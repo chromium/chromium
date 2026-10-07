@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.educational_tip.two_cell;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_1_COMPLETED_ICON;
@@ -15,6 +17,7 @@ import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTi
 import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellProperties.ITEM_2_MARK_COMPLETED;
 
 import android.app.Activity;
+import android.graphics.Paint;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -32,19 +35,19 @@ import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Tests for {@link EducationalTipModuleTwoCellViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class EducationalTipModuleTwoCellViewBinderUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private Activity mActivity;
     private EducationalTipModuleTwoCellView mModuleView;
-    @Mock private EducationalTipModuleTwoCellView mMockView;
     private PropertyModel mModel;
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
@@ -150,59 +153,73 @@ public final class EducationalTipModuleTwoCellViewBinderUnitTest {
 
     @Test
     public void testSetItem1Icon() {
-        mPropertyModelChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        mModel, mMockView, EducationalTipModuleTwoCellViewBinder::bind);
-        int expectedRes = R.drawable.default_browser_promo_logo;
-        mModel.set(ITEM_1_ICON, expectedRes);
-        verify(mMockView).setItem1Icon(expectedRes);
+        verifySetIcon(
+                ITEM_1_ICON, R.id.two_cell_item_1_icon, R.drawable.default_browser_promo_logo);
     }
 
     @Test
     public void testSetItem1CompletedIcon() {
-        mPropertyModelChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        mModel, mMockView, EducationalTipModuleTwoCellViewBinder::bind);
-        int expectedRes = R.drawable.setup_list_completed_background_wavy_circle;
-        mModel.set(ITEM_1_COMPLETED_ICON, expectedRes);
-        verify(mMockView).setItem1IconWithAnimation(expectedRes);
+        verifySetCompletedIcon(ITEM_1_COMPLETED_ICON, R.id.two_cell_item_1_icon);
     }
 
     @Test
     public void testSetItem1MarkCompleted() {
-        mPropertyModelChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        mModel, mMockView, EducationalTipModuleTwoCellViewBinder::bind);
-        mModel.set(ITEM_1_MARK_COMPLETED, true);
-        verify(mMockView).setItem1Completed(true);
+        verifyMarkCompleted(
+                ITEM_1_MARK_COMPLETED, R.id.two_cell_item_1_title, R.id.two_cell_item_1);
     }
 
     @Test
     public void testSetItem2Icon() {
-        mPropertyModelChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        mModel, mMockView, EducationalTipModuleTwoCellViewBinder::bind);
-        int expectedRes = R.drawable.history_sync_promo_logo;
-        mModel.set(ITEM_2_ICON, expectedRes);
-        verify(mMockView).setItem2Icon(expectedRes);
+        verifySetIcon(ITEM_2_ICON, R.id.two_cell_item_2_icon, R.drawable.history_sync_promo_logo);
     }
 
     @Test
     public void testSetItem2CompletedIcon() {
-        mPropertyModelChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        mModel, mMockView, EducationalTipModuleTwoCellViewBinder::bind);
-        int expectedRes = R.drawable.setup_list_completed_background_wavy_circle;
-        mModel.set(ITEM_2_COMPLETED_ICON, expectedRes);
-        verify(mMockView).setItem2IconWithAnimation(expectedRes);
+        verifySetCompletedIcon(ITEM_2_COMPLETED_ICON, R.id.two_cell_item_2_icon);
     }
 
     @Test
     public void testSetItem2MarkCompleted() {
+        verifyMarkCompleted(
+                ITEM_2_MARK_COMPLETED, R.id.two_cell_item_2_title, R.id.two_cell_item_2);
+    }
+
+    private void verifySetIcon(
+            WritableObjectPropertyKey<Integer> key, int iconViewId, int expectedRes) {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
-                        mModel, mMockView, EducationalTipModuleTwoCellViewBinder::bind);
-        mModel.set(ITEM_2_MARK_COMPLETED, true);
-        verify(mMockView).setItem2Completed(true);
+                        mModel, mModuleView, EducationalTipModuleTwoCellViewBinder::bind);
+        ImageView iconView = mModuleView.findViewById(iconViewId);
+        iconView.setAlpha(0.5f);
+        mModel.set(key, expectedRes);
+        assertEquals(expectedRes, Shadows.shadowOf(iconView.getDrawable()).getCreatedFromResId());
+        assertEquals(1f, iconView.getAlpha(), 0f);
+    }
+
+    private void verifySetCompletedIcon(WritableObjectPropertyKey<Integer> key, int iconViewId) {
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mModuleView, EducationalTipModuleTwoCellViewBinder::bind);
+        ImageView iconView = mModuleView.findViewById(iconViewId);
+        int expectedRes = R.drawable.setup_list_completed_background_wavy_circle;
+        mModel.set(key, expectedRes);
+        // The icon is swapped once the fade-out animation ends.
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        assertEquals(expectedRes, Shadows.shadowOf(iconView.getDrawable()).getCreatedFromResId());
+        assertEquals(1f, iconView.getAlpha(), 0f);
+    }
+
+    private void verifyMarkCompleted(
+            WritableObjectPropertyKey<Boolean> key, int titleViewId, int itemLayoutId) {
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mModuleView, EducationalTipModuleTwoCellViewBinder::bind);
+        TextView titleView = mModuleView.findViewById(titleViewId);
+        View itemLayout = mModuleView.findViewById(itemLayoutId);
+        itemLayout.setClickable(true);
+
+        mModel.set(key, true);
+        assertTrue((titleView.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) != 0);
+        assertFalse(itemLayout.isClickable());
     }
 }

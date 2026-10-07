@@ -10,14 +10,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,6 +28,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
@@ -48,10 +43,13 @@ import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabsActionDelegate;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Unit tests for {@link ChromeTabbedActivity}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ChromeTabbedActivityUnitTest {
     private static class TestChromeTabbedActivity extends ChromeTabbedActivity {
         private boolean mAreTabModelsInitialized;
@@ -59,6 +57,41 @@ public class ChromeTabbedActivityUnitTest {
         private boolean mDidFinishNativeInitialization;
         private boolean mTerminateIncognitoSessionCalled;
         private boolean mFinishCalled;
+        private final List<Integer> mMenuOrKeyboardActionIds = new ArrayList<>();
+        private final List<Boolean> mMenuOrKeyboardActionFromMenu = new ArrayList<>();
+        private final List<Integer> mRequestedWindowFeatures = new ArrayList<>();
+
+        public List<Integer> getMenuOrKeyboardActionIds() {
+            return mMenuOrKeyboardActionIds;
+        }
+
+        public List<Boolean> getMenuOrKeyboardActionFromMenu() {
+            return mMenuOrKeyboardActionFromMenu;
+        }
+
+        public List<Integer> getRequestedWindowFeatures() {
+            return mRequestedWindowFeatures;
+        }
+
+        // Records the action instead of running it, since running it requires native.
+        @Override
+        public boolean onMenuOrKeyboardAction(
+                int id,
+                boolean fromMenu,
+                @Nullable Bundle menuItemData,
+                @Nullable MotionEventInfo triggeringMotion) {
+            mMenuOrKeyboardActionIds.add(id);
+            mMenuOrKeyboardActionFromMenu.add(fromMenu);
+            return true;
+        }
+
+        // AppCompatDelegate#hasWindowFeature() cannot be queried before onCreate(), so record the
+        // request instead (intentionally without calling super).
+        @Override
+        public boolean supportRequestWindowFeature(int featureId) {
+            mRequestedWindowFeatures.add(featureId);
+            return true;
+        }
 
         public void setAreTabModelsInitialized(boolean areTabModelsInitialized) {
             mAreTabModelsInitialized = areTabModelsInitialized;
@@ -159,26 +192,24 @@ public class ChromeTabbedActivityUnitTest {
     public void
             testVerticalTabsActionDelegate_openHubSearch_disabledOnDesktop_doesNotTriggerHubSearch() {
         DeviceInfo.setIsDesktopForTesting(true);
-        ChromeTabbedActivity activitySpy = spy(mActivity);
-        doReturn(true).when(activitySpy).onMenuOrKeyboardAction(anyInt(), anyBoolean());
+        TestChromeTabbedActivity activity = new TestChromeTabbedActivity();
 
-        VerticalTabsActionDelegate delegate = activitySpy.createVerticalTabsActionDelegate();
+        VerticalTabsActionDelegate delegate = activity.createVerticalTabsActionDelegate();
         delegate.openHubSearch();
 
-        verify(activitySpy, never()).onMenuOrKeyboardAction(anyInt(), anyBoolean());
+        assertTrue(activity.getMenuOrKeyboardActionIds().isEmpty());
     }
 
     @Test
     @DisableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
     public void
             testVerticalTabsActionDelegate_openHubSearch_enabledOnNonDesktop_triggersHubSearch() {
-        ChromeTabbedActivity activitySpy = spy(mActivity);
-        doReturn(true).when(activitySpy).onMenuOrKeyboardAction(anyInt(), anyBoolean());
-
-        VerticalTabsActionDelegate delegate = activitySpy.createVerticalTabsActionDelegate();
+        TestChromeTabbedActivity activity = new TestChromeTabbedActivity();
+        VerticalTabsActionDelegate delegate = activity.createVerticalTabsActionDelegate();
         delegate.openHubSearch();
 
-        verify(activitySpy).onMenuOrKeyboardAction(eq(R.id.tab_search), /* fromMenu= */ eq(false));
+        assertEquals(List.of(R.id.tab_search), activity.getMenuOrKeyboardActionIds());
+        assertEquals(List.of(false), activity.getMenuOrKeyboardActionFromMenu());
     }
 
     @Test
@@ -355,10 +386,11 @@ public class ChromeTabbedActivityUnitTest {
 
     @Test
     public void testOnPreCreate_requestsFeatureActionModeOverlay() {
-        ChromeTabbedActivity activity =
-                spy(Robolectric.buildActivity(ChromeTabbedActivity.class).get());
+        TestChromeTabbedActivity activity =
+                Robolectric.buildActivity(TestChromeTabbedActivity.class).get();
         activity.onPreCreate();
-        verify(activity).supportRequestWindowFeature(Window.FEATURE_ACTION_MODE_OVERLAY);
+        assertTrue(
+                activity.getRequestedWindowFeatures().contains(Window.FEATURE_ACTION_MODE_OVERLAY));
     }
 
     @Test

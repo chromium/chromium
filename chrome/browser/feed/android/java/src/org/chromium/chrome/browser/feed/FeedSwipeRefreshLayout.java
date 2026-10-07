@@ -161,6 +161,10 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
         mRefreshListeners.removeObserver(listener);
     }
 
+    ObserverList<SwipeRefreshLayout.OnRefreshListener> getRefreshListenersForTesting() {
+        return mRefreshListeners;
+    }
+
     /**
      * Starts a refreshing spinner at the bottom of the view. Should only be used for non-swipe
      * refreshes.

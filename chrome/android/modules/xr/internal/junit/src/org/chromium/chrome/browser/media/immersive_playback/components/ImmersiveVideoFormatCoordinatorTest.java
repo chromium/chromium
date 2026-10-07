@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.util.SizeF;
+import android.view.View;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +24,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.media.immersive_playback.ImmersiveVideoFormatRadioGroup;
 import org.chromium.chrome.browser.modules.xr.R;
 import org.chromium.chrome.browser.xr.scenecore.XrModuleProviderImpl;
@@ -35,14 +37,31 @@ import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
 
 /** Tests for {@link ImmersiveVideoFormatCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ImmersiveVideoFormatCoordinatorTest {
+    private static class TestImmersiveVideoFormatCoordinator
+            extends ImmersiveVideoFormatCoordinator {
+        private final ImmersiveVideoFormatView mView;
+
+        public TestImmersiveVideoFormatCoordinator(
+                Activity activity,
+                XrSceneCoreSessionManager sessionManager,
+                Delegate delegate,
+                ImmersiveVideoFormatView view) {
+            super(activity, sessionManager, delegate);
+            mView = view;
+        }
+
+        @Override
+        ImmersiveVideoFormatView createView() {
+            return mView;
+        }
+    }
+
     @Mock private XrSceneCoreSessionManager mSessionManager;
     @Mock private ImmersiveVideoFormatCoordinator.Delegate mDelegate;
     @Mock private XrPanelEntityHolder<?> mHolder;
     @Mock private XrEntityHolder<?> mParentEntity;
-    @Mock private ImmersiveVideoFormatView mFormatView;
-    @Mock private ImmersiveVideoFormatRadioGroup mFormatRadioGroup;
+    private ImmersiveVideoFormatView mFormatView;
 
     private Activity mActivity;
     private ImmersiveVideoFormatCoordinator mCoordinator;
@@ -51,36 +70,18 @@ public class ImmersiveVideoFormatCoordinatorTest {
     public void setUp() {
         XrModuleProviderImpl.initialize();
         MockitoAnnotations.openMocks(this);
-        mActivity = Robolectric.buildActivity(Activity.class).create().get();
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mFormatView = new ImmersiveVideoFormatView(mActivity);
+        mActivity.setContentView(mFormatView);
 
         when(mSessionManager.createPanelEntity(any(), any())).thenReturn(mHolder);
         when(mSessionManager.getPixelDensity())
                 .thenReturn(XrPixelDensityImpl.createForTesting(1000f, 1000f));
-        when(mFormatView.getRadioGroup()).thenReturn(mFormatRadioGroup);
-        when(mFormatView.findViewById(R.id.format_radio_group)).thenReturn(mFormatRadioGroup);
 
         mCoordinator =
                 new TestImmersiveVideoFormatCoordinator(
                         mActivity, mSessionManager, mDelegate, mFormatView);
-    }
-
-    private static class TestImmersiveVideoFormatCoordinator
-            extends ImmersiveVideoFormatCoordinator {
-        private final ImmersiveVideoFormatView mMockView;
-
-        public TestImmersiveVideoFormatCoordinator(
-                Activity activity,
-                XrSceneCoreSessionManager sessionManager,
-                Delegate delegate,
-                ImmersiveVideoFormatView mockView) {
-            super(activity, sessionManager, delegate);
-            mMockView = mockView;
-        }
-
-        @Override
-        ImmersiveVideoFormatView createView() {
-            return mMockView;
-        }
     }
 
     @Test
@@ -138,8 +139,19 @@ public class ImmersiveVideoFormatCoordinatorTest {
                 new SizeF(1f, 1f),
                 ImmersiveStereoMode.MONO,
                 ImmersiveProjectionType.QUAD);
-        mCoordinator.requestFocusForAccessibility();
+        ImmersiveVideoFormatRadioGroup radioGroup = mFormatView.getRadioGroup();
+        View standardOption = radioGroup.findViewById(R.id.standard_option);
+        View sphereOption = radioGroup.findViewById(R.id.sphere_option);
+        // Robolectric runs in touch mode, so views must be focusable in touch mode to take focus.
+        standardOption.setFocusableInTouchMode(true);
+        sphereOption.setFocusableInTouchMode(true);
+        sphereOption.requestFocus();
+        assertTrue(sphereOption.isFocused());
 
-        verify(mFormatView).requestFocusForAccessibility();
+        mCoordinator.requestFocusForAccessibility();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        // Focus moves to the selected (standard) option.
+        assertTrue(standardOption.isFocused());
     }
 }

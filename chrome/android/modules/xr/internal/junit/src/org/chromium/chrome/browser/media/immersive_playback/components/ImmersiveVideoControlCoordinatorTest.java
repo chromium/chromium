@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.media.immersive_playback.components;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
@@ -17,6 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.view.accessibility.AccessibilityEvent;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,6 +29,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.modules.xr.R;
 import org.chromium.chrome.browser.xr.scenecore.XrModuleProviderImpl;
 import org.chromium.chrome.browser.xr.scenecore.XrPixelDensityImpl;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -39,13 +43,11 @@ import org.chromium.ui.xr.scenecore.XrVector3;
 
 /** Tests for {@link ImmersiveVideoControlCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ImmersiveVideoControlCoordinatorTest {
     @Mock private XrSceneCoreSessionManager mSessionManager;
     @Mock private ImmersiveVideoControlCoordinator.Delegate mDelegate;
     @Mock private XrPanelEntityHolder<?> mHolder;
     @Mock private XrEntityHolder<?> mParentEntity;
-    @Mock private ImmersiveVideoControlView mControlView;
     @Mock private XrMovableComponent mMovableComponent;
 
     private Activity mActivity;
@@ -56,35 +58,14 @@ public class ImmersiveVideoControlCoordinatorTest {
         XrModuleProviderImpl.initialize();
         MockitoAnnotations.openMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         when(mSessionManager.createPanelEntity(any(), any())).thenReturn(mHolder);
         when(mHolder.getMovableComponent()).thenReturn(mMovableComponent);
         when(mSessionManager.getPixelDensity())
                 .thenReturn(XrPixelDensityImpl.createForTesting(1000f, 1000f));
 
-        mCoordinator =
-                new TestImmersiveVideoControlCoordinator(
-                        mActivity, mSessionManager, mDelegate, mControlView);
-    }
-
-    private static class TestImmersiveVideoControlCoordinator
-            extends ImmersiveVideoControlCoordinator {
-        private final ImmersiveVideoControlView mMockView;
-
-        public TestImmersiveVideoControlCoordinator(
-                Activity activity,
-                XrSceneCoreSessionManager sessionManager,
-                Delegate delegate,
-                ImmersiveVideoControlView mockView) {
-            super(activity, sessionManager, delegate);
-            mMockView = mockView;
-        }
-
-        @Override
-        ImmersiveVideoControlView createView(
-                Activity activity, ImmersiveVideoControlView.UserInteractionListener listener) {
-            return mMockView;
-        }
+        mCoordinator = new ImmersiveVideoControlCoordinator(mActivity, mSessionManager, mDelegate);
     }
 
     @Test
@@ -129,25 +110,32 @@ public class ImmersiveVideoControlCoordinatorTest {
     public void testDispose_ReleasesBindingsAndListenersAndIsTerminal() {
         mCoordinator.show(mParentEntity);
         PropertyModel model = mCoordinator.getModelForTesting();
+        ImmersiveVideoControlView controlView = mCoordinator.getControlPanelForTesting();
+        assertNotNull(controlView.getHoverListenerForTesting());
         mCoordinator.dispose();
 
         verify(mHolder).dispose();
         verify(mMovableComponent).removeMoveListener(any());
-        verify(mControlView).setHoverListener(null);
-        verify(mControlView).setAccessibilityFocusListener(null);
+        assertNull(controlView.getHoverListenerForTesting());
+        // The accessibility focus listener should have been cleared, so the delegate is not
+        // notified when a child gains accessibility focus.
+        controlView.requestSendAccessibilityEvent(
+                controlView.getChildAt(0),
+                AccessibilityEvent.obtain(AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED));
+        verify(mDelegate, never()).onControlPanelAccessibilityFocusChanged(anyBoolean());
 
-        clearInvocations(mSessionManager, mHolder, mMovableComponent, mControlView);
+        clearInvocations(mSessionManager, mHolder, mMovableComponent);
+        float seekBarValue = controlView.getSeekBarForTesting().getValue();
         model.set(ImmersiveVideoControlProperties.PROGRESS, 1234);
         model.set(
-                ImmersiveVideoControlProperties.POSE,
-                XrPose.create(XrVector3.create(1f, 2f, 3f)));
+                ImmersiveVideoControlProperties.POSE, XrPose.create(XrVector3.create(1f, 2f, 3f)));
         mCoordinator.dispose();
         mCoordinator.show(mParentEntity);
 
         verify(mSessionManager, never()).createPanelEntity(any(), any());
         verify(mHolder, never()).dispose();
         verify(mHolder, never()).setEntityPose(any(), anyInt());
-        verify(mControlView, never()).setProgress(anyInt());
+        assertEquals(seekBarValue, controlView.getSeekBarForTesting().getValue(), 0f);
     }
 
     @Test

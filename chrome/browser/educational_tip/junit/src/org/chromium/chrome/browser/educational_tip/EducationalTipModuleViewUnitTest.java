@@ -4,18 +4,13 @@
 
 package org.chromium.chrome.browser.educational_tip;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.text.StaticLayout;
 import android.view.LayoutInflater;
-import android.view.View.OnLayoutChangeListener;
+import android.view.View.MeasureSpec;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,28 +19,21 @@ import androidx.test.core.app.ApplicationProvider;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+import org.robolectric.annotation.GraphicsMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
+// Native graphics are needed for real text measurement / ellipsizing.
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
 public class EducationalTipModuleViewUnitTest {
-
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock private TextView mMockContentTitleView;
-    @Mock private StaticLayout mMockContentTitleViewLayout;
-    @Mock private TextView mMockContentDescriptionView;
-
-    @Captor private ArgumentCaptor<OnLayoutChangeListener> mOnLayoutChangeListenerCaptor;
+    private static final String LONG_TITLE =
+            "This is a very long title that cannot possibly fit on a single line of the module";
+    private static final int MODULE_WIDTH_PX = 300;
 
     private EducationalTipModuleView mModuleView;
     private Context mContext;
@@ -93,41 +81,45 @@ public class EducationalTipModuleViewUnitTest {
     @Test
     public void testUpdateContentTitleAndDescriptionMaxLines() {
         Assert.assertTrue(mModuleView.getIsTitleSingleLineForTesting());
+        TextView contentTitleView =
+                mModuleView.findViewById(R.id.educational_tip_module_content_title);
+        TextView contentDescriptionView =
+                mModuleView.findViewById(R.id.educational_tip_module_content_description);
 
         // Test if the title exceeds the available horizontal space, wrap it to two lines and limit
         // the description to a single line.
-        when(mMockContentTitleView.getLayout()).thenReturn(mMockContentTitleViewLayout);
-        when(mMockContentTitleViewLayout.getEllipsisCount(/* line= */ 0)).thenReturn(1);
-        mModuleView.setContentTitleViewForTesting(mMockContentTitleView);
-        mModuleView.setContentDescriptionViewForTesting(mMockContentDescriptionView);
-
+        mModuleView.setContentTitle(LONG_TITLE);
+        layoutModuleView();
         mModuleView.updateContentTitleAndDescriptionMaxLines();
-        verify(mMockContentTitleView, times(1)).setMaxLines(2);
-        verify(mMockContentDescriptionView, times(1)).setMaxLines(1);
+        Assert.assertEquals(2, contentTitleView.getMaxLines());
+        Assert.assertEquals(1, contentDescriptionView.getMaxLines());
         Assert.assertFalse(mModuleView.getIsTitleSingleLineForTesting());
 
         // Test if the title fits within a single line, the description should span two lines.
-        when(mMockContentTitleView.getLineCount()).thenReturn(1);
-        when(mMockContentTitleViewLayout.getEllipsisCount(/* line= */ 0)).thenReturn(0);
-
+        mModuleView.setContentTitle("Title");
+        layoutModuleView();
         mModuleView.updateContentTitleAndDescriptionMaxLines();
-        verify(mMockContentTitleView, times(1)).setMaxLines(1);
-        verify(mMockContentDescriptionView, times(1)).setMaxLines(2);
+        Assert.assertEquals(1, contentTitleView.getMaxLines());
+        Assert.assertEquals(2, contentDescriptionView.getMaxLines());
         Assert.assertTrue(mModuleView.getIsTitleSingleLineForTesting());
     }
 
     @Test
     public void testOnLayoutChangeListener() {
-        mModuleView.setContentTitleViewForTesting(mMockContentTitleView);
-        mModuleView.setContentTitleViewOnLayoutChangeListener();
+        TextView contentTitleView =
+                mModuleView.findViewById(R.id.educational_tip_module_content_title);
+        mModuleView.setContentTitle(LONG_TITLE);
 
-        verify(mMockContentTitleView)
-                .addOnLayoutChangeListener(mOnLayoutChangeListenerCaptor.capture());
-        mOnLayoutChangeListenerCaptor
-                .getValue()
-                .onLayoutChange(mMockContentTitleView, 0, 0, 0, 0, 0, 0, 0, 0);
+        // The view must be attached to a window for View#post() runnables to run.
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        activity.setContentView(mModuleView);
+        Assert.assertEquals(1, contentTitleView.getMaxLines());
 
-        verify(mMockContentTitleView, times(1)).post(any());
+        // Laying out the title triggers the layout change listener, which posts an update of the
+        // max lines.
+        RobolectricUtil.runAllBackgroundAndUi();
+        Assert.assertEquals(2, contentTitleView.getMaxLines());
+        Assert.assertFalse(mModuleView.getIsTitleSingleLineForTesting());
     }
 
     @Test
@@ -156,6 +148,13 @@ public class EducationalTipModuleViewUnitTest {
 
         mModuleView.setUseTransparentIconBackground(true);
         Assert.assertNull(imageView.getBackground());
+    }
+
+    private void layoutModuleView() {
+        mModuleView.measure(
+                MeasureSpec.makeMeasureSpec(MODULE_WIDTH_PX, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+        mModuleView.layout(0, 0, MODULE_WIDTH_PX, mModuleView.getMeasuredHeight());
     }
 
     private void verifySetCompleted() {

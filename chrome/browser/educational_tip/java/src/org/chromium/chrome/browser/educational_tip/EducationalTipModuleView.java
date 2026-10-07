@@ -47,8 +47,7 @@ public class EducationalTipModuleView extends LinearLayout {
         setContentTitleViewOnLayoutChangeListener();
     }
 
-    @VisibleForTesting
-    void setContentTitleViewOnLayoutChangeListener() {
+    private void setContentTitleViewOnLayoutChangeListener() {
         mOnLayoutChangeListener =
                 (_, _, _, _, _, _, _, _, _) ->
                         mContentTitleView.post(this::updateContentTitleAndDescriptionMaxLines);
@@ -116,14 +115,6 @@ public class EducationalTipModuleView extends LinearLayout {
 
     void setModuleButtonOnClickListener(View.OnClickListener onClickListener) {
         mModuleButtonView.setOnClickListener(onClickListener);
-    }
-
-    void setContentTitleViewForTesting(TextView contentTitleView) {
-        mContentTitleView = contentTitleView;
-    }
-
-    void setContentDescriptionViewForTesting(TextView contentDescriptionView) {
-        mContentDescriptionView = contentDescriptionView;
     }
 
     boolean getIsTitleSingleLineForTesting() {

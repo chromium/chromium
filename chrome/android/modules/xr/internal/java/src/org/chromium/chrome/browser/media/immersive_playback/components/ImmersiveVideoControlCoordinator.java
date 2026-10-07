@@ -10,8 +10,6 @@ import android.app.Activity;
 import android.util.SizeF;
 import android.view.View;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.media.immersive_playback.ImmersiveVideoPlaybackDelegate;
@@ -114,7 +112,7 @@ public class ImmersiveVideoControlCoordinator {
     private void ensureInitialized() {
         if (mHolder != null) return;
 
-        mView = createView(mActivity, mMediator);
+        mView = new ImmersiveVideoControlView(mActivity, mMediator);
         mHolder = mSessionManager.createPanelEntity(mView, "MediaControlPanel");
         mHolder.getMovableComponent().addMoveListener(mOnMoveListener);
 
@@ -123,12 +121,6 @@ public class ImmersiveVideoControlCoordinator {
                         mModel,
                         new ImmersiveVideoControlSpatialView(mView, mHolder),
                         ImmersiveVideoControlViewBinder::bind);
-    }
-
-    @VisibleForTesting
-    ImmersiveVideoControlView createView(
-            Activity activity, ImmersiveVideoControlView.UserInteractionListener listener) {
-        return new ImmersiveVideoControlView(activity, listener);
     }
 
     /**

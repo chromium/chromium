@@ -5,9 +5,13 @@
 package org.chromium.chrome.browser.educational_tip;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.robolectric.Shadows.shadowOf;
 
 import static org.chromium.chrome.browser.educational_tip.EducationalTipModuleProperties.MARK_COMPLETED;
 import static org.chromium.chrome.browser.educational_tip.EducationalTipModuleProperties.MODULE_BUTTON_ON_CLICK_LISTENER;
@@ -18,7 +22,9 @@ import static org.chromium.chrome.browser.educational_tip.EducationalTipModulePr
 import static org.chromium.chrome.browser.educational_tip.EducationalTipModuleProperties.USE_TRANSPARENT_ICON_BACKGROUND;
 
 import android.app.Activity;
+import android.graphics.Paint;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.junit.After;
@@ -33,18 +39,17 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.ButtonCompat;
 
 /** Tests for {@link EducationalTipModuleViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class EducationalTipModuleViewBinderUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
     private EducationalTipModuleView mEducationalTipModuleView;
-    @Mock private EducationalTipModuleView mMockView;
     private PropertyModel mModel;
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     @Mock private View.OnClickListener mModuleButtonOnClickListener;
@@ -109,39 +114,58 @@ public final class EducationalTipModuleViewBinderUnitTest {
     public void testSetModuleContentImage() {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
-                        mModel, mMockView, EducationalTipModuleViewBinder::bind);
+                        mModel, mEducationalTipModuleView, EducationalTipModuleViewBinder::bind);
+        ImageView imageView =
+                mEducationalTipModuleView.findViewById(R.id.educational_tip_module_content_image);
+        imageView.setAlpha(0.5f);
         int expectedRes =
                 org.chromium.chrome.browser.educational_tip.R.drawable.default_browser_promo_logo;
         mModel.set(MODULE_CONTENT_IMAGE, expectedRes);
-        verify(mMockView).setContentImageResource(expectedRes);
+        assertEquals(expectedRes, shadowOf(imageView.getDrawable()).getCreatedFromResId());
+        assertEquals(1f, imageView.getAlpha(), 0f);
     }
 
     @Test
     public void testSetModuleContentCompletedImage() {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
-                        mModel, mMockView, EducationalTipModuleViewBinder::bind);
+                        mModel, mEducationalTipModuleView, EducationalTipModuleViewBinder::bind);
+        ImageView imageView =
+                mEducationalTipModuleView.findViewById(R.id.educational_tip_module_content_image);
         int expectedRes = R.drawable.setup_list_completed_background_wavy_circle;
         mModel.set(MODULE_CONTENT_COMPLETED_IMAGE, expectedRes);
-        verify(mMockView).setContentImageResourceWithAnimation(expectedRes);
+        // The image is swapped once the fade-out animation ends.
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        assertEquals(expectedRes, shadowOf(imageView.getDrawable()).getCreatedFromResId());
+        assertEquals(1f, imageView.getAlpha(), 0f);
     }
 
     @Test
     public void testMarkCompleted() {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
-                        mModel, mMockView, EducationalTipModuleViewBinder::bind);
+                        mModel, mEducationalTipModuleView, EducationalTipModuleViewBinder::bind);
+        TextView contentTitleView =
+                mEducationalTipModuleView.findViewById(R.id.educational_tip_module_content_title);
+        ButtonCompat moduleButtonView =
+                mEducationalTipModuleView.findViewById(R.id.educational_tip_module_button);
+        assertTrue(moduleButtonView.isEnabled());
+
         mModel.set(MARK_COMPLETED, true);
-        verify(mMockView).setCompleted(true);
+        assertTrue((contentTitleView.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) != 0);
+        assertFalse(moduleButtonView.isEnabled());
     }
 
     @Test
     public void testSetUseTransparentIconBackground() {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
-                        mModel, mMockView, EducationalTipModuleViewBinder::bind);
+                        mModel, mEducationalTipModuleView, EducationalTipModuleViewBinder::bind);
+        ImageView imageView =
+                mEducationalTipModuleView.findViewById(R.id.educational_tip_module_content_image);
+        assertNotNull(imageView.getBackground());
         mModel.set(USE_TRANSPARENT_ICON_BACKGROUND, true);
-        verify(mMockView).setUseTransparentIconBackground(true);
+        assertNull(imageView.getBackground());
     }
 
     @Test
