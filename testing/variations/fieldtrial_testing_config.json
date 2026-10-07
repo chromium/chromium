@@ -573,6 +573,21 @@
             ]
         }
     ],
+    "AndroidDesktopWebUiHistory": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidDesktopWebUiHistory"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidDevToolsFrontend": [
         {
             "platforms": [

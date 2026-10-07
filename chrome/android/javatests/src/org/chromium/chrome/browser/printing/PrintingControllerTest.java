@@ -33,6 +33,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.TestFileUtil;
@@ -489,6 +490,7 @@ public class PrintingControllerTest {
     @Test
     @SmallTest
     @Feature({"Printing"})
+    @DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_WEB_UI_HISTORY)
     public void testDisallowPrintOnNativePage() {
         mActivityTestRule.startOnBlankPage();
         mActivityTestRule.loadUrl(UrlConstants.HISTORY_URL);

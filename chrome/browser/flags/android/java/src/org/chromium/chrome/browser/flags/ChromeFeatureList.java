@@ -971,7 +971,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidBottomBar =
             newCachedFlag(ANDROID_BOTTOM_BAR, false, /* defaultValueInTests= */ true);
     public static final CachedFlag sAndroidDesktopWebUiHistory =
-            newCachedFlag(ANDROID_DESKTOP_WEB_UI_HISTORY, /* defaultValue= */ false);
+            newCachedFlag(
+                    ANDROID_DESKTOP_WEB_UI_HISTORY,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sAndroidElegantTextHeight =
             newCachedFlag(ANDROID_ELEGANT_TEXT_HEIGHT, true);
     public static final CachedFlag sAndroidKeyboardShortcutOpenFile =
