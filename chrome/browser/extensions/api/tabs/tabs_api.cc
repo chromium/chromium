@@ -3127,8 +3127,9 @@ bool TabsMoveFunction::MoveTab(int tab_id,
 
 #if BUILDFLAG(IS_ANDROID)
     if (is_source_window_cct_or_app_on_android &&
-        target_controller->GetBrowserWindowInterface()->GetType() !=
-            BrowserWindowInterface::TYPE_NORMAL) {
+        (!target_controller->GetBrowserWindowInterface() ||
+         target_controller->GetBrowserWindowInterface()->GetType() !=
+             BrowserWindowInterface::TYPE_NORMAL)) {
       *error =
           tabs_constants::kAndroidCanOnlyMoveCctOrWebAppTabsToNormalWindowError;
       return false;
@@ -3176,6 +3177,10 @@ bool TabsMoveFunction::MoveTab(int tab_id,
 
   TabListInterface* source_tab_list =
       TabListInterface::From(source_window->GetBrowserWindowInterface());
+  if (!source_tab_list) {
+    *error = ExtensionTabUtil::kTabStripNotEditableError;
+    return false;
+  }
   if (*new_index >= source_tab_list->GetTabCount() || *new_index < 0) {
     *new_index = source_tab_list->GetTabCount() - 1;
   }

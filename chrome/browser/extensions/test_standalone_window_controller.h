@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_TEST_STANDALONE_WINDOW_CONTROLLER_H_
 #define CHROME_BROWSER_EXTENSIONS_TEST_STANDALONE_WINDOW_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -47,8 +48,12 @@ class TestStandaloneWindowController : public WindowController {
       const TestStandaloneWindowController&) = delete;
   ~TestStandaloneWindowController() override;
 
-  // Allows ExtensionTabUtil::GetTabById to resolve this window during tests.
-  void SetBrowserWindowInterfaceForLookup(BrowserWindowInterface* bwi);
+  // Allows ExtensionTabUtil::GetTabById (or GetSplitById) to resolve this
+  // window during tests while optionally returning nullptr on subsequent
+  // GetBrowserWindowInterface() calls once `count` lookups have occurred.
+  void SetBrowserWindowInterfaceForLookup(
+      BrowserWindowInterface* bwi,
+      std::optional<int> count = std::nullopt);
 
   // WindowController:
   int GetWindowId() const override;
@@ -76,6 +81,7 @@ class TestStandaloneWindowController : public WindowController {
   const SessionID session_id_;
   raw_ptr<content::WebContents> web_contents_;
   raw_ptr<BrowserWindowInterface> lookup_bwi_ = nullptr;
+  std::optional<int> remaining_bwi_lookups_;
 };
 
 }  // namespace extensions

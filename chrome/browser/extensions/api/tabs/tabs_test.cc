@@ -42,6 +42,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/profile_util.h"
+#include "chrome/browser/extensions/test_standalone_window_controller.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -60,6 +61,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -6083,5 +6085,36 @@ IN_PROC_BROWSER_TEST_P(ExtensionTabsDiscardTest, DiscardEvent) {
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+// Verifies that TabsMoveFunction::MoveTab returns kTabStripNotEditableError
+// rather than crashing on a null source_tab_list when moving a tab within a
+// standalone WindowController that has no BrowserWindowInterface.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       TabsMove_IntraStandaloneWindowRejected) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(content::WebContents::CreateParams(profile()));
+  sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
+                                                   base::NullCallback());
+  const int tab_id = ExtensionTabUtil::GetTabId(web_contents.get());
+  ASSERT_NE(tab_id, api::tabs::TAB_ID_NONE);
+
+  const SessionID standalone_window_id = SessionID::NewUnique();
+  TestStandaloneWindowController standalone_controller(
+      /*base_window=*/nullptr, profile(), standalone_window_id,
+      web_contents.get());
+  // Allow GetTabById (2 calls) to resolve the standalone tab, then return
+  // nullptr when MoveTab queries source_window->GetBrowserWindowInterface().
+  standalone_controller.SetBrowserWindowInterfaceForLookup(
+      browser_window_interface(), 2);
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("MoveStandaloneTabTest").Build();
+  auto function = base::MakeRefCounted<TabsMoveFunction>();
+  function->set_extension(extension.get());
+  std::string args = base::StringPrintf(R"([%d, {"index": 0}])", tab_id);
+  std::string error =
+      utils::RunFunctionAndReturnError(function.get(), args, profile());
+  EXPECT_EQ(ExtensionTabUtil::kTabStripNotEditableError, error);
+}
 
 }  // namespace extensions

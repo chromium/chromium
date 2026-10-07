@@ -25,8 +25,10 @@ TestStandaloneWindowController::~TestStandaloneWindowController() {
 }
 
 void TestStandaloneWindowController::SetBrowserWindowInterfaceForLookup(
-    BrowserWindowInterface* bwi) {
+    BrowserWindowInterface* bwi,
+    std::optional<int> count) {
   lookup_bwi_ = bwi;
+  remaining_bwi_lookups_ = count;
 }
 
 int TestStandaloneWindowController::GetWindowId() const {
@@ -43,7 +45,14 @@ void TestStandaloneWindowController::SetFullscreenMode(
 
 BrowserWindowInterface*
 TestStandaloneWindowController::GetBrowserWindowInterface() {
-  return lookup_bwi_;
+  if (!remaining_bwi_lookups_.has_value()) {
+    return lookup_bwi_;
+  }
+  if (*remaining_bwi_lookups_ > 0) {
+    --(*remaining_bwi_lookups_);
+    return lookup_bwi_;
+  }
+  return nullptr;
 }
 
 content::WebContents* TestStandaloneWindowController::GetActiveTab() const {
