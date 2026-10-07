@@ -4,13 +4,14 @@
 
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_status_provider.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/policy/core/common/management/platform_management_service.h"
-
 #include "content/public/browser/browser_context.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -64,6 +65,11 @@ ManagementServiceFactory::ManagementServiceFactory()
               .WithRegular(ProfileSelection::kOwnInstance)
               // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
+              .WithIsolatedMode(base::FeatureList::IsEnabled(
+                                    enterprise_isolated_mode::
+                                        kEnterpriseIsolatedModeMilestone2)
+                                    ? ProfileSelection::kRedirectedToOriginal
+                                    : ProfileSelection::kOwnInstance)
               .WithGuest(ProfileSelection::kOwnInstance)
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
