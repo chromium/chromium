@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_BROWSER_SELECT_FILE_DIALOG_CONTROLLER_H_
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -57,6 +58,10 @@ class BrowserSelectFileDialogController
   // SelectFileDialog::Listener:
   void FileSelected(const ui::SelectedFileInfo& file_info, int index) override;
   void FileSelectionCanceled() override;
+
+  // Prohibits the active WebContents from entering fullscreen while the native
+  // open file dialog is open.
+  base::ScopedClosureRunner fullscreen_block_;
 
   // The current file selection dialog. This is a ref-counted object that
   // maintains its own lifetime, but we hold a reference to manage interaction.

@@ -20,6 +20,7 @@
 #include "ui/base/base_window.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 
@@ -60,6 +61,16 @@ void BrowserSelectFileDialogController::OpenFile() {
     return;
   }
 
+  base::ScopedClosureRunner fullscreen_block;
+  if (web_contents) {
+    auto blocker =
+        web_contents->ForSecurityDropFullscreen(display::kInvalidDisplayId);
+    if (!blocker) {
+      return;
+    }
+    fullscreen_block = std::move(*blocker);
+  }
+
   base::RecordAction(base::UserMetricsAction("OpenFile"));
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
@@ -67,6 +78,7 @@ void BrowserSelectFileDialogController::OpenFile() {
   if (!select_file_dialog_) {
     return;
   }
+  fullscreen_block_ = std::move(fullscreen_block);
 
   const base::FilePath directory = profile_->last_selected_directory();
   // TODO(beng): figure out how to juggle this.
@@ -81,6 +93,8 @@ void BrowserSelectFileDialogController::OpenFile() {
 void BrowserSelectFileDialogController::FileSelected(
     const ui::SelectedFileInfo& file_info,
     int index) {
+  fullscreen_block_.RunAndReset();
+
   // Transfer the ownership of select file dialog so that the ref count is
   // released after the function returns. This is needed because the passed-in
   // data such as |file_info| and |params| could be owned by the dialog.
@@ -100,5 +114,6 @@ void BrowserSelectFileDialogController::FileSelected(
 }
 
 void BrowserSelectFileDialogController::FileSelectionCanceled() {
+  fullscreen_block_.RunAndReset();
   select_file_dialog_.reset();
 }

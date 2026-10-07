@@ -103,6 +103,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/display/types/display_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
@@ -746,17 +747,30 @@ void ChromeDownloadManagerDelegate::SetDownloadManager(DownloadManager* dm) {
 
 #if BUILDFLAG(IS_ANDROID)
 void ChromeDownloadManagerDelegate::ShowDownloadDialog(
-    gfx::NativeWindow native_window,
+    content::WebContents* web_contents,
     int64_t total_bytes,
     DownloadLocationDialogType dialog_type,
     const base::FilePath& suggested_path,
     DownloadDialogBridge::DialogCallback callback) {
   CHECK(download_dialog_bridge_, base::NotFatalUntil::M161);
+  if (web_contents) {
+    auto fullscreen_block =
+        web_contents->ForSecurityDropFullscreen(display::kInvalidDisplayId);
+    if (!fullscreen_block) {
+      DownloadDialogResult result;
+      result.location_result = DownloadLocationDialogResult::USER_CANCELED;
+      std::move(callback).Run(std::move(result));
+      return;
+    }
+    callback = std::move(callback).Then(base::BindOnce(
+        [](base::ScopedClosureRunner) {}, std::move(*fullscreen_block)));
+  }
   auto connection_type = net::NetworkChangeNotifier::GetConnectionType();
 
   download_dialog_bridge_->ShowDialog(
-      native_window, total_bytes, connection_type, dialog_type, suggested_path,
-      profile_, std::move(callback));
+      web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr,
+      total_bytes, connection_type, dialog_type, suggested_path, profile_,
+      std::move(callback));
 }
 
 void ChromeDownloadManagerDelegate::SetDownloadDialogBridgeForTesting(
@@ -1707,9 +1721,8 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
       break;
   }
 
-  gfx::NativeWindow native_window = web_contents->GetTopLevelNativeWindow();
   ShowDownloadDialog(
-      native_window, download->GetTotalBytes(), dialog_type, suggested_path,
+      web_contents, download->GetTotalBytes(), dialog_type, suggested_path,
       base::BindOnce(&OnDownloadDialogClosed, std::move(callback)));
   return;
 
@@ -1835,11 +1848,9 @@ void ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone(
       content::WebContents* web_contents =
           download ? content::DownloadItemUtils::GetWebContents(download)
                    : nullptr;
-      gfx::NativeWindow native_window =
-          web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr;
       // Null native window will be handled by ShowDownloadDialog().
       ShowDownloadDialog(
-          native_window, 0 /* total_bytes */,
+          web_contents, 0 /* total_bytes */,
           DownloadLocationDialogType::NAME_CONFLICT, target_path,
           base::BindOnce(&OnDownloadDialogClosed, std::move(callback)));
       return;
@@ -2746,10 +2757,9 @@ void ChromeDownloadManagerDelegate::RequestIncognitoSavePackageConfirmationDone(
 
   bool is_save_as_enabled = IsDownloadSaveAsContextMenuEnabled();
   if (is_save_as_enabled) {
-    gfx::NativeWindow native_window = web_contents->GetTopLevelNativeWindow();
     base::FilePath mhtml_path = suggested_path.ReplaceExtension("mhtml");
     ShowDownloadDialog(
-        native_window, 0 /* total_bytes */,
+        web_contents, 0 /* total_bytes */,
         DownloadLocationDialogType::FORCE_PROMPT, mhtml_path,
         base::BindOnce(&OnSavePackageDownloadDialogClosed,
                        web_contents->GetURL(), std::move(callback)));

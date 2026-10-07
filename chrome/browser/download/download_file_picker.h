@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_FILE_PICKER_H_
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/download_confirmation_result.h"
 #include "components/download/public/common/download_item.h"
@@ -55,6 +56,10 @@ class DownloadFilePicker : public ui::SelectFileDialog::Listener,
 
   // Callback invoked when a file selection is complete.
   ConfirmationCallback file_selected_callback_;
+
+  // Prohibits the associated WebContents from entering fullscreen while the
+  // native save file dialog is open.
+  base::ScopedClosureRunner fullscreen_block_;
 
   // For managing select file dialogs.
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;

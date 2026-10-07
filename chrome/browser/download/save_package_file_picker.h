@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/public/browser/download_manager_delegate.h"
@@ -57,6 +58,10 @@ class SavePackageFilePicker : public ui::SelectFileDialog::Listener {
   content::SavePackagePathPickedCallback callback_;
 
   std::vector<content::SavePageType> save_types_;
+
+  // Prohibits the associated WebContents from entering fullscreen while the
+  // native save file dialog is open.
+  base::ScopedClosureRunner fullscreen_block_;
 
   // For managing select file dialogs.
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;

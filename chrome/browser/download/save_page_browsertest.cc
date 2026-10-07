@@ -1858,4 +1858,34 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveMHTMLWithDlp) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+IN_PROC_BROWSER_TEST_F(SavePageBrowserTest,
+                       SavePageAsBlocksConcurrentFullscreen) {
+  NavigateToMockURL("a");
+  WebContents* web_contents = GetCurrentTab(browser());
+  auto request_fullscreen = [&]() {
+    return content::EvalJs(web_contents,
+                           "document.documentElement.requestFullscreen()"
+                           ".then(() => 'entered', () => 'rejected')");
+  };
+
+  SavePackageFilePicker::SetShouldPromptUser(true);
+  FakeSelectFileDialog::Factory* dialog_factory =
+      FakeSelectFileDialog::RegisterFactory();
+  base::ScopedClosureRunner reset_factory(
+      base::BindOnce([]() { ui::SelectFileDialog::SetFactory(nullptr); }));
+
+  base::RunLoop run_loop;
+  dialog_factory->SetOpenCallback(run_loop.QuitClosure());
+  chrome::SavePage(browser());
+  run_loop.Run();
+
+  EXPECT_EQ("rejected", request_fullscreen());
+  EXPECT_FALSE(web_contents->IsFullscreen());
+
+  ASSERT_NE(nullptr, dialog_factory->GetLastDialog());
+  dialog_factory->GetLastDialog()->CallFileSelectionCanceled();
+
+  EXPECT_EQ("entered", request_fullscreen());
+}
+
 }  // namespace

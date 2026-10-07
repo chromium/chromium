@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -35,6 +36,7 @@
 #include "content/public/browser/save_page_type.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
 using content::RenderProcessHost;
@@ -222,6 +224,19 @@ SavePackageFilePicker::SavePackageFilePicker(
   }
 
   if (g_should_prompt_for_filename) {
+    if (web_contents) {
+      auto fullscreen_block =
+          web_contents->ForSecurityDropFullscreen(display::kInvalidDisplayId);
+      if (!fullscreen_block) {
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(&SavePackageFilePicker::FileSelectionCanceled,
+                           base::Unretained(this)));
+        return;
+      }
+      fullscreen_block_ = std::move(*fullscreen_block);
+    }
+
     select_file_dialog_ = ui::SelectFileDialog::Create(
         this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
     select_file_dialog_->SelectFile(

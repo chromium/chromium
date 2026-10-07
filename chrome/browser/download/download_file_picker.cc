@@ -17,6 +17,7 @@
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
@@ -41,10 +42,23 @@ DownloadFilePicker::DownloadFilePicker(download::DownloadItem* item,
 
   CHECK(item, base::NotFatalUntil::M161);
   item->AddObserver(this);
-  WebContents* web_contents = content::DownloadItemUtils::GetWebContents(item);
+  // Exiting fullscreen may spin a nested loop and destroy |download_item_|.
+  if (WebContents* initial_contents =
+          content::DownloadItemUtils::GetWebContents(item)) {
+    if (auto blocker = initial_contents->ForSecurityDropFullscreen(
+            display::kInvalidDisplayId)) {
+      fullscreen_block_ = std::move(*blocker);
+    }
+  }
+  WebContents* web_contents =
+      download_item_
+          ? content::DownloadItemUtils::GetWebContents(download_item_)
+          : nullptr;
   // Extension download may not have associated webcontents.
-  if (item->GetDownloadSource() != download::DownloadSource::EXTENSION_API &&
-      (!web_contents || !web_contents->GetNativeView())) {
+  if (!download_item_ || (web_contents && !fullscreen_block_) ||
+      (download_item_->GetDownloadSource() !=
+           download::DownloadSource::EXTENSION_API &&
+       (!web_contents || !web_contents->GetNativeView()))) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&DownloadFilePicker::FileSelectionCanceled,
                                   base::Unretained(this)));
@@ -86,9 +100,11 @@ DownloadFilePicker::DownloadFilePicker(download::DownloadItem* item,
   // window if it is null. https://crbug.com/40825014
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   if (!owning_window || !owning_window->GetHost()) {
-    owning_window = GetLastActiveBrowserWindowInterfaceWithAnyProfile()
-                        ->GetWindow()
-                        ->GetNativeWindow();
+    if (BrowserWindowInterface* browser =
+            GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+        browser && browser->GetWindow()) {
+      owning_window = browser->GetWindow()->GetNativeWindow();
+    }
   }
 #endif
 
