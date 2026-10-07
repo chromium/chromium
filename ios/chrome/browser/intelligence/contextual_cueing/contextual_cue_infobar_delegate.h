@@ -61,7 +61,6 @@ class ContextualCueInfobarDelegate : public ConfirmInfoBarDelegate {
   int GetButtons() const override;
   std::u16string GetButtonLabel(InfoBarButton button) const override;
   ui::ImageModel GetIcon() const override;
-  bool UseIconBackgroundTint() const override;
   bool Accept() override;
   void InfoBarDismissed() override;
   bool ShouldExpire(const NavigationDetails& details) const override;

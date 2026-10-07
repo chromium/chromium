@@ -70,6 +70,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 
 // Revamp container stack constants.
 const CGFloat kRevampContainerStackSpacing = 12.0;
+const CGFloat kRevampIconContainerSize = 36.0;
 
 // Revamp labels stack constants.
 const CGFloat kRevampLabelsStackViewVerticalSpacing = 3.0;
@@ -643,7 +644,6 @@ const CGFloat kButtonMaxWidthMultiplier = 0.40;
   }
   if (self.iconImage) {
     if (IsInfobarBannerRevampEnabled()) {
-      self.useIconBackgroundTint = NO;
       return [self configureRevampedIconImageContainer];
     }
     return [self configureIconImageContainer];
@@ -812,13 +812,22 @@ const CGFloat kButtonMaxWidthMultiplier = 0.40;
   [iconContainerView addSubview:iconImageView];
   iconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
 
+  CGFloat containerSize = kInfobarBannerRevampIconSize;
+  if (self.useIconBackgroundTint) {
+    containerSize = kRevampIconContainerSize;
+    iconContainerView.layer.cornerRadius = containerSize / 2.0;
+    iconContainerView.backgroundColor =
+        self.iconBackgroundColor ? self.iconBackgroundColor
+                                 : [UIColor colorNamed:kBlueHaloColor];
+  }
+
   [NSLayoutConstraint activateConstraints:@[
     [iconImageView.widthAnchor
         constraintEqualToConstant:kInfobarBannerRevampIconSize],
     [iconImageView.heightAnchor
         constraintEqualToConstant:kInfobarBannerRevampIconSize],
-    [iconContainerView.widthAnchor
-        constraintEqualToAnchor:iconImageView.widthAnchor],
+    [iconContainerView.widthAnchor constraintEqualToConstant:containerSize],
+    [iconContainerView.heightAnchor constraintEqualToConstant:containerSize],
   ]];
   AddSameCenterConstraints(iconContainerView, iconImageView);
 
