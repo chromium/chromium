@@ -950,6 +950,21 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 <translation id="1635748761015837179">Schreiben auf externen Speichergeräten zulassen</translation>
 <translation id="1639468541408865385">Globales HTTP-Authentication-Cache aktivieren</translation>
 <translation id="1639673466479276550">Bildschirmschoner auf dem Anmeldebildschirm aktivieren.</translation>
+<translation id="1640646094704433064">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern für Websites erstellen, durch die angegeben wird, welche Websites JavaScript mit aktiviertem JIT-Compiler (Just In Time) nicht ausführen dürfen.
+
+          Wenn JavaScript JIT deaktiviert ist, rendert <ph name="PRODUCT_NAME" /> Webinhalte möglicherweise langsamer und Teile von JavaScript, einschließlich WebAssembly, werden eventuell deaktiviert. Außerdem kann <ph name="PRODUCT_NAME" /> Webinhalte möglicherweise in einer sichereren Konfiguration rendern, sollte JavaScript JIT deaktiviert sein.
+
+          Ausführliche Informationen zu gültigen URL‑Mustern findest du unter https://chromeenterprise.google/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.
+
+          Richtlinienausnahmen können sowohl für bestimmte Subdomains als auch für ganze Websites festgelegt werden. Eine nur für subdomain.beispiel.de konfigurierte Richtlinie gilt beispielsweise für subdomain.beispiel.de, ohne dass sich dies auf beispiel.de auswirkt. In einigen Fällen, in denen eine Subdomain nicht von ihrer übergeordneten Website isoliert werden kann, übernimmt sie möglicherweise die für beispiel.de konfigurierte Richtlinie. Ausnahmen werden eventuell erst dann für Frames wirksam, die in einem vorhandenen Tab geladen werden, wenn die Website in einem neuen Tab geöffnet wird. Auf <ph name="ANDROID_NAME" />-Geräten mit wenig Arbeitsspeicher werden websitespezifische Ausnahmen möglicherweise nicht erzwungen. Stattdessen wird die Richtlinie aus <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, falls konfiguriert, oder die JavaScript JIT-Einstellung des Profils verwendet.
+
+          Um Ausnahmen zu erzwingen, kann <ph name="PRODUCT_NAME" /> Websites oder Subdomains, deren Einstellung von der Standardeinstellung abweicht, in dedizierten Prozessen platzieren. Dies kann die Arbeitsspeichernutzung erhöhen, insbesondere unter <ph name="ANDROID_NAME" /> oder wenn ein Platzhaltermuster mit vielen Subdomains übereinstimmt, da jeder übereinstimmende Ursprung separat isoliert werden kann. Isolierte Subdomains können auch nicht „document.domain“ verwenden, um auf ihre übergeordnete Website zuzugreifen.
+
+          Hinweis: In Version 155 und früheren Versionen wurden Richtlinienausnahmen nur für die jeweilige Website (eTLD+1) erzwungen. Eine nur für subdomain.beispiel.de konfigurierte Richtlinie wurde nicht wirksam, auch nicht für subdomain.beispiel.de. Sie musste für beispiel.de konfiguriert werden, damit sie sowohl für beispiel.de als auch für subdomain.beispiel.de gilt.
+
+          Diese Richtlinie wird Frame für Frame angewendet und nicht nur auf Grundlage der Ursprungs-URL auf oberster Ebene. Wenn also beispielsweise beispiel-eins.de in der Richtlinie „<ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" />“ aufgeführt ist, aber beispiel-eins.de einen Frame mit beispiel-zwei.de lädt, ist JavaScript JIT für beispiel-eins.de deaktiviert. Für beispiel-zwei.de wird jedoch die Richtlinie aus <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> verwendet, falls konfiguriert, oder standardmäßig JavaScript JIT aktiviert. Einträge auf der Sperrliste haben eine höhere Priorität als Einträge auf der Zulassungsliste, die wiederum eine höhere Priorität als der konfigurierte Standardwert haben.
+
+          Wenn diese Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> für die Website, falls konfiguriert. Andernfalls ist JavaScript JIT für die Website aktiviert.</translation>
 <translation id="1640824698339859203">Floating-SSO aktivieren und die Webdienstauthentifizierungen des Nutzers auf ein neues Gerät verschieben</translation>
 <translation id="1643642938972654829">Zugriff auf die Richtlinientestseite erlauben</translation>
 <translation id="1645793986494086629">Schema:</translation>
@@ -8009,6 +8024,23 @@ Wenn die Richtlinie nicht konfiguriert ist, ist das Deaktivieren von Hintergrund
 <translation id="608788685013546076">Schwellenwert des Akkus für das Umschalten bei Leistungsspitzen in Prozent festlegen</translation>
 <translation id="6089679180657323464">Legt die Einstellungen für Wilco Diagnostics and Telemetry Controller fest.</translation>
 <translation id="6091233616732024397">Erzwingen, dass Nutzer sich im Browser anmelden müssen</translation>
+<translation id="6091279561320899147">Mit dieser Richtlinie kannst du eine Liste mit URL‑Mustern festlegen, durch die angegeben wird, für welche Websites erweiterte JavaScript-Optimierungen deaktiviert werden.
+
+Wenn JavaScript-Optimierungen deaktiviert sind, rendert <ph name="PRODUCT_NAME" /> Webinhalte möglicherweise langsamer.
+
+Ausführliche Informationen zu gültigen URL‑Mustern findest du unter https://chromeenterprise.google/policies/url-patterns.
+Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.
+
+Richtlinienausnahmen können sowohl für bestimmte Subdomains als auch für ganze Websites festgelegt werden.
+Eine nur für subdomain.beispiel.de konfigurierte Richtlinie gilt beispielsweise für subdomain.beispiel.de, ohne dass sich dies auf beispiel.de auswirkt. In einigen Fällen, in denen eine Subdomain nicht von ihrer übergeordneten Website isoliert werden kann, übernimmt sie möglicherweise die für beispiel.de konfigurierte Richtlinie. Ausnahmen werden eventuell erst dann für Frames wirksam, die in einem vorhandenen Tab geladen werden, wenn die Website in einem neuen Tab geöffnet wird. Auf <ph name="ANDROID_NAME" />-Geräten mit wenig Arbeitsspeicher werden websitespezifische Ausnahmen möglicherweise nicht erzwungen. Stattdessen wird die Richtlinie aus <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, falls konfiguriert, oder die JavaScript-Optimierungseinstellung des Profils verwendet.
+
+Um Ausnahmen zu erzwingen, kann <ph name="PRODUCT_NAME" /> Websites oder Subdomains, deren Einstellung von der Standardeinstellung abweicht, in dedizierten Prozessen platzieren. Dies kann die Arbeitsspeichernutzung erhöhen, insbesondere unter <ph name="ANDROID_NAME" /> oder wenn ein Platzhaltermuster mit vielen Subdomains übereinstimmt, da jeder übereinstimmende Ursprung separat isoliert werden kann. Isolierte Subdomains können auch nicht „document.domain“ verwenden, um auf ihre übergeordnete Website zuzugreifen.
+
+Hinweis: In Version 138 und früheren Versionen wurden Richtlinienausnahmen nur für die jeweilige Website (eTLD+1) erzwungen. Eine nur für subdomain.beispiel.de konfigurierte Richtlinie wurde nicht wirksam, auch nicht für subdomain.beispiel.de. Sie musste für beispiel.de konfiguriert werden, damit sie sowohl für beispiel.de als auch für subdomain.beispiel.de gilt.
+
+          Diese Richtlinie wird Frame für Frame angewendet und nicht nur auf Grundlage der Ursprungs-URL auf oberster Ebene. Wenn also beispielsweise beispiel-eins.de in der Richtlinie „<ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />“ aufgeführt ist, aber beispiel-eins.de einen Frame mit beispiel-zwei.de lädt, sind JavaScript-Optimierungen für beispiel-eins.de deaktiviert. Für beispiel-zwei.de wird jedoch die Richtlinie aus <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> verwendet, falls konfiguriert. Andernfalls sind JavaScript-Optimierungen standardmäßig aktiviert. Einträge in der Sperrliste haben eine höhere Priorität als Einträge in der Zulassungsliste, die wiederum eine höhere Priorität als der konfigurierte Standardwert haben.
+
+Wenn diese Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> für die Website, falls konfiguriert. Andernfalls ist die JavaScript-Optimierung für die Website aktiviert.</translation>
 <translation id="6092073071805297119">Verwendung des Barrierefreiheitsfilters zur Leistungsverbesserung zulassen.</translation>
 <translation id="6093156968240188330">Zulassen, dass Remote-Nutzer in Remote-Sitzungen mit geöffneten Fenstern arbeiten können</translation>
 <translation id="6093551397728373988">In Nutzersitzungen die Aktivierung aller zulässigen Eingabemethoden erzwingen</translation>

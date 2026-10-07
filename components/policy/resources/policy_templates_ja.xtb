@@ -916,6 +916,21 @@ URL は「http://example.com」、「https://example.com」のような標準的
 <translation id="1635748761015837179">外部ストレージ デバイスへの書き込みを許可する</translation>
 <translation id="1639468541408865385">グローバル スコープを持つ HTTP 認証キャッシュを有効にする</translation>
 <translation id="1639673466479276550">ログイン画面でスクリーンセーバーを有効にする。</translation>
+<translation id="1640646094704433064">JIT（Just In Time）コンパイラを有効にした JavaScript の実行を許可しないサイトの URL パターンのリストを設定できます。
+
+          JavaScript JIT を無効にした場合、<ph name="PRODUCT_NAME" /> でウェブ コンテンツの表示に時間がかかったり、WebAssembly を使用する JavaScript の一部が無効になったりする可能性があります。JavaScript JIT を無効にすると、<ph name="PRODUCT_NAME" /> でのウェブ コンテンツの表示をより安全な設定で行えるようになります。
+
+          有効な URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns をご覧ください。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。
+
+          ポリシーの例外は、サイト全体だけでなく、特定のサブドメインにも設定できます。たとえば、ポリシーを subdomain.site.com でのみ設定した場合は、site.com には影響せず、subdomain.site.com にのみ適用されます。サブドメインを親サイトから分離できない場合は、site.com で設定されたポリシーが継承されることがあります。また、既存のタブで読み込まれたフレームについては、サイトが新しいタブで開かれるまで、例外が有効にならない場合があります。メモリ容量の少ない <ph name="ANDROID_NAME" /> デバイスでは、サイト固有の例外が適用されない場合があります。その場合、サイトでは <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> のポリシーが適用されるか（設定されている場合）、プロファイルの JavaScript JIT 設定がデフォルトで使用されます。
+
+          例外を適用するため、<ph name="PRODUCT_NAME" /> は、設定がデフォルトと異なるサイトまたはサブドメインを専用のプロセスに配置する場合があります。これにより、特に <ph name="ANDROID_NAME" /> で、またはワイルドカード パターンが多くのサブドメインに一致する場合に、メモリ使用量が増加する可能性があります。これは、一致するオリジンがそれぞれ個別に分離される可能性があるためです。また、分離されたサブドメインは、document.domain を使用して親サイトにアクセスすることもできません。
+
+          注: バージョン 155 以前では、ポリシーの例外はサイトの詳細レベル（eTLD+1）でのみ適用されていました。subdomain.site.com でのみ設定されたポリシーは、subdomain.site.com でも有効になりませんでした。site.com と subdomain.site.com の両方に適用するには、site.com で設定する必要がありました。
+
+          このポリシーは、最上位のオリジン URL のみに基づいて適用されるわけでなく、フレーム単位で適用されます。たとえば、site-one.com が <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" /> ポリシーにリストされているものの、site-one.com が site-two.com を含むフレームを読み込む場合、site-one.com では JavaScript JIT が無効になりますが、site-two.com では <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> のポリシーが適用されるか（設定されている場合）、デフォルトで JavaScript JIT が有効になります。ブロックリストのエントリの優先度は許可リストのエントリより高く、許可リストのエントリの優先度は設定されたデフォルト値より高くなります。
+
+          サイトでこのポリシーが設定されていない場合、<ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> のポリシーがサイトに適用されます（ポリシーを設定しているか、JavaScript JIT をサイトで有効にしている場合）。</translation>
 <translation id="1640824698339859203">フローティング SSO を有効にして、ユーザーのウェブサービス認証を新しいデバイスに移動する</translation>
 <translation id="1643642938972654829">ポリシーテストのページへのアクセスを許可する</translation>
 <translation id="1645793986494086629">スキーマ:</translation>
@@ -7791,6 +7806,21 @@ false に設定した場合、教師はこの機能にアクセスできませ�
 <translation id="608788685013546076">電力ピークシフトのバッテリーのしきい値をパーセントで設定する</translation>
 <translation id="6089679180657323464">Wilco の診断およびテレメトリー用コントローラの設定を制御します。</translation>
 <translation id="6091233616732024397">ブラウザを使用するにはログインを必須とする</translation>
+<translation id="6091279561320899147">JavaScript の高度な最適化を無効にするサイトの URL パターンのリストを指定できます。
+
+JavaScript の最適化を無効にした場合、<ph name="PRODUCT_NAME" /> でウェブ コンテンツの表示に時間がかかる可能性があります。
+
+有効な URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns をご覧ください。
+ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。
+
+ポリシーの例外は、サイト全体だけでなく、特定のサブドメインにも設定できます。
+たとえば、ポリシーを subdomain.site.com でのみ設定した場合は、site.com には影響せず、subdomain.site.com にのみ適用されます。サブドメインを親サイトから分離できない場合は、site.com で設定されたポリシーが継承されることがあります。また、既存のタブで読み込まれたフレームについては、サイトが新しいタブで開かれるまで、例外が有効にならない場合があります。メモリ容量の少ない <ph name="ANDROID_NAME" /> デバイスでは、サイト固有の例外が適用されない場合があります。その場合、サイトでは <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> のポリシーが適用されるか（設定されている場合）、プロファイルの JavaScript 最適化設定がデフォルトで使用されます。例外を適用するため、<ph name="PRODUCT_NAME" /> は、設定がデフォルトと異なるサイトまたはサブドメインを専用のプロセスに配置する場合があります。これにより、特に <ph name="ANDROID_NAME" /> で、またはワイルドカード パターンが多くのサブドメインに一致する場合に、メモリ使用量が増加する可能性があります。これは、一致するオリジンがそれぞれ個別に分離される可能性があるためです。また、分離されたサブドメインは、document.domain を使用して親サイトにアクセスすることもできません。
+
+注: バージョン 138 以前では、ポリシーの例外はサイトの詳細レベル（eTLD+1）でのみ適用されていました。subdomain.site.com のみに対して設定されたポリシーは、subdomain.site.com でも有効になりませんでした。site.com と subdomain.site.com の両方に適用するには、site.com に対して設定する必要がありました。
+
+このポリシーは、最上位のオリジン URL のみに基づいて適応されるわけでなく、フレーム単位で適用されます。たとえば、<ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" /> ポリシーに site-one.com が登録されていても、site-one.com が site-two.com を含むフレームを読み込む場合、site-one.com では JavaScript の最適化が無効になりますが、site-two.com では <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> のポリシーが適用されるか（設定されている場合）、デフォルトで JavaScript の最適化が有効になります。ブロックリストのエントリの優先度は許可リストのエントリより高く、許可リストのエントリの優先度は設定されたデフォルト値より高くなります。
+
+サイトでこのポリシーが設定されていない場合は、<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> のポリシーがサイトに適用されます（このポリシーが設定されているか、サイトで JavaScript の最適化が有効になっている場合）。</translation>
 <translation id="6092073071805297119">ユーザー補助パフォーマンス フィルタの使用を許可する。</translation>
 <translation id="6093156968240188330">リモート ユーザーがリモート アシスタンス セッションで権限昇格ウィンドウとやり取りできるようにする</translation>
 <translation id="6093551397728373988">許可されているすべての入力方法をユーザー セッションで強制的に有効にする</translation>
