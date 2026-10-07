@@ -80,7 +80,8 @@ import org.chromium.ui.test.util.TestViewAndroidDelegate;
     ContentFeatureList.ANDROID_BLOCK_GRAMMAR_SUGGESTION_SPAN_IN_COMPOSITION_MODE,
     ContentFeatureList.ANDROID_BLOCK_MISSPELLING_SUGGESTION_SPAN_IN_COMPOSITION_MODE,
     ContentFeatureList.ANDROID_MEDIA_INSERTION,
-    ContentFeatures.ANDROID_REPLAY_DEL_KEY_EVENT
+    ContentFeatures.ANDROID_REPLAY_DEL_KEY_EVENT,
+    ContentFeatures.RESTRICT_INTERACTIONS_IN_SWIPE_REGION_ON_FULLSCREEN
 })
 public class ImeAdapterImplTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -184,6 +185,7 @@ public class ImeAdapterImplTest {
                 /* replyToRequest= */ false,
                 /* lastVkVisibilityRequest= */ 0,
                 /* vkPolicy= */ 0,
+                /* nodeId= */ 0,
                 /* imeTextSpans= */ null);
     }
 
@@ -204,6 +206,7 @@ public class ImeAdapterImplTest {
                 /* replyToRequest= */ false,
                 /* lastVkVisibilityRequest= */ 0,
                 /* vkPolicy= */ 0,
+                /* nodeId= */ 0,
                 /* imeTextSpans= */ null);
     }
 
@@ -864,6 +867,7 @@ public class ImeAdapterImplTest {
                 /* replyToRequest= */ false,
                 /* lastVkVisibilityRequest= */ 0,
                 /* vkPolicy= */ 0,
+                /* nodeId= */ 0,
                 /* imeTextSpans= */ null);
 
         verify(mInputMethodManagerWrapper, never()).showSoftInput(any(), anyInt(), any());
@@ -1144,5 +1148,84 @@ public class ImeAdapterImplTest {
 
         adapter.destroyFromNative();
         verify(mEventForwarder).removeTouchSequenceObserver(adapter);
+    }
+
+    @Test
+    public void testUpdateState_SameNodeIdDoesNotRestartInputOnRefocus() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);
+        adapter.onConnectedToRenderProcess();
+
+        // Initial focus on node 42.
+        adapter.focusedNodeChanged(/* isEditable= */ true, 0, 0, 100, 100);
+        adapter.updateState(
+                /* textInputType= */ TextInputType.TEXT_AREA,
+                /* textInputFlags= */ 0,
+                /* textInputMode= */ 0,
+                /* textInputAction= */ 0,
+                /* showIfNeeded= */ true,
+                /* alwaysHide= */ false,
+                /* text= */ "hello",
+                /* selectionStart= */ 5,
+                /* selectionEnd= */ 5,
+                /* compositionStart= */ -1,
+                /* compositionEnd= */ -1,
+                /* replyToRequest= */ false,
+                /* lastVkVisibilityRequest= */ 0,
+                /* vkPolicy= */ 0,
+                /* nodeId= */ 42,
+                /* imeTextSpans= */ null);
+        verify(mInputMethodManagerWrapper, times(1)).restartInput(mContainerView);
+        reset(mInputMethodManagerWrapper);
+
+        // Simulate a active InputConnection being created.
+        EditorInfo outAttrs = new EditorInfo();
+        adapter.onCreateInputConnection(outAttrs);
+
+        // Simulate synchronous blur() + focus() on the same node 42 without an intervening
+        // TextInputType.NONE state update.
+        adapter.focusedNodeChanged(/* isEditable= */ false, 0, 0, 0, 0);
+        adapter.focusedNodeChanged(/* isEditable= */ true, 0, 0, 100, 100);
+        adapter.updateState(
+                /* textInputType= */ TextInputType.TEXT_AREA,
+                /* textInputFlags= */ 0,
+                /* textInputMode= */ 0,
+                /* textInputAction= */ 0,
+                /* showIfNeeded= */ true,
+                /* alwaysHide= */ false,
+                /* text= */ "hell",
+                /* selectionStart= */ 4,
+                /* selectionEnd= */ 4,
+                /* compositionStart= */ -1,
+                /* compositionEnd= */ -1,
+                /* replyToRequest= */ false,
+                /* lastVkVisibilityRequest= */ 0,
+                /* vkPolicy= */ 0,
+                /* nodeId= */ 42,
+                /* imeTextSpans= */ null);
+        verify(mInputMethodManagerWrapper, never()).restartInput(any());
+
+        // Moving focus to a different editable node (node 43) with the same TextInputType
+        // should restart input.
+        adapter.focusedNodeChanged(/* isEditable= */ false, 0, 0, 0, 0);
+        adapter.focusedNodeChanged(/* isEditable= */ true, 0, 0, 100, 100);
+        adapter.updateState(
+                /* textInputType= */ TextInputType.TEXT_AREA,
+                /* textInputFlags= */ 0,
+                /* textInputMode= */ 0,
+                /* textInputAction= */ 0,
+                /* showIfNeeded= */ true,
+                /* alwaysHide= */ false,
+                /* text= */ "",
+                /* selectionStart= */ 0,
+                /* selectionEnd= */ 0,
+                /* compositionStart= */ -1,
+                /* compositionEnd= */ -1,
+                /* replyToRequest= */ false,
+                /* lastVkVisibilityRequest= */ 0,
+                /* vkPolicy= */ 0,
+                /* nodeId= */ 43,
+                /* imeTextSpans= */ null);
+        verify(mInputMethodManagerWrapper, times(1)).restartInput(mContainerView);
     }
 }

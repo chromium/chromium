@@ -176,6 +176,7 @@ public class ImeAdapterImpl
     private int mTextInputFlags;
     private int mTextInputMode = WebTextInputMode.DEFAULT;
     private int mTextInputAction = TextInputAction.DEFAULT;
+    private int mTextInputNodeId;
     private boolean mNodeEditable;
     private boolean mNodePassword;
 
@@ -733,6 +734,7 @@ public class ImeAdapterImpl
      * @param lastVkVisibilityRequest VK visibility request type if show/hide APIs are called from
      *     JS.
      * @param vkPolicy VK policy type whether it is manual or automatic.
+     * @param nodeId The DOM node ID of the focused editable element, or 0 if none.
      * @param imeTextSpans an array of span information (such as spelling and grammar markers).
      */
     @VisibleForTesting
@@ -752,6 +754,7 @@ public class ImeAdapterImpl
             boolean replyToRequest,
             int lastVkVisibilityRequest,
             int vkPolicy,
+            int nodeId,
             ImeTextSpan[] imeTextSpans) {
         TraceEvent.begin("ImeAdapter.updateState");
         try {
@@ -771,8 +774,16 @@ public class ImeAdapterImpl
             boolean needsRestart = false;
             boolean hide = false;
             if (mRestartInputOnNextStateUpdate) {
-                needsRestart = true;
+                if (mTextInputNodeId != nodeId || nodeId == 0) {
+                    needsRestart = true;
+                }
                 mRestartInputOnNextStateUpdate = false;
+            }
+            if (mTextInputNodeId != nodeId) {
+                mTextInputNodeId = nodeId;
+                if (textInputType != TextInputType.NONE) {
+                    needsRestart = true;
+                }
             }
 
             mTextInputFlags = textInputFlags;
@@ -1148,6 +1159,7 @@ public class ImeAdapterImpl
         mTextInputType = TextInputType.NONE;
         mTextInputFlags = 0;
         mTextInputMode = WebTextInputMode.DEFAULT;
+        mTextInputNodeId = 0;
         mRestartInputOnNextStateUpdate = false;
         updateNodeAttributes(/* isEditable= */ false, mNodePassword);
         // This will trigger unblocking if necessary.
@@ -1212,10 +1224,10 @@ public class ImeAdapterImpl
     /**
      * Update selection to input method manager.
      *
-     * @param selectionStart   The selection start.
-     * @param selectionEnd     The selection end.
+     * @param selectionStart The selection start.
+     * @param selectionEnd The selection end.
      * @param compositionStart The composition start.
-     * @param compositionEnd   The composition end.
+     * @param compositionEnd The composition end.
      */
     void updateSelection(
             int selectionStart, int selectionEnd, int compositionStart, int compositionEnd) {
@@ -1524,10 +1536,11 @@ public class ImeAdapterImpl
 
     /**
      * Send a request to the native counterpart to delete a given range of characters.
+     *
      * @param beforeLength Number of code points to extend the selection by before the existing
-     *                     selection.
+     *     selection.
      * @param afterLength Number of code points to extend the selection by after the existing
-     *                    selection.
+     *     selection.
      * @return Whether the native counterpart of ImeAdapter received the call.
      */
     boolean deleteSurroundingTextInCodePoints(int beforeLength, int afterLength) {
@@ -1615,6 +1628,7 @@ public class ImeAdapterImpl
 
     /**
      * Send a request to the native counterpart to set composing region to given indices.
+     *
      * @param start The start of the composition.
      * @param end The end of the composition.
      * @return Whether the native counterpart of ImeAdapter received the call.
@@ -1629,8 +1643,9 @@ public class ImeAdapterImpl
         return true;
     }
 
+    @VisibleForTesting
     @CalledByNative
-    private void focusedNodeChanged(
+    /*package*/ void focusedNodeChanged(
             boolean isEditable,
             int nodeLeftDip,
             int nodeTopDip,
