@@ -160,7 +160,7 @@ public abstract class NtpBackgroundDataImageBase extends NtpBackgroundDataBase {
                 NtpCustomizationConfigManager.getInstance().getNtpBackgroundData();
         if (currentBackgroundData instanceof NtpBackgroundDataImageBase imageBaseData
                 && Objects.equals(currentBackgroundData, this)) {
-            mBitmap = imageBaseData.getBitmap();
+            borrowFromCurrentBackground(imageBaseData);
             onImageLoadedCallback.onResult(mBitmap);
         } else if (getPreviewBitmap() != null) {
             onImageLoadedCallback.onResult(getPreviewBitmap());
@@ -171,6 +171,27 @@ public abstract class NtpBackgroundDataImageBase extends NtpBackgroundDataBase {
                         onImageLoadedCallback.onResult(mBitmap);
                     },
                     mLastUploadImageFilePath);
+        }
+    }
+
+    /**
+     * Borrows the bitmap of the current background, which equals this one, as well as its {@link
+     * BackgroundImageInfo}, primary color and file ID hash if this one doesn't have them yet. This
+     * completes e.g. a recommended theme collection card, which only has a preview bitmap, so that
+     * it can be applied without fetching the image.
+     *
+     * @param currentBackgroundData The current background, which equals this one.
+     */
+    private void borrowFromCurrentBackground(NtpBackgroundDataImageBase currentBackgroundData) {
+        mBitmap = currentBackgroundData.getBitmap();
+        if (mBackgroundImageInfo == null) {
+            mBackgroundImageInfo = currentBackgroundData.getBackgroundImageInfo();
+        }
+        if (mPrimaryColor == null) {
+            mPrimaryColor = currentBackgroundData.getPrimaryColor();
+        }
+        if (mFileIdHash == null) {
+            setFileIdHash(currentBackgroundData.getFileIdHash());
         }
     }
 

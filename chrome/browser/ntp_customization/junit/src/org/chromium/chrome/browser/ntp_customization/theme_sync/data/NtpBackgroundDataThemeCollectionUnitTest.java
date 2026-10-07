@@ -9,7 +9,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -24,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
@@ -32,6 +36,7 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for {@link NtpBackgroundDataThemeCollection}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -274,6 +279,57 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         /* fileIdHash= */ null);
 
         data.getBitmapOrLoadImage((result) -> assertEquals(bitmap, result));
+    }
+
+    @Test
+    public void testGetBitmapOrLoadImage_borrowsFromCurrentBackground() {
+        NtpBackgroundDataThemeCollection currentData = setUpCurrentThemeCollection();
+
+        // A recommended theme collection card only has a preview bitmap.
+        Bitmap previewBitmap = Bitmap.createBitmap(5, 5, Bitmap.Config.ARGB_8888);
+        NtpBackgroundDataThemeCollection card =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID, currentData.getCustomBackgroundInfo(), previewBitmap);
+
+        // Verifies that the callback, which shows the thumbnail, gets the current theme's bitmap,
+        // and that the card borrows everything needed to apply it.
+        AtomicReference<Bitmap> callbackBitmap = new AtomicReference<>();
+        card.getBitmapOrLoadImage(callbackBitmap::set);
+        assertEquals(currentData.getBitmap(), callbackBitmap.get());
+        assertEquals(currentData.getBitmap(), card.getBitmap());
+        assertSame(currentData.getBackgroundImageInfo(), card.getBackgroundImageInfo());
+        assertEquals(Color.RED, card.getPrimaryColor().intValue());
+        assertEquals(TEST_FILE_ID_HASH, card.getFileIdHash());
+        assertNotNull(card.getLastUploadImageFilePath());
+    }
+
+    @Test
+    public void testGetBitmapOrLoadImage_borrowsFromCurrentBackground_keepsOwnData() {
+        NtpBackgroundDataThemeCollection currentData = setUpCurrentThemeCollection();
+
+        // A history entry loaded from prefs has no bitmap in memory yet.
+        String ownFileIdHash = "own_file_id_hash";
+        BackgroundImageInfo ownImageInfo =
+                new BackgroundImageInfo(
+                        new Matrix(),
+                        new Matrix(),
+                        /* portraitWindowSize= */ null,
+                        /* landscapeWindowSize= */ null);
+        NtpBackgroundDataThemeCollection historyEntry =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID,
+                        currentData.getCustomBackgroundInfo(),
+                        ownImageInfo,
+                        /* bitmap= */ null,
+                        Color.GREEN,
+                        ownFileIdHash);
+
+        // Verifies that only the bitmap is borrowed.
+        historyEntry.getBitmapOrLoadImage(_ -> {});
+        assertEquals(currentData.getBitmap(), historyEntry.getBitmap());
+        assertSame(ownImageInfo, historyEntry.getBackgroundImageInfo());
+        assertEquals(Color.GREEN, historyEntry.getPrimaryColor().intValue());
+        assertEquals(ownFileIdHash, historyEntry.getFileIdHash());
     }
 
     @Test
@@ -598,5 +654,35 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                 /* bitmap= */ null,
                 primaryColor,
                 /* fileIdHash= */ null);
+    }
+
+    /**
+     * Sets a theme collection, which has a bitmap, a BackgroundImageInfo, a primary color and a
+     * file ID hash, as the current background and returns it.
+     */
+    private static NtpBackgroundDataThemeCollection setUpCurrentThemeCollection() {
+        Matrix matrix = new Matrix();
+        matrix.setTranslate(10f, 0f);
+        NtpBackgroundDataThemeCollection currentData =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID,
+                        new CustomBackgroundInfo(
+                                JUnitTestGURLs.URL_1,
+                                TEST_COLLECTION_ID,
+                                /* isUploadedImage= */ false,
+                                /* isDailyRefreshEnabled= */ false),
+                        new BackgroundImageInfo(
+                                matrix,
+                                new Matrix(matrix),
+                                /* portraitWindowSize= */ null,
+                                /* landscapeWindowSize= */ null),
+                        Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888),
+                        Color.RED,
+                        TEST_FILE_ID_HASH);
+
+        NtpCustomizationConfigManager configManager = mock(NtpCustomizationConfigManager.class);
+        when(configManager.getNtpBackgroundData()).thenReturn(currentData);
+        NtpCustomizationConfigManager.setInstanceForTesting(configManager);
+        return currentData;
     }
 }

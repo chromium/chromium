@@ -402,7 +402,10 @@ public class NtpCustomizationConfigManager {
         if (backgroundData == null
                 || backgroundData.getBackgroundType() == NtpBackgroundType.DEFAULT
                 || (backgroundData instanceof NtpBackgroundDataColor ntpBackgroundDataColor
-                        && ntpBackgroundDataColor.getThemeColorId() == NtpThemeColorId.DEFAULT)) {
+                        && ntpBackgroundDataColor.getThemeColorId() == NtpThemeColorId.DEFAULT)
+                || (backgroundData instanceof NtpBackgroundDataImageBase imageBaseData
+                        && imageBaseData.getBitmap() == null)) {
+            backgroundData = null;
             onBackgroundReset();
         } else {
             // Persists the new background type. The rest of the new background's data is persisted
@@ -446,21 +449,7 @@ public class NtpCustomizationConfigManager {
                                 uploadImageData.getLastUploadImageFilePath())
                         .getAbsolutePath());
 
-        Bitmap bitmap = uploadImageData.getBitmap();
-        if (bitmap == null) {
-            // The image is selected from the history list, whose image file has already been saved
-            // to disk. Persists its background info and primary color so that it can be loaded
-            // from disk on next startup.
-            BackgroundImageInfo historyBackgroundImageInfo =
-                    uploadImageData.getBackgroundImageInfo();
-            if (historyBackgroundImageInfo != null) {
-                NtpCustomizationUtils.saveBackgroundInfo(
-                        uploadImageData, /* bitmap= */ null, historyBackgroundImageInfo);
-            }
-            //  TODO(https://crbug.com/488439751): Removes this early exit when we load the bitmap.
-            return;
-        }
-
+        Bitmap bitmap = assumeNonNull(uploadImageData.getBitmap());
         BackgroundImageInfo backgroundImageInfo =
                 assumeNonNull(uploadImageData.getBackgroundImageInfo());
 
