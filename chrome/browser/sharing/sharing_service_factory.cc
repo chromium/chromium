@@ -137,7 +137,7 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
   syncer::LocalDeviceInfoProvider* local_device_info_provider =
       device_info_sync_service->GetLocalDeviceInfoProvider();
   auto channel_sender = std::make_unique<SharingChannelSender>(
-      message_bridge, sync_prefs.get(), gcm_driver, device_info_tracker,
+      message_bridge, gcm_driver, device_info_tracker,
       local_device_info_provider, sync_service,
       sync_start_util::GetFlareForSyncableService(profile->GetPath()));
 

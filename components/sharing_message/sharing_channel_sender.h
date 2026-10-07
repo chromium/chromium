@@ -42,7 +42,6 @@ class SharingMessageCommitError;
 
 enum class SharingChannelType;
 class SharingMessageBridge;
-class SharingSyncPreference;
 
 // Responsible for sending Sharing messages over the available delivery
 // channels (FCM and iOS/Chime push).
@@ -56,7 +55,6 @@ class SharingChannelSender : public syncer::SyncServiceObserver {
 
   SharingChannelSender(
       SharingMessageBridge* sharing_message_bridge,
-      SharingSyncPreference* sync_preference,
       gcm::GCMDriver* gcm_driver,
       const syncer::DeviceInfoTracker* device_info_tracker,
       const syncer::LocalDeviceInfoProvider* local_device_info_provider,
@@ -113,20 +111,19 @@ class SharingChannelSender : public syncer::SyncServiceObserver {
       SharingMessageBridge* sharing_message_bridge);
 
  private:
-  using MessageSender = base::OnceCallback<void(std::string message,
-                                                SendMessageCallback callback)>;
-
-  void EncryptMessage(const std::string& authorized_entity,
+  void EncryptMessage(sync_pb::SharingMessageSpecifics::ChannelConfiguration
+                          channel_configuration,
                       const std::string& p256dh,
                       const std::string& auth_secret,
-                      const SharingMessage& message,
+                      SharingMessage message,
                       SharingChannelType channel_type,
-                      SendMessageCallback callback,
-                      MessageSender message_sender);
+                      SendMessageCallback callback);
 
-  void OnMessageEncrypted(SharingChannelType channel_type,
+  void OnMessageEncrypted(sync_pb::SharingMessageSpecifics::ChannelConfiguration
+                              channel_configuration,
+                          SharingChannelType channel_type,
+                          std::string message_id,
                           SendMessageCallback callback,
-                          MessageSender message_sender,
                           gcm::GCMEncryptionResult result,
                           std::string message);
 
@@ -149,7 +146,6 @@ class SharingChannelSender : public syncer::SyncServiceObserver {
   bool CanSendSendTabPushMessage(const syncer::DeviceInfo& target_device_info);
 
   raw_ptr<SharingMessageBridge> sharing_message_bridge_;
-  const raw_ptr<SharingSyncPreference> sync_preference_;
   const raw_ptr<gcm::GCMDriver, AcrossTasksDanglingUntriaged> gcm_driver_;
   const raw_ptr<const syncer::DeviceInfoTracker> device_info_tracker_;
   const raw_ptr<const syncer::LocalDeviceInfoProvider>

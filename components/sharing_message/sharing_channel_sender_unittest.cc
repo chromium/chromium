@@ -17,14 +17,12 @@
 #include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_message_bridge.h"
-#include "components/sharing_message/sharing_sync_preference.h"
 #include "components/sharing_message/sharing_utils.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/sync_device_info/fake_local_device_info_provider.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -127,22 +125,16 @@ class SharingChannelSenderTest : public testing::Test {
 
  protected:
   SharingChannelSenderTest()
-      : sync_prefs_(&prefs_, &fake_device_info_sync_service_),
-        sharing_channel_sender_(
+      : sharing_channel_sender_(
             &fake_sharing_message_bridge_,
-            &sync_prefs_,
             &fake_gcm_driver_,
             fake_device_info_sync_service_.GetDeviceInfoTracker(),
             &fake_local_device_info_provider_,
             &test_sync_service_,
-            mock_sync_flare_.Get()) {
-    SharingSyncPreference::RegisterProfilePrefs(prefs_.registry());
-  }
+            mock_sync_flare_.Get()) {}
 
-  sync_preferences::TestingPrefServiceSyncable prefs_;
   FakeSharingMessageBridge fake_sharing_message_bridge_;
   syncer::FakeDeviceInfoSyncService fake_device_info_sync_service_;
-  SharingSyncPreference sync_prefs_;
   FakeGCMDriver fake_gcm_driver_;
   syncer::FakeLocalDeviceInfoProvider fake_local_device_info_provider_;
   syncer::TestSyncService test_sync_service_;
@@ -151,32 +143,7 @@ class SharingChannelSenderTest : public testing::Test {
   SharingChannelSender sharing_channel_sender_;
 };
 
-TEST_F(SharingChannelSenderTest, NoFcmRegistration) {
-  sync_prefs_.ClearFCMRegistration();
-
-  // Do not populate sender ID channel.
-  components_sharing_message::FCMChannelConfiguration fcm_channel;
-
-  SharingSendMessageResult result;
-  std::optional<std::string> message_id;
-  SharingChannelType channel_type;
-  components_sharing_message::SharingMessage sharing_message;
-  sharing_message.mutable_ack_message();
-  sharing_channel_sender_.SendMessageToFcmTarget(
-      fcm_channel, base::Seconds(kTtlSeconds), std::move(sharing_message),
-      base::BindOnce(&SharingChannelSenderTest::OnMessageSent,
-                     base::Unretained(this), &result, &message_id,
-                     &channel_type));
-
-  EXPECT_EQ(SharingSendMessageResult::kDeviceNotFound, result);
-  EXPECT_FALSE(message_id);
-  EXPECT_EQ(SharingChannelType::kUnknown, channel_type);
-}
-
 TEST_F(SharingChannelSenderTest, NoChannelsSpecified) {
-  sync_prefs_.SetFCMRegistration(
-      SharingSyncPreference::FCMRegistration(base::Time::Now()));
-
   components_sharing_message::FCMChannelConfiguration fcm_channel;
   // Don't set any channels.
 
@@ -197,9 +164,6 @@ TEST_F(SharingChannelSenderTest, NoChannelsSpecified) {
 }
 
 TEST_F(SharingChannelSenderTest, PreferSync) {
-  sync_prefs_.SetFCMRegistration(
-      SharingSyncPreference::FCMRegistration(base::Time::Now()));
-
   fake_sharing_message_bridge_.set_error_code(
       sync_pb::SharingMessageCommitError::NONE);
 
@@ -352,8 +316,6 @@ TEST_F(SharingChannelSenderTest, ServerTarget) {
 TEST_F(SharingChannelSenderTest, ShouldPostponeSendingMessageViaSync) {
   // Make sync unavailable to simulate browser startup.
   test_sync_service_.SetFailedDataTypes({syncer::SHARING_MESSAGE});
-  sync_prefs_.SetFCMRegistration(
-      SharingSyncPreference::FCMRegistration(base::Time::Now()));
 
   components_sharing_message::FCMChannelConfiguration fcm_channel;
   fcm_channel.set_sender_id_fcm_token(kSenderIdFcmToken);
@@ -382,8 +344,6 @@ TEST_F(SharingChannelSenderTest, ShouldPostponeSendingMessageViaSync) {
 TEST_F(SharingChannelSenderTest, ShouldClearPendingMessages) {
   // Make sync unavailable to simulate browser startup.
   test_sync_service_.SetFailedDataTypes({syncer::SHARING_MESSAGE});
-  sync_prefs_.SetFCMRegistration(
-      SharingSyncPreference::FCMRegistration(base::Time::Now()));
 
   components_sharing_message::FCMChannelConfiguration fcm_channel;
   fcm_channel.set_sender_id_fcm_token(kSenderIdFcmToken);

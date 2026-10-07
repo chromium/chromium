@@ -56,7 +56,6 @@ class MockSharingChannelSender : public SharingChannelSender {
   MockSharingChannelSender()
       : SharingChannelSender(
             /*sharing_message_bridge=*/nullptr,
-            /*sync_preference=*/nullptr,
             /*gcm_driver=*/nullptr,
             /*device_info_tracker=*/nullptr,
             /*local_device_info_provider=*/nullptr,

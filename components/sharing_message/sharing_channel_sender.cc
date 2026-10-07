@@ -6,14 +6,11 @@
 
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/notimplemented.h"
-#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
-#include "base/version.h"
 #include "components/gcm_driver/crypto/gcm_encryption_result.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/sharing_message/ios_push/ios_push_notification_util.h"
@@ -21,9 +18,7 @@
 #include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_message_bridge.h"
 #include "components/sharing_message/sharing_metrics.h"
-#include "components/sharing_message/sharing_sync_preference.h"
 #include "components/sharing_message/sharing_utils.h"
-#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/protocol/unencrypted_sharing_message.pb.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -41,14 +36,12 @@ BASE_FEATURE(kSharingPostponeFcmMessageSending,
 
 SharingChannelSender::SharingChannelSender(
     SharingMessageBridge* sharing_message_bridge,
-    SharingSyncPreference* sync_preference,
     gcm::GCMDriver* gcm_driver,
     const syncer::DeviceInfoTracker* device_info_tracker,
     const syncer::LocalDeviceInfoProvider* local_device_info_provider,
     syncer::SyncService* sync_service,
     syncer::SyncableService::StartSyncFlare start_sync_flare)
     : sharing_message_bridge_(sharing_message_bridge),
-      sync_preference_(sync_preference),
       gcm_driver_(gcm_driver),
       device_info_tracker_(device_info_tracker),
       local_device_info_provider_(local_device_info_provider),
@@ -175,31 +168,23 @@ void SharingChannelSender::SendMessageToFcmTarget(
   bool can_send_via_sync = !fcm_configuration.sender_id_fcm_token().empty() &&
                            !fcm_configuration.sender_id_p256dh().empty() &&
                            !fcm_configuration.sender_id_auth_secret().empty();
-
-  if (can_send_via_sync) {
-    message.set_message_id(base::Uuid::GenerateRandomV4().AsLowercaseString());
-
-    sync_pb::SharingMessageSpecifics::ChannelConfiguration
-        channel_configuration;
-    auto* fcm = channel_configuration.mutable_fcm();
-    fcm->set_token(fcm_configuration.sender_id_fcm_token());
-    fcm->set_ttl(time_to_live.InSeconds());
-    fcm->set_priority(10);
-
-    EncryptMessage(
-        kSharingSenderID, fcm_configuration.sender_id_p256dh(),
-        fcm_configuration.sender_id_auth_secret(), message,
-        SharingChannelType::kFcmSenderId, std::move(callback),
-        base::BindOnce(&SharingChannelSender::SendMessageViaSync,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(channel_configuration),
-                       SharingChannelType::kFcmSenderId, message.message_id()));
+  if (!can_send_via_sync) {
+    std::move(callback).Run(SharingSendMessageResult::kDeviceNotFound,
+                            /*message_id=*/std::nullopt,
+                            SharingChannelType::kUnknown);
     return;
   }
 
-  std::move(callback).Run(SharingSendMessageResult::kDeviceNotFound,
-                          /*message_id=*/std::nullopt,
-                          SharingChannelType::kUnknown);
+  sync_pb::SharingMessageSpecifics::ChannelConfiguration channel_configuration;
+  auto* fcm = channel_configuration.mutable_fcm();
+  fcm->set_token(fcm_configuration.sender_id_fcm_token());
+  fcm->set_ttl(time_to_live.InSeconds());
+  fcm->set_priority(10);
+
+  EncryptMessage(std::move(channel_configuration),
+                 fcm_configuration.sender_id_p256dh(),
+                 fcm_configuration.sender_id_auth_secret(), std::move(message),
+                 SharingChannelType::kFcmSenderId, std::move(callback));
 }
 
 void SharingChannelSender::SendMessageToServerTarget(
@@ -209,18 +194,12 @@ void SharingChannelSender::SendMessageToServerTarget(
     SendMessageCallback callback) {
   TRACE_EVENT0("sharing", "SharingChannelSender::SendMessageToServerTarget");
 
-  message.set_message_id(base::Uuid::GenerateRandomV4().AsLowercaseString());
-
   sync_pb::SharingMessageSpecifics::ChannelConfiguration channel_configuration;
   channel_configuration.set_server(server_channel.configuration());
 
-  EncryptMessage(
-      kSharingSenderID, server_channel.p256dh(), server_channel.auth_secret(),
-      message, SharingChannelType::kServer, std::move(callback),
-      base::BindOnce(&SharingChannelSender::SendMessageViaSync,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(channel_configuration),
-                     SharingChannelType::kServer, message.message_id()));
+  EncryptMessage(std::move(channel_configuration), server_channel.p256dh(),
+                 server_channel.auth_secret(), std::move(message),
+                 SharingChannelType::kServer, std::move(callback));
 }
 
 void SharingChannelSender::ClearPendingMessages() {
@@ -250,27 +229,34 @@ void SharingChannelSender::OnSyncShutdown(syncer::SyncService* sync_service) {
   sync_service_observation_.Reset();
 }
 
-void SharingChannelSender::EncryptMessage(const std::string& authorized_entity,
-                                          const std::string& p256dh,
-                                          const std::string& auth_secret,
-                                          const SharingMessage& message,
-                                          SharingChannelType channel_type,
-                                          SendMessageCallback callback,
-                                          MessageSender message_sender) {
+void SharingChannelSender::EncryptMessage(
+    sync_pb::SharingMessageSpecifics::ChannelConfiguration
+        channel_configuration,
+    const std::string& p256dh,
+    const std::string& auth_secret,
+    SharingMessage message,
+    SharingChannelType channel_type,
+    SendMessageCallback callback) {
+  std::string message_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  message.set_message_id(message_id);
   std::string payload;
   message.SerializeToString(&payload);
   gcm_driver_->EncryptMessage(
-      kSharingFCMAppID, authorized_entity, p256dh, auth_secret, payload,
+      kSharingFCMAppID, kSharingSenderID, p256dh, auth_secret, payload,
       base::BindOnce(&SharingChannelSender::OnMessageEncrypted,
-                     weak_ptr_factory_.GetWeakPtr(), channel_type,
-                     std::move(callback), std::move(message_sender)));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(channel_configuration), channel_type,
+                     std::move(message_id), std::move(callback)));
 }
 
-void SharingChannelSender::OnMessageEncrypted(SharingChannelType channel_type,
-                                              SendMessageCallback callback,
-                                              MessageSender message_sender,
-                                              gcm::GCMEncryptionResult result,
-                                              std::string message) {
+void SharingChannelSender::OnMessageEncrypted(
+    sync_pb::SharingMessageSpecifics::ChannelConfiguration
+        channel_configuration,
+    SharingChannelType channel_type,
+    std::string message_id,
+    SendMessageCallback callback,
+    gcm::GCMEncryptionResult result,
+    std::string message) {
   if (result != gcm::GCMEncryptionResult::ENCRYPTED_DRAFT_08) {
     LOG(ERROR) << "Unable to encrypt message";
     std::move(callback).Run(SharingSendMessageResult::kEncryptionError,
@@ -278,7 +264,9 @@ void SharingChannelSender::OnMessageEncrypted(SharingChannelType channel_type,
     return;
   }
 
-  std::move(message_sender).Run(std::move(message), std::move(callback));
+  SendMessageViaSync(std::move(channel_configuration), channel_type,
+                     std::move(message_id), std::move(message),
+                     std::move(callback));
 }
 
 void SharingChannelSender::SendMessageViaSync(

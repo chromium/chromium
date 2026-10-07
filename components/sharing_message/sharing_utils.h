@@ -18,10 +18,7 @@ class SyncService;
 
 enum class SharingDevicePlatform;
 
-// Returns true if can send messages via VAPID.
-bool CanSendViaVapid(syncer::SyncService* sync_service);
-
-// Returns true if can send messages via sedner ID.
+// Returns true if can send messages via sender ID.
 bool CanSendViaSenderID(syncer::SyncService* sync_service);
 
 // Returns true if required sync feature is enabled.

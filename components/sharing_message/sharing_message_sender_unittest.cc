@@ -13,7 +13,6 @@
 #include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sharing_message/sharing_channel_sender.h"
 #include "components/sharing_message/sharing_metrics.h"
-#include "components/sharing_message/sharing_sync_preference.h"
 #include "components/sharing_message/sharing_utils.h"
 #include "components/sync/base/features.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
@@ -23,7 +22,6 @@
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/sync_device_info/fake_local_device_info_provider.h"
 #include "components/sync_device_info/test_device_info_builder.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,13 +42,11 @@ using testing::IsNull;
 class MockSharingChannelSender : public SharingChannelSender {
  public:
   MockSharingChannelSender(
-      SharingSyncPreference* sync_preference,
       syncer::DeviceInfoTracker* device_info_tracker,
       syncer::LocalDeviceInfoProvider* local_device_info_provider,
       syncer::SyncService* sync_service)
       : SharingChannelSender(
             /*sharing_message_bridge=*/nullptr,
-            sync_preference,
             /*gcm_driver=*/nullptr,
             device_info_tracker,
             local_device_info_provider,
@@ -109,10 +105,8 @@ SharingTargetDeviceInfo CreateFakeSharingTargetDeviceInfo(
 class SharingMessageSenderTest : public testing::Test {
  public:
   SharingMessageSenderTest() {
-    SharingSyncPreference::RegisterProfilePrefs(prefs_.registry());
     auto mock_sharing_channel_sender =
         std::make_unique<MockSharingChannelSender>(
-            &sharing_sync_preference_,
             fake_device_info_sync_service_.GetDeviceInfoTracker(),
             fake_device_info_sync_service_.GetLocalDeviceInfoProvider(),
             &sync_service_);
@@ -121,8 +115,6 @@ class SharingMessageSenderTest : public testing::Test {
         std::move(mock_sharing_channel_sender),
         fake_device_info_sync_service_.GetLocalDeviceInfoProvider(),
         base::SingleThreadTaskRunner::GetCurrentDefault());
-    sharing_sync_preference_.SetFCMRegistration(
-        SharingSyncPreference::FCMRegistration(base::Time::Now()));
     fake_device_info_sync_service_.GetLocalDeviceInfoProvider()
         ->GetMutableDeviceInfo()
         ->set_sharing_info(CreateLocalSharingInfo());
@@ -149,10 +141,7 @@ class SharingMessageSenderTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  sync_preferences::TestingPrefServiceSyncable prefs_;
   syncer::FakeDeviceInfoSyncService fake_device_info_sync_service_;
-  SharingSyncPreference sharing_sync_preference_{
-      &prefs_, &fake_device_info_sync_service_};
   syncer::MockSyncService sync_service_;
 
   std::unique_ptr<SharingMessageSender> sharing_message_sender_;
