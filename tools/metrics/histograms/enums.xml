@@ -1279,11 +1279,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="1" label="Received"/>
 </enum>
 
-<enum name="BooleanRegistered">
-  <int value="0" label="Not Registered"/>
-  <int value="1" label="Registered"/>
-</enum>
-
 <enum name="BooleanRegistrationIsDuplicate">
   <int value="0" label="Registration is not a duplicate"/>
   <int value="1" label="Registration is a duplicate"/>
@@ -23377,65 +23372,6 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="False"/>
   <int value="1" label="True"/>
   <int value="2" label="Null"/>
-</enum>
-
-<enum name="NuxGoogleAppsInteractions">
-  <summary>
-    The button that a user pressed when interacting with the Google Apps NUX.
-  </summary>
-  <int value="0" label="Page Shown"/>
-  <int value="1" label="No Thanks (deprecated)"/>
-  <int value="2" label="Get Started (deprecated)"/>
-  <int value="3" label="Did nothing and navigated away"/>
-  <int value="4" label="Did nothing and clicked skip"/>
-  <int value="5" label="Chose an option then navigated away"/>
-  <int value="6" label="Chose an option then chose skip"/>
-  <int value="7" label="Chose an option then chose next"/>
-  <int value="8" label="Clicked disabled next button then navigated away"/>
-  <int value="9" label="Clicked disabled next button then chose skip"/>
-  <int value="10" label="Clicked disabled next button then chose next"/>
-  <int value="11" label="Did nothing and clicked next"/>
-  <int value="12" label="Navigated away through browser history"/>
-</enum>
-
-<enum name="NuxLandingPageInteractions">
-  <summary>
-    Interactions a user can take on the initial onboarding step.
-  </summary>
-  <int value="0" label="Page Shown"/>
-  <int value="1" label="Navigated Away"/>
-  <int value="2" label="New User"/>
-  <int value="3" label="Existing User"/>
-</enum>
-
-<enum name="NuxNtpBackgroundInteractions">
-  <summary>
-    All possible user journeys when interacting with the NUX NTP background
-    page.
-  </summary>
-  <int value="0" label="Page Shown"/>
-  <int value="1" label="Did nothing and navigated away"/>
-  <int value="2" label="Did nothing and clicked skip"/>
-  <int value="3" label="Did nothing and clicked next"/>
-  <int value="4" label="Chose an option then navigated away"/>
-  <int value="5" label="Chose an option then chose skip"/>
-  <int value="6" label="Chose an option then chose next"/>
-  <int value="7" label="Navigated away through browser history"/>
-  <int value="8" label="Background failed to load"/>
-  <int value="9" label="Background never finished loading"/>
-</enum>
-
-<enum name="NuxSetAsDefaultInteractions">
-  <summary>
-    Interactions a user can take on the &quot;Set as default&quot; onboarding
-    step.
-  </summary>
-  <int value="0" label="Page Shown"/>
-  <int value="1" label="Navigated Away"/>
-  <int value="2" label="Skip"/>
-  <int value="3" label="Clicked Set Default"/>
-  <int value="4" label="Successfully Set Default"/>
-  <int value="5" label="Navigated Away Through Browser History"/>
 </enum>
 
 <!-- LINT.IfChange(OAuth2Response) -->

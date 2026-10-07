@@ -1028,16 +1028,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Drive.PushNotificationRegistered" enum="BooleanRegistered"
-    expires_after="2025-09-28">
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Tracks whether the push notification request is registered correctly for
-    Drive. Recorded when the push notification manager is initialized.
-  </summary>
-</histogram>
-
 <histogram name="DrmUtil.CreateDisplaySnapshot.BitsPerChannel" units="bits"
     expires_after="2026-09-01">
   <owner>hiroh@chromium.org</owner>
@@ -2073,60 +2063,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FirstRun.NewUserExperience.GoogleAppsInteraction"
-    enum="NuxGoogleAppsInteractions" expires_after="2025-04-13">
-  <owner>johntlee@chromium.org</owner>
-  <owner>dpapad@chromium.org</owner>
-  <summary>
-    Records when a user interacted with the Google Apps new user experience. We
-    record both accept and reject but are not recording when a user ignored the
-    prompt completely. Users can ignore this prompt by closing the tab or
-    navigating away, we record when the prompt is shown.
-
-    Warning: this histogram was expired from M76 to M100; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="FirstRun.NewUserExperience.LandingPageInteraction"
-    enum="NuxLandingPageInteractions" expires_after="never">
-<!-- expires-never: Captures users' initial interaction with chrome. We will
-    need to track how the metrics change over time, and how different
-    acquisition campaigns impact this metric. -->
-
-  <owner>scottchen@chromium.org</owner>
-  <summary>
-    Records when a user interacted with the landing page of the onboarding
-    process. We record that the page was seen and what action the user took.
-  </summary>
-</histogram>
-
-<histogram name="FirstRun.NewUserExperience.NtpBackgroundInteraction"
-    enum="NuxNtpBackgroundInteractions" expires_after="2025-04-13">
-  <owner>johntlee@chromium.org</owner>
-  <owner>dpapad@chromium.org</owner>
-  <summary>
-    Records when a user interacts with the NTP Backgrounds new user experience.
-    We record the number of times the page is seen, how they interacted with the
-    page (i.e. interacted with the options and buttons), and through what method
-    they leave the page (i.e, confirm, cancel, neither). The new user experience
-    should only be shown once to new profiles.
-  </summary>
-</histogram>
-
-<histogram name="FirstRun.NewUserExperience.SetAsDefaultInteraction"
-    enum="NuxSetAsDefaultInteractions" expires_after="never">
-<!-- expires-never: Captures users' initial interaction with chrome. We will
-    need to track how the metrics change over time, and how different
-    acquisition campaigns impact this metric. -->
-
-  <owner>johntlee@chromium.org</owner>
-  <owner>dpapad@chromium.org</owner>
-  <summary>
-    Records when a user interacted with the set default page of the onboarding
-    process. We record that the page was seen and what action the user took.
-  </summary>
-</histogram>
-
 <histogram name="FirstRun.Sentinel.Created" enum="FirstRunSentinelResult"
     expires_after="2027-03-07">
   <owner>jlebel@chromium.org</owner>
@@ -3017,19 +2953,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Mojo.Connector.MaxUnreadMessageQuotaUsed" units="messages"
-    expires_after="2022-05-01">
-  <owner>siggi@chromium.org</owner>
-  <owner>rockot@chromium.org</owner>
-  <summary>
-    The maximal unread message quota used for the lifetime of a Connector. This
-    is sampled for a configurable percentage of Connectors only when the feature
-    MojoRecordUnreadMessageCount is enabled. By default 1% of Connectors are
-    sampled, as there's some overhead involved in enabling the unread message
-    quota on a MessagePipe. See //mojo/public/cpp/bindings/lib/connector.cc.
-  </summary>
-</histogram>
-
 <histogram name="Mojo.DirectReceiver.AdoptPipeResult"
     enum="MojoAdoptPipeResult" expires_after="2027-02-07">
   <owner>joenotcharles@google.com</owner>
@@ -3585,16 +3508,6 @@ chromium-metrics-reviews@google.com.
   <owner>mark@chromium.org</owner>
   <summary>
     MacOS X NSExceptions seen, common exceptions binned, others in overflow.
-  </summary>
-</histogram>
-
-<histogram name="Ozone.NeuralStylusReport.ActivePalmTouchCount"
-    units="touch event count" expires_after="2023-06-30">
-  <owner>napper@chromium.org</owner>
-  <owner>robsc@chromium.org</owner>
-  <summary>
-    When a stylus is touched to screen, the number of palms on the device at
-    that time.
   </summary>
 </histogram>
 
@@ -5614,23 +5527,6 @@ should be kept until we use this API.  -->
   <summary>Number of retries until the final response was recorded.</summary>
 </histogram>
 
-<histogram name="TouchScreen.MissedTOUCHEVENTF_UP" enum="BooleanHit"
-    expires_after="2024-10-03">
-  <owner>girard@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Recorded when a touch event excludes an active touch (a touch-id/dwId that
-    previously generated a TOUCHEVENTF_DOWN, and has not since generated a
-    TOUCHEVENTF_UP). Chromium generates a simulated event to maintain
-    consistency/correctness. Only recorded on Windows.
-
-    Warning: This histogram was expired after M95, and resurrected in M108.
-
-    This workaround will be removed once usage drops off. See
-    https://crbug.com/811273 for details.
-  </summary>
-</histogram>
-
 <histogram name="Tracing.Background.FinalizationDisallowedReason"
     enum="TracingFinalizationDisallowedReason" expires_after="2027-04-12">
   <owner>ssid@chromium.org</owner>
@@ -5750,16 +5646,6 @@ should be kept until we use this API.  -->
 
     This histogram is added to investigate the impact of Tracing initialization
     on WebView startup performance.
-  </summary>
-</histogram>
-
-<histogram name="Tracing.SharedBufferIsValid" enum="BooleanSuccess"
-    expires_after="2024-07-28">
-  <owner>eseckler@chromium.org</owner>
-  <owner>tracing@chromium.org</owner>
-  <summary>
-    Records success or failure of creating the shared buffer in
-    ProducerClient::InitSharedMemoryIfNeeded()
   </summary>
 </histogram>
 
