@@ -17,6 +17,7 @@
 #include <array>
 #include <cmath>
 #include <memory>
+#include <numeric>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -704,6 +705,18 @@ TEST_F(AudioRendererAlgorithmTest, DotProduct) {
   EXPECT_FLOAT_EQ(kFrames / 2, dot_prod[0]);
   EXPECT_FLOAT_EQ(0, dot_prod[1]);
   EXPECT_FLOAT_EQ(-kFrames / 2, dot_prod[2]);
+
+  // Ramp frames [0, 8) from 1.0f to 8.0f to make sure the upper 128-bit lane
+  // of an 8-float AVX2 register isn't dropped during horizontal reduction.
+  constexpr size_t kAvx2Floats = 8;
+  constexpr float kExpectedRampSum = 36.0f;  // 1 + 2 + ... + 8
+  auto a_ramp = a->channel(0).first<kAvx2Floats>();
+  std::iota(a_ramp.begin(), a_ramp.end(), 1.0f);
+  std::ranges::fill(b->channel(0), 1.0f);
+
+  internal::MultiChannelDotProduct(a.get(), 0, b.get(), 0, kAvx2Floats,
+                                   dot_prod);
+  EXPECT_FLOAT_EQ(kExpectedRampSum, dot_prod[0]);
 }
 
 TEST_F(AudioRendererAlgorithmTest, MovingBlockEnergy) {

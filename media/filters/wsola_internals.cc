@@ -121,14 +121,14 @@ __attribute__((target("avx2,fma"))) void MultiChannelDotProduct_AVX2(
       m_sum = _mm256_fmadd_ps(a_avx, b_avx, m_sum);
     }
 
-    // Horizontal add thrice to reduce 8 floats to 4, then 2, then 1.
-    // Note: the following could be reduced to a single _mm256_reduce_add_ps(),
-    // on CPUs with AVX512 support.
-    m_sum = _mm256_hadd_ps(m_sum, m_sum);
-    m_sum = _mm256_hadd_ps(m_sum, m_sum);
-    m_sum = _mm256_hadd_ps(m_sum, m_sum);
-
-    dot_product[ch] = _mm256_cvtss_f32(m_sum);
+    // Fold the upper 128 bits into the lower 128 bits, then reduce across the
+    // 128-bit lane as in MultiChannelDotProduct_SSE().
+    __m128 m_sum_128 = _mm_add_ps(_mm256_castps256_ps128(m_sum),
+                                  _mm256_extractf128_ps(m_sum, 1));
+    m_sum_128 = _mm_add_ps(_mm_movehl_ps(m_sum_128, m_sum_128), m_sum_128);
+    _mm_store_ss(
+        &dot_product[ch],
+        _mm_add_ss(m_sum_128, _mm_shuffle_ps(m_sum_128, m_sum_128, 1)));
   }
 
   if (!rem) {
