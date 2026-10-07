@@ -249,6 +249,17 @@ public class AwWebContentsObserver extends WebContentsObserver {
         return mCommittedNavigation;
     }
 
+    @Override
+    public void didChangeThemeColor() {
+        AwContents awContents = mAwContents.get();
+        if (awContents == null) return;
+
+        AwContentsClient client = mAwContentsClient.get();
+        if (client == null) return;
+
+        client.getCallbackHelper().postOnReceivedThemeColor(awContents.getThemeColor());
+    }
+
     /** Callback that triggers {@code onPageCommitVisible} and {@code onNavigationVisible}. */
     // Deliberately not static to capture the outer class members so we don't have to
     // redeclare all the weakReferences.

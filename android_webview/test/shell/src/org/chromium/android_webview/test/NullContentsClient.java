@@ -5,6 +5,7 @@
 package org.chromium.android_webview.test;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Picture;
 import android.net.http.SslError;
 import android.os.Looper;
@@ -251,4 +252,7 @@ public class NullContentsClient extends AwContentsClient {
     public boolean onRenderProcessGone(AwRenderProcessGoneDetail detail) {
         return false;
     }
+
+    @Override
+    public void onReceivedThemeColor(Color color) {}
 }

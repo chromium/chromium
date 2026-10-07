@@ -533,4 +533,7 @@ public class Features {
     // WebViewCompat.createSharedArrayBuffer
     // WebMessagePayload.getAsSharedArrayBuffer
     public static final String WEB_MESSAGE_SHARED_ARRAY_BUFFER = "WEB_MESSAGE_SHARED_ARRAY_BUFFER";
+
+    // WebChromeClientCompat.onReceivedThemeColor
+    public static final String THEME_COLOR_CALLBACK = "THEME_COLOR_CALLBACK";
 }

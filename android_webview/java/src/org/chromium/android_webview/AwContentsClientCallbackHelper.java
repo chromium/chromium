@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview;
 
+import android.graphics.Color;
 import android.graphics.Picture;
 import android.os.Handler;
 import android.os.Looper;
@@ -136,6 +137,7 @@ public class AwContentsClientCallbackHelper {
     private static final int MSG_DO_UPDATE_VISITED_HISTORY = 13;
     private static final int MSG_ON_FORM_RESUBMISSION = 14;
     private static final int MSG_ON_SAFE_BROWSING_HIT = 15;
+    private static final int MSG_ON_RECEIVED_THEME_COLOR = 16;
 
     // Minimum period allowed between consecutive onNewPicture calls, to rate-limit the callbacks.
     private static final long ON_NEW_PICTURE_MIN_PERIOD_MILLIS = 500;
@@ -271,6 +273,11 @@ public class AwContentsClientCallbackHelper {
                         mContentsClient.onFormResubmission(info.mDontResend, info.mResend);
                         break;
                     }
+                case MSG_ON_RECEIVED_THEME_COLOR:
+                    {
+                        mContentsClient.onReceivedThemeColor((Color) msg.obj);
+                        break;
+                    }
                 default:
                     throw new IllegalStateException(
                             "AwContentsClientCallbackHelper: unhandled message " + msg.what);
@@ -382,6 +389,10 @@ public class AwContentsClientCallbackHelper {
     public void postOnFormResubmission(Message dontResend, Message resend) {
         OnFormResubmissionInfo info = new OnFormResubmissionInfo(dontResend, resend);
         mHandler.sendMessage(mHandler.obtainMessage(MSG_ON_FORM_RESUBMISSION, info));
+    }
+
+    public void postOnReceivedThemeColor(Color color) {
+        mHandler.sendMessage(mHandler.obtainMessage(MSG_ON_RECEIVED_THEME_COLOR, color));
     }
 
     void removeCallbacksAndMessages() {

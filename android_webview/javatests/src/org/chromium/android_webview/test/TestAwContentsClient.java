@@ -5,6 +5,7 @@
 package org.chromium.android_webview.test;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Picture;
 import android.net.http.SslError;
 import android.os.Message;
@@ -69,6 +70,7 @@ public class TestAwContentsClient extends NullContentsClient {
     private final RenderProcessGoneHelper mRenderProcessGoneHelper;
     private final ShowFileChooserHelper mShowFileChooserHelper;
     private final OnFormResubmissionHelper mOnFormResubmissionHelper;
+    private final OnReceivedThemeColorHelper mOnReceivedThemeColorHelper;
 
     public TestAwContentsClient() {
         super(ThreadUtils.getUiThreadLooper());
@@ -95,6 +97,7 @@ public class TestAwContentsClient extends NullContentsClient {
         mTouchIconHelper = new TouchIconHelper();
         mRenderProcessGoneHelper = new RenderProcessGoneHelper();
         mShowFileChooserHelper = new ShowFileChooserHelper();
+        mOnReceivedThemeColorHelper = new OnReceivedThemeColorHelper();
         mAllowSslError = true;
     }
 
@@ -1089,5 +1092,29 @@ public class TestAwContentsClient extends NullContentsClient {
     public void onFormResubmission(Message dontResend, Message resend) {
         if (TRACE) Log.i(TAG, "onFormResubmission");
         mOnFormResubmissionHelper.notifyCalled(dontResend, resend);
+    }
+
+    /** Callback helper for onReceivedThemeColor. */
+    public static class OnReceivedThemeColorHelper extends CallbackHelper {
+        private Color mColor;
+
+        public void notifyCalled(Color color) {
+            mColor = color;
+            super.notifyCalled();
+        }
+
+        public Color getColor() {
+            return mColor;
+        }
+    }
+
+    public OnReceivedThemeColorHelper getOnReceivedThemeColorHelper() {
+        return mOnReceivedThemeColorHelper;
+    }
+
+    @Override
+    public void onReceivedThemeColor(Color color) {
+        if (TRACE) Log.i(TAG, "onReceivedThemeColor " + color.toString());
+        mOnReceivedThemeColorHelper.notifyCalled(color);
     }
 }

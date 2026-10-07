@@ -2899,6 +2899,7 @@ chromium-metrics-reviews@google.com.
   <int value="37" label="WebChromeClient.getDefaultVideoPoster"/>
   <int value="38" label="WebViewClient.onRenderProcessGone"/>
   <int value="39" label="WebViewClient.onScaleChanged"/>
+  <int value="40" label="WebChromeClient.onReceivedThemeColor"/>
 </enum>
 
 <!-- LINT.IfChange(WebViewChromiumStartupMode) -->

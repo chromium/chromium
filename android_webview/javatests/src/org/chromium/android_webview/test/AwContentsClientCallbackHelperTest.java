@@ -6,6 +6,7 @@ package org.chromium.android_webview.test;
 
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
 
+import android.graphics.Color;
 import android.graphics.Picture;
 import android.os.Handler;
 import android.os.Looper;
@@ -21,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
+import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClientCallbackHelper;
 import org.chromium.android_webview.AwWebResourceError;
 import org.chromium.android_webview.AwWebResourceRequest;
@@ -28,11 +30,14 @@ import org.chromium.android_webview.test.TestAwContentsClient.OnDownloadStartHel
 import org.chromium.android_webview.test.TestAwContentsClient.OnLoadResourceHelper;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedLoginRequestHelper;
+import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedThemeColorHelper;
 import org.chromium.android_webview.test.TestAwContentsClient.PictureListenerHelper;
+import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
+import org.chromium.net.test.util.TestWebServer;
 
 import java.util.Collections;
 import java.util.concurrent.Callable;
@@ -255,5 +260,61 @@ public class AwContentsClientCallbackHelperTest extends AwParameterizedTest {
 
         // Neither callback should actually happen.
         Assert.assertEquals(onPageStartedCount, pageStartedHelper.getCallCount());
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    public void testOnReceivedThemeColor() throws Exception {
+        AwTestContainerView testContainerView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        AwContents awContents = testContainerView.getAwContents();
+
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
+
+        OnReceivedThemeColorHelper themeColorHelper =
+                mContentsClient.getOnReceivedThemeColorHelper();
+        int onThemeColorChangeCount = themeColorHelper.getCallCount();
+
+        try (TestWebServer webServer = TestWebServer.start()) {
+            final String pageUrl =
+                    webServer.setResponse(
+                            "/index.html",
+                            CommonResources.makeHtmlPageFrom(
+                                    "<meta name=\"theme-color\" content=\"red\">", "Body"),
+                            CommonResources.getTextHtmlHeaders(true));
+
+            mActivityTestRule.loadUrlSync(
+                    awContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+        }
+
+        themeColorHelper.waitForCallback(onThemeColorChangeCount);
+        Assert.assertNotNull(themeColorHelper.getColor());
+        Assert.assertEquals(Color.RED, themeColorHelper.getColor().toArgb());
+
+        onThemeColorChangeCount = themeColorHelper.getCallCount();
+        final String changeCode =
+                """
+                document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "rgb(0 0 255 / 50%)");
+                """;
+        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                awContents, mContentsClient, changeCode);
+
+        themeColorHelper.waitForCallback(onThemeColorChangeCount);
+        Assert.assertNotNull(themeColorHelper.getColor());
+        // Blue, at 50% opacity
+        Assert.assertEquals(0x800000ff, themeColorHelper.getColor().toArgb());
+
+        onThemeColorChangeCount = themeColorHelper.getCallCount();
+        final String removeCode =
+                """
+                document.querySelector('meta[name="theme-color"]')?.remove();
+                """;
+        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                awContents, mContentsClient, removeCode);
+
+        themeColorHelper.waitForCallback(onThemeColorChangeCount);
+        Assert.assertNotNull(themeColorHelper.getColor());
+        Assert.assertEquals(Color.TRANSPARENT, themeColorHelper.getColor().toArgb());
     }
 }
