@@ -61,7 +61,7 @@ const NSInteger kLevelUpPasswordCheckupWalkthroughTotalPages = 3;
 const NSInteger kLevelUpQuickDeleteWalkthroughTotalPages = 2;
 
 // Total number of pages in the Level Up Payment Methods walkthrough sequence.
-const NSInteger kLevelUpPaymentMethodsWalkthroughTotalPages = 4;
+const NSInteger kLevelUpPaymentMethodsWalkthroughTotalPages = 5;
 
 // The active IPH session type inside the popup menu.
 enum class PopupMenuIPHSessionType {

@@ -2247,7 +2247,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
                       alignment:BubbleAlignmentBottomOrTrailing
                      bubbleType:BubbleViewTypeRichWithNext
                 pageControlPage:BubblePageControlPageThird
-          totalPageControlPages:4
+          totalPageControlPages:5
           customNextButtonTitle:l10n_util::GetNSString(IDS_IOS_IPH_BUBBLE_NEXT)
               dismissalCallback:dismissalCallback];
   presenter.dismissalTimerDisabled = YES;

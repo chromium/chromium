@@ -101,6 +101,7 @@ typedef NS_ENUM(NSInteger, BubblePageControlPage) {
   BubblePageControlPageSecond,
   BubblePageControlPageThird,
   BubblePageControlPageFourth,
+  BubblePageControlPageFifth,
 };
 
 #endif  // IOS_CHROME_BROWSER_BUBBLE_UI_BUNDLED_BUBBLE_CONSTANTS_H_

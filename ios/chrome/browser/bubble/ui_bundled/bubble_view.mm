@@ -239,7 +239,7 @@ UIButton* BubbleNextButton(BubblePageControlPage page,
   button.accessibilityIdentifier = kBubbleViewNextButtonIdentifier;
   NSString* title = customTitle;
   if (!title) {
-    NSInteger maxPages = BubblePageControlPageFourth;
+    NSInteger maxPages = BubblePageControlPageFifth;
     if (totalPageControlPages > 0) {
       maxPages = std::min(totalPageControlPages, maxPages);
     }
@@ -271,7 +271,7 @@ UIStackView* PageControl(BubblePageControlPage page,
   container.alignment = UIStackViewAlignmentCenter;
   container.spacing = 8;
   container.accessibilityIdentifier = kBubbleViewPageControlIdentifier;
-  NSInteger maxPages = BubblePageControlPageFourth;
+  NSInteger maxPages = BubblePageControlPageFifth;
   if (totalPageControlPages > 0) {
     maxPages = std::min(totalPageControlPages, maxPages);
   }
@@ -403,7 +403,7 @@ UIStackView* PageControl(BubblePageControlPage page,
     _direction = direction;
     _alignment = alignment;
     _alignmentOffset = bubble_util::BubbleDefaultAlignmentOffset();
-    NSInteger defaultMaxPages = BubblePageControlPageFourth;
+    NSInteger defaultMaxPages = BubblePageControlPageFifth;
     BOOL hasCustomPages = totalPageControlPages > 0;
     _totalPageControlPages =
         hasCustomPages ? std::min(totalPageControlPages, defaultMaxPages)
