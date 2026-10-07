@@ -48,8 +48,8 @@ import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
-import org.chromium.chrome.browser.customtabs.EphemeralCustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler;
@@ -2081,7 +2081,7 @@ public class IntentHandler {
                 intent, /* recordMetrics= */ false)) {
             return true;
         }
-        if (EphemeralCustomTabIntentDataProvider.isValidEphemeralTabIntent(intent)) {
+        if (CustomTabIntentDataProvider.isValidEphemeralTabIntent(intent)) {
             return true;
         }
         return false;

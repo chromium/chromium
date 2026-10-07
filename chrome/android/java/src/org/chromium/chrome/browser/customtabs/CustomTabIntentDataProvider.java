@@ -114,6 +114,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -340,7 +341,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         int OPEN_IN_BROWSER_STATE_DEFAULT = CustomTabsIntent.OPEN_IN_BROWSER_STATE_DEFAULT;
     }
 
-    protected final CustomTabIntentDataHolder mDataHolder;
+    private final CustomTabIntentDataHolder mDataHolder;
     private final Intent mIntent;
     private final ColorProvider mColorProvider;
     private final int mShareState;
@@ -515,16 +516,13 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         return referrer;
     }
 
-    public CustomTabIntentDataProvider(Intent intent, Context context, int colorScheme) {
-        this(intent, context, colorScheme, /* dataHolder= */ null);
+    public static boolean isValidEphemeralTabIntent(Intent intent) {
+        return IntentUtils.safeGetBooleanExtra(
+                intent, CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING, false);
     }
 
-    public CustomTabIntentDataProvider(
-            Intent intent,
-            Context context,
-            int colorScheme,
-            @Nullable CustomTabIntentDataHolder dataHolder) {
-        this(intent, context, colorScheme, dataHolder, CustomTabProfileType.REGULAR);
+    public CustomTabIntentDataProvider(Intent intent, Context context, int colorScheme) {
+        this(intent, context, colorScheme, /* dataHolder= */ null);
     }
 
     /**
@@ -540,14 +538,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      *     be created.
      * @param dataHolder Data holder used to recover intent data from the saved instance state. A
      *     null value should be passed if there is no saved instance state.
-     * @param customTabMode The {@link CustomTabProfileType} for the Custom Tab.
      */
-    protected CustomTabIntentDataProvider(
+    public CustomTabIntentDataProvider(
             Intent intent,
             Context context,
             int colorScheme,
-            @Nullable CustomTabIntentDataHolder dataHolder,
-            @CustomTabProfileType int customTabMode) {
+            @Nullable CustomTabIntentDataHolder dataHolder) {
         assert intent != null;
         mIntent = intent;
 
@@ -562,6 +558,11 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             builder.setSessionHolder(session);
             builder.setClientPackageName(
                     getClientPackageNameFromSessionOrCallingActivity(intent, session));
+            @CustomTabProfileType
+            int customTabMode =
+                    isValidEphemeralTabIntent(intent)
+                            ? CustomTabProfileType.EPHEMERAL
+                            : CustomTabProfileType.REGULAR;
             builder.setCustomTabMode(customTabMode);
             boolean isTrustedIntent = isTrustedCustomTab(intent, session);
             builder.setIsTrustedIntent(isTrustedIntent);
@@ -1381,6 +1382,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (IntentUtils.safeHasExtra(intent, EXTRA_ACTIVITY_SIDE_SHEET_POSITION)) {
             featureUsage.log(CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_POSITION);
         }
+        if (mDataHolder.mCustomTabMode == CustomTabProfileType.EPHEMERAL) {
+            featureUsage.log(CustomTabsFeature.EXTRA_ENABLE_EPHEMERAL_BROWSING);
+        }
         if (CustomTabsConnection.getInstance().shouldEnableGoogleBottomBarForIntent(this)) {
             featureUsage.log(CustomTabsFeature.EXTRA_ENABLE_GOOGLE_BOTTOM_BAR);
         }
@@ -1474,6 +1478,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public @Nullable String getClientPackageNameIdentitySharing() {
+        if (isOffTheRecord()) return null;
         return IntentUtils.safeGetStringExtra(mIntent, IntentHandler.EXTRA_LAUNCHED_FROM_PACKAGE);
     }
 
@@ -1547,7 +1552,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public List<CustomButtonParams> getCustomButtonsOnGoogleBottomBar() {
-        return mGoogleBottomBarButtons;
+        return isOffTheRecord() ? Collections.emptyList() : mGoogleBottomBarButtons;
     }
 
     @Override
@@ -1939,7 +1944,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public boolean isOptionalButtonSupported() {
-        return !isTrustedWebActivity() && getUiType() == CustomTabsUiType.DEFAULT;
+        return !isTrustedWebActivity()
+                && !isOffTheRecord()
+                && getUiType() == CustomTabsUiType.DEFAULT;
     }
 
     private static boolean isDisplayModeSupported(
@@ -2056,8 +2063,15 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
+    public @IncognitoCctCallerId int getFeatureIdForMetricsCollection() {
+        if (mDataHolder.mCustomTabMode == CustomTabProfileType.EPHEMERAL) {
+            return IncognitoCctCallerId.EPHEMERAL_TAB;
+        }
+        return super.getFeatureIdForMetricsCollection();
+    }
+
+    @Override
     public @CustomTabProfileType int getCustomTabMode() {
-        assert mDataHolder.mCustomTabMode == CustomTabProfileType.REGULAR;
         return mDataHolder.mCustomTabMode;
     }
 

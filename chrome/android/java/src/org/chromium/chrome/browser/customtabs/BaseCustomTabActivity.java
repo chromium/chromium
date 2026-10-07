@@ -308,9 +308,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
             } else if (dataHolder.mCustomTabMode == CustomTabProfileType.INCOGNITO) {
                 return new IncognitoCustomTabIntentDataProvider(
                         intent, this, colorScheme, dataHolder);
-            } else if (dataHolder.mCustomTabMode == CustomTabProfileType.EPHEMERAL) {
-                return new EphemeralCustomTabIntentDataProvider(
-                        intent, this, colorScheme, dataHolder);
             }
             return new CustomTabIntentDataProvider(intent, this, colorScheme, dataHolder);
         }
@@ -320,8 +317,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         } else if (IncognitoCustomTabIntentDataProvider.isValidIncognitoIntent(
                 intent, /* recordMetrics= */ true)) {
             return new IncognitoCustomTabIntentDataProvider(intent, this, colorScheme);
-        } else if (EphemeralCustomTabIntentDataProvider.isValidEphemeralTabIntent(intent)) {
-            return new EphemeralCustomTabIntentDataProvider(intent, this, colorScheme);
         }
         return new CustomTabIntentDataProvider(intent, this, colorScheme);
     }

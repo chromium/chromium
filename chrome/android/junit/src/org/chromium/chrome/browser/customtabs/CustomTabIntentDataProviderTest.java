@@ -88,6 +88,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.Backgr
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams.VariantLayoutType;
@@ -2204,11 +2205,27 @@ public class CustomTabIntentDataProviderTest {
     @Test
     public void testIsOptionalButtonSupported_ephemeralCct() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
-        var dataProvider =
-                new EphemeralCustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertFalse(
                 "eCCT should NOT support optional button",
                 dataProvider.isOptionalButtonSupported());
+    }
+
+    @Test
+    public void testEphemeralTabIntentData() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
+        intent.putExtra(IntentHandler.EXTRA_LAUNCHED_FROM_PACKAGE, "com.example.app");
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertTrue(CustomTabIntentDataProvider.isValidEphemeralTabIntent(intent));
+        assertEquals(CustomTabProfileType.EPHEMERAL, dataProvider.getCustomTabMode());
+        assertTrue(dataProvider.isOffTheRecord());
+        assertEquals(
+                BrowserServicesIntentDataProvider.IncognitoCctCallerId.EPHEMERAL_TAB,
+                dataProvider.getFeatureIdForMetricsCollection());
+        assertNull(dataProvider.getClientPackageNameIdentitySharing());
+        assertTrue(dataProvider.getCustomButtonsOnGoogleBottomBar().isEmpty());
     }
 
     @Test
