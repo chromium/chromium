@@ -466,6 +466,254 @@ TEST_F(MacNotificationServiceUNTest, DisplayNotificationWithIcon) {
   EXPECT_FALSE(base::PathExists(icon_path));
 }
 
+TEST_F(MacNotificationServiceUNTest,
+       DisplayNotificationWithIcon_RetriesWithoutAttachmentOnError) {
+  base::HistogramTester histogram_tester;
+  base::RunLoop run_loop;
+  __block base::FilePath icon_path;
+
+  NSError* attachment_error =
+      [NSError errorWithDomain:UNErrorDomain
+                          code:UNErrorCodeAttachmentMoveIntoDataStoreFailed
+                      userInfo:nil];
+
+  // First attempt has the icon attachment and fails with an attachment error.
+  OCMExpect([mock_notification_center_
+      addNotificationRequest:[OCMArg checkWithBlock:^BOOL(
+                                         UNNotificationRequest* request) {
+        NSArray<UNNotificationAttachment*>* attachments =
+            request.content.attachments;
+        if (attachments.count != 1u) {
+          return NO;
+        }
+        icon_path = base::apple::NSURLToFilePath(attachments[0].URL);
+        return YES;
+      }]
+       withCompletionHandler:([OCMArg
+                                 invokeBlockWithArgs:attachment_error, nil])]);
+
+  // Second attempt retries without attachments.
+  OCMExpect(
+      [mock_notification_center_
+          addNotificationRequest:[OCMArg checkWithBlock:^BOOL(
+                                             UNNotificationRequest* request) {
+            EXPECT_NSEQ(@"i|profileId|notificationId", request.identifier);
+            EXPECT_NSEQ(@"title", request.content.title);
+            return request.content.attachments.count == 0u;
+          }]
+           withCompletionHandler:([OCMArg
+                                     invokeBlockWithArgs:[NSNull null], nil])])
+      .andDo(invokeClosure(run_loop.QuitClosure()));
+
+  auto notification = CreateMojoNotification("notificationId", "profileId",
+                                             /*incognito=*/true);
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(64, 64);
+  bitmap.eraseARGB(255, 100, 150, 200);
+  notification->icon = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  service_remote_->DisplayNotification(std::move(notification));
+
+  run_loop.Run();
+  task_environment_.RunUntilIdle();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+
+  ASSERT_FALSE(icon_path.empty());
+  EXPECT_FALSE(base::PathExists(icon_path));
+  histogram_tester.ExpectUniqueSample(
+      "Notifications.macOS.DeliveryResult.Banner",
+      UNErrorCodeAttachmentMoveIntoDataStoreFailed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Notifications.macOS.DeliveryResult.RetryWithoutAttachment.Banner", 0, 1);
+}
+
+TEST_F(MacNotificationServiceUNTest,
+       DisplayNotificationWithIcon_DoesNotRetryOnNonAttachmentError) {
+  base::HistogramTester histogram_tester;
+  base::RunLoop run_loop;
+  __block base::FilePath icon_path;
+
+  NSError* non_attachment_error =
+      [NSError errorWithDomain:UNErrorDomain
+                          code:UNErrorCodeNotificationsNotAllowed
+                      userInfo:nil];
+
+  OCMExpect(
+      [mock_notification_center_
+          addNotificationRequest:[OCMArg checkWithBlock:^BOOL(
+                                             UNNotificationRequest* request) {
+            NSArray<UNNotificationAttachment*>* attachments =
+                request.content.attachments;
+            if (attachments.count != 1u) {
+              return NO;
+            }
+            icon_path = base::apple::NSURLToFilePath(attachments[0].URL);
+            return YES;
+          }]
+           withCompletionHandler:([OCMArg
+                                     invokeBlockWithArgs:non_attachment_error,
+                                                         nil])])
+      .andDo(invokeClosure(run_loop.QuitClosure()));
+
+  auto notification = CreateMojoNotification("notificationId", "profileId",
+                                             /*incognito=*/true);
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(64, 64);
+  bitmap.eraseARGB(255, 100, 150, 200);
+  notification->icon = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  service_remote_->DisplayNotification(std::move(notification));
+
+  run_loop.Run();
+  task_environment_.RunUntilIdle();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+
+  ASSERT_FALSE(icon_path.empty());
+  EXPECT_FALSE(base::PathExists(icon_path));
+  histogram_tester.ExpectUniqueSample(
+      "Notifications.macOS.DeliveryResult.Banner",
+      UNErrorCodeNotificationsNotAllowed, 1);
+  histogram_tester.ExpectTotalCount(
+      "Notifications.macOS.DeliveryResult.RetryWithoutAttachment.Banner", 0);
+}
+
+TEST_F(MacNotificationServiceUNTest,
+       DisplayNotificationWithIcon_DoesNotRetryIfClosedBeforeCompletion) {
+  base::HistogramTester histogram_tester;
+  base::RunLoop display_loop;
+  __block void (^saved_completion_handler)(NSError* _Nullable) = nil;
+
+  OCMExpect(
+      [mock_notification_center_
+          addNotificationRequest:[OCMArg checkWithBlock:^BOOL(
+                                             UNNotificationRequest* request) {
+            return request.content.attachments.count == 1u;
+          }]
+           withCompletionHandler:[OCMArg checkWithBlock:^BOOL(void (
+                                     ^completion_handler)(NSError* _Nullable)) {
+             saved_completion_handler = [completion_handler copy];
+             return YES;
+           }]])
+      .andDo(invokeClosure(display_loop.QuitClosure()));
+
+  auto notification = CreateMojoNotification("notificationId", "profileId",
+                                             /*incognito=*/true);
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(64, 64);
+  bitmap.eraseARGB(255, 100, 150, 200);
+  notification->icon = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  service_remote_->DisplayNotification(std::move(notification));
+
+  display_loop.Run();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+
+  // Close the notification before the first attempt's completion handler runs.
+  base::RunLoop close_loop;
+  OCMExpect(
+      [mock_notification_center_ removeDeliveredNotificationsWithIdentifiers:@[
+        @"i|profileId|notificationId"
+      ]])
+      .andDo(invokeClosure(close_loop.QuitClosure()));
+  service_remote_->CloseNotification(mojom::NotificationIdentifier::New(
+      "notificationId",
+      mojom::ProfileIdentifier::New("profileId", /*incognito=*/true)));
+  close_loop.Run();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+
+  // Now invoke the completion handler with an attachment error; it should not
+  // retry since the notification was already closed.
+  ASSERT_TRUE(saved_completion_handler);
+  NSError* attachment_error =
+      [NSError errorWithDomain:UNErrorDomain
+                          code:UNErrorCodeAttachmentMoveIntoDataStoreFailed
+                      userInfo:nil];
+  saved_completion_handler(attachment_error);
+  saved_completion_handler = nil;
+  task_environment_.RunUntilIdle();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+
+  histogram_tester.ExpectUniqueSample(
+      "Notifications.macOS.DeliveryResult.Banner",
+      UNErrorCodeAttachmentMoveIntoDataStoreFailed, 1);
+  histogram_tester.ExpectTotalCount(
+      "Notifications.macOS.DeliveryResult.RetryWithoutAttachment.Banner", 0);
+}
+
+TEST_F(MacNotificationServiceUNTest,
+       RedisplayNotificationWithIcon_RetriesWithoutAttachmentOnError) {
+  auto notification = CreateMojoNotification("notificationId", "profileId",
+                                             /*incognito=*/false,
+                                             /*renotify=*/false);
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(64, 64);
+  bitmap.eraseARGB(255, 100, 150, 200);
+  notification->icon = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+
+  {
+    base::RunLoop run_loop;
+    OCMExpect([mock_notification_center_ addNotificationRequest:[OCMArg any]
+                                          withCompletionHandler:[OCMArg any]])
+        .andDo(invokeClosure(run_loop.QuitClosure()));
+    service_remote_->DisplayNotification(notification.Clone());
+    run_loop.Run();
+    EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    base::RunLoop run_loop;
+    NSError* attachment_error =
+        [NSError errorWithDomain:UNErrorDomain
+                            code:UNErrorCodeAttachmentMoveIntoDataStoreFailed
+                        userInfo:nil];
+
+    OCMExpect([mock_notification_center_
+        getDeliveredNotificationsWithCompletionHandler:
+            ([OCMArg invokeBlockWithArgs:@[
+              CreateNotification("notificationId", "profileId",
+                                 /*incognito=*/false, /*display=*/false)
+            ],
+                                         nil])]);
+
+    // First replacement attempt includes the attachment and fails.
+    OCMExpect([mock_notification_center_
+        replaceContentForRequestWithIdentifier:@"r|profileId|notificationId"
+                            replacementContent:
+                                [OCMArg checkWithBlock:^BOOL(
+                                            UNNotificationContent* content) {
+                                  return content.attachments.count == 1u;
+                                }]
+                             completionHandler:
+                                 ([OCMArg invokeBlockWithArgs:attachment_error,
+                                                              nil])]);
+
+    // Second replacement attempt retries without attachments.
+    OCMExpect(
+        [mock_notification_center_
+            replaceContentForRequestWithIdentifier:@"r|profileId|notificationId"
+                                replacementContent:
+                                    [OCMArg
+                                        checkWithBlock:^BOOL(
+                                            UNNotificationContent* content) {
+                                          return content.attachments.count ==
+                                                 0u;
+                                        }]
+                                 completionHandler:
+                                     ([OCMArg invokeBlockWithArgs:[NSNull null],
+                                                                  nil])])
+        .andDo(invokeClosure(run_loop.QuitClosure()));
+
+    service_remote_->DisplayNotification(notification.Clone());
+    run_loop.Run();
+    task_environment_.RunUntilIdle();
+    EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+    histogram_tester.ExpectUniqueSample(
+        "Notifications.macOS.DeliveryResult.Banner",
+        UNErrorCodeAttachmentMoveIntoDataStoreFailed, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Notifications.macOS.DeliveryResult.RetryWithoutAttachment.Banner", 0,
+        1);
+  }
+}
+
 TEST_F(MacNotificationServiceUNTest, RedisplayNotification) {
   auto notification_no_renotify =
       CreateMojoNotification("notificationId", "profileId",

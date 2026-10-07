@@ -82,9 +82,11 @@ void LogUNNotificationSettings(UNNotificationSettings* settings) {
       ConvertAuthorizationStatus(settings.authorizationStatus));
 }
 
-void LogUNNotificationAddRequestResult(NSError* error) {
+void LogUNNotificationAddRequestResult(NSError* error,
+                                       bool is_retry_without_attachment) {
   std::string metric_name = base::StrCat(
-      {"Notifications.macOS.DeliveryResult.",
+      {"Notifications.macOS.DeliveryResult",
+       is_retry_without_attachment ? ".RetryWithoutAttachment." : ".",
        MacNotificationStyleSuffix(NotificationStyleFromAppBundle())});
   int32_t status_code = error ? static_cast<int32_t>(error.code) : 0;
   base::UmaHistogramSparse(metric_name, status_code);

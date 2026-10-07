@@ -25,7 +25,9 @@ void LogUNNotificationRequestPermissionResult(
 void LogUNNotificationSettings(UNNotificationSettings* settings);
 
 // Logs the result of adding a notification request to the system.
-void LogUNNotificationAddRequestResult(NSError* error);
+void LogUNNotificationAddRequestResult(
+    NSError* error,
+    bool is_retry_without_attachment = false);
 
 }  // namespace mac_notifications
 

@@ -104,6 +104,23 @@ base::ScopedTempFile WriteNotificationIconToTempFile(const gfx::Image& icon) {
   return temp_file;
 }
 
+bool IsAttachmentError(NSError* _Nullable error) {
+  if (!error || ![error.domain isEqualToString:UNErrorDomain]) {
+    return false;
+  }
+  switch (error.code) {
+    case UNErrorCodeAttachmentInvalidURL:
+    case UNErrorCodeAttachmentUnrecognizedType:
+    case UNErrorCodeAttachmentInvalidFileSize:
+    case UNErrorCodeAttachmentNotInDataStore:
+    case UNErrorCodeAttachmentMoveIntoDataStoreFailed:
+    case UNErrorCodeAttachmentCorrupt:
+      return true;
+    default:
+      return false;
+  }
+}
+
 }  // namespace
 
 namespace mac_notifications {
@@ -274,38 +291,74 @@ void MacNotificationServiceUN::DoDisplayNotification(
     [content setValue:@YES forKey:@"shouldBackgroundDefaultAction"];
   }
 
-  auto completion_handler =
-      base::CallbackToBlock(base::BindPostTaskToCurrentDefault(base::BindOnce(
-          [](base::ScopedTempFile icon_file, NSError* _Nullable error) {
-            mac_notifications::LogUNNotificationAddRequestResult(error);
-          },
-          std::move(icon_file))));
-
   // If the renotify is not set try to replace the notification silently.
   bool should_replace = !notification->renotify;
   bool can_replace = [notification_center_
       respondsToSelector:@selector
       (replaceContentForRequestWithIdentifier:
                            replacementContent:completionHandler:)];
-  if (should_replace && can_replace && !is_new_notification) {
-    // If the notification has been delivered before, it will get updated in the
-    // notification center. We should only call this if the notification is
-    // currently displayed, as this method will not deliver a notification that
-    // isn't already delivered.
-    [notification_center_
-        replaceContentForRequestWithIdentifier:notification_id_ns
-                            replacementContent:content
-                             completionHandler:completion_handler];
-    return;
-  }
+  bool replace_content = should_replace && can_replace && !is_new_notification;
+  using CompletionCallback = base::OnceCallback<void(NSError* _Nullable)>;
+  using DeliverNotificationCallback = base::RepeatingCallback<void(
+      UNMutableNotificationContent*, CompletionCallback)>;
+  DeliverNotificationCallback deliver_notification = base::BindRepeating(
+      [](bool replace_content, NSString* notification_id_ns,
+         UNUserNotificationCenter* notification_center,
+         UNMutableNotificationContent* notification_content,
+         CompletionCallback completion) {
+        auto completion_block = base::CallbackToBlock(
+            base::BindPostTaskToCurrentDefault(std::move(completion)));
+        if (replace_content) {
+          // If the notification has been delivered before, it will get updated
+          // in the notification center. We should only call this if the
+          // notification is currently displayed, as this method will not
+          // deliver a notification that isn't already delivered.
+          [notification_center
+              replaceContentForRequestWithIdentifier:notification_id_ns
+                                  replacementContent:notification_content
+                                   completionHandler:completion_block];
+        } else {
+          UNNotificationRequest* request =
+              [UNNotificationRequest requestWithIdentifier:notification_id_ns
+                                                   content:notification_content
+                                                   trigger:nil];
+          [notification_center addNotificationRequest:request
+                                withCompletionHandler:completion_block];
+        }
+      },
+      replace_content, notification_id_ns, notification_center_);
 
-  UNNotificationRequest* request =
-      [UNNotificationRequest requestWithIdentifier:notification_id_ns
-                                           content:content
-                                           trigger:nil];
-
-  [notification_center_ addNotificationRequest:request
-                         withCompletionHandler:completion_handler];
+  deliver_notification.Run(
+      content,
+      base::BindOnce(
+          [](base::WeakPtr<MacNotificationServiceUN> service,
+             const std::string& notification_id,
+             DeliverNotificationCallback deliver_notification,
+             UNMutableNotificationContent* content,
+             base::ScopedTempFile icon_file, NSError* _Nullable error) {
+            mac_notifications::LogUNNotificationAddRequestResult(error);
+            icon_file.Reset();
+            if (!service) {
+              return;
+            }
+            DCHECK_CALLED_ON_VALID_SEQUENCE(service->sequence_checker_);
+            if (!service->delivered_notifications_.contains(notification_id)) {
+              return;
+            }
+            if (IsAttachmentError(error) && content.attachments.count > 0) {
+              UNMutableNotificationContent* retry_content =
+                  [content mutableCopy];
+              [retry_content setAttachments:@[]];
+              std::move(deliver_notification)
+                  .Run(retry_content,
+                       base::BindOnce([](NSError* _Nullable retry_error) {
+                         mac_notifications::LogUNNotificationAddRequestResult(
+                             retry_error, /*is_retry_without_attachment=*/true);
+                       }));
+            }
+          },
+          weak_factory_.GetWeakPtr(), std::move(notification_id),
+          deliver_notification, content, std::move(icon_file)));
 }
 
 void MacNotificationServiceUN::GetDisplayedNotifications(
