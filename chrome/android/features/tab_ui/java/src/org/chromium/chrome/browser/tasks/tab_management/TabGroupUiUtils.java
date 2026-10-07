@@ -5,15 +5,19 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
+import android.content.Intent;
 
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.IntentHandler.BringToFrontSource;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
@@ -398,15 +402,45 @@ public class TabGroupUiUtils {
     }
 
     /**
-     * Opens a synced tab group in the current window, committing any pending closures and cleaning
-     * up stale local mappings first if the group was in a closing/hidden state.
+     * Opens the tab group in another window by bringing that window to the foreground if
+     * cross-window operations are enabled and the group exists in another active window.
      *
+     * @param context The current {@link Context}, or null if window activation is not supported.
+     * @param groupId The {@link Token} ID of the tab group.
+     * @param syncId The sync ID of the tab group.
+     * @return True if the intent to open the tab group in the other window was launched; false
+     *     otherwise.
+     */
+    private static boolean openTabGroupInOtherWindow(
+            @Nullable Context context, Token groupId, String syncId) {
+        if (!isCrossWindowTabGroupOperationsEnabled() || context == null) {
+            return false;
+        }
+        TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
+        @WindowId int windowId = windowManager.findWindowIdForTabGroup(groupId);
+        if (windowId == TabWindowManager.INVALID_WINDOW_ID) {
+            return false;
+        }
+        Intent intent =
+                IntentHandler.createTrustedBringTabGroupToFrontIntent(
+                        syncId, BringToFrontSource.ACTIVATE_TAB);
+        MultiWindowUtils.launchIntentInMaybeClosedWindow(context, intent, windowId);
+        return true;
+    }
+
+    /**
+     * Opens a synced tab group, bringing the target window to the foreground if the group exists in
+     * another window and cross-window operations are enabled. Otherwise, opens the group in the
+     * current window after committing any pending closures and cleaning up stale local mappings.
+     *
+     * @param context The current {@link Context}, or null if window activation is not supported.
      * @param tabModel The current {@link TabModel}.
      * @param syncService The {@link TabGroupSyncService}.
      * @param uiActionHandler The {@link TabGroupUiActionHandler}.
      * @param syncId The sync ID of the tab group to open.
      */
     public static void openTabGroup(
+            @Nullable Context context,
             TabModel tabModel,
             @Nullable TabGroupSyncService syncService,
             @Nullable TabGroupUiActionHandler uiActionHandler,
@@ -419,6 +453,11 @@ public class TabGroupUiUtils {
             Token groupId = savedGroup.localId.tabGroupId;
             commitClosingTabsForGroup(tabModel, groupId);
             TabModel targetModel = getTabModelForGroup(tabModel, groupId);
+            if (targetModel != tabModel && targetModel.tabGroupExists(groupId)) {
+                if (openTabGroupInOtherWindow(context, groupId, syncId)) {
+                    return;
+                }
+            }
             if (!targetModel.tabGroupExists(groupId)) {
                 savedGroup = syncService.getGroup(syncId);
                 if (savedGroup != null && savedGroup.localId != null) {
@@ -502,7 +541,7 @@ public class TabGroupUiUtils {
             commitClosingTabsForGroup(sourceTabModel, destinationGroup.localId);
         }
         String syncId = destinationGroup.syncId;
-        openTabGroup(sourceTabModel, syncService, uiActionHandler, syncId);
+        openTabGroup(/* context= */ null, sourceTabModel, syncService, uiActionHandler, syncId);
         SavedTabGroup savedGroup = syncService.getGroup(syncId);
         return (savedGroup != null && savedGroup.localId != null)
                 ? savedGroup.localId.tabGroupId

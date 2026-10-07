@@ -215,6 +215,15 @@ class TabGroupRowMediator {
     private void openGroup() {
         @GroupWindowState int state = mFetchGroupState.get();
         if (state == GroupWindowState.IN_ANOTHER) {
+            String syncId = mSavedTabGroup.syncId;
+            if (syncId != null) {
+                TabGroupUiUtils.openTabGroup(
+                        mContext,
+                        mTabModel,
+                        mTabGroupSyncService,
+                        mTabGroupUiActionHandler,
+                        syncId);
+            }
             return;
         }
 
@@ -236,7 +245,7 @@ class TabGroupRowMediator {
             assumeNonNull(syncId);
             boolean isTabGroupArchived = savedTabGroup.archivalTimeMs != null;
             TabGroupUiUtils.openTabGroup(
-                    mTabModel, mTabGroupSyncService, mTabGroupUiActionHandler, syncId);
+                    mContext, mTabModel, mTabGroupSyncService, mTabGroupUiActionHandler, syncId);
             if (isTabGroupArchived) {
                 RecordUserAction.record("TabGroups.RestoreFromTabGroupPane");
                 RecordHistogram.recordCount1000Histogram(

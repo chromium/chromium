@@ -319,6 +319,9 @@ public class TabGroupListMediator {
     }
 
     private boolean shouldShowGroupByState(@GroupWindowState int groupWindowState) {
-        return groupWindowState != GroupWindowState.IN_ANOTHER;
+        if (groupWindowState == GroupWindowState.IN_ANOTHER) {
+            return TabGroupUiUtils.isRemoteGroupOperationsEnabled();
+        }
+        return true;
     }
 }

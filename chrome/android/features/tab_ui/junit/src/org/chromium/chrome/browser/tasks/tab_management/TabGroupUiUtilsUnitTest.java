@@ -20,7 +20,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -32,15 +34,18 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Shadows;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
+import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
@@ -968,7 +973,8 @@ public class TabGroupUiUtilsUnitTest {
         savedGroup.localId = new LocalTabGroupId(closingGroupId);
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
 
-        TabGroupUiUtils.openTabGroup(mTabModel, mTabGroupSyncService, mUiActionHandler, syncId);
+        TabGroupUiUtils.openTabGroup(
+                mContext, mTabModel, mTabGroupSyncService, mUiActionHandler, syncId);
 
         InOrder inOrder = inOrder(mTabModel, mTabGroupSyncService, mUiActionHandler);
         inOrder.verify(mTabModel).commitTabClosure(111);
@@ -1377,5 +1383,118 @@ public class TabGroupUiUtilsUnitTest {
         verify(orchestrator, never())
                 .moveTabsToWindowByIdChecked(anyInt(), any(), anyInt(), anyInt(), anyBoolean());
         verify(callback, never()).onTabMoved();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testOpenTabGroup_otherWindow_opensInOtherWindow() {
+        MultiWindowTestUtils.enableMultiInstance();
+        Token groupId = Token.createRandom();
+        String syncId = "sync-other-123";
+
+        SavedTabGroup savedGroup = new SavedTabGroup();
+        savedGroup.syncId = syncId;
+        savedGroup.localId = new LocalTabGroupId(groupId);
+        when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
+
+        when(mTabModel.tabGroupExists(groupId)).thenReturn(false);
+        when(mTabModel.isIncognito()).thenReturn(false);
+
+        when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId))).thenReturn(2);
+        when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId), anyBoolean())).thenReturn(2);
+        when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mOtherSelector);
+        when(mOtherSelector.getModel(false)).thenReturn(mOtherModel);
+        when(mOtherModel.tabGroupExists(groupId)).thenReturn(true);
+
+        TabGroupUiUtils.openTabGroup(
+                mContext, mTabModel, mTabGroupSyncService, mUiActionHandler, syncId);
+
+        Intent intent =
+                Shadows.shadowOf((Application) ApplicationProvider.getApplicationContext())
+                        .getNextStartedActivity();
+        assertNotNull(intent);
+        assertEquals(
+                2,
+                intent.getIntExtra(
+                        IntentHandler.EXTRA_WINDOW_ID, TabWindowManager.INVALID_WINDOW_ID));
+        assertEquals(syncId, IntentHandler.getBringTabGroupToFrontId(intent));
+        verify(mUiActionHandler, never()).openTabGroup(any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testOpenTabGroup_otherWindow_closedWindow_fallsBackToOpen() {
+        Token groupId = Token.createRandom();
+        String syncId = "sync-closed-456";
+
+        SavedTabGroup savedGroup = new SavedTabGroup();
+        savedGroup.syncId = syncId;
+        savedGroup.localId = new LocalTabGroupId(groupId);
+        when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
+
+        when(mTabModel.tabGroupExists(groupId)).thenReturn(false);
+        when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId)))
+                .thenReturn(TabWindowManager.INVALID_WINDOW_ID);
+        when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId), anyBoolean()))
+                .thenReturn(TabWindowManager.INVALID_WINDOW_ID);
+
+        TabGroupUiUtils.openTabGroup(
+                mContext, mTabModel, mTabGroupSyncService, mUiActionHandler, syncId);
+
+        verify(mTabGroupSyncService)
+                .removeLocalTabGroupMapping(savedGroup.localId, ClosingSource.CLOSED_BY_USER);
+        verify(mUiActionHandler).openTabGroup(syncId);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testOpenTabGroup_otherWindow_nullContext_fallsBackToOpen() {
+        MultiWindowTestUtils.enableMultiInstance();
+        Token groupId = Token.createRandom();
+        String syncId = "sync-null-context";
+
+        SavedTabGroup savedGroup = new SavedTabGroup();
+        savedGroup.syncId = syncId;
+        savedGroup.localId = new LocalTabGroupId(groupId);
+        when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
+
+        when(mTabModel.tabGroupExists(groupId)).thenReturn(false);
+        when(mTabModel.isIncognito()).thenReturn(false);
+
+        when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId))).thenReturn(2);
+        when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId), anyBoolean())).thenReturn(2);
+        when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mOtherSelector);
+        when(mOtherSelector.getModel(false)).thenReturn(mOtherModel);
+        when(mOtherModel.tabGroupExists(groupId)).thenReturn(true);
+
+        TabGroupUiUtils.openTabGroup(
+                /* context= */ null, mTabModel, mTabGroupSyncService, mUiActionHandler, syncId);
+
+        verify(mUiActionHandler).openTabGroup(syncId);
+        verify(mTabGroupSyncService, never()).removeLocalTabGroupMapping(any(), anyInt());
+        assertNull(
+                Shadows.shadowOf((Application) ApplicationProvider.getApplicationContext())
+                        .getNextStartedActivity());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testOpenTabGroup_flagDisabled_fallsBackToOpen() {
+        Token groupId = Token.createRandom();
+        String syncId = "sync-disabled-789";
+
+        SavedTabGroup savedGroup = new SavedTabGroup();
+        savedGroup.syncId = syncId;
+        savedGroup.localId = new LocalTabGroupId(groupId);
+        when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
+
+        when(mTabModel.tabGroupExists(groupId)).thenReturn(false);
+
+        TabGroupUiUtils.openTabGroup(
+                mContext, mTabModel, mTabGroupSyncService, mUiActionHandler, syncId);
+
+        verify(mTabGroupSyncService)
+                .removeLocalTabGroupMapping(savedGroup.localId, ClosingSource.CLOSED_BY_USER);
+        verify(mUiActionHandler).openTabGroup(syncId);
     }
 }

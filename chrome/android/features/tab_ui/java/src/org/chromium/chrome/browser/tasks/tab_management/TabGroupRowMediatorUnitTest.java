@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -31,10 +32,13 @@ import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_M
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER2;
 import static org.chromium.components.tab_group_sync.SyncedGroupTestHelper.SYNC_GROUP_ID1;
 
+import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.view.ContextThemeWrapper;
 
 import androidx.core.util.Supplier;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -45,6 +49,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Shadows;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -53,14 +58,19 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
+import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.collaboration.CollaborationService;
@@ -311,6 +321,63 @@ public class TabGroupRowMediatorUnitTest {
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
 
         propertyModel.get(OPEN_RUNNABLE).run();
+        verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID1);
+        verifyNoInteractions(mPaneManager);
+        verifyNoInteractions(mTabSwitcherPaneBase);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testOpen_InAnother_FlagEnabled() {
+        MultiWindowTestUtils.enableMultiInstance();
+        TabWindowManager tabWindowManager = mock(TabWindowManager.class);
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
+        when(tabWindowManager.findWindowIdForTabGroup(eq(GROUP_ID1))).thenReturn(2);
+        when(tabWindowManager.findWindowIdForTabGroup(eq(GROUP_ID1), anyBoolean())).thenReturn(2);
+        TabModelSelector otherSelector = mock(TabModelSelector.class);
+        TabModel otherModel = mock(TabModel.class);
+        when(tabWindowManager.getTabModelSelectorById(2)).thenReturn(otherSelector);
+        when(otherSelector.getModel(anyBoolean())).thenReturn(otherModel);
+        when(otherModel.tabGroupExists(GROUP_ID1)).thenReturn(true);
+
+        when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_ANOTHER);
+        PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
+        when(mTabModel.getTabsInGroup(GROUP_ID1)).thenReturn(List.of());
+        when(mTabModel.tabGroupExists(GROUP_ID1)).thenReturn(false);
+
+        propertyModel.get(OPEN_RUNNABLE).run();
+        verifyNoInteractions(mPaneManager);
+        verifyNoInteractions(mTabSwitcherPaneBase);
+        verify(mTabGroupUiActionHandler, never()).openTabGroup(any());
+
+        Intent intent =
+                Shadows.shadowOf((Application) ApplicationProvider.getApplicationContext())
+                        .getNextStartedActivity();
+        assertNotNull(intent);
+        assertEquals(
+                2,
+                intent.getIntExtra(
+                        IntentHandler.EXTRA_WINDOW_ID, TabWindowManager.INVALID_WINDOW_ID));
+        assertEquals(SYNC_GROUP_ID1, IntentHandler.getBringTabGroupToFrontId(intent));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testOpen_InAnother_WindowNotFound_FallsBackToOpenLocally() {
+        TabWindowManager tabWindowManager = mock(TabWindowManager.class);
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
+        when(tabWindowManager.findWindowIdForTabGroup(eq(GROUP_ID1)))
+                .thenReturn(TabWindowManager.INVALID_WINDOW_ID);
+        when(tabWindowManager.findWindowIdForTabGroup(eq(GROUP_ID1), anyBoolean()))
+                .thenReturn(TabWindowManager.INVALID_WINDOW_ID);
+        when(mTabModel.tabGroupExists(GROUP_ID1)).thenReturn(false);
+
+        when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_ANOTHER);
+        PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
+        when(mTabModel.getTabsInGroup(GROUP_ID1)).thenReturn(List.of());
+
+        propertyModel.get(OPEN_RUNNABLE).run();
+        verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID1);
         verifyNoInteractions(mPaneManager);
         verifyNoInteractions(mTabSwitcherPaneBase);
     }
