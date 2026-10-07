@@ -30,33 +30,41 @@
 
 namespace {
 
+auto IsSectionState(bool expanded, bool show_all) {
+  return testing::Pointee(
+      organizer_panel::mojom::SectionState(expanded, show_all));
+}
+
 class FakeOrganizerPanelPage : public organizer_panel::mojom::Page {
  public:
   mojo::PendingRemote<organizer_panel::mojom::Page> BindAndPassRemote() {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
-  void OnSectionsExpandedChanged(
-      const base::flat_map<std::string, bool>& sections_expanded) override {
-    sections_expanded_ = sections_expanded;
+  void OnSectionsStateChanged(
+      base::flat_map<std::string, organizer_panel::mojom::SectionStatePtr>
+          sections_state) override {
+    sections_state_ = std::move(sections_state);
     if (quit_closure_) {
       std::move(quit_closure_).Run();
     }
   }
 
-  void WaitForSectionsExpandedChanged() {
+  void WaitForSectionsStateChanged() {
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
     run_loop.Run();
   }
 
-  const base::flat_map<std::string, bool>& sections_expanded() const {
-    return sections_expanded_;
+  const base::flat_map<std::string, organizer_panel::mojom::SectionStatePtr>&
+  sections_state() const {
+    return sections_state_;
   }
 
  private:
   mojo::Receiver<organizer_panel::mojom::Page> receiver_{this};
-  base::flat_map<std::string, bool> sections_expanded_;
+  base::flat_map<std::string, organizer_panel::mojom::SectionStatePtr>
+      sections_state_;
   base::OnceClosure quit_closure_;
 };
 
@@ -99,30 +107,38 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,
       browser()->GetTabStripModel()->GetActiveWebContents());
 
   {
-    base::test::TestFuture<bool> future;
-    handler_remote->IsSectionExpanded("open-tabs", future.GetCallback());
-    EXPECT_TRUE(future.Get());
+    base::test::TestFuture<organizer_panel::mojom::SectionStatePtr> future;
+    handler_remote->GetSectionState("open-tabs", future.GetCallback());
+    EXPECT_EQ(organizer_panel::mojom::SectionState::New(true, false),
+              future.Get());
   }
 
   handler_remote->SetSectionExpanded("open-tabs", false);
-  page.WaitForSectionsExpandedChanged();
+  page.WaitForSectionsStateChanged();
 
   const base::DictValue& sections_expanded =
       browser()->GetProfile()->GetPrefs()->GetDict(
           prefs::kOrganizerPanelSectionsExpanded);
   EXPECT_EQ(false, sections_expanded.FindBool("open-tabs"));
-  EXPECT_THAT(page.sections_expanded(),
-              testing::ElementsAre(testing::Pair("open-tabs", false)));
+  EXPECT_THAT(
+      page.sections_state(),
+      testing::ElementsAre(
+          testing::Pair("cross-device-tabs", IsSectionState(true, false)),
+          testing::Pair("open-tabs", IsSectionState(false, false)),
+          testing::Pair("recently-closed", IsSectionState(true, false)),
+          testing::Pair("tab-groups", IsSectionState(true, false))));
 
   {
-    base::test::TestFuture<bool> future;
-    handler_remote->IsSectionExpanded("open-tabs", future.GetCallback());
-    EXPECT_FALSE(future.Get());
+    base::test::TestFuture<organizer_panel::mojom::SectionStatePtr> future;
+    handler_remote->GetSectionState("open-tabs", future.GetCallback());
+    EXPECT_EQ(organizer_panel::mojom::SectionState::New(false, false),
+              future.Get());
   }
   {
-    base::test::TestFuture<bool> future;
-    handler_remote->IsSectionExpanded("tab-groups", future.GetCallback());
-    EXPECT_TRUE(future.Get());
+    base::test::TestFuture<organizer_panel::mojom::SectionStatePtr> future;
+    handler_remote->GetSectionState("tab-groups", future.GetCallback());
+    EXPECT_EQ(organizer_panel::mojom::SectionState::New(true, false),
+              future.Get());
   }
 
   {
@@ -130,10 +146,59 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,
                                 prefs::kOrganizerPanelSectionsExpanded);
     update->Set("tab-groups", false);
   }
-  page.WaitForSectionsExpandedChanged();
-  EXPECT_THAT(page.sections_expanded(),
-              testing::ElementsAre(testing::Pair("open-tabs", false),
-                                   testing::Pair("tab-groups", false)));
+  page.WaitForSectionsStateChanged();
+  EXPECT_THAT(
+      page.sections_state(),
+      testing::ElementsAre(
+          testing::Pair("cross-device-tabs", IsSectionState(true, false)),
+          testing::Pair("open-tabs", IsSectionState(false, false)),
+          testing::Pair("recently-closed", IsSectionState(true, false)),
+          testing::Pair("tab-groups", IsSectionState(false, false))));
+}
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,
+                       GetAndSetSectionShowAllUpdatesPrefAndNotifiesPage) {
+  FakeOrganizerPanelPage page;
+  mojo::Remote<organizer_panel::mojom::PageHandler> handler_remote;
+  OrganizerPanelPageHandler handler(
+      handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
+      browser()->GetTabStripModel()->GetActiveWebContents());
+
+  handler_remote->SetSectionShowAll("open-tabs", true);
+  page.WaitForSectionsStateChanged();
+
+  const base::DictValue& sections_show_all =
+      browser()->GetProfile()->GetPrefs()->GetDict(
+          prefs::kOrganizerPanelSectionsShowAll);
+  EXPECT_EQ(true, sections_show_all.FindBool("open-tabs"));
+  EXPECT_THAT(
+      page.sections_state(),
+      testing::ElementsAre(
+          testing::Pair("cross-device-tabs", IsSectionState(true, false)),
+          testing::Pair("open-tabs", IsSectionState(true, true)),
+          testing::Pair("recently-closed", IsSectionState(true, false)),
+          testing::Pair("tab-groups", IsSectionState(true, false))));
+
+  {
+    base::test::TestFuture<organizer_panel::mojom::SectionStatePtr> future;
+    handler_remote->GetSectionState("open-tabs", future.GetCallback());
+    EXPECT_EQ(organizer_panel::mojom::SectionState::New(true, true),
+              future.Get());
+  }
+
+  {
+    ScopedDictPrefUpdate update(browser()->GetProfile()->GetPrefs(),
+                                prefs::kOrganizerPanelSectionsShowAll);
+    update->Set("tab-groups", true);
+  }
+  page.WaitForSectionsStateChanged();
+  EXPECT_THAT(
+      page.sections_state(),
+      testing::ElementsAre(
+          testing::Pair("cross-device-tabs", IsSectionState(true, false)),
+          testing::Pair("open-tabs", IsSectionState(true, true)),
+          testing::Pair("recently-closed", IsSectionState(true, false)),
+          testing::Pair("tab-groups", IsSectionState(true, true))));
 }
 
 }  // namespace

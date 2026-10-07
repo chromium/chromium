@@ -26,7 +26,7 @@ export class TestSectionDelegate implements
 
   constructor(
       header: string, items: Array<OrganizerListSectionItem<unknown>> = [],
-      zeroState?: TemplateResult, id: string = 'test-section',
+      zeroState?: TemplateResult, id: string = 'open-tabs',
       alwaysShowZeroState: boolean = false) {
     this.id_ = id;
     this.header_ = header;

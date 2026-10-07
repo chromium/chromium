@@ -4,7 +4,11 @@
 
 #include "chrome/browser/ui/webui/organizer_panel/organizer_panel_page_handler.h"
 
+#include <algorithm>
+#include <array>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -19,6 +23,23 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/web_contents.h"
 
+namespace {
+
+constexpr std::array<std::string_view, 4> kSectionIds = {
+    "cross-device-tabs",
+    "open-tabs",
+    "recently-closed",
+    "tab-groups",
+};
+
+void CheckValidSectionId(std::string_view section_id) {
+  CHECK(std::ranges::contains(kSectionIds, section_id))
+      << "Unknown section ID \"" << section_id
+      << "\". Please add new section IDs to kSectionIds.";
+}
+
+}  // namespace
+
 OrganizerPanelPageHandler::OrganizerPanelPageHandler(
     mojo::PendingReceiver<organizer_panel::mojom::PageHandler> receiver,
     mojo::PendingRemote<organizer_panel::mojom::Page> page,
@@ -31,10 +52,13 @@ OrganizerPanelPageHandler::OrganizerPanelPageHandler(
   CHECK(web_contents_);
   CHECK(profile_);
   pref_change_registrar_.Init(profile_->GetPrefs());
-  pref_change_registrar_.Add(
-      prefs::kOrganizerPanelSectionsExpanded,
-      base::BindRepeating(&OrganizerPanelPageHandler::OnSectionsExpandedChanged,
-                          base::Unretained(this)));
+  auto pref_changed_callback =
+      base::BindRepeating(&OrganizerPanelPageHandler::OnSectionsStateChanged,
+                          base::Unretained(this));
+  pref_change_registrar_.Add(prefs::kOrganizerPanelSectionsExpanded,
+                             pref_changed_callback);
+  pref_change_registrar_.Add(prefs::kOrganizerPanelSectionsShowAll,
+                             pref_changed_callback);
 }
 
 OrganizerPanelPageHandler::~OrganizerPanelPageHandler() = default;
@@ -49,30 +73,54 @@ void OrganizerPanelPageHandler::ClosePanel() {
   controller->SetOrganizerVisible(false);
 }
 
-void OrganizerPanelPageHandler::IsSectionExpanded(
+void OrganizerPanelPageHandler::GetSectionState(
     const std::string& section_id,
-    IsSectionExpandedCallback callback) {
-  const base::DictValue& sections_expanded =
-      profile_->GetPrefs()->GetDict(prefs::kOrganizerPanelSectionsExpanded);
-  std::move(callback).Run(
-      sections_expanded.FindBool(section_id).value_or(true));
+    GetSectionStateCallback callback) {
+  std::move(callback).Run(GetSectionStateForId(section_id));
 }
 
 void OrganizerPanelPageHandler::SetSectionExpanded(
     const std::string& section_id,
     bool expanded) {
+  CheckValidSectionId(section_id);
   ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               prefs::kOrganizerPanelSectionsExpanded);
   update->Set(section_id, expanded);
 }
 
-void OrganizerPanelPageHandler::OnSectionsExpandedChanged() {
-  const base::DictValue& sections_expanded_pref =
-      profile_->GetPrefs()->GetDict(prefs::kOrganizerPanelSectionsExpanded);
-  base::flat_map<std::string, bool> sections_expanded;
-  for (const auto [section_id, expanded] : sections_expanded_pref) {
-    CHECK(expanded.is_bool());
-    sections_expanded[section_id] = expanded.GetBool();
+void OrganizerPanelPageHandler::SetSectionShowAll(const std::string& section_id,
+                                                  bool show_all) {
+  CheckValidSectionId(section_id);
+  ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                              prefs::kOrganizerPanelSectionsShowAll);
+  update->Set(section_id, show_all);
+}
+
+organizer_panel::mojom::SectionStatePtr
+OrganizerPanelPageHandler::GetSectionStateForId(
+    const std::string& section_id) const {
+  CheckValidSectionId(section_id);
+  PrefService* prefs = profile_->GetPrefs();
+  auto state = organizer_panel::mojom::SectionState::New();
+  if (std::optional<bool> expanded =
+          prefs->GetDict(prefs::kOrganizerPanelSectionsExpanded)
+              .FindBool(section_id)) {
+    state->expanded = *expanded;
   }
-  page_->OnSectionsExpandedChanged(std::move(sections_expanded));
+  if (std::optional<bool> show_all =
+          prefs->GetDict(prefs::kOrganizerPanelSectionsShowAll)
+              .FindBool(section_id)) {
+    state->show_all = *show_all;
+  }
+  return state;
+}
+
+void OrganizerPanelPageHandler::OnSectionsStateChanged() {
+  base::flat_map<std::string, organizer_panel::mojom::SectionStatePtr>
+      sections_state;
+  for (std::string_view section_id : kSectionIds) {
+    sections_state[std::string(section_id)] =
+        GetSectionStateForId(std::string(section_id));
+  }
+  page_->OnSectionsStateChanged(std::move(sections_state));
 }

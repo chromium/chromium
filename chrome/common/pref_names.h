@@ -1215,6 +1215,10 @@ inline constexpr char kOrganizerPanelEntrypointEnabled[] =
 // whether the section is expanded.
 inline constexpr char kOrganizerPanelSectionsExpanded[] =
     "organizer_panel.sections_expanded";
+// Dictionary mapping organizer panel section IDs to a boolean indicating
+// whether the section shows all items.
+inline constexpr char kOrganizerPanelSectionsShowAll[] =
+    "organizer_panel.sections_show_all";
 inline constexpr char kProjectsPanelEntrypointEnabled[] =
     "projects_panel.entrypoint_enabled";
 

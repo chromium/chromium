@@ -4,10 +4,16 @@
 
 module organizer_panel.mojom;
 
+// Persisted display state for an organizer panel section.
+struct SectionState {
+  bool expanded = true;
+  bool show_all = false;
+};
+
 // WebUI-side handler for general panel requests from the browser.
 interface Page {
-  // Called when the expanded state of sections changes.
-  OnSectionsExpandedChanged(map<string, bool> sections_expanded);
+  // Called when the persisted state of sections changes.
+  OnSectionsStateChanged(map<string, SectionState> sections_state);
 };
 
 // Browser-side handler for general panel requests from WebUI page.
@@ -15,11 +21,14 @@ interface PageHandler {
   // Closes the organizer panel.
   ClosePanel();
 
-  // Returns whether the section with the given ID is expanded.
-  IsSectionExpanded(string section_id) => (bool expanded);
+  // Returns the persisted state for the section with the given ID.
+  GetSectionState(string section_id) => (SectionState state);
 
   // Sets whether the section with the given ID is expanded.
   SetSectionExpanded(string section_id, bool expanded);
+
+  // Sets whether the section with the given ID shows all items.
+  SetSectionShowAll(string section_id, bool show_all);
 };
 
 // Factory interface to bootstrap communication between WebUI and browser.

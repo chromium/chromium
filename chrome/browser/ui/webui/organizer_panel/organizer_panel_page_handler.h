@@ -34,13 +34,16 @@ class OrganizerPanelPageHandler : public organizer_panel::mojom::PageHandler {
 
   // organizer_panel::mojom::PageHandler:
   void ClosePanel() override;
-  void IsSectionExpanded(const std::string& section_id,
-                         IsSectionExpandedCallback callback) override;
+  void GetSectionState(const std::string& section_id,
+                       GetSectionStateCallback callback) override;
   void SetSectionExpanded(const std::string& section_id,
                           bool expanded) override;
+  void SetSectionShowAll(const std::string& section_id, bool show_all) override;
 
  private:
-  void OnSectionsExpandedChanged();
+  organizer_panel::mojom::SectionStatePtr GetSectionStateForId(
+      const std::string& section_id) const;
+  void OnSectionsStateChanged();
 
   mojo::Receiver<organizer_panel::mojom::PageHandler> receiver_;
   mojo::Remote<organizer_panel::mojom::Page> page_;
