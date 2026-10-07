@@ -215,15 +215,6 @@ void OpenKnownPageTool::OnHistoryMatches(
 
 void OpenKnownPageTool::ValidateDestinationUrl(const GURL& url,
                                                ToolCallback callback) {
-  // TODO(b/565736899): Decide whether TTC actor tasks should generally support
-  // the NTP and, if so, configure OriginGatingChecker for TTC tasks to allow
-  // the NTP instead of bypassing ValidateUrlIsAcceptableNavigationDestination
-  // here.
-  if (IsAllowedMatchUrl(url, {UrlMatchCategory::kNewTabPage})) {
-    PostResponseTask(std::move(callback), MakeOkResult());
-    return;
-  }
-
   ValidateUrlIsAcceptableNavigationDestination(url, tool_delegate(),
                                                std::move(callback));
 }

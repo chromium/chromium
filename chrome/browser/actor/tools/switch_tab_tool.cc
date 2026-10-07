@@ -20,7 +20,6 @@
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/common/url_constants.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace actor {
@@ -99,17 +98,6 @@ void SwitchTabTool::Validate(ToolCallback callback) {
   }
 
   match_ = matches.front();
-
-  // TODO(b/565736899): Decide whether TTC actor tasks should generally support
-  // the NTP and, if so, configure OriginGatingChecker for TTC tasks to allow
-  // the NTP instead of bypassing ValidateUrlIsAcceptableNavigationDestination
-  // here.
-  // NTP URLs (chrome://newtab, etc.) were already verified by FindMatchingTabs
-  // against kNewTabPageHosts; OriginGatingChecker only accepts http(s).
-  if (match_->url.SchemeIs(content::kChromeUIScheme)) {
-    PostResponseTask(std::move(callback), MakeOkResult());
-    return;
-  }
 
   ValidateUrlIsAcceptableNavigationDestination(match_->url, tool_delegate(),
                                                std::move(callback));

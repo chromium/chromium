@@ -178,12 +178,24 @@ class ExecutionEngine : public ToolDelegate,
       base::RepeatingCallback<std::unique_ptr<ExecutionEngine>(ActorTask&)>;
   static FactoryFunction& GetFactoryFunctionForTesting();
 
-  static std::unique_ptr<ExecutionEngine> Create(ActorTask& owner_task);
+  // Defines the allowed navigation schemes / origin gating policy.
+  enum class AllowedSchemes {
+    kRequireHttpsOrHttp,
+    kRequireHttpsOrHttpOrNtp,
+  };
+
+  static std::unique_ptr<ExecutionEngine> Create(
+      ActorTask& owner_task,
+      AllowedSchemes allowed_schemes = AllowedSchemes::kRequireHttpsOrHttp);
 
   // Constructor public for std::make_unique but only usable via static Create
   // method.
-  explicit ExecutionEngine(base::PassKey<ExecutionEngine>,
-                           ActorTask& owner_task);
+  explicit ExecutionEngine(
+      base::PassKey<ExecutionEngine>,
+      ActorTask& owner_task,
+      AllowedSchemes allowed_schemes = AllowedSchemes::kRequireHttpsOrHttp);
+
+  AllowedSchemes allowed_schemes() const { return allowed_schemes_; }
 
   ExecutionEngine(const ExecutionEngine&) = delete;
   ExecutionEngine& operator=(const ExecutionEngine&) = delete;
@@ -346,7 +358,9 @@ class ExecutionEngine : public ToolDelegate,
 
  protected:
   // Allow derived classes to use the natural constructors.
-  explicit ExecutionEngine(ActorTask& owner_task);
+  explicit ExecutionEngine(
+      ActorTask& owner_task,
+      AllowedSchemes allowed_schemes = AllowedSchemes::kRequireHttpsOrHttp);
 
  private:
   class NewTabWebContentsObserver;
@@ -466,6 +480,9 @@ class ExecutionEngine : public ToolDelegate,
 
   // Owns `this`.
   const base::raw_ref<ActorTask> task_;
+
+  // Allowed navigation schemes / origin gating policy.
+  const AllowedSchemes allowed_schemes_ = AllowedSchemes::kRequireHttpsOrHttp;
 
   base::SafeRef<AggregatedJournal> journal_;
 

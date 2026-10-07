@@ -444,7 +444,9 @@ void ToolController::EnsureTaskCreated(
   task_id_ = actor_service->CreateTaskWithOptions(
       actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kTtc, "ttc"),
       actor::GetNullEnterprisePolicyChecker(), /*options=*/nullptr,
-      /*delegate=*/nullptr, &ttc_service->actor_ui_state_manager());
+      /*delegate=*/nullptr, &ttc_service->actor_ui_state_manager(),
+      /*initial_invocation_source=*/std::nullopt,
+      actor::ActorKeyedService::AllowedSchemes::kRequireHttpsOrHttpOrNtp);
 
   // The session keeps a single journal so that its async events stay
   // continuous if the task is replaced.

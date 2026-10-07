@@ -149,7 +149,8 @@ ActorTask::ActorTask(
     const TaskSourceInfo& source_info,
     const EnterprisePolicyChecker* policy_checker,
     base::WeakPtr<ActorTaskDelegate> delegate,
-    std::optional<glic::mojom::InvocationSource> initial_invocation_source)
+    std::optional<glic::mojom::InvocationSource> initial_invocation_source,
+    AllowedSchemes allowed_schemes)
     : service_(service),
       id_(id),
       source_info_(source_info),
@@ -173,7 +174,7 @@ ActorTask::ActorTask(
       ui_weak_ptr_factory_(ui_event_dispatcher_.get()) {
   CHECK(policy_checker);
   CHECK(!id_.is_null());
-  execution_engine_ = ExecutionEngine::Create(*this);
+  execution_engine_ = ExecutionEngine::Create(*this, allowed_schemes);
 }
 
 ActorTask::~ActorTask() {
@@ -191,11 +192,12 @@ std::unique_ptr<ActorTask> ActorTask::CreateForTesting(
     const TaskSourceInfo& source_info,
     const EnterprisePolicyChecker* policy_checker,
     base::WeakPtr<ActorTaskDelegate> delegate,
-    std::optional<glic::mojom::InvocationSource> initial_invocation_source) {
+    std::optional<glic::mojom::InvocationSource> initial_invocation_source,
+    AllowedSchemes allowed_schemes) {
   return std::make_unique<ActorTask>(
       base::PassKey<ActorTask>(), service, id, std::move(ui_event_dispatcher),
       std::move(options), source_info, policy_checker, std::move(delegate),
-      initial_invocation_source);
+      initial_invocation_source, allowed_schemes);
 }
 
 ExecutionEngine& ActorTask::GetExecutionEngine() const {

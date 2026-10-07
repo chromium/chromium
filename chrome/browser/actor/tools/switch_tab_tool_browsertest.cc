@@ -5,11 +5,13 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/switch_tab_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
@@ -220,6 +222,38 @@ IN_PROC_BROWSER_TEST_F(ActorSwitchTabToolBrowserTest,
   ExpectErrorResult(result, mojom::ActionResultCode::kUrlBlocked);
 
   EXPECT_EQ(browser()->GetTabStripModel()->active_index(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorSwitchTabToolBrowserTest,
+                       SwitchTabTool_NewTabPageAllowed) {
+  // Create a task configured with kRequireHttpsOrHttpOrNtp so that NTP
+  // navigation is permitted by origin gating.
+  task_id_ =
+      ActorKeyedService::Get(browser()->GetProfile())
+          ->CreateTask(
+              TaskSourceInfo(TaskSourceInfo::Client::kTtc, "ttc"),
+              NoEnterprisePolicyChecker(),
+              ActorKeyedService::AllowedSchemes::kRequireHttpsOrHttpOrNtp);
+
+  const GURL ntp_url("chrome://newtab/");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), ntp_url));
+
+  const GURL active_url =
+      embedded_https_test_server().GetURL("example.com", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), active_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_EQ(browser()->GetTabStripModel()->active_index(), 1);
+
+  std::unique_ptr<ToolRequest> action =
+      std::make_unique<SwitchTabToolRequest>("newtab");
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_EQ(browser()->GetTabStripModel()->active_index(), 0);
+  EXPECT_EQ(browser()->GetTabStripModel()->GetActiveWebContents()->GetURL(),
+            ntp_url);
 }
 
 }  // namespace

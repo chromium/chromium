@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/execution_engine.h"
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <memory>
 #include <optional>
@@ -57,6 +58,7 @@
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/actor_metrics.h"
 #include "components/actor/core/actor_switches.h"
@@ -85,6 +87,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/url_constants.h"
 #include "net/base/schemeful_site.h"
 #include "net/http/http_response_headers.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -127,6 +130,7 @@ enum class ActorCustomPredicate {
   kTabErrorDocument,
   kTabSafeBrowsingObserver,
   kDangerousMimeType,
+  kRequireHttpsOrHttpOrNtp,
 };
 
 }  // namespace actor
@@ -157,6 +161,8 @@ constexpr std::string_view ActorCustomPredicateToString(
       return "actor_tab_safe_browsing_observer_check";
     case ActorCustomPredicate::kDangerousMimeType:
       return "actor_dangerous_mime_type_check";
+    case ActorCustomPredicate::kRequireHttpsOrHttpOrNtp:
+      return "actor_require_https_or_http_or_ntp";
   }
   NOTREACHED();
 }
@@ -264,6 +270,25 @@ origin_gating::Decision BlockTabErrorDocument(
     return origin_gating::Decision::kBlocked;
   }
   return origin_gating::Decision::kNoDecision;
+}
+
+constexpr auto kNewTabPageHosts = std::to_array<std::string_view>(
+    {chrome::kChromeUINewTabHost, chrome::kChromeUINewTabPageHost,
+     chrome::kChromeUINewTabPageThirdPartyHost});
+
+// Allow HTTP/HTTPS schemes, as well as NTP hosts under the chrome:// scheme.
+origin_gating::Decision RequireHttpsOrHttpOrNtp(
+    origin_gating::GatingDecisionContext* context,
+    const GateableEvent& event) {
+  const GURL& destination = event.destination();
+  if (destination.SchemeIsHTTPOrHTTPS()) {
+    return origin_gating::Decision::kNoDecision;
+  }
+  if (destination.SchemeIs(content::kChromeUIScheme) &&
+      std::ranges::contains(kNewTabPageHosts, destination.host())) {
+    return origin_gating::Decision::kNoDecision;
+  }
+  return origin_gating::Decision::kBlocked;
 }
 
 // Blocks acting on a tab that has a pending SafeBrowsing delayed warning. The
@@ -596,6 +621,11 @@ ExecutionEngine::GatingDecision MapGatingDecisionToEngineDecision(
         case ActorCustomPredicate::kTabSafeBrowsingObserver:
           return ExecutionEngine::GatingDecision::
               kBlockByTabSafeBrowsingObserver;
+        case ActorCustomPredicate::kRequireHttpsOrHttpOrNtp:
+          // Unreachable because `MapGatingDecisionToEngineDecision` is only
+          // called for navigation response events, while
+          // `kRequireHttpsOrHttpOrNtp` only gates navigation requests.
+          NOTREACHED();
       }
       NOTREACHED();
   }
@@ -652,6 +682,10 @@ MayActOnUrlBlockReason MapGatingDecisionToBlockReason(
           return MayActOnUrlBlockReason::kTabIsErrorDocument;
         case ActorCustomPredicate::kTabSafeBrowsingObserver:
           return MayActOnUrlBlockReason::kSafeBrowsing;
+        case ActorCustomPredicate::kRequireHttpsOrHttpOrNtp:
+          return ProfileIOData::IsHandledURL(url)
+                     ? MayActOnUrlBlockReason::kWrongScheme
+                     : MayActOnUrlBlockReason::kExternalProtocol;
         case ActorCustomPredicate::kSafetyChecksDisabled:
           // Unreachable since this predicate allows the event, but
           // `decision.is_allowed` is false.
@@ -731,13 +765,93 @@ ExecutionEngine::GetFactoryFunctionForTesting() {
   return *callback;
 }
 
+std::vector<origin_gating::PredicateConfiguration> CreateOriginGatingPredicates(
+    ActorTask& task,
+    ExecutionEngine::AllowedSchemes allowed_schemes) {
+  std::vector<origin_gating::PredicateConfiguration> predicates({
+      {CustomPredicate(base::BindRepeating(&BlockTabErrorDocument),
+                       ActorCustomPredicate::kTabErrorDocument),
+       {GateableEvent::kPageAction}},
+      {CustomPredicate(
+           base::BindRepeating(&BlockSafeBrowsingWarningIfSafetyChecksEnabled),
+           ActorCustomPredicate::kTabSafeBrowsingObserver),
+       {GateableEvent::kPageAction}},
+      // If localhost should be treated as sensitive, only
+      // auto-allow for navigation requests.
+      {DecisionSource::kAllowHttpLocalhost,
+       base::FeatureList::IsEnabled(kGlicActorLocalhostIsSensitive)
+           ? GateableEventSet{GateableEvent::kNavigationRequest}
+           : kRequestsAndPageActions},
+      {DecisionSource::kAllowAboutBlank, kRequestsAndPageActions},
+  });
+
+  if (allowed_schemes ==
+      ExecutionEngine::AllowedSchemes::kRequireHttpsOrHttpOrNtp) {
+    predicates.push_back(
+        {CustomPredicate(base::BindRepeating(&RequireHttpsOrHttpOrNtp),
+                         ActorCustomPredicate::kRequireHttpsOrHttpOrNtp),
+         {GateableEvent::kNavigationRequest}});
+  } else {
+    // Allow insecure HTTP for navigation requests, as in
+    // practice sites may have HTTP links that will get upgraded.
+    // Rejecting HTTP URLs before this can happen would be too
+    // serious of an impediment.
+    predicates.push_back({DecisionSource::kRequireHttpsOrHttp,
+                          {GateableEvent::kNavigationRequest}});
+  }
+
+  predicates.append_range(std::initializer_list<
+                          origin_gating::PredicateConfiguration>{
+      {DecisionSource::kRequireHttpsOrLocalhost, {GateableEvent::kPageAction}},
+      {DecisionSource::kForbidNonLocalhostIpAddress, kRequestsAndPageActions},
+      {CustomPredicate(base::BindRepeating(&AllowIfSafetyChecksDisabled),
+                       ActorCustomPredicate::kSafetyChecksDisabled),
+       origin_gating::GateableEventSet::All()},
+      {CustomPredicate(
+           base::BindRepeating(&BlockIfSafeBrowsingDisabled, task.GetProfile()),
+           ActorCustomPredicate::kSafeBrowsing),
+       kRequestsAndPageActions},
+      {CustomPredicate(base::BindRepeating(&BlockDangerousMimeType),
+                       ActorCustomPredicate::kDangerousMimeType),
+       {GateableEvent::kNavigationResponse}},
+      {DecisionSource::kEnterprisePolicy,
+       {GateableEvent::kNavigationResponse, GateableEvent::kPageAction}},
+      {CustomPredicate(
+           base::BindRepeating(&BlockLookalikeUrl, task.GetProfile()),
+           ActorCustomPredicate::kLookalikeUrl),
+       kRequestsAndPageActions},
+      {DecisionSource::kBlockByTaskPolicyConfig,
+       {GateableEvent::kNavigationResponse, GateableEvent::kPageAction}},
+      {CreateSafetyListPredicate(),
+       {GateableEvent::kNavigationResponse, GateableEvent::kPageAction}},
+      {DecisionSource::kCacheWithUserConfirmation, GateableEventSet::All()},
+      {DecisionSource::kAllowSameOrigin, {GateableEvent::kNavigationResponse}},
+      {CustomPredicate(
+           base::BindRepeating(&BlockSensitiveUrlWhenNavigationGatingDisabled,
+                               task.GetProfile()),
+           ActorCustomPredicate::kSensitiveUrl),
+       {GateableEvent::kNavigationRequest}},
+      {DecisionSource::kAllowByTaskPolicyConfig,
+       {GateableEvent::kNavigationResponse, GateableEvent::kPageAction}},
+      {DecisionSource::kCacheWithoutUserConfirmation,
+       {GateableEvent::kNavigationResponse}},
+  });
+
+  return predicates;
+}
+
 // Protected constructor without pass key to allow subclassing.
-ExecutionEngine::ExecutionEngine(ActorTask& owner_task)
-    : ExecutionEngine(base::PassKey<ExecutionEngine>(), owner_task) {}
+ExecutionEngine::ExecutionEngine(ActorTask& owner_task,
+                                 AllowedSchemes allowed_schemes)
+    : ExecutionEngine(base::PassKey<ExecutionEngine>(),
+                      owner_task,
+                      allowed_schemes) {}
 
 ExecutionEngine::ExecutionEngine(base::PassKey<ExecutionEngine>,
-                                 ActorTask& owner_task)
+                                 ActorTask& owner_task,
+                                 AllowedSchemes allowed_schemes)
     : task_(owner_task),
+      allowed_schemes_(allowed_schemes),
       journal_(task_->actor_keyed_service().GetJournal().GetSafeRef()),
       tool_controller_(std::make_unique<ToolController>(*task_, *this)),
       actor_login_service_(
@@ -757,85 +871,20 @@ ExecutionEngine::ExecutionEngine(base::PassKey<ExecutionEngine>,
       GetOriginGatingService().CreateAndRegisterChecker(
           weak_ptr_factory_.GetWeakPtr(),
           origin_gating::OriginGatingConfiguration(
-              {
-                  {CustomPredicate(base::BindRepeating(&BlockTabErrorDocument),
-                                   ActorCustomPredicate::kTabErrorDocument),
-                   {GateableEvent::kPageAction}},
-                  {CustomPredicate(
-                       base::BindRepeating(
-                           &BlockSafeBrowsingWarningIfSafetyChecksEnabled),
-                       ActorCustomPredicate::kTabSafeBrowsingObserver),
-                   {GateableEvent::kPageAction}},
-                  // If localhost should be treated as sensitive, only
-                  // auto-allow for navigation requests.
-                  {DecisionSource::kAllowHttpLocalhost,
-                   base::FeatureList::IsEnabled(kGlicActorLocalhostIsSensitive)
-                       ? GateableEventSet{GateableEvent::kNavigationRequest}
-                       : kRequestsAndPageActions},
-                  {DecisionSource::kAllowAboutBlank, kRequestsAndPageActions},
-                  // Allow insecure HTTP for navigation requests, as in
-                  // practice sites may have HTTP links that will get upgraded.
-                  // Rejecting HTTP URLs before this can happen would be too
-                  // serious of an impediment.
-                  {DecisionSource::kRequireHttpsOrHttp,
-                   {GateableEvent::kNavigationRequest}},
-                  {DecisionSource::kRequireHttpsOrLocalhost,
-                   {GateableEvent::kPageAction}},
-                  {DecisionSource::kForbidNonLocalhostIpAddress,
-                   kRequestsAndPageActions},
-                  {CustomPredicate(
-                       base::BindRepeating(&AllowIfSafetyChecksDisabled),
-                       ActorCustomPredicate::kSafetyChecksDisabled),
-                   origin_gating::GateableEventSet::All()},
-                  {CustomPredicate(
-                       base::BindRepeating(&BlockIfSafeBrowsingDisabled,
-                                           task_->GetProfile()),
-                       ActorCustomPredicate::kSafeBrowsing),
-                   kRequestsAndPageActions},
-                  {CustomPredicate(base::BindRepeating(&BlockDangerousMimeType),
-                                   ActorCustomPredicate::kDangerousMimeType),
-                   {GateableEvent::kNavigationResponse}},
-                  {DecisionSource::kEnterprisePolicy,
-                   {GateableEvent::kNavigationResponse,
-                    GateableEvent::kPageAction}},
-                  {CustomPredicate(base::BindRepeating(&BlockLookalikeUrl,
-                                                       task_->GetProfile()),
-                                   ActorCustomPredicate::kLookalikeUrl),
-                   kRequestsAndPageActions},
-                  {DecisionSource::kBlockByTaskPolicyConfig,
-                   {GateableEvent::kNavigationResponse,
-                    GateableEvent::kPageAction}},
-                  {CreateSafetyListPredicate(),
-                   {GateableEvent::kNavigationResponse,
-                    GateableEvent::kPageAction}},
-                  {DecisionSource::kCacheWithUserConfirmation,
-                   GateableEventSet::All()},
-                  {DecisionSource::kAllowSameOrigin,
-                   {GateableEvent::kNavigationResponse}},
-                  {CustomPredicate(
-                       base::BindRepeating(
-                           &BlockSensitiveUrlWhenNavigationGatingDisabled,
-                           task_->GetProfile()),
-                       ActorCustomPredicate::kSensitiveUrl),
-                   {GateableEvent::kNavigationRequest}},
-                  {DecisionSource::kAllowByTaskPolicyConfig,
-                   {GateableEvent::kNavigationResponse,
-                    GateableEvent::kPageAction}},
-                  {DecisionSource::kCacheWithoutUserConfirmation,
-                   {GateableEvent::kNavigationResponse}},
-              },
+              CreateOriginGatingPredicates(*task_, allowed_schemes_),
               kGlicNavigationGatingUseSiteNotOrigin.Get()));
 }
 
 // static
 std::unique_ptr<ExecutionEngine> ExecutionEngine::Create(
-    ActorTask& owner_task) {
+    ActorTask& owner_task,
+    AllowedSchemes allowed_schemes) {
   if (!GetFactoryFunctionForTesting().is_null()) {
     return GetFactoryFunctionForTesting().Run(owner_task);
   }
 
   return std::make_unique<ExecutionEngine>(base::PassKey<ExecutionEngine>(),
-                                           owner_task);
+                                           owner_task, allowed_schemes);
 }
 
 ExecutionEngine::~ExecutionEngine() {

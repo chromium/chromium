@@ -478,10 +478,12 @@ void ActorKeyedService::ResetForTesting() {
 
 TaskId ActorKeyedService::CreateTask(
     const TaskSourceInfo& source_info,
-    const EnterprisePolicyChecker* policy_checker) {
-  return CreateTaskWithOptions(source_info, policy_checker, /*options=*/nullptr,
-                               /*delegate=*/nullptr,
-                               actor_ui_state_manager_.get());
+    const EnterprisePolicyChecker* policy_checker,
+    AllowedSchemes allowed_schemes) {
+  return CreateTaskWithOptions(
+      source_info, policy_checker, /*options=*/nullptr,
+      /*delegate=*/nullptr, actor_ui_state_manager_.get(),
+      /*initial_invocation_source=*/std::nullopt, allowed_schemes);
 }
 
 TaskId ActorKeyedService::CreateTaskWithOptions(
@@ -490,11 +492,13 @@ TaskId ActorKeyedService::CreateTaskWithOptions(
     webui::mojom::TaskOptionsPtr options,
     base::WeakPtr<ActorTaskDelegate> delegate,
     actor::ui::ActorUiStateManagerInterface* ui_state_manager,
-    std::optional<glic::mojom::InvocationSource> initial_invocation_source) {
+    std::optional<glic::mojom::InvocationSource> initial_invocation_source,
+    AllowedSchemes allowed_schemes) {
   CHECK(ui_state_manager);
   return CreateTaskImpl(ui::NewUiEventDispatcher(ui_state_manager), source_info,
                         policy_checker, std::move(options), std::move(delegate),
-                        ui_state_manager, initial_invocation_source);
+                        ui_state_manager, initial_invocation_source,
+                        allowed_schemes);
 }
 
 TaskId ActorKeyedService::CreateTaskForTesting(
@@ -503,11 +507,12 @@ TaskId ActorKeyedService::CreateTaskForTesting(
     const EnterprisePolicyChecker* policy_checker,
     webui::mojom::TaskOptionsPtr options,
     base::WeakPtr<ActorTaskDelegate> delegate,
-    std::optional<glic::mojom::InvocationSource> initial_invocation_source) {
+    std::optional<glic::mojom::InvocationSource> initial_invocation_source,
+    AllowedSchemes allowed_schemes) {
   return CreateTaskImpl(std::move(ui_event_dispatcher), source_info,
                         policy_checker, std::move(options), std::move(delegate),
                         actor_ui_state_manager_.get(),
-                        initial_invocation_source);
+                        initial_invocation_source, allowed_schemes);
 }
 
 TaskId ActorKeyedService::CreateTaskImpl(
@@ -517,7 +522,8 @@ TaskId ActorKeyedService::CreateTaskImpl(
     webui::mojom::TaskOptionsPtr options,
     base::WeakPtr<ActorTaskDelegate> delegate,
     actor::ui::ActorUiStateManagerInterface* ui_state_manager,
-    std::optional<glic::mojom::InvocationSource> initial_invocation_source) {
+    std::optional<glic::mojom::InvocationSource> initial_invocation_source,
+    AllowedSchemes allowed_schemes) {
   TRACE_EVENT0("actor", "ActorKeyedService::CreateTask");
   GetJournal().Log(GURL(), TaskId(), "ActorKeyedService::CreateTask", {});
 
@@ -531,7 +537,8 @@ TaskId ActorKeyedService::CreateTaskImpl(
   auto actor_task = std::make_unique<ActorTask>(
       base::PassKey<ActorKeyedService>(), *this, task_id,
       std::move(ui_event_dispatcher), std::move(options), source_info,
-      policy_checker, std::move(delegate), initial_invocation_source);
+      policy_checker, std::move(delegate), initial_invocation_source,
+      allowed_schemes);
 
   if (initial_tab_handle != tabs::TabHandle::Null()) {
     actor_task->AddTab(initial_tab_handle, /*stop_task_on_detach=*/true,

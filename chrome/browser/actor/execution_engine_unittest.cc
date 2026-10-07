@@ -1223,7 +1223,9 @@ class ExecutionEngineUrlGatingTest : public ChromeRenderViewHostTestHarness {
   // Lazily creates a real ActorTask/ExecutionEngine and returns its engine, so
   // that IsAcceptableNavigationDestination tests can exercise the
   // OriginGatingChecker-backed path.
-  ExecutionEngine& GetExecutionEngine() {
+  ExecutionEngine& GetExecutionEngine(
+      ExecutionEngine::AllowedSchemes allowed_schemes =
+          ExecutionEngine::AllowedSchemes::kRequireHttpsOrHttp) {
     if (!task_) {
       std::unique_ptr<ui::UiEventDispatcher> task_dispatcher =
           ui::NewMockUiEventDispatcher();
@@ -1246,7 +1248,8 @@ class ExecutionEngineUrlGatingTest : public ChromeRenderViewHostTestHarness {
           *ActorKeyedService::Get(profile()), TaskId(1),
           std::move(task_dispatcher),
           /*options=*/nullptr, TestTaskSourceInfo(), &task_policy_checker_,
-          mock_actor_task_delegate_.GetWeakPtr());
+          mock_actor_task_delegate_.GetWeakPtr(),
+          /*initial_invocation_source=*/std::nullopt, allowed_schemes);
     }
     return task_->GetExecutionEngine();
   }
@@ -1483,6 +1486,30 @@ TEST_F(ExecutionEngineUrlGatingTest,
   // Not allowed by the cache, but the policy fails open (without consulting
   // the sensitive sites list).
   EXPECT_EQ(allowed.Get(), MayActOnUrlBlockReason::kAllowed);
+}
+
+TEST_F(ExecutionEngineUrlGatingTest,
+       IsAcceptableNavigationDestination_DefaultRejectsNewTabPage) {
+  base::test::TestFuture<MayActOnUrlBlockReason> allowed;
+  GetExecutionEngine().IsAcceptableNavigationDestination(
+      GURL("chrome://newtab/"), allowed.GetCallback());
+  EXPECT_EQ(allowed.Get(), MayActOnUrlBlockReason::kWrongScheme);
+}
+
+TEST_F(ExecutionEngineUrlGatingTest,
+       IsAcceptableNavigationDestination_TtcAllowsNewTabPage) {
+  base::test::TestFuture<MayActOnUrlBlockReason> allowed_ntp;
+  GetExecutionEngine(ExecutionEngine::AllowedSchemes::kRequireHttpsOrHttpOrNtp)
+      .IsAcceptableNavigationDestination(GURL("chrome://newtab/"),
+                                         allowed_ntp.GetCallback());
+  EXPECT_EQ(allowed_ntp.Get(), MayActOnUrlBlockReason::kAllowed);
+
+  // Still rejects non-NTP chrome:// URLs.
+  base::test::TestFuture<MayActOnUrlBlockReason> allowed_settings;
+  GetExecutionEngine(ExecutionEngine::AllowedSchemes::kRequireHttpsOrHttpOrNtp)
+      .IsAcceptableNavigationDestination(GURL("chrome://settings/"),
+                                         allowed_settings.GetCallback());
+  EXPECT_EQ(allowed_settings.Get(), MayActOnUrlBlockReason::kWrongScheme);
 }
 
 TEST_F(ExecutionEngineUrlGatingTest, SafetyChecksForNextAction_AllowedByCache) {

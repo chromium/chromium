@@ -7,6 +7,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/open_known_page_tool_request.h"
@@ -318,6 +319,15 @@ IN_PROC_BROWSER_TEST_F(ActorOpenKnownPageToolBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ActorOpenKnownPageToolBrowserTest,
                        OpenKnownPageTool_NewTabPageAllowed) {
+  // Create a task configured with kRequireHttpsOrHttpOrNtp so that NTP
+  // navigation is permitted by origin gating.
+  task_id_ =
+      ActorKeyedService::Get(browser()->GetProfile())
+          ->CreateTask(
+              TaskSourceInfo(TaskSourceInfo::Client::kTtc, "ttc"),
+              NoEnterprisePolicyChecker(),
+              ActorKeyedService::AllowedSchemes::kRequireHttpsOrHttpOrNtp);
+
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/title1.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));

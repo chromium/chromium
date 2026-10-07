@@ -85,12 +85,16 @@ class ActorKeyedService : public KeyedService,
   // Stop and clear all active tasks for testing only.
   void ResetForTesting();
 
+  using AllowedSchemes = ActorTask::AllowedSchemes;
+
   // Starts a new task with an execution engine and returns the new task's id.
   // `options`, when provided, contains information used to initialize the task.
   // The provided `policy_checker` and `ui_state_manager` must be non-null and
   // must outlive the ActorTask.
-  TaskId CreateTask(const TaskSourceInfo& source_info,
-                    const EnterprisePolicyChecker* policy_checker);
+  TaskId CreateTask(
+      const TaskSourceInfo& source_info,
+      const EnterprisePolicyChecker* policy_checker,
+      AllowedSchemes allowed_schemes = AllowedSchemes::kRequireHttpsOrHttp);
   TaskId CreateTaskWithOptions(
       const TaskSourceInfo& source_info,
       const EnterprisePolicyChecker* policy_checker,
@@ -98,7 +102,8 @@ class ActorKeyedService : public KeyedService,
       base::WeakPtr<ActorTaskDelegate> delegate,
       actor::ui::ActorUiStateManagerInterface* ui_state_manager,
       std::optional<glic::mojom::InvocationSource> initial_invocation_source =
-          std::nullopt);
+          std::nullopt,
+      AllowedSchemes allowed_schemes = AllowedSchemes::kRequireHttpsOrHttp);
   TaskId CreateTaskForTesting(
       std::unique_ptr<actor::ui::UiEventDispatcher> ui_event_dispatcher,
       const TaskSourceInfo& source_info,
@@ -106,7 +111,8 @@ class ActorKeyedService : public KeyedService,
       webui::mojom::TaskOptionsPtr options,
       base::WeakPtr<ActorTaskDelegate> delegate,
       std::optional<glic::mojom::InvocationSource> initial_invocation_source =
-          std::nullopt);
+          std::nullopt,
+      AllowedSchemes allowed_schemes = AllowedSchemes::kRequireHttpsOrHttp);
 
   // Executes the given ToolRequest actions using the execution engine for the
   // given task id.
@@ -295,7 +301,8 @@ class ActorKeyedService : public KeyedService,
       webui::mojom::TaskOptionsPtr options,
       base::WeakPtr<ActorTaskDelegate> delegate,
       actor::ui::ActorUiStateManagerInterface* ui_state_manager,
-      std::optional<glic::mojom::InvocationSource> initial_invocation_source);
+      std::optional<glic::mojom::InvocationSource> initial_invocation_source,
+      AllowedSchemes allowed_schemes);
 
   // The callback used for ExecutorEngine::Act.
   void OnActionsFinished(
