@@ -12,7 +12,6 @@
 #include "content/public/common/content_switches.h"
 #include "mojo/core/embedder/configuration.h"
 #include "mojo/core/embedder/embedder.h"
-#include "mojo/core/embedder/features.h"
 #include "mojo/public/c/system/functions.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/base/shared_memory_utils.h"
@@ -44,14 +43,11 @@ void InitializeMojoCore() {
     if (!config.is_broker_process)
       config.force_direct_shared_memory_allocation = true;
   } else {
-#if BUILDFLAG(IS_WIN)
-    // On Windows it's not necessary to broker shared memory allocation, as
-    // even sandboxed processes can allocate their own without trouble.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)
+    // On Windows, Android and Apple platforms it is not necessary to broker
+    // shared memory allocation. Sandboxed processes are allowed to allocate
+    // shared memory directly.
     config.force_direct_shared_memory_allocation = true;
-#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)
-    // Brokering is not necessary on these platforms too.
-    config.force_direct_shared_memory_allocation = base::FeatureList::IsEnabled(
-        mojo::core::kMojoDirectSharedMemoryAllocation);
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
