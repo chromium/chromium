@@ -20,6 +20,7 @@ enum class DictationToggleSource;
 class PointerMetricsRecorder;
 class TouchUsageMetricsRecorder;
 class StylusMetricsRecorder;
+class WindowPresentationMetricsRecorder;
 class WMFeatureMetricsRecorder;
 
 // User Metrics Recorder provides a repeating callback (RecordPeriodicMetrics)
@@ -110,6 +111,10 @@ class ASH_EXPORT UserMetricsRecorder {
 
   // Metrics recorder to track window management related usage.
   std::unique_ptr<WMFeatureMetricsRecorder> wm_feature_metrics_recorder_;
+
+  // Metric recorder to track how long new app windows take to present.
+  std::unique_ptr<WindowPresentationMetricsRecorder>
+      window_presentation_metrics_recorder_;
 };
 
 }  // namespace ash

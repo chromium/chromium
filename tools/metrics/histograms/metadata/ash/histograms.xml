@@ -8575,6 +8575,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Window.InitToFirstPresentation.{AppType}" units="ms"
+    expires_after="M165">
+  <owner>achuith@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    Time from the aura::Window initialization of a new {AppType} window to the
+    first successfully presented frame after the window is first shown. For
+    browser windows this includes building the browser UI. Recorded once per
+    window, and only if the window is on screen when first shown (e.g. not on an
+    inactive desk).
+  </summary>
+  <token key="AppType">
+    <variant name="ArcApp" summary="ARC app"/>
+    <variant name="Browser" summary="browser"/>
+    <variant name="ChromeApp" summary="Chrome app"/>
+    <variant name="CrostiniApp" summary="Crostini app"/>
+    <variant name="SystemApp" summary="system web app"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.Window.PartialSplitDuration" units="minutes"
     expires_after="2027-05-21">
   <owner>xdai@chromium.org</owner>

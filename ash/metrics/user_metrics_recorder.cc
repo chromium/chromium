@@ -15,6 +15,7 @@
 #include "ash/metrics/pointer_metrics_recorder.h"
 #include "ash/metrics/stylus_metrics_recorder.h"
 #include "ash/metrics/touch_usage_metrics_recorder.h"
+#include "ash/metrics/window_presentation_metrics_recorder.h"
 #include "ash/metrics/wm_feature_metrics_recorder.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/shelf_item.h"
@@ -115,6 +116,8 @@ void UserMetricsRecorder::OnShellInitialized() {
   pointer_metrics_recorder_ = std::make_unique<PointerMetricsRecorder>();
   touch_usage_metrics_recorder_ = std::make_unique<TouchUsageMetricsRecorder>();
   stylus_metrics_recorder_ = std::make_unique<StylusMetricsRecorder>();
+  window_presentation_metrics_recorder_ =
+      std::make_unique<WindowPresentationMetricsRecorder>();
 }
 
 void UserMetricsRecorder::OnShellShuttingDown() {
@@ -134,6 +137,8 @@ void UserMetricsRecorder::OnShellShuttingDown() {
   touch_usage_metrics_recorder_.reset();
   stylus_metrics_recorder_.reset();
   wm_feature_metrics_recorder_.reset();
+  // Stop observing windows before they're torn down with the shell.
+  window_presentation_metrics_recorder_.reset();
 }
 
 void UserMetricsRecorder::RecordPeriodicMetrics() {
