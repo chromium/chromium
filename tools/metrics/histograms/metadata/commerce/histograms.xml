@@ -923,12 +923,15 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.PageInfo.IsStoreInfoVisible"
-    enum="BooleanVisible" expires_after="2026-06-28">
+    enum="BooleanVisible" expires_after="2027-10-07">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records whether the store info row is visible in page info. Recorded when
     the page info is opened. Implemented for Android.
+
+    Warning: this histogram was expired from 2026-06-28 to 2026-10-07; data may
+    be missing.
   </summary>
 </histogram>
 
