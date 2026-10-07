@@ -1021,11 +1021,6 @@ BASE_FEATURE(kImeDownloaderExperiment, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enable or disable proto-based communication for IME Service.
 BASE_FEATURE(kImeServiceProto, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable or disable system emoji picker jelly support
-BASE_FEATURE(kImeSystemEmojiPickerJellySupport,
-             "SystemEmojiPickerJellySupport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable or disable system emoji picker mojo based emoji search
 BASE_FEATURE(kImeSystemEmojiPickerMojoSearch,
              "SystemEmojiPickerMojoSearch",
