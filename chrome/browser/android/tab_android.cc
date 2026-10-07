@@ -423,9 +423,12 @@ void TabAndroid::InitWebContents(
 
   night_mode::WebContentsThemeClient::CreateForWebContents(web_contents_.get());
 
-  renderer_preferences_util::UpdateFromSystemSettings(
-      web_contents_->GetMutableRendererPrefs(),
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+  if (!base::FeatureList::IsEnabled(
+          chrome::android::kClankStartupTabOptimizations)) {
+    renderer_preferences_util::UpdateFromSystemSettings(
+        web_contents_->GetMutableRendererPrefs(),
+        Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+  }
   web_contents_->SetOwnerLocationForDebug(FROM_HERE);
 
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents_.get(),
@@ -493,7 +496,13 @@ void TabAndroid::InitWebContents(
   alert_to_show_subscription_ =
       tab_alert_controller_->AddAlertToShowChangedCallback(base::BindRepeating(
           &TabAndroid::OnAlertStateChanged, base::Unretained(this)));
-  OnAlertStateChanged(tab_alert_controller_->GetAlertToShow());
+  std::optional<tabs::TabAlert> initial_alert =
+      tab_alert_controller_->GetAlertToShow();
+  if (initial_alert.has_value() ||
+      !base::FeatureList::IsEnabled(
+          chrome::android::kClankStartupTabOptimizations)) {
+    OnAlertStateChanged(initial_alert);
+  }
 
   for (Observer& observer : observers_) {
     observer.OnInitWebContents(this);
