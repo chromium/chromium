@@ -8,7 +8,7 @@ import 'chrome://settings/lazy_load.js';
 import type {SettingsAntiAbusePageElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, DefaultSettingSource, ContentSettingsTypes, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertNotEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 import type {SiteSettingsPref} from './test_util.js';
@@ -64,6 +64,7 @@ suite('SettingsAntiAbusePage', function() {
     const toggleElement = element.$.toggleButton;
 
     let category = await proxy.whenCalled('getDefaultValueForContentType');
+    await microtasksFinished();
     let categoryEnabled = toggleElement.checked;
     assertEquals(category, ContentSettingsTypes.ANTI_ABUSE);
     assertEquals(expectedEnabled, categoryEnabled);
@@ -120,6 +121,7 @@ suite('SettingsAntiAbusePage', function() {
     const toggleElement = testElement.$.toggleButton;
 
     await browserProxy.whenCalled('getDefaultValueForContentType');
+    await microtasksFinished();
     assertFalse(toggleElement.checked);
     assertTrue(toggleElement.disabled);
 
@@ -128,7 +130,7 @@ suite('SettingsAntiAbusePage', function() {
     browserProxy.reset();
     browserProxy.setPrefs(enabledPref);
 
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(toggleElement.checked);
     assertFalse(toggleElement.disabled);
   });

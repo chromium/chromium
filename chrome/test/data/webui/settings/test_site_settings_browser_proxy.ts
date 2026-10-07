@@ -86,6 +86,8 @@ export class TestSiteSettingsBrowserProxy extends TestBrowserProxy implements
       'revokeFileSystemGrant',
       'revokeFileSystemGrants',
       'setBlockAutoplayEnabled',
+      'initializeCaptureDevices',
+      'setPreferredCaptureDevice',
     ]);
 
 
@@ -606,9 +608,13 @@ export class TestSiteSettingsBrowserProxy extends TestBrowserProxy implements
     return Promise.resolve(this.recentSitePermissions_);
   }
 
-  initializeCaptureDevices() {}
+  initializeCaptureDevices(type: string) {
+    this.methodCalled('initializeCaptureDevices', type);
+  }
 
-  setPreferredCaptureDevice() {}
+  setPreferredCaptureDevice(type: string, defaultValue: string) {
+    this.methodCalled('setPreferredCaptureDevice', [type, defaultValue]);
+  }
 
   setProtocolHandlerDefault(value: boolean) {
     this.methodCalled('setProtocolHandlerDefault', value);

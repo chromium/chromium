@@ -1,33 +1,34 @@
-    <style include="settings-shared">
-      #exceptionHeader {
-        padding: 0 var(--cr-section-padding);
-      }
-    </style>
+<!-- #html_wrapper_imports_start
+import {ContentSetting} from './constants.js';
+#html_wrapper_imports_end -->
+
     <div id="exceptionHeader">
       <h2>$i18n{siteSettingsCustomizedBehaviors}</h2>
       <div id="exceptionHeaderSubLabel" class="secondary">
-        [[description]]
+        ${this.description}
       </div>
     </div>
-    <site-list
-        category="[[category]]"
-        category-subtype="[[contentSettingEnum_.BLOCK]]"
-        category-header="[[blockHeader]]"
-        read-only-list="[[getReadOnlyList_(readOnlyList, defaultManaged_)]]"
-        search-filter="[[searchFilter]]">
-    </site-list>
-    <site-list
-        category="[[category]]"
-        category-subtype="[[contentSettingEnum_.SESSION_ONLY]]"
-        category-header="$i18n{siteSettingsSessionOnly}"
-        read-only-list="[[getReadOnlyList_(readOnlyList, defaultManaged_)]]"
-        search-filter="[[searchFilter]]">
-    </site-list>
-    <site-list
-        category="[[category]]"
-        category-subtype="[[contentSettingEnum_.ALLOW]]"
-        category-header="[[allowHeader]]"
-        read-only-list="[[getReadOnlyList_(readOnlyList, defaultManaged_)]]"
-        search-filter="[[searchFilter]]"
-        hidden$="[[!showAllowSiteList_]]">
-    </site-list>
+    ${this.category ? html`
+      <site-list
+          .category="${this.category}"
+          category-subtype="${ContentSetting.BLOCK}"
+          category-header="${this.blockHeader}"
+          ?read-only-list="${this.getReadOnlyList_()}"
+          search-filter="${this.searchFilter}">
+      </site-list>
+      <site-list
+          .category="${this.category}"
+          category-subtype="${ContentSetting.SESSION_ONLY}"
+          category-header="$i18n{siteSettingsSessionOnly}"
+          ?read-only-list="${this.getReadOnlyList_()}"
+          search-filter="${this.searchFilter}">
+      </site-list>
+      <site-list
+          .category="${this.category}"
+          category-subtype="${ContentSetting.ALLOW}"
+          category-header="${this.allowHeader}"
+          ?read-only-list="${this.getReadOnlyList_()}"
+          search-filter="${this.searchFilter}"
+          ?hidden="${!this.shouldShowAllowSiteList_()}">
+      </site-list>
+    ` : ''}

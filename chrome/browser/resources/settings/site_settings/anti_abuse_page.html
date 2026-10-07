@@ -1,14 +1,13 @@
-<style include="settings-shared settings-columned-section"></style>
 <settings-subpage page-title="$i18n{siteSettingsAntiAbuse}"
-    route-path$="[[routePath]]">
+    route-path="${this.routePath}">
   <settings-toggle-button
       id="toggleButton"
-      pref="{{pref_}}"
+      .pref="${this.pref_}"
       no-set-pref
       label="$i18n{siteSettingsAntiAbuse}"
       sub-label="$i18n{siteSettingsAntiAbuseDescription}"
-      disabled="[[toggleDisabled_]]"
-      on-settings-boolean-control-change="onToggleChange_">
+      ?disabled="${this.getToggleDisabled_()}"
+      @settings-boolean-control-change="${this.onSettingsBooleanControlChange_}">
   </settings-toggle-button>
   <div class="settings-columned-section">
     <div class="column">

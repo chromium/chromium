@@ -9,18 +9,20 @@
  */
 import './site_list.js';
 
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
-import {getTemplate} from './category_setting_exceptions.html.js';
-import {ContentSetting, ContentSettingsTypes} from './constants.js';
+import {getCss} from './category_setting_exceptions.css.js';
+import {getHtml} from './category_setting_exceptions.html.js';
+import {ContentSettingsTypes} from './constants.js';
 import {DefaultSettingSource} from './site_settings_browser_proxy.js';
-import {SiteSettingsMixin} from './site_settings_mixin.js';
+import {SiteSettingsMixinLit} from './site_settings_mixin_lit.js';
 
 const CategorySettingExceptionsElementBase =
-    SiteSettingsMixin(WebUiListenerMixin(PolymerElement));
+    SiteSettingsMixinLit(WebUiListenerMixinLit(CrLitElement));
 
 export class CategorySettingExceptionsElement extends
     CategorySettingExceptionsElementBase {
@@ -28,93 +30,74 @@ export class CategorySettingExceptionsElement extends
     return 'category-setting-exceptions';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * The string description shown below the header.
        */
-      description: {
-        type: String,
-        value: function() {
-          return loadTimeData.getString(
-              'siteSettingsCustomizedBehaviorsDescription');
-        },
-      },
+      description: {type: String},
 
       /**
        * Some content types (like Location) do not allow the user to manually
        * edit the exception list from within Settings.
        */
-      readOnlyList: {
-        type: Boolean,
-        value: false,
-      },
+      readOnlyList: {type: Boolean},
 
       /**
        * True if the default value is managed by a policy.
        */
-      defaultManaged_: Boolean,
+      defaultManaged_: {type: Boolean},
 
       /**
        * The heading text for the blocked exception list.
        */
-      blockHeader: String,
+      blockHeader: {type: String},
 
       /**
        * The heading text for the allowed exception list.
        */
-      allowHeader: String,
+      allowHeader: {type: String},
 
-      searchFilter: String,
-
-      /**
-       * If true, displays the Allow site list. Defaults to true.
-       */
-      showAllowSiteList_: {
-        type: Boolean,
-        computed: 'computeShowAllowSiteList_(category)',
-      },
-
-      /**
-       * Expose ContentSetting enum to HTML bindings.
-       */
-      contentSettingEnum_: {
-        type: Object,
-        value: ContentSetting,
-      },
+      searchFilter: {type: String},
     };
   }
 
-  static get observers() {
-    return [
-      'updateDefaultManaged_(category)',
-    ];
-  }
+  accessor description: string =
+      loadTimeData.getString('siteSettingsCustomizedBehaviorsDescription');
+  accessor readOnlyList: boolean = false;
+  private accessor defaultManaged_: boolean = false;
+  accessor blockHeader: string = '';
+  accessor allowHeader: string = '';
+  accessor searchFilter: string = '';
 
-  declare description: string;
-  declare private readOnlyList: boolean;
-  declare private defaultManaged_: boolean;
-  declare blockHeader: string;
-  declare allowHeader: string;
-  declare searchFilter: string;
-  declare private showAllowSiteList_: boolean;
-
-  override ready() {
-    super.ready();
+  override connectedCallback() {
+    super.connectedCallback();
 
     this.addWebUiListener(
         'contentSettingCategoryChanged', () => this.updateDefaultManaged_());
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('category')) {
+      this.updateDefaultManaged_();
+    }
   }
 
   /**
    * Hides particular category subtypes if |this.category| does not support the
    * content setting of that type.
    */
-  private computeShowAllowSiteList_(): boolean {
+  protected shouldShowAllowSiteList_(): boolean {
     // TODO(crbug.com/40101962): This function should return true when the
     // feature flag for Persistent Permissions is removed.
     return this.category !== ContentSettingsTypes.FILE_SYSTEM_WRITE &&
@@ -141,7 +124,7 @@ export class CategorySettingExceptionsElement extends
    * by a policy. User should not be able to set exceptions to managed default
    * values.
    */
-  private getReadOnlyList_(): boolean {
+  protected getReadOnlyList_(): boolean {
     return this.readOnlyList || this.defaultManaged_;
   }
 }

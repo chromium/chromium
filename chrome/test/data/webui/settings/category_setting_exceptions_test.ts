@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CategorySettingExceptionsElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, DefaultSettingSource, ContentSettingsTypes, SiteSettingsBrowserProxyImpl} from'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 import {createContentSettingTypeToValuePair,createDefaultContentSetting,createSiteSettingsPrefs} from './test_util.js';
@@ -33,43 +33,57 @@ suite('CategorySettingExceptions', function() {
     document.body.appendChild(testElement);
   });
 
-  test('allow site list is hidden for FILE_SYSTEM_WRITE', function() {
+  test('allow site list is hidden for FILE_SYSTEM_WRITE', async function() {
     testElement.category = ContentSettingsTypes.FILE_SYSTEM_WRITE;
 
     // Flush to be sure that the container is updated.
-    flush();
+    await microtasksFinished();
 
     // Make sure that the Allow and Session Only site lists are hidden.
-    const siteListElements = testElement.querySelectorAll('site-list');
+    const siteListElements =
+        testElement.shadowRoot.querySelectorAll('site-list');
+    assertEquals(3, siteListElements.length);
     siteListElements.forEach(element => {
       if (element.categorySubtype === ContentSetting.BLOCK) {
         assertFalse(
             element.hidden,
             `site-list for ${element.categorySubtype} should not be hidden`);
-      } else {
+      } else if (element.categorySubtype === ContentSetting.ALLOW) {
         assertTrue(
             element.hidden,
+            `site-list for ${element.categorySubtype} should be hidden`);
+      } else {
+        assertEquals(ContentSetting.SESSION_ONLY, element.categorySubtype);
+        assertTrue(
+            element.$.category.hidden,
             `site-list for ${element.categorySubtype} should be hidden`);
       }
     });
   });
 
-  test('allow site list is hidden for INLINE_CUE_MENU', function() {
+  test('allow site list is hidden for INLINE_CUE_MENU', async function() {
     testElement.category = ContentSettingsTypes.INLINE_CUE_MENU;
 
     // Flush to be sure that the container is updated.
-    flush();
+    await microtasksFinished();
 
     // Make sure that the Allow and Session Only site lists are hidden.
-    const siteListElements = testElement.querySelectorAll('site-list');
+    const siteListElements =
+        testElement.shadowRoot.querySelectorAll('site-list');
+    assertEquals(3, siteListElements.length);
     siteListElements.forEach(element => {
       if (element.categorySubtype === ContentSetting.BLOCK) {
         assertFalse(
             element.hidden,
             `site-list for ${element.categorySubtype} should not be hidden`);
-      } else {
+      } else if (element.categorySubtype === ContentSetting.ALLOW) {
         assertTrue(
             element.hidden,
+            `site-list for ${element.categorySubtype} should be hidden`);
+      } else {
+        assertEquals(ContentSetting.SESSION_ONLY, element.categorySubtype);
+        assertTrue(
+            element.$.category.hidden,
             `site-list for ${element.categorySubtype} should be hidden`);
       }
     });
@@ -99,10 +113,10 @@ suite('CategorySettingExceptions', function() {
 
         await browserProxy.whenCalled('getDefaultValueForContentType');
         // Flush the container to ensure that the container is populated.
-        flush();
+        await microtasksFinished();
 
         const siteListElements =
-            testElement.shadowRoot!.querySelectorAll('site-list');
+            testElement.shadowRoot.querySelectorAll('site-list');
         assertEquals(3, siteListElements.length);
         siteListElements.forEach(element => {
           assertTrue(element.readOnlyList);
@@ -132,10 +146,10 @@ suite('CategorySettingExceptions', function() {
 
         await browserProxy.whenCalled('getDefaultValueForContentType');
         // Flush the container to ensure that the container is populated.
-        flush();
+        await microtasksFinished();
 
         const siteListElements =
-            testElement.shadowRoot!.querySelectorAll('site-list');
+            testElement.shadowRoot.querySelectorAll('site-list');
         assertEquals(3, siteListElements.length);
         siteListElements.forEach(element => {
           assertTrue(!element.readOnlyList);

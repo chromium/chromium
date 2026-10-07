@@ -1833,7 +1833,7 @@ suite('AddExceptionDialog', function() {
     assertTrue(!!actionButton);
     assertTrue(actionButton.disabled);
 
-    const input = dialog.shadowRoot!.querySelector('cr-input');
+    const input = dialog.shadowRoot.querySelector('cr-input');
     assertTrue(!!input);
     input.value = expectedPattern;
     await input.updateComplete;
@@ -1862,21 +1862,21 @@ suite('AddExceptionDialog', function() {
     dialog.remove();
   });
 
-  test('incognito', function() {
-    dialog.set('hasIncognito', true);
-    flush();
+  test('incognito', async function() {
+    dialog.hasIncognito = true;
+    await microtasksFinished();
     assertFalse(dialog.$.incognito.checked);
     dialog.$.incognito.checked = true;
     // Changing the incognito status will reset the checkbox.
-    dialog.set('hasIncognito', false);
-    flush();
+    dialog.hasIncognito = false;
+    await microtasksFinished();
     assertFalse(dialog.$.incognito.checked);
   });
 
   test('invalid input', async function() {
     // Initially the action button should be disabled, but the error warning
     // should not be shown for an empty input.
-    const input = dialog.shadowRoot!.querySelector('cr-input');
+    const input = dialog.shadowRoot.querySelector('cr-input');
     assertTrue(!!input);
     assertFalse(input.invalid);
 
@@ -1901,9 +1901,8 @@ suite('AddExceptionDialog', function() {
   test(
       'add cookie exception for combined cookie exception type',
       async function() {
-        dialog.set('category', ContentSettingsTypes.COOKIES);
-        dialog.set('cookiesExceptionType', CookiesExceptionType.COMBINED);
-        flush();
+        dialog.category = ContentSettingsTypes.COOKIES;
+        dialog.cookiesExceptionType = CookiesExceptionType.COMBINED;
 
         // Enter a pattern and click the button.
         const expectedPattern = 'foo-bar.com';
@@ -1919,9 +1918,8 @@ suite('AddExceptionDialog', function() {
       });
 
   test('add third party cookie exception', async function() {
-    dialog.set('category', ContentSettingsTypes.COOKIES);
-    dialog.set('cookiesExceptionType', CookiesExceptionType.THIRD_PARTY);
-    flush();
+    dialog.category = ContentSettingsTypes.COOKIES;
+    dialog.cookiesExceptionType = CookiesExceptionType.THIRD_PARTY;
 
     // Enter a pattern and click the button.
     const expectedPattern = 'foo-bar.com';
@@ -1937,9 +1935,8 @@ suite('AddExceptionDialog', function() {
   });
 
   test('add site data cookie exception', async function() {
-    dialog.set('category', ContentSettingsTypes.COOKIES);
-    dialog.set('cookiesExceptionType', CookiesExceptionType.SITE_DATA);
-    flush();
+    dialog.category = ContentSettingsTypes.COOKIES;
+    dialog.cookiesExceptionType = CookiesExceptionType.SITE_DATA;
 
     // Enter a pattern and click the button.
     const expectedPattern = 'foo-bar.com';

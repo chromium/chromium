@@ -1,0 +1,30 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../settings_shared_lit.css.js
+ * #include=settings-shared-lit
+ * #css_wrapper_metadata_end */
+
+#radioSection {
+  padding: 0 var(--cr-section-padding);
+}
+
+#radioGroupSubLabel {
+  padding-bottom: 10px;
+}
+
+settings-collapse-radio-button {
+  --settings-collapse-toggle-min-height: var(--cr-section-min-height);
+}
+
+settings-collapse-radio-button.two-line {
+  --settings-collapse-toggle-min-height:
+      var(--cr-section-two-line-min-height);
+}
+
+settings-collapse-radio-button:not(:first-of-type) {
+  --settings-collapse-separator-line: var(--cr-separator-line);
+}

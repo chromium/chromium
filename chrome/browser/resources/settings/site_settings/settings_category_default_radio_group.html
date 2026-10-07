@@ -1,71 +1,52 @@
-<style include="settings-shared">
+<!-- #html_wrapper_imports_start
+import {ContentSetting} from './constants.js';
+#html_wrapper_imports_end -->
 
-  #radioSection {
-    padding: 0 var(--cr-section-padding);
-  }
-
-  #radioGroupSubLabel {
-    padding-bottom: 10px;
-  }
-
-  settings-collapse-radio-button {
-    --settings-collapse-toggle-min-height: var(--cr-section-min-height);
-  }
-
-  settings-collapse-radio-button.two-line {
-    --settings-collapse-toggle-min-height:
-        var(--cr-section-two-line-min-height);
-  }
-
-  settings-collapse-radio-button:not(:first-of-type) {
-    --settings-collapse-separator-line: var(--cr-separator-line);
-  }
-</style>
 <div id="radioSection">
-  <h2>[[header]]</h2>
+  <h2>${this.header}</h2>
   <div id="radioGroupSubLabel" class="secondary">
-    [[description]]
+    ${this.description}
   </div>
   <settings-radio-group
       id="settingsCategoryDefaultRadioGroup"
-      pref="{{pref_}}"
+      .pref="${this.pref_}"
       selectable-elements="settings-collapse-radio-button"
-      on-change="onSelectedRadioChanged_"
-      group-aria-label="[[header]]">
+      @change="${this.onSelectedRadioChange_}"
+      group-aria-label="${this.header}">
     <settings-collapse-radio-button
         id="allowRadioOption"
-        class$="[[getButtonClass_(allowOptionSubLabel)]]"
-        name="[[contentSettingEnum_.ALLOW]]"
-        pref="[[pref_]]"
-        label="[[allowOptionLabel]]"
-        sub-label="[[allowOptionSubLabel]]"
-        disabled$="[[isRadioGroupDisabled_(category)]]"
-        icon="[[allowOptionIcon]]"
-        hidden="[[!allowOptionLabel]]"
+        class="${this.getButtonClass_(this.allowOptionSubLabel)}"
+        name="${ContentSetting.ALLOW}"
+        .pref="${this.pref_}"
+        label="${this.allowOptionLabel}"
+        sub-label="${this.allowOptionSubLabel}"
+        ?disabled="${this.isRadioGroupDisabled_()}"
+        icon="${this.allowOptionIcon}"
+        ?hidden="${!this.allowOptionLabel}"
         no-collapse>
     </settings-collapse-radio-button>
     <settings-collapse-radio-button
         id="askRadioOption"
-        class$="[[getButtonClass_(askOptionSubLabel)]]"
-        name="[[contentSettingEnum_.ASK]]"
-        pref="[[pref_]]"
-        label="[[askOptionLabel]]"
-        sub-label="[[askOptionSubLabel]]"
-        disabled$="[[isRadioGroupDisabled_(category)]]"
-        icon="[[askOptionIcon]]"
-        hidden="[[!askOptionLabel]]"
+        class="${this.getButtonClass_(this.askOptionSubLabel)}"
+        name="${ContentSetting.ASK}"
+        .pref="${this.pref_}"
+        label="${this.askOptionLabel}"
+        sub-label="${this.askOptionSubLabel}"
+        ?disabled="${this.isRadioGroupDisabled_()}"
+        icon="${this.askOptionIcon}"
+        ?hidden="${!this.askOptionLabel}"
         no-collapse>
     </settings-collapse-radio-button>
     <settings-collapse-radio-button
         id="blockRadioOption"
-        class$="[[getButtonClass_(blockOptionSubLabel)]]"
-        name="[[contentSettingEnum_.BLOCK]]"
-        pref="[[pref_]]"
-        label="[[blockOptionLabel]]"
-        sub-label="[[blockOptionSubLabel]]"
-        disabled$="[[isRadioGroupDisabled_(category)]]"
-        icon="[[blockOptionIcon]]"
-        hidden="[[!blockOptionLabel]]"
+        class="${this.getButtonClass_(this.blockOptionSubLabel)}"
+        name="${ContentSetting.BLOCK}"
+        .pref="${this.pref_}"
+        label="${this.blockOptionLabel}"
+        sub-label="${this.blockOptionSubLabel}"
+        ?disabled="${this.isRadioGroupDisabled_()}"
+        icon="${this.blockOptionIcon}"
+        ?hidden="${!this.blockOptionLabel}"
         no-collapse>
     </settings-collapse-radio-button>
   </settings-radio-group>

@@ -7,18 +7,16 @@
  * 'media-picker' handles showing the dropdown allowing users to select the
  * default camera/microphone.
  */
-import 'chrome://resources/cr_elements/md_select.css.js';
-import '../settings_shared.css.js';
-import '../settings_vars.css.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {getTemplate} from './media_picker.html.js';
+import {getCss} from './media_picker.css.js';
+import {getHtml} from './media_picker.html.js';
 import type {MediaPickerEntry} from './site_settings_browser_proxy.js';
-import {SiteSettingsMixin} from './site_settings_mixin.js';
+import {SiteSettingsMixinLit} from './site_settings_mixin_lit.js';
 
-interface MediaPickerElement {
+export interface MediaPickerElement {
   $: {
     mediaPicker: HTMLSelectElement,
     picker: HTMLElement,
@@ -26,40 +24,47 @@ interface MediaPickerElement {
 }
 
 const MediaPickerElementBase =
-    SiteSettingsMixin(WebUiListenerMixin(PolymerElement));
+    SiteSettingsMixinLit(WebUiListenerMixinLit(CrLitElement));
 
-class MediaPickerElement extends MediaPickerElementBase {
+export class MediaPickerElement extends MediaPickerElementBase {
   static get is() {
     return 'media-picker';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * The type of media picker, either 'camera' or 'mic'.
        */
-      type: String,
+      type: {type: String},
 
       /** Label for a11y purposes. */
-      label: String,
+      label: {type: String},
 
       /**
        * The devices available to pick from.
        */
-      devices: Array,
+      devices: {type: Array},
+
+      selectedDevice_: {type: String},
     };
   }
 
-  declare type: string;
-  declare label: string;
-  declare devices: MediaPickerEntry[];
+  accessor type: string = '';
+  accessor label: string = '';
+  accessor devices: MediaPickerEntry[] = [];
+  protected accessor selectedDevice_: string = '';
 
-  override ready() {
-    super.ready();
+  override connectedCallback() {
+    super.connectedCallback();
 
     this.addWebUiListener(
         'updateDevicesMenu',
@@ -68,11 +73,22 @@ class MediaPickerElement extends MediaPickerElementBase {
     this.browserProxy.initializeCaptureDevices(this.type);
   }
 
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedProperties.has('devices') ||
+        changedPrivateProperties.has('selectedDevice_')) {
+      this.$.mediaPicker.value = this.selectedDevice_;
+    }
+  }
+
   /**
    * Updates the microphone/camera devices menu with the given entries.
    * @param type The device type.
    * @param devices List of available devices.
-   * @param defaultDevice The unique id of the current default device.
+   * @param selectedDevice The unique id of the current default device.
    */
   private updateDevicesMenu_(
       type: string, devices: MediaPickerEntry[], selectedDevice: string) {
@@ -83,20 +99,23 @@ class MediaPickerElement extends MediaPickerElementBase {
     this.$.picker.hidden = devices.length === 0;
     if (devices.length > 0) {
       this.devices = devices;
-
-      // Wait for <select> to be populated.
-      microTask.run(() => {
-        this.$.mediaPicker.value = selectedDevice;
-      });
+      this.selectedDevice_ = selectedDevice;
     }
   }
 
   /**
    * A handler for when an item is selected in the media picker.
    */
-  private onChange_() {
+  protected onChange_() {
+    this.selectedDevice_ = this.$.mediaPicker.value;
     this.browserProxy.setPreferredCaptureDevice(
         this.type, this.$.mediaPicker.value);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'media-picker': MediaPickerElement;
   }
 }
 

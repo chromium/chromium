@@ -152,6 +152,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, CategorySettingExceptions) {
   RunTest("settings/category_setting_exceptions_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, MediaPicker) {
+  RunTest("settings/media_picker_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, Checkbox) {
   RunTest("settings/checkbox_test.js", "mocha.run()");
 }

@@ -8,24 +8,23 @@
  * settings.
  */
 
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../controls/settings_toggle_button.js';
-import '../icons.html.js';
 import '../settings_page/settings_subpage.js';
-import '../settings_shared.css.js';
 
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import {getCss as getSettingsColumnedSectionCss} from '../settings_columned_section_lit.css.js';
+import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
+import {getCss as getSettingsSharedCss} from '../settings_shared_lit.css.js';
 import {ContentSetting, ContentSettingsTypes} from '../site_settings/constants.js';
 import {DefaultSettingSource} from '../site_settings/site_settings_browser_proxy.js';
-import {SiteSettingsMixin} from '../site_settings/site_settings_mixin.js';
+import {SiteSettingsMixinLit} from '../site_settings/site_settings_mixin_lit.js';
 import {isSettingEnabled} from '../site_settings/site_settings_util.js';
 
-import {getTemplate} from './anti_abuse_page.html.js';
+import {getHtml} from './anti_abuse_page.html.js';
 
 export interface SettingsAntiAbusePageElement {
   $: {
@@ -33,46 +32,50 @@ export interface SettingsAntiAbusePageElement {
   };
 }
 
-const AntiAbuseElementBase =
-    SettingsViewMixin(SiteSettingsMixin(WebUiListenerMixin(PolymerElement)));
+export type AntiAbusePageElement = SettingsAntiAbusePageElement;
+
+const AntiAbuseElementBase = SettingsViewMixinLit(
+    SiteSettingsMixinLit(WebUiListenerMixinLit(CrLitElement)));
 
 export class SettingsAntiAbusePageElement extends AntiAbuseElementBase {
   static get is() {
     return 'settings-anti-abuse-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return [
+      getSettingsSharedCss(),
+      getSettingsColumnedSectionCss(),
+    ];
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * Preference object used to keep track of the selected content setting
        * option.
        */
-      pref_: {
-        type: Object,
-        value() {
-          return {type: chrome.settingsPrivate.PrefType.BOOLEAN};
-        },
-      },
-
-      toggleDisabled_: Boolean,
+      pref_: {type: Object},
     };
   }
 
-  static get observers() {
-    return [
-      'onEnforcementChanged_(pref_.enforcement)',
-    ];
+  protected accessor pref_: chrome.settingsPrivate.PrefObject<boolean> = {
+    key: '',
+    type: chrome.settingsPrivate.PrefType.BOOLEAN,
+    value: false,
+  };
+
+  protected getToggleDisabled_(): boolean {
+    return this.pref_.enforcement ===
+        chrome.settingsPrivate.Enforcement.ENFORCED;
   }
 
-  declare private pref_: chrome.settingsPrivate.PrefObject<boolean>;
-  declare private toggleDisabled_: boolean;
-
-  override ready() {
-    super.ready();
+  override connectedCallback() {
+    super.connectedCallback();
 
     this.addWebUiListener(
         'contentSettingCategoryChanged',
@@ -89,20 +92,19 @@ export class SettingsAntiAbusePageElement extends AntiAbuseElementBase {
     this.updateToggleValue_();
   }
 
-  private onEnforcementChanged_(enforcement:
-                                    chrome.settingsPrivate.Enforcement) {
-    this.toggleDisabled_ =
-        enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
-  }
-
   private async updateToggleValue_() {
     const defaultValue = await this.browserProxy.getDefaultValueForContentType(
         ContentSettingsTypes.ANTI_ABUSE);
 
+    const pref: chrome.settingsPrivate.PrefObject<boolean> = {
+      key: '',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: isSettingEnabled(defaultValue.setting),
+    };
+
     if (defaultValue.source !== undefined &&
         defaultValue.source !== DefaultSettingSource.PREFERENCE) {
-      this.set(
-          'pref_.enforcement', chrome.settingsPrivate.Enforcement.ENFORCED);
+      pref.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
       let controlledBy = chrome.settingsPrivate.ControlledBy.USER_POLICY;
       switch (defaultValue.source) {
         case DefaultSettingSource.POLICY:
@@ -117,29 +119,26 @@ export class SettingsAntiAbusePageElement extends AntiAbuseElementBase {
         default:
           break;
       }
-      this.set('pref_.controlledBy', controlledBy);
-    } else {
-      this.set('pref_.enforcement', null);
-      this.set('pref_.controlledBy', null);
+      pref.controlledBy = controlledBy;
     }
 
-    this.set('pref_.value', isSettingEnabled(defaultValue.setting));
+    this.pref_ = pref;
   }
 
   /**
-   * A handler for changing the default permission value for a the anti-abuse
+   * A handler for changing the default permission value for the anti-abuse
    * content type.
    */
-  private onToggleChange_() {
+  protected onSettingsBooleanControlChange_() {
     this.browserProxy.setDefaultValueForContentType(
         ContentSettingsTypes.ANTI_ABUSE,
         this.$.toggleButton.checked ? ContentSetting.ALLOW :
                                       ContentSetting.BLOCK);
   }
 
-  // SettingsViewMixin implementation.
+  // SettingsViewMixinLit implementation.
   override focusBackButton() {
-    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+    this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

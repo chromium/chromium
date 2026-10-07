@@ -1,27 +1,21 @@
-    <style include="settings-shared">
-      #incognito {
-        padding-bottom: 10px;
-      }
-    </style>
     <cr-dialog id="dialog" close-text="$i18n{close}">
       <div slot="title">$i18n{addSiteTitle}</div>
       <div slot="body">
         <cr-input id="site" label="$i18n{addSite}"
             placeholder="$i18n{addSiteExceptionPlaceholder}"
-            value="{{site_}}" on-input="validate_"
-            error-message="{{errorMessage_}}" spellcheck="false"
+            .value="${this.site_}" @input="${this.onInput_}"
+            error-message="${this.errorMessage_}" spellcheck="false"
             autofocus></cr-input>
         <cr-checkbox id="incognito"
-            hidden$="[[!showIncognitoSessionOnly_(hasIncognito,
-                contentSetting)]]">
+            ?hidden="${!this.showIncognitoSessionOnly_()}">
           $i18n{incognitoSiteOnly}
         </cr-checkbox>
       </div>
       <div slot="button-container">
-        <cr-button class="cancel-button" on-click="onCancelClick_">
+        <cr-button class="cancel-button" @click="${this.onCancelClick_}">
           $i18n{cancel}
         </cr-button>
-        <cr-button class="action-button" id="add" on-click="onSubmit_"
+        <cr-button class="action-button" id="add" @click="${this.onSubmitClick_}"
             disabled>
           $i18n{add}
         </cr-button>

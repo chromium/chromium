@@ -77,7 +77,7 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
       expectedInitialSetting: ContentSetting) {
     proxy.reset();
     proxy.setPrefs(prefs);
-    element.set('category', expectedCategory);
+    element.category = expectedCategory;
 
     // Set labels for the options that should be supported and thus displayed.
     if (expectedSupportedSettings.includes(ContentSetting.ALLOW)) {
