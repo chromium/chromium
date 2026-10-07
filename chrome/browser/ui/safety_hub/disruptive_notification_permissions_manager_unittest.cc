@@ -1564,3 +1564,31 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
                    IsUrlIgnoredForRevokedDisruptiveNotification(
                        hcsm(), non_existent_url));
 }
+
+TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest, OnPageVisited) {
+  base::HistogramTester t;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  GURL url("https://chrome.test/");
+  SetDailyAverageNotificationCount(url, kHighNotificationCount);
+  SetupRevocationEntry(url, /*days_since_revocation=*/5,
+                       RevocationState::kProposed);
+  site_engagement_service()->ResetBaseScoreForURL(url, 1.0);
+
+  ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
+  ukm_recorder.UpdateSourceURL(source_id, url);
+
+  manager()->OnPageVisited(url::Origin::Create(url), source_id);
+
+  t.ExpectBucketCount(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations."
+      "Proposed.FalsePositiveInteraction",
+      FalsePositiveReason::kPageVisit, 1);
+
+  // Opaque origins should be ignored and not record metrics.
+  manager()->OnPageVisited(url::Origin(), source_id);
+  t.ExpectBucketCount(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations."
+      "Proposed.FalsePositiveInteraction",
+      FalsePositiveReason::kPageVisit, 1);
+}

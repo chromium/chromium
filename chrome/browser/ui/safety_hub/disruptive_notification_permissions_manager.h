@@ -156,6 +156,10 @@ class DisruptiveNotificationPermissionsManager {
   void OnPermissionChanged(const ContentSettingsPattern& primary_pattern,
                            const ContentSettingsPattern& secondary_pattern);
 
+  // Called when a page is visited to check for disruptive notification false
+  // positives and record metrics.
+  void OnPageVisited(const url::Origin& origin, ukm::SourceId ukm_source_id);
+
   // If the URL is in the revoke or proposed revoke list, report a false
   // positive and record metrics.
   static void MaybeReportFalsePositive(Profile* profile,

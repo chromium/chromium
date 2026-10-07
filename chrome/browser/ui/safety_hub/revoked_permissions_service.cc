@@ -105,10 +105,9 @@ base::TimeDelta RevokedPermissionsService::GetRepeatedUpdateInterval() {
 
 RevokedPermissionsTabHelper::RevokedPermissionsTabHelper(
     content::WebContents* web_contents,
-    RevokedPermissionsService* unused_site_permission_service)
+    RevokedPermissionsService* revoked_permissions_service)
     : content::WebContentsObserver(web_contents),
-      unused_site_permission_service_(
-          unused_site_permission_service->AsWeakPtr()) {}
+      revoked_permissions_service_(revoked_permissions_service->AsWeakPtr()) {}
 
 RevokedPermissionsTabHelper::~RevokedPermissionsTabHelper() = default;
 
@@ -126,16 +125,10 @@ PermissionsData::PermissionsData(const PermissionsData& other)
 }
 
 void RevokedPermissionsTabHelper::PrimaryPageChanged(content::Page& page) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  DisruptiveNotificationPermissionsManager::MaybeReportFalsePositive(
-      profile, page.GetMainDocument().GetLastCommittedURL(),
-      DisruptiveNotificationPermissionsManager::FalsePositiveReason::kPageVisit,
-      page.GetMainDocument().GetPageUkmSourceId());
-
-  if (unused_site_permission_service_) {
-    unused_site_permission_service_->OnPageVisited(
-        page.GetMainDocument().GetLastCommittedOrigin());
+  if (revoked_permissions_service_) {
+    revoked_permissions_service_->OnPageVisited(
+        page.GetMainDocument().GetLastCommittedOrigin(),
+        page.GetMainDocument().GetPageUkmSourceId());
   }
 }
 
@@ -343,9 +336,13 @@ void RevokedPermissionsService::ClearRevokedPermissionsList() {
 }
 
 // Called by TabHelper when a URL was visited.
-void RevokedPermissionsService::OnPageVisited(const url::Origin& origin) {
+void RevokedPermissionsService::OnPageVisited(const url::Origin& origin,
+                                              ukm::SourceId ukm_source_id) {
   CHECK(unused_site_permissions_manager_);
   unused_site_permissions_manager_->OnPageVisited(origin);
+  if (disruptive_notification_manager_) {
+    disruptive_notification_manager_->OnPageVisited(origin, ukm_source_id);
+  }
 }
 
 base::OnceCallback<std::unique_ptr<SafetyHubResult>()>

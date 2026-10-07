@@ -648,6 +648,14 @@ void DisruptiveNotificationPermissionsManager::RestoreDeletedRevokedPermission(
   ContentSettingHelper(*hcsm_).PersistRevocationEntry(url, *revocation_entry);
 }
 
+void DisruptiveNotificationPermissionsManager::OnPageVisited(
+    const url::Origin& origin,
+    ukm::SourceId ukm_source_id) {
+  MaybeReportFalsePositive(Profile::FromBrowserContext(browser_context_),
+                           origin.GetURL(), FalsePositiveReason::kPageVisit,
+                           ukm_source_id);
+}
+
 // static
 void DisruptiveNotificationPermissionsManager::MaybeReportFalsePositive(
     Profile* profile,

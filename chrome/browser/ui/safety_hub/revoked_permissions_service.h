@@ -24,6 +24,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 class PrefChangeRegistrar;
 class PrefService;
@@ -41,7 +42,7 @@ class RevokedPermissionsTabHelper : public content::WebContentsObserver {
  public:
   RevokedPermissionsTabHelper(
       content::WebContents* web_contents,
-      RevokedPermissionsService* unused_site_permission_service);
+      RevokedPermissionsService* revoked_permissions_service);
   RevokedPermissionsTabHelper(const RevokedPermissionsTabHelper&) = delete;
   RevokedPermissionsTabHelper& operator=(const RevokedPermissionsTabHelper&) =
       delete;
@@ -51,7 +52,7 @@ class RevokedPermissionsTabHelper : public content::WebContentsObserver {
   void PrimaryPageChanged(content::Page& page) override;
 
  private:
-  base::WeakPtr<RevokedPermissionsService> unused_site_permission_service_;
+  base::WeakPtr<RevokedPermissionsService> revoked_permissions_service_;
 };
 
 // This class keeps track of revoked permissions, including unused permissions,
@@ -122,7 +123,7 @@ class RevokedPermissionsService final : public SafetyHubService,
   friend class RevokedPermissionsTabHelper;
 
   // Called by TabHelper when a URL was visited.
-  void OnPageVisited(const url::Origin& origin);
+  void OnPageVisited(const url::Origin& origin, ukm::SourceId ukm_source_id);
 
   HostContentSettingsMap* hcsm() {
     return HostContentSettingsMapFactory::GetForProfile(browser_context_.get());
