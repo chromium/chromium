@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/process/process.h"
 #include "base/test/scoped_command_line.h"
+#include "build/build_config.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/enterprise/reporting/browser_launch/scoped_initial_command_line.h"
 #include "components/prefs/testing_pref_service.h"
@@ -16,6 +17,10 @@
 #include "components/webui/flags/pref_service_flags_storage.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/common/chrome_switches.h"
+#endif
 
 namespace enterprise_reporting {
 
@@ -48,6 +53,22 @@ TEST_F(BrowserLaunchDataCollectorDesktopTest, GetEvent) {
       base::Process::Current().CreationTime().InMillisecondsSinceUnixEpoch();
   EXPECT_EQ(event.launch_time_millis(), expected_time_ms);
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(BrowserLaunchDataCollectorDesktopTest, ExcludesSourceShortcutLocation) {
+  stubbed_cli_.AppendSwitchASCII(switches::kSourceShortcutLocation,
+                                 switches::kSourceShortcutLocationDesktop);
+  stubbed_cli_.AppendSwitch("user-switch");
+
+  ScopedInitialCommandLine scoped_cli(&stubbed_cli_);
+
+  BrowserLaunchDataCollectorDesktop collector;
+  auto&& event = collector.GetEvent();
+
+  EXPECT_THAT(event.command_line_switch_keys(),
+              testing::ElementsAre("user-switch"));
+}
+#endif
 
 TEST_F(BrowserLaunchDataCollectorDesktopTest, GetEventWithFlagSwitches) {
   stubbed_cli_.AppendSwitchASCII("switch-2", "value-2");
