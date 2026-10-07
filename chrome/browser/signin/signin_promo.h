@@ -143,11 +143,32 @@ struct ChromeReauthUrlArgs {
 // details on the arguments.
 GURL GetChromeReauthURL(ChromeReauthUrlArgs args);
 
+// Outcome of checking whether a reauth for an account can use
+// `GetChromeReauthURL()` with `proceed_to_challenge` based on the cookie jar.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(ReauthProceedToChallengeResult)
+enum class ReauthProceedToChallengeResult {
+  // `/AccountChooser` with `ptc=1` is used and the account is present in the
+  // cookie jar (signed out or invalid), so Gaia skips the identifier page.
+  kProceedToChallenge = 0,
+  // `/AccountChooser` with `ptc=1` is used, but the account is not in the
+  // cookie jar (e.g. cookies were cleared), so Gaia still shows the prefilled
+  // identifier page.
+  kAccountNotInCookies = 1,
+  // Falls back to `/AddSession` because cookie jar info is stale or the account
+  // still has a valid Gaia session.
+  kAddSessionFallback = 2,
+  kMaxValue = kAddSessionFallback,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:ReauthProceedToChallengeResult)
+
 // Returns whether a reauth for `email` can use `GetChromeReauthURL()` with
 // `proceed_to_challenge`, based on `accounts_in_cookie_jar`.
 // Returns false (i.e. callers should keep using `GetAddAccountURLForDice()`)
 // if `email` is empty, if the cookie jar info is stale, or if `email` still
 // has a valid signed-in Gaia session.
+// When `email` is non-empty, records `Signin.Reauth.ProceedToChallengeResult`.
 bool CanReauthProceedToChallenge(
     const std::string& email,
     const AccountsInCookieJarInfo& accounts_in_cookie_jar);

@@ -1112,6 +1112,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/signin/public/base/signin_metrics.h:ReauthAccessPoint) -->
 
+<!-- LINT.IfChange(ReauthProceedToChallengeResult) -->
+
+<enum name="ReauthProceedToChallengeResult">
+  <int value="0" label="Proceed to challenge (account in cookies)"/>
+  <int value="1"
+      label="Proceed to challenge without cookies (shows identifier page)"/>
+  <int value="2" label="Fallback to AddSession"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/signin/signin_promo.h:ReauthProceedToChallengeResult) -->
+
 <enum name="ResumeBlockedRequestsTrigger">
   <int value="0" label="Cookie fresh notification"/>
   <int value="1"

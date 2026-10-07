@@ -3579,6 +3579,18 @@ Signin.OAuthMultiloginResponseStatus2{PartitionSuffix} one for a long enough tim
   <token key="Event" variants="ReauthFlowEvent"/>
 </histogram>
 
+<histogram name="Signin.Reauth.ProceedToChallengeResult"
+    enum="ReauthProceedToChallengeResult" expires_after="2027-03-28">
+  <owner>ddac@google.com</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <summary>
+    Records the outcome of checking the cookie jar to determine whether a DICE
+    re-authentication tab can use `/AccountChooser` with `ptc=1` to skip the
+    identifier page. Recorded when opening a DICE re-authentication tab for a
+    known email with `ReauthSkipIdentifierPage` enabled.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Reconciler.AllExternalCcResultCompleted"
     enum="BooleanSuccess" expires_after="never">
 <!-- expires-never: used to detect and debug signin issues -->

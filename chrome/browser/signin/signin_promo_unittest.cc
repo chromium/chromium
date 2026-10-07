@@ -124,6 +124,8 @@ namespace {
 
 constexpr char kReauthTestEmail[] = "example@domain.com";
 constexpr char kReauthTestOtherEmail[] = "other@domain.com";
+constexpr char kReauthProceedToChallengeResultHistogram[] =
+    "Signin.Reauth.ProceedToChallengeResult";
 
 gaia::ListedAccount MakeListedAccount(const std::string& email,
                                       bool valid,
@@ -141,16 +143,21 @@ gaia::ListedAccount MakeListedAccount(const std::string& email,
 // Test that reauth can proceed to challenge when the account is signed out of
 // the web.
 TEST(SigninPromoTest, TestCanReauthProceedToChallengeSignedOutAccount) {
+  base::HistogramTester histogram_tester;
   EXPECT_TRUE(CanReauthProceedToChallenge(
       kReauthTestEmail, AccountsInCookieJarInfo(
                             /*accounts_are_fresh=*/true,
                             {MakeListedAccount(kReauthTestEmail, /*valid=*/true,
                                                /*signed_out=*/true)})));
+  histogram_tester.ExpectUniqueSample(
+      kReauthProceedToChallengeResultHistogram,
+      ReauthProceedToChallengeResult::kProceedToChallenge, 1);
 }
 
 // Test that reauth can proceed to challenge when the account is not in the
 // cookie jar.
 TEST(SigninPromoTest, TestCanReauthProceedToChallengeAccountNotInCookies) {
+  base::HistogramTester histogram_tester;
   EXPECT_TRUE(CanReauthProceedToChallenge(
       kReauthTestEmail,
       AccountsInCookieJarInfo(
@@ -160,23 +167,31 @@ TEST(SigninPromoTest, TestCanReauthProceedToChallengeAccountNotInCookies) {
   EXPECT_TRUE(CanReauthProceedToChallenge(
       kReauthTestEmail,
       AccountsInCookieJarInfo(/*accounts_are_fresh=*/true, {})));
+  histogram_tester.ExpectUniqueSample(
+      kReauthProceedToChallengeResultHistogram,
+      ReauthProceedToChallengeResult::kAccountNotInCookies, 2);
 }
 
 // Test that reauth can proceed to challenge when the account session in the
 // cookie jar is invalid.
 TEST(SigninPromoTest, TestCanReauthProceedToChallengeInvalidSession) {
+  base::HistogramTester histogram_tester;
   EXPECT_TRUE(CanReauthProceedToChallenge(
       kReauthTestEmail,
       AccountsInCookieJarInfo(
           /*accounts_are_fresh=*/true,
           {MakeListedAccount(kReauthTestEmail, /*valid=*/false,
                              /*signed_out=*/false)})));
+  histogram_tester.ExpectUniqueSample(
+      kReauthProceedToChallengeResultHistogram,
+      ReauthProceedToChallengeResult::kProceedToChallenge, 1);
 }
 
 // Test that reauth cannot proceed to challenge when Gaia still has a valid
 // session for the account, since `/AccountChooser` would complete without a
 // new sign-in.
 TEST(SigninPromoTest, TestCanReauthProceedToChallengeValidSession) {
+  base::HistogramTester histogram_tester;
   EXPECT_FALSE(CanReauthProceedToChallenge(
       kReauthTestEmail, AccountsInCookieJarInfo(
                             /*accounts_are_fresh=*/true,
@@ -189,20 +204,30 @@ TEST(SigninPromoTest, TestCanReauthProceedToChallengeValidSession) {
           /*accounts_are_fresh=*/true,
           {MakeListedAccount(kReauthTestEmail, /*valid=*/true,
                              /*signed_out=*/false)})));
+  histogram_tester.ExpectUniqueSample(
+      kReauthProceedToChallengeResultHistogram,
+      ReauthProceedToChallengeResult::kAddSessionFallback, 2);
 }
 
 // Test that reauth cannot proceed to challenge when the cookie jar info is
 // stale.
 TEST(SigninPromoTest, TestCanReauthProceedToChallengeStaleCookies) {
+  base::HistogramTester histogram_tester;
   EXPECT_FALSE(CanReauthProceedToChallenge(
       kReauthTestEmail,
       AccountsInCookieJarInfo(/*accounts_are_fresh=*/false, {})));
+  histogram_tester.ExpectUniqueSample(
+      kReauthProceedToChallengeResultHistogram,
+      ReauthProceedToChallengeResult::kAddSessionFallback, 1);
 }
 
 // Test that reauth cannot proceed to challenge without an email.
 TEST(SigninPromoTest, TestCanReauthProceedToChallengeEmptyEmail) {
+  base::HistogramTester histogram_tester;
   EXPECT_FALSE(CanReauthProceedToChallenge(
       std::string(), AccountsInCookieJarInfo(/*accounts_are_fresh=*/true, {})));
+  histogram_tester.ExpectTotalCount(kReauthProceedToChallengeResultHistogram,
+                                    0);
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

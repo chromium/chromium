@@ -50,6 +50,9 @@ namespace {
 // account is known (via `Email`).
 constexpr char kProceedToChallengeQueryKey[] = "ptc";
 
+constexpr char kReauthProceedToChallengeResultHistogram[] =
+    "Signin.Reauth.ProceedToChallengeResult";
+
 }  // namespace
 
 const char kSignInPromoQueryKeyAccessPoint[] = "access_point";
@@ -182,21 +185,36 @@ GURL GetChromeReauthURL(ChromeReauthUrlArgs args) {
 bool CanReauthProceedToChallenge(
     const std::string& email,
     const AccountsInCookieJarInfo& accounts_in_cookie_jar) {
-  // Without fresh cookie info, it is unknown whether Gaia still has a valid
-  // session for `email`, so fall back to the existing `/AddSession` flow.
-  if (email.empty() || !accounts_in_cookie_jar.AreAccountsFresh()) {
+  if (email.empty()) {
     return false;
   }
 
-  // If Gaia still has a valid session for `email`, `/AccountChooser` completes
-  // immediately without a new sign-in, so Chrome never receives a new refresh
-  // token and stays in the auth error state. `/AddSession` always requires the
-  // challenge, so keep using it in that case.
-  return std::ranges::none_of(accounts_in_cookie_jar.GetValidSignedInAccounts(),
-                              [&email](const gaia::ListedAccount& account) {
-                                return gaia::AreEmailsSame(account.email,
-                                                           email);
-                              });
+  const auto has_matching_email = [&email](const gaia::ListedAccount& account) {
+    return gaia::AreEmailsSame(account.email, email);
+  };
+
+  // Without fresh cookie info, it is unknown whether Gaia still has a valid
+  // session for `email`. If Gaia does have a valid session, `/AccountChooser`
+  // completes immediately without a new sign-in, so Chrome never receives a
+  // new refresh token and stays in the auth error state. In both cases, fall
+  // back to `/AddSession`, which always requires the challenge.
+  if (!accounts_in_cookie_jar.AreAccountsFresh() ||
+      std::ranges::any_of(accounts_in_cookie_jar.GetValidSignedInAccounts(),
+                          has_matching_email)) {
+    base::UmaHistogramEnumeration(
+        kReauthProceedToChallengeResultHistogram,
+        ReauthProceedToChallengeResult::kAddSessionFallback);
+    return false;
+  }
+
+  const bool account_in_cookies = std::ranges::any_of(
+      accounts_in_cookie_jar.GetAllAccounts(), has_matching_email);
+  base::UmaHistogramEnumeration(
+      kReauthProceedToChallengeResultHistogram,
+      account_in_cookies
+          ? ReauthProceedToChallengeResult::kProceedToChallenge
+          : ReauthProceedToChallengeResult::kAccountNotInCookies);
+  return true;
 }
 
 GURL GetAddAccountURLForDice(const std::string& email,
