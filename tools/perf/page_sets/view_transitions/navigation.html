@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<!--
+A page for UNSCHEDULED_view_transitions.navigation. Query parameters:
+  vt=1: Opts into cross-document view transitions.
+  i=N: Index of the navigation. Even and odd indices use different colors.
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Avoids a favicon request after each navigation. -->
+<link rel="icon" href="data:,">
+<title>View transition navigation</title>
+<script>
+  const params = new URLSearchParams(location.search);
+  const index = Number(params.get('i'));
+  if (params.get('vt') === '1') {
+    const style = document.createElement('style');
+    style.textContent = '@view-transition { navigation: auto; }';
+    document.head.appendChild(style);
+  }
+  document.documentElement.className = index % 2 ? 'odd' : 'even';
+
+  window.__results = {index};
+  addEventListener('pagereveal', event => {
+    window.__results.viewTransition = !!event.viewTransition;
+  });
+  new PerformanceObserver(list => {
+    for (const entry of list.getEntriesByName('first-contentful-paint')) {
+      window.__results.fcp = entry.startTime;
+    }
+  }).observe({type: 'paint', buffered: true});
+
+  // A renderer-initiated navigation, which can have a view transition.
+  function navigateToNextPage() {
+    params.set('i', index + 1);
+    location.href = location.pathname + '?' + params;
+  }
+</script>
+<style>
+  .even { --fg: #1d3557; --bg: #f1faee; --accent: #e63946; }
+  .odd { --fg: #264653; --bg: #fefae0; --accent: #2a9d8f; }
+  body { margin: 0; font-family: sans-serif; background: var(--bg);
+         color: var(--fg); }
+  header { background: var(--fg); color: var(--bg); padding: 16px 24px;
+           display: flex; align-items: center; gap: 16px;
+           box-shadow: 0 2px 6px rgba(0, 0, 0, .4); }
+  header .logo { width: 40px; height: 40px; border-radius: 50%;
+                 background: radial-gradient(circle at 30% 30%, #fff,
+                                             var(--accent)); }
+  nav a { color: var(--bg); margin-right: 12px; }
+  main { display: grid; grid-template-columns: 2fr 1fr; gap: 24px;
+         padding: 24px; }
+  article p { line-height: 1.5; }
+  .hero { height: 220px; border-radius: 12px;
+          background: linear-gradient(135deg, var(--accent), var(--fg)); }
+  .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .card { padding: 12px; border-radius: 8px; background: white;
+          box-shadow: 0 1px 4px rgba(0, 0, 0, .25); }
+  .card .thumb { height: 60px; border-radius: 6px;
+                 background: repeating-linear-gradient(
+                     45deg, var(--accent), var(--accent) 6px, var(--bg) 6px,
+                     var(--bg) 12px); }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"></div>
+  <h1 style="margin: 0">View transition navigation</h1>
+  <nav><a href="#">Home</a><a href="#">News</a><a href="#">Sports</a><a href="#">About</a></nav>
+</header>
+<main>
+<article>
+<div class="hero"></div>
+<h2>Section 0</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+<h2>Section 1</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+<h2>Section 2</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+<h2>Section 3</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+<h2>Section 4</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+<h2>Section 5</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+<h2>Section 6</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+<h2>Section 7</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+<h2>Section 8</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+<h2>Section 9</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+<h2>Section 10</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+<h2>Section 11</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+</article>
+<aside>
+<div class="cards">
+<div class="card"><div class="thumb"></div><p>Card 0: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i</p></div>
+<div class="card"><div class="thumb"></div><p>Card 1: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i</p></div>
+<div class="card"><div class="thumb"></div><p>Card 2: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i</p></div>
+<div class="card"><div class="thumb"></div><p>Card 3: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i</p></div>
+<div class="card"><div class="thumb"></div><p>Card 4: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i</p></div>
+<div class="card"><div class="thumb"></div><p>Card 5: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i</p></div>
+<div class="card"><div class="thumb"></div><p>Card 6: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i</p></div>
+<div class="card"><div class="thumb"></div><p>Card 7: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i</p></div>
+<div class="card"><div class="thumb"></div><p>Card 8: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i</p></div>
+<div class="card"><div class="thumb"></div><p>Card 9: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i</p></div>
+<div class="card"><div class="thumb"></div><p>Card 10: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i</p></div>
+<div class="card"><div class="thumb"></div><p>Card 11: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i</p></div>
+<div class="card"><div class="thumb"></div><p>Card 12: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i</p></div>
+<div class="card"><div class="thumb"></div><p>Card 13: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i</p></div>
+<div class="card"><div class="thumb"></div><p>Card 14: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i</p></div>
+<div class="card"><div class="thumb"></div><p>Card 15: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i</p></div>
+<div class="card"><div class="thumb"></div><p>Card 16: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i</p></div>
+<div class="card"><div class="thumb"></div><p>Card 17: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i</p></div>
+<div class="card"><div class="thumb"></div><p>Card 18: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i</p></div>
+<div class="card"><div class="thumb"></div><p>Card 19: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i</p></div>
+<div class="card"><div class="thumb"></div><p>Card 20: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i</p></div>
+<div class="card"><div class="thumb"></div><p>Card 21: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i</p></div>
+<div class="card"><div class="thumb"></div><p>Card 22: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i</p></div>
+<div class="card"><div class="thumb"></div><p>Card 23: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i</p></div>
+</div>
+</aside>
+</main>
+</body>
+</html>
