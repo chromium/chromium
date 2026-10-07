@@ -611,16 +611,9 @@ TEST_F(AudioProcessorHandlerTest,
 
   handler->StopProcessing();
 }
-// TODO(crbug.com/568298417): Enable on UBSan once the tests are fixed.
-#if defined(UNDEFINED_SANITIZER)
-#define MAYBE_VoiceIsolationHandlerMaybeCreateRegistersDebugRecorder \
-  DISABLED_VoiceIsolationHandlerMaybeCreateRegistersDebugRecorder
-#else
-#define MAYBE_VoiceIsolationHandlerMaybeCreateRegistersDebugRecorder \
-  VoiceIsolationHandlerMaybeCreateRegistersDebugRecorder
-#endif
+
 TEST_F(AudioProcessorHandlerTest,
-       MAYBE_VoiceIsolationHandlerMaybeCreateRegistersDebugRecorder) {
+       VoiceIsolationHandlerMaybeCreateRegistersDebugRecorder) {
   MockMlModelManager model_manager;
   EXPECT_CALL(model_manager,
               GetModel(mojom::MlModelType::kVoiceIsolationDenoiser))
@@ -682,16 +675,8 @@ TEST_F(AudioProcessorHandlerTest,
       /*error_callback=*/base::DoNothing());
   EXPECT_FALSE(handler);
 }
-// TODO(crbug.com/568298417): Enable on UBSan once the tests are fixed.
-#if defined(UNDEFINED_SANITIZER)
-#define MAYBE_VoiceIsolationHandlerMaybeCreateSuccess \
-  DISABLED_VoiceIsolationHandlerMaybeCreateSuccess
-#else
-#define MAYBE_VoiceIsolationHandlerMaybeCreateSuccess \
-  VoiceIsolationHandlerMaybeCreateSuccess
-#endif
-TEST_F(AudioProcessorHandlerTest,
-       MAYBE_VoiceIsolationHandlerMaybeCreateSuccess) {
+
+TEST_F(AudioProcessorHandlerTest, VoiceIsolationHandlerMaybeCreateSuccess) {
   MockMlModelManager model_manager;
   EXPECT_CALL(model_manager,
               GetModel(mojom::MlModelType::kVoiceIsolationDenoiser))
@@ -708,16 +693,8 @@ TEST_F(AudioProcessorHandlerTest,
   EXPECT_FALSE(handler->IsVoiceIsolationBypassedForTesting());
 }
 
-// TODO(crbug.com/568298417): Enable on UBSan once the tests are fixed.
-#if defined(UNDEFINED_SANITIZER)
-#define MAYBE_VoiceIsolationHandlerPassThroughDuringAsyncInitialization \
-  DISABLED_VoiceIsolationHandlerPassThroughDuringAsyncInitialization
-#else
-#define MAYBE_VoiceIsolationHandlerPassThroughDuringAsyncInitialization \
-  VoiceIsolationHandlerPassThroughDuringAsyncInitialization
-#endif
 TEST_F(AudioProcessorHandlerTest,
-       MAYBE_VoiceIsolationHandlerPassThroughDuringAsyncInitialization) {
+       VoiceIsolationHandlerPassThroughDuringAsyncInitialization) {
   MockMlModelManager model_manager;
   EXPECT_CALL(model_manager,
               GetModel(mojom::MlModelType::kVoiceIsolationDenoiser))
@@ -748,16 +725,8 @@ TEST_F(AudioProcessorHandlerTest,
   EXPECT_FALSE(delivered_same_instance);
 }
 
-// TODO(crbug.com/568298417): Enable on UBSan once the tests are fixed.
-#if defined(UNDEFINED_SANITIZER)
-#define MAYBE_VoiceIsolationHandlerDisableWhileInitializing \
-  DISABLED_VoiceIsolationHandlerDisableWhileInitializing
-#else
-#define MAYBE_VoiceIsolationHandlerDisableWhileInitializing \
-  VoiceIsolationHandlerDisableWhileInitializing
-#endif
 TEST_F(AudioProcessorHandlerTest,
-       MAYBE_VoiceIsolationHandlerDisableWhileInitializing) {
+       VoiceIsolationHandlerDisableWhileInitializing) {
   MockMlModelManager model_manager;
   EXPECT_CALL(model_manager,
               GetModel(mojom::MlModelType::kVoiceIsolationDenoiser))
@@ -782,16 +751,8 @@ TEST_F(AudioProcessorHandlerTest,
   EXPECT_TRUE(handler->IsVoiceIsolationBypassedForTesting());
 }
 
-// TODO(crbug.com/568298417): Enable on UBSan once the tests are fixed.
-#if defined(UNDEFINED_SANITIZER)
-#define MAYBE_VoiceIsolationHandlerDestroyWhileInitializing \
-  DISABLED_VoiceIsolationHandlerDestroyWhileInitializing
-#else
-#define MAYBE_VoiceIsolationHandlerDestroyWhileInitializing \
-  VoiceIsolationHandlerDestroyWhileInitializing
-#endif
 TEST_F(AudioProcessorHandlerTest,
-       MAYBE_VoiceIsolationHandlerDestroyWhileInitializing) {
+       VoiceIsolationHandlerDestroyWhileInitializing) {
   base::RunLoop run_loop;
   MockMlModelManager model_manager;
   EXPECT_CALL(model_manager,
@@ -808,16 +769,8 @@ TEST_F(AudioProcessorHandlerTest,
   run_loop.Run();
 }
 
-// TODO(crbug.com/568298417): Enable on UBSan once the tests are fixed.
-#if defined(UNDEFINED_SANITIZER)
-#define MAYBE_VoiceIsolationHandlerAsyncStartupSuccessMetrics \
-  DISABLED_VoiceIsolationHandlerAsyncStartupSuccessMetrics
-#else
-#define MAYBE_VoiceIsolationHandlerAsyncStartupSuccessMetrics \
-  VoiceIsolationHandlerAsyncStartupSuccessMetrics
-#endif
 TEST_F(AudioProcessorHandlerTest,
-       MAYBE_VoiceIsolationHandlerAsyncStartupSuccessMetrics) {
+       VoiceIsolationHandlerAsyncStartupSuccessMetrics) {
   base::HistogramTester histogram_tester;
   MockMlModelManager model_manager;
   EXPECT_CALL(model_manager,
@@ -848,16 +801,8 @@ TEST_F(AudioProcessorHandlerTest,
       "Media.Audio.Capture.VoiceIsolation.StartupDuration.Failure", 0);
 }
 
-// TODO(crbug.com/568298417): Enable on UBSan once the tests are fixed.
-#if defined(UNDEFINED_SANITIZER)
-#define MAYBE_VoiceIsolationHandlerAsyncStartupAbortedMetrics \
-  DISABLED_VoiceIsolationHandlerAsyncStartupAbortedMetrics
-#else
-#define MAYBE_VoiceIsolationHandlerAsyncStartupAbortedMetrics \
-  VoiceIsolationHandlerAsyncStartupAbortedMetrics
-#endif
 TEST_F(AudioProcessorHandlerTest,
-       MAYBE_VoiceIsolationHandlerAsyncStartupAbortedMetrics) {
+       VoiceIsolationHandlerAsyncStartupAbortedMetrics) {
   base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   MockMlModelManager model_manager;
@@ -1297,16 +1242,8 @@ TEST_F(AudioProcessorHandlerTest,
   audio_processor_handler->StopProcessing();
 }
 
-// TODO(crbug.com/568298417): Enable on UBSan once the tests are fixed.
-#if defined(UNDEFINED_SANITIZER)
-#define MAYBE_AudioPassesThroughDuringAsyncInitializationWithDedicatedFifo \
-  DISABLED_AudioPassesThroughDuringAsyncInitializationWithDedicatedFifo
-#else
-#define MAYBE_AudioPassesThroughDuringAsyncInitializationWithDedicatedFifo \
-  AudioPassesThroughDuringAsyncInitializationWithDedicatedFifo
-#endif
 TEST_F(AudioProcessorHandlerTest,
-       MAYBE_AudioPassesThroughDuringAsyncInitializationWithDedicatedFifo) {
+       AudioPassesThroughDuringAsyncInitializationWithDedicatedFifo) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(media::kWebRtcVoiceIsolationProcessingFifo);
 
