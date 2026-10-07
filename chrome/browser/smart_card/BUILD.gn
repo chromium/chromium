@@ -107,7 +107,6 @@ if (is_chromeos) {
       "//chrome/browser/permissions",
       "//chrome/browser/policy:test_support",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/views/permissions",
       "//chrome/test:test_support_ui",
       "//components/permissions:permissions_common",

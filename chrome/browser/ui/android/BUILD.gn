@@ -95,11 +95,11 @@ if (is_desktop_android) {
     sources = [ "browser_navigator_android_browsertest.cc" ]
     deps = [
       "//base",
+      "//chrome/browser",
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/tab_list",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/browser_window/test:android_browser_test_support",

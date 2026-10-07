@@ -153,7 +153,6 @@ source_set("browser_tests") {
     ":autofill",
     "//base",
     "//chrome/browser/autofill",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui/android/autofill:test_support",
     "//chrome/browser/ui/autofill",

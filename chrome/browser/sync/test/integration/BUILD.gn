@@ -676,7 +676,6 @@ if (!is_android) {
       ":sync_integration_test_support",
       "//chrome/app:chrome_dll_resources",
       "//chrome/app:command_ids",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/select_file_policy",

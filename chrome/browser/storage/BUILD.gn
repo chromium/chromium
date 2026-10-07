@@ -87,7 +87,6 @@ if (!is_android) {
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/prefs:util",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/common:non_code_constants",

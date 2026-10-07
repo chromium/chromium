@@ -21,7 +21,6 @@ static_library("test_support") {
     "//ash/public/cpp",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui/browser_web_contents_delegate",
     "//chrome/browser/ui/browser_window",

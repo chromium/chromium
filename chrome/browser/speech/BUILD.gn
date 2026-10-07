@@ -303,7 +303,6 @@ if (!is_android) {
       ":test_support",
       "//base",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/browser_window",
       "//chrome/test:test_support",
@@ -368,7 +367,6 @@ if (!is_android) {
         "speech_recognition_recognizer_client_impl_browsertest.cc",
       ]
       deps += [
-        "//chrome/browser/ui",
         "//components/soda:constants",
         "//components/soda:utils",
       ]

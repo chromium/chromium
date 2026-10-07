@@ -107,7 +107,6 @@ if (!is_android) {
       ":actions",
       "//base",
       "//base/test:test_support",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui:browser_command_controller",
       "//chrome/browser/ui:browser_commands",

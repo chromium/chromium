@@ -349,7 +349,6 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/signin",
       "//chrome/browser/ssl",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:tab_ui_helper",
       "//chrome/browser/ui:test_support",
@@ -430,7 +429,6 @@ if (!is_android) {
 
     deps = [
       "//chrome/browser/prefs",
-      "//chrome/browser/ui",
       "//chrome/test:test_support",
       "//chrome/test/supervised_user:live_tests",
       "//chrome/test/supervised_user:test_support",
