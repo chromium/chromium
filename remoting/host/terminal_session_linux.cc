@@ -15,7 +15,10 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 #include "base/base_paths.h"
 #include "base/check.h"
@@ -77,7 +80,7 @@ void KillTmuxSession(int32_t id) {
   if (!tmx2_path.empty()) {
     std::vector<std::string> tmux_args = {
         tmx2_path.value(), "-L", std::string(kTmuxSocketName),
-        "kill-session", "-t", GetTmuxSessionName(id)};
+        "kill-session",    "-t", GetTmuxSessionName(id)};
     base::Process process =
         base::LaunchProcess(tmux_args, base::LaunchOptions());
     if (process.IsValid()) {
@@ -99,8 +102,8 @@ std::optional<pid_t> GetTmuxPaneShellPid(int32_t id) {
 
   std::string output;
   std::vector<std::string> args = {
-      tmx2_path.value(), "-L", std::string(kTmuxSocketName),
-      "display-message", "-p", "-t",
+      tmx2_path.value(),      "-L", std::string(kTmuxSocketName),
+      "display-message",      "-p", "-t",
       GetTmuxSessionName(id), "-F", "#{pane_pid}"};
 
   if (!base::GetAppOutput(args, &output)) {
@@ -123,11 +126,15 @@ std::string GetTmuxScrollback(int32_t id) {
 
   // Capture full pane history with -epJ flags.
   std::string scrollback_output;
-  std::vector<std::string> args = {
-      tmx2_path.value(), "-L", std::string(kTmuxSocketName),
-      "capture-pane",    "-epJ",
-      "-S",              "-",
-      "-t",              GetTmuxSessionName(id)};
+  std::vector<std::string> args = {tmx2_path.value(),
+                                   "-L",
+                                   std::string(kTmuxSocketName),
+                                   "capture-pane",
+                                   "-epJ",
+                                   "-S",
+                                   "-",
+                                   "-t",
+                                   GetTmuxSessionName(id)};
 
   if (!base::GetAppOutput(args, &scrollback_output) ||
       scrollback_output.empty()) {
@@ -182,23 +189,50 @@ base::expected<base::Process, TerminalError> LaunchShellProcess(
             {kTmx2Path, " not found. Cannot launch terminal session."})));
   }
 
+  static constexpr std::pair<std::string_view, std::string_view>
+      kTmuxOptions[] = {
+          // Disable the alternate screen buffer (smcup/rmcup) for xterm* so
+          // output flows into the outer terminal's (xterm.js) native scrollback
+          // buffer.
+          {"terminal-overrides", "xterm*:smcup@:rmcup@"},
+          // Tell tmux the outer terminal (xterm.js) supports OSC 8 hyperlinks
+          // so that they are forwarded to the client instead of being stripped.
+          // Use an explicit array index so that repeated launches against the
+          // same tmux server don't keep appending duplicate entries.
+          {"terminal-features[1000]", "xterm*:hyperlinks"},
+          // Forward pane title changes to the outer terminal via OSC escape
+          // sequences so the CRD client can update the tab title.
+          {"set-titles", "on"},
+          // Use only the inner pane's title (#T) without tmux's default
+          // session/window prefix.
+          {"set-titles-string", "#T"},
+          // Hide the tmux status bar so the persistence session is visually
+          // transparent.
+          {"status", "off"},
+          // Disable tmux mouse capture so the outer terminal (xterm.js) handles
+          // native text selection and scrolling directly.
+          {"mouse", "off"},
+      };
+
+  // clang-format off
   std::vector<std::string> tmux_cmd = {
-    tmx2_path.value(),
-    "-L", std::string(kTmuxSocketName),
-    "set-option", "-s", "terminal-overrides", "xterm*:smcup@:rmcup@", ";",
-    // Tell tmux the outer terminal (xterm.js) supports OSC 8 hyperlinks so
-    // that they are forwarded to the client instead of being stripped. Use an
-    // explicit array index so that repeated launches against the same tmux
-    // server don't keep appending duplicate entries.
-    "set-option", "-s", "terminal-features[1000]", "xterm*:hyperlinks", ";",
-    "new-session", "-A", "-s", GetTmuxSessionName(id),
-    "-e", base::StrCat({"CRD_TERMINAL_ID=", base::NumberToString(id)}),
-    "-e", "CLI_GRAPHICS=iterm2", ";",
-    "set-option", "set-titles", "on", ";",
-    "set-option", "set-titles-string", "#T", ";",
-    "set-option", "-g", "status", "off", ";",
-    "set-option", "-g", "mouse", "off"
+      tmx2_path.value(),
+      // Use the CRD-specific tmux socket name to avoid conflicts with other
+      // tmux sessions.
+      "-L", std::string(kTmuxSocketName),
   };
+  for (const auto& [name, value] : kTmuxOptions) {
+    tmux_cmd.insert(tmux_cmd.end(), {"set-option", "-g", std::string(name),
+                                     std::string(value), ";"});
+  }
+  tmux_cmd.insert(
+      tmux_cmd.end(),
+      {
+          "new-session", "-A", "-s", GetTmuxSessionName(id),
+          "-e", base::StrCat({"CRD_TERMINAL_ID=", base::NumberToString(id)}),
+          "-e", "CLI_GRAPHICS=iterm2", ";",
+      });
+  // clang-format on
 
   base::LaunchOptions options;
   base::FilePath home_dir;
@@ -305,8 +339,7 @@ class TerminalSessionLinux : public TerminalSession {
     // Since this is asynchronous, `callback` is guaranteed to run before any
     // output is delivered.
     writer_task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&GetTmuxScrollback, id_),
+        FROM_HERE, base::BindOnce(&GetTmuxScrollback, id_),
         base::BindOnce(&TerminalSessionLinux::OnScrollbackRetrieved,
                        weak_factory_.GetWeakPtr()));
 
@@ -368,8 +401,8 @@ class TerminalSessionLinux : public TerminalSession {
     }
     terminated_ = true;
     if (writer_task_runner_) {
-      writer_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&KillTmuxSession, id_));
+      writer_task_runner_->PostTask(FROM_HERE,
+                                    base::BindOnce(&KillTmuxSession, id_));
     }
     CleanupLocalSession();
   }
@@ -439,8 +472,8 @@ class TerminalSessionLinux : public TerminalSession {
     process_monitor_.reset();
     if (process_.IsValid() && writer_task_runner_) {
       writer_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(&TerminateProcessInBackground,
-                                    std::move(process_)));
+          FROM_HERE,
+          base::BindOnce(&TerminateProcessInBackground, std::move(process_)));
     }
     if (pty_fd_.is_valid() && writer_task_runner_) {
       // Post the destruction of pty_fd_ to the writer task runner
@@ -538,8 +571,8 @@ class TerminalSessionLinux : public TerminalSession {
     }
     if (pid) {
       shell_pid_ = *pid;
-      HOST_LOG << "Retrieved shell PID " << *pid
-               << " for terminal session " << id_;
+      HOST_LOG << "Retrieved shell PID " << *pid << " for terminal session "
+               << id_;
       if (process_info_callback_) {
         process_monitor_ = std::make_unique<TerminalProcessMonitorLinux>(
             *pid,
@@ -552,9 +585,8 @@ class TerminalSessionLinux : public TerminalSession {
     }
   }
 
-  void OnProcessInfoChanged(
-      bool is_active,
-      const std::optional<std::string>& process_name) {
+  void OnProcessInfoChanged(bool is_active,
+                            const std::optional<std::string>& process_name) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (detached_ || terminated_) {
       HOST_LOG << "OnProcessInfoChanged called after detach or terminate, "
@@ -588,8 +620,8 @@ class TerminalSessionLinux : public TerminalSession {
   bool terminated_ = false;
   scoped_refptr<base::SequencedTaskRunner> writer_task_runner_;
   std::optional<pid_t> shell_pid_ GUARDED_BY_CONTEXT(sequence_checker_);
-  bool shell_pid_retrieval_started_
-      GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool shell_pid_retrieval_started_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -610,8 +642,7 @@ std::unique_ptr<TerminalSession> TerminalSession::Create(
     TerminalSessionManager::ProcessInfoCallback process_info_cb,
     int32_t id) {
   return std::make_unique<TerminalSessionLinux>(
-      std::move(output_cb), std::move(exit_cb), std::move(process_info_cb),
-      id);
+      std::move(output_cb), std::move(exit_cb), std::move(process_info_cb), id);
 }
 
 // static
