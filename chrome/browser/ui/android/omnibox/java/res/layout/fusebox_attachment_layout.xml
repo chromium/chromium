@@ -74,6 +74,6 @@ found in the LICENSE file.
         android:contentDescription="@string/acc_remove_attachment"
         android:scaleType="fitCenter"
         android:src="@drawable/btn_close"
-        app:tint="@color/default_icon_color_secondary_baseline" />
+        app:tint="@macro/default_icon_color_secondary" />
 
 </FrameLayout>
