@@ -89,6 +89,10 @@ public final class EventConstants {
     /** AutoDark theme settings opened while feature enabled. */
     public static final String AUTO_DARK_SETTINGS_OPENED = "auto_dark_settings_opened";
 
+    /** Trigger event for the blue bubble IPH cooldown group. */
+    public static final String BLUE_BUBBLE_COOLDOWN_GROUP_TRIGGER =
+            "blue_bubble_cooldown_group_trigger";
+
     /** User has activated menu allowing them to move the toolbar to the bottom of the screen. */
     public static final String BOTTOM_TOOLBAR_MENU_TRIGGERED = "bottom_toolbar_menu_triggered";
 
@@ -158,6 +162,10 @@ public final class EventConstants {
 
     /** 'Manage windows' menu for multi-instance support feature was tapped. */
     public static final String INSTANCE_SWITCHER_IPH_USED = "instance_switcher_iph_used";
+
+    /** Trigger event for the interruptive IPH cooldown group. */
+    public static final String INTERRUPTIVE_IPH_COOLDOWN_GROUP_TRIGGER =
+            "interruptive_iph_cooldown_group_trigger";
 
     /** Shared Highlighting button event */
     public static final String IPH_SHARED_HIGHLIGHTING_USED = "iph_shared_highlighting_used";

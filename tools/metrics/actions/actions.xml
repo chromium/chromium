@@ -315,6 +315,8 @@ should be able to be added at any place in this file.
   <variant name="_BadgedTranslateManualTrigger"
       summary="For BadgedTranslateManualTrigger feature."/>
   <variant name="_BatterySaverMode" summary="For BatterySaverMode feature."/>
+  <variant name="_BlueBubbleCooldownGroup"
+      summary="Cooldown group for blue bubble IPHs on Android."/>
   <variant name="_Bookmark" summary="For Bookmark feature."/>
   <variant name="_BookmarkBarSimplified"
       summary="For bookmark bar simplified auto-hide toast."/>
@@ -536,6 +538,8 @@ should be able to be added at any place in this file.
   <variant name="_IntentChip"
       summary="In product help for opening a webpage in an app using the
                intent chip."/>
+  <variant name="_InterruptiveIphCooldownGroup"
+      summary="Cooldown group for interruptive IPHs on Android."/>
   <variant name="_iOSAddressPromoDesktop"
       summary="For iOSAddressPromoDesktop feature"/>
   <variant name="_iOSAIHubNewBadge" summary="For AI Hub New Badge feature."/>

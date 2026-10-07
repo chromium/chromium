@@ -816,6 +816,52 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPH_BlueBubbleCooldownGroup.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = kAlwaysAvailable;
+    // The blue bubble IPH cooldown relies on the session rate to determine
+    // whether it is OK for an IPH to show (at most 1 per session).
+    config.session_rate = Comparator(EQUAL, 0);
+    config.session_rate_impact.type = SessionRateImpact::Type::EXPLICIT;
+    config.session_rate_impact.affected_features =
+        std::vector<std::string>{kIPH_BlueBubbleCooldownGroup.name};
+    config.blocked_by.type = BlockedBy::Type::NONE;
+    config.blocking.type = Blocking::Type::NONE;
+    // Use an always-true condition here because the cooldown rule is only
+    // decided by the session rate.
+    config.trigger =
+        EventConfig("blue_bubble_cooldown_group_trigger", kAlwaysTrue, 0, 360);
+    // Required for valid config; never fired (count == 0), so EQUAL 0 never
+    // blocks.
+    config.used =
+        EventConfig("cooldown_group_used", Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+
+  if (kIPH_InterruptiveIphCooldownGroup.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = kAlwaysAvailable;
+    // Use a no-restrictions condition here because the cooldown rule is only
+    // decided by the trigger condition.
+    config.session_rate = kNoRestrictions;
+    config.session_rate_impact.type = SessionRateImpact::Type::EXPLICIT;
+    config.session_rate_impact.affected_features =
+        std::vector<std::string>{kIPH_InterruptiveIphCooldownGroup.name};
+    config.blocked_by.type = BlockedBy::Type::NONE;
+    config.blocking.type = Blocking::Type::NONE;
+    // The interruptive IPH cooldown relies on the trigger condition to
+    // determine whether it is OK for an IPH to show (at most 1 every 3 days).
+    config.trigger = EventConfig("interruptive_iph_cooldown_group_trigger",
+                                 Comparator(EQUAL, 0), 3, 360);
+    // Required for valid config; never fired (count == 0), so EQUAL 0 never
+    // blocks.
+    config.used =
+        EventConfig("cooldown_group_used", Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+
   if (kIPHFuseboxAttachmentFeature.name == feature->name) {
     // A config that allows measurement for user engagement on the fusebox
     // attachment button by checking:

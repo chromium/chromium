@@ -39,6 +39,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.AUTO_DARK_OPT_OUT_FEATURE,
     FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE,
     FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_OPT_IN_FEATURE,
+    FeatureConstants.BLUE_BUBBLE_COOLDOWN_GROUP,
     FeatureConstants.BOOKMARK_BAR_VISIBILITY_FEATURE,
     FeatureConstants.BOTTOM_TOOLBAR_FEATURE,
     FeatureConstants.CCT_HISTORY_FEATURE,
@@ -72,6 +73,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.GLIC_PROMO_ANDROID_FEATURE,
     FeatureConstants.IDENTITY_DISC_FEATURE,
     FeatureConstants.INSTANCE_SWITCHER,
+    FeatureConstants.INTERRUPTIVE_IPH_COOLDOWN_GROUP,
     FeatureConstants.IPH_EXTENSIONS_MANAGE_APP_MENU_FEATURE,
     FeatureConstants.IPH_EXTENSIONS_MANAGE_TOOLBAR_FEATURE,
     FeatureConstants.IPH_EXTENSIONS_PINNED_BY_DEFAULT_FEATURE,
@@ -193,6 +195,9 @@ public @interface FeatureConstants {
     String AUTO_DARK_USER_EDUCATION_MESSAGE_OPT_IN_FEATURE =
             "IPH_AutoDarkUserEducationMessageOptIn";
 
+    /** Cooldown group for blue bubble IPHs on Android. */
+    String BLUE_BUBBLE_COOLDOWN_GROUP = "IPH_BlueBubbleCooldownGroup";
+
     String BOOKMARK_BAR_VISIBILITY_FEATURE = "IPH_BookmarkBarVisibility";
 
     String BOTTOM_TOOLBAR_FEATURE = "IPH_BottomToolbarTip";
@@ -288,6 +293,9 @@ public @interface FeatureConstants {
      * with instance switcher.
      */
     String INSTANCE_SWITCHER = "IPH_InstanceSwitcher";
+
+    /** Cooldown group for interruptive IPHs on Android. */
+    String INTERRUPTIVE_IPH_COOLDOWN_GROUP = "IPH_InterruptiveIphCooldownGroup";
 
     /**
      * An IPH feature that shows after the extensions menu is uninstalled to inform users to manage
