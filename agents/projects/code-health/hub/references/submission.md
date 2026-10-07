@@ -49,10 +49,11 @@ choices "Yes, submit this cleanup" and "No, keep local changes uncommitted".
 
        Bug: <Parent Bug>, <Bug ID>
        ```
-       **CRITICAL**: The first line (subject line) of the commit message must be
-       under 72 characters. Use a shortened component name if necessary.
-       **CRITICAL**: Explicitly omit any `TAG=` or `CONV=` lines from the commit
-       message. Do NOT include them.
+       Always include `<Parent Bug>` in the `Bug:` footer (omit `<Bug ID>` if it
+       is `"none"`). **CRITICAL**: The first line (subject line) of the commit
+       message must be under 72 characters. Use a shortened component name if
+       necessary. **CRITICAL**: Explicitly omit any `TAG=` or `CONV=` lines from
+       the commit message. Do NOT include them.
      - Commit the changes using `git commit -m "<drafted message>"`.
   4. **Upload**: Run
      `git pull origin main --rebase > /dev/null 2>&1 && gclient sync -D > /dev/null 2>&1`
