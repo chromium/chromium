@@ -373,6 +373,9 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
 
 // Returns whether the provided `suggestion` has a context menu.
 bool ShouldShowContextMenu(FormSuggestion* suggestion) {
+  if (!suggestion) {
+    return false;
+  }
   switch (suggestion.type) {
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kBackupPasswordEntry:
@@ -388,6 +391,9 @@ bool ShouldShowContextMenu(FormSuggestion* suggestion) {
 
 // Returns whether the provided `suggestion` has an edit action.
 bool ShouldShowEditAction(FormSuggestion* suggestion) {
+  if (!suggestion) {
+    return false;
+  }
   switch (suggestion.type) {
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kBackupPasswordEntry:
@@ -641,10 +647,7 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
     ConfigureFetchingAmbientDataSuggestion(stackView, _suggestion.value,
                                            _isCompact);
     [self setUserInteractionEnabled:NO];
-    return;
-  }
-
-  if (_suggestion.icon) {
+  } else if (_suggestion.icon) {
     UIImageView* iconView = [[UIImageView alloc]
         initWithImage:[self resizeIconIfNecessary:_suggestion.icon]];
     // If we have an icon, we want to see the icon and let the text be
@@ -682,10 +685,18 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
                                 base::NumberToString16(_numberOfSuggestions))];
   [self setAccessibilityIdentifier:kFormSuggestionLabelAccessibilityIdentifier];
 
+  NSString* accessibilityHint = nil;
+  if (_isContextMenuEnabled && ShouldShowContextMenu(_suggestion)) {
+    accessibilityHint =
+        l10n_util::GetNSString(IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_NEW_TAB);
+  }
+  [self setAccessibilityHint:accessibilityHint];
+
   NSString* minorValue = isPasskey ? nil : _suggestion.minorValue;
 
   BOOL hasText =
       _suggestion.type != SuggestionType::kAutocompleteAtMemoryButton &&
+      _suggestion.type != SuggestionType::kFetchingAmbientData &&
       (suggestionText.length > 0 || minorValue.length > 0 ||
        displayDescription.length > 0);
 
