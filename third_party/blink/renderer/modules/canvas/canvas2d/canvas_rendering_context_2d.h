@@ -177,6 +177,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
       canvas()->ClearCanvas2DLayerTexture();
     }
   }
+  scoped_refptr<StaticBitmapImage> Snapshot() override;
 
   // CanvasRenderingContext implementation
   bool IsComposited() const override;
