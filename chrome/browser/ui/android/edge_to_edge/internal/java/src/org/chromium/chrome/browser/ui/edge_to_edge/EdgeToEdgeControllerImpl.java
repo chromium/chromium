@@ -59,9 +59,9 @@ import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer.InsetConsumerSo
 import org.chromium.ui.util.TokenHolder;
 
 /**
- * Controls use of the Android Edge To Edge feature that allows an App to draw benieth the Status
- * and Navigation Bars. For Chrome, we intentend to sometimes draw under the Nav Bar but not the
- * Status Bar.
+ * Controls use of the Android Edge To Edge feature that allows an App to draw beneath the Status
+ * and Navigation Bars. For Chrome, we intend to sometimes draw under the Status Bar (e.g. for
+ * customized NTPs) and/or the Navigation Bar.
  */
 @NullMarked
 @RequiresApi(VERSION_CODES.R)
@@ -80,7 +80,7 @@ public class EdgeToEdgeControllerImpl
     private final WindowAndroid mWindowAndroid;
     private final TabSupplierObserver mTabSupplierObserver;
     private final ObserverList<EdgeToEdgePadAdjuster> mPadAdjusters = new ObserverList<>();
-    private final ObserverList<ChangeObserver> mEdgeChangeObservers = new ObserverList<>();
+    private final ObserverList<ChangeObserver> mBottomEdgeChangeObservers = new ObserverList<>();
     private final TabObserver mTabObserver;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final MonotonicObservableSupplier<LayoutManager> mLayoutManagerSupplier;
@@ -110,22 +110,21 @@ public class EdgeToEdgeControllerImpl
 
     /**
      * Whether the system is drawing "toEdge" (i.e. the edge-to-edge wrapper has no bottom padding).
-     * This could be due to the current page being opted into edge-to-edge, or a partial
+     * This could be due to the current page being opted into bottom edge-to-edge, or a partial
      * edge-to-edge with the bottom chin present.
      */
-    private boolean mIsDrawingToEdge;
+    private boolean mIsDrawingToBottomEdge;
 
     /**
-     * Whether the edge-to-edge feature is enabled and the current tab content is showing
-     * edge-to-edge. This could be from the web content being opted in, or from the tab showing a
-     * native page that supports edge-to-edge.
+     * Whether the page is opted into bottom edge-to-edge. This could be from the web content being
+     * opted in, or from the tab showing a native page that supports bottom edge-to-edge.
      */
-    private boolean mIsPageOptedIntoEdgeToEdge;
+    private boolean mIsPageOptedIntoBottomEdgeToEdge;
 
     /**
      * Whether the page should constrain the safe area, which requires the page to be retained
      * within the safe area region. This essentially opts the page out of edge-to-edge, regardless
-     * of other flags and values (e.g. |mIsPageOptedIntoEdgeToEdge|)
+     * of other flags and values (e.g. |mIsPageOptedIntoBottomEdgeToEdge|)
      */
     private boolean mHasSafeAreaConstraint;
 
@@ -198,8 +197,8 @@ public class EdgeToEdgeControllerImpl
                         if (tab == null || tab != mCurrentTab) {
                             return;
                         }
-                        boolean wasDrawingToTopEdge = isDrawingToTopEdge();
-                        drawToEdge(
+                        boolean topEdgeChanged = updateTopEdgeToEdge();
+                        drawToBottomEdge(
                                 EdgeToEdgeUtils.isPageOptedIntoBottomEdgeToEdge(tab),
                                 /* changedWindowState= */ false);
                         EdgeToEdgeControllerImpl.this.onContentViewScrollingStateChanged(
@@ -207,9 +206,9 @@ public class EdgeToEdgeControllerImpl
                         if (tab.getWebContents() != null) {
                             updateWebContentsObserver(tab);
                         }
-                        // Only retrigger when we draw to the top edge, to reduce the number of
-                        // calls to retriggerOnApplyWindowInsets.
-                        if (wasDrawingToTopEdge != isDrawingToTopEdge() && mInsetObserver != null) {
+                        // Only retrigger when the top edge-to-edge state changes, to reduce the
+                        // number of calls to retriggerOnApplyWindowInsets.
+                        if (topEdgeChanged && mInsetObserver != null) {
                             mInsetObserver.retriggerOnApplyWindowInsets();
                         }
                     }
@@ -252,7 +251,7 @@ public class EdgeToEdgeControllerImpl
         mWindowInsetsConsumer = this::handleWindowInsets;
         mInsetObserver.addInsetsConsumer(
                 mWindowInsetsConsumer, InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_IMPL);
-        mIsBottomChinEnabled = isSupportedByConfiguration(mActivity, mInsetObserver);
+        mIsBottomChinEnabled = isBottomChinSupportedByConfiguration(mActivity, mInsetObserver);
         mIsEdgeToEdgeRefactorEnabled = EdgeToEdgeUtils.isEdgeToEdgeRefactorEnabled();
 
         mEdgeToEdgeStateProvider = mEdgeToEdgeManager.getEdgeToEdgeStateProvider();
@@ -301,12 +300,14 @@ public class EdgeToEdgeControllerImpl
 
         mConsumeTopInset = shouldDrawTopEdgeToEdge(mCurrentTab);
         // retriggerOnApplyWindowInsets to populate all the initial state.
-        mIsPageOptedIntoEdgeToEdge = EdgeToEdgeUtils.isPageOptedIntoBottomEdgeToEdge(mCurrentTab);
+        mIsPageOptedIntoBottomEdgeToEdge =
+                EdgeToEdgeUtils.isPageOptedIntoBottomEdgeToEdge(mCurrentTab);
         mInsetObserver.retriggerOnApplyWindowInsets();
     }
 
     @VisibleForTesting
-    static boolean isSupportedByConfiguration(Activity activity, InsetObserver insetObserver) {
+    static boolean isBottomChinSupportedByConfiguration(
+            Activity activity, InsetObserver insetObserver) {
         if (shouldMonitorConfigurationChanges()) {
             return EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(activity)
                     && EdgeToEdgeUtils.doAllInsetsIndicateGestureNavigation(
@@ -317,8 +318,6 @@ public class EdgeToEdgeControllerImpl
 
     @VisibleForTesting
     void onTabSwitched(@Nullable Tab tab) {
-        boolean wasDrawingToTopEdge = isDrawingToTopEdge();
-
         if (mCurrentTab != null) mCurrentTab.removeObserver(mTabObserver);
         mCurrentTab = tab;
         if (tab != null) {
@@ -328,18 +327,15 @@ public class EdgeToEdgeControllerImpl
             }
         }
 
-        drawToEdge(
+        boolean topEdgeChanged = updateTopEdgeToEdge();
+        drawToBottomEdge(
                 EdgeToEdgeUtils.isPageOptedIntoBottomEdgeToEdge(mCurrentTab),
                 /* changedWindowState= */ false);
         onContentViewScrollingStateChanged(/* scrolling= */ false);
-
-        if (!mIsTabSwitcherShowing) {
-            boolean isDrawingToTopEdge = isDrawingToTopEdge();
-            // Only retrigger when the top edge-to-edge state changes to
-            // avoid unnecessary retriggers.
-            if (wasDrawingToTopEdge != isDrawingToTopEdge && mInsetObserver != null) {
-                mInsetObserver.retriggerOnApplyWindowInsets();
-            }
+        // Only retrigger when the top edge-to-edge state changes to
+        // avoid unnecessary retriggers.
+        if (topEdgeChanged && !mIsTabSwitcherShowing && mInsetObserver != null) {
+            mInsetObserver.retriggerOnApplyWindowInsets();
         }
     }
 
@@ -360,7 +356,7 @@ public class EdgeToEdgeControllerImpl
     @Override
     public boolean isDrawingToTopEdge() {
         // TODO(crbug.com/498302496): When top edge-to-edge expands to web pages, update this to
-        // also check page opt-in (mIsPageOptedIntoEdgeToEdge).
+        // also check top edge-to-edge page opt-in.
         assert !mConsumeTopInset || mIsEdgeToEdgeRefactorEnabled
                 : "Top inset should not be consumed when edge-to-edge top inset is disabled";
         return mConsumeTopInset;
@@ -384,11 +380,42 @@ public class EdgeToEdgeControllerImpl
         return false;
     }
 
+    /**
+     * Updates whether the system is drawing edge-to-edge on the top based on the current tab, and
+     * adjusts the root view edge paddings if the top edge-to-edge state changed.
+     *
+     * @return Whether the top edge-to-edge state changed.
+     */
+    private boolean updateTopEdgeToEdge() {
+        boolean wasDrawingToTopEdge = isDrawingToTopEdge();
+        mConsumeTopInset = shouldDrawTopEdgeToEdge(mCurrentTab);
+        boolean changedTopEdge = wasDrawingToTopEdge != isDrawingToTopEdge();
+        if (changedTopEdge) {
+            adjustEdgePaddings();
+        }
+        return changedTopEdge;
+    }
+
+    private void notifyTopInsetObservers() {
+        @LayoutType
+        int activeLayoutType =
+                mLayoutManager != null ? mLayoutManager.getActiveLayoutType() : LayoutType.NONE;
+        // Skip notifying top observers when in the Hub with a null tab (crbug.com/491888405) so
+        // the toolbar does not lose its top padding when closing the last tab in the Hub.
+        boolean shouldNotifyTopObservers =
+                mCurrentTab != null || activeLayoutType != LayoutType.HUB;
+        if (shouldNotifyTopObservers) {
+            for (var observer : mTopInsetObservers) {
+                observer.onToEdgeChange(mSystemInsets.top, isDrawingToTopEdge(), activeLayoutType);
+            }
+        }
+    }
+
     @Override
     public void setStatusIndicatorVisible(boolean visible) {
         if (mStatusIndicatorVisible == visible) return;
         mStatusIndicatorVisible = visible;
-        drawToEdge(mIsPageOptedIntoEdgeToEdge, /* changedWindowState= */ false);
+        updateTopEdgeToEdge();
         if (mInsetObserver != null) {
             mInsetObserver.retriggerOnApplyWindowInsets();
         }
@@ -404,18 +431,17 @@ public class EdgeToEdgeControllerImpl
         boolean shouldRefreshWindowInsets = oldType == NtpBackgroundType.DEFAULT;
         if (fromInitialization || !shouldRefreshWindowInsets) return;
 
-        changeConsumeTopInset();
+        updateTopEdgeToEdge();
+        if (mInsetObserver != null) {
+            mInsetObserver.retriggerOnApplyWindowInsets();
+        }
     }
 
     @VisibleForTesting
     void onNtpBackgroundReset(@NtpBackgroundType int oldType) {
         if (oldType == NtpBackgroundType.DEFAULT) return;
 
-        changeConsumeTopInset();
-    }
-
-    private void changeConsumeTopInset() {
-        drawToEdge(mIsPageOptedIntoEdgeToEdge, /* changedWindowState= */ false);
+        updateTopEdgeToEdge();
         if (mInsetObserver != null) {
             mInsetObserver.retriggerOnApplyWindowInsets();
         }
@@ -437,22 +463,22 @@ public class EdgeToEdgeControllerImpl
 
     @Override
     public void registerObserver(ChangeObserver changeObserver) {
-        mEdgeChangeObservers.addObserver(changeObserver);
+        mBottomEdgeChangeObservers.addObserver(changeObserver);
     }
 
     @Override
     public void unregisterObserver(ChangeObserver changeObserver) {
-        mEdgeChangeObservers.removeObserver(changeObserver);
+        mBottomEdgeChangeObservers.removeObserver(changeObserver);
     }
 
     @Override
     public int getBottomInset() {
-        return isDrawingToEdge() ? (int) Math.ceil(mSystemInsets.bottom * mPxToDp) : 0;
+        return mIsDrawingToBottomEdge ? (int) Math.ceil(mSystemInsets.bottom * mPxToDp) : 0;
     }
 
     @Override
     public int getBottomInsetPx() {
-        return isDrawingToEdge() ? mSystemInsets.bottom : 0;
+        return mIsDrawingToBottomEdge ? mSystemInsets.bottom : 0;
     }
 
     @Override
@@ -462,12 +488,12 @@ public class EdgeToEdgeControllerImpl
 
     @Override
     public boolean isDrawingToEdge() {
-        return mIsDrawingToEdge;
+        return mIsDrawingToBottomEdge;
     }
 
     @Override
     public boolean isPageOptedIntoEdgeToEdge() {
-        return mIsPageOptedIntoEdgeToEdge;
+        return mIsPageOptedIntoBottomEdgeToEdge;
     }
 
     // BrowserControlsStateProvider.Observer
@@ -512,7 +538,7 @@ public class EdgeToEdgeControllerImpl
 
     @Override
     public void onStartedShowing(int layoutType) {
-        drawToEdge(mIsPageOptedIntoEdgeToEdge, false);
+        drawToBottomEdge(mIsPageOptedIntoBottomEdgeToEdge, false);
     }
 
     @Override
@@ -539,12 +565,12 @@ public class EdgeToEdgeControllerImpl
     // FullscreenManager.Observer
     @Override
     public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
-        drawToEdge(mIsPageOptedIntoEdgeToEdge, /* changedWindowState= */ true);
+        drawToBottomEdge(mIsPageOptedIntoBottomEdgeToEdge, /* changedWindowState= */ true);
     }
 
     @Override
     public void onExitFullscreen(Tab tab) {
-        drawToEdge(mIsPageOptedIntoEdgeToEdge, /* changedWindowState= */ true);
+        drawToBottomEdge(mIsPageOptedIntoBottomEdgeToEdge, /* changedWindowState= */ true);
     }
 
     private View getContentView() {
@@ -575,7 +601,7 @@ public class EdgeToEdgeControllerImpl
                 new WebContentsObserver(tab.getWebContents()) {
                     @Override
                     public void viewportFitChanged(@WebContentsObserver.ViewportFitType int value) {
-                        drawToEdge(
+                        drawToBottomEdge(
                                 EdgeToEdgeUtils.isPageOptedIntoBottomEdgeToEdge(mCurrentTab, value),
                                 /* changedWindowState= */ false);
                     }
@@ -587,7 +613,7 @@ public class EdgeToEdgeControllerImpl
                         }
 
                         mHasSafeAreaConstraint = hasConstraint;
-                        for (var observer : mEdgeChangeObservers) {
+                        for (var observer : mBottomEdgeChangeObservers) {
                             observer.onSafeAreaConstraintChanged(mHasSafeAreaConstraint);
                         }
                     }
@@ -603,21 +629,23 @@ public class EdgeToEdgeControllerImpl
             newValue.addObserver(this);
         }
         mLayoutManager = newValue;
-        drawToEdge(
+        drawToBottomEdge(
                 EdgeToEdgeUtils.isPageOptedIntoBottomEdgeToEdge(mCurrentTab),
                 /* changedWindowState= */ false);
     }
 
     /**
-     * Conditionally draws the given View ToEdge or ToNormal based on the {@code toEdge} param.
+     * Conditionally draws the given View ToEdge or ToNormal on the bottom based on the {@code
+     * pageOptedIntoBottomEdgeToEdge} param.
      *
-     * @param pageOptedIntoEdgeToEdge Whether the page is opted into edge-to-edge.
+     * @param pageOptedIntoBottomEdgeToEdge Whether the page is opted into bottom edge-to-edge.
      * @param changedWindowState Whether this method is called due to window state changed (e.g.
      *     windowInsets updated, window goes into fullscreen mode).
      */
     @VisibleForTesting
-    void drawToEdge(boolean pageOptedIntoEdgeToEdge, boolean changedWindowState) {
-        final boolean isChinEnabled = isSupportedByConfiguration(mActivity, mInsetObserver);
+    void drawToBottomEdge(boolean pageOptedIntoBottomEdgeToEdge, boolean changedWindowState) {
+        final boolean isChinEnabled =
+                isBottomChinSupportedByConfiguration(mActivity, mInsetObserver);
 
         if (!isChinEnabled && !mIsEdgeToEdgeRefactorEnabled) {
             EdgeToEdgeUtils.recordDrawToEdgeInUnsupportedConfig(changedWindowState);
@@ -634,52 +662,51 @@ public class EdgeToEdgeControllerImpl
         @LayoutType
         int currentLayoutType =
                 mLayoutManager != null ? mLayoutManager.getActiveLayoutType() : LayoutType.NONE;
-        boolean shouldDrawToEdge =
+        boolean shouldDrawToBottomEdge =
                 EdgeToEdgeUtils.shouldDrawToBottomEdge(
-                        pageOptedIntoEdgeToEdge, currentLayoutType, mSystemInsets.bottom);
-        shouldDrawToEdge &= isChinEnabled;
-        pageOptedIntoEdgeToEdge &= isChinEnabled;
+                        pageOptedIntoBottomEdgeToEdge, currentLayoutType, mSystemInsets.bottom);
+        shouldDrawToBottomEdge &= isChinEnabled;
+        pageOptedIntoBottomEdgeToEdge &= isChinEnabled;
         // Refresh the mHasSafeAreaConstraint to ensure the boolean stays fresh (e.g. when
-        // #drawToEdge is called due to tab switching)
+        // #drawToBottomEdge is called due to tab switching)
         boolean hasSafeAreaConstraint = EdgeToEdgeUtils.hasSafeAreaConstraintForTab(mCurrentTab);
 
-        boolean changedPageOptedIn = pageOptedIntoEdgeToEdge != mIsPageOptedIntoEdgeToEdge;
-        boolean changedDrawToEdge = shouldDrawToEdge != mIsDrawingToEdge;
+        boolean changedPageOptedIn =
+                pageOptedIntoBottomEdgeToEdge != mIsPageOptedIntoBottomEdgeToEdge;
+        boolean changedDrawToBottomEdge = shouldDrawToBottomEdge != mIsDrawingToBottomEdge;
         boolean changedSafeAreaConstraint = mHasSafeAreaConstraint != hasSafeAreaConstraint;
-        mIsPageOptedIntoEdgeToEdge = pageOptedIntoEdgeToEdge;
-        mIsDrawingToEdge = shouldDrawToEdge;
+        mIsPageOptedIntoBottomEdgeToEdge = pageOptedIntoBottomEdgeToEdge;
+        mIsDrawingToBottomEdge = shouldDrawToBottomEdge;
         mHasSafeAreaConstraint = hasSafeAreaConstraint;
 
         if (changedPageOptedIn) {
             Log.v(
                     TAG,
                     "Switching %s",
-                    (mIsPageOptedIntoEdgeToEdge
+                    (mIsPageOptedIntoBottomEdgeToEdge
                             ? "Opted into EdgeToEdge"
                             : "Not opted into EdgeToEdge"));
         }
 
-        if (changedDrawToEdge) {
-            Log.v(TAG, "Switching %s", (mIsDrawingToEdge ? "ToEdge" : "ToNormal"));
+        if (changedDrawToBottomEdge) {
+            Log.v(TAG, "Switching %s", (mIsDrawingToBottomEdge ? "ToEdge" : "ToNormal"));
         }
 
-        boolean wasDrawingToTopEdge = isDrawingToTopEdge();
-        mConsumeTopInset = shouldDrawTopEdgeToEdge(mCurrentTab);
-        boolean changedDrawToTopEdge = wasDrawingToTopEdge != isDrawingToTopEdge();
-
-        if (changedPageOptedIn || changedDrawToEdge || changedDrawToTopEdge || changedWindowState) {
+        if (changedPageOptedIn || changedDrawToBottomEdge || changedWindowState) {
             adjustEdgePaddings();
             pushSafeAreaInsetUpdate();
             updatePadAdjusters();
 
-            for (var observer : mEdgeChangeObservers) {
+            for (var observer : mBottomEdgeChangeObservers) {
                 observer.onToEdgeChange(
-                        mSystemInsets.bottom, isDrawingToEdge(), isPageOptedIntoEdgeToEdge());
+                        mSystemInsets.bottom,
+                        mIsDrawingToBottomEdge,
+                        mIsPageOptedIntoBottomEdgeToEdge);
             }
         }
 
         if (changedSafeAreaConstraint) {
-            for (var observer : mEdgeChangeObservers) {
+            for (var observer : mBottomEdgeChangeObservers) {
                 observer.onSafeAreaConstraintChanged(mHasSafeAreaConstraint);
             }
         }
@@ -689,7 +716,8 @@ public class EdgeToEdgeControllerImpl
     WindowInsetsCompat handleWindowInsets(View rootView, WindowInsetsCompat windowInsets) {
         boolean changedWindowState = false;
         boolean switchedToUnsupportedConfig = false;
-        if (mIsBottomChinEnabled != isSupportedByConfiguration(mActivity, mInsetObserver)) {
+        if (mIsBottomChinEnabled
+                != isBottomChinSupportedByConfiguration(mActivity, mInsetObserver)) {
             Log.v(
                     TAG,
                     "Switching supported configuration from %s",
@@ -697,10 +725,10 @@ public class EdgeToEdgeControllerImpl
                             ? "supported to unsupported"
                             : "unsupported to supported"));
             switchedToUnsupportedConfig = mIsBottomChinEnabled;
-            mIsBottomChinEnabled = isSupportedByConfiguration(mActivity, mInsetObserver);
+            mIsBottomChinEnabled = isBottomChinSupportedByConfiguration(mActivity, mInsetObserver);
             EdgeToEdgeUtils.recordSupportedConfigurationSwitch(mIsBottomChinEnabled);
             if (mCurrentTab != null) {
-                mIsPageOptedIntoEdgeToEdge =
+                mIsPageOptedIntoBottomEdgeToEdge =
                         EdgeToEdgeUtils.isPageOptedIntoBottomEdgeToEdge(mCurrentTab)
                                 && mIsBottomChinEnabled;
             }
@@ -731,35 +759,23 @@ public class EdgeToEdgeControllerImpl
 
             // When a foldable goes to/from tablet mode we must reassess.
             // TODO(https://crbug.com/325356134) Find a cleaner check and remedy.
-            mIsPageOptedIntoEdgeToEdge =
-                    mIsPageOptedIntoEdgeToEdge
-                            && isSupportedByConfiguration(mActivity, mInsetObserver);
+            mIsPageOptedIntoBottomEdgeToEdge =
+                    mIsPageOptedIntoBottomEdgeToEdge
+                            && isBottomChinSupportedByConfiguration(mActivity, mInsetObserver);
 
             changedWindowState = true;
         }
 
-        // Note that we cannot call #drawToEdge earlier since we need the system
-        // insets.
-        // Let #drawToEdge update mConsumeTopInset in one place so top padding is updated even when
-        // raw window insets are unchanged (e.g. on retrigger).
-        if (changedWindowState || mConsumeTopInset != shouldDrawTopEdgeToEdge(mCurrentTab)) {
-            drawToEdge(mIsPageOptedIntoEdgeToEdge, changedWindowState);
-        }
-
         if (mIsEdgeToEdgeRefactorEnabled) {
-            @LayoutType
-            int activeLayoutType =
-                    mLayoutManager != null ? mLayoutManager.getActiveLayoutType() : LayoutType.NONE;
-            boolean shouldNotifyTopObservers =
-                    mCurrentTab != null || activeLayoutType != LayoutType.HUB;
-            if (shouldNotifyTopObservers) {
-                for (var observer : mTopInsetObservers) {
-                    observer.onToEdgeChange(
-                            mSystemInsets.top, isDrawingToTopEdge(), activeLayoutType);
-                }
-            }
+            updateTopEdgeToEdge();
+            notifyTopInsetObservers();
         }
 
+        // Note that we cannot call #drawToBottomEdge earlier since we need the system
+        // insets.
+        if (changedWindowState) {
+            drawToBottomEdge(mIsPageOptedIntoBottomEdgeToEdge, /* changedWindowState= */ true);
+        }
         // Signal: When configuration is changed, did we pad the system correctly.
         if (switchedToUnsupportedConfig) {
             EdgeToEdgeUtils.recordConfigurationSwitchScenario(
@@ -826,8 +842,8 @@ public class EdgeToEdgeControllerImpl
                 mLayoutManager != null ? mLayoutManager.getActiveLayoutType() : LayoutType.NONE;
         if (mBottomControlsAreVisible && currentLayoutType != LayoutType.HUB) return false;
 
-        // Pad the adjusters if drawing to edge.
-        return isDrawingToEdge();
+        // Pad the adjusters if drawing to bottom edge.
+        return mIsDrawingToBottomEdge;
     }
 
     private void updatePadAdjusters() {
@@ -850,17 +866,17 @@ public class EdgeToEdgeControllerImpl
         //  by calls to this #setContentFitsWindow() method.
         // Content should fit within the window insets if the activity is not drawing edge-to-edge.
         if (!EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
-            mEdgeToEdgeManager.setContentFitsWindowInsets(!isDrawingToEdge());
+            mEdgeToEdgeManager.setContentFitsWindowInsets(!mIsDrawingToBottomEdge);
         }
 
         View contentView = getContentView();
         assert contentView != null : "Root view for Edge To Edge not found!";
 
+        // Adjust the top and bottom padding to reflect whether ToEdge or ToNormal for the Status
+        // Bar and Gesture Nav Bar. All the other edges need to be padded to prevent drawing under
+        // an edge that we don't want drawn ToEdge.
         int topPadding = isDrawingToTopEdge() ? 0 : mSystemInsets.top;
-        // Adjust the bottom padding to reflect whether ToEdge or ToNormal for the Gesture Nav Bar.
-        // All the other edges need to be padded to prevent drawing under an edge that we
-        // don't want drawn ToEdge (e.g. the Status Bar).
-        int bottomPadding = mIsDrawingToEdge ? 0 : mSystemInsets.bottom;
+        int bottomPadding = mIsDrawingToBottomEdge ? 0 : mSystemInsets.bottom;
         // If the keyboard is taller than the navigation bar, pad content to account for it.
         if (isKeyboardInsetTallerThanNavBar()) {
             assert mKeyboardInsets != null;
@@ -896,7 +912,7 @@ public class EdgeToEdgeControllerImpl
         // during split screen mode, bottom insets are counted as part of the Chrome window even
         // when Chrome does not draw into the system bar region. See https://crbug.com/359659885.
         boolean hasBottomSafeArea =
-                (mIsDrawingToEdge && !mFullscreenManager.getPersistentFullscreenMode());
+                (mIsDrawingToBottomEdge && !mFullscreenManager.getPersistentFullscreenMode());
 
         // When the content view is padded (e.g. when keyboard is showing), we should not count the
         // padding as part of the bottom safe area.
@@ -959,16 +975,18 @@ public class EdgeToEdgeControllerImpl
         return mTabObserver;
     }
 
-    public void setIsOptedIntoEdgeToEdgeForTesting(boolean toEdge) {
-        mIsPageOptedIntoEdgeToEdge = toEdge;
+    public void setIsOptedIntoBottomEdgeToEdgeForTesting(boolean toEdge) {
+        mIsPageOptedIntoBottomEdgeToEdge = toEdge;
     }
 
-    public void setIsDrawingToEdgeForTesting(boolean toEdge) {
-        mIsDrawingToEdge = toEdge;
+    public void setIsDrawingToBottomEdgeForTesting(boolean toEdge) {
+        mIsDrawingToBottomEdge = toEdge;
     }
 
     public @Nullable ChangeObserver getAnyChangeObserverForTesting() {
-        return mEdgeChangeObservers.isEmpty() ? null : mEdgeChangeObservers.iterator().next();
+        return mBottomEdgeChangeObservers.isEmpty()
+                ? null
+                : mBottomEdgeChangeObservers.iterator().next();
     }
 
     public void setConsumeTopInsetForTesting(boolean consumeTopInset) {

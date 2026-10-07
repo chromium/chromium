@@ -359,7 +359,7 @@ public class BottomControlsMediatorTest {
                 mTabObservableSupplier,
                 mReadAloudRestoringSupplier);
         assertNotNull(liveEdgeToEdgeController.getAnyChangeObserverForTesting());
-        liveEdgeToEdgeController.setIsOptedIntoEdgeToEdgeForTesting(false);
+        liveEdgeToEdgeController.setIsOptedIntoBottomEdgeToEdgeForTesting(false);
         int toNormalHeight = mModel.get(ANDROID_VIEW_HEIGHT_NO_PADDING);
         // Go to a native page which will go ToEdge due to our enabled Feature for this test case.
         mTabObservableSupplier.set(null);

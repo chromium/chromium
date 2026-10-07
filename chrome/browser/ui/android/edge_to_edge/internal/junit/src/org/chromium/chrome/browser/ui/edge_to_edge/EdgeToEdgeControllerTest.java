@@ -340,16 +340,16 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    public void drawEdgeToEdge_ToEdgeAndToNormal() {
-        mEdgeToEdgeControllerImpl.drawToEdge(true, /* changedWindowState= */ false);
+    public void drawToBottomEdge_ToEdgeAndToNormal() {
+        mEdgeToEdgeControllerImpl.drawToBottomEdge(true, /* changedWindowState= */ false);
         assertToEdgeExpectations();
 
-        mEdgeToEdgeControllerImpl.drawToEdge(false, /* changedWindowState= */ false);
+        mEdgeToEdgeControllerImpl.drawToBottomEdge(false, /* changedWindowState= */ false);
         assertToNormalExpectations();
     }
 
     @Test
-    public void drawEdgeToEdge_UpdateWindowInsets_toNormal() {
+    public void drawToBottomEdge_UpdateWindowInsets_toNormal() {
         when(mTab.isNativePage()).thenReturn(false);
         mTabProvider.set(mTab);
         verifyInteractions(mTab);
@@ -357,17 +357,17 @@ public class EdgeToEdgeControllerTest {
         Mockito.clearInvocations(mEdgeToEdgeManager);
 
         mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
-        mEdgeToEdgeControllerImpl.drawToEdge(false, /* changedWindowState= */ false);
+        mEdgeToEdgeControllerImpl.drawToBottomEdge(false, /* changedWindowState= */ false);
         verify(mOsWrapper).setPadding(any(), eq(0), eq(TOP_INSET), eq(0), eq(BOTTOM_INSET));
 
         mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS_LANDSCAPE);
-        mEdgeToEdgeControllerImpl.drawToEdge(false, /* changedWindowState= */ true);
+        mEdgeToEdgeControllerImpl.drawToBottomEdge(false, /* changedWindowState= */ true);
         verify(mOsWrapper)
                 .setPadding(
                         any(), eq(0), eq(TOP_INSET_LANDSCAPE), eq(0), eq(BOTTOM_INSET_LANDSCAPE));
 
         mEdgeToEdgeControllerImpl.setKeyboardInsetsForTesting(IME_INSETS_KEYBOARD);
-        mEdgeToEdgeControllerImpl.drawToEdge(false, /* changedWindowState= */ true);
+        mEdgeToEdgeControllerImpl.drawToBottomEdge(false, /* changedWindowState= */ true);
         verify(mOsWrapper)
                 .setPadding(
                         any(), eq(0), eq(TOP_INSET_LANDSCAPE), eq(0), eq(BOTTOM_KEYBOARD_INSET));
@@ -376,7 +376,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    public void drawEdgeToEdge_UpdateWindowInsets_toEdge() {
+    public void drawToBottomEdge_UpdateWindowInsets_toEdge() {
         when(mTab.isNativePage()).thenReturn(false);
         mTabProvider.set(mTab);
         verifyInteractions(mTab);
@@ -384,15 +384,15 @@ public class EdgeToEdgeControllerTest {
         Mockito.clearInvocations(mEdgeToEdgeManager);
 
         mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
-        mEdgeToEdgeControllerImpl.drawToEdge(true, /* changedWindowState= */ false);
+        mEdgeToEdgeControllerImpl.drawToBottomEdge(true, /* changedWindowState= */ false);
         verify(mOsWrapper).setPadding(any(), eq(0), eq(TOP_INSET), eq(0), eq(0));
 
         mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS_LANDSCAPE);
-        mEdgeToEdgeControllerImpl.drawToEdge(true, /* changedWindowState= */ true);
+        mEdgeToEdgeControllerImpl.drawToBottomEdge(true, /* changedWindowState= */ true);
         verify(mOsWrapper).setPadding(any(), eq(0), eq(TOP_INSET_LANDSCAPE), eq(0), eq(0));
 
         mEdgeToEdgeControllerImpl.setKeyboardInsetsForTesting(IME_INSETS_KEYBOARD);
-        mEdgeToEdgeControllerImpl.drawToEdge(true, /* changedWindowState= */ true);
+        mEdgeToEdgeControllerImpl.drawToBottomEdge(true, /* changedWindowState= */ true);
         verify(mOsWrapper)
                 .setPadding(
                         any(), eq(0), eq(TOP_INSET_LANDSCAPE), eq(0), eq(BOTTOM_KEYBOARD_INSET));
@@ -401,7 +401,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    public void drawEdgeToEdge_stylusHandwritingKeyboardInsetsEqualsNavHeight_noBottomPadding() {
+    public void drawToBottomEdge_stylusHandwritingKeyboardInsetsEqualsNavHeight_noBottomPadding() {
         when(mTab.isNativePage()).thenReturn(false);
         mTabProvider.set(mTab);
         verifyInteractions(mTab);
@@ -410,7 +410,7 @@ public class EdgeToEdgeControllerTest {
         // IME bottom inset equals the navigation bar height (e.g. stylus handwriting with no soft
         // keyboard).
         mEdgeToEdgeControllerImpl.setKeyboardInsetsForTesting(NAVIGATION_BAR_INSETS);
-        mEdgeToEdgeControllerImpl.drawToEdge(true, /* changedWindowState= */ true);
+        mEdgeToEdgeControllerImpl.drawToBottomEdge(true, /* changedWindowState= */ true);
 
         // When drawing to edge, bottom padding should remain 0 when keyboard inset does not exceed
         // system bottom inset.
@@ -431,8 +431,8 @@ public class EdgeToEdgeControllerTest {
     @SuppressLint("NewApi")
     public void onObservingDifferentTab_changeToWebDisabled() {
         // First go ToEdge by invoking the changeToTabSwitcher test logic.
-        mEdgeToEdgeControllerImpl.setIsOptedIntoEdgeToEdgeForTesting(true);
-        mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsOptedIntoBottomEdgeToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsDrawingToBottomEdgeForTesting(true);
         mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
 
         // Now test that a Web page causes a transition ToNormal (when Web forcing is disabled).
@@ -513,8 +513,8 @@ public class EdgeToEdgeControllerTest {
                                 mLayoutManagerSupplier,
                                 mFullscreenManager);
         assertNotNull(liveController);
-        liveController.setIsOptedIntoEdgeToEdgeForTesting(true);
-        liveController.setIsDrawingToEdgeForTesting(true);
+        liveController.setIsOptedIntoBottomEdgeToEdgeForTesting(true);
+        liveController.setIsDrawingToBottomEdgeForTesting(true);
         liveController.setSystemInsetsForTesting(SYSTEM_INSETS);
         when(mTab.isNativePage()).thenReturn(false);
         liveSupplier.set(mTab);
@@ -527,8 +527,8 @@ public class EdgeToEdgeControllerTest {
     public void onObservingDifferentTab_nullTab() {
         Mockito.clearInvocations(mEdgeToEdgeManager);
 
-        mEdgeToEdgeControllerImpl.setIsOptedIntoEdgeToEdgeForTesting(true);
-        mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsOptedIntoBottomEdgeToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsDrawingToBottomEdgeForTesting(true);
         mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
         mEdgeToEdgeControllerImpl.onTabSwitched(null);
         assertFalse(mEdgeToEdgeControllerImpl.isPageOptedIntoEdgeToEdge());
@@ -913,8 +913,8 @@ public class EdgeToEdgeControllerTest {
 
     @Test
     public void noPadAdjustmentWhenNotDrawingToEdge() {
-        mEdgeToEdgeControllerImpl.setIsOptedIntoEdgeToEdgeForTesting(false);
-        mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(false);
+        mEdgeToEdgeControllerImpl.setIsOptedIntoBottomEdgeToEdgeForTesting(false);
+        mEdgeToEdgeControllerImpl.setIsDrawingToBottomEdgeForTesting(false);
         mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
         mEdgeToEdgeControllerImpl.setKeyboardInsetsForTesting(null);
 
@@ -925,8 +925,8 @@ public class EdgeToEdgeControllerTest {
 
     @Test
     public void toggleKeyboard_properlyPadAdjusters() {
-        mEdgeToEdgeControllerImpl.setIsOptedIntoEdgeToEdgeForTesting(true);
-        mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsOptedIntoBottomEdgeToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsDrawingToBottomEdgeForTesting(true);
         mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
         mEdgeToEdgeControllerImpl.setKeyboardInsetsForTesting(null);
 
@@ -946,8 +946,8 @@ public class EdgeToEdgeControllerTest {
 
     @Test
     public void padAdjusters_keyboardInsetsEqualsNavHeight_adjustersPadded() {
-        mEdgeToEdgeControllerImpl.setIsOptedIntoEdgeToEdgeForTesting(true);
-        mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsOptedIntoBottomEdgeToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsDrawingToBottomEdgeForTesting(true);
         mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
         // IME bottom inset equals the navigation bar height (e.g. stylus handwriting with no soft
         // keyboard).
@@ -966,8 +966,8 @@ public class EdgeToEdgeControllerTest {
         verify(mBrowserControlsStateProvider, atLeastOnce())
                 .addObserver(eq(mEdgeToEdgeControllerImpl));
 
-        mEdgeToEdgeControllerImpl.setIsOptedIntoEdgeToEdgeForTesting(true);
-        mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsOptedIntoBottomEdgeToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsDrawingToBottomEdgeForTesting(true);
         mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
         mEdgeToEdgeControllerImpl.setKeyboardInsetsForTesting(null);
 
@@ -1060,8 +1060,8 @@ public class EdgeToEdgeControllerTest {
         int unused = -1;
         int browserControlsHeight = BOTTOM_INSET * 2;
 
-        mEdgeToEdgeControllerImpl.setIsOptedIntoEdgeToEdgeForTesting(true);
-        mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsOptedIntoBottomEdgeToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsDrawingToBottomEdgeForTesting(true);
         mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
         mEdgeToEdgeControllerImpl.setKeyboardInsetsForTesting(null);
 
@@ -1088,26 +1088,26 @@ public class EdgeToEdgeControllerTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
-    public void drawToEdge_EdgeToEdgeEverywhereEnabled() {
+    public void drawToBottomEdge_EdgeToEdgeEverywhereEnabled() {
         Mockito.clearInvocations(mEdgeToEdgeManager);
-        mEdgeToEdgeControllerImpl.drawToEdge(
-                /* pageOptedIntoEdgeToEdge= */ false, /* changedWindowState= */ true);
+        mEdgeToEdgeControllerImpl.drawToBottomEdge(
+                /* pageOptedIntoBottomEdgeToEdge= */ false, /* changedWindowState= */ true);
         verify(mEdgeToEdgeManager, never()).setContentFitsWindowInsets(anyBoolean());
     }
 
     @Test
     @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
-    public void drawToEdge_EdgeToEdgeEverywhereDisabled() {
+    public void drawToBottomEdge_EdgeToEdgeEverywhereDisabled() {
         Mockito.clearInvocations(mEdgeToEdgeManager);
-        mEdgeToEdgeControllerImpl.drawToEdge(
-                /* pageOptedIntoEdgeToEdge= */ false, /* changedWindowState= */ true);
+        mEdgeToEdgeControllerImpl.drawToBottomEdge(
+                /* pageOptedIntoBottomEdgeToEdge= */ false, /* changedWindowState= */ true);
         // #setContentFitsWindowInsets should be called once when EdgeToEdgeEverywhere is disabled.
         verify(mEdgeToEdgeManager, times(1)).setContentFitsWindowInsets(anyBoolean());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_MONITOR_CONFIGURATIONS)
-    public void drawToEdge_configurationChanges_tappable() {
+    public void drawToBottomEdge_configurationChanges_tappable() {
         EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(null);
 
         assertTrue(EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(mActivity));
@@ -1115,14 +1115,18 @@ public class EdgeToEdgeControllerTest {
         when(mTab.isNativePage()).thenReturn(false);
         mTabProvider.set(mTab);
 
-        assertTrue(EdgeToEdgeControllerImpl.isSupportedByConfiguration(mActivity, mInsetObserver));
+        assertTrue(
+                EdgeToEdgeControllerImpl.isBottomChinSupportedByConfiguration(
+                        mActivity, mInsetObserver));
         mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertTrue(mEdgeToEdgeControllerImpl.isDrawingToEdge());
 
         // Simulate a tappable navigation bar.
         when(mInsetObserver.getLastRawWindowInsets()).thenReturn(SYSTEM_BARS_WITH_TAPPABLE_NAVBAR);
 
-        assertFalse(EdgeToEdgeControllerImpl.isSupportedByConfiguration(mActivity, mInsetObserver));
+        assertFalse(
+                EdgeToEdgeControllerImpl.isBottomChinSupportedByConfiguration(
+                        mActivity, mInsetObserver));
         mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WITH_TAPPABLE_NAVBAR);
         assertFalse(
                 "Drawing to edge should be false when the configuration is not supported.",
@@ -1138,7 +1142,7 @@ public class EdgeToEdgeControllerTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_MONITOR_CONFIGURATIONS)
-    public void drawToEdge_configurationChanges_neitherTappableNorGesture() {
+    public void drawToBottomEdge_configurationChanges_neitherTappableNorGesture() {
         EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(null);
 
         assertTrue(EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(mActivity));
@@ -1146,7 +1150,9 @@ public class EdgeToEdgeControllerTest {
         when(mTab.isNativePage()).thenReturn(false);
         mTabProvider.set(mTab);
 
-        assertTrue(EdgeToEdgeControllerImpl.isSupportedByConfiguration(mActivity, mInsetObserver));
+        assertTrue(
+                EdgeToEdgeControllerImpl.isBottomChinSupportedByConfiguration(
+                        mActivity, mInsetObserver));
         mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertTrue(mEdgeToEdgeControllerImpl.isDrawingToEdge());
 
@@ -1154,7 +1160,9 @@ public class EdgeToEdgeControllerTest {
         when(mInsetObserver.getLastRawWindowInsets())
                 .thenReturn(SYSTEM_BARS_NEITHER_TAPPABLE_NOR_GESTURE_NAV);
 
-        assertFalse(EdgeToEdgeControllerImpl.isSupportedByConfiguration(mActivity, mInsetObserver));
+        assertFalse(
+                EdgeToEdgeControllerImpl.isBottomChinSupportedByConfiguration(
+                        mActivity, mInsetObserver));
         mEdgeToEdgeControllerImpl.handleWindowInsets(
                 mView, SYSTEM_BARS_NEITHER_TAPPABLE_NOR_GESTURE_NAV);
         assertFalse(
@@ -1431,7 +1439,7 @@ public class EdgeToEdgeControllerTest {
 
     @Test
     public void pushSafeAreaInsetUpdate_notDrawingToEdge() {
-        mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(false);
+        mEdgeToEdgeControllerImpl.setIsDrawingToBottomEdgeForTesting(false);
         doReturn(false).when(mFullscreenManager).getPersistentFullscreenMode();
         mEdgeToEdgeControllerImpl.onBottomControlsHeightChanged(0, 0);
         assertBottomInsetForSafeArea(0);
@@ -1439,7 +1447,7 @@ public class EdgeToEdgeControllerTest {
 
     @Test
     public void pushSafeAreaInsetUpdate_drawingToEdgeInFullscreen() {
-        mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsDrawingToBottomEdgeForTesting(true);
         doReturn(true).when(mFullscreenManager).getPersistentFullscreenMode();
         mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
         mEdgeToEdgeControllerImpl.onBottomControlsHeightChanged(0, 0);
@@ -1448,7 +1456,7 @@ public class EdgeToEdgeControllerTest {
 
     @Test
     public void pushSafeAreaInsetUpdate_drawingToEdgeNoPadding() {
-        mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsDrawingToBottomEdgeForTesting(true);
         doReturn(false).when(mFullscreenManager).getPersistentFullscreenMode();
         mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
         mEdgeToEdgeControllerImpl.onBottomControlsHeightChanged(0, 0);
@@ -1457,7 +1465,7 @@ public class EdgeToEdgeControllerTest {
 
     @Test
     public void pushSafeAreaInsetUpdate_drawingToEdgeWithKeyboardPadding() {
-        mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsDrawingToBottomEdgeForTesting(true);
         doReturn(false).when(mFullscreenManager).getPersistentFullscreenMode();
         mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
         mEdgeToEdgeControllerImpl.setKeyboardInsetsForTesting(IME_INSETS_KEYBOARD);
@@ -2487,8 +2495,8 @@ public class EdgeToEdgeControllerTest {
         final int unused = 0;
         final int browserControlsHeight = BOTTOM_INSET * 2;
 
-        mEdgeToEdgeControllerImpl.setIsOptedIntoEdgeToEdgeForTesting(true);
-        mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsOptedIntoBottomEdgeToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsDrawingToBottomEdgeForTesting(true);
         mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
         mEdgeToEdgeControllerImpl.setKeyboardInsetsForTesting(null);
 
