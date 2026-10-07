@@ -122,7 +122,7 @@ TEST_F(OutputStreamImplTest, Write) {
 TEST_F(OutputStreamImplTest, MultipleChunks) {
   // Expect a total message size of 1MB delivered in chunks because a mojo pipe
   // has a maximum buffer size and only accepts a certain amount of data per
-  // call. The default is 64KB defined in //mojo/core/core.cc
+  // call. The default is 64KB defined in //mojo/core/core_ipcz.cc
   uint32_t message_size = 1024 * 1024;
   std::string message(message_size, 'A');
 
@@ -159,8 +159,9 @@ TEST_F(OutputStreamImplTest, CloseWhileWriting) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
         // Expect a total message size of 1MB delivered in chunks because a mojo
         // pipe has a maximum buffer size and only accepts a certain amount of
-        // data per call. The default is 64KB defined in //mojo/core/core.cc. We
-        // want a large message so the Write() will be forced to wait.
+        // data per call. The default is 64KB defined in
+        // //mojo/core/core_ipcz.cc. We want a large message so the Write() will
+        // be forced to wait.
         uint32_t message_size = 1024 * 1024;
         std::string message(message_size, 'A');
         write_exception = output_stream_->Write(ByteArray(message));

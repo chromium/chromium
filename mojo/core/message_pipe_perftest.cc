@@ -18,10 +18,10 @@
 #include "base/test/perf_time_logger.h"
 #include "base/threading/thread.h"
 #include "mojo/core/embedder/embedder.h"
-#include "mojo/core/handle_signals_state.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/core/test/test_utils.h"
 #include "mojo/public/c/system/functions.h"
+#include "mojo/public/cpp/system/handle_signals_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {

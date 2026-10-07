@@ -116,7 +116,7 @@ TEST_F(InputStreamImplTest, Read) {
 TEST_F(InputStreamImplTest, MultipleChunks) {
   // Expect a total message size of 1MB delivered in chunks because a mojo pipe
   // has a maximum buffer size and only accepts a certain amount of data per
-  // call. The default is 64KB defined in //mojo/core/core.cc
+  // call. The default is 64KB defined in //mojo/core/core_ipcz.cc
   uint32_t message_size = 1024 * 1024;
   std::string message(message_size, 'A');
 

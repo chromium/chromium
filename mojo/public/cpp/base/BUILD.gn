@@ -11,8 +11,6 @@ component("base") {
   sources = [
     "big_buffer.cc",
     "big_buffer.h",
-    "shared_memory_utils.cc",
-    "shared_memory_utils.h",
     "shared_memory_version.cc",
     "shared_memory_version.h",
   ]
@@ -23,7 +21,6 @@ component("base") {
 
   public_deps = [
     "//base",
-    "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
   ]
@@ -45,7 +42,6 @@ component("protobuf_support") {
   public_deps = [
     ":base",
     "//base",
-    "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//third_party/protobuf:protobuf_lite",

@@ -40,7 +40,6 @@ source_set("impl_for_embedder") {
     "embedder/configuration.h",
     "embedder/process_error_callback.h",
     "fuzzing_utils.h",
-    "handle_signals_state.h",
     "ipcz_api.h",
     "ipcz_driver/base_shared_memory_service.h",
     "ipcz_driver/driver.h",

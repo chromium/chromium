@@ -9,12 +9,9 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
 
-namespace mojo {
-class SharedMemoryUtils;
-namespace core::ipcz_driver {
+namespace mojo::core::ipcz_driver {
 class BaseSharedMemoryService;
-}
-}  // namespace mojo
+}  // namespace mojo::core::ipcz_driver
 
 namespace base {
 
@@ -24,7 +21,6 @@ class SharedMemoryHooks {
 
  private:
   friend class SharedMemoryHooksTest;
-  friend mojo::SharedMemoryUtils;
   friend class mojo::core::ipcz_driver::BaseSharedMemoryService;
 
   // Allows shared memory region creation to be hooked. Useful for sandboxed

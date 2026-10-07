@@ -17,7 +17,6 @@
 #include "cc/paint/paint_op_buffer_iterator.h"
 #include "components/paint_preview/common/file_stream.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
-#include "mojo/public/cpp/base/shared_memory_utils.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkData.h"

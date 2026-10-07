@@ -14,7 +14,6 @@
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/c/system/functions.h"
 #include "mojo/public/c/system/types.h"
-#include "mojo/public/cpp/base/shared_memory_utils.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
@@ -75,8 +74,8 @@ void InitializeMojoCore() {
   // will simply fail.
   //
   // Note #2: some platforms can directly allocated shared memory in a
-  // sandboxed process. The defines below must be in sync with the
-  // implementation of mojo::NodeController::CreateSharedBuffer().
+  // sandboxed process. The defines below must be in sync with
+  // mojo::core::ipcz_driver::BaseSharedMemoryService::CreateWritableRegion().
 #if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
   if (sandbox::policy::IsUnsandboxedSandboxType(
           sandbox::policy::SandboxTypeFromCommandLine(
@@ -92,7 +91,7 @@ void InitializeMojoCore() {
     DCHECK(!config.is_broker_process);
     // Otherwise, this is a sandboxed process that will need brokering to
     // allocate shared memory.
-    mojo::SharedMemoryUtils::InstallBaseHooks();
+    mojo::core::InstallMojoIpczBaseSharedMemoryHooks();
   }
 #endif  // !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA)
 }
