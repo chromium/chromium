@@ -137,7 +137,6 @@ public class UrlBarCoordinator
         mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(this);
         mUrlBar.removeCallbacks(mKeyboardTransitionRunnable);
         mKeyboardState = KeyboardState.HIDDEN;
-        mTextWrappingSupplier.destroy();
         mUrlBar.destroy();
     }
 

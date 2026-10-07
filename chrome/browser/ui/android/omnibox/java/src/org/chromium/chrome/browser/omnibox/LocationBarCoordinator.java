@@ -460,7 +460,8 @@ public class LocationBarCoordinator
                         uiOverrides,
                         windowAndroid,
                         mDeferredIMEWindowInsetApplicationCallback,
-                        mFuseboxCoordinator);
+                        mFuseboxCoordinator,
+                        mUrlCoordinator.getUrlTextWrappingSupplier());
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator =
                 new StatusCoordinator(
