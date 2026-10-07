@@ -250,6 +250,7 @@ class MediaStreamVideoCapturerSourceTest : public testing::Test {
     start_result_ = result;
   }
 
+  base::test::ScopedFeatureList feature_list_;
   test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
 
@@ -758,8 +759,7 @@ TEST_F(MediaStreamVideoCapturerSourceTest,
 
 TEST_F(MediaStreamVideoCapturerSourceTest,
        CropTargetOnCloneRejectedWhenRegionCaptureOfClonedTracksDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kRegionCaptureOfClonedTracks);
+  feature_list_.InitAndDisableFeature(features::kRegionCaptureOfClonedTracks);
 
   WebMediaStreamTrack track1 = StartTabCaptureSource();
   WebMediaStreamTrack track2 = CloneTrack(track1, "track2");
@@ -785,8 +785,7 @@ TEST_F(MediaStreamVideoCapturerSourceTest,
 
 TEST_F(MediaStreamVideoCapturerSourceTest,
        ClonedTrackInheritsCropWhenRegionCaptureOfClonedTracksDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kRegionCaptureOfClonedTracks);
+  feature_list_.InitAndDisableFeature(features::kRegionCaptureOfClonedTracks);
 
   WebMediaStreamTrack track1 = StartTabCaptureSource();
   auto* native_track1 = MediaStreamVideoTrack::From(track1);
