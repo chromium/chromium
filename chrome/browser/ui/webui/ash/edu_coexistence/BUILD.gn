@@ -59,7 +59,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
-    "//chrome/browser/ui",
     "//chrome/test:test_support_ui",
     "//components/prefs",
     "//components/signin/public/identity_manager",

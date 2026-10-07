@@ -105,7 +105,6 @@ source_set("unit_tests") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//skia:skia_core_public_headers",
     "//testing/gmock",

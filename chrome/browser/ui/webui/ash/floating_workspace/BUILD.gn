@@ -63,7 +63,6 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/login/test:test_support",
-    "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//content/test:test_support",
     "//testing/gtest",

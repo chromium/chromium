@@ -64,7 +64,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/drive:test_support",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/webui/ash/settings/pages/files/mojom",
     "//chrome/browser/ui/webui/ash/settings/test_support",
     "//chrome/test/data/webui/chromeos/settings:test_api_mojom",

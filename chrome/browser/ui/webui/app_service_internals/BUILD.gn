@@ -42,7 +42,6 @@ if (!is_android) {
     sources = [ "app_service_internals_browsertest.cc" ]
 
     deps = [
-      "//chrome/browser/ui",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/web_applications",
       "//chrome/test:test_support",

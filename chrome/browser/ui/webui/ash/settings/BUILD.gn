@@ -143,7 +143,6 @@ source_set("unit_tests") {
   deps = [
     ":settings",
     "//chrome/browser/ash/login/users:test_support",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/webui/ash/settings/pages/reset",
     "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",

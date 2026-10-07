@@ -65,7 +65,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ash/printing:test_support",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/select_file_policy",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",

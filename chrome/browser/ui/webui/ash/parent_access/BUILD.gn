@@ -102,7 +102,6 @@ source_set("browser_tests") {
     "//chrome/browser",
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/signin",
-    "//chrome/browser/ui",
     "//components/signin/public/identity_manager:test_support",
     "//content/public/browser",
     "//content/test:test_support",

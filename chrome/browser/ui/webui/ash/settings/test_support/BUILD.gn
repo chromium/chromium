@@ -25,7 +25,6 @@ static_library("test_support") {
     "//base",
     "//chrome/browser",
     "//chrome/browser/ash/login/test:test_support",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/webui/ash/settings/pages",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/test:test_support_ui",

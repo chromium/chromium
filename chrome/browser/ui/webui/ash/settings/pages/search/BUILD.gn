@@ -71,7 +71,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/lobster:test_support",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/search_engines",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
     "//chrome/common:non_code_constants",

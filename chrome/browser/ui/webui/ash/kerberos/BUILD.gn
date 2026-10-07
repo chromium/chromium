@@ -57,7 +57,6 @@ source_set("browser_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/system_web_apps",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/test:test_support",
     "//content/test:test_support",
