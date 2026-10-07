@@ -12,7 +12,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.isSelected;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -39,8 +38,8 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_STICKY_LAST_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SELECTED_SUGGESTION_INDEX;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_OPENER_ITEM;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.STYLE;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
@@ -60,7 +59,6 @@ import androidx.annotation.DimenRes;
 import androidx.annotation.Px;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.test.espresso.ViewInteraction;
-import androidx.test.espresso.matcher.RootMatchers;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matcher;
@@ -74,6 +72,8 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewFinder;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -117,7 +117,6 @@ import org.chromium.ui.ViewProvider;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.LazyConstructionPropertyMcp;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -255,6 +254,11 @@ public class KeyboardAccessoryViewTest {
                                                     }))
                                     .with(DISABLE_ANIMATIONS_FOR_TESTING, true)
                                     .with(HAS_STICKY_LAST_ITEM, true)
+                                    .with(
+                                            STYLE,
+                                            KeyboardAccessoryStyle
+                                                    .createDockedKeyboardAccessoryStyle(
+                                                            /* verticalOffset= */ 0))
                                     .build();
                     AsyncViewStub viewStub =
                             mActivityTestRule
@@ -274,6 +278,8 @@ public class KeyboardAccessoryViewTest {
                                 view.setBarItemsAdapter(
                                         KeyboardAccessoryCoordinator.createBarItemsAdapter(
                                                 mModel.get(BAR_ITEMS), view, uiConfiguration));
+                                view.setFeatureEngagementTracker(
+                                        TrackerFactory.getTrackerForProfile(mProfile));
                                 mKeyboardAccessoryView.add(view);
                             });
                 });
@@ -325,7 +331,6 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/565452121
     @SuppressWarnings("BooleanLiteral")
     public void testAddsClickableAutofillSuggestions() {
         AtomicReference<Boolean> clickRecorded = new AtomicReference<>();
@@ -336,11 +341,11 @@ public class KeyboardAccessoryViewTest {
                             .set(createAutofillChipAndTab("Johnathan", clickRecorded::set));
                 });
 
-        onViewWaiting(withText("Johnathan")).perform(click());
+        onActivityViewWaiting(withText("Johnathan")).perform(click());
         // The value should be set and equal to `false` because the window was not obscured.
         assertEquals(Boolean.FALSE, clickRecorded.get());
 
-        onViewWaiting(withText("Johnathan"))
+        onActivityViewWaiting(withText("Johnathan"))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
         // The value should change to `true` because the motion event has the corresponding flag
         // set.
@@ -371,17 +376,17 @@ public class KeyboardAccessoryViewTest {
                 });
 
         // Click the chips and make sure the application window is not considered obscured.
-        onViewWaiting(withText("Johnathan")).perform(click());
+        onActivityViewWaiting(withText("Johnathan")).perform(click());
         assertEquals(Boolean.FALSE, clickRecorded1.get());
-        onViewWaiting(withText("Mark")).perform(click());
+        onActivityViewWaiting(withText("Mark")).perform(click());
         assertEquals(Boolean.FALSE, clickRecorded2.get());
 
         // Click the chips with special motion event flags and make sure the application window is
         // considered obscured.
-        onViewWaiting(withText("Johnathan"))
+        onActivityViewWaiting(withText("Johnathan"))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED));
         assertEquals(Boolean.TRUE, clickRecorded1.get());
-        onViewWaiting(withText("Mark"))
+        onActivityViewWaiting(withText("Mark"))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED));
         assertEquals(Boolean.TRUE, clickRecorded2.get());
     }
@@ -415,7 +420,7 @@ public class KeyboardAccessoryViewTest {
                                     });
                 });
 
-        onViewWaiting(withText("Johnathan")).perform(longClick());
+        onActivityViewWaiting(withText("Johnathan")).perform(longClick());
         assertEquals(Boolean.TRUE, clickRecorded.get());
     }
 
@@ -444,8 +449,8 @@ public class KeyboardAccessoryViewTest {
                                     });
                 });
 
-        onViewWaiting(withText(R.string.password_generation_accessory_button));
-        onViewWaiting(withText(R.string.more_passkeys));
+        onActivityViewWaiting(withText(R.string.password_generation_accessory_button));
+        onActivityViewWaiting(withText(R.string.more_passkeys));
         onView(withText(R.string.password_generation_accessory_button))
                 .check(matches(isDisplayed()));
         onView(withText(R.string.more_passkeys)).check(matches(isDisplayed()));
@@ -476,7 +481,7 @@ public class KeyboardAccessoryViewTest {
                                     });
                 });
 
-        onViewWaiting(withText(R.string.password_generation_accessory_button));
+        onActivityViewWaiting(withText(R.string.password_generation_accessory_button));
         onView(withText(R.string.password_generation_accessory_button))
                 .check(matches(isDisplayed()));
         onView(withText(R.string.more_passkeys)).check(matches(isDisplayed()));
@@ -520,7 +525,6 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/565452121
     public void testDismissesCardInfoRetrievalBubbleOnFilling() throws InterruptedException {
         String descriptionText =
                 "You can autofill this card because your PayPay account is linked to Google";
@@ -553,22 +557,27 @@ public class KeyboardAccessoryViewTest {
                                     });
                 });
 
-        onViewWaiting(withText("Card Info Retrieval"));
+        onActivityViewWaiting(withText("Card Info Retrieval"));
         waitForHelpBubble(withText(descriptionText));
         assertThat(mKeyboardAccessoryView.take().areClicksAllowedWhenObscured(), is(true));
-        onView(withChild(withText("Card Info Retrieval"))).check(matches(isSelected()));
-        onView(withText("Card Info Retrieval")).perform(click());
+        onActivityViewWaiting(withChild(withText("Card Info Retrieval")))
+                .check(matches(isSelected()));
+        onActivityViewWaiting(withText("Card Info Retrieval")).perform(click());
 
-        assertThat(tracker.wasDismissed(), is(true));
-        assertThat(
-                tracker.getLastEmittedEvent(),
-                is(EventConstants.KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_AUTOFILLED));
-        onView(withChild(withText("Card Info Retrieval"))).check(matches(not(isSelected())));
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(tracker.wasDismissed(), is(true)));
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                tracker.getLastEmittedEvent(),
+                                is(
+                                        EventConstants
+                                                .KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_AUTOFILLED)));
+        onActivityViewWaiting(withChild(withText("Card Info Retrieval")))
+                .check(matches(not(isSelected())));
     }
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/565452121
     public void testDismissesHomeAndWorkdEducationBubbleOnFilling() throws InterruptedException {
         AutofillBarItem itemWithIph =
                 new AutofillBarItem(
@@ -599,20 +608,23 @@ public class KeyboardAccessoryViewTest {
                                     });
                 });
 
-        onViewWaiting(withText("Johnathan"));
+        onActivityViewWaiting(withText("Johnathan"));
         waitForHelpBubble(withText(R.string.iph_keyboard_accessory_home_work_profile_suggestion));
         assertThat(mKeyboardAccessoryView.take().areClicksAllowedWhenObscured(), is(true));
-        onView(withText("Johnathan")).perform(click());
+        onActivityViewWaiting(withText("Johnathan")).perform(click());
 
-        assertThat(tracker.wasDismissed(), is(true));
-        assertThat(
-                tracker.getLastEmittedEvent(),
-                is(EventConstants.KEYBOARD_ACCESSORY_HOME_AND_WORK_ADDRESS_AUTOFILLED));
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(tracker.wasDismissed(), is(true)));
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                tracker.getLastEmittedEvent(),
+                                is(
+                                        EventConstants
+                                                .KEYBOARD_ACCESSORY_HOME_AND_WORK_ADDRESS_AUTOFILLED)));
     }
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/565452121
     public void testDismissesPaymentOfferEducationBubbleOnFilling() throws InterruptedException {
         AutofillBarItem itemWithIph =
                 new AutofillBarItem(
@@ -642,19 +654,21 @@ public class KeyboardAccessoryViewTest {
                                     });
                 });
 
-        onViewWaiting(withText("Johnathan"));
+        onActivityViewWaiting(withText("Johnathan"));
+        waitForHelpBubble(withText(R.string.iph_keyboard_accessory_payment_offer));
         assertThat(mKeyboardAccessoryView.take().areClicksAllowedWhenObscured(), is(true));
-        onView(withText("Johnathan")).perform(click());
+        onActivityViewWaiting(withText("Johnathan")).perform(click());
 
-        assertThat(tracker.wasDismissed(), is(true));
-        assertThat(
-                tracker.getLastEmittedEvent(),
-                is(EventConstants.KEYBOARD_ACCESSORY_PAYMENT_AUTOFILLED));
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(tracker.wasDismissed(), is(true)));
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                tracker.getLastEmittedEvent(),
+                                is(EventConstants.KEYBOARD_ACCESSORY_PAYMENT_AUTOFILLED)));
     }
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/565452121
     public void testScrollingNotResetOnItemUpdate() throws InterruptedException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -685,7 +699,7 @@ public class KeyboardAccessoryViewTest {
                                                     "Item 7 - very long text to fill width", null),
                                             createSheetOpener(/* atMemoryEnabled= */ true)
                                         }));
-        onViewWaiting(withText("Item 1 - very long text to fill width"));
+        onActivityViewWaiting(withText("Item 1 - very long text to fill width"));
 
         // Scroll the view manually
         ThreadUtils.runOnUiThreadBlocking(() -> view.mBarItemsView.scrollBy(500, 0));
@@ -1197,10 +1211,16 @@ public class KeyboardAccessoryViewTest {
     }
 
     private ViewInteraction waitForHelpBubble(Matcher<View> matcher) {
-        View mainDecorView = mActivityTestRule.getActivity().getWindow().getDecorView();
-        return onView(isRoot())
-                .inRoot(RootMatchers.withDecorView(not(is(mainDecorView))))
-                .check(ViewUtils.isEventuallyVisible(matcher));
+        return ViewFinder.waitForView(
+                        View.class,
+                        mActivityTestRule.getActivity(),
+                        matcher,
+                        ViewElement.initialSettleTimeOption(500))
+                .onView();
+    }
+
+    private ViewInteraction onActivityViewWaiting(Matcher<View> matcher) {
+        return ViewFinder.waitForView(mActivityTestRule.getActivity(), matcher).onView();
     }
 
     private void rotateActivityToLandscape() {
