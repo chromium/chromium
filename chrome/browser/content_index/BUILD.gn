@@ -31,7 +31,6 @@ source_set("impl") {
     "//chrome/browser/metrics",
     "//chrome/browser/offline_items_collection",
     "//chrome/browser/profiles",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/navigator",
     "//components/site_engagement/content",
     "//services/metrics/public/cpp:ukm_builders",
@@ -71,7 +70,6 @@ if (!is_android) {
     deps = [
       ":content_index",
       "//base/test:test_support",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
       "//chrome/test:test_support_ui",
       "//components/offline_items_collection/core",

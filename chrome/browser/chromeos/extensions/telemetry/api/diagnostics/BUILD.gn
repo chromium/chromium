@@ -46,7 +46,6 @@ source_set("browser_tests") {
     ":diagnostics",
     "//base",
     "//chrome/browser/chromeos/extensions/telemetry/api/common:test_support",
-    "//chrome/browser/ui",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
     "//chromeos/ash/services/cros_healthd/public/mojom",

@@ -181,7 +181,6 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/segmentation_platform",
       "//chrome/browser/signin",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/tabs:tab_strip",

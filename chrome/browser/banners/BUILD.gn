@@ -49,7 +49,6 @@ source_set("impl") {
   } else {
     sources += [ "app_banner_manager_desktop.cc" ]
     deps += [
-      "//chrome/browser/ui",
       "//chrome/browser/ui:intent_picker_tab_helper",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/web_applications",
@@ -107,7 +106,6 @@ source_set("platform_browser_tests") {
     "//url",
   ]
   deps = [
-    "//chrome/browser/ui",
     "//chrome/test/base:chrome_test_utils",
     "//content/public/browser",
     "//content/test:test_support",
@@ -139,7 +137,6 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/app:command_ids",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_command_controller",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/actions:actions_headers",

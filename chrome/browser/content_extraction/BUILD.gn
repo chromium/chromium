@@ -32,7 +32,6 @@ if (!is_android) {
     deps = [
       ":content_extraction",
       "//base/test:test_support",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/test:test_support_ui",
       "//content/test:test_support",

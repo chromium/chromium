@@ -57,7 +57,6 @@ if (!is_android) {
       ":bitmap_fetcher",
       "//base",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//chrome/test:test_support_ui",
       "//content/public/browser",
       "//content/test:test_support",

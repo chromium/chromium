@@ -239,7 +239,6 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/browser/browsing_data",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_content_setting_bubble_model_delegate",
       "//chrome/browser/ui:view_ids",

@@ -17,7 +17,6 @@ source_set("browser_tests") {
   deps = [
     "//base",
     "//chrome/browser/policy:test_support",
-    "//chrome/browser/ui",
     "//chrome/test:test_support_ui",
     "//components/permissions:permissions_common",
     "//components/policy:generated",

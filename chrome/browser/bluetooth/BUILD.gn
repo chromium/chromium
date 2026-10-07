@@ -32,7 +32,6 @@ source_set("impl") {
     ":bluetooth",
     "//chrome/browser/chooser_controller",
     "//chrome/browser/content_settings:content_settings_factory",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/bluetooth",
     "//chrome/browser/ui/dialogs",
     "//components/content_settings/core/browser",
@@ -136,7 +135,6 @@ if (is_linux || is_mac || is_win) {
     sources = [ "chrome_bluetooth_realtarget_browsertest.cc" ]
     deps = [
       ":bluetooth",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/test:test_support_ui",
       "//content/public/common",

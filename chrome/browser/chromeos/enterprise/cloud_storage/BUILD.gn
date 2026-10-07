@@ -67,7 +67,6 @@ source_set("browser_tests") {
     "//chrome/browser/extensions",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common:constants",
