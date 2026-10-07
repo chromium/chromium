@@ -31,6 +31,10 @@
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/view_utils.h"
 
+#if defined(USE_AURA)
+#include "ui/aura/env.h"
+#endif
+
 namespace {
 
 // TODO(crbug.com/500937645): Re-enable the test on Windows.
@@ -51,6 +55,20 @@ class MultiContentsViewTabDragEntrypointsUiTest
  public:
   MultiContentsViewTabDragEntrypointsUiTest() = default;
   ~MultiContentsViewTabDragEntrypointsUiTest() override = default;
+
+  void SetUp() override {
+#if defined(USE_AURA)
+    // While a child surface resizes, Aura holds mouse moves and dispatches the
+    // held move from a non-nestable task once the resize ends. These tests
+    // move the mouse once while the tab drag runs a nested move loop, so a
+    // held move would not be dispatched until the drag ends, and the drop
+    // target would never show. Disable the throttling, as
+    // TabDragControllerTest does.
+    aura::Env::set_initial_throttle_input_on_resize_for_testing(false);
+#endif
+    SplitViewInteractiveTestMixin<
+        TabStripInteractiveTestMixin<InteractiveBrowserTest>>::SetUp();
+  }
 
   const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       override {
@@ -148,7 +166,6 @@ class MultiContentsViewTabDragEntrypointsUiTest
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
 };
 
-
 class MultiContentsViewTabDragEntrypointsUiParamTest
     : public MultiContentsViewTabDragEntrypointsUiTest,
       public testing::WithParamInterface<
@@ -214,8 +231,7 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
   RunTestSequence(
       AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL(), 1),
       AddInstrumentedTab(kSecondTab, chrome::ChromeUINewTabURLAsGURL(), 2),
-      WaitForActiveTabChange(2),
-      NameTabViewAt("Tab to drag", 1),
+      WaitForActiveTabChange(2), NameTabViewAt("Tab to drag", 1),
       MoveMouseTo("Tab to drag"),
       DragMouseTo(kBrowserViewElementId, CenterPoint(), /*release=*/false),
       PollState(kBrowserCountPoller, GetBrowserCount()),
@@ -235,8 +251,7 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
       MoveMouseTo(kBrowserViewElementId),
       InAnyContext(WaitForHide(
           MultiContentsDropTargetView::kMultiContentsDropTargetElementId)),
-      ReleaseMouse(),
-      PollState(kDragStatePoller, GetDragActive()),
+      ReleaseMouse(), PollState(kDragStatePoller, GetDragActive()),
       WaitForState(kDragStatePoller, false));
 }
 
@@ -298,18 +313,16 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewTabDragEntrypointsUiTest,
   RunTestSequence(
       AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL(), 1),
       AddInstrumentedTab(kSecondTab, chrome::ChromeUINewTabURLAsGURL(), 2),
-      WaitForActiveTabChange(2),
-      NameTabViewAt("Tab to drag", 1),
+      WaitForActiveTabChange(2), NameTabViewAt("Tab to drag", 1),
       MoveMouseTo("Tab to drag"),
       DragMouseTo(kBrowserViewElementId, CenterPoint(), /*release=*/false),
       PollState(kBrowserCountPoller, GetBrowserCount()),
       WaitForState(kBrowserCountPoller, 2u),
       MoveMouseTo(base::BindLambdaForTesting([&]() {
-        return GetPointForDropSide(MultiContentsDropTargetView::DropSide::START);
+        return GetPointForDropSide(
+            MultiContentsDropTargetView::DropSide::START);
       })),
-      WaitTime(base::Milliseconds(500)),
-      ReleaseMouse(),
-      Check([this]() {
+      WaitTime(base::Milliseconds(500)), ReleaseMouse(), Check([this]() {
         return !GetDropTargetView(GetBrowserView())->GetVisible();
       }),
       PollState(kDragStatePoller, GetDragActive()),
