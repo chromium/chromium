@@ -68,18 +68,18 @@ const char kJsonProtobuf[] = "application/json+protobuf";
 const char kJsonSuffix[] = "+json";
 const char kXmlSuffix[] = "+xml";
 
-// The function below returns a set of MIME types below may be blocked by CORB
+// The function below returns whether `mime_type` may be blocked by ORB
 // without any confirmation sniffing (in contrast to HTML/JSON/XML which require
 // confirmation sniffing because images, scripts, etc. are frequently
 // mislabelled by http servers as HTML/JSON/XML).
 //
-// CORB cannot block images, scripts, stylesheets and other resources that the
-// web standards allows to be fetched in `no-cors` mode.  CORB cannot block
+// ORB cannot block images, scripts, stylesheets and other resources that the
+// web standards allow to be fetched in `no-cors` mode.  ORB cannot block
 // these resources even if they are not explicitly labeled with their type - in
 // practice http servers may serve images as application/octet-stream or even as
-// text/html.  OTOH, CORB *can* block all Content-Types that are very unlikely
+// text/html.  OTOH, ORB *can* block all Content-Types that are very unlikely
 // to represent images, scripts, stylesheets, etc. - such Content-Types are
-// returned by GetNeverSniffedMimeTypes.
+// recognized by IsNeverSniffedMimeType.
 //
 // Some of the Content-Types returned below might seem like a layering violation
 // (e.g. why would //services/network care about application/zip or
@@ -95,7 +95,7 @@ const char kXmlSuffix[] = "+xml";
 // disclosure of "application/zip" even though Chrome doesn't have built-in
 // support for this resource type.  And CORB also wants to protect
 // "application/pdf" even though Chrome happens to support this resource type.
-const auto& GetNeverSniffedMimeTypes() {
+bool IsNeverSniffedMimeType(std::string_view mime_type) {
   static constexpr auto kNeverSniffedMimeTypes = base::MakeFixedFlatSet<
       std::string_view>({
       // clang-format off
@@ -105,10 +105,10 @@ const auto& GetNeverSniffedMimeTypes() {
       // For the canonical specification of never sniffed mime types, see
       // "opaque-blocklisted-never-sniffed MIME types" in
       // https://github.com/annevk/orb
+      // Note that `application/x-protobuf` and `application/x-protobuffer` are
+      // covered by `"protobuf"` in `kNeverSniffedSubstrings` below.
       "application/gzip",
       "application/x-gzip",
-      "application/x-protobuf",
-      "application/x-protobuffer",
       "application/zip",
       "text/event-stream",
       // The types listed below were initially taken from the list of types
@@ -147,6 +147,16 @@ const auto& GetNeverSniffedMimeTypes() {
       "application/vnd.wordprocessing-openxml",
       "text/csv",
       "text/pdf",
+      // Additional types blocked without sniffing - see
+      // https://crbug.com/563877891 and https://crbug.com/565505280:
+      "application/proto",
+      "application/rtf",
+      "application/x-7z-compressed",
+      "text/calendar",
+      "text/rtf",
+      "text/tab-separated-values",
+      "text/vcard",
+      "text/x-vcard",
       // Block signed documents to protect (potentially sensitive) unencrypted
       // body of the signed document.  There should be no need to block
       // encrypted documents (e.g. `multipart/encrypted` nor
@@ -165,13 +175,54 @@ const auto& GetNeverSniffedMimeTypes() {
       // clang-format on
   });
 
+  // WARNING: when adding additional substrings, consider the risk of matching
+  // an unrelated MIME type that shouldn't be never-sniffed-and-then-blocked.
+  static constexpr std::string_view kNeverSniffedSubstrings[] = {
+      // Covers `application/vnd.oasis.opendocument.text`,
+      // `application/vnd.oasis.opendocument.spreadsheet`, etc.
+      "opendocument",
+      // Covers `application/protobuf`, `application/x-protobuf`,
+      // `application/x-protobuffer`, `application/vnd.google.protobuf`, etc.
+      "protobuf",
+      // Covers `application/yaml`, `application/x-yaml`, `text/yaml`,
+      // `text/x-yaml`, `application/openapi+yaml`, etc.
+      "yaml",
+  };
+
+  static constexpr std::string_view kNeverSniffedSuffixes[] = {
+      // Covers `application/grpc-web+proto`, `application/grpc+proto`,
+      // `application/connect+proto`, etc.
+      "+proto",
+  };
+
   // All items need to be lower-case, to support case-insensitive comparisons
   // later.
   DCHECK(std::ranges::all_of(kNeverSniffedMimeTypes, [](const auto& s) {
     return s == base::ToLowerASCII(s);
   }));
+  DCHECK(std::ranges::all_of(kNeverSniffedSubstrings, [](const auto& s) {
+    return s == base::ToLowerASCII(s);
+  }));
+  DCHECK(std::ranges::all_of(kNeverSniffedSuffixes, [](const auto& s) {
+    return s == base::ToLowerASCII(s);
+  }));
 
-  return kNeverSniffedMimeTypes;
+  std::string lower_case = base::ToLowerASCII(mime_type);
+  if (kNeverSniffedMimeTypes.contains(lower_case)) {
+    return true;
+  }
+  if (std::ranges::any_of(kNeverSniffedSubstrings,
+                          [&](std::string_view substring) {
+                            return lower_case.contains(substring);
+                          })) {
+    return true;
+  }
+  if (std::ranges::any_of(kNeverSniffedSuffixes, [&](std::string_view suffix) {
+        return lower_case.ends_with(suffix);
+      })) {
+    return true;
+  }
+  return false;
 }
 
 }  // namespace
@@ -221,7 +272,7 @@ MimeType GetCanonicalMimeType(std::string_view mime_type) {
     return MimeType::kPlain;
   }
 
-  if (GetNeverSniffedMimeTypes().contains(base::ToLowerASCII(mime_type))) {
+  if (IsNeverSniffedMimeType(mime_type)) {
     return MimeType::kNeverSniffed;
   }
 
