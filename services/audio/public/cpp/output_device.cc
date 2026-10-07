@@ -85,7 +85,6 @@ void OutputDevice::StreamCreated(
 void OutputDevice::OnConnectionError() {
   // Connection errors should be rare and handling them synchronously is
   // simpler.
-  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_thread_join;
   CleanUp();
 
   render_callback_->OnRenderError();
@@ -93,7 +92,15 @@ void OutputDevice::OnConnectionError() {
 
 void OutputDevice::CleanUp() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  audio_thread_.reset();  // Blocking call.
+  {
+    // Destroying the audio thread joins it. This is quick because
+    // AudioDeviceThread shuts down its socket first, which unblocks the
+    // thread. Allow it so that OutputDevice can be used on threads that
+    // disallow base sync primitives, such as the browser UI thread. See also
+    // media::AudioInputDevice::Stop().
+    base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_thread_join;
+    audio_thread_.reset();  // Blocking call.
+  }
   audio_callback_.reset();
   stream_.reset();
   stream_factory_.reset();

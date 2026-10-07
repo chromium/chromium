@@ -11,7 +11,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "media/audio/audio_output_device.h"
 #include "media/base/audio_bus.h"
@@ -193,6 +197,41 @@ TEST_F(AudioServiceOutputDeviceTest, VerifyDataFlow) {
     EXPECT_TRUE(std::ranges::all_of(test_bus->channel(0), samples_match));
     EXPECT_TRUE(std::ranges::all_of(test_bus->channel(1), samples_match));
   }
+}
+
+// Regression test for crbug.com/570694470: destroying an OutputDevice joins its
+// audio thread, which must work on threads that disallow base sync primitives
+// (e.g. the browser UI thread).
+TEST_F(AudioServiceOutputDeviceTest,
+       DestroyWithRunningAudioThreadWhenSyncPrimitivesDisallowed) {
+  auto params(media::AudioParameters::UnavailableDeviceParams());
+  params.set_frames_per_buffer(kFrames);
+  DataFlowTestEnvironment env(params);
+
+  // Set the expectation before the OutputDevice exists, so that no mock calls
+  // can happen before it. Render() runs on the audio thread.
+  base::test::TestFuture<void> render_future;
+  EXPECT_CALL(env.render_callback, Render(_, _, _, NotNull()))
+      .WillOnce(testing::DoAll(
+          base::test::RunOnceClosure(render_future.GetSequenceBoundCallback()),
+          testing::Return(kFrames)));
+
+  auto output_device = std::make_unique<OutputDevice>(
+      MakeFactoryRemote(), params, &env.render_callback, kDeviceId);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !stream_factory_->created_callback().is_null(); }));
+
+  // Creating the stream starts the audio thread. Wait until it renders once so
+  // that it's known to be running.
+  std::move(stream_factory_->created_callback())
+      .Run({std::in_place, env.reader->TakeSharedMemoryRegion(),
+            mojo::PlatformHandle(env.client_socket.Take())});
+  env.reader->RequestMoreData(kDelay, env.time_stamp, {});
+  ASSERT_TRUE(render_future.Wait());
+
+  // Without an explicit allowance, joining the audio thread would DCHECK.
+  base::ScopedDisallowBaseSyncPrimitives disallow_sync_primitives;
+  output_device.reset();
 }
 
 #if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
