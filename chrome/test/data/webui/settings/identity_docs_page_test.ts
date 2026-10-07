@@ -8,7 +8,7 @@ import {AiEnterpriseFeaturePrefName, EntityDataManagerProxyImpl} from 'chrome://
 import type {SettingsAutofillAiEntriesListElement, SettingsIdentityDocsPageElement} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, MetricsBrowserProxyImpl, ModelExecutionEnterprisePolicyValue, PrefsBrowserProxy, PrefService, resetRouterForTesting, Router} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -55,7 +55,7 @@ suite('IdentityDocsPage', function() {
   async function setupPage(): Promise<SettingsIdentityDocsPageElement> {
     const page = document.createElement('settings-identity-docs-page');
     document.body.appendChild(page);
-    await flushTasks();
+    await microtasksFinished();
     return page;
   }
 
@@ -96,13 +96,13 @@ suite('IdentityDocsPage', function() {
             .value);
 
     const entriesList =
-        page.shadowRoot!.querySelector<SettingsAutofillAiEntriesListElement>(
+        page.shadowRoot.querySelector<SettingsAutofillAiEntriesListElement>(
             'settings-autofill-ai-entries-list')!;
     assertTrue(!!entriesList);
     assertTrue(entriesList.allowNewEntitiesAdditionPref!.value);
 
     page.$.optInToggle.click();
-    await flushTasks();
+    await microtasksFinished();
 
     assertFalse(page.$.optInToggle.checked);
     assertFalse(
@@ -199,7 +199,7 @@ suite('IdentityDocsPage', function() {
         const policyIndicator = page.$.optInToggle.shadowRoot!.querySelector(
             'cr-policy-pref-indicator');
         const extensionControlledIndicator =
-            page.shadowRoot!.querySelector('#autofillExtensionIndicator');
+            page.shadowRoot.querySelector('#autofillExtensionIndicator');
 
         assertTrue(!!policyIndicator);
         assertFalse(!!extensionControlledIndicator);
@@ -229,7 +229,7 @@ suite('IdentityDocsPage', function() {
         const policyIndicator = page.$.optInToggle.shadowRoot!.querySelector(
             'cr-policy-pref-indicator');
         const extensionControlledIndicator =
-            page.shadowRoot!.querySelector('#autofillExtensionIndicator');
+            page.shadowRoot.querySelector('#autofillExtensionIndicator');
 
         assertFalse(!!policyIndicator);
         assertTrue(!!extensionControlledIndicator);
@@ -257,7 +257,7 @@ suite('IdentityDocsPage', function() {
 
         const page = await setupPage();
         const extensionControlledIndicator =
-            page.shadowRoot!.querySelector('#autofillExtensionIndicator');
+            page.shadowRoot.querySelector('#autofillExtensionIndicator');
 
         assertFalse(!!extensionControlledIndicator);
         assertFalse(page.$.optInToggle.checked);
@@ -339,9 +339,8 @@ suite('IdentityDocsPage', function() {
         assertFalse(page.$.optInToggle.checked);
 
         const entriesList =
-            page.shadowRoot!
-                .querySelector<SettingsAutofillAiEntriesListElement>(
-                    'settings-autofill-ai-entries-list')!;
+            page.shadowRoot.querySelector<SettingsAutofillAiEntriesListElement>(
+                'settings-autofill-ai-entries-list')!;
         assertTrue(!!entriesList);
         assertFalse(entriesList.allowNewEntitiesAdditionPref!.value);
       });
@@ -370,9 +369,8 @@ suite('IdentityDocsPage', function() {
         assertFalse(page.$.optInToggle.checked);
 
         const entriesList =
-            page.shadowRoot!
-                .querySelector<SettingsAutofillAiEntriesListElement>(
-                    'settings-autofill-ai-entries-list')!;
+            page.shadowRoot.querySelector<SettingsAutofillAiEntriesListElement>(
+                'settings-autofill-ai-entries-list')!;
         assertTrue(!!entriesList);
         assertFalse(entriesList.allowNewEntitiesAdditionPref!.value);
       });
@@ -427,7 +425,7 @@ suite('IdentityDocsPage', function() {
 
       const page = await setupPage();
 
-      const button = page.shadowRoot!.querySelector<HTMLElement>(
+      const button = page.shadowRoot.querySelector<HTMLElement>(
           '#suggestionsFromGeminiLinkRow');
       assertTrue(!!button);
 
@@ -447,7 +445,7 @@ suite('IdentityDocsPage', function() {
 
       const page = await setupPage();
 
-      const button = page.shadowRoot!.querySelector<HTMLElement>(
+      const button = page.shadowRoot.querySelector<HTMLElement>(
           '#suggestionsFromGeminiLinkRow');
       assertFalse(!!button);
     });

@@ -13,14 +13,12 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_page/settings_subpage.js';
-import '../../settings_shared.css.js';
 import '../autofill_ai_entries_list.js';
-import '../autofill_shared.css.js';
 
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {AiEnterpriseFeaturePrefName} from '../../ai_page/constants.js';
 import type {ModelExecutionEnterprisePolicyValue} from '../../ai_page/constants.js';
@@ -31,13 +29,14 @@ import type {MetricsBrowserProxy} from '../../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, SuggestionsFromGeminiEntryPoint} from '../../metrics_browser_proxy.js';
 import {routes} from '../../route.js';
 import {Router} from '../../router.js';
-import {SettingsViewMixin} from '../../settings_page/settings_view_mixin.js';
+import {SettingsViewMixinLit} from '../../settings_page/settings_view_mixin_lit.js';
 import type {EntityDataManagerProxy} from '../entity_data_manager_proxy.js';
 import {EntityDataManagerProxyImpl} from '../entity_data_manager_proxy.js';
 import {AutofillPolicyDataCategory, checkAutofillPoliciesAndModifyPrefIfNecessary} from '../policy_utils.js';
 import type {TypesBlockedEntry} from '../policy_utils.js';
 
-import {getTemplate} from './travel_page.html.js';
+import {getCss} from './travel_page.css.js';
+import {getHtml} from './travel_page.html.js';
 
 export interface SettingsTravelPageElement {
   $: {
@@ -46,78 +45,85 @@ export interface SettingsTravelPageElement {
 }
 
 const SettingsTravelPageElementBase =
-    SettingsViewMixin(PrefServiceObserverMixin(PolymerElement));
+    SettingsViewMixinLit(PrefServiceObserverMixinLit(CrLitElement));
 
 export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
   static get is() {
     return 'settings-travel-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      /**
-       Controls whether the user can use Autofill AI (in this context travel
-       info filling). As an example, this can be false if the extensions API
-       disables the feature.
-      */
-      canEnableOrDisableAutofillAi_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('canEnableOrDisableAutofillAi');
-        },
-      },
+      allowedEntityTypes_: {type: Object},
 
       /**
-         Fake preference used by `this.$.optInToggle`. Shows value of
-         `autofill.autofill_ai.travel_entities_enabled` preference if toggle
-         is enabled (clickable). If toggle is disabled then the value is
-         overridden to be shown as false even if the preference is true.
+       * If true, Autofill AI does not depend on whether Autofill for addresses
+       * is enabled.
        */
-      travelOptedIn_: {
-        type: Object,
-        value: () => ({
-          key: 'fake',
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: false,
-        }),
-      },
+      autofillSettingsEnterprisePolicyEnabled_: {type: Boolean},
 
       /**
-        If true, Autofill AI does not depend on whether Autofill for addresses
-        is enabled.
-      */
-      autofillSettingsEnterprisePolicyEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'AutofillSettingsEnterprisePolicyEnabled');
-        },
-      },
+       * Controls whether the user can use Autofill AI (in this context travel
+       * info filling). As an example, this can be false if the extensions API
+       * disables the feature.
+       */
+      canEnableOrDisableAutofillAi_: {type: Boolean},
 
-      profileEnabledPref_: {
-        type: Object,
-        value: null,
-      },
+      metricEntityTypes_: {type: Object},
+      profileEnabledPref_: {type: Object},
+      showSuggestionsFromGeminiSettings_: {type: Boolean},
 
-      showSuggestionsFromGeminiSettings_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showSuggestionsFromGeminiSettings');
-        },
-      },
+      /**
+       * Fake preference used by `this.$.optInToggle`. Shows value of
+       * `autofill.autofill_ai.travel_entities_enabled` preference if toggle
+       * is enabled (clickable). If toggle is disabled then the value is
+       * overridden to be shown as false even if the preference is true.
+       */
+      travelOptedIn_: {type: Object},
     };
   }
 
-  declare private travelOptedIn_: chrome.settingsPrivate.PrefObject<boolean>;
-  declare private autofillSettingsEnterprisePolicyEnabled_: boolean;
-  declare private canEnableOrDisableAutofillAi_: boolean;
-  declare private profileEnabledPref_:
-      chrome.settingsPrivate.PrefObject<boolean>|null;
-  declare private showSuggestionsFromGeminiSettings_: boolean;
+  protected accessor allowedEntityTypes_: Set<EntityTypeName> = new Set([
+    EntityTypeName.kFlightReservation,
+    EntityTypeName.kKnownTravelerNumber,
+    EntityTypeName.kRedressNumber,
+    EntityTypeName.kVehicle,
+  ]);
+
+  protected accessor metricEntityTypes_:
+      Partial<Record<EntityTypeName, string>> = {
+        [EntityTypeName.kFlightReservation]: 'FlightReservation',
+        [EntityTypeName.kKnownTravelerNumber]: 'KnownTravelerNumber',
+        [EntityTypeName.kRedressNumber]: 'RedressNumber',
+        [EntityTypeName.kVehicle]: 'Vehicle',
+      };
+
+  private accessor canEnableOrDisableAutofillAi_: boolean =
+      loadTimeData.getBoolean('canEnableOrDisableAutofillAi');
+
+  protected accessor travelOptedIn_:
+      chrome.settingsPrivate.PrefObject<boolean> = {
+    key: 'fake',
+    type: chrome.settingsPrivate.PrefType.BOOLEAN,
+    value: false,
+  };
+
+  private accessor autofillSettingsEnterprisePolicyEnabled_: boolean =
+      loadTimeData.getBoolean('AutofillSettingsEnterprisePolicyEnabled');
+
+  protected accessor profileEnabledPref_:
+      chrome.settingsPrivate.PrefObject<boolean>|null = null;
+
+  protected accessor showSuggestionsFromGeminiSettings_: boolean =
+      loadTimeData.getBoolean('showSuggestionsFromGeminiSettings');
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -140,7 +146,7 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
     this.entityDataManager_.preloadDetailsForUpsertPass();
   }
 
-  private optInToggleDisabled_(): boolean {
+  protected optInToggleDisabled_(): boolean {
     if (!this.profileEnabledPref_) {
       return true;
     }
@@ -178,7 +184,7 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
     this.travelOptedIn_ = fakePref;
   }
 
-  private onOptInToggleChange_() {
+  protected onOptInToggleSettingsBooleanControlChange_() {
     // If the preference is enforced by enterprise policy, do not allow the user
     // to toggle or mutate the underlying preference value.
     if (this.$.optInToggle.pref?.enforcement ===
@@ -190,25 +196,7 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
         this.$.optInToggle.checked);
   }
 
-  private getAllowedEntityTypes_(): Set<EntityTypeName> {
-    return new Set([
-      EntityTypeName.kFlightReservation,
-      EntityTypeName.kKnownTravelerNumber,
-      EntityTypeName.kRedressNumber,
-      EntityTypeName.kVehicle,
-    ]);
-  }
-
-  private getMetricEntityTypes_(): Record<EntityTypeName, string> {
-    return {
-      [EntityTypeName.kFlightReservation]: 'FlightReservation',
-      [EntityTypeName.kKnownTravelerNumber]: 'KnownTravelerNumber',
-      [EntityTypeName.kRedressNumber]: 'RedressNumber',
-      [EntityTypeName.kVehicle]: 'Vehicle',
-    } as Record<EntityTypeName, string>;
-  }
-
-  private extensionControlledIndicatorIsVisible_(): boolean {
+  protected extensionControlledIndicatorIsVisible_(): boolean {
     if (!this.profileEnabledPref_) {
       return false;
     }
@@ -217,7 +205,7 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
         !this.profileEnabledPref_.value;
   }
 
-  private onSuggestionsFromGeminiClick_() {
+  protected onSuggestionsFromGeminiClick_() {
     this.metricsBrowserProxy_.recordSuggestionsFromGeminiEntryPointClick(
         SuggestionsFromGeminiEntryPoint.TRAVEL);
     Router.getInstance().navigateTo(routes.SUGGESTIONS_FROM_GEMINI);
@@ -235,9 +223,11 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
 
   // SettingsViewMixin implementation.
   override focusBackButton() {
-    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+    this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
   }
 }
+
+export type TravelPageElement = SettingsTravelPageElement;
 
 declare global {
   interface HTMLElementTagNameMap {

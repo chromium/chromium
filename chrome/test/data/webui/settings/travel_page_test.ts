@@ -8,7 +8,7 @@ import {AiEnterpriseFeaturePrefName, EntityDataManagerProxyImpl} from 'chrome://
 import type {SettingsAutofillAiEntriesListElement, SettingsTravelPageElement} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, MetricsBrowserProxyImpl, ModelExecutionEnterprisePolicyValue, PrefsBrowserProxy, PrefService, resetRouterForTesting, Router} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -55,7 +55,7 @@ suite('TravelPage', function() {
   async function setupPage(): Promise<SettingsTravelPageElement> {
     const page = document.createElement('settings-travel-page');
     document.body.appendChild(page);
-    await flushTasks();
+    await microtasksFinished();
     return page;
   }
 
@@ -104,13 +104,13 @@ suite('TravelPage', function() {
             .value);
 
     const entriesList =
-        page.shadowRoot!.querySelector<SettingsAutofillAiEntriesListElement>(
+        page.shadowRoot.querySelector<SettingsAutofillAiEntriesListElement>(
             'settings-autofill-ai-entries-list')!;
     assertTrue(!!entriesList);
     assertTrue(entriesList.allowNewEntitiesAdditionPref!.value);
 
     page.$.optInToggle.click();
-    await flushTasks();
+    await microtasksFinished();
 
     assertFalse(page.$.optInToggle.checked);
     assertFalse(
@@ -207,7 +207,7 @@ suite('TravelPage', function() {
         const policyIndicator = page.$.optInToggle.shadowRoot!.querySelector(
             'cr-policy-pref-indicator');
         const extensionControlledIndicator =
-            page.shadowRoot!.querySelector('#autofillExtensionIndicator');
+            page.shadowRoot.querySelector('#autofillExtensionIndicator');
 
         assertTrue(!!policyIndicator);
         assertFalse(!!extensionControlledIndicator);
@@ -237,7 +237,7 @@ suite('TravelPage', function() {
         const policyIndicator = page.$.optInToggle.shadowRoot!.querySelector(
             'cr-policy-pref-indicator');
         const extensionControlledIndicator =
-            page.shadowRoot!.querySelector('#autofillExtensionIndicator');
+            page.shadowRoot.querySelector('#autofillExtensionIndicator');
 
         assertFalse(!!policyIndicator);
         assertTrue(!!extensionControlledIndicator);
@@ -265,7 +265,7 @@ suite('TravelPage', function() {
 
         const page = await setupPage();
         const extensionControlledIndicator =
-            page.shadowRoot!.querySelector('#autofillExtensionIndicator');
+            page.shadowRoot.querySelector('#autofillExtensionIndicator');
 
         assertFalse(!!extensionControlledIndicator);
         assertFalse(page.$.optInToggle.checked);
@@ -347,9 +347,8 @@ suite('TravelPage', function() {
         assertFalse(page.$.optInToggle.checked);
 
         const entriesList =
-            page.shadowRoot!
-                .querySelector<SettingsAutofillAiEntriesListElement>(
-                    'settings-autofill-ai-entries-list')!;
+            page.shadowRoot.querySelector<SettingsAutofillAiEntriesListElement>(
+                'settings-autofill-ai-entries-list')!;
         assertTrue(!!entriesList);
         assertFalse(entriesList.allowNewEntitiesAdditionPref!.value);
       });
@@ -378,9 +377,8 @@ suite('TravelPage', function() {
         assertFalse(page.$.optInToggle.checked);
 
         const entriesList =
-            page.shadowRoot!
-                .querySelector<SettingsAutofillAiEntriesListElement>(
-                    'settings-autofill-ai-entries-list')!;
+            page.shadowRoot.querySelector<SettingsAutofillAiEntriesListElement>(
+                'settings-autofill-ai-entries-list')!;
         assertTrue(!!entriesList);
         assertFalse(entriesList.allowNewEntitiesAdditionPref!.value);
       });
@@ -435,7 +433,7 @@ suite('TravelPage', function() {
 
       const page = await setupPage();
 
-      const button = page.shadowRoot!.querySelector<HTMLElement>(
+      const button = page.shadowRoot.querySelector<HTMLElement>(
           '#suggestionsFromGeminiLinkRow');
       assertTrue(!!button);
 
@@ -454,7 +452,7 @@ suite('TravelPage', function() {
 
       const page = await setupPage();
 
-      const button = page.shadowRoot!.querySelector<HTMLElement>(
+      const button = page.shadowRoot.querySelector<HTMLElement>(
           '#suggestionsFromGeminiLinkRow');
       assertFalse(!!button);
     });

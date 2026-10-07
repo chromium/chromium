@@ -148,7 +148,8 @@ export class SettingsAutofillAiEntriesListElement extends
   accessor allowedEntityTypes: Set<EntityTypeName>|null = null;
   accessor listTitle: string = '';
   accessor pageName: string = '';
-  accessor metricEntityTypes: Record<EntityTypeName, string>|null = null;
+  accessor metricEntityTypes: Partial<Record<EntityTypeName, string>>|null =
+      null;
   accessor allowNewEntitiesAdditionPref:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
   protected accessor allowNewEntitiesAddition_: boolean = false;

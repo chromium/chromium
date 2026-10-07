@@ -1,44 +1,34 @@
-<style include="settings-shared autofill-shared">
-
-  .card {
-    overflow: hidden;
-  }
-
-</style>
 <settings-subpage page-title="$i18n{identityDocsCardTitle}"
     class="multi-card">
 
   <div class="card">
     <settings-toggle-button id="optInToggle"
-        disabled="[[optInToggleDisabled_(
-            autofillSettingsEnterprisePolicyEnabled_,
-            profileEnabledPref_)]]"
-        on-settings-boolean-control-change="onOptInToggleChange_"
-        pref="[[identityDocsOptedIn_]]"
+        ?disabled="${this.optInToggleDisabled_()}"
+        @settings-boolean-control-change="${
+            this.onOptInToggleSettingsBooleanControlChange_}"
+        .pref="${this.identityDocsOptedIn_}"
         no-extension-indicator
         label="$i18n{identityDocsOptInToggleLabel}"
         sub-label="$i18n{identityDocsOptInToggleSubLabel}">
     </settings-toggle-button>
-    <template is="dom-if" if="[[showSuggestionsFromGeminiSettings_]]">
+    ${this.showSuggestionsFromGeminiSettings_ ? html`
       <cr-link-row label="$i18n{autofillPersonalContextSettingsTitle}"
           sub-label="$i18n{autofillPersonalContextSettingsSubpageSummary}"
           id="suggestionsFromGeminiLinkRow"
-          on-click="onSuggestionsFromGeminiClick_" class="hr">
+          @click="${this.onSuggestionsFromGeminiClick_}" class="hr">
       </cr-link-row>
-    </template>
-    <template is="dom-if" if="[[extensionControlledIndicatorIsVisible_(
-            profileEnabledPref_)]]">
+    ` : ''}
+    ${this.extensionControlledIndicatorIsVisible_() ? html`
       <div class="cr-row continuation">
         <extension-controlled-indicator class="flex"
             id="autofillExtensionIndicator"
-            extension-id="[[profileEnabledPref_.extensionId]]"
-            extension-name="[[profileEnabledPref_.controlledByName]]"
-            extension-can-be-disabled="[[
-                profileEnabledPref_.extensionCanBeDisabled
-                ]]">
+            extension-id="${this.profileEnabledPref_!.extensionId}"
+            extension-name="${this.profileEnabledPref_!.controlledByName}"
+            ?extension-can-be-disabled="${
+                !!this.profileEnabledPref_!.extensionCanBeDisabled}">
         </extension-controlled-indicator>
       </div>
-    </template>
+    ` : ''}
   </div>
 
   <!-- Entities list card -->
@@ -46,9 +36,9 @@
     <settings-autofill-ai-entries-list
         list-title="$i18n{identityDocsCardTitle}"
         page-name="IdentityDocs"
-        allowed-entity-types="[[getAllowedEntityTypes_()]]"
-        metric-entity-types="[[getMetricEntityTypes_()]]"
-        allow-new-entities-addition-pref="[[identityDocsOptedIn_]]">
+        .allowedEntityTypes="${this.allowedEntityTypes_}"
+        .metricEntityTypes="${this.metricEntityTypes_}"
+        .allowNewEntitiesAdditionPref="${this.identityDocsOptedIn_}">
     </settings-autofill-ai-entries-list>
   </div>
 
