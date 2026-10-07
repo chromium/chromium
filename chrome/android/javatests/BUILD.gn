@@ -461,6 +461,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.actor") {
   sources = [
     "src/org/chromium/chrome/browser/actor/ActorOverlayDesktopPTTest.java",
     "src/org/chromium/chrome/browser/actor/ActorOverlayPTTest.java",
+    "src/org/chromium/chrome/browser/actor/ActorOverlayZOrderTestUtil.java",
   ]
 
   deps = [
@@ -470,6 +471,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.actor") {
     "//chrome/browser/glic/android:java",
     "//chrome/browser/glic/android:test_support_java",
     "//chrome/test/android:chrome_java_transit",
+    "//components/omnibox/common:features_java",
   ]
 }
 

@@ -30,7 +30,6 @@ import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
@@ -86,8 +85,7 @@ public class ActorOverlayViewRenderTest {
     private ActorOverlayCoordinator mCoordinator;
     private SettableNullableObservableSupplier<Tab> mCurrentTabSupplier;
     private SettableMonotonicObservableSupplier<LayoutManager> mLayoutManagerSupplier;
-    private final SettableNonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier =
-            ObservableSuppliers.createNonNull(false);
+    private SettableNonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
     private FrameLayout mParentView;
 
@@ -109,6 +107,8 @@ public class ActorOverlayViewRenderTest {
                     mLayoutManagerSupplier = ObservableSuppliers.createMonotonic();
                     mLayoutManagerSupplier.set(mLayoutManager);
                     when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+
+                    mOmniboxFocusStateSupplier = ObservableSuppliers.createNonNull(false);
 
                     mProfileSupplier = ObservableSuppliers.createMonotonic();
                     mProfileSupplier.set(mProfile);
@@ -139,7 +139,6 @@ public class ActorOverlayViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "b/559848887")
     public void testActorOverlay() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(() -> mCoordinator.getMediator().setOverlayVisible(true));
 
@@ -153,7 +152,6 @@ public class ActorOverlayViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "b/559848887")
     public void testActorOverlay_accountsForSideUi() throws Exception {
         ArgumentCaptor<SideUiObserver> sideUiObserverCaptor =
                 ArgumentCaptor.forClass(SideUiObserver.class);
@@ -182,7 +180,6 @@ public class ActorOverlayViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "b/559848887")
     public void testActorOverlayHovered() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -200,7 +197,6 @@ public class ActorOverlayViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "b/559848887")
     public void testActorOverlayWithTakeOverButton() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
