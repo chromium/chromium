@@ -7363,8 +7363,6 @@ INSTANTIATE_TEST_SUITE_P(
         /*input_source=*/::testing::Values("mouse")));
 #endif
 
-// TODO(crbug.com/409577362) : Fix test flakiness
-#if !BUILDFLAG(IS_CHROMEOS)
 class SideBySideTabDragControllerTest
     : public TabDragControllerInteractiveTestMixin<TabDragControllerTest> {
  public:
@@ -7416,7 +7414,6 @@ IN_PROC_BROWSER_TEST_F(SideBySideTabDragControllerTest, DragBetweenSplitTab) {
   EXPECT_TRUE(IsTabInSplit(2));
 }
 
-// Flaky. https://crbug.com/40748225
 IN_PROC_BROWSER_TEST_F(SideBySideTabDragControllerTest,
                        DragBetweenMultipleSplitTabs) {
   TabStrip* const tab_strip = GetTabStripForBrowser(browser());
@@ -7708,7 +7705,6 @@ INSTANTIATE_TEST_SUITE_P(
         /*kTearOffWebAppTabOpensWebAppWindow=*/::testing::Values(false),
         /*input_source=*/::testing::Values("mouse")));
 #endif  // BUILDFLAG(IS_MAC)
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 
