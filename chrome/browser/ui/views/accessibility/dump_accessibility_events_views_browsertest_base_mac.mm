@@ -75,6 +75,7 @@ base::NoDestructor<std::unique_ptr<ViewsAXPlatformTreeManagerMacForTesting>>
 std::unique_ptr<ui::AXEventRecorder> CreateViewsAXEventRecorderMac(
     base::ProcessId pid,
     const ui::AXTreeSelector& selector,
+    gfx::NativeWindow target_window,
     gfx::NativeViewAccessible root_element,
     WidgetAXManager* widget_ax_manager) {
   base::WeakPtr<ui::AXPlatformTreeManager> manager;
@@ -91,7 +92,14 @@ std::unique_ptr<ui::AXEventRecorder> CreateViewsAXEventRecorderMac(
     manager = (*g_stub_views_manager_for_testing)->GetWeakPtr();
   }
 
-  return std::make_unique<ui::AXEventRecorderMac>(manager, pid, selector);
+  // The AXObserver is process-wide, so it also sees events from windows the
+  // test is not interested in, such as the browser window created by
+  // InProcessBrowserTest (whose views may fire events asynchronously during
+  // startup). Restrict recording to the target window and its child windows
+  // (menus, bubbles, tooltips) so tests don't need per-test deny filters for
+  // that noise. The scope lives and dies with the recorder.
+  return std::make_unique<ui::AXEventRecorderMac>(
+      manager, pid, selector, target_window.GetNativeNSWindow());
 }
 
 void CleanupViewsAXEventRecorderMac() {

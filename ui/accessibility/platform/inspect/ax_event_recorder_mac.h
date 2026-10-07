@@ -26,9 +26,20 @@ class AXPlatformTreeManager;
 class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderMac
     : public AXEventRecorder {
  public:
+  // If `scope_window` is non-nil, recording is restricted to events whose
+  // target element belongs to `scope_window` or to one of its descendant child
+  // windows (e.g. menus, bubbles and tooltips anchored to it). Events
+  // targeting elements in any other window of the application are dropped.
+  // This lets a test observe a single widget without picking up unrelated
+  // events from, e.g., a browser window that happens to be open in the same
+  // process. The scope is fixed for the lifetime of the recorder: the
+  // accessibility markers it applies to out-of-scope windows are removed in
+  // the destructor. If `scope_window` is nil, events from all windows are
+  // recorded.
   AXEventRecorderMac(base::WeakPtr<AXPlatformTreeManager> manager,
                      base::ProcessId pid,
-                     const AXTreeSelector& selector);
+                     const AXTreeSelector& selector,
+                     NSWindow* scope_window = nil);
 
   AXEventRecorderMac(const AXEventRecorderMac&) = delete;
   AXEventRecorderMac& operator=(const AXEventRecorderMac&) = delete;
@@ -49,7 +60,20 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderMac
   // observer.
   void AddNotification(NSString* notification);
 
+  // Returns true if `element` should be recorded given the current window
+  // scope. See the constructor.
+  bool IsElementInWindowScope(AXUIElementRef element);
+
+  // Tags every window of the application that is outside the current window
+  // scope with a marker accessibility identifier, so that an event target's
+  // window can be classified through the accessibility API.
+  void UpdateWindowScopeMarkers();
+
   base::WeakPtr<AXPlatformTreeManager> manager_;
+
+  // The window to which recording is restricted, if any. Fixed at
+  // construction.
+  NSWindow* const __strong scope_window_;
 
   // The AXUIElement for the application.
   base::apple::ScopedCFTypeRef<AXUIElementRef> application_;

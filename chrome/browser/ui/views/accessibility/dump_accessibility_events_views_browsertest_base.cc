@@ -53,6 +53,7 @@ namespace views {
 std::unique_ptr<ui::AXEventRecorder> CreateViewsAXEventRecorderMac(
     base::ProcessId pid,
     const ui::AXTreeSelector& selector,
+    gfx::NativeWindow target_window,
     gfx::NativeViewAccessible root_element,
     WidgetAXManager* widget_ax_manager);
 void CleanupViewsAXEventRecorderMac();
@@ -401,7 +402,8 @@ DumpAccessibilityEventsViewsTestBase::CreateEventRecorder() {
   gfx::NativeViewAccessible root_element =
       widget_->GetRootView()->GetNativeViewAccessible();
   return CreateViewsAXEventRecorderMac(base::GetCurrentProcId(), selector,
-                                       root_element, widget_->ax_manager());
+                                       native_window, root_element,
+                                       widget_->ax_manager());
 #elif BUILDFLAG(IS_LINUX)
   if (GetApiType() != ui::AXApiType::kLinux) {
     return nullptr;
