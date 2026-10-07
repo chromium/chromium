@@ -76,7 +76,7 @@ android_library("java") {
 generate_jni("jni_headers") {
   visibility = [
     ":*",
-    "//chrome/browser/ui",
+    "//chrome/browser",
     "//chrome/browser/ui/android/autofill",
     "//chrome/browser/ui/android/autofill/payments",
   ]

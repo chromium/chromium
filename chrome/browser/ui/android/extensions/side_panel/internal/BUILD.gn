@@ -18,7 +18,7 @@ assert(
 source_set("internal") {
   visibility = [
     ":*",
-    "//chrome/browser/ui",
+    "//chrome/browser",
   ]
   sources = [
     "extension_side_panel_contents_android.cc",

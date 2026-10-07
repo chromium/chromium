@@ -569,7 +569,6 @@ if (is_win || is_mac || is_linux) {
     visibility = [
       "//chrome/browser",
       "//chrome/browser/component_updater:unit_tests",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/webui/help:*",
       "//chrome/browser/ui/webui/updater:*",
       "//chrome/browser/updater:*",

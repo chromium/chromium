@@ -34,7 +34,7 @@ source_set("internal") {
     # //c/b/ui/browser_window.
     visibility = [
       ":*",
-      "//chrome/browser/ui",
+      "//chrome/browser",
     ]
     sources += [
       "android/android_base_window.cc",

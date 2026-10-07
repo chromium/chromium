@@ -16,7 +16,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 source_set("android") {
   visibility = [
     ":*",
-    "//chrome/browser/ui",
+    "//chrome/browser",
   ]
   sources = [
     "side_panel_coordinator_android.cc",
@@ -52,8 +52,8 @@ source_set("dev") {
   # The window-scoped dev feature is initialized from Java side, so it needs to
   # be included in the C++ "glue" target (//c/b/ui).
   visibility = [
+    "//chrome/browser",
     "//chrome/browser/android:tabs_impl",
-    "//chrome/browser/ui",
   ]
   sources = [
     "dev/side_panel_tab_scoped_dev_feature.cc",

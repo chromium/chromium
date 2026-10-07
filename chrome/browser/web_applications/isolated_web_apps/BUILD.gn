@@ -59,7 +59,7 @@ source_set("isolated_web_apps_no_pwa_core_deps") {
   assert_no_deps = [ "//chrome/browser/web_applications" ]
 
   visibility = [
-    "//chrome/browser/ui/*",
+    "//chrome/browser/*",
     "//chrome/browser/web_applications/*",
   ]
 

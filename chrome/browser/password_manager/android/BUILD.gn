@@ -44,8 +44,8 @@ source_set("backend") {
   visibility = [
     ":backend_public",
     ":unit_tests",
+    "//chrome/browser",
     "//chrome/browser/password_manager/factories:backend_factory",
-    "//chrome/browser/ui",
   ]
 
   sources = [

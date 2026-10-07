@@ -16,7 +16,7 @@ assert(enable_extensions_core)
 source_set("internal") {
   visibility = [
     ":*",
-    "//chrome/browser/ui",
+    "//chrome/browser",
   ]
   sources = [
     "extension_browser_window_helper_bridge.cc",

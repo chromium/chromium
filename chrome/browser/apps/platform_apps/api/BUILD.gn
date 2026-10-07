@@ -97,7 +97,6 @@ source_set("api") {
     visibility += [
       "//chrome/browser",
       "//chrome/browser/profiles:profiles_extra_parts_impl",
-      "//chrome/browser/ui",
     ]
   } else {
     # //chrome/browser:browser and //chrome/browser/ui:* will be split into
@@ -105,7 +104,6 @@ source_set("api") {
     visibility += [
       "//chrome/browser:*",
       "//chrome/browser/profiles:profiles_extra_parts_impl",
-      "//chrome/browser/ui:*",
     ]
   }
   visibility += [ ":api_registration" ]
