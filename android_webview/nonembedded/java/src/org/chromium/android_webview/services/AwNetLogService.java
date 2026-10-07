@@ -14,7 +14,6 @@ import android.os.ParcelFileDescriptor;
 import org.chromium.android_webview.common.services.INetLogService;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.metrics.RecordHistogram;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -56,10 +55,6 @@ public class AwNetLogService extends Service {
                         } catch (FileNotFoundException e) {
                             Log.e(TAG, "Failed to open log file " + newLogFile);
                         }
-
-                        // The boolean value doesn't matter, we only care about the total count.
-                        RecordHistogram.recordBooleanHistogram(
-                                "Android.WebView.DevUi.NetLogsCalled", true);
                     }
 
                     return fileDescriptor;
