@@ -7,18 +7,16 @@
 #include <variant>
 
 #include "ash/constants/notifier_catalogs.h"
-#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/eche_app_ui/eche_alert_generator.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/message_center/message_center.h"
@@ -50,15 +48,15 @@ std::unique_ptr<message_center::Notification> CreateNotification(
 }  // namespace
 
 EcheAppNotificationController::EcheAppNotificationController(
-    Profile* profile,
-    const base::RepeatingCallback<void(Profile*)>& relaunch_callback)
-    : profile_(profile), relaunch_callback_(relaunch_callback) {}
+    const AccountId& account_id,
+    const base::RepeatingClosure& relaunch_callback)
+    : account_id_(account_id), relaunch_callback_(relaunch_callback) {}
 
 EcheAppNotificationController::~EcheAppNotificationController() = default;
 
 void EcheAppNotificationController::LaunchSettings() {
-  const user_manager::User& user = CHECK_DEREF(
-      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
+  const user_manager::User& user =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(account_id_));
   // TODO(crbug.com/40785967): Wait for UX confirm.
   ash::SettingsAppManager::Get()->Open(
       user,
@@ -66,15 +64,15 @@ void EcheAppNotificationController::LaunchSettings() {
 }
 
 void EcheAppNotificationController::LaunchNetworkSettings() {
-  const user_manager::User& user = CHECK_DEREF(
-      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
+  const user_manager::User& user =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(account_id_));
   // TODO(crbug.com/40785967): Wait for UX confirm.
   ash::SettingsAppManager::Get()->Open(
       user, {.sub_page = chromeos::settings::mojom::kNetworkSectionPath});
 }
 
 void EcheAppNotificationController::LaunchTryAgain() {
-  relaunch_callback_.Run(profile_.get());
+  relaunch_callback_.Run();
 }
 
 void EcheAppNotificationController::ShowNotificationFromWebUI(
@@ -160,12 +158,12 @@ void EcheAppNotificationController::ShowScreenLockNotification(
 
 void EcheAppNotificationController::ShowNotification(
     std::unique_ptr<message_center::Notification> notification) {
-  const user_manager::User& user = CHECK_DEREF(
-      BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
+  const user_manager::User& user =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(account_id_));
   notification = std::make_unique<message_center::Notification>(
       CreateUserScopedNotificationId(notification->id(), user.username_hash()),
       *notification);
-  notification->set_profile_id(user.GetAccountId().GetUserEmail());
+  notification->set_profile_id(account_id_.GetUserEmail());
   notification->SetSystemPriority();
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));
@@ -173,8 +171,8 @@ void EcheAppNotificationController::ShowNotification(
 
 void EcheAppNotificationController::CloseNotification(
     const std::string& notification_id) {
-  const user_manager::User& user = CHECK_DEREF(
-      BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
+  const user_manager::User& user =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(account_id_));
   message_center::MessageCenter::Get()->RemoveNotification(
       CreateUserScopedNotificationId(notification_id, user.username_hash()),
       /*by_user=*/false);

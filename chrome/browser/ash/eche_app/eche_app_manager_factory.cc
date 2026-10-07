@@ -20,6 +20,7 @@
 #include "ash/webui/eche_app_ui/eche_uid_provider.h"
 #include "ash/webui/eche_app_ui/system_info.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -182,9 +183,13 @@ void EcheAppManagerFactory::ShowNotification(
     const std::optional<std::u16string>& message,
     std::unique_ptr<LaunchAppHelper::NotificationInfo> info) {
   if (!weak_ptr->notification_controller_) {
+    const AccountId& account_id =
+        CHECK_DEREF(
+            BrowserContextHelper::Get()->GetUserByBrowserContext(profile))
+            .GetAccountId();
     weak_ptr->notification_controller_ =
         std::make_unique<EcheAppNotificationController>(
-            profile, base::BindRepeating(&RelaunchLast));
+            account_id, base::BindRepeating(&RelaunchLast, profile));
   }
 
   if (info->category() ==
@@ -209,9 +214,13 @@ void EcheAppManagerFactory::CloseNotification(
     Profile* profile,
     const std::string& notification_id) {
   if (!weak_ptr->notification_controller_) {
+    const AccountId& account_id =
+        CHECK_DEREF(
+            BrowserContextHelper::Get()->GetUserByBrowserContext(profile))
+            .GetAccountId();
     weak_ptr->notification_controller_ =
         std::make_unique<EcheAppNotificationController>(
-            profile, base::BindRepeating(&RelaunchLast));
+            account_id, base::BindRepeating(&RelaunchLast, profile));
   }
   weak_ptr->notification_controller_->CloseNotification(notification_id);
 }

@@ -6,15 +6,14 @@
 #define CHROME_BROWSER_ASH_ECHE_APP_ECHE_APP_NOTIFICATION_CONTROLLER_H_
 
 #include <optional>
+#include <string>
 #include <variant>
 
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
-#include "base/memory/raw_ptr.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
+#include "components/account_id/account_id.h"
 #include "ui/message_center/public/cpp/notification.h"
-
-class Profile;
 
 namespace ash {
 namespace eche_app {
@@ -22,9 +21,9 @@ namespace eche_app {
 // Controller class to show notifications.
 class EcheAppNotificationController {
  public:
-  explicit EcheAppNotificationController(
-      Profile* profile,
-      const base::RepeatingCallback<void(Profile*)>& relaunch_callback);
+  EcheAppNotificationController(
+      const AccountId& account_id,
+      const base::RepeatingClosure& relaunch_callback);
   virtual ~EcheAppNotificationController();
 
   EcheAppNotificationController(const EcheAppNotificationController&) = delete;
@@ -59,8 +58,8 @@ class EcheAppNotificationController {
   void ShowNotification(
       std::unique_ptr<message_center::Notification> notification);
 
-  raw_ptr<Profile, DanglingUntriaged> profile_;
-  base::RepeatingCallback<void(Profile*)> relaunch_callback_;
+  const AccountId account_id_;
+  base::RepeatingClosure relaunch_callback_;
   base::WeakPtrFactory<EcheAppNotificationController> weak_ptr_factory_{this};
 };
 

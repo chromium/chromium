@@ -6,11 +6,17 @@
 
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_helper.h"
 #include "ash/webui/eche_app_ui/eche_alert_generator.h"
 #include "base/check_deref.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "base/functional/callback_helpers.h"
+#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/message_center/message_center.h"
 
@@ -19,16 +25,18 @@ namespace eche_app {
 
 namespace {
 
-void RelaunchEcheApp(Profile* profile) {}
+constexpr auto kAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("test@test",
+                                            GaiaId::Literal("123456789"));
 
 }  // namespace
 
 class TestableNotificationController : public EcheAppNotificationController {
  public:
-  explicit TestableNotificationController(
-      Profile* profile,
-      const base::RepeatingCallback<void(Profile*)>& relaunch_callback)
-      : EcheAppNotificationController(profile, relaunch_callback) {}
+  TestableNotificationController(
+      const AccountId& account_id,
+      const base::RepeatingClosure& relaunch_callback)
+      : EcheAppNotificationController(account_id, relaunch_callback) {}
   ~TestableNotificationController() override = default;
   TestableNotificationController(const TestableNotificationController&) =
       delete;
@@ -50,7 +58,7 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
               (override));
 };
 
-class EcheAppNotificationControllerTest : public BrowserWithTestWindowTest {
+class EcheAppNotificationControllerTest : public AshTestBase {
  protected:
   EcheAppNotificationControllerTest() = default;
 
@@ -61,17 +69,22 @@ class EcheAppNotificationControllerTest : public BrowserWithTestWindowTest {
       const EcheAppNotificationControllerTest&) = delete;
 
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+    AshTestBase::SetUp();
+
+    ASSERT_TRUE(
+        ash_test_helper()->user_session_test_environment().AddRegularUser(
+            kAccountId));
+    ash_test_helper()->user_session_test_environment().LogIn(kAccountId);
 
     notification_controller_ =
         std::make_unique<testing::StrictMock<TestableNotificationController>>(
-            profile(), base::BindRepeating(&RelaunchEcheApp));
+            kAccountId, base::DoNothing());
   }
 
   const message_center::Notification* GetNotification(
       const std::string& notification_id) {
-    const user_manager::User& user = CHECK_DEREF(
-        BrowserContextHelper::Get()->GetUserByBrowserContext(profile()));
+    const user_manager::User& user =
+        CHECK_DEREF(user_manager::UserManager::Get()->FindUser(kAccountId));
     return message_center::MessageCenter::Get()->FindVisibleNotificationById(
         CreateUserScopedNotificationId(notification_id, user.username_hash()));
   }
