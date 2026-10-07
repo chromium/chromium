@@ -25,6 +25,8 @@ build_webui("build") {
     "common.ts",
     "composebox.html.ts",
     "composebox.ts",
+    "composebox_aim_button.html.ts",
+    "composebox_aim_button.ts",
     "composebox_favicon_group.html.ts",
     "composebox_favicon_group.ts",
     "composebox_context_menu.html.ts",
@@ -69,6 +71,7 @@ build_webui("build") {
   ]
   css_files = [
     "composebox.css",
+    "composebox_aim_button.css",
     "composebox_favicon_group.css",
     "composebox_submit.css",
     "composebox_dropdown.css",

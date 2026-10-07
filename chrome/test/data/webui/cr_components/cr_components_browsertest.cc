@@ -449,6 +449,11 @@ IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxMixin) {
   RunTest("cr_components/composebox/composebox_mixin_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxAimButton) {
+  RunTest("cr_components/composebox/composebox_aim_button_test.js",
+          "runMochaSuite('ComposeboxAimButtonTest')");
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 class CrComponentsWithPixelOutputTest : public WebUIMochaBrowserTest {
  public:

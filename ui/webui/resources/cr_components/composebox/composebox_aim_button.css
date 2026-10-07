@@ -1,0 +1,97 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --cr-button-height: 32px;
+  flex-shrink: 0;
+}
+
+:host([disabled]) {
+  opacity: var(--cr-disabled-opacity, 0.38);
+  pointer-events: none;
+}
+
+#button {
+  --cr-hover-background-color: var(
+      --cr-composebox-submit-button-hover-color,
+      var(--color-composebox-submit-button-hover));
+  background-color: var(--color-composebox-submit-button-background);
+  border: none;
+  color: var(--color-composebox-submit-button-icon, white);
+  font-size: 13px;
+  gap: 2px;
+  padding-inline: 12px;
+}
+
+#button:has(> #leadingIcon) {
+  padding-inline-start: 8px;
+}
+
+#button:has(> #trailingIcon) {
+  padding-inline-end: 8px;
+}
+
+#button:has(> .icon-clear) {
+  padding-block: 0;
+}
+
+:host-context(.focus-outline-visible) #button:focus {
+  outline-color: var(
+      --color-searchbox-results-icon-focused-outline,
+      var(--cr-focus-outline-color));
+}
+
+#label {
+  white-space: nowrap;
+}
+
+#leadingIcon,
+#trailingIcon {
+  -webkit-mask-image: var(--cr-icon-image);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  background-color: currentColor;
+  flex-shrink: 0;
+  mask-image: var(--cr-icon-image);
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: contain;
+}
+
+#leadingIcon {
+  height: 18px;
+  width: 18px;
+}
+
+#trailingIcon.icon-clear {
+  -webkit-mask-size: var(--cr-composebox-aim-button-exit-icon-size, 20px);
+  height: var(--cr-composebox-aim-button-exit-icon-box-size, 24px);
+  mask-size: var(--cr-composebox-aim-button-exit-icon-size, 20px);
+  width: var(--cr-composebox-aim-button-exit-icon-box-size, 24px);
+}
+
+#trailingIcon.arrow-icon {
+  --cr-icon-image:
+      url(//resources/cr_components/searchbox/icons/arrow_forward_old.svg);
+  height: 20px;
+  width: 20px;
+}
+
+:host-context([webui-rounded-icons]) #trailingIcon.arrow-icon {
+  --cr-icon-image:
+      url(//resources/cr_components/searchbox/icons/arrow_forward.svg);
+}
+
+:host-context([dir='rtl']) #trailingIcon.arrow-icon {
+  transform: scaleX(-1);
+}
