@@ -180,6 +180,17 @@ InterpolableList* InterpolableList::RawCloneAndZero() const {
   return result;
 }
 
+void InterpolableList::RepeatTo(wtf_size_t new_length) {
+  const wtf_size_t current_length = length();
+  if (current_length == 0 || current_length >= new_length) {
+    return;
+  }
+  values_.resize(new_length);
+  for (wtf_size_t i = current_length; i < new_length; ++i) {
+    values_[i] = values_[i % current_length]->Clone();
+  }
+}
+
 void InterpolableNumber::Scale(double scale) {
   if (IsDoubleValue()) {
     value_ *= scale;

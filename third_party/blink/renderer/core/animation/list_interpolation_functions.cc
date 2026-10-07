@@ -14,8 +14,6 @@ namespace blink {
 
 DEFINE_NON_INTERPOLABLE_VALUE_TYPE(NonInterpolableList);
 
-const wtf_size_t kRepeatableListMaxLength = 1000;
-
 // An UnderlyingValue used for compositing list items.
 //
 // When new NonInterpolableValues are set, the NonInterpolableList::AutoBuilder
@@ -105,7 +103,7 @@ static wtf_size_t MatchLengths(
     // animating values multiple times. This maximum limit is to avoid locking
     // up users' systems with memory consumption in the event that this occurs.
     // See crbug.com/739197 for more context.
-    return std::min(kRepeatableListMaxLength,
+    return std::min(ListInterpolationFunctions::kRepeatableListMaxLength,
                     static_cast<wtf_size_t>(
                         LowestCommonMultiple(start_length, end_length)));
   }
@@ -237,18 +235,13 @@ static void RepeatToLength(InterpolationValue& value, wtf_size_t length) {
   if (current_length == length)
     return;
   DCHECK_LT(current_length, length);
-  auto* new_interpolable_list = MakeGarbageCollected<InterpolableList>(length);
+  interpolable_list.RepeatTo(length);
   HeapVector<Member<const NonInterpolableValue>> new_non_interpolable_values(
       length);
-  for (wtf_size_t i = length; i-- > 0;) {
-    new_interpolable_list->Set(
-        i, i < current_length
-               ? std::move(interpolable_list.GetMutable(i).Get())
-               : interpolable_list.Get(i % current_length)->Clone());
+  for (wtf_size_t i = 0; i < length; ++i) {
     new_non_interpolable_values[i] =
         non_interpolable_list.Get(i % current_length);
   }
-  value.interpolable_value = std::move(new_interpolable_list);
   value.non_interpolable_value = MakeGarbageCollected<NonInterpolableList>(
       std::move(new_non_interpolable_values));
 }

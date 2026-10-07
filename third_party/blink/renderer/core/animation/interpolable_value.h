@@ -187,6 +187,7 @@ class CORE_EXPORT InterpolableList final : public InterpolableValue {
   void Set(wtf_size_t position, InterpolableValue* value) {
     values_[position] = std::move(value);
   }
+  void RepeatTo(wtf_size_t new_length);
 
   InterpolableList* Clone() const { return RawClone(); }
   InterpolableList* CloneAndZero() const { return RawCloneAndZero(); }

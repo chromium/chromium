@@ -23,6 +23,8 @@ class CORE_EXPORT ListInterpolationFunctions {
   STACK_ALLOCATED();
 
  public:
+  static constexpr wtf_size_t kRepeatableListMaxLength = 1000;
+
   template <typename CreateItemCallback>
   static InterpolationValue CreateList(wtf_size_t length, CreateItemCallback);
   static InterpolationValue CreateEmptyList() {

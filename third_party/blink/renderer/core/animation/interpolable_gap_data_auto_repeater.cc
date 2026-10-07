@@ -79,9 +79,13 @@ void InterpolableGapLengthAutoRepeater::Composite(
     const InterpolableGapLengthAutoRepeater& other,
     double fraction) {
   CHECK(IsCompatibleWith(other));
+  const wtf_size_t other_length = other.values_->length();
+  EnsureLCMInnerLength(other_length);
+
   for (wtf_size_t i = 0; i < values_->length(); ++i) {
     auto& a = To<InterpolableLength>(*values_->GetMutable(i));
-    auto& b = To<InterpolableLength>(*other.values_->Get(i));
+    const auto& b =
+        To<InterpolableLength>(*other.values_->Get(i % other_length));
     a.ScaleAndAdd(fraction, b);
   }
 }
@@ -164,10 +168,13 @@ void InterpolableGapColorAutoRepeater::Composite(
     const InterpolableGapColorAutoRepeater& other,
     double fraction) {
   CHECK(IsCompatibleWith(other));
+  const wtf_size_t other_length = other.values_->length();
+  EnsureLCMInnerLength(other_length);
 
   for (wtf_size_t i = 0; i < values_->length(); ++i) {
     auto& color = To<InterpolableColor>(*values_->GetMutable(i));
-    auto& other_color = To<InterpolableColor>(*other.values_->GetMutable(i));
+    const auto& other_color =
+        To<InterpolableColor>(*other.values_->Get(i % other_length));
     color.Composite(other_color, fraction);
   }
 }

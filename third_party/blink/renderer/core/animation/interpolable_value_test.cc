@@ -253,4 +253,30 @@ TEST_F(AnimationInterpolableValueTest, InterpolableNumberAsExpression) {
   }
 }
 
+TEST_F(AnimationInterpolableValueTest, InterpolableListRepeatTo) {
+  auto* list = MakeGarbageCollected<InterpolableList>(2);
+  list->Set(0, MakeGarbageCollected<InterpolableNumber>(10));
+  list->Set(1, MakeGarbageCollected<InterpolableNumber>(20));
+
+  // No-op when new_length <= length.
+  list->RepeatTo(2);
+  EXPECT_EQ(list->length(), 2u);
+  list->RepeatTo(1);
+  EXPECT_EQ(list->length(), 2u);
+
+  // Expand cyclically.
+  list->RepeatTo(5);
+  EXPECT_EQ(list->length(), 5u);
+  EXPECT_EQ(To<InterpolableNumber>(list->Get(0))->Value(), 10);
+  EXPECT_EQ(To<InterpolableNumber>(list->Get(1))->Value(), 20);
+  EXPECT_EQ(To<InterpolableNumber>(list->Get(2))->Value(), 10);
+  EXPECT_EQ(To<InterpolableNumber>(list->Get(3))->Value(), 20);
+  EXPECT_EQ(To<InterpolableNumber>(list->Get(4))->Value(), 10);
+
+  // Empty list is a no-op.
+  auto* empty_list = MakeGarbageCollected<InterpolableList>(0);
+  empty_list->RepeatTo(4);
+  EXPECT_EQ(empty_list->length(), 0u);
+}
+
 }  // namespace blink
