@@ -62,7 +62,8 @@ TEST_F(OriginGatingRegistrationTest, UnregistersOnDestruction) {
     std::unique_ptr<OriginGatingRegistration> registration =
         service_->CreateAndRegisterChecker(
             delegate.GetWeakPtr(),
-            OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
+            OriginGatingConfiguration(
+                {}, OriginGatingConfiguration::CacheScope::kOrigin));
     id = registration->id();
     EXPECT_FALSE(id.is_null());
     EXPECT_TRUE(service_->GetChecker(id));
@@ -75,7 +76,8 @@ TEST_F(OriginGatingRegistrationTest, ResetUnregistersChecker) {
   std::unique_ptr<OriginGatingRegistration> registration =
       service_->CreateAndRegisterChecker(
           delegate.GetWeakPtr(),
-          OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
+          OriginGatingConfiguration(
+              {}, OriginGatingConfiguration::CacheScope::kOrigin));
   CheckerId id = registration->id();
   EXPECT_FALSE(id.is_null());
   EXPECT_TRUE(service_->GetChecker(id));
@@ -91,7 +93,8 @@ TEST_F(OriginGatingRegistrationTest, MoveUniquePtrTransfersOwnership) {
     std::unique_ptr<OriginGatingRegistration> reg1 =
         service_->CreateAndRegisterChecker(
             delegate.GetWeakPtr(),
-            OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
+            OriginGatingConfiguration(
+                {}, OriginGatingConfiguration::CacheScope::kOrigin));
     id = reg1->id();
     EXPECT_FALSE(id.is_null());
     EXPECT_TRUE(service_->GetChecker(id));
@@ -110,7 +113,8 @@ TEST_F(OriginGatingRegistrationTest, ServiceGetter) {
   std::unique_ptr<OriginGatingRegistration> registration =
       service_->CreateAndRegisterChecker(
           delegate.GetWeakPtr(),
-          OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
+          OriginGatingConfiguration(
+              {}, OriginGatingConfiguration::CacheScope::kOrigin));
   EXPECT_EQ(&registration->service(), service_.get());
 }
 

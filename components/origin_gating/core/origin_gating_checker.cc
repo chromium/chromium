@@ -151,7 +151,10 @@ OriginGatingChecker::OriginGatingChecker(base::WeakPtr<Delegate> delegate,
                                          OriginGatingConfiguration config)
     : delegate_(delegate),
       config_(std::move(config)),
-      cache_(config_.use_site_keyed_cache()) {}
+      cache_(config_.cache_scope().transform(
+          [](OriginGatingCache::CacheScope scope) {
+            return OriginGatingCache(scope);
+          })) {}
 
 OriginGatingChecker::~OriginGatingChecker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -252,8 +255,8 @@ std::optional<Decision> OriginGatingChecker::EvaluateSinglePredicate(
       RunActionOrGetUserConfirmationInfo(
           context, current_and_rest, input, callback,
           [&]() VALID_CONTEXT_REQUIRED(sequence_checker_) {
-            decision = !input.requires_user_confirmation.value() &&
-                               cache_.IsNavigationAllowed(
+            decision = !input.requires_user_confirmation.value() && cache_ &&
+                               cache_->IsNavigationAllowed(
                                    input.source_origin.value_or(url::Origin()),
                                    input.destination_origin)
                            ? Decision::kAllowed
@@ -417,8 +420,9 @@ void OriginGatingChecker::RunActionOrGetUserConfirmationInfo(
 
 Decision OriginGatingChecker::IsCachedWithUserConfirmation(
     const url::Origin& origin) const {
-  return cache_.IsNavigationConfirmedByUser(origin) ? Decision::kAllowed
-                                                    : Decision::kNoDecision;
+  return cache_ && cache_->IsNavigationConfirmedByUser(origin)
+             ? Decision::kAllowed
+             : Decision::kNoDecision;
 }
 
 Decision OriginGatingChecker::EvaluateTaskPolicyConfigWithCache(

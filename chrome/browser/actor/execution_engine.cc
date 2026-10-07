@@ -75,6 +75,7 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/origin_gating/core/origin_gating_cache.h"
+#include "components/origin_gating/core/origin_gating_configuration.h"
 #include "components/origin_gating/core/origin_gating_service.h"
 #include "components/origin_gating/core/types.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_service.h"
@@ -739,6 +740,13 @@ void OnNavigationConfirmationDecisionInBackground(
   NOTREACHED();
 }
 
+origin_gating::OriginGatingConfiguration::CacheScope
+GetOriginGatingCacheScope() {
+  using CacheScope = origin_gating::OriginGatingConfiguration::CacheScope;
+  return kGlicNavigationGatingUseSiteNotOrigin.Get() ? CacheScope::kSite
+                                                     : CacheScope::kOrigin;
+}
+
 }  // namespace
 
 ToolDelegate::CredentialWithPermission::CredentialWithPermission() = default;
@@ -864,15 +872,14 @@ ExecutionEngine::ExecutionEngine(base::PassKey<ExecutionEngine>,
               task_->GetProfile(),
               journal_,
               task_->id())),
-      dark_launch_origin_gating_cache_(
-          kGlicNavigationGatingUseSiteNotOrigin.Get()) {
+      dark_launch_origin_gating_cache_(GetOriginGatingCacheScope()) {
   TRACE_EVENT0("actor", "ExecutionEngine::ExecutionEngine");
   origin_gating_registration_ =
       GetOriginGatingService().CreateAndRegisterChecker(
           weak_ptr_factory_.GetWeakPtr(),
           origin_gating::OriginGatingConfiguration(
               CreateOriginGatingPredicates(*task_, allowed_schemes_),
-              kGlicNavigationGatingUseSiteNotOrigin.Get()));
+              GetOriginGatingCacheScope()));
 }
 
 // static

@@ -71,7 +71,7 @@ DevToolsNavigationGatingService::DevToolsNavigationGatingService(
                    DevToolsCustomPredicate::kDevToolsNavigationGatingRuleset),
                origin_gating::GateableEventSet::All()},
           },
-          /*use_site_keyed_cache=*/false));
+          origin_gating::OriginGatingConfiguration::CacheScope::kOrigin));
 }
 
 DevToolsNavigationGatingService::~DevToolsNavigationGatingService() = default;

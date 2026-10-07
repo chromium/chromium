@@ -8,6 +8,7 @@
 #include <variant>
 
 #include "base/containers/map_util.h"
+#include "base/notreached.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -15,10 +16,16 @@
 
 namespace origin_gating {
 
-OriginGatingCache::OriginGatingCache(bool use_site_not_origin)
-    : allowed_navigation_origins_(use_site_not_origin ? StateMap(SiteMap())
-                                                      : StateMap(OriginMap())) {
-}
+OriginGatingCache::OriginGatingCache(CacheScope scope)
+    : allowed_navigation_origins_([&] -> StateMap {
+        switch (scope) {
+          case CacheScope::kOrigin:
+            return OriginMap();
+          case CacheScope::kSite:
+            return SiteMap();
+        }
+        NOTREACHED();
+      }()) {}
 
 OriginGatingCache::~OriginGatingCache() = default;
 

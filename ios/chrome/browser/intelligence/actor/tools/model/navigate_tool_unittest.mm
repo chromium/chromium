@@ -70,9 +70,11 @@ class NavigateToolTest : public PlatformTest {
     UrlLoadingBrowserAgent::CreateForBrowser(browser_.get());
     default_gating_registration_ =
         origin_gating::OriginGatingServiceFactory::GetForProfile(profile_.get())
-            ->CreateAndRegisterChecker(default_gating_delegate_.GetWeakPtr(),
-                                       origin_gating::OriginGatingConfiguration(
-                                           {}, /*use_site_keyed_cache=*/false));
+            ->CreateAndRegisterChecker(
+                default_gating_delegate_.GetWeakPtr(),
+                origin_gating::OriginGatingConfiguration(
+                    {}, origin_gating::OriginGatingConfiguration::CacheScope::
+                            kOrigin));
   }
 
   ~NavigateToolTest() override {
@@ -355,9 +357,11 @@ TEST_F(NavigateToolTest, Execute_OriginGatingBlocksNavigation) {
   FakeOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
   std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
       origin_gating::OriginGatingServiceFactory::GetForProfile(profile_.get())
-          ->CreateAndRegisterChecker(delegate.GetWeakPtr(),
-                                     origin_gating::OriginGatingConfiguration(
-                                         {}, /*use_site_keyed_cache=*/false));
+          ->CreateAndRegisterChecker(
+              delegate.GetWeakPtr(),
+              origin_gating::OriginGatingConfiguration(
+                  {}, origin_gating::OriginGatingConfiguration::CacheScope::
+                          kOrigin));
   optimization_guide::proto::Action action;
   action.mutable_navigate()->set_url("https://malicious.example.com/");
   action.mutable_navigate()->set_tab_id(tab_id);
@@ -395,9 +399,11 @@ TEST_F(NavigateToolTest, Execute_OriginGatingAllowsNavigation) {
   FakeOriginGatingCheckerDelegate delegate(/*is_allowed=*/true);
   std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
       origin_gating::OriginGatingServiceFactory::GetForProfile(profile_.get())
-          ->CreateAndRegisterChecker(delegate.GetWeakPtr(),
-                                     origin_gating::OriginGatingConfiguration(
-                                         {}, /*use_site_keyed_cache=*/false));
+          ->CreateAndRegisterChecker(
+              delegate.GetWeakPtr(),
+              origin_gating::OriginGatingConfiguration(
+                  {}, origin_gating::OriginGatingConfiguration::CacheScope::
+                          kOrigin));
   const std::string kUrl = "https://safe.example.com/";
   optimization_guide::proto::Action action;
   action.mutable_navigate()->set_url(kUrl);
@@ -434,9 +440,11 @@ TEST_F(NavigateToolTest, Execute_OriginGatingFeatureDisabled_BypassesCheck) {
   FakeOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
   std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
       origin_gating::OriginGatingServiceFactory::GetForProfile(profile_.get())
-          ->CreateAndRegisterChecker(delegate.GetWeakPtr(),
-                                     origin_gating::OriginGatingConfiguration(
-                                         {}, /*use_site_keyed_cache=*/false));
+          ->CreateAndRegisterChecker(
+              delegate.GetWeakPtr(),
+              origin_gating::OriginGatingConfiguration(
+                  {}, origin_gating::OriginGatingConfiguration::CacheScope::
+                          kOrigin));
 
   const std::string kUrl = "https://example.com/";
   optimization_guide::proto::Action action;

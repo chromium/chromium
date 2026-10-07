@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/origin_gating/core/concepts.h"
+#include "components/origin_gating/core/origin_gating_cache.h"
 #include "components/origin_gating/core/types.h"
 #include "url/gurl.h"
 
@@ -92,6 +93,8 @@ class PredicateConfiguration {
 
 class OriginGatingConfiguration {
  public:
+  using CacheScope = OriginGatingCache::CacheScope;
+
   // `predicates` specifies the ordered sequence of decision predicates to
   // execute. Each entry is a PredicateConfiguration that restricts the
   // predicate to specific events. All CustomPredicate entries must have been
@@ -104,11 +107,11 @@ class OriginGatingConfiguration {
   // configured to apply to `GateableEvent::kPageAction`:
   // - `DecisionSource::kAllowSameOrigin`
   //
-  // Note: `use_site_keyed_cache` is essentially useless if `predicates` does
-  // not include a cache predicate (`kCacheWithUserConfirmation` or
-  // `kCacheWithoutUserConfirmation`), since the cache will not be used at all.
+  // Note: `cache_scope` is ignored if `predicates` does not include a cache
+  // predicate (`kCacheWithUserConfirmation` or
+  // `kCacheWithoutUserConfirmation`).
   OriginGatingConfiguration(std::vector<PredicateConfiguration> predicates,
-                            bool use_site_keyed_cache);
+                            CacheScope cache_scope);
   ~OriginGatingConfiguration();
 
   OriginGatingConfiguration(const OriginGatingConfiguration&);
@@ -117,17 +120,12 @@ class OriginGatingConfiguration {
   const std::vector<PredicateConfiguration>& predicates() const {
     return predicates_;
   }
-  bool use_site_keyed_cache() const { return use_site_keyed_cache_; }
 
-  // Returns true if `predicates` includes at least one predicate that consults
-  // the cache (`kCacheWithUserConfirmation` or
-  // `kCacheWithoutUserConfirmation`).
-  bool uses_cache() const { return uses_cache_; }
+  std::optional<CacheScope> cache_scope() const { return cache_scope_; }
 
  private:
   std::vector<PredicateConfiguration> predicates_;
-  bool use_site_keyed_cache_ = false;
-  bool uses_cache_ = false;
+  std::optional<CacheScope> cache_scope_;
 };
 
 }  // namespace origin_gating

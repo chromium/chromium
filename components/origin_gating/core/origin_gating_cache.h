@@ -20,11 +20,16 @@ namespace origin_gating {
 class OriginGatingCache {
  public:
   struct SizeMetrics {
+    friend bool operator==(const SizeMetrics&, const SizeMetrics&) = default;
+
     size_t allow_list_size = 0;
     size_t confirmed_list_size = 0;
   };
 
-  explicit OriginGatingCache(bool use_site_not_origin);
+  // The level of granularity at which to cache gating decisions.
+  enum class CacheScope { kOrigin, kSite };
+
+  explicit OriginGatingCache(CacheScope scope);
   ~OriginGatingCache();
 
   OriginGatingCache(const OriginGatingCache&) = delete;

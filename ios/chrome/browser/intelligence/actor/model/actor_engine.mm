@@ -276,9 +276,9 @@ ActorEngine::CreateOriginGatingConfig() {
                // etc.) within the loaded page.
                origin_gating::GateableEvent::kPageAction}),
       },
-      // Do not cache decisions per-site, as actor safety policies require
-      // re-evaluating each navigation and page action dynamically.
-      /*use_site_keyed_cache=*/false);
+      // Note that none of the predicates above consult the cache, so this
+      // parameter is ignored.
+      origin_gating::OriginGatingConfiguration::CacheScope::kOrigin);
 }
 
 void ActorEngine::ExecuteNextAction() {

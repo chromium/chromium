@@ -43,12 +43,18 @@ bool UsesAtMostOneCustomPredicateDomain(
       });
 }
 
-bool UsesCache(base::span<const PredicateConfiguration> predicates) {
-  return std::ranges::any_of(predicates, [](const PredicateConfiguration& pc) {
-    const DecisionSource* source = std::get_if<DecisionSource>(&pc.predicate());
-    return source && (*source == DecisionSource::kCacheWithUserConfirmation ||
-                      *source == DecisionSource::kCacheWithoutUserConfirmation);
-  });
+std::optional<OriginGatingConfiguration::CacheScope> ComputeEffectiveCacheScope(
+    base::span<const PredicateConfiguration> predicates,
+    OriginGatingConfiguration::CacheScope cache_scope) {
+  const bool uses_cache =
+      std::ranges::any_of(predicates, [](const PredicateConfiguration& pc) {
+        const DecisionSource* source =
+            std::get_if<DecisionSource>(&pc.predicate());
+        return source &&
+               (*source == DecisionSource::kCacheWithUserConfirmation ||
+                *source == DecisionSource::kCacheWithoutUserConfirmation);
+      });
+  return uses_cache ? std::make_optional(cache_scope) : std::nullopt;
 }
 
 }  // namespace
@@ -88,10 +94,9 @@ PredicateConfiguration& PredicateConfiguration::operator=(
 
 OriginGatingConfiguration::OriginGatingConfiguration(
     std::vector<PredicateConfiguration> predicates,
-    bool use_site_keyed_cache)
+    CacheScope cache_scope)
     : predicates_(std::move(predicates)),
-      use_site_keyed_cache_(use_site_keyed_cache),
-      uses_cache_(UsesCache(predicates_)) {
+      cache_scope_(ComputeEffectiveCacheScope(predicates_, cache_scope)) {
   for (const PredicateConfiguration& pc : predicates_) {
     const DecisionSource* source = std::get_if<DecisionSource>(&pc.predicate());
     if (!source) {

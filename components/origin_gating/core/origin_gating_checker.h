@@ -107,22 +107,23 @@ class OriginGatingChecker {
   // `config_` does not include any predicates that consult the cache.
   void AllowNavigationTo(url::Origin origin, bool is_user_confirmed) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!config_.uses_cache()) {
-      return;
+    if (cache_) {
+      cache_->AllowNavigationTo(std::move(origin), is_user_confirmed);
     }
-    cache_.AllowNavigationTo(std::move(origin), is_user_confirmed);
   }
   void AllowNavigationTo(const absl::flat_hash_set<url::Origin>& origins) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!config_.uses_cache()) {
-      return;
+    if (cache_) {
+      cache_->AllowNavigationTo(origins);
     }
-    cache_.AllowNavigationTo(origins);
   }
 
   OriginGatingCache::SizeMetrics GetCacheSizeMetrics() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return cache_.GetSizeMetrics();
+    if (cache_) {
+      return cache_->GetSizeMetrics();
+    }
+    return {};
   }
 
   // Returns references to the task policy config slot.
@@ -225,7 +226,9 @@ class OriginGatingChecker {
   SEQUENCE_CHECKER(sequence_checker_);
   const base::WeakPtr<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
   OriginGatingConfiguration config_ GUARDED_BY_CONTEXT(sequence_checker_);
-  OriginGatingCache cache_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // Cache for origin gating decisions. This is nullopt if the list of
+  // predicates never consults the cache.
+  std::optional<OriginGatingCache> cache_ GUARDED_BY_CONTEXT(sequence_checker_);
   TaskPolicyConfigSlot task_policy_config_slot_
       GUARDED_BY_CONTEXT(sequence_checker_);
   base::WeakPtrFactory<OriginGatingChecker> weak_ptr_factory_

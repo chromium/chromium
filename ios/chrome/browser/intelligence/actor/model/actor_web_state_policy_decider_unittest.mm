@@ -45,7 +45,8 @@ class ActorWebStatePolicyDeciderTest : public PlatformTest {
     return gating_service_->CreateAndRegisterChecker(
         delegate.GetWeakPtr(),
         origin_gating::OriginGatingConfiguration(
-            /*predicates=*/{}, /*use_site_keyed_cache=*/false));
+            /*predicates=*/{},
+            origin_gating::OriginGatingConfiguration::CacheScope::kOrigin));
   }
 
   web::WebStatePolicyDecider::RequestInfo CreateRequestInfo(

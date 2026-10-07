@@ -72,14 +72,16 @@ TEST_F(OriginGatingServiceTest, CreateAndRegisterChecker) {
   std::unique_ptr<OriginGatingRegistration> reg1 =
       service_->CreateAndRegisterChecker(
           delegate.GetWeakPtr(),
-          OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
+          OriginGatingConfiguration(
+              {}, OriginGatingConfiguration::CacheScope::kOrigin));
   CheckerId id1 = reg1->id();
   EXPECT_FALSE(id1.is_null());
 
   std::unique_ptr<OriginGatingRegistration> reg2 =
       service_->CreateAndRegisterChecker(
           delegate.GetWeakPtr(),
-          OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
+          OriginGatingConfiguration(
+              {}, OriginGatingConfiguration::CacheScope::kOrigin));
   CheckerId id2 = reg2->id();
   EXPECT_FALSE(id2.is_null());
   EXPECT_NE(id1, id2);
@@ -102,11 +104,13 @@ TEST_F(OriginGatingServiceTest, Shutdown) {
   std::unique_ptr<OriginGatingRegistration> reg1 =
       service_->CreateAndRegisterChecker(
           delegate.GetWeakPtr(),
-          OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
+          OriginGatingConfiguration(
+              {}, OriginGatingConfiguration::CacheScope::kOrigin));
   std::unique_ptr<OriginGatingRegistration> reg2 =
       service_->CreateAndRegisterChecker(
           delegate.GetWeakPtr(),
-          OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
+          OriginGatingConfiguration(
+              {}, OriginGatingConfiguration::CacheScope::kOrigin));
   CheckerId id1 = reg1->id();
   CheckerId id2 = reg2->id();
 
@@ -126,7 +130,8 @@ TEST_F(OriginGatingServiceTest, RegistrationUnregistersOnDestruction) {
     std::unique_ptr<OriginGatingRegistration> registration =
         service_->CreateAndRegisterChecker(
             delegate.GetWeakPtr(),
-            OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
+            OriginGatingConfiguration(
+                {}, OriginGatingConfiguration::CacheScope::kOrigin));
     id = registration->id();
     EXPECT_FALSE(id.is_null());
     EXPECT_TRUE(service_->GetChecker(id));
