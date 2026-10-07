@@ -44,6 +44,7 @@ class OrganizerPanelViewImpl : public OrganizerPanelView {
       : OrganizerPanelView(browser) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
     auto web_view = std::make_unique<views::WebView>(browser.GetProfile());
+    web_view->set_allow_accelerators(true);
     webui::SetBrowserWindowInterface(web_view->GetWebContents(), &browser);
     views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
         web_view->GetWebContents(), SK_ColorTRANSPARENT);
