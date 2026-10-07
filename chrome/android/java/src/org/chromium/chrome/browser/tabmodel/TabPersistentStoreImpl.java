@@ -1039,11 +1039,6 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             return;
         }
 
-        if (mSaveTabTask != null && mSaveTabTask.mId == tab.getId()) {
-            RecordHistogram.recordCount100Histogram(
-                    "Tabs.PotentialDoubleDirty.SaveQueueSize", mTabsToSave.size());
-        }
-
         mTabsToSave.addLast(tab);
     }
 
