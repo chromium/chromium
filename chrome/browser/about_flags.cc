@@ -4057,16 +4057,6 @@ const FeatureEntry::FeatureParam
         {"keep_app_menu_in_toolbar", "true"},
         {"disable_on_ntp", "false"},
         {"show_glic_setting_toggle", "true"}};
-const FeatureEntry::FeatureParam kAndroidBottomBarKeepBothInToolbarParam[] = {
-    {"keep_app_menu_in_toolbar", "true"},
-    {"keep_home_button_in_toolbar", "true"},
-    {"show_glic_setting_toggle", "true"}};
-const FeatureEntry::FeatureParam
-    kAndroidBottomBarKeepBothInToolbarWithNtpParam[] = {
-        {"keep_app_menu_in_toolbar", "true"},
-        {"keep_home_button_in_toolbar", "true"},
-        {"disable_on_ntp", "false"},
-        {"show_glic_setting_toggle", "true"}};
 const FeatureEntry::FeatureParam kAndroidBottomBarShowDomainOnlyParam[] = {
     {"disable_on_ntp", "false"},
     {"show_bottom_bar_on_gts", "true"},
@@ -4088,9 +4078,7 @@ const FeatureEntry::FeatureVariation kAndroidBottomBarVariations[] = {
      nullptr},
     {"- 1B", kAndroidBottomBarKeepAppMenuInToolbarParam, nullptr},
     {"- 1B with NTP", kAndroidBottomBarKeepAppMenuInToolbarWithNtpParam,
-     nullptr},
-    {"- 1C", kAndroidBottomBarKeepBothInToolbarParam, nullptr},
-    {"- 1C with NTP", kAndroidBottomBarKeepBothInToolbarWithNtpParam, nullptr}};
+     nullptr}};
 
 const FeatureEntry::FeatureParam kHomeButtonRemovalEverywhereParam[] = {
     {"remove_home_button_everywhere", "true"}};

@@ -48,11 +48,6 @@ public class BottomBarConfigUtils {
         return Math.clamp(heightDp, MIN_BOTTOM_BAR_HEIGHT_DP, MAX_BOTTOM_BAR_HEIGHT_DP);
     }
 
-    /** Whether to include the home button in the bottom bar if the flag is enabled. */
-    public static boolean shouldIncludeHomeButtonIfEnabled() {
-        return !ChromeFeatureList.sAndroidBottomBarKeepHomeButtonInToolbar.getValue();
-    }
-
     /** Whether to include the app menu button in the bottom bar if the flag is enabled. */
     public static boolean shouldIncludeAppMenuButton() {
         return !ChromeFeatureList.sAndroidBottomBarKeepAppMenuInToolbar.getValue();

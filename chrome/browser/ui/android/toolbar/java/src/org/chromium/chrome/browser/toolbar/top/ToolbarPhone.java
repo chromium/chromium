@@ -2115,13 +2115,9 @@ public class ToolbarPhone extends ToolbarLayout
                 ToolbarVariationUtils.shouldModifyToolbarButtons(
                         getContext(), isNtpVisualState(mVisualState));
         boolean showBackButtonOutside = shouldShowBackButtonOutside();
-        // Enforce mutual exclusivity: if the back button should be shown outside,
-        // we must hide the home button to prevent them from overlapping.
-        boolean hideHomeButton =
-                !mIsHomeButtonEnabled
-                        || showBackButtonOutside
-                        || (shouldModifyToolbarButtons
-                                && !ToolbarVariationUtils.shouldHomeButtonBeAtStartOfToolbar());
+        // Under the toolbar UI refactor, the home button moves to the bottom bar and
+        // is never shown in the top toolbar.
+        boolean hideHomeButton = !mIsHomeButtonEnabled || shouldModifyToolbarButtons;
         if (hideHomeButton) {
             mHomeButton.setVisibility(View.GONE);
         } else {

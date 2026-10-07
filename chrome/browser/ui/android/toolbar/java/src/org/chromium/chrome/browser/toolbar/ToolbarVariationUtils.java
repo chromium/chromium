@@ -19,22 +19,14 @@ public final class ToolbarVariationUtils {
 
     /** Whether the back button should be in the omnibox. */
     public static boolean shouldBackButtonBeInOmnibox() {
-        boolean keepAppMenu = ChromeFeatureList.sAndroidBottomBarKeepAppMenuInToolbar.getValue();
-        boolean keepHome = ChromeFeatureList.sAndroidBottomBarKeepHomeButtonInToolbar.getValue();
-        // Returns true if home is kept (Arm 1C) or app menu is not kept (Arm 1A).
-        return keepHome || !keepAppMenu;
+        // Returns true if app menu is not kept in toolbar (Arm 1A).
+        return !ChromeFeatureList.sAndroidBottomBarKeepAppMenuInToolbar.getValue();
     }
 
     /** Whether the app menu should be in the toolbar. */
     public static boolean shouldAppMenuBeInToolbar() {
-        // Arm 1B and Arm 1C have app menu in toolbar.
+        // Arm 1B has app menu in toolbar.
         return ChromeFeatureList.sAndroidBottomBarKeepAppMenuInToolbar.getValue();
-    }
-
-    /** Whether the home button should be at the start of the toolbar. */
-    public static boolean shouldHomeButtonBeAtStartOfToolbar() {
-        // Arm 1C has home button at start of toolbar.
-        return ChromeFeatureList.sAndroidBottomBarKeepHomeButtonInToolbar.getValue();
     }
 
     /**

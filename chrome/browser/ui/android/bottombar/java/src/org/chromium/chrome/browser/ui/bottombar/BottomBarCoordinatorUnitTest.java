@@ -268,24 +268,12 @@ public class BottomBarCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_home_button_in_toolbar/false")
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testInitialization_withHomeButton_bindsHomeButton() {
         verify(mActionRegistry, times(1)).get(ActionId.HOME_BUTTON);
 
         View homeButton = mCoordinator.getView().findViewById(R.id.home_button);
         assertNotNull(homeButton);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_home_button_in_toolbar/true")
-    public void testInitialization_withoutHomeButton_doesNotBindHomeButton() {
-        verify(mActionRegistry, never()).get(ActionId.HOME_BUTTON);
-
-        View homeButton = mCoordinator.getView().findViewById(R.id.home_button);
-        assertNull(homeButton);
-
-        View homeStub = mCoordinator.getView().findViewById(R.id.home_stub);
-        assertNotNull(homeStub);
     }
 
     @Test

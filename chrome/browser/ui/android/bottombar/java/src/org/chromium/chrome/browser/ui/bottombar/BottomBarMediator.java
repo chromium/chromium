@@ -83,7 +83,6 @@ public class BottomBarMediator
     private final OneshotSupplier<String> mCountrySupplier;
     private final NullableObservableSupplier<PropertyModel> mGlicActionSupplier;
     private final NullableObservableSupplier<PropertyModel> mNewTabActionSupplier;
-    private final boolean mShouldIncludeHomeButton;
 
     // Observers and Callbacks
     private final TabObserver mTabObserver;
@@ -122,7 +121,6 @@ public class BottomBarMediator
      * @param tabSupplier Supplier of the current tab.
      * @param homepageEnabledSupplier Supplier of whether the homepage is enabled.
      * @param visibilityDelegate Delegate to handle compositor-level visibility changes.
-     * @param shouldIncludeHomeButton Whether the home button should be included in the bottom bar.
      * @param profileSupplier Supplier of the current profile.
      * @param countrySupplier Supplier of the latest variations country code.
      * @param omniboxFocusStateSupplier Supplier of the omnibox focus state.
@@ -138,7 +136,6 @@ public class BottomBarMediator
             NullableObservableSupplier<Tab> tabSupplier,
             NonNullObservableSupplier<Boolean> homepageEnabledSupplier,
             VisibilityDelegate visibilityDelegate,
-            boolean shouldIncludeHomeButton,
             NullableObservableSupplier<Profile> profileSupplier,
             OneshotSupplier<String> countrySupplier,
             NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier,
@@ -152,7 +149,6 @@ public class BottomBarMediator
         mTabSupplier = tabSupplier;
         mHomepageEnabledSupplier = homepageEnabledSupplier;
         mVisibilityDelegate = visibilityDelegate;
-        mShouldIncludeHomeButton = shouldIncludeHomeButton;
         mProfileSupplier = profileSupplier;
         mCountrySupplier = countrySupplier;
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
@@ -186,9 +182,7 @@ public class BottomBarMediator
         mCountrySupplier.onAvailable((country) -> updateExtraActionVisibility());
         mOmniboxFocusStateSupplier.addSyncObserver(mOmniboxFocusObserver);
         onTabChanged(mTabSupplier.addSyncObserver(mTabSupplierObserver));
-        if (mShouldIncludeHomeButton) {
-            mHomepageEnabledSupplier.addSyncObserverAndCallIfNonNull(mHomepageEnabledObserver);
-        }
+        mHomepageEnabledSupplier.addSyncObserverAndCallIfNonNull(mHomepageEnabledObserver);
 
         // Safe to set the listener after all observers are initialized to trigger the immediate
         // callback with the correct state.
@@ -567,9 +561,7 @@ public class BottomBarMediator
             mCurrentTab = null;
         }
         mTabSupplier.removeObserver(mTabSupplierObserver);
-        if (mShouldIncludeHomeButton) {
-            mHomepageEnabledSupplier.removeObserver(mHomepageEnabledObserver);
-        }
+        mHomepageEnabledSupplier.removeObserver(mHomepageEnabledObserver);
         if (mObservingSharedPrefs) {
             ContextUtils.getAppSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
             mObservingSharedPrefs = false;

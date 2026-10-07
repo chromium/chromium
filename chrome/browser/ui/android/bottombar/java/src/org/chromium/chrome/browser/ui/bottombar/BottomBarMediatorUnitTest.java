@@ -155,11 +155,11 @@ public class BottomBarMediatorUnitTest {
     }
 
     @Test
-    public void testInitialization_WithoutHomeButton_DoesNotObserveHomepage() {
-        createMediator(/* shouldIncludeHomeButton= */ false);
+    public void testInitialization_ObservesHomepage() {
+        createMediator();
 
         mHomepageEnabledSupplier.set(true);
-        verify(mButtonManager, never()).setButtonVisibility(ActionId.HOME_BUTTON, true);
+        verify(mButtonManager).setButtonVisibility(ActionId.HOME_BUTTON, true);
     }
 
     private void setupTab(GURL url, boolean isIncognito) {
@@ -171,7 +171,7 @@ public class BottomBarMediatorUnitTest {
 
     @Test
     public void testConstructor() {
-        createMediator(/* shouldIncludeHomeButton= */ true);
+        createMediator();
 
         assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
         verify(mVisibilityDelegate, times(1)).onVisibilityChanged(true);
@@ -180,7 +180,7 @@ public class BottomBarMediatorUnitTest {
     @Test
     public void testTabObserverCleanup_OnTabRemoved() {
         setupTab(JUnitTestGURLs.NTP_URL, false);
-        createMediator(/* shouldIncludeHomeButton= */ true);
+        createMediator();
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
 
@@ -192,7 +192,7 @@ public class BottomBarMediatorUnitTest {
     @Test
     public void testVisibilityChange_EmptyUrl() {
         setupTab(GURL.emptyGURL(), false);
-        createMediator(/* shouldIncludeHomeButton= */ true);
+        createMediator();
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         mTabObserverCaptor.getValue().onUrlUpdated(mTab);
@@ -203,7 +203,7 @@ public class BottomBarMediatorUnitTest {
     @Test
     public void testVisibilityChange_Ntp_Incognito() {
         setupTab(JUnitTestGURLs.NTP_URL, true);
-        createMediator(/* shouldIncludeHomeButton= */ true);
+        createMediator();
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         verify(mVisibilityDelegate, times(1)).onVisibilityChanged(true);
@@ -217,7 +217,7 @@ public class BottomBarMediatorUnitTest {
     @Test
     public void testVisibilityChange_NotNtp() {
         setupTab(JUnitTestGURLs.EXAMPLE_URL, false);
-        createMediator(/* shouldIncludeHomeButton= */ true);
+        createMediator();
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         verify(mVisibilityDelegate, times(1)).onVisibilityChanged(true);
@@ -234,7 +234,7 @@ public class BottomBarMediatorUnitTest {
         when(mNativePage.getHost()).thenReturn(UrlConstants.NTP_HOST);
         when(mTab.getNativePage()).thenReturn(mNativePage);
         setupTab(JUnitTestGURLs.EXAMPLE_URL, false);
-        createMediator(/* shouldIncludeHomeButton= */ true);
+        createMediator();
 
         assertFalse(mModel.get(BottomBarProperties.IS_VISIBLE));
 
@@ -253,7 +253,7 @@ public class BottomBarMediatorUnitTest {
         // The URL updates when the navigation starts; the native page is shown on commit.
         when(mTab.getNativePage()).thenReturn(null);
         setupTab(JUnitTestGURLs.NTP_URL, false);
-        createMediator(/* shouldIncludeHomeButton= */ true);
+        createMediator();
 
         assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
 
@@ -275,7 +275,7 @@ public class BottomBarMediatorUnitTest {
 
         mModel.set(BottomBarProperties.IS_EXTRA_BUTTON_VISIBLE, true);
 
-        createMediator(/* shouldIncludeHomeButton= */ true);
+        createMediator();
         assertNotNull(mMediator);
 
         mMediator.onPromoDialogAccepted();
@@ -371,7 +371,7 @@ public class BottomBarMediatorUnitTest {
 
         mModel.set(BottomBarProperties.IS_EXTRA_BUTTON_VISIBLE, true);
 
-        createMediator(/* shouldIncludeHomeButton= */ true);
+        createMediator();
         assertNotNull(mMediator);
 
         mMediator.onPromoDialogAccepted();
@@ -413,7 +413,7 @@ public class BottomBarMediatorUnitTest {
         mGlicActionSupplier.set(glicModel);
         mNewTabActionSupplier.set(newTabModel);
 
-        createMediator(/* shouldIncludeHomeButton= */ true);
+        createMediator();
         assertNotNull(mMediator);
 
         // Simulate accepting the promo dialog to populate IPH intents in the action models.
@@ -436,7 +436,7 @@ public class BottomBarMediatorUnitTest {
 
         // Create mediator with GLIC not visible, which triggers New Tab IPH.
         mModel.set(BottomBarProperties.IS_EXTRA_BUTTON_VISIBLE, false);
-        createMediator(/* shouldIncludeHomeButton= */ true);
+        createMediator();
         assertNotNull(mMediator);
 
         IphIntent firstIntent = newTabModel.get(ActionProperties.IPH_INTENT);
@@ -459,7 +459,7 @@ public class BottomBarMediatorUnitTest {
 
         // Create mediator with GLIC not visible, which triggers New Tab IPH.
         mModel.set(BottomBarProperties.IS_EXTRA_BUTTON_VISIBLE, false);
-        createMediator(/* shouldIncludeHomeButton= */ true);
+        createMediator();
         assertNotNull(mMediator);
 
         IphIntent initialNewTabIph = newTabModel.get(ActionProperties.IPH_INTENT);
@@ -520,7 +520,6 @@ public class BottomBarMediatorUnitTest {
                         mTabSupplier,
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
-                        /* shouldIncludeHomeButton= */ true,
                         mProfileSupplier,
                         mCountrySupplier,
                         mOmniboxFocusStateSupplier,
@@ -558,7 +557,7 @@ public class BottomBarMediatorUnitTest {
     public void testGlicAllowedChanged_WhenGlicCandidate_HidesGlic() {
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
 
-        createMediator(/* shouldIncludeHomeButton= */ false);
+        createMediator();
 
         // Verify initial state: GLIC is visible.
         verify(mButtonManager).setButtonVisibility(ActionId.GLIC, true);
@@ -582,7 +581,7 @@ public class BottomBarMediatorUnitTest {
     public void testOnSharedPreferenceChanged_TogglesGlicVisibility() {
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
 
-        createMediator(/* shouldIncludeHomeButton= */ false);
+        createMediator();
 
         assertNotNull(mMediator);
         verify(mButtonManager).setButtonVisibility(ActionId.GLIC, true);
@@ -599,7 +598,7 @@ public class BottomBarMediatorUnitTest {
     @Test
     public void testColdStart_NullProfile_HidesExtraButton() {
         mProfileSupplier.set(null);
-        createMediator(/* shouldIncludeHomeButton= */ false);
+        createMediator();
         RobolectricUtil.runAllBackgroundAndUi();
 
         assertNotNull(mMediator);
@@ -613,7 +612,7 @@ public class BottomBarMediatorUnitTest {
         mCountrySupplier.set("fr");
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
 
-        createMediator(/* shouldIncludeHomeButton= */ false);
+        createMediator();
 
         assertNotNull(mMediator);
         verify(mButtonManager).setButtonVisibility(ActionId.GLIC, false);
@@ -626,7 +625,7 @@ public class BottomBarMediatorUnitTest {
         mCountrySupplier = new OneshotSupplierImpl<>();
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
 
-        createMediator(/* shouldIncludeHomeButton= */ false);
+        createMediator();
 
         // While country is null, extra buttons should remain hidden and no dynamic observers
         // attached.
@@ -649,7 +648,7 @@ public class BottomBarMediatorUnitTest {
         mCountrySupplier.set("us");
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
 
-        createMediator(/* shouldIncludeHomeButton= */ false);
+        createMediator();
         RobolectricUtil.runAllBackgroundAndUi();
 
         // While profile is null, extra buttons should remain hidden.
@@ -670,7 +669,7 @@ public class BottomBarMediatorUnitTest {
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
         mCountrySupplier = new OneshotSupplierImpl<>();
 
-        createMediator(/* shouldIncludeHomeButton= */ false);
+        createMediator();
 
         // Geofencing is bypassed -> candidate resolves to GLIC immediately despite null country.
         verify(mButtonManager).setButtonVisibility(ActionId.GLIC, true);
@@ -684,7 +683,7 @@ public class BottomBarMediatorUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.BottomBar.ExtraAction.CandidateResolved",
                         BottomBarMetrics.CandidateAction.GLIC);
-        createMediator(/* shouldIncludeHomeButton= */ false);
+        createMediator();
         glicWatcher.assertExpected();
     }
 
@@ -699,13 +698,13 @@ public class BottomBarMediatorUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.BottomBar.Glic.IneligibilityReason",
                         GlicIneligibilityReason.USER_DISABLED_IN_SETTINGS);
-        createMediator(/* shouldIncludeHomeButton= */ false);
+        createMediator();
         watcher.assertExpected();
     }
 
     @Test
     public void testOnTintChanged_WhenHostTabbed_UpdatesColorSchemeAndNotifiesDelegate() {
-        createMediator(/* shouldIncludeHomeButton= */ false);
+        createMediator();
         assertNotNull(mMediator);
         assertEquals(Host.TABBED, mMediator.getHostForTesting());
 
@@ -717,7 +716,7 @@ public class BottomBarMediatorUnitTest {
 
     @Test
     public void testOnTintChanged_WhenHostHub_SuppressesColorSchemeUpdate() {
-        createMediator(/* shouldIncludeHomeButton= */ false);
+        createMediator();
         assertNotNull(mMediator);
 
         // Set initial color scheme to INCOGNITO
@@ -740,7 +739,7 @@ public class BottomBarMediatorUnitTest {
 
     @Test
     public void testSetParent_TabbedToHubAndBack_UpdatesColorSchemeOnReturn() {
-        createMediator(/* shouldIncludeHomeButton= */ false);
+        createMediator();
         assertNotNull(mMediator);
 
         mMediator.onTintChanged(null, null, BrandedColorScheme.INCOGNITO);
@@ -762,7 +761,7 @@ public class BottomBarMediatorUnitTest {
 
     @Test
     public void testOnBottomBarStateChanged_AfterDestroy_IsNoOp() {
-        createMediator(/* shouldIncludeHomeButton= */ false);
+        createMediator();
         assertNotNull(mMediator);
 
         mMediator.destroy();
@@ -772,7 +771,7 @@ public class BottomBarMediatorUnitTest {
         verify(mVisibilityDelegate, never()).onModelTokenChange();
     }
 
-    private void createMediator(boolean shouldIncludeHomeButton) {
+    private void createMediator() {
         mMediator =
                 new BottomBarMediator(
                         mContext,
@@ -782,7 +781,6 @@ public class BottomBarMediatorUnitTest {
                         mTabSupplier,
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
-                        shouldIncludeHomeButton,
                         mProfileSupplier,
                         mCountrySupplier,
                         mOmniboxFocusStateSupplier,

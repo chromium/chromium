@@ -234,10 +234,7 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/true",
-        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_home_button_in_toolbar/false"
-    })
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/true")
     public void testBackButtonVisibility_ntp() {
         ToolbarPhone toolbarSpy = Mockito.spy(mToolbar);
         BackButtonCoordinator mockBackButtonCoordinator = Mockito.mock(BackButtonCoordinator.class);
@@ -253,10 +250,7 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/true",
-        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_home_button_in_toolbar/false"
-    })
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/true")
     public void testBackButtonVisibility_regularPage() {
         ToolbarPhone toolbarSpy = Mockito.spy(mToolbar);
         BackButtonCoordinator mockBackButtonCoordinator = Mockito.mock(BackButtonCoordinator.class);
@@ -272,10 +266,7 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/true",
-        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_home_button_in_toolbar/false"
-    })
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/true")
     public void testBackButtonVisibility_focused() {
         ToolbarPhone toolbarSpy = Mockito.spy(mToolbar);
         BackButtonCoordinator mockBackButtonCoordinator = Mockito.mock(BackButtonCoordinator.class);
@@ -291,10 +282,7 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/true",
-        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_home_button_in_toolbar/false"
-    })
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/true")
     public void testBackButtonVisibility_urlExpansion() {
         BackButtonCoordinator mockBackButtonCoordinator = Mockito.mock(BackButtonCoordinator.class);
         mToolbar.setBackButtonCoordinatorForTesting(mockBackButtonCoordinator);
