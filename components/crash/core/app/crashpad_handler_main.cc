@@ -31,6 +31,10 @@
 #include "components/crash/core/app/shared_memory_user_stream_args.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "components/crash/core/app/shared_memory_user_stream_mach_port.h"
+#endif
+
 extern "C" {
 
 __attribute__((visibility("default"), used)) int CrashpadHandlerMain(
@@ -54,6 +58,21 @@ __attribute__((visibility("default"), used)) int CrashpadHandlerMain(
   for (auto& source : shared_memory_sources) {
     user_stream_data_sources.push_back(std::move(source));
   }
+#elif BUILDFLAG(IS_MAC)
+  // Append shared-memory-user-stream regions once the client makes them
+  // available through Mach.
+  crashpad::EmbedderPortCallback embedder_port_callback =
+      [&user_stream_data_sources](base::apple::ScopedMachReceiveRight port) {
+        std::vector<base::ReadOnlySharedMemoryRegion> regions =
+            crash_reporter::internal::ReceiveSharedMemoryUserStreamsFromPort(
+                std::move(port));
+        crashpad::UserStreamDataSources shared_memory_sources =
+            crash_reporter::internal::CreateSharedMemoryUserStreamDataSources(
+                std::move(regions));
+        for (auto& source : shared_memory_sources) {
+          user_stream_data_sources.push_back(std::move(source));
+        }
+      };
 #endif
 
 #if BUILDFLAG(ENABLE_GWP_ASAN)
@@ -71,7 +90,12 @@ __attribute__((visibility("default"), used)) int CrashpadHandlerMain(
               allocation_recorder::crash_handler::StreamDataSourceFactory>()));
 #endif
 
-  return crashpad::HandlerMain(argc, argv, &user_stream_data_sources);
+  return crashpad::HandlerMain(argc, argv, &user_stream_data_sources
+#if BUILDFLAG(IS_MAC)
+                               ,
+                               embedder_port_callback
+#endif  // BUILDFLAG(IS_MAC)
+  );
 }
 
 }  // extern "C"

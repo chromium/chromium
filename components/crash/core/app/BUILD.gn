@@ -41,14 +41,25 @@ if (!is_ios) {
     ]
   }
 
-  if (is_win || is_linux || is_chromeos || is_android) {
+  if (is_win || is_linux || is_chromeos || is_android || is_mac) {
     source_set("shared_memory_user_stream_args") {
-      sources = [
-        "shared_memory_user_stream_args.cc",
-        "shared_memory_user_stream_args.h",
-      ]
-      public_deps = [ "//third_party/crashpad/crashpad/util" ]
+      sources = []
       deps = [ "//base" ]
+
+      if (is_win || is_linux || is_chromeos || is_android) {
+        sources += [
+          "shared_memory_user_stream_args.cc",
+          "shared_memory_user_stream_args.h",
+        ]
+        public_deps = [ "//third_party/crashpad/crashpad/util" ]
+      }
+
+      if (is_mac) {
+        sources += [
+          "shared_memory_user_stream_mach_port.cc",
+          "shared_memory_user_stream_mach_port.h",
+        ]
+      }
     }
   }
 
@@ -64,7 +75,7 @@ if (!is_ios) {
       "//third_party/crashpad/crashpad/minidump",
     ]
 
-    if (is_linux || is_chromeos || is_android) {
+    if (is_linux || is_chromeos || is_android || is_mac) {
       deps += [ ":shared_memory_user_stream_args" ]
     }
 
@@ -141,7 +152,7 @@ static_library("app") {
     libs = [ "log" ]
   }
 
-  if (is_win || is_linux || is_chromeos || is_android) {
+  if (is_win || is_linux || is_chromeos || is_android || is_mac) {
     deps += [ ":shared_memory_user_stream_args" ]
   }
 
@@ -358,9 +369,16 @@ source_set("unit_tests") {
       ":shared_memory_data_source",
     ]
 
+    if (is_win || is_linux || is_chromeos || is_android || is_mac) {
+      deps += [ ":shared_memory_user_stream_args" ]
+    }
+
     if (is_win || is_linux || is_chromeos || is_android) {
       sources += [ "shared_memory_user_stream_args_unittest.cc" ]
-      deps += [ ":shared_memory_user_stream_args" ]
+    }
+
+    if (is_mac) {
+      sources += [ "shared_memory_user_stream_mach_port_unittest.cc" ]
     }
   }
 
