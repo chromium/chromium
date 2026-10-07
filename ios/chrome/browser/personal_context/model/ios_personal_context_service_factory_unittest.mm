@@ -20,6 +20,14 @@ class IOSPersonalContextServiceFactoryTest : public PlatformTest {
   IOSPersonalContextServiceFactoryTest() = default;
 
  protected:
+  std::unique_ptr<TestProfileIOS> BuildProfile() {
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        IOSPersonalContextServiceFactory::GetInstance(),
+        IOSPersonalContextServiceFactory::GetDefaultFactory());
+    return std::move(builder).Build();
+  }
+
   web::WebTaskEnvironment task_environment_;
 };
 
@@ -30,7 +38,7 @@ TEST_F(IOSPersonalContextServiceFactoryTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       personal_context::features::kPersonalContext);
-  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
+  std::unique_ptr<TestProfileIOS> profile = BuildProfile();
 
   EXPECT_NE(nullptr,
             IOSPersonalContextServiceFactory::GetForProfile(profile.get()));
@@ -43,7 +51,7 @@ TEST_F(IOSPersonalContextServiceFactoryTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       personal_context::features::kPersonalContext);
-  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
+  std::unique_ptr<TestProfileIOS> profile = BuildProfile();
 
   EXPECT_EQ(nullptr,
             IOSPersonalContextServiceFactory::GetForProfile(profile.get()));
@@ -56,7 +64,7 @@ TEST_F(IOSPersonalContextServiceFactoryTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       personal_context::features::kPersonalContext);
-  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
+  std::unique_ptr<TestProfileIOS> profile = BuildProfile();
   ProfileIOS* otr_profile = profile->GetOffTheRecordProfile();
 
   EXPECT_EQ(nullptr,

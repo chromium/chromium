@@ -19,6 +19,14 @@ class PersonalContextServiceFactoryTest : public testing::Test {
   ~PersonalContextServiceFactoryTest() override = default;
 
  protected:
+  std::unique_ptr<TestingProfile> BuildProfile() {
+    TestingProfile::Builder builder;
+    builder.AddTestingFactory(
+        PersonalContextServiceFactory::GetInstance(),
+        PersonalContextServiceFactory::GetDefaultFactory());
+    return builder.Build();
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
 };
@@ -26,23 +34,25 @@ class PersonalContextServiceFactoryTest : public testing::Test {
 TEST_F(PersonalContextServiceFactoryTest, CreatesServiceWithFlagEnabled) {
   scoped_feature_list_.InitAndEnableFeature(
       personal_context::features::kPersonalContext);
-  TestingProfile profile;
-  EXPECT_NE(nullptr, PersonalContextServiceFactory::GetForProfile(&profile));
+  std::unique_ptr<TestingProfile> profile = BuildProfile();
+  EXPECT_NE(nullptr,
+            PersonalContextServiceFactory::GetForProfile(profile.get()));
 }
 
 TEST_F(PersonalContextServiceFactoryTest, CreatesNoServiceWithFlagDisabled) {
   scoped_feature_list_.InitAndDisableFeature(
       personal_context::features::kPersonalContext);
-  TestingProfile profile;
-  EXPECT_EQ(nullptr, PersonalContextServiceFactory::GetForProfile(&profile));
+  std::unique_ptr<TestingProfile> profile = BuildProfile();
+  EXPECT_EQ(nullptr,
+            PersonalContextServiceFactory::GetForProfile(profile.get()));
 }
 
 TEST_F(PersonalContextServiceFactoryTest,
        CreatesNoServiceForIncognitoWithFlagEnabled) {
   scoped_feature_list_.InitAndEnableFeature(
       personal_context::features::kPersonalContext);
-  TestingProfile profile;
-  Profile* otr_profile = profile.GetOffTheRecordProfile(
+  std::unique_ptr<TestingProfile> profile = BuildProfile();
+  Profile* otr_profile = profile->GetOffTheRecordProfile(
       Profile::OTRProfileID::PrimaryID(), /*create_if_needed=*/true);
   EXPECT_EQ(nullptr, PersonalContextServiceFactory::GetForProfile(otr_profile));
 }

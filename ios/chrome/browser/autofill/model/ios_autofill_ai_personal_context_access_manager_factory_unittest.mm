@@ -7,6 +7,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/personal_context/core/personal_context_features.h"
+#import "ios/chrome/browser/personal_context/model/ios_personal_context_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -21,6 +22,14 @@ class IOSAutofillAiPersonalContextAccessManagerFactoryTest
   IOSAutofillAiPersonalContextAccessManagerFactoryTest() = default;
 
  protected:
+  std::unique_ptr<TestProfileIOS> BuildProfile() {
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        IOSPersonalContextServiceFactory::GetInstance(),
+        IOSPersonalContextServiceFactory::GetDefaultFactory());
+    return std::move(builder).Build();
+  }
+
   web::WebTaskEnvironment task_environment_;
 };
 
@@ -34,7 +43,7 @@ TEST_F(IOSAutofillAiPersonalContextAccessManagerFactoryTest,
       /*enabled_features=*/{autofill::features::kAutofillAmbientAutofill,
                             personal_context::features::kPersonalContext},
       /*disabled_features=*/{});
-  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
+  std::unique_ptr<TestProfileIOS> profile = BuildProfile();
 
   EXPECT_NE(nullptr,
             IOSAutofillAiPersonalContextAccessManagerFactory::GetForProfile(
@@ -49,7 +58,7 @@ TEST_F(IOSAutofillAiPersonalContextAccessManagerFactoryTest,
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{personal_context::features::kPersonalContext},
       /*disabled_features=*/{autofill::features::kAutofillAmbientAutofill});
-  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
+  std::unique_ptr<TestProfileIOS> profile = BuildProfile();
 
   EXPECT_EQ(nullptr,
             IOSAutofillAiPersonalContextAccessManagerFactory::GetForProfile(
@@ -64,7 +73,7 @@ TEST_F(IOSAutofillAiPersonalContextAccessManagerFactoryTest,
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{autofill::features::kAutofillAmbientAutofill},
       /*disabled_features=*/{personal_context::features::kPersonalContext});
-  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
+  std::unique_ptr<TestProfileIOS> profile = BuildProfile();
 
   EXPECT_EQ(nullptr,
             IOSAutofillAiPersonalContextAccessManagerFactory::GetForProfile(
@@ -80,7 +89,7 @@ TEST_F(IOSAutofillAiPersonalContextAccessManagerFactoryTest,
       /*enabled_features=*/{autofill::features::kAutofillAmbientAutofill,
                             personal_context::features::kPersonalContext},
       /*disabled_features=*/{});
-  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
+  std::unique_ptr<TestProfileIOS> profile = BuildProfile();
   ProfileIOS* otr_profile = profile->GetOffTheRecordProfile();
 
   EXPECT_EQ(nullptr,

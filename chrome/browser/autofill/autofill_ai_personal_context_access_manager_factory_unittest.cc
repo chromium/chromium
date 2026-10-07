@@ -26,6 +26,14 @@ class AutofillAiPersonalContextAccessManagerFactoryTest : public testing::Test {
   ~AutofillAiPersonalContextAccessManagerFactoryTest() override = default;
 
  protected:
+  std::unique_ptr<TestingProfile> BuildProfile() {
+    TestingProfile::Builder builder;
+    builder.AddTestingFactory(
+        PersonalContextServiceFactory::GetInstance(),
+        PersonalContextServiceFactory::GetDefaultFactory());
+    return builder.Build();
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
 };
@@ -34,18 +42,18 @@ class AutofillAiPersonalContextAccessManagerFactoryTest : public testing::Test {
 // AutofillAiPersonalContextAccessManager when the ambient autofill feature is
 // enabled.
 TEST_F(AutofillAiPersonalContextAccessManagerFactoryTest, CreatesService) {
-  TestingProfile profile;
-  EXPECT_NE(
-      nullptr,
-      AutofillAiPersonalContextAccessManagerFactory::GetForProfile(&profile));
+  std::unique_ptr<TestingProfile> profile = BuildProfile();
+  EXPECT_NE(nullptr,
+            AutofillAiPersonalContextAccessManagerFactory::GetForProfile(
+                profile.get()));
 }
 
 // Test that the factory returns nullptr (does not instantiate the service)
 // when using an Incognito / Off-the-record profile.
 TEST_F(AutofillAiPersonalContextAccessManagerFactoryTest,
        CreatesNoServiceForIncognito) {
-  TestingProfile profile;
-  Profile* otr_profile = profile.GetOffTheRecordProfile(
+  std::unique_ptr<TestingProfile> profile = BuildProfile();
+  Profile* otr_profile = profile->GetOffTheRecordProfile(
       Profile::OTRProfileID::PrimaryID(), /*create_if_needed=*/true);
   EXPECT_EQ(nullptr,
             AutofillAiPersonalContextAccessManagerFactory::GetForProfile(
