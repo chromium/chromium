@@ -160,7 +160,6 @@ actions {
               m_protected_video: false
               m_hw_protected: false
               m_needs_detiling: false
-              m_is_webgpu_compatible: false
               m_power_efficient: false
               m_background_blur: 0
             }

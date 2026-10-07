@@ -98,7 +98,6 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
   output->protected_video = input.protected_video();
   output->hw_protected = input.hw_protected();
   output->needs_detiling = input.needs_detiling();
-  output->is_webgpu_compatible = input.is_webgpu_compatible();
   output->power_efficient = input.power_efficient();
   output->read_lock_fences_enabled = input.read_lock_fences_enabled();
   output->interactive_content = input.interactive_content();

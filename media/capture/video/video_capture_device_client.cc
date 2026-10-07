@@ -249,9 +249,6 @@ mojom::VideoFrameInfoPtr CreateNewVideoFrameInfo(
     bool is_premapped,
     const gfx::ColorSpace& color_space) {
   VideoFrameMetadata metadata = current_metadata.value_or(VideoFrameMetadata{});
-  // Note: we are not setting `metadata.is_webgpu_compatible` here since we
-  // have not verified whether the buffer pool returns frames that are
-  // WebGPU-compatible across all platforms.
   metadata.frame_rate = format.frame_rate;
   metadata.reference_time = reference_time;
   metadata.capture_begin_time = capture_begin_timestamp;

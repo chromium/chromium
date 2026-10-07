@@ -212,8 +212,6 @@ void MailboxVideoFrameConverter::WrapSharedImageAndVideoFrameAndOutput(
   mailbox_frame->set_hdr_metadata(frame->hdr_metadata());
   mailbox_frame->set_metadata(frame->metadata());
   mailbox_frame->metadata().read_lock_fences_enabled = true;
-  mailbox_frame->metadata().is_webgpu_compatible =
-      shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ);
 
   mailbox_frame->AddDestructionObserver(
       base::DoNothingWithBoundArgs(std::move(frame)));

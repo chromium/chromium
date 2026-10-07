@@ -231,8 +231,6 @@ std::optional<ExternalTexture> CreateExternalTexture(
     src_color_space = gfx::ColorSpace::CreateREC709();
   }
 
-  // TODO(crbug.com/1306753): Use SharedImageProducer and CompositeSharedImage
-  // rather than check 'is_webgpu_compatible'.
   // Note that the feature is checked on the adapter and not the device, because
   // we assume that the GPU-process side automatically adds
   // DawnMultiPlanarFormats to the requested extension list (since we don't do
@@ -275,12 +273,20 @@ std::optional<ExternalTexture> CreateExternalTexture(
     external_texture_desc.mirrored = metadata.transformation->mirrored;
   }
 
+  // TODO(crbug.com/425634684): The SharedMemory buffer check is due to
+  // historical reasons, and the SharedImage system should now be able to
+  // support zero copy with SharedMemory buffers.
+  const bool si_supports_zero_copy =
+      media_video_frame->HasSharedImage() &&
+      media_video_frame->shared_image()->usage().Has(
+          gpu::SHARED_IMAGE_USAGE_WEBGPU_READ) &&
+      media_video_frame->shared_image()->GetGpuMemoryBufferType() !=
+          gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;
   const bool zero_copy =
-      (media_video_frame->HasSharedImage() &&
-       (media_video_frame->format() == media::PIXEL_FORMAT_NV12) &&
-       device_support_zero_copy &&
-       media_video_frame->metadata().is_webgpu_compatible &&
-       DstColorSpaceSupportedByZeroCopy(dst_predefined_color_space));
+      si_supports_zero_copy &&
+      media_video_frame->format() == media::PIXEL_FORMAT_NV12 &&
+      device_support_zero_copy &&
+      DstColorSpaceSupportedByZeroCopy(dst_predefined_color_space);
 
   TRACE_EVENT_INSTANT(
       TRACE_DISABLED_BY_DEFAULT("webgpu"), "CreateExternalTexture", "zero_copy",

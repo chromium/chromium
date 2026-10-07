@@ -2221,6 +2221,7 @@ _CONFIG = [
         ],
         'allowed': [
             'base::CommandLine',
+            'gfx::GpuMemoryBufferType',
             'gpu::WebGPUTextureScopedAccess',
             'gpu::webgpu::PowerPreference',
             'gpu::webgpu::WEBGPU_MAILBOX_NONE',

@@ -82,10 +82,6 @@ struct StructTraits<media::mojom::VideoFrameMetadataDataView,
     return input.needs_detiling;
   }
 
-  static bool is_webgpu_compatible(const media::VideoFrameMetadata& input) {
-    return input.is_webgpu_compatible;
-  }
-
   static bool power_efficient(const media::VideoFrameMetadata& input) {
     return input.power_efficient;
   }

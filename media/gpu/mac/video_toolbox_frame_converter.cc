@@ -216,8 +216,6 @@ void VideoToolboxFrameConverter::Convert(
   // Releasing |image| must happen after command buffer commands are complete
   // (not just submitted).
   frame->metadata().read_lock_fences_enabled = true;
-  frame->metadata().is_webgpu_compatible =
-      shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ);
 
   // TODO(crbug.com/40227557): VideoToolbox can report software usage, should
   // we plumb that through?

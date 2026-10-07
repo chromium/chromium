@@ -854,9 +854,6 @@ bool D3DVideoDecoder::OutputResult(const CodecPicture* picture,
     frame->set_hdr_metadata(hdr_metadata);
   }
 
-  frame->metadata().is_webgpu_compatible =
-      shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ);
-
   output_cb_.Run(frame);
   return true;
 }

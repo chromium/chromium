@@ -1032,17 +1032,14 @@ TEST(VideoFrameMetadata, MergeMetadata) {
 
 TEST(VideoFrameMetadata, ClearTextureMetadata) {
   VideoFrameMetadata reference_md = GetFullVideoFrameMetadata();
-  reference_md.is_webgpu_compatible = true;
   reference_md.read_lock_fences_enabled = true;
 
   VideoFrameMetadata copy_md;
   copy_md.MergeMetadataFrom(reference_md);
 
   copy_md.ClearTextureFrameMetadata();
-  EXPECT_FALSE(copy_md.is_webgpu_compatible);
   EXPECT_FALSE(copy_md.read_lock_fences_enabled);
 
-  reference_md.is_webgpu_compatible = false;
   reference_md.read_lock_fences_enabled = false;
   VerifyVideoFrameMetadataEquality(copy_md, reference_md);
 }

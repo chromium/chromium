@@ -1083,13 +1083,6 @@ scoped_refptr<VideoFrame> MappableSharedImageVideoFramePool::PoolImpl::
                   : std::string("Media.GPU.OutputFormatHardwareGmb");
   base::UmaHistogramEnumeration(name, output_format_);
 
-  bool is_webgpu_compatible = frame_resource->shared_image->usage().Has(
-      gpu::SHARED_IMAGE_USAGE_WEBGPU_READ);
-#if BUILDFLAG(IS_CHROMEOS)
-  is_webgpu_compatible = is_webgpu_compatible &&
-                         gmb_type == gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
-#endif
-
   // Bind the texture and create or rebind the image. This image may be read
   // via the raster interface for import into canvas and/or 2-copy import into
   // WebGL as well as potentially being read via the GLES interface for 1-copy
@@ -1117,7 +1110,6 @@ scoped_refptr<VideoFrame> MappableSharedImageVideoFramePool::PoolImpl::
       base::BindOnce(&PoolImpl::SharedImageReleased, this, frame_resource));
 
   frame->metadata().read_lock_fences_enabled = true;
-  frame->metadata().is_webgpu_compatible = is_webgpu_compatible;
   return frame;
 }
 
