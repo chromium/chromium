@@ -2055,7 +2055,7 @@ inline constexpr char kEnableAccountPreviewEntityPreviewsDescription[] =
 inline constexpr char kEnableAccountPreviewPreferredAccountName[] =
     "Enable Account Preview Preferred Account";
 inline constexpr char kEnableAccountPreviewPreferredAccountDescription[] =
-    "Controls whether computing and storing the preferred account is enabled.";
+    "Controls whether storing and exposing the preferred account is enabled.";
 
 inline constexpr char kEnableAccountPreviewPreferredAccountFollowupName[] =
     "Enable Account Preview Preferred Account Followup";
@@ -2063,6 +2063,12 @@ inline constexpr char
     kEnableAccountPreviewPreferredAccountFollowupDescription[] =
         "Controls whether followup features for preferred account preview "
         "(promos, and updated strings) are enabled.";
+
+inline constexpr char kEnableAccountPreviewSwitchingAccountName[] =
+    "Enable Account Preview Switching Account";
+inline constexpr char kEnableAccountPreviewSwitchingAccountDescription[] =
+    "Controls whether storing and exposing the preferred account for "
+    "switching is enabled.";
 
 inline constexpr char kEnableAccountPreviewUseAppAccountName[] =
     "Use 1P App Account for Preferred Account Computing";

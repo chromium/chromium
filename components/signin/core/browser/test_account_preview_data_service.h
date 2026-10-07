@@ -26,6 +26,8 @@ class TestAccountPreviewDataService : public AccountPreviewDataService {
   // AccountPreviewDataService:
   std::optional<AccountPreviewPreference> GetPreferredAccountForPromo()
       const override;
+  std::optional<AccountPreviewPreference> GetPreferredAccountForSwitching()
+      const override;
   void GetPreviewPreferenceForAccount(
       const GaiaId& gaia_id,
       base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
@@ -49,6 +51,11 @@ class TestAccountPreviewDataService : public AccountPreviewDataService {
     preferred_account_for_promo_ = std::move(preference);
   }
 
+  void SetPreferredAccountForSwitching(
+      std::optional<AccountPreviewPreference> preference) {
+    preferred_account_for_switching_ = std::move(preference);
+  }
+
   void TriggerCallback(std::optional<AccountPreviewPreference> pref);
   bool has_pending_callback() const { return !pending_callback_.is_null(); }
   base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
@@ -60,6 +67,7 @@ class TestAccountPreviewDataService : public AccountPreviewDataService {
   bool defer_callbacks_ = false;
   std::optional<AccountPreviewPreference> preference_;
   std::optional<AccountPreviewPreference> preferred_account_for_promo_;
+  std::optional<AccountPreviewPreference> preferred_account_for_switching_;
   base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
       pending_callback_;
 };

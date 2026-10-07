@@ -17,6 +17,11 @@ TestAccountPreviewDataService::GetPreferredAccountForPromo() const {
   return preferred_account_for_promo_;
 }
 
+std::optional<AccountPreviewDataService::AccountPreviewPreference>
+TestAccountPreviewDataService::GetPreferredAccountForSwitching() const {
+  return preferred_account_for_switching_;
+}
+
 void TestAccountPreviewDataService::GetPreviewPreferenceForAccount(
     const GaiaId& gaia_id,
     base::OnceCallback<void(std::optional<AccountPreviewPreference>)>

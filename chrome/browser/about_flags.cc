@@ -13630,6 +13630,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          switches::kEnableAccountPreviewPreferredAccountFollowup)},
 
+    {"enable-account-preview-switching-account",
+     flag_descriptions::kEnableAccountPreviewSwitchingAccountName,
+     flag_descriptions::kEnableAccountPreviewSwitchingAccountDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(switches::kEnableAccountPreviewSwitchingAccount)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"enable-account-preview-use-app-account",
      flag_descriptions::kEnableAccountPreviewUseAppAccountName,

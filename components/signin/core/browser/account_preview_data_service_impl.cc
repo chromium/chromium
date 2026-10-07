@@ -92,6 +92,103 @@ void RecordSuccessfulFetchingMetrics(
   }
 }
 
+std::optional<AccountPreviewDataService::AccountPreviewPreference>
+ReadAccountPreviewPreferenceFromPrefs(const PrefService& profile_prefs,
+                                      std::string_view pref_name) {
+  const base::DictValue& dict = profile_prefs.GetDict(pref_name);
+  const std::string* gaia_id_str =
+      dict.FindString(kPreferredAccountDictGaiaIdKey);
+  if (!gaia_id_str || gaia_id_str->empty()) {
+    return std::nullopt;
+  }
+
+  AccountPreviewDataService::AccountPreviewPreference preference;
+  preference.gaia_id = GaiaId(*gaia_id_str);
+
+  const base::ListValue* data_types_list =
+      dict.FindList(kPreferredAccountDictDataTypesKey);
+  if (data_types_list) {
+    for (const base::Value& val : *data_types_list) {
+      if (val.is_dict()) {
+        const base::DictValue& info_dict = val.GetDict();
+        const std::optional<int> dt_int =
+            info_dict.FindInt(kPreferredAccountDictDataTypeKey);
+        const std::optional<int> q_int =
+            info_dict.FindInt(kPreferredAccountDictQuartileKey);
+        if (dt_int.has_value() && q_int.has_value()) {
+          syncer::DataType data_type =
+              syncer::GetDataTypeFromStableIdentifier(*dt_int);
+          std::optional<SyncDataQuartile> quartile =
+              SyncDataQuartileFromValue(*q_int);
+          if (syncer::IsRealDataType(data_type) && quartile.has_value()) {
+            preference.preferred_data_types.push_back({
+                .data_type = data_type,
+                .quartile = *quartile,
+            });
+          }
+        }
+      }
+    }
+  }
+
+  std::optional<int> form_factor_int =
+      dict.FindInt(kPreferredAccountDictOtherDeviceFormFactorKey);
+  if (form_factor_int.has_value() &&
+      sync_pb::SyncEnums::DeviceFormFactor_IsValid(*form_factor_int)) {
+    preference.other_device_info.form_factor =
+        static_cast<sync_pb::SyncEnums_DeviceFormFactor>(*form_factor_int);
+  }
+
+  if (const base::ListValue* other_device_data_types_list =
+          dict.FindList(kPreferredAccountDictOtherDeviceEnabledDataTypesKey)) {
+    for (const base::Value& val : *other_device_data_types_list) {
+      if (std::optional<int> dt_int = val.GetIfInt()) {
+        syncer::DataType data_type =
+            syncer::GetDataTypeFromStableIdentifier(*dt_int);
+        if (syncer::IsRealDataType(data_type)) {
+          preference.other_device_info.enabled_data_types.Put(data_type);
+        }
+      }
+    }
+  }
+
+  return preference;
+}
+
+void WriteAccountPreviewPreferenceToPrefs(
+    PrefService& profile_prefs,
+    std::string_view pref_name,
+    std::optional<AccountPreviewDataService::AccountPreviewPreference>
+        preference) {
+  if (!preference.has_value()) {
+    profile_prefs.ClearPref(pref_name);
+    return;
+  }
+
+  base::DictValue dict;
+  dict.Set(kPreferredAccountDictGaiaIdKey, preference->gaia_id.ToString());
+  base::ListValue data_types_list;
+  for (const PreferredDataTypeInfo& info : preference->preferred_data_types) {
+    base::DictValue info_dict;
+    info_dict.Set(kPreferredAccountDictDataTypeKey,
+                  syncer::DataTypeToStableIdentifier(info.data_type));
+    info_dict.Set(kPreferredAccountDictQuartileKey,
+                  SyncDataQuartileToValue(info.quartile));
+    data_types_list.Append(std::move(info_dict));
+  }
+  dict.Set(kPreferredAccountDictDataTypesKey, std::move(data_types_list));
+  dict.Set(kPreferredAccountDictOtherDeviceFormFactorKey,
+           static_cast<int>(preference->other_device_info.form_factor));
+  base::ListValue other_device_data_types_list;
+  for (syncer::DataType data_type :
+       preference->other_device_info.enabled_data_types) {
+    other_device_data_types_list.Append(
+        syncer::DataTypeToStableIdentifier(data_type));
+  }
+  dict.Set(kPreferredAccountDictOtherDeviceEnabledDataTypesKey,
+           std::move(other_device_data_types_list));
+  profile_prefs.SetDict(pref_name, std::move(dict));
+}
 
 }  // namespace
 
@@ -151,6 +248,11 @@ bool AccountPreviewDataServiceImpl::IsRateLimited() const {
 std::optional<AccountPreviewDataService::AccountPreviewPreference>
 AccountPreviewDataServiceImpl::GetPreferredAccountForPromo() const {
   return ReadPreferredAccountFromPrefs();
+}
+
+std::optional<AccountPreviewDataService::AccountPreviewPreference>
+AccountPreviewDataServiceImpl::GetPreferredAccountForSwitching() const {
+  return ReadSwitchingAccountFromPrefs();
 }
 
 void AccountPreviewDataServiceImpl::GetPreviewPreferenceForAccount(
@@ -621,6 +723,10 @@ void AccountPreviewDataServiceImpl::ComputeAndStoreSwitchingAccount(
     base::span<const AccountPreviewHeuristicContext> contexts) {
   AccountSwitchingSelectionResult result =
       ComputeAccountSwitchingSelection(contexts);
+  if (base::FeatureList::IsEnabled(
+          switches::kEnableAccountPreviewSwitchingAccount)) {
+    WriteSwitchingAccountToPrefs(result.preference);
+  }
   metrics_recorder_.RecordSwitchingHeuristicResult(result);
 }
 
@@ -699,97 +805,27 @@ void AccountPreviewDataServiceImpl::OnAllFetchesCompleted(
 
 std::optional<AccountPreviewDataService::AccountPreviewPreference>
 AccountPreviewDataServiceImpl::ReadPreferredAccountFromPrefs() const {
-  const base::DictValue& dict =
-      profile_prefs_->GetDict(prefs::kAccountPreviewPreference);
-  const std::string* gaia_id_str =
-      dict.FindString(kPreferredAccountDictGaiaIdKey);
-  if (!gaia_id_str || gaia_id_str->empty()) {
-    return std::nullopt;
-  }
-
-  AccountPreviewPreference preference;
-  preference.gaia_id = GaiaId(*gaia_id_str);
-
-  const base::ListValue* data_types_list =
-      dict.FindList(kPreferredAccountDictDataTypesKey);
-  if (data_types_list) {
-    for (const base::Value& val : *data_types_list) {
-      if (val.is_dict()) {
-        const base::DictValue& info_dict = val.GetDict();
-        const std::optional<int> dt_int =
-            info_dict.FindInt(kPreferredAccountDictDataTypeKey);
-        const std::optional<int> q_int =
-            info_dict.FindInt(kPreferredAccountDictQuartileKey);
-        if (dt_int.has_value() && q_int.has_value()) {
-          syncer::DataType data_type =
-              syncer::GetDataTypeFromStableIdentifier(*dt_int);
-          std::optional<SyncDataQuartile> quartile =
-              SyncDataQuartileFromValue(*q_int);
-          if (syncer::IsRealDataType(data_type) && quartile.has_value()) {
-            preference.preferred_data_types.push_back({
-                .data_type = data_type,
-                .quartile = *quartile,
-            });
-          }
-        }
-      }
-    }
-  }
-
-  std::optional<int> form_factor_int =
-      dict.FindInt(kPreferredAccountDictOtherDeviceFormFactorKey);
-  if (form_factor_int.has_value() &&
-      sync_pb::SyncEnums::DeviceFormFactor_IsValid(*form_factor_int)) {
-    preference.other_device_info.form_factor =
-        static_cast<sync_pb::SyncEnums_DeviceFormFactor>(*form_factor_int);
-  }
-
-  if (const base::ListValue* other_device_data_types_list =
-          dict.FindList(kPreferredAccountDictOtherDeviceEnabledDataTypesKey)) {
-    for (const base::Value& val : *other_device_data_types_list) {
-      if (std::optional<int> dt_int = val.GetIfInt()) {
-        syncer::DataType data_type =
-            syncer::GetDataTypeFromStableIdentifier(*dt_int);
-        if (syncer::IsRealDataType(data_type)) {
-          preference.other_device_info.enabled_data_types.Put(data_type);
-        }
-      }
-    }
-  }
-
-  return preference;
+  return ReadAccountPreviewPreferenceFromPrefs(
+      *profile_prefs_, prefs::kAccountPreviewPreference);
 }
 
 void AccountPreviewDataServiceImpl::WritePreferredAccountToPrefs(
     std::optional<AccountPreviewPreference> preference) {
-  if (!preference.has_value()) {
-    profile_prefs_->ClearPref(prefs::kAccountPreviewPreference);
-    return;
-  }
+  WriteAccountPreviewPreferenceToPrefs(
+      *profile_prefs_, prefs::kAccountPreviewPreference, std::move(preference));
+}
 
-  base::DictValue dict;
-  dict.Set(kPreferredAccountDictGaiaIdKey, preference->gaia_id.ToString());
-  base::ListValue data_types_list;
-  for (const PreferredDataTypeInfo& info : preference->preferred_data_types) {
-    base::DictValue info_dict;
-    info_dict.Set(kPreferredAccountDictDataTypeKey,
-                  syncer::DataTypeToStableIdentifier(info.data_type));
-    info_dict.Set(kPreferredAccountDictQuartileKey,
-                  SyncDataQuartileToValue(info.quartile));
-    data_types_list.Append(std::move(info_dict));
-  }
-  dict.Set(kPreferredAccountDictDataTypesKey, std::move(data_types_list));
-  dict.Set(kPreferredAccountDictOtherDeviceFormFactorKey,
-           static_cast<int>(preference->other_device_info.form_factor));
-  base::ListValue other_device_data_types_list;
-  for (syncer::DataType data_type :
-       preference->other_device_info.enabled_data_types) {
-    other_device_data_types_list.Append(
-        syncer::DataTypeToStableIdentifier(data_type));
-  }
-  dict.Set(kPreferredAccountDictOtherDeviceEnabledDataTypesKey,
-           std::move(other_device_data_types_list));
-  profile_prefs_->SetDict(prefs::kAccountPreviewPreference, std::move(dict));
+std::optional<AccountPreviewDataService::AccountPreviewPreference>
+AccountPreviewDataServiceImpl::ReadSwitchingAccountFromPrefs() const {
+  return ReadAccountPreviewPreferenceFromPrefs(
+      *profile_prefs_, prefs::kAccountPreviewSwitchingPreference);
+}
+
+void AccountPreviewDataServiceImpl::WriteSwitchingAccountToPrefs(
+    std::optional<AccountPreviewPreference> preference) {
+  WriteAccountPreviewPreferenceToPrefs(
+      *profile_prefs_, prefs::kAccountPreviewSwitchingPreference,
+      std::move(preference));
 }
 
 void AccountPreviewDataServiceImpl::ResetTimer() {
@@ -922,6 +958,7 @@ void AccountPreviewDataServiceImpl::ClearMemoryData() {
 void AccountPreviewDataServiceImpl::ClearStoredResults() {
   profile_prefs_->ClearPref(prefs::kAccountPreviewDataLastFetchAccounts);
   WritePreferredAccountToPrefs(/*preference=*/std::nullopt);
+  WriteSwitchingAccountToPrefs(/*preference=*/std::nullopt);
 }
 
 void AccountPreviewDataServiceImpl::ClearAllDataAndResults() {

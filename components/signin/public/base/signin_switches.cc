@@ -297,7 +297,7 @@ const base::FeatureParam<bool> kAccountPreviewDataPersistAccounts{
 BASE_FEATURE(kEnableAccountPreviewEntityPreviews,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether computing and storing the preferred account is enabled.
+// Controls whether storing and exposing the preferred account is enabled.
 // This flag has no effect if `kEnableAccountPreviewData` is not enabled.
 BASE_FEATURE(kEnableAccountPreviewPreferredAccount,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -385,6 +385,12 @@ BASE_FEATURE_PARAM(
 // updated strings). This flag has no effect if
 // `kEnableAccountPreviewPreferredAccount` is not enabled.
 BASE_FEATURE(kEnableAccountPreviewPreferredAccountFollowup,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether storing and exposing the preferred account for switching is
+// enabled. This flag has no effect if `kEnableAccountPreviewData` is not
+// enabled.
+BASE_FEATURE(kEnableAccountPreviewSwitchingAccount,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)

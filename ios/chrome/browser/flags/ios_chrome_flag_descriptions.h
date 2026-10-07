@@ -725,7 +725,13 @@ inline constexpr char
 inline constexpr char kEnableAccountPreviewPreferredAccountName[] =
     "Enable Account Preview Preferred Account";
 inline constexpr char kEnableAccountPreviewPreferredAccountDescription[] =
-    "Controls whether computing and storing the preferred account is enabled.";
+    "Controls whether storing and exposing the preferred account is enabled.";
+
+inline constexpr char kEnableAccountPreviewSwitchingAccountName[] =
+    "Enable Account Preview Switching Account";
+inline constexpr char kEnableAccountPreviewSwitchingAccountDescription[] =
+    "Controls whether storing and exposing the preferred account for "
+    "switching is enabled.";
 
 inline constexpr char kEnableAutofillAddressSavePromptName[] =
     "Autofill Address Save Prompts";

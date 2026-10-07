@@ -75,6 +75,8 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   // AccountPreviewDataService implementation:
   std::optional<AccountPreviewPreference> GetPreferredAccountForPromo()
       const override;
+  std::optional<AccountPreviewPreference> GetPreferredAccountForSwitching()
+      const override;
   void GetPreviewPreferenceForAccount(
       const GaiaId& gaia_id,
       base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
@@ -156,6 +158,10 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   std::optional<AccountPreviewPreference> ReadPreferredAccountFromPrefs() const;
   // Writing `std::nullopt` as `preference` clears the pref.
   void WritePreferredAccountToPrefs(
+      std::optional<AccountPreviewPreference> preference);
+  std::optional<AccountPreviewPreference> ReadSwitchingAccountFromPrefs() const;
+  // Writing `std::nullopt` as `preference` clears the pref.
+  void WriteSwitchingAccountToPrefs(
       std::optional<AccountPreviewPreference> preference);
 
 #if BUILDFLAG(IS_ANDROID)

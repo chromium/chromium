@@ -86,6 +86,13 @@ class AccountPreviewDataService : public KeyedService {
   virtual std::optional<AccountPreviewPreference> GetPreferredAccountForPromo()
       const = 0;
 
+  // From the list of secondary accounts with refresh tokens, get the account
+  // that has significantly more sync data than the primary account to promote
+  // for account switching. Returns std::nullopt if no account qualifies, if
+  // there is no primary account, or if preview data is not fetched yet.
+  virtual std::optional<AccountPreviewPreference>
+  GetPreferredAccountForSwitching() const = 0;
+
   // Computes the preview preference for a single account specified by
   // `gaia_id`. If data is already cached or the account is invalid/tokens
   // unloaded, `callback` is invoked synchronously with the result. Otherwise, a

@@ -2868,6 +2868,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          switches::kEnableAccountPreviewPreferredAccountFollowup)},
+    {"enable-account-preview-switching-account",
+     flag_descriptions::kEnableAccountPreviewSwitchingAccountName,
+     flag_descriptions::kEnableAccountPreviewSwitchingAccountDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(switches::kEnableAccountPreviewSwitchingAccount)},
     {"aim-history-threads-management",
      flag_descriptions::kAimHistoryThreadsManagementName,
      flag_descriptions::kAimHistoryThreadsManagementDescription,

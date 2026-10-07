@@ -22,6 +22,11 @@ const char kAccountInfo[] = "account_info";
 // Dictionary pref that contains the AccountPreviewPreference result.
 const char kAccountPreviewPreference[] = "signin.account_preview_preference";
 
+// Dictionary pref that contains the AccountPreviewPreference result for account
+// switching.
+const char kAccountPreviewSwitchingPreference[] =
+    "signin.account_preview_switching_preference";
+
 // Time pref that tracks the last time account preview data was refreshed.
 const char kAccountPreviewDataLastUpdatePref[] =
     "signin.account_preview_data_last_update";

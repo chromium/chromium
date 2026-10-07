@@ -14151,6 +14151,7 @@ from previous Chrome versions.
   <int value="-250631040" label="ReadAnythingReadabilitySelectText:disabled"/>
   <int value="-250543540" label="DeferAllScript:enabled"/>
   <int value="-250357169" label="MediaAppImageMantisReimagine:enabled"/>
+  <int value="-250058704" label="EnableAccountPreviewSwitchingAccount:enabled"/>
   <int value="-249636068" label="ChromeRootStoreUsed:enabled"/>
   <int value="-249443346" label="PhoneHubCallNotification:disabled"/>
   <int value="-249415830" label="FilteringScrollPrediction:disabled"/>
@@ -19843,6 +19844,8 @@ from previous Chrome versions.
   <int value="1479951837" label="FastPairKeyboards:enabled"/>
   <int value="1480073052" label="WallpaperSearchSettingsVisibility:enabled"/>
   <int value="1480507924" label="EnableNetworkingInDiagnosticsApp:enabled"/>
+  <int value="1480874242"
+      label="EnableAccountPreviewSwitchingAccount:disabled"/>
   <int value="1481562816" label="disable-password-link"/>
   <int value="1482039233" label="SearchSuggestionsOnLocalNtp:disabled"/>
   <int value="1482245628" label="OmniboxNativeVoiceSuggestProvider:enabled"/>

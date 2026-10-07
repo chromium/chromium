@@ -89,7 +89,8 @@ class AccountPreviewDataServiceTest : public testing::Test {
     feature_list_.InitWithFeatures(
         {switches::kEnableAccountPreviewData,
          switches::kEnableAccountPreviewEntityPreviews,
-         switches::kEnableAccountPreviewPreferredAccount
+         switches::kEnableAccountPreviewPreferredAccount,
+         switches::kEnableAccountPreviewSwitchingAccount
 #if BUILDFLAG(IS_ANDROID)
          ,
          switches::kEnableAccountPreviewUseAppAccount
@@ -1271,6 +1272,86 @@ TEST_F(AccountPreviewDataServiceTest,
       "Signin.SwitchingHeuristic.WouldShowPromo",
       AccountSwitchingSelectionOutcome::kWouldNotShowPrimaryMissingPreviewData,
       1);
+}
+
+TEST_F(AccountPreviewDataServiceTest, GetPreferredAccountForSwitching) {
+  EXPECT_EQ(service_->GetPreferredAccountForSwitching(), std::nullopt);
+
+  signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
+
+  AllDataAvailableWaiter waiter(service_.get());
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "primary@gmail.com", ConsentLevel::kSignin);
+  AccountInfo secondary =
+      identity_test_env_.MakeAccountAvailable("secondary@gmail.com");
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  identity_test_env_.SetCookieAccounts(
+      {{std::string(primary.GetEmail()), primary.GetGaiaId()},
+       {std::string(secondary.GetEmail()), secondary.GetGaiaId()}});
+#endif
+
+  // Resolve primary with 0 data, and secondary with passwords above median and
+  // another device.
+  SimulateSuccessfulFetch(&test_url_loader_factory_);
+  SimulateSuccessfulFetch(
+      &test_url_loader_factory_, {.password_count = 50},
+      {DevicePreview{
+          .cache_guid = "other_device",
+          .last_updated = base::Time::Now(),
+          .os_type = sync_pb::SyncEnums_OsType_OS_TYPE_ANDROID,
+          .form_factor =
+              sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE}});
+  waiter.Wait();
+
+  std::optional<AccountPreviewPreference> switching_pref =
+      service_->GetPreferredAccountForSwitching();
+  ASSERT_TRUE(switching_pref.has_value());
+  EXPECT_EQ(switching_pref->gaia_id, secondary.GetGaiaId());
+  EXPECT_EQ(switching_pref->other_device_info.form_factor,
+            sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE);
+  EXPECT_THAT(switching_pref->preferred_data_types,
+              testing::ElementsAre(PreferredDataTypeInfo{
+                  .data_type = syncer::PASSWORDS,
+                  .quartile = SyncDataQuartile::kMedianToQ3,
+              }));
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       DoesNotStoreSwitchingAccountWhenFeatureDisabledButRecordsMetrics) {
+  base::HistogramTester histogram_tester;
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      switches::kEnableAccountPreviewSwitchingAccount);
+
+  signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
+
+  AllDataAvailableWaiter waiter(service_.get());
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "primary@gmail.com", ConsentLevel::kSignin);
+  AccountInfo secondary =
+      identity_test_env_.MakeAccountAvailable("secondary@gmail.com");
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  identity_test_env_.SetCookieAccounts(
+      {{std::string(primary.GetEmail()), primary.GetGaiaId()},
+       {std::string(secondary.GetEmail()), secondary.GetGaiaId()}});
+#endif
+
+  SimulateSuccessfulFetch(&test_url_loader_factory_);
+  SimulateSuccessfulFetch(
+      &test_url_loader_factory_, {.password_count = 50},
+      {DevicePreview{
+          .cache_guid = "other_device",
+          .last_updated = base::Time::Now(),
+          .os_type = sync_pb::SyncEnums_OsType_OS_TYPE_ANDROID,
+          .form_factor =
+              sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE}});
+  waiter.Wait();
+
+  EXPECT_EQ(service_->GetPreferredAccountForSwitching(), std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SwitchingHeuristic.WouldShowPromo",
+      AccountSwitchingSelectionOutcome::kWouldShowLowPrimaryScore, 1);
 }
 
 TEST_F(AccountPreviewDataServiceTest, ReadPreviewPreferenceFromPrefsDataTypes) {

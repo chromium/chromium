@@ -350,6 +350,12 @@ BASE_DECLARE_FEATURE_PARAM(
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableAccountPreviewPreferredAccountFollowup);
 
+// Controls whether storing and exposing the preferred account for switching is
+// enabled. This flag has no effect if `kEnableAccountPreviewData` is not
+// enabled.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnableAccountPreviewSwitchingAccount);
+
 #if BUILDFLAG(IS_ANDROID)
 // Enables the use of 1P app account information on Android in preferred account
 // computation.

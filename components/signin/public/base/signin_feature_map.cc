@@ -25,6 +25,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kEnableActivitylessSigninAllEntryPoint,
     &switches::kEnableAccountPreviewPreferredAccount,
     &switches::kEnableAccountPreviewPreferredAccountFollowup,
+    &switches::kEnableAccountPreviewSwitchingAccount,
     &switches::kEnableAddSessionRedirect,
     &switches::kEnableAiSubscriptionAvatarRing,
     &switches::kForceStartupSigninPromo,
