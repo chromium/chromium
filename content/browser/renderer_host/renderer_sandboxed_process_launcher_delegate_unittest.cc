@@ -7,8 +7,11 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/test/scoped_feature_list.h"
+#include "base/types/optional_ref.h"
+#include "base/version.h"
 #include "base/win/windows_version.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -183,6 +186,32 @@ class TestTargetPolicy : public ::sandbox::TargetPolicy {
   TestTargetConfig config_;
 };
 
+class ChildModuleVersionTestBrowserClient
+    : public content::ContentBrowserClient {
+ public:
+  void set_child_module_version(std::optional<base::Version> version) {
+    child_module_version_ = std::move(version);
+  }
+  const std::optional<base::Version>& last_pre_spawn_version() const {
+    return last_pre_spawn_version_;
+  }
+  std::optional<base::Version> GetChildModuleVersion() override {
+    return child_module_version_;
+  }
+  bool PreSpawnChild(
+      ::sandbox::TargetConfig* config,
+      ::sandbox::mojom::Sandbox sandbox_type,
+      ChildSpawnFlags flags,
+      base::optional_ref<const base::Version> child_module_version) override {
+    last_pre_spawn_version_ = child_module_version.CopyAsOptional();
+    return true;
+  }
+
+ private:
+  std::optional<base::Version> child_module_version_;
+  std::optional<base::Version> last_pre_spawn_version_;
+};
+
 }  // namespace
 
 class RendererFeatureSandboxWinTest
@@ -315,6 +344,62 @@ TEST_P(RendererSandboxedProcessLauncherDelegateTest,
             policy.get());
     ASSERT_EQ(::sandbox::ResultCode::SBOX_ALL_OK, result);
   }
+}
+
+TEST_P(RendererSandboxedProcessLauncherDelegateTest, ChildModuleVersion) {
+  ChildModuleVersionTestBrowserClient test_browser_client;
+
+  auto* old_browser_client =
+      content::SetBrowserClientForTesting(&test_browser_client);
+  absl::Cleanup reset_browser_client = [&old_browser_client]() {
+    content::SetBrowserClientForTesting(old_browser_client);
+  };
+
+  base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
+  content::RendererSandboxedProcessLauncherDelegateWin default_delegate(
+      cmd_line, /*is_pdf_renderer=*/false, /*is_jit_disabled=*/false);
+
+  const base::Version kChildModuleVersion("147.0.7727.51");
+  test_browser_client.set_child_module_version(kChildModuleVersion);
+
+  EXPECT_EQ(default_delegate.GetSandboxTag(),
+            ::sandbox::policy::SandboxWin::GetSandboxTagForDelegate(
+                "renderer", ::sandbox::mojom::Sandbox::kRenderer));
+
+  content::RendererSandboxedProcessLauncherDelegateWin standard_delegate(
+      cmd_line, /*is_pdf_renderer=*/false, /*is_jit_disabled=*/false);
+  EXPECT_EQ(
+      standard_delegate.GetSandboxTag(),
+      ::sandbox::policy::SandboxWin::GetSandboxTagForDelegate(
+          "renderer-147.0.7727.51", ::sandbox::mojom::Sandbox::kRenderer));
+
+  content::RendererSandboxedProcessLauncherDelegateWin jitless_delegate(
+      cmd_line, /*is_pdf_renderer=*/false, /*is_jit_disabled=*/true);
+  EXPECT_EQ(jitless_delegate.GetSandboxTag(),
+            ::sandbox::policy::SandboxWin::GetSandboxTagForDelegate(
+                "renderer-jitless-147.0.7727.51",
+                ::sandbox::mojom::Sandbox::kRenderer));
+
+  content::RendererSandboxedProcessLauncherDelegateWin pdf_delegate(
+      cmd_line, /*is_pdf_renderer=*/true, /*is_jit_disabled=*/true);
+  EXPECT_EQ(pdf_delegate.GetSandboxTag(),
+            ::sandbox::policy::SandboxWin::GetSandboxTagForDelegate(
+                "renderer-pdfium-147.0.7727.51",
+                ::sandbox::mojom::Sandbox::kRenderer));
+
+  TestTargetPolicy policy;
+  ASSERT_EQ(
+      ::sandbox::ResultCode::SBOX_ALL_OK,
+      ::sandbox::policy::SandboxWin::GeneratePolicyForSandboxedProcess(
+          cmd_line, /*handles_to_inherit=*/{}, &standard_delegate, &policy));
+  EXPECT_EQ(test_browser_client.last_pre_spawn_version(), kChildModuleVersion);
+
+  TestTargetPolicy default_policy;
+  ASSERT_EQ(::sandbox::ResultCode::SBOX_ALL_OK,
+            ::sandbox::policy::SandboxWin::GeneratePolicyForSandboxedProcess(
+                cmd_line, /*handles_to_inherit=*/{}, &default_delegate,
+                &default_policy));
+  EXPECT_EQ(test_browser_client.last_pre_spawn_version(), std::nullopt);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

@@ -475,6 +475,7 @@
 #include "chrome/browser/performance_manager/public/dll_pre_read_policy_win.h"
 #include "chrome/browser/tracing/tracing_features.h"
 #include "chrome/browser/tracing/windows_system_tracing_client_win.h"
+#include "chrome/common/child_module/child_module_helper.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/isolation_support.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
@@ -570,7 +571,6 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "base/version.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/child_module/child_module_manager.h"
@@ -1378,11 +1378,20 @@ void MaybeAppendSecureOriginsAllowlistSwitch(base::CommandLine* cmdline) {
 
 #if BUILDFLAG(IS_WIN) && !defined(COMPONENT_BUILD) && \
     !defined(ADDRESS_SANITIZER)
-// Returns the full path to |module_name|. Both dev builds (where |module_name|
-// is in the current executable's directory) and proper installs (where
-// |module_name| is in a versioned sub-directory of the current executable's
-// directory) are supported. The identified file is not guaranteed to exist.
-base::FilePath GetModulePath(std::wstring_view module_name) {
+// Returns the full path to |module_name|. If |module_name| is the renderer DLL
+// and |child_module_version| is present, returns the path to the patched
+// renderer binary for that version. Otherwise, both dev builds (where
+// |module_name| is in the current executable's directory) and proper installs
+// (where |module_name| is in a versioned sub-directory of the current
+// executable's directory) are supported. The identified file is not guaranteed
+// to exist.
+base::FilePath GetModulePath(std::wstring_view module_name,
+                             base::optional_ref<const base::Version>
+                                 child_module_version = std::nullopt) {
+  if (module_name == chrome::kRendererDll && child_module_version.has_value()) {
+    return child_module::GetRendererBinaryPath(*child_module_version);
+  }
+
   base::FilePath exe_dir;
   const bool has_path = base::PathService::Get(base::DIR_EXE, &exe_dir);
   DCHECK(has_path);
@@ -3161,12 +3170,9 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 #endif
 
 #if BUILDFLAG(IS_WIN)
-    if (auto* child_module_manager =
-            g_browser_process->GetFeatures()->child_module_manager()) {
-      if (auto patch_version = child_module_manager->GetLatestVersion()) {
-        command_line->AppendSwitchASCII(switches::kChildModuleVersion,
-                                        patch_version->GetString());
-      }
+    if (auto patch_version = GetChildModuleVersion()) {
+      command_line->AppendSwitchASCII(switches::kChildModuleVersion,
+                                      patch_version->GetString());
     }
 #endif
 
@@ -5452,7 +5458,8 @@ ChromeContentBrowserClient::GetLPACCapabilityNameForNetworkService() {
 bool ChromeContentBrowserClient::PreSpawnChild(
     sandbox::TargetConfig* config,
     sandbox::mojom::Sandbox sandbox_type,
-    ChildSpawnFlags flags) {
+    ChildSpawnFlags flags,
+    base::optional_ref<const base::Version> child_module_version) {
   DCHECK(!config->IsConfigured());
 // Does not work under component build because all the component DLLs would need
 // to be manually added and maintained. Does not work under ASAN build because
@@ -5531,20 +5538,24 @@ bool ChromeContentBrowserClient::PreSpawnChild(
     return false;
   }
 
-  // Allow loading chrome.dll and chrome_elf.dll for most process types.
+  // Allow loading chrome.dll and chrome_elf.dll for most process types, or
+  // chrome_renderer.dll and chrome_elf.dll for renderers using a separate or
+  // dynamically patched renderer binary.
   static constexpr auto kChildDlls = {chrome::kBrowserResourcesDll,
                                       chrome::kElfDll};
-#if BUILDFLAG(ENABLE_SEPARATE_RENDERER_BINARY)
-  // Allow loading chrome_renderer.dll and chrome_elf.dll for renderers.
   static constexpr auto kRendererDlls = {chrome::kRendererDll, chrome::kElfDll};
-  const auto& extra_dlls = sandbox_type == sandbox::mojom::Sandbox::kRenderer
-                               ? kRendererDlls
-                               : kChildDlls;
+#if BUILDFLAG(ENABLE_SEPARATE_RENDERER_BINARY)
+  const bool use_renderer_dll =
+      sandbox_type == sandbox::mojom::Sandbox::kRenderer;
 #else
-  const auto& extra_dlls = kChildDlls;
+  const bool use_renderer_dll =
+      sandbox_type == sandbox::mojom::Sandbox::kRenderer &&
+      child_module_version.has_value();
 #endif
+  const auto& extra_dlls = use_renderer_dll ? kRendererDlls : kChildDlls;
   for (const auto* dll : extra_dlls) {
-    result = config->AllowExtraDll(GetModulePath(dll).value());
+    result =
+        config->AllowExtraDll(GetModulePath(dll, child_module_version).value());
     if (result != sandbox::SBOX_ALL_OK) {
       return false;
     }
@@ -5568,6 +5579,16 @@ bool ChromeContentBrowserClient::PreSpawnChild(
 #endif
 #endif  // !defined(COMPONENT_BUILD) && !defined(ADDRESS_SANITIZER)
   return true;
+}
+
+std::optional<base::Version>
+ChromeContentBrowserClient::GetChildModuleVersion() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (auto* manager =
+          g_browser_process->GetFeatures()->child_module_manager()) {
+    return manager->GetLatestVersion();
+  }
+  return std::nullopt;
 }
 
 // Note: Only use sparingly to add Chrome specific sandbox functionality here.

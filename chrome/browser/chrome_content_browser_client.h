@@ -24,7 +24,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/optional_ref.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/browser/startup_data.h"
 #include "chrome/common/renderer_configuration.mojom.h"
@@ -576,9 +578,12 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::PosixFileDescriptorInfo* mappings) override;
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 #if BUILDFLAG(IS_WIN)
-  bool PreSpawnChild(sandbox::TargetConfig* config,
-                     sandbox::mojom::Sandbox sandbox_type,
-                     ChildSpawnFlags flags) override;
+  bool PreSpawnChild(
+      sandbox::TargetConfig* config,
+      sandbox::mojom::Sandbox sandbox_type,
+      ChildSpawnFlags flags,
+      base::optional_ref<const base::Version> child_module_version) override;
+  std::optional<base::Version> GetChildModuleVersion() override;
   std::wstring GetAppContainerSidForSandboxType(
       sandbox::mojom::Sandbox sandbox_type,
       AppContainerFlags flags) override;

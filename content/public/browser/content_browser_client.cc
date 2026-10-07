@@ -997,10 +997,16 @@ std::unique_ptr<NavigationUIData> ContentBrowserClient::GetNavigationUIData(
 
 #if BUILDFLAG(IS_WIN)
 
-bool ContentBrowserClient::PreSpawnChild(sandbox::TargetConfig* config,
-                                         sandbox::mojom::Sandbox sandbox_type,
-                                         ChildSpawnFlags flags) {
+bool ContentBrowserClient::PreSpawnChild(
+    sandbox::TargetConfig* config,
+    sandbox::mojom::Sandbox sandbox_type,
+    ChildSpawnFlags flags,
+    base::optional_ref<const base::Version> child_module_version) {
   return true;
+}
+
+std::optional<base::Version> ContentBrowserClient::GetChildModuleVersion() {
+  return std::nullopt;
 }
 
 bool ContentBrowserClient::IsUtilityCetCompatible(

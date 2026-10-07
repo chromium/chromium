@@ -789,15 +789,6 @@ void WebTestContentBrowserClient::BindNonAssociatedWebTestControlHost(
   }
 }
 
-#if BUILDFLAG(IS_WIN)
-bool WebTestContentBrowserClient::PreSpawnChild(
-    sandbox::TargetConfig* config,
-    sandbox::mojom::Sandbox sandbox_type,
-    ChildSpawnFlags flags) {
-  return true;
-}
-#endif  // BUILDFLAG(IS_WIN)
-
 std::string WebTestContentBrowserClient::GetAcceptLangs(
     BrowserContext* context) {
   return GetShellLanguage();

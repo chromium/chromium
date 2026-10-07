@@ -23,8 +23,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "base/types/strong_alias.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/download/public/common/quarantine_connection.h"
@@ -1666,12 +1668,21 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // This may be called on the PROCESS_LAUNCHER thread before the child process
   // configuration is set. It gives the embedder a chance to modify the sandbox
-  // configuration. Returns false if configuration is invalid and the child
-  // should not spawn. Only use this for embedder-specific policies, as
-  // standard sandbox policies are configured by the content layer.
-  virtual bool PreSpawnChild(sandbox::TargetConfig* config,
-                             sandbox::mojom::Sandbox sandbox_type,
-                             ChildSpawnFlags flags);
+  // configuration. `child_module_version`, if present, specifies the child
+  // module version to use for this child process. Returns false if
+  // configuration is invalid and the child should not spawn. Only use this for
+  // embedder-specific policies, as standard sandbox policies are configured by
+  // the content layer.
+  virtual bool PreSpawnChild(
+      sandbox::TargetConfig* config,
+      sandbox::mojom::Sandbox sandbox_type,
+      ChildSpawnFlags flags,
+      base::optional_ref<const base::Version> child_module_version);
+
+  // Returns the version of the child module to use for a new child process if
+  // different from the browser version, or std::nullopt otherwise. Called on
+  // the UI thread.
+  virtual std::optional<base::Version> GetChildModuleVersion();
 
   // This may be called on the PROCESS_LAUNCHER thread before the child process
   // is launched. It gives the embedder a chance to indicate that a process will

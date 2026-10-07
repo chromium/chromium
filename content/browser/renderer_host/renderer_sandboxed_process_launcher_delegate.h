@@ -5,7 +5,10 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_RENDERER_SANDBOXED_PROCESS_LAUNCHER_DELEGATE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_RENDERER_SANDBOXED_PROCESS_LAUNCHER_DELEGATE_H_
 
+#include <optional>
+
 #include "base/command_line.h"
+#include "base/version.h"
 #include "build/build_config.h"
 #include "content/browser/sandboxed_process_launcher_delegate.h"
 #include "content/common/content_export.h"
@@ -40,6 +43,8 @@ class CONTENT_EXPORT RendererSandboxedProcessLauncherDelegateWin
   RendererSandboxedProcessLauncherDelegateWin(const base::CommandLine& cmd_line,
                                               bool is_pdf_renderer,
                                               bool is_jit_disabled);
+  ~RendererSandboxedProcessLauncherDelegateWin() override;
+
   // sandbox::policy::SandboxDelegate:
   std::string GetSandboxTag() override;
   bool InitializeConfig(sandbox::TargetConfig* config) override;
@@ -55,6 +60,9 @@ class CONTENT_EXPORT RendererSandboxedProcessLauncherDelegateWin
   const bool is_pdf_renderer_ = false;
   const bool restrict_core_sharing_ = false;
   bool dynamic_code_can_be_disabled_ = false;
+  // The version of the child module to use if different from the browser
+  // version, or std::nullopt to use the default browser-versioned module.
+  const std::optional<base::Version> child_module_version_;
 };
 #endif  // BUILDFLAG(IS_WIN)
 
