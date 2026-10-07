@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_coordinator.h"
 
 #import "base/check.h"
-#import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/collaboration/public/collaboration_flow_entry_point.h"
@@ -80,8 +80,9 @@ constexpr CGFloat kFacePileAvatarSize = 26;
   TabGroupViewController* _viewController;
   // Context Menu helper for the tabs.
   TabContextMenuHelper* _tabContextMenuHelper;
-  // Tab group to display.
-  raw_ptr<const TabGroup, DanglingUntriaged> _tabGroup;
+  // Tab group to display. The group is owned by the WebStateList and can be
+  // destroyed while this coordinator is still alive.
+  base::WeakPtr<const TabGroup> _tabGroup;
   // The coordinator for the user education half screen.
   SharedTabGroupUserEducationCoordinator* _userEducationCoordinator;
   // Coordinator that handles confirmation dialog when the last tab of a group
@@ -97,7 +98,7 @@ constexpr CGFloat kFacePileAvatarSize = 26;
   CHECK(tabGroup) << "You need to pass a tab group in order to display it.";
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _tabGroup = tabGroup;
+    _tabGroup = tabGroup->GetWeakPtr();
     _animatedPresentation = YES;
   }
   return self;
@@ -143,7 +144,7 @@ constexpr CGFloat kFacePileAvatarSize = 26;
            shareKitService:shareKitService
       collaborationService:collaborationService
         dataSharingService:dataSharingService
-                  tabGroup:_tabGroup->GetWeakPtr()
+                  tabGroup:_tabGroup
                   consumer:_viewController
               gridConsumer:_viewController.gridViewController
                 modeHolder:self.modeHolder
@@ -435,7 +436,7 @@ constexpr CGFloat kFacePileAvatarSize = 26;
   tab_groups::TabGroupSyncService* tabGroupSyncService =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(self.profile);
   CollaborationServiceShareOrManageEntryPoint entryPoint =
-      tab_groups::utils::IsTabGroupShared(_tabGroup, tabGroupSyncService)
+      tab_groups::utils::IsTabGroupShared(_tabGroup.get(), tabGroupSyncService)
           ? CollaborationServiceShareOrManageEntryPoint::kiOSTabGroupViewManage
           : CollaborationServiceShareOrManageEntryPoint::kiOSTabGroupViewShare;
   collaborationService->StartShareOrManageFlow(
@@ -462,7 +463,7 @@ constexpr CGFloat kFacePileAvatarSize = 26;
   _viewController =
       [[TabGroupViewController alloc] initWithHandler:handler
                                             incognito:self.isOffTheRecord
-                                             tabGroup:_tabGroup];
+                                             tabGroup:_tabGroup.get()];
   _viewController.layoutState = self.sceneState.layoutState;
   _viewController.gridViewController.delegate = self;
   _viewController.presentationHandler = self;
@@ -474,7 +475,7 @@ constexpr CGFloat kFacePileAvatarSize = 26;
   tab_groups::TabGroupSyncService* syncService =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(self.profile);
 
-  if (!tab_groups::utils::IsTabGroupShared(_tabGroup, syncService)) {
+  if (!tab_groups::utils::IsTabGroupShared(_tabGroup.get(), syncService)) {
     return;
   }
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];

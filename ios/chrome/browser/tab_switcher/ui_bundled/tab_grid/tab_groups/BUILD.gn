@@ -309,6 +309,7 @@ source_set("unit_tests") {
     "create_tab_group_mediator_unittest.mm",
     "tab_group_coordinator_unittest.mm",
     "tab_group_mediator_unittest.mm",
+    "tab_group_view_controller_unittest.mm",
     "tab_groups_panel_coordinator_unittest.mm",
     "tab_groups_panel_item_unittest.mm",
     "tab_groups_panel_mediator_unittest.mm",
