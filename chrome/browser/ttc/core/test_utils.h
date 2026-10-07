@@ -38,7 +38,7 @@ class MockConversation : public Conversation {
                const std::string&,
                const optimization_guide::proto::AnnotatedPageContent&),
               (override));
-  MOCK_METHOD(void, OnPageContextChanged, (), (override));
+  MOCK_METHOD(void, OnPageContextInvalidated, (), (override));
 };
 
 // Records the entries added to an actor journal while it's alive.

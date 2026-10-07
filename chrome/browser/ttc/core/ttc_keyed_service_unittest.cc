@@ -46,7 +46,7 @@ class FakeConversation : public Conversation {
       const GURL& url,
       const std::string& title,
       const optimization_guide::proto::AnnotatedPageContent& apc) override {}
-  void OnPageContextChanged() override {}
+  void OnPageContextInvalidated() override {}
 
   bool is_started() const { return is_started_; }
 

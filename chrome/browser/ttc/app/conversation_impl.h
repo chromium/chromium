@@ -55,7 +55,7 @@ class ConversationImpl : public Conversation, public TtcBackend::Observer {
       const GURL& url,
       const std::string& title,
       const optimization_guide::proto::AnnotatedPageContent& apc) override;
-  void OnPageContextChanged() override;
+  void OnPageContextInvalidated() override;
 
   // TtcBackend::Observer implementation:
   void OnBackendInitialized() override;

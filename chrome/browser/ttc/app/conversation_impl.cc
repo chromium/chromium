@@ -81,7 +81,7 @@ void ConversationImpl::SendContextUpdate(
   backend_->SendContextUpdate(url, title, apc);
 }
 
-void ConversationImpl::OnPageContextChanged() {
+void ConversationImpl::OnPageContextInvalidated() {
   NOTIMPLEMENTED();
 }
 

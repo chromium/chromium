@@ -43,7 +43,6 @@ class SessionControllerImpl : public SessionController,
   // SessionController implementation:
   void OnSessionInitialized() override;
   void OnError(ErrorCode error) override;
-  void GetPageContext(FetchCompleteCallback callback) override;
   SessionJournal& GetJournal() override;
   SessionLifecycle GetSessionLifecycle() const override;
   void SetSessionLifecycle(SessionLifecycle lifecycle) override;
@@ -65,8 +64,7 @@ class SessionControllerImpl : public SessionController,
   Conversation& conversation() { return CHECK_DEREF(conversation_.get()); }
 
  private:
-  // Invoked by `page_context_monitor_` when the monitored page changes.
-  void OnPageContextChanged();
+  void OnPageContextFetched(const PageContextResult& result);
 
   // Safe because TtcKeyedService owns this object and outlives it. Gets
   // assigned on construction.

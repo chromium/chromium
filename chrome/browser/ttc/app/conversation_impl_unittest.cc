@@ -47,7 +47,6 @@ class FakeSessionController : public SessionController {
   ~FakeSessionController() override = default;
 
   // SessionController overrides:
-  void GetPageContext(FetchCompleteCallback callback) override {}
   Profile* GetProfile() override { return profile_; }
   SessionJournal& GetJournal() override { return session_journal_; }
   SessionLifecycle GetSessionLifecycle() const override {

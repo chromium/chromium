@@ -25,7 +25,9 @@
 #include "chrome/browser/ttc/core/ttc_page_context_monitor.h"
 #include "chrome/browser/ttc/core/voice_focused_contents_tracker.h"
 #include "components/actor/core/journal_details_builder.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/web_contents.h"
+#include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ttc/core/session_view_impl.h"
@@ -77,16 +79,11 @@ SessionControllerImpl::SessionControllerImpl(TtcKeyedService& service)
   // calls back into GetProfile() on this object.
   conversation_ =
       service.MakeConversation(base::PassKey<SessionControllerImpl>(), *this);
-
-  if (conversation_) {
-    conversation_->Start();
-  }
+  conversation_->Start();
 }
 
 SessionControllerImpl::~SessionControllerImpl() {
-  if (conversation_) {
-    conversation_->Stop();
-  }
+  conversation_->Stop();
 
   GetJournal().Log(
       "TtcSessionEnd",
@@ -114,18 +111,6 @@ void SessionControllerImpl::SetSessionLifecycle(SessionLifecycle lifecycle) {
                        .Add("new_state", lifecycle)
                        .Build());
   session_lifecycle_ = lifecycle;
-}
-
-void SessionControllerImpl::GetPageContext(FetchCompleteCallback callback) {
-  if (!page_context_monitor_) {
-    std::move(callback).Run(base::unexpected(
-        page_content_annotations::FetchPageContextError::kWebContentsWentAway));
-    return;
-  }
-
-  // TODO(b/555804152) - Migrate to automatic extractions from
-  // PageContentExtractionService.
-  page_context_monitor_->StartNewFetch(std::move(callback));
 }
 
 Profile* SessionControllerImpl::GetProfile() {
@@ -214,16 +199,25 @@ void SessionControllerImpl::OnVoiceFocusedContentsChanged(
   if (web_contents) {
     page_context_monitor_ = std::make_unique<TtcPageContextMonitor>(
         *web_contents,
-        base::BindRepeating(&SessionControllerImpl::OnPageContextChanged,
+        base::BindRepeating(&Conversation::OnPageContextInvalidated,
+                            base::Unretained(conversation_.get())),
+        base::BindRepeating(&SessionControllerImpl::OnPageContextFetched,
                             base::Unretained(this)));
   }
-  OnPageContextChanged();
+  conversation_->OnPageContextInvalidated();
 }
 
-void SessionControllerImpl::OnPageContextChanged() {
-  if (conversation_) {
-    conversation_->OnPageContextChanged();
+void SessionControllerImpl::OnPageContextFetched(
+    const PageContextResult& result) {
+  if (!result.has_value()) {
+    // TODO(b/555804152): Signal to the model when page context cannot be
+    // fetched or is ineligible.
+    return;
   }
+  const optimization_guide::proto::AnnotatedPageContent& apc =
+      result->annotated_page_content->data;
+  conversation_->SendContextUpdate(GURL(apc.main_frame_data().url()),
+                                   apc.main_frame_data().title(), apc);
 }
 
 }  // namespace ttc

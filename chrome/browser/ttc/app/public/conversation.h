@@ -33,8 +33,8 @@ class Conversation {
 
   // Sends user text, context, or tool messages to the model.
   virtual void SendTextInput(const std::string& text) = 0;
-  // TODO(bokan): Conversation should pull page context using
-  // SessionController::GetPageContext. Remove this path.
+  // Sends the context of the page the session is operating on to the model.
+  // Called by the SessionController whenever fresh page context is extracted.
   virtual void SendContextUpdate(
       const GURL& url,
       const std::string& title,
@@ -42,7 +42,7 @@ class Conversation {
 
   // Invoked when the page the session is operating on has changed, and so the
   // conversation's page context may be stale.
-  virtual void OnPageContextChanged() = 0;
+  virtual void OnPageContextInvalidated() = 0;
 };
 
 }  // namespace ttc

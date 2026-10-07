@@ -5,28 +5,29 @@
 #ifndef CHROME_BROWSER_TTC_CORE_PAGE_CONTEXT_H_
 #define CHROME_BROWSER_TTC_CORE_PAGE_CONTEXT_H_
 
-#include "base/functional/callback.h"
 #include "base/types/expected.h"
-#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 
 namespace ttc {
 
-// Represents context extracted from a page.
+// Represents context extracted from a page. Cheap to copy: the extracted
+// content is shared, immutable and ref-counted.
 struct PageContext {
   PageContext();
+  explicit PageContext(
+      page_content_annotations::RefCountedAnnotatedPageContentPtr
+          annotated_page_content);
   ~PageContext();
 
-  // Move-only
-  PageContext(const PageContext&) = delete;
-  PageContext& operator=(const PageContext&) = delete;
+  PageContext(const PageContext&);
+  PageContext& operator=(const PageContext&);
   PageContext(PageContext&&);
   PageContext& operator=(PageContext&&);
 
-  base::expected<optimization_guide::AIPageContentResult,
-                 page_content_annotations::FetchPageContextError>
-      ai_page_content = base::unexpected(
-          page_content_annotations::FetchPageContextError::kUnknown);
+  // The annotated page content extracted from the page. Never null.
+  page_content_annotations::RefCountedAnnotatedPageContentPtr
+      annotated_page_content;
 };
 
 // The result of fetching a PageContext; on failure, the reason the fetch
@@ -34,8 +35,6 @@ struct PageContext {
 using PageContextResult =
     base::expected<PageContext,
                    page_content_annotations::FetchPageContextError>;
-
-using FetchCompleteCallback = base::OnceCallback<void(PageContextResult)>;
 
 }  // namespace ttc
 

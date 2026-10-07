@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "chrome/browser/ttc/core/page_context.h"
 #include "chrome/browser/ttc/core/states.h"
 #include "components/ttc/app/public/error_codes.h"
 #include "components/ttc/app/public/tool_types.h"
@@ -34,11 +33,6 @@ class SessionController {
 
   // Ends the session asynchronously
   virtual void EndSessionAsync() = 0;
-
-  // Fetches the context of the page this session is operating on, invoking
-  // `callback` with the result. Any fetch already in flight is cancelled and
-  // its callback will not be run.
-  virtual void GetPageContext(FetchCompleteCallback callback) = 0;
 
   // The profile this session belongs to.
   virtual Profile* GetProfile() = 0;
