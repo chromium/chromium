@@ -5400,8 +5400,6 @@ crbug.com/1163437 external/wpt/css/css-highlight-api/painting/custom-highlight-p
 crbug.com/359253683 external/wpt/css/css-highlight-api/highlight-text-across-elements.html [ Failure Pass ]
 crbug.com/359253683 external/wpt/css/css-highlight-api/highlight-text-decorations.html [ Failure Pass ]
 
-crbug.com/1455239 http/tests/security/drag-drop-different-origin.html [ Failure Pass ]
-
 # Waiting for resolution on disabled fieldsets in https://github.com/whatwg/html/issues/5886
 # We want to make fieldsets not disableable due to crbug.com/1422096 and crbug.com/1422547
 # which breaks this exhaustive test, but it will be updated after whatwg/html resolution.
