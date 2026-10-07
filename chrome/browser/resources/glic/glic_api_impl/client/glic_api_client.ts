@@ -11,6 +11,7 @@ import {                                       //
   CaptureRegionObserverReceiver,               //
   PinCandidatesObserverReceiver,               //
   SettingsPageField as SettingsPageFieldMojo,  //
+  TabDataHandlerReceiver,                      //
   TabFaviconHandlerReceiver,                   //
   WebClientReceiver,                           //
 } from '../../glic.mojom-webui.js';
@@ -29,6 +30,7 @@ import type {                                                          //
              PinCandidate as PinCandidateMojo,                         //
              PinCandidatesObserverInterface,                           //
              TabData as TabDataMojo,                                   //
+             TabDataHandlerInterface,                                  //
              TabFaviconHandlerInterface,                               //
              WebClientHandlerRemote,                                   //
              WebClientInterface,                                       //
@@ -84,7 +86,6 @@ import type {                            //
              ZeroStateSuggestions,       //
 } from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
-import {OneShotTimer} from '../../timer.js';
 import {GlicBrowserHostActor} from '../actor/actor_client.js';
 import {GlicBrowserHostAnnotation} from '../annotation/annotation_client.js';
 import {GlicBrowserHostExperimentalTriggering} from '../experimental_triggering/experimental_triggering_client.js';
@@ -118,15 +119,13 @@ import {GlicBrowserHostTools} from '../tools/tools_client.js';
 import {assertNever, ResponseExtras} from '../transport/messaging.js';
 import type {                           //
              createDirectMessagingPair, //
-             PendingRemote,             //
-             PostMessageHandler,        //
              PostMessageRemote,         //
              PostMessageRouter,         //
 } from '../transport/post_message_transport.js';
 import {GlicBrowserHostZeroStateSuggestions} from '../zero_state_suggestions/zero_state_suggestions_client.js';
 
 import {replaceProperties} from './../conversions.js';
-import {ErrorWithReasonImpl, newTransferableException, WebClientTabDataObserverDef} from './../request_types.js';
+import {ErrorWithReasonImpl, newTransferableException} from './../request_types.js';
 import type {                              //
              AdditionalContextPrivate,     //
              AnnotatedPageDataPrivate,     //
@@ -141,13 +140,11 @@ import type {                              //
              TabDataPrivate,               //
              WebClient,                    //
              WebClientHost,                //
-             WebClientTabDataObserver,     //
 } from './../request_types.js';
 import type {GlicBrowserHostBaseContext} from './glic_client_common.js';
 import {createDelegationProxy} from './glic_client_common.js';
 import {rgbaImageToBlob} from './image_utils.js';
-import type {ObservableSetByTabIdDelegate} from './observable_set_by_tab_id.js';
-import {ObservableSetByTabId} from './observable_set_by_tab_id.js';
+import {TabObservable, TabObservableSet} from './observable_set_by_tab_id.js';
 
 // Web client side of the Glic API.
 // Communicates with the Chrome-WebUI-side in glic_api_host.ts
@@ -240,9 +237,8 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   pageMetadataObservers: Map<string, ObservableValueImpl<PageMetadata>> =
       new Map();
 
-  getTabByIdObservableSet:
-      ObservableSetByTabId<TabData, WebClientTabDataObserver>;
-  getTabFaviconByIdObservableSet: TabFaviconObservableSet;
+  private readonly getTabByIdObservableSet: TabDataObservableSet;
+  private readonly getTabFaviconByIdObservableSet: TabFaviconObservableSet;
   notifyPanelWillOpenCompleted = Promise.withResolvers<void>();
   private panelOpenState = PanelOpenState.CLOSED;
 
@@ -265,9 +261,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     this.toolsClient = new GlicBrowserHostTools();
     this.geicClient = new GlicBrowserHostGeic();
 
-    this.getTabByIdObservableSet =
-        new ObservableSetByTabId<TabData, WebClientTabDataObserver>(
-            new GetTabByIdObservableSetImpl(), this.clientRemote, this.router);
+    this.getTabByIdObservableSet = new TabDataObservableSet(this.handler);
     this.getTabFaviconByIdObservableSet =
         new TabFaviconObservableSet(this.handler);
     this.metrics = new GlicBrowserHostMetricsImpl(this.clientRemote);
@@ -1382,86 +1376,90 @@ class PinCandidatesObservable extends ObservableValueImpl<PinCandidate[]>
   }
 }
 
-
-
-class GetTabByIdObservableSetImpl implements
-    ObservableSetByTabIdDelegate<TabData, WebClientTabDataObserver> {
-  readonly interfaceDef = WebClientTabDataObserverDef;
-  readonly unsubscribeDelay = 1000;
-
-  subscribe(
-      clientRemote: PostMessageRemote<WebClientHost>, tabId: string,
-      remote: PendingRemote<WebClientTabDataObserver>): void {
-    clientRemote.requestNoResponse('subscribeToTabData', {tabId, remote});
-  }
-  createHandler(observable: ObservableValueImpl<TabData>):
-      PostMessageHandler<WebClientTabDataObserver> {
-    return new WebClientTabDataObserverHandler(observable);
+export class TabDataObservableSet extends
+    TabObservableSet<TabData, TabDataObservable> {
+  constructor(handler: WebClientHandlerRemote) {
+    super(
+        (tabId, onComplete) =>
+            new TabDataObservable(tabId, handler, onComplete));
   }
 }
 
-class WebClientTabDataObserverHandler implements
-    PostMessageHandler<WebClientTabDataObserver> {
-  constructor(private observable: ObservableValueImpl<TabData>) {}
-  tabDataChanged(payload: {tabData: TabDataPrivate}): void {
-    this.observable.assignAndSignal(convertTabDataFromPrivate(payload.tabData));
-  }
-}
-
-export class TabFaviconObservableSet {
-  private observablesByTabId = new Map<string, TabFaviconObservable>();
-
-  constructor(private handler: WebClientHandlerRemote) {}
-
-  getObservableByTabId(tabId: string): ObservableValueImpl<Blob|undefined> {
-    let obs = this.observablesByTabId.get(tabId);
-    if (obs !== undefined) {
-      return obs;
-    }
-    obs = new TabFaviconObservable(tabId, this.handler, () => {
-      this.observablesByTabId.delete(tabId);
-    });
-    this.observablesByTabId.set(tabId, obs);
-    return obs;
-  }
-}
-
-export class TabFaviconObservable extends ObservableValueImpl<Blob|undefined>
-    implements TabFaviconHandlerInterface {
-  private unsubscribeTimer = new OneShotTimer(1000);
-  private receiver?: TabFaviconHandlerReceiver;
-  private isCompleting = false;
+export class TabDataObservable extends TabObservable<TabData> implements
+    TabDataHandlerInterface {
+  private receiver?: TabDataHandlerReceiver;
 
   constructor(
-      public tabId: string, private handler: WebClientHandlerRemote,
-      private onComplete: () => void) {
-    super(/*isSet=*/ false);
+      tabId: string, private handler: WebClientHandlerRemote,
+      onComplete: () => void) {
+    super(tabId, onComplete);
   }
 
-  override activeSubscriptionChanged(hasActiveSubscription: boolean): void {
-    super.activeSubscriptionChanged(hasActiveSubscription);
-    if (!hasActiveSubscription) {
-      this.unsubscribeTimer.start(() => {
-        if (this.hasActiveSubscription()) {
-          return;
-        }
-        this.complete();
-      });
+  protected override isConnected(): boolean {
+    return this.receiver !== undefined;
+  }
+
+  protected override connectToSource(): void {
+    this.receiver = new TabDataHandlerReceiver(this);
+    this.receiver.onConnectionError.addListener(() => {
+      this.complete();
+    });
+    this.handler.subscribeToTabData(
+        idFromClient(this.tabId), this.receiver.$.bindNewPipeAndPassRemote());
+  }
+
+  protected override disconnectFromSource(): void {
+    this.receiver?.$.close();
+    this.receiver = undefined;
+  }
+
+  onTabDataChanged(tabData: TabDataMojo): void {
+    if (this.isStopped()) {
       return;
     }
-    this.unsubscribeTimer.reset();
-    if (!this.receiver) {
-      this.receiver = new TabFaviconHandlerReceiver(this);
-      this.receiver.onConnectionError.addListener(() => {
-        this.complete();
-      });
-      this.handler.subscribeToTabFavicon(
-          idFromClient(this.tabId), this.receiver.$.bindNewPipeAndPassRemote());
-    }
+    this.assignAndSignal(tabDataToClient(tabData));
+  }
+}
+
+export class TabFaviconObservableSet extends
+    TabObservableSet<Blob|undefined, TabFaviconObservable> {
+  constructor(handler: WebClientHandlerRemote) {
+    super(
+        (tabId, onComplete) =>
+            new TabFaviconObservable(tabId, handler, onComplete));
+  }
+}
+
+export class TabFaviconObservable extends TabObservable<Blob|undefined>
+    implements TabFaviconHandlerInterface {
+  private receiver?: TabFaviconHandlerReceiver;
+
+  constructor(
+      tabId: string, private handler: WebClientHandlerRemote,
+      onComplete: () => void) {
+    super(tabId, onComplete);
+  }
+
+  protected override isConnected(): boolean {
+    return this.receiver !== undefined;
+  }
+
+  protected override connectToSource(): void {
+    this.receiver = new TabFaviconHandlerReceiver(this);
+    this.receiver.onConnectionError.addListener(() => {
+      this.complete();
+    });
+    this.handler.subscribeToTabFavicon(
+        idFromClient(this.tabId), this.receiver.$.bindNewPipeAndPassRemote());
+  }
+
+  protected override disconnectFromSource(): void {
+    this.receiver?.$.close();
+    this.receiver = undefined;
   }
 
   onTabFaviconChanged(favicon: BitmapN32|null): void {
-    if (this.isCompleting || this.isStopped()) {
+    if (this.isStopped()) {
       return;
     }
     let blob: Blob|undefined;
@@ -1472,17 +1470,6 @@ export class TabFaviconObservable extends ObservableValueImpl<Blob|undefined>
       }
     }
     this.assignAndSignal(blob);
-  }
-
-  override complete() {
-    if (this.isCompleting || this.isStopped()) {
-      return;
-    }
-    this.isCompleting = true;
-    this.receiver?.$.close();
-    this.receiver = undefined;
-    this.onComplete();
-    super.complete();
   }
 }
 

@@ -8,12 +8,8 @@
 import {assertNotReached} from '//resources/js/assert.js';
 
 import {enumFromClient} from '../../enum_conversions.js';
-import {                                       //
-  PromptType as PromptTypeMojo,                //
-  ResponseStopCause as ResponseStopCauseMojo,  //
-  TabDataHandlerReceiver,                      //
-} from '../../glic.mojom-webui.js';
-import type {TabDataHandlerInterface, TabDataMojoType, WebClientHandlerInterface} from '../../glic.mojom-webui.js';
+import {PromptType as PromptTypeMojo, ResponseStopCause as ResponseStopCauseMojo} from '../../glic.mojom-webui.js';
+import type {WebClientHandlerInterface} from '../../glic.mojom-webui.js';
 import {ResponseStopCause} from '../../glic_api/glic_api.js';
 import type {                            //
              ClientErrorDialogType,      //
@@ -30,22 +26,16 @@ import type {                            //
              ZeroStateSuggestions,       //
 } from '../../glic_api/glic_api.js';
 import {replaceProperties} from '../conversions.js';
-import type {                          //
-             GlicException,            //
-             ImageBytesResultPrivate,  //
-             RgbaImage,                //
-             TabContextResultPrivate,  //
-             WebClientHost,            //
-             WebClientTabDataObserver, //
+import type {                         //
+             GlicException,           //
+             ImageBytesResultPrivate, //
+             RgbaImage,               //
+             TabContextResultPrivate, //
+             WebClientHost,           //
 } from '../request_types.js';
 import {ErrorWithReasonImpl, exceptionFromTransferable} from '../request_types.js';
-import {ResponseExtras} from '../transport/messaging.js';
-import type {                    //
-             PendingRemote,      //
-             PostMessageHandler, //
-             PostMessageRemote,  //
-             PostMessageRouter,  //
-} from '../transport/post_message_transport.js';
+import type {ResponseExtras} from '../transport/messaging.js';
+import type {PostMessageHandler} from '../transport/post_message_transport.js';
 
 import {                             //
   bitmapN32ToRGBAImage,              //
@@ -60,14 +50,12 @@ import {                             //
   pinTabsOptionsToMojo,              //
   tabContextOptionsFromClient,       //
   tabContextToClient,                //
-  tabDataToPrivate,                  //
   timeDeltaFromClient,               //
   unpinTabsOptionsToMojo,            //
   urlToClient,                       //
   webClientModeToMojo,               //
 } from './conversions.js';
 import type {GlicApiHost} from './glic_api_host.js';
-import {linkPipeClosure} from './host_utils.js';
 
 /**
  * Handles all requests to the host.
@@ -426,15 +414,6 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
     this.handler.setOnboardingCompleted();
   }
 
-  subscribeToTabData(request: {
-    tabId: string,
-    remote: PendingRemote<WebClientTabDataObserver>,
-  }): void {
-    new TabDataHandlerImpl(
-        idFromClient(request.tabId), this.handler, request.remote,
-        this.host.router);
-  }
-
   setErrorDialogState(request: {
     shownDialogType?: ClientErrorDialogType,
   }): void {
@@ -445,30 +424,5 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
     // TODO(b/506142920): Avoid showing error panels to the user if it is
     // presented while the panel is backgrounded. Automatically reload the
     // page instead.
-  }
-}
-
-
-class TabDataHandlerImpl implements TabDataHandlerInterface {
-  mojoReceiver?: TabDataHandlerReceiver;
-  private pmRemote: PostMessageRemote<WebClientTabDataObserver>;
-
-  constructor(
-      tabId: number, handler: WebClientHandlerInterface,
-      pendingRemote: PendingRemote<WebClientTabDataObserver>,
-      router: PostMessageRouter) {
-    this.pmRemote = router.newRemote(pendingRemote);
-    this.mojoReceiver = new TabDataHandlerReceiver(this);
-    linkPipeClosure(this.pmRemote, this.mojoReceiver);
-    handler.subscribeToTabData(
-        tabId, this.mojoReceiver.$.bindNewPipeAndPassRemote());
-  }
-  onTabDataChanged(tabData: TabDataMojoType): void {
-    const extras = new ResponseExtras();
-    this.pmRemote.requestNoResponse(
-        'tabDataChanged', {
-          tabData: tabDataToPrivate(tabData, extras),
-        },
-        extras.transfers);
   }
 }

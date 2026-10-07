@@ -2,94 +2,66 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ObservableSetByTabId} from '//webui-test/glic/glic_api_impl/client/observable_set_by_tab_id.js';
-import type {ObservableSetByTabIdDelegate} from '//webui-test/glic/glic_api_impl/client/observable_set_by_tab_id.js';
-import {WebClientHostDef} from '//webui-test/glic/glic_api_impl/request_types.js';
-import type {WebClientHost} from '//webui-test/glic/glic_api_impl/request_types.js';
-import {defInterface} from '//webui-test/glic/glic_api_impl/transport/messaging.js';
-import type {InterfaceDef} from '//webui-test/glic/glic_api_impl/transport/messaging.js';
-import {createDirectMessagingPair} from '//webui-test/glic/glic_api_impl/transport/post_message_transport.js';
-import type {PendingRemote, PostMessageRemote, PostMessageRouter} from '//webui-test/glic/glic_api_impl/transport/post_message_transport.js';
-import type {ObservableValue} from '//webui-test/glic/observable.js';
+import {TabObservable, TabObservableSet} from '//webui-test/glic/glic_api_impl/client/observable_set_by_tab_id.js';
 import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-interface TestEnvironment {
-  sender: PostMessageRemote<WebClientHost>;
-  delegate: TestDelegate;
-  obs: ObservableSetByTabId<string>;
-}
+import {sleep, waitUntilEqual} from './test_helpers.js';
+
+const TEST_UNSUBSCRIBE_DELAY = 10;
 
 interface CurrentSubscription {
   tabId: string;
 }
 
-const DummyInterfaceDef = defInterface({
-  name: 'DummyInterface',
-  methods: [],
-});
+class TestTabObservable extends TabObservable<string> {
+  connected = false;
+  receiver?: {close: () => void};
 
-class TestDelegate implements
-    ObservableSetByTabIdDelegate<string, InterfaceDef> {
-  readonly interfaceDef = DummyInterfaceDef;
-  readonly unsubscribeDelay = 10;
-  observations: CurrentSubscription[] = [];
-
-  constructor(private router: PostMessageRouter) {}
-
-  subscribe(
-      _sender: PostMessageRemote<WebClientHost>, tabId: string,
-      remote: PendingRemote<InterfaceDef>): void {
-    // Wrap tabId in a new object literal to create a unique reference.
-    const sub = {tabId};
-    this.observations.push(sub);
-    this.router.addCloseHandler(remote, () => {
-      this.observations = this.observations.filter(s => s !== sub);
-    });
+  constructor(
+      tabId: string, private env: TestEnvironment, onComplete: () => void) {
+    super(tabId, onComplete, /*unsubscribeDelay=*/ TEST_UNSUBSCRIBE_DELAY);
   }
 
-  createHandler(obs: ObservableValue<string>): Record<never, never> {
-    return new TestHandler(obs) as any;
+  protected override isConnected(): boolean {
+    return this.connected;
   }
-}
 
-class TestHandler {
-  constructor(private obs: ObservableValue<string>) {}
-  onUpdate(value?: string) {
-    if (value === undefined) {
-      this.obs.complete();
-    } else {
-      this.obs.assignAndSignal(value);
+  protected override connectToSource(): void {
+    this.connected = true;
+    this.receiver = {
+      close: () => {
+        this.complete();
+      },
+    };
+    this.env.activeSubscriptions.push({tabId: this.tabId});
+  }
+
+  protected override disconnectFromSource(): void {
+    if (this.connected) {
+      this.connected = false;
+      this.receiver = undefined;
+      this.env.activeSubscriptions =
+          this.env.activeSubscriptions.filter(s => s.tabId !== this.tabId);
     }
   }
 }
 
-function sleep(timeout: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, timeout));
+class TestEnvironment {
+  activeSubscriptions: CurrentSubscription[] = [];
+  obs = new TabObservableSet<string, TestTabObservable>(
+      (tabId, onComplete) => new TestTabObservable(tabId, this, onComplete));
 }
 
-suite('ObservableSetByTabId', () => {
+suite('TabObservableSet', () => {
   function createEnvironment(): TestEnvironment {
-    const pair = createDirectMessagingPair<WebClientHost, InterfaceDef>(
-        'test',
-        /*errorCodec=*/ {} as any,
-        /*clientRootHandler=*/ {} as any,
-        /*hostRootHandler=*/ {} as any,
-        /*clientInterfaceDef=*/ DummyInterfaceDef,
-        /*hostInterfaceDef=*/ WebClientHostDef,
-    );
-    const router = pair.client.router;
-    const sender =
-        router.newPipeWithRemote<WebClientHost>(WebClientHostDef).remote;
-    const delegate = new TestDelegate(router);
-    const obs = new ObservableSetByTabId<string>(delegate, sender, router);
-    return {sender, delegate, obs};
+    return new TestEnvironment();
   }
 
   test('send with no observers', () => {
     const env = createEnvironment();
     // Does nothing.
     env.obs.getObservableByTabId('4').assignAndSignal('HI');
-    assertEquals(env.delegate.observations.length, 0);
+    assertEquals(env.activeSubscriptions.length, 0);
     assertEquals(env.obs.getObservableByTabId('4').getCurrentValue(), 'HI');
   });
 
@@ -103,8 +75,8 @@ suite('ObservableSetByTabId', () => {
       notifiedCount++;
       assertEquals(value, 'HI', 'Notified value is incorrect');
     });
-    assertEquals(env.delegate.observations.length, 1);
-    assertEquals(env.delegate.observations[0]!.tabId, '123');
+    assertEquals(env.activeSubscriptions.length, 1);
+    assertEquals(env.activeSubscriptions[0]!.tabId, '123');
     obs.assignAndSignal('HI');
     assertEquals(notifiedCount, 1, 'Subscriber was not notified');
     assertEquals(obs.getCurrentValue(), 'HI', 'getCurrentValue() is incorrect');
@@ -145,11 +117,9 @@ suite('ObservableSetByTabId', () => {
     sub3.unsubscribe();
   });
 
-  test('completeObservable removes subscription', async () => {
+  test('complete removes subscription from set', () => {
     const env = createEnvironment();
     const obs = env.obs.getObservableByTabId('123');
-    assertEquals(
-        obs.getCurrentValue(), undefined, 'Initial value is incorrect');
     let completed = false;
     obs.subscribe({
       complete() {
@@ -158,19 +128,17 @@ suite('ObservableSetByTabId', () => {
       next() {},
     });
     assertEquals(
-        env.delegate.observations.length, 1, 'Subscription was not created');
-    assertEquals(env.delegate.observations[0]!.tabId, '123');
+        env.activeSubscriptions.length, 1, 'Subscription was not created');
+    assertEquals(env.activeSubscriptions[0]!.tabId, '123');
 
     obs.complete();
     assertTrue(completed, 'complete() was not called');
     assertTrue(
         obs.isStopped(), 'Observable should be stopped after complete()');
-    // wait for prune
-    await sleep(env.delegate.unsubscribeDelay + 1);
-    await sleep(0);
     assertEquals(
-        env.delegate.observations.length, 0, 'Subscription was not removed');
+        env.activeSubscriptions.length, 0, 'Subscription was not removed');
 
+    // Getting the tab again yields a new instance since it completed.
     const newObs = env.obs.getObservableByTabId('123');
     assertNotEquals(
         obs, newObs,
@@ -178,74 +146,64 @@ suite('ObservableSetByTabId', () => {
     assertTrue(!newObs.isStopped(), 'New observable must not be stopped');
   });
 
-  test('subscribe after unsubscribe before prune', async () => {
+  test('subscribe after unsubscribe before disconnect delay', async () => {
     const env = createEnvironment();
     const obs = env.obs.getObservableByTabId('123');
 
     const sub1 = obs.subscribe(() => {});
     assertEquals(
-        env.delegate.observations.length, 1, 'observation was not created');
+        env.activeSubscriptions.length, 1, 'observation was not created');
 
     sub1.unsubscribe();
 
-    // Subscribe before the original subscription is pruned. This should reuse
-    // the first observation.
+    // Subscribe before the original subscription is disconnected. This should
+    // keep the connection active.
     const sub2 = obs.subscribe(() => {});
 
-    await sleep(env.delegate.unsubscribeDelay + 1);
-    await sleep(0);
+    await sleep(TEST_UNSUBSCRIBE_DELAY + 5);
     assertEquals(
-        env.delegate.observations.length, 1,
+        env.activeSubscriptions.length, 1,
         'just one observation after second subscribe');
     assertTrue(
         !obs.isStopped(),
         'observable should not be stopped while resubscribed');
 
     sub2.unsubscribe();
-
-    await sleep(env.delegate.unsubscribeDelay + 1);
-    await sleep(0);
-    assertEquals(
-        env.delegate.observations.length, 0, 'observation should be removed');
-    assertTrue(obs.isStopped(), 'observable should be stopped after prune');
+    await waitUntilEqual(() => env.activeSubscriptions.length, 0);
+    assertTrue(
+        !obs.isStopped(), 'observable should not be stopped after disconnect');
   });
 
-  test('subscribe after prune', async () => {
+  test('cached observable reconnects after disconnect delay', async () => {
     const env = createEnvironment();
     const obs = env.obs.getObservableByTabId('123');
 
     const sub1 = obs.subscribe(() => {});
     assertEquals(
-        env.delegate.observations.length, 1,
-        'first observation was not created');
+        env.activeSubscriptions.length, 1, 'first observation was not created');
 
     sub1.unsubscribe();
-    await sleep(env.delegate.unsubscribeDelay + 1);
-    await sleep(0);
-    assertEquals(
-        env.delegate.observations.length, 0,
-        'first observation should be removed');
-    assertTrue(obs.isStopped(), 'observable must be stopped after prune');
+    await waitUntilEqual(() => env.activeSubscriptions.length, 0);
+    assertTrue(
+        !obs.isStopped(), 'observable must not be stopped after disconnect');
 
-    // Subscribe after the original subscription is pruned. This should create
-    // a new observation.
-    const newObs = env.obs.getObservableByTabId('123');
-    assertNotEquals(
-        obs, newObs, 'Expected a new observable instance after prune');
-    assertTrue(!newObs.isStopped(), 'New observable must not be stopped');
-
-    const sub2 = newObs.subscribe(() => {});
+    // Subscribe after the disconnect delay has passed. The cached observable
+    // should reconnect to the source.
+    const sameObs = env.obs.getObservableByTabId('123');
     assertEquals(
-        env.delegate.observations.length, 1,
+        obs, sameObs, 'Expected same observable instance to be cached');
+    assertTrue(!sameObs.isStopped(), 'Cached observable must not be stopped');
+
+    const sub2 = sameObs.subscribe(() => {});
+    assertEquals(
+        env.activeSubscriptions.length, 1,
         'second observation was not created');
 
     sub2.unsubscribe();
-    await sleep(env.delegate.unsubscribeDelay + 1);
-    await sleep(0);
-    assertEquals(
-        env.delegate.observations.length, 0,
-        'second observation should be removed');
-    assertTrue(newObs.isStopped(), 'second observable should be stopped');
+    await waitUntilEqual(() => env.activeSubscriptions.length, 0);
+    assertTrue(
+        !sameObs.isStopped(),
+        'observable must not be stopped after second disconnect');
   });
 
   test('multiple concurrent subscribers (deduplication)', async () => {
@@ -255,56 +213,43 @@ suite('ObservableSetByTabId', () => {
     // First subscriber
     const sub1 = obs.subscribe(() => {});
     assertEquals(
-        env.delegate.observations.length, 1,
-        'First sub should trigger delegate');
+        env.activeSubscriptions.length, 1, 'First sub should trigger connect');
 
     // Second subscriber
     assertEquals(
         obs, env.obs.getObservableByTabId('123'), 'Should get same observer');
     const sub2 = obs.subscribe(() => {});
     assertEquals(
-        env.delegate.observations.length, 1,
-        'Second sub should not trigger duplicate delegate call');
+        env.activeSubscriptions.length, 1,
+        'Second sub should not trigger duplicate connect');
+
     // First unsubscribes
     sub1.unsubscribe();
-    await sleep(env.delegate.unsubscribeDelay + 1);
-    await sleep(0);
+    await sleep(TEST_UNSUBSCRIBE_DELAY + 5);
     assertEquals(
-        env.delegate.observations.length, 1,
-        'Delegate observation should remain active while second sub exists');
+        env.activeSubscriptions.length, 1,
+        'Connection should remain active while second sub exists');
 
     // Second unsubscribes
     sub2.unsubscribe();
-    await sleep(env.delegate.unsubscribeDelay + 1);
-    await sleep(0);
+    await waitUntilEqual(() => env.activeSubscriptions.length, 0);
     assertEquals(
-        env.delegate.observations.length, 0,
-        'Delegate observation should be removed after last sub unsubscribes');
+        env.activeSubscriptions.length, 0,
+        'Should disconnect after last sub unsubscribes');
   });
 
-  test(
-      'requesting a tab after completeObservable yields a new observable',
-      async () => {
-        const env = createEnvironment();
-        const obs1 = env.obs.getObservableByTabId('foo');
-        // Subscribe to force observation generation
-        const sub1 = obs1.subscribe(() => {});
+  test('requesting a tab after complete yields a new observable', () => {
+    const env = createEnvironment();
+    const obs1 = env.obs.getObservableByTabId('foo');
+    const sub1 = obs1.subscribe(() => {});
 
-        // Calling complete queues a prune operation.
-        obs1.complete();
+    obs1.complete();
 
-        await sleep(env.delegate.unsubscribeDelay + 1);
-        await sleep(0);
-
-        // After prune, requesting the same tab should return a fresh observable
-        // instance
-        const obs2 = env.obs.getObservableByTabId('foo');
-        if (obs1 === obs2) {
-          throw new Error(
-              'Expected new observable instance, but got the same one');
-        }
-        sub1.unsubscribe();
-      });
+    const obs2 = env.obs.getObservableByTabId('foo');
+    assertNotEquals(
+        obs1, obs2, 'Expected new observable instance, but got the same one');
+    sub1.unsubscribe();
+  });
 
   test('two different tabs can be observed independently', async () => {
     const env = createEnvironment();
@@ -314,22 +259,22 @@ suite('ObservableSetByTabId', () => {
     const subA = obsA.subscribe(() => {});
     const subB = obsB.subscribe(() => {});
     assertEquals(
-        env.delegate.observations.length, 2,
-        'Should have 2 independent delegate observations');
+        env.activeSubscriptions.length, 2,
+        'Should have 2 independent observations');
     subA.unsubscribe();
-    await sleep(env.delegate.unsubscribeDelay + 1);
-    await sleep(0);
+    await waitUntilEqual(() => env.activeSubscriptions.length, 1);
 
     assertEquals(
-        env.delegate.observations.length, 1,
-        'Only one observation should be removed');
+        env.activeSubscriptions.length, 1,
+        'Only one observation should be disconnected');
     assertEquals(
-        env.delegate.observations[0]!.tabId, 'tabB',
+        env.activeSubscriptions[0]!.tabId, 'tabB',
         'tabB observation should remain');
     subB.unsubscribe();
+    await waitUntilEqual(() => env.activeSubscriptions.length, 0);
   });
 
-  test('closing the receiver completes the observable', async () => {
+  test('closing the receiver completes the observable', () => {
     const env = createEnvironment();
     const obs = env.obs.getObservableByTabId('123');
 
@@ -342,7 +287,7 @@ suite('ObservableSetByTabId', () => {
     });
 
     // Access the private receiver and close it to simulate a pipe closure from
-    // the host
+    // the host.
     const receiver = (obs as any).receiver;
     assertTrue(!!receiver, 'Receiver should be established after subscription');
     receiver.close();
@@ -351,17 +296,12 @@ suite('ObservableSetByTabId', () => {
         completed,
         'Observable should have completed when the receiver was closed');
     assertTrue(obs.isStopped(), 'Observable should be stopped');
-
-    // Wait for prune
-    await sleep(env.delegate.unsubscribeDelay + 1);
-    await sleep(0);
     assertEquals(
-        env.delegate.observations.length, 0,
-        'Subscription should be cleaned up');
+        env.activeSubscriptions.length, 0, 'Subscription should be cleaned up');
 
     const newObs = env.obs.getObservableByTabId('123');
     assertNotEquals(
-        obs, newObs, 'Expected a new observable instance after prune');
+        obs, newObs, 'Expected a new observable instance after receiver close');
     assertTrue(!newObs.isStopped(), 'New observable must not be stopped');
   });
 

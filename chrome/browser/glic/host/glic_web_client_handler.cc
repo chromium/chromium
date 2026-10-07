@@ -1692,6 +1692,7 @@ class GlicWebClientHandler
   void SubscribeToTabData(
       int32_t tab_id,
       ::mojo::PendingRemote<mojom::TabDataHandler> receiver) override {
+    LogApiRequest(GlicHostApiRequestId::kSubscribeToTabData);
     glic_service_->tab_data_observer().SubscribeToTabData(tab_id,
                                                           std::move(receiver));
   }

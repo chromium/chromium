@@ -34,7 +34,7 @@ import type {                             //
 
 import type {InterfaceDef, InterfaceDefMethods} from './transport/messaging.js';
 import {defInterface, defMessage} from './transport/messaging.js';
-import type {ErrorCodec, PendingRemote, TransferableException} from './transport/post_message_transport.js';
+import type {ErrorCodec, TransferableException} from './transport/post_message_transport.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -376,14 +376,6 @@ export const WebClientHostDef = defInterface({
       histogram: {id: 80},
     },
     {
-      name: 'subscribeToTabData',
-      request: defMessage<{
-        tabId: string,
-        remote: PendingRemote<WebClientTabDataObserver>,
-      }>(),
-      histogram: {id: 81},
-    },
-    {
       name: 'onMicrophoneStatusChange',
       request: defMessage<{
         status: MicrophoneStatus,
@@ -432,21 +424,7 @@ export const WebClientDef = defInterface({
 
 export type WebClient = typeof WebClientDef;
 
-export const WebClientTabDataObserverDef = defInterface({
-  name: 'WebClientTabDataObserver',
-  methods: [
-    {
-      name: 'tabDataChanged',
-      request: defMessage<{
-        tabData: TabDataPrivate,
-      }>(),
-    },
-  ],
-});
-export type WebClientTabDataObserver = typeof WebClientTabDataObserverDef;
-
-export type WebClientRequestTypes = InterfaceDefMethods<WebClient>&
-    InterfaceDefMethods<WebClientTabDataObserver>;
+export type WebClientRequestTypes = InterfaceDefMethods<WebClient>;
 
 export type HostRequestTypes = InterfaceDefMethods<WebClientHost>;
 
@@ -541,7 +519,7 @@ export const RECORDED_REQUEST_IDS = {
   // Do not reuse deleted request ID: 77,
   // Do not reuse deleted request ID: 78,
   SetOnboardingCompleted: 80,
-  SubscribeToTabData: 81,
+  // Do not reuse deleted request ID: 81,
   // Do not reuse deleted request ID: 82,
   // Do not reuse deleted request ID: 83,
   // Do not reuse deleted request ID: 84,
