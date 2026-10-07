@@ -134,12 +134,6 @@ std::string BuildUserAgentFromProductAndExtraOSInfo(
     const std::string& extra_os_info,
     IncludeAndroidBuildNumber include_android_build_number);
 
-// Helper function to generate a reduced user agent string with unified
-// platform from a given product name and extra os information.
-std::string BuildUnifiedPlatformUAFromProductAndExtraOs(
-    const std::string& product,
-    const std::string& extra_os_info);
-
 // Helper function to generate just the OS info.
 std::string GetAndroidOSInfo(
     IncludeAndroidBuildNumber include_android_build_number,
