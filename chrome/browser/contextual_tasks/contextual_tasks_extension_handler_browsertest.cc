@@ -668,6 +668,43 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest, ClearFiles) {
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       AddTabContext_AssociatesTabWithTask) {
+  auto* contextual_tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_NE(contextual_tasks_service, nullptr);
+  ContextualTask task = contextual_tasks_service->CreateTask();
+  handler_->SetTaskId(task.GetTaskId());
+  EXPECT_TRUE(
+      contextual_tasks_service->GetTabsAssociatedWithTask(task.GetTaskId())
+          .empty());
+
+  tabs::TabInterface* active_tab =
+      TabListInterface::From(browser())->GetActiveTab();
+  ASSERT_NE(active_tab, nullptr);
+  int32_t active_tab_id = active_tab->GetHandle().raw_value();
+  SessionID active_session_id =
+      sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
+
+  base::RunLoop run_loop;
+  static_cast<searchbox::mojom::PageHandler*>(handler_)->AddTabContext(
+      active_tab_id, /*delay_upload=*/true,
+      searchbox::mojom::TabAttachmentSource::kContextMenu,
+      base::BindLambdaForTesting(
+          [&](base::expected<base::UnguessableToken,
+                             contextual_search::ContextUploadErrorType>
+                  result) {
+            ASSERT_TRUE(result.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  // Attaching the tab as context associates it with the handler's task.
+  EXPECT_THAT(
+      contextual_tasks_service->GetTabsAssociatedWithTask(task.GetTaskId()),
+      testing::ElementsAre(active_session_id));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
                        AddTabContext_InvalidTabId) {
   base::RunLoop run_loop;
   static_cast<searchbox::mojom::PageHandler*>(handler_)->AddTabContext(
