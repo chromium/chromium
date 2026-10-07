@@ -209,6 +209,17 @@ MY_CPU_64BIT means that processor can work with 64-bit registers.
 #endif
 
 
+#if  defined(__s390__)
+#if  defined(__s390x__) || defined(__LP64__) || (defined(__SIZEOF_POINTER__) && __SIZEOF_POINTER__ == 8)
+  #define MY_CPU_NAME "s390x"
+  #define MY_CPU_SIZEOF_POINTER 8
+#else
+  #define MY_CPU_NAME "s390"
+  #define MY_CPU_SIZEOF_POINTER 4
+#endif
+#endif
+
+
 // #undef MY_CPU_NAME
 // #undef MY_CPU_SIZEOF_POINTER
 // #define __e2k__

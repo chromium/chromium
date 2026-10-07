@@ -1,5 +1,5 @@
 /* SfxSetup.c - 7z SFX Setup
-2024-01-24 : Igor Pavlov : Public domain */
+: Igor Pavlov : Public domain */
 
 #include "Precomp.h"
 
@@ -58,7 +58,7 @@ static const char * const kNames[] =
   , "start"
 };
 
-static unsigned FindExt(const wchar_t *s, unsigned *extLen)
+static unsigned FindExt(const WCHAR *s, unsigned *extLen)
 {
   unsigned len = (unsigned)wcslen(s);
   unsigned i;
@@ -76,7 +76,7 @@ static unsigned FindExt(const wchar_t *s, unsigned *extLen)
 
 #define MAKE_CHAR_UPPER(c) ((((c) >= 'a' && (c) <= 'z') ? (c) - 0x20 : (c)))
 
-static unsigned FindItem(const char * const *items, unsigned num, const wchar_t *s, unsigned len)
+static unsigned FindItem(const char * const *items, unsigned num, const WCHAR *s, unsigned len)
 {
   unsigned i;
   for (i = 0; i < num; i++)
@@ -272,7 +272,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
   #endif
   size_t pathLen;
   DWORD winRes;
-  const wchar_t *cmdLineParams;
+  const WCHAR *cmdLineParams;
   const char *errorMessage = NULL;
   BoolInt useShellExecute = True;
   DWORD exitCode = 0;
@@ -310,7 +310,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
       BoolInt quoteMode = False;
       for (;; cmdLineParams++)
       {
-        const wchar_t c = *cmdLineParams;
+        const WCHAR c = *cmdLineParams;
         if (c == L'\"')
           quoteMode = !quoteMode;
         else if (c == 0 || (c == L' ' && !quoteMode))
@@ -339,14 +339,14 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
       wcscpy(path + pathLen, L"7z");
 
       {
-        wchar_t *s = path + wcslen(path);
+        WCHAR *s = path + wcslen(path);
         UInt32 value = d;
         unsigned k;
         for (k = 0; k < 8; k++)
         {
           const unsigned t = value & 0xF;
           value >>= 4;
-          s[7 - k] = (wchar_t)((t < 10) ? ('0' + t) : ('A' + (t - 10)));
+          s[7 - k] = (WCHAR)((t < 10) ? ('0' + t) : ('A' + (t - 10)));
         }
         s[k] = '\0';
       }

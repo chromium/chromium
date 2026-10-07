@@ -1,4 +1,4 @@
-From 2e5a2dc2fd8c6d76f9cdbbefa809ec5a20c1dc5a Mon Sep 17 00:00:00 2001
+From 8697f3b4290df46d6ad2b39aed6b393826d3d26b Mon Sep 17 00:00:00 2001
 From: Greg Thompson <grt@chromium.org>
 Date: Wed, 13 May 2026 14:18:44 +0200
 Subject: [PATCH 4/6] Fix compilation when <asm/hwcap.h> is unavailable (on
@@ -25,5 +25,5 @@ index 342280d0bc7f7..876f00410ab80 100644
  #ifdef USE_HWCAP
  
 -- 
-2.54.0.563.g4f69b47b94-goog
+2.55.0.1082.g2b9226bbc0-goog
 
