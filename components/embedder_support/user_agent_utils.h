@@ -112,10 +112,6 @@ std::string BuildOSCpuInfoFromOSVersionAndCpuType(const std::string& os_version,
 // Return the <unifiedPlatform> token of a reduced User-Agent header.
 std::string GetUnifiedPlatformForTesting();
 
-// Helper function to generate a full user agent string from a short
-// product name.
-std::string BuildUserAgentFromProduct(const std::string& product);
-
 // Helper function to generate a reduced user agent string with unified
 // platform from a given product name.
 std::string BuildUnifiedPlatformUserAgentFromProduct(

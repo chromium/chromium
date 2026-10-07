@@ -211,25 +211,6 @@ const blink::UserAgentBrandList GetUserAgentBrandFullVersionListInternal(
                                additional_brand_version);
 }
 
-// Internal function to handle return the full or "reduced" user agent string,
-// depending on the Reduce User-Agent reduction phase features.
-std::string GetUserAgentInternal() {
-  std::string product = GetProductAndVersion();
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(kHeadless)) {
-    product.insert(0, "Headless");
-  }
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(kUseMobileUserAgent)) {
-    product += " Mobile";
-  }
-#endif
-
-  return ShouldSendUserAgentUnifiedPlatform()
-             ? BuildUnifiedPlatformUserAgentFromProduct(product)
-             : BuildUserAgentFromProduct(product);
-}
-
 // Generate random order list based on the input size and seed.
 // Manually implement a stable permutation shuffle since STL random number
 // engines and generators are banned and helpers in base/rand_util.h not
@@ -454,6 +435,34 @@ std::string BuildOSCpuInfo(
   return BuildOSCpuInfoFromOSVersionAndCpuType(
       GetOSVersion(include_android_build_number, include_android_model),
       BuildCpuInfo());
+}
+
+std::string BuildUserAgentFromProduct(const std::string& product) {
+  std::string os_info;
+  base::StringAppendF(&os_info, "%s%s", GetUserAgentPlatform().c_str(),
+                      BuildOSCpuInfo(IncludeAndroidBuildNumber::Exclude,
+                                     IncludeAndroidModel::Include)
+                          .c_str());
+  return BuildUserAgentFromOSAndProduct(os_info, product);
+}
+
+// Internal function to handle return the full or "reduced" user agent string,
+// depending on the Reduce User-Agent reduction phase features.
+std::string GetUserAgentInternal() {
+  std::string product = GetProductAndVersion();
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(kHeadless)) {
+    product.insert(0, "Headless");
+  }
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(kUseMobileUserAgent)) {
+    product += " Mobile";
+  }
+#endif
+
+  return ShouldSendUserAgentUnifiedPlatform()
+             ? BuildUnifiedPlatformUserAgentFromProduct(product)
+             : BuildUserAgentFromProduct(product);
 }
 
 }  // namespace
@@ -843,15 +852,6 @@ std::string BuildOSCpuInfoFromOSVersionAndCpuType(const std::string& os_version,
 std::string BuildUnifiedPlatformUserAgentFromProduct(
     const std::string& product) {
   return BuildUserAgentFromOSAndProduct(GetUnifiedPlatform(), product);
-}
-
-std::string BuildUserAgentFromProduct(const std::string& product) {
-  std::string os_info;
-  base::StringAppendF(&os_info, "%s%s", GetUserAgentPlatform().c_str(),
-                      BuildOSCpuInfo(IncludeAndroidBuildNumber::Exclude,
-                                     IncludeAndroidModel::Include)
-                          .c_str());
-  return BuildUserAgentFromOSAndProduct(os_info, product);
 }
 
 std::string BuildModelInfo() {
