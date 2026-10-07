@@ -2869,8 +2869,24 @@ if (_is_default_toolchain) {
         data_deps = [ ":trichrome_32_minimal_apks" ]
       }
 
+      # TODO(crbug.com/532501271): Aliases to allow updating trybot
+      # configurations before switching over to measuring Chrome and WebView
+      # directly.
+      group("chrome_and_webview_32_minimal_apks") {
+        deps = [ ":trichrome_32_minimal_apks" ]
+      }
+
+      group("chrome_and_webview_64_minimal_apks") {
+        deps = [ ":trichrome_64_minimal_apks" ]
+      }
+
       android_size_bot_config("resource_size_config_trichrome") {
-        name = "Trichrome"
+        name = "ChromeAndWebView"
+
+        # TODO(crbug.com/532501271): Remove once the recipe's
+        # DEFAULT_SIZE_CONFIG_JSON points at
+        # ChromeAndWebView_size_config.json.
+        legacy_name = "Trichrome"
         mapping_files = [
           "apks/TrichromeChrome32.aab.mapping",
           "apks/TrichromeWebView32.aab.mapping",
@@ -2904,7 +2920,11 @@ if (_is_default_toolchain) {
       # This one is used when arm32 shows no regression, but arm64 does. In
       # this case supersize is run a second time with this config.
       android_size_bot_config("arm64_resource_size_config_trichrome") {
-        name = "TrichromeLibrary64"
+        name = "ChromeAndWebView64"
+
+        # TODO(crbug.com/532501271): Remove once no trybot passes
+        # arm64_size_config_json=config/TrichromeLibrary64_size_config.json.
+        legacy_name = "TrichromeLibrary64"
         mapping_files = []
 
         archive_files = [

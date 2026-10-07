@@ -46,7 +46,9 @@ def _generate_resource_sizes(
   ]
   FORWARDED_PARAMS = [
     ('--trichrome-library', make_chromium_output_path, 'trichrome_library'),
+    ('--chrome', make_chromium_output_path, 'chrome'),
     ('--trichrome-chrome', make_chromium_output_path, 'trichrome_chrome'),
+    ('--webview', make_chromium_output_path, 'webview'),
     ('--trichrome-webview', make_chromium_output_path, 'trichrome_webview'),
   ]
   for switch, fun, key in FORWARDED_PARAMS:

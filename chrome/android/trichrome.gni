@@ -190,8 +190,10 @@ template("trichrome_library_apk_tmpl") {
 
 # An .ssargs file is a text file to specify multiple input files with respective
 # parameters, and is used by SuperSize-archive to create multi-container .size
-# files. This is used to support SuperSize on Trichrome.
-template("write_ssargs_trichrome") {
+# files.
+# TODO(crbug.com/532501271): This template is only used for binary size
+# measurement, which no longer involves Trichrome. Move it out of trichrome.gni.
+template("write_ssargs") {
   _extra_args = " --abi-filter ${invoker.abi_filter}"
   if (defined(invoker.symbols_dir)) {
     _extra_args += " --symbols-dir ${invoker.symbols_dir}"
@@ -199,14 +201,43 @@ template("write_ssargs_trichrome") {
 
   # Base names (i.e., no full path) are used because .ssargs files specifies
   # files using paths relative to itself. It is expected for |ssargs_path| to
-  # be in the same directory as all Trichrome files whose sizes are measured
-  # by SuperSize.
-  _lines = [
-    "# Written by build target \"${target_name}.\"",
-    "Library -f ${invoker.trichrome_library_basename}$_extra_args --no-java",
-    "Chrome -f ${invoker.trichrome_chrome_basename}$_extra_args",
-    "WebView -f ${invoker.trichrome_webview_basename}$_extra_args",
-  ]
+  # be in the same directory as all files whose sizes are measured by SuperSize.
+  _lines = [ "# Written by build target \"${target_name}.\"" ]
+  if (defined(invoker.trichrome_library_basename)) {
+    _lines += [
+      "Library -f ${invoker.trichrome_library_basename}$_extra_args --no-java",
+    ]
+  }
+
+  if (defined(invoker.chrome_basename)) {
+    _lines += [ "Chrome -f ${invoker.chrome_basename}$_extra_args" ]
+  } else if (defined(invoker.trichrome_chrome_basename)) {
+    _lines += [ "Chrome -f ${invoker.trichrome_chrome_basename}$_extra_args" ]
+  }
+
+  if (defined(invoker.webview_basename)) {
+    _lines += [ "WebView -f ${invoker.webview_basename}$_extra_args" ]
+  } else if (defined(invoker.trichrome_webview_basename)) {
+    _lines += [ "WebView -f ${invoker.trichrome_webview_basename}$_extra_args" ]
+  }
 
   write_file(invoker.ssargs_path, _lines)
+}
+
+# TODO(crbug.com/532501271): Remove alias once downstream repositories switch to
+# write_ssargs.
+template("write_ssargs_trichrome") {
+  write_ssargs(target_name) {
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "testonly",
+                             "visibility",
+                           ])
+    forward_variables_from(invoker,
+                           [
+                             "testonly",
+                             "visibility",
+                           ])
+  }
 }

@@ -12,9 +12,11 @@ import("//build/config/android/internal_rules.gni")
 # Variables:
 #   apk_name: The name of the apk, without the extension.
 #   file_path: The path to the apk or .minimal.apks.
-#   trichrome_chrome_path: The path to chrome apk or .minimal.apks.
-#   trichrome_webview_path: The path to webview apk or .minimal.apks.
-#   trichrome_library_path: The path to library apk or .minimal.apks.
+#   chrome_path: The path to chrome apk or .minimal.apks.
+#   webview_path: The path to webview apk or .minimal.apks.
+#   trichrome_chrome_path: (Legacy) The path to chrome apk or .minimal.apks.
+#   trichrome_webview_path: (Legacy) The path to webview apk or .minimal.apks.
+#   trichrome_library_path: (Legacy) The path to library apk or .minimal.apks.
 template("android_resource_sizes_test") {
   generate_android_wrapper(target_name) {
     forward_variables_from(invoker, [ "data_deps" ])
@@ -33,29 +35,66 @@ template("android_resource_sizes_test") {
     ]
 
     data = []
-    if (defined(invoker.trichrome_chrome_path)) {
-      data += [
-        invoker.trichrome_chrome_path,
-        invoker.trichrome_webview_path,
-        invoker.trichrome_library_path,
-      ]
-      _rebased_chrome =
-          rebase_path(invoker.trichrome_chrome_path, root_build_dir)
-      _rebased_webview =
-          rebase_path(invoker.trichrome_webview_path, root_build_dir)
-      _rebased_library =
-          rebase_path(invoker.trichrome_library_path, root_build_dir)
+    _has_chrome = defined(invoker.chrome_path)
+    _has_webview = defined(invoker.webview_path)
+    _has_trichrome_chrome = defined(invoker.trichrome_chrome_path)
+    _has_trichrome_webview = defined(invoker.trichrome_webview_path)
+    _has_trichrome_library = defined(invoker.trichrome_library_path)
+
+    # If any component paths are provided, pass them via component-specific
+    # arguments (--chrome, --webview, --trichrome-library) with invoker.apk_name
+    # used only as the test suite name. Otherwise, invoker.apk_name / file_path
+    # is passed as a single positional file input to measure.
+    _has_component_inputs =
+        _has_chrome || _has_webview || _has_trichrome_chrome ||
+        _has_trichrome_webview || _has_trichrome_library
+    if (_has_component_inputs) {
+      if (_has_chrome) {
+        data += [ invoker.chrome_path ]
+        _rebased_chrome = rebase_path(invoker.chrome_path, root_build_dir)
+        executable_args += [
+          "--chrome",
+          "@WrappedPath(${_rebased_chrome})",
+        ]
+      } else if (_has_trichrome_chrome) {
+        data += [ invoker.trichrome_chrome_path ]
+        _rebased_chrome =
+            rebase_path(invoker.trichrome_chrome_path, root_build_dir)
+        executable_args += [
+          "--chrome",
+          "@WrappedPath(${_rebased_chrome})",
+        ]
+      }
+
+      if (_has_webview) {
+        data += [ invoker.webview_path ]
+        _rebased_webview = rebase_path(invoker.webview_path, root_build_dir)
+        executable_args += [
+          "--webview",
+          "@WrappedPath(${_rebased_webview})",
+        ]
+      } else if (_has_trichrome_webview) {
+        data += [ invoker.trichrome_webview_path ]
+        _rebased_webview =
+            rebase_path(invoker.trichrome_webview_path, root_build_dir)
+        executable_args += [
+          "--webview",
+          "@WrappedPath(${_rebased_webview})",
+        ]
+      }
+
+      if (_has_trichrome_library) {
+        data += [ invoker.trichrome_library_path ]
+        _rebased_library =
+            rebase_path(invoker.trichrome_library_path, root_build_dir)
+        executable_args += [
+          "--trichrome-library",
+          "@WrappedPath(${_rebased_library})",
+        ]
+      }
 
       # apk_name used only as test suite name. Not a path in this case.
-      executable_args += [
-        "--trichrome-chrome",
-        "@WrappedPath(${_rebased_chrome})",
-        "--trichrome-webview",
-        "@WrappedPath(${_rebased_webview})",
-        "--trichrome-library",
-        "@WrappedPath(${_rebased_library})",
-        "${invoker.apk_name}",
-      ]
+      executable_args += [ "${invoker.apk_name}" ]
     } else {
       if (defined(invoker.apk_name)) {
         _file_path = "$root_out_dir/apks/${invoker.apk_name}.apk"
@@ -91,4 +130,15 @@ template("android_size_bot_config") {
   }
   _output_json_path = "$root_build_dir/config/${invoker.name}_size_config.json"
   write_file(_output_json_path, _out_json, "json")
+
+  # Emits a second copy of the config under an older name. Trybots read the
+  # config filename from the recipe checked out at origin/main rather than from
+  # the patch under test, so a config cannot be renamed in a single CL.
+  # TODO(crbug.com/532501271): Remove once the Chrome/WebView size migration is
+  # complete.
+  if (defined(invoker.legacy_name)) {
+    _legacy_output_json_path =
+        "$root_build_dir/config/${invoker.legacy_name}_size_config.json"
+    write_file(_legacy_output_json_path, _out_json, "json")
+  }
 }

@@ -401,12 +401,13 @@ def _AnalyzeInternal(
     is_monochrome = 'Monochrome' in orig_filename
     is_library = 'Library' in orig_filename
     is_trichrome = 'TrichromeChrome' in orig_filename
+    is_chrome = 'Chrome' in orig_filename
     # WebView is always a shared APK since other apps load it.
     # Library is always shared since it's used by chrome and webview
     # Chrome is always shared since renderers can't access dex otherwise
     # (see DexFixer).
     is_shared_apk = sdk_version >= 24 and (
-        is_monochrome or is_webview or is_library or is_trichrome
+        is_monochrome or is_webview or is_library or is_trichrome or is_chrome
     )
     # Dex decompression overhead varies by Android version.
     if sdk_version < 21:
@@ -833,8 +834,8 @@ def _ResourceSizes(args):
     dex_stats_collector = method_count.DexStatsCollector()
 
     specs = [
-        ('Chrome_', args.trichrome_chrome),
-        ('WebView_', args.trichrome_webview),
+        ('Chrome_', args.chrome),
+        ('WebView_', args.webview),
         ('Library_', args.trichrome_library),
     ]
     for prefix, path in specs:
@@ -952,14 +953,20 @@ def main():
         'input', help='Path to .apk or .apks file to measure.'
     )
     trichrome_group = argparser.add_argument_group(
-        'Trichrome inputs',
+        'Trichrome / Multi-APK inputs',
         description='When specified, |input| is used only as Test suite name.',
     )
     trichrome_group.add_argument(
-        '--trichrome-chrome', help='Path to Trichrome Chrome .apks'
+        '--chrome',
+        '--trichrome-chrome',
+        dest='chrome',
+        help='Path to Chrome .apks',
     )
     trichrome_group.add_argument(
-        '--trichrome-webview', help='Path to Trichrome WebView .apk(s)'
+        '--webview',
+        '--trichrome-webview',
+        dest='webview',
+        help='Path to WebView .apk(s)',
     )
     trichrome_group.add_argument(
         '--trichrome-library', help='Path to Trichrome Library .apk'

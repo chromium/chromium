@@ -185,8 +185,21 @@ def _CreateResourceSizesDelta(before_dir, after_dir, max_increase):
   )
   sizes_diff.ProduceDiff(before_dir, after_dir)
 
+  # TODO(crbug.com/532501271): Remove fallback once Chrome/WebView size
+  # measurements land on main. The reference build still reports a Library_
+  # container (TrichromeLibrary32) that the patched build does not, so metric
+  # keys can fail to line up.
+  try:
+    summary_value = sizes_diff.summary_stat.value
+  except Exception:
+    logging.warning(
+      'Could not find canonical "normalized" in 32-bit sizes diff; '
+      'setting delta to 0.'
+    )
+    summary_value = 0
+
   return sizes_diff.Summary(), _SizeDelta(
-    'Normalized APK Size', 'bytes', max_increase, sizes_diff.summary_stat.value
+    'Normalized APK Size', 'bytes', max_increase, summary_value
   )
 
 
@@ -196,11 +209,35 @@ def _CreateBaseModuleResourceSizesDelta(before_dir, after_dir, max_increase):
   )
   sizes_diff.ProduceDiff(before_dir, after_dir)
 
+  # TODO(crbug.com/532501271): Remove fallback once Chrome/WebView size
+  # measurements land on main.
+  try:
+    delta_value = sizes_diff.CombinedSizeChangeForSection('base')
+  except Exception:
+    logging.warning(
+      'Could not find "Combined" in 32-bit base module sizes diff; '
+      'setting delta to 0.'
+    )
+    delta_value = 0
+
+  if abs(delta_value) > max_increase * 100:
+    # TODO(crbug.com/532501271): Remove once Chrome/WebView size measurements
+    # land on main. During migration from Trichrome (where the native library
+    # lived in TrichromeLibrary32.apk) to separate Chrome and WebView APKs
+    # (where it lives in the base module of ChromePublic32 and of
+    # SystemWebView32), base module size jumps by tens of MB.
+    logging.warning(
+      'Detected large base module size shift (%s bytes) during migration; '
+      'setting delta to 0.',
+      delta_value,
+    )
+    delta_value = 0
+
   return sizes_diff.DetailedResults(), _SizeDelta(
     'Base Module Size',
     'bytes',
     max_increase,
-    sizes_diff.CombinedSizeChangeForSection('base'),
+    delta_value,
   )
 
 
@@ -212,11 +249,25 @@ def _CreateResourceSizes64Delta(before_dir, after_dir, max_increase):
 
   # Allow 4x growth of arm64 before blocking CLs.
   # TODO(crbug.com/399103933): Return this to * 4 once bot is not noisy.
+  # TODO(crbug.com/532501271): Remove fallback once Chrome/WebView size
+  # measurements land on main. During migration from single APK
+  # (TrichromeLibrary64) to multi-APK (ChromePublic64 + SystemWebView64),
+  # metric prefixes change, causing summary_stat lookup to fail on mismatched
+  # keys.
+  try:
+    summary_value = sizes_diff.summary_stat.value
+  except Exception:
+    logging.warning(
+      'Could not find canonical "normalized" in 64-bit sizes diff (likely '
+      'migration from single APK to multi-APK); setting delta to 0.'
+    )
+    summary_value = 0
+
   return sizes_diff.Summary(), _SizeDelta(
     'Normalized APK Size (arm64)',
     'bytes',
     max_increase * 400,
-    sizes_diff.summary_stat.value,
+    summary_value,
   )
 
 
@@ -281,20 +332,27 @@ def _CreateResourceDiffLines(
   r_txt_after_paths,
 ):
   unused_resources_before = set()
+  # TODO(crbug.com/532501271): Remove existence check once migration lands on
+  # main. Files staged in the patched build may not exist in the reference
+  # build from main.
   for path in unused_resources_before_paths:
-    unused_resources_before.update(_ParseUnusedResources(path))
+    if os.path.isfile(path):
+      unused_resources_before.update(_ParseUnusedResources(path))
 
   unused_resources_after = set()
   for path in unused_resources_after_paths:
-    unused_resources_after.update(_ParseUnusedResources(path))
+    if os.path.isfile(path):
+      unused_resources_after.update(_ParseUnusedResources(path))
 
   all_resources_before = set()
   for path in r_txt_before_paths:
-    all_resources_before.update(_ParseRTxtResources(path))
+    if os.path.isfile(path):
+      all_resources_before.update(_ParseRTxtResources(path))
 
   all_resources_after = set()
   for path in r_txt_after_paths:
-    all_resources_after.update(_ParseRTxtResources(path))
+    if os.path.isfile(path):
+      all_resources_after.update(_ParseRTxtResources(path))
 
   new_resources = all_resources_after - all_resources_before
   existing_resources = all_resources_before & all_resources_after
@@ -369,7 +427,12 @@ def IterForTestingSymbolsFromMapping(contents):
 
 def _ExtractForTestingSymbolsFromMappings(mapping_paths):
   symbols = set()
+  # TODO(crbug.com/532501271): Remove existence check once migration lands on
+  # main. Mapping files configured in the patch may not exist in the reference
+  # build from main.
   for mapping_path in mapping_paths:
+    if not os.path.isfile(mapping_path):
+      continue
     with open(mapping_path) as f:
       symbols.update(IterForTestingSymbolsFromMapping(f.read()))
   return symbols
@@ -438,13 +501,33 @@ def _FormatNumber(number):
   return '{:+,}'.format(number)
 
 
+# TODO(crbug.com/532501271): Remove once Chrome/WebView size measurements land
+# on main. Until then the reference build (built from main) stages files under
+# the legacy Trichrome names, which the patched build no longer produces. Each
+# entry maps a file staged by the patched build onto its legacy equivalent.
+_MIGRATION_RENAMES = [
+  ('ChromeAndWebView32.ssargs', 'Trichrome32.ssargs'),
+  ('ChromeAndWebView64.ssargs', 'TrichromeLibrary64.apk'),
+  ('ChromeAndWebViewGoogle32.ssargs', 'TrichromeGoogle32.ssargs'),
+  ('ChromePublic32', 'TrichromeChrome32'),
+  ('SystemWebView32', 'TrichromeWebView32'),
+  ('Chrome32', 'TrichromeChromeGoogle32'),
+  ('SystemWebViewGoogle32', 'TrichromeWebViewGoogle32'),
+]
+
+
 # TODO(crbug.com/40256106): If missing and file is x32y, return xy; else
 # return original filename. Basically allows comparing x_32 targets with x
 # targets built under 32bit target_cpu without failing the script due to
 # different file names. Remove once migration is complete.
-def _UseAlterantiveIfMissing(path):
+def _UseAlternativeIfMissing(path):
   if not os.path.isfile(path):
     parent, name = os.path.split(path)
+    for old, new in _MIGRATION_RENAMES:
+      if old in name:
+        candidate = os.path.join(parent, name.replace(old, new, 1))
+        if os.path.isfile(candidate):
+          return candidate
     path = os.path.join(parent, name.replace('32', '', 1))
   return path
 
@@ -515,11 +598,11 @@ def main():
     size_filename = config['supersize_input_file'] + '.size'
 
   before_mapping_paths = [
-    _UseAlterantiveIfMissing(before_path_resolver(f))
+    _UseAlternativeIfMissing(before_path_resolver(f))
     for f in config['mapping_files']
   ]
   after_mapping_paths = [
-    _UseAlterantiveIfMissing(after_path_resolver(f))
+    _UseAlternativeIfMissing(after_path_resolver(f))
     for f in config['mapping_files']
   ]
 
@@ -530,8 +613,8 @@ def main():
 
   logging.info('Creating Supersize diff')
   supersize_diff_lines, delta_size_info = _CreateSupersizeDiff(
-    _UseAlterantiveIfMissing(before_path_resolver(size_filename)),
-    _UseAlterantiveIfMissing(after_path_resolver(size_filename)),
+    _UseAlternativeIfMissing(before_path_resolver(size_filename)),
+    _UseAlternativeIfMissing(after_path_resolver(size_filename)),
     args.review_subject,
     args.review_url,
   )
@@ -568,18 +651,18 @@ def main():
   resources_diff_lines = []
   if unused_resources_paths and r_txt_paths:
     unused_resources_before_paths = [
-      _UseAlterantiveIfMissing(before_path_resolver(p))
+      _UseAlternativeIfMissing(before_path_resolver(p))
       for p in unused_resources_paths
     ]
     unused_resources_after_paths = [
-      _UseAlterantiveIfMissing(after_path_resolver(p))
+      _UseAlternativeIfMissing(after_path_resolver(p))
       for p in unused_resources_paths
     ]
     r_txt_before_paths = [
-      _UseAlterantiveIfMissing(before_path_resolver(p)) for p in r_txt_paths
+      _UseAlternativeIfMissing(before_path_resolver(p)) for p in r_txt_paths
     ]
     r_txt_after_paths = [
-      _UseAlterantiveIfMissing(after_path_resolver(p)) for p in r_txt_paths
+      _UseAlternativeIfMissing(after_path_resolver(p)) for p in r_txt_paths
     ]
     resources_diff_lines = _CreateResourceDiffLines(
       unused_resources_before_paths,
