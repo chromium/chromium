@@ -6,7 +6,6 @@
 
 #include <stdio.h>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/strings/stringprintf.h"
@@ -17,11 +16,9 @@ using base::File;
 namespace ui {
 
 TouchEventLogEvdev::TouchEventLogEvdev()
-    : logged_events_(new TouchEvent[kDebugBufferSize]) {
-}
+    : logged_events_(base::HeapArray<TouchEvent>::WithSize(kDebugBufferSize)) {}
 
-TouchEventLogEvdev::~TouchEventLogEvdev() {
-}
+TouchEventLogEvdev::~TouchEventLogEvdev() = default;
 
 void TouchEventLogEvdev::Initialize(const EventDeviceInfo& devinfo) {
   device_name_ = devinfo.name();
@@ -35,10 +32,10 @@ void TouchEventLogEvdev::Initialize(const EventDeviceInfo& devinfo) {
 void TouchEventLogEvdev::ProcessEvent(size_t cur_slot, const input_event* ev) {
   if (ev->type == EV_ABS || ev->type == EV_SYN ||
       (ev->type == EV_KEY && ev->code == BTN_TOUCH)) {
-    UNSAFE_TODO(logged_events_[debug_buffer_tail_]).ev = *ev;
-    UNSAFE_TODO(logged_events_[debug_buffer_tail_]).slot = cur_slot;
+    logged_events_[debug_buffer_tail_].ev = *ev;
+    logged_events_[debug_buffer_tail_].slot = cur_slot;
     debug_buffer_tail_++;
-    debug_buffer_tail_ %= kDebugBufferSize;
+    debug_buffer_tail_ %= logged_events_.size();
   }
 }
 
@@ -56,15 +53,15 @@ void TouchEventLogEvdev::DumpLog(const char* filename) {
         axes_[i].info.resolution);
     report_content += absinfo;
   }
-  for (int i = 0; i < kDebugBufferSize; ++i) {
-    struct TouchEvent* te = UNSAFE_TODO(
-        &logged_events_[(debug_buffer_tail_ + i) % kDebugBufferSize]);
-    if (te->ev.input_event_sec == 0 && te->ev.input_event_usec == 0)
+  for (size_t i = 0; i < logged_events_.size(); ++i) {
+    const TouchEvent& te =
+        logged_events_[(debug_buffer_tail_ + i) % logged_events_.size()];
+    if (te.ev.input_event_sec == 0 && te.ev.input_event_usec == 0) {
       continue;
+    }
     std::string event_string = base::StringPrintf(
-        "E: %ld.%06ld %04x %04x %d %d\n", te->ev.input_event_sec,
-        te->ev.input_event_usec, te->ev.type, te->ev.code, te->ev.value,
-        te->slot);
+        "E: %ld.%06ld %04x %04x %d %d\n", te.ev.input_event_sec,
+        te.ev.input_event_usec, te.ev.type, te.ev.code, te.ev.value, te.slot);
     report_content += event_string;
   }
   file.Write(0, base::as_byte_span(report_content));

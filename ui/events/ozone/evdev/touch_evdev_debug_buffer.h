@@ -8,11 +8,11 @@
 #include <linux/input.h>
 #include <stddef.h>
 
-#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/heap_array.h"
 
 #ifndef input_event_sec
 #define input_event_sec time.tv_sec
@@ -38,9 +38,9 @@ class COMPONENT_EXPORT(EVDEV) TouchEventLogEvdev {
     struct input_event ev;
     int slot;
   };
-  const int kDebugBufferSize = 65536;
-  std::unique_ptr<TouchEvent[]> logged_events_;
-  int debug_buffer_tail_ = 0;
+  static constexpr size_t kDebugBufferSize = 65536;
+  base::HeapArray<TouchEvent> logged_events_;
+  size_t debug_buffer_tail_ = 0;
 
   std::string device_name_;
 
