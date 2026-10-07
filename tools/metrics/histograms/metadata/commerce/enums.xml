@@ -36,19 +36,9 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Contains price drop"/>
 </enum>
 
-<enum name="BooleanIsAddToCart">
-  <int value="0" label="Not Add-to-cart"/>
-  <int value="1" label="Is Add-to-cart"/>
-</enum>
-
 <enum name="BooleanIsProductDetailPage">
   <int value="0" label="Is not a product detail page"/>
   <int value="1" label="Is a product detail page"/>
-</enum>
-
-<enum name="BooleanIsTransaction">
-  <int value="0" label="Not Transaction"/>
-  <int value="1" label="Is Transaction"/>
 </enum>
 
 <enum name="CommerceIconInteractionState">
