@@ -199,10 +199,6 @@ class ArcNotificationViewTest : public AshTestBase {
     return notification_view_->content_view_;
   }
 
-  views::View* collapsed_summary_view() {
-    return notification_view_->collapsed_summary_view_;
-  }
-
   bool IsGroupChild() { return notification_view_->is_group_child_; }
 
   views::Widget* widget() { return notification_view_->GetWidget(); }
@@ -408,103 +404,6 @@ TEST_F(ArcNotificationViewTest, TrackPadGestureSlideOut) {
   generator.ScrollSequence(gfx::Point(), base::TimeDelta(), /*x_offset=*/200,
                            /*y_offset=*/0, /*steps=*/1, /*num_fingers=*/2);
   EXPECT_TRUE(IsPopupRemovedAfterIdle(kDefaultNotificationId));
-}
-
-class ArcNotificationViewRenderByChromeEnabledTest
-    : public ArcNotificationViewTest {
- public:
-  ArcNotificationViewRenderByChromeEnabledTest() = default;
-
-  ArcNotificationViewRenderByChromeEnabledTest(
-      const ArcNotificationViewRenderByChromeEnabledTest&) = delete;
-  ArcNotificationViewRenderByChromeEnabledTest& operator=(
-      const ArcNotificationViewRenderByChromeEnabledTest&) = delete;
-
-  ~ArcNotificationViewRenderByChromeEnabledTest() override = default;
-
-  // Overridden from ViewsTestBase:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kRenderArcNotificationsByChrome);
-
-    ArcNotificationViewTest::SetUp();
-  }
-
-  // Check that smoothness should be recorded after an animation is performed on
-  // a particular view.
-  // This is copied from
-  // ash/system/notification_center/views/ash_notification_view_unittest.cc.
-  void CheckSmoothnessRecorded(base::HistogramTester& histograms,
-                               views::View* view,
-                               const char* animation_histogram_name,
-                               int data_point_count = 1) {
-    ui::Compositor* compositor = view->layer()->GetCompositor();
-
-    ui::LayerAnimationStoppedWaiter animation_waiter;
-    animation_waiter.Wait(view->layer());
-
-    // Force frames and wait for all throughput trackers to be gone to allow
-    // animation throughput data to be passed from cc to ui.
-    while (compositor->has_compositor_metrics_trackers_for_testing()) {
-      compositor->ScheduleFullRedraw();
-      std::ignore = ui::WaitForNextFrameToBePresented(compositor,
-                                                      base::Milliseconds(500));
-    }
-
-    // Smoothness should be recorded.
-    histograms.ExpectTotalCount(animation_histogram_name, data_point_count);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// TODO(b/324991437)): the test is disabled due to recent flaky results.
-TEST_F(ArcNotificationViewRenderByChromeEnabledTest,
-       DISABLED_AnimateGroupedChildExpandedCollapseChanged) {
-  // Enable animations.
-  gfx::ScopedAnimationDurationScaleMode duration(
-      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
-
-  std::unique_ptr<Notification> notification = CreateSimpleNotification();
-  notification->SetGroupChild();
-  UpdateNotificationViews(*notification);
-  EXPECT_TRUE(IsGroupChild());
-  EXPECT_NE(nullptr, collapsed_summary_view());
-
-  // Expected histogram logged when expanding/collapsing.
-  notification_view()->AnimateGroupedChildExpandedCollapse(true);
-
-  base::HistogramTester tester_;
-  CheckSmoothnessRecorded(
-      tester_, collapsed_summary_view(),
-      "Arc.NotificationView.CollapsedSummaryView.FadeOut.AnimationSmoothness");
-
-  // Expected behavior in collapsed state.
-  notification_view()->AnimateGroupedChildExpandedCollapse(false);
-
-  CheckSmoothnessRecorded(
-      tester_, collapsed_summary_view(),
-      "Arc.NotificationView.CollapsedSummaryView.FadeIn.AnimationSmoothness");
-}
-
-TEST_F(ArcNotificationViewRenderByChromeEnabledTest,
-       GroupedChildExpandStateChanged) {
-  std::unique_ptr<Notification> notification = CreateSimpleNotification();
-  notification->SetGroupChild();
-  UpdateNotificationViews(*notification);
-  EXPECT_TRUE(IsGroupChild());
-  EXPECT_NE(nullptr, collapsed_summary_view());
-
-  // Expected behavior in expanded state.
-  notification_view()->SetGroupedChildExpanded(true);
-  EXPECT_TRUE(content_view()->GetVisible());
-  EXPECT_FALSE(collapsed_summary_view()->GetVisible());
-
-  // Expected behavior in collapsed state.
-  notification_view()->SetGroupedChildExpanded(false);
-  EXPECT_FALSE(content_view()->GetVisible());
-  EXPECT_TRUE(collapsed_summary_view()->GetVisible());
 }
 
 }  // namespace ash

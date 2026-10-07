@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
@@ -49,32 +48,6 @@ namespace {
 // Android side.
 constexpr base::TimeDelta kArcNotificationAnimationDuration =
     base::Milliseconds(360);
-
-// Create a view containing the title and message for the notification in a
-// single line. This is used when a grouped child notification is in a
-// collapsed parent notification.
-views::Builder<views::BoxLayoutView> CreateCollapsedSummaryBuilder(
-    const message_center::Notification& notification) {
-  return views::Builder<views::BoxLayoutView>()
-      .SetID(
-          message_center::NotificationViewBase::ViewId::kCollapsedSummaryView)
-      .SetInsideBorderInsets(ash::kGroupedCollapsedSummaryInsets)
-      .SetBetweenChildSpacing(ash::kGroupedCollapsedSummaryLabelSpacing)
-      .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-      .SetVisible(false)
-      .AddChild(views::Builder<views::Label>()
-                    .SetText(notification.title())
-                    .SetFontList(
-                        ash::TypographyProvider::Get()->ResolveTypographyToken(
-                            ash::TypographyToken::kCrosButton2)))
-      .AddChild(views::Builder<views::Label>()
-                    .SetText(notification.message())
-                    .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
-                    .SetTextStyle(views::style::STYLE_SECONDARY)
-                    .SetFontList(
-                        ash::TypographyProvider::Get()->ResolveTypographyToken(
-                            ash::TypographyToken::kCrosBody2)));
-}
 }  // namespace
 
 namespace ash {
@@ -105,10 +78,6 @@ ArcNotificationView::ArcNotificationView(
   item_observation_.Observe(item_);
 
   AddChildViewRaw(content_view_.get());
-
-  AddChildView(CreateCollapsedSummaryBuilder(notification)
-                   .CopyAddressTo(&collapsed_summary_view_)
-                   .Build());
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets()));
@@ -263,119 +232,6 @@ void ArcNotificationView::OnContainerAnimationEnded() {
 base::TimeDelta ArcNotificationView::GetBoundsAnimationDuration(
     const message_center::Notification&) const {
   return kArcNotificationAnimationDuration;
-}
-
-void ArcNotificationView::SetGroupedChildExpanded(bool expanded) {
-  if (!collapsed_summary_view_) {
-    return;
-  }
-  CHECK(features::IsRenderArcNotificationsByChromeEnabled());
-
-  collapsed_summary_view_->SetVisible(!expanded);
-  content_view_->SetVisible(expanded);
-}
-
-void ArcNotificationView::AnimateGroupedChildExpandedCollapse(bool expanded) {
-  if (!collapsed_summary_view_) {
-    return;
-  }
-  CHECK(features::IsRenderArcNotificationsByChromeEnabled());
-
-  message_center_utils::InitLayerForAnimations(collapsed_summary_view_);
-  message_center_utils::InitLayerForAnimations(content_view_);
-  // Fade out `collapsed_summary_view_`, then fade in `content_view_` in
-  // expanded state and vice versa in collapsed state.
-  if (expanded) {
-    message_center_utils::FadeOutView(
-        collapsed_summary_view_,
-        base::BindRepeating(
-            [](base::WeakPtr<ash::ArcNotificationView> parent,
-               views::View* collapsed_summary_view) {
-              if (parent) {
-                collapsed_summary_view->layer()->SetOpacity(1.0f);
-                collapsed_summary_view->SetVisible(false);
-              }
-            },
-            weak_factory_.GetWeakPtr(), collapsed_summary_view_),
-        0, kCollapsedSummaryViewAnimationDurationMs, gfx::Tween::LINEAR,
-        "Arc.NotificationView.CollapsedSummaryView.FadeOut."
-        "AnimationSmoothness");
-    message_center_utils::FadeInView(
-        content_view_, kCollapsedSummaryViewAnimationDurationMs,
-        kChildMainViewFadeInAnimationDurationMs, gfx::Tween::LINEAR,
-        "Arc.NotificationView.ContentView.FadeIn.AnimationSmoothness");
-    return;
-  }
-
-  message_center_utils::FadeOutView(
-      content_view_,
-      base::BindRepeating(
-          [](base::WeakPtr<ash::ArcNotificationView> parent,
-             views::View* content_view) {
-            if (parent) {
-              content_view->layer()->SetOpacity(1.0f);
-              content_view->SetVisible(false);
-            }
-          },
-          weak_factory_.GetWeakPtr(), content_view_),
-      0, kChildMainViewFadeOutAnimationDurationMs, gfx::Tween::LINEAR,
-      "Arc.NotificationView.ContentView.FadeOut.AnimationSmoothness");
-  message_center_utils::FadeInView(
-      collapsed_summary_view_, kChildMainViewFadeOutAnimationDurationMs,
-      kCollapsedSummaryViewAnimationDurationMs, gfx::Tween::LINEAR,
-      "Arc.NotificationView.CollapsedSummaryView.FadeIn.AnimationSmoothness");
-}
-
-void ArcNotificationView::AnimateSingleToGroup(
-    const std::string& notification_id,
-    std::string parent_id) {
-  if (!collapsed_summary_view_) {
-    return;
-  }
-  CHECK(features::IsRenderArcNotificationsByChromeEnabled());
-
-  auto on_animation_ended = base::BindOnce(
-      [](base::WeakPtr<ash::ArcNotificationView> parent,
-         const std::string& notification_id, std::string parent_id) {
-        if (!parent) {
-          return;
-        }
-
-        auto* parent_notification =
-            message_center::MessageCenter::Get()->FindNotificationById(
-                parent_id);
-        auto* child_notification =
-            message_center::MessageCenter::Get()->FindNotificationById(
-                notification_id);
-        // The child and parent notifications are not guaranteed to exist.
-        //  If they were deleted avoid the animation cleanup.
-        if (!parent_notification || !child_notification) {
-          return;
-        }
-
-        auto* grouping_controller =
-            message_center_utils::GetGroupingControllerForNotificationView(
-                parent.get());
-        if (grouping_controller) {
-          grouping_controller
-              ->ConvertFromSingleToGroupNotificationAfterAnimation(
-                  notification_id, parent_id, parent_notification);
-        }
-        parent->DeprecatedLayoutImmediately();
-      },
-      weak_factory_.GetWeakPtr(), notification_id, parent_id);
-
-  std::pair<base::OnceClosure, base::OnceClosure> split =
-      base::SplitOnceCallback(std::move(on_animation_ended));
-
-  views::AnimationBuilder()
-      .SetPreemptionStrategy(
-          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .OnEnded(std::move(split.first))
-      .OnAborted(std::move(split.second))
-      .Once()
-      .SetDuration(
-          base::Milliseconds(kConvertFromSingleToGroupFadeOutDurationMs));
 }
 
 void ArcNotificationView::OnSlideChanged(bool in_progress) {

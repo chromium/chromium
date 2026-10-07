@@ -64,10 +64,6 @@ class ArcNotificationView : public message_center::MessageView,
   void UpdateBackgroundPainter() override;
   base::TimeDelta GetBoundsAnimationDuration(
       const message_center::Notification&) const override;
-  void AnimateGroupedChildExpandedCollapse(bool expanded) override;
-  void AnimateSingleToGroup(const std::string& notification_id,
-                            std::string parent_id) override;
-  void SetGroupedChildExpanded(bool expanded) override;
 
   // views::SlideOutControllerDelegate:
   void OnSlideChanged(bool in_progress) override;
@@ -99,8 +95,6 @@ class ArcNotificationView : public message_center::MessageView,
   const bool shown_in_popup_;
 
   bool is_group_child_;
-
-  raw_ptr<views::View> collapsed_summary_view_ = nullptr;
 
   base::ScopedObservation<ArcNotificationItem, ArcNotificationItem::Observer>
       item_observation_{this};
