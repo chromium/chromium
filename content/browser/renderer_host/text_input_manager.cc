@@ -313,6 +313,13 @@ void TextInputManager::UpdateTextInputState(
       new_edit_context_region != view_state.edit_context_selection_region;
   view_state.edit_context_selection_region = std::move(new_edit_context_region);
 
+  // Observers can run nested message loops (e.g. a third-party IME pumping
+  // messages inside InputMethod::OnTextInputTypeChanged()). Those can destroy
+  // the WebContents, and with it |this|, or unregister |view|. Re-validate
+  // both after every notification below before touching any state.
+  base::WeakPtr<TextInputManager> weak_this = weak_ptr_factory_.GetWeakPtr();
+  base::WeakPtr<RenderWidgetHostViewBase> weak_view = view->GetWeakPtr();
+
   // If |view| is different from |active_view| and its |TextInputState.type| is
   // not NONE, |active_view_| should change to |view| only if |view| has focus.
   if (text_input_state.type != ui::TEXT_INPUT_TYPE_NONE &&
@@ -331,6 +338,11 @@ void TextInputManager::UpdateTextInputState(
       RenderWidgetHostViewBase* active_view = active_view_;
       active_view_ = nullptr;
       NotifyObserversAboutInputStateUpdate(active_view, true);
+      // |view| may also have been unregistered without being destroyed (e.g.
+      // moved to another TextInputManager); it must not become |active_view_|.
+      if (!weak_this || !weak_view || !IsRegistered(view)) {
+        return;
+      }
     }
     active_view_ = view;
   }
@@ -343,9 +355,11 @@ void TextInputManager::UpdateTextInputState(
     active_view_ = nullptr;
   }
 
-  base::WeakPtr<RenderWidgetHostViewBase> weak_view = view->GetWeakPtr();
   NotifyObserversAboutInputStateUpdate(view, changed);
-  if (edit_context_bounds_changed && weak_view && active_view_ == view) {
+  if (!weak_this || !weak_view) {
+    return;
+  }
+  if (edit_context_bounds_changed && active_view_ == view) {
     NotifySelectionBoundsChanged(view);
   }
 }
