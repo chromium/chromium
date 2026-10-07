@@ -124,8 +124,6 @@ TEST_F(FractionalInputFilterTest, TouchEventCalculation) {
   filter_.InjectTouchEvent(event);
 }
 
-
-
 TEST_F(FractionalInputFilterTest, TouchEventInvalidScreenIsDropped) {
   converter_.set_video_layout(BuildLayout(kSimpleLayout));
 
@@ -144,6 +142,18 @@ TEST_F(FractionalInputFilterTest, EventWithNoScreenIdIsDropped) {
 
   EXPECT_CALL(mock_stub_, InjectMouseEvent(_)).Times(0);
   filter_.InjectMouseEvent(MouseMoveEvent(0, 0.5, 0.5));
+}
+
+TEST_F(FractionalInputFilterTest,
+       MouseEventWithBothFractionalAndRelativeIsDropped) {
+  converter_.set_video_layout(BuildLayout(kSimpleLayout));
+
+  MouseEvent event = MouseMoveEvent(2, 0.5, 0.5);
+  event.set_delta_x(10);
+  event.set_delta_y(20);
+
+  EXPECT_CALL(mock_stub_, InjectMouseEvent(_)).Times(0);
+  filter_.InjectMouseEvent(event);
 }
 
 }  // namespace remoting::protocol

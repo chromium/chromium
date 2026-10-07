@@ -114,7 +114,8 @@ void InputEventTracker::InjectTextEvent(const TextEvent& event) {
 void InputEventTracker::InjectMouseEvent(const MouseEvent& event) {
   DCHECK(input_stub_);
 
-  if (event.has_x() && event.has_y()) {
+  if (event.has_x() && event.has_y() && !event.has_delta_x() &&
+      !event.has_delta_y()) {
     mouse_pos_ = webrtc::DesktopVector(event.x(), event.y());
   }
   if (event.has_button() && event.has_button_down()) {

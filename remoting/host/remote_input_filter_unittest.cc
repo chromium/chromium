@@ -200,4 +200,28 @@ TEST_F(RemoteInputFilterTest, LocalActivityReleasesAll) {
   }
 }
 
+// Verify that a mouse event with relative deltas does not record its (x, y)
+// coordinates in the echo queue, so a subsequent local move to (x, y) is
+// treated as genuine local activity.
+TEST_F(RemoteInputFilterTest,
+       RelativeMouseMoveWithCoordinatesDoesNotRecordEcho) {
+  EXPECT_CALL(mock_stub_, InjectKeyEvent(EqualsKeyEvent(0, true)));
+  EXPECT_CALL(mock_stub_, InjectKeyEvent(EqualsKeyEvent(0, false)));
+  input_filter_.InjectKeyEvent(UsbKeyEvent(0, true));
+
+  protocol::MouseEvent event;
+  event.set_x(50);
+  event.set_y(50);
+  event.set_delta_x(-10);
+  event.set_delta_y(-10);
+  EXPECT_CALL(mock_stub_, InjectMouseEvent(_));
+  input_filter_.InjectMouseEvent(event);
+
+  EXPECT_TRUE(input_filter_.LocalPointerMoved(webrtc::DesktopVector(50, 50),
+                                              ui::EventType::kMouseMoved));
+
+  // Subsequent remote input should be blocked.
+  input_filter_.InjectMouseEvent(MouseMoveEvent(0, 0));
+}
+
 }  // namespace remoting

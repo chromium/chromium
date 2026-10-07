@@ -344,16 +344,18 @@ void InputInjectorX11::Core::InjectMouseEvent(const MouseEvent& event) {
     return;
   }
 
-  if (event.has_delta_x() && event.has_delta_y() &&
-      (event.delta_x() != 0 || event.delta_y() != 0)) {
-    latest_mouse_position_.set(-1, -1);
-    VLOG(3) << "Moving mouse by " << event.delta_x() << "," << event.delta_y();
-    connection_->xtest().FakeInput({
-        .type = x11::MotionNotifyEvent::opcode,
-        .detail = true,
-        .rootX = static_cast<int16_t>(event.delta_x()),
-        .rootY = static_cast<int16_t>(event.delta_y()),
-    });
+  if (event.has_delta_x() || event.has_delta_y()) {
+    if (event.delta_x() != 0 || event.delta_y() != 0) {
+      latest_mouse_position_.set(-1, -1);
+      VLOG(3) << "Moving mouse by " << event.delta_x() << ","
+              << event.delta_y();
+      connection_->xtest().FakeInput({
+          .type = x11::MotionNotifyEvent::opcode,
+          .detail = true,
+          .rootX = static_cast<int16_t>(event.delta_x()),
+          .rootY = static_cast<int16_t>(event.delta_y()),
+      });
+    }
   } else if (event.has_x() && event.has_y()) {
     // Injecting a motion event immediately before a button release results in
     // a MotionNotify even if the mouse position hasn't changed, which confuses

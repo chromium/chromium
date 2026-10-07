@@ -137,9 +137,9 @@ void RemoteInputFilter::InjectMouseEvent(const protocol::MouseEvent& event) {
   if (ShouldIgnoreInput()) {
     return;
   }
-  if (expect_local_echo_ && event.has_x() && event.has_y()) {
-    injected_mouse_positions_.push_back(
-        webrtc::DesktopVector(event.x(), event.y()));
+  if (expect_local_echo_ && event.has_x() && event.has_y() &&
+      !event.has_delta_x() && !event.has_delta_y()) {
+    injected_mouse_positions_.emplace_back(event.x(), event.y());
     if (injected_mouse_positions_.size() > kNumRemoteMousePositions) {
       VLOG(1) << "Injected mouse positions queue full.";
       injected_mouse_positions_.pop_front();

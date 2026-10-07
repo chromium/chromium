@@ -33,6 +33,12 @@ void FractionalInputFilter::InjectMouseEvent(const MouseEvent& event) {
     return;
   }
 
+  if (event.has_delta_x() || event.has_delta_y()) {
+    // Drop mouse events that contain both fractional coordinates and relative
+    // deltas, as absolute and relative mouse modes are mutually exclusive.
+    return;
+  }
+
   auto result =
       converter_->ToGlobalAbsoluteCoordinate(event.fractional_coordinate());
   if (result) {
