@@ -1044,6 +1044,11 @@ bool ContextualTasksSidePanelCoordinator::UpdateWebContentsForActiveTab() {
     if (permission_controller_) {
       permission_controller_->Update(web_contents);
     }
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
+    if (extensions_container_) {
+      extensions_container_->SetWebContents(web_contents);
+    }
+#endif
     contextual_tasks_panel_host_->SetWebContents(web_contents);
     NotifyExpandToFullTabStateChanged();
   }
@@ -1271,6 +1276,11 @@ void ContextualTasksSidePanelCoordinator::MaybeDetachWebContents(
     if (permission_controller_) {
       permission_controller_->Update(nullptr);
     }
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
+    if (extensions_container_) {
+      extensions_container_->SetWebContents(nullptr);
+    }
+#endif
   }
 }
 

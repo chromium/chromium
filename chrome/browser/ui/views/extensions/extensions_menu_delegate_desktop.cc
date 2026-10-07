@@ -389,12 +389,15 @@ void ExtensionsMenuDelegateDesktop::OnUserPermissionsSettingsChanged() {
     // Site permissions page can only be opened when site setting is set to
     // "customize by extension". Thus, when site settings changed, we have to
     // return to main page.
-    DCHECK_NE(PermissionsManager::Get(browser_->GetProfile())
-                  ->GetUserSiteSetting(browser_->GetTabStripModel()
-                                           ->GetActiveWebContents()
-                                           ->GetPrimaryMainFrame()
-                                           ->GetLastCommittedOrigin()),
-              PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+    content::WebContents* web_contents = GetActiveWebContents();
+    if (!web_contents) {
+      web_contents = browser_->GetTabStripModel()->GetActiveWebContents();
+    }
+    DCHECK_NE(
+        PermissionsManager::Get(browser_->GetProfile())
+            ->GetUserSiteSetting(
+                web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin()),
+        PermissionsManager::UserSiteSetting::kCustomizeByExtension);
     OpenMainPage();
     return;
   }

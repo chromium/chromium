@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/extensions/extension_action_delegate.h"
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "chrome/browser/ui/views/extensions/extension_view_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -134,12 +135,26 @@ TEST_F(ContextualTasksExtensionsContainerTest, GetAndSetActiveWebContents) {
 
   auto container = CreateContainer(web_contents1.get());
   EXPECT_EQ(container->GetActiveWebContents(), web_contents1.get());
+  EXPECT_EQ(GetExtensionsContainerViews(web_contents1.get()), container.get());
 
   container->SetWebContents(web_contents2.get());
   EXPECT_EQ(container->GetActiveWebContents(), web_contents2.get());
+  EXPECT_EQ(GetExtensionsContainerViews(web_contents1.get()), nullptr);
+  EXPECT_EQ(GetExtensionsContainerViews(web_contents2.get()), container.get());
 
   container->SetWebContents(nullptr);
   EXPECT_EQ(container->GetActiveWebContents(), nullptr);
+  EXPECT_EQ(GetExtensionsContainerViews(web_contents2.get()), nullptr);
+}
+
+TEST_F(ContextualTasksExtensionsContainerTest,
+       DestructionClearsExtensionsContainerViewsOverride) {
+  auto web_contents = CreateTestWebContents();
+  auto container = CreateContainer(web_contents.get());
+  EXPECT_EQ(GetExtensionsContainerViews(web_contents.get()), container.get());
+
+  container.reset();
+  EXPECT_EQ(GetExtensionsContainerViews(web_contents.get()), nullptr);
 }
 
 TEST_F(ContextualTasksExtensionsContainerTest, WebContentsWeakPtrLifecycle) {

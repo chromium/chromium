@@ -52,8 +52,10 @@ class TabHelper : public content::WebContentsObserver,
   void SetReloadRequired(PermissionsManager::UserSiteSetting site_setting);
 
   // Sets whether the tab requires a page reload for applying site access
-  // changes for the given extensions.
-  void SetReloadRequired(const std::vector<const Extension*>& extensions);
+  // changes for the given extensions. If `show_bubble_if_visible` is true,
+  // immediately shows the reload bubble if this WebContents is visible.
+  void SetReloadRequired(const std::vector<const Extension*>& extensions,
+                         bool show_bubble_if_visible = true);
 
   // Returns whether a page reload is required to apply the user site settings
   // in the tab.

@@ -21,6 +21,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/permissions/permissions_test_util.h"
 #include "extensions/browser/permissions/scripting_permissions_modifier.h"
@@ -852,6 +853,50 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperBrowserTest,
   browser()->GetTabStripModel()->ActivateTabAt(1);
   ASSERT_TRUE(WaitForReloadToFinish());
   EXPECT_FALSE(tab_helper_b->IsReloadRequired());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SitePermissionsHelperBrowserTest,
+    UpdateSiteAccess_SidePanelWebContentsDoesNotAutoReloadActiveTab) {
+  content::WebContents* active_tab = GetActiveWebContents();
+  ASSERT_TRUE(ContentScriptInjected());
+
+  // Create a non-tab WebContents (such as a side panel WebContents) on the same
+  // origin as the active tab.
+  std::unique_ptr<content::WebContents> side_panel_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile()));
+  TabHelper::CreateForWebContents(side_panel_contents.get());
+  ASSERT_TRUE(content::NavigateToURL(side_panel_contents.get(), original_url_));
+  ASSERT_TRUE(content::WaitForLoadStop(side_panel_contents.get()));
+  side_panel_contents->WasShown();
+
+  auto reload_page_dialog_reset =
+      ReloadPageDialogController::AcceptDialogForTesting(true);
+
+  content::TestNavigationObserver reload_observer(side_panel_contents.get());
+
+  // Update site access on the side panel WebContents to kOnClick.
+  permissions_helper_->UpdateSiteAccess(
+      *extension_, side_panel_contents.get(), UserSiteAccess::kOnClick,
+      side_panel_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  EXPECT_FALSE(active_tab->IsLoading());
+
+  // Wait for the side panel WebContents reload to finish.
+  reload_observer.Wait();
+
+  TabHelper* side_panel_tab_helper =
+      TabHelper::FromWebContents(side_panel_contents.get());
+  ASSERT_TRUE(side_panel_tab_helper);
+  EXPECT_FALSE(side_panel_tab_helper->IsReloadRequired());
+
+  // The active tab is on the same origin and is visible, so it should be marked
+  // as requiring a reload, but must NOT have popped up a competing reload
+  // bubble or reloaded automatically.
+  TabHelper* active_tab_helper = TabHelper::FromWebContents(active_tab);
+  ASSERT_TRUE(active_tab_helper);
+  EXPECT_TRUE(active_tab_helper->IsReloadRequired());
+  EXPECT_TRUE(ContentScriptInjected());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

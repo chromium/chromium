@@ -41,6 +41,13 @@ void ShowDialog(gfx::NativeWindow parent,
                 const std::vector<extensions::ExtensionId>& extension_ids,
                 std::unique_ptr<ui::DialogModel> dialog_model);
 
+// Shows the dialog constructed from `dialog_model` for a set of extensions
+// associated with `web_contents`. This may be anchored to the extensions
+// container for `web_contents` if available, or shown as a modal dialog.
+void ShowDialog(content::WebContents* web_contents,
+                const std::vector<extensions::ExtensionId>& extension_ids,
+                std::unique_ptr<ui::DialogModel> dialog_model);
+
 // Shows a modal dialog constructed from `dialog_model` on the `parent` window.
 void ShowModalDialog(gfx::NativeWindow parent,
                      std::unique_ptr<ui::DialogModel> dialog_model);

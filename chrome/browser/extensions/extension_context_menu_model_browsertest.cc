@@ -251,6 +251,17 @@ void VerifyItems(const ExtensionContextMenuModel& model,
 class TestPopupDelegate : public ExtensionContextMenuModel::PopupDelegate {
  public:
   void InspectPopup() override {}
+
+  content::WebContents* GetCurrentWebContents() const override {
+    return web_contents_;
+  }
+
+  void SetWebContents(content::WebContents* web_contents) {
+    web_contents_ = web_contents;
+  }
+
+ private:
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 };
 
 }  // namespace
@@ -764,6 +775,31 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuModelTest,
               CommandState::kEnabled);
 
     // Verify the option page is opened when the command is executed.
+    menu.ExecuteCommand(ExtensionContextMenuModel::OPTIONS, 0);
+    auto* web_contents = GetActiveWebContents();
+    content::WaitForLoadStop(web_contents);
+    EXPECT_EQ(OptionsPageInfo::GetOptionsPage(extension_with_options.get()),
+              web_contents->GetLastCommittedURL());
+  }
+
+  {
+    // Verify the options page is opened when the command is executed from a
+    // context menu associated with a non-tab WebContents (such as a side
+    // panel).
+    ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), GURL("about:blank")));
+
+    std::unique_ptr<content::WebContents> panel_contents =
+        content::WebContents::Create(
+            content::WebContents::CreateParams(profile()));
+    TestPopupDelegate delegate;
+    delegate.SetWebContents(panel_contents.get());
+
+    ExtensionContextMenuModel menu(
+        extension_with_options.get(), browser_window_interface(),
+        /*is_pinned=*/true, &delegate, true, ContextMenuSource::kMenuItem);
+    EXPECT_EQ(GetCommandState(menu, ExtensionContextMenuModel::OPTIONS),
+              CommandState::kEnabled);
+
     menu.ExecuteCommand(ExtensionContextMenuModel::OPTIONS, 0);
     auto* web_contents = GetActiveWebContents();
     content::WaitForLoadStop(web_contents);
@@ -2759,6 +2795,41 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuModelRateExtensionImpressionTest,
     tester.ExpectTotalCount(
         HistogramForSource(ContextMenuSource::kToolbarAction), 0);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuModelRateExtensionTest,
+                       RateExtensionCommand_UsesPanelWebContents) {
+  scoped_refptr<const Extension> cws_extension = AddReviewEligibleExtension();
+  EXPECT_EQ(GetTabCount(), 1);
+
+  // Create a secondary/non-tab WebContents representing a side panel.
+  std::unique_ptr<content::WebContents> panel_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile()));
+  TestPopupDelegate delegate;
+  delegate.SetWebContents(panel_contents.get());
+
+  // Instantiate the context menu model with the delegate that points to the
+  // panel WebContents.
+  ExtensionContextMenuModel menu_item(
+      cws_extension.get(), browser_window_interface(),
+      /*is_pinned=*/true, &delegate,
+      /*can_show_icon_in_toolbar=*/true, ContextMenuSource::kMenuItem);
+
+  EXPECT_EQ(
+      GetCommandState(menu_item, ExtensionContextMenuModel::RATE_EXTENSION),
+      CommandState::kEnabled);
+
+  // Executing the command should open the review URL in a new foreground tab in
+  // the browser via the browser's active tab rather than the panel WebContents.
+  menu_item.ExecuteCommand(ExtensionContextMenuModel::RATE_EXTENSION, 0);
+  content::WebContents* web_contents = GetActiveWebContents();
+  content::WaitForLoadStop(web_contents);
+  EXPECT_EQ(GetTabCount(), 2);
+  EXPECT_EQ(web_contents->GetLastCommittedURL(),
+            extensions::util::GetCWSWritingReviewUrl(
+                cws_extension->id(),
+                extensions::util::CWSReviewSource::kExtensionsMenu));
 }
 
 }  // namespace extensions

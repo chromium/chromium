@@ -235,8 +235,7 @@ void ReloadPageDialogController::Show() {
     extension_ids.push_back(info.id);
   }
 
-  ShowDialog(web_contents_->GetTopLevelNativeWindow(), extension_ids,
-             dialog_builder.Build());
+  ShowDialog(web_contents_, extension_ids, dialog_builder.Build());
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

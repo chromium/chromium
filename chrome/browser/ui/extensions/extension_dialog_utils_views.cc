@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/widget/widget.h"
@@ -53,11 +54,27 @@ void ShowDialog(gfx::NativeWindow parent,
                 std::unique_ptr<ui::DialogModel> dialog_model) {
   ExtensionsContainerViews* const container =
       parent ? GetExtensionsContainerViews(parent) : nullptr;
-  if (container && container->IsVisible()) {
+  if (container && container->IsVisible() &&
+      !GetDialogAnchor(container, extension_ids).IsNull()) {
     ShowDialog(container, extension_ids, std::move(dialog_model));
   } else {
     // If the container is not available, show a modal dialog.
     ShowModalDialog(parent, std::move(dialog_model));
+  }
+}
+
+void ShowDialog(content::WebContents* web_contents,
+                const std::vector<extensions::ExtensionId>& extension_ids,
+                std::unique_ptr<ui::DialogModel> dialog_model) {
+  ExtensionsContainerViews* const container =
+      GetExtensionsContainerViews(web_contents);
+  if (container && container->IsVisible() &&
+      !GetDialogAnchor(container, extension_ids).IsNull()) {
+    ShowDialog(container, extension_ids, std::move(dialog_model));
+  } else {
+    ShowModalDialog(web_contents ? web_contents->GetTopLevelNativeWindow()
+                                 : gfx::NativeWindow(),
+                    std::move(dialog_model));
   }
 }
 
@@ -68,7 +85,7 @@ void ShowDialog(ExtensionsContainerViews* container,
 
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       std::move(dialog_model), GetDialogAnchor(container, extension_ids),
-      views::BubbleBorder::TOP_RIGHT);
+      container->GetPopupArrow());
   views::Widget* widget = views::BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(bubble), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
 

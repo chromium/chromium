@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/extensions/extension_action_delegate_desktop.h"
+#include "chrome/browser/ui/views/extensions/extension_view_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 #include "content/public/browser/web_contents.h"
@@ -24,7 +25,6 @@ ContextualTasksExtensionsContainer::ContextualTasksExtensionsContainer(
     content::WebContents* web_contents,
     AnchorProvider anchor_provider)
     : browser_(browser),
-      web_contents_(web_contents ? web_contents->GetWeakPtr() : nullptr),
       anchor_provider_(std::move(anchor_provider)),
       toolbar_model_(browser && browser->GetProfile()
                          ? ToolbarActionsModel::Get(browser->GetProfile())
@@ -34,6 +34,7 @@ ContextualTasksExtensionsContainer::ContextualTasksExtensionsContainer(
               extensions_features::kExtensionsMenuAccessControl)
               ? std::make_unique<ExtensionsMenuCoordinator>(browser, this)
               : nullptr) {
+  SetWebContents(web_contents);
   if (toolbar_model_) {
     toolbar_model_observation_.Observe(toolbar_model_);
     CreateActions();
@@ -41,6 +42,9 @@ ContextualTasksExtensionsContainer::ContextualTasksExtensionsContainer(
 }
 
 ContextualTasksExtensionsContainer::~ContextualTasksExtensionsContainer() {
+  if (web_contents_) {
+    SetExtensionsContainerViewsForWebContents(web_contents_.get(), nullptr);
+  }
   CloseExtensionsMenuIfOpen();
   HideActivePopup();
   popup_owner_ = nullptr;
@@ -84,7 +88,20 @@ bool ContextualTasksExtensionsContainer::IsExtensionsMenuShowing() const {
 
 void ContextualTasksExtensionsContainer::SetWebContents(
     content::WebContents* web_contents) {
+  if (web_contents_.get() == web_contents) {
+    return;
+  }
+  if (web_contents_) {
+    // Unregister this container from the previous WebContents.
+    SetExtensionsContainerViewsForWebContents(web_contents_.get(), nullptr);
+  }
   web_contents_ = web_contents ? web_contents->GetWeakPtr() : nullptr;
+  if (web_contents) {
+    // Register this container with the incoming WebContents so extension views
+    // and dialogs (e.g. reload page dialog) resolve to this container.
+    SetExtensionsContainerViewsForWebContents(web_contents,
+                                              weak_ptr_factory_.GetWeakPtr());
+  }
 }
 
 ToolbarActionViewModel* ContextualTasksExtensionsContainer::GetActionForId(

@@ -129,6 +129,7 @@ class ContextualTasksExtensionsContainer
                  std::unique_ptr<ExtensionActionViewModel>>
       actions_;
   std::unique_ptr<ExtensionsMenuCoordinator> extensions_menu_coordinator_;
+  base::WeakPtrFactory<ExtensionsContainerViews> weak_ptr_factory_{this};
 };
 
 }  // namespace contextual_tasks

@@ -297,7 +297,17 @@ void LogToggleVisibility(bool visible) {
   }
 }
 
-void OpenUrl(content::WebContents* web_contents, const GURL& url) {
+content::WebContents* GetActiveTabWebContents(BrowserWindowInterface* browser) {
+  tabs::TabInterface* active_tab =
+      TabListInterface::From(browser)->GetActiveTab();
+  return active_tab ? active_tab->GetContents() : nullptr;
+}
+
+void OpenUrl(BrowserWindowInterface* browser, const GURL& url) {
+  content::WebContents* web_contents = GetActiveTabWebContents(browser);
+  if (!web_contents) {
+    return;
+  }
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -534,14 +544,13 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
 
   switch (command_id) {
     case HOME_PAGE: {
-      OpenUrl(GetActiveWebContents(), ManifestURL::GetHomepageURL(extension));
+      OpenUrl(browser_, ManifestURL::GetHomepageURL(extension));
       break;
     }
     case OPTIONS:
       CHECK(OptionsPageInfo::HasOptionsPage(extension),
             base::NotFatalUntil::M161);
-      ExtensionTabUtil::OpenOptionsPageFromWebContents(extension,
-                                                       GetActiveWebContents());
+      ExtensionTabUtil::OpenOptionsPage(extension, browser_);
       break;
     case TOGGLE_VISIBILITY: {
       bool visible = !is_pinned_;
@@ -609,7 +618,7 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
         replacements.SetQueryStr(query);
         url = url.ReplaceComponents(replacements);
       }
-      OpenUrl(GetActiveWebContents(), url);
+      OpenUrl(browser_, url);
 #endif
       break;
     }
@@ -635,7 +644,7 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
       const GURL review_url =
           util::GetCWSWritingReviewUrl(extension->id(), review_source);
       CHECK(review_url.is_valid());
-      OpenUrl(GetActiveWebContents(), review_url);
+      OpenUrl(browser_, review_url);
       break;
     }
     case POLICY_INSTALLED:
@@ -670,13 +679,13 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
     case PAGE_ACCESS_PERMISSIONS_PAGE:
       LogPageAccessAction(command_id);
       OpenUrl(
-          GetActiveWebContents(),
+          browser_,
           GURL(extension_permissions_constants::kExtensionsSitePermissionsURL));
       break;
     case PAGE_ACCESS_LEARN_MORE:
       LogPageAccessAction(command_id);
       OpenUrl(
-          GetActiveWebContents(),
+          browser_,
           GURL(
               extension_permissions_constants::kRuntimeHostPermissionsHelpURL));
 
@@ -1140,10 +1149,19 @@ void ExtensionContextMenuModel::CreatePageAccessItems(
                          page_access_submenu_.get());
 }
 
+content::WebContents*
+ExtensionContextMenuModel::PopupDelegate::GetCurrentWebContents() const {
+  return nullptr;
+}
+
 content::WebContents* ExtensionContextMenuModel::GetActiveWebContents() const {
-  tabs::TabInterface* active_tab =
-      TabListInterface::From(browser_)->GetActiveTab();
-  return active_tab ? active_tab->GetContents() : nullptr;
+  if (delegate_) {
+    if (content::WebContents* web_contents =
+            delegate_->GetCurrentWebContents()) {
+      return web_contents;
+    }
+  }
+  return GetActiveTabWebContents(browser_);
 }
 
 SidePanelService* ExtensionContextMenuModel::GetSidePanelService() const {

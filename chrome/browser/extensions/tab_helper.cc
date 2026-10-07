@@ -155,14 +155,17 @@ void TabHelper::SetReloadRequired(
 }
 
 void TabHelper::SetReloadRequired(
-    const std::vector<const Extension*>& extensions) {
+    const std::vector<const Extension*>& extensions,
+    bool show_bubble_if_visible) {
   reload_required_ = true;
   for (const auto* extension : extensions) {
     if (!std::ranges::contains(reload_extensions_, extension)) {
       reload_extensions_.push_back(extension);
     }
   }
-  ShowReloadBubbleIfVisible();
+  if (show_bubble_if_visible) {
+    ShowReloadBubbleIfVisible();
+  }
 }
 
 bool TabHelper::IsReloadRequired() {

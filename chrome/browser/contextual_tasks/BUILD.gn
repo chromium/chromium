@@ -534,6 +534,7 @@ source_set("ui_impl") {
       ]
       deps += [
         "//chrome/browser/ui/views/extensions:extension_action_delegate_desktop",
+        "//chrome/browser/ui/views/extensions:extension_view_utils",
         "//chrome/browser/ui/views/extensions:extensions_container_views",
         "//chrome/browser/ui/views/extensions:extensions_menu_coordinator",
         "//chrome/browser/ui/views/extensions:extensions_menu_view",
@@ -811,6 +812,9 @@ source_set("unit_tests") {
 
   if (enable_extensions_core) {
     deps += [ "//chrome/browser/extensions" ]
+    if (!is_android) {
+      deps += [ "//chrome/browser/ui/views/extensions:extension_view_utils" ]
+    }
   }
 }
 

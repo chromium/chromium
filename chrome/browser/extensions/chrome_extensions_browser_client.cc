@@ -111,6 +111,7 @@
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/update_client.h"
 #include "components/version_info/version_info.h"
@@ -1109,9 +1110,17 @@ void ChromeExtensionsBrowserClient::ShowReloadBubbleForAllExtensions(
     return;
   }
 
-  // For open tabs on the same origin: clear activeTab permissions and mark the
-  // tab as requiring a reload so the reload bubble or menu prompt appears.
-  auto process_tab = [&](content::WebContents* contents) {
+  const bool is_tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents) != nullptr;
+
+  // For the initiating WebContents (which may be a side panel WebContents not
+  // in any TabStripModel) and open tabs on the same origin: clear activeTab
+  // permissions and mark the WebContents as requiring a reload. When the
+  // action was triggered from a non-tab WebContents (such as a side panel),
+  // only pop up the reload bubble immediately for the initiating
+  // `web_contents` so that a visible tab on the same origin does not show a
+  // competing reload bubble and steal focus.
+  auto process_web_contents = [&](content::WebContents* contents) {
     if (!contents) {
       return;
     }
@@ -1127,16 +1136,22 @@ void ChromeExtensionsBrowserClient::ShowReloadBubbleForAllExtensions(
       }
     }
     if (auto* tab_helper = TabHelper::FromWebContents(contents)) {
-      tab_helper->SetReloadRequired(extensions);
+      const bool show_bubble_if_visible = is_tab || contents == web_contents;
+      tab_helper->SetReloadRequired(extensions, show_bubble_if_visible);
     }
   };
+
+  process_web_contents(web_contents);
 
 #if !BUILDFLAG(IS_ANDROID)
   if (auto* collection = ProfileBrowserCollection::GetForProfile(profile)) {
     collection->ForEach([&](BrowserWindowInterface* bwi) {
       if (auto* model = bwi->GetTabStripModel()) {
         for (int i = 0; i < model->count(); ++i) {
-          process_tab(model->GetWebContentsAt(i));
+          content::WebContents* tab_contents = model->GetWebContentsAt(i);
+          if (tab_contents != web_contents) {
+            process_web_contents(tab_contents);
+          }
         }
       }
       return true;
@@ -1148,7 +1163,10 @@ void ChromeExtensionsBrowserClient::ShowReloadBubbleForAllExtensions(
       continue;
     }
     for (int i = 0; i < model->GetTabCount(); ++i) {
-      process_tab(model->GetWebContentsAt(i));
+      content::WebContents* tab_contents = model->GetWebContentsAt(i);
+      if (tab_contents != web_contents) {
+        process_web_contents(tab_contents);
+      }
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

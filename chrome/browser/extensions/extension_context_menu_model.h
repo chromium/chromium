@@ -120,6 +120,10 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
     // The delegate should know which popup to display.
     virtual void InspectPopup() = 0;
 
+    // Returns the active WebContents for the context that owns this menu, or
+    // nullptr to fall back to the browser's active tab.
+    virtual content::WebContents* GetCurrentWebContents() const;
+
    protected:
     virtual ~PopupDelegate() = default;
   };

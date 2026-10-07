@@ -31,6 +31,14 @@ void ShowDialog(gfx::NativeWindow parent,
   ShowModalDialog(parent, std::move(dialog_model));
 }
 
+void ShowDialog(content::WebContents* web_contents,
+                const std::vector<extensions::ExtensionId>& extension_ids,
+                std::unique_ptr<ui::DialogModel> dialog_model) {
+  ShowDialog(web_contents ? web_contents->GetTopLevelNativeWindow()
+                          : gfx::NativeWindow(),
+             extension_ids, std::move(dialog_model));
+}
+
 void ShowWebModalDialog(content::WebContents* web_contents,
                         std::unique_ptr<ui::DialogModel> dialog_model) {
   ShowModalDialog(web_contents->GetTopLevelNativeWindow(),
