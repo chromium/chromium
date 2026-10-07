@@ -15,6 +15,9 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/net/profile_network_context_service.h"
+#include "chrome/browser/net/profile_network_context_service_factory.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -46,7 +49,10 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/ssl_test_util.h"
 #include "net/test/test_doh_server.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "services/network/public/mojom/ssl_config.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
@@ -80,6 +86,25 @@
 // Used by DisableWithNewProfile test. See the comment in above that test.
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "base/run_loop.h"
+#include "base/scoped_observation.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/gmock_callback_support.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/policy/schema_registry_service.h"
+#include "chrome/browser/profiles/profile_impl.h"
+#include "components/policy/core/common/cloud/cloud_external_data_manager.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/mock_user_cloud_policy_store.h"
+#include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
+#include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "components/policy/core/common/mock_policy_service.h"
+#include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/policy_service.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #endif
 
 namespace policy {
@@ -125,6 +150,62 @@ net::SSLServerConfig GetServerConfigForPreferSlowCiphersTest() {
       });
   return ssl_config;
 }
+
+// Returns an SSLServerConfig that causes the test server to reject any TLS
+// handshake unless the client offers ML-KEM-1024 for key exchange, which it
+// only does if the PreferSlowKexAlgorithms policy is set to "cnsa2".
+net::SSLServerConfig GetServerConfigForPreferSlowKexAlgorithmsTest() {
+  net::SSLServerConfig ssl_config;
+  ssl_config.curves_for_testing = {NID_ML_KEM_1024};
+  return ssl_config;
+}
+
+bool IsCnsa2KeyExchange(const network::mojom::SSLConfig& config) {
+  return config.named_groups_preset ==
+         network::mojom::SSLNamedGroupsPreset::kCnsa2;
+}
+
+bool IsCnsaCipherOrder(const network::mojom::SSLConfig& config) {
+  return config.tls13_cipher_prefer_aes_256;
+}
+
+// Describes one of the SSL compliance policies, which share plumbing and
+// structure, so that tests can be written generically.
+struct ComplianceTestParams {
+  // Suffix used in the gtest name.
+  const char* name;
+  const char* policy_key;
+  const char* pref_name;
+  // The policy value selecting the configuration compliant with a given scheme.
+  const char* compliant_value;
+  // The policy value selecting the default configuration.
+  const char* default_value;
+  // Returns a server config that rejects the handshake unless the client is
+  // configured with `compliant_value`.
+  net::SSLServerConfig (*server_config)();
+  // Returns whether `config` reflects the compliant setting.
+  bool (*is_compliant)(const network::mojom::SSLConfig&);
+};
+
+constexpr ComplianceTestParams kKeyExchangePolicyParams{
+    "KeyExchange",
+    key::kPreferSlowKexAlgorithms,
+    prefs::kPreferSlowKexAlgorithms,
+    "cnsa2",
+    "default",
+    &GetServerConfigForPreferSlowKexAlgorithmsTest,
+    &IsCnsa2KeyExchange,
+};
+
+constexpr ComplianceTestParams kCiphersPolicyParams{
+    "Ciphers",
+    key::kPreferSlowCiphers,
+    prefs::kPreferSlowCiphers,
+    "cnsa",
+    "default",
+    &GetServerConfigForPreferSlowCiphersTest,
+    &IsCnsaCipherOrder,
+};
 
 bool GetLocalStateBooleanPref(const std::string& pref_name) {
   return g_browser_process->local_state()->GetBoolean(pref_name);
@@ -195,85 +276,236 @@ class SSLPolicyTest : public PolicyTest {
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
-IN_PROC_BROWSER_TEST_F(SSLPolicyTest, PreferSlowKexAlgorithmsPolicy) {
-  net::SSLServerConfig ssl_config;
-  ssl_config.curves_for_testing = {NID_ML_KEM_1024};
-  ASSERT_TRUE(StartTestServer(ssl_config));
+class SSLCompliancePolicyTest
+    : public SSLPolicyTest,
+      public testing::WithParamInterface<ComplianceTestParams> {
+ protected:
+  const ComplianceTestParams& params() const { return GetParam(); }
 
+  bool StartComplianceTestServer() {
+    return StartTestServer(params().server_config());
+  }
+
+  // Sets the policy under test to `value` at machine scope and waits for the
+  // resulting SSLConfig to reach the network service.
+  void SetMachinePolicy(const char* value) {
+    PolicyMap policies;
+    policies.Set(params().policy_key, POLICY_LEVEL_MANDATORY,
+                 POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
+                 base::Value(value), nullptr);
+    UpdateProviderPolicy(policies);
+    g_browser_process->system_network_context_manager()
+        ->FlushSSLConfigManagerForTesting();
+    content::FlushNetworkServiceInstanceForTesting();
+  }
+
+  std::optional<std::string> GetProfileManagedPref() {
+    return GetManagedStringPref(chrome_test_utils::GetProfile(this)->GetPrefs(),
+                                params().pref_name);
+  }
+
+  std::optional<std::string> GetLocalStateManagedPref() {
+    return GetLocalStateManagedStringPref(params().pref_name);
+  }
+
+  // Returns the SSLConfig that this Profile's ProfileNetworkContextService
+  // would hand to a newly created NetworkContext at this time, which should be
+  // the NetworkService-global config with this Profile's SSLConfigOverlay
+  // applied on top.
+  network::mojom::SSLConfigPtr GetProfileInitialSSLConfig() {
+    network::mojom::NetworkContextParams params;
+    cert_verifier::mojom::CertVerifierCreationParams cert_verifier_params;
+    ProfileNetworkContextServiceFactory::GetForContext(
+        chrome_test_utils::GetProfile(this))
+        ->ConfigureNetworkContextParams(/*in_memory=*/false, base::FilePath(),
+                                        &params, &cert_verifier_params);
+    return std::move(params.initial_ssl_config);
+  }
+
+// The user-scope policy tests are limited to Win/Mac/Linux:
+// - ChromeOS has a different setup for user policies. It has no machine-level
+//   value for these policies (only the separate DeviceLoginScreen* device
+//   policies), so there is no machine/user conflict. Also, the primary user's
+//   profile policy is proxied into local_state, so it isn't Profile-only
+//   either.
+// - Android can't support these tests: ProfileImpl only consults
+//   SetCloudPolicyManagerFactoryForTesting() on Windows, Mac, and Linux, so
+//   there is no way to give the testing Profile a user policy source aside from
+//   the browser-wide `provider_`.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Gives the Profile a UserCloudPolicyManager with a mock store, so that tests
+  // can set user-scope policy alongside the machine-scope `provider_`.
+  void SetUpInProcessBrowserTestFixture() override {
+    SSLPolicyTest::SetUpInProcessBrowserTestFixture();
+    ProfileImpl::SetCloudPolicyManagerFactoryForTesting(
+        base::BindRepeating(&CreateUserCloudPolicyManager));
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    ProfileImpl::SetCloudPolicyManagerFactoryForTesting({});
+    SSLPolicyTest::TearDownInProcessBrowserTestFixture();
+  }
+
+  // Sets the policy under test to `value` at user scope, as cloud user policy
+  // would. This reaches only the Profile's PolicyService.
+  void SetUserPolicy(const char* value) {
+    Profile* profile = chrome_test_utils::GetProfile(this);
+    UserCloudPolicyManager* manager = profile->GetUserCloudPolicyManager();
+    auto* store =
+        static_cast<MockUserCloudPolicyStore*>(manager->core()->store());
+
+    // Wait for the update to be merged into the Profile's PolicyService.
+    MockPolicyServiceProviderUpdateObserver observer;
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer, OnProviderUpdatePropagated(testing::_))
+        .Times(testing::AnyNumber());
+    EXPECT_CALL(observer, OnProviderUpdatePropagated(manager))
+        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+    base::ScopedObservation<PolicyService,
+                            PolicyService::ProviderUpdateObserver>
+        observation(&observer);
+    observation.Observe(profile->GetProfilePolicyConnector()->policy_service());
+
+    SetPolicy(&store->policy_map_, params().policy_key, base::Value(value));
+    store->NotifyStoreLoaded();
+    run_loop.Run();
+  }
+
+  // Returns the merged entry from the Profile's PolicyService.
+  const PolicyMap::Entry* GetProfilePolicyEntry() {
+    return chrome_test_utils::GetProfile(this)
+        ->GetProfilePolicyConnector()
+        ->policy_service()
+        ->GetPolicies(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
+        .Get(params().policy_key);
+  }
+
+ private:
+  static std::variant<std::unique_ptr<UserCloudPolicyManager>,
+                      std::unique_ptr<ProfileCloudPolicyManager>>
+  CreateUserCloudPolicyManager(Profile* profile) {
+    auto store = std::make_unique<testing::NiceMock<MockUserCloudPolicyStore>>(
+        dm_protocol::GetChromeUserPolicyType());
+    store->NotifyStoreLoaded();
+    auto manager = std::make_unique<UserCloudPolicyManager>(
+        std::move(store), /*extension_install_user_store=*/nullptr,
+        /*component_policy_cache_path=*/base::FilePath(),
+        /*external_data_manager=*/nullptr,
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        network::TestNetworkConnectionTracker::CreateGetter());
+    manager->Init(profile->GetPolicySchemaRegistryService()->registry());
+    return manager;
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    SSLCompliancePolicyTest,
+    testing::Values(kKeyExchangePolicyParams, kCiphersPolicyParams),
+    [](const testing::TestParamInfo<ComplianceTestParams>& info) {
+      return std::string(info.param.name);
+    });
+
+IN_PROC_BROWSER_TEST_P(SSLCompliancePolicyTest, MachinePolicy) {
+  ASSERT_TRUE(StartComplianceTestServer());
+
+  ASSERT_EQ(GetLocalStateManagedPref(), std::nullopt);
+  ASSERT_EQ(GetProfileManagedPref(), std::nullopt);
+  ASSERT_FALSE(params().is_compliant(*GetProfileInitialSSLConfig()));
   // Should fail to load a page from the test server because, by default, we
-  // don't negotiate ML-KEM-1024.
-  EXPECT_EQ(GetLocalStateManagedStringPref(prefs::kPreferSlowKexAlgorithms),
-            std::nullopt);
-  LoadResult result = LoadPage("/title2.html");
-  EXPECT_FALSE(result.success);
+  // don't use the policy-compliant configuration.
+  ASSERT_FALSE(LoadPage("/title2.html").success);
 
-  // Set the policy to cnsa2 to prefer ML-KEM-1024.
-  {
-    PolicyMap policies;
-    SetPolicy(&policies, key::kPreferSlowKexAlgorithms, base::Value("cnsa2"));
-    UpdateProviderPolicy(policies);
-    content::FlushNetworkServiceInstanceForTesting();
-  }
+  // Set the policy to the default value explicitly.
+  SetMachinePolicy(params().default_value);
+  // Page load should still fail.
+  EXPECT_EQ(GetLocalStateManagedPref(), params().default_value);
+  EXPECT_FALSE(LoadPage("/title2.html").success);
 
+  // Set the policy-compliant value at machine scope.
+  SetMachinePolicy(params().compliant_value);
   // Page load should now succeed.
-  EXPECT_EQ(GetLocalStateManagedStringPref(prefs::kPreferSlowKexAlgorithms),
-            "cnsa2");
-  result = LoadPage("/title2.html");
+  EXPECT_EQ(GetLocalStateManagedPref(), params().compliant_value);
+  LoadResult result = LoadPage("/title2.html");
   EXPECT_TRUE(result.success);
   EXPECT_EQ(u"Title Of Awesomeness", result.title);
+  // A machine-scope value is applied to the Profile prefs as well as to
+  // local_state, and the Profile's SSLConfigOverlay reflects it in the
+  // SSLConfig handed to the Profile's NetworkContexts.
+  EXPECT_EQ(GetProfileManagedPref(), params().compliant_value);
+  EXPECT_TRUE(params().is_compliant(*GetProfileInitialSSLConfig()));
 
-  // Set the policy to an unrecognized value; this falls back to the defaults.
-  {
-    PolicyMap policies;
-    SetPolicy(&policies, key::kPreferSlowKexAlgorithms, base::Value("bogus"));
-    UpdateProviderPolicy(policies);
-    content::FlushNetworkServiceInstanceForTesting();
-  }
-
+  // Set the policy to an unrecognized value; this falls back to the default
+  // configuration.
+  SetMachinePolicy("bogus");
   // Page load should now fail.
-  EXPECT_EQ(GetLocalStateManagedStringPref(prefs::kPreferSlowKexAlgorithms),
-            "bogus");
-  result = LoadPage("/title2.html");
-  EXPECT_FALSE(result.success);
+  EXPECT_EQ(GetLocalStateManagedPref(), "bogus");
+  EXPECT_FALSE(LoadPage("/title2.html").success);
 }
 
-IN_PROC_BROWSER_TEST_F(SSLPolicyTest, PreferSlowCiphersPolicy) {
-  ASSERT_TRUE(StartTestServer(GetServerConfigForPreferSlowCiphersTest()));
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// A user-scope value applies to the Profile's NetworkContexts only; the
+// browser-wide configuration, controlled by local_state, is unaffected.
+IN_PROC_BROWSER_TEST_P(SSLCompliancePolicyTest,
+                       UserPolicyAppliesOnlyToProfile) {
+  ASSERT_TRUE(StartComplianceTestServer());
 
-  // Should fail to load a page from the test server because the default
-  // cipher order doesn't match and the test server rejects the handshake.
-  EXPECT_EQ(GetLocalStateManagedStringPref(prefs::kPreferSlowCiphers),
-            std::nullopt);
+  ASSERT_EQ(GetLocalStateManagedPref(), std::nullopt);
+  ASSERT_EQ(GetProfileManagedPref(), std::nullopt);
+  ASSERT_FALSE(params().is_compliant(*GetProfileInitialSSLConfig()));
+  ASSERT_FALSE(LoadPage("/title2.html").success);
+
+  // Set the policy-compliant value at user scope.
+  SetUserPolicy(params().compliant_value);
+
+  EXPECT_EQ(GetLocalStateManagedPref(), std::nullopt);
+  EXPECT_EQ(GetProfileManagedPref(), params().compliant_value);
+  EXPECT_TRUE(params().is_compliant(*GetProfileInitialSSLConfig()));
+
+  const PolicyMap::Entry* entry = GetProfilePolicyEntry();
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(entry->scope, POLICY_SCOPE_USER);
+  EXPECT_TRUE(entry->conflicts.empty());
+
+  // Page load via the Profile NetworkContext should now succeed.
   LoadResult result = LoadPage("/title2.html");
-  EXPECT_FALSE(result.success);
-
-  // Set the policy to cnsa to prefer the TLS 1.3 ciphers in the expected order.
-  {
-    PolicyMap policies;
-    SetPolicy(&policies, key::kPreferSlowCiphers, base::Value("cnsa"));
-    UpdateProviderPolicy(policies);
-    content::FlushNetworkServiceInstanceForTesting();
-  }
-
-  // Page load should now succeed.
-  EXPECT_EQ(GetLocalStateManagedStringPref(prefs::kPreferSlowCiphers), "cnsa");
-  result = LoadPage("/title2.html");
   EXPECT_TRUE(result.success);
   EXPECT_EQ(u"Title Of Awesomeness", result.title);
-
-  // Set the policy to an unrecognized value; this falls back to the defaults.
-  {
-    PolicyMap policies;
-    SetPolicy(&policies, key::kPreferSlowCiphers, base::Value("bogus"));
-    UpdateProviderPolicy(policies);
-    content::FlushNetworkServiceInstanceForTesting();
-  }
-
-  // Page load should now fail.
-  EXPECT_EQ(GetLocalStateManagedStringPref(prefs::kPreferSlowCiphers), "bogus");
-  result = LoadPage("/title2.html");
-  EXPECT_FALSE(result.success);
 }
+
+// When the two scopes disagree, the machine value overrides the user value.
+IN_PROC_BROWSER_TEST_P(SSLCompliancePolicyTest,
+                       MachineScopeOverridesUserScope) {
+  ASSERT_TRUE(StartComplianceTestServer());
+  const auto kOptions =
+      std::to_array({params().default_value, params().compliant_value});
+  for (const size_t machine_value_index : {0, 1}) {
+    const char* machine_value = kOptions[machine_value_index];
+    const char* user_value =
+        kOptions[(machine_value_index + 1) % kOptions.size()];
+    SetMachinePolicy(machine_value);
+    SetUserPolicy(user_value);
+
+    bool is_compliant = machine_value == params().compliant_value;
+    EXPECT_EQ(GetProfileManagedPref(), machine_value);
+    EXPECT_EQ(GetLocalStateManagedPref(), machine_value);
+    EXPECT_EQ(params().is_compliant(*GetProfileInitialSSLConfig()),
+              is_compliant);
+    EXPECT_EQ(LoadPage("/title2.html").success, is_compliant);
+
+    const PolicyMap::Entry* entry = GetProfilePolicyEntry();
+    ASSERT_TRUE(entry);
+    EXPECT_EQ(entry->scope, POLICY_SCOPE_MACHINE);
+    // The conflict is reported as informational, because the policy specifies
+    // `uses_machine_and_user_values`.
+    ASSERT_EQ(entry->conflicts.size(), 1u);
+    EXPECT_EQ(entry->conflicts[0].entry().scope, POLICY_SCOPE_USER);
+    EXPECT_TRUE(entry->HasMessage(PolicyMap::MessageType::kInfo));
+    EXPECT_FALSE(entry->HasMessage(PolicyMap::MessageType::kWarning));
+  }
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Tests for the device login screen policies on ChromeOS, using a SAML login

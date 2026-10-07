@@ -253,7 +253,6 @@ source_set("impl") {
       "//chrome/browser/profiles:profile_manager",
       "//chrome/browser/ui/ash/network",
       "//chrome/browser/ui/ash/system_web_apps",
-      "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/network",
       "//chromeos/ash/components/settings",
       "//chromeos/components/kiosk",

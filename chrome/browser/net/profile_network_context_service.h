@@ -22,6 +22,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/encryption/cache_encryption_provider_impl.h"
 #include "chrome/browser/net/proxy_config_monitor.h"
+#include "chrome/browser/ssl/ssl_config_overlay.h"
 #include "chrome/common/buildflags.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -38,10 +39,6 @@
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 #include "components/server_certificate_database/server_certificate_database.h"  // nogncheck
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ssl/ssl_config_overlay.h"
 #endif
 
 class PrefRegistrySimple;
@@ -206,13 +203,10 @@ class ProfileNetworkContextService
 
   void UpdateCorsNonWildcardRequestHeadersSupport();
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // These settings are only managed at a Profile level on ChromeOS for the
-  // login screen profile. (In other cases they are managed by
-  // SSLConfigServiceManager on a NetworkService-global basis.)
+  // Applies profile-scoped SSL compliance settings on top of the
+  // SSLConfigServiceManager's NetworkService-global settings.
   void ConfigureSSLComplianceSettings(network::mojom::SSLConfig* config) const;
   void UpdateSSLComplianceConfig();
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Creates parameters for the NetworkContext. Use |in_memory| instead of
   // |profile_->IsOffTheRecord()| because sometimes normal profiles want off the
@@ -259,18 +253,13 @@ class ProfileNetworkContextService
   StringPrefMember pref_accept_language_;
   BooleanPrefMember enable_referrers_;
   PrefChangeRegistrar pref_change_registrar_;
-#if BUILDFLAG(IS_CHROMEOS)
-  // These prefs are only used on ChromeOS in the login screen profile.
   StringPrefMember profile_key_exchange_compliance_;
   StringPrefMember profile_tls13_cipher_compliance_;
 
-  // Only populated on ChromeOS for the login screen profile.
   // Holds helper objects used to override certain SSLConfig settings for the
   // NetworkContexts associated with this object's Profile. Each
-  // SSLConfigOverlay corresponds to a single NetworkContext. Inactive instances
-  // may get deleted but nulls are not removed from the vector.
+  // SSLConfigOverlay corresponds to a single NetworkContext.
   std::vector<std::unique_ptr<SSLConfigOverlay>> ssl_config_overlays_;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   base::ScopedObservation<content_settings::CookieSettings,

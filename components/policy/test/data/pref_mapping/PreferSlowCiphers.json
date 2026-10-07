@@ -8,8 +8,28 @@
       "win"
     ],
     "simple_policy_pref_mapping_test": {
+      "policy_settings": { "scope": "machine" },
       "pref_name": "ssl.compliance.cipher",
       "pref_location": "local_state",
+      "default_value": "",
+      "values_to_test": [
+        "cnsa",
+        "default"
+      ]
+    }
+  },
+  {
+    "os": [
+      "android",
+      "chromeos",
+      "linux",
+      "mac",
+      "win"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "policy_settings": { "scope": "user" },
+      "pref_name": "ssl.compliance.cipher",
+      "pref_location": "user_profile",
       "default_value": "",
       "values_to_test": [
         "cnsa",
