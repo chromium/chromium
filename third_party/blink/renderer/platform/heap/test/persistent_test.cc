@@ -5,10 +5,13 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 
 #include <memory>
+
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
+#include "third_party/blink/renderer/platform/heap/safe_non_retaining_persistent.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -51,6 +54,30 @@ TEST_F(PersistentTest, CrossThreadBindCancellation) {
   PreciselyCollectGarbage();
   std::move(function).Run();
   EXPECT_EQ(0, counter);
+}
+
+TEST_F(PersistentTest, UnretainedPersistentAccess) {
+  Persistent<Receiver> owner = MakeGarbageCollected<Receiver>();
+  SafeNonRetainingPersistent<Receiver> unretained(owner.Get());
+  int counter = 0;
+
+  PreciselyCollectGarbage();
+  EXPECT_EQ(owner.Get(), unretained.Get());
+  EXPECT_EQ(owner.Get(), &*unretained);
+  Receiver* raw = unretained;
+  EXPECT_EQ(owner.Get(), raw);
+  unretained->Increment(&counter);
+  EXPECT_EQ(1, counter);
+}
+
+TEST_F(PersistentTest, UnretainedPersistentDiesWhenNull) {
+  SafeNonRetainingPersistent<Receiver> unretained(
+      MakeGarbageCollected<Receiver>());
+  PreciselyCollectGarbage();
+  int counter = 0;
+  EXPECT_CHECK_DEATH(unretained.Get());
+  EXPECT_CHECK_DEATH(*unretained);
+  EXPECT_CHECK_DEATH(unretained->Increment(&counter));
 }
 
 }  // namespace
