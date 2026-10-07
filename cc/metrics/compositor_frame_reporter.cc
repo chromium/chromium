@@ -275,38 +275,6 @@ void ReportTopControlsMetric(
 
 }  // namespace
 
-// CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator ==================
-
-CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator::Iterator(
-    const ProcessedBlinkBreakdown* owner)
-    : owner_(owner) {}
-
-CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator::~Iterator() =
-    default;
-
-bool CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator::IsValid()
-    const {
-  return index_ < std::size(owner_->list_);
-}
-
-void CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator::Advance() {
-  DCHECK(IsValid());
-  index_++;
-}
-
-BlinkBreakdown
-CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator::GetBreakdown()
-    const {
-  DCHECK(IsValid());
-  return static_cast<BlinkBreakdown>(index_);
-}
-
-base::TimeDelta
-CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator::GetLatency() const {
-  DCHECK(IsValid());
-  return owner_->list_[index_];
-}
-
 // CompositorFrameReporter::ProcessedBlinkBreakdown ============================
 
 CompositorFrameReporter::ProcessedBlinkBreakdown::ProcessedBlinkBreakdown(
@@ -337,76 +305,16 @@ CompositorFrameReporter::ProcessedBlinkBreakdown::ProcessedBlinkBreakdown(
       begin_main_frame_start - blink_start_time;
 }
 
-CompositorFrameReporter::ProcessedBlinkBreakdown::~ProcessedBlinkBreakdown() =
-    default;
-
-CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator
-CompositorFrameReporter::ProcessedBlinkBreakdown::CreateIterator() const {
-  return Iterator(this);
-}
-
-// CompositorFrameReporter::ProcessedVizBreakdown::Iterator ====================
-
-CompositorFrameReporter::ProcessedVizBreakdown::Iterator::Iterator(
-    const ProcessedVizBreakdown* owner,
-    bool skip_swap_start_to_swap_end)
-    : owner_(owner), skip_swap_start_to_swap_end_(skip_swap_start_to_swap_end) {
-  DCHECK(owner_);
-  SkipBreakdownsIfNecessary();
-}
-
-CompositorFrameReporter::ProcessedVizBreakdown::Iterator::~Iterator() = default;
-
-bool CompositorFrameReporter::ProcessedVizBreakdown::Iterator::IsValid() const {
-  return index_ < std::size(owner_->list_);
-}
-
-void CompositorFrameReporter::ProcessedVizBreakdown::Iterator::Advance() {
-  DCHECK(HasValue());
-  index_++;
-  SkipBreakdownsIfNecessary();
-}
-
-VizBreakdown
-CompositorFrameReporter::ProcessedVizBreakdown::Iterator::GetBreakdown() const {
-  DCHECK(HasValue());
-  return static_cast<VizBreakdown>(index_);
-}
-
-base::TimeTicks
-CompositorFrameReporter::ProcessedVizBreakdown::Iterator::GetStartTime() const {
-  DCHECK(HasValue());
-  return owner_->list_[index_]->first;
-}
-
-base::TimeTicks
-CompositorFrameReporter::ProcessedVizBreakdown::Iterator::GetEndTime() const {
-  DCHECK(HasValue());
-  return owner_->list_[index_]->second;
-}
-
-base::TimeDelta
-CompositorFrameReporter::ProcessedVizBreakdown::Iterator::GetDuration() const {
-  DCHECK(HasValue());
-  return owner_->list_[index_]->second - owner_->list_[index_]->first;
-}
-
-bool CompositorFrameReporter::ProcessedVizBreakdown::Iterator::HasValue()
-    const {
-  DCHECK(IsValid());
-  return owner_->list_[index_].has_value();
-}
-
-void CompositorFrameReporter::ProcessedVizBreakdown::Iterator::
-    SkipBreakdownsIfNecessary() {
-  while (IsValid() &&
-         (!HasValue() ||
-          (GetBreakdown() ==
-               CompositorFrameReporter::VizBreakdown::kSwapStartToSwapEnd &&
-           skip_swap_start_to_swap_end_))) {
-    index_++;
+void CompositorFrameReporter::ProcessedBlinkBreakdown::ForEachBreakdown(
+    base::FunctionRef<void(BlinkBreakdown breakdown, base::TimeDelta latency)>
+        fn) const {
+  for (size_t i = 0; i < list_.size(); ++i) {
+    fn(static_cast<BlinkBreakdown>(i), list_[i]);
   }
 }
+
+CompositorFrameReporter::ProcessedBlinkBreakdown::~ProcessedBlinkBreakdown() =
+    default;
 
 // CompositorFrameReporter::ProcessedVizBreakdown ==============================
 
@@ -483,80 +391,27 @@ CompositorFrameReporter::ProcessedVizBreakdown::ProcessedVizBreakdown(
                      viz_breakdown.swap_timings.swap_end);
 }
 
-CompositorFrameReporter::ProcessedVizBreakdown::~ProcessedVizBreakdown() =
-    default;
-
-CompositorFrameReporter::ProcessedVizBreakdown::Iterator
-CompositorFrameReporter::ProcessedVizBreakdown::CreateIterator(
-    bool skip_swap_start_to_swap_end_if_breakdown_available) const {
-  return Iterator(this, skip_swap_start_to_swap_end_if_breakdown_available &&
-                            buffer_ready_available_);
-}
-
-// CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator ==================
-
-CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator::Iterator(
-    const ProcessedTreesInVizBreakdown* owner)
-    : owner_(owner) {
-  DCHECK(owner_);
-  SkipBreakdownsIfNecessary();
-}
-
-CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator::~Iterator() =
-    default;
-
-bool CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator::IsValid()
-    const {
-  return index_ < std::size(owner_->list_);
-}
-
-void CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator::
-    Advance() {
-  DCHECK(IsValid());
-  index_++;
-  SkipBreakdownsIfNecessary();
-}
-
-TreesInVizBreakdown
-CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator::GetBreakdown()
-    const {
-  DCHECK(IsValid());
-  return static_cast<TreesInVizBreakdown>(index_);
-}
-
-base::TimeTicks
-CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator::GetStartTime()
-    const {
-  DCHECK(HasValue());
-  return owner_->list_[index_]->first;
-}
-
-base::TimeTicks
-CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator::GetEndTime()
-    const {
-  DCHECK(HasValue());
-  return owner_->list_[index_]->second;
-}
-
-base::TimeDelta
-CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator::GetDuration()
-    const {
-  DCHECK(HasValue());
-  return owner_->list_[index_]->second - owner_->list_[index_]->first;
-}
-
-bool CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator::HasValue()
-    const {
-  DCHECK(IsValid());
-  return owner_->list_[index_].has_value();
-}
-
-void CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator::
-    SkipBreakdownsIfNecessary() {
-  while (IsValid() && (!HasValue())) {
-    index_++;
+void CompositorFrameReporter::ProcessedVizBreakdown::ForEachBreakdown(
+    bool skip_swap_start_to_swap_end_if_breakdown_available,
+    base::FunctionRef<void(VizBreakdown breakdown,
+                           base::TimeTicks start_time,
+                           base::TimeTicks end_time)> fn) const {
+  const bool skip_swap_start_to_swap_end =
+      skip_swap_start_to_swap_end_if_breakdown_available &&
+      buffer_ready_available_;
+  for (size_t i = 0; i < list_.size(); ++i) {
+    const auto breakdown = static_cast<VizBreakdown>(i);
+    if (!list_[i].has_value() ||
+        (skip_swap_start_to_swap_end &&
+         breakdown == VizBreakdown::kSwapStartToSwapEnd)) {
+      continue;
+    }
+    fn(breakdown, list_[i]->first, list_[i]->second);
   }
 }
+
+CompositorFrameReporter::ProcessedVizBreakdown::~ProcessedVizBreakdown() =
+    default;
 
 // CompositorFrameReporter::ProcessedBlinkBreakdown ============================
 
@@ -611,13 +466,20 @@ CompositorFrameReporter::ProcessedTreesInVizBreakdown::
   return;
 }
 
+void CompositorFrameReporter::ProcessedTreesInVizBreakdown::ForEachBreakdown(
+    base::FunctionRef<void(TreesInVizBreakdown breakdown,
+                           base::TimeTicks start_time,
+                           base::TimeTicks end_time)> fn) const {
+  for (size_t i = 0; i < list_.size(); ++i) {
+    if (!list_[i].has_value()) {
+      continue;
+    }
+    fn(static_cast<TreesInVizBreakdown>(i), list_[i]->first, list_[i]->second);
+  }
+}
+
 CompositorFrameReporter::ProcessedTreesInVizBreakdown::
     ~ProcessedTreesInVizBreakdown() = default;
-
-CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator
-CompositorFrameReporter::ProcessedTreesInVizBreakdown::CreateIterator() const {
-  return Iterator(this);
-}
 
 // CompositorFrameReporter =====================================================
 
@@ -1322,49 +1184,52 @@ void CompositorFrameReporter::ReportStageHistogramWithBreakdown(
 void CompositorFrameReporter::ReportCompositorLatencyBlinkBreakdowns(
     FrameSequenceTrackerType frame_sequence_tracker_type) const {
   DCHECK(processed_blink_breakdown_);
-  for (auto it = processed_blink_breakdown_->CreateIterator(); it.IsValid();
-       it.Advance()) {
-    ReportCompositorLatencyHistogram(
-        frame_sequence_tracker_type, StageType::kSendBeginMainFrameToCommit,
-        /*viz_breakdown=*/std::nullopt, it.GetBreakdown(),
-        /*trees_in_viz_breakdown=*/std::nullopt, it.GetLatency());
-  }
+  processed_blink_breakdown_->ForEachBreakdown(
+      [&](BlinkBreakdown breakdown, base::TimeDelta latency) {
+        ReportCompositorLatencyHistogram(
+            frame_sequence_tracker_type, StageType::kSendBeginMainFrameToCommit,
+            /*viz_breakdown=*/std::nullopt, breakdown,
+            /*trees_in_viz_breakdown=*/std::nullopt, latency);
+      });
 }
 
 void CompositorFrameReporter::ReportCompositorLatencyVizBreakdowns(
     FrameSequenceTrackerType frame_sequence_tracker_type,
     StageType stage_type) const {
   DCHECK(processed_viz_breakdown_);
-  for (auto it = processed_viz_breakdown_->CreateIterator(false); it.IsValid();
-       it.Advance()) {
-    ReportCompositorLatencyHistogram(
-        frame_sequence_tracker_type, stage_type, it.GetBreakdown(),
-        /*blink_breakdown=*/std::nullopt,
-        /*trees_in_viz_breakdown*/ std::nullopt, it.GetDuration());
-  }
+  processed_viz_breakdown_->ForEachBreakdown(
+      /*skip_swap_start_to_swap_end_if_breakdown_available=*/false,
+      [&](VizBreakdown breakdown, base::TimeTicks start_time,
+          base::TimeTicks end_time) {
+        ReportCompositorLatencyHistogram(
+            frame_sequence_tracker_type, stage_type, breakdown,
+            /*blink_breakdown=*/std::nullopt,
+            /*trees_in_viz_breakdown*/ std::nullopt, end_time - start_time);
+      });
 }
 
 void CompositorFrameReporter::ReportCompositorLatencyTreesInVizBreakdowns(
     FrameSequenceTrackerType frame_sequence_tracker_type) const {
   DCHECK(processed_trees_in_viz_breakdown_);
-  for (auto it = processed_trees_in_viz_breakdown_->CreateIterator();
-       it.IsValid(); it.Advance()) {
-    if (it.GetBreakdown() == TreesInVizBreakdown::kEndActivateToDrawLayers ||
-        it.GetBreakdown() ==
-            TreesInVizBreakdown::kDrawLayersToSubmitUpdateDisplayTree) {
-      ReportCompositorLatencyHistogram(
-          frame_sequence_tracker_type,
-          StageType::kEndActivateToSubmitUpdateDisplayTree,
-          /*viz_breakdown=*/std::nullopt, /*blink_breakdown=*/std::nullopt,
-          it.GetBreakdown(), it.GetDuration());
-    } else {
-      ReportCompositorLatencyHistogram(
-          frame_sequence_tracker_type,
-          StageType::kSubmitUpdateDisplayTreeToPresentationCompositorFrame,
-          /*viz_breakdown=*/std::nullopt, /*blink_breakdown=*/std::nullopt,
-          it.GetBreakdown(), it.GetDuration());
-    }
-  }
+  processed_trees_in_viz_breakdown_->ForEachBreakdown(
+      [&](TreesInVizBreakdown breakdown, base::TimeTicks start_time,
+          base::TimeTicks end_time) {
+        if (breakdown == TreesInVizBreakdown::kEndActivateToDrawLayers ||
+            breakdown ==
+                TreesInVizBreakdown::kDrawLayersToSubmitUpdateDisplayTree) {
+          ReportCompositorLatencyHistogram(
+              frame_sequence_tracker_type,
+              StageType::kEndActivateToSubmitUpdateDisplayTree,
+              /*viz_breakdown=*/std::nullopt, /*blink_breakdown=*/std::nullopt,
+              breakdown, end_time - start_time);
+        } else {
+          ReportCompositorLatencyHistogram(
+              frame_sequence_tracker_type,
+              StageType::kSubmitUpdateDisplayTreeToPresentationCompositorFrame,
+              /*viz_breakdown=*/std::nullopt, /*blink_breakdown=*/std::nullopt,
+              breakdown, end_time - start_time);
+        }
+      });
 }
 
 // To accommodate TreesInViz and normal modes in parallel, we need to
@@ -1743,48 +1608,49 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
             auto* reporter =
                 context.event<perfetto::protos::pbzero::ChromeTrackEvent>()
                     ->set_send_begin_mainframe_to_commit_breakdown();
-            for (auto it = processed_blink_breakdown_->CreateIterator();
-                 it.IsValid(); it.Advance()) {
-              int64_t latency = it.GetLatency().InMicroseconds();
-              int curr_breakdown = static_cast<int>(it.GetBreakdown());
-              switch (curr_breakdown) {
-                case static_cast<int>(BlinkBreakdown::kHandleInputEvents):
-                  reporter->set_handle_input_events_us(latency);
-                  break;
-                case static_cast<int>(BlinkBreakdown::kAnimate):
-                  reporter->set_animate_us(latency);
-                  break;
-                case static_cast<int>(BlinkBreakdown::kStyleUpdate):
-                  reporter->set_style_update_us(latency);
-                  break;
-                case static_cast<int>(BlinkBreakdown::kLayoutUpdate):
-                  reporter->set_layout_update_us(latency);
-                  break;
-                case static_cast<int>(BlinkBreakdown::kAccessibility):
-                  reporter->set_accessibility_update_us(latency);
-                  break;
-                case static_cast<int>(BlinkBreakdown::kPrepaint):
-                  reporter->set_prepaint_us(latency);
-                  break;
-                case static_cast<int>(BlinkBreakdown::kCompositingInputs):
-                  reporter->set_compositing_inputs_us(latency);
-                  break;
-                case static_cast<int>(BlinkBreakdown::kPaint):
-                  reporter->set_paint_us(latency);
-                  break;
-                case static_cast<int>(BlinkBreakdown::kCompositeCommit):
-                  reporter->set_composite_commit_us(latency);
-                  break;
-                case static_cast<int>(BlinkBreakdown::kUpdateLayers):
-                  reporter->set_update_layers_us(latency);
-                  break;
-                case static_cast<int>(BlinkBreakdown::kBeginMainSentToStarted):
-                  reporter->set_begin_main_sent_to_started_us(latency);
-                  break;
-                default:
-                  break;
-              }
-            }
+            processed_blink_breakdown_->ForEachBreakdown(
+                [&](BlinkBreakdown breakdown, base::TimeDelta latency_delta) {
+                  int64_t latency = latency_delta.InMicroseconds();
+                  int curr_breakdown = static_cast<int>(breakdown);
+                  switch (curr_breakdown) {
+                    case static_cast<int>(BlinkBreakdown::kHandleInputEvents):
+                      reporter->set_handle_input_events_us(latency);
+                      break;
+                    case static_cast<int>(BlinkBreakdown::kAnimate):
+                      reporter->set_animate_us(latency);
+                      break;
+                    case static_cast<int>(BlinkBreakdown::kStyleUpdate):
+                      reporter->set_style_update_us(latency);
+                      break;
+                    case static_cast<int>(BlinkBreakdown::kLayoutUpdate):
+                      reporter->set_layout_update_us(latency);
+                      break;
+                    case static_cast<int>(BlinkBreakdown::kAccessibility):
+                      reporter->set_accessibility_update_us(latency);
+                      break;
+                    case static_cast<int>(BlinkBreakdown::kPrepaint):
+                      reporter->set_prepaint_us(latency);
+                      break;
+                    case static_cast<int>(BlinkBreakdown::kCompositingInputs):
+                      reporter->set_compositing_inputs_us(latency);
+                      break;
+                    case static_cast<int>(BlinkBreakdown::kPaint):
+                      reporter->set_paint_us(latency);
+                      break;
+                    case static_cast<int>(BlinkBreakdown::kCompositeCommit):
+                      reporter->set_composite_commit_us(latency);
+                      break;
+                    case static_cast<int>(BlinkBreakdown::kUpdateLayers):
+                      reporter->set_update_layers_us(latency);
+                      break;
+                    case static_cast<int>(
+                        BlinkBreakdown::kBeginMainSentToStarted):
+                      reporter->set_begin_main_sent_to_started_us(latency);
+                      break;
+                    default:
+                      break;
+                  }
+                });
           });
     } else {
       TRACE_EVENT_BEGIN(kTraceCategory, perfetto::StaticString{stage_name},
@@ -1794,37 +1660,36 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
     if (stage.stage_type ==
         StageType::kSubmitCompositorFrameToPresentationCompositorFrame) {
       DCHECK(processed_viz_breakdown_);
-      for (auto it = processed_viz_breakdown_->CreateIterator(true);
-           it.IsValid(); it.Advance()) {
-        base::TimeTicks start_time = it.GetStartTime();
-        base::TimeTicks end_time = it.GetEndTime();
-        if (start_time >= end_time)
-          continue;
-        const char* breakdown_name = GetVizBreakdownName(it.GetBreakdown());
-        TRACE_EVENT_BEGIN(kTraceCategory,
-                          perfetto::StaticString{breakdown_name}, trace_track,
-                          start_time);
-        TRACE_EVENT_END(kTraceCategory, trace_track, end_time);
-      }
+      processed_viz_breakdown_->ForEachBreakdown(
+          /*skip_swap_start_to_swap_end_if_breakdown_available=*/true,
+          [&](VizBreakdown breakdown, base::TimeTicks start_time,
+              base::TimeTicks end_time) {
+            if (start_time >= end_time) {
+              return;
+            }
+            const char* breakdown_name = GetVizBreakdownName(breakdown);
+            TRACE_EVENT_BEGIN(kTraceCategory,
+                              perfetto::StaticString{breakdown_name},
+                              trace_track, start_time);
+            TRACE_EVENT_END(kTraceCategory, trace_track, end_time);
+          });
     }
 
     if (stage.stage_type ==
         StageType::kSubmitUpdateDisplayTreeToPresentationCompositorFrame) {
       DCHECK(processed_trees_in_viz_breakdown_);
-      for (auto it = processed_trees_in_viz_breakdown_->CreateIterator();
-           it.IsValid(); it.Advance()) {
-        base::TimeTicks start_time = it.GetStartTime();
-        base::TimeTicks end_time = it.GetEndTime();
-        if (start_time >= end_time) {
-          continue;
-        }
-        const char* breakdown_name =
-            GetTreesInVizBreakdownName(it.GetBreakdown());
-        TRACE_EVENT_BEGIN(kTraceCategory,
-                          perfetto::StaticString{breakdown_name}, trace_track,
-                          start_time);
-        TRACE_EVENT_END(kTraceCategory, trace_track, end_time);
-      }
+      processed_trees_in_viz_breakdown_->ForEachBreakdown(
+          [&](TreesInVizBreakdown breakdown, base::TimeTicks start_time,
+              base::TimeTicks end_time) {
+            if (start_time >= end_time) {
+              return;
+            }
+            const char* breakdown_name = GetTreesInVizBreakdownName(breakdown);
+            TRACE_EVENT_BEGIN(kTraceCategory,
+                              perfetto::StaticString{breakdown_name},
+                              trace_track, start_time);
+            TRACE_EVENT_END(kTraceCategory, trace_track, end_time);
+          });
     }
 
     TRACE_EVENT_END(kTraceCategory, trace_track, stage.end_time);

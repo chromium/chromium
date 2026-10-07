@@ -389,44 +389,42 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
              CompositorFrameReporter::StageType::
                  kSubmitUpdateDisplayTreeToPresentationCompositorFrame)) {
           DCHECK(viz_breakdown);
-          for (auto it = viz_breakdown->CreateIterator(true); it.IsValid();
-               it.Advance()) {
-            base::TimeTicks start_time = it.GetStartTime();
-            base::TimeTicks end_time = it.GetEndTime();
+          viz_breakdown->ForEachBreakdown(
+              /*skip_swap_start_to_swap_end_if_breakdown_available=*/true,
+              [&](CompositorFrameReporter::VizBreakdown breakdown,
+                  base::TimeTicks start_time, base::TimeTicks end_time) {
+                // Only record events with positive duration that start before
+                // termination.
+                // For example, in WebView, swap start time is the same as
+                // presentation time, and it wouldn't make sense to have a
+                // zero-duration `SwapStartToPresentation` event. As a result,
+                // the last stage for WebView is `StartDrawToSwapStart`.
+                //
+                // http://b/337195538 tracks a feature request for receiving
+                // presentation time in WebView, which should make it
+                // consistent with Chrome.
+                if (start_time >= end_time || start_time >= termination_time) {
+                  return;
+                }
 
-            // Only record events with positive duration that start before
-            // termination.
-            // For example, in WebView, swap start time is the same as
-            // presentation time, and it wouldn't make sense to have a
-            // zero-duration `SwapStartToPresentation` event. As a result, the
-            // last stage for WebView is `StartDrawToSwapStart`.
-            //
-            // http://b/337195538 tracks a feature request for receiving
-            // presentation time in WebView, which should make it consistent
-            // with Chrome.
-            if (start_time >= end_time || start_time >= termination_time) {
-              continue;
-            }
+                const char* breakdown_name = nullptr;
 
-            CompositorFrameReporter::VizBreakdown breakdown = it.GetBreakdown();
-            const char* breakdown_name = nullptr;
-
-            if (end_time > termination_time) {
-              end_time = termination_time;
-              // A breakdown ending in swap-end can end after termination time
-              // (because swap-end is actually the time the post swap end
-              // callback is run, which can happen after presentation). In this
-              // case we truncate the breakdown to presentation.
-              breakdown_name = GetVizBreakdownToPresentationName(breakdown);
-            } else {
-              breakdown_name =
-                  CompositorFrameReporter::GetVizBreakdownName(breakdown);
-            }
-            TRACE_EVENT_BEGIN(kTracingCategory,
-                              perfetto::StaticString{breakdown_name},
-                              trace_track, start_time);
-            TRACE_EVENT_END(kTracingCategory, trace_track, end_time);
-          }
+                if (end_time > termination_time) {
+                  end_time = termination_time;
+                  // A breakdown ending in swap-end can end after termination
+                  // time (because swap-end is actually the time the post swap
+                  // end callback is run, which can happen after presentation).
+                  // In this case we truncate the breakdown to presentation.
+                  breakdown_name = GetVizBreakdownToPresentationName(breakdown);
+                } else {
+                  breakdown_name =
+                      CompositorFrameReporter::GetVizBreakdownName(breakdown);
+                }
+                TRACE_EVENT_BEGIN(kTracingCategory,
+                                  perfetto::StaticString{breakdown_name},
+                                  trace_track, start_time);
+                TRACE_EVENT_END(kTracingCategory, trace_track, end_time);
+              });
         }
 
         TRACE_EVENT_END(kTracingCategory, trace_track, stage_it->end_time);

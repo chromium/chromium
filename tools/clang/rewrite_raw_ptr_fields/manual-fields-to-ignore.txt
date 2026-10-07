@@ -315,8 +315,6 @@ content::responsiveness::Watcher::calculator_io_
 cc::EffectTreeLayerListIterator::layer_tree_impl_
 cc::EffectTreeLayerListIterator::effect_tree_
 cc::HeadsUpDisplayLayerImpl::placeholder_quad_
-cc::CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator::owner_
-cc::CompositorFrameReporter::ProcessedVizBreakdown::Iterator::owner_
 cc::TilingSetCoverageIterator::tilings_
 cc::PrioritizedTile::tile_
 cc::PrioritizedTile::source_tiling_

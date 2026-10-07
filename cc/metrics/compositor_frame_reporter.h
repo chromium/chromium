@@ -7,6 +7,7 @@
 
 #include <array>
 #include <bitset>
+#include <cstddef>
 #include <deque>
 #include <memory>
 #include <optional>
@@ -15,6 +16,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/bind_internal.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/default_tick_clock.h"
@@ -173,28 +175,9 @@ class CC_EXPORT CompositorFrameReporter {
   using SmoothThread = FrameInfo::SmoothThread;
   using SmoothEffectDrivingThread = FrameInfo::SmoothEffectDrivingThread;
 
-  // Holds a processed list of Blink breakdowns with an `Iterator` class to
-  // easily iterator over them.
+  // Holds a processed list of Blink breakdowns.
   class CC_EXPORT ProcessedBlinkBreakdown {
    public:
-    class Iterator {
-     public:
-      explicit Iterator(const ProcessedBlinkBreakdown* owner);
-      ~Iterator();
-
-      bool IsValid() const;
-      void Advance();
-      BlinkBreakdown GetBreakdown() const;
-      base::TimeDelta GetLatency() const;
-
-     private:
-      // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
-      // stacks.
-      RAW_PTR_EXCLUSION const ProcessedBlinkBreakdown* owner_;
-
-      size_t index_ = 0;
-    };
-
     ProcessedBlinkBreakdown(base::TimeTicks blink_start_time,
                             base::TimeTicks begin_main_frame_start,
                             const BeginMainFrameMetrics& blink_breakdown);
@@ -203,8 +186,9 @@ class CC_EXPORT CompositorFrameReporter {
     ProcessedBlinkBreakdown(const ProcessedBlinkBreakdown&) = delete;
     ProcessedBlinkBreakdown& operator=(const ProcessedBlinkBreakdown&) = delete;
 
-    // Returns a new iterator for the Blink breakdowns.
-    Iterator CreateIterator() const;
+    void ForEachBreakdown(
+        base::FunctionRef<void(BlinkBreakdown breakdown,
+                               base::TimeDelta latency)> fn) const;
 
    private:
     std::array<base::TimeDelta,
@@ -212,35 +196,9 @@ class CC_EXPORT CompositorFrameReporter {
         list_;
   };
 
-  // Holds a processed list of Viz breakdowns with an `Iterator` class to easily
-  // iterate over them.
+  // Holds a processed list of Viz breakdowns.
   class CC_EXPORT ProcessedVizBreakdown {
    public:
-    class Iterator {
-     public:
-      Iterator(const ProcessedVizBreakdown* owner,
-               bool skip_swap_start_to_swap_end);
-      ~Iterator();
-
-      bool IsValid() const;
-      void Advance();
-      VizBreakdown GetBreakdown() const;
-      base::TimeTicks GetStartTime() const;
-      base::TimeTicks GetEndTime() const;
-      base::TimeDelta GetDuration() const;
-
-     private:
-      bool HasValue() const;
-      void SkipBreakdownsIfNecessary();
-
-      // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
-      // stacks.
-      RAW_PTR_EXCLUSION const ProcessedVizBreakdown* owner_;
-      const bool skip_swap_start_to_swap_end_;
-
-      size_t index_ = 0;
-    };
-
     ProcessedVizBreakdown(base::TimeTicks viz_start_time,
                           const viz::FrameTimingDetails& viz_breakdown,
                           bool should_report_histograms);
@@ -249,11 +207,13 @@ class CC_EXPORT CompositorFrameReporter {
     ProcessedVizBreakdown(const ProcessedVizBreakdown&) = delete;
     ProcessedVizBreakdown& operator=(const ProcessedVizBreakdown&) = delete;
 
-    // Returns a new iterator for the Viz breakdowns. If buffer ready breakdowns
-    // are available, `skip_swap_start_to_swap_end_if_breakdown_available` can
-    // be used to skip `kSwapStartToSwapEnd` breakdown.
-    Iterator CreateIterator(
-        bool skip_swap_start_to_swap_end_if_breakdown_available) const;
+    // Calls `fn` for each Viz breakdown that has a value, in enum order. If
+    // buffer ready breakdowns are available,
+    void ForEachBreakdown(
+        bool skip_swap_start_to_swap_end_if_breakdown_available,
+        base::FunctionRef<void(VizBreakdown breakdown,
+                               base::TimeTicks start_time,
+                               base::TimeTicks end_time)> fn) const;
 
     base::TimeTicks swap_start() const { return swap_start_; }
 
@@ -268,29 +228,6 @@ class CC_EXPORT CompositorFrameReporter {
 
   class CC_EXPORT ProcessedTreesInVizBreakdown {
    public:
-    class Iterator {
-     public:
-      explicit Iterator(const ProcessedTreesInVizBreakdown* owner);
-      ~Iterator();
-
-      bool IsValid() const;
-      void Advance();
-      TreesInVizBreakdown GetBreakdown() const;
-      base::TimeTicks GetStartTime() const;
-      base::TimeTicks GetEndTime() const;
-      base::TimeDelta GetDuration() const;
-
-     private:
-      bool HasValue() const;
-      void SkipBreakdownsIfNecessary();
-
-      // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
-      // stacks.
-      RAW_PTR_EXCLUSION const ProcessedTreesInVizBreakdown* owner_;
-
-      size_t index_ = 0;
-    };
-
     explicit ProcessedTreesInVizBreakdown(
         base::TimeTicks trees_in_viz_branch_time,
         base::TimeTicks start_draw_layers,
@@ -302,8 +239,11 @@ class CC_EXPORT CompositorFrameReporter {
     ProcessedTreesInVizBreakdown& operator=(
         const ProcessedTreesInVizBreakdown&) = delete;
 
-    // Returns a new iterator for the TreesInViz breakdowns.
-    Iterator CreateIterator() const;
+    // Calls `fn` for each TreesInViz breakdown that has a value, in enum order.
+    void ForEachBreakdown(
+        base::FunctionRef<void(TreesInVizBreakdown breakdown,
+                               base::TimeTicks start_time,
+                               base::TimeTicks end_time)> fn) const;
 
    private:
     std::array<std::optional<std::pair<base::TimeTicks, base::TimeTicks>>,
