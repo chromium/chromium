@@ -74,6 +74,7 @@ export interface ContentBrowserProxy {
   isReadabilityEnabled(): boolean;
   isReadabilitySelectTextEnabled(): boolean;
   isContentTranslated(): boolean;
+  isTranslatePdfEnabled(): boolean;
   isGoogleDocs(): boolean;
   isLeafNode(nodeId: number): boolean;
   isOverline(nodeId: number): boolean;
@@ -191,6 +192,10 @@ export class ContentBrowserProxyImpl implements ContentBrowserProxy {
 
   isContentTranslated(): boolean {
     return chrome.readingMode.isContentTranslated;
+  }
+
+  isTranslatePdfEnabled(): boolean {
+    return chrome.readingMode.isTranslatePdfEnabled;
   }
 
   isGoogleDocs(): boolean {

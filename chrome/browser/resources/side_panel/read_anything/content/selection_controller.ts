@@ -8,14 +8,7 @@ import type {ContentBrowserProxy} from './content_browser_proxy.js';
 import {ContentBrowserProxyImpl} from './content_browser_proxy.js';
 import {NodeStore} from './node_store.js';
 import {ContentPositionSource} from './read_anything_types.js';
-import type {ContentPosition} from './read_anything_types.js';
-
-interface SelectionWithIds {
-  anchorNodeId?: number;
-  anchorOffset: number;
-  focusNodeId?: number;
-  focusOffset: number;
-}
+import type {ContentPosition, SelectionWithIds} from './read_anything_types.js';
 
 interface ReadOnlySelection {
   anchorNode: Node;

@@ -6,7 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import {ContentType, HIGHLIGHTED_LINK_CLASS, LOG_EMPTY_DELAY_MS, MIN_MS_TO_READ, previousReadHighlightClass, ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ContentController, ContentListener, NodeStore, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -591,6 +591,105 @@ suite('ContentController', () => {
       const root = contentController.updateContent();
       assertTrue(root instanceof HTMLDivElement);
       assertEquals(inputText, root.textContent);
+    });
+
+    suite('block tracking', () => {
+      const pdfRootId = 1;
+      const paragraphId = 10;
+      const paragraphTextId = 11;
+      const linkId = 12;
+      const linkTextId = 13;
+      const headingLineId = 20;
+      const headingLineTextId = 21;
+
+      setup(() => {
+        // A paragraph with a link, followed by a heading line, which is
+        // shown as a <span>.
+        contentBrowserProxy.rootId = pdfRootId;
+        contentBrowserProxy.htmlTagMap = {
+          [pdfRootId]: 'span',
+          [paragraphId]: 'p',
+          [linkId]: 'a',
+          [headingLineId]: 'span',
+        };
+        contentBrowserProxy.childrenMap = {
+          [pdfRootId]: [paragraphId, headingLineId],
+          [paragraphId]: [paragraphTextId, linkId],
+          [linkId]: [linkTextId],
+          [headingLineId]: [headingLineTextId],
+        };
+        contentBrowserProxy.textContentMap = {
+          [paragraphTextId]: 'Follow the ',
+          [linkTextId]: 'link',
+          [headingLineTextId]: 'Heading',
+        };
+        contentBrowserProxy.urlMap = {[linkId]: 'https://www.google.com/'};
+        contentBrowserProxy.translatePdfEnabled = true;
+        visualBrowserProxy.pdf = true;
+      });
+
+      test('groups text by the innermost block', () => {
+        contentController.updateContent();
+
+        assertTrue(nodeStore.isBlock(paragraphId));
+        assertFalse(nodeStore.isBlock(linkId));
+        assertFalse(nodeStore.isBlock(pdfRootId));
+        assertEquals(paragraphId, nodeStore.getBlockIdForText(paragraphTextId));
+        assertEquals(paragraphId, nodeStore.getBlockIdForText(linkTextId));
+      });
+
+      test('groups text that is not in a block by its parent', () => {
+        contentController.updateContent();
+
+        assertTrue(nodeStore.isBlock(headingLineId));
+        assertEquals(
+            headingLineId, nodeStore.getBlockIdForText(headingLineTextId));
+      });
+
+      test('groups text in nested blocks by the innermost block', () => {
+        const divId = 30;
+        const divTextId = 31;
+        contentBrowserProxy.htmlTagMap[divId] = 'div';
+        contentBrowserProxy.childrenMap[pdfRootId] = [divId];
+        contentBrowserProxy.childrenMap[divId] = [divTextId, paragraphId];
+        contentBrowserProxy.textContentMap[divTextId] = 'Before';
+
+        contentController.updateContent();
+
+        assertEquals(divId, nodeStore.getBlockIdForText(divTextId));
+        assertEquals(paragraphId, nodeStore.getBlockIdForText(paragraphTextId));
+      });
+
+      test('registers text in document order', () => {
+        contentController.updateContent();
+
+        assertDeepEquals(
+            {
+              anchorNodeId: paragraphTextId,
+              anchorOffset: 0,
+              focusNodeId: headingLineTextId,
+              focusOffset: 'Heading'.length,
+            },
+            nodeStore.getAxSelectionForBlockRange(paragraphId, headingLineId));
+      });
+
+      test('does not track blocks if disabled', () => {
+        contentBrowserProxy.translatePdfEnabled = false;
+
+        contentController.updateContent();
+
+        assertFalse(nodeStore.isBlock(paragraphId));
+        assertEquals(undefined, nodeStore.getBlockIdForText(paragraphTextId));
+      });
+
+      test('does not track blocks if not a PDF', () => {
+        visualBrowserProxy.pdf = false;
+
+        contentController.updateContent();
+
+        assertFalse(nodeStore.isBlock(paragraphId));
+        assertEquals(undefined, nodeStore.getBlockIdForText(paragraphTextId));
+      });
     });
 
     test('link visibility toggled toggles links with Readability', async () => {

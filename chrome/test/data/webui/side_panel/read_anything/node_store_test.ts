@@ -6,7 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {NodeStore} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {ESTIMATED_WORDS_PER_MS, getWordCount, MIN_MS_TO_READ, ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertGT, assertNotEquals, assertNull, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
 import {setupTestEnvironment, setWindowSize} from './common.js';
@@ -480,5 +480,130 @@ suite('NodeStore', () => {
     nodeStore.setAncestor(child, parent, offset);
 
     assertFalse(!!nodeStore.getAncestor(parent));
+  });
+
+  suite('block map', () => {
+    // Block 10 has the texts 11 and 12, block 15 has the empty text 13, and
+    // block 20 has the text 21.
+    setup(() => {
+      contentBrowserProxy.translatePdfEnabled = true;
+      nodeStore.registerTextInBlock(11, 10, 5);
+      nodeStore.registerTextInBlock(12, 10, 3);
+      nodeStore.registerTextInBlock(13, 15, 0);
+      nodeStore.registerTextInBlock(21, 20, 4);
+    });
+
+    test('does not register text if TranslatePdf is disabled', () => {
+      nodeStore.clearDomNodes();
+      contentBrowserProxy.translatePdfEnabled = false;
+      nodeStore.registerTextInBlock(11, 10, 5);
+
+      // Re-enable the flag to check that nothing was registered.
+      contentBrowserProxy.translatePdfEnabled = true;
+      assertFalse(nodeStore.isBlock(10));
+      assertEquals(undefined, nodeStore.getBlockIdForText(11));
+    });
+
+    test('does not return blocks if TranslatePdf is disabled', () => {
+      contentBrowserProxy.translatePdfEnabled = false;
+
+      assertFalse(nodeStore.isBlock(10));
+      assertEquals(undefined, nodeStore.getBlockIdForText(11));
+      assertNull(nodeStore.getAxSelectionForBlockRange(10, 20));
+      assertNull(nodeStore.getBlockRangeForAxSelection(11, 0, 21, 2));
+    });
+
+    test('groups text by block', () => {
+      assertTrue(nodeStore.isBlock(10));
+      assertTrue(nodeStore.isBlock(15));
+      assertTrue(nodeStore.isBlock(20));
+      assertFalse(nodeStore.isBlock(11));
+      assertFalse(nodeStore.isBlock(30));
+      assertEquals(10, nodeStore.getBlockIdForText(11));
+      assertEquals(10, nodeStore.getBlockIdForText(12));
+      assertEquals(15, nodeStore.getBlockIdForText(13));
+      assertEquals(20, nodeStore.getBlockIdForText(21));
+      assertEquals(undefined, nodeStore.getBlockIdForText(10));
+    });
+
+    test('ignores text that is already registered', () => {
+      nodeStore.registerTextInBlock(11, 20, 5);
+
+      assertEquals(10, nodeStore.getBlockIdForText(11));
+      assertDeepEquals(
+          {anchorNodeId: 21, anchorOffset: 0, focusNodeId: 21, focusOffset: 4},
+          nodeStore.getAxSelectionForBlockRange(20, 20));
+    });
+
+    test('clearDomNodes clears the block map', () => {
+      nodeStore.clearDomNodes();
+
+      assertFalse(nodeStore.isBlock(10));
+      assertEquals(undefined, nodeStore.getBlockIdForText(11));
+      assertNull(nodeStore.getAxSelectionForBlockRange(10, 10));
+      assertNull(nodeStore.getBlockRangeForAxSelection(11, 0, 11, 1));
+    });
+
+    test('getAxSelectionForBlockRange selects all text in the blocks', () => {
+      assertDeepEquals(
+          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 12, focusOffset: 3},
+          nodeStore.getAxSelectionForBlockRange(10, 10));
+      assertDeepEquals(
+          {anchorNodeId: 11, anchorOffset: 0, focusNodeId: 21, focusOffset: 4},
+          nodeStore.getAxSelectionForBlockRange(10, 20));
+    });
+
+    test('getAxSelectionForBlockRange with invalid range', () => {
+      assertNull(nodeStore.getAxSelectionForBlockRange(20, 10));
+      assertNull(nodeStore.getAxSelectionForBlockRange(10, 30));
+      assertNull(nodeStore.getAxSelectionForBlockRange(30, 20));
+    });
+
+    test('getBlockRangeForAxSelection within one block', () => {
+      assertDeepEquals(
+          {startBlockId: 10, endBlockId: 10},
+          nodeStore.getBlockRangeForAxSelection(11, 1, 11, 3));
+      assertDeepEquals(
+          {startBlockId: 10, endBlockId: 10},
+          nodeStore.getBlockRangeForAxSelection(11, 4, 12, 1));
+    });
+
+    test('getBlockRangeForAxSelection across blocks', () => {
+      assertDeepEquals(
+          {startBlockId: 10, endBlockId: 20},
+          nodeStore.getBlockRangeForAxSelection(12, 2, 21, 1));
+    });
+
+    test('getBlockRangeForAxSelection with backward selection', () => {
+      assertDeepEquals(
+          {startBlockId: 10, endBlockId: 20},
+          nodeStore.getBlockRangeForAxSelection(21, 1, 12, 2));
+      assertDeepEquals(
+          {startBlockId: 10, endBlockId: 10},
+          nodeStore.getBlockRangeForAxSelection(11, 3, 11, 1));
+    });
+
+    test('getBlockRangeForAxSelection skips unselected text', () => {
+      // Starts at the end of block 10 and skips the empty text in block 15.
+      assertDeepEquals(
+          {startBlockId: 20, endBlockId: 20},
+          nodeStore.getBlockRangeForAxSelection(12, 3, 21, 1));
+      // Ends at the start of block 20 and skips the empty text in block 15.
+      assertDeepEquals(
+          {startBlockId: 10, endBlockId: 10},
+          nodeStore.getBlockRangeForAxSelection(11, 1, 21, 0));
+    });
+
+    test('getBlockRangeForAxSelection without selected text', () => {
+      // Collapsed.
+      assertNull(nodeStore.getBlockRangeForAxSelection(11, 2, 11, 2));
+      // From the end of one text to the start of the next one.
+      assertNull(nodeStore.getBlockRangeForAxSelection(11, 5, 12, 0));
+      // Only the empty text.
+      assertNull(nodeStore.getBlockRangeForAxSelection(12, 3, 21, 0));
+      // Text that isn't in a block.
+      assertNull(nodeStore.getBlockRangeForAxSelection(11, 0, 30, 1));
+      assertNull(nodeStore.getBlockRangeForAxSelection(30, 0, 11, 1));
+    });
   });
 });

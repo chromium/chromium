@@ -37,6 +37,14 @@ export interface ContentPosition {
   source: ContentPositionSource;
 }
 
+// A selection whose endpoints are identified by AXNodeIDs and offsets.
+export interface SelectionWithIds {
+  anchorNodeId?: number;
+  anchorOffset: number;
+  focusNodeId?: number;
+  focusOffset: number;
+}
+
 export enum LineFocusType {
   NONE = 0,
   LINE = 1,

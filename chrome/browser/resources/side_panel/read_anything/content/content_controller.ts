@@ -76,6 +76,33 @@ const READABILITY_TAG_TO_RM_TAG: Map<string, string> = new Map([
   ['em', 'b'],
 ]);
 
+// The tags of the elements that are registered as blocks in the NodeStore when
+// block tracking is enabled (see ContentController.buildSubtree_). A block
+// is an element whose text is translated as a unit, and which translation
+// doesn't replace, so it can be used to map selections of translated text to
+// the text in the AX tree. When blocks are nested, text belongs to the
+// innermost block. Only used when building content from the AX tree (see
+// buildSubtree_), not for Readability distillation.
+const SCREEN2X_BLOCK_TAGS: Set<string> = new Set([
+  'BLOCKQUOTE',
+  'CAPTION',
+  'DD',
+  'DIV',
+  'DT',
+  'FIGCAPTION',
+  'H1',
+  'H2',
+  'H3',
+  'H4',
+  'H5',
+  'H6',
+  'LI',
+  'P',
+  'PRE',
+  'TD',
+  'TH',
+]);
+
 export interface ContentListener {
   // Called when the current state changes between the different ContentTypes.
   onContentStateChange(): void;
@@ -373,7 +400,10 @@ export class ContentController {
       return null;
     }
 
-    const node = this.buildSubtree_(rootId);
+    const shouldTrackBlocks =
+        this.contentBrowserProxy_.isTranslatePdfEnabled() &&
+        this.visualBrowserProxy_.isPdf();
+    const node = this.buildSubtree_(rootId, shouldTrackBlocks);
     // If there is no text or images in the tree, do not proceed. The empty
     // state container will show instead.
     // We should only consider images as content when determining whether or
@@ -499,17 +529,27 @@ export class ContentController {
     });
   }
 
-  private buildSubtree_(nodeId: number): Node {
+  // `shouldTrackBlocks` is whether to register blocks and their text in the
+  // NodeStore, so that selections of translated content can be synced with the
+  // main panel. When tracking blocks, `blockId` is the AXNodeID of the
+  // innermost block containing the node, if any, and `parentId` is the
+  // AXNodeID of the node's parent, if any. Text nodes that aren't in a block
+  // are grouped by their parent instead.
+  private buildSubtree_(
+      nodeId: number, shouldTrackBlocks: boolean, blockId?: number,
+      parentId?: number): Node {
     let htmlTag = this.contentBrowserProxy_.getHtmlTag(nodeId);
     const dataAttributes = new Map<string, string>();
 
     // Text nodes do not have an html tag.
     if (!htmlTag.length) {
-      return this.createTextNode_(nodeId);
+      return this.createTextNode_(
+          nodeId, shouldTrackBlocks ? blockId ?? parentId : undefined);
     }
 
     // For Google Docs, we extract text from Annotated Canvas. The Annotated
-    // Canvas elements with text are leaf nodes with <rect> html tag.
+    // Canvas elements with text are leaf nodes with <rect> html tag. Blocks
+    // are only tracked for PDFs, so there's no block to pass here.
     if (this.contentBrowserProxy_.isGoogleDocs() &&
         this.contentBrowserProxy_.isLeafNode(nodeId)) {
       return this.createTextNode_(nodeId);
@@ -537,6 +577,9 @@ export class ContentController {
       element.dataset[attr] = val;
     }
     this.nodeStore_.setDomNode(element, nodeId);
+    if (shouldTrackBlocks && SCREEN2X_BLOCK_TAGS.has(element.tagName)) {
+      blockId = nodeId;
+    }
     const direction = this.contentBrowserProxy_.getTextDirection(nodeId);
     if (direction) {
       element.setAttribute('dir', direction);
@@ -558,7 +601,7 @@ export class ContentController {
       element.setAttribute('lang', language);
     }
 
-    this.appendChildSubtrees_(element, nodeId);
+    this.appendChildSubtrees_(element, nodeId, shouldTrackBlocks, blockId);
 
     // Check after the children are built so the figure's contents are in the
     // node store.
@@ -570,9 +613,12 @@ export class ContentController {
     return element;
   }
 
-  private appendChildSubtrees_(node: Node, nodeId: number) {
+  private appendChildSubtrees_(
+      node: Node, nodeId: number, shouldTrackBlocks: boolean,
+      blockId?: number) {
     for (const childNodeId of this.contentBrowserProxy_.getChildren(nodeId)) {
-      const childNode = this.buildSubtree_(childNodeId);
+      const childNode =
+          this.buildSubtree_(childNodeId, shouldTrackBlocks, blockId, nodeId);
       node.appendChild(childNode);
     }
   }
@@ -656,10 +702,16 @@ export class ContentController {
     };
   }
 
-  private createTextNode_(nodeId: number): Node {
+  // `blockId` is the AXNodeID of the block that the text node belongs to. It's
+  // only set when tracking blocks, and the text is registered in the block if
+  // it's set. See buildSubtree_.
+  private createTextNode_(nodeId: number, blockId?: number): Node {
     const textContent = this.contentBrowserProxy_.getTextContent(nodeId);
     const textNode = document.createTextNode(textContent);
     this.nodeStore_.setDomNode(textNode, nodeId);
+    if (blockId !== undefined) {
+      this.nodeStore_.registerTextInBlock(nodeId, blockId, textContent.length);
+    }
     const isOverline = this.contentBrowserProxy_.isOverline(nodeId);
     const shouldBold = this.contentBrowserProxy_.shouldBold(nodeId);
     const isPdf = this.visualBrowserProxy_.isPdf();
