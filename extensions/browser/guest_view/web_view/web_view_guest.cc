@@ -1489,14 +1489,7 @@ void WebViewGuest::RenderFrameCreated(
     return;
   }
 
-  PushWebViewStateToIOThread(render_frame_host);
-
-  if (!render_frame_host->GetParentOrOuterDocument()) {
-    ExtensionWebContentsObserver::GetForWebContents(web_contents())
-        ->GetLocalFrameChecked(render_frame_host)
-        .SetFrameName(name_);
-    SetTransparency(render_frame_host);
-  }
+  ApplyWebViewStateToRenderFrameHost(render_frame_host);
 }
 
 void WebViewGuest::RenderFrameDeleted(
@@ -1538,6 +1531,19 @@ void WebViewGuest::RenderFrameHostChanged(content::RenderFrameHost* old_host,
     WebViewRendererState::GetInstance()->RemoveGuest(
         old_host->GetProcess()->GetDeprecatedID(), old_host->GetRoutingID());
   }
+
+  // When a guest opens a popup, a new `WebViewGuest` is initially created in
+  // an unattached state (before the embedder attaches a `<webview>` element
+  // with its `view_instance_id`, content scripts, and `name` attribute). In
+  // MPArch, the popup's initial navigation starts before attachment (paused at
+  // `WillStartRequest()` by `CreateWindowThrottle`) and can create a
+  // speculative RenderFrameHost (`new_host`) whose `RenderFrameCreated()` runs
+  // while the guest is still unattached. When the embedder subsequently
+  // attaches the `<webview>`, `WillAttachToEmbedder()` and
+  // `DidAttachToEmbedder()` (`SetName()`, etc.) only update
+  // `GetGuestMainFrame()` (`old_host`), not the speculative `new_host`. Apply
+  // the post-attachment state to `new_host` when it swaps in.
+  ApplyWebViewStateToRenderFrameHost(new_host);
 }
 
 void WebViewGuest::ReportFrameNameChange(const std::string& name) {
@@ -1574,6 +1580,16 @@ void WebViewGuest::PushWebViewStateToIOThread(
   WebViewRendererState::GetInstance()->AddGuest(
       guest_host->GetProcess()->GetDeprecatedID(), guest_host->GetRoutingID(),
       web_view_info);
+}
+
+void WebViewGuest::ApplyWebViewStateToRenderFrameHost(
+    content::RenderFrameHost* render_frame_host) {
+  PushWebViewStateToIOThread(render_frame_host);
+
+  if (!render_frame_host->GetParentOrOuterDocument()) {
+    SetFrameName(render_frame_host);
+    SetTransparency(render_frame_host);
+  }
 }
 
 void WebViewGuest::RequestMediaAccessPermission(
@@ -1905,9 +1921,7 @@ void WebViewGuest::SetName(const std::string& name) {
   if (!GetGuestMainFrame()->IsRenderFrameLive()) {
     return;
   }
-  ExtensionWebContentsObserver::GetForWebContents(web_contents())
-      ->GetLocalFrameChecked(GetGuestMainFrame())
-      .SetFrameName(name_);
+  SetFrameName(GetGuestMainFrame());
 }
 
 void WebViewGuest::SetSpatialNavigationEnabled(bool enabled) {
@@ -1970,6 +1984,13 @@ bool WebViewGuest::IsAudioMuted() {
     CHECK(web_contents());
     return web_contents()->IsAudioMuted();
   }
+}
+
+void WebViewGuest::SetFrameName(content::RenderFrameHost* render_frame_host) {
+  CHECK(render_frame_host->IsRenderFrameLive());
+  ExtensionWebContentsObserver::GetForWebContents(web_contents())
+      ->GetLocalFrameChecked(render_frame_host)
+      .SetFrameName(name_);
 }
 
 void WebViewGuest::SetTransparency(

@@ -348,6 +348,8 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void ReportFrameNameChange(const std::string& name);
 
   void PushWebViewStateToIOThread(content::RenderFrameHost* guest_host);
+  void ApplyWebViewStateToRenderFrameHost(
+      content::RenderFrameHost* render_frame_host);
 
   // Loads the URL using the parameters provided in `load_url_params`.
   // `force_navigation` indicates whether to reload the content if the provided
@@ -387,6 +389,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
 
   void ApplyAttributes(const base::DictValue& params);
 
+  void SetFrameName(content::RenderFrameHost* render_frame_host);
   void SetTransparency(content::RenderFrameHost* render_frame_host);
 
   void CreateInnerPageWithStoragePartition(
