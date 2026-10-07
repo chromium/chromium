@@ -6,6 +6,7 @@
 
 #import <optional>
 
+#import "base/check.h"
 #import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
@@ -111,6 +112,7 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
     return;
   }
   _currentTaskId = taskID;
+  _actorService->SetTaskInterventionDelegate(taskID, self);
 }
 
 - (void)stopObservingTask {
@@ -118,6 +120,7 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
     return;
   }
   if (_actorService) {
+    _actorService->SetTaskInterventionDelegate(*_currentTaskId, nil);
     _actorService->RemoveTaskUpdatesObserver(*_currentTaskId, self);
   }
   _currentTaskId.reset();
@@ -128,6 +131,9 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
 }
 
 - (void)disconnect {
+  // TODO(crbug.com/567035965): A pending intervention is dropped without an
+  // answer, leaving the task in `kWaitingOnUser`. Re-surface the intervention
+  // once the worklog can be restored.
   [self stopObservingTask];
   _actorService = nullptr;
   _consumer = nil;
@@ -227,6 +233,7 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
         completionHandler:
             (void (^)(ActorFormSuggestion* selectedSuggestion,
                       BOOL shouldStorePermission))completionHandler {
+  CHECK(_currentTaskId == taskID);
   completionHandler(suggestions.firstObject, NO);
 }
 
@@ -235,6 +242,7 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
                             subtitle:(NSString*)subtitle
                           buttonText:(NSString*)buttonText
                    completionHandler:(void (^)(void))completionHandler {
+  CHECK(_currentTaskId == taskID);
   [self discardPendingIntervention];
   if (completionHandler) {
     _pendingInterventionCompletion = [completionHandler copy];
