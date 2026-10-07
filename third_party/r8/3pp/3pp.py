@@ -60,13 +60,6 @@ public class Sample implements Iface {
   public Supplier<String> supplier() { return () -> greet(); }
 }
 """
-# Record desugaring emits a global synthetic (RecordTag), which --intermediate
-# dexing rejects unless --ignore-global-synthetics is passed.
-_SAMPLE_RECORD_JAVA = """\
-package org.chromium.sample;
-
-public record Point(int x, int y) {}
-"""
 
 # Examples of version strings:
 # 1.8, 2.5.10, 3.7-dev-aosp
@@ -199,7 +192,6 @@ def _sample_d8_args(out_dir, jdk_home, classpath_jar, program_class_files,
         # Per-library dexing with desugaring.
         common_args + [
             '--intermediate',
-            '--ignore-global-synthetics',
             '--file-per-class-file',
             '--classpath',
             classpath_jar,
@@ -239,14 +231,11 @@ def _build_native_custom_d8(r8_jar, output_path):
     (sample_src / 'Iface.java').write_text(_SAMPLE_IFACE_JAVA,
                                            encoding='utf-8')
     (sample_src / 'Sample.java').write_text(_SAMPLE_JAVA, encoding='utf-8')
-    (sample_src / 'Point.java').write_text(_SAMPLE_RECORD_JAVA,
-                                           encoding='utf-8')
     sample_classes = os.path.abspath('sample_classes')
     common.run_cmd([
-        javac_bin, '--release', '17', '-d', sample_classes,
+        javac_bin, '--release', '11', '-d', sample_classes,
         str(sample_src / 'Iface.java'),
-        str(sample_src / 'Sample.java'),
-        str(sample_src / 'Point.java')
+        str(sample_src / 'Sample.java')
     ])
     iface_class = 'org/chromium/sample/Iface.class'
     iface_jar = os.path.abspath('sample_classpath.jar')
