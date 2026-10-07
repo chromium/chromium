@@ -89,6 +89,9 @@ struct GeminiContainerUIState {
 // when floaty is minimized in zero state with Chrome Next IA enabled).
 - (BOOL)shouldBeDismissed;
 
+// Returns whether the Gemini UI is currently in Live mode.
+- (BOOL)isInGeminiLiveMode;
+
 // Disconnects and resets internal state and timer.
 - (void)reset;
 

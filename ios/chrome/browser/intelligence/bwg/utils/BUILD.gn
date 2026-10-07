@@ -42,6 +42,20 @@ source_set("feature_availability") {
   ]
 }
 
+source_set("live_utils") {
+  sources = [
+    "gemini_live_utils.h",
+    "gemini_live_utils.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+  ]
+}
+
 source_set("availability") {
   sources = [
     "gemini_availability.h",

@@ -216,6 +216,10 @@ GeminiContainerUIState GeminiContainerUIState::Actuating() {
          !_hasConversation && IsChromeNextIaEnabled();
 }
 
+- (BOOL)isInGeminiLiveMode {
+  return _viewMode == GeminiViewMode::kLive;
+}
+
 - (void)reset {
   _thinkingStartTime = base::TimeTicks();
   _hasConversation = NO;
