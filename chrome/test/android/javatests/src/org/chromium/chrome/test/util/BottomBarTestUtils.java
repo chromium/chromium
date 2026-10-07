@@ -25,15 +25,13 @@ import org.chromium.chrome.browser.ui.bottombar.BottomBarView;
 public class BottomBarTestUtils {
     /**
      * Whether the bottom bar is currently expected to be visible for the given activity based on
-     * its state and configuration (e.g. not disabled on NTP).
+     * its state and configuration.
      */
     public static boolean isBottomBarVisible(Activity activity) {
         if (!BottomBarConfigUtils.isBottomBarEnabled(activity)) {
             return false;
         }
-        if (isRegularNtp(activity) && BottomBarConfigUtils.shouldDisableOnNtp()) {
-            return false;
-        }
+
         if (activity instanceof ChromeTabbedActivity tabbedActivity
                 && !BottomBarConfigUtils.shouldShowOnGts()
                 && ThreadUtils.runOnUiThreadBlocking(
@@ -153,15 +151,6 @@ public class BottomBarTestUtils {
             return null;
         }
         return fallbackView;
-    }
-
-    /** Returns whether the current tab for the given activity is a regular New Tab Page. */
-    private static boolean isRegularNtp(Activity activity) {
-        if (activity instanceof ChromeTabbedActivity chromeActivity) {
-            return ThreadUtils.runOnUiThreadBlocking(
-                    () -> BottomBarConfigUtils.isRegularNtp(chromeActivity.getActivityTab()));
-        }
-        return false;
     }
 
     private static boolean isChildOf(View child, View potentialParent) {

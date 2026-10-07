@@ -49,7 +49,6 @@ public class NewBackgroundTabAnimationData {
     private @Nullable View mToolbarTabSwitcherButton;
 
     // Snapshotted state.
-    private boolean mIsBottomBarVisible;
     private boolean mIsPositionOnTop;
     private @Nullable View mTabSwitcherButton;
     private @ColorInt int mPrimaryColor;
@@ -82,8 +81,7 @@ public class NewBackgroundTabAnimationData {
 
     /**
      * Captures a snapshot of the current UI state for the duration of the animation. This includes
-     * computing the visibility of the bottom bar, finding the tab switcher button, calculating its
-     * location, and retrieving the colors.
+     * finding the tab switcher button, calculating its location, and retrieving the colors.
      *
      * <p>This method should be called at the start of the animation to ensure that all getters
      * return consistent, snapshotted data.
@@ -96,21 +94,20 @@ public class NewBackgroundTabAnimationData {
         mTabSwitcherButton = null;
         mTabSwitcherButtonRect.setEmpty();
 
-        if (mIsBottomBarEnabled) updateBottomBarTabSwitcherButtonCalculations(isRegularNtp);
-
-        if (mIsBottomBarVisible) {
+        if (mIsBottomBarEnabled) {
             // When the bottom bar is enabled, NewTabAnimationLayout will force it to be visible, so
             // we do not need to worry about the visibility of the bottom bar button.
+            updateBottomBarTabSwitcherButtonViewIfNull();
             mTabSwitcherButton = mBottomBarTabSwitcherButton;
         } else {
-            // Fallback to the toolbar button if the bottom bar is not visible.
+            // Fallback to the toolbar button if the bottom bar is not enabled.
             updateToolbarTabSwitcherButtonViewIfNull();
             mTabSwitcherButton = mToolbarTabSwitcherButton;
         }
 
         assumeNonNull(mTabSwitcherButton);
         mIsPositionOnTop =
-                !mIsBottomBarVisible && ToolbarPositionController.shouldShowToolbarOnTop(tab);
+                !mIsBottomBarEnabled && ToolbarPositionController.shouldShowToolbarOnTop(tab);
 
         boolean tabSwitcherButtonIsVisible =
                 mTabSwitcherButton.getGlobalVisibleRect(mTabSwitcherButtonRect);
@@ -134,13 +131,13 @@ public class NewBackgroundTabAnimationData {
                         tabSwitcherButtonIsVisible,
                         isRegularNtp,
                         ntpToolbarTransitionPercentage,
-                        mIsBottomBarVisible);
+                        mIsBottomBarEnabled);
 
         if (isRegularNtp
                 && mAnimationType == AnimationType.DEFAULT
                 && NtpCustomizationUtils.shouldAdjustIconTintForNtp(
                         mToolbarManager.getWindowAndroid(), /* isLff= */ false)
-                && !mIsBottomBarVisible) {
+                && !mIsBottomBarEnabled) {
             mBrandedColorScheme = BrandedColorScheme.DARK_BRANDED_THEME;
             mIconTint = ThemeUtils.getThemedToolbarIconTint(mContext, mBrandedColorScheme);
         }
@@ -180,9 +177,9 @@ public class NewBackgroundTabAnimationData {
         return mBrandedColorScheme;
     }
 
-    /** Returns whether the bottom bar is visible. */
-    /* package */ boolean isBottomBarVisible() {
-        return mIsBottomBarVisible;
+    /** Returns whether the bottom bar is enabled. */
+    /* package */ boolean isBottomBarEnabled() {
+        return mIsBottomBarEnabled;
     }
 
     /** Returns the icon tint color. */
@@ -191,7 +188,7 @@ public class NewBackgroundTabAnimationData {
         return mIconTint;
     }
 
-    private void updateBottomBarTabSwitcherButtonCalculations(boolean isNtp) {
+    private void updateBottomBarTabSwitcherButtonViewIfNull() {
         if (mBottomBarTabSwitcherButton == null) {
             View bottomBar =
                     mAnimationHostView.findViewById(
@@ -201,8 +198,6 @@ public class NewBackgroundTabAnimationData {
             assert mBottomBarTabSwitcherButton != null
                     : "Tab switcher button not found in bottom bar";
         }
-        mIsBottomBarVisible =
-                mIsBottomBarEnabled && !(isNtp && BottomBarConfigUtils.shouldDisableOnNtp());
     }
 
     private void updateToolbarTabSwitcherButtonViewIfNull() {
@@ -217,7 +212,7 @@ public class NewBackgroundTabAnimationData {
     private @BrandedColorScheme int computeBrandedColorScheme(@Nullable Tab tab) {
         boolean isIncognito = tab != null && tab.isIncognitoBranded();
 
-        if (mIsBottomBarVisible) {
+        if (mIsBottomBarEnabled) {
             // TODO(crbug.com/491513154): Update this to use the actual bottom bar color scheme
             // from the provider.
             return isIncognito
@@ -230,14 +225,14 @@ public class NewBackgroundTabAnimationData {
     }
 
     private @ColorInt int computePrimaryColor() {
-        if (mIsBottomBarVisible) {
+        if (mIsBottomBarEnabled) {
             return BottomBarUtils.getBottomBarBackgroundColor(mContext, mBrandedColorScheme);
         }
         return mToolbarManager.getPrimaryColor();
     }
 
     private ColorStateList computeIconTint() {
-        if (mIsBottomBarVisible) {
+        if (mIsBottomBarEnabled) {
             return BottomBarUtils.getIconColorStateList(mContext, mBrandedColorScheme);
         }
         return ThemeUtils.getThemedToolbarIconTint(mContext, mBrandedColorScheme);

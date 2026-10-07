@@ -51,29 +51,4 @@ public class ToolbarVariationUtilsUnitTest {
                 ToolbarVariationUtils.isToolbarUiRefactorEnabled(
                         RuntimeEnvironment.getApplication()));
     }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false")
-    public void testShouldModifyToolbarButtons_FlagDisabled() {
-        // Flag disabled: return true on both.
-        assertTrue(
-                ToolbarVariationUtils.shouldModifyToolbarButtons(
-                        RuntimeEnvironment.getApplication(), true));
-        assertTrue(
-                ToolbarVariationUtils.shouldModifyToolbarButtons(
-                        RuntimeEnvironment.getApplication(), false));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/true")
-    public void testShouldModifyToolbarButtons_FlagEnabled() {
-        // Flag enabled: return false on NTP.
-        assertFalse(
-                ToolbarVariationUtils.shouldModifyToolbarButtons(
-                        RuntimeEnvironment.getApplication(), true));
-        // Return true on non-NTP.
-        assertTrue(
-                ToolbarVariationUtils.shouldModifyToolbarButtons(
-                        RuntimeEnvironment.getApplication(), false));
-    }
 }

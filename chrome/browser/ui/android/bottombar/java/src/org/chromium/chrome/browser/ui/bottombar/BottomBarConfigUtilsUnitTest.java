@@ -106,9 +106,9 @@ public class BottomBarConfigUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false")
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testIsNtpScrollOffEnabled_ValidNtp() {
-        when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.isOffTheRecord()).thenReturn(false);
         when(mTab.getNativePage()).thenReturn(mNativePage);
         when(mNativePage.getHost()).thenReturn("newtab");
 
@@ -118,7 +118,7 @@ public class BottomBarConfigUtilsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testIsNtpScrollOffEnabled_Incognito() {
-        when(mTab.isIncognito()).thenReturn(true);
+        when(mTab.isOffTheRecord()).thenReturn(true);
         when(mTab.getNativePage()).thenReturn(mNativePage);
         when(mNativePage.getHost()).thenReturn("newtab");
 
@@ -128,7 +128,7 @@ public class BottomBarConfigUtilsUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testIsNtpScrollOffEnabled_BottomBarDisabled() {
-        when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.isOffTheRecord()).thenReturn(false);
         when(mTab.getNativePage()).thenReturn(mNativePage);
         when(mNativePage.getHost()).thenReturn("newtab");
 
@@ -136,11 +136,9 @@ public class BottomBarConfigUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures(
-            ChromeFeatureList.ANDROID_BOTTOM_BAR
-                    + ":ntp_scroll_off_enabled/true/disable_on_ntp/false")
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":ntp_scroll_off_enabled/true")
     public void testIsNtpScrollOffEnabled_KillSwitchEnabled() {
-        when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.isOffTheRecord()).thenReturn(false);
         when(mTab.getNativePage()).thenReturn(mNativePage);
         when(mNativePage.getHost()).thenReturn("newtab");
 
@@ -150,33 +148,11 @@ public class BottomBarConfigUtilsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":ntp_scroll_off_enabled/false")
     public void testIsNtpScrollOffEnabled_KillSwitchDisabled() {
-        when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.isOffTheRecord()).thenReturn(false);
         when(mTab.getNativePage()).thenReturn(mNativePage);
         when(mNativePage.getHost()).thenReturn("newtab");
 
         assertFalse(BottomBarConfigUtils.isNtpScrollOffEnabled(mTab, mContext));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/true")
-    public void testIsNtpScrollOffEnabled_DisableOnNtpEnabled() {
-        when(mTab.isIncognito()).thenReturn(false);
-        when(mTab.getNativePage()).thenReturn(mNativePage);
-        when(mNativePage.getHost()).thenReturn("newtab");
-        when(mTab.isNativePage()).thenReturn(true);
-
-        assertFalse(BottomBarConfigUtils.isNtpScrollOffEnabled(mTab, mContext));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false")
-    public void testIsNtpScrollOffEnabled_DisableOnNtpDisabled() {
-        when(mTab.isIncognito()).thenReturn(false);
-        when(mTab.getNativePage()).thenReturn(mNativePage);
-        when(mNativePage.getHost()).thenReturn("newtab");
-        when(mTab.isNativePage()).thenReturn(true);
-
-        assertTrue(BottomBarConfigUtils.isNtpScrollOffEnabled(mTab, mContext));
     }
 
     @Test
@@ -200,9 +176,9 @@ public class BottomBarConfigUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false")
-    public void testShouldForceBothConstraints_ValidNtp_ScrollOffEnabled() {
-        when(mTab.isIncognito()).thenReturn(false);
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testShouldForceBothConstraints_RegularNtp() {
+        when(mTab.isOffTheRecord()).thenReturn(false);
         when(mTab.getNativePage()).thenReturn(mNativePage);
         when(mNativePage.getHost()).thenReturn("newtab");
         when(mTab.isNativePage()).thenReturn(true);
@@ -212,9 +188,9 @@ public class BottomBarConfigUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false")
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testShouldForceBothConstraints_IncognitoNtp() {
-        when(mTab.isIncognito()).thenReturn(true);
+        when(mTab.isOffTheRecord()).thenReturn(true);
         when(mTab.getNativePage()).thenReturn(mNativePage);
         when(mNativePage.getHost()).thenReturn("newtab");
         when(mTab.isNativePage()).thenReturn(true);
@@ -225,9 +201,9 @@ public class BottomBarConfigUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false")
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testShouldForceBothConstraints_NormalPage() {
-        when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.isOffTheRecord()).thenReturn(false);
         when(mTab.getNativePage()).thenReturn(null);
 
         assertFalse(
@@ -237,7 +213,7 @@ public class BottomBarConfigUtilsUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testShouldForceBothConstraints_BottomBarDisabled() {
-        when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.isOffTheRecord()).thenReturn(false);
         when(mTab.getNativePage()).thenReturn(mNativePage);
         when(mNativePage.getHost()).thenReturn("newtab");
         when(mTab.isNativePage()).thenReturn(true);
@@ -247,24 +223,14 @@ public class BottomBarConfigUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false")
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testShouldForceBothConstraints_InternalScheme() {
-        when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.isOffTheRecord()).thenReturn(false);
         when(mTab.getNativePage()).thenReturn(null);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
 
         assertTrue(
                 BottomBarConfigUtils.shouldForceBothConstraintsForBottomControls(mTab, mContext));
-    }
-
-    @Test
-    public void testIsRegularNtp_NtpUrlWithoutNativePage() {
-        // A navigation to the NTP updates the URL before the native page is shown.
-        when(mTab.isOffTheRecord()).thenReturn(false);
-        when(mTab.getNativePage()).thenReturn(null);
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
-
-        assertFalse(BottomBarConfigUtils.isRegularNtp(mTab));
     }
 
     @Test

@@ -235,7 +235,7 @@ public class BottomControlsMediatorTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false"})
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR})
     public void testEdgeToEdge_NtpYTranslation() {
         Tab tab = Mockito.mock(Tab.class);
         Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
@@ -519,7 +519,7 @@ public class BottomControlsMediatorTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false"})
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR})
     public void testEdgeToEdge_BottomPadding() {
         BottomControlsMediator bottomAppBarMediator =
                 new BottomControlsMediator(

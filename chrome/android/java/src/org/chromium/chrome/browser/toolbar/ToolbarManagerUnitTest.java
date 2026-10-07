@@ -708,9 +708,7 @@ public class ToolbarManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures(
-            ChromeFeatureList.ANDROID_BOTTOM_BAR
-                    + ":ntp_scroll_off_enabled/true/disable_on_ntp/false")
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":ntp_scroll_off_enabled/true")
     public void testBottomBarConstraintsSupplier_ntpScrollOffEnabled() {
         var supplier = mToolbarManager.getBottomBarConstraintsSupplierForTesting();
         Tab ntpTab = mockTab(/* isNtp= */ true);
@@ -727,9 +725,7 @@ public class ToolbarManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures(
-            ChromeFeatureList.ANDROID_BOTTOM_BAR
-                    + ":ntp_scroll_off_enabled/false/disable_on_ntp/false")
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":ntp_scroll_off_enabled/false")
     public void testBottomBarConstraintsSupplier_ntpScrollOffDisabledButForcedBoth() {
         var supplier = mToolbarManager.getBottomBarConstraintsSupplierForTesting();
         Tab ntpTab = mockTab(/* isNtp= */ true);
@@ -745,28 +741,7 @@ public class ToolbarManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures(
-            ChromeFeatureList.ANDROID_BOTTOM_BAR
-                    + ":ntp_scroll_off_enabled/true/disable_on_ntp/true")
-    public void testBottomBarConstraintsSupplier_disableOnNtpEnabled() {
-        var supplier = mToolbarManager.getBottomBarConstraintsSupplierForTesting();
-        Tab ntpTab = mockTab(/* isNtp= */ true);
-        BrowserControlsVisibilityDelegate visibilityDelegate =
-                new BrowserControlsVisibilityDelegate(BrowserControlsState.SHOWN);
-        setMockConstraintsHelper(ntpTab, visibilityDelegate);
-
-        mActivityTabProvider.setForTesting(ntpTab);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        // If bottom bar is disabled on NTP, we should not force BOTH constraints (should return
-        // SHOWN).
-        assertEquals(BrowserControlsState.SHOWN, supplier.get().intValue());
-    }
-
-    @Test
-    @EnableFeatures(
-            ChromeFeatureList.ANDROID_BOTTOM_BAR
-                    + ":ntp_scroll_off_enabled/true/disable_on_ntp/false")
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":ntp_scroll_off_enabled/true")
     public void testBottomBarConstraintsSupplier_normalPage() {
         var supplier = mToolbarManager.getBottomBarConstraintsSupplierForTesting();
         Tab normalTab = mockTab(/* isNtp= */ false);
@@ -798,9 +773,7 @@ public class ToolbarManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures(
-            ChromeFeatureList.ANDROID_BOTTOM_BAR
-                    + ":ntp_scroll_off_enabled/true/disable_on_ntp/false")
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":ntp_scroll_off_enabled/true")
     public void testBottomBarConstraintsSupplier_incognitoNtpForcedBoth() {
         var supplier = mToolbarManager.getBottomBarConstraintsSupplierForTesting();
         Tab ntpTab = mockTab(/* isNtp= */ true, /* isIncognito= */ true);
@@ -916,8 +889,6 @@ public class ToolbarManagerUnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     @DisableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
     public void testToolbarOptionalButtonHidden_whenBottomBarEnabled_andNotIdentityDisk() {
-        ChromeFeatureList.sAndroidBottomBarDisableOnNtp.setForTesting(false);
-
         Tab ntpTab = mockTab(/* isNtp= */ true);
         mActivityTabProvider.setForTesting(ntpTab);
 
@@ -973,39 +944,6 @@ public class ToolbarManagerUnitTest {
                 toolbar.findViewById(R.id.toolbar_buttons)
                         .findViewById(R.id.optional_toolbar_button_container);
         assertTrue(toolbarButton == null || toolbarButton.getVisibility() == View.GONE);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
-    @DisableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
-    public void testNtpOptionalButtonVisible_whenBottomBarEnabled_andDisableOnNtp() {
-        ChromeFeatureList.sAndroidBottomBarDisableOnNtp.setForTesting(true);
-
-        Tab ntpTab = mockTab(/* isNtp= */ true);
-        mActivityTabProvider.setForTesting(ntpTab);
-
-        ButtonDataImpl shareButtonData =
-                new ButtonDataImpl(
-                        /* canShow= */ true,
-                        /* isEnabled= */ true,
-                        new ButtonSpec.Builder(
-                                        /* drawable= */ null,
-                                        /* contentDescription= */ "Share",
-                                        /* supportsTinting= */ false)
-                                .setButtonVariant(AdaptiveToolbarButtonVariant.SHARE)
-                                .build());
-        when(mAdaptiveButtonProvider.get(ntpTab)).thenReturn(shareButtonData);
-
-        mAdaptiveButtonObserverCaptor.getValue().buttonDataChanged(true);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        AppCompatActivity activity = mActivityController.get();
-        View toolbar = activity.findViewById(R.id.toolbar);
-        View toolbarButton =
-                toolbar.findViewById(R.id.toolbar_buttons)
-                        .findViewById(R.id.optional_toolbar_button_container);
-        assertNotNull(toolbarButton);
-        assertEquals(View.VISIBLE, toolbarButton.getVisibility());
     }
 
     @Test

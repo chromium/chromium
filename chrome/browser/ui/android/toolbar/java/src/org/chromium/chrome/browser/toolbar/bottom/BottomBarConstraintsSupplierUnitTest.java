@@ -32,7 +32,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link BottomBarConstraintsSupplier}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false"})
+@EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR})
 public class BottomBarConstraintsSupplierUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

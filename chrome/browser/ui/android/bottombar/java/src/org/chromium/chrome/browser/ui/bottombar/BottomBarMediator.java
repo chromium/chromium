@@ -28,8 +28,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
@@ -76,7 +74,6 @@ public class BottomBarMediator
     private final ThemeColorProvider mThemeColorProvider;
     private final VisibilityDelegate mVisibilityDelegate;
     private final BottomBarPromoDialogCoordinator mPromoDialogCoordinator;
-    private final NullableObservableSupplier<Tab> mTabSupplier;
     private final NonNullObservableSupplier<Boolean> mHomepageEnabledSupplier;
     private final NonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private final NullableObservableSupplier<Profile> mProfileSupplier;
@@ -85,8 +82,6 @@ public class BottomBarMediator
     private final NullableObservableSupplier<PropertyModel> mNewTabActionSupplier;
 
     // Observers and Callbacks
-    private final TabObserver mTabObserver;
-    private final Callback<@Nullable Tab> mTabSupplierObserver = this::onTabChanged;
     private final Callback<Boolean> mHomepageEnabledObserver = this::onHomepageEnabledChanged;
     private final Callback<Boolean> mOmniboxFocusObserver = this::onOmniboxFocusChanged;
     private final Callback<@Nullable Profile> mProfileObserver = this::onProfileChanged;
@@ -96,7 +91,6 @@ public class BottomBarMediator
     // Mutable State (Nullable)
     private @Nullable GlicKeyedService mGlicKeyedService;
     private @Nullable Profile mOriginalProfile;
-    private @Nullable Tab mCurrentTab;
     private @TriState int mIsVisible;
     private @Nullable IphIntent mNewTabIphIntent;
     private @Nullable LayoutStateProvider mLayoutStateProvider;
@@ -118,7 +112,6 @@ public class BottomBarMediator
      * @param model The property model to update.
      * @param buttonManager The {@link BottomBarButtonManager} for the bottom bar buttons.
      * @param themeColorProvider The provider to observe theme changes from.
-     * @param tabSupplier Supplier of the current tab.
      * @param homepageEnabledSupplier Supplier of whether the homepage is enabled.
      * @param visibilityDelegate Delegate to handle compositor-level visibility changes.
      * @param profileSupplier Supplier of the current profile.
@@ -133,7 +126,6 @@ public class BottomBarMediator
             PropertyModel model,
             BottomBarButtonManager buttonManager,
             ThemeColorProvider themeColorProvider,
-            NullableObservableSupplier<Tab> tabSupplier,
             NonNullObservableSupplier<Boolean> homepageEnabledSupplier,
             VisibilityDelegate visibilityDelegate,
             NullableObservableSupplier<Profile> profileSupplier,
@@ -146,7 +138,6 @@ public class BottomBarMediator
         mModel = model;
         mButtonManager = buttonManager;
         mThemeColorProvider = themeColorProvider;
-        mTabSupplier = tabSupplier;
         mHomepageEnabledSupplier = homepageEnabledSupplier;
         mVisibilityDelegate = visibilityDelegate;
         mProfileSupplier = profileSupplier;
@@ -163,41 +154,17 @@ public class BottomBarMediator
             mLayoutStateProvider = layoutStateProvider;
         }
 
-        mTabObserver =
-                new TabObserver() {
-                    @Override
-                    public void onUrlUpdated(Tab tab) {
-                        updateVisibility();
-                    }
-
-                    @Override
-                    public void onContentChanged(Tab tab) {
-                        updateVisibility();
-                    }
-                };
-
         mThemeColorProvider.addTintObserver(this);
         mModel.set(BottomBarProperties.COLOR_SCHEME, mThemeColorProvider.getBrandedColorScheme());
         mProfileSupplier.addSyncObserverAndCallIfNonNull(mProfileObserver);
         mCountrySupplier.onAvailable((country) -> updateExtraActionVisibility());
         mOmniboxFocusStateSupplier.addSyncObserver(mOmniboxFocusObserver);
-        onTabChanged(mTabSupplier.addSyncObserver(mTabSupplierObserver));
+        updateVisibility();
         mHomepageEnabledSupplier.addSyncObserverAndCallIfNonNull(mHomepageEnabledObserver);
 
         // Safe to set the listener after all observers are initialized to trigger the immediate
         // callback with the correct state.
         mButtonManager.setListener(this);
-    }
-
-    private void onTabChanged(@Nullable Tab tab) {
-        if (mCurrentTab != null) {
-            mCurrentTab.removeObserver(mTabObserver);
-        }
-        mCurrentTab = tab;
-        if (mCurrentTab != null) {
-            mCurrentTab.addObserver(mTabObserver);
-        }
-        updateVisibility();
     }
 
     private void onOmniboxFocusChanged(boolean focused) {
@@ -221,11 +188,8 @@ public class BottomBarMediator
     }
 
     private void updateVisibility() {
-        boolean currentTabIsRegularNtp = BottomBarConfigUtils.isRegularNtp(mCurrentTab);
         boolean isOmniboxFocused = mOmniboxFocusStateSupplier.get();
-        boolean shouldDisableOnNtp =
-                BottomBarConfigUtils.shouldDisableOnNtp() && currentTabIsRegularNtp;
-        boolean isVisible = !shouldDisableOnNtp && !isOmniboxFocused && !mShouldHideForHub;
+        boolean isVisible = !isOmniboxFocused && !mShouldHideForHub;
 
         if (mIsVisible == TriStateUtils.from(isVisible)) return;
 
@@ -556,11 +520,6 @@ public class BottomBarMediator
     public void destroy() {
         mDestroyed = true;
         mThemeColorProvider.removeTintObserver(this);
-        if (mCurrentTab != null) {
-            mCurrentTab.removeObserver(mTabObserver);
-            mCurrentTab = null;
-        }
-        mTabSupplier.removeObserver(mTabSupplierObserver);
         mHomepageEnabledSupplier.removeObserver(mHomepageEnabledObserver);
         if (mObservingSharedPrefs) {
             ContextUtils.getAppSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);

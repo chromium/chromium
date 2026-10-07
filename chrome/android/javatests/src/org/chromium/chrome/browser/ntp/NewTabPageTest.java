@@ -446,7 +446,7 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage"})
     @Restriction(DeviceFormFactor.PHONE)
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false")
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testNtpScrollListenerAttached() {
         Assert.assertNotNull(mNtp.getScrollListenerForTesting());
     }

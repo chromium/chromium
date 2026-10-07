@@ -1491,20 +1491,14 @@ public class LocationBarCoordinator
     }
 
     private boolean shouldHideOptionalButton(boolean isNtp) {
-        if (!ToolbarVariationUtils.shouldModifyToolbarButtons(
-                mLocationBarLayout.getContext(), isNtp)) {
+        if (!ToolbarVariationUtils.isToolbarUiRefactorEnabled(mLocationBarLayout.getContext())) {
             return true;
         }
-        if (mLocationBarMediator.isUrlBarFocused()
+        return isNtp
+                || mLocationBarMediator.isUrlBarFocused()
                 || mMiniOriginMode
-                || mOptionalButtonData == null) {
-            return true;
-        }
-        if (ToolbarVariationUtils.isToolbarUiRefactorEnabled(mLocationBarLayout.getContext())
-                && mOptionalButtonData.isIdentityDisc()) {
-            return true;
-        }
-        return false;
+                || mOptionalButtonData == null
+                || mOptionalButtonData.isIdentityDisc();
     }
 
     private void updateUrlBarNextFocusForwardId() {

@@ -8062,7 +8062,6 @@
                     "params": {
                         "adaptive-toolbar-auto-pin": "false",
                         "always_use_filled_glic_icon": "true",
-                        "disable_on_ntp": "false",
                         "dont_show_fusebox": "true",
                         "glic-min-required-ram-mb": "3600",
                         "show_glic_setting_toggle": "true"

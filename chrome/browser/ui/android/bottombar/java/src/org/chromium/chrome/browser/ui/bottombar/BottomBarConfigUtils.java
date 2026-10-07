@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.ui.bottombar;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 
 import org.chromium.base.DeviceInfo;
@@ -63,11 +61,6 @@ public class BottomBarConfigUtils {
         return ChromeFeatureList.sAndroidBottomBarShowBottomBarOnGts.getValue();
     }
 
-    /** Whether to disable the bottom bar on the regular NTP. */
-    public static boolean shouldDisableOnNtp() {
-        return ChromeFeatureList.sAndroidBottomBarDisableOnNtp.getValue();
-    }
-
     /**
      * Whether bottom controls scroll-off is enabled for the given tab. Scroll-off is enabled for
      * regular (non-incognito) NTP when the bottom bar is enabled.
@@ -75,7 +68,8 @@ public class BottomBarConfigUtils {
     public static boolean isNtpScrollOffEnabled(@Nullable Tab tab, @Nullable Context context) {
         if (tab == null || context == null) return false;
         return !tab.isOffTheRecord()
-                && isNtpWithBottomBar(tab, context)
+                && isNtp(tab)
+                && isBottomBarEnabled(context)
                 && ChromeFeatureList.sAndroidBottomBarNtpScrollOffEnabled.getValue();
     }
 
@@ -90,16 +84,9 @@ public class BottomBarConfigUtils {
      */
     public static boolean shouldForceBothConstraintsForBottomControls(
             @Nullable Tab tab, @Nullable Context context) {
-        if (tab == null || context == null) return false;
-
-        if (isRegularNtp(tab) && shouldDisableOnNtp()) return false;
+        if (tab == null || context == null || !isBottomBarEnabled(context)) return false;
 
         return tab.isNativePage() || UrlUtilities.isInternalScheme(tab.getUrl());
-    }
-
-    /** Whether the given tab is a regular NTP (excludes incognito). */
-    public static boolean isRegularNtp(@Nullable Tab tab) {
-        return isNtp(tab) && !assumeNonNull(tab).isOffTheRecord();
     }
 
     /** Whether to always use the filled GLIC icon. */
@@ -110,12 +97,6 @@ public class BottomBarConfigUtils {
     /** Whether to bypass geofencing country check for GLIC. */
     public static boolean bypassGlicGeofencing() {
         return ChromeFeatureList.sAndroidBottomBarBypassGlicGeofencing.getValue();
-    }
-
-    private static boolean isNtpWithBottomBar(Tab tab, Context context) {
-        return isNtp(tab)
-                && isBottomBarEnabled(context)
-                && (tab.isOffTheRecord() || !shouldDisableOnNtp());
     }
 
     /**

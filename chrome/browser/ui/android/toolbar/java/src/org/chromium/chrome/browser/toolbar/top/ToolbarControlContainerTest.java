@@ -1817,6 +1817,7 @@ public class ToolbarControlContainerTest {
         toolbarPhone.mVisualState = ToolbarPhone.VisualState.NEW_TAB_NORMAL;
 
         ButtonData buttonData = mock(ButtonData.class);
+        doReturn(true).when(buttonData).isIdentityDisc();
         toolbarPhone.updateOptionalButton(buttonData);
 
         verify(mLocationBarCoordinator, never()).updateOptionalButton(any());

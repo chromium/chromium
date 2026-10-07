@@ -50,8 +50,6 @@ import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
@@ -59,17 +57,13 @@ import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.android.bars_common.IphIntent;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.GlicIneligibilityReason;
-import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.url.GURL;
-import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link BottomBarMediator}. */
 @NullMarked
@@ -80,8 +74,6 @@ public class BottomBarMediatorUnitTest {
 
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private BottomBarMediator.VisibilityDelegate mVisibilityDelegate;
-    @Mock private Tab mTab;
-    @Mock private NativePage mNativePage;
     @Mock private Profile mProfile;
     @Mock private BottomBarButtonManager mButtonManager;
     @Mock private GlicEnabling.Natives mGlicEnablingJniMock;
@@ -94,7 +86,6 @@ public class BottomBarMediatorUnitTest {
     @Mock private Resources mResources;
     @Mock private LayoutStateProvider mLayoutStateProvider;
 
-    @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<BottomBarButtonManager.Listener> mButtonManagerListenerCaptor;
 
     @Captor
@@ -103,7 +94,6 @@ public class BottomBarMediatorUnitTest {
     private SettableNullableObservableSupplier<Profile> mProfileSupplier;
     private OneshotSupplierImpl<String> mCountrySupplier;
 
-    private SettableNullableObservableSupplier<Tab> mTabSupplier;
     private SettableNonNullObservableSupplier<Boolean> mHomepageEnabledSupplier;
     private SettableNonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private SettableNullableObservableSupplier<PropertyModel> mGlicActionSupplier;
@@ -114,7 +104,6 @@ public class BottomBarMediatorUnitTest {
 
     @Before
     public void setUp() {
-        mTabSupplier = ObservableSuppliers.createNullable();
         mHomepageEnabledSupplier = ObservableSuppliers.createNonNull(false);
         mOmniboxFocusStateSupplier = ObservableSuppliers.createNonNull(false);
         mProfileSupplier = ObservableSuppliers.createNullable();
@@ -162,108 +151,12 @@ public class BottomBarMediatorUnitTest {
         verify(mButtonManager).setButtonVisibility(ActionId.HOME_BUTTON, true);
     }
 
-    private void setupTab(GURL url, boolean isIncognito) {
-        when(mTab.getUrl()).thenReturn(url);
-        when(mTab.isOffTheRecord()).thenReturn(isIncognito);
-        mTabSupplier.set(mTab);
-        TrackerFactory.setTrackerForTests(mTracker);
-    }
-
     @Test
     public void testConstructor() {
         createMediator();
 
         assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
         verify(mVisibilityDelegate, times(1)).onVisibilityChanged(true);
-    }
-
-    @Test
-    public void testTabObserverCleanup_OnTabRemoved() {
-        setupTab(JUnitTestGURLs.NTP_URL, false);
-        createMediator();
-
-        verify(mTab).addObserver(mTabObserverCaptor.capture());
-
-        mTabSupplier.set(null);
-        verify(mTab).removeObserver(mTabObserverCaptor.getValue());
-        assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
-    }
-
-    @Test
-    public void testVisibilityChange_EmptyUrl() {
-        setupTab(GURL.emptyGURL(), false);
-        createMediator();
-
-        verify(mTab).addObserver(mTabObserverCaptor.capture());
-        mTabObserverCaptor.getValue().onUrlUpdated(mTab);
-
-        assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
-    }
-
-    @Test
-    public void testVisibilityChange_Ntp_Incognito() {
-        setupTab(JUnitTestGURLs.NTP_URL, true);
-        createMediator();
-
-        verify(mTab).addObserver(mTabObserverCaptor.capture());
-        verify(mVisibilityDelegate, times(1)).onVisibilityChanged(true);
-
-        mTabObserverCaptor.getValue().onUrlUpdated(mTab);
-
-        assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
-        verify(mVisibilityDelegate, times(1)).onVisibilityChanged(true);
-    }
-
-    @Test
-    public void testVisibilityChange_NotNtp() {
-        setupTab(JUnitTestGURLs.EXAMPLE_URL, false);
-        createMediator();
-
-        verify(mTab).addObserver(mTabObserverCaptor.capture());
-        verify(mVisibilityDelegate, times(1)).onVisibilityChanged(true);
-
-        mTabObserverCaptor.getValue().onUrlUpdated(mTab);
-
-        assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
-        verify(mVisibilityDelegate, times(1)).onVisibilityChanged(true);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/true")
-    public void testVisibility_NavigatingAwayFromNtp_BarStaysHidden() {
-        when(mNativePage.getHost()).thenReturn(UrlConstants.NTP_HOST);
-        when(mTab.getNativePage()).thenReturn(mNativePage);
-        setupTab(JUnitTestGURLs.EXAMPLE_URL, false);
-        createMediator();
-
-        assertFalse(mModel.get(BottomBarProperties.IS_VISIBLE));
-
-        verify(mTab).addObserver(mTabObserverCaptor.capture());
-        mTabObserverCaptor.getValue().onUrlUpdated(mTab);
-        assertFalse(mModel.get(BottomBarProperties.IS_VISIBLE));
-
-        when(mTab.getNativePage()).thenReturn(null);
-        mTabObserverCaptor.getValue().onContentChanged(mTab);
-        assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/true")
-    public void testVisibility_NavigatingToNtp_BarHidesWhenNativePageShown() {
-        // The URL updates when the navigation starts; the native page is shown on commit.
-        when(mTab.getNativePage()).thenReturn(null);
-        setupTab(JUnitTestGURLs.NTP_URL, false);
-        createMediator();
-
-        assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
-
-        verify(mTab).addObserver(mTabObserverCaptor.capture());
-
-        when(mNativePage.getHost()).thenReturn(UrlConstants.NTP_HOST);
-        when(mTab.getNativePage()).thenReturn(mNativePage);
-        mTabObserverCaptor.getValue().onContentChanged(mTab);
-
-        assertFalse(mModel.get(BottomBarProperties.IS_VISIBLE));
     }
 
     @Test
@@ -517,7 +410,6 @@ public class BottomBarMediatorUnitTest {
                         mModel,
                         mButtonManager,
                         mThemeColorProvider,
-                        mTabSupplier,
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         mProfileSupplier,
@@ -778,7 +670,6 @@ public class BottomBarMediatorUnitTest {
                         mModel,
                         mButtonManager,
                         mThemeColorProvider,
-                        mTabSupplier,
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         mProfileSupplier,

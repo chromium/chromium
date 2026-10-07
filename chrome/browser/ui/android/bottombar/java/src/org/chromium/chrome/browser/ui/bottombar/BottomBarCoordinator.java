@@ -100,7 +100,6 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
                         mModel,
                         mButtonManager,
                         themeColorProvider,
-                        tabSupplier,
                         homepageEnabledSupplier,
                         visibilityDelegate,
                         profileSupplier,
@@ -203,9 +202,6 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
         }
         Tab tab = mTabSupplier.get();
         if (tab == null || tab.isOffTheRecord()) {
-            return false;
-        }
-        if (BottomBarConfigUtils.isRegularNtp(tab) && BottomBarConfigUtils.shouldDisableOnNtp()) {
             return false;
         }
         return mPromoDialogCoordinator.maybeShowPromoDialog(profile);

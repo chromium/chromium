@@ -108,7 +108,7 @@ public class NewTabAnimationLayout extends Layout {
     private final TopInsetProvider mTopInsetProvider;
     private final TopInsetProvider.Observer mTopInsetProviderObserver;
     private final NewBackgroundTabAnimationData mNewBackgroundTabAnimationData;
-    private final boolean mIsBottomBarEnabledInNtp;
+    private final boolean mIsBottomBarEnabled;
 
     private @Nullable StaticTabSceneLayer mSceneLayer;
     private @Nullable NewBackgroundTabAnimationHostView mBackgroundHostView;
@@ -177,9 +177,7 @@ public class NewTabAnimationLayout extends Layout {
         // Set up observer to handle edge-to-edge changes.
         mTopInsetProviderObserver = this::onToEdgeChange;
         mTopInsetProvider.addObserver(mTopInsetProviderObserver);
-        mIsBottomBarEnabledInNtp =
-                BottomBarConfigUtils.isBottomBarEnabled(context)
-                        && !BottomBarConfigUtils.shouldDisableOnNtp();
+        mIsBottomBarEnabled = BottomBarConfigUtils.isBottomBarEnabled(context);
     }
 
     @Override
@@ -474,7 +472,7 @@ public class NewTabAnimationLayout extends Layout {
             return RectStart.CENTER;
         }
 
-        if (BottomBarConfigUtils.isBottomBarEnabled(getContext())) {
+        if (mIsBottomBarEnabled) {
             return RectStart.BOTTOM_CENTER;
         }
 
@@ -498,22 +496,14 @@ public class NewTabAnimationLayout extends Layout {
             return 0;
         }
 
-        boolean isNtp = UrlUtilities.isNtpUrl(tab.getUrl()) && !tab.isIncognitoBranded();
-
         Context context = getContext();
         int height = 0;
-        boolean hasBottomBar = false;
-        if (BottomBarConfigUtils.isBottomBarEnabled(context)) {
-            // On NTP, bottom bar is only disabled if shouldDisableOnNtp() is true.
-            boolean disabledOnNtp = isNtp && BottomBarConfigUtils.shouldDisableOnNtp();
-            if (!disabledOnNtp) {
-                height += BottomBarUtils.getBottomBarHeight(context);
-                hasBottomBar = true;
-            }
+        if (mIsBottomBarEnabled) {
+            height += BottomBarUtils.getBottomBarHeight(context);
         }
-        // Bottom toolbar is always relocated to the top on NTP.
+
         boolean hasBottomToolbar = false;
-        if (!isNtp && !ToolbarPositionController.shouldShowToolbarOnTop(tab)) {
+        if (!ToolbarPositionController.shouldShowToolbarOnTop(tab)) {
             height +=
                     context.getResources()
                             .getDimensionPixelSize(R.dimen.control_container_height);
@@ -523,7 +513,7 @@ public class NewTabAnimationLayout extends Layout {
         // Edge-to-Edge Bottom Chin Height
         if (edgeToEdgeController != null && edgeToEdgeController.isDrawingToEdge()) {
             boolean isTabOptedIn = EdgeToEdgeUtils.isPageOptedIntoBottomEdgeToEdge(tab);
-            boolean othersAreVisible = hasBottomBar || hasBottomToolbar;
+            boolean othersAreVisible = mIsBottomBarEnabled || hasBottomToolbar;
             // Stacker shows the chin if the page is not opted in, OR if other layers are visible
             // (VISIBLE_IF_OTHERS_VISIBLE resolves to true when othersAreVisible is true).
             if (!isTabOptedIn || othersAreVisible) {
@@ -747,17 +737,17 @@ public class NewTabAnimationLayout extends Layout {
         mSkipForceAnimationToFinish = true;
         forceHidingImmediatelyIfNeeded(isRegularNtp);
 
-        // Acquire a persistent controls token for non-regular NTPs or when the NTP has the bottom
-        // bar enabled. This forces BrowserControlsState.SHOWN so NtpScrollListener pauses
+        // Acquire a persistent controls token for non-regular NTPs or when the bottom bar is
+        // enabled. This forces BrowserControlsState.SHOWN so NtpScrollListener pauses
         // scroll-to-hide behavior and locks controls in place during the background tab animation.
-        if ((!isRegularNtp || mIsBottomBarEnabledInNtp)
+        if ((!isRegularNtp || mIsBottomBarEnabled)
                 && mBrowserControlsVisibilityToken == TokenHolder.INVALID_TOKEN) {
             mBrowserControlsVisibilityToken = mBrowserVisibilityDelegate.showControlsPersistent();
         }
-        // Immediately snap controls to offset 0 (fully visible) if the NTP has the bottom bar
-        // enabled, ensuring mNewBackgroundTabAnimationData.captureState() measures the target tab
-        // switcher button in its resting visible position.
-        if (isRegularNtp && mIsBottomBarEnabledInNtp) {
+        // Immediately snap controls to offset 0 (fully visible) on a regular NTP when the bottom
+        // bar is enabled, ensuring mNewBackgroundTabAnimationData.captureState() measures the
+        // target tab switcher button in its resting visible position.
+        if (isRegularNtp && mIsBottomBarEnabled) {
             mBrowserControlsManager.showAndroidControls(/* animate= */ false);
         }
 
@@ -838,7 +828,7 @@ public class NewTabAnimationLayout extends Layout {
                     boolean shouldObserveNtp =
                             isRegularNtp
                                     && animationType == AnimationType.DEFAULT
-                                    && !mNewBackgroundTabAnimationData.isBottomBarVisible();
+                                    && !mNewBackgroundTabAnimationData.isBottomBarEnabled();
                     AnimationInterruptor interruptor =
                             new AnimationInterruptor(
                                     mLayoutStateProvider,

@@ -144,7 +144,7 @@ public class NewBackgroundTabAnimationDataUnitTest {
         mData.captureState(mTab, /* isRegularNtp= */ false, /* expectedToolbarTop= */ 100);
 
         assertEquals(mToolbarTabSwitcherButton, mData.getTabSwitcherButton());
-        assertFalse(mData.isBottomBarVisible());
+        assertFalse(mData.isBottomBarEnabled());
         assertTrue(mData.isPositionOnTop());
 
         Rect tabSwitcherButtonRect = mData.getTabSwitcherButtonRect();
@@ -160,13 +160,13 @@ public class NewBackgroundTabAnimationDataUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false")
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testCaptureState_BottomBarEnabled_Visible() {
         mData = new NewBackgroundTabAnimationData(mRootView, mToolbarManager);
         mData.captureState(mTab, /* isRegularNtp= */ false, /* expectedToolbarTop= */ 0);
 
         assertEquals(mBottomBarTabSwitcherButton, mData.getTabSwitcherButton());
-        assertTrue(mData.isBottomBarVisible());
+        assertTrue(mData.isBottomBarEnabled());
         assertFalse(mData.isPositionOnTop());
 
         Rect tabSwitcherButtonRect = mData.getTabSwitcherButtonRect();
@@ -178,22 +178,6 @@ public class NewBackgroundTabAnimationDataUnitTest {
 
         assertEquals(
                 NewBackgroundTabAnimationHostView.AnimationType.DEFAULT, mData.getAnimationType());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/true")
-    public void testCaptureState_BottomBarEnabled_NtpDisabled() {
-        mData = new NewBackgroundTabAnimationData(mRootView, mToolbarManager);
-        mData.captureState(mTab, /* isRegularNtp= */ true, /* expectedToolbarTop= */ 0);
-
-        assertEquals(mToolbarTabSwitcherButton, mData.getTabSwitcherButton());
-        assertFalse(mData.isBottomBarVisible());
-
-        Rect tabSwitcherButtonRect = mData.getTabSwitcherButtonRect();
-        assertEquals(mToolbarButtonWidth, tabSwitcherButtonRect.width());
-        assertEquals(mToolbarHeight, tabSwitcherButtonRect.height());
-        assertEquals(0, tabSwitcherButtonRect.top);
-        assertEquals(mToolbarHeight, tabSwitcherButtonRect.bottom);
     }
 
     @Test
@@ -237,7 +221,7 @@ public class NewBackgroundTabAnimationDataUnitTest {
         mData.captureState(mTab, /* isRegularNtp= */ false, /* expectedToolbarTop= */ 100);
 
         assertEquals(mToolbarTabSwitcherButton, mData.getTabSwitcherButton());
-        assertFalse(mData.isBottomBarVisible());
+        assertFalse(mData.isBottomBarEnabled());
         assertFalse(mData.isPositionOnTop());
 
         Rect tabSwitcherButtonRect = mData.getTabSwitcherButtonRect();
