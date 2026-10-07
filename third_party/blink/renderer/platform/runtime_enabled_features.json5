@@ -2391,6 +2391,10 @@
       status: "experimental",
     },
     {
+      name: "DeferLineBoxHitTestToBackground",
+      status: "stable",
+    },
+    {
       // Killswitch for https://crbug.com/400317114 fix.
       // This lands in M142, and the flag can be removed in M144.
       name: "DelegatesFocusTextControlInputFix",

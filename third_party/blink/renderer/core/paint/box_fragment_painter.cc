@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
@@ -482,6 +483,29 @@ bool ShouldDelegatePaintingToViewTransition(const PhysicalBoxFragment& fragment,
     case PaintPhase::kMask:
       return false;
   }
+}
+
+// Normally, a line box hits its container in the foreground phase when the
+// point is not on any of its children. Defer that to the self block background
+// phase if the container has negative z-index children. They are hit tested
+// between the two phases, and should win since the line box paints nothing
+// over them.
+bool ShouldDeferLineBoxHitToBackground(const PhysicalBoxFragment& container,
+                                       const PhysicalFragment& line_box,
+                                       const HitTestRequest& request) {
+  if (!RuntimeEnabledFeatures::DeferLineBoxHitTestToBackgroundEnabled()) {
+    return false;
+  }
+  const PaintLayer* layer = container.Layer();
+  if (!layer || !layer->GetLayoutObject().IsStackingContext() ||
+      request.IsHitTestVisualOverflow() ||
+      // A line box that paints is above negative z-index children.
+      LineBoxFragmentPainter::NeedsPaint(line_box) ||
+      !container.IsInSelfHitTestingPhase(HitTestPhase::kSelfBlockBackground)) {
+    return false;
+  }
+  return PaintLayerPaintOrderIterator(layer, kNegativeZOrderChildren).Next() !=
+         nullptr;
 }
 
 }  // anonymous namespace
@@ -2535,8 +2559,32 @@ bool BoxFragmentPainter::HitTestLineBoxFragment(
     return true;
   }
 
-  if (hit_test.phase != HitTestPhase::kForeground)
+  if (hit_test.phase != HitTestPhase::kForeground &&
+      hit_test.phase != HitTestPhase::kSelfBlockBackground) {
     return false;
+  }
+
+  const bool defer_to_background = ShouldDeferLineBoxHitToBackground(
+      box_fragment_, fragment, hit_test.result->GetHitTestRequest());
+  if (defer_to_background) {
+    if (hit_test.phase == HitTestPhase::kForeground) {
+      return false;
+    }
+    if (box_fragment_.ShouldClipOverflowAlongEitherAxis()) {
+      // PaintLayer doesn't apply our own overflow clip in the background phase.
+      // Undo the scroll, since `inline_root_offset` is scrolled.
+      PhysicalRect clip_rect = box_fragment_.OverflowClipRect(
+          kExcludeOverlayScrollbarSizeForHitTesting);
+      clip_rect.Move(hit_test.inline_root_offset +
+                     PhysicalOffset(PixelSnappedScrollOffset()) +
+                     PhysicalOffset(PixelSnappedOverscrollOffset()));
+      if (!hit_test.location.Intersects(clip_rect)) {
+        return false;
+      }
+    }
+  } else if (hit_test.phase == HitTestPhase::kSelfBlockBackground) {
+    return false;
+  }
 
   if (!IsVisibleToHitTest(box_fragment_, hit_test.result->GetHitTestRequest()))
     return false;
