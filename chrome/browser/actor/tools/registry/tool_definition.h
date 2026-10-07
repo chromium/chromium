@@ -19,7 +19,9 @@ namespace actor {
 enum class ToolId {
   // Navigates the active tab to a specified URL.
   kNavigate = 0,
-  kMaxValue = kNavigate,
+  // Clicks an element on the active page by DOM node ID.
+  kClick = 1,
+  kMaxValue = kClick,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer

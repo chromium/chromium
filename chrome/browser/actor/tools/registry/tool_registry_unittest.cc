@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/registry/tool_definition_test_util.h"
@@ -42,6 +43,17 @@ TEST(ToolRegistryTest, NavigateToolDefinition) {
   EXPECT_THAT(*definition,
               HasParamOfType(NavigateToolRequest::kUrlParam, "string"));
   EXPECT_THAT(*definition, RequiresParam(NavigateToolRequest::kUrlParam));
+}
+
+TEST(ToolRegistryTest, ClickToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      ClickToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kClick);
+  EXPECT_EQ(definition->name, ClickToolRequest::kModelFacingName);
+  EXPECT_THAT(*definition,
+              HasParamOfType(ClickToolRequest::kDomNodeIdParam, "integer"));
+  EXPECT_THAT(*definition, RequiresParam(ClickToolRequest::kDomNodeIdParam));
 }
 
 TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
