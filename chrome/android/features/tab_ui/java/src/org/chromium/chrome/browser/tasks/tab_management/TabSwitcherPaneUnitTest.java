@@ -123,7 +123,6 @@ import java.util.function.Supplier;
     SensitiveContentFeatures.SENSITIVE_CONTENT,
     SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS
 })
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabSwitcherPaneUnitTest {
     private static final int TAB_ID = 723849;
 
@@ -166,14 +165,11 @@ public class TabSwitcherPaneUnitTest {
     @Mock private TabSwitcherPaneCoordinator mTabSwitcherPaneCoordinator;
     @Mock private TabSwitcherPaneDrawableCoordinator mTabSwitcherPaneDrawableCoordinator;
     @Mock private TabSwitcherDrawable mTabSwitcherDrawable;
-    @Mock private HubContainerView mHubContainerView;
     @Mock private View.OnClickListener mNewTabButtonClickListener;
     @Mock private PaneHubController mPaneHubController;
     @Mock private TabSwitcherCustomViewManager.Delegate mCustomViewManagerDelegate;
-    @Mock private View mCustomView;
     @Mock private DoubleConsumer mOnAlphaChange;
     @Mock private UserEducationHelper mUserEducationHelper;
-    @Mock private View mAnchorView;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private SavedTabGroup mSavedTabGroup;
     @Mock private TabGroupCreationUiDelegate mUiFlow;
@@ -194,6 +190,9 @@ public class TabSwitcherPaneUnitTest {
     private final Token mToken = new Token(1L, 2L);
 
     private Context mContext;
+    private HubContainerView mHubContainerView;
+    private View mCustomView;
+    private View mAnchorView;
     private final SettableNonNullObservableSupplier<Boolean> mHandleBackPressChangeSupplier =
             ObservableSuppliers.createNonNull(false);
     private final SettableNonNullObservableSupplier<Boolean> mIsScrollingSupplier =
@@ -222,7 +221,9 @@ public class TabSwitcherPaneUnitTest {
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_Chromium_TabbedMode);
 
-        when(mHubContainerView.getContext()).thenReturn(mContext);
+        mHubContainerView = new HubContainerView(mContext);
+        mCustomView = new View(mContext);
+        mAnchorView = new View(mContext);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         TrackerFactory.setTrackerForTests(mTracker);
 
@@ -473,10 +474,10 @@ public class TabSwitcherPaneUnitTest {
                 R.drawable.new_tab_icon,
                 shadowOf(buttonData.resolveIcon(mContext)).getCreatedFromResId());
 
-        View mockView = mock(View.class);
-        buttonData.onPress(mockView);
+        View view = new View(mContext);
+        buttonData.onPress(view);
         verify(mTabSwitcherPaneCoordinator).prepareHiding();
-        verify(mNewTabButtonClickListener).onClick(mockView);
+        verify(mNewTabButtonClickListener).onClick(view);
     }
 
     @Test
@@ -491,9 +492,9 @@ public class TabSwitcherPaneUnitTest {
     public void testNewTabButton_NoCoordinator() {
         FullButtonData buttonData = mTabSwitcherPane.getActionButtonDataSupplier().get();
 
-        View mockView = mock(View.class);
-        buttonData.onPress(mockView);
-        verify(mNewTabButtonClickListener).onClick(mockView);
+        View view = new View(mContext);
+        buttonData.onPress(view);
+        verify(mNewTabButtonClickListener).onClick(view);
     }
 
     @Test
