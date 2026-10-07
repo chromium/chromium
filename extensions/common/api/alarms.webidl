@@ -67,15 +67,12 @@ interface Alarms {
   // replaced by this alarm.
   //
   // In order to reduce the load on the user's machine, Chrome limits alarms
-  // to at most once every 30 seconds but may delay them an arbitrary amount
+  // to at most once every second but may delay them an arbitrary amount
   // more.  That is, setting <code>delayInMinutes</code> or
-  // <code>periodInMinutes</code> to less than <code>0.5</code> will not be
-  // honored and will cause a warning.  <code>when</code> can be set to less
-  // than 30 seconds after "now" without warning but won't actually cause the
-  // alarm to fire for at least 30 seconds.
-  //
-  // To help you debug your app or extension, when you've loaded it unpacked,
-  // there's no limit to how often the alarm can fire.
+  // <code>periodInMinutes</code> to less than 1 second will not be honored
+  // and will cause a warning.  <code>when</code> can be set to less than 1
+  // second after "now" without warning but won't actually cause the alarm to
+  // fire for at least 1 second.
   //
   // |name|: Optional name to identify this alarm. Defaults to the empty
   // string.
