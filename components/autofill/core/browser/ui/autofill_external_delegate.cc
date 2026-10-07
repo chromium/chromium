@@ -316,7 +316,6 @@ bool HasAutofillSuggestionsForA11y(SuggestionType type) {
     case SuggestionType::kPersonalContextNotice:
     case SuggestionType::kRemoveAutofillAi:
     case SuggestionType::kScanCreditCard:
-    case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kSeparator:
     case SuggestionType::kTitle:
     case SuggestionType::kTroubleSigningInEntry:
@@ -427,7 +426,6 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kPersonalContextNotice:
     case SuggestionType::kRemoveAutofillAi:
     case SuggestionType::kScanCreditCard:
-    case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kSeparator:
     case SuggestionType::kTitle:
     case SuggestionType::kTroubleSigningInEntry:
@@ -903,7 +901,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kRemoveAutofillAi:
     case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kScanCreditCard:
-    case SuggestionType::kSeePromoCodeDetails:
       break;
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
@@ -959,7 +956,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kMerchantPromoCodeEntry:
     case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kScanCreditCard:
-    case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kVirtualCreditCardEntry:
       DidAcceptPaymentsSuggestion(suggestion, metadata, effective_form_id,
                                   effective_field_id);
@@ -1431,7 +1427,6 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kRemoveAutofillAi:
     case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kScanCreditCard:
-    case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kSeparator:
     case SuggestionType::kTitle:
     case SuggestionType::kTroubleSigningInEntry:
@@ -1755,13 +1750,6 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
           base::UTF8ToUTF16(
               suggestion.GetPayload<Suggestion::PromoCode>().value()),
           FillingProduct::kMerchantPromoCode, MERCHANT_PROMO_CODE);
-      manager_->OnSingleFieldSuggestionSelected(suggestion, form_id, field_id);
-      break;
-    case SuggestionType::kSeePromoCodeDetails:
-      // Open a new tab and navigate to the offer details page.
-      manager_->client()
-          .GetPaymentsAutofillClient()
-          ->OpenPromoCodeOfferDetailsURL(suggestion.GetPayload<GURL>());
       manager_->OnSingleFieldSuggestionSelected(suggestion, form_id, field_id);
       break;
     case SuggestionType::kSaveAndFillCreditCardEntry: {

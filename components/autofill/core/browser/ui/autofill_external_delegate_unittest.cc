@@ -249,10 +249,6 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
               ScanCreditCard,
               (CreditCardScanCallback callback),
               (override));
-  MOCK_METHOD(void,
-              OpenPromoCodeOfferDetailsURL,
-              (const GURL& url),
-              (override));
 };
 
 class MockAutofillClient : public TestAutofillClient {
@@ -2501,19 +2497,6 @@ TEST_F(AutofillExternalDelegateTest, AcceptManageOffers) {
                                           {.multi_index = {0}});
 }
 
-// Test that the Autofill delegate routes the merchant promo code suggestions
-// footer redirect logic correctly.
-TEST_F(AutofillExternalDelegateTest,
-       ExternalDelegateMerchantPromoCodeSuggestionsFooter) {
-  IssueOnQuery();
-  const GURL gurl{"https://example.com/"};
-  EXPECT_CALL(payments_autofill_client(), OpenPromoCodeOfferDetailsURL(gurl));
-
-  external_delegate().DidAcceptSuggestion(
-      CreateAutofillSuggestion(SuggestionType::kSeePromoCodeDetails, u"baz foo",
-                               gurl),
-      SuggestionPosition{.multi_index = {0}});
-}
 
 // Test that the ClearPreview call is only sent if the form was being previewed
 // (i.e. it isn't autofilling a password).

@@ -6185,7 +6185,7 @@ Called by update_autofill_enums.py.-->
   <int value="39" label="(Obsolete) Create new plus address"/>
   <int value="40" label="(Obsolete) Fill existing plus address"/>
   <int value="41" label="Merchant promo code entry"/>
-  <int value="42" label="See promo code details"/>
+  <int value="42" label="(Obsolete) See promo code details"/>
   <int value="43" label="Webauthn credential"/>
   <int value="44" label="Webauthn sign-in with another device"/>
   <int value="45" label="Title"/>

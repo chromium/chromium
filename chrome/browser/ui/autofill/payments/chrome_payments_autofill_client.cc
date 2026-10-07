@@ -76,13 +76,10 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -915,15 +912,6 @@ IbanAccessManager* ChromePaymentsAutofillClient::GetIbanAccessManager() {
 MerchantPromoCodeManager*
 ChromePaymentsAutofillClient::GetMerchantPromoCodeManager() {
   return merchant_promo_code_manager_.get();
-}
-
-void ChromePaymentsAutofillClient::OpenPromoCodeOfferDetailsURL(
-    const GURL& url) {
-  web_contents()->OpenURL(
-      content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL),
-      /*navigation_handle_callback=*/{});
 }
 
 AutofillOfferManager* ChromePaymentsAutofillClient::GetAutofillOfferManager() {

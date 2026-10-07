@@ -15,8 +15,6 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "ios/web_view/internal/autofill/cwv_autofill_client_ios_bridge.h"
 
-class GURL;
-
 namespace web {
 class WebState;
 }  // namespace web
@@ -148,7 +146,6 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
   IbanManager* GetIbanManager() override;
   IbanAccessManager* GetIbanAccessManager() override;
   MerchantPromoCodeManager* GetMerchantPromoCodeManager() override;
-  void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
   AutofillOfferManager* GetAutofillOfferManager() override;
   void UpdateOfferNotification(
       const AutofillOfferData& offer,

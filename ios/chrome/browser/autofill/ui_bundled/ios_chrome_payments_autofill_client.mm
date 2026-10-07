@@ -67,7 +67,6 @@
 #import "ios/public/provider/chrome/browser/risk_data/risk_data_api.h"
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#import "url/gurl.h"
 
 namespace autofill::payments {
 namespace {
@@ -527,14 +526,6 @@ IbanAccessManager* IOSChromePaymentsAutofillClient::GetIbanAccessManager() {
 MerchantPromoCodeManager*
 IOSChromePaymentsAutofillClient::GetMerchantPromoCodeManager() {
   return nullptr;
-}
-
-void IOSChromePaymentsAutofillClient::OpenPromoCodeOfferDetailsURL(
-    const GURL& url) {
-  web_state_->OpenURL(web::WebState::OpenURLParams(
-      url, web::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
-      /*is_renderer_initiated=*/false));
 }
 
 AutofillOfferManager*

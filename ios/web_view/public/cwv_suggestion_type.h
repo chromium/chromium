@@ -89,7 +89,7 @@ typedef NS_ENUM(NSInteger, CWVSuggestionType) {
 
   // Promotion suggestions.
   CWVSuggestionTypeMerchantPromoCodeEntry = 41,
-  CWVSuggestionTypeSeePromoCodeDetails = 42,
+  // CWVSuggestionTypeSeePromoCodeDetails = 42, // DEPRECATED
 
   // Webauthn suggestions.
   CWVSuggestionTypeWebauthnCredential = 43,

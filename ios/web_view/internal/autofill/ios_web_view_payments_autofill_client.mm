@@ -33,7 +33,6 @@
 #import "ios/web_view/internal/autofill/web_view_autofill_client_ios.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#import "url/gurl.h"
 
 namespace autofill::payments {
 
@@ -337,14 +336,6 @@ IbanAccessManager* IOSWebViewPaymentsAutofillClient::GetIbanAccessManager() {
 MerchantPromoCodeManager*
 IOSWebViewPaymentsAutofillClient::GetMerchantPromoCodeManager() {
   return nullptr;
-}
-
-void IOSWebViewPaymentsAutofillClient::OpenPromoCodeOfferDetailsURL(
-    const GURL& url) {
-  web_state_->OpenURL(web::WebState::OpenURLParams(
-      url, web::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
-      /*is_renderer_initiated=*/false));
 }
 
 AutofillOfferManager*

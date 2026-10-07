@@ -112,7 +112,6 @@ bool IsSuggestionTypeEligibleForKeyboardAccessory(SuggestionType type) {
     case SuggestionType::kBnplEntry:
     case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kMerchantPromoCodeEntry:
-    case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kIdentityCredential:
     case SuggestionType::kAllLoyaltyCardsEntry:
     case SuggestionType::kWebauthnCredential:

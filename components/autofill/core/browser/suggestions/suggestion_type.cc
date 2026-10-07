@@ -93,8 +93,6 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kBnplEntry";
     case SuggestionType::kMerchantPromoCodeEntry:
       return "kMerchantPromoCodeEntry";
-    case SuggestionType::kSeePromoCodeDetails:
-      return "kSeePromoCodeDetails";
     case SuggestionType::kWebauthnCredential:
       return "kWebauthnCredential";
     case SuggestionType::kWebauthnSignInWithAnotherDevice:

@@ -63,8 +63,7 @@ void SingleFieldFillRouter::OnSingleFieldSuggestionSelected(
     const Suggestion& suggestion) {
   SuggestionType type = suggestion.type;
   if (merchant_promo_code_manager_ &&
-      (type == SuggestionType::kMerchantPromoCodeEntry ||
-       type == SuggestionType::kSeePromoCodeDetails)) {
+      type == SuggestionType::kMerchantPromoCodeEntry) {
     merchant_promo_code_manager_->OnSingleFieldSuggestionSelected(suggestion);
   } else if (iban_manager_ && type == SuggestionType::kIbanEntry) {
     iban_manager_->OnSingleFieldSuggestionSelected(suggestion);

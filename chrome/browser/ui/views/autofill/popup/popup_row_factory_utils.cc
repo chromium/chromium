@@ -1144,7 +1144,6 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case SuggestionType::kPersonalContextNotice:
     case SuggestionType::kRemoveAutofillAi:
     case SuggestionType::kScanCreditCard:
-    case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kTitle:
     case SuggestionType::kUndo:
     case SuggestionType::kViewPasswordDetails:

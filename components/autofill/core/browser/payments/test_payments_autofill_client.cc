@@ -360,9 +360,6 @@ TestPaymentsAutofillClient::GetMerchantPromoCodeManager() {
   return mock_merchant_promo_code_manager_.get();
 }
 
-void TestPaymentsAutofillClient::OpenPromoCodeOfferDetailsURL(const GURL& url) {
-}
-
 AutofillOfferManager* TestPaymentsAutofillClient::GetAutofillOfferManager() {
   return autofill_offer_manager_.get();
 }
