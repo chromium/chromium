@@ -903,6 +903,10 @@ class CompileSizeProbeTest(unittest.TestCase):
                                 'gen/net/cert/duration.pb.h',
                             ),
                         },
+                        symbol_sizes={
+                            'Duration::ByteSizeLong() const': 128,
+                            '<local constants (.L*)>': 16,
+                        },
                     ),
                 ))
 
@@ -921,8 +925,8 @@ class CompileSizeProbeTest(unittest.TestCase):
             loaded_baseline,
             msg=(
                 'Expected SaveProbeBaseline and LoadProbeBaseline to '
-                'round-trip snapshots and include chains losslessly under '
-                '<build_directory>/.compile_size_probe.'),
+                'round-trip snapshots, include chains, and symbol sizes '
+                'losslessly under <build_directory>/.compile_size_probe.'),
         )
 
     def testSaveProbeBaselineRaisesFileExistsErrorWithoutOverwriteFlag(self):
@@ -1871,10 +1875,11 @@ class CompileSizeProbeTest(unittest.TestCase):
         self.assertEqual(
             (
                 'Compile-size comparison against baseline "before":\n'
-                'Total across 2 translation units: 1.95 KiB (2,000 B) -> '
-                '1.76 KiB (1,800 B) (-200 B)\n\n'
+                'Total compiler inputs across 2 translation units: '
+                '1.95 KiB (2,000 B) -> 1.76 KiB (1,800 B) (-200 B)\n\n'
                 '=== gen/net/cert/duration.pb.cc: -200 B '
                 '(-13.33%, 1,500 B -> 1,300 B) ===\n'
+                '  Compiled symbols: unavailable\n'
                 '  Removed headers (1):\n'
                 '    -300 B  third_party/protobuf/src/old_header.h\n'
                 '  Resized files (1):\n'
@@ -1882,6 +1887,7 @@ class CompileSizeProbeTest(unittest.TestCase):
                 '(1,200 B -> 1,300 B)\n\n'
                 '=== components/sync/model/processor_entity.cc: 0 B '
                 '(0.00%, 500 B -> 500 B) ===\n'
+                '  Compiled symbols: unavailable\n'
                 '  No header changes.'
             ),
             formatted_report,
@@ -2188,6 +2194,760 @@ class CompileSizeProbeTest(unittest.TestCase):
             msg=(
                 'Expected main --compare to exit 1 with a Malformed baseline '
                 'JSON error on stderr instead of an uncaught TypeError.'),
+        )
+
+    def testParseLlvmNmSymbolSizesDeduplicatesIdenticalElfSymbolAliases(self):
+        llvm_nm_stdout = (
+            '                 U memcpy\n'
+            '0000000000000000 0000000000000000 T ZeroSizeSymbol\n'
+            '0000000000000000 0000000000000037 T '
+            'chrome_root_store::Duration::Duration()\n'
+            '0000000000000000 0000000000000037 T '
+            'chrome_root_store::Duration::Duration()\n'
+        )
+        symbol_sizes = compile_size_probe.ParseLlvmNmSymbolSizes(llvm_nm_stdout)
+        self.assertEqual(
+            {'chrome_root_store::Duration::Duration()': 0x37},
+            symbol_sizes,
+            msg=(
+                'Expected ParseLlvmNmSymbolSizes to deduplicate identical '
+                'C1/C2 ELF alias lines and skip undefined (U) and 0-byte '
+                'symbols.'),
+        )
+
+    def testParseLlvmNmSymbolSizesSumsDistinctDestructorAbiVariants(self):
+        llvm_nm_stdout = (
+            '0000000000000000 0000000000000016 T '
+            'chrome_root_store::Duration::~Duration()\n'
+            '0000000000000020 0000000000000020 T '
+            'chrome_root_store::Duration::~Duration()\n'
+        )
+        symbol_sizes = compile_size_probe.ParseLlvmNmSymbolSizes(llvm_nm_stdout)
+        self.assertEqual(
+            {'chrome_root_store::Duration::~Duration()': 0x36},
+            symbol_sizes,
+            msg=(
+                'Expected ParseLlvmNmSymbolSizes to sum distinct D1 and D0 '
+                'destructor variants that share a demangled C++ signature.'),
+        )
+
+    def testParseLlvmNmSymbolSizesFoldsLocalConstantSymbolsIntoBucket(self):
+        llvm_nm_stdout = (
+            '0000000000000000 0000000000000010 r .LCPI0_0\n'
+            '0000000000000010 0000000000000008 r .L.str.1\n'
+        )
+        symbol_sizes = compile_size_probe.ParseLlvmNmSymbolSizes(llvm_nm_stdout)
+        self.assertEqual(
+            {'<local constants (.L*)>': 0x18},
+            symbol_sizes,
+            msg=(
+                'Expected ParseLlvmNmSymbolSizes to fold .L* compiler-local '
+                'constants into <local constants (.L*)>.'),
+        )
+
+    def testBuildClangCodegenCommandStripsLtoFlagsAndAppendsFnoLto(self):
+        compile_rule = compile_size_probe.NinjaCompileRule(
+            translation_unit='gen/net/duration.pb.cc',
+            ninja_source_path='gen/net/duration.pb.cc',
+            object_target='obj/net/duration.pb.o',
+            ninja_file_path='obj/net/proto.ninja',
+            variables={
+                'cflags': (
+                    '-Oz -flto=thin -fsplit-lto-unit '
+                    '-fwhole-program-vtables '
+                    '-fvirtual-function-elimination '
+                    '-fsanitize=cfi-vcall '
+                    '-fsanitize-cfi-cross-dso '
+                    '-fno-sanitize-trap=cfi '
+                    '-fsanitize-recover=cfi'
+                ),
+                'cflags_cc': '-std=c++20',
+            },
+        )
+        command = compile_size_probe.BuildClangCodegenCommand(
+            compile_rule=compile_rule,
+            build_directory='/tmp/out',
+            clang_binary='/bin/clang++',
+            codegen_flags=['-S', '-emit-llvm', '-o', '-'],
+        )
+        self.assertEqual(
+            [
+                '/bin/clang++',
+                '-Oz',
+                '-std=c++20',
+                '-fno-lto',
+                '-g0',
+                '-S',
+                '-emit-llvm',
+                '-o',
+                '-',
+                'gen/net/duration.pb.cc',
+            ],
+            command,
+            msg=(
+                'Expected BuildClangCodegenCommand to strip ThinLTO and CFI '
+                'flags and append -fno-lto -g0 before codegen_flags.'),
+        )
+
+    def testCompareTranslationUnitSnapshotsRanksResizedSymbolsLargestFirst(
+            self):
+        before_snapshot = compile_size_probe.TranslationUnitSnapshot(
+            translation_unit='gen/sync/sync_entity.pb.cc',
+            total_bytes=5000,
+            included_files={'gen/sync/sync_entity.pb.cc': 5000},
+            include_chains={},
+            symbol_sizes={
+                'sync_pb::SyncEntity::ByteSizeLong() const': 1254,
+                'sync_pb::SyncEntity::MergeImpl()': 1193,
+                'sync_pb::SyncEntity::Clear()': 64,
+            },
+        )
+        after_snapshot = compile_size_probe.TranslationUnitSnapshot(
+            translation_unit='gen/sync/sync_entity.pb.cc',
+            total_bytes=5000,
+            included_files={'gen/sync/sync_entity.pb.cc': 5000},
+            include_chains={},
+            symbol_sizes={
+                'sync_pb::SyncEntity::ByteSizeLong() const': 1274,
+                'sync_pb::SyncEntity::MergeImpl()': 1257,
+                'sync_pb::SyncEntity::Clear()': 64,
+            },
+        )
+        comparison = compile_size_probe.CompareTranslationUnitSnapshots(
+            before_snapshot, after_snapshot)
+        self.assertEqual(
+            [
+                'sync_pb::SyncEntity::MergeImpl()',
+                'sync_pb::SyncEntity::ByteSizeLong() const',
+            ],
+            [delta.symbol_name for delta in comparison.resized_symbols],
+            msg=(
+                'Expected resized symbols to exclude unchanged symbols and '
+                'sort by absolute byte change descending.'),
+        )
+        self.assertEqual(
+            84,
+            comparison.delta_symbol_bytes,
+            msg='Expected delta_symbol_bytes to be after minus before.',
+        )
+
+    def testIsObjectFileUpToDateRejectsMissingOrDirectoryDependency(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            object_file = os.path.join(temporary_directory, 'duration.pb.o')
+            _WriteFileWithByteSize(object_file, 16)
+            os.utime(temporary_directory, (500.0, 500.0))
+            os.utime(object_file, (1000.0, 1000.0))
+            is_fresh = compile_size_probe._IsObjectFileUpToDate(
+                object_file, (temporary_directory,))
+
+        self.assertFalse(
+            is_fresh,
+            msg=(
+                'Expected _IsObjectFileUpToDate to return False when a '
+                'dependency path is not a regular file on disk.'),
+        )
+
+    def testMeasureObjectSymbolSizesRecompilesWhenObjectIsOlderThanHeader(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            object_file = os.path.join(
+                temporary_directory, 'obj', 'duration.pb.o')
+            header_file = os.path.join(temporary_directory, 'extension_set.h')
+            fake_nm = os.path.join(temporary_directory, 'llvm-nm')
+            _WriteFileWithByteSize(object_file, 16)
+            _WriteFileWithByteSize(header_file, 32)
+            _WriteFileWithByteSize(fake_nm, 8)
+            os.utime(object_file, (1000.0, 1000.0))
+            os.utime(header_file, (2000.0, 2000.0))
+
+            rule = compile_size_probe.NinjaCompileRule(
+                translation_unit='gen/net/duration.pb.cc',
+                ninja_source_path='gen/net/duration.pb.cc',
+                object_target='obj/duration.pb.o',
+                ninja_file_path='obj/net/proto.ninja',
+                variables={},
+            )
+            with (
+                mock.patch.object(compile_size_probe.sys, 'platform', 'linux'),
+                mock.patch('subprocess.run') as mock_run,
+                mock.patch.object(
+                    compile_size_probe,
+                    '_RunLlvmNmOnObjectFile',
+                    return_value={'Duration::ByteSizeLong() const': 48},
+                ) as mock_nm,
+            ):
+                mock_run.return_value = (
+                    compile_size_probe.subprocess.CompletedProcess(
+                        args=[], returncode=0, stdout='', stderr=''))
+                compile_size_probe.MeasureObjectSymbolSizes(
+                    compile_rule=rule,
+                    build_directory=temporary_directory,
+                    clang_binary='/bin/clang++',
+                    llvm_nm_binary=fake_nm,
+                    dependency_disk_paths=(header_file,),
+                )
+
+        compile_command = mock_run.call_args.args[0]
+        temporary_object_path = compile_command[-2]
+        self.assertEqual(
+            [
+                '/bin/clang++',
+                '-fno-lto',
+                '-g0',
+                '-c',
+                '-o',
+                temporary_object_path,
+                'gen/net/duration.pb.cc',
+            ],
+            compile_command,
+            msg='Expected a native -fno-lto -c compile into a temporary .o.',
+        )
+        self.assertEqual(
+            [mock.call(fake_nm, temporary_object_path)],
+            mock_nm.call_args_list,
+            msg='Expected llvm-nm to read the freshly compiled temporary .o.',
+        )
+
+    def testMeasureObjectSymbolSizesReturnsEmptyMappingOnDarwin(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            fake_nm = os.path.join(temporary_directory, 'llvm-nm')
+            _WriteFileWithByteSize(fake_nm, 8)
+            rule = compile_size_probe.NinjaCompileRule(
+                translation_unit='gen/net/duration.pb.cc',
+                ninja_source_path='gen/net/duration.pb.cc',
+                object_target='obj/duration.pb.o',
+                ninja_file_path='obj/net/proto.ninja',
+                variables={},
+            )
+            with mock.patch.object(
+                    compile_size_probe.sys, 'platform', 'darwin'):
+                symbol_sizes = compile_size_probe.MeasureObjectSymbolSizes(
+                    compile_rule=rule,
+                    build_directory=temporary_directory,
+                    clang_binary='/bin/clang++',
+                    llvm_nm_binary=fake_nm,
+                )
+        self.assertEqual(
+            {},
+            symbol_sizes,
+            msg=(
+                'Expected MeasureObjectSymbolSizes to return {} on darwin '
+                'where Mach-O object files do not store symbol byte sizes.'),
+        )
+
+    def testRunLlvmNmOnObjectFileRaisesRuntimeErrorWhenLlvmNmExitsNonZero(
+            self):
+        with (
+            mock.patch(
+                'subprocess.run',
+                return_value=compile_size_probe.subprocess.CompletedProcess(
+                    args=['llvm-nm'],
+                    returncode=1,
+                    stdout='',
+                    stderr='llvm-nm: corrupted object file',
+                ),
+            ),
+            self.assertRaises(
+                RuntimeError,
+                msg=(
+                    'Expected _RunLlvmNmOnObjectFile to raise RuntimeError '
+                    'when llvm-nm exits with a non-zero status.'),
+            ),
+        ):
+            compile_size_probe._RunLlvmNmOnObjectFile(
+                '/bin/llvm-nm', '/tmp/broken.o')
+
+    def testMeasureObjectSymbolSizesRaisesRuntimeErrorWhenCodegenFails(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            fake_nm = os.path.join(temporary_directory, 'llvm-nm')
+            _WriteFileWithByteSize(fake_nm, 8)
+            rule = compile_size_probe.NinjaCompileRule(
+                translation_unit='gen/net/duration.pb.cc',
+                ninja_source_path='gen/net/duration.pb.cc',
+                object_target='obj/duration.pb.o',
+                ninja_file_path='obj/net/proto.ninja',
+                variables={},
+            )
+            with (
+                mock.patch.object(compile_size_probe.sys, 'platform', 'linux'),
+                mock.patch(
+                    'subprocess.run',
+                    return_value=compile_size_probe.subprocess.CompletedProcess(
+                        args=['clang++'],
+                        returncode=1,
+                        stdout='',
+                        stderr='error: unknown flag',
+                    ),
+                ),
+                self.assertRaisesRegex(
+                    RuntimeError,
+                    r'clang\+\+ codegen failed',
+                    msg=(
+                        'Expected MeasureObjectSymbolSizes to raise '
+                        'RuntimeError when clang++ codegen exits non-zero.'),
+                ),
+            ):
+                compile_size_probe.MeasureObjectSymbolSizes(
+                    compile_rule=rule,
+                    build_directory=temporary_directory,
+                    clang_binary='/bin/clang++',
+                    llvm_nm_binary=fake_nm,
+                )
+
+    def testFormatComparisonReportNotesWhenSymbolSizesAreUnavailable(self):
+        report = compile_size_probe.ProbeComparisonReport(
+            baseline_name='before',
+            before_total_bytes=1000,
+            after_total_bytes=1000,
+            delta_total_bytes=0,
+            translation_units=(
+                compile_size_probe.TranslationUnitComparison(
+                    translation_unit='gen/net/duration.pb.cc',
+                    before_bytes=1000,
+                    after_bytes=1000,
+                    delta_bytes=0,
+                    added_headers=(),
+                    removed_headers=(),
+                    resized_files=(),
+                ),
+            ),
+        )
+        formatted_report = compile_size_probe.FormatComparisonReport(report)
+
+        self.assertIn(
+            '  Compiled symbols: unavailable\n  No header changes.',
+            formatted_report,
+            msg=(
+                'Expected FormatComparisonReport to note when compiled symbol '
+                'sizes are unavailable instead of claiming no symbol changes.'),
+        )
+
+    def testMeasureObjectSymbolSizesReusesFreshNativeObjectWithoutRecompiling(
+            self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            object_file = os.path.join(
+                temporary_directory, 'obj', 'duration.pb.o')
+            header_file = os.path.join(temporary_directory, 'extension_set.h')
+            fake_nm = os.path.join(temporary_directory, 'llvm-nm')
+            _WriteFileWithByteSize(object_file, 16)
+            _WriteFileWithByteSize(header_file, 32)
+            _WriteFileWithByteSize(fake_nm, 8)
+            os.utime(header_file, (1000.0, 1000.0))
+            os.utime(object_file, (2000.0, 2000.0))
+
+            rule = compile_size_probe.NinjaCompileRule(
+                translation_unit='gen/net/duration.pb.cc',
+                ninja_source_path='gen/net/duration.pb.cc',
+                object_target='obj/duration.pb.o',
+                ninja_file_path='obj/net/proto.ninja',
+                variables={},
+            )
+            with (
+                mock.patch.object(compile_size_probe.sys, 'platform', 'linux'),
+                mock.patch.object(
+                    compile_size_probe,
+                    '_RunLlvmNmOnObjectFile',
+                    return_value={'Duration::ByteSizeLong() const': 48},
+                ) as mock_nm,
+            ):
+                compile_size_probe.MeasureObjectSymbolSizes(
+                    compile_rule=rule,
+                    build_directory=temporary_directory,
+                    clang_binary='/bin/clang++',
+                    llvm_nm_binary=fake_nm,
+                    dependency_disk_paths=(header_file,),
+                )
+        self.assertEqual(
+            [mock.call(fake_nm, object_file)],
+            mock_nm.call_args_list,
+            msg=(
+                'Expected MeasureObjectSymbolSizes to pass the existing '
+                'up-to-date native .o file to _RunLlvmNmOnObjectFile without '
+                'recompiling to a temporary object file.'),
+        )
+
+    def testMeasureObjectSymbolSizesRecompilesWhenObjectIsThinLtoBitcode(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            object_file = os.path.join(
+                temporary_directory, 'obj', 'duration.pb.o')
+            header_file = os.path.join(temporary_directory, 'extension_set.h')
+            fake_nm = os.path.join(temporary_directory, 'llvm-nm')
+            os.makedirs(os.path.dirname(object_file), exist_ok=True)
+            with open(object_file, 'wb') as file_handle:
+                file_handle.write(b'BC\xc0\xde' + b'\x00' * 12)
+            _WriteFileWithByteSize(header_file, 32)
+            _WriteFileWithByteSize(fake_nm, 8)
+            os.utime(header_file, (1000.0, 1000.0))
+            os.utime(object_file, (2000.0, 2000.0))
+
+            rule = compile_size_probe.NinjaCompileRule(
+                translation_unit='gen/net/duration.pb.cc',
+                ninja_source_path='gen/net/duration.pb.cc',
+                object_target='obj/duration.pb.o',
+                ninja_file_path='obj/net/proto.ninja',
+                variables={},
+            )
+            with (
+                mock.patch.object(compile_size_probe.sys, 'platform', 'linux'),
+                mock.patch('subprocess.run') as mock_run,
+                mock.patch.object(
+                    compile_size_probe,
+                    '_RunLlvmNmOnObjectFile',
+                    return_value={'Duration::ByteSizeLong() const': 48},
+                ) as mock_nm,
+            ):
+                mock_run.return_value = (
+                    compile_size_probe.subprocess.CompletedProcess(
+                        args=[], returncode=0, stdout='', stderr=''))
+                compile_size_probe.MeasureObjectSymbolSizes(
+                    compile_rule=rule,
+                    build_directory=temporary_directory,
+                    clang_binary='/bin/clang++',
+                    llvm_nm_binary=fake_nm,
+                    dependency_disk_paths=(header_file,),
+                )
+
+        compile_command = mock_run.call_args.args[0]
+        temporary_object_path = compile_command[-2]
+        self.assertEqual(
+            [
+                '/bin/clang++',
+                '-fno-lto',
+                '-g0',
+                '-c',
+                '-o',
+                temporary_object_path,
+                'gen/net/duration.pb.cc',
+            ],
+            compile_command,
+            msg=(
+                'Expected MeasureObjectSymbolSizes to recompile with -fno-lto '
+                'when the existing .o file is ThinLTO bitcode.'),
+        )
+        self.assertEqual(
+            [mock.call(fake_nm, temporary_object_path)],
+            mock_nm.call_args_list,
+            msg='Expected llvm-nm to read the freshly compiled temporary .o.',
+        )
+
+    def testMeasureObjectSymbolSizesDetectsBitcodeWrapperMagicAndMissingNm(
+            self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            wrapped_bitcode = os.path.join(temporary_directory, 'wrapped.o')
+            with open(wrapped_bitcode, 'wb') as file_handle:
+                file_handle.write(b'\xde\xc0\x17\x0b' + b'\x00' * 12)
+            rule = compile_size_probe.NinjaCompileRule(
+                translation_unit='gen/net/duration.pb.cc',
+                ninja_source_path='gen/net/duration.pb.cc',
+                object_target='obj/duration.pb.o',
+                ninja_file_path='obj/net/proto.ninja',
+                variables={},
+            )
+            with mock.patch.object(
+                    compile_size_probe.sys, 'platform', 'linux'):
+                is_bitcode = compile_size_probe._IsLlvmBitcodeFile(
+                    wrapped_bitcode)
+                missing_nm_result = (
+                    compile_size_probe.MeasureObjectSymbolSizes(
+                        compile_rule=rule,
+                        build_directory=temporary_directory,
+                        clang_binary='/bin/clang++',
+                        llvm_nm_binary=os.path.join(
+                            temporary_directory, 'no_such_llvm_nm'),
+                    ))
+
+        self.assertEqual(
+            (True, {}),
+            (is_bitcode, missing_nm_result),
+            msg=(
+                'Expected _IsLlvmBitcodeFile to recognize the LLVM bitcode '
+                'wrapper header and MeasureObjectSymbolSizes to return {} '
+                'when the llvm-nm binary does not exist on disk.'),
+        )
+
+    def testMeasureTranslationUnitForwardsDependenciesToSymbolMeasurement(
+            self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            source_path = os.path.join(
+                temporary_directory, 'gen', 'net', 'duration.pb.cc')
+            _WriteFileWithByteSize(source_path, 100)
+            compile_rule = compile_size_probe.NinjaCompileRule(
+                translation_unit='gen/net/duration.pb.cc',
+                ninja_source_path='gen/net/duration.pb.cc',
+                object_target='obj/net/duration.pb.o',
+                ninja_file_path='obj/net/proto.ninja',
+                variables={},
+            )
+            probe_process = mock.Mock(
+                returncode=0,
+                stdout='obj/net/duration.pb.o: gen/net/duration.pb.cc\n',
+                stderr='',
+            )
+            with (
+                mock.patch('subprocess.run', return_value=probe_process),
+                mock.patch.object(
+                    compile_size_probe,
+                    'MeasureObjectSymbolSizes',
+                    return_value={'Duration::ByteSizeLong() const': 48},
+                ) as mock_measure_symbols,
+            ):
+                snapshot = compile_size_probe.MeasureTranslationUnit(
+                    compile_rule=compile_rule,
+                    build_directory=temporary_directory,
+                    repository_root=temporary_directory,
+                    clang_binary='/bin/clang++',
+                    llvm_nm_binary='/bin/llvm-nm',
+                )
+            expected_dependency = os.path.realpath(source_path)
+
+        self.assertEqual(
+            {'Duration::ByteSizeLong() const': 48},
+            snapshot.symbol_sizes,
+            msg='Expected MeasureTranslationUnit to store measured symbols.',
+        )
+        mock_measure_symbols.assert_called_once_with(
+            compile_rule=compile_rule,
+            build_directory=temporary_directory,
+            clang_binary='/bin/clang++',
+            llvm_nm_binary='/bin/llvm-nm',
+            dependency_disk_paths=(expected_dependency,),
+        )
+
+    def testMeasureProbeBaselineForwardsLlvmNmBinaryToEachUnit(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            build_directory = os.path.join(
+                temporary_directory, 'out', 'Default')
+            _CreateSyntheticNinjaWorkspace(
+                temporary_directory,
+                build_directory,
+                ('gen/net/cert/root_store_proto_lite/duration.pb.cc',),
+            )
+            fake_snapshot = compile_size_probe.TranslationUnitSnapshot(
+                translation_unit=(
+                    'gen/net/cert/root_store_proto_lite/duration.pb.cc'),
+                total_bytes=500,
+                included_files={},
+                include_chains={},
+            )
+            with mock.patch(
+                    'compile_size_probe.MeasureTranslationUnit',
+                    return_value=fake_snapshot) as mock_measure:
+                compile_size_probe.MeasureProbeBaseline(
+                    build_directory=build_directory,
+                    repository_root=temporary_directory,
+                    translation_units=(
+                        'gen/net/cert/root_store_proto_lite/duration.pb.cc',
+                    ),
+                    clang_binary='/bin/clang++',
+                    should_build_targets=False,
+                    llvm_nm_binary='/bin/llvm-nm',
+                )
+
+        self.assertEqual(
+            '/bin/llvm-nm',
+            mock_measure.call_args.kwargs['llvm_nm_binary'],
+            msg='Expected MeasureProbeBaseline to forward llvm_nm_binary.',
+        )
+
+    def testMainPassesBundledLlvmNmAndPrintsDarwinMachONotice(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            fake_baseline = compile_size_probe.ProbeBaseline(
+                translation_units=())
+            captured_stderr = io.StringIO()
+            with (
+                mock.patch.object(compile_size_probe.sys, 'platform', 'darwin'),
+                mock.patch(
+                    'compile_size_probe.MeasureProbeBaseline',
+                    return_value=fake_baseline,
+                ) as mock_measure,
+                mock.patch('sys.stdout', io.StringIO()),
+                mock.patch('sys.stderr', captured_stderr),
+            ):
+                exit_code = compile_size_probe.main(
+                    ['-C', temporary_directory, '--no-build'])
+
+        self.assertEqual(
+            (0, True, True),
+            (
+                exit_code,
+                mock_measure.call_args.kwargs['llvm_nm_binary'].endswith(
+                    os.path.join('Release+Asserts', 'bin', 'llvm-nm')),
+                'Mach-O object files' in captured_stderr.getvalue(),
+            ),
+            msg=(
+                'Expected main() to pass the bundled llvm-nm path to '
+                'MeasureProbeBaseline and note Mach-O symbol limits on '
+                'darwin.'),
+        )
+
+    def testFormatBaselineSummaryRendersTotalAndPerUnitSymbolSizes(self):
+        baseline = compile_size_probe.ProbeBaseline(
+            translation_units=(
+                compile_size_probe.TranslationUnitSnapshot(
+                    translation_unit='gen/net/duration.pb.cc',
+                    total_bytes=1536,
+                    included_files={
+                        'gen/net/duration.pb.cc': 512,
+                        'gen/net/duration.pb.h': 1024,
+                    },
+                    include_chains={},
+                    symbol_sizes={
+                        'Duration::ByteSizeLong() const': 128,
+                        'Duration::Clear()': 64,
+                    },
+                ),
+            ))
+
+        summary = compile_size_probe.FormatBaselineSummary(baseline)
+
+        self.assertEqual(
+            (
+                'Total compiler inputs size across 1 translation unit: '
+                '1.50 KiB (1,536 B)\n'
+                'Total compiled symbol size across 1 translation unit: '
+                '192 B\n'
+                '  gen/net/duration.pb.cc: 1.50 KiB (1,536 B) '
+                '(2 files, 192 B across 2 symbols)'
+            ),
+            summary,
+            msg=(
+                'Expected FormatBaselineSummary to include total and '
+                'per-unit compiled symbol sizes when symbol_sizes is '
+                'non-empty.'),
+        )
+
+    def testCompareProbeBaselinesAggregatesBeforeAfterAndDeltaSymbolBytes(
+            self):
+        before_baseline = compile_size_probe.ProbeBaseline(
+            translation_units=(
+                compile_size_probe.TranslationUnitSnapshot(
+                    translation_unit='gen/net/duration.pb.cc',
+                    total_bytes=1000,
+                    included_files={'gen/net/duration.pb.cc': 1000},
+                    include_chains={},
+                    symbol_sizes={'Duration::ByteSizeLong() const': 200},
+                ),
+            ))
+        after_baseline = compile_size_probe.ProbeBaseline(
+            translation_units=(
+                compile_size_probe.TranslationUnitSnapshot(
+                    translation_unit='gen/net/duration.pb.cc',
+                    total_bytes=1000,
+                    included_files={'gen/net/duration.pb.cc': 1000},
+                    include_chains={},
+                    symbol_sizes={'Duration::ByteSizeLong() const': 260},
+                ),
+            ))
+
+        report = compile_size_probe.CompareProbeBaselines(
+            baseline_name='before',
+            before_baseline=before_baseline,
+            after_baseline=after_baseline,
+        )
+
+        self.assertEqual(
+            (200, 260, 60),
+            (
+                report.before_total_symbol_bytes,
+                report.after_total_symbol_bytes,
+                report.delta_total_symbol_bytes,
+            ),
+            msg=(
+                'Expected CompareProbeBaselines to sum before, after, '
+                'and delta compiled symbol bytes across compared units.'),
+        )
+
+    def testFormatComparisonReportRendersAddedRemovedResizedAndUnchangedSymbols(
+            self):
+        report = compile_size_probe.ProbeComparisonReport(
+            baseline_name='before',
+            before_total_bytes=2000,
+            after_total_bytes=2000,
+            delta_total_bytes=0,
+            before_total_symbol_bytes=500,
+            after_total_symbol_bytes=550,
+            delta_total_symbol_bytes=50,
+            translation_units=(
+                compile_size_probe.TranslationUnitComparison(
+                    translation_unit='gen/net/duration.pb.cc',
+                    before_bytes=1000,
+                    after_bytes=1000,
+                    delta_bytes=0,
+                    added_headers=(),
+                    removed_headers=(),
+                    resized_files=(),
+                    before_symbol_bytes=300,
+                    after_symbol_bytes=350,
+                    delta_symbol_bytes=50,
+                    added_symbols=(
+                        compile_size_probe.SymbolSizeDelta(
+                            symbol_name='Duration::NewHelper()',
+                            before_bytes=0,
+                            after_bytes=80,
+                            delta_bytes=80,
+                        ),
+                    ),
+                    removed_symbols=(
+                        compile_size_probe.SymbolSizeDelta(
+                            symbol_name='Duration::OldHelper()',
+                            before_bytes=50,
+                            after_bytes=0,
+                            delta_bytes=-50,
+                        ),
+                    ),
+                    resized_symbols=(
+                        compile_size_probe.SymbolSizeDelta(
+                            symbol_name='Duration::ByteSizeLong() const',
+                            before_bytes=250,
+                            after_bytes=270,
+                            delta_bytes=20,
+                        ),
+                    ),
+                ),
+                compile_size_probe.TranslationUnitComparison(
+                    translation_unit=(
+                        'components/sync/model/processor_entity.cc'),
+                    before_bytes=1000,
+                    after_bytes=1000,
+                    delta_bytes=0,
+                    added_headers=(),
+                    removed_headers=(),
+                    resized_files=(),
+                    before_symbol_bytes=200,
+                    after_symbol_bytes=200,
+                    delta_symbol_bytes=0,
+                ),
+            ),
+        )
+
+        formatted_report = compile_size_probe.FormatComparisonReport(report)
+
+        self.assertEqual(
+            (
+                'Compile-size comparison against baseline "before":\n'
+                'Total compiler inputs across 2 translation units: '
+                '1.95 KiB (2,000 B) -> 1.95 KiB (2,000 B) (0 B)\n'
+                'Total compiled symbols across 2 translation units: '
+                '500 B -> 550 B (+50 B)\n\n'
+                '=== gen/net/duration.pb.cc: 0 B '
+                '(0.00%, 1,000 B -> 1,000 B) ===\n'
+                '  Compiled symbols: 300 B -> 350 B (+50 B)\n'
+                '  Added symbols (1):\n'
+                '    +80 B  Duration::NewHelper() (0 B -> 80 B)\n'
+                '  Removed symbols (1):\n'
+                '    -50 B  Duration::OldHelper() (50 B -> 0 B)\n'
+                '  Resized symbols (1):\n'
+                '    +20 B  Duration::ByteSizeLong() const '
+                '(250 B -> 270 B)\n\n'
+                '=== components/sync/model/processor_entity.cc: 0 B '
+                '(0.00%, 1,000 B -> 1,000 B) ===\n'
+                '  Compiled symbols: 200 B -> 200 B (0 B)\n'
+                '  No header or symbol changes.'
+            ),
+            formatted_report,
+            msg=(
+                'Expected FormatComparisonReport to render total symbol '
+                'sizes, per-unit symbol deltas, Added/Removed/Resized '
+                'symbols, and "No header or symbol changes." lines.'),
         )
 
 

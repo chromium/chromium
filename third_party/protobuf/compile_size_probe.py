@@ -2,28 +2,32 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Measures and compares compiler input sizes and include chains for protobuf.
+"""Measures and compares compiler input and symbol sizes for protobuf.
 
 Chromium's `compile-size` trybot measures the total byte size of every source
 file and `#include`d header compiled by a translation unit, using the metric in
-`//tools/clang/scripts/compiler_inputs_size.py`. During a
-`//third_party/protobuf` roll or header change, a single new `#include` inside a
-widely included protobuf runtime header or a code generator expansion in
-`protoc` can add hundreds of megabytes across the build, while the bot only
-reports one aggregate delta.
+`//tools/clang/scripts/compiler_inputs_size.py`, while `android-binary-size`
+measures compiled machine code and data tables linked into Chrome. During a
+`//third_party/protobuf` roll or header change, regressions come in two forms:
+
+1. Header bloat: A single new `#include` inside a widely included protobuf
+   runtime header adds hundreds of megabytes of compiler input across the build.
+2. Codegen bloat: Upstream changes to generated methods such as `ByteSizeLong`
+   or `MergeImpl` increase compiled symbol sizes across thousands of `.pb.o`
+   files even when the `#include` graph is unchanged.
 
 When saving or measuring without a baseline, this standalone CLI probes three
 representative translation units (plus any extra translation units passed via
 `--tu`); when comparing against a saved baseline via `--compare`, it probes the
-baseline's translation units (or the subset selected via `--tu`) in a single
-`clang++ -M -H` pass per file:
+baseline's translation units (or the subset selected via `--tu`):
 
 1. `gen/net/cert/root_store_proto_lite/duration.pb.cc`: A tiny generated
    message dominated by protobuf runtime headers, Abseil, and libc++, isolating
-   constant per-file header weight.
+   constant per-file header weight and baseline per-message symbol sizes.
 2. `gen/components/sync/protocol/sync_entity.pb.cc`: A large generated Chrome
    Sync message where roughly half of the compiler input is generated `.pb.h`
-   code, exposing `protoc` codegen growth.
+   code, exposing `protoc` codegen growth in methods like `ByteSizeLong` and
+   `MergeImpl`.
 3. `components/sync/model/processor_entity.cc`: An ordinary hand-written C++
    translation unit that `#include`s large generated protobuf headers.
 
@@ -37,6 +41,12 @@ dependency including system headers and module maps on `stdout` (any `.pcm`
 module cache paths are excluded), and `-H` outputs the `#include` tree on
 `stderr` so newly added headers can be traced back to the exact header that
 pulled them in.
+
+On Linux and Android, the script also measures per-symbol compiled byte sizes
+via Chromium's bundled `llvm-nm` (reusing the existing `.o` file when fresh or
+compiling a temporary native object with `-fno-lto -g0` when the `.o` file is
+stale or ThinLTO bitcode, as on `android-binary-size`). On macOS, Mach-O `.o`
+files do not store per-symbol byte sizes, so symbol-size collection is skipped.
 
 See https://crbug.com/568074904 for full background.
 """
@@ -54,13 +64,15 @@ import shlex
 import shutil
 import subprocess
 import sys
+import tempfile
 from typing import Any
 
 _THIS_DIRECTORY = os.path.abspath(os.path.dirname(__file__))
 _DEFAULT_REPOSITORY_ROOT = os.path.abspath(
     os.path.join(_THIS_DIRECTORY, '..', '..'))
-_DEFAULT_CLANG_RELATIVE_PATH = (
-    'third_party/llvm-build/Release+Asserts/bin/clang++')
+_LLVM_BIN_RELATIVE_DIRECTORY = 'third_party/llvm-build/Release+Asserts/bin'
+_DEFAULT_CLANG_RELATIVE_PATH = f'{_LLVM_BIN_RELATIVE_DIRECTORY}/clang++'
+_DEFAULT_LLVM_NM_RELATIVE_PATH = f'{_LLVM_BIN_RELATIVE_DIRECTORY}/llvm-nm'
 _DEPOT_TOOLS_AUTONINJA_RELATIVE_PATH = 'third_party/depot_tools/autoninja'
 _BASELINE_SUBDIRECTORY_NAME = '.compile_size_probe'
 
@@ -80,6 +92,20 @@ _MODULE_FILE_FLAG_PATTERN = re.compile(r'-fmodule-file=(?:[^=\s]+=)?([^\s]+)')
 _CLANG_HEADER_TRACE_LINE_PATTERN = re.compile(r'^(\.+)\s+(.+)$')
 _SAFE_BASELINE_NAME_PATTERN = re.compile(r'^[A-Za-z0-9_.-]+$')
 _BASELINE_FORMAT_VERSION = 1
+_LLVM_NM_SIZED_SYMBOL_PATTERN = re.compile(
+    r'^([0-9a-fA-F]+)\s+([0-9a-fA-F]+)\s+([A-Za-z])\s+(.+)$')
+_LOCAL_CONSTANTS_SYMBOL_BUCKET = '<local constants (.L*)>'
+_LLVM_BITCODE_MAGIC_HEADERS = (b'BC\xc0\xde', b'\xde\xc0\x17\x0b')
+_LTO_FLAG_PREFIXES = (
+    '-flto',
+    '-fsplit-lto-unit',
+    '-fwhole-program-vtables',
+    '-fvirtual-function-elimination',
+    '-fsanitize=cfi',
+    '-fsanitize-cfi-',
+    '-fno-sanitize-trap=cfi',
+    '-fsanitize-recover=cfi',
+)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -111,7 +137,7 @@ class NinjaCompileRule:
 
 @dataclasses.dataclass(frozen=True)
 class TranslationUnitSnapshot:
-    """Stores measured compiler input sizes and include chains for one unit.
+    """Stores compiler input sizes, include chains, and symbol sizes.
 
     Attributes:
       translation_unit: Normalized path of the measured translation unit.
@@ -123,23 +149,32 @@ class TranslationUnitSnapshot:
         `translation_unit` to that header. Files that clang only probes
         (`__has_include`) or reads as module maps appear in
         `included_files` but have no chain.
+      symbol_sizes: Mapping from demangled symbol name to compiled byte size in
+        the translation unit's object file.
     """
 
     translation_unit: str
     total_bytes: int
     included_files: Mapping[str, int]
     include_chains: Mapping[str, tuple[str, ...]]
+    symbol_sizes: Mapping[str, int] = dataclasses.field(default_factory=dict)
+
+    def TotalSymbolBytes(self) -> int:
+        """Returns the sum of compiled byte sizes across `symbol_sizes`."""
+        return sum(self.symbol_sizes.values())
 
     def ToDict(self) -> dict[str, Any]:
         """Serializes this snapshot to a JSON-compatible dictionary."""
         return {
             'translation_unit': self.translation_unit,
             'total_bytes': self.total_bytes,
+            'total_symbol_bytes': self.TotalSymbolBytes(),
             'included_files': dict(sorted(self.included_files.items())),
             'include_chains': {
                 header_path: list(chain)
                 for header_path, chain in sorted(self.include_chains.items())
             },
+            'symbol_sizes': dict(sorted(self.symbol_sizes.items())),
         }
 
     @classmethod
@@ -155,11 +190,17 @@ class TranslationUnitSnapshot:
             for header_path, chain in raw_dictionary.get(
                 'include_chains', {}).items()
         }
+        symbol_sizes = {
+            str(symbol_name): int(byte_size)
+            for symbol_name, byte_size in raw_dictionary.get(
+                'symbol_sizes', {}).items()
+        }
         return cls(
             translation_unit=str(raw_dictionary['translation_unit']),
             total_bytes=int(raw_dictionary['total_bytes']),
             included_files=included_files,
             include_chains=include_chains,
+            symbol_sizes=symbol_sizes,
         )
 
 
@@ -178,6 +219,10 @@ class ProbeBaseline:
         """Returns the sum of `total_bytes` across all translation units."""
         return sum(unit.total_bytes for unit in self.translation_units)
 
+    def TotalSymbolBytes(self) -> int:
+        """Returns the sum of compiled symbol bytes across all units."""
+        return sum(unit.TotalSymbolBytes() for unit in self.translation_units)
+
     def ByTranslationUnit(self) -> dict[str, TranslationUnitSnapshot]:
         """Returns snapshots indexed by `translation_unit` path."""
         return {
@@ -189,6 +234,7 @@ class ProbeBaseline:
         return {
             'format_version': _BASELINE_FORMAT_VERSION,
             'total_bytes': self.TotalBytes(),
+            'total_symbol_bytes': self.TotalSymbolBytes(),
             'translation_units': [
                 unit.ToDict() for unit in self.translation_units
             ],
@@ -266,6 +312,23 @@ class ResizedFileDelta:
 
 
 @dataclasses.dataclass(frozen=True)
+class SymbolSizeDelta:
+    """Describes an added, removed, or resized compiled symbol in an object.
+
+    Attributes:
+      symbol_name: Demangled C++ symbol name (or `<local constants (.L*)>`).
+      before_bytes: Compiled byte size in the saved baseline (`0` if added).
+      after_bytes: Compiled byte size in the current run (`0` if removed).
+      delta_bytes: Signed byte difference (`after_bytes - before_bytes`).
+    """
+
+    symbol_name: str
+    before_bytes: int
+    after_bytes: int
+    delta_bytes: int
+
+
+@dataclasses.dataclass(frozen=True)
 class TranslationUnitComparison:
     """Holds the before/after comparison for a single translation unit.
 
@@ -277,6 +340,15 @@ class TranslationUnitComparison:
       added_headers: Newly included headers sorted by `size_bytes` descending.
       removed_headers: Removed headers sorted by `size_bytes` descending.
       resized_files: Modified files sorted by `abs(delta_bytes)` descending.
+      before_symbol_bytes: Total compiled symbol bytes in the saved baseline.
+      after_symbol_bytes: Total compiled symbol bytes in the current run.
+      delta_symbol_bytes: Signed difference (`after_symbol_bytes -
+        before_symbol_bytes`).
+      added_symbols: Newly emitted symbols sorted by `abs(delta_bytes)`
+        descending.
+      removed_symbols: Removed symbols sorted by `abs(delta_bytes)` descending.
+      resized_symbols: Symbols whose byte size changed, sorted by
+        `abs(delta_bytes)` descending.
     """
 
     translation_unit: str
@@ -286,6 +358,12 @@ class TranslationUnitComparison:
     added_headers: tuple[AddedHeaderDelta, ...]
     removed_headers: tuple[RemovedHeaderDelta, ...]
     resized_files: tuple[ResizedFileDelta, ...]
+    before_symbol_bytes: int = 0
+    after_symbol_bytes: int = 0
+    delta_symbol_bytes: int = 0
+    added_symbols: tuple[SymbolSizeDelta, ...] = ()
+    removed_symbols: tuple[SymbolSizeDelta, ...] = ()
+    resized_symbols: tuple[SymbolSizeDelta, ...] = ()
 
 
 @dataclasses.dataclass(frozen=True)
@@ -299,6 +377,10 @@ class ProbeComparisonReport:
       delta_total_bytes: Signed difference (`after_total_bytes -
         before_total_bytes`).
       translation_units: Per-unit comparison results in probe order.
+      before_total_symbol_bytes: Sum of `before_symbol_bytes` across units.
+      after_total_symbol_bytes: Sum of `after_symbol_bytes` across units.
+      delta_total_symbol_bytes: Signed difference (`after_total_symbol_bytes -
+        before_total_symbol_bytes`).
     """
 
     baseline_name: str
@@ -306,6 +388,9 @@ class ProbeComparisonReport:
     after_total_bytes: int
     delta_total_bytes: int
     translation_units: tuple[TranslationUnitComparison, ...]
+    before_total_symbol_bytes: int = 0
+    after_total_symbol_bytes: int = 0
+    delta_total_symbol_bytes: int = 0
 
     def ToDict(self) -> dict[str, Any]:
         """Serializes this comparison report to a JSON-compatible dict."""
@@ -318,7 +403,7 @@ def UnescapeNinjaValue(raw_value: str) -> str:
 
 
 def _IsPathWithinDirectory(candidate_path: str, directory_path: str) -> bool:
-    """Returns True if candidate_path is inside directory_path."""
+    """Returns True if `candidate_path` is inside `directory_path`."""
     try:
         return os.path.commonpath(
             [candidate_path, directory_path]) == directory_path
@@ -643,6 +728,34 @@ def BuildClangProbeCommand(
     )
 
 
+def _StripLtoFlags(compiler_flags: Sequence[str]) -> list[str]:
+    """Removes ThinLTO and CFI flags so `clang++` emits native code or IR.
+
+    Clang requires `-flto` when Control Flow Integrity (`-fsanitize=cfi*`) or
+    whole-program vtable flags are active, so those flags must be stripped
+    alongside `-flto*` before passing `-fno-lto`.
+    """
+    return [
+        flag for flag in compiler_flags
+        if not flag.startswith(_LTO_FLAG_PREFIXES)
+    ]
+
+
+def BuildClangCodegenCommand(
+        compile_rule: NinjaCompileRule,
+        build_directory: str,
+        clang_binary: str,
+        codegen_flags: Sequence[str]) -> list[str]:
+    """Constructs a non-LTO `clang++` command for `.o` or `.ll` output."""
+    compiler_flags = _StripLtoFlags(
+        _CollectTargetCompilerFlags(compile_rule, build_directory))
+    return (
+        [clang_binary]
+        + compiler_flags
+        + ['-fno-lto', '-g0', *codegen_flags, compile_rule.ninja_source_path]
+    )
+
+
 def _IsPrebuiltModuleArtifact(file_path: str) -> bool:
     """Returns True if `file_path` is a precompiled Clang module (`.pcm`).
 
@@ -754,6 +867,148 @@ def _MeasureFileByteSizes(
     }
 
 
+def _IsLlvmBitcodeFile(file_path: str) -> bool:
+    """Returns True if `file_path` begins with an LLVM IR bitcode header."""
+    try:
+        with open(file_path, 'rb') as file_handle:
+            magic_bytes = file_handle.read(4)
+    except OSError:
+        return False
+    return magic_bytes in _LLVM_BITCODE_MAGIC_HEADERS
+
+
+def _IsObjectFileUpToDate(
+        object_file_path: str,
+        dependency_disk_paths: Sequence[str]) -> bool:
+    """Returns True if `object_file_path` exists and is newer than inputs."""
+    if not os.path.isfile(object_file_path):
+        return False
+    try:
+        object_mtime = os.path.getmtime(object_file_path)
+        return all(
+            os.path.isfile(dependency_path)
+            and object_mtime >= os.path.getmtime(dependency_path)
+            for dependency_path in dependency_disk_paths
+        )
+    except OSError:
+        return False
+
+
+def ParseLlvmNmSymbolSizes(llvm_nm_stdout: str) -> dict[str, int]:
+    """Parses `llvm-nm --print-size --demangle` output into `{symbol: bytes}`.
+
+    Deduplicates identical `(address, size, type, name)` ELF alias lines (such
+    as `C1`/`C2` constructor or `D1`/`D2` destructor aliases sharing the same
+    section offset and size) while summing distinct ABI functions (such as `D0`
+    deleting destructors) that share a demangled C++ signature. Note that under
+    `-ffunction-sections`, every function starts at section offset `0`, so two
+    separate ABI variants that demangle to the same signature and compile to
+    the exact same byte size will also share an `(address, size, type, name)`
+    tuple and be deduplicated together. Folds compiler-generated `.L*` local
+    constants into `<local constants (.L*)>` so symbol renumbering does not
+    produce spurious added/removed entries.
+    """
+    symbol_sizes: dict[str, int] = {}
+    seen_symbol_entries: set[tuple[str, str, str, str]] = set()
+    for raw_line in llvm_nm_stdout.splitlines():
+        match = _LLVM_NM_SIZED_SYMBOL_PATTERN.match(raw_line.strip())
+        if match is None:
+            continue
+        address_hex, size_hex, symbol_type, raw_symbol_name = match.groups()
+        size_bytes = int(size_hex, 16)
+        if size_bytes <= 0:
+            continue
+        symbol_name = raw_symbol_name.strip()
+        if symbol_name.startswith('.L'):
+            symbol_name = _LOCAL_CONSTANTS_SYMBOL_BUCKET
+        else:
+            # C1/C2 constructors and D1/D2 destructors are often emitted as ELF
+            # symbol-table aliases pointing at the same address and size. Under
+            # -ffunction-sections, distinct sections also start at offset 0, so
+            # equal-sized ABI variants with the same demangled name cannot be
+            # distinguished from aliases in llvm-nm output and are merged here.
+            entry_key = (address_hex, size_hex, symbol_type, symbol_name)
+            if entry_key in seen_symbol_entries:
+                continue
+            seen_symbol_entries.add(entry_key)
+        symbol_sizes[symbol_name] = (
+            symbol_sizes.get(symbol_name, 0) + size_bytes)
+    return symbol_sizes
+
+
+def _RunLlvmNmOnObjectFile(
+        llvm_nm_binary: str, object_file_path: str) -> dict[str, int]:
+    """Runs `llvm-nm` on `object_file_path` and returns parsed symbol sizes."""
+    completed = subprocess.run(
+        [
+            llvm_nm_binary,
+            '--print-size',
+            '--size-sort',
+            '--demangle',
+            object_file_path,
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if completed.returncode != 0:
+        raise RuntimeError(
+            f'llvm-nm failed for {object_file_path} '
+            f'(exit {completed.returncode}):\n{completed.stderr}')
+    return ParseLlvmNmSymbolSizes(completed.stdout)
+
+
+def MeasureObjectSymbolSizes(
+        compile_rule: NinjaCompileRule,
+        build_directory: str,
+        clang_binary: str,
+        llvm_nm_binary: str | None = None,
+        dependency_disk_paths: Sequence[str] = ()) -> dict[str, int]:
+    """Measures per-symbol compiled byte sizes for `compile_rule`.
+
+    Uses the existing `.o` file in `build_directory` when it is already a native
+    object file and is newer than all `dependency_disk_paths`. When the `.o`
+    file is stale, missing, or ThinLTO bitcode (as on `android-binary-size`),
+    compiles a temporary native `.o` file with `-fno-lto`. Returns `{}` on
+    macOS where Mach-O object files do not record per-symbol byte sizes.
+    """
+    if (sys.platform == 'darwin'
+            or not llvm_nm_binary
+            or not os.path.isfile(llvm_nm_binary)):
+        return {}
+
+    existing_object_path = os.path.normpath(
+        os.path.join(build_directory, compile_rule.object_target))
+    paths_to_check = dependency_disk_paths or (
+        os.path.normpath(
+            os.path.join(build_directory, compile_rule.ninja_source_path)),
+    )
+    if (_IsObjectFileUpToDate(existing_object_path, paths_to_check)
+            and not _IsLlvmBitcodeFile(existing_object_path)):
+        return _RunLlvmNmOnObjectFile(llvm_nm_binary, existing_object_path)
+
+    with tempfile.TemporaryDirectory() as temporary_directory:
+        temporary_object_path = os.path.join(temporary_directory, 'probe.o')
+        compile_command = BuildClangCodegenCommand(
+            compile_rule=compile_rule,
+            build_directory=build_directory,
+            clang_binary=clang_binary,
+            codegen_flags=['-c', '-o', temporary_object_path],
+        )
+        completed = subprocess.run(
+            compile_command,
+            cwd=build_directory,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if completed.returncode != 0:
+            raise RuntimeError(
+                f'clang++ codegen failed for {compile_rule.translation_unit} '
+                f'(exit {completed.returncode}):\n{completed.stderr}')
+        return _RunLlvmNmOnObjectFile(llvm_nm_binary, temporary_object_path)
+
+
 def ResolveAutoninjaBinary(repository_root: str) -> str:
     """Finds `autoninja` on `PATH` or in `//third_party/depot_tools`."""
     autoninja_on_path = shutil.which('autoninja')
@@ -784,8 +1039,10 @@ def MeasureTranslationUnit(
         compile_rule: NinjaCompileRule,
         build_directory: str,
         repository_root: str,
-        clang_binary: str) -> TranslationUnitSnapshot:
-    """Runs `clang++ -M -H` for `compile_rule` and returns its snapshot."""
+        clang_binary: str,
+        llvm_nm_binary: str | None = None,
+) -> TranslationUnitSnapshot:
+    """Runs `clang++ -M -H` and `llvm-nm` for `compile_rule`."""
     command = BuildClangProbeCommand(
         compile_rule=compile_rule,
         build_directory=build_directory,
@@ -815,11 +1072,19 @@ def MeasureTranslationUnit(
         build_directory=build_directory,
         repository_root=repository_root,
     )
+    symbol_sizes = MeasureObjectSymbolSizes(
+        compile_rule=compile_rule,
+        build_directory=build_directory,
+        clang_binary=clang_binary,
+        llvm_nm_binary=llvm_nm_binary,
+        dependency_disk_paths=tuple(normalized_to_disk_path.values()),
+    )
     return TranslationUnitSnapshot(
         translation_unit=compile_rule.translation_unit,
         total_bytes=sum(included_files.values()),
         included_files=included_files,
         include_chains=include_chains,
+        symbol_sizes=symbol_sizes,
     )
 
 
@@ -848,14 +1113,15 @@ def MeasureProbeBaseline(
         repository_root: str,
         translation_units: Sequence[str],
         clang_binary: str,
-        should_build_targets: bool = True) -> ProbeBaseline:
+        should_build_targets: bool = True,
+        llvm_nm_binary: str | None = None) -> ProbeBaseline:
     """Measures all requested translation units and returns a ProbeBaseline.
 
     Resolves the Ninja `cxx` compile rule for each translation unit, runs
     `autoninja` on the deduplicated prerequisite targets when
     `should_build_targets` is True so generated `.pb.h`/`.pb.cc` files and
-    prebuilt `.pcm` Clang modules are up to date, and runs `clang++ -M -H` on
-    each unit.
+    prebuilt `.pcm` Clang modules are up to date, and runs `clang++ -M -H` and
+    `llvm-nm` on each unit.
 
     Args:
       build_directory: Path to the GN/Ninja build output directory.
@@ -864,14 +1130,15 @@ def MeasureProbeBaseline(
       clang_binary: Path to the `clang++` executable.
       should_build_targets: When True (the default), builds each compile rule's
         prerequisite targets via `autoninja` before measuring.
+      llvm_nm_binary: Optional path to `llvm-nm` for per-symbol size collection.
 
     Returns:
       A `ProbeBaseline` containing a `TranslationUnitSnapshot` per unit.
 
     Raises:
       FileNotFoundError: If `build_directory` does not exist.
-      RuntimeError: If any translation unit's Ninja rule or `clang++ -M -H`
-        invocation fails.
+      RuntimeError: If any translation unit's Ninja rule, `clang++`, or
+        `llvm-nm` invocation fails.
       subprocess.CalledProcessError: If `autoninja` fails.
     """
     _ValidateBuildDirectory(build_directory)
@@ -893,6 +1160,7 @@ def MeasureProbeBaseline(
             build_directory=build_directory,
             repository_root=repository_root,
             clang_binary=clang_binary,
+            llvm_nm_binary=llvm_nm_binary,
         )
         for rule in compile_rules
     )
@@ -1044,11 +1312,22 @@ def FormatBaselineSummary(
         f'Total compiler inputs size across '
         f'{unit_count} {unit_label}: '
         f'{FormatHumanByteSize(baseline.TotalBytes())}')
+    if baseline.TotalSymbolBytes() > 0:
+        lines.append(
+            f'Total compiled symbol size across '
+            f'{unit_count} {unit_label}: '
+            f'{FormatHumanByteSize(baseline.TotalSymbolBytes())}')
     for snapshot in baseline.translation_units:
+        symbol_suffix = (
+            f', {FormatHumanByteSize(snapshot.TotalSymbolBytes())} across '
+            f'{len(snapshot.symbol_sizes)} symbols'
+            if snapshot.symbol_sizes
+            else ''
+        )
         lines.append(
             f'  {snapshot.translation_unit}: '
             f'{FormatHumanByteSize(snapshot.total_bytes)} '
-            f'({len(snapshot.included_files)} files)')
+            f'({len(snapshot.included_files)} files{symbol_suffix})')
     return '\n'.join(lines)
 
 
@@ -1067,10 +1346,72 @@ def _ResizedFileSortKey(resized_file: ResizedFileDelta) -> tuple[int, str]:
     return (-abs(resized_file.delta_bytes), resized_file.path)
 
 
+def _SymbolDeltaSortKey(symbol_delta: SymbolSizeDelta) -> tuple[int, str]:
+    """Orders SymbolSizeDelta entries by |delta_bytes| descending, name."""
+    return (-abs(symbol_delta.delta_bytes), symbol_delta.symbol_name)
+
+
+def _CompareSymbolSizeMaps(
+        before_symbols: Mapping[str, int],
+        after_symbols: Mapping[str, int],
+) -> tuple[
+    tuple[SymbolSizeDelta, ...],
+    tuple[SymbolSizeDelta, ...],
+    tuple[SymbolSizeDelta, ...],
+]:
+    """Computes sorted `(added, removed, resized)` symbol size deltas."""
+    added_names = set(after_symbols) - set(before_symbols)
+    removed_names = set(before_symbols) - set(after_symbols)
+    common_names = set(before_symbols) & set(after_symbols)
+
+    added_symbols = sorted(
+        (
+            SymbolSizeDelta(
+                symbol_name=name,
+                before_bytes=0,
+                after_bytes=after_symbols[name],
+                delta_bytes=after_symbols[name],
+            )
+            for name in added_names
+        ),
+        key=_SymbolDeltaSortKey,
+    )
+    removed_symbols = sorted(
+        (
+            SymbolSizeDelta(
+                symbol_name=name,
+                before_bytes=before_symbols[name],
+                after_bytes=0,
+                delta_bytes=-before_symbols[name],
+            )
+            for name in removed_names
+        ),
+        key=_SymbolDeltaSortKey,
+    )
+    resized_symbols = sorted(
+        (
+            SymbolSizeDelta(
+                symbol_name=name,
+                before_bytes=before_symbols[name],
+                after_bytes=after_symbols[name],
+                delta_bytes=after_symbols[name] - before_symbols[name],
+            )
+            for name in common_names
+            if after_symbols[name] != before_symbols[name]
+        ),
+        key=_SymbolDeltaSortKey,
+    )
+    return (
+        tuple(added_symbols),
+        tuple(removed_symbols),
+        tuple(resized_symbols),
+    )
+
+
 def CompareTranslationUnitSnapshots(
         before_snapshot: TranslationUnitSnapshot,
         after_snapshot: TranslationUnitSnapshot) -> TranslationUnitComparison:
-    """Computes added, removed, and resized files between two snapshots."""
+    """Computes header and symbol deltas between two snapshots."""
     before_files = before_snapshot.included_files
     after_files = after_snapshot.included_files
 
@@ -1109,6 +1450,10 @@ def CompareTranslationUnitSnapshots(
         ),
         key=_ResizedFileSortKey,
     )
+    added_symbols, removed_symbols, resized_symbols = _CompareSymbolSizeMaps(
+        before_snapshot.symbol_sizes, after_snapshot.symbol_sizes)
+    before_symbol_bytes = before_snapshot.TotalSymbolBytes()
+    after_symbol_bytes = after_snapshot.TotalSymbolBytes()
 
     return TranslationUnitComparison(
         translation_unit=after_snapshot.translation_unit,
@@ -1118,6 +1463,12 @@ def CompareTranslationUnitSnapshots(
         added_headers=tuple(added_headers),
         removed_headers=tuple(removed_headers),
         resized_files=tuple(resized_files),
+        before_symbol_bytes=before_symbol_bytes,
+        after_symbol_bytes=after_symbol_bytes,
+        delta_symbol_bytes=after_symbol_bytes - before_symbol_bytes,
+        added_symbols=added_symbols,
+        removed_symbols=removed_symbols,
+        resized_symbols=resized_symbols,
     )
 
 
@@ -1133,7 +1484,7 @@ def CompareProbeBaselines(
       after_baseline: Newly measured ProbeBaseline snapshot.
 
     Returns:
-      A ProbeComparisonReport summarizing total and per-unit header changes.
+      A ProbeComparisonReport summarizing total and per-unit changes.
 
     Raises:
       ValueError: If any translation unit in `after_baseline` is missing from
@@ -1156,12 +1507,19 @@ def CompareProbeBaselines(
         comparison.before_bytes for comparison in comparisons)
     after_total = sum(
         comparison.after_bytes for comparison in comparisons)
+    before_symbols_total = sum(
+        comparison.before_symbol_bytes for comparison in comparisons)
+    after_symbols_total = sum(
+        comparison.after_symbol_bytes for comparison in comparisons)
     return ProbeComparisonReport(
         baseline_name=baseline_name,
         before_total_bytes=before_total,
         after_total_bytes=after_total,
         delta_total_bytes=after_total - before_total,
         translation_units=tuple(comparisons),
+        before_total_symbol_bytes=before_symbols_total,
+        after_total_symbol_bytes=after_symbols_total,
+        delta_total_symbol_bytes=after_symbols_total - before_symbols_total,
     )
 
 
@@ -1206,6 +1564,20 @@ def _FormatResizedFilesLines(
     return lines
 
 
+def _FormatSymbolDeltasLines(
+        heading: str, symbol_deltas: Sequence[SymbolSizeDelta]) -> list[str]:
+    """Formats added, removed, or resized symbol size lines."""
+    if not symbol_deltas:
+        return []
+    lines = [f'  {heading} ({len(symbol_deltas)}):']
+    for delta in symbol_deltas:
+        sign = '+' if delta.delta_bytes > 0 else ''
+        lines.append(
+            f'    {sign}{delta.delta_bytes:,} B  {delta.symbol_name} '
+            f'({delta.before_bytes:,} B -> {delta.after_bytes:,} B)')
+    return lines
+
+
 def _FormatTranslationUnitComparisonSection(
         comparison: TranslationUnitComparison) -> list[str]:
     """Formats the human-readable section for a single translation unit."""
@@ -1217,22 +1589,52 @@ def _FormatTranslationUnitComparisonSection(
     sign = '+' if percentage > 0 else ''
     formatted_delta = FormatHumanByteSize(
         comparison.delta_bytes, should_include_sign=True)
-    header_line = (
+    lines = [
         f'=== {comparison.translation_unit}: '
         f'{formatted_delta} '
         f'({sign}{percentage:.2f}%, '
         f'{comparison.before_bytes:,} B -> {comparison.after_bytes:,} B) ==='
-    )
-    lines = [header_line]
-    if (not comparison.added_headers
-            and not comparison.removed_headers
-            and not comparison.resized_files):
-        lines.append('  No header changes.')
+    ]
+    has_symbol_sizes = bool(
+        comparison.before_symbol_bytes or comparison.after_symbol_bytes)
+    if has_symbol_sizes:
+        formatted_symbol_delta = FormatHumanByteSize(
+            comparison.delta_symbol_bytes, should_include_sign=True)
+        lines.append(
+            f'  Compiled symbols: {comparison.before_symbol_bytes:,} B -> '
+            f'{comparison.after_symbol_bytes:,} B '
+            f'({formatted_symbol_delta})')
+    else:
+        lines.append('  Compiled symbols: unavailable')
+
+    has_header_changes = bool(
+        comparison.added_headers
+        or comparison.removed_headers
+        or comparison.resized_files)
+    has_symbol_changes = bool(
+        comparison.added_symbols
+        or comparison.removed_symbols
+        or comparison.resized_symbols)
+    if not has_header_changes and not has_symbol_changes:
+        no_changes_line = (
+            '  No header or symbol changes.'
+            if has_symbol_sizes
+            else '  No header changes.'
+        )
+        lines.append(no_changes_line)
         return lines
 
     lines.extend(_FormatAddedHeadersLines(comparison.added_headers))
     lines.extend(_FormatRemovedHeadersLines(comparison.removed_headers))
     lines.extend(_FormatResizedFilesLines(comparison.resized_files))
+    lines.extend(
+        _FormatSymbolDeltasLines('Added symbols', comparison.added_symbols))
+    lines.extend(
+        _FormatSymbolDeltasLines(
+            'Removed symbols', comparison.removed_symbols))
+    lines.extend(
+        _FormatSymbolDeltasLines(
+            'Resized symbols', comparison.resized_symbols))
     return lines
 
 
@@ -1244,11 +1646,19 @@ def FormatComparisonReport(report: ProbeComparisonReport) -> str:
         report.delta_total_bytes, should_include_sign=True)
     lines = [
         f'Compile-size comparison against baseline "{report.baseline_name}":',
-        f'Total across {unit_count} {unit_label}: '
+        f'Total compiler inputs across {unit_count} {unit_label}: '
         f'{FormatHumanByteSize(report.before_total_bytes)} -> '
         f'{FormatHumanByteSize(report.after_total_bytes)} '
         f'({formatted_total_delta})',
     ]
+    if report.before_total_symbol_bytes or report.after_total_symbol_bytes:
+        formatted_total_symbol_delta = FormatHumanByteSize(
+            report.delta_total_symbol_bytes, should_include_sign=True)
+        lines.append(
+            f'Total compiled symbols across {unit_count} {unit_label}: '
+            f'{FormatHumanByteSize(report.before_total_symbol_bytes)} -> '
+            f'{FormatHumanByteSize(report.after_total_symbol_bytes)} '
+            f'({formatted_total_symbol_delta})')
     for comparison in report.translation_units:
         lines.append('')
         lines.extend(_FormatTranslationUnitComparisonSection(comparison))
@@ -1260,8 +1670,9 @@ def _ParseCommandLineArguments(
     """Parses command-line arguments for `compile_size_probe.py`."""
     parser = argparse.ArgumentParser(
         description=(
-            'Measures and compares compiler input sizes and #include chains '
-            'for representative //third_party/protobuf translation units.'))
+            'Measures and compares compiler input sizes, #include chains, '
+            'and compiled symbol sizes for representative '
+            '//third_party/protobuf translation units.'))
     parser.add_argument(
         '-C',
         dest='build_directory',
@@ -1321,6 +1732,13 @@ def _ResolveDefaultClangBinary(repository_root: str) -> str:
     """Returns the absolute path to Chromium's bundled `clang++` binary."""
     return os.path.abspath(
         os.path.join(repository_root, *_DEFAULT_CLANG_RELATIVE_PATH.split('/')))
+
+
+def _ResolveDefaultLlvmNmBinary(repository_root: str) -> str:
+    """Returns the absolute path to Chromium's bundled `llvm-nm` binary."""
+    return os.path.abspath(
+        os.path.join(
+            repository_root, *_DEFAULT_LLVM_NM_RELATIVE_PATH.split('/')))
 
 
 def _SelectTranslationUnitsToMeasure(
@@ -1393,10 +1811,18 @@ def main(command_line_arguments: Sequence[str] | None = None) -> int:
             file=sys.stderr,
         )
         return 1
+    if sys.platform == 'darwin':
+        print(
+            'compile_size_probe.py: Mach-O object files do not record '
+            'per-symbol byte sizes, so symbol size reporting is unavailable '
+            'on macOS.',
+            file=sys.stderr,
+        )
 
     build_directory = os.path.abspath(parsed_arguments.build_directory)
     repository_root = _DEFAULT_REPOSITORY_ROOT
     clang_binary = _ResolveDefaultClangBinary(repository_root)
+    llvm_nm_binary = _ResolveDefaultLlvmNmBinary(repository_root)
     baseline_directory = ResolveBaselineStorageDirectory(build_directory)
 
     try:
@@ -1423,6 +1849,7 @@ def main(command_line_arguments: Sequence[str] | None = None) -> int:
             translation_units=translation_units,
             clang_binary=clang_binary,
             should_build_targets=not parsed_arguments.should_skip_build,
+            llvm_nm_binary=llvm_nm_binary,
         )
 
         saved_path: str | None = None
