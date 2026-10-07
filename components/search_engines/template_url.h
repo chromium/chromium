@@ -317,6 +317,10 @@ class TemplateURLRef {
     // Output flag set during TemplateURLRef::HandleReplacements indicating
     // whether the original query ("oq") parameter value was truncated.
     mutable std::optional<bool> is_oq_truncated;
+
+    // Output flag set during TemplateURLRef::HandleReplacements indicating
+    // whether the query ("q") parameter value was truncated.
+    mutable std::optional<bool> is_q_truncated;
   };
 
   TemplateURLRef(const TemplateURL* owner, Type type);

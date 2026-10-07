@@ -1154,6 +1154,7 @@ std::string TemplateURLRef::HandleReplacements(
     PostContent* post_content) const {
   TRACE_EVENT0("omnibox", "TemplateURLRef::HandleReplacement");
   search_terms_args.is_oq_truncated.reset();
+  search_terms_args.is_q_truncated.reset();
   if (replacements_.empty()) {
     if (!post_params_.empty()) {
       EncodeFormData(post_params_, post_content);
@@ -1378,9 +1379,8 @@ std::string TemplateURLRef::HandleReplacements(
             search_terms_args.searchbox_stats.ByteSizeLong() > 0) {
           std::string original_query =
               base::UTF16ToUTF8(encoded_original_query);
-          if (base::FeatureList::IsEnabled(omnibox::kTruncateSearchSuggestOq)) {
-            const int max_length =
-                omnibox::kTruncateSearchSuggestOqLength.Get();
+          if (base::FeatureList::IsEnabled(omnibox::kTruncateSearchUrlOq)) {
+            const int max_length = omnibox::kTruncateSearchUrlOqLength.Get();
             bool truncated = false;
             if (max_length >= 0) {
               const size_t original_length = original_query.length();
@@ -1611,10 +1611,24 @@ std::string TemplateURLRef::HandleReplacements(
                           &url);
         break;
 
-      case SEARCH_TERMS:
-        HandleReplacement(std::string(), base::UTF16ToUTF8(encoded_terms),
-                          replacement, &url);
+      case SEARCH_TERMS: {
+        std::string terms = base::UTF16ToUTF8(encoded_terms);
+        if (base::FeatureList::IsEnabled(omnibox::kTruncateSearchUrlQ) &&
+            (HasGoogleBaseURLs(search_terms_data) ||
+             google_util::IsGoogleHostname(GetHost(search_terms_data),
+                                           google_util::DISALLOW_SUBDOMAIN))) {
+          const int max_length = omnibox::kTruncateSearchUrlQLength.Get();
+          bool truncated = false;
+          if (max_length >= 0) {
+            const size_t original_length = terms.length();
+            terms = TruncateEncodedQuery(terms, max_length);
+            truncated = terms.length() < original_length;
+          }
+          search_terms_args.is_q_truncated = truncated;
+        }
+        HandleReplacement(std::string(), terms, replacement, &url);
         break;
+      }
 
       case GOOGLE_IMAGE_THUMBNAIL:
         HandleReplacement(std::string(),
