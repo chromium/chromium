@@ -1,9 +1,0 @@
-include_rules = [
-  "+components/keyed_service/core/keyed_service.h",
-  "+components/signin/public",
-  "+third_party/nearby",
-  "+components/cross_device/logging",
-  "+components/push_notification",
-  # For testing.
-  "+content/public/test",
-]

@@ -25,9 +25,9 @@ namespace ash::nearby {
 
 class BluetoothAdapterManager;
 
-// Provides dependencies required to initialize NearbyPresence and
-// NearbyConnections. Implemented as a KeyedService because WebRTC
-// dependencies are linked to the user's identity.
+// Provides dependencies required to initialize NearbyConnections.
+// Implemented as a KeyedService because WebRTC dependencies are linked to the
+// user's identity.
 class NearbyDependenciesProvider : public KeyedService {
  public:
   NearbyDependenciesProvider(Profile* profile,

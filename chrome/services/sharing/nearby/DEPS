@@ -16,7 +16,6 @@ include_rules = [
   # on a per- directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/services/sharing/public/cpp",
   "+chrome/services/sharing/public/proto",
-  "+chromeos/ash/components/nearby/presence/conversions/nearby_presence_conversions.h",
   "+components/cross_device/logging",
   "+components/cross_device/nearby/nearby_features.h",
   "+third_party/nearby",

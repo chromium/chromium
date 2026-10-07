@@ -147,10 +147,10 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Cros Network Config"/>
   <int value="7" label="Firewall Hole Factory"/>
   <int value="8" label="TCP Socket Factory"/>
-  <int value="9" label="Nearby Presence"/>
+  <int value="9" label="Nearby Presence (deprecated)"/>
   <int value="10" label="Nearby Share Decoder"/>
   <int value="11" label="Quick Start Decoder"/>
-  <int value="12" label="Nearby Presence Credential Storage"/>
+  <int value="12" label="Nearby Presence Credential Storage (deprecated)"/>
   <int value="13" label="Wi-Fi Direct Manager"/>
   <int value="14" label="mDNS Manager"/>
 </enum>
@@ -165,7 +165,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Mojo pipe disconnection (deprecated)"/>
   <int value="3" label="Utility process disconnected Decoder mojo pipe"/>
   <int value="4" label="Utility process disconnected Connections mojo pipe"/>
-  <int value="5" label="Utility process disconnected Presence mojo pipe"/>
+  <int value="5"
+      label="Utility process disconnected Presence mojo pipe (deprecated)"/>
 </enum>
 
 <!-- LINT.ThenChange(//chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h:NearbyConnectionsUtilityProcessShutdownReason) -->

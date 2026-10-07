@@ -12,8 +12,6 @@ source_set("nearby") {
     "nearby_connections_conversions.h",
     "nearby_connections_stream_buffer_manager.cc",
     "nearby_connections_stream_buffer_manager.h",
-    "nearby_presence.cc",
-    "nearby_presence.h",
     "nearby_shared_remotes.cc",
     "nearby_shared_remotes.h",
     "platform.cc",
@@ -34,14 +32,9 @@ source_set("nearby") {
     "//components/cross_device/logging",
     "//mojo/public/cpp/bindings",
     "//third_party/nearby:connections",
-    "//third_party/nearby:connections_credential_proto",
-    "//third_party/nearby:connections_metadata_proto",
-    "//third_party/nearby:interop_device",
-    "//third_party/nearby:presence",
   ]
 
   deps = [
-    "//chromeos/ash/components/nearby/presence/conversions",
     "//chromeos/services/network_config/public/mojom",
     "//components/cross_device/nearby",
   ]
@@ -53,7 +46,6 @@ source_set("unit_tests") {
   sources = [
     "nearby_connections_stream_buffer_manager_unittest.cc",
     "nearby_connections_unittest.cc",
-    "nearby_presence_unittest.cc",
   ]
 
   deps = [
@@ -61,12 +53,10 @@ source_set("unit_tests") {
     "test_support",
     "//ash/public/cpp",
     "//base/test:test_support",
-    "//chromeos/ash/components/nearby/presence/conversions",
     "//chromeos/ash/services/nearby/public/cpp:test_support",
     "//chromeos/ash/services/network_config/public/cpp:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/nearby:connections_test_util",
-    "//third_party/nearby:presence_test",
   ]
 }

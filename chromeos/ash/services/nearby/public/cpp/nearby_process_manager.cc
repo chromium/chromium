@@ -18,9 +18,6 @@ std::ostream& operator<<(
         kConnectionsMojoPipeDisconnection:
       return os << "Connections Mojo Pipe Disconnection";
     case NearbyProcessManager::NearbyProcessShutdownReason::
-        kPresenceMojoPipeDisconnection:
-      return os << "Presence Mojo Pipe Disconnection";
-    case NearbyProcessManager::NearbyProcessShutdownReason::
         kDecoderMojoPipeDisconnection:
       return os << "Decoder Mojo Pipe Disconnection";
   }

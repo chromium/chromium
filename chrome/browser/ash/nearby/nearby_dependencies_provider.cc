@@ -174,8 +174,6 @@ NearbyDependenciesProvider::GetDependencies() {
     dependencies->bluetooth_adapter = mojo::NullRemote();
   }
 
-  dependencies->nearby_presence_credential_storage = mojo::NullRemote();
-
   dependencies->webrtc_dependencies = GetWebRtcDependencies();
   dependencies->wifilan_dependencies = GetWifiLanDependencies();
   dependencies->wifidirect_dependencies = GetWifiDirectDependencies();

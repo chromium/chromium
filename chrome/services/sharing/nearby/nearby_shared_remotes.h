@@ -7,7 +7,6 @@
 
 #include "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/mdns.mojom.h"
-#include "chromeos/ash/services/nearby/public/mojom/nearby_presence_credential_storage.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/webrtc.mojom.h"
@@ -20,8 +19,7 @@
 
 namespace nearby {
 
-// Container for the SharedRemote objects required by Nearby Connections and
-// Nearby Presence.
+// Container for the SharedRemote objects required by Nearby Connections.
 struct NearbySharedRemotes {
   static NearbySharedRemotes* GetInstance();
   static void SetInstance(NearbySharedRemotes* instance);
@@ -44,9 +42,6 @@ struct NearbySharedRemotes {
       firewall_hole_factory;
   mojo::SharedRemote<::sharing::mojom::TcpSocketFactory> tcp_socket_factory;
   mojo::SharedRemote<::sharing::mojom::MdnsManager> mdns_manager;
-  mojo::SharedRemote<
-      ash::nearby::presence::mojom::NearbyPresenceCredentialStorage>
-      nearby_presence_credential_storage;
   mojo::SharedRemote<ash::wifi_direct::mojom::WifiDirectManager>
       wifi_direct_manager;
   mojo::SharedRemote<sharing::mojom::FirewallHoleFactory>

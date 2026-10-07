@@ -7,14 +7,12 @@ module sharing.mojom;
 import "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom";
 import "chromeos/ash/services/nearby/public/mojom/mdns.mojom";
 import "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom";
-import "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom";
 import "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom";
 import "chromeos/ash/services/nearby/public/mojom/nearby_decoder.mojom";
 import "chromeos/ash/services/nearby/public/mojom/tcp_socket_factory.mojom";
 import "chromeos/ash/services/nearby/public/mojom/webrtc.mojom";
 import "chromeos/services/network_config/public/mojom/cros_network_config.mojom";
 import "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom";
-import "chromeos/ash/services/nearby/public/mojom/nearby_presence_credential_storage.mojom";
 import "chromeos/ash/services/wifi_direct/public/mojom/wifi_direct_manager.mojom";
 import "device/bluetooth/public/mojom/adapter.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
@@ -39,11 +37,11 @@ struct WifiDirectDependencies {
   pending_remote<FirewallHoleFactory> firewall_hole_factory;
 };
 
-// A collection of dependencies required by the Nearby Presence and
-// Nearby Connections libraries. These are generally system resources that
-// the utility process (which the Nearby libraries are hosted in) does not
-// have privileges to directly access. This collection is provided once
-// during start-up of the utility process and its hosted libraries.
+// A collection of dependencies required by the Nearby Connections library.
+// These are generally system resources that the utility process (which the
+// Nearby libraries are hosted in) does not have privileges to directly access.
+// This collection is provided once during start-up of the utility process and
+// its hosted libraries.
 struct NearbyDependencies {
   pending_remote<bluetooth.mojom.Adapter>? bluetooth_adapter;
 
@@ -54,9 +52,6 @@ struct NearbyDependencies {
 
   // Null if the WifiDirect feature flag is disabled.
   WifiDirectDependencies? wifidirect_dependencies;
-
-  pending_remote<ash.nearby.presence.mojom.NearbyPresenceCredentialStorage>?
-      nearby_presence_credential_storage;
 
   nearby.connections.mojom.LogSeverity min_log_severity =
       nearby.connections.mojom.LogSeverity.kInfo;
@@ -75,9 +70,6 @@ interface Sharing {
       pending_receiver<
           nearby.connections.mojom.NearbyConnections>
               nearby_connections,
-      pending_receiver<
-          ash.nearby.presence.mojom.NearbyPresence>
-              nearby_presence,
       pending_receiver<sharing.mojom.NearbySharingDecoder>
           decoder,
       pending_receiver<ash.quick_start.mojom.QuickStartDecoder>
