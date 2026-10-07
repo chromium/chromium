@@ -4,6 +4,7 @@
 
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -12,6 +13,8 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
+#include "chrome/browser/ttc/core/page_context_util.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/test_utils.h"
 #include "chrome/browser/ttc/core/ttc_core_browser_test_base.h"
@@ -20,6 +23,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/page_content_annotations/content/page_content_extraction_service.h"
+#include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -272,6 +277,80 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   // Restore a browser for the test profile so fixture teardown has a valid
   // profile and browser.
   SetBrowser(CreateBrowser(test_profile));
+}
+
+// A session on a page whose URL is not supported (e.g. non-NTP chrome:// pages,
+// data: and about: URLs) must never send page context to the conversation,
+// whether PCES extracts the page's content or not, and must resume sending
+// context once the page navigates to a supported URL.
+IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
+                       UnsupportedUrlsAreNotFetchedOrEmitted) {
+  page_content_annotations::PageContentExtractionService* extraction_service =
+      page_content_annotations::PageContentExtractionServiceFactory::
+          GetForProfile(profile());
+  ASSERT_TRUE(extraction_service);
+
+  // Starts a session, which fetches context for the current page, and waits
+  // for the initial notification. The conversation is left expecting no
+  // context updates.
+  auto start_session_expecting_no_context = [&]() {
+    ttc_service().StartSession();
+    ASSERT_TRUE(conversation());
+    EXPECT_CALL(*conversation(), SendContextUpdate).Times(0);
+    EXPECT_TRUE(ExpectPageChange().Wait());
+  };
+
+  for (const GURL& url :
+       {GURL("chrome://version/"), GURL("data:text/html,<title>Data</title>"),
+        GURL("about:blank")}) {
+    SCOPED_TRACE(url);
+    ASSERT_FALSE(IsUrlSupportedForPageContext(url));
+    ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+    // Starting a session must not fetch or send anything for the page.
+    ASSERT_NO_FATAL_FAILURE(start_session_expecting_no_context());
+
+    // Having an active session makes PCES extract every page in the profile.
+    // Wait for that extraction (triggering it if it has not started), to make
+    // sure its result is not sent either. PCES never extracts about:blank, so
+    // there is nothing to wait for there.
+    if (!url.IsAboutBlank()) {
+      base::test::TestFuture<
+          std::optional<page_content_annotations::ExtractedPageContentResult>>
+          extracted;
+      extraction_service->GetExtractedPageContentAndEligibilityForPageAsync(
+          web_contents()->GetPrimaryPage(), extracted.GetCallback(),
+          /*trigger_if_not_cached=*/true);
+      ASSERT_TRUE(extracted.Wait());
+    }
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
+
+    // Neither must a new session, which finds the extracted content cached.
+    ttc_service().EndSession();
+    ASSERT_NO_FATAL_FAILURE(start_session_expecting_no_context());
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
+
+    ttc_service().EndSession();
+  }
+
+  // Navigating from an unsupported page to a supported one during a session
+  // must invalidate the context and send context for the new page.
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GURL("chrome://version/")));
+  ASSERT_NO_FATAL_FAILURE(start_session_expecting_no_context());
+  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
+
+  const GURL supported_url = embedded_test_server()->GetURL("/simple.html");
+  auto navigated = ExpectPageChange();
+  base::test::TestFuture<void> sent;
+  EXPECT_CALL(*conversation(),
+              SendContextUpdate(supported_url, "OK", testing::_))
+      .WillOnce(base::test::RunOnceClosure(sent.GetCallback()));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), supported_url));
+  EXPECT_TRUE(navigated.Wait());
+  EXPECT_TRUE(sent.Wait());
 }
 
 // Page context fetched for the voice-focused tab must be sent to the

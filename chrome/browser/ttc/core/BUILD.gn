@@ -49,6 +49,8 @@ source_set("impl") {
   sources = [
     "entrypoint_controller.cc",
     "page_context.cc",
+    "page_context_util.cc",
+    "page_context_util.h",
     "session_controller_impl.cc",
     "session_controller_impl.h",
     "session_journal.cc",
@@ -83,6 +85,7 @@ source_set("impl") {
     "//components/tabs:public",
     "//components/ttc/app/public",
     "//content/public/browser",
+    "//content/public/common",
     "//ui/actions:actions_headers",
     "//url",
   ]
@@ -143,6 +146,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "page_context_util_unittest.cc",
     "session_journal_unittest.cc",
     "ttc_keyed_service_unittest.cc",
   ]
@@ -163,6 +167,7 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//url",
   ]
   if (!is_android) {
     sources += [ "session_view_impl_unittest.cc" ]

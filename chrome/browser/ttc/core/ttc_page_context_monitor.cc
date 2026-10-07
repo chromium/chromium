@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ttc/core/page_context_util.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
@@ -68,6 +69,13 @@ void TtcPageContextMonitor::FetchPageContext() {
   CHECK(web_contents_);
 
   content::Page& page = web_contents_->GetPrimaryPage();
+  if (!IsUrlSupportedForPageContext(
+          page.GetMainDocument().GetLastCommittedURL())) {
+    // TODO(b/555804152): Figure out how to send specific error messages to
+    // the server.
+    return;
+  }
+
   // PCES may have a cached extraction for this page. If so, use it; if not,
   // fetch one async.
   if (std::optional<page_content_annotations::ExtractedPageContentResult>
@@ -98,6 +106,8 @@ void TtcPageContextMonitor::OnPageContentReset(content::Page& current_page,
     return;
   }
 
+  // Deliberately not gated on IsUrlSupportedForPageContext(), so that
+  // observers learn that context for the previous page no longer applies.
   pending_cached_notification_.Cancel();
   on_page_context_invalidated_.Run();
 }
@@ -112,6 +122,10 @@ void TtcPageContextMonitor::OnPageContentExtracted(
   }
   // PDF text is not supported as page context.
   if (!page_content_annotations::IsAnnotatedPageContentPtr(page_content)) {
+    return;
+  }
+  if (!IsUrlSupportedForPageContext(
+          page.GetMainDocument().GetLastCommittedURL())) {
     return;
   }
 

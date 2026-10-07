@@ -60,7 +60,8 @@ class TtcPageContextMonitor
   // Requests page context for the monitored page on construction. If PCES
   // already has content cached for the page, `on_page_context_fetched_` is
   // invoked asynchronously; otherwise an extraction is triggered and
-  // `on_page_context_fetched_` is invoked once it completes.
+  // `on_page_context_fetched_` is invoked once it completes. No-op if the
+  // page's URL is not supported (see `ttc::IsUrlSupportedForPageContext`);
   void FetchPageContext();
 
   // Returns whether `page` is the primary page of the monitored WebContents.
