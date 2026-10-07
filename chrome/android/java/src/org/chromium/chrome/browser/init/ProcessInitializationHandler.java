@@ -89,6 +89,7 @@ import org.chromium.chrome.browser.photo_picker.DecoderService;
 import org.chromium.chrome.browser.preferences.AllPreferenceKeyRegistries;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preferences.SharedPreferencesMetrics;
 import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -797,6 +798,8 @@ public class ProcessInitializationHandler {
                     // Warm up all web app shared prefs. This must be run after the WebappRegistry
                     // instance is initialized.
                     WebappRegistry.warmUpSharedPrefs();
+
+                    SharedPreferencesMetrics.recordAppSharedPreferencesMetrics();
 
                     return null;
                 } finally {

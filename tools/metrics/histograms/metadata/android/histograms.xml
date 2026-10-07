@@ -624,6 +624,62 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.AppSharedPreferences.CachedFlags.EstimatedSizeKB"
+    units="KB" expires_after="2027-10-01">
+  <owner>hnakashima@chromium.org</owner>
+  <owner>clank-commons@google.com</owner>
+  <summary>
+    Estimated serialized size of the CachedFlag and CachedFeatureParam entries
+    (keys prefixed with &quot;Chrome.Flags.CachedFlag.&quot; or
+    &quot;Chrome.Flags.FeatureParamCached.&quot;) in the app-wide (default)
+    SharedPreferences file, computed from key and value lengths plus a per-type
+    XML overhead. Rounded up to the next KB. Used to track the reduction of
+    CachedFlags storage as they are migrated away and their keys cleaned up.
+    Recorded once per browser process during deferred startup.
+  </summary>
+</histogram>
+
+<histogram name="Android.AppSharedPreferences.CachedFlags.KeyCount"
+    units="keys" expires_after="2027-10-01">
+  <owner>hnakashima@chromium.org</owner>
+  <owner>clank-commons@google.com</owner>
+  <summary>
+    Number of CachedFlag and CachedFeatureParam entries (keys prefixed with
+    &quot;Chrome.Flags.CachedFlag.&quot; or
+    &quot;Chrome.Flags.FeatureParamCached.&quot;) in the app-wide (default)
+    SharedPreferences file. Used to track the reduction of CachedFlags as they
+    are migrated away and their keys cleaned up. Recorded once per browser
+    process during deferred startup.
+  </summary>
+</histogram>
+
+<histogram name="Android.AppSharedPreferences.FileSizeKB" units="KB"
+    expires_after="2027-10-01">
+  <owner>hnakashima@chromium.org</owner>
+  <owner>clank-commons@google.com</owner>
+  <summary>
+    Size on disk of the app-wide (default) SharedPreferences XML file, used by
+    ContextUtils.getAppSharedPreferences() and ChromeSharedPreferences. The
+    whole file is rewritten on every apply()/commit(), so this approximates the
+    disk write cost of SharedPreferences. Recorded once per browser process
+    during deferred startup. Rounded up to the next KB. Not recorded if the file
+    does not exist.
+  </summary>
+</histogram>
+
+<histogram name="Android.AppSharedPreferences.KeyCount" units="keys"
+    expires_after="2027-10-01">
+  <owner>hnakashima@chromium.org</owner>
+  <owner>clank-commons@google.com</owner>
+  <summary>
+    Number of entries in the app-wide (default) SharedPreferences file, used by
+    ContextUtils.getAppSharedPreferences() and ChromeSharedPreferences. All
+    entries are kept in memory for the lifetime of the process, so this is
+    likely proportional to the RAM footprint of SharedPreferences. Recorded once
+    per browser process during deferred startup.
+  </summary>
+</histogram>
+
 <histogram name="Android.AssistContent.AttachedUrl" enum="BooleanSuccess"
     expires_after="2027-02-07">
   <owner>salg@google.com</owner>
