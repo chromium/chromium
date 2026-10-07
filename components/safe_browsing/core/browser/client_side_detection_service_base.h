@@ -10,8 +10,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/callback_list.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -160,10 +162,10 @@ class ClientSideDetectionServiceBase : public KeyedService {
   virtual CSDModelType GetModelType() const;
 
   // Returns the visual TFLite model thresholds from the model class.
-  virtual const std::vector<TfLiteModelMetadata::Threshold>&
+  virtual base::span<const TfLiteModelMetadata::Threshold>
   GetVisualTfLiteModelThresholds() const;
 
-  virtual const std::vector<TargetEmbedding>& GetTargetImageEmbeddings() const;
+  virtual base::span<const TargetEmbedding> GetTargetImageEmbeddings() const;
 
   // Checks whether the model class has a model available or not. Virtual so
   // that mock classes can override it.

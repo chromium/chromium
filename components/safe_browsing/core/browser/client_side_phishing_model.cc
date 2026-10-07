@@ -597,7 +597,7 @@ int ClientSidePhishingModel::GetImageEmbeddingModelVersion() {
              : 0;
 }
 
-const std::vector<TargetEmbedding>&
+base::span<const TargetEmbedding>
 ClientSidePhishingModel::GetTargetImageEmbeddings() const {
   return target_image_embeddings_;
 }
@@ -687,7 +687,7 @@ std::string ClientSidePhishingModel::GetHashFromEmbedding(
   return base::HexEncodeLower(raw_hash);
 }
 
-const std::vector<TfLiteModelMetadata::Threshold>&
+base::span<const TfLiteModelMetadata::Threshold>
 ClientSidePhishingModel::GetVisualTfLiteModelThresholds() const {
   return thresholds_;
 }

@@ -110,10 +110,10 @@ class ClientSidePhishingModel
   // failure).
   void SetModelDoneCallbackForTesting(base::OnceClosure callback);
 
-  const std::vector<TfLiteModelMetadata::Threshold>&
+  base::span<const TfLiteModelMetadata::Threshold>
   GetVisualTfLiteModelThresholds() const;
 
-  const std::vector<TargetEmbedding>& GetTargetImageEmbeddings() const;
+  base::span<const TargetEmbedding> GetTargetImageEmbeddings() const;
 
   void SetTargetImageEmbeddingsForTesting(
       std::vector<TargetEmbedding> target_embeddings);

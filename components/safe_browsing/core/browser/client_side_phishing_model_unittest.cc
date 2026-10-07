@@ -176,7 +176,7 @@ class ClientSidePhishingModelTest : public testing::Test {
   }
 
   void ValidateTargetEmbeddings(
-      const std::vector<TargetEmbedding>& target_embeddings) {
+      base::span<const TargetEmbedding> target_embeddings) {
     ASSERT_EQ(target_embeddings.size(), static_cast<size_t>(3));
     // Verify thresholds match.
     EXPECT_FLOAT_EQ(target_embeddings[0].threshold, .9);

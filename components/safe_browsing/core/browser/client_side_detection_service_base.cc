@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
@@ -107,24 +108,20 @@ void ClientSideDetectionServiceBase::Shutdown() {
   client_side_phishing_model_.reset();
 }
 
-const std::vector<TfLiteModelMetadata::Threshold>&
+base::span<const TfLiteModelMetadata::Threshold>
 ClientSideDetectionServiceBase::GetVisualTfLiteModelThresholds() const {
   if (client_side_phishing_model_) {
     return client_side_phishing_model_->GetVisualTfLiteModelThresholds();
   }
-  static const base::NoDestructor<std::vector<TfLiteModelMetadata::Threshold>>
-      empty_thresholds;
-  return *empty_thresholds;
+  return {};
 }
 
-const std::vector<TargetEmbedding>&
+base::span<const TargetEmbedding>
 ClientSideDetectionServiceBase::GetTargetImageEmbeddings() const {
   if (client_side_phishing_model_) {
     return client_side_phishing_model_->GetTargetImageEmbeddings();
   }
-  static const base::NoDestructor<std::vector<TargetEmbedding>>
-      empty_embeddings;
-  return *empty_embeddings;
+  return {};
 }
 
 bool ClientSideDetectionServiceBase::IsEnabled() const {
@@ -365,7 +362,7 @@ void ClientSideDetectionServiceBase::ClassifyPhishingThroughThresholds(
     return;
   }
 
-  const std::vector<TfLiteModelMetadata::Threshold>& thresholds =
+  base::span<const TfLiteModelMetadata::Threshold> thresholds =
       client_side_phishing_model_->GetVisualTfLiteModelThresholds();
 
   if (static_cast<int>(verdict->tflite_model_scores().size()) !=
@@ -385,7 +382,7 @@ void ClientSideDetectionServiceBase::ClassifyPhishingThroughThresholds(
   }
 
   for (int i = 0; i < verdict->tflite_model_scores().size(); i++) {
-    const TfLiteModelMetadata::Threshold& threshold = thresholds.at(i);
+    const TfLiteModelMetadata::Threshold& threshold = thresholds[i];
 
     ClientPhishingRequest::CategoryScore* category =
         verdict->mutable_tflite_model_scores(i);
@@ -419,7 +416,7 @@ void ClientSideDetectionServiceBase::ClassifyPhishingThroughThresholds(
 
 void ClientSideDetectionServiceBase::ClassifyThroughEmbeddings(
     ClientPhishingRequest* verdict) {
-  auto target_image_embeddings =
+  base::span<const TargetEmbedding> target_image_embeddings =
       client_side_phishing_model_->GetTargetImageEmbeddings();
   if (target_image_embeddings.empty() ||
       !verdict->has_image_feature_embedding()) {
