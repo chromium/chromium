@@ -1019,9 +1019,8 @@ void AppListBubbleAppsPage::RecordAboveTheFoldMetrics() {
       apps_below_the_fold.push_back(child_view->item()->id());
     }
   }
-  view_delegate_->RecordAppsDefaultVisibility(
-      std::move(apps_above_the_fold), std::move(apps_below_the_fold),
-      /*is_apps_collections_page=*/false);
+  view_delegate_->RecordAppsDefaultVisibility(std::move(apps_above_the_fold),
+                                              std::move(apps_below_the_fold));
 }
 
 BEGIN_METADATA(AppListBubbleAppsPage)

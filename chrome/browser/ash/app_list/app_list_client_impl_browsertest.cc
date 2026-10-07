@@ -186,33 +186,6 @@ class TestObserver : public app_list::AppListSyncableService::Observer {
   size_t add_or_update_count_ = 0;
 };
 
-// A fake for AppListSyncableService that allows easy modifications.
-class AppListSyncableServiceFake : public app_list::AppListSyncableService {
- public:
-  AppListSyncableServiceFake(Profile* profile,
-                             bool was_first_sync_ever,
-                             base::OneShotEvent* on_first_sync)
-      : app_list::AppListSyncableService(profile),
-        on_first_sync_(on_first_sync),
-        was_first_sync_ever_(was_first_sync_ever) {}
-  ~AppListSyncableServiceFake() override = default;
-  AppListSyncableServiceFake(const AppListSyncableServiceFake&) = delete;
-  AppListSyncableServiceFake& operator=(const AppListSyncableServiceFake&) =
-      delete;
-
-  void OnFirstSync(
-      base::OnceCallback<void(bool was_first_sync_ever)> callback) override {
-    on_first_sync_->Post(
-        FROM_HERE, base::BindOnce(std::move(callback), was_first_sync_ever_));
-  }
-
-  // The event to signal when the first app list sync in the session has been
-  // completed.
-  const raw_ptr<base::OneShotEvent> on_first_sync_;
-
-  bool was_first_sync_ever_;
-};
-
 }  // namespace
 
 // Test AppListClient::IsAppOpen for extension apps.
@@ -1360,67 +1333,3 @@ IN_PROC_BROWSER_TEST_F(
       "ClamshellMode",
       0);
 }
-
-class AppListClientNewUserTest : public InProcessBrowserTest,
-                                 public testing::WithParamInterface<bool> {
- public:
-  AppListClientNewUserTest() = default;
-  ~AppListClientNewUserTest() override = default;
-
-  // Returns the event to signal when the first app list sync in the session has
-  // been completed.
-  base::OneShotEvent& on_first_sync() { return on_first_sync_; }
-
-  // Returns whether the first app list sync in the session was the first sync
-  // ever across all ChromeOS devices and sessions for the given user, based on
-  // test parameterization.
-  bool was_first_sync_ever() const { return GetParam(); }
-
-  // Returns the `AccountId` for the primary user.
-  const AccountId& account_id() const {
-    return session_manager::SessionManager::Get()
-        ->GetPrimarySession()
-        ->account_id();
-  }
-
- private:
-  // InProcessBrowserTest:
-  void SetUpBrowserContextKeyedServices(
-      content::BrowserContext* browser_context) override {
-    InProcessBrowserTest::SetUpBrowserContextKeyedServices(browser_context);
-
-    app_list::AppListSyncableServiceFactory::GetInstance()->SetTestingFactory(
-        browser_context,
-        base::BindLambdaForTesting([&](content::BrowserContext* browser_context)
-                                       -> std::unique_ptr<KeyedService> {
-          return std::make_unique<AppListSyncableServiceFake>(
-              Profile::FromBrowserContext(browser_context),
-              was_first_sync_ever(), &on_first_sync_);
-        }));
-  }
-
-  // The event to signal when the first app list sync in the session has been
-  // completed.
-  base::OneShotEvent on_first_sync_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All, AppListClientNewUserTest, testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(AppListClientNewUserTest, IsNewUser) {
-  // Until the first app list sync in the session has been completed, it is
-  // not known whether a given user can be considered new.
-  EXPECT_EQ(AppListClientImpl::GetInstance()->IsNewUser(account_id()),
-            std::nullopt);
-
-  // Signal that the first app list sync in the session has been completed.
-  on_first_sync().Signal();
-
-  // Once the first app list sync in the session has been completed, a task
-  // will be posted to the `AppListClient` which will cache whether the given
-  // user can be considered new.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return AppListClientImpl::GetInstance()->IsNewUser(account_id()) ==
-           was_first_sync_ever();
-  }));
-}
-

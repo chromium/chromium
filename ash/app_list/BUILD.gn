@@ -34,8 +34,6 @@ source_set("app_list") {
     "app_list_view_provider.h",
     "app_waiter.cc",
     "app_waiter.h",
-    "apps_collections_controller.cc",
-    "apps_collections_controller.h",
     "apps_grid_row_change_animator.cc",
     "apps_grid_row_change_animator.h",
     "grid_index.cc",

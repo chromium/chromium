@@ -66,7 +66,6 @@ class AppListModel;
 class AppListModelProvider;
 class AppListPresenterImpl;
 enum class AppListSortOrder;
-class AppsCollectionsController;
 
 // Ash's AppListController owns the AppListModel and implements interface
 // functions that allow Chrome to modify and observe the Shelf and AppListModel
@@ -223,8 +222,7 @@ class ASH_EXPORT AppListControllerImpl
   bool IsInTabletMode() const override;
   void RecordAppsDefaultVisibility(
       const std::vector<std::string>& apps_above_the_fold,
-      const std::vector<std::string>& apps_below_the_fold,
-      bool is_apps_collections_page) override;
+      const std::vector<std::string>& apps_below_the_fold) override;
 
   // Notifies observers of AppList visibility changes.
   void OnVisibilityChanged(bool visible, int64_t display_id);
@@ -542,9 +540,6 @@ class ASH_EXPORT AppListControllerImpl
   std::optional<ui::ThroughputTracker> smoothness_tracker_;
 
   std::optional<AppWaiter> gemini_app_waiter_;
-
-  // Sub-controller to handle app collections page.
-  std::unique_ptr<AppsCollectionsController> apps_collections_controller_;
 
   base::ScopedObservation<SplitViewController, SplitViewObserver>
       split_view_observation_{this};

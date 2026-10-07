@@ -115,8 +115,7 @@ class AppListTestViewDelegate : public AppListViewDelegate,
                           bool enabled) override {}
   void RecordAppsDefaultVisibility(
       const std::vector<std::string>& apps_above_the_fold,
-      const std::vector<std::string>& apps_below_the_fold,
-      bool is_apps_collections_page) override {}
+      const std::vector<std::string>& apps_below_the_fold) override {}
 
   // Do a bulk replacement of the items in the model.
   void ReplaceTestModel(int item_count);

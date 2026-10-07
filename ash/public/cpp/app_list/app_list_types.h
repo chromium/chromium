@@ -187,8 +187,6 @@ enum class AppListItemContext {
   kAppsGrid,
   // Recent apps.
   kRecentApps,
-  // The apps collections grid.
-  kAppsCollectionsGrid,
 };
 
 // All possible orders to sort app list items.
@@ -292,8 +290,6 @@ enum class AppListBubblePage {
   kNone = 0,
   // The apps grid, as well as continue tasks and recent apps.
   kApps,
-  // The apps collections page.
-  kAppsCollections,
   // The search page.
   kSearch,
   // The assistant page.
@@ -312,10 +308,6 @@ enum class AppListToastType {
   // Shows the notification that the apps are temporarily sorted and allows
   // users to undo the sorting actions.
   kReorderUndo,
-
-  // Show the notification that the tutorial view is showing in the bubble
-  // launcher. Allows user to exit the tutorial view into the default apps view.
-  kTutorialViewNudge,
 };
 
 ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& os,

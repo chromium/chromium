@@ -475,7 +475,6 @@ void AppListBubbleView::ShowPage(AppListBubblePage page) {
   switch (current_page_) {
     case AppListBubblePage::kNone:
     case AppListBubblePage::kAssistant:
-    case AppListBubblePage::kAppsCollections:
       NOTREACHED();
     case AppListBubblePage::kApps:
       apps_page_->ResetScrollPosition();

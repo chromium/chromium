@@ -66,11 +66,9 @@ class TestAppListClient : public AppListClient {
   std::unique_ptr<ScopedIphSession> CreateLauncherSearchIphSession() override;
   void LoadIcon(int profile_id, const std::string& app_id) override;
   ash::AppListSortOrder GetPermanentSortingOrder() const override;
-  std::optional<bool> IsNewUser(const AccountId& account_id) const override;
   void RecordAppsDefaultVisibility(
       const std::vector<std::string>& apps_above_the_fold,
-      const std::vector<std::string>& apps_below_the_fold,
-      bool is_apps_collections_page) override;
+      const std::vector<std::string>& apps_below_the_fold) override;
   bool HasReordered() override;
   gfx::Image GetGeminiIcon() override;
 
@@ -127,10 +125,6 @@ class TestAppListClient : public AppListClient {
     search_callback_ = std::move(callback);
   }
 
-  void set_is_new_user(std::optional<bool> is_new_user) {
-    is_new_user_ = is_new_user;
-  }
-
  private:
   // Called in response to StartZeroStateSearch() when
   // `run_zero_state_callback_immediately_` is false. Counts calls via
@@ -152,7 +146,6 @@ class TestAppListClient : public AppListClient {
   std::vector<std::string> loaded_icon_app_ids_;
 
   std::vector<AppListSearchControlCategory> toggleable_categories_for_test_;
-  std::optional<bool> is_new_user_;
 
   // If not null, callback that will be run on each search request. It can be
   // used by tests to inject results to search model in response to search

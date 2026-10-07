@@ -160,7 +160,6 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   // Subclasses also have mutable access to the metadata ptr.
   AppListItemMetadata* metadata() { return metadata_.get(); }
 
-  friend class AppsCollectionSectionViewTest;
   friend class AppListBadgeController;
   friend class AppListTestHelper;
   friend class AppListItemList;

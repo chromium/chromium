@@ -17,7 +17,6 @@
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/app_list/app_list_view_delegate.h"
-#include "ash/app_list/apps_collections_controller.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_item_observer.h"
 #include "ash/app_list/model/app_list_model.h"
@@ -294,9 +293,7 @@ AppListControllerImpl::AppListControllerImpl()
     : model_provider_(std::make_unique<AppListModelProvider>()),
       fullscreen_presenter_(std::make_unique<AppListPresenterImpl>(this)),
       bubble_presenter_(std::make_unique<AppListBubblePresenter>(this)),
-      badge_controller_(std::make_unique<AppListBadgeController>()),
-      apps_collections_controller_(
-          std::make_unique<AppsCollectionsController>()) {
+      badge_controller_(std::make_unique<AppListBadgeController>()) {
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
   session_controller->AddObserver(this);
@@ -361,12 +358,6 @@ void AppListControllerImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(prefs::kLauncherSearchLastFileScanLogTime,
                              base::Time());
 
-  // The prefs for apps collections experiment.
-  registry->RegisterIntegerPref(
-      prefs::kLauncherAppsCollectionsExperimentArm,
-      static_cast<int>(
-          AppsCollectionsController::ExperimentalArm::kDefaultValue));
-
   // The prefs for the Sunfish launcher nudge.
   registry->RegisterIntegerPref(prefs::kSunfishLauncherNudgeShownCount, 0);
   registry->RegisterTimePref(prefs::kSunfishLauncherNudgeLastShown,
@@ -375,7 +366,6 @@ void AppListControllerImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 void AppListControllerImpl::SetClient(AppListClient* client) {
   client_ = client;
-  apps_collections_controller_->SetClient(client);
 }
 
 AppListClient* AppListControllerImpl::GetClient() {
@@ -594,9 +584,6 @@ void AppListControllerImpl::UpdateAppListWithNewTemporarySortOrder(
       new_order, is_tablet_mode && animate,
       is_tablet_mode ? std::move(update_position_closure)
                      : base::NullCallback());
-
-  // Notify the AppsCollectionsController that there was a reorder.
-  apps_collections_controller_->SetAppsReordered();
 }
 
 ShelfAction AppListControllerImpl::ToggleAppList(
@@ -1361,11 +1348,10 @@ void AppListControllerImpl::SetCategoryEnabled(
 
 void AppListControllerImpl::RecordAppsDefaultVisibility(
     const std::vector<std::string>& apps_above_the_fold,
-    const std::vector<std::string>& apps_below_the_fold,
-    bool is_apps_collections_page) {
+    const std::vector<std::string>& apps_below_the_fold) {
   if (client_) {
-    client_->RecordAppsDefaultVisibility(
-        apps_above_the_fold, apps_below_the_fold, is_apps_collections_page);
+    client_->RecordAppsDefaultVisibility(apps_above_the_fold,
+                                         apps_below_the_fold);
   }
 }
 

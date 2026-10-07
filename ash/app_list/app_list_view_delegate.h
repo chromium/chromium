@@ -202,8 +202,7 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // above the fold if it is visible without scrolling.
   virtual void RecordAppsDefaultVisibility(
       const std::vector<std::string>& apps_above_the_fold,
-      const std::vector<std::string>& apps_below_the_fold,
-      bool is_apps_collections_page) = 0;
+      const std::vector<std::string>& apps_below_the_fold) = 0;
 };
 
 }  // namespace ash

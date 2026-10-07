@@ -229,8 +229,6 @@ std::ostream& operator<<(std::ostream& os, AppListBubblePage page) {
       return os << "None";
     case AppListBubblePage::kApps:
       return os << "Apps";
-    case AppListBubblePage::kAppsCollections:
-      return os << "AppsCollections";
     case AppListBubblePage::kSearch:
       return os << "Search";
     case AppListBubblePage::kAssistant:

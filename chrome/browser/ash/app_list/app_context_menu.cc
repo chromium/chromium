@@ -229,8 +229,7 @@ void AppContextMenu::AddContextMenuOption(ui::SimpleMenuModel* menu_model,
 }
 
 void AppContextMenu::AddReorderMenuOption(ui::SimpleMenuModel* menu_model) {
-  if (item_context_ != ash::AppListItemContext::kAppsGrid &&
-      item_context_ != ash::AppListItemContext::kAppsCollectionsGrid) {
+  if (item_context_ != ash::AppListItemContext::kAppsGrid) {
     return;
   }
   const ui::ColorId color_id = apps::GetColorIdForMenuItemIcon();

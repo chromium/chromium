@@ -50,7 +50,6 @@ class Profile;
 class AppListClientImpl
     : public ash::AppListClient,
       public AppListControllerDelegate,
-      public user_manager::UserManager::Observer,
       public user_manager::UserManager::UserSessionStateObserver,
       public session_manager::SessionManagerObserver,
       public TemplateURLServiceObserver,
@@ -104,11 +103,9 @@ class AppListClientImpl
       override;
   void LoadIcon(int profile_id, const std::string& app_id) override;
   ash::AppListSortOrder GetPermanentSortingOrder() const override;
-  std::optional<bool> IsNewUser(const AccountId& account_id) const override;
   void RecordAppsDefaultVisibility(
       const std::vector<std::string>& apps_above_the_fold,
-      const std::vector<std::string>& apps_below_the_fold,
-      bool is_apps_collections_page) override;
+      const std::vector<std::string>& apps_below_the_fold) override;
   bool HasReordered() override;
   gfx::Image GetGeminiIcon() override;
 
@@ -124,9 +121,6 @@ class AppListClientImpl
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
   void OnWindowDestroying(aura::Window* window) override;
-
-  // user_manager::UserManager::Observer:
-  void OnUserProfileCreated(const user_manager::User& user) override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;
@@ -267,17 +261,6 @@ class AppListClientImpl
 
   bool app_list_target_visibility_ = false;
   bool app_list_visible_ = false;
-
-  // If present, indicates whether the user associated with the primary profile
-  // is considered new. A user is considered new if the first app list sync in
-  // the session was the first sync ever across all ChromeOS devices and
-  // sessions for the given user. As such, this value is absent until the first
-  // app list sync of the session is completed.
-  std::optional<bool> is_primary_profile_new_user_;
-
-  base::ScopedObservation<user_manager::UserManager,
-                          user_manager::UserManager::Observer>
-      user_manager_observation_{this};
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       app_list_window_observation_{this};

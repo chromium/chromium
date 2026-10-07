@@ -48,9 +48,6 @@ class APP_LIST_MODEL_EXPORT AppListItemObserver : public base::CheckedObserver {
   // Invoked when the item app status is updated.
   virtual void ItemAppStatusUpdated() {}
 
-  // Invoked when the item app collection id is updated.
-  virtual void ItemAppCollectionIdChanged() {}
-
  protected:
   ~AppListItemObserver() override;
 };
