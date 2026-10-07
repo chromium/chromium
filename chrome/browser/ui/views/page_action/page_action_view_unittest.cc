@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -41,17 +42,23 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/test_event.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/test/ax_event_counter.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace page_actions {
@@ -214,6 +221,22 @@ class PageActionViewTest : public ChromeViewsTestBase {
   int view_icon_size() const { return view_icon_size_; }
   views::Widget* widget() { return widget_.get(); }
 
+  AnchoredMessageBubbleView* ShowTestAnchoredMessage() {
+    EXPECT_CALL(mock_model_, GetVisible()).WillRepeatedly(Return(true));
+    EXPECT_CALL(mock_model_, ShouldShowAnchoredMessage())
+        .WillRepeatedly(Return(true));
+    EXPECT_CALL(mock_model_, GetAnchoredMessageText())
+        .WillRepeatedly(ReturnRef(mock_string_));
+    EXPECT_CALL(mock_model_, GetAnchoredMessageIcon())
+        .WillRepeatedly(ReturnRef(no_anchored_message_icon_));
+    EXPECT_CALL(mock_model_, GetAnchoredMessageExpandableContent())
+        .WillRepeatedly(ReturnRef(no_expandable_content_));
+    EXPECT_CALL(mock_model_, GetAnchoredMessageActionIconType())
+        .WillRepeatedly(Return(AnchoredMessageActionIconType::kNone));
+    page_action_view_->OnPageActionModelChanged(mock_model_);
+    return page_action_view_->GetAnchoredMessageForTesting();
+  }
+
  protected:
   testing::NiceMock<MockIconLabelViewDelegate> icon_label_view_delegate_;
 
@@ -236,6 +259,8 @@ class PageActionViewTest : public ChromeViewsTestBase {
       ui::kColorSysPrimary,
       kDefaultIconSize);
   std::u16string mock_string_ = kTestText;
+  std::optional<ui::ImageModel> no_anchored_message_icon_;
+  std::optional<AnchoredMessageExpandableContent> no_expandable_content_;
 
   const int view_icon_size_ = kDefaultIconSize;
 };
@@ -799,6 +824,78 @@ TEST_F(PageActionViewTest, AnchoredMessageCreateBeforeAsyncDestroy) {
   EXPECT_TRUE(page_action_view()->IsAnchoredMessageVisible());
   EXPECT_EQ(second_bubble_widget,
             page_action_view()->GetAnchoredMessageForTesting()->GetWidget());
+}
+
+TEST_F(PageActionViewTest, AnchoredMessageAnimation) {
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  AnchoredMessageBubbleView* bubble = ShowTestAnchoredMessage();
+  ASSERT_TRUE(bubble);
+  views::View* frame = bubble->GetBubbleFrameView();
+  ASSERT_TRUE(frame->layer());
+  EXPECT_EQ(frame->layer()->GetTargetTransform(), gfx::Transform());
+  EXPECT_EQ(frame->layer()->GetTargetOpacity(), 1.0f);
+
+  EXPECT_CALL(*model(), ShouldShowAnchoredMessage())
+      .WillRepeatedly(Return(false));
+  page_action_view()->OnPageActionModelChanged(*model());
+
+  EXPECT_EQ(frame->layer()->GetTargetTransform(),
+            gfx::Transform::MakeTranslation(0, -16));
+  EXPECT_EQ(frame->layer()->GetTargetOpacity(), 0.0f);
+  EXPECT_FALSE(page_action_view()->IsAnchoredMessageVisible());
+  EXPECT_EQ(page_action_view()->GetAnchoredMessageForTesting(), bubble);
+
+  frame->layer()->GetAnimator()->StopAnimating();
+  EXPECT_FALSE(page_action_view()->GetAnchoredMessageForTesting());
+}
+
+TEST_F(PageActionViewTest, AnchoredMessageAnimatesOutWhenPageActionHidden) {
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  AnchoredMessageBubbleView* bubble = ShowTestAnchoredMessage();
+  ASSERT_TRUE(bubble);
+  views::View* frame = bubble->GetBubbleFrameView();
+  views::Widget* bubble_widget = bubble->GetWidget();
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
+
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*model(), ShouldShowAnchoredMessage())
+      .WillRepeatedly(Return(false));
+  page_action_view()->OnPageActionModelChanged(*model());
+
+  EXPECT_FALSE(page_action_view()->IsAnchoredMessageVisible());
+  EXPECT_TRUE(bubble_widget->IsVisible());
+  EXPECT_EQ(frame->layer()->GetTargetOpacity(), 0.0f);
+
+  frame->layer()->GetAnimator()->StopAnimating();
+  destroyed_waiter.Wait();
+}
+
+TEST_F(PageActionViewTest, HiddenAnchoredMessageClosesOnControllerChange) {
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  AnchoredMessageBubbleView* bubble = ShowTestAnchoredMessage();
+  ASSERT_TRUE(bubble);
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble->GetWidget());
+
+  base::MockCallback<base::RepeatingClosure> close_callback;
+  page_action_view()->SetAnchoredMessageCloseCallback(close_callback.Get());
+
+  // Simulates the tab being deactivated while the message should still show.
+  EXPECT_CALL(close_callback, Run());
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(false));
+  page_action_view()->OnPageActionModelChanged(*model());
+  testing::Mock::VerifyAndClearExpectations(&close_callback);
+  EXPECT_FALSE(page_action_view()->IsAnchoredMessageVisible());
+  EXPECT_EQ(page_action_view()->GetAnchoredMessageForTesting(), bubble);
+
+  page_action_view()->OnNewActiveController(nullptr);
+  EXPECT_FALSE(page_action_view()->GetAnchoredMessageForTesting());
+  destroyed_waiter.Wait();
 }
 
 class PageActionViewTriggerTest : public PageActionViewTest {

@@ -345,6 +345,7 @@ void WebUIPageActionControl::WebUIPageActionDelegate::OnPageActionModelChanged(
     element_shown_subscription_ = {};
 
     // Then, close the active bubble widget if it is currently open.
+    // TODO(b/571160141): Animate out like PageActionView.
     if (anchored_message_widget_ && !anchored_message_widget_->IsClosed()) {
       anchored_message_widget_->CloseWithReason(
           views::Widget::ClosedReason::kUnspecified);
@@ -619,6 +620,7 @@ void WebUIPageActionControl::WebUIPageActionDelegate::
   if (anchored_message_widget_) {
     // Don't steal focus when shown.
     anchored_message_widget_->ShowInactive();
+    anchored_message_->AnimateIn();
   } else {
     anchored_message_ = nullptr;
   }

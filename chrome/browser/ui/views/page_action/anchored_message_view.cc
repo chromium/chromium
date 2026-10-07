@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/page_action/multi_icon_button.h"
@@ -32,15 +33,18 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/gfx/animation/animation.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -58,6 +62,18 @@
 #include "ui/views/widget/widget.h"
 
 namespace page_actions {
+
+namespace {
+
+constexpr base::TimeDelta kAnchoredMessageAnimateInDuration =
+    base::Milliseconds(250);
+constexpr base::TimeDelta kAnchoredMessageAnimateOutDuration =
+    base::Milliseconds(150);
+constexpr int kAnchoredMessageAnimationYOffset = -16;
+constexpr gfx::Tween::Type kAnchoredMessageAnimationTween =
+    gfx::Tween::ACCEL_45_DECEL_88;
+
+}  // namespace
 
 const int kChipContainerHeight = 36;
 const int kChipIconSize = 20;
@@ -287,6 +303,65 @@ void AnchoredMessageBubbleView::UpdateContent(
   OnThemeChanged();
 }
 
+void AnchoredMessageBubbleView::AddedToWidget() {
+  views::View::AddedToWidget();
+  // Animate the frame view so the border and shadow move with the contents.
+  views::View* frame = GetBubbleFrameView();
+  frame->SetPaintToLayer();
+  frame->layer()->SetFillsBoundsOpaquely(false);
+  // Start hidden until AnimateIn().
+  frame->layer()->SetTransform(
+      gfx::Transform::MakeTranslation(0, kAnchoredMessageAnimationYOffset));
+  frame->layer()->SetOpacity(0.0f);
+}
+
+void AnchoredMessageBubbleView::AnimateIn() {
+  // Catch up with anchor moves ignored while animating out.
+  if (is_closing_) {
+    is_closing_ = false;
+    BubbleDialogDelegate::OnAnchorBoundsChanged();
+  }
+
+  views::View* frame = GetBubbleFrameView();
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(gfx::Animation::RichAnimationDuration(
+          kAnchoredMessageAnimateInDuration))
+      .SetTransform(frame, gfx::Transform(), kAnchoredMessageAnimationTween)
+      .SetOpacity(frame, 1.0f, kAnchoredMessageAnimationTween);
+}
+
+void AnchoredMessageBubbleView::AnimateOut() {
+  if (is_closing_) {
+    return;
+  }
+  is_closing_ = true;
+
+  views::View* frame = GetBubbleFrameView();
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(base::BindOnce(&AnchoredMessageBubbleView::CloseWidget,
+                              weak_factory_.GetWeakPtr()))
+      .Once()
+      .SetDuration(gfx::Animation::RichAnimationDuration(
+          kAnchoredMessageAnimateOutDuration))
+      .SetTransform(
+          frame,
+          gfx::Transform::MakeTranslation(0, kAnchoredMessageAnimationYOffset),
+          kAnchoredMessageAnimationTween)
+      .SetOpacity(frame, 0.0f, kAnchoredMessageAnimationTween);
+}
+
+void AnchoredMessageBubbleView::CloseWidget() {
+  views::Widget* widget = GetWidget();
+  if (widget && !widget->IsClosed()) {
+    widget->Close();
+  }
+}
+
 void AnchoredMessageBubbleView::OnThemeChanged() {
   views::View::OnThemeChanged();
   const ui::ColorProvider* color_provider = GetColorProvider();
@@ -339,6 +414,14 @@ gfx::Rect AnchoredMessageBubbleView::GetAnchorRect() const {
   // and above it if the bubble flips.
   anchor_rect.Outset(gfx::Outsets::VH(kAnchoredMessageVerticalGap, 0));
   return anchor_rect;
+}
+
+void AnchoredMessageBubbleView::OnAnchorBoundsChanged() {
+  // Hold position while animating out, since hiding the page action moves the
+  // anchor.
+  if (!is_closing_) {
+    BubbleDialogDelegate::OnAnchorBoundsChanged();
+  }
 }
 
 views::View* AnchoredMessageBubbleView::GetContentsView() {

@@ -28,10 +28,13 @@
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -701,6 +704,68 @@ TEST_F(AnchoredMessageBubbleViewTest, GetAnchorRectPlacement) {
   EXPECT_EQ(anchor_rect.bottom(), anchor_bounds.bottom() + 2);
   EXPECT_EQ(anchor_rect.y(), anchor_bounds.y() - 2);
   EXPECT_EQ(anchor_rect.right(), anchor_bounds.CenterPoint().x() + 24);
+}
+
+TEST_F(AnchoredMessageBubbleViewTest, AnimateOutClosesWidgetWhenEnded) {
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  views::View* frame = bubble_view_->GetBubbleFrameView();
+  ASSERT_TRUE(frame->layer());
+  EXPECT_FALSE(frame->layer()->fills_bounds_opaquely());
+
+  bubble_view_->AnimateIn();
+  EXPECT_EQ(frame->layer()->GetTargetTransform(), gfx::Transform());
+  EXPECT_EQ(frame->layer()->GetTargetOpacity(), 1.0f);
+  frame->layer()->GetAnimator()->StopAnimating();
+
+  bubble_view_->AnimateOut();
+  EXPECT_TRUE(bubble_view_->is_closing());
+  EXPECT_EQ(frame->layer()->GetTargetTransform(),
+            gfx::Transform::MakeTranslation(0, -16));
+  EXPECT_EQ(frame->layer()->GetTargetOpacity(), 0.0f);
+  EXPECT_FALSE(bubble_widget_->IsClosed());
+
+  frame->layer()->GetAnimator()->StopAnimating();
+  EXPECT_TRUE(bubble_widget_->IsClosed());
+}
+
+TEST_F(AnchoredMessageBubbleViewTest, AnimateInCancelsAnimateOut) {
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  views::View* frame = bubble_view_->GetBubbleFrameView();
+  bubble_view_->AnimateOut();
+  bubble_view_->AnimateIn();
+  EXPECT_FALSE(bubble_view_->is_closing());
+  EXPECT_EQ(frame->layer()->GetTargetOpacity(), 1.0f);
+
+  frame->layer()->GetAnimator()->StopAnimating();
+  EXPECT_FALSE(bubble_widget_->IsClosed());
+}
+
+TEST_F(AnchoredMessageBubbleViewTest, AnimateOutHoldsPositionWhenAnchorMoves) {
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  views::View* anchor_view = anchor_widget_->GetContentsView();
+  const gfx::Rect bounds = bubble_widget_->GetWindowBoundsInScreen();
+  const gfx::Vector2d offset(20, 0);
+
+  bubble_view_->AnimateOut();
+  anchor_view->SetPosition(anchor_view->origin() + offset);
+  EXPECT_EQ(bubble_widget_->GetWindowBoundsInScreen(), bounds);
+
+  bubble_view_->AnimateIn();
+  EXPECT_EQ(bubble_widget_->GetWindowBoundsInScreen(), bounds + offset);
+}
+
+TEST_F(AnchoredMessageBubbleViewTest,
+       AnimateOutClosesImmediatelyWithoutAnimation) {
+  gfx::ScopedAnimationDurationScaleMode zero(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  bubble_view_->AnimateOut();
+  EXPECT_TRUE(bubble_widget_->IsClosed());
 }
 
 }  // namespace page_actions

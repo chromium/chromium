@@ -85,6 +85,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
+#include "chrome/browser/ui/views/page_action/anchored_message_view.h"
 #include "chrome/browser/ui/views/page_action/webui_page_action_control.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_bubble_view.h"
@@ -183,6 +184,7 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/compositor/compositor.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -192,6 +194,7 @@
 #include "ui/views/accessibility/ax_update_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_runner_handler.h"
 #include "ui/views/controls/styled_label.h"
@@ -4974,6 +4977,7 @@ IN_PROC_BROWSER_TEST_F(WebUIPageActionBrowserTest,
 
   auto* bubble = control.GetAnchoredMessageForTesting(target_action_id);
   ASSERT_TRUE(bubble);
+  EXPECT_EQ(bubble->GetBubbleFrameView()->layer()->GetTargetOpacity(), 1.0f);
 
   controller->HideAnchoredMessage(target_action_id);
 

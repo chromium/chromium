@@ -110,7 +110,7 @@ bool PageActionView::IsChipVisible() const {
 }
 
 bool PageActionView::IsAnchoredMessageVisible() const {
-  return (anchored_message_ != nullptr);
+  return anchored_message_ && !anchored_message_->is_closing();
 }
 
 base::CallbackListSubscription PageActionView::AddChipVisibilityChangedCallback(
@@ -170,6 +170,10 @@ void PageActionView::OnNewActiveController(PageActionController* controller) {
   chip_shown_metric_recorded_ = false;
   observation_.Reset();
   action_item_controller_subscription_ = {};
+  // Close without animating so it doesn't animate over the new tab.
+  if (anchored_message_widget_ && !anchored_message_widget_->IsClosed()) {
+    anchored_message_widget_->Close();
+  }
   if (controller) {
     controller->RegisterCallbacks(PassKey(),
                                   action_item_->GetActionId().value(), this);
@@ -218,14 +222,7 @@ void PageActionView::OnPageActionModelChanged(
 
   UpdateIconImage();
   UpdateAnimationState(model);
-
-  if (visible && model.ShouldShowAnchoredMessage()) {
-    CreateAndShowAnchoredMessage(model);
-  } else if (anchored_message_ && anchored_message_widget_ &&
-             !anchored_message_widget_->IsClosed()) {
-    anchored_message_widget_->Close();
-  }
-
+  UpdateAnchoredMessage(model);
   UpdateTooltipText();
 
   // Announce the chip only if announcements are enabled and the chip was
@@ -561,12 +558,23 @@ void PageActionView::NotifyIsChipShowingChange() {
       base::BindOnce(is_chip_showing_changed_callback_, is_chip_showing));
 }
 
+void PageActionView::UpdateAnchoredMessage(
+    const PageActionModelInterface& model) {
+  if (model.GetVisible() && model.ShouldShowAnchoredMessage()) {
+    CreateAndShowAnchoredMessage(model);
+  } else if (IsAnchoredMessageVisible()) {
+    anchored_message_->AnimateOut();
+    OnAnchoredMessageClosed();
+  }
+}
+
 void PageActionView::CreateAndShowAnchoredMessage(
     const PageActionModelInterface& model) {
   const std::u16string chip_text(label()->GetText());
 
   if (anchored_message_) {
     anchored_message_->UpdateContent(model);
+    anchored_message_->AnimateIn();
     UpdateTooltipText();
     return;
   }
@@ -589,6 +597,7 @@ void PageActionView::CreateAndShowAnchoredMessage(
 
     // Don't steal focus when shown
     anchored_message_widget_->ShowInactive();
+    anchored_message_->AnimateIn();
   } else {
     anchored_message_ = nullptr;
   }
@@ -605,11 +614,19 @@ void PageActionView::OnAnchoredMessageWidgetClose(
     return;
   }
   CHECK(anchored_message_widget_);
+  // UpdateAnchoredMessage() already handles messages closed by AnimateOut().
+  const bool already_closing = anchored_message_->is_closing();
   anchored_message_ = nullptr;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PageActionView::CloseWidgetDeferred,
                                 weak_factory_.GetWeakPtr(),
                                 anchored_message_widget_->GetWeakPtr()));
+  if (!already_closing) {
+    OnAnchoredMessageClosed();
+  }
+}
+
+void PageActionView::OnAnchoredMessageClosed() {
   UpdateBackground();
   UpdateIconImage();
   UpdateTooltipText();
