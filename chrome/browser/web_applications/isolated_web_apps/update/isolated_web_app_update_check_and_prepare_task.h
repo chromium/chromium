@@ -123,18 +123,23 @@ class IsolatedWebAppUpdateCheckAndPrepareTask {
   void FailWith(Error error);
 
   void OnUpdateManifestFetched(
-      base::expected<UpdateManifest, UpdateManifestFetcher::Error>
-          fetch_result);
+      base::expected<UpdateManifestWithAddressSpace,
+                     UpdateManifestFetcher::Error> fetch_result);
 
   void CheckIntegrityBundleForRotatedKey(
       UpdateManifest::VersionEntry version_entry,
+      network::mojom::IPAddressSpace update_manifest_address_space,
       std::vector<uint8_t> rotated_key,
       std::optional<std::string> initial_bytes);
 
-  void CreateTempFile(UpdateManifest::VersionEntry version_entry);
+  void CreateTempFile(
+      UpdateManifest::VersionEntry version_entry,
+      network::mojom::IPAddressSpace update_manifest_address_space);
 
-  void OnTempFileCreated(UpdateManifest::VersionEntry version_entry,
-                         ScopedTempWebBundleFile bundle);
+  void OnTempFileCreated(
+      UpdateManifest::VersionEntry version_entry,
+      network::mojom::IPAddressSpace update_manifest_address_space,
+      ScopedTempWebBundleFile bundle);
 
   void OnWebBundleDownloaded(const IwaVersion& expected_version,
                              int32_t net_error);

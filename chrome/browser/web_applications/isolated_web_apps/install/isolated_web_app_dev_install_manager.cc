@@ -575,9 +575,8 @@ void IsolatedWebAppDevInstallManager::DownloadWebBundleToFile(
     std::optional<IwaUpdateInfo> optional_update_info,
     ScopedTempWebBundleFile bundle) {
   base::FilePath path = bundle.path();
-  auto downloader = IsolatedWebAppDownloader::Create(
-      profile()->GetURLLoaderFactory(),
-      profile()->GetDefaultStoragePartition()->GetNetworkContext());
+  auto downloader =
+      IsolatedWebAppDownloader::Create(profile()->GetURLLoaderFactory());
   auto* downloader_ptr = downloader.get();
   base::OnceClosure downloader_keep_alive =
       base::DoNothingWithBoundArgs(std::move(downloader));
@@ -585,6 +584,7 @@ void IsolatedWebAppDevInstallManager::DownloadWebBundleToFile(
   downloader_ptr->DownloadSignedWebBundle(
       web_bundle_url, std::move(path),
       GetDownloadAnnotationTag(install_surface),
+      /*client_security_state_address_space=*/std::nullopt,
       base::BindOnce(&IsolatedWebAppDevInstallManager::OnWebBundleDownloaded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(install_surface),
                      std::move(callback), std::move(expected_bundle_id),

@@ -300,7 +300,8 @@ void IwaInstaller::OnTempFileCreated(base::OnceClosure next_step_callback,
 }
 
 void IwaInstaller::DownloadUpdateManifest(
-    base::OnceCallback<void(GURL, IwaVersion)> next_step_callback) {
+    base::OnceCallback<void(GURL, IwaVersion, network::mojom::IPAddressSpace)>
+        next_step_callback) {
   log_->Append(base::Value(
       "Downloading Update Manifest from " +
       install_options_.update_manifest_url().possibly_invalid_spec()));
@@ -315,11 +316,13 @@ void IwaInstaller::DownloadUpdateManifest(
 }
 
 void IwaInstaller::OnUpdateManifestParsed(
-    base::OnceCallback<void(GURL, IwaVersion)> next_step_callback,
-    base::expected<UpdateManifest, UpdateManifestFetcher::Error> fetch_result) {
+    base::OnceCallback<void(GURL, IwaVersion, network::mojom::IPAddressSpace)>
+        next_step_callback,
+    base::expected<UpdateManifestWithAddressSpace, UpdateManifestFetcher::Error>
+        fetch_result) {
   update_manifest_fetcher_.reset();
   ASSIGN_OR_RETURN(
-      UpdateManifest update_manifest, fetch_result,
+      UpdateManifestWithAddressSpace update_manifest_with_space, fetch_result,
       [&](UpdateManifestFetcher::Error error) {
         switch (error) {
           case UpdateManifestFetcher::Error::kDownloadFailed:
@@ -333,7 +336,8 @@ void IwaInstaller::OnUpdateManifestParsed(
       });
 
   std::optional<UpdateManifest::VersionEntry> version_to_install =
-      GetVersionWithOptions(update_manifest, install_options_);
+      GetVersionWithOptions(update_manifest_with_space.manifest,
+                            install_options_);
 
   if (!version_to_install) {
     Finish(Result(Result::Type::kErrorWebBundleUrlCantBeDetermined));
@@ -345,20 +349,22 @@ void IwaInstaller::OnUpdateManifestParsed(
                            " from " +
                            version_to_install->src().possibly_invalid_spec()));
   std::move(next_step_callback)
-      .Run(version_to_install->src(), version_to_install->version());
+      .Run(version_to_install->src(), version_to_install->version(),
+           update_manifest_with_space.address_space);
 }
 
 void IwaInstaller::DownloadWebBundle(
     base::OnceCallback<void(IwaVersion)> next_step_callback,
     GURL web_bundle_url,
-    IwaVersion expected_version) {
+    IwaVersion expected_version,
+    network::mojom::IPAddressSpace update_manifest_address_space) {
   log_->Append(base::Value("Downloading Web Bundle from " +
                            web_bundle_url.possibly_invalid_spec()));
 
   bundle_downloader_ = IsolatedWebAppDownloader::CreateAndStartDownloading(
       std::move(web_bundle_url), bundle_.path(),
       kWebBundleDownloadTrafficAnnotation, profile_->GetURLLoaderFactory(),
-      profile_->GetDefaultStoragePartition()->GetNetworkContext(),
+      update_manifest_address_space,
       base::BindOnce(&IwaInstaller::OnWebBundleDownloaded,
                      // If `this` is deleted, `bundle_downloader_` is deleted
                      // as well, and thus the callback will never run.

@@ -347,7 +347,7 @@ void IwaDevPageHandler::ParseUpdateManifestFromUrl(
       base::DoNothingWithBoundArgs(std::move(fetcher));
   fetcher_ptr->FetchUpdateManifest(
       base::BindOnce(
-          [](base::expected<web_app::UpdateManifest,
+          [](base::expected<web_app::UpdateManifestWithAddressSpace,
                             web_app::UpdateManifestFetcher::Error> result)
               -> base::expected<iwa_dev::mojom::UpdateManifestPtr,
                                 mojo_base::mojom::ErrorPtr> {
@@ -358,7 +358,7 @@ void IwaDevPageHandler::ParseUpdateManifestFromUrl(
                                 web_app::UpdateManifestFetcher::ErrorToString(
                                     result.error())})));
             }
-            return MapToMojomUpdateManifest(result.value());
+            return MapToMojomUpdateManifest(result->manifest);
           })
           .Then(std::move(callback))
           .Then(std::move(fetcher_keep_alive)));

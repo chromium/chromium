@@ -99,8 +99,8 @@ class IsolatedWebAppInstallerViewController
 
   void LoadChannelsAndShowMetadata();
   void OnUpdateManifestFetched(
-      base::expected<UpdateManifest, UpdateManifestFetcher::Error>
-          fetch_result);
+      base::expected<UpdateManifestWithAddressSpace,
+                     UpdateManifestFetcher::Error> fetch_result);
   void OnUpdateManifestTimeout();
 
   void OnUserInstallPreconditionsMaybeChanged();

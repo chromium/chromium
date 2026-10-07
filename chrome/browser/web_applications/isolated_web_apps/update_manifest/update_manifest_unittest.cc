@@ -358,13 +358,14 @@ TEST(UpdateManifestTest, ParsesManifestWithMultipleVersions) {
       auto update_manifest,
       UpdateManifest::CreateFromJson(
           base::Value(base::DictValue().Set(
-              "versions", base::ListValue()
-                              .Append(base::DictValue()
-                                          .Set("version", "1.2.3")
-                                          .Set("src", "https://example.com"))
-                              .Append(base::DictValue()
-                                          .Set("version", "3.0.0")
-                                          .Set("src", "http://localhost")))),
+              "versions",
+              base::ListValue()
+                  .Append(base::DictValue()
+                              .Set("version", "1.2.3")
+                              .Set("src", "https://example.com"))
+                  .Append(base::DictValue()
+                              .Set("version", "3.0.0")
+                              .Set("src", "https://example2.com")))),
           GURL("https://c.de/um.json")));
 
   EXPECT_THAT(
@@ -373,7 +374,7 @@ TEST(UpdateManifestTest, ParsesManifestWithMultipleVersions) {
           UpdateManifest::VersionEntry{GURL("https://example.com"),
                                        *IwaVersion::Create("1.2.3"),
                                        {*UpdateChannel::Create("default")}},
-          UpdateManifest::VersionEntry{GURL("http://localhost"),
+          UpdateManifest::VersionEntry{GURL("https://example2.com"),
                                        *IwaVersion::Create("3.0.0"),
                                        {*UpdateChannel::Create("default")}}));
 }
@@ -485,10 +486,49 @@ TEST_P(UpdateManifestValidSrcTest, ParsesValidSrc) {
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          UpdateManifestValidSrcTest,
-                         ::testing::Values("https://localhost",
-                                           "http://localhost",
-                                           "https://example.com",
+                         ::testing::Values("https://example.com",
                                            "https://example.com:1234"));
+
+TEST(UpdateManifestTest, AllowsSameOriginLocalhostSrc) {
+  // localhost/loopback src entries remain valid when they are same-origin
+  // with the update manifest itself (e.g. local development), even though
+  // they are not "public" address spaces.
+  ASSERT_OK_AND_ASSIGN(
+      auto update_manifest,
+      UpdateManifest::CreateFromJson(
+          base::Value(base::DictValue().Set(
+              "versions",
+              base::ListValue().Append(
+                  base::DictValue()
+                      .Set("version", "1.0.0")
+                      .Set("src", "https://localhost/other.swbn")))),
+          GURL("https://localhost/um.json")));
+
+  ASSERT_EQ(update_manifest.versions().size(), 1u);
+}
+
+TEST(UpdateManifestTest, RejectsCrossOriginLocalBundleFromPublicManifest) {
+  ASSERT_OK_AND_ASSIGN(
+      auto update_manifest,
+      UpdateManifest::CreateFromJson(
+          base::Value(base::DictValue().Set(
+              "versions",
+              base::ListValue()
+                  .Append(base::DictValue()
+                              .Set("version", "1.0.0")
+                              .Set("src", "http://127.0.0.1:8080/a.swbn"))
+                  .Append(base::DictValue()
+                              .Set("version", "2.0.0")
+                              .Set("src", "http://localhost:8080/b.swbn"))
+                  .Append(
+                      base::DictValue()
+                          .Set("version", "3.0.0")
+                          .Set("src", "https://downloads.example/a.swbn")))),
+          GURL("https://updates.example/manifest.json")));
+
+  ASSERT_EQ(update_manifest.versions().size(), 1u);
+  EXPECT_EQ(update_manifest.versions()[0].version().GetString(), "3.0.0");
+}
 
 using UpdateManifestInvalidSrcTest = testing::TestWithParam<std::string>;
 

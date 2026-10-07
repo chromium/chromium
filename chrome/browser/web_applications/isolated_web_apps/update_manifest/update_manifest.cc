@@ -24,7 +24,10 @@
 #include "base/values.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
+#include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
+#include "url/origin.h"
 
 namespace web_app {
 
@@ -144,6 +147,22 @@ base::expected<GURL, std::monostate> ParseAndValidateSrc(
     return base::unexpected(std::monostate());
   }
 
+  // Non-public (e.g. loopback or private network) bundle URLs are only
+  // permitted if they are same-origin with the update manifest. This blocks
+  // public update manifests from referencing loopback or intranet bundle
+  // targets (LNA SSRF), while still allowing local development and testing
+  // workflows where both the update manifest and the bundle are hosted on the
+  // same local server (e.g. http://127.0.0.1:8080/manifest.json ->
+  // http://127.0.0.1:8080/bundle.swbn).
+  const std::optional<network::mojom::IPAddressSpace> src_space =
+      network::GetAddressSpaceFromUrl(src);
+  if (src_space.has_value() &&
+      *src_space != network::mojom::IPAddressSpace::kPublic &&
+      !url::Origin::Create(src).IsSameOriginWith(
+          url::Origin::Create(update_manifest_url))) {
+    return base::unexpected(std::monostate());
+  }
+
   return src;
 }
 
@@ -241,6 +260,10 @@ UpdateManifest::UpdateManifest(const UpdateManifest& other) = default;
 
 UpdateManifest& UpdateManifest::operator=(const UpdateManifest& other) =
     default;
+
+UpdateManifest::UpdateManifest(UpdateManifest&& other) = default;
+
+UpdateManifest& UpdateManifest::operator=(UpdateManifest&& other) = default;
 
 UpdateManifest::~UpdateManifest() = default;
 

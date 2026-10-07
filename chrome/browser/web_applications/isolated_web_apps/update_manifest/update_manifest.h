@@ -126,6 +126,9 @@ class UpdateManifest {
   UpdateManifest(const UpdateManifest& other);
   UpdateManifest& operator=(const UpdateManifest& other);
 
+  UpdateManifest(UpdateManifest&& other);
+  UpdateManifest& operator=(UpdateManifest&& other);
+
   ~UpdateManifest();
 
   const std::vector<VersionEntry>& versions() const { return version_entries_; }

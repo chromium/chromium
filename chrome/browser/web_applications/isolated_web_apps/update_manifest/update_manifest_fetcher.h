@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "net/base/address_list.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
@@ -31,7 +32,12 @@ class NetworkContext;
 
 namespace web_app {
 
-class UpdateManifest;
+// Encapsulates a parsed UpdateManifest along with the IPAddressSpace of the
+// response from which it was fetched.
+struct UpdateManifestWithAddressSpace {
+  UpdateManifest manifest;
+  network::mojom::IPAddressSpace address_space;
+};
 
 // Helper class to download and parse an update manifest of an Isolated Web App.
 class UpdateManifestFetcher {
@@ -44,8 +50,8 @@ class UpdateManifestFetcher {
 
   static std::string_view ErrorToString(Error error);
 
-  using FetchCallback =
-      base::OnceCallback<void(base::expected<UpdateManifest, Error>)>;
+  using FetchCallback = base::OnceCallback<void(
+      base::expected<UpdateManifestWithAddressSpace, Error>)>;
 
   UpdateManifestFetcher(
       GURL url,
@@ -66,12 +72,15 @@ class UpdateManifestFetcher {
       const net::AddressList& resolved_addresses,
       const net::HostResolverEndpointResults& alternative_endpoints);
 
-  void DownloadUpdateManifest(network::mojom::IPAddressSpace client_space);
+  void DownloadUpdateManifest(
+      network::mojom::IPAddressSpace client_security_state_address_space);
 
   void OnUpdateManifestDownloaded(
       std::optional<std::string> update_manifest_content);
 
-  void ParseUpdateManifest(const std::string& update_manifest_content);
+  void ParseUpdateManifest(
+      const std::string& update_manifest_content,
+      network::mojom::IPAddressSpace manifest_address_space);
 
   GURL url_;
   net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation_;

@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/check_is_test.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
@@ -114,7 +115,7 @@ void UpdateManifestFetcher::OnHostResolved(
 }
 
 void UpdateManifestFetcher::DownloadUpdateManifest(
-    network::mojom::IPAddressSpace client_space) {
+    network::mojom::IPAddressSpace client_security_state_address_space) {
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::CompleteNetworkTrafficAnnotation("iwa_update_manifest_fetcher",
                                             partial_traffic_annotation_,
@@ -147,13 +148,13 @@ void UpdateManifestFetcher::DownloadUpdateManifest(
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   // Configure the security state for this request to enable Local Network
-  // Access (LNA) checks. By specifying the 'client_space' (determined during
-  // host resolution), we allow the network service to identify if this is a
-  // request from a more privileged space to a less privileged one (e.g., Public
-  // -> Local) and enforce the appropriate security policies, such as CORS
-  // preflights for LNA.
+  // Access (LNA) checks. By specifying the
+  // `client_security_state_address_space` (determined during host resolution),
+  // we allow the network service to identify if this is a request from a more
+  // privileged space to a less privileged one (e.g., Public -> Local) and
+  // enforce the appropriate security policies, such as CORS preflights for LNA.
   auto client_security_state = network::mojom::ClientSecurityState::New();
-  client_security_state->ip_address_space = client_space;
+  client_security_state->ip_address_space = client_security_state_address_space;
   client_security_state->is_web_secure_context = true;
   client_security_state->local_network_access_request_policy =
       network::mojom::LocalNetworkAccessRequestPolicy::kBlock;
@@ -197,18 +198,31 @@ void UpdateManifestFetcher::OnUpdateManifestDownloaded(
         error_or_http_response_code_);
   }
 
-  simple_url_loader_.reset();
-
   if (!update_manifest_content) {
+    simple_url_loader_.reset();
     std::move(fetch_callback_).Run(base::unexpected(Error::kDownloadFailed));
     return;
   }
 
-  ParseUpdateManifest(*update_manifest_content);
+  network::mojom::IPAddressSpace manifest_address_space =
+      simple_url_loader_->ResponseInfo()
+          ? simple_url_loader_->ResponseInfo()->response_address_space
+          : network::mojom::IPAddressSpace::kUnknown;
+  if (manifest_address_space == network::mojom::IPAddressSpace::kUnknown) {
+    CHECK_IS_TEST();
+    manifest_address_space =
+        network::GetAddressSpaceFromUrl(simple_url_loader_->GetFinalURL())
+            .value_or(network::mojom::IPAddressSpace::kPublic);
+  }
+
+  simple_url_loader_.reset();
+
+  ParseUpdateManifest(*update_manifest_content, manifest_address_space);
 }
 
 void UpdateManifestFetcher::ParseUpdateManifest(
-    const std::string& update_manifest_content) {
+    const std::string& update_manifest_content,
+    network::mojom::IPAddressSpace manifest_address_space) {
   base::JSONReader::Result result =
       base::JSONReader::ReadAndReturnValueWithError(update_manifest_content,
                                                     base::JSON_PARSE_RFC);
@@ -220,17 +234,20 @@ void UpdateManifestFetcher::ParseUpdateManifest(
     return;
   }
 
-  base::expected<UpdateManifest, UpdateManifest::JsonFormatError>
-      update_manifest =
-          UpdateManifest::CreateFromJson(std::move(*result), url_);
-
   std::move(fetch_callback_)
-      .Run(update_manifest.transform_error(
-          [this](UpdateManifest::JsonFormatError error) -> Error {
-            DVLOG(1) << "Unable to parse IWA Update Manifest format for URL "
+      .Run(UpdateManifest::CreateFromJson(std::move(*result), url_)
+               .transform_error([this](UpdateManifest::JsonFormatError error) {
+                 LOG(ERROR)
+                     << "Unable to parse IWA Update Manifest format for URL "
                      << url_ << ": " << UpdateManifest::ErrorToString(error);
-            return Error::kInvalidManifest;
-          }));
+                 return Error::kInvalidManifest;
+               })
+               .transform([manifest_address_space](UpdateManifest manifest) {
+                 return UpdateManifestWithAddressSpace{
+                     .manifest = std::move(manifest),
+                     .address_space = manifest_address_space,
+                 };
+               }));
 }
 
 }  // namespace web_app
