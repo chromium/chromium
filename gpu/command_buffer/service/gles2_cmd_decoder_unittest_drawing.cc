@@ -1825,6 +1825,52 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 
+// If the lazy clear of a sampled texture fails, the draw must not be issued.
+TEST_P(GLES2DecoderWithShaderTest, DrawArraysSkippedWhenTextureClearFails) {
+  SetupAllNeededVertexBuffers();
+  DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);
+  // Create an uncleared, mipmap-complete texture with 2 levels.
+  DoTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0,
+               0);
+  DoTexImage2D(GL_TEXTURE_2D, 1, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0,
+               0);
+  TextureRef* texture_ref =
+      group().texture_manager()->GetTexture(client_texture_id_);
+  ASSERT_TRUE(texture_ref != nullptr);
+
+  // The driver fails the zero upload of level 0 with GL_OUT_OF_MEMORY, so the
+  // clear stops there.
+  SetupClearTextureExpectations(
+      kServiceTextureId, kServiceTextureId, GL_TEXTURE_2D, GL_TEXTURE_2D, 0,
+      GL_RGBA, GL_UNSIGNED_BYTE, 0, 0, 2, 2, 0, GL_OUT_OF_MEMORY);
+  EXPECT_CALL(*gl_, DrawArrays(_, _, _)).Times(0);
+  cmds::DrawArrays cmd;
+  cmd.Init(GL_TRIANGLES, 0, kNumVertices);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_FALSE(texture_ref->texture()->IsLevelCleared(GL_TEXTURE_2D, 0));
+  EXPECT_FALSE(texture_ref->texture()->SafeToRenderFrom());
+  // The draw reports its own failure, and the driver's out of memory is
+  // surfaced rather than left latched.
+  EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
+  EXPECT_EQ(GL_OUT_OF_MEMORY, GetGLError());
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+
+  // A later draw retries the clear; when it succeeds the draw is issued.
+  SetupClearTextureExpectations(kServiceTextureId, kServiceTextureId,
+                                GL_TEXTURE_2D, GL_TEXTURE_2D, 0, GL_RGBA,
+                                GL_UNSIGNED_BYTE, 0, 0, 2, 2, 0);
+  SetupClearTextureExpectations(kServiceTextureId, kServiceTextureId,
+                                GL_TEXTURE_2D, GL_TEXTURE_2D, 1, GL_RGBA,
+                                GL_UNSIGNED_BYTE, 0, 0, 1, 1, 0);
+  SetupExpectationsForApplyingDefaultDirtyState();
+  EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, 0, kNumVertices))
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_TRUE(texture_ref->texture()->SafeToRenderFrom());
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+}
+
 TEST_P(GLES2DecoderWithShaderTest, DrawArraysClearsAfterTexImage2DNULL) {
   SetupAllNeededVertexBuffers();
   DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);

@@ -427,6 +427,10 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
 
   void DeleteIndexBuffer();
 
+  // |clear_error| is the error reported by the post-clear glGetError() that
+  // GLES2DecoderImpl::ClearLevel uses to decide whether the clear landed. Pass
+  // something other than GL_NO_ERROR to simulate a driver that failed the
+  // clear (e.g. GL_OUT_OF_MEMORY).
   void SetupClearTextureExpectations(GLuint service_id,
                                      GLuint old_service_id,
                                      GLenum bind_target,
@@ -438,7 +442,8 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
                                      GLint yoffset,
                                      GLsizei width,
                                      GLsizei height,
-                                     GLuint bound_pixel_unpack_buffer);
+                                     GLuint bound_pixel_unpack_buffer,
+                                     GLenum clear_error = GL_NO_ERROR);
 
   void SetupClearTexture3DExpectations(GLsizeiptr buffer_size,
                                        GLenum target,

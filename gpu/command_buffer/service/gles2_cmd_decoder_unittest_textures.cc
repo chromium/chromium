@@ -3247,6 +3247,37 @@ TEST_P(GLES3DecoderTest, ClearLevelWithBoundUnpackBuffer) {
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
 }
 
+// If the lazy clear of a texture level fails, the level must not be recorded as
+// cleared, and the error must be surfaced.
+TEST_P(GLES2DecoderTest, ClearLevelNotMarkedClearedWhenTexSubImage2DFails) {
+  DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);
+  DoTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0,
+               0);
+  TextureRef* texture_ref =
+      group().texture_manager()->GetTexture(client_texture_id_);
+  ASSERT_TRUE(texture_ref != nullptr);
+  Texture* texture = texture_ref->texture();
+  EXPECT_FALSE(texture->IsLevelCleared(GL_TEXTURE_2D, 0));
+
+  // The driver fails the zero upload with GL_OUT_OF_MEMORY.
+  SetupClearTextureExpectations(
+      kServiceTextureId, kServiceTextureId, GL_TEXTURE_2D, GL_TEXTURE_2D, 0,
+      GL_RGBA, GL_UNSIGNED_BYTE, 0, 0, 2, 2, 0, GL_OUT_OF_MEMORY);
+  EXPECT_FALSE(TextureManager::ClearTextureLevel(decoder_.get(), texture_ref,
+                                                 GL_TEXTURE_2D, 0));
+  EXPECT_FALSE(texture->IsLevelCleared(GL_TEXTURE_2D, 0));
+  EXPECT_EQ(GL_OUT_OF_MEMORY, GetGLError());
+
+  // A later clear retries; when it succeeds the level is marked cleared.
+  SetupClearTextureExpectations(kServiceTextureId, kServiceTextureId,
+                                GL_TEXTURE_2D, GL_TEXTURE_2D, 0, GL_RGBA,
+                                GL_UNSIGNED_BYTE, 0, 0, 2, 2, 0);
+  EXPECT_TRUE(TextureManager::ClearTextureLevel(decoder_.get(), texture_ref,
+                                                GL_TEXTURE_2D, 0));
+  EXPECT_TRUE(texture->IsLevelCleared(GL_TEXTURE_2D, 0));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+}
+
 TEST_P(GLES2DecoderTest, CopyTexImage2DMarksTextureAsCleared) {
   DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);
 
