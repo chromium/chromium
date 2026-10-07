@@ -554,7 +554,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInlineInUnknownRoot(void* object,
   PA_DCHECK(object);
 
   auto* root = GetRootFromAddressInFirstSuperpage(object);
-  root->FreeInlineInternal<flags | FreeFlags::kNoHooks>(object, hint...);
+  root->FreeAfterProlog<flags>(object, hint...);
 }
 
 PA_ALWAYS_INLINE std::pair<SlotStart, internal::SlotSpanMetadata*>
@@ -591,7 +591,6 @@ PartitionRoot::GetSlotStartAndSlotSpanFromAddress(void* object) {
 template <FreeFlags flags, FreeHint... Hint>
 PA_ALWAYS_INLINE void PartitionRoot::FreeInlineInternal(void* object,
                                                         Hint... hint) {
-  static_assert(internal::kAreValidFreeHints<Hint...>);
   // The correct PartitionRoot might not be deducible if the |object| originates
   // from an override hook.
   bool early_return = FreeProlog<flags>(object, this);
@@ -601,7 +600,14 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInlineInternal(void* object,
   // FreeProlog ensures the object is not nullptr.
   PA_DCHECK(object);
 
-  // Almost all calls to FreeNoNooks() will end up writing to |*object|.
+  FreeAfterProlog<flags>(object, hint...);
+}
+
+template <FreeFlags flags, FreeHint... Hint>
+PA_ALWAYS_INLINE void PartitionRoot::FreeAfterProlog(void* object,
+                                                     Hint... hint) {
+  static_assert(internal::kAreValidFreeHints<Hint...>);
+  // Almost all calls to FreeAfterProlog() will end up writing to |*object|.
   PA_PREFETCH_FOR_WRITE(object);
   auto [slot_start, slot_span] = GetSlotStartAndSlotSpanFromAddress(object);
 
@@ -1793,6 +1799,16 @@ void* PartitionRoot::ReallocInline(void* ptr,
     internal::PartitionExcessiveAllocationSize(new_size);
   }
 
+  return ReallocInPlaceOrMove<alloc_flags, free_flags>(ptr, new_size,
+                                                       type_name);
+#endif  // PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
+}
+
+template <AllocFlags alloc_flags, FreeFlags free_flags>
+PA_ALWAYS_INLINE void* PartitionRoot::ReallocInPlaceOrMove(
+    void* ptr,
+    size_t new_size,
+    const char* type_name) {
   constexpr bool no_hooks = ContainsFlags(alloc_flags, AllocFlags::kNoHooks);
   bool overridden = false;
   size_t old_usable_size = 0;
@@ -1856,21 +1872,32 @@ void* PartitionRoot::ReallocInline(void* ptr,
 #endif
 
   // This realloc cannot be resized in-place. Sadness.
-  void* ret = AllocInternal<alloc_flags>(
-                  new_size, internal::PartitionPageSize(), type_name)
-                  .object;
+  void* ret = AllocForRealloc<alloc_flags>(this, new_size, type_name);
   if (!ret) {
-    if constexpr (ContainsFlags(alloc_flags, AllocFlags::kReturnNull)) {
-      return nullptr;
-    }
-    internal::PartitionExcessiveAllocationSize(new_size);
+    return nullptr;
   }
 
   PA_UNSAFE_TODO(memcpy(ret, ptr, std::min(old_usable_size, new_size)));
   FreeInUnknownRoot<free_flags>(
       ptr);  // Implicitly protects the old ptr on MTE systems.
   return ret;
-#endif
+}
+
+// static
+template <AllocFlags alloc_flags>
+PA_ALWAYS_INLINE void* PartitionRoot::AllocForRealloc(PartitionRoot* root,
+                                                      size_t size,
+                                                      const char* type_name) {
+  void* object = root->AllocInternal<alloc_flags>(
+                         size, internal::PartitionPageSize(), type_name)
+                     .object;
+  if (!object) {
+    if constexpr (ContainsFlags(alloc_flags, AllocFlags::kReturnNull)) {
+      return nullptr;
+    }
+    internal::PartitionExcessiveAllocationSize(size);
+  }
+  return object;
 }
 
 internal::ThreadCache* PartitionRoot::GetOrCreateThreadCache()

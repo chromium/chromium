@@ -1475,26 +1475,16 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
   return object;
 }
 
-// static
-//
-// Returns the size available to the app. It can be equal or higher than the
-// requested size. If higher, the overage won't exceed what's actually usable
-// by the app without a risk of running out of an allocated region or into
-// PartitionAlloc's internal data. Used as malloc_usable_size and malloc_size.
-//
-// |ptr| should preferably point to the beginning of an object returned from
-// malloc() et al., but it doesn't have to. crbug.com/1292646 shows an example
-// where this isn't the case. Note, an inner object pointer won't work for
-// direct map, unless it is within the first partition page.
-size_t PartitionRoot::GetExternalUsableSize(const void* ptr) {
-  // malloc_usable_size() is expected to handle NULL gracefully and return 0.
-  if (!ptr) {
-    return 0;
-  }
+namespace {
+
+// What `PartitionRoot::GetExternalUsableSize()` does for a non-null `ptr`:
+// reads its usable size from its metadata.
+PA_ALWAYS_INLINE size_t GetExternalUsableSizeFromMetadata(const void* ptr) {
   const std::ptrdiff_t offset =
       internal::GetMetadataOffsetFromAddr(internal::ObjectInnerPtr2Addr(ptr));
-  auto* slot_span = SlotSpanMetadata::FromObjectInnerPtr(ptr, offset);
-  auto* root = FromSlotSpanMetadata(slot_span);
+  auto* slot_span =
+      PartitionRoot::SlotSpanMetadata::FromObjectInnerPtr(ptr, offset);
+  auto* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
   size_t usable = root->GetSlotUsableSize(slot_span);
 #if PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
   if (root->brp_enabled()) [[likely]] {
@@ -1518,6 +1508,27 @@ size_t PartitionRoot::GetExternalUsableSize(const void* ptr) {
   }
 #endif  // PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
   return usable;
+}
+
+}  // namespace
+
+// static
+//
+// Returns the size available to the app. It can be equal or higher than the
+// requested size. If higher, the overage won't exceed what's actually usable
+// by the app without a risk of running out of an allocated region or into
+// PartitionAlloc's internal data. Used as malloc_usable_size and malloc_size.
+//
+// |ptr| should preferably point to the beginning of an object returned from
+// malloc() et al., but it doesn't have to. crbug.com/1292646 shows an example
+// where this isn't the case. Note, an inner object pointer won't work for
+// direct map, unless it is within the first partition page.
+size_t PartitionRoot::GetExternalUsableSize(const void* ptr) {
+  // malloc_usable_size() is expected to handle NULL gracefully and return 0.
+  if (!ptr) {
+    return 0;
+  }
+  return GetExternalUsableSizeFromMetadata(ptr);
 }
 
 // Return the capacity of the underlying slot (adjusted for extras) that'd be
@@ -2063,6 +2074,16 @@ void PartitionRoot::ReconfigureSchedulerLoopQuarantineForCurrentThread(
 }
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+namespace {
+
+// Zaps the object of a slot entering BackupRefPtr's quarantine.
+PA_ALWAYS_INLINE void ZapBrpQuarantinedObject(void* object,
+                                              size_t usable_size) {
+  internal::SecureMemset(object, internal::kQuarantinedByte, usable_size);
+}
+
+}  // namespace
+
 PA_NOINLINE void PartitionRoot::QuarantineForBrp(
     const internal::SlotSpanMetadata* slot_span,
     SlotStart slot_start) {
@@ -2071,8 +2092,7 @@ PA_NOINLINE void PartitionRoot::QuarantineForBrp(
   if (hook) [[unlikely]] {
     hook(slot_start.ToObject(), usable_size);
   } else {
-    internal::SecureMemset(slot_start.ToObject(), internal::kQuarantinedByte,
-                           usable_size);
+    ZapBrpQuarantinedObject(slot_start.ToObject(), usable_size);
   }
 }
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)

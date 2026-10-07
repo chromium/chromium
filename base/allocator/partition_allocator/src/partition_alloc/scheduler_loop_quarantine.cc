@@ -154,6 +154,60 @@ BatchFreeQueue<QuarantineTarget::kSanitizedObjects>::Purge() {
   } while (size_);
 }
 
+namespace {
+
+// Releases a single dequarantined slot for `PurgeInternal()`: into the thread
+// cache if it takes it, otherwise batched in `queue`.
+//
+// `queue` amortizes the root lock over `kQueueSize` slots and is never null.
+// `tcache` is the cache owning this branch, and is null unless `thread_bound`.
+template <bool thread_bound, QuarantineTarget quarantine_target>
+PA_ALWAYS_INLINE void ReleaseDequarantinedSlot(
+    PartitionRoot* root,
+    UntaggedSlotStart slot_start,
+    size_t bucket_index,
+    size_t slot_size,
+    BatchFreeQueue<quarantine_target>* queue,
+    ThreadCache* tcache) {
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+  root->RetagSlotIfNeeded(slot_start, slot_size);
+#endif
+  if constexpr (!thread_bound) {
+    // Assuming that ThreadCache is not available as this is not thread-bound.
+    // Going to `RawFree()` directly.
+    queue->Queue(slot_start);
+    return;
+  } else {
+    std::optional<size_t> slot_size_opt =
+        tcache->MaybePutInCache(slot_start, bucket_index);
+
+    if (slot_size_opt.has_value()) [[likely]] {
+      PA_DCHECK(slot_size_opt.value() == slot_size);
+      // This is a fast path, avoid calling GetSlotUsableSize() in Release
+      // builds as it is costlier. Copy its small bucket path instead.
+      const size_t usable_size =
+          root->AdjustSizeForExtrasSubtract(slot_size_opt.value());
+
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
+      auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start, root);
+      PA_DCHECK(!slot_span->CanStoreRawSize());
+      PA_DCHECK(usable_size == root->GetSlotUsableSize(slot_span));
+#endif
+      tcache->RecordDeallocation(usable_size);
+      // Now ThreadCache is responsible for freeing the allocation.
+      return;
+    }
+
+    // ThreadCache refused to take ownership of the allocation, hence we free
+    // it.
+    const size_t usable_size = root->AdjustSizeForExtrasSubtract(slot_size);
+    tcache->RecordDeallocation(usable_size);
+    queue->Queue(slot_start);
+  }
+}
+
+}  // namespace
+
 template <bool thread_bound, QuarantineTarget quarantine_target>
 SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::
     SchedulerLoopQuarantineBranch(PartitionRoot* allocator_root,
@@ -403,19 +457,18 @@ SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::PurgeInternal(
     // to picking random entry.
     SlotStart slot_start = slots_.back().slot_start;
     const size_t bucket_index = slots_.back().bucket_index;
-    size_t slot_size = 0;
+    const size_t slot_size = BucketIndexLookup::GetBucketSize(bucket_index);
 
-#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
-    allocator_root_->RetagSlotIfNeeded(
-        slot_start.Untag(), BucketIndexLookup::GetBucketSize(bucket_index));
-    slot_start = slot_start.Untag().Tag();
-#endif
-    if constexpr (!kThreadBound) {
-      // Assuming that ThreadCache is not available as this is not thread-bound.
-      // Going to `RawFree()` directly.
-      slot_size = BucketIndexLookup::GetBucketSize(bucket_index);
-      queue.Queue(slot_start.Untag());
-    } else {
+    // Take the entry off the list before releasing it, so that anything the
+    // release runs that re-enters `PurgeInternal()` finds neither this entry
+    // nor its bytes.
+    slots_.pop_back();
+    ++freed_count;
+    PA_DCHECK(slot_size > 0);
+    freed_size_in_bytes += slot_size;
+    branch_size_in_bytes_ -= slot_size;
+
+    if constexpr (kThreadBound) {
       // Unless during its destruction, we can assume ThreadCache is valid
       // because this branch is embedded inside ThreadCache.
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
@@ -424,42 +477,11 @@ SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::PurgeInternal(
       PA_DCHECK(being_destructed_ ||
                 allocator_root_->GetThreadCache() == tcache_);
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
-
-      std::optional<size_t> slot_size_opt =
-          tcache_->MaybePutInCache(slot_start.Untag(), bucket_index);
-
-      if (slot_size_opt.has_value()) [[likely]] {
-        slot_size = slot_size_opt.value();
-        // This is a fast path, avoid calling GetSlotUsableSize() in Release
-        // builds as it is costlier. Copy its small bucket path instead.
-        const size_t usable_size =
-            allocator_root_->AdjustSizeForExtrasSubtract(slot_size);
-
-#if PA_BUILDFLAG(DCHECKS_ARE_ON)
-        auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start.Untag(),
-                                                          allocator_root_);
-        PA_DCHECK(!slot_span->CanStoreRawSize());
-        PA_DCHECK(usable_size == allocator_root_->GetSlotUsableSize(slot_span));
-#endif
-        tcache_->RecordDeallocation(usable_size);
-        // Now ThreadCache is responsible for freeing the allocation.
-      } else {
-        // ThreadCache refused to take ownership of the allocation, hence we
-        // free it.
-        slot_size = BucketIndexLookup::GetBucketSize(bucket_index);
-        const size_t usable_size =
-            allocator_root_->AdjustSizeForExtrasSubtract(slot_size);
-        tcache_->RecordDeallocation(usable_size);
-        queue.Queue(slot_start.Untag());
-      }
     }
 
-    ++freed_count;
-    PA_DCHECK(slot_size > 0);
-    freed_size_in_bytes += slot_size;
-    branch_size_in_bytes_ -= slot_size;
-
-    slots_.pop_back();
+    ReleaseDequarantinedSlot<kThreadBound, quarantine_target>(
+        allocator_root_, slot_start.Untag(), bucket_index, slot_size, &queue,
+        tcache_);
   }
 
   root_->size_in_bytes_.fetch_sub(freed_size_in_bytes,

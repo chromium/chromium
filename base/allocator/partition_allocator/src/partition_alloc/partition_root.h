@@ -549,9 +549,6 @@ class alignas(internal::kPartitionCachelineSize)
 
   template <FreeFlags flags = FreeFlags::kNone, FreeHint... Hint>
   PA_NOINLINE static void FreeInUnknownRoot(void* object, Hint... hint);
-  template <FreeFlags flags = FreeFlags::kNone, FreeHint... Hint>
-  PA_ALWAYS_INLINE static void FreeInlineInUnknownRoot(void* object,
-                                                       Hint... hint);
   // |object| must be a non-null pointer.
   PA_ALWAYS_INLINE static PartitionRoot* GetRootFromAddressInFirstSuperpage(
       void* object);
@@ -830,6 +827,28 @@ class alignas(internal::kPartitionCachelineSize)
   // `hint` are the caller's `FreeHint`s, if it passed any.
   template <FreeFlags flags = FreeFlags::kNone, FreeHint... Hint>
   PA_ALWAYS_INLINE void FreeInlineInternal(void* object, Hint... hint);
+  template <FreeFlags flags = FreeFlags::kNone, FreeHint... Hint>
+  PA_ALWAYS_INLINE static void FreeInlineInUnknownRoot(void* object,
+                                                       Hint... hint);
+
+  // What `FreeInlineInternal()` does after `FreeProlog()`: frees a non-null
+  // `object`. `hint` are the caller's `FreeHint`s, if it passed any.
+  template <FreeFlags flags = FreeFlags::kNone, FreeHint... Hint>
+  PA_ALWAYS_INLINE void FreeAfterProlog(void* object, Hint... hint);
+
+  // What `ReallocInline()` does for a non-null `ptr` and a valid, non-zero
+  // `new_size`: resizes `ptr` in place if it can, and moves it otherwise.
+  template <AllocFlags alloc_flags, FreeFlags free_flags>
+  PA_ALWAYS_INLINE void* ReallocInPlaceOrMove(void* ptr,
+                                              size_t new_size,
+                                              const char* type_name);
+  // Allocates the object a reallocation moves to: `size` bytes from `root`,
+  // with the reallocation's `alloc_flags`. Returns null only with
+  // `AllocFlags::kReturnNull`.
+  template <AllocFlags alloc_flags>
+  PA_ALWAYS_INLINE static void* AllocForRealloc(PartitionRoot* root,
+                                                size_t size,
+                                                const char* type_name);
 
   // Common path of Free() and FreeInUnknownRoot(). Returns
   // true if the caller should return immediately.
