@@ -290,4 +290,12 @@ public class ScopedServiceBindingBatchImplTest {
         assertEquals(0, mFakeBindingRequestQueue.getUnbinds().size());
         assertEquals(0, mFakeBindingRequestQueue.getFlushCount());
     }
+
+    @Test
+    public void testScopedServiceBindingBatchIsAbstractClass() {
+        assertFalse(
+                "ScopedServiceBindingBatch must remain an abstract class, not an interface! "
+                        + "Converting it to an interface breaks downstream JNI desugaring.",
+                ScopedServiceBindingBatch.class.isInterface());
+    }
 }

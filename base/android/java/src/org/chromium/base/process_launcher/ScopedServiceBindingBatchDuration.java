@@ -11,7 +11,7 @@ import org.chromium.build.annotations.Nullable;
 
 /** Records the duration of the batching scope on the main thread. */
 @NullMarked
-/*package*/ final class ScopedServiceBindingBatchDuration implements ScopedServiceBindingBatch {
+/*package*/ final class ScopedServiceBindingBatchDuration extends ScopedServiceBindingBatch {
     private static @Nullable ScopedServiceBindingBatchDuration sInstance;
     private final long mStartTimeMillis;
 
