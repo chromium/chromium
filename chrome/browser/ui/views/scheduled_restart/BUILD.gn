@@ -95,7 +95,6 @@ if (is_win || is_mac || is_linux) {
       "//chrome/browser",
       "//chrome/browser/lifetime",
       "//chrome/browser/lifetime:test_support",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/frame:browser_view_header",

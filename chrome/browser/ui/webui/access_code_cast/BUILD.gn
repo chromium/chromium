@@ -101,7 +101,6 @@ source_set("interactive_ui_tests") {
     ":access_code_cast",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//chrome/test/media_router/access_code_cast:access_code_cast_integration_base",
     "//components/prefs",

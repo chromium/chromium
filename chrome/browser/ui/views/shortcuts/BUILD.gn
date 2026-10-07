@@ -85,7 +85,6 @@ source_set("browser_tests") {
     "//chrome/browser/picture_in_picture:test_support_ui",
     "//chrome/browser/profiles:misc",
     "//chrome/browser/shortcuts:test_support",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/test:test_support",
@@ -106,7 +105,6 @@ source_set("interactive_ui_tests") {
   deps = [
     ":test_support",
     "//chrome/browser/shortcuts:test_support",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui/profiles",
     "//chrome/test:test_support",

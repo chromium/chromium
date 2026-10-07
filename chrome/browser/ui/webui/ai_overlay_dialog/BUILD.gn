@@ -71,7 +71,6 @@ source_set("impl") {
     "//chrome/browser/translate",
     "//chrome/browser/ttc/core",
     "//chrome/browser/ttc/resources",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/webui:webui_util",
@@ -177,7 +176,6 @@ source_set("browser_tests") {
     ]
     deps += [
       "//chrome/browser/translate",
-      "//chrome/browser/ui",
       "//components/optimization_guide/content/browser",
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//content/test:browsertest_support",

@@ -153,7 +153,6 @@ if (!is_chromeos) {
     deps = [
       ":relaunch_notification",
       "//base",
-      "//chrome/browser/ui",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//testing/gtest",
@@ -171,7 +170,6 @@ if (!is_chromeos) {
     deps = [
       ":relaunch_notification",
       "//base",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",

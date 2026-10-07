@@ -64,7 +64,6 @@ source_set("test_support_ui") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser:chrome_browser_main",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:browser_tabstrip",
     "//chrome/browser/ui:browser_window_header",

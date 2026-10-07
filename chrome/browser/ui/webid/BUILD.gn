@@ -54,7 +54,6 @@ if (!is_android) {
       "//chrome/browser/actor",
       "//chrome/browser/actor:test_support",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//chrome/test:test_support",
       "//content/public/browser",
       "//content/test:test_support",

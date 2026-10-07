@@ -58,7 +58,6 @@ source_set("interactive_ui_tests") {
     "//base/test:test_support",
     "//chrome/browser/desktop_to_mobile_promos:utils",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/page_action:icon_type",

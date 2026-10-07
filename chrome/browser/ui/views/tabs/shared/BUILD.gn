@@ -82,7 +82,6 @@ source_set("interactive_ui_tests") {
   deps = [
     ":impl",
     "//base",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/tabs/organizer",
     "//chrome/browser/ui/views/tabs/organizer",
     "//chrome/browser/ui/views/tabs/shared",

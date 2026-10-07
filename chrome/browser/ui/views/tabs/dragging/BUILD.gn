@@ -157,7 +157,6 @@ source_set("browser_tests") {
   sources = [ "dragging_tabs_session_browsertest.cc" ]
   deps = [
     ":dragging",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_tabstrip",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/views/frame:browser_view_header",
@@ -185,7 +184,6 @@ if (!is_chromeos_device) {
       ":tab_drag_controller_interactive_test_mixin",
       "//base/test:test_support",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui/browser_window",

@@ -59,7 +59,6 @@ if (toolkit_views) {
       "//base",
       "//base/test:test_support",
       "//chrome/browser/signin",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/test:test_support",

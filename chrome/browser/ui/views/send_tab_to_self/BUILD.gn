@@ -98,7 +98,6 @@ source_set("browser_tests") {
     "//chrome/browser/signin:signin_browser_test_base",
     "//chrome/browser/signin:test_support",
     "//chrome/browser/sync",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_actions",
     "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:browser_window_header",
@@ -144,7 +143,6 @@ source_set("interactive_ui_tests") {
   deps = [
     ":send_tab_to_self",
     "//chrome/browser/sync",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/send_tab_to_self",
     "//chrome/browser/ui/toasts",
