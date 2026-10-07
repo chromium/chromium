@@ -238,12 +238,14 @@ export class ComposeboxMatchElement extends CrLitElement {
   }
 
   /**
-   * Returns whether pressing forward Tab while this match is active will move
-   * focus outside of this match element rather than to an internal focusable
-   * control (such as the remove button).
+   * Returns whether pressing Tab (or Shift-Tab when `shiftKey` is true) while
+   * this match is active will move focus outside of this match element rather
+   * than between internal focusable controls (such as the remove button).
    */
-  willTabExitMatch(): boolean {
-    return !this.match.supportsDeletion || this.isRemoveButtonFocused();
+  willTabExitMatch(shiftKey: boolean = false): boolean {
+    return shiftKey ?
+        !this.isRemoveButtonFocused() :
+        (!this.match.supportsDeletion || this.isRemoveButtonFocused());
   }
 }
 

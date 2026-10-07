@@ -273,16 +273,18 @@ suite('ComposeboxMatch', () => {
   test(
       'willTabExitMatch accounts for supportsDeletion and remove button focus',
       async () => {
-        // When supportsDeletion is false, forward Tab exits the match.
+        // When supportsDeletion is false, both Tab and Shift-Tab exit the
+        // match.
         matchElement.match = createAutocompleteMatch({
           supportsDeletion: false,
         });
         await microtasksFinished();
-        assertTrue(matchElement.willTabExitMatch());
+        assertTrue(matchElement.willTabExitMatch(/*shiftKey=*/ false));
+        assertTrue(matchElement.willTabExitMatch(/*shiftKey=*/ true));
 
         // When supportsDeletion is true and focus is on the match row (not the
-        // remove button), forward Tab moves to the remove button rather than
-        // exiting the match.
+        // remove button), Shift-Tab exits the match while forward Tab moves to
+        // the remove button.
         matchElement.match = createAutocompleteMatch({
           supportsDeletion: true,
         });
@@ -290,13 +292,17 @@ suite('ComposeboxMatch', () => {
         await microtasksFinished();
 
         assertFalse(matchElement.isRemoveButtonFocused());
-        assertFalse(matchElement.willTabExitMatch());
+        assertFalse(matchElement.willTabExitMatch(/*shiftKey=*/ false));
+        assertTrue(matchElement.willTabExitMatch(/*shiftKey=*/ true));
 
-        // When focus is on the remove button, forward Tab exits the match.
+        // When focus is on the remove button, forward Tab exits the match
+        // while Shift-Tab moves back to the match row.
+        matchElement.$.remove.style.display = 'inline-flex';
         matchElement.$.remove.focus();
         await microtasksFinished();
 
         assertTrue(matchElement.isRemoveButtonFocused());
-        assertTrue(matchElement.willTabExitMatch());
+        assertTrue(matchElement.willTabExitMatch(/*shiftKey=*/ false));
+        assertFalse(matchElement.willTabExitMatch(/*shiftKey=*/ true));
       });
 });

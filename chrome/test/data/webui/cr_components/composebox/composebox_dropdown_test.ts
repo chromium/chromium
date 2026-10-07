@@ -207,58 +207,121 @@ suite('ComposeboxDropdown', () => {
         assertTrue(scrollCalled);
       });
 
-  test('unselectOnTabExit unselects when tabbing past last match', async () => {
+  test(
+      'getFirstVisibleIndex and getLastVisibleIndex for zero state',
+      async () => {
+        dropdown.richImageSuggestionsEnabled = true;
+        dropdown.result = createAutocompleteResultForTesting({
+          input: '',
+          matches: [
+            createAutocompleteMatch({contents: 'image match 1'}),
+            createAutocompleteMatch({contents: 'image match 2'}),
+          ],
+        });
+        await microtasksFinished();
+
+        assertEquals(0, dropdown.getFirstVisibleIndex());
+        assertEquals(1, dropdown.getLastVisibleIndex());
+      });
+
+  test(
+      'getFirstVisibleIndex hides verbatim for typed suggestions', async () => {
+        dropdown.richImageSuggestionsEnabled = true;
+        dropdown.result = createAutocompleteResultForTesting({
+          input: 'test',
+          matches: [
+            createAutocompleteMatch(
+                {contents: 'test', allowedToBeDefaultMatch: true}),
+            createAutocompleteMatch({contents: 'suggestion 1'}),
+            createAutocompleteMatch({contents: 'suggestion 2'}),
+          ],
+        });
+        await microtasksFinished();
+
+        assertEquals(1, dropdown.getFirstVisibleIndex());
+        assertEquals(2, dropdown.getLastVisibleIndex());
+      });
+
+  test('getFirstVisibleIndex returns -1 for empty or null result', async () => {
+    dropdown.result = null;
+    await microtasksFinished();
+    assertEquals(-1, dropdown.getFirstVisibleIndex());
+
     dropdown.result = createAutocompleteResultForTesting({
-      input: '',
-      matches: [
-        createAutocompleteMatch({supportsDeletion: false}),
-        createAutocompleteMatch({supportsDeletion: false}),
-      ],
+      matches: [],
     });
     await microtasksFinished();
-
-    // Forward Tab on non-last visible match does not unselect.
-    dropdown.selectedMatchIndex = 0;
-    dropdown.unselectOnTabExit(new KeyboardEvent('keydown', {key: 'Tab'}));
-    assertEquals(0, dropdown.selectedMatchIndex);
-
-    // Shift-Tab on last visible match does not unselect.
-    dropdown.selectedMatchIndex = 1;
-    dropdown.unselectOnTabExit(
-        new KeyboardEvent('keydown', {key: 'Tab', shiftKey: true}));
-    assertEquals(1, dropdown.selectedMatchIndex);
-
-    // Forward Tab on last visible match unselects.
-    dropdown.selectedMatchIndex = 1;
-    dropdown.unselectOnTabExit(new KeyboardEvent('keydown', {key: 'Tab'}));
-    assertEquals(-1, dropdown.selectedMatchIndex);
-
-    // When matches support deletion, forward Tab accounts for the inner
-    // remove button focus state.
-    dropdown.result = createAutocompleteResultForTesting({
-      input: '',
-      matches: [
-        createAutocompleteMatch({supportsDeletion: true}),
-        createAutocompleteMatch({supportsDeletion: true}),
-      ],
-    });
-    dropdown.selectedMatchIndex = 1;
-    await microtasksFinished();
-
-    const matches = dropdown.shadowRoot.querySelectorAll('cr-composebox-match');
-
-    // Forward Tab on the last match row moves focus to its remove button
-    // rather than exiting the dropdown.
-    matches[1]!.focus();
-    await microtasksFinished();
-    dropdown.unselectOnTabExit(new KeyboardEvent('keydown', {key: 'Tab'}));
-    assertEquals(1, dropdown.selectedMatchIndex);
-
-    // Forward Tab while focused on the last match's remove button exits
-    // the dropdown and unselects.
-    matches[1]!.$.remove.focus();
-    await microtasksFinished();
-    dropdown.unselectOnTabExit(new KeyboardEvent('keydown', {key: 'Tab'}));
-    assertEquals(-1, dropdown.selectedMatchIndex);
+    assertEquals(-1, dropdown.getFirstVisibleIndex());
   });
+
+  test(
+      'unselectOnTabExit unselects when navigating outside bounds',
+      async () => {
+        dropdown.result = createAutocompleteResultForTesting({
+          input: '',
+          matches: [
+            createAutocompleteMatch({supportsDeletion: false}),
+            createAutocompleteMatch({supportsDeletion: false}),
+          ],
+        });
+        await microtasksFinished();
+
+        // Shift-Tab on first visible match unselects.
+        dropdown.selectedMatchIndex = 0;
+        dropdown.unselectOnTabExit(
+            new KeyboardEvent('keydown', {key: 'Tab', shiftKey: true}));
+        assertEquals(-1, dropdown.selectedMatchIndex);
+
+        // Forward Tab on last visible match unselects.
+        dropdown.selectedMatchIndex = 1;
+        dropdown.unselectOnTabExit(new KeyboardEvent('keydown', {key: 'Tab'}));
+        assertEquals(-1, dropdown.selectedMatchIndex);
+
+        // Shift-Tab on last visible match does not unselect.
+        dropdown.selectedMatchIndex = 1;
+        dropdown.unselectOnTabExit(
+            new KeyboardEvent('keydown', {key: 'Tab', shiftKey: true}));
+        assertEquals(1, dropdown.selectedMatchIndex);
+
+        // When matches support deletion, Tab/Shift-Tab accounts for the inner
+        // remove button focus state.
+        dropdown.result = createAutocompleteResultForTesting({
+          input: '',
+          matches: [
+            createAutocompleteMatch({supportsDeletion: true}),
+            createAutocompleteMatch({supportsDeletion: true}),
+          ],
+        });
+        dropdown.selectedMatchIndex = 0;
+        await microtasksFinished();
+
+        const matches =
+            dropdown.shadowRoot.querySelectorAll('cr-composebox-match');
+        matches[0]!.$.remove.style.display = 'inline-flex';
+        matches[0]!.$.remove.focus();
+        await microtasksFinished();
+
+        // Shift-Tab while focused on the first match's remove button moves
+        // focus to the match row rather than exiting the dropdown.
+        dropdown.unselectOnTabExit(
+            new KeyboardEvent('keydown', {key: 'Tab', shiftKey: true}));
+        assertEquals(0, dropdown.selectedMatchIndex);
+
+        // Forward Tab on the last match row moves focus to its remove button
+        // rather than exiting the dropdown.
+        dropdown.selectedMatchIndex = 1;
+        await microtasksFinished();
+        matches[1]!.focus();
+        await microtasksFinished();
+        dropdown.unselectOnTabExit(new KeyboardEvent('keydown', {key: 'Tab'}));
+        assertEquals(1, dropdown.selectedMatchIndex);
+
+        // Forward Tab while focused on the last match's remove button exits
+        // the dropdown and unselects.
+        matches[1]!.$.remove.style.display = 'inline-flex';
+        matches[1]!.$.remove.focus();
+        await microtasksFinished();
+        dropdown.unselectOnTabExit(new KeyboardEvent('keydown', {key: 'Tab'}));
+        assertEquals(-1, dropdown.selectedMatchIndex);
+      });
 });

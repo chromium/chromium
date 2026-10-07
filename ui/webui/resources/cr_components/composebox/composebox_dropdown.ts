@@ -171,18 +171,39 @@ export class ComposeboxDropdownElement extends CrLitElement {
     this.selectedMatchIndex = remainder(next, maxVisibleIndex + 1);
   }
 
+  /** Returns the minimum index of the visible matches. */
+  getFirstVisibleIndex(): number {
+    if (!this.result || this.result.matches.length === 0) {
+      return -1;
+    }
+    const firstIndex = this.hideVerbatimMatch_(0) ? 1 : 0;
+    return firstIndex <= this.getMaxVisibleIndex_() ? firstIndex : -1;
+  }
+
+  /** Returns the maximum index of the visible matches. */
+  getLastVisibleIndex(): number {
+    return this.getMaxVisibleIndex_();
+  }
+
   /**
-   * Unselects the active match if a forward Tab event is about to move focus
-   * past the last visible dropdown match.
+   * Unselects the active match if a Tab or Shift-Tab event is about to move
+   * focus outside the visible dropdown matches.
    */
   unselectOnTabExit(e: KeyboardEvent) {
-    if (hasKeyModifiers(e) || this.selectedMatchIndex < 0 ||
-        this.selectedMatchIndex !== this.getMaxVisibleIndex_()) {
+    if (this.selectedMatchIndex < 0) {
       return;
     }
+    const isForwardExit = !hasKeyModifiers(e) &&
+        this.selectedMatchIndex === this.getLastVisibleIndex();
+    const isBackwardExit = e.shiftKey && !e.altKey && !e.ctrlKey &&
+        !e.metaKey && this.selectedMatchIndex === this.getFirstVisibleIndex();
+    if (!isForwardExit && !isBackwardExit) {
+      return;
+    }
+
     const matchEl = this.shadowRoot.querySelector<ComposeboxMatchElement>(
         `#match${this.selectedMatchIndex}`);
-    if (matchEl?.willTabExitMatch()) {
+    if (matchEl?.willTabExitMatch(e.shiftKey)) {
       this.unselect();
     }
   }
