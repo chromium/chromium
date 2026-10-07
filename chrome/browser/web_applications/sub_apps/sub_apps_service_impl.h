@@ -41,8 +41,6 @@ extern const base::FeatureParam<int> kSubAppsInstallLimitParam;
 BASE_DECLARE_FEATURE(kSubAppsPerPromptLimit);
 extern const base::FeatureParam<int> kSubAppsPerPromptLimitParam;
 
-namespace {
-
 struct SubAppInstallResult {
   SubAppInstallResult(GURL install_url,
                       webapps::ManifestId manifest_id,
@@ -57,8 +55,6 @@ struct SubAppInstallResult {
   webapps::ManifestId manifest_id;
   webapps::InstallResultCode install_result_code;
 };
-
-}  // namespace
 
 // Internal enum to represent error codes of add function.
 // It is remapped to ukm and mojo corresponding enums.

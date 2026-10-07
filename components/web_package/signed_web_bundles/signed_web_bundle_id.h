@@ -16,10 +16,10 @@
 
 namespace web_package {
 
-// This class represents the ID of a Signed Web Bundle. There are currently two
-// types of IDs:
+// This class represents the ID of a Signed Web Bundle. There are currently
+// three types of IDs:
 //   * IDs used for development and testing (the so-called proxy mode);
-//   * IDs based on an Ed25519 public key.
+//   * IDs based on an Ed25519 public key;
 //   * IDs based on an ECDSA P-256 public key.
 //
 // IDs are base32-encoded (without padding), and then transformed to lowercase.

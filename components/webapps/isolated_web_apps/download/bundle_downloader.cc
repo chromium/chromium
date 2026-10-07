@@ -26,18 +26,23 @@
 
 namespace web_app {
 
+namespace {
+
+ScopedTempWebBundleFile CreateScopedTempFileBlocking() {
+  auto file = std::make_unique<base::ScopedTempFile>();
+  if (!file->Create()) {
+    return ScopedTempWebBundleFile(/*file=*/nullptr);
+  }
+  return ScopedTempWebBundleFile(std::move(file));
+}
+
+}  // namespace
+
 void ScopedTempWebBundleFile::Create(
     base::OnceCallback<void(ScopedTempWebBundleFile)> callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce([]() -> ScopedTempWebBundleFile {
-        auto file = std::make_unique<base::ScopedTempFile>();
-        if (!file->Create()) {
-          return ScopedTempWebBundleFile(/*file=*/nullptr);
-        }
-        return ScopedTempWebBundleFile(std::move(file));
-      }),
-      std::move(callback));
+      base::BindOnce(&CreateScopedTempFileBlocking), std::move(callback));
 }
 
 ScopedTempWebBundleFile::ScopedTempWebBundleFile(

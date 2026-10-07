@@ -53,10 +53,8 @@ class IsolatedWebAppUpdateNotificationService;
 #endif
 class WebAppProvider;
 
-namespace {
 inline constexpr base::TimeDelta kDefaultUpdateDiscoveryFrequency =
     base::Hours(5);
-}
 
 // This enum lists the error types that can occur during the update of an
 // isolated web apps.

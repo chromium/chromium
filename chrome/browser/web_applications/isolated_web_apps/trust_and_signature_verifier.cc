@@ -21,7 +21,18 @@
 
 namespace web_app {
 
-namespace {}  // namespace
+namespace {
+
+base::expected<std::optional<web_package::SignedWebBundleIntegrityBlock>,
+               std::string>
+WrapIntegrityBlock(base::expected<web_package::SignedWebBundleIntegrityBlock,
+                                  std::string> result) {
+  return result.transform([](web_package::SignedWebBundleIntegrityBlock value) {
+    return std::make_optional(std::move(value));
+  });
+}
+
+}  // namespace
 
 void CheckTrustAndSignatures(
     const web_package::SignedWebBundleId& web_bundle_id,
@@ -44,14 +55,7 @@ void CheckTrustAndSignatures(
             CHECK(!web_bundle_id.is_for_proxy_mode());
             ValidateSignedWebBundleSignatures(
                 profile, location.path(), web_bundle_id,
-                base::BindOnce([](base::expected<
-                                   web_package::SignedWebBundleIntegrityBlock,
-                                   std::string> result) {
-                  return result.transform(
-                      [](web_package::SignedWebBundleIntegrityBlock value) {
-                        return std::make_optional(std::move(value));
-                      });
-                }).Then(std::move(callback)));
+                base::BindOnce(&WrapIntegrityBlock).Then(std::move(callback)));
           },
           [&](const IwaSourceProxy& location) {
             CHECK(web_bundle_id.is_for_proxy_mode());

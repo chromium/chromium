@@ -73,6 +73,15 @@ void OnTrustAndSignaturesOfBundleChecked(
                                std::move(integrity_block_result))));
 }
 
+base::expected<web_package::SignedWebBundleId, std::string>
+FormatWebBundleIdReadError(base::expected<web_package::SignedWebBundleId,
+                                          UnusableSwbnFileError> result) {
+  return result.transform_error([](const UnusableSwbnFileError& error) {
+    return "Failed to read the integrity block of the signed web bundle: " +
+           error.message();
+  });
+}
+
 }  // namespace
 
 void ReadSignedWebBundleIdInsecurely(
@@ -81,14 +90,7 @@ void ReadSignedWebBundleIdInsecurely(
                                            std::string>)> callback) {
   UnsecureSignedWebBundleIdReader::GetWebBundleId(
       path,
-      base::BindOnce([](base::expected<web_package::SignedWebBundleId,
-                                       UnusableSwbnFileError> result) {
-        return result.transform_error([](const UnusableSwbnFileError& error) {
-          return "Failed to read the integrity block of the "
-                 "signed web bundle: " +
-                 error.message();
-        });
-      }).Then(std::move(callback)));
+      base::BindOnce(&FormatWebBundleIdReadError).Then(std::move(callback)));
 }
 
 void ValidateSignedWebBundleSignatures(

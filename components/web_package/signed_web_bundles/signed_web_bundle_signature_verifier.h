@@ -56,11 +56,8 @@ class SignedWebBundleSignatureVerifier {
       base::OnceCallback<void(base::expected<void, Error>)>;
 
   // Verifies the signatures of the Signed Web Bundle `file` with the integrity
-  // block `integrity_block`. Executes the `callback` with `std::nullopt` on
-  // success, or an instance of `Error` on error. Only one signature is
-  // currently supported.
-  //
-  // TODO(crbug.com/40239682): Support more than one signature.
+  // block `integrity_block`. Executes the `callback` with `base::ok()` on
+  // success, or an instance of `Error` on error.
   virtual void VerifySignatures(base::File file,
                                 SignedWebBundleIntegrityBlock integrity_block,
                                 SignatureVerificationCallback callback) const;

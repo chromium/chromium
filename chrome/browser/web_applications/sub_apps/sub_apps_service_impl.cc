@@ -87,8 +87,6 @@ BASE_FEATURE(kSubAppsPerPromptLimit, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int> kSubAppsPerPromptLimitParam{
     &kSubAppsPerPromptLimit, "limit", 20};
 
-namespace {
-
 SubAppInstallResult::SubAppInstallResult(
     GURL install_url,
     webapps::ManifestId manifest_id,
@@ -103,6 +101,8 @@ SubAppInstallResult& SubAppInstallResult::operator=(
 SubAppInstallResult::SubAppInstallResult(SubAppInstallResult&&) = default;
 SubAppInstallResult& SubAppInstallResult::operator=(SubAppInstallResult&&) =
     default;
+
+namespace {
 
 constexpr char kSubAppsUninstallNotifierId[] = "sub_apps_service";
 
