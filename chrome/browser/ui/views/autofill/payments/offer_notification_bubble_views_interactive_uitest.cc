@@ -24,7 +24,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
-#include "components/autofill/core/browser/payments/offer_notification_handler.h"
 #include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
@@ -146,8 +145,7 @@ class OfferNotificationBubbleViewsInteractiveUiTest
   }
 
   void ClearNotificationActiveDomainsForTesting() {
-    GetOfferManager()
-        ->notification_handler_.ClearShownNotificationIdForTesting();
+    GetOfferManager()->ClearShownNotificationIdsForTesting();
   }
 
   TestAutofillClock test_clock_;

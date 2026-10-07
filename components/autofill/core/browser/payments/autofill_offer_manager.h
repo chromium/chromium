@@ -10,6 +10,7 @@
 #include <map>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -25,8 +26,9 @@ class OfferNotificationHandler;
 class PaymentsDataManager;
 
 // Determines which of the offers stored in the `PaymentsDataManager` apply to
-// a page, and drives the offer notification UI for them. One per browser
-// context. Owned and created by the AutofillOfferManagerFactory.
+// a page, drives the offer notification UI for them, and tracks which offer
+// notifications have already been shown. One per browser context. Owned and
+// created by the AutofillOfferManagerFactory.
 class AutofillOfferManager : public KeyedService {
  public:
   // Mapping from credit card guid id to offer data.
@@ -53,12 +55,20 @@ class AutofillOfferManager : public KeyedService {
   const AutofillOfferData* GetOfferForUrl(
       const GURL& last_committed_primary_main_frame_url) const;
 
+  // Returns whether the notification for the offer with `offer_id` has been
+  // shown in this browser context before.
+  bool HasShownNotification(const std::string& offer_id) const;
+
+  // Records that the notification for the offer with `offer_id` was shown.
+  void MarkNotificationShown(const std::string& offer_id);
+
+  void ClearShownNotificationIdsForTesting();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(
       AutofillOfferManagerTest,
       CreateCardLinkedOffersMap_ReturnsOnlyCardLinkedOffers);
   FRIEND_TEST_ALL_PREFIXES(AutofillOfferManagerTest, IsUrlEligible);
-  friend class OfferNotificationBubbleViewsInteractiveUiTest;
   friend class OfferNotificationControllerAndroidBrowserTest;
 
   const raw_ref<PaymentsDataManager> payments_data_manager_;
@@ -66,6 +76,11 @@ class AutofillOfferManager : public KeyedService {
   // The handler for offer notification UI. It is a sub-level component of
   // AutofillOfferManager to decide whether to show the offer notification.
   OfferNotificationHandler notification_handler_{this};
+
+  // The ids of the offers whose notification has been shown in this browser
+  // context. The notification is only shown automatically once per offer,
+  // across all tabs.
+  base::flat_set<std::string> shown_notification_ids_;
 };
 
 }  // namespace autofill

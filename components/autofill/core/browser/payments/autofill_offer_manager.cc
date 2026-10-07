@@ -51,4 +51,17 @@ const AutofillOfferData* AutofillOfferManager::GetOfferForUrl(
   return nullptr;
 }
 
+bool AutofillOfferManager::HasShownNotification(
+    const std::string& offer_id) const {
+  return shown_notification_ids_.contains(offer_id);
+}
+
+void AutofillOfferManager::MarkNotificationShown(const std::string& offer_id) {
+  shown_notification_ids_.insert(offer_id);
+}
+
+void AutofillOfferManager::ClearShownNotificationIdsForTesting() {
+  shown_notification_ids_.clear();
+}
+
 }  // namespace autofill

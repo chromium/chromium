@@ -205,6 +205,16 @@ TEST_F(AutofillOfferManagerTest,
   EXPECT_EQ(offer2, *result);
 }
 
+// Verify that shown notifications are remembered per offer.
+TEST_F(AutofillOfferManagerTest, MarkNotificationShown) {
+  EXPECT_FALSE(autofill_offer_manager_->HasShownNotification("1"));
+
+  autofill_offer_manager_->MarkNotificationShown("1");
+
+  EXPECT_TRUE(autofill_offer_manager_->HasShownNotification("1"));
+  EXPECT_FALSE(autofill_offer_manager_->HasShownNotification("2"));
+}
+
 // Hidden tabs must not set up an offer notification the user cannot see.
 TEST_F(AutofillOfferManagerTest, HiddenTab_DoesNotUpdateNotification) {
   payments_autofill_client().set_is_tab_visible_for_offer_notification(false);
