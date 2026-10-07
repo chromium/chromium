@@ -201,6 +201,10 @@ const base::FeatureParam<int> kGlicReloadMaxLoadingTimeMs{
 
 BASE_FEATURE(kGlicContextualCueingV2AutoSubmit,
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicContextualCuesHandleEdu,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicContextualCuesHandleShopping,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicContextualCueV2ActiveUserBackoff,
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -268,6 +268,36 @@ TEST_F(GlicCueTargetTest, IsEligible_ActiveUserBackoff_FeatureDisabled) {
                                 base::Time::Now() - base::Hours(1));
   EXPECT_TRUE(target_->IsEligible());
 }
+
+TEST_F(GlicCueTargetTest, IsEligible_VerticalFeaturesDisabled) {
+  profile_->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, true);
+  EXPECT_CALL(*mock_glic_keyed_service_, IsPanelShowingForBrowser(testing::_))
+      .WillRepeatedly(testing::Return(false));
+
+  auto* sync_service = static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetForProfile(profile_));
+  sync_service->SetSignedIn(signin::ConsentLevel::kSignin);
+  sync_service->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, true);
+
+  {
+    // Only Edu disabled -> still eligible (Shopping enabled).
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        features::kGlicContextualCuesHandleEdu);
+    EXPECT_TRUE(target_->IsEligible());
+  }
+
+  {
+    // Both Edu and Shopping disabled -> ineligible.
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{features::kGlicContextualCuesHandleEdu,
+                               features::kGlicContextualCuesHandleShopping});
+    EXPECT_FALSE(target_->IsEligible());
+  }
+}
 #endif
 
 TEST_F(GlicCueTargetTest, IsPageEligible_LowScoreEdu) {
@@ -280,6 +310,18 @@ TEST_F(GlicCueTargetTest, IsPageEligible_HighScoreEdu) {
   EXPECT_TRUE(target_->IsPageEligible(result, web_contents_.get()));
 }
 
+TEST_F(GlicCueTargetTest, IsPageEligible_HighScoreEdu_Disabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kGlicContextualCuesHandleEdu);
+
+  auto edu_result = CreateAnnotationResult(CategoryType::kEducation, 80);
+  EXPECT_FALSE(target_->IsPageEligible(edu_result, web_contents_.get()));
+
+  auto shopping_result = CreateAnnotationResult(CategoryType::kShopping, 70);
+  EXPECT_TRUE(target_->IsPageEligible(shopping_result, web_contents_.get()));
+}
+
 TEST_F(GlicCueTargetTest, IsPageEligible_LowScoreShopping) {
   auto result = CreateAnnotationResult(CategoryType::kShopping, 50);
   EXPECT_FALSE(target_->IsPageEligible(result, web_contents_.get()));
@@ -288,6 +330,18 @@ TEST_F(GlicCueTargetTest, IsPageEligible_LowScoreShopping) {
 TEST_F(GlicCueTargetTest, IsPageEligible_HighScoreShopping) {
   auto result = CreateAnnotationResult(CategoryType::kShopping, 70);
   EXPECT_TRUE(target_->IsPageEligible(result, web_contents_.get()));
+}
+
+TEST_F(GlicCueTargetTest, IsPageEligible_HighScoreShopping_Disabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kGlicContextualCuesHandleShopping);
+
+  auto shopping_result = CreateAnnotationResult(CategoryType::kShopping, 70);
+  EXPECT_FALSE(target_->IsPageEligible(shopping_result, web_contents_.get()));
+
+  auto edu_result = CreateAnnotationResult(CategoryType::kEducation, 80);
+  EXPECT_TRUE(target_->IsPageEligible(edu_result, web_contents_.get()));
 }
 
 TEST_F(GlicCueTargetTest, IsPageEligible_HighScoreShopping_PdfDiscarded) {
