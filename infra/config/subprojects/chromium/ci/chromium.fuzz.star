@@ -33,7 +33,7 @@ ci.defaults.set(
         "chromium_tests.resultdb_module": 100,
     },
     health_spec = health_spec.default(),
-    notifies = ["chrome-fuzzing-core"],
+    notifies = ["chrome-fuzzing-infra"],
     service_account = ci_constants.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci_constants.DEFAULT_SHADOW_SERVICE_ACCOUNT,
     siso_project = siso.project.DEFAULT_TRUSTED,
@@ -1343,6 +1343,8 @@ libfuzzer_linux_asan_builder(
         "android_desktop",
     ],
     max_concurrent_invocations = 2,
+    # TODO(b/570770824): Remove once the APK compilation fix lands.
+    notifies = args.ignore_default(None),
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
     use_component_build = False,
 )
@@ -1367,6 +1369,8 @@ libfuzzer_linux_builder(
         "hwasan",
     ],
     max_concurrent_invocations = 2,
+    # TODO(b/570770824): Remove once the APK compilation fix lands.
+    notifies = args.ignore_default(None),
     sanitizer = "hwasan",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
     use_component_build = False,

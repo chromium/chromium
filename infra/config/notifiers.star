@@ -12,6 +12,14 @@ luci.notifier(
     ],
 )
 
+luci.notifier(
+    name = "chrome-fuzzing-infra",
+    on_new_status = ["FAILURE", "INFRA_FAILURE"],
+    notify_emails = [
+        "chrome-test-infra-fuzzing-team+builder-alerts@google.com",
+    ],
+)
+
 # Notifier for "package rust" step on *_upload_clang bots.
 luci.notifier(
     name = "chrome-rust-toolchain",
