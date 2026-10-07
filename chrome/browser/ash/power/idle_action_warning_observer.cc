@@ -7,12 +7,13 @@
 #include <memory>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/power/idle_action_warning_dialog_view.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -39,7 +40,13 @@ void ReportMetricsForDemoMode(IdleLogoutWarningEvent event) {
 }
 
 chromeos::PowerPolicyController::Action GetIdleAction(bool on_battery_power) {
-  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  // Serves the sign-in screen prefs before login and the active user's prefs
+  // after. Null only very early in startup, before this observer is created.
+  PrefService* prefs =
+      ash::Shell::Get()->session_controller()->GetActivePrefService();
+  if (!prefs) {
+    return chromeos::PowerPolicyController::ACTION_SUSPEND;
+  }
   int action;
   if (on_battery_power) {
     action = prefs->GetInteger(ash::prefs::kPowerBatteryIdleAction);

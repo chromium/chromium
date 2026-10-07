@@ -27,10 +27,9 @@ static_library("power") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
+    "//ash",
     "//ash/constants",
     "//base",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/profiles:profile_manager",
     "//chrome/common",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/demo_mode",
