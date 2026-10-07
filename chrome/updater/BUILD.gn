@@ -1045,6 +1045,7 @@ if (is_win || is_mac || is_linux) {
         "app/server/win/com_classes_legacy_unittest.cc",
         "app/server/win/com_classes_util_unittest.cc",
         "auto_run_on_os_upgrade_task_unittest.cc",
+        "ipc/ipc_security_win_unittest.cc",
         "ipc/update_service_dialer_win_unittest.cc",
         "policy/win/group_policy_manager_unittest.cc",
         "test/integration_tests_win.cc",
@@ -1095,6 +1096,8 @@ if (is_win || is_mac || is_linux) {
         "win/test:test_executables",
         "win/test:test_strings",
         "win/ui/resources",
+        "//components/named_mojo_ipc_server",
+        "//mojo/public/cpp/system",
       ]
 
       data_deps += [

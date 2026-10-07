@@ -10,6 +10,7 @@
 #include <string>
 #include <variant>
 
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "mojo/public/c/system/invitation.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -19,6 +20,8 @@
 #endif
 
 namespace named_mojo_ipc_server {
+
+struct ConnectionInfo;
 
 // Options used by NamedMojoIpcServer to start the server endpoint.
 struct EndpointOptions {
@@ -58,6 +61,15 @@ struct EndpointOptions {
   // Extra flags added when sending the outgoing invitation.
   MojoSendInvitationFlags extra_send_invitation_flags =
       MOJO_SEND_INVITATION_FLAG_NONE;
+
+  // If set, called for each client that has passed validation to choose the
+  // extra flags for the invitation sent to that client, in place of
+  // `extra_send_invitation_flags`. This lets a server declare only some of its
+  // callers untrusted (MOJO_SEND_INVITATION_FLAG_UNTRUSTED_PROCESS), based on
+  // who they are. Runs on the server's sequence.
+  using SendInvitationFlagsCallback =
+      base::RepeatingCallback<MojoSendInvitationFlags(const ConnectionInfo&)>;
+  SendInvitationFlagsCallback send_invitation_flags_callback;
 
 #if BUILDFLAG(IS_WIN)
   // If non-empty, a security descriptor to use when creating the pipe. If

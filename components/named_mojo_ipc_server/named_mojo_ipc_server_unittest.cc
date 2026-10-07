@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -406,6 +407,26 @@ TEST_P(NamedMojoIpcServerTest, IpcServerRestarted_NewIpcsCanBeMade) {
 
   child_process = LaunchClientProcess();
   WaitForProcessExit(child_process);
+}
+
+TEST_P(NamedMojoIpcServerTest, SendInvitationFlagsCallback_CalledPerClient) {
+  ipc_server_.reset();
+  std::vector<base::ProcessId> callback_pids;
+  EndpointOptions options;
+  options.send_invitation_flags_callback = base::BindLambdaForTesting(
+      [&](const ConnectionInfo& info) -> MojoSendInvitationFlags {
+        callback_pids.push_back(info.pid);
+        return MOJO_SEND_INVITATION_FLAG_NONE;
+      });
+  CreateIpcServer(std::move(options));
+  ipc_server_->StartServer();
+  WaitForServerEndpointCreated();
+
+  base::Process child_process = LaunchClientProcess();
+  base::ProcessId child_pid = child_process.Pid();
+  EXPECT_EQ(0, WaitForProcessExit(child_process));
+  EXPECT_EQ(child_pid, last_echo_string_peer_pid_);
+  EXPECT_THAT(callback_pids, testing::ElementsAre(child_pid));
 }
 
 #if BUILDFLAG(IS_LINUX)

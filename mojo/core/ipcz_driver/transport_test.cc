@@ -22,6 +22,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/path_service.h"
+#include "base/process/process.h"
+#include "base/process/process_handle.h"
 #include "base/strings/string_view_util.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -40,6 +42,10 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/scoped_handle.h"
+#endif
 
 namespace mojo::core::ipcz_driver {
 namespace {
@@ -91,15 +97,20 @@ class MojoIpczTransportTest : public test::MojoTestBase {
   }
 
   // Retrieves a PlatformChannel endpoint from `pipe` and returns a newly
-  // constructed Transport over it.
-  static scoped_refptr<Transport> ReceiveTransport(MojoHandle pipe) {
+  // constructed Transport over it. By default the new Transport is a non-broker
+  // endpoint connected to a broker.
+  static scoped_refptr<Transport> ReceiveTransport(
+      MojoHandle pipe,
+      Transport::EndpointTypes endpoint_types =
+          {.source = Transport::kNonBroker, .destination = Transport::kBroker},
+      Transport::ProcessTrust process_trust = Transport::ProcessTrust{}) {
     MojoHandle transport_for_client;
     ReadMessageWithHandles(pipe, &transport_for_client, 1);
     PlatformHandle handle =
         UnwrapPlatformHandle(ScopedHandle(Handle(transport_for_client)));
-    return Transport::Create(
-        {.source = Transport::kNonBroker, .destination = Transport::kBroker},
-        PlatformChannelEndpoint(std::move(handle)));
+    return Transport::Create(endpoint_types,
+                             PlatformChannelEndpoint(std::move(handle)),
+                             base::Process(), process_trust);
   }
 
   static TestMessage SerializeObjectFor(Transport& transmitter,
@@ -826,6 +837,31 @@ TEST_F(MojoIpczTransportTest, InvalidHandleUntrusted) {
       });
 }
 
+// Substitutes `local_handle` for the first handle encoded in `message` and
+// verifies that `transport` refuses to deserialize the result. `message` must
+// have been encoded with HandleOwner::kRecipient. On return `local_handle` must
+// still be owned solely by the caller.
+void ExpectRecipientOwnedHandleRejected(Transport& transport,
+                                        TestMessage message,
+                                        HANDLE local_handle) {
+  const uint64_t value =
+      static_cast<uint64_t>(reinterpret_cast<uintptr_t>(local_handle));
+  base::span(message.bytes)
+      .subspan(Transport::FirstHandleOffsetForTesting())
+      .first<sizeof(uint64_t)>()
+      .copy_from(base::byte_span_from_ref(value));
+
+  scoped_refptr<ObjectBase> object;
+  const IpczResult result = transport.DeserializeObject(
+      base::span(message.bytes), base::span(message.handles), object);
+  EXPECT_EQ(result, IPCZ_RESULT_INVALID_ARGUMENT);
+  EXPECT_FALSE(object);
+
+  // The handle must not have been adopted (and therefore closed) by the
+  // deserializer.
+  EXPECT_TRUE(::SetEvent(local_handle));
+}
+
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(RecipientHandleFromUntrustedBrokerClient,
                                   MojoIpczTransportTest,
                                   h) {
@@ -836,31 +872,15 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(RecipientHandleFromUntrustedBrokerClient,
   scoped_refptr<Transport> transport = ReceiveTransport(h);
   transport->set_is_elevated(true);
   transport->set_is_trusted_by_peer(true);
+  ASSERT_FALSE(transport->CanAcceptReceiverOwnedHandles());
 
   TransportListener listener(*transport);
 
   // Hold a local handle which the deserializer must not adopt.
-  HANDLE event = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
-  ASSERT_NE(event, nullptr);
-
-  TestMessage message = listener.WaitForNextMessage();
-  // Substitute the local handle for the one encoded by the host. The host
-  // encoded the message with handles owned by the recipient.
-  uint64_t value = static_cast<uint64_t>(reinterpret_cast<uintptr_t>(event));
-  base::span(message.bytes)
-      .subspan(Transport::FirstHandleOffsetForTesting())
-      .first<sizeof(uint64_t)>()
-      .copy_from(base::byte_span_from_ref(value));
-
-  scoped_refptr<ObjectBase> object;
-  const IpczResult result = transport->DeserializeObject(
-      base::span(message.bytes), base::span(message.handles), object);
-  EXPECT_EQ(result, IPCZ_RESULT_INVALID_ARGUMENT);
-  EXPECT_FALSE(object);
-
-  // The local handle must still be live and owned solely by this scope.
-  EXPECT_TRUE(::SetEvent(event));
-  ::CloseHandle(event);
+  base::win::ScopedHandle event(::CreateEvent(nullptr, FALSE, FALSE, nullptr));
+  ASSERT_TRUE(event.is_valid());
+  ExpectRecipientOwnedHandleRejected(*transport, listener.WaitForNextMessage(),
+                                     event.get());
 
   TestMessage("done").Transmit(*transport);
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
@@ -884,6 +904,147 @@ TEST_F(MojoIpczTransportTest, RecipientHandleFromUntrustedBroker) {
         SerializeObjectFor(*transport, std::move(wrapper)).Transmit(*transport);
 
         EXPECT_EQ("done", listener.WaitForNextMessage().as_string());
+        listener.WaitForDisconnect();
+      });
+}
+
+DEFINE_TEST_CLIENT_TEST_WITH_PIPE(
+    RecipientHandleFromUntrustedBrokerToBrokerClient,
+    MojoIpczTransportTest,
+    h) {
+  // This client is a broker connected to another broker over what is modeled
+  // on mojo::IsolatedConnection, and it has declared the peer's process
+  // untrustworthy - as the updater does for its public endpoint, which any
+  // authenticated user may connect to. Being a broker confers no implicit trust
+  // on a peer broker, so this client must not accept handles which the peer
+  // claims to already belong to it.
+  scoped_refptr<Transport> transport = ReceiveTransport(
+      h, {.source = Transport::kBroker, .destination = Transport::kBroker},
+      Transport::ProcessTrust::kUntrusted);
+  ASSERT_FALSE(transport->is_peer_trusted());
+  ASSERT_FALSE(transport->CanAcceptReceiverOwnedHandles());
+
+  TransportListener listener(*transport);
+
+  // Hold a local handle which the deserializer must not adopt.
+  base::win::ScopedHandle event(::CreateEvent(nullptr, FALSE, FALSE, nullptr));
+  ASSERT_TRUE(event.is_valid());
+  ExpectRecipientOwnedHandleRejected(*transport, listener.WaitForNextMessage(),
+                                     event.get());
+
+  TestMessage("done").Transmit(*transport);
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
+}
+
+TEST_F(MojoIpczTransportTest, RecipientHandleFromUntrustedBrokerToBroker) {
+  RunTestClientWithController(
+      "RecipientHandleFromUntrustedBrokerToBrokerClient",
+      [&](ClientController& c) {
+        PlatformChannel channel;
+        MojoHandle transport_for_client =
+            WrapPlatformHandle(
+                channel.TakeRemoteEndpoint().TakePlatformHandle())
+                .release()
+                .value();
+        WriteMessageWithHandles(c.pipe(), "", &transport_for_client, 1);
+        scoped_refptr<Transport> transport = Transport::Create(
+            {.source = Transport::kBroker, .destination = Transport::kBroker},
+            channel.TakeLocalEndpoint(), c.process().Duplicate());
+        EXPECT_FALSE(transport->is_peer_trusted());
+
+        // A broker with a handle to the peer's process encodes handles as
+        // already owned by the recipient. The client must reject them because
+        // it has declared this peer's process untrustworthy.
+        transport->set_is_trusted_by_peer(true);
+
+        TransportListener listener(*transport);
+
+        // The client substitutes its own local handle value for the encoded
+        // one before deserializing.
+        base::win::ScopedHandle handle(
+            ::CreateEvent(nullptr, FALSE, FALSE, nullptr));
+        auto wrapper = base::MakeRefCounted<WrappedPlatformHandle>(
+            PlatformHandle(std::move(handle)));
+        SerializeObjectFor(*transport, std::move(wrapper)).Transmit(*transport);
+
+        EXPECT_EQ("done", listener.WaitForNextMessage().as_string());
+        listener.WaitForDisconnect();
+      });
+}
+
+DEFINE_TEST_CLIENT_TEST_WITH_PIPE(SenderHandleToUntrustingBrokerClient,
+                                  MojoIpczTransportTest,
+                                  h) {
+  // This client plays the server of RecipientHandleFromUntrustedBrokerToBroker:
+  // a broker which has declared its peer broker's process untrustworthy, but
+  // which holds a handle to that process, as the updater's server does by
+  // opening each caller before accepting its connection.
+  scoped_refptr<Transport> transport = ReceiveTransport(
+      h, {.source = Transport::kBroker, .destination = Transport::kBroker},
+      Transport::ProcessTrust::kUntrusted);
+  transport->set_remote_process(base::Process::OpenWithAccess(
+      base::GetParentProcessId(base::GetCurrentProcessHandle()),
+      PROCESS_DUP_HANDLE));
+  ASSERT_TRUE(transport->remote_process().IsValid());
+  ASSERT_FALSE(transport->CanAcceptReceiverOwnedHandles());
+
+  TransportListener listener(*transport);
+
+  // The peer must have encoded its handle as sender-owned, since a
+  // recipient-owned one would have been refused above. This end duplicates it
+  // out of the peer's process.
+  scoped_refptr<WrappedPlatformHandle> wrapper =
+      DeserializeObjectFrom<WrappedPlatformHandle>(
+          *transport, listener.WaitForNextMessage());
+  PlatformHandle handle = wrapper->TakeHandle();
+  ASSERT_TRUE(handle.is_valid());
+  EXPECT_TRUE(::SetEvent(handle.GetHandle().get()));
+
+  TestMessage("done").Transmit(*transport);
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
+}
+
+TEST_F(MojoIpczTransportTest, SenderHandleToUntrustingBroker) {
+  // The client side of the same relationship. It can open the peer's process
+  // (an administrator connecting to the system updater can), so on its own it
+  // would pre-duplicate handles and be refused. Declaring the peer elevated, as
+  // UpdateServiceProxyMojoImpl::OnConnected() does, makes it send handles as
+  // its own instead and lets the peer do the duplication.
+  RunTestClientWithController(
+      "SenderHandleToUntrustingBrokerClient", [&](ClientController& c) {
+        PlatformChannel channel;
+        MojoHandle transport_for_client =
+            WrapPlatformHandle(
+                channel.TakeRemoteEndpoint().TakePlatformHandle())
+                .release()
+                .value();
+        WriteMessageWithHandles(c.pipe(), "", &transport_for_client, 1);
+        scoped_refptr<Transport> transport = Transport::Create(
+            {.source = Transport::kBroker, .destination = Transport::kBroker},
+            channel.TakeLocalEndpoint(), c.process().Duplicate());
+        ASSERT_TRUE(transport->remote_process().IsValid());
+        transport->set_is_peer_elevated(true);
+
+        TransportListener listener(*transport);
+
+        base::win::ScopedHandle handle(
+            ::CreateEvent(nullptr, FALSE, FALSE, nullptr));
+        ASSERT_TRUE(handle.is_valid());
+        // Keep a duplicate to observe the peer's SetEvent() on the object.
+        base::win::ScopedHandle observer;
+        {
+          HANDLE raw = nullptr;
+          ASSERT_TRUE(::DuplicateHandle(::GetCurrentProcess(), handle.get(),
+                                        ::GetCurrentProcess(), &raw, 0, FALSE,
+                                        DUPLICATE_SAME_ACCESS));
+          observer.Set(raw);
+        }
+        auto wrapper = base::MakeRefCounted<WrappedPlatformHandle>(
+            PlatformHandle(std::move(handle)));
+        SerializeObjectFor(*transport, std::move(wrapper)).Transmit(*transport);
+
+        EXPECT_EQ("done", listener.WaitForNextMessage().as_string());
+        EXPECT_EQ(WAIT_OBJECT_0, ::WaitForSingleObject(observer.get(), 0));
         listener.WaitForDisconnect();
       });
 }
@@ -962,6 +1123,73 @@ INSTANTIATE_TEST_SUITE_P(/*empty prefix*/,
                                              : "FeatureDisabled";
                          });
 
+// Regression test for the exemption in DecodeHandle() for transports whose
+// remote process is this process. mojo::DirectReceiver hosts an extra node
+// inside an existing process and hands the broker a transport whose remote
+// process is that process. Within a non-broker process both of that
+// transport's endpoint types are kNonBroker, so the node's end is not
+// source-trusted, but the broker holds a handle to the process and therefore
+// still pre-duplicates handles for it. Rejecting those handles leaves the node
+// unable to receive its shared memory and hangs it. See CreateTransportPair()
+// in mojo/public/cpp/bindings/direct_receiver.cc.
+TEST_F(MojoIpczTransportTest, RecipientHandleForNodeInSameProcess) {
+  // The broker's end of the introduced transport, which adopted a handle to
+  // the process hosting the new node. See CreateTransports() in driver.cc.
+  auto [broker_side, unused_broker_peer] =
+      Transport::CreatePair(Transport::kBroker, Transport::kNonBroker);
+  broker_side->set_remote_process(base::Process::Current());
+
+  // The new node's end of the same transport, as created within a non-broker
+  // process.
+  auto [local_side, unused_local_peer] =
+      Transport::CreatePair(Transport::kNonBroker, Transport::kNonBroker);
+  local_side->set_remote_process(base::Process::Current());
+  ASSERT_FALSE(local_side->CanAcceptReceiverOwnedHandles());
+
+  base::win::ScopedHandle event(::CreateEvent(nullptr, FALSE, FALSE, nullptr));
+  ASSERT_TRUE(event.is_valid());
+  TestMessage message = SerializeObjectFor(
+      *broker_side, base::MakeRefCounted<WrappedPlatformHandle>(
+                        PlatformHandle(std::move(event))));
+
+  scoped_refptr<WrappedPlatformHandle> received =
+      DeserializeObjectFrom<WrappedPlatformHandle>(*local_side, message);
+  ASSERT_TRUE(received);
+  EXPECT_TRUE(received->TakeHandle().is_valid());
+}
+
+// Both ends of a mojo::IsolatedConnection are brokers and neither is explicitly
+// trusted by the other, but handle transfer must keep working in both
+// directions: whichever end cannot open its peer's process depends entirely on
+// the peer pre-duplicating handles for it. Only an end which has declared the
+// peer's process untrustworthy refuses, per
+// RecipientHandleFromUntrustedBrokerToBroker.
+TEST_F(MojoIpczTransportTest, RecipientHandleBetweenIsolatedBrokers) {
+  auto [sender, unused_sender_peer] =
+      Transport::CreatePair(Transport::kBroker, Transport::kBroker);
+  sender->set_remote_process(base::Process::Current());
+
+  // The receiving end has no handle to the sender's process, which is exactly
+  // why the sender has to pre-duplicate. This models an unprivileged client of
+  // e.g. the updater, which cannot open the server process.
+  auto [receiver, unused_receiver_peer] =
+      Transport::CreatePair(Transport::kBroker, Transport::kBroker);
+  ASSERT_FALSE(receiver->is_peer_trusted());
+  ASSERT_FALSE(receiver->remote_process().IsValid());
+  ASSERT_TRUE(receiver->CanAcceptReceiverOwnedHandles());
+
+  base::win::ScopedHandle event(::CreateEvent(nullptr, FALSE, FALSE, nullptr));
+  ASSERT_TRUE(event.is_valid());
+  TestMessage message =
+      SerializeObjectFor(*sender, base::MakeRefCounted<WrappedPlatformHandle>(
+                                      PlatformHandle(std::move(event))));
+
+  scoped_refptr<WrappedPlatformHandle> received =
+      DeserializeObjectFrom<WrappedPlatformHandle>(*receiver, message);
+  ASSERT_TRUE(received);
+  EXPECT_TRUE(received->TakeHandle().is_valid());
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(TransportFromUntrustedClient,
@@ -1037,6 +1265,39 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(TransportFromUntrustedBrokerClient,
     EXPECT_EQ("got untrusted", listener.WaitForNextMessage().as_string());
   }
 
+  {
+    // A transport whose remote process is this client's own process, so that
+    // the serialized header carries `is_same_remote_process`. A broker peer
+    // must not be able to make the recipient adopt its handle to this process.
+    auto [our_new_transport, their_new_transport] =
+        Transport::CreatePair(Transport::kNonBroker, Transport::kNonBroker);
+    their_new_transport->set_remote_process(base::Process::Current());
+    SerializeObjectFor(*transport, std::move(their_new_transport))
+        .Transmit(*transport);
+    EXPECT_EQ("got no process", listener.WaitForNextMessage().as_string());
+  }
+
+#if BUILDFLAG(IS_WIN)
+  {
+    // The other way to name a remote process: attach a handle to one directly.
+    // Opening our own process by PID yields a real handle rather than the
+    // current-process pseudo-handle, so `is_same_remote_process` stays clear
+    // and the process travels in the serialized transport's second handle.
+    // A broker peer must not adopt that either. This vector is Windows-only;
+    // see Transport::ShouldSerializeProcessHandle().
+    auto [our_new_transport, their_new_transport] =
+        Transport::CreatePair(Transport::kNonBroker, Transport::kNonBroker);
+    base::Process opened = base::Process::Open(base::GetCurrentProcId());
+    ASSERT_TRUE(opened.IsValid());
+    ASSERT_FALSE(opened.is_current());
+    their_new_transport->set_remote_process(std::move(opened));
+    SerializeObjectFor(*transport, std::move(their_new_transport))
+        .Transmit(*transport);
+    EXPECT_EQ("got no attached process",
+              listener.WaitForNextMessage().as_string());
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
@@ -1044,7 +1305,8 @@ TEST_F(MojoIpczTransportTest, TransportFromUntrustedBroker) {
   // When both endpoints of a transport are brokers, the peer being a broker
   // does not by itself grant it any additional trust on this end. A broker
   // receiving a serialized transport over such a link must reject it if it
-  // claims its own peer is trusted or is itself a broker.
+  // claims its own peer is trusted or is itself a broker, and must not let it
+  // inherit a handle to the sender's process.
   RunTestClientWithController(
       "TransportFromUntrustedBrokerClient", [&](ClientController& c) {
         PlatformChannel channel;
@@ -1054,9 +1316,17 @@ TEST_F(MojoIpczTransportTest, TransportFromUntrustedBroker) {
                 .release()
                 .value();
         WriteMessageWithHandles(c.pipe(), "", &transport_for_client, 1);
+#if BUILDFLAG(IS_WIN)
+        constexpr auto kClientProcessTrust =
+            Transport::ProcessTrust::kUntrusted;
+#else
+        // Process trust is not tracked off Windows.
+        constexpr auto kClientProcessTrust = Transport::ProcessTrust{};
+#endif
         scoped_refptr<Transport> transport = Transport::Create(
             {.source = Transport::kBroker, .destination = Transport::kBroker},
-            channel.TakeLocalEndpoint(), c.process().Duplicate());
+            channel.TakeLocalEndpoint(), c.process().Duplicate(),
+            kClientProcessTrust);
         EXPECT_FALSE(transport->is_peer_trusted());
 
         TransportListener listener(*transport);
@@ -1080,8 +1350,111 @@ TEST_F(MojoIpczTransportTest, TransportFromUntrustedBroker) {
           TestMessage("got untrusted").Transmit(*transport);
         }
 
+        {
+          // The serialized transport claims to share the client's process. On
+          // Windows we have declared that process untrustworthy, so the new
+          // transport must not inherit our handle to it. Elsewhere process
+          // trust is untracked and a remote process handle plays no part in
+          // handle transfer, so the claim is honored as it is on trunk.
+          TestMessage message = listener.WaitForNextMessage();
+          scoped_refptr<Transport> received =
+              DeserializeObjectFrom<Transport>(*transport, message);
+#if BUILDFLAG(IS_WIN)
+          EXPECT_FALSE(received->remote_process().IsValid());
+#endif
+          TestMessage("got no process").Transmit(*transport);
+        }
+
+#if BUILDFLAG(IS_WIN)
+        {
+          // Same conclusion for a process handle the client attached directly
+          // rather than asserting through the header. Refusing only the header
+          // bit would leave this path open.
+          TestMessage message = listener.WaitForNextMessage();
+          scoped_refptr<Transport> received =
+              DeserializeObjectFrom<Transport>(*transport, message);
+          ASSERT_TRUE(received);
+          EXPECT_FALSE(received->remote_process().IsValid());
+          TestMessage("got no attached process").Transmit(*transport);
+        }
+#endif  // BUILDFLAG(IS_WIN)
+
         listener.WaitForDisconnect();
       });
+}
+
+DEFINE_TEST_CLIENT_TEST_WITH_PIPE(TransportWithSameRemoteProcessClient,
+                                  MojoIpczTransportTest,
+                                  h) {
+  scoped_refptr<Transport> transport = ReceiveTransport(h);
+  TransportListener listener(*transport);
+  EXPECT_EQ("ready", listener.WaitForNextMessage().as_string());
+
+  // A node hosted within this process is introduced to our broker by sending
+  // the broker a transport whose remote process is our own. See
+  // CreateTransports() in driver.cc.
+  auto [our_new_transport, their_new_transport] =
+      Transport::CreatePair(Transport::kNonBroker, Transport::kNonBroker);
+  their_new_transport->set_remote_process(base::Process::Current());
+  SerializeObjectFor(*transport, std::move(their_new_transport))
+      .Transmit(*transport);
+  EXPECT_EQ("got process", listener.WaitForNextMessage().as_string());
+
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
+}
+
+TEST_F(MojoIpczTransportTest, TransportWithSameRemoteProcess) {
+  // A broker must honor `is_same_remote_process` from a non-broker it brokers
+  // for, because that is how nodes hosted within a client process (e.g.
+  // mojo::DirectReceiver) are introduced. The process handle is not serialized
+  // in this case, so without this the broker would have no handle to the new
+  // transport's process and could not transmit handles over it at all.
+  RunTestClientWithController(
+      "TransportWithSameRemoteProcessClient", [&](ClientController& c) {
+        scoped_refptr<Transport> transport =
+            CreateAndSendTransport(c.pipe(), c.process());
+        TransportListener listener(*transport);
+        TestMessage("ready").Transmit(*transport);
+
+        TestMessage message = listener.WaitForNextMessage();
+        scoped_refptr<Transport> received =
+            DeserializeObjectFrom<Transport>(*transport, message);
+        EXPECT_TRUE(received->remote_process().IsValid());
+        EXPECT_EQ(c.process().Pid(), received->remote_process().Pid());
+        TestMessage("got process").Transmit(*transport);
+
+        listener.WaitForDisconnect();
+      });
+}
+
+// The counterpart of the case rejected by TransportFromUntrustedBroker, and of
+// RecipientHandleBetweenIsolatedBrokers for the other predicate. Both ends of a
+// mojo::IsolatedConnection are brokers and neither is source-trusted, but
+// unless one of them has declared the other's process untrustworthy the claim
+// must still be honored. Refusing it would leave transports introduced over
+// such a link with no handle to their remote process, and so no way to move
+// handles at all.
+TEST_F(MojoIpczTransportTest, SameRemoteProcessBetweenIsolatedBrokers) {
+  auto [sender, unused_sender_peer] =
+      Transport::CreatePair(Transport::kBroker, Transport::kBroker);
+
+  auto [receiver, unused_receiver_peer] =
+      Transport::CreatePair(Transport::kBroker, Transport::kBroker);
+  receiver->set_remote_process(base::Process::Current());
+  ASSERT_FALSE(receiver->is_peer_trusted());
+  ASSERT_TRUE(receiver->CanAcceptRemoteProcessFromPeer());
+
+  // A transport the peer hosts in its own process, which is what makes it set
+  // TransportHeader::is_same_remote_process when serializing.
+  auto [transmitted, unused_transmitted_peer] =
+      Transport::CreatePair(Transport::kNonBroker, Transport::kNonBroker);
+  transmitted->set_remote_process(base::Process::Current());
+
+  TestMessage message = SerializeObjectFor(*sender, std::move(transmitted));
+  scoped_refptr<Transport> received =
+      DeserializeObjectFrom<Transport>(*receiver, message);
+  ASSERT_TRUE(received);
+  EXPECT_TRUE(received->remote_process().IsValid());
 }
 
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(TransportFromLessPrivilegedBrokerClient,
