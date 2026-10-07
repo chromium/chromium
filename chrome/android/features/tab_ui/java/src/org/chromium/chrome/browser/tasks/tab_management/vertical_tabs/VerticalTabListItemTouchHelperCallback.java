@@ -141,7 +141,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
     }
 
     /** Sets the listener for outward drag events. */
-    public void setOnDragOutListener(OnDragOutListener listener) {
+    public void setOnDragOutListener(@Nullable OnDragOutListener listener) {
         mOnDragOutListener = listener;
     }
 
@@ -641,6 +641,9 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                             mLongPressDpCancelThreshold,
                             CONTEXT_MENU_ORCHESTRATOR_DELAY_MS);
         } else {
+            if (mTabGridItemLongPressOrchestrator != null) {
+                mTabGridItemLongPressOrchestrator.cancel();
+            }
             mTabGridItemLongPressOrchestrator = null;
         }
     }

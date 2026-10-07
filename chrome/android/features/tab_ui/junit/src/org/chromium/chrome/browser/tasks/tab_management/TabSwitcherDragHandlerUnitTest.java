@@ -693,4 +693,17 @@ public class TabSwitcherDragHandlerUnitTest {
         assertFalse(mDragHandler.handleEscPress());
         verify(mDragHandlerDelegate, never()).handleInternalDragEnd();
     }
+
+    @Test
+    public void testDestroy_RendersHandlerInert() {
+        mDragHandler.destroy();
+
+        DragEvent dragEvent = mock(DragEvent.class);
+        when(dragEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_STARTED);
+        assertFalse(mDragHandler.onDrag(new View(ContextUtils.getApplicationContext()), dragEvent));
+
+        assertFalse(mDragHandler.handleEscPress());
+        verify(mDragHandlerDelegate, never()).handleDragStart(any(), anyFloat(), anyFloat());
+        verify(mDragHandlerDelegate, never()).isDragInProcess();
+    }
 }

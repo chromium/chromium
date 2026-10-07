@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.res.Resources;
@@ -160,7 +158,9 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
 
     @Override
     public Boolean handleEscPress() {
-        assumeNonNull(mDragHandlerDelegate);
+        if (mDragHandlerDelegate == null) {
+            return super.handleEscPress();
+        }
         // If an external Android view drag is actively in progress, ESC always cancels the OS
         // drag via cancelDragAndDrop().
         if (isViewDraggingInProgress()) {
@@ -347,6 +347,7 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
         super.destroy();
         destroyShadowView();
         mCurrentDragShadowBuilder = null;
+        mDragHandlerDelegate = null;
     }
 
     @Override

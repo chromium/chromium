@@ -174,7 +174,6 @@ public class VerticalTabListCoordinator {
     private final Callback<Boolean> mActiveObserver = this::setActive;
     private final PropertyModel mContainerModel;
     private final VerticalExternalViewDragDropReorderStrategy mReorderStrategy;
-    private final List<TabSwitcherDragHandler> mTabSwitcherDragHandlers = new ArrayList<>();
     private final View.OnLayoutChangeListener mContainerLayoutChangeListener;
     private final View.OnLayoutChangeListener mPinnedTabsLayoutChangeListener;
     private final VerticalTabItemHoverController mTabItemHoverController;
@@ -190,14 +189,14 @@ public class VerticalTabListCoordinator {
     private final @Nullable TabUnderlineManager mTabUnderlineManager;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final Supplier<@Nullable TabContentManager> mTabContentManagerSupplier;
-    private final List<VerticalTabListItemTouchHelperCallback> mTouchHelperCallbacks =
-            new ArrayList<>();
+    private final List<DragSurface> mDragSurfaces = new ArrayList<>();
+    private final TabSwitcherDragHandler mTabSwitcherDragHandler;
+    private final DragHandlerDelegate mNonOriginatingDragHandlerDelegate;
     private @Nullable TabStripContextMenuCoordinator mTabStripContextMenuCoordinator;
     private @Nullable VerticalTabCollapseButtonContextMenuCoordinator
             mCollapseButtonContextMenuCoordinator;
     private @Nullable TabContextMenuCoordinator mTabContextMenuCoordinator;
     private @Nullable TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
-    private @Nullable VerticalTabListItemTouchHelperCallback mMainTouchHelperCallback;
     private @Nullable StripDragShadowView mDragShadowView;
     private @Nullable MultiThumbnailCardProvider mMultiThumbnailCardProvider;
 
@@ -205,6 +204,51 @@ public class VerticalTabListCoordinator {
     private @Nullable View mDragEndRelayView;
 
     private boolean mIsActive;
+
+    /**
+     * The per-{@link RecyclerView} drag machinery that the coordinator routes between.
+     *
+     * <p>The handler is shared because the OS delivers a drag event to whichever view is under the
+     * pointer, and a handler bound to one list cannot answer for the other. The {@link
+     * ItemTouchHelper2} and its callback stay strictly one per list: they own that list's item
+     * positions, so driving one with the other's coordinates is crbug.com/509226293.
+     */
+    static class DragSurface {
+        public final RecyclerView recyclerView;
+        public final ItemTouchHelper2 itemTouchHelper;
+        public final VerticalTabListItemTouchHelperCallback touchHelperCallback;
+        private final RecyclerView.OnItemTouchListener mBeforeTouchListener;
+        private final RecyclerView.OnItemTouchListener mMouseDragDetector;
+        private final RecyclerView.OnItemTouchListener mAfterTouchListener;
+
+        DragSurface(
+                RecyclerView recyclerView,
+                ItemTouchHelper2 itemTouchHelper,
+                VerticalTabListItemTouchHelperCallback touchHelperCallback,
+                RecyclerView.OnItemTouchListener beforeTouchListener,
+                RecyclerView.OnItemTouchListener mouseDragDetector,
+                RecyclerView.OnItemTouchListener afterTouchListener) {
+            this.recyclerView = recyclerView;
+            this.itemTouchHelper = itemTouchHelper;
+            this.touchHelperCallback = touchHelperCallback;
+            mBeforeTouchListener = beforeTouchListener;
+            mMouseDragDetector = mouseDragDetector;
+            mAfterTouchListener = afterTouchListener;
+        }
+
+        void destroy() {
+            touchHelperCallback.setOnLongPressTabItemEventListener(null);
+            touchHelperCallback.setOnDragStartCallback(null);
+            touchHelperCallback.setOnDragStateChangedCallback(null);
+            touchHelperCallback.setOnDragOutListener(null);
+            touchHelperCallback.cancelDelayedExternalItemRestoration();
+            recyclerView.removeOnItemTouchListener(mBeforeTouchListener);
+            recyclerView.removeOnItemTouchListener(mMouseDragDetector);
+            recyclerView.removeOnItemTouchListener(mAfterTouchListener);
+            recyclerView.setOnDragListener(null);
+            itemTouchHelper.attachToRecyclerView(null);
+        }
+    }
 
     private class VerticalTabListClickHandler implements TabListItemOnClickListenerProvider {
         private final TabActionListener mTabGroupClickedListener =
@@ -484,6 +528,11 @@ public class VerticalTabListCoordinator {
                         TabListMode.VERTICAL,
                         R.dimen.default_favicon_corner_radius,
                         TabFavicon::getBitmap);
+
+        mTabSwitcherDragHandler = createTabSwitcherDragHandler(activity, tabModelSelector);
+        mNonOriginatingDragHandlerDelegate =
+                createNonOriginatingDragHandlerDelegate(mTabSwitcherDragHandler);
+        mTabSwitcherDragHandler.setDragHandlerDelegate(mNonOriginatingDragHandlerDelegate);
 
         setupItemTouchHelper(activity, recyclerView, mModelList, tabModelSelector);
 
@@ -874,10 +923,12 @@ public class VerticalTabListCoordinator {
             mBackPressManager.removeHandler(BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG);
         }
         removeDragEndRelay();
-        for (TabSwitcherDragHandler dragHandler : mTabSwitcherDragHandlers) {
-            dragHandler.destroy();
+        mTabSwitcherDragHandler.destroy();
+        mContainerView.setOnDragListener(null);
+        View newTabButton = mContainerView.findViewById(R.id.new_tab_button);
+        if (newTabButton != null) {
+            newTabButton.setOnDragListener(null);
         }
-        mTabSwitcherDragHandlers.clear();
 
         mTabItemHoverController.destroy();
 
@@ -890,10 +941,10 @@ public class VerticalTabListCoordinator {
         if (mTabUnderlineManager != null) {
             mTabUnderlineManager.destroy();
         }
-        for (VerticalTabListItemTouchHelperCallback callback : mTouchHelperCallbacks) {
-            callback.cancelDelayedExternalItemRestoration();
+        for (DragSurface surface : mDragSurfaces) {
+            surface.destroy();
         }
-        mTouchHelperCallbacks.clear();
+        mDragSurfaces.clear();
         mReorderStrategy.clear();
         mDropIndicatorDecoration.clear();
         mPinnedDropIndicatorDecoration.clear();
@@ -1147,10 +1198,6 @@ public class VerticalTabListCoordinator {
                         modelList,
                         tabModelSelector.getCurrentTabModelSupplier().asNonNull(),
                         mUndoBarThrottle);
-        if (mMainTouchHelperCallback == null) {
-            mMainTouchHelperCallback = touchHelperCallback;
-        }
-        mTouchHelperCallbacks.add(touchHelperCallback);
 
         // Handles long-presses for tab item/group context menus. Long-presses for empty space
         // context menus are handled by the gesture detector.
@@ -1174,37 +1221,33 @@ public class VerticalTabListCoordinator {
                 });
         touchHelperCallback.setOnDragStartCallback(this::dismissActiveContextMenus);
 
-        recyclerView.addOnItemTouchListener(
+        RecyclerView.OnItemTouchListener beforeTouchListener =
                 VerticalTabListItemTouchHelperCallback.createBeforeOnItemTouchListener(
-                        touchHelperCallback));
+                        touchHelperCallback);
+        recyclerView.addOnItemTouchListener(beforeTouchListener);
 
         ItemTouchHelper2 itemTouchHelper =
                 new ItemTouchHelper2(touchHelperCallback, /* externalLongPressHandler= */ null);
 
-        recyclerView.addOnItemTouchListener(
-                touchHelperCallback.createMouseDragDetector(itemTouchHelper));
+        RecyclerView.OnItemTouchListener mouseDragDetector =
+                touchHelperCallback.createMouseDragDetector(itemTouchHelper);
+        recyclerView.addOnItemTouchListener(mouseDragDetector);
 
-        TabSwitcherDragHandler dragHandler =
-                createTabSwitcherDragHandler(activity, tabModelSelector);
+        touchHelperCallback.setOnDragStateChangedCallback(
+                mTabSwitcherDragHandler::onDragStateChanged);
 
-        touchHelperCallback.setOnDragStateChangedCallback(dragHandler::onDragStateChanged);
-
-        DragHandlerDelegate nonOriginatingDelegate =
-                createNonOriginatingDragHandlerDelegate(
-                        recyclerView, dragHandler, itemTouchHelper, touchHelperCallback);
-        dragHandler.setDragHandlerDelegate(nonOriginatingDelegate);
-        recyclerView.setOnDragListener(dragHandler);
+        recyclerView.setOnDragListener(mTabSwitcherDragHandler);
         if (recyclerView == mRecyclerView) {
-            mContainerView.setOnDragListener(dragHandler);
+            mContainerView.setOnDragListener(mTabSwitcherDragHandler);
             View newTabButton = mContainerView.findViewById(R.id.new_tab_button);
             if (newTabButton != null) {
-                newTabButton.setOnDragListener(dragHandler);
+                newTabButton.setOnDragListener(mTabSwitcherDragHandler);
             }
         }
 
         touchHelperCallback.setOnDragOutListener(
                 (viewHolder, dX, dY) -> {
-                    if (dragHandler.isViewDraggingInProgress()) {
+                    if (mTabSwitcherDragHandler.isViewDraggingInProgress()) {
                         return;
                     }
 
@@ -1245,13 +1288,13 @@ public class VerticalTabListCoordinator {
                     PointF startPoint = new PointF(mLastTouchPoint.x + dX, mLastTouchPoint.y + dY);
 
                     itemTouchHelper.setExternalDragItem(viewHolder);
-                    dragHandler.setDragHandlerDelegate(
+                    mTabSwitcherDragHandler.setDragHandlerDelegate(
                             createDragHandlerDelegate(
                                     recyclerView,
                                     itemTouchHelper,
                                     touchHelperCallback,
-                                    dragHandler,
-                                    nonOriginatingDelegate,
+                                    mTabSwitcherDragHandler,
+                                    mNonOriginatingDragHandlerDelegate,
                                     viewHolder,
                                     model));
 
@@ -1259,7 +1302,7 @@ public class VerticalTabListCoordinator {
 
                     // Installed before the drag starts: ACTION_DRAG_STARTED is dispatched
                     // asynchronously, but only a view that already has a listener can claim it.
-                    installDragEndRelay(dragHandler);
+                    installDragEndRelay(mTabSwitcherDragHandler);
 
                     boolean dragStarted;
                     if (isGroupHeader) {
@@ -1269,7 +1312,7 @@ public class VerticalTabListCoordinator {
                         }
 
                         dragStarted =
-                                dragHandler.startGroupDragAction(
+                                mTabSwitcherDragHandler.startGroupDragAction(
                                         viewHolder.itemView,
                                         assumeNonNull(tabGroupId),
                                         startPoint,
@@ -1280,7 +1323,7 @@ public class VerticalTabListCoordinator {
                                     assumeNonNull(tab), viewHolder.itemView.getWidth());
                         }
                         dragStarted =
-                                dragHandler.startTabDragAction(
+                                mTabSwitcherDragHandler.startTabDragAction(
                                         viewHolder.itemView,
                                         assumeNonNull(tab),
                                         startPoint,
@@ -1293,16 +1336,27 @@ public class VerticalTabListCoordinator {
                             mDragShadowView.clear();
                         }
                         itemTouchHelper.onExternalDragStop(/* recoverItem= */ true);
-                        dragHandler.setDragHandlerDelegate(nonOriginatingDelegate);
+                        mTabSwitcherDragHandler.setDragHandlerDelegate(
+                                mNonOriginatingDragHandlerDelegate);
                     }
                 });
 
         itemTouchHelper.attachToRecyclerView(recyclerView);
         touchHelperCallback.setRecyclerView(recyclerView);
 
-        recyclerView.addOnItemTouchListener(
+        RecyclerView.OnItemTouchListener afterTouchListener =
                 VerticalTabListItemTouchHelperCallback.createAfterOnItemTouchListener(
-                        touchHelperCallback));
+                        touchHelperCallback);
+        recyclerView.addOnItemTouchListener(afterTouchListener);
+
+        mDragSurfaces.add(
+                new DragSurface(
+                        recyclerView,
+                        itemTouchHelper,
+                        touchHelperCallback,
+                        beforeTouchListener,
+                        mouseDragDetector,
+                        afterTouchListener));
     }
 
     /**
@@ -1333,11 +1387,8 @@ public class VerticalTabListCoordinator {
                 /* layerTitleCacheSupplier= */ null,
                 mTabModelSelector,
                 () -> {
-                    for (TabSwitcherDragHandler dragHandler : mTabSwitcherDragHandlers) {
-                        if (dragHandler.hasActiveDragShadow()) {
-                            dragHandler.refreshDragShadow(mDragShadowView);
-                            break;
-                        }
+                    if (mTabSwitcherDragHandler.hasActiveDragShadow()) {
+                        mTabSwitcherDragHandler.refreshDragShadow(mDragShadowView);
                     }
                 });
     }
@@ -1345,9 +1396,7 @@ public class VerticalTabListCoordinator {
     private TabSwitcherDragHandler createTabSwitcherDragHandler(
             Activity activity, TabModelSelector tabModelSelector) {
         if (sTabSwitcherDragHandlerSupplierForTesting != null) {
-            TabSwitcherDragHandler dragHandler = sTabSwitcherDragHandlerSupplierForTesting.get();
-            mTabSwitcherDragHandlers.add(dragHandler);
-            return dragHandler;
+            return sTabSwitcherDragHandlerSupplierForTesting.get();
         }
 
         Supplier<@Nullable Activity> activitySupplier = () -> activity;
@@ -1363,7 +1412,6 @@ public class VerticalTabListCoordinator {
                         mBackPressHandlerManager,
                         /* fadeDragShadow= */ false);
         dragHandler.setTabModelSelector(tabModelSelector);
-        mTabSwitcherDragHandlers.add(dragHandler);
         return dragHandler;
     }
 
@@ -1439,6 +1487,19 @@ public class VerticalTabListCoordinator {
         mDragEndRelayView = null;
     }
 
+    /**
+     * Returns the drag surface whose {@link ItemTouchHelper2} is running an internal, in-list drag,
+     * or null if none is. At most one can be: an internal drag follows a single pointer.
+     */
+    private @Nullable DragSurface getDragSurfaceWithInternalDrag() {
+        for (DragSurface surface : mDragSurfaces) {
+            if (surface.itemTouchHelper.isDragInProcess()) {
+                return surface;
+            }
+        }
+        return null;
+    }
+
     private void clearDropIndicators() {
         mReorderStrategy.clear();
         mDropIndicatorDecoration.clear();
@@ -1449,22 +1510,28 @@ public class VerticalTabListCoordinator {
         }
     }
 
+    /**
+     * Creates the delegate used whenever this window is not the drag's source: it covers both lists
+     * and the rail's non-list views, resolving the list a point belongs to by hit test rather than
+     * by which view the event arrived on.
+     */
     private DragHandlerDelegate createNonOriginatingDragHandlerDelegate(
-            RecyclerView recyclerView,
-            TabSwitcherDragHandler dragHandler,
-            ItemTouchHelper2 itemTouchHelper,
-            VerticalTabListItemTouchHelperCallback touchHelperCallback) {
+            TabSwitcherDragHandler dragHandler) {
         return new DragHandlerDelegate() {
 
             @Override
             public boolean isDragInProcess() {
-                return itemTouchHelper.isDragInProcess();
+                return getDragSurfaceWithInternalDrag() != null;
             }
 
             @Override
             public int handleInternalDragEnd() {
-                touchHelperCallback.markDragAbortedByEsc();
-                itemTouchHelper.stopInternalDrag();
+                DragSurface surface = getDragSurfaceWithInternalDrag();
+                if (surface == null) {
+                    return BackPressHandler.BackPressResult.FAILURE;
+                }
+                surface.touchHelperCallback.markDragAbortedByEsc();
+                surface.itemTouchHelper.stopInternalDrag();
                 return BackPressHandler.BackPressResult.SUCCESS;
             }
 
@@ -1475,9 +1542,9 @@ public class VerticalTabListCoordinator {
             }
 
             @Override
-            public boolean handleDragEnter() {
+            public boolean handleDragEnter(View view) {
                 if (!dragHandler.isDragSourceInstance()) {
-                    dragHandler.showDragShadow(recyclerView, false);
+                    dragHandler.showDragShadow(view, /* show= */ false);
                 }
                 return true;
             }
@@ -1497,10 +1564,10 @@ public class VerticalTabListCoordinator {
             }
 
             @Override
-            public boolean handleDragExit() {
+            public boolean handleDragExit(View view) {
                 clearDropIndicators();
                 if (!dragHandler.isDragSourceInstance()) {
-                    dragHandler.showDragShadow(recyclerView, true);
+                    dragHandler.showDragShadow(view, /* show= */ true);
                 }
                 return true;
             }
@@ -2419,19 +2486,39 @@ public class VerticalTabListCoordinator {
         ResettersForTesting.register(() -> sTabSwitcherDragHandlerSupplierForTesting = null);
     }
 
+    /**
+     * Returns the drag surfaces for testing, in setup order: the main list first, then the pinned
+     * grid.
+     */
+    List<DragSurface> getDragSurfacesForTesting() {
+        return mDragSurfaces;
+    }
+
+    /** Returns the drag surface for the given {@link RecyclerView} for testing. */
+    @Nullable DragSurface getDragSurfaceForTesting(RecyclerView recyclerView) {
+        for (DragSurface surface : mDragSurfaces) {
+            if (surface.recyclerView == recyclerView) {
+                return surface;
+            }
+        }
+        return null;
+    }
+
     /** Returns the main touch helper callback for testing. */
     @Nullable VerticalTabListItemTouchHelperCallback getMainTouchHelperCallbackForTesting() {
-        return mMainTouchHelperCallback;
+        DragSurface surface = getDragSurfaceForTesting(mRecyclerView);
+        return surface != null ? surface.touchHelperCallback : null;
     }
 
     /** Returns the pinned touch helper callback for testing. */
     @Nullable VerticalTabListItemTouchHelperCallback getPinnedTouchHelperCallbackForTesting() {
-        return mTouchHelperCallbacks.size() > 1 ? mTouchHelperCallbacks.get(1) : null;
+        DragSurface surface = getDragSurfaceForTesting(mPinnedTabsRecyclerView);
+        return surface != null ? surface.touchHelperCallback : null;
     }
 
-    /** Returns the active tab switcher drag handlers for testing. */
-    List<TabSwitcherDragHandler> getTabSwitcherDragHandlersForTesting() {
-        return mTabSwitcherDragHandlers;
+    /** Returns the rail's tab switcher drag handler for testing. */
+    TabSwitcherDragHandler getTabSwitcherDragHandlerForTesting() {
+        return mTabSwitcherDragHandler;
     }
 
     TabHoverListener getTabHoverListenerForTesting() {
