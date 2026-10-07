@@ -31,7 +31,7 @@ public class CustomTabMinimizationManagerHolder implements DestroyObserver {
     private final ActivityTabProvider mActivityTabProvider;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
-    private final Supplier<Bundle> mSavedInstanceStateSupplier;
+    private final Supplier<@Nullable Bundle> mSavedInstanceStateSupplier;
 
     private @Nullable MinimizedCustomTabIphController mIphController;
     private @Nullable CustomTabMinimizationManager mMinimizationManager;
@@ -41,7 +41,7 @@ public class CustomTabMinimizationManagerHolder implements DestroyObserver {
             Supplier<CustomTabActivityNavigationController> navigationController,
             ActivityTabProvider activityTabProvider,
             BrowserServicesIntentDataProvider intentDataProvider,
-            Supplier<Bundle> savedInstanceStateSupplier,
+            Supplier<@Nullable Bundle> savedInstanceStateSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
         mActivity = activity;
         mNavigationController = navigationController;

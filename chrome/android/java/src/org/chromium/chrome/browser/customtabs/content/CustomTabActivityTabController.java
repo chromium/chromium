@@ -94,7 +94,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
     private final CustomTabNavigationEventObserver mTabNavigationEventObserver;
     private final ActivityTabProvider mActivityTabProvider;
     private final CustomTabActivityTabProvider mTabProvider;
-    private final Supplier<Bundle> mSavedInstanceStateSupplier;
+    private final Supplier<@Nullable Bundle> mSavedInstanceStateSupplier;
     private final ActivityWindowAndroid mWindowAndroid;
     private final TabModelInitializer mTabModelInitializer;
     private final CipherFactory mCipherFactory;
@@ -117,7 +117,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
             CustomTabNavigationEventObserver tabNavigationEventObserver,
             ActivityTabProvider activityTabProvider,
             CustomTabActivityTabProvider tabProvider,
-            Supplier<Bundle> savedInstanceStateSupplier,
+            Supplier<@Nullable Bundle> savedInstanceStateSupplier,
             ActivityWindowAndroid windowAndroid,
             TabModelInitializer tabModelInitializer,
             CipherFactory cipherFactory,
@@ -245,7 +245,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         return mTabFactory.getTabModelSelector();
     }
 
-    public void setUpInitialTab(Tab hiddenTab) {
+    public void setUpInitialTab(@Nullable Tab hiddenTab) {
         if ((mSavedInstanceStateSupplier.get() == null
                         && CustomTabsConnection.getInstance().hasWarmUpBeenFinished())
                 || checkIfTabReparentingParamsExistForIntent(mIntent)) {

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -73,7 +74,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     private final Supplier<@Nullable EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private final Runnable mContextMenuCopyLinkObserver;
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
-    private final Supplier<BottomSheetController> mBottomSheetControllerSupplier;
+    private final Supplier<@Nullable BottomSheetController> mBottomSheetControllerSupplier;
 
     /** Builds a {@link TabContextMenuItemDelegate} instance. */
     public TabContextMenuItemDelegate(
@@ -84,7 +85,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
             Supplier<@Nullable EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             Runnable contextMenuCopyLinkObserver,
             Supplier<SnackbarManager> snackbarManagerSupplier,
-            Supplier<BottomSheetController> bottomSheetControllerSupplier) {
+            Supplier<@Nullable BottomSheetController> bottomSheetControllerSupplier) {
         mActivity = activity;
         mActivityType = activityType;
         mTab = (TabImpl) tab;
@@ -525,7 +526,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                             url,
                             mSnackbarManagerSupplier.get(),
                             mTab.getProfile(),
-                            mBottomSheetControllerSupplier.get(),
+                            assertNonNull(mBottomSheetControllerSupplier.get()),
                             new BookmarkManagerOpenerImpl(),
                             PriceDropNotificationManagerFactory.create(mTab.getProfile()));
                 });

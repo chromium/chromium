@@ -66,7 +66,7 @@ class CustomTabToolbarButtonsMediator
     private final PropertyModel mModel;
     private final CustomTabToolbar mView;
     private final Activity mActivity;
-    private final CustomTabMinimizeDelegate mMinimizeDelegate;
+    private final @Nullable CustomTabMinimizeDelegate mMinimizeDelegate;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final ActivityTabProvider mTabProvider;
 
@@ -82,7 +82,7 @@ class CustomTabToolbarButtonsMediator
             PropertyModel model,
             CustomTabToolbar view,
             Activity activity,
-            CustomTabMinimizeDelegate minimizeDelegate,
+            @Nullable CustomTabMinimizeDelegate minimizeDelegate,
             BrowserServicesIntentDataProvider intentDataProvider,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             ActivityTabProvider tabProvider) {
@@ -308,7 +308,7 @@ class CustomTabToolbarButtonsMediator
 
     private static boolean getMinimizeButtonAvailable(
             Activity activity,
-            CustomTabMinimizeDelegate minimizeDelegate,
+            @Nullable CustomTabMinimizeDelegate minimizeDelegate,
             BrowserServicesIntentDataProvider intentDataProvider) {
         return MinimizedFeatureUtils.isMinimizedCustomTabAvailable(activity)
                 && MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(intentDataProvider)

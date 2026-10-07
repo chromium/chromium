@@ -144,7 +144,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     private final Supplier<CustomTabToolbarCoordinator> mToolbarCoordinator;
     private final Supplier<BrowserServicesIntentDataProvider> mIntentDataProvider;
     private final Supplier<CustomTabActivityTabController> mTabController;
-    private final Supplier<CustomTabMinimizeDelegate> mMinimizeDelegateSupplier;
+    private final Supplier<@Nullable CustomTabMinimizeDelegate> mMinimizeDelegateSupplier;
     private final SearchActivityClient mCustomTabSearchClient;
 
     private @MonotonicNonNull CustomTabHeightStrategy mCustomTabHeightStrategy;
@@ -253,7 +253,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             Supplier<BrowserServicesIntentDataProvider> intentDataProvider,
             BackPressManager backPressManager,
             Supplier<CustomTabActivityTabController> tabController,
-            Supplier<CustomTabMinimizeDelegate> minimizeDelegateSupplier,
+            Supplier<@Nullable CustomTabMinimizeDelegate> minimizeDelegateSupplier,
             Runnable openInBrowserRunnable,
             EdgeToEdgeManager edgeToEdgeManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,

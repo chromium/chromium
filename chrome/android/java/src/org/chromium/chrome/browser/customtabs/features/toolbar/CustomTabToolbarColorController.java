@@ -47,7 +47,7 @@ public class CustomTabToolbarColorController
     public CustomTabToolbarColorController(
             Context context,
             BrowserServicesThemeColorProvider browserServicesThemeColorProvider,
-            DesktopWindowStateManager desktopWindowStateManager,
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
             BrowserServicesIntentDataProvider intentDataProvider,
             ActivityLifecycleDispatcher activityLifecycleDispatcher) {
         mContext = context;

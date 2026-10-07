@@ -74,7 +74,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     protected final boolean mIncognito;
     protected final AsyncTabParamsManager mAsyncTabParamsManager;
-    private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<@Nullable CompositorViewHolder> mCompositorViewHolderSupplier;
 
     private @Nullable TabModel mTabModel;
@@ -87,7 +87,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             boolean incognito,
             AsyncTabParamsManager asyncTabParamsManager,
-            Supplier<TabModelSelector> tabModelSelectorSupplier,
+            Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
             Supplier<@Nullable CompositorViewHolder> compositorViewHolderSupplier) {
         mActivity = activity;
         mNativeWindow = nativeWindow;
@@ -379,6 +379,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
                                 .setInitiallyHidden(!openInForeground)
                                 .build();
                 assumeNonNull(parentIntent);
+                assumeNonNull(selector);
                 TabParentIntent.from(tab).set(parentIntent).setCurrentTab(selector::getCurrentTab);
                 webContents.resumeLoadingCreatedWebContents();
             } else if ((!openInForeground && SysUtils.isLowEndDevice())

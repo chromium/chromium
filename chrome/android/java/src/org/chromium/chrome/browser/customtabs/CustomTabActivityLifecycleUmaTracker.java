@@ -56,7 +56,7 @@ public class CustomTabActivityLifecycleUmaTracker
     }
 
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
-    private final Supplier<Bundle> mSavedInstanceStateSupplier;
+    private final Supplier<@Nullable Bundle> mSavedInstanceStateSupplier;
     private final Activity mActivity;
 
     private boolean mIsInitialResume = true;
@@ -89,7 +89,7 @@ public class CustomTabActivityLifecycleUmaTracker
     public CustomTabActivityLifecycleUmaTracker(
             Activity activity,
             BrowserServicesIntentDataProvider intentDataProvider,
-            Supplier<Bundle> savedInstanceStateSupplier,
+            Supplier<@Nullable Bundle> savedInstanceStateSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
         mIntentDataProvider = intentDataProvider;
         mActivity = activity;

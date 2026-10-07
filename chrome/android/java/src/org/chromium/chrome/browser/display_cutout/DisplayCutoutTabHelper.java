@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.display_cutout;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 
 import androidx.annotation.VisibleForTesting;
@@ -135,7 +137,8 @@ public class DisplayCutoutTabHelper implements UserData {
             if (!(activity instanceof BaseCustomTabActivity baseCustomTabActivity)) {
                 return DisplayMode.BROWSER;
             }
-            return baseCustomTabActivity.getIntentDataProvider().getResolvedDisplayMode();
+            return assumeNonNull(baseCustomTabActivity.getIntentDataProvider())
+                    .getResolvedDisplayMode();
         }
 
         @Override
@@ -147,7 +150,8 @@ public class DisplayCutoutTabHelper implements UserData {
         public boolean isShortEdgesCutoutModeEnabled() {
             Activity activity = getAttachedActivity();
             if (!(activity instanceof BaseCustomTabActivity baseCustomTabActivity)) return false;
-            return baseCustomTabActivity.getIntentDataProvider().isWebappOrWebApkActivity()
+            return assumeNonNull(baseCustomTabActivity.getIntentDataProvider())
+                            .isWebappOrWebApkActivity()
                     && BaseCustomTabActivity.isShortEdgesCutoutModeEnabledForDisplayMode(
                             getDisplayMode());
         }

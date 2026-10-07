@@ -35,7 +35,7 @@ public class RedirectTabCreator extends ChromeTabCreator {
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             boolean incognito,
             AsyncTabParamsManager asyncTabParamsManager,
-            Supplier<TabModelSelector> tabModelSelectorSupplier,
+            Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
             Supplier<@Nullable CompositorViewHolder> compositorViewHolderSupplier) {
         super(
                 activity,

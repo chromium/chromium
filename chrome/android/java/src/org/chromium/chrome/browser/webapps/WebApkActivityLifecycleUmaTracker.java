@@ -15,6 +15,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
@@ -40,7 +41,7 @@ public class WebApkActivityLifecycleUmaTracker
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final Supplier<SplashController> mSplashController;
     private final StartupMetricsTracker mStartupMetricsTracker;
-    private final Supplier<Bundle> mSavedInstanceStateSupplier;
+    private final Supplier<@Nullable Bundle> mSavedInstanceStateSupplier;
 
     /** The start time that the activity becomes focused in milliseconds since boot. */
     private long mStartTime;
@@ -55,7 +56,7 @@ public class WebApkActivityLifecycleUmaTracker
             BrowserServicesIntentDataProvider intentDataProvider,
             Supplier<SplashController> splashController,
             StartupMetricsTracker startupMetricsTracker,
-            Supplier<Bundle> savedInstanceStateSupplier,
+            Supplier<@Nullable Bundle> savedInstanceStateSupplier,
             WebappDeferredStartupWithStorageHandler webappDeferredStartupWithStorageHandler,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
         mActivity = activity;

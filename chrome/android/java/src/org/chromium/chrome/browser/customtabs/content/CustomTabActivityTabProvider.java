@@ -28,7 +28,7 @@ public class CustomTabActivityTabProvider implements Supplier<@Nullable Tab> {
     private @TabCreationMode int mTabCreationMode = TabCreationMode.NONE;
     private @Nullable String mSpeculatedUrl;
 
-    public CustomTabActivityTabProvider(String speculatedUrl) {
+    public CustomTabActivityTabProvider(@Nullable String speculatedUrl) {
         mSpeculatedUrl = speculatedUrl;
     }
 

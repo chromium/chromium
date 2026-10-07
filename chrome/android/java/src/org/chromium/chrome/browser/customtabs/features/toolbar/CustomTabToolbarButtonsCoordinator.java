@@ -68,7 +68,7 @@ public class CustomTabToolbarButtonsCoordinator
             CustomTabToolbar view,
             BrowserServicesIntentDataProvider intentDataProvider,
             Callback<CustomButtonParams> customButtonClickCallback,
-            CustomTabMinimizeDelegate minimizeDelegate,
+            @Nullable CustomTabMinimizeDelegate minimizeDelegate,
             Supplier<@Nullable AppMenuHandler> appMenuHandler,
             CustomTabToolbar.@Nullable OmniboxParams omniboxParams,
             ActivityLifecycleDispatcher lifecycleDispatcher,

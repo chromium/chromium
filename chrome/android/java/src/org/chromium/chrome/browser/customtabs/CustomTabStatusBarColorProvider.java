@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.ui.system.StatusBarColorController.DEF
 import static org.chromium.chrome.browser.ui.system.StatusBarColorController.UNDEFINED_STATUS_BAR_COLOR;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.BrowserServicesThemeColorProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.BrowserServicesThemeColorProvider.ThemeColorSource;
@@ -40,7 +41,7 @@ public class CustomTabStatusBarColorProvider {
         mStatusBarColorController.updateStatusBarColor();
     }
 
-    int getBaseStatusBarColor(Tab tab) {
+    int getBaseStatusBarColor(@Nullable Tab tab) {
         @ThemeColorSource
         int toolbarColorType =
                 BrowserServicesThemeColorProvider.computeColorSource(

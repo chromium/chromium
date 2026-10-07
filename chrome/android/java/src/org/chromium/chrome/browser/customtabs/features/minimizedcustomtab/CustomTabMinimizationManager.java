@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs.features.minimizedcustomtab;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedCardProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedCardProperties.FAVICON;
 import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedCardProperties.TITLE;
@@ -104,7 +105,7 @@ public class CustomTabMinimizationManager
     private final Runnable mCloseTabRunnable;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
-    private final Supplier<Bundle> mSavedInstanceStateSupplier;
+    private final Supplier<@Nullable Bundle> mSavedInstanceStateSupplier;
     private @Nullable MinimizedCardCoordinator mCoordinator;
     private @Nullable PropertyModel mModel;
     private boolean mMinimized;
@@ -127,7 +128,7 @@ public class CustomTabMinimizationManager
             Runnable closeTabRunnable,
             BrowserServicesIntentDataProvider intentData,
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            Supplier<Bundle> savedInstanceStateSupplier) {
+            Supplier<@Nullable Bundle> savedInstanceStateSupplier) {
         mActivity = activity;
         mTabProvider = tabProvider;
         mFeatureEngagementDelegate = featureEngagementDelegate;
@@ -304,8 +305,7 @@ public class CustomTabMinimizationManager
 
     private void showMinimizedCard(boolean fromSavedState) {
         if (fromSavedState) {
-            assert mSavedInstanceStateSupplier.get() != null;
-            mModel = toModel(mSavedInstanceStateSupplier.get());
+            mModel = toModel(assertNonNull(mSavedInstanceStateSupplier.get()));
         } else {
             Tab tab = mTabProvider.get();
             if (tab == null) return;

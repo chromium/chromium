@@ -85,7 +85,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
     private @Nullable SequencedTaskRunner mTaskRunner;
     private boolean mDestroyed;
 
-    public CustomTabTabPersistencePolicy(Activity activity, Bundle savedInstanceState) {
+    public CustomTabTabPersistencePolicy(Activity activity, @Nullable Bundle savedInstanceState) {
         mTaskId = activity.getTaskId();
         mShouldRestore = savedInstanceState != null;
     }

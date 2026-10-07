@@ -28,7 +28,7 @@ public class ClientPackageNameProvider implements SaveInstanceStateObserver {
     public ClientPackageNameProvider(
             ActivityLifecycleDispatcher lifecycleDispatcher,
             BrowserServicesIntentDataProvider intentDataProvider,
-            Bundle savedInstanceState) {
+            @Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             mClientPackageName = savedInstanceState.getString(KEY_CLIENT_PACKAGE);
         } else {

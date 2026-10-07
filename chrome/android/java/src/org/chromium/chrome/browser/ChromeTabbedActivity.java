@@ -4056,7 +4056,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         Supplier<TabDelegateFactory> tabDelegateFactorySupplier = this::getTabDelegateFactory;
         OneshotSupplier<ProfileProvider> profileProviderSupplier = getProfileProviderSupplier();
         AsyncTabParamsManager asyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
-        Supplier<TabModelSelector> tabModelSelectorSupplier = () -> mTabModelSelector;
+        Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier =
+                getTabModelSelectorSupplier();
         Supplier<@Nullable CompositorViewHolder> compositorViewHolderSupplier =
                 getCompositorViewHolderSupplier();
 

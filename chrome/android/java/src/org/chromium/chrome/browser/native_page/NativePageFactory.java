@@ -618,7 +618,7 @@ public class NativePageFactory {
             Tab tab,
             @Nullable PdfInfo pdfInfo,
             BrowserControlsManager browserControlsManager,
-            TabModelSelector tabModelSelector,
+            @Nullable TabModelSelector tabModelSelector,
             Activity activity) {
         // Only pdf native page is supported on custom tab.
         if (url == null || pdfInfo == null) {
@@ -631,6 +631,7 @@ public class NativePageFactory {
                 && url.equals(candidatePage.getUrl())) {
             page = candidatePage;
         } else {
+            assert tabModelSelector != null;
             page =
                     buildPdfPage(
                             url,
