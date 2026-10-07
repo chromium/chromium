@@ -1133,13 +1133,10 @@ void CanvasRenderingContext2D::CreateProvider() {
 }
 
 base::ByteSize CanvasRenderingContext2D::AllocatedBufferSize() const {
-  if (HasResourceProvider()) {
-    return BaseRenderingContext2D::AllocatedBufferSize();
-  }
   if (hibernation_handler_ && hibernation_handler_->IsHibernating()) {
     return base::ByteSize(hibernation_handler_->memory_size());
   }
-  return base::ByteSize();
+  return BaseRenderingContext2D::AllocatedBufferSize();
 }
 
 bool CanvasRenderingContext2D::IsResourceProviderValid() const {
