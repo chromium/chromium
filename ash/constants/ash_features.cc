@@ -1619,10 +1619,6 @@ BASE_FEATURE(kShowSharingUserInLauncherContinueSection,
 // Shows the spatial audio toggle in audio settings page.
 BASE_FEATURE(kShowSpatialAudioToggle, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Try to use only a single CA cert for the EAP network if CA cert was selected,
-// fallback to the previous config.
-BASE_FEATURE(kSingleCaCertVerificationPhase1, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Use a single CA cert for the EAP network if CA cert was selected, no
 // fallback.
 BASE_FEATURE(kSingleCaCertVerificationPhase2, base::FEATURE_ENABLED_BY_DEFAULT);

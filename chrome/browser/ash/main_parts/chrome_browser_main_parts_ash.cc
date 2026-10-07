@@ -1455,9 +1455,7 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
                        shill::kUseLegacyDHCPCDProperty));
 
     ash::ShillManagerClient::Get()->SetProperty(
-        shill::kEnableSingleCACertVerificationPhase1Property,
-        base::Value(base::FeatureList::IsEnabled(
-            features::kSingleCaCertVerificationPhase1)),
+        shill::kEnableSingleCACertVerificationPhase1Property, base::Value(true),
         base::DoNothing(),
         base::BindOnce(ShillSetPropertyErrorCallback,
                        shill::kEnableSingleCACertVerificationPhase1Property));

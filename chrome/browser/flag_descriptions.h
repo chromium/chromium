@@ -8349,12 +8349,6 @@ inline constexpr char kShowSpatialAudioToggleName[] =
 inline constexpr char kShowSpatialAudioToggleDescription[] =
     "Enable a setting toggle for spatial audio.";
 
-inline constexpr char kSingleCaCertVerificationPhase1Name[] =
-    "Use single CA cert for EAP networks if provided phase 1";
-inline constexpr char kSingleCaCertVerificationPhase1Description[] =
-    "Use a single CA cert for server's cert verification with fallback to"
-    "the old config.";
-
 inline constexpr char kSingleCaCertVerificationPhase2Name[] =
     "Use single CA cert for EAP networks if provided phase 2";
 inline constexpr char kSingleCaCertVerificationPhase2Description[] =
