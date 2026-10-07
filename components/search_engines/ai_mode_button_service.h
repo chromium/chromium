@@ -39,9 +39,9 @@ struct AiModeButtonUiConfig {
   std::u16string a11y_label;
   std::u16string context_menu_label;
   std::u16string placeholder_text;
-  std::string_view favicon_url;
-  std::string_view navigation_url;
-  std::string_view navigation_url_empty;
+  std::string favicon_url;
+  std::string navigation_url;
+  std::string navigation_url_empty;
 };
 
 class AiModeButtonService : public KeyedService,

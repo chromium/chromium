@@ -237,9 +237,9 @@ TEST(AiModeButtonConfigTest, CompiledThirdPartyConfigsContainNoDuplicateIds) {
 }
 
 TEST_F(AiModeButtonServiceTest, DebugConfig) {
-  // For manual testing, ai_mode_button_config.json contains a debug config
-  // mapped to bing. Debug config shouldn't be returned when feature is
-  // disabled.
+  // For manual testing, a debug config is generated for any third-party search
+  // engine when `kAim3pEntrypointDebug` is enabled. Debug config shouldn't be
+  // returned when feature is disabled.
   template_url_service()->SetUserSelectedDefaultSearchProvider(
       FindTurl(u"bing"));
   EXPECT_FALSE(service_->GetCurrentConfig());
@@ -259,8 +259,8 @@ TEST_F(AiModeButtonServiceTest, DebugConfig) {
     EXPECT_FALSE(service_->GetCurrentConfig());
   }
 
-  // Debug config should be returned when feature is enabled with the debug
-  // param.
+  // Debug config should be returned for any third-party search engine when
+  // feature is enabled with the debug param.
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
@@ -275,14 +275,23 @@ TEST_F(AiModeButtonServiceTest, DebugConfig) {
     const auto* config = service_->GetCurrentConfig();
     ASSERT_TRUE(config);
     EXPECT_EQ(config->id, SearchEngineType::SEARCH_ENGINE_BING);
-    EXPECT_EQ(std::u16string_view(config->text), u"DEBÜG");
-    EXPECT_EQ(std::u16string_view(config->tooltip), u"Ask DEBÜG");
-    EXPECT_EQ(std::u16string_view(config->a11y_label),
-              u"DEBÜG button, press Enter to ask DEBÜG");
-    EXPECT_THAT(std::u16string_view(config->context_menu_label),
-                testing::AnyOf(u"Always Show DEBÜG", u"Always show DEBÜG"));
-    EXPECT_EQ(std::u16string_view(config->placeholder_text),
-              u"Press tab then enter to ask DEBÜG");
+    EXPECT_EQ(config->text, u"AI Mode for Bing (ĄÜÔ)");
+    EXPECT_EQ(config->tooltip, u"Ask AI Mode for Bing (ĄÜÔ)");
+    EXPECT_EQ(config->a11y_label,
+              u"AI Mode for Bing (ĄÜÔ) button, press Enter to ask AI Mode "
+              u"for Bing (ĄÜÔ)");
+    EXPECT_THAT(config->context_menu_label,
+                testing::AnyOf(u"Always Show AI Mode for Bing (ĄÜÔ)",
+                               u"Always show AI Mode for Bing (ĄÜÔ)"));
+    EXPECT_EQ(config->placeholder_text,
+              u"Press tab then enter to ask AI Mode for Bing (ĄÜÔ)");
+    EXPECT_EQ(
+        config->navigation_url,
+        "https://google.com/search?q=this opens aimode for Bing with search "
+        "terms: {searchTerms}");
+    EXPECT_EQ(config->navigation_url_empty,
+              "https://google.com/search?q=this opens aimode landing page for "
+              "Bing");
   }
 }
 

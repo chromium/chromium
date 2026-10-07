@@ -124,7 +124,7 @@ TEST_F(AIModeButtonServiceIOSTest, ThirdPartyDseEnabledWithDebugConfig) {
   EXPECT_CALL(*aim_eligibility_service_, IsAimAllowedByFeatureAndPolicy())
       .WillRepeatedly(testing::Return(true));
   EXPECT_TRUE(service_->IsButtonAvailable());
-  EXPECT_NSEQ(service_->GetTitle(), @"DEBÜG");
+  EXPECT_NSEQ(service_->GetTitle(), @"AI Mode for Bing (ĄÜÔ)");
   EXPECT_NE(service_->GetIcon(), nil);
   EXPECT_TRUE(service_->GetUrl().is_valid());
 
