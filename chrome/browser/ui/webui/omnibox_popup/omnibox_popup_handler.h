@@ -71,6 +71,14 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler,
   void OpenDevTools() override;
   void AdvanceFocus(bool reverse) override;
 
+  // Computes URL emphasis metadata for the given text.
+  // This implementation is based on `OmniboxViewViews::UpdateTextStyle()`
+  // (for URL component parsing and deemphasis mode determination) and
+  // `OmniboxViewViews::UpdateSchemeStyle()` (for security-related scheme
+  // styling).
+  searchbox::mojom::UrlEmphasisPtr ComputeUrlEmphasis(
+      const std::string& text) const;
+
   // omnibox_popup::mojom::Page:
   void OnShow();
   void OnContextMenuClosed();

@@ -20,8 +20,10 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/security_state/core/security_state.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/test/test_web_ui.h"
+#include "net/cert/cert_status_flags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -131,6 +133,8 @@ TEST_F(OmniboxPopupHandlerTest, SetInputState) {
         EXPECT_TRUE(state->show_full_url);
         EXPECT_TRUE(state->query_zps);
         EXPECT_TRUE(state->is_tab_switch);
+        EXPECT_TRUE(state->url_emphasis);
+        EXPECT_TRUE(state->unelided_url_emphasis);
       });
   handler_->SetInputState(test_text, test_selection,
                           /*user_input_in_progress=*/true, full_url,
@@ -568,6 +572,152 @@ TEST_F(OmniboxPopupHandlerTest, SetEditHistoryState) {
   handler_->SetEditHistoryState(/*can_undo=*/true, /*can_redo=*/true);
   EXPECT_TRUE(handler_->can_undo());
   EXPECT_TRUE(handler_->can_redo());
+}
+
+TEST_F(OmniboxPopupHandlerTest, SetInputStateUrlEmphasisWithNullController) {
+  omnibox_popup::mojom::OmniboxInputStatePtr captured_state;
+  EXPECT_CALL(page_, SetInputState(testing::_))
+      .WillOnce([&](omnibox_popup::mojom::OmniboxInputStatePtr state) {
+        captured_state = std::move(state);
+      });
+  handler_->SetInputState("example.com/path", gfx::Range(0, 0),
+                          /*user_input_in_progress=*/false,
+                          "https://example.com/path",
+                          /*is_focused=*/true, "example.com/path",
+                          /*show_full_url=*/false, /*query_zps=*/false,
+                          /*keyword_model=*/nullptr, /*is_tab_switch=*/false);
+  page_.FlushForTesting();
+  ASSERT_TRUE(captured_state);
+  ASSERT_TRUE(captured_state->url_emphasis);
+  EXPECT_FALSE(captured_state->url_emphasis->text_is_url);
+  EXPECT_EQ(captured_state->url_emphasis->deemphasis_mode,
+            searchbox::mojom::UrlDeemphasisMode::kNothing);
+  ASSERT_TRUE(captured_state->unelided_url_emphasis);
+  EXPECT_FALSE(captured_state->unelided_url_emphasis->text_is_url);
+  EXPECT_EQ(captured_state->unelided_url_emphasis->deemphasis_mode,
+            searchbox::mojom::UrlDeemphasisMode::kNothing);
+}
+
+TEST_F(OmniboxPopupHandlerTest, SetInputStateUrlEmphasisWithController) {
+  auto omnibox_controller = std::make_unique<OmniboxController>(
+      std::make_unique<TestOmniboxClient>());
+  testing::NiceMock<MockOmniboxPopupPage> local_page;
+  auto handler = std::make_unique<OmniboxPopupHandler>(
+      mojo::PendingReceiver<omnibox_popup::mojom::PageHandler>(),
+      local_page.BindAndGetRemote(), web_contents(), omnibox_controller.get());
+
+  auto set_input_state_and_take = [&](const std::string& text,
+                                      const std::string& full_url,
+                                      bool user_input_in_progress) {
+    omnibox_popup::mojom::OmniboxInputStatePtr captured_state;
+    EXPECT_CALL(local_page, SetInputState(testing::_))
+        .WillOnce([&](omnibox_popup::mojom::OmniboxInputStatePtr state) {
+          captured_state = std::move(state);
+        });
+    handler->SetInputState(text, gfx::Range(0, 0), user_input_in_progress,
+                           full_url,
+                           /*is_focused=*/true, text, /*show_full_url=*/false,
+                           /*query_zps=*/false, /*keyword_model=*/nullptr,
+                           /*is_tab_switch=*/false);
+    local_page.FlushForTesting();
+    return captured_state;
+  };
+
+  {
+    // When user input is in progress, search text is not classified as a URL.
+    omnibox_controller->edit_model()->SetUserText(u"search query");
+    auto state = set_input_state_and_take("search query", "",
+                                          /*user_input_in_progress=*/true);
+    ASSERT_TRUE(state);
+    ASSERT_TRUE(state->url_emphasis);
+    EXPECT_FALSE(state->url_emphasis->text_is_url);
+    EXPECT_EQ(state->url_emphasis->deemphasis_mode,
+              searchbox::mojom::UrlDeemphasisMode::kNothing);
+  }
+
+  {
+    // Elided and unelided web URLs both compute precomputed URL emphasis in
+    // OmniboxInputState.
+    omnibox_controller->edit_model()->SetInputInProgress(false);
+    auto state = set_input_state_and_take("example.com/path?query=1",
+                                          "https://example.com/path?query=1",
+                                          /*user_input_in_progress=*/false);
+    ASSERT_TRUE(state);
+    ASSERT_TRUE(state->url_emphasis);
+    EXPECT_TRUE(state->url_emphasis->text_is_url);
+    EXPECT_EQ(state->url_emphasis->deemphasis_mode,
+              searchbox::mojom::UrlDeemphasisMode::kAllButHost);
+    EXPECT_FALSE(state->url_emphasis->scheme_range);
+    ASSERT_TRUE(state->url_emphasis->host_range);
+    EXPECT_EQ(state->url_emphasis->host_range->start(), 0u);
+    EXPECT_EQ(state->url_emphasis->host_range->end(), 11u);
+
+    ASSERT_TRUE(state->unelided_url_emphasis);
+    EXPECT_TRUE(state->unelided_url_emphasis->text_is_url);
+    EXPECT_EQ(state->unelided_url_emphasis->deemphasis_mode,
+              searchbox::mojom::UrlDeemphasisMode::kAllButHost);
+    ASSERT_TRUE(state->unelided_url_emphasis->scheme_range);
+    EXPECT_EQ(state->unelided_url_emphasis->scheme_range->start(), 0u);
+    EXPECT_EQ(state->unelided_url_emphasis->scheme_range->end(), 5u);
+    ASSERT_TRUE(state->unelided_url_emphasis->host_range);
+    EXPECT_EQ(state->unelided_url_emphasis->host_range->start(), 8u);
+    EXPECT_EQ(state->unelided_url_emphasis->host_range->end(), 19u);
+  }
+
+  {
+    // Data URL deemphasizes all but scheme (ALL_BUT_SCHEME) when not in user
+    // input.
+    omnibox_controller->edit_model()->SetInputInProgress(false);
+    auto state =
+        set_input_state_and_take("data:text/html,hello", "data:text/html,hello",
+                                 /*user_input_in_progress=*/false);
+    ASSERT_TRUE(state);
+    ASSERT_TRUE(state->url_emphasis);
+    EXPECT_TRUE(state->url_emphasis->text_is_url);
+    EXPECT_EQ(state->url_emphasis->deemphasis_mode,
+              searchbox::mojom::UrlDeemphasisMode::kAllButScheme);
+    ASSERT_TRUE(state->url_emphasis->scheme_range);
+    EXPECT_EQ(state->url_emphasis->scheme_range->start(), 0u);
+    EXPECT_EQ(state->url_emphasis->scheme_range->end(), 4u);
+  }
+
+  {
+    // URL with certificate error has scheme strike-through and dangerous
+    // styling.
+    auto* client =
+        static_cast<TestOmniboxClient*>(omnibox_controller->client());
+    client->location_bar_model()->set_url(GURL("https://expired.badssl.com/"));
+    client->location_bar_model()->set_cert_status(
+        net::CERT_STATUS_DATE_INVALID);
+    client->location_bar_model()->set_security_level(security_state::DANGEROUS);
+    omnibox_controller->edit_model()->SetInputInProgress(false);
+
+    auto state = set_input_state_and_take("https://expired.badssl.com",
+                                          "https://expired.badssl.com/",
+                                          /*user_input_in_progress=*/false);
+    ASSERT_TRUE(state);
+    ASSERT_TRUE(state->url_emphasis);
+    EXPECT_TRUE(state->url_emphasis->text_is_url);
+    EXPECT_EQ(state->url_emphasis->deemphasis_mode,
+              searchbox::mojom::UrlDeemphasisMode::kAllButHost);
+    ASSERT_TRUE(state->url_emphasis->scheme_range);
+    EXPECT_EQ(state->url_emphasis->scheme_range->start(), 0u);
+    EXPECT_EQ(state->url_emphasis->scheme_range->end(), 5u);
+    EXPECT_TRUE(state->url_emphasis->scheme_strike_through);
+    EXPECT_TRUE(state->url_emphasis->scheme_dangerous);
+
+    // Match URL emphasis (include_security_style=false) omits cert security
+    // styling even when the current navigation entry has a cert error.
+    auto match_emphasis = SearchboxHandler::ComputeUrlEmphasis(
+        u"https://expired.badssl.com", /*text_is_url=*/true,
+        /*include_security_style=*/false, omnibox_controller->client());
+    ASSERT_TRUE(match_emphasis);
+    EXPECT_TRUE(match_emphasis->text_is_url);
+    EXPECT_EQ(match_emphasis->deemphasis_mode,
+              searchbox::mojom::UrlDeemphasisMode::kAllButHost);
+    EXPECT_FALSE(match_emphasis->scheme_strike_through);
+    EXPECT_FALSE(match_emphasis->scheme_dangerous);
+  }
 }
 
 }  // namespace

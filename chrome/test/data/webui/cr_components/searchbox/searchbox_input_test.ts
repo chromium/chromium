@@ -7,8 +7,8 @@ import 'chrome://resources/cr_components/searchbox/searchbox_input.js';
 import {createSearchMatchForTesting, SearchboxBrowserProxy} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {SearchboxInputElement} from 'chrome://resources/cr_components/searchbox/searchbox_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {KeywordType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {KeywordType, UrlDeemphasisMode} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertIconMaskImageUrl, createClipboardEvent, createUrlMatch} from './searchbox_test_utils.js';
@@ -498,6 +498,7 @@ suite('SearchboxInputTest', () => {
         assertEquals(
             'clip', window.getComputedStyle(input.inputElement).textOverflow);
       });
+
   test(
       'isMatchPreview forces single line when user input is single line',
       async () => {
@@ -574,5 +575,302 @@ suite('SearchboxInputTest', () => {
           configurable: true,
         });
         assertTrue(input.isMultiline());
+      });
+
+  test('Emphasizes URL components in mirror element', async () => {
+    input = await createInput({urlEmphasisEnabled: true});
+    input.setInput({text: 'https://www.google.com/search?q=test', inline: ''});
+    input.urlEmphasis = {
+      textIsUrl: true,
+      deemphasisMode: UrlDeemphasisMode.kAllButHost,
+      schemeRange: {start: 0, end: 0},
+      hostRange: {start: 8, end: 22},
+      schemeStrikeThrough: false,
+      schemeDangerous: false,
+    };
+    await input.updateComplete;
+
+    const mirror = input.shadowRoot.querySelector<HTMLElement>('#mirror');
+    assertTrue(!!mirror);
+    assertEquals('ltr', mirror.dir);
+    assertEquals('ltr', input.inputElement.dir);
+    const spans = mirror.querySelectorAll('span');
+    assertEquals(3, spans.length);
+
+    assertEquals('https://', spans[0]!.textContent);
+    assertTrue(spans[0]!.classList.contains('dimmed'));
+
+    assertEquals('www.google.com', spans[1]!.textContent);
+    assertFalse(spans[1]!.classList.contains('dimmed'));
+
+    assertEquals('/search?q=test', spans[2]!.textContent);
+    assertTrue(spans[2]!.classList.contains('dimmed'));
+  });
+
+
+  test(
+      'Emphasizes scheme with security dangerous and strikethrough styling',
+      async () => {
+        input = await createInput({urlEmphasisEnabled: true});
+        input.setInput({text: 'https://expired.badssl.com/', inline: ''});
+        input.urlEmphasis = {
+          textIsUrl: true,
+          deemphasisMode: UrlDeemphasisMode.kAllButHost,
+          schemeRange: {start: 0, end: 5},
+          hostRange: {start: 8, end: 26},
+          schemeStrikeThrough: true,
+          schemeDangerous: true,
+        };
+        await input.updateComplete;
+
+        const mirror = input.shadowRoot.querySelector('#mirror');
+        assertTrue(!!mirror);
+        const spans = mirror.querySelectorAll('span');
+        assertEquals(4, spans.length);
+
+        assertEquals('https', spans[0]!.textContent);
+        assertTrue(spans[0]!.classList.contains('dangerous'));
+        assertTrue(spans[0]!.classList.contains('strikethrough'));
+        assertFalse(spans[0]!.classList.contains('dimmed'));
+
+        assertEquals('://', spans[1]!.textContent);
+        assertTrue(spans[1]!.classList.contains('dimmed'));
+        assertFalse(spans[1]!.classList.contains('dangerous'));
+        assertFalse(spans[1]!.classList.contains('strikethrough'));
+
+        assertEquals('expired.badssl.com', spans[2]!.textContent);
+        assertFalse(spans[2]!.classList.contains('dimmed'));
+        assertEquals('/', spans[3]!.textContent);
+        assertTrue(spans[3]!.classList.contains('dimmed'));
+      });
+
+  test(
+      'Does not deemphasize user input in progress for search queries',
+      async () => {
+        input = await createInput({urlEmphasisEnabled: true});
+        input.setInput({text: 'search query text', inline: ''});
+        input.urlEmphasis = {
+          textIsUrl: false,
+          deemphasisMode: UrlDeemphasisMode.kNothing,
+          schemeRange: {start: 0, end: 0},
+          hostRange: {start: 0, end: 0},
+          schemeStrikeThrough: false,
+          schemeDangerous: false,
+        };
+        await input.updateComplete;
+
+        const mirror = input.shadowRoot.querySelector<HTMLElement>('#mirror');
+        assertTrue(!!mirror);
+        assertEquals('auto', mirror.dir);
+        assertEquals('auto', input.inputElement.dir);
+        const spans = mirror.querySelectorAll('span');
+        assertEquals(1, spans.length);
+
+        assertEquals('search query text', spans[0]!.textContent);
+        assertFalse(spans[0]!.classList.contains('dimmed'));
+      });
+
+  test('Emphasizes data URL scheme in mirror element', async () => {
+    input = await createInput({urlEmphasisEnabled: true});
+    input.setInput({text: 'data:text/html,hello', inline: ''});
+    input.urlEmphasis = {
+      textIsUrl: true,
+      deemphasisMode: UrlDeemphasisMode.kAllButScheme,
+      schemeRange: {start: 0, end: 4},
+      hostRange: {start: 0, end: 0},
+      schemeStrikeThrough: false,
+      schemeDangerous: false,
+    };
+    await input.updateComplete;
+
+    const mirror = input.shadowRoot.querySelector('#mirror');
+    assertTrue(!!mirror);
+    const spans = mirror.querySelectorAll('span');
+    assertEquals(2, spans.length);
+
+    assertEquals('data', spans[0]!.textContent);
+    assertFalse(spans[0]!.classList.contains('dimmed'));
+
+    assertEquals(':text/html,hello', spans[1]!.textContent);
+    assertTrue(spans[1]!.classList.contains('dimmed'));
+  });
+
+  test(
+      'Styles only the inner scheme of view-source: URLs in mirror element',
+      async () => {
+        input = await createInput({urlEmphasisEnabled: true});
+        input.setInput(
+            {text: 'view-source:https://example.com/path', inline: ''});
+        input.urlEmphasis = {
+          textIsUrl: true,
+          deemphasisMode: UrlDeemphasisMode.kAllButHost,
+          schemeRange: {start: 12, end: 17},
+          hostRange: {start: 20, end: 31},
+          schemeStrikeThrough: true,
+          schemeDangerous: false,
+        };
+        await input.updateComplete;
+
+        const mirror = input.shadowRoot.querySelector('#mirror');
+        assertTrue(!!mirror);
+        const spans = mirror.querySelectorAll('span');
+        assertEquals(5, spans.length);
+
+        // The "view-source:" prefix is not part of the scheme range, so it
+        // gets the base (dimmed) style and no security styling.
+        assertEquals('view-source:', spans[0]!.textContent);
+        assertTrue(spans[0]!.classList.contains('dimmed'));
+        assertFalse(spans[0]!.classList.contains('strikethrough'));
+
+        assertEquals('https', spans[1]!.textContent);
+        assertFalse(spans[1]!.classList.contains('dimmed'));
+        assertTrue(spans[1]!.classList.contains('strikethrough'));
+
+        assertEquals('://', spans[2]!.textContent);
+        assertTrue(spans[2]!.classList.contains('dimmed'));
+
+        assertEquals('example.com', spans[3]!.textContent);
+        assertFalse(spans[3]!.classList.contains('dimmed'));
+
+        assertEquals('/path', spans[4]!.textContent);
+        assertTrue(spans[4]!.classList.contains('dimmed'));
+      });
+
+  test(
+      'Emphasizes only the inner data: scheme of view-source: URLs',
+      async () => {
+        input = await createInput({urlEmphasisEnabled: true});
+        input.setInput({text: 'view-source:data:text/html,hi', inline: ''});
+        input.urlEmphasis = {
+          textIsUrl: true,
+          deemphasisMode: UrlDeemphasisMode.kAllButScheme,
+          schemeRange: {start: 12, end: 16},
+          hostRange: null,
+          schemeStrikeThrough: false,
+          schemeDangerous: false,
+        };
+        await input.updateComplete;
+
+        const mirror = input.shadowRoot.querySelector('#mirror');
+        assertTrue(!!mirror);
+        const spans = mirror.querySelectorAll('span');
+        assertEquals(3, spans.length);
+
+        assertEquals('view-source:', spans[0]!.textContent);
+        assertTrue(spans[0]!.classList.contains('dimmed'));
+
+        assertEquals('data', spans[1]!.textContent);
+        assertFalse(spans[1]!.classList.contains('dimmed'));
+
+        assertEquals(':text/html,hi', spans[2]!.textContent);
+        assertTrue(spans[2]!.classList.contains('dimmed'));
+      });
+
+  test('Clears mirror element contents when input is empty', async () => {
+    input = await createInput({urlEmphasisEnabled: true});
+    input.setInput({text: 'https://example.com', inline: ''});
+    input.urlEmphasis = {
+      textIsUrl: true,
+      deemphasisMode: UrlDeemphasisMode.kAllButHost,
+      schemeRange: {start: 0, end: 5},
+      hostRange: {start: 8, end: 19},
+      schemeStrikeThrough: false,
+      schemeDangerous: false,
+    };
+    await input.updateComplete;
+
+    input.setInput({text: '', inline: ''});
+    await input.updateComplete;
+
+    const mirror = input.shadowRoot.querySelector<HTMLElement>('#mirror');
+    assertTrue(!!mirror);
+    const spans = mirror.querySelectorAll('span');
+    assertEquals(0, spans.length);
+    assertEquals('', mirror.textContent);
+    assertEquals('', mirror.dir);
+    assertEquals('', input.inputElement.dir);
+  });
+
+  test(
+      'Renders non-URL text as undimmed single span matching Views Omnibox',
+      async () => {
+        input = await createInput({urlEmphasisEnabled: true});
+        input.setInput({text: 'exampleexampleexample', inline: ''});
+        input.urlEmphasis = null;
+        await input.updateComplete;
+
+        const mirror = input.shadowRoot.querySelector('#mirror');
+        assertTrue(!!mirror);
+        const spans = mirror.querySelectorAll('span');
+        assertEquals(1, spans.length);
+
+        assertEquals('exampleexampleexample', spans[0]!.textContent);
+        assertFalse(spans[0]!.classList.contains('dimmed'));
+      });
+
+  test('Mirror preserves whitespace like the underlying input', async () => {
+    input = await createInput({urlEmphasisEnabled: true});
+    const mirror = input.shadowRoot.querySelector<HTMLElement>('#mirror');
+    assertTrue(!!mirror);
+
+    // The mirror must preserve whitespace and never wrap, matching how the
+    // <input> renders its value.
+    const mirrorStyle = window.getComputedStyle(mirror);
+    assertEquals(
+        'preserve', mirrorStyle.getPropertyValue('white-space-collapse'));
+    assertEquals('nowrap', mirrorStyle.getPropertyValue('text-wrap-mode'));
+
+    // Leading and consecutive spaces must take up space in the mirror (as they
+    // do in the <input>) so the visible text stays aligned with the caret.
+    input.setInput({text: 'foo bar', inline: ''});
+    await input.updateComplete;
+    const singleSpaced = mirror.querySelector('span');
+    assertTrue(!!singleSpaced);
+    const singleSpacedWidth = singleSpaced.getBoundingClientRect().width;
+
+    input.setInput({text: '  foo    bar', inline: ''});
+    await input.updateComplete;
+    const multiSpaced = mirror.querySelector('span');
+    assertTrue(!!multiSpaced);
+    assertEquals('  foo    bar', multiSpaced.textContent);
+    assertTrue(multiSpaced.getBoundingClientRect().width > singleSpacedWidth);
+  });
+
+  test('Clears urlEmphasis on setInput when value changes', async () => {
+    input = await createInput({urlEmphasisEnabled: true});
+    input.urlEmphasis = {
+      textIsUrl: true,
+      deemphasisMode: UrlDeemphasisMode.kAllButHost,
+      schemeRange: {start: 0, end: 8},
+      hostRange: {start: 8, end: 18},
+      schemeStrikeThrough: false,
+      schemeDangerous: false,
+    };
+    await input.updateComplete;
+
+    input.setInput({text: 'https://newurl.com', inline: ''});
+    assertEquals(null, input.urlEmphasis);
+  });
+
+  test(
+      'Does not clear urlEmphasis on setInput if value does not change',
+      async () => {
+        input = await createInput({urlEmphasisEnabled: true});
+        input.setInput({text: 'https://newurl.com', inline: ''});
+        await input.updateComplete;
+
+        input.urlEmphasis = {
+          textIsUrl: true,
+          deemphasisMode: UrlDeemphasisMode.kAllButHost,
+          schemeRange: {start: 0, end: 8},
+          hostRange: {start: 8, end: 18},
+          schemeStrikeThrough: false,
+          schemeDangerous: false,
+        };
+        await input.updateComplete;
+
+        // Calling setInput() with identical full value.
+        input.setInput({text: 'https://newurl.com', inline: ''});
+        assertNotEquals(null, input.urlEmphasis);
       });
 });

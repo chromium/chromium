@@ -47,6 +47,7 @@ export function createAutocompleteMatch(
     fuseboxAction: null,
     suggestStyle: SuggestStyle.kUnspecified,
     suggestTemplate: createSuggestTemplateInfo(),
+    urlEmphasis: null,
   };
 
   return Object.assign(base, modifiers);

@@ -40,6 +40,7 @@ export function createAutocompleteMatch(
       secondaryTextPlacement: SecondaryTextPlacement.kUnspecified,
       image: null,
     },
+    urlEmphasis: null,
     ...config,
   };
 }

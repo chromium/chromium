@@ -12,7 +12,8 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
     <div id="inputWrapper" @focusout="${this.onInputWrapperFocusout}"
         @keydown="${this.onInputWrapperKeydown}">
       <cr-searchbox-input id="input"
-          exportparts="searchbox-input"
+          exportparts="searchbox-input, mirror"
+          url-emphasis-enabled
           ?dropdown-is-visible="${this.dropdownIsVisible}"
           input-aria-live="${this.inputAriaLive}"
           ?multi-line-enabled="${this.multiLineEnabled}"

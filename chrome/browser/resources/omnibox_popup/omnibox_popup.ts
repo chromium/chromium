@@ -11,6 +11,7 @@ import './omnibox_popup_contextual_entrypoint_button.js';
 export {ComposeboxProxyImpl} from '//resources/cr_components/composebox/composebox_proxy.js';
 export {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 export {sanitizeTextForPaste, stripJavascriptSchemas} from '//resources/cr_components/searchbox/utils.js';
+export {UrlDeemphasisMode, type UrlEmphasis} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 export {OmniboxAimAppElement} from './aim_app.js';
 export {OmniboxPopupAppElement} from './app.js';
 export {OmniboxFullAppElement} from './full_app.js';

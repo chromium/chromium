@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -1809,6 +1810,148 @@ TEST_F(WebuiOmniboxHandlerTest, CreateAutocompleteMatches_A11yLabels) {
           l10n_util::GetStringUTF16(IDS_ACC_REMOVE_SUGGESTION_FOCUSED_PREFIX),
           {base_label}, nullptr),
       mojom_matches[1]->remove_button_a11y_label);
+}
+
+TEST_F(WebuiOmniboxHandlerTest,
+       CreateAutocompleteMatches_PopulatesUrlEmphasis) {
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile());
+  bookmark_model->LoadEmptyForTest();
+
+  // Search match should deemphasize nothing, and non-default URL match should
+  // compute emphasis on fill_into_edit.
+  {
+    AutocompleteMatch search_match;
+    search_match.type = omnibox::AutocompleteMatchType::kSearchWhatYouTyped;
+    search_match.destination_url = GURL("https://www.google.com/search?q=test");
+    search_match.fill_into_edit = u"test";
+
+    AutocompleteMatch url_match;
+    url_match.type = omnibox::AutocompleteMatchType::kUrlWhatYouTyped;
+    url_match.destination_url = GURL("https://example.com/path");
+    url_match.fill_into_edit = u"https://example.com/path";
+
+    AutocompleteResult result;
+    result.AppendMatches({search_match, url_match});
+
+    auto mojom_matches = handler_->CreateAutocompleteMatches(
+        result, bookmark_model, omnibox::GroupConfigMap(),
+        omnibox_controller_->client()->GetTemplateURLService());
+    ASSERT_EQ(2u, mojom_matches.size());
+
+    ASSERT_TRUE(mojom_matches[0]->url_emphasis);
+    EXPECT_EQ(mojom_matches[0]->url_emphasis->deemphasis_mode,
+              searchbox::mojom::UrlDeemphasisMode::kNothing);
+
+    ASSERT_TRUE(mojom_matches[1]->url_emphasis);
+    EXPECT_EQ(mojom_matches[1]->url_emphasis->deemphasis_mode,
+              searchbox::mojom::UrlDeemphasisMode::kAllButHost);
+    EXPECT_EQ(mojom_matches[1]->url_emphasis->scheme_range, gfx::Range(0, 5));
+    EXPECT_EQ(mojom_matches[1]->url_emphasis->host_range, gfx::Range(8, 19));
+    EXPECT_FALSE(mojom_matches[1]->url_emphasis->scheme_strike_through);
+    EXPECT_FALSE(mojom_matches[1]->url_emphasis->scheme_dangerous);
+  }
+
+  // Default URL match with inline autocompletion should compute emphasis on
+  // input.text() + match.inline_autocompletion rather than fill_into_edit.
+  {
+    auto fake_autocomplete_controller =
+        std::make_unique<FakeAutocompleteController>(&task_environment_);
+    fake_autocomplete_controller->input_ =
+        FakeAutocompleteController::CreateInput(u"example");
+    handler_->autocomplete_controller_observation_.Reset();
+    handler_->SetAutocompleteControllerForTesting(
+        std::move(fake_autocomplete_controller));
+
+    AutocompleteMatch match;
+    match.type = omnibox::AutocompleteMatchType::kHistoryUrl;
+    match.allowed_to_be_default_match = true;
+    match.destination_url = GURL("https://example.com/path");
+    match.fill_into_edit = u"https://example.com/path";
+    match.inline_autocompletion = u".com/path";
+    AutocompleteResult result;
+    result.AppendMatches({match});
+
+    auto mojom_matches = handler_->CreateAutocompleteMatches(
+        result, bookmark_model, omnibox::GroupConfigMap(),
+        omnibox_controller_->client()->GetTemplateURLService());
+    ASSERT_EQ(1u, mojom_matches.size());
+    ASSERT_TRUE(mojom_matches[0]->url_emphasis);
+    EXPECT_EQ(mojom_matches[0]->url_emphasis->deemphasis_mode,
+              searchbox::mojom::UrlDeemphasisMode::kAllButHost);
+    EXPECT_EQ(mojom_matches[0]->url_emphasis->scheme_range, std::nullopt);
+    EXPECT_EQ(mojom_matches[0]->url_emphasis->host_range, gfx::Range(0, 11));
+  }
+}
+
+TEST_F(WebuiOmniboxHandlerTest, ComputeUrlEmphasis_SchemelessInput) {
+  const auto* client = omnibox_controller_->client();
+
+  // Inputs without an explicit scheme must not have their entire text treated
+  // as the scheme. In particular, text that happens to spell a special scheme
+  // name must still be emphasized by host.
+  for (std::u16string_view text :
+       {u"example.com", u"data", u"chrome-extension"}) {
+    SCOPED_TRACE(base::UTF16ToUTF8(text));
+    auto emphasis = SearchboxHandler::ComputeUrlEmphasis(
+        std::u16string(text), /*text_is_url=*/true,
+        /*include_security_style=*/false, client);
+    ASSERT_TRUE(emphasis);
+    EXPECT_TRUE(emphasis->text_is_url);
+    EXPECT_EQ(emphasis->deemphasis_mode,
+              searchbox::mojom::UrlDeemphasisMode::kAllButHost);
+    EXPECT_EQ(emphasis->scheme_range, std::nullopt);
+    EXPECT_EQ(emphasis->host_range, gfx::Range(0, text.size()));
+  }
+
+  // An explicit data: scheme should still emphasize only the scheme.
+  {
+    auto emphasis = SearchboxHandler::ComputeUrlEmphasis(
+        u"data:text/plain,hello", /*text_is_url=*/true,
+        /*include_security_style=*/false, client);
+    ASSERT_TRUE(emphasis);
+    EXPECT_EQ(emphasis->deemphasis_mode,
+              searchbox::mojom::UrlDeemphasisMode::kAllButScheme);
+    EXPECT_EQ(emphasis->scheme_range, gfx::Range(0, 4));
+  }
+}
+
+TEST_F(WebuiOmniboxHandlerTest, ComputeUrlEmphasis_InnerUrlComponents) {
+  const auto* client = omnibox_controller_->client();
+
+  // For view-source: and blob: URLs, the scheme and host ranges refer to the
+  // inner URL, so the scheme range does not start at 0.
+  {
+    auto emphasis = SearchboxHandler::ComputeUrlEmphasis(
+        u"view-source:https://example.com/path", /*text_is_url=*/true,
+        /*include_security_style=*/false, client);
+    ASSERT_TRUE(emphasis);
+    EXPECT_EQ(emphasis->deemphasis_mode,
+              searchbox::mojom::UrlDeemphasisMode::kAllButHost);
+    EXPECT_EQ(emphasis->scheme_range, gfx::Range(12, 17));
+    EXPECT_EQ(emphasis->host_range, gfx::Range(20, 31));
+  }
+  {
+    auto emphasis = SearchboxHandler::ComputeUrlEmphasis(
+        u"blob:https://example.com/uuid", /*text_is_url=*/true,
+        /*include_security_style=*/false, client);
+    ASSERT_TRUE(emphasis);
+    EXPECT_EQ(emphasis->deemphasis_mode,
+              searchbox::mojom::UrlDeemphasisMode::kAllButHost);
+    EXPECT_EQ(emphasis->scheme_range, gfx::Range(5, 10));
+    EXPECT_EQ(emphasis->host_range, gfx::Range(13, 24));
+  }
+  // An inner data: URL emphasizes only the inner "data" scheme.
+  {
+    auto emphasis = SearchboxHandler::ComputeUrlEmphasis(
+        u"view-source:data:text/html,hi", /*text_is_url=*/true,
+        /*include_security_style=*/false, client);
+    ASSERT_TRUE(emphasis);
+    EXPECT_EQ(emphasis->deemphasis_mode,
+              searchbox::mojom::UrlDeemphasisMode::kAllButScheme);
+    EXPECT_EQ(emphasis->scheme_range, gfx::Range(12, 16));
+    EXPECT_EQ(emphasis->host_range, std::nullopt);
+  }
 }
 
 TEST_F(WebuiOmniboxHandlerTest, OpenAutocompleteMatch_KeyboardModifiers) {

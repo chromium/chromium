@@ -111,6 +111,17 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   static base::DictValue GetWebUIDataSourceDict(Profile* profile,
                                                 WebUIDataSourceOptions options);
 
+  // Computes URL emphasis metadata for the given `text`.
+  // Based on `OmniboxView::UpdateTextStyle()` (for URL component parsing and
+  // deemphasis mode determination) and `OmniboxViewViews::UpdateSchemeStyle()`
+  // (for security-related scheme styling when `include_security_style` is
+  // true).
+  static searchbox::mojom::UrlEmphasisPtr ComputeUrlEmphasis(
+      const std::u16string& text,
+      bool text_is_url,
+      bool include_security_style,
+      const OmniboxClient* client);
+
   // Maps all icons returned from either `AutocompleteMatch::GetVectorIcon()` or
   // `OmniboxAction::GetIconImage()` to svg resource strings.
   virtual std::string AutocompleteIconToResourceName(

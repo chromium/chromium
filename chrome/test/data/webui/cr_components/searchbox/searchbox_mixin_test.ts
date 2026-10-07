@@ -3010,18 +3010,15 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         assertEquals(0, element.selection.line);
         assertEquals('suggested query', mockInput.inputElement.value);
 
-        // Setting selection to line -1 and calling updateInputForSelection_
+        // Setting selection to line -1 and calling updateInputForSelection
         // restores typed input.
         element.setSelection(
             {line: -1, state: SelectionLineState.kNormal, actionIndex: 0});
         await microtasksFinished();
 
-        (element as unknown as {
-          updateInputForSelection_: (s: unknown, k: string) => void,
-        })
-            .updateInputForSelection_(
-                {line: -1, state: SelectionLineState.kNormal, actionIndex: 0},
-                'Tab');
+        element.updateInputForSelection(
+            {line: -1, state: SelectionLineState.kNormal, actionIndex: 0},
+            'Tab');
         await microtasksFinished();
         assertEquals('typed query', mockInput.inputElement.value);
       });
@@ -3421,12 +3418,9 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         element.setSelection(
             {line: 0, state: SelectionLineState.kNormal, actionIndex: 0});
         await element.updateComplete;
-        (element as unknown as {
-          updateInputForSelection_: (s: unknown, k: string) => void,
-        })
-            .updateInputForSelection_(
-                {line: 0, state: SelectionLineState.kNormal, actionIndex: 0},
-                'ArrowDown');
+        element.updateInputForSelection(
+            {line: 0, state: SelectionLineState.kNormal, actionIndex: 0},
+            'ArrowDown');
         await microtasksFinished();
         assertEquals('test default', mockInput.inputElement.value);
 
@@ -3435,12 +3429,9 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         element.setSelection(
             {line: 1, state: SelectionLineState.kNormal, actionIndex: 0});
         await element.updateComplete;
-        (element as unknown as {
-          updateInputForSelection_: (s: unknown, k: string) => void,
-        })
-            .updateInputForSelection_(
-                {line: 1, state: SelectionLineState.kNormal, actionIndex: 0},
-                'ArrowDown');
+        element.updateInputForSelection(
+            {line: 1, state: SelectionLineState.kNormal, actionIndex: 0},
+            'ArrowDown');
         await microtasksFinished();
         assertEquals('test secondary', mockInput.inputElement.value);
       });
@@ -3471,12 +3462,9 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         element.setSelection(
             {line: 0, state: SelectionLineState.kNormal, actionIndex: 0});
         await element.updateComplete;
-        (element as unknown as {
-          updateInputForSelection_: (s: unknown, k: string) => void,
-        })
-            .updateInputForSelection_(
-                {line: 0, state: SelectionLineState.kNormal, actionIndex: 0},
-                'ArrowDown');
+        element.updateInputForSelection(
+            {line: 0, state: SelectionLineState.kNormal, actionIndex: 0},
+            'ArrowDown');
         await microtasksFinished();
         assertEquals('test default', mockInput.inputElement.value);
         assertEquals(' default', mockInput.lastInput()?.inline);
@@ -3489,16 +3477,13 @@ suite('SearchboxMixinVirtualFocusTest', () => {
           actionIndex: 0,
         });
         await element.updateComplete;
-        (element as unknown as {
-          updateInputForSelection_: (s: unknown, k: string) => void,
-        })
-            .updateInputForSelection_(
-                {
-                  line: 0,
-                  state: SelectionLineState.kFocusedButtonAim,
-                  actionIndex: 0,
-                },
-                'Tab');
+        element.updateInputForSelection(
+            {
+              line: 0,
+              state: SelectionLineState.kFocusedButtonAim,
+              actionIndex: 0,
+            },
+            'Tab');
         await microtasksFinished();
         assertEquals('test', mockInput.inputElement.value);
         assertEquals('', mockInput.lastInput()?.inline);

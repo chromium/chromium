@@ -723,8 +723,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       return this.handleVirtualFocusEnter(e);
     }
 
-    private updateInputForSelection_(
-        nextSelection: OmniboxPopupSelection, key: string) {
+    updateInputForSelection(nextSelection: OmniboxPopupSelection, key: string) {
       if (nextSelection.state === SelectionLineState.kFocusedButtonAim ||
           nextSelection.line === -1) {
         // The input itself, or a button outside the matches: show the typed
@@ -993,7 +992,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
 
           await this.updateComplete;
 
-          this.updateInputForSelection_(nextSelection, e.key);
+          this.updateInputForSelection(nextSelection, e.key);
           return;
         }
       }
@@ -1132,7 +1131,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       }
       this.setSelection(selection);
       await this.updateComplete;
-      this.updateInputForSelection_(selection, 'click');
+      this.updateInputForSelection(selection, 'click');
       const inputValue = this.getInputElement().getInputValue();
       if (inputValue) {
         this.queryAutocomplete(
@@ -1253,4 +1252,6 @@ export interface SearchboxMixinInterface extends
       isOnFocus: boolean): void;
   getTabId(): number|null;
   shouldAppendDotComOnCtrlEnter(): boolean;
+  updateInputForSelection(nextSelection: OmniboxPopupSelection, key: string):
+      void;
 }

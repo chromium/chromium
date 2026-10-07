@@ -37,6 +37,10 @@ struct OmniboxInputState {
   searchbox.mojom.InputKeywordModel? keyword_model;
   // Whether this input state update is the result of switching tabs.
   bool is_tab_switch;
+  // Precomputed URL emphasis for `text`.
+  searchbox.mojom.UrlEmphasis? url_emphasis;
+  // Precomputed URL emphasis for `full_url` on unelision.
+  searchbox.mojom.UrlEmphasis? unelided_url_emphasis;
 };
 
 // Browser-side handler for the Omnibox Popup.

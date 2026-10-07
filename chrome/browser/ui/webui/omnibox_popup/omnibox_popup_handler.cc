@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/search/search.h"
@@ -232,6 +233,8 @@ void OmniboxPopupHandler::SetInputState(
   state->query_zps = query_zps;
   state->keyword_model = std::move(keyword_model);
   state->is_tab_switch = is_tab_switch;
+  state->url_emphasis = ComputeUrlEmphasis(text);
+  state->unelided_url_emphasis = ComputeUrlEmphasis(full_url);
   // Extract active tab ID if in a Chrome browser window context.
   if (controller_ && controller_->client()->IsChromeOmniboxClient()) {
     auto* chrome_client =
@@ -469,4 +472,15 @@ void OmniboxPopupHandler::AdvanceFocus(bool reverse) {
           OmniboxPopupWebContentsHelper::FromWebContents(web_contents_)) {
     helper->AdvanceFocus(reverse);
   }
+}
+
+searchbox::mojom::UrlEmphasisPtr OmniboxPopupHandler::ComputeUrlEmphasis(
+    const std::string& text) const {
+  const auto* edit_model = controller_ ? controller_->edit_model() : nullptr;
+  const bool text_is_url = edit_model && edit_model->CurrentTextIsURL();
+  const bool is_user_input = edit_model && edit_model->user_input_in_progress();
+  return SearchboxHandler::ComputeUrlEmphasis(
+      base::UTF8ToUTF16(text), text_is_url,
+      /*include_security_style=*/!is_user_input,
+      controller_ ? controller_->client() : nullptr);
 }

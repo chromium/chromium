@@ -302,12 +302,14 @@ void OmniboxView::UpdateTextStyle(
     return;
   }
 
+  // LINT.IfChange(DemphasizeComponents)
   enum DemphasizeComponents {
     kEverything,
     kAllButScheme,
     kAllButHost,
     kNothing,
   } deemphasize = kNothing;
+  // LINT.ThenChange(//components/omnibox/browser/searchbox.mojom:UrlDeemphasisMode)
 
   url::Component scheme;
   url::Component host;

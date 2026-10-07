@@ -21,39 +21,45 @@ export function getHtml(this: SearchboxInputElement) {
     ${this.inKeywordMode_() ?
       html`<span id="keyword">${
           this.inputKeywordModel!.displayText}</span>` : ''}
-    ${this.multiLineEnabled ? html`
-      <textarea id="input" autocomplete="off"
-          part="searchbox-input"
-          spellcheck="false" aria-live="${this.inputAriaLive}" role="combobox"
-          aria-expanded="${this.dropdownIsVisible}" aria-controls="matches"
-          aria-description="${this.searchboxAriaDescription}"
-          placeholder="${this.computePlaceholderText_()}"
-          @blur="${this.onInputBlur_}"
-          @focus="${this.onInputFocus_}"
-          @copy="${this.onInputCopy_}"
-          @cut="${this.onInputCut_}"
-          @input="${this.onInputInput_}"
-          @keydown="${this.onInputKeydown_}"
-          @keyup="${this.onInputKeyup_}"
-          @mousedown="${this.onInputMousedown_}"
-          @paste="${this.onInputPaste_}"></textarea>
-    ` : html`
-      <input id="input" class="truncate" type="search" autocomplete="off"
-          part="searchbox-input"
-          spellcheck="false" aria-live="${this.inputAriaLive}" role="combobox"
-          aria-expanded="${this.dropdownIsVisible}" aria-controls="matches"
-          aria-description="${this.searchboxAriaDescription}"
-          placeholder="${this.computePlaceholderText_()}"
-          @blur="${this.onInputBlur_}"
-          @focus="${this.onInputFocus_}"
-          @copy="${this.onInputCopy_}"
-          @cut="${this.onInputCut_}"
-          @input="${this.onInputInput_}"
-          @keydown="${this.onInputKeydown_}"
-          @keyup="${this.onInputKeyup_}"
-          @mousedown="${this.onInputMousedown_}"
-          @paste="${this.onInputPaste_}">
-    `}
+    <div id="mirrorContainer">
+      <div id="mirror" part="mirror" aria-hidden="true"
+          ?hidden="${!this.urlEmphasisEnabled}"></div>
+      ${this.multiLineEnabled ? html`
+        <textarea id="input" autocomplete="off"
+            part="searchbox-input"
+            spellcheck="false" aria-live="${this.inputAriaLive}" role="combobox"
+            aria-expanded="${this.dropdownIsVisible}" aria-controls="matches"
+            aria-description="${this.searchboxAriaDescription}"
+            placeholder="${this.computePlaceholderText_()}"
+            @blur="${this.onInputBlur_}"
+            @focus="${this.onInputFocus_}"
+            @copy="${this.onInputCopy_}"
+            @cut="${this.onInputCut_}"
+            @input="${this.onInputInput_}"
+            @keydown="${this.onInputKeydown_}"
+            @keyup="${this.onInputKeyup_}"
+            @mousedown="${this.onInputMousedown_}"
+            @paste="${this.onInputPaste_}"
+            @scroll="${this.onInputScroll_}"></textarea>
+      ` : html`
+        <input id="input" class="truncate" type="search" autocomplete="off"
+            part="searchbox-input"
+            spellcheck="false" aria-live="${this.inputAriaLive}" role="combobox"
+            aria-expanded="${this.dropdownIsVisible}" aria-controls="matches"
+            aria-description="${this.searchboxAriaDescription}"
+            placeholder="${this.computePlaceholderText_()}"
+            @blur="${this.onInputBlur_}"
+            @focus="${this.onInputFocus_}"
+            @copy="${this.onInputCopy_}"
+            @cut="${this.onInputCut_}"
+            @input="${this.onInputInput_}"
+            @keydown="${this.onInputKeydown_}"
+            @keyup="${this.onInputKeyup_}"
+            @mousedown="${this.onInputMousedown_}"
+            @paste="${this.onInputPaste_}"
+            @scroll="${this.onInputScroll_}">
+      `}
+    </div>
     <span id="ellipsisIndicator" aria-hidden="true">...</span>
     <!-- Target of the input's aria-activedescendant while a selection is
          active. It distracts screen readers from the input's value, which

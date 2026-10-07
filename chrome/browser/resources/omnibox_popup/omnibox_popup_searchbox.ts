@@ -28,7 +28,7 @@ import {isMac} from '//resources/js/platform.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {SelectionLineState} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerInterface as SearchboxPageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerInterface as SearchboxPageHandlerInterface, UrlEmphasis} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {browserProxyFactory, OmniboxEscapeAction} from './omnibox_popup.mojom-webui.js';
@@ -334,6 +334,8 @@ export class OmniboxPopupSearchboxElement extends
   // synchronize input state.
   private hasReceivedInitialInputState_: boolean = false;
   private fullUrlShown_: boolean = false;
+  private urlEmphasis_: UrlEmphasis|null = null;
+  private unelidedUrlEmphasis_: UrlEmphasis|null = null;
   // TODO(b/504669677): Replace `deferredFocusAction_` with
   // an actual handshake, to give more control of when focusing happens, instead
   // of relying on deferred focus/selectall.
@@ -747,6 +749,7 @@ export class OmniboxPopupSearchboxElement extends
     performance.mark(
         'OmniboxPopupSearchboxElement::onAutocompleteResultChanged:ResultsReceived');
     await super.onAutocompleteResultChanged(result);
+    this.updateUrlEmphasisFromMatch_();
 
     // If these results didn't produce a visible dropdown (ex: 0 matches),
     // don't schedule paint or emit marks.
@@ -1181,8 +1184,12 @@ export class OmniboxPopupSearchboxElement extends
     }
     this.hasDirectUserDomInput_ = false;
 
+    this.fullUrlShown_ = false;
     this.$.input.setInputText(text);
     this.userInputInProgress_ = state.userInputInProgress;
+    this.urlEmphasis_ = state.urlEmphasis;
+    this.unelidedUrlEmphasis_ = state.unelidedUrlEmphasis;
+    this.$.input.urlEmphasis = text === state.text ? state.urlEmphasis : null;
     this.hasUserInput_ = state.userInputInProgress && !!text.trim();
     this.currentSequenceNum_ = state.sequenceNumber;
     this.tabId_ = state.tabId;
@@ -1224,8 +1231,6 @@ export class OmniboxPopupSearchboxElement extends
     }
     if (state.showFullUrl) {
       this.maybeShowFullUrl_();
-    } else {
-      this.fullUrlShown_ = false;
     }
 
     this.hasInputSelection_ = selection.start !== selection.end;
@@ -1271,6 +1276,32 @@ export class OmniboxPopupSearchboxElement extends
     } else {
       // Prevent stale tracking of queried input across state updates.
       this.lastQueriedInput = text;
+    }
+  }
+
+  override updateInputForSelection(
+      nextSelection: OmniboxPopupSelection, key: string) {
+    super.updateInputForSelection(nextSelection, key);
+    if (this.selectedMatch || nextSelection.line === -1) {
+      this.fullUrlShown_ = false;
+    }
+    this.updateUrlEmphasisFromMatch_();
+  }
+
+  private getSteadyStateUrlEmphasis_(): UrlEmphasis|null {
+    return this.fullUrlShown_ ?
+        (this.unelidedUrlEmphasis_ ?? this.urlEmphasis_) :
+        this.urlEmphasis_;
+  }
+
+  private updateUrlEmphasisFromMatch_() {
+    const match = this.result?.matches?.[this.matchIndex] ?? null;
+    if (match) {
+      this.$.input.urlEmphasis = match.urlEmphasis;
+    } else if (!this.userInputInProgress_) {
+      this.$.input.urlEmphasis = this.getSteadyStateUrlEmphasis_();
+    } else {
+      this.$.input.urlEmphasis = null;
     }
   }
 
@@ -1415,6 +1446,7 @@ export class OmniboxPopupSearchboxElement extends
     }
     this.fullUrlShown_ = true;
     this.$.input.setInputText(this.fullUrl_);
+    this.$.input.urlEmphasis = this.unelidedUrlEmphasis_ ?? this.urlEmphasis_;
     this.lastInputText_ = this.fullUrl_;
     const len = this.fullUrl_.length;
     this.lastInputSelection_ = {start: len, end: len};
@@ -1803,6 +1835,7 @@ export class OmniboxPopupSearchboxElement extends
           (defaultMatch && defaultMatch.allowedToBeDefaultMatch) ?
           defaultMatch.inlineAutocompletion :
           '';
+      this.fullUrlShown_ = false;
       inputEl.setInput({
         text: typedText,
         inline: inlineText,
@@ -1813,6 +1846,13 @@ export class OmniboxPopupSearchboxElement extends
         inputEl.setSelectionA11yLabel(this.getSelectionA11yLabel(
             defaultMatch ?? null,
             {line: 0, state: SelectionLineState.kNormal, actionIndex: 0}));
+      }
+      if (defaultMatch && defaultMatch.allowedToBeDefaultMatch) {
+        inputEl.urlEmphasis = defaultMatch.urlEmphasis;
+      } else if (!this.userInputInProgress_) {
+        inputEl.urlEmphasis = this.getSteadyStateUrlEmphasis_();
+      } else {
+        inputEl.urlEmphasis = null;
       }
       this.popupPageHandler_.logEscapeAction(
           OmniboxEscapeAction.kRevertTemporaryText);
@@ -1843,6 +1883,7 @@ export class OmniboxPopupSearchboxElement extends
         text: restoredText,
         inline: '',
       });
+      inputEl.urlEmphasis = restoredText ? this.urlEmphasis_ : null;
       inputEl.select();
       this.userInputInProgress_ = false;
       this.popupPageHandler_.revert(this.currentSequenceNum_);
