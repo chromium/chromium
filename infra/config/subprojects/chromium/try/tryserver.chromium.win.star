@@ -228,6 +228,7 @@ try_.orchestrator_builder(
         # crbug.com/40280175
         "chromium_checkout.expand_submodules": 100,
         "luci.buildbucket.run_in_turboci": 100,
+        "luci.buildbucket.run_in_turboci.grpc_client": 2,
     },
     main_list_view = "try",
     use_clang_coverage = True,
