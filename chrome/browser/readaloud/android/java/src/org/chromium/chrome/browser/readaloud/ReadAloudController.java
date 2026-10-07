@@ -1716,6 +1716,7 @@ public class ReadAloudController
         }
         mSelectedVoiceId.set(selectedVoiceId);
         if (ReadAloudFeatures.isNativeEnabled() && mNativeBridge.isInitialized()) {
+            mNativeBridge.setLanguageCode(language);
             mNativeBridge.setVoice(selectedVoiceId);
         }
     }

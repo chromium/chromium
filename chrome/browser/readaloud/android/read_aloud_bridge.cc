@@ -307,6 +307,13 @@ void ReadAloudBridge::SetVoice(JNIEnv* env, const std::string& voice_id) {
   }
 }
 
+void ReadAloudBridge::SetLanguageCode(JNIEnv* env,
+                                      const std::string& language_code) {
+  if (service_) {
+    service_->SetLanguageCode(language_code);
+  }
+}
+
 void ReadAloudBridge::PreviewVoice(JNIEnv* env, const std::string& voice_id) {
   if (service_) {
     service_->PreviewVoice(voice_id);

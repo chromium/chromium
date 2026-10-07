@@ -163,6 +163,14 @@ class ReadAloudNativeBridge {
         }
     }
 
+    /** Sets the target language code for text-to-speech synthesis. */
+    public void setLanguageCode(String languageCode) {
+        ThreadUtils.assertOnUiThread();
+        if (mNativeReadAloudBridge != 0) {
+            ReadAloudNativeBridgeJni.get().setLanguageCode(mNativeReadAloudBridge, languageCode);
+        }
+    }
+
     /** Plays a short audio sample of the specified voice. */
     public void previewVoice(String voiceId) {
         ThreadUtils.assertOnUiThread();
@@ -362,6 +370,10 @@ class ReadAloudNativeBridge {
 
         // Sets the voice to be used for text-to-speech synthesis.
         void setVoice(long nativeReadAloudBridge, @JniType("std::string") String voiceId);
+
+        // Sets the target language code for text-to-speech synthesis.
+        void setLanguageCode(
+                long nativeReadAloudBridge, @JniType("std::string") String languageCode);
 
         // Plays a short audio sample of the specified voice.
         void previewVoice(long nativeReadAloudBridge, @JniType("std::string") String voiceId);

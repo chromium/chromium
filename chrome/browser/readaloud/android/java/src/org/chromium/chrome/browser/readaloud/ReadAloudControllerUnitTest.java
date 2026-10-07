@@ -511,6 +511,7 @@ public class ReadAloudControllerUnitTest {
         verify(mPlayerCoordinator)
                 .playbackReady(
                         any(NativePlayback.class), eq(PlaybackListener.State.PLAYBACK_CREATION));
+        verify(mNativeBridgeNatives).setLanguageCode(eq(12345L), eq("en"));
         verify(mNativeBridgeNatives).setVoice(eq(12345L), eq("voiceA"));
         verify(mNativeBridgeNatives).play(eq(12345L), eq(mWebContents));
     }
