@@ -1003,6 +1003,17 @@ void AutocompleteController::
   UpdateSearchTermsArgsWithAdditionalSearchboxStats(query_formulation_time,
                                                     *match->search_terms_args);
   SetMatchDestinationURL(match);
+
+  // Truncation itself is performed in TemplateURLRef::HandleReplacements
+  // (template_url.cc) during URL construction to keep all generated URLs
+  // (including prerender URLs) consistent and bounded to the URL length budget.
+  // However, the histogram is recorded here because this method is called once
+  // when an accepted search suggestion is actually navigated to across
+  // platforms, avoiding recording during keystroke candidate generation.
+  if (match->search_terms_args->is_oq_truncated.has_value()) {
+    base::UmaHistogramBoolean("Omnibox.SuggestionUsed.TruncationOq",
+                              *match->search_terms_args->is_oq_truncated);
+  }
 }
 
 void AutocompleteController::UpdateSearchTermsArgsWithAdditionalSearchboxStats(

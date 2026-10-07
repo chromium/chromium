@@ -4836,6 +4836,18 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.SuggestionUsed.TruncationOq" enum="Boolean"
+    expires_after="2027-10-01">
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records whether or not the &quot;oq&quot; (original query) parameter value
+    of a search URL was truncated. Recorded once per navigation when the user
+    accepts a search suggestion and the kTruncateSearchSuggestOq feature is
+    enabled.
+  </summary>
+</histogram>
+
 <histogram
     name="Omnibox.SuggestionUsed.URL.Experimental.NavigationToFirstMeaningfulPaint"
     units="ms" expires_after="2027-03-07">

@@ -1153,6 +1153,7 @@ std::string TemplateURLRef::HandleReplacements(
     const SearchTermsData& search_terms_data,
     PostContent* post_content) const {
   TRACE_EVENT0("omnibox", "TemplateURLRef::HandleReplacement");
+  search_terms_args.is_oq_truncated.reset();
   if (replacements_.empty()) {
     if (!post_params_.empty()) {
       EncodeFormData(post_params_, post_content);
@@ -1380,9 +1381,13 @@ std::string TemplateURLRef::HandleReplacements(
           if (base::FeatureList::IsEnabled(omnibox::kTruncateSearchSuggestOq)) {
             const int max_length =
                 omnibox::kTruncateSearchSuggestOqLength.Get();
+            bool truncated = false;
             if (max_length >= 0) {
+              const size_t original_length = original_query.length();
               original_query = TruncateEncodedQuery(original_query, max_length);
+              truncated = original_query.length() < original_length;
             }
+            search_terms_args.is_oq_truncated = truncated;
           }
           HandleReplacement("oq", original_query, replacement, &url);
         }
