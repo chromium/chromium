@@ -1,0 +1,73 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.tasks.tab_management.data_provider;
+
+import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+
+import java.util.function.Predicate;
+
+/**
+ * {@link TabListDataProvider} implementation that filters tabs from a {@link TabModel} according to
+ * a {@link Predicate} into a flat list of {@link TabItem} entries.
+ */
+@NullMarked
+public class FlatTabListDataProvider extends TabListDataProvider {
+    private final @Nullable Predicate<Tab> mFilter;
+
+    /**
+     * Constructs a new {@link FlatTabListDataProvider}.
+     *
+     * @param tabModelSupplier Supplier of the current {@link TabModel}.
+     * @param filter Predicate to filter tabs, or null for all tabs.
+     */
+    public FlatTabListDataProvider(
+            NullableObservableSupplier<TabModel> tabModelSupplier,
+            @Nullable Predicate<Tab> filter) {
+        super(tabModelSupplier);
+        // TODO(crbug.com/562590772): Wire flat surface coordinators to pass this provider to
+        // TabListCoordinator with their surface filter (e.g.
+        // `tab -> groupId.equals(tab.getTabGroupId())` for TabGridDialog/TabGroupUi,
+        // `Tab::getIsPinned` for pinned tabs, or `tab -> tabIds.contains(tab.getId())` for
+        // TabListEditor).
+        mFilter = filter;
+
+        TabModelObserver tabModelObserver =
+                new TabModelObserver() {
+                    @Override
+                    public void restoreCompleted() {
+                        requestDataReset();
+                    }
+
+                    // TODO(crbug.com/562590772): Add incremental TabModelObserver and
+                    // TabGroupObserver callbacks for tab additions, removals, moves, and selection.
+                };
+
+        initObservers(tabModelObserver);
+    }
+
+    @Override
+    protected void rebuildItems() {
+        mItems.clear();
+        TabModel model = getTabModelIfRestored();
+        if (model == null) return;
+
+        Tab selectedTab = TabModelUtils.getCurrentTab(model);
+        for (Tab tab : model) {
+            if (shouldShowTab(tab)) {
+                mItems.add(createTabItem(selectedTab, tab));
+            }
+        }
+    }
+
+    private boolean shouldShowTab(Tab tab) {
+        return mFilter == null || mFilter.test(tab);
+    }
+}
