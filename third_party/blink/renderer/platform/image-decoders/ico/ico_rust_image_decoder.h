@@ -23,6 +23,7 @@ class PLATFORM_EXPORT IcoRustImageDecoder final : public SkiaImageDecoderBase {
   String FilenameExtension() const override;
   const AtomicString& MimeType() const override;
   gfx::Size FrameSizeAtIndex(wtf_size_t) const override;
+  bool HotSpot(gfx::Point&) const override;
 
  protected:
   // SkiaImageDecoderBase:

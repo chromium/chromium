@@ -31,6 +31,15 @@ gfx::Size IcoRustImageDecoder::FrameSizeAtIndex(wtf_size_t index) const {
                    frame_info.fFrameRect.height());
 }
 
+bool IcoRustImageDecoder::HotSpot(gfx::Point& hot_spot) const {
+  SkIPoint sk_hot_spot;
+  if (!SkIcoRustDecoder::GetHotSpot(codec(), 0, &sk_hot_spot)) {
+    return false;
+  }
+  hot_spot = gfx::Point(sk_hot_spot.x(), sk_hot_spot.y());
+  return true;
+}
+
 std::unique_ptr<SkCodec> IcoRustImageDecoder::OnCreateSkCodec(
     std::unique_ptr<SkStream> stream,
     SkCodec::Result* result) {
