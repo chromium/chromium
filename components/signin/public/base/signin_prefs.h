@@ -6,14 +6,13 @@
 #define COMPONENTS_SIGNIN_PUBLIC_BASE_SIGNIN_PREFS_H_
 
 #include <optional>
-#include <string_view>
 
 #include "base/containers/flat_set.h"
-#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "components/signin/public/base/signin_prefs_accessor.h"
 
 namespace base {
 class Time;
@@ -67,7 +66,9 @@ class SigninPrefs {
   // Pref access:
   // Writing a value will create the account dictionary and the pref value if
   // any of those do not exist yet. It is expected be to used with a valid
-  // `gaia_id` for an account that is in Chrome.
+  // `gaia_id` for an account that is in Chrome (except for
+  // `Set/GetChromeSigninInterceptionUserChoice`, which treat an empty
+  // `gaia_id` as a no-op / `kNoChoice`).
   // Reading a value from a pref dictionary or a data pref that do not exist yet
   // will return the default value of that pref or std::nullopt if a default
   // value does apply.
@@ -276,61 +277,8 @@ class SigninPrefs {
   std::optional<int> GetDeprecatedPrefForTesting(const GaiaId& gaia_id);
 
  private:
-  // Helper methods for accessing preferences under `gaia_id`. If `parents` is
-  // non-empty, the preference is nested under intermediate dictionaries.
-  // Set/Increment helpers create missing intermediate dictionaries (overwriting
-  // non-dict values if necessary); read helpers return the default value if any
-  // intermediate dictionary is missing or not a dictionary.
-
-  // Increments any specified `pref` of type int for the given `gaia_id`.
-  int IncrementIntPrefForAccount(
-      const GaiaId& gaia_id,
-      std::string_view pref,
-      base::span<const std::string_view> parents = {});
-  // Gets any specified `pref` of type int for the given `gaia_id`.
-  // Returns 0 if the corresponding `pref` doesn't exist for `gaia_id`.
-  int GetIntPrefForAccount(
-      const GaiaId& gaia_id,
-      std::string_view pref,
-      base::span<const std::string_view> parents = {}) const;
-
-  // Sets any specified `pref` of type int for the given `gaia_id` to `value`.
-  void SetIntPrefForAccount(const GaiaId& gaia_id,
-                            std::string_view pref,
-                            int value,
-                            base::span<const std::string_view> parents = {});
-
-  // Sets any specified `pref` of type bool for the given `gaia_id` to
-  // `enabled`.
-  void SetBooleanPrefForAccount(
-      const GaiaId& gaia_id,
-      std::string_view pref,
-      bool enabled,
-      base::span<const std::string_view> parents = {});
-  // Gets any specified `pref` of type bool for the given `gaia_id`.
-  // Returns false if the corresponding `pref` doesn't exist for `gaia_id`.
-  bool GetBooleanPrefForAccount(
-      const GaiaId& gaia_id,
-      std::string_view pref,
-      base::span<const std::string_view> parents = {}) const;
-
-  // Time pref related, returns by default std::nullopt if the pref is not
-  // created yet for the given `gaia_id`.
-  void SetTimePref(base::Time time,
-                   const GaiaId& gaia_id,
-                   std::string_view pref,
-                   base::span<const std::string_view> parents = {});
-  std::optional<base::Time> GetTimePref(
-      const GaiaId& gaia_id,
-      std::string_view pref,
-      base::span<const std::string_view> parents = {}) const;
-
-  // Clear any given account pref for the given `gaia_id`.
-  void ClearPref(const GaiaId& gaia_id,
-                 std::string_view pref,
-                 base::span<const std::string_view> parents = {});
-
   const raw_ref<PrefService> pref_service_;
+  SigninPrefsAccessor accessor_;
 };
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_SIGNIN_PREFS_H_

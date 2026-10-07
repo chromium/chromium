@@ -5,7 +5,11 @@
 #include "components/signin/public/base/signin_prefs.h"
 
 #include <limits>
+#include <set>
+#include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
@@ -1008,6 +1012,250 @@ TEST_F(SigninPrefsTest, IsValidValueValidatesTypesAndTimestamps) {
                                                  base::Value(1)));
 }
 
+namespace {
+
+using PrefPath = std::pair<std::vector<std::string>, std::string>;
+
+void VerifyAndCollectDictEntriesAreRegistered(
+    const base::DictValue& dict,
+    std::vector<std::string_view> parents,
+    std::set<PrefPath>* observed_paths) {
+  auto pass_key = SigninPrefsRegistry::CreatePassKeyForTesting();
+  for (const auto [key, value] : dict) {
+    observed_paths->insert(
+        {std::vector<std::string>(parents.begin(), parents.end()), key});
+    if (value.is_dict()) {
+      const SigninPrefsRegistry::PrefDescriptor* pref_desc =
+          SigninPrefsRegistry::Find(pass_key, parents, key);
+      EXPECT_NE(pref_desc, nullptr) << "Unregistered dict: " << key;
+      if (pref_desc) {
+        EXPECT_EQ(pref_desc->type, base::Value::Type::DICT);
+      }
+      std::vector<std::string_view> child_parents = parents;
+      child_parents.push_back(key);
+      VerifyAndCollectDictEntriesAreRegistered(value.GetDict(), child_parents,
+                                               observed_paths);
+    } else {
+      EXPECT_TRUE(
+          SigninPrefsRegistry::IsValidValue(pass_key, parents, key, value))
+          << "Unregistered or type-mismatched key: " << key;
+    }
+  }
+}
+
+}  // namespace
+
+TEST_F(SigninPrefsTest, AllWrittenPrefsAreRegisteredWithMatchingType) {
+  const GaiaId gaia_id("gaia_id_all_prefs");
+  const base::Time now = base::Time::Now();
+
+  // Exercise all setters/mutators.
+  signin_prefs().SetChromeSigninInterceptionUserChoice(
+      gaia_id, ChromeSigninUserChoice::kSignin);
+  signin_prefs().SetAccountMetricsId(gaia_id, 7);
+  signin_prefs().SetAccountMetricsIdCapped(gaia_id);
+  signin_prefs().SetChromeLastSignoutTime(gaia_id, now);
+  signin_prefs().SetChromeSigninInterceptionLastBubbleDeclineTime(gaia_id, now);
+  signin_prefs().IncrementChromeSigninBubbleRepromptCount(gaia_id);
+  signin_prefs().IncrementChromeSigninInterceptionDismissCount(gaia_id);
+  signin_prefs().IncrementPasswordSigninPromoImpressionCount(gaia_id);
+  signin_prefs().IncrementAddressSigninPromoImpressionCount(gaia_id);
+  signin_prefs().IncrementBookmarkSigninPromoImpressionCount(gaia_id);
+  signin_prefs().IncrementBookmarkManagerSigninPromoImpressionCount(gaia_id);
+  signin_prefs().IncrementBookmarkManagerSigninPromoDismissCount(gaia_id);
+  signin_prefs().IncrementSearchAIModeSigninPromoImpressionCount(gaia_id);
+  signin_prefs().IncrementAutofillSigninPromoDismissCount(gaia_id);
+  signin_prefs().IncrementSearchAIModeSigninPromoDismissCount(gaia_id);
+  signin_prefs().SetExtensionsExplicitBrowserSignin(gaia_id, true);
+  signin_prefs().SetBookmarksExplicitBrowserSignin(gaia_id, true);
+  signin_prefs().SetPolicyDisclaimerLastRegistrationFailureTime(gaia_id, now);
+  signin_prefs().SetSearchAIModeSigninPromoLastImpressionTime(gaia_id, now);
+  signin_prefs().IncrementHistoryPageHistorySyncPromoShownCount(gaia_id);
+  signin_prefs().SetHistoryPageHistorySyncPromoLastDismissedTimestamp(gaia_id,
+                                                                      now);
+  signin_prefs().SetHistoryPageHistorySyncPromoShownAfterDismissal(gaia_id);
+  signin_prefs().IncrementBookmarkBatchUploadPromoDismissCountWithLastTime(
+      gaia_id);
+  signin_prefs().SetBatchUploadLastUploadRemainingLocalDataCount(gaia_id, 4);
+
+  // AvatarButtonPromoCountDictionary prefs via typed SigninPrefs accessors.
+  signin_prefs().IncrementAvatarButtonHistorySyncPromoShownCount(gaia_id);
+  signin_prefs().IncrementAvatarButtonHistorySyncPromoUsedCount(gaia_id);
+  signin_prefs().IncrementAvatarButtonBatchUploadPromoShownCount(gaia_id);
+  signin_prefs().IncrementAvatarButtonBatchUploadPromoUsedCount(gaia_id);
+  signin_prefs().IncrementAvatarButtonBatchUploadBookmarkPromoShownCount(
+      gaia_id);
+  signin_prefs().IncrementAvatarButtonBatchUploadBookmarkPromoUsedCount(
+      gaia_id);
+  signin_prefs()
+      .IncrementAvatarButtonBatchUploadWindows10DepreciationPromoShownCount(
+          gaia_id);
+  signin_prefs()
+      .IncrementAvatarButtonBatchUploadWindows10DepreciationPromoUsedCount(
+          gaia_id);
+  signin_prefs().IncrementAvatarButtonSigninPromoShownCount(gaia_id);
+  signin_prefs().IncrementAvatarButtonSigninPromoUsedCount(gaia_id);
+  signin_prefs().SetAvatarButtonSigninPromoLastShownTime(gaia_id, now);
+
+  // CrossDevicePromoPrefs.history prefs via typed SigninPrefs accessors.
+  signin_prefs().SetCrossDeviceHistoryPromoShownCount(gaia_id, 2);
+  signin_prefs().SetCrossDeviceHistoryPromoLastDismissedTime(gaia_id, now);
+  signin_prefs().SetCrossDeviceHistoryPromoShownAfterDismissal(gaia_id, true);
+
+  // Verify all typed getters return the expected values and succeed.
+  EXPECT_EQ(signin_prefs().GetChromeSigninInterceptionUserChoice(gaia_id),
+            ChromeSigninUserChoice::kSignin);
+  EXPECT_EQ(signin_prefs().GetAccountMetricsId(gaia_id), 7);
+  EXPECT_TRUE(signin_prefs().IsAccountMetricsIdCapped(gaia_id));
+  EXPECT_EQ(signin_prefs().GetChromeLastSignoutTime(gaia_id), now);
+  EXPECT_EQ(
+      signin_prefs().GetChromeSigninInterceptionLastBubbleDeclineTime(gaia_id),
+      now);
+  EXPECT_EQ(signin_prefs().GetChromeSigninBubbleRepromptCount(gaia_id), 1);
+  EXPECT_EQ(signin_prefs().GetChromeSigninInterceptionDismissCount(gaia_id), 1);
+  EXPECT_EQ(signin_prefs().GetPasswordSigninPromoImpressionCount(gaia_id), 1);
+  EXPECT_EQ(signin_prefs().GetAddressSigninPromoImpressionCount(gaia_id), 1);
+  EXPECT_EQ(signin_prefs().GetBookmarkSigninPromoImpressionCount(gaia_id), 1);
+  EXPECT_EQ(
+      signin_prefs().GetBookmarkManagerSigninPromoImpressionCount(gaia_id), 1);
+  EXPECT_EQ(signin_prefs().GetBookmarkManagerSigninPromoDismissCount(gaia_id),
+            1);
+  EXPECT_EQ(signin_prefs().GetSearchAIModeSigninPromoImpressionCount(gaia_id),
+            1);
+  EXPECT_EQ(signin_prefs().GetAutofillSigninPromoDismissCount(gaia_id), 1);
+  EXPECT_EQ(signin_prefs().GetSearchAIModeSigninPromoDismissCount(gaia_id), 1);
+  EXPECT_TRUE(signin_prefs().GetExtensionsExplicitBrowserSignin(gaia_id));
+  EXPECT_TRUE(signin_prefs().GetBookmarksExplicitBrowserSignin(gaia_id));
+  EXPECT_EQ(
+      signin_prefs().GetPolicyDisclaimerLastRegistrationFailureTime(gaia_id),
+      now);
+  EXPECT_EQ(
+      signin_prefs().GetSearchAIModeSigninPromoLastImpressionTime(gaia_id),
+      now);
+  EXPECT_EQ(signin_prefs().GetHistoryPageHistorySyncPromoShownCount(gaia_id),
+            1);
+  EXPECT_EQ(
+      signin_prefs().GetHistoryPageHistorySyncPromoLastDismissedTimestamp(
+          gaia_id),
+      now);
+  EXPECT_TRUE(
+      signin_prefs().GetHistoryPageHistorySyncPromoShownAfterDismissal(
+          gaia_id));
+  auto [bookmark_batch_dismiss_count, bookmark_batch_dismiss_time] =
+      signin_prefs().GetBookmarkBatchUploadPromoDismissCountWithLastTime(
+          gaia_id);
+  EXPECT_EQ(bookmark_batch_dismiss_count, 1);
+  EXPECT_TRUE(bookmark_batch_dismiss_time.has_value());
+  EXPECT_EQ(
+      signin_prefs().GetBatchUploadLastUploadRemainingLocalDataCount(gaia_id),
+      4);
+
+  EXPECT_EQ(signin_prefs().GetAvatarButtonHistorySyncPromoShownCount(gaia_id),
+            1);
+  EXPECT_EQ(signin_prefs().GetAvatarButtonHistorySyncPromoUsedCount(gaia_id),
+            1);
+  EXPECT_EQ(signin_prefs().GetAvatarButtonBatchUploadPromoShownCount(gaia_id),
+            1);
+  EXPECT_EQ(signin_prefs().GetAvatarButtonBatchUploadPromoUsedCount(gaia_id),
+            1);
+  EXPECT_EQ(
+      signin_prefs().GetAvatarButtonBatchUploadBookmarkPromoShownCount(gaia_id),
+      1);
+  EXPECT_EQ(
+      signin_prefs().GetAvatarButtonBatchUploadBookmarkPromoUsedCount(gaia_id),
+      1);
+  EXPECT_EQ(
+      signin_prefs()
+          .GetAvatarButtonBatchUploadWindows10DepreciationPromoShownCount(
+              gaia_id),
+      1);
+  EXPECT_EQ(
+      signin_prefs()
+          .GetAvatarButtonBatchUploadWindows10DepreciationPromoUsedCount(
+              gaia_id),
+      1);
+  EXPECT_EQ(signin_prefs().GetAvatarButtonSigninPromoShownCount(gaia_id), 1);
+  EXPECT_EQ(signin_prefs().GetAvatarButtonSigninPromoUsedCount(gaia_id), 1);
+  EXPECT_EQ(signin_prefs().GetAvatarButtonSigninPromoLastShownTime(gaia_id),
+            now);
+
+  EXPECT_EQ(signin_prefs().GetCrossDeviceHistoryPromoShownCount(gaia_id), 2);
+  EXPECT_EQ(
+      signin_prefs().GetCrossDeviceHistoryPromoLastDismissedTime(gaia_id), now);
+  EXPECT_TRUE(
+      signin_prefs().GetCrossDeviceHistoryPromoShownAfterDismissal(gaia_id));
+
+  SigninPrefsAccessor accessor(pref_service(),
+                               SigninPrefsAccessor::CreatePassKeyForTesting());
+  const base::DictValue* account_dict =
+      accessor.GetAccountPrefsDict().FindDict(gaia_id.ToString());
+  ASSERT_NE(account_dict, nullptr);
+  std::set<PrefPath> observed_paths;
+  VerifyAndCollectDictEntriesAreRegistered(*account_dict, /*parents=*/{},
+                                           &observed_paths);
+
+  auto pass_key = SigninPrefsRegistry::CreatePassKeyForTesting();
+  std::set<PrefPath> registered_paths;
+  for (const auto& pref : SigninPrefsRegistry::GetAll(pass_key)) {
+    base::span<const std::string_view> parents = pref.parent_keys();
+    registered_paths.insert(
+        {std::vector<std::string>(parents.begin(), parents.end()),
+         std::string(pref.key)});
+  }
+  EXPECT_EQ(observed_paths, registered_paths);
+}
+
+TEST_F(SigninPrefsTest, EmptyGaiaInterceptionUserChoice) {
+  const GaiaId empty_gaia;
+  EXPECT_EQ(signin_prefs().GetChromeSigninInterceptionUserChoice(empty_gaia),
+            ChromeSigninUserChoice::kNoChoice);
+  EXPECT_FALSE(HasAccountPrefs(empty_gaia));
+
+  signin_prefs().SetChromeSigninInterceptionUserChoice(
+      empty_gaia, ChromeSigninUserChoice::kSignin);
+  EXPECT_FALSE(HasAccountPrefs(empty_gaia));
+  EXPECT_EQ(signin_prefs().GetChromeSigninInterceptionUserChoice(empty_gaia),
+            ChromeSigninUserChoice::kNoChoice);
+}
+
+TEST_F(SigninPrefsTest, MigrateObsoleteAccountPrefsWithCorruptedEntry) {
+  const GaiaId valid_gaia("valid_gaia");
+  const GaiaId other_valid_gaia("other_valid_gaia");
+  signin_prefs().SetDeprecatedPrefForTesting(valid_gaia);
+  signin_prefs().IncrementChromeSigninBubbleRepromptCount(valid_gaia);
+  signin_prefs().SetChromeSigninInterceptionUserChoice(
+      other_valid_gaia, ChromeSigninUserChoice::kSignin);
+  ASSERT_TRUE(
+      signin_prefs().GetDeprecatedPrefForTesting(valid_gaia).has_value());
+
+  // Corrupt the accounts dict by adding non-dict entries.
+  {
+    ScopedDictPrefUpdate update(&pref_service(), kSigninAccountPrefs);
+    update->Set("corrupted_account_not_a_dict", "corrupted_string_value");
+    update->Set("corrupted_account_int", 12345);
+  }
+  ASSERT_EQ(pref_service().GetDict(kSigninAccountPrefs).size(), 4u);
+
+  // MigrateObsoleteSigninPrefs should not crash on non-dict entries, should
+  // remove them, and should clean up deprecated prefs from valid accounts
+  // while keeping their other keys intact.
+  signin_prefs().MigrateObsoleteSigninPrefs();
+  EXPECT_FALSE(
+      signin_prefs().GetDeprecatedPrefForTesting(valid_gaia).has_value());
+  EXPECT_EQ(signin_prefs().GetChromeSigninBubbleRepromptCount(valid_gaia), 1);
+  EXPECT_EQ(
+      signin_prefs().GetChromeSigninInterceptionUserChoice(other_valid_gaia),
+      ChromeSigninUserChoice::kSignin);
+
+  base::DictValue expected_accounts;
+  expected_accounts.EnsureDict(valid_gaia.ToString())
+      ->Set("ChromeSigninInterceptionRepromptCount", 1);
+  expected_accounts.EnsureDict(other_valid_gaia.ToString())
+      ->Set("ChromeSigninInterceptionUserChoice",
+            static_cast<int>(ChromeSigninUserChoice::kSignin));
+  EXPECT_EQ(pref_service().GetDict(kSigninAccountPrefs), expected_accounts);
+}
+
 TEST_F(SigninPrefsTest, SigninPrefsAccessorDirectOperations) {
   SigninPrefsAccessor accessor(pref_service(),
                                SigninPrefsAccessor::CreatePassKeyForTesting());
@@ -1432,5 +1680,3 @@ TEST_F(SigninPrefsTest, SigninPrefsAccessorCheckFailures) {
   EXPECT_CHECK_DEATH(accessor.SetIntPref(
       GaiaId(), signin::internal::kChromeSigninInterceptionDismissCount, 1));
 }
-
-
