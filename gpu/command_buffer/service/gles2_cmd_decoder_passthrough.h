@@ -13,11 +13,13 @@
 #include <optional>
 #include <vector>
 
+#include "base/cancelable_callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/debug_marker_manager.h"
 #include "gpu/command_buffer/common/discardable_handle.h"
@@ -136,6 +138,10 @@ struct PassthroughResources {
 // so we can stack-allocate load/store ops.
 static constexpr GLsizei kPassthroughMaxPLSPlanes = 8;
 
+// Minimum idle delay before memory is trimmed for this context. Actual delay
+// can be higher.
+static constexpr base::TimeDelta kIdleTrimDelay = base::Seconds(1);
+
 class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
  public:
   GLES2DecoderPassthroughImpl(DecoderClient* client,
@@ -219,6 +225,9 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
 
   void SetIgnoreCachedStateForTest(bool ignore) override;
   void SetForceShaderNameHashingForTest(bool force) override;
+  void ForceReinitializeFeatureInfoForTesting() {
+    feature_info_->ForceReinitialize();
+  }
 
   // Gets the QueryManager for this context.
   QueryManager* GetQueryManager() override;
@@ -772,13 +781,19 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
 
   GLuint linking_program_service_id_ = 0u;
 
+  void ScheduleIdleMemoryTrim();
+  void PostIdleMemoryTrimTask();
+  void PerformIdleMemoryTrim();
+
+  base::TimeTicks last_active_time_;
+  base::CancelableOnceClosure idle_trim_cb_;
+
   base::WeakPtrFactory<GLES2DecoderPassthroughImpl> weak_ptr_factory_{this};
 
   class ScopedEnableTextureRectangleInShaderCompiler;
 
 // Include the prototypes of all the doer functions from a separate header to
 // keep this file clean.
-#include "base/time/time.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough_doer_prototypes.h"
 };
 

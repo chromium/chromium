@@ -15,6 +15,7 @@
 #include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -22,6 +23,7 @@
 #include "base/notimplemented.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_view_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
@@ -29,8 +31,8 @@
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/gpu_fence_manager.h"
-#include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
+#include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/multi_draw_manager.h"
 #include "gpu/command_buffer/service/passthrough_program_cache.h"
 #include "gpu/command_buffer/service/program_cache.h"
@@ -1023,6 +1025,10 @@ GLES2Decoder::Error GLES2DecoderPassthroughImpl::DoCommandsImpl(
     context_->FlushForDriverCrashWorkaround();
 #endif
 
+  if (process_pos > 0 && feature_info_->IsWebGLContext()) {
+    ScheduleIdleMemoryTrim();
+  }
+
   return result;
 }
 
@@ -1263,6 +1269,8 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
 }
 
 void GLES2DecoderPassthroughImpl::Destroy(bool have_context) {
+  idle_trim_cb_.Cancel();
+
   if (have_context && feature_info_->feature_flags().angle_blob_cache) {
     api()->glBlobCacheCallbacksANGLEFn(nullptr, nullptr, nullptr);
   }
@@ -1722,6 +1730,8 @@ bool GLES2DecoderPassthroughImpl::WasContextLostByRobustnessExtension() const {
 
 void GLES2DecoderPassthroughImpl::MarkContextLost(
     error::ContextLostReason reason) {
+  idle_trim_cb_.Cancel();
+
   // Only lose the context once.
   if (WasContextLost()) {
     return;
@@ -2894,6 +2904,47 @@ bool GLES2DecoderPassthroughImpl::CheckErrorCallbackState() {
     FlushErrors();
   }
   return had_error_;
+}
+
+void GLES2DecoderPassthroughImpl::ScheduleIdleMemoryTrim() {
+  if (WasContextLost()) {
+    return;
+  }
+  if (!feature_info_->feature_flags().angle_trim_memory ||
+      !base::FeatureList::IsEnabled(features::kANGLETrimMemoryOnIdle)) {
+    return;
+  }
+
+  last_active_time_ = base::TimeTicks::Now();
+  if (idle_trim_cb_.IsCancelled()) {
+    PostIdleMemoryTrimTask();
+  }
+}
+
+void GLES2DecoderPassthroughImpl::PostIdleMemoryTrimTask() {
+  if (!base::SingleThreadTaskRunner::HasCurrentDefault()) {
+    return;
+  }
+  idle_trim_cb_.Reset(
+      base::BindOnce(&GLES2DecoderPassthroughImpl::PerformIdleMemoryTrim,
+                     weak_ptr_factory_.GetWeakPtr()));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, idle_trim_cb_.callback(), kIdleTrimDelay);
+}
+
+void GLES2DecoderPassthroughImpl::PerformIdleMemoryTrim() {
+  TRACE_EVENT("gpu", __PRETTY_FUNCTION__);
+  idle_trim_cb_.Cancel();
+
+  if (base::TimeTicks::Now() - last_active_time_ < kIdleTrimDelay) {
+    PostIdleMemoryTrimTask();
+    return;
+  }
+
+  if (WasContextLost() || !MakeCurrent()) {
+    return;
+  }
+  api()->glTrimMemoryANGLEFn(GL_MEMORY_TRIM_HIGH_ANGLE);
 }
 
 #define GLES2_CMD_OP(name)                                 \

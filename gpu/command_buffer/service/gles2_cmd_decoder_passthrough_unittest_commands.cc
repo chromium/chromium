@@ -4,8 +4,13 @@
 
 #include <stdint.h>
 
+#include <string>
+
+#include "base/no_destructor.h"
+#include "base/test/scoped_feature_list.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest.h"
+#include "gpu/config/gpu_finch_features.h"
 
 namespace gpu {
 namespace gles2 {
@@ -183,6 +188,140 @@ TEST_F(GLES2WebGLDecoderPassthroughTest, ContextVisibilityHintCHROMIUM) {
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
     EXPECT_EQ(GL_NO_ERROR, GetGLError());
   }
+}
+
+class GLES2WebGLDecoderPassthroughIdleTrimBaseTest
+    : public GLES2WebGLDecoderPassthroughTest {
+ public:
+  void SetUp() override {
+    GLES2WebGLDecoderPassthroughTest::SetUp();
+    trim_count_ = 0;
+    last_trim_level_ = 0;
+    prev_get_string_fn_ = gl::g_current_gl_driver->fn.glGetStringFn;
+    gl::g_current_gl_driver->fn.glGetStringFn =
+        &GLES2WebGLDecoderPassthroughIdleTrimBaseTest::OnGetString;
+    prev_trim_memory_fn_ = gl::g_current_gl_driver->fn.glTrimMemoryANGLEFn;
+    gl::g_current_gl_driver->fn.glTrimMemoryANGLEFn =
+        &GLES2WebGLDecoderPassthroughIdleTrimBaseTest::OnTrimMemoryANGLE;
+    GetDecoder()->ForceReinitializeFeatureInfoForTesting();
+  }
+
+  void TearDown() override {
+    gl::g_current_gl_driver->fn.glGetStringFn = prev_get_string_fn_;
+    gl::g_current_gl_driver->fn.glTrimMemoryANGLEFn = prev_trim_memory_fn_;
+    prev_get_string_fn_ = nullptr;
+    prev_trim_memory_fn_ = nullptr;
+    GLES2WebGLDecoderPassthroughTest::TearDown();
+  }
+
+ protected:
+  static const GLubyte* GL_BINDING_CALL OnGetString(GLenum name) {
+    const GLubyte* str = prev_get_string_fn_(name);
+    if (name == GL_EXTENSIONS) {
+      static base::NoDestructor<std::string> extensions;
+      *extensions = str ? reinterpret_cast<const char*>(str) : "";
+      *extensions += " GL_ANGLE_trim_memory";
+      return reinterpret_cast<const GLubyte*>(extensions->c_str());
+    }
+    return str;
+  }
+
+  static void GL_BINDING_CALL OnTrimMemoryANGLE(GLenum trim_level) {
+    trim_count_++;
+    last_trim_level_ = trim_level;
+  }
+
+  inline static gl::glGetStringProc prev_get_string_fn_ = nullptr;
+  inline static int trim_count_ = 0;
+  inline static GLenum last_trim_level_ = 0;
+
+ private:
+  gl::glTrimMemoryANGLEProc prev_trim_memory_fn_ = nullptr;
+};
+
+class GLES2WebGLDecoderPassthroughIdleTrimTest
+    : public GLES2WebGLDecoderPassthroughIdleTrimBaseTest {
+ public:
+  GLES2WebGLDecoderPassthroughIdleTrimTest() {
+    feature_list_.InitAndEnableFeature(features::kANGLETrimMemoryOnIdle);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(GLES2WebGLDecoderPassthroughIdleTrimBaseTest,
+       IdleTrimDisabledByDefault) {
+  cmds::Finish cmd;
+  cmd.Init();
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  task_environment_.FastForwardBy(kIdleTrimDelay);
+  EXPECT_EQ(0, trim_count_);
+}
+
+TEST_F(GLES2WebGLDecoderPassthroughIdleTrimTest,
+       IdleTrimsMemoryAfterOneSecond) {
+  cmds::Finish cmd;
+  cmd.Init();
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(0, trim_count_);
+
+  task_environment_.FastForwardBy(kIdleTrimDelay / 2);
+  EXPECT_EQ(0, trim_count_);
+
+  task_environment_.FastForwardBy(kIdleTrimDelay / 2);
+  EXPECT_EQ(1, trim_count_);
+  EXPECT_EQ(static_cast<GLenum>(GL_MEMORY_TRIM_HIGH_ANGLE), last_trim_level_);
+
+  task_environment_.FastForwardBy(5 * kIdleTrimDelay);
+  EXPECT_EQ(1, trim_count_);
+}
+
+TEST_F(GLES2WebGLDecoderPassthroughIdleTrimTest, ActivityReschedulesIdleTrim) {
+  cmds::Finish cmd;
+  cmd.Init();
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+
+  task_environment_.FastForwardBy(base::Milliseconds(600));
+  EXPECT_EQ(0, trim_count_);
+
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  EXPECT_EQ(0, trim_count_);
+
+  task_environment_.FastForwardBy(base::Milliseconds(899));
+  EXPECT_EQ(0, trim_count_);
+
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  EXPECT_EQ(1, trim_count_);
+  EXPECT_EQ(static_cast<GLenum>(GL_MEMORY_TRIM_HIGH_ANGLE), last_trim_level_);
+}
+
+TEST_F(GLES2WebGLDecoderPassthroughIdleTrimTest,
+       MultipleCommandsInSameFrameTrimAfterOneSecond) {
+  cmds::Finish cmd;
+  cmd.Init();
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+
+  task_environment_.FastForwardBy(kIdleTrimDelay - base::Milliseconds(1));
+  EXPECT_EQ(0, trim_count_);
+
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  EXPECT_EQ(1, trim_count_);
+}
+
+TEST_F(GLES2WebGLDecoderPassthroughIdleTrimTest, ContextLossCancelsIdleTrim) {
+  cmds::Finish cmd;
+  cmd.Init();
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+
+  GetDecoder()->MarkContextLost(error::kUnknown);
+
+  task_environment_.FastForwardBy(kIdleTrimDelay);
+  EXPECT_EQ(0, trim_count_);
 }
 
 }  // namespace gles2
