@@ -24,6 +24,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/animation/animation_test_api.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
@@ -48,6 +49,8 @@ class StartupLaunchInfoBarInteractiveTest : public InteractiveBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(StartupLaunchInfoBarInteractiveTest, ShowOptInInfoBar) {
+  const auto render_mode = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
   base::HistogramTester histogram_tester;
   RunTestSequence(
       InstrumentTab(kWebContentsElementId, 0), Do([this]() {
@@ -56,6 +59,7 @@ IN_PROC_BROWSER_TEST_F(StartupLaunchInfoBarInteractiveTest, ShowOptInInfoBar) {
       }),
       WaitForShow(ConfirmInfoBar::kInfoBarElementId),
       PressButton(ConfirmInfoBar::kOkButtonElementId),
+      WaitForHide(ConfirmInfoBar::kInfoBarElementId),
       CheckResult(
           []() {
             return g_browser_process->local_state()->GetBoolean(
@@ -72,6 +76,8 @@ IN_PROC_BROWSER_TEST_F(StartupLaunchInfoBarInteractiveTest, ShowOptInInfoBar) {
 }
 
 IN_PROC_BROWSER_TEST_F(StartupLaunchInfoBarInteractiveTest, ShowOptOutInfoBar) {
+  const auto render_mode = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
   base::HistogramTester histogram_tester;
   RunTestSequence(
       InstrumentTab(kWebContentsElementId, 0), Do([this]() {
@@ -80,6 +86,7 @@ IN_PROC_BROWSER_TEST_F(StartupLaunchInfoBarInteractiveTest, ShowOptOutInfoBar) {
       }),
       WaitForShow(ConfirmInfoBar::kInfoBarElementId),
       PressButton(ConfirmInfoBar::kOkButtonElementId),
+      WaitForHide(ConfirmInfoBar::kInfoBarElementId),
       WaitForWebContentsNavigation(kWebContentsElementId,
                                    GURL("chrome://settings/onStartup")),
       Do([&histogram_tester]() {

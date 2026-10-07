@@ -32,6 +32,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "url/gurl.h"
 
 namespace session_restore_infobar {
@@ -385,6 +386,19 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest, MetricsIgnored) {
   histogram_tester.ExpectBucketCount(
       histogram_name, InfobarAction::kIgnored,
       1);
+}
+
+// Regression test for crbug.com/568176548: dismissing the session restore
+// infobar when animations are disabled must not destroy the InfoBarView while
+// InfoBarDismissed() is still on the stack before RemoveSelf() runs.
+IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
+                       DismissWithAnimationsDisabled) {
+  const auto render_mode = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+  CreateInfobar(browser(), false);
+  RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
+                  PressButton(ConfirmInfoBar::kDismissButtonElementId),
+                  WaitForHide(ConfirmInfoBar::kInfoBarElementId));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

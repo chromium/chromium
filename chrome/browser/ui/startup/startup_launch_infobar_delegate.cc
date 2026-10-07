@@ -83,13 +83,6 @@ std::optional<ui::ButtonStyle> StartupLaunchInfoBarDelegate::GetButtonStyle(
   }
 }
 
-bool StartupLaunchInfoBarDelegate::Accept() {
-  // Notify observers but don't close the infobar. Closing infobar will occur
-  // when the corresponding pref is changed.
-  ConfirmInfoBarDelegate::Accept();
-  return false;
-}
-
 std::u16string StartupLaunchInfoBarDelegate::GetButtonLabel(
     InfoBarButton /*button*/) const {
   switch (infobar_type_) {

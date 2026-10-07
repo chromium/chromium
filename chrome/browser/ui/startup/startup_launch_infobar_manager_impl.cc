@@ -110,6 +110,8 @@ void StartupLaunchInfoBarManagerImpl::CloseAllInfoBars() {
       continue;
     }
     infobar->owner()->RemoveObserver(this);
+    static_cast<ConfirmInfoBarDelegate*>(infobar->delegate())
+        ->RemoveObserver(this);
     infobar->RemoveSelf();
   }
 }
@@ -186,9 +188,6 @@ void StartupLaunchInfoBarManagerImpl::OnInfoBarRemoved(
 
   if (did_user_interact_) {
     CloseAllInfoBars();
-    for (auto& observer : observers_) {
-      observer.OnInfoBarDismissed();
-    }
   }
 }
 
@@ -198,9 +197,14 @@ void StartupLaunchInfoBarManagerImpl::OnAccept() {
                                 StartupLaunchInfoBarInteraction::kAccept);
   g_browser_process->local_state()->SetBoolean(
       prefs::kStartupLaunchInfobarAccepted, true);
+  for (auto& observer : observers_) {
+    observer.OnInfoBarDismissed();
+  }
 
   switch (infobar_type_) {
     case InfoBarType::kForegroundOptOut:
+      browser_collection_observation_.Reset();
+      browser_tab_strip_tracker_.reset();
       GlobalBrowserCollection::GetInstance()->ForEach(
           [this](BrowserWindowInterface* browser) {
             if (ShouldTrackBrowser(browser)) {
@@ -210,7 +214,6 @@ void StartupLaunchInfoBarManagerImpl::OnAccept() {
             return true;
           },
           BrowserCollection::Order::kActivation);
-      CloseAllInfoBars();
       break;
     case InfoBarType::kForegroundOptIn:
       g_browser_process->local_state()->SetBoolean(
@@ -233,4 +236,7 @@ void StartupLaunchInfoBarManagerImpl::OnDismiss() {
 
   local_state->SetTime(prefs::kStartupLaunchInfobarLastDeclinedTime,
                        base::Time::Now());
+  for (auto& observer : observers_) {
+    observer.OnInfoBarDismissed();
+  }
 }

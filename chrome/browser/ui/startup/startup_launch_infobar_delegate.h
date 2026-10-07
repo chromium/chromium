@@ -43,7 +43,6 @@ class StartupLaunchInfoBarDelegate : public ConfirmInfoBarDelegate {
   int GetButtons() const override;
   std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool ShouldHideInFullscreen() const override;
-  bool Accept() override;
   std::optional<ui::ButtonStyle> GetButtonStyle(
       ConfirmInfoBarDelegate::InfoBarButton button) const override;
 
