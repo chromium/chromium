@@ -61,6 +61,9 @@ class TestHibernationHandlerDelegate final
     return resource_provider_.get();
   }
   bool HasBacking() const override { return resource_provider_ != nullptr; }
+  bool IsBackingValid() const override {
+    return resource_provider_ && resource_provider_->IsValid();
+  }
   void ResetBacking() override { resource_provider_.reset(); }
 
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason reason) override {

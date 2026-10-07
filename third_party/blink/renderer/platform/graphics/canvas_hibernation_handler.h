@@ -42,6 +42,7 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
 
     virtual Canvas2DResourceProvider* GetSharedImageProvider() const = 0;
     virtual bool HasBacking() const = 0;
+    virtual bool IsBackingValid() const = 0;
     virtual bool IsPageVisible() const = 0;
     virtual bool IsContextLost() const = 0;
     virtual void ResetBacking() = 0;
