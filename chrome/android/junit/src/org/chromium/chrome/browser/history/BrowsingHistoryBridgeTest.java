@@ -22,7 +22,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
@@ -190,6 +192,7 @@ public class BrowsingHistoryBridgeTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.BROWSING_HISTORY_ACTOR_INTEGRATION_M3)
     public void testQueryHistoryWithOptions() {
         QueryOptions options =
                 new QueryOptions(
@@ -203,7 +206,9 @@ public class BrowsingHistoryBridgeTest {
                         eq("search query"),
                         eq("org.chromium.app"),
                         eq("example.com"),
-                        eq(List.of("client_123", "client_456")));
+                        eq(List.of("client_123", "client_456")),
+                        eq(/* includeUserVisits= */ true),
+                        eq(/* includeActorVisits= */ false));
     }
 
     @Test

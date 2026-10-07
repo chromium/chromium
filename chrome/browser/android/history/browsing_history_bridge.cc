@@ -95,7 +95,9 @@ void BrowsingHistoryBridge::QueryHistory(
     const std::u16string& query,
     const std::optional<std::string>& app_id,
     const std::optional<std::string>& hostname_suffix,
-    const std::vector<std::string>& client_ids) {
+    const std::vector<std::string>& client_ids,
+    bool include_user_visits,
+    bool include_actor_visits) {
   j_query_result_obj_.Reset(env, j_result_obj);
   query_history_continuation_.Reset();
 
@@ -103,8 +105,8 @@ void BrowsingHistoryBridge::QueryHistory(
   options.max_count = kMaxQueryCount;
   options.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
   options.duplicate_policy = history::QueryOptions::REMOVE_DUPLICATES_PER_DAY;
-  options.include_actor_visits =
-      history::IsBrowsingHistoryActorIntegrationM3Enabled();
+  options.include_user_visits = include_user_visits;
+  options.include_actor_visits = include_actor_visits;
   options.app_id = app_id;
   if (hostname_suffix.has_value()) {
     options.hostname_suffix = *hostname_suffix;

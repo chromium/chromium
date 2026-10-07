@@ -56,7 +56,9 @@ public class BrowsingHistoryBridge implements HistoryProvider {
                         query,
                         options.appId,
                         options.hostName,
-                        options.clientIds);
+                        options.clientIds,
+                        options.includeUserVisits,
+                        options.includeActorVisits);
     }
 
     @Override
@@ -209,7 +211,9 @@ public class BrowsingHistoryBridge implements HistoryProvider {
                 @JniType("std::u16string") String query,
                 @JniType("std::optional<std::string>") @Nullable String appId,
                 @JniType("std::optional<std::string>") @Nullable String hostnameSuffix,
-                @JniType("std::vector<std::string>") List<String> clientIds);
+                @JniType("std::vector<std::string>") List<String> clientIds,
+                boolean includeUserVisits,
+                boolean includeActorVisits);
 
         void queryHistoryContinuation(
                 long nativeBrowsingHistoryBridge, List<HistoryItem> historyItems);
