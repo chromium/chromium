@@ -2603,4 +2603,224 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
   run_loop.Run();
 }
 
+class ContextualTasksExtensionHandlerContextLibraryBrowserTest
+    : public ContextualTasksExtensionHandlerBrowserTestBase {
+ public:
+  ContextualTasksExtensionHandlerContextLibraryBrowserTest()
+      : ContextualTasksExtensionHandlerBrowserTestBase(
+            {kContextualTasks, kContextualTasksRearchitecture,
+             kContextualTasksForceEntryPointEligibility,
+             kContextualTasksContextLibrary},
+            {}) {}
+
+ protected:
+  // Adds a webpage context with Chrome tab data to `message`.
+  static void AddWebpageContext(
+      lens::SearchToClientMessage::UpdateThreadContextLibrary& message,
+      int64_t context_id,
+      const std::string& url,
+      const std::string& title) {
+    auto* context = message.add_contexts();
+    context->set_context_id(context_id);
+    context->mutable_webpage()->set_url(url);
+    context->mutable_webpage()->set_title(title);
+    context->set_has_chrome_tab_data(true);
+  }
+
+  void SendUpdateThreadContextLibrary(
+      const lens::SearchToClientMessage::UpdateThreadContextLibrary& library) {
+    lens::SearchToClientMessage message;
+    *message.mutable_update_thread_context_library() = library;
+    const size_t size = message.ByteSizeLong();
+    std::vector<uint8_t> serialized_message(size);
+    message.SerializeToArray(serialized_message.data(), size);
+    handler_->OnWebviewMessage(serialized_message);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerContextLibraryBrowserTest,
+    OnWebviewMessage_UpdateThreadContextLibrary_SetsRestoredTabsWhenEmpty) {
+  handler_->SetTaskId(base::Uuid::GenerateRandomV4());
+  ASSERT_TRUE(mock_session_handle_->GetTabContextState().restored.empty());
+
+  lens::SearchToClientMessage::UpdateThreadContextLibrary library;
+  AddWebpageContext(library, 1, "https://example.com/a", "Tab A");
+  AddWebpageContext(library, 2, "https://example.com/b", "Tab B");
+  // Non-tab contexts should not be added as restored tabs.
+  auto* pdf_context = library.add_contexts();
+  pdf_context->set_context_id(3);
+  pdf_context->mutable_pdf()->set_url("https://example.com/doc.pdf");
+  pdf_context->mutable_pdf()->set_title("Doc");
+
+  SendUpdateThreadContextLibrary(library);
+
+  const auto& restored = mock_session_handle_->GetTabContextState().restored;
+  ASSERT_EQ(restored.size(), 2u);
+  EXPECT_EQ(restored[0].url, GURL("https://example.com/a"));
+  EXPECT_EQ(restored[0].title, "Tab A");
+  EXPECT_TRUE(restored[0].restored_from_aim);
+  EXPECT_TRUE(restored[0].submitted);
+  EXPECT_EQ(restored[1].url, GURL("https://example.com/b"));
+  EXPECT_EQ(restored[1].title, "Tab B");
+  EXPECT_TRUE(restored[1].restored_from_aim);
+  EXPECT_TRUE(restored[1].submitted);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerContextLibraryBrowserTest,
+    OnWebviewMessage_UpdateThreadContextLibrary_ReplacesOldRestoredTabs) {
+  handler_->SetTaskId(base::Uuid::GenerateRandomV4());
+
+  lens::SearchToClientMessage::UpdateThreadContextLibrary first_library;
+  AddWebpageContext(first_library, 1, "https://example.com/a", "Tab A");
+  AddWebpageContext(first_library, 2, "https://example.com/b", "Tab B");
+  SendUpdateThreadContextLibrary(first_library);
+  ASSERT_EQ(mock_session_handle_->GetTabContextState().restored.size(), 2u);
+
+  // A later restored tabs update replaces the restored tabs with the server's
+  // latest list, in server order.
+  lens::SearchToClientMessage::UpdateThreadContextLibrary second_library;
+  AddWebpageContext(second_library, 3, "https://example.com/c", "Tab C");
+  AddWebpageContext(second_library, 1, "https://example.com/a", "Tab A");
+  SendUpdateThreadContextLibrary(second_library);
+
+  const auto& restored = mock_session_handle_->GetTabContextState().restored;
+  ASSERT_EQ(restored.size(), 2u);
+  EXPECT_EQ(restored[0].url, GURL("https://example.com/c"));
+  EXPECT_EQ(restored[0].title, "Tab C");
+  EXPECT_EQ(restored[1].url, GURL("https://example.com/a"));
+  EXPECT_EQ(restored[1].title, "Tab A");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerContextLibraryBrowserTest,
+    OnWebviewMessage_UpdateThreadContextLibrary_UpdatesServiceAndClearsSubmittedTokens) {
+  auto* tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_NE(tasks_service, nullptr);
+  ContextualTask task = tasks_service->CreateTask();
+  SessionID active_tab_id = sessions::SessionTabHelper::IdForTab(web_contents_);
+  tasks_service->AssociateTabWithTask(task.GetTaskId(), active_tab_id);
+  handler_->SetTaskId(task.GetTaskId());
+
+  base::UnguessableToken submitted_token = base::UnguessableToken::Create();
+  mock_session_handle_->set_submitted_context_tokens({submitted_token});
+
+  contextual_search::FileInfo submitted_file;
+  submitted_file.file_token = submitted_token;
+  submitted_file.tab_session_id = SessionID::FromSerializedValue(42);
+  lens::LensOverlayRequestId req_id;
+  req_id.set_context_id(101);
+  submitted_file.request_id = req_id;
+  EXPECT_CALL(*mock_session_handle_, GetSubmittedContextFileInfos())
+      .WillOnce(
+          Return(std::vector<contextual_search::FileInfo>{submitted_file}));
+
+  lens::SearchToClientMessage::UpdateThreadContextLibrary library;
+  AddWebpageContext(library, 101, "https://example.com/a", "Tab A");
+  auto* pdf_context = library.add_contexts();
+  pdf_context->set_context_id(202);
+  pdf_context->mutable_pdf()->set_url("https://example.com/doc.pdf");
+  pdf_context->mutable_pdf()->set_title("Doc");
+
+  SendUpdateThreadContextLibrary(library);
+
+  // Submitted tokens are cleared once committed by the server.
+  EXPECT_TRUE(mock_session_handle_->GetSubmittedContextTokens().empty());
+
+  // The matching submitted FileInfo populates `tab_id` on the restored tab.
+  const auto& restored = mock_session_handle_->GetTabContextState().restored;
+  ASSERT_EQ(restored.size(), 1u);
+  EXPECT_EQ(restored[0].tab_id, 42);
+  EXPECT_EQ(restored[0].url, GURL("https://example.com/a"));
+  EXPECT_EQ(restored[0].title, "Tab A");
+
+  // ContextualTasksService receives all committed URL resources (both tab and
+  // PDF). This is for underlining, etc.
+  std::optional<ContextualTask> updated_task =
+      tasks_service->GetContextualTaskForTab(active_tab_id);
+  ASSERT_TRUE(updated_task.has_value());
+  const std::vector<UrlResource> resources = updated_task->GetUrlResources();
+  ASSERT_EQ(resources.size(), 2u);
+  EXPECT_EQ(resources[0].url, GURL("https://example.com/a"));
+  EXPECT_EQ(resources[0].title, "Tab A");
+  EXPECT_EQ(resources[0].tab_id, SessionID::FromSerializedValue(42));
+  EXPECT_TRUE(resources[0].has_chrome_tab_data);
+  EXPECT_EQ(resources[1].url, GURL("https://example.com/doc.pdf"));
+  EXPECT_EQ(resources[1].title, "Doc");
+  EXPECT_FALSE(resources[1].has_chrome_tab_data);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerContextLibraryBrowserTest,
+    OnWebviewMessage_UpdateThreadContextLibrary_EmptyMessageReturnsEarly) {
+  auto* tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_NE(tasks_service, nullptr);
+  ContextualTask task = tasks_service->CreateTask();
+  SessionID active_tab_id = sessions::SessionTabHelper::IdForTab(web_contents_);
+  tasks_service->AssociateTabWithTask(task.GetTaskId(), active_tab_id);
+  handler_->SetTaskId(task.GetTaskId());
+
+  // Seed existing restored tabs and submitted tokens.
+  lens::SearchToClientMessage::UpdateThreadContextLibrary initial_library;
+  AddWebpageContext(initial_library, 1, "https://example.com/a", "Tab A");
+  SendUpdateThreadContextLibrary(initial_library);
+  ASSERT_EQ(mock_session_handle_->GetTabContextState().restored.size(), 1u);
+
+  base::UnguessableToken submitted_token = base::UnguessableToken::Create();
+  mock_session_handle_->set_submitted_context_tokens({submitted_token});
+
+  // Sending an empty UpdateThreadContextLibrary returns early without clearing
+  // submitted tokens or overwriting existing restored tabs / service resources.
+  lens::SearchToClientMessage::UpdateThreadContextLibrary empty_library;
+  SendUpdateThreadContextLibrary(empty_library);
+
+  EXPECT_THAT(mock_session_handle_->GetSubmittedContextTokens(),
+              testing::ElementsAre(submitted_token));
+  EXPECT_EQ(mock_session_handle_->GetTabContextState().restored.size(), 1u);
+  std::optional<ContextualTask> updated_task =
+      tasks_service->GetContextualTaskForTab(active_tab_id);
+  ASSERT_TRUE(updated_task.has_value());
+  EXPECT_EQ(updated_task->GetUrlResources().size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerContextLibraryBrowserTest,
+    OnWebviewMessage_UpdateThreadContextLibrary_NoTaskIdOrNoSessionHandleReturnsEarly) {
+  auto* tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_NE(tasks_service, nullptr);
+  ContextualTask task = tasks_service->CreateTask();
+  SessionID active_tab_id = sessions::SessionTabHelper::IdForTab(web_contents_);
+  tasks_service->AssociateTabWithTask(task.GetTaskId(), active_tab_id);
+
+  base::UnguessableToken submitted_token = base::UnguessableToken::Create();
+  mock_session_handle_->set_submitted_context_tokens({submitted_token});
+
+  lens::SearchToClientMessage::UpdateThreadContextLibrary library;
+  AddWebpageContext(library, 1, "https://example.com/a", "Tab A");
+
+  // 1. Before SetTaskId() is called, the update is ignored.
+  SendUpdateThreadContextLibrary(library);
+  EXPECT_TRUE(mock_session_handle_->GetTabContextState().restored.empty());
+  EXPECT_THAT(mock_session_handle_->GetSubmittedContextTokens(),
+              testing::ElementsAre(submitted_token));
+
+  // 2. With task_id set but no session handle in the helper, the update returns
+  // early without updating ContextualTasksService.
+  handler_->SetTaskId(task.GetTaskId());
+  mock_session_handle_ = nullptr;
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(task.GetTaskId(), /*handle=*/nullptr,
+                       /*input_state_model=*/nullptr);
+
+  SendUpdateThreadContextLibrary(library);
+  std::optional<ContextualTask> updated_task =
+      tasks_service->GetContextualTaskForTab(active_tab_id);
+  ASSERT_TRUE(updated_task.has_value());
+  EXPECT_TRUE(updated_task->GetUrlResources().empty());
+}
+
 }  // namespace contextual_tasks

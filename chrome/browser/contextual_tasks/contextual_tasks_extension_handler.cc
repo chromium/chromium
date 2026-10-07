@@ -16,6 +16,7 @@
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
+#include "chrome/browser/contextual_tasks/ai_mode_context_library_converter.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
@@ -31,6 +32,8 @@
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/input_state_model.h"
+#include "components/contextual_tasks/public/contextual_task.h"
+#include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
@@ -328,6 +331,11 @@ void ContextualTasksExtensionHandler::OnWebviewMessage(
           search_to_client_message.open_link_in_side_panel_mode().url());
       return;
     }
+    if (search_to_client_message.has_update_thread_context_library()) {
+      HandleThreadContextLibraryUpdateFromAim(
+          search_to_client_message.update_thread_context_library());
+      return;
+    }
   }
 
   // Fall back to legacy AimToClientMessage.
@@ -525,6 +533,66 @@ void ContextualTasksExtensionHandler::HandleOpenLinkInSidePanelMode(
       target_url, task_id, tab ? tab->GetWeakPtr() : nullptr,
       browser ? browser->GetWeakPtr() : nullptr,
       web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+}
+
+void ContextualTasksExtensionHandler::HandleThreadContextLibraryUpdateFromAim(
+    const lens::SearchToClientMessage::UpdateThreadContextLibrary& message) {
+  if (!base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksContextLibrary)) {
+    return;
+  }
+  if (!task_id_.has_value()) {
+    return;
+  }
+
+  auto* service =
+      contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(render_frame_host().GetBrowserContext()));
+  contextual_search::ContextualSearchSessionHandle* session_handle =
+      GetOrCreateContextualSessionHandle();
+  if (!service || !session_handle) {
+    return;
+  }
+
+  std::vector<contextual_search::FileInfo> submitted_context;
+  submitted_context = session_handle->GetSubmittedContextFileInfos();
+
+  std::vector<contextual_tasks::UrlResource> committed_context =
+      contextual_tasks::ConvertAiModeContextToUrlResources(message,
+                                                           submitted_context);
+  if (committed_context.empty()) {
+    return;
+  }
+
+  // Save the thread's tabs in the session handle's central
+  // restored tabs tracker:
+  std::vector<contextual_search::TabInfo> restored_tabs;
+  for (const auto& resource : committed_context) {
+    if (!resource.has_chrome_tab_data) {
+      continue;
+    }
+    contextual_search::TabInfo tab;
+    if (resource.tab_id.has_value()) {
+      tab.tab_id = resource.tab_id->id();
+    }
+    tab.url = resource.url;
+    tab.title = resource.title.value_or("");
+    tab.submitted = true;
+
+    restored_tabs.push_back(std::move(tab));
+  }
+  session_handle->SetRestoredTabs(std::move(restored_tabs));
+
+  // The submitted contexts are now part of the task's server-provided
+  // context (and the restored tabs above), so the session handle no longer
+  // needs to track their tokens.
+  session_handle->ClearSubmittedContextTokens();
+
+  // Save the context list on the task in `ContextualTasksService` (outlives the
+  // session). This notifies `ActiveTaskContextProvider`, which recomputes tab
+  // strip underlines from the task's context (these underlines are in addition
+  // to any underlines placed by other handlers).
+  service->SetUrlResourcesFromServer(*task_id_, std::move(committed_context));
 }
 
 std::optional<lens::AddedContext>

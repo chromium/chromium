@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
+#include "third_party/lens_server_proto/search_communication.pb.h"
 #include "url/gurl.h"
 
 namespace contextual_tasks {
@@ -304,6 +305,49 @@ TEST(AiModeContextLibraryConverterTest,
   EXPECT_EQ(url_resources[0].tab_id->id(), 42);
   EXPECT_EQ(url_resources[0].context_id, 999u);
   EXPECT_TRUE(url_resources[0].has_chrome_tab_data);
+}
+
+TEST(AiModeContextLibraryConverterTest,
+     ConvertSearchToClientMessageWithMatchingLocalContext) {
+  lens::SearchToClientMessage::UpdateThreadContextLibrary message;
+  auto* webpage_context = message.add_contexts();
+  webpage_context->set_context_id(123);
+  webpage_context->mutable_webpage()->set_url("https://example.com/page1");
+  webpage_context->mutable_webpage()->set_title("Server Title");
+  webpage_context->set_has_chrome_tab_data(true);
+
+  auto* pdf_context = message.add_contexts();
+  pdf_context->set_context_id(456);
+  pdf_context->mutable_pdf()->set_url("https://example.com/doc.pdf");
+  pdf_context->mutable_pdf()->set_title("Doc");
+
+  std::vector<contextual_search::FileInfo> local_contexts;
+  contextual_search::FileInfo file_info;
+  file_info.request_id.emplace();
+  file_info.request_id->set_context_id(123);
+  file_info.tab_url = GURL("https://example.com/page1");
+  file_info.tab_title = "Local Title";
+  file_info.tab_session_id = SessionID::FromSerializedValue(10);
+  local_contexts.push_back(file_info);
+
+  std::vector<UrlResource> url_resources =
+      ConvertAiModeContextToUrlResources(message, local_contexts);
+
+  ASSERT_EQ(url_resources.size(), 2u);
+  EXPECT_EQ(url_resources[0].url, GURL("https://example.com/page1"));
+  EXPECT_EQ(url_resources[0].title, "Local Title");
+  EXPECT_EQ(url_resources[0].resource_type, ResourceType::kWebpage);
+  ASSERT_TRUE(url_resources[0].tab_id.has_value());
+  EXPECT_EQ(url_resources[0].tab_id->id(), 10);
+  EXPECT_EQ(url_resources[0].context_id, 123u);
+  EXPECT_TRUE(url_resources[0].has_chrome_tab_data);
+
+  EXPECT_EQ(url_resources[1].url, GURL("https://example.com/doc.pdf"));
+  EXPECT_EQ(url_resources[1].title, "Doc");
+  EXPECT_EQ(url_resources[1].resource_type, ResourceType::kPdf);
+  EXPECT_FALSE(url_resources[1].tab_id.has_value());
+  EXPECT_EQ(url_resources[1].context_id, 456u);
+  EXPECT_FALSE(url_resources[1].has_chrome_tab_data);
 }
 
 }  // namespace contextual_tasks

@@ -11,6 +11,7 @@
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
+#include "third_party/lens_server_proto/search_communication.pb.h"
 #include "url/gurl.h"
 
 namespace {
@@ -26,13 +27,17 @@ const contextual_search::FileInfo* GetFileInfoFromContext(
   }
   return nullptr;
 }
-}  // namespace
 
-namespace contextual_tasks {
-
-std::vector<UrlResource> ConvertAiModeContextToUrlResources(
-    const lens::UpdateThreadContextLibrary& message,
+// Shared implementation for lens::UpdateThreadContextLibrary (AIM protocol) and
+// lens::SearchToClientMessage::UpdateThreadContextLibrary (Search in Chrome
+// protocol), which have identical field layouts.
+template <typename UpdateThreadContextLibraryT>
+std::vector<contextual_tasks::UrlResource> ConvertImpl(
+    const UpdateThreadContextLibraryT& message,
     const std::vector<contextual_search::FileInfo>& local_contexts) {
+  using contextual_tasks::ResourceType;
+  using contextual_tasks::UrlResource;
+
   std::vector<UrlResource> result;
   // Iterate through the contexts in the message and attempt to find matching
   // local file info (e.g. tab URL) to build the UrlResource list.
@@ -96,6 +101,28 @@ std::vector<UrlResource> ConvertAiModeContextToUrlResources(
     }
   }
   return result;
+}
+}  // namespace
+
+namespace contextual_tasks {
+
+// Chrome-driven (controlled) cobrowsing communication:
+// `AimToClientMessage.update_thread_context_library`
+// (aim_communication.proto). The message type is top-level in that proto, so
+// it is `lens::UpdateThreadContextLibrary` rather than a nested type.
+std::vector<UrlResource> ConvertAiModeContextToUrlResources(
+    const lens::UpdateThreadContextLibrary& message,
+    const std::vector<contextual_search::FileInfo>& local_contexts) {
+  return ConvertImpl(message, local_contexts);
+}
+
+// AIM-search-driven (controlled) cobrowsing communication:
+// `SearchToClientMessage.update_thread_context_library`
+// (search_communication.proto).
+std::vector<UrlResource> ConvertAiModeContextToUrlResources(
+    const lens::SearchToClientMessage::UpdateThreadContextLibrary& message,
+    const std::vector<contextual_search::FileInfo>& local_contexts) {
+  return ConvertImpl(message, local_contexts);
 }
 
 }  // namespace contextual_tasks

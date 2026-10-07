@@ -107,8 +107,9 @@ struct TabContextState {
   // in `ClearFiles(), all attached tabs should be cleared; otherwise, no
   // change. Delayed tabs are attached with `uploaded` false before their upload
   // starts, and are changed to true once uploaded. Does not include restored
-  // tabs, only tabs manually attached in the current session. At most one entry
-  // per tab ID.
+  // tabs, only tabs manually attached in the current session. Frontend or page
+  // will combine them/reverse order as needed based on current product
+  // requirements. At most one entry per tab ID.
   std::vector<TabInfo> attached;
 
   // Tabs carried from past history in this thread from the server, in the

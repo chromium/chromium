@@ -57,6 +57,7 @@ class AddedContext;
 struct ContextualInputData;
 class ClientToSearchMessage;
 enum class LensOverlayDismissalSource;
+class SearchToClientMessage_UpdateThreadContextLibrary;
 }  // namespace lens
 
 class BrowserWindowInterface;
@@ -295,6 +296,10 @@ class ContextualTasksExtensionHandler
       contextual_search::ContextualSearchSessionHandle* session_handle,
       const std::optional<base::UnguessableToken>& overlay_token);
   void HandleOpenLinkInSidePanelMode(std::string_view url);
+  // Syncs this thread's context library from AIM Search Web's tab history
+  // into the `ContextualTasksService` for the current task.
+  void HandleThreadContextLibraryUpdateFromAim(
+      const lens::SearchToClientMessage_UpdateThreadContextLibrary& message);
   std::optional<lens::AddedContext> GetLensAddedContext();
   void DoSubmitQueryCleanup();
   void CloseLensAsync(lens::LensOverlayDismissalSource dismissal_source);
@@ -305,6 +310,9 @@ class ContextualTasksExtensionHandler
   };
   void SendInjectChromeInput(InjectedInputType type, bool is_active);
   void SendMountContextLibrary();
+
+  // Tell AIM to add context library UI (favicons) iframe based
+  // on if there are tabs, and to remove the UI iframe if there are no tabs.
   void UpdateContextLibraryInputState();
 
   mojo::Receiver<contextual_tasks::mojom::ExtensionPageHandlerFactory>
