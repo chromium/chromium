@@ -68,11 +68,6 @@ class WebUIPerformanceInterventionInteractiveTest
     unconditionally_discard_pages_ =
         std::make_unique<ScopedSetAllPagesDiscardableForTesting>();
     WaitForInitialWebUIToolbar(browser());
-    // Set a larger suppression threshold to account for IPC latency on bots.
-    auto* webview = GetWebUIToolbarWebView(browser());
-    CHECK(webview);
-    webview->GetPerformanceInterventionControlForTesting()
-        ->SetSuppressionThresholdForTesting(base::Seconds(1));
   }
 
   void TearDownOnMainThread() override {
@@ -141,20 +136,15 @@ class WebUIPerformanceInterventionInteractiveTest
   }
 
   auto CheckButtonActive(bool active) {
-    return CheckJsResultAt(kWebUIToolbarWebContentsId, ActualButtonDeepQuery(),
-                           "el => el.hasAttribute('is-activated')", active);
+    return CheckJsResultAt(kWebUIToolbarWebContentsId, ButtonDeepQuery(),
+                           "el => el.classList.contains('anchor-highlight')",
+                           active);
   }
 
   auto WaitForButtonActive(bool active) {
-    return WaitForJsResultAt(kWebUIToolbarWebContentsId,
-                             ActualButtonDeepQuery(),
-                             "el => el.hasAttribute('is-activated')", active);
-  }
-
-  auto WaitForButtonHighlighted(bool highlighted) {
     return WaitForJsResultAt(kWebUIToolbarWebContentsId, ButtonDeepQuery(),
                              "el => el.classList.contains('anchor-highlight')",
-                             highlighted);
+                             active);
   }
 
   auto ClickButton() {
@@ -177,11 +167,16 @@ class WebUIPerformanceInterventionInteractiveTest
                 views::Widget::ClosedReason::kLostFocus);
           }
         }),
+        ExecuteJsAt(kWebUIToolbarWebContentsId, ButtonDeepQuery(),
+                    "(el) => {"
+                    "  el.highlightTracker.lastUnhighlightedTime = "
+                    "      performance.now() + 10000;"
+                    "}"),
         ExecuteJsAt(kWebUIToolbarWebContentsId, ActualButtonDeepQuery(),
                     "(el) => {"
                     "  el.dispatchEvent(new PointerEvent('pointerdown', "
                     "{bubbles: true, cancelable: true, view: window, "
-                    "button: 0}));"
+                    "button: 0, pointerType: 'mouse'}));"
                     "  el.dispatchEvent(new PointerEvent('click', "
                     "{bubbles: true, cancelable: true, view: window, "
                     "button: 0, pointerType: 'mouse'}));"
@@ -211,15 +206,14 @@ IN_PROC_BROWSER_TEST_F(WebUIPerformanceInterventionInteractiveTest,
         widget->LayoutRootViewIfNecessary();
       }),
       InstrumentWebUIToolbar(), WaitForButtonShown(true),
-      WaitForButtonActive(true), WaitForButtonHighlighted(true),
+      WaitForButtonActive(true),
       WaitForShow(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
       ClickButton(),
       WaitForHide(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
       WaitForButtonShown(true), WaitForButtonActive(false),
-      WaitForButtonHighlighted(false), TriggerOnActionableTabListChange({}),
-      WaitForButtonShown(false));
+      TriggerOnActionableTabListChange({}), WaitForButtonShown(false));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIPerformanceInterventionInteractiveTest,
@@ -329,6 +323,6 @@ IN_PROC_BROWSER_TEST_F(WebUIPerformanceInterventionDisabledInteractiveTest,
   RunTestSequence(Do([this]() {
     WebUIPerformanceInterventionControl* control = GetControl();
     // This should not crash.
-    control->OnClicked(true);
+    control->OnClicked();
   }));
 }

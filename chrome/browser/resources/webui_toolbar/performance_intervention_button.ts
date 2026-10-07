@@ -7,7 +7,7 @@ import '/strings.m.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import {HelpBubbleAnchorMixin} from '/shared/toolbar_button.js';
+import {HelpBubbleAnchorMixin, HighlightTracker} from '/shared/toolbar_button.js';
 import type {PerformanceInterventionControlState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
@@ -41,10 +41,11 @@ export class PerformanceInterventionButtonElement extends
 
   accessor state: PerformanceInterventionControlState = {
     shouldBeShown: false,
-    isActive: true,
   };
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+
+  highlightTracker: HighlightTracker = new HighlightTracker();
 
   protected getLabel_(): string {
     return loadTimeData.getString('performanceInterventionButtonAccName');
@@ -55,14 +56,9 @@ export class PerformanceInterventionButtonElement extends
   }
 
   protected onClick_(e: PointerEvent) {
-    this.browserProxy_.toolbarUIHandler.onPerformanceInterventionButtonClicked(
-        e.pointerType !== '');
-  }
-
-  protected onPointerdown_(e: PointerEvent) {
-    if (e.button === 0) {
+    if (!this.highlightTracker.shouldSkipClick(e)) {
       this.browserProxy_.toolbarUIHandler
-          .onPerformanceInterventionButtonMousePressed();
+          .onPerformanceInterventionButtonClicked();
     }
   }
 }

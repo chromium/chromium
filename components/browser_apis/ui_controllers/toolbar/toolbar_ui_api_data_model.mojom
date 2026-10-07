@@ -250,11 +250,6 @@ struct PerformanceInterventionControlState {
   // Whether the button should be shown.
   // Corresponds to `OverflowableButtonState.shouldBeShown`.
   bool should_be_shown;
-  // Boolean that keeps track if the intervention button icon should be shown
-  // in the active color. The intervention button should show the active color
-  // when it becomes visible and stay in the active color until the user clicks
-  // on the button.
-  bool is_active;
 };
 
 // State of media button that shows up in toolbar when a tab is playing media.

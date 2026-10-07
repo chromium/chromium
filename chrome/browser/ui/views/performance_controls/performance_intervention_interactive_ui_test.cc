@@ -134,13 +134,6 @@ class PerformanceInterventionInteractiveTest
 
   void SetupWebUIToolbarForTesting(BrowserWindowInterface* browser) {
     WaitForInitialWebUIToolbar(browser);
-    if (features::IsWebUIPerformanceInterventionButtonEnabled()) {
-      auto* webview = GetWebUIToolbarWebView(browser);
-      if (webview) {
-        webview->GetPerformanceInterventionControlForTesting()
-            ->SetSuppressionThresholdForTesting(base::TimeDelta());
-      }
-    }
   }
 
   PerformanceInterventionButtonControllerDelegate* GetInterventionButton(
@@ -187,8 +180,7 @@ class PerformanceInterventionInteractiveTest
     if (features::IsWebUIPerformanceInterventionButtonEnabled()) {
       auto* webview = GetWebUIToolbarWebView(browser);
       CHECK(webview);
-      webview->GetPerformanceInterventionControlForTesting()->OnClicked(
-          /*is_mouse_interaction=*/true);
+      webview->GetPerformanceInterventionControlForTesting()->OnClicked();
     } else {
       PerformanceInterventionButton* const views_button =
           BrowserView::GetBrowserViewForBrowser(browser)

@@ -10,14 +10,14 @@
  * #include=cr-hidden-style-lit toolbar-button
  * #css_wrapper_metadata_end */
 
-#button[is-activated] {
+#button {
   --cr-icon-button-fill-color: var(
-      --color-performance-intervention-button-icon-active,
+      --color-performance-intervention-button-icon-inactive,
       currentColor);
 }
 
-#button:not([is-activated]) {
+:host(.anchor-highlight) #button {
   --cr-icon-button-fill-color: var(
-      --color-performance-intervention-button-icon-inactive,
+      --color-performance-intervention-button-icon-active,
       currentColor);
 }

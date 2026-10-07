@@ -37,7 +37,6 @@ void WebUIPerformanceInterventionControl::Init() {
 
 void WebUIPerformanceInterventionControl::Show() {
   should_be_shown_ = true;
-  is_active_ = true;
   UpdateState();
   delegate_->OnPreferredSizeChanged();
 
@@ -59,7 +58,6 @@ void WebUIPerformanceInterventionControl::Show() {
 
 void WebUIPerformanceInterventionControl::Hide() {
   should_be_shown_ = false;
-  is_active_ = false;
   UpdateState();
   delegate_->OnPreferredSizeChanged();
   button_shown_subscription_ = {};
@@ -82,46 +80,25 @@ void WebUIPerformanceInterventionControl::OnWidgetDestroying(
 
   bubble_dialog_model_host_ = nullptr;
   scoped_widget_observation_.Reset();
-  is_active_ = false;
-  UpdateState();
 }
 
-void WebUIPerformanceInterventionControl::OnClicked(bool is_mouse_interaction) {
+void WebUIPerformanceInterventionControl::OnClicked() {
   if (!controller_) {
     return;
   }
 
-  const bool was_active = is_active_ || IsBubbleShowing();
-  is_active_ = false;
-  UpdateState();
-
-  const bool suppress =
-      reopen_suppressor_.ShouldSuppressBubbleShow(is_mouse_interaction);
-
   if (IsBubbleShowing()) {
     PerformanceInterventionBubble::CloseBubble(bubble_dialog_model_host_);
-    return;
+  } else {
+    CreateBubble();
+    RecordInterventionToolbarButtonClicked();
   }
-
-  if (was_active || suppress) {
-    return;
-  }
-
-  is_active_ = true;
-  UpdateState();
-  CreateBubble();
-  RecordInterventionToolbarButtonClicked();
-}
-
-void WebUIPerformanceInterventionControl::OnMousePressed() {
-  reopen_suppressor_.OnMousePressed();
 }
 
 void WebUIPerformanceInterventionControl::UpdateState() {
   auto state =
       toolbar_ui_api::mojom::PerformanceInterventionControlState::New();
   state->should_be_shown = should_be_shown_;
-  state->is_active = is_active_;
   delegate_->OnPerformanceInterventionControlStateChanged(std::move(state));
 }
 
@@ -142,7 +119,6 @@ void WebUIPerformanceInterventionControl::CreateBubble() {
 
   bubble_dialog_model_host_ = PerformanceInterventionBubble::CreateBubble(
       views::BubbleAnchor(button_element), controller_.get());
-  reopen_suppressor_.Observe(bubble_dialog_model_host_->GetWidget());
   scoped_widget_observation_.Observe(bubble_dialog_model_host_->GetWidget());
 }
 
@@ -150,10 +126,4 @@ void WebUIPerformanceInterventionControl::OnButtonShown(
     ui::TrackedElement* element) {
   button_shown_subscription_ = {};
   CreateBubble();
-}
-
-void WebUIPerformanceInterventionControl::
-    SetSuppressionThresholdForTesting(  // IN-TEST
-        base::TimeDelta threshold) {
-  reopen_suppressor_.SetSuppressionThresholdForTesting(threshold);  // IN-TEST
 }

@@ -11,9 +11,8 @@ export function getHtml(this: PerformanceInterventionButtonElement) {
   return html`<!--_html_template_start_-->
 <cr-icon-button id="button" class="iph-visual-target"
     iron-icon="webui-toolbar:speed"
-    ?is-activated="${this.state.isActive}"
     @click="${this.onClick_}"
-    @pointerdown="${this.onPointerdown_}"
+    @pointerdown="${this.highlightTracker.onPointerdown}"
     title="${this.getTooltip_()}" aria-label="${this.getLabel_()}"
     suppress-rtl-flip>
 </cr-icon-button>

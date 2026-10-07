@@ -444,7 +444,6 @@ export class ToolbarAppElement extends AppElementBase {
     },
     performanceInterventionControlState: {
       shouldBeShown: false,
-      isActive: true,
     },
     appMenuControlState: {
       iconType: AppMenuIconType.kNone,

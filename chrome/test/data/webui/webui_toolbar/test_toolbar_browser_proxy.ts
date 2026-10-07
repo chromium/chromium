@@ -45,7 +45,6 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
       'onPageActionPointerDown',
       'onPageInitialized',
       'onPerformanceInterventionButtonClicked',
-      'onPerformanceInterventionButtonMousePressed',
       'onToolbarDropFile',
       'setAvatarButtonFocused',
       'setAvatarButtonHovered',
@@ -209,13 +208,8 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
     this.methodCalled('showExtensionContextMenu', [extensionId, source]);
   }
 
-  onPerformanceInterventionButtonClicked(isMouseInteraction: boolean) {
-    this.methodCalled(
-        'onPerformanceInterventionButtonClicked', isMouseInteraction);
-  }
-
-  onPerformanceInterventionButtonMousePressed() {
-    this.methodCalled('onPerformanceInterventionButtonMousePressed');
+  onPerformanceInterventionButtonClicked() {
+    this.methodCalled('onPerformanceInterventionButtonClicked');
   }
 
   onMediaButtonClicked() {

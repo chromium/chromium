@@ -110,9 +110,7 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
         mojo_base::mojom::ErrorPtr>
     AdjustOmniboxTextForCopy(const std::u16string& text,
                              int32_t selection_start) = 0;
-    virtual void OnPerformanceInterventionButtonClicked(
-        bool is_mouse_interaction) = 0;
-    virtual void OnPerformanceInterventionButtonMousePressed() = 0;
+    virtual void OnPerformanceInterventionButtonClicked() = 0;
     virtual void OnMediaButtonClicked() = 0;
     virtual void OnGlicButtonClicked() = 0;
   };
@@ -217,9 +215,7 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
       const std::u16string& text,
       int32_t selection_start,
       AdjustOmniboxTextForCopyCallback callback) override;
-  void OnPerformanceInterventionButtonClicked(
-      bool is_mouse_interaction) override;
-  void OnPerformanceInterventionButtonMousePressed() override;
+  void OnPerformanceInterventionButtonClicked() override;
   void OnMediaButtonClicked() override;
   // Handles click events from the WebUI Glic button by forwarding them to the
   // delegate.

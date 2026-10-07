@@ -246,12 +246,7 @@ interface ToolbarUIService {
       => result<AdjustOmniboxTextForCopyResult, mojo_base.mojom.Error>;
 
   // Called when the performance intervention button is clicked.
-  // `is_mouse_interaction` is true if the click was triggered by a mouse event.
-  OnPerformanceInterventionButtonClicked(bool is_mouse_interaction);
-
-  // Called when the performance intervention button is pressed
-  // (e.g. pointerdown).
-  OnPerformanceInterventionButtonMousePressed();
+  OnPerformanceInterventionButtonClicked();
 
   // Called when the media button is clicked.
   OnMediaButtonClicked();

@@ -925,13 +925,8 @@ WebUIToolbarWebView::AdjustOmniboxTextForCopy(const std::u16string& text,
   return result;
 }
 
-void WebUIToolbarWebView::OnPerformanceInterventionButtonClicked(
-    bool is_mouse_interaction) {
-  performance_intervention_control_.OnClicked(is_mouse_interaction);
-}
-
-void WebUIToolbarWebView::OnPerformanceInterventionButtonMousePressed() {
-  performance_intervention_control_.OnMousePressed();
+void WebUIToolbarWebView::OnPerformanceInterventionButtonClicked() {
+  performance_intervention_control_.OnClicked();
 }
 
 void WebUIToolbarWebView::OnMediaButtonClicked() {

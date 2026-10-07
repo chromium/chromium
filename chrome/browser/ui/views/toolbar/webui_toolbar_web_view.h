@@ -302,9 +302,7 @@ class WebUIToolbarWebView
                  mojo_base::mojom::ErrorPtr>
   AdjustOmniboxTextForCopy(const std::u16string& text,
                            int32_t selection_start) override;
-  void OnPerformanceInterventionButtonClicked(
-      bool is_mouse_interaction) override;
-  void OnPerformanceInterventionButtonMousePressed() override;
+  void OnPerformanceInterventionButtonClicked() override;
   void OnMediaButtonClicked() override;
   void OnGlicButtonClicked() override;
 
