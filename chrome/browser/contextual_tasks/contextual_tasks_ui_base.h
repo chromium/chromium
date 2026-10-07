@@ -107,6 +107,7 @@ class ContextualTasksUIBase
   void ShowPageInfoBubble(bool is_pointer_interaction) override;
   void OnLogoPointerDown() override;
   void CreateNewThread() override;
+  void MaybeTriggerPinningPromo() override;
 
 #if !BUILDFLAG(IS_ANDROID)
   // PinnedToolbarActionsModel::Observer:

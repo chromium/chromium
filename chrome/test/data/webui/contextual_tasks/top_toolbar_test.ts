@@ -808,16 +808,17 @@ suite('TopToolbarTest', () => {
     test('calls maybeTriggerPinningPromo when AI page is shown', async () => {
       topToolbar.isAiPage = false;
       await microtasksFinished();
-      proxy.handler.reset();
+      toolbarProxy.handler.reset();
 
       topToolbar.isAiPage = true;
       await microtasksFinished();
 
       // <if expr="is_android">
-      assertEquals(0, proxy.handler.getCallCount('maybeTriggerPinningPromo'));
+      assertEquals(
+          0, toolbarProxy.handler.getCallCount('maybeTriggerPinningPromo'));
       // </if>
       // <if expr="not is_android">
-      await proxy.handler.whenCalled('maybeTriggerPinningPromo');
+      await toolbarProxy.handler.whenCalled('maybeTriggerPinningPromo');
       // </if>
     });
 
@@ -827,13 +828,13 @@ suite('TopToolbarTest', () => {
           topToolbar.isAiPage = false;
           topToolbar.onboardingTooltipShowing = true;
           await microtasksFinished();
-          proxy.handler.reset();
+          toolbarProxy.handler.reset();
 
           topToolbar.isAiPage = true;
           await microtasksFinished();
 
           assertEquals(
-              0, proxy.handler.getCallCount('maybeTriggerPinningPromo'));
+              0, toolbarProxy.handler.getCallCount('maybeTriggerPinningPromo'));
         });
   });
 

@@ -483,6 +483,13 @@ void ContextualTasksUIBase::CreateNewThread() {
   SetThreadTitle(std::nullopt);
 }
 
+void ContextualTasksUIBase::MaybeTriggerPinningPromo() {
+  // TODO(b/560292506): The AI-Mode precondition uses
+  // ui_service_->IsAiUrl(web_ui_controller_->GetInnerFrameUrl()).
+  // GetInnerFrameUrl() is webview-specific and has no panel-controller
+  // equivalent, so the precondition cannot be evaluated post-rearchitecture.
+}
+
 void ContextualTasksUIBase::BindInterface(
     mojo::PendingReceiver<contextual_tasks_toolbar::mojom::PageHandlerFactory>
         pending_receiver) {

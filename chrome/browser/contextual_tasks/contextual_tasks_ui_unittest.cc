@@ -33,6 +33,8 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"  // nogncheck
 #include "chrome/browser/ui/actions/chrome_actions.h"    // nogncheck
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"  // nogncheck
+#include "chrome/test/user_education/mock_browser_user_education_interface.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "ui/actions/actions.h"  // nogncheck
 #endif
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
@@ -46,6 +48,7 @@
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
+#include "components/contextual_tasks/public/prefs.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -63,6 +66,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/webui/buildflags.h"
 #include "url/gurl.h"
 
@@ -297,6 +301,10 @@ class TestContextualTasksUI : public ContextualTasksUI {
     panel_controller_ = panel_controller;
   }
 
+  void set_browser_window(BrowserWindowInterface* browser_window) {
+    browser_window_ = browser_window;
+  }
+
   contextual_tasks::ContextualTasksPanelController* GetPanelController()
       override {
     if (panel_controller_) {
@@ -305,9 +313,17 @@ class TestContextualTasksUI : public ContextualTasksUI {
     return ContextualTasksUI::GetPanelController();
   }
 
+  BrowserWindowInterface* GetBrowser() override {
+    if (browser_window_) {
+      return browser_window_;
+    }
+    return ContextualTasksUI::GetBrowser();
+  }
+
  private:
   raw_ptr<contextual_tasks::ContextualTasksPanelController> panel_controller_ =
       nullptr;
+  raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;
 };
 
 }  // namespace
@@ -3659,5 +3675,187 @@ TEST_F(ContextualTasksUiTest, CreateNewThread_LegacyUI_ClearsThreadTitle) {
 
   EXPECT_EQ(controller.GetThreadTitle(), std::nullopt);
 }
+
+TEST_F(ContextualTasksUiTest, MaybeTriggerPinningPromo_SafeNoOp) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  ContextualTasksUIConfig config;
+  std::unique_ptr<content::WebUIController> controller =
+      config.CreateWebUIController(&web_ui, GURL("chrome://contextual-tasks"));
+  ASSERT_TRUE(controller);
+  auto* base_ui = static_cast<ContextualTasksUIBase*>(controller.get());
+  ASSERT_NE(base_ui, nullptr);
+
+  base_ui->MaybeTriggerPinningPromo();
+}
+
+TEST_F(ContextualTasksUiTest,
+       MaybeTriggerPinningPromo_PostRearchitecture_SafeNoOp) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kContextualTasks, kContextualTasksSidePanelRearchitecture}, {});
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  ContextualTasksUIConfig config;
+  std::unique_ptr<content::WebUIController> controller =
+      config.CreateWebUIController(&web_ui, GURL("chrome://contextual-tasks"));
+  ASSERT_TRUE(controller);
+  auto* base_ui = static_cast<ContextualTasksUIBase*>(controller.get());
+  ASSERT_NE(base_ui, nullptr);
+
+  base_ui->MaybeTriggerPinningPromo();
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ContextualTasksUiTest, MaybeTriggerPinningPromo_PanelClosed) {
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller;
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUI controller(&web_ui);
+  controller.set_panel_controller(&mock_panel_controller);
+
+  // If the side panel is not open for Contextual Tasks, we should not attempt
+  // to trigger the promo (no-op).
+  EXPECT_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
+      .WillOnce(Return(false));
+
+  controller.MaybeTriggerPinningPromo();
+}
+
+TEST_F(ContextualTasksUiTest, MaybeTriggerPinningPromo_Success) {
+  InitializeActionIdStringMapping();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {contextual_tasks::kEnableContextualTasksPinButtonInToolbar,
+       feature_engagement::kIPHSidePanelContextualTasksPinnableFeature},
+      /*disabled_features=*/{
+          contextual_tasks::kContextualTasksHideMenuOnAiPage});
+
+  // Set the post-onboarding session count to meet the default threshold (2).
+  profile_->GetPrefs()->SetInteger(
+      contextual_tasks::kContextualTasksSessionCountPostOnboarding, 2);
+
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ui::UnownedUserDataHost window_user_data_host;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(ReturnRef(window_user_data_host));
+  ON_CALL(mock_browser_window, GetProfile()).WillByDefault(Return(profile_));
+
+  // Instantiating MockBrowserUserEducationInterface automatically attaches it
+  // to the mock_browser_window (via the UnownedUserDataHost).
+  MockBrowserUserEducationInterface mock_user_education(&mock_browser_window);
+
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller;
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUI controller(&web_ui);
+  controller.set_panel_controller(&mock_panel_controller);
+  controller.set_browser_window(&mock_browser_window);
+
+  EXPECT_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*service_for_nav_, IsAiUrl(_)).WillOnce(Return(true));
+
+  // The pinning promo is expected to be tried.
+  EXPECT_CALL(
+      mock_user_education,
+      MaybeShowFeaturePromo(
+          testing::Matcher<user_education::FeaturePromoParams>(testing::_)))
+      .WillOnce(Return(true));
+
+  controller.MaybeTriggerPinningPromo();
+
+  actions::ActionIdMap::ResetMapsForTesting();
+}
+
+TEST_F(ContextualTasksUiTest,
+       MaybeTriggerPinningPromo_SessionsLessThanThreshold) {
+  InitializeActionIdStringMapping();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {contextual_tasks::kEnableContextualTasksPinButtonInToolbar,
+       feature_engagement::kIPHSidePanelContextualTasksPinnableFeature},
+      /*disabled_features=*/{
+          contextual_tasks::kContextualTasksHideMenuOnAiPage});
+
+  // Set the count to 1 (less than the default threshold of 2).
+  profile_->GetPrefs()->SetInteger(
+      contextual_tasks::kContextualTasksSessionCountPostOnboarding, 1);
+
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ui::UnownedUserDataHost window_user_data_host;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(ReturnRef(window_user_data_host));
+  ON_CALL(mock_browser_window, GetProfile()).WillByDefault(Return(profile_));
+
+  MockBrowserUserEducationInterface mock_user_education(&mock_browser_window);
+
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller;
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUI controller(&web_ui);
+  controller.set_panel_controller(&mock_panel_controller);
+  controller.set_browser_window(&mock_browser_window);
+
+  EXPECT_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*service_for_nav_, IsAiUrl(_)).WillOnce(Return(true));
+
+  // The pinning promo is NOT expected to be tried because threshold (2) is not
+  // met.
+  EXPECT_CALL(
+      mock_user_education,
+      MaybeShowFeaturePromo(
+          testing::Matcher<user_education::FeaturePromoParams>(testing::_)))
+      .Times(0);
+
+  controller.MaybeTriggerPinningPromo();
+
+  actions::ActionIdMap::ResetMapsForTesting();
+}
+
+TEST_F(ContextualTasksUiTest,
+       MaybeTriggerPinningPromo_HideMenuOnAiPageEnabled) {
+  InitializeActionIdStringMapping();
+  base::test::ScopedFeatureList test_features;
+  test_features.InitWithFeatures(
+      /*enabled_features=*/
+      {contextual_tasks::kEnableContextualTasksPinButtonInToolbar,
+       feature_engagement::kIPHSidePanelContextualTasksPinnableFeature,
+       contextual_tasks::kContextualTasksHideMenuOnAiPage},
+      /*disabled_features=*/{});
+
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ui::UnownedUserDataHost window_user_data_host;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(ReturnRef(window_user_data_host));
+  ON_CALL(mock_browser_window, GetProfile()).WillByDefault(Return(profile_));
+
+  MockBrowserUserEducationInterface mock_user_education(&mock_browser_window);
+
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller;
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUI controller(&web_ui);
+  controller.set_panel_controller(&mock_panel_controller);
+  controller.set_browser_window(&mock_browser_window);
+
+  EXPECT_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
+      .WillOnce(Return(true));
+
+  // The pinning promo is not expected to be tried.
+  EXPECT_CALL(
+      mock_user_education,
+      MaybeShowFeaturePromo(
+          testing::Matcher<user_education::FeaturePromoParams>(testing::_)))
+      .Times(0);
+
+  controller.MaybeTriggerPinningPromo();
+
+  actions::ActionIdMap::ResetMapsForTesting();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace contextual_tasks

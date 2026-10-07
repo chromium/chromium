@@ -863,63 +863,6 @@ void ContextualTasksPageHandler::CloseWindow(
   }
 }
 
-void ContextualTasksPageHandler::MaybeTriggerPinningPromo() {
-#if BUILDFLAG(IS_ANDROID)
-  return;
-#else
-  if (!web_ui_controller_) {
-    return;
-  }
-
-  if (!panel_controller_ ||
-      !panel_controller_->IsPanelOpenForContextualTask()) {
-    return;
-  }
-
-  Profile* profile = web_ui_controller_->GetProfile();
-  if (!profile) {
-    return;
-  }
-
-  if (!contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled() ||
-      base::FeatureList::IsEnabled(
-          contextual_tasks::kContextualTasksHideMenuOnAiPage)) {
-    return;
-  }
-
-  // 1. Verify we are still in AI Mode.
-  bool is_ai_page = ui_service_ && ui_service_->IsAiUrl(
-                                       web_ui_controller_->GetInnerFrameUrl());
-  if (!is_ai_page) {
-    return;
-  }
-
-  // 2. Verify the button is not already pinned.
-  bool is_pinned = contextual_tasks::GetEffectivePinState(profile);
-  if (is_pinned) {
-    return;
-  }
-
-  // 3. Verify we have reached the session count threshold after onboarding
-  // tooltip was dismissed.
-  int post_onboarding_sessions = profile->GetPrefs()->GetInteger(
-      contextual_tasks::kContextualTasksSessionCountPostOnboarding);
-  if (post_onboarding_sessions <
-      contextual_tasks::GetContextualTasksNumSessionsBeforeRequestPinPromo()) {
-    return;
-  }
-
-  // 4. Attempt to show the IPH!
-  BrowserWindowInterface* browser_window = web_ui_controller_->GetBrowser();
-  if (!browser_window) {
-    return;
-  }
-  BrowserUserEducationInterface::From(browser_window)
-      ->MaybeShowFeaturePromo(
-              feature_engagement::kIPHSidePanelContextualTasksPinnableFeature);
-#endif
-}
-
 void ContextualTasksPageHandler::OnReceivedExecuteActions(
     const lens::ExecuteActions& execute_actions) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

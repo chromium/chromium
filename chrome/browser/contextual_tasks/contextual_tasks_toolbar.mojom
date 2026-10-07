@@ -106,6 +106,10 @@ interface PageHandler {
 
   // Requests the browser to load a new thread URL in the guest WebContents.
   CreateNewThread();
+
+  // Evaluates preconditions and potentially shows the side panel pinning promo
+  // in-product help (IPH).
+  MaybeTriggerPinningPromo();
 };
 
 // WebUI-side handler for requests from the browser.

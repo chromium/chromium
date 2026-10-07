@@ -113,11 +113,13 @@
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_query_flow_router.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.h"
 #include "chrome/grit/webui_toolbar_shared_resources.h"
 #include "chrome/grit/webui_toolbar_shared_resources_map.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/omnibox/browser/searchbox.mojom-forward.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_scale_factor.h"
@@ -1212,6 +1214,58 @@ void ContextualTasksUI::ShowThreadHistory() {
     return;
   }
   ContextualTasksUIBase::ShowThreadHistory();
+}
+
+void ContextualTasksUI::MaybeTriggerPinningPromo() {
+#if BUILDFLAG(IS_ANDROID)
+  return;
+#else
+  auto* panel_controller = GetPanelController();
+  if (!panel_controller || !panel_controller->IsPanelOpenForContextualTask()) {
+    return;
+  }
+
+  Profile* profile = GetProfile();
+  if (!profile) {
+    return;
+  }
+
+  if (!contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled() ||
+      base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksHideMenuOnAiPage)) {
+    return;
+  }
+
+  // 1. Verify we are still in AI Mode.
+  bool is_ai_page = ui_service_ && ui_service_->IsAiUrl(GetInnerFrameUrl());
+  if (!is_ai_page) {
+    return;
+  }
+
+  // 2. Verify the button is not already pinned.
+  bool is_pinned = contextual_tasks::GetEffectivePinState(profile);
+  if (is_pinned) {
+    return;
+  }
+
+  // 3. Verify we have reached the session count threshold after onboarding
+  // tooltip was dismissed.
+  int post_onboarding_sessions = profile->GetPrefs()->GetInteger(
+      contextual_tasks::kContextualTasksSessionCountPostOnboarding);
+  if (post_onboarding_sessions <
+      contextual_tasks::GetContextualTasksNumSessionsBeforeRequestPinPromo()) {
+    return;
+  }
+
+  // 4. Attempt to show the IPH!
+  BrowserWindowInterface* browser_window = GetBrowser();
+  if (!browser_window) {
+    return;
+  }
+  BrowserUserEducationInterface::From(browser_window)
+      ->MaybeShowFeaturePromo(
+          feature_engagement::kIPHSidePanelContextualTasksPinnableFeature);
+#endif
 }
 
 void ContextualTasksUI::PostAimMessage(

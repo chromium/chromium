@@ -293,7 +293,7 @@ export class TopToolbarElement extends TopToolbarElementBase {
       // <if expr="not is_android">
       if (this.isAiPage) {
         if (!this.onboardingTooltipShowing) {
-          this.browserProxy_.handler.maybeTriggerPinningPromo();
+          this.toolbarBrowserProxy_.handler.maybeTriggerPinningPromo();
         }
       }
       // </if>
