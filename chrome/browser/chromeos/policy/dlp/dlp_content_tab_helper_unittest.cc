@@ -4,17 +4,17 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
 
-#include "base/memory/raw_ptr.h"
+#include <memory>
+#include <vector>
+
 #include "base/no_destructor.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_content_observer.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
-#include "chrome/browser/ui/tabs/tab_activity_simulator.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,20 +43,32 @@ class DlpContentTabHelperTest : public ChromeRenderViewHostTestHarness {
     scoped_dlp_content_observer_ =
         std::make_unique<ScopedDlpContentObserverForTesting>(
             &mock_dlp_content_observer_);
-
-    // Initialize browser.
-    BrowserWindowCreateParams params(profile(), /*user_gesture=*/true);
-    browser_ = CreateBrowserWithTestWindowForParams(std::move(params));
-    tab_strip_model_ = browser_->GetTabStripModel();
   }
 
   void TearDown() override {
-    tab_strip_model_->CloseAllTabs();
-    browser_.reset();
-
+    created_web_contents_.clear();
     scoped_dlp_content_observer_.reset();
 
     ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  content::WebContents* CreateWebContentsAndNavigate(
+      content::BrowserContext* context,
+      const GURL& url) {
+    const bool initially_visible = created_web_contents_.empty();
+    std::unique_ptr<content::WebContents> test_contents =
+        content::WebContentsTester::CreateTestWebContents(context, nullptr);
+    content::WebContents* web_contents = test_contents.get();
+    if (initially_visible) {
+      web_contents->WasShown();
+    } else {
+      web_contents->WasHidden();
+    }
+    created_web_contents_.push_back(std::move(test_contents));
+    DlpContentTabHelper::MaybeCreateForWebContents(web_contents);
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents,
+                                                               url);
+    return web_contents;
   }
 
   DlpContentTabHelper::ScopedIgnoreDlpRulesManager ignore_dlp_rules_manager_{
@@ -64,24 +76,14 @@ class DlpContentTabHelperTest : public ChromeRenderViewHostTestHarness {
   MockDlpContentObserver mock_dlp_content_observer_;
   std::unique_ptr<ScopedDlpContentObserverForTesting>
       scoped_dlp_content_observer_;
-  TabActivitySimulator tab_activity_simulator_;
-  raw_ptr<TabStripModel, DanglingUntriaged> tab_strip_model_;
-  std::unique_ptr<BrowserWindowInterface> browser_;
+  std::vector<std::unique_ptr<content::WebContents>> created_web_contents_;
 };
 
 TEST_F(DlpContentTabHelperTest, NotCreatedForIncognito) {
-  BrowserWindowCreateParams params(
+  content::WebContents* web_contents = CreateWebContentsAndNavigate(
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-      /*user_gesture=*/true);
-  auto browser = CreateBrowserWithTestWindowForParams(std::move(params));
-
-  content::WebContents* web_contents =
-      tab_activity_simulator_.AddWebContentsAndNavigate(
-          browser->GetTabStripModel(), GURL("https://example.com"));
+      GURL("https://example.com"));
   EXPECT_EQ(nullptr, DlpContentTabHelper::FromWebContents(web_contents));
-
-  // Close tabs before |browser| is destructed.
-  browser->GetTabStripModel()->CloseAllTabs();
 }
 
 TEST_F(DlpContentTabHelperTest, NotConfidential) {
@@ -95,7 +97,7 @@ TEST_F(DlpContentTabHelperTest, NotConfidential) {
   EXPECT_CALL(mock_dlp_content_observer_, OnVisibilityChanged(_)).Times(0);
 
   content::WebContents* web_contents =
-      tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model_, kUrl);
+      CreateWebContentsAndNavigate(profile(), kUrl);
   EXPECT_NE(nullptr, DlpContentTabHelper::FromWebContents(web_contents));
 
   EXPECT_CALL(mock_dlp_content_observer_, OnWebContentsDestroyed(_)).Times(1);
@@ -113,7 +115,7 @@ TEST_F(DlpContentTabHelperTest, Confidential) {
   EXPECT_CALL(mock_dlp_content_observer_, OnVisibilityChanged(_)).Times(0);
 
   content::WebContents* web_contents =
-      tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model_, kUrl);
+      CreateWebContentsAndNavigate(profile(), kUrl);
   EXPECT_NE(nullptr, DlpContentTabHelper::FromWebContents(web_contents));
 
   EXPECT_CALL(mock_dlp_content_observer_,
@@ -136,20 +138,20 @@ TEST_F(DlpContentTabHelperTest, VisibilityChanged) {
       .Times(1);
   EXPECT_CALL(mock_dlp_content_observer_, OnVisibilityChanged(_)).Times(0);
   content::WebContents* web_contents1 =
-      tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model_,
-                                                        kUrl1);
+      CreateWebContentsAndNavigate(profile(), kUrl1);
   content::WebContents* web_contents2 =
-      tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model_,
-                                                        kUrl2);
+      CreateWebContentsAndNavigate(profile(), kUrl2);
   EXPECT_NE(nullptr, DlpContentTabHelper::FromWebContents(web_contents1));
   EXPECT_NE(nullptr, DlpContentTabHelper::FromWebContents(web_contents2));
   EXPECT_CALL(mock_dlp_content_observer_, OnVisibilityChanged(_)).Times(1);
 
-  tab_activity_simulator_.SwitchToTabAt(tab_strip_model_, 1);
+  web_contents1->WasHidden();
+  web_contents2->WasShown();
 
   EXPECT_CALL(mock_dlp_content_observer_, OnVisibilityChanged(_)).Times(1);
 
-  tab_activity_simulator_.SwitchToTabAt(tab_strip_model_, 0);
+  web_contents2->WasHidden();
+  web_contents1->WasShown();
 
   EXPECT_CALL(mock_dlp_content_observer_,
               OnConfidentialityChanged(_, GetEmptyRestrictionSet()))
@@ -172,8 +174,7 @@ TEST_F(DlpContentTabHelperTest, SubFrameNavigation) {
 
   // Create WebContents.
   content::WebContents* web_contents =
-      tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model_,
-                                                        kNonConfidentialUrl);
+      CreateWebContentsAndNavigate(profile(), kNonConfidentialUrl);
   EXPECT_NE(nullptr, DlpContentTabHelper::FromWebContents(web_contents));
 
   // Add subframe and navigate to confidential URL.
