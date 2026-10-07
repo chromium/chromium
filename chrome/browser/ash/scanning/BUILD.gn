@@ -148,7 +148,6 @@ source_set("unit_tests") {
     "//chrome/browser/local_discovery",
     "//chrome/browser/local_discovery:test_support",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui/ash/holding_space",
     "//chrome/browser/ui/ash/holding_space:test_support",

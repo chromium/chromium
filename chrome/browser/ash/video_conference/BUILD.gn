@@ -94,7 +94,6 @@ source_set("browser_tests") {
     "//chrome/browser/chromeos/video_conference",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/media/webrtc:webrtc_browser_tests_base",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/common",
     "//chrome/test:test_support",

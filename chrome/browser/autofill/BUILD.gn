@@ -349,7 +349,6 @@ if (!is_android) {
       "//chrome/browser",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles:profile_io_data",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/autofill",

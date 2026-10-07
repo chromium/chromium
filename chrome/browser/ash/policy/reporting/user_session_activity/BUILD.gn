@@ -89,7 +89,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/policy/messaging_layer/proto:user_session_activity_proto",
-    "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/dbus/session_manager",

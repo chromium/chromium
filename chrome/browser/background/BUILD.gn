@@ -59,7 +59,6 @@ source_set("impl") {
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/extensions",
       "//chrome/browser/notifications",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_tabstrip",
       "//components/pref_registry",
     ]
@@ -97,7 +96,6 @@ if (!is_android) {
         "//chrome/browser:browser_process",
         "//chrome/browser/notifications",
         "//chrome/browser/profiles",
-        "//chrome/browser/ui",
         "//chrome/common:constants",
         "//chrome/test:test_support",
         "//components/prefs",

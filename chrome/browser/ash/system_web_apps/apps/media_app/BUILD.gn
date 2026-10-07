@@ -94,7 +94,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
     "//chrome/browser/error_reporting:test_support",
     "//chrome/browser/extensions",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_init_state",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/web_applications",

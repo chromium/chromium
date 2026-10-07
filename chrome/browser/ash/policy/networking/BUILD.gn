@@ -77,7 +77,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/policy:onc",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/network",
     "//chrome/browser/ui/webui/ash/login",
