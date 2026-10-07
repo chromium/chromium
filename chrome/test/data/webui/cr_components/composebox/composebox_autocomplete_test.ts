@@ -212,6 +212,88 @@ suite('ComposeboxAutocomplete', () => {
     });
 
     test(
+        'dropdown does not show when smart tab sharing is active', async () => {
+          loadTimeData.overrideValues({
+            composeboxShowZps: true,
+            composeboxShowTypedSuggest: true,
+          });
+          element = createTestElement();
+          await microtasksFinished();
+          element.smartTabSharingActive = true;
+          await microtasksFinished();
+          assertTrue(element.smartTabSharingActive);
+
+          setInputValue(element.getInputElement().inputElement, '');
+          element.getInputElement().inputElement.dispatchEvent(
+              new Event('input'));
+          await microtasksFinished();
+
+          const composeboxDropdown = element.$.matches;
+          const matches = [
+            createSearchMatchForTesting(),
+            createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
+          ];
+          searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                queryId: element.activeQueryId,
+                matches,
+              }));
+          await microtasksFinished();
+          assertTrue(composeboxDropdown.hidden);
+
+          // Toggling Smart Tab Sharing off restores the dropdown.
+          element.smartTabSharingActive = false;
+          await microtasksFinished();
+          assertFalse(composeboxDropdown.hidden);
+
+          // Toggling it back on hides the dropdown again.
+          element.smartTabSharingActive = true;
+          await microtasksFinished();
+          assertTrue(composeboxDropdown.hidden);
+        });
+
+    test(
+        'dropdown does not show for typed suggest when smart tab sharing on',
+        async () => {
+          loadTimeData.overrideValues({
+            composeboxShowZps: true,
+            composeboxShowTypedSuggest: true,
+          });
+          element = createTestElement();
+          await microtasksFinished();
+          element.smartTabSharingActive = true;
+          await microtasksFinished();
+          assertTrue(element.smartTabSharingActive);
+
+          setInputValue(element.getInputElement().inputElement, 'Test');
+          element.getInputElement().inputElement.dispatchEvent(
+              new Event('input'));
+          await microtasksFinished();
+
+          const composeboxDropdown = element.$.matches;
+          const matches = [
+            createSearchMatchForTesting({
+              fillIntoEdit: 'hello world 1',
+              allowedToBeDefaultMatch: true,
+            }),
+            createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
+            createSearchMatchForTesting({fillIntoEdit: 'hello world 3'}),
+          ];
+          searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                queryId: element.activeQueryId,
+                matches,
+                input: 'Test',
+              }));
+          await microtasksFinished();
+          assertTrue(composeboxDropdown.hidden);
+
+          element.smartTabSharingActive = false;
+          await microtasksFinished();
+          assertFalse(composeboxDropdown.hidden);
+        });
+
+    test(
         'dropdown does not show when no typed suggestions enabled',
         async () => {
       loadTimeData.overrideValues(

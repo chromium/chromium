@@ -2570,6 +2570,7 @@ suite('ComposeboxMixinTest', () => {
         assertFalse(emptyModel.hasTabs());
         assertFalse(emptyModel.hasNonTabFiles());
         assertFalse(emptyModel.hasFiles());
+        assertFalse(emptyModel.hasMultipleFiles());
         assertEquals(0, emptyModel.getNonTabFileNum());
         assertEquals(0, emptyModel.getSharedTabs().length);
         assertFalse(emptyModel.hasValidQuery());
@@ -2583,6 +2584,7 @@ suite('ComposeboxMixinTest', () => {
         assertTrue(tabModel.hasTabs());
         assertFalse(tabModel.hasNonTabFiles());
         assertTrue(tabModel.hasFiles());
+        assertFalse(tabModel.hasMultipleFiles());
         assertEquals(0, tabModel.getNonTabFileNum());
         assertEquals(1, tabModel.getSharedTabs().length);
         assertEquals('Tab 1', tabModel.getSharedTabs()[0]!.title);
@@ -2596,12 +2598,14 @@ suite('ComposeboxMixinTest', () => {
         assertTrue(mixedModel.hasTabs());
         assertTrue(mixedModel.hasNonTabFiles());
         assertTrue(mixedModel.hasFiles());
+        assertTrue(mixedModel.hasMultipleFiles());
         assertEquals(1, mixedModel.getNonTabFileNum());
 
         const stsModel = new ComposeboxInputModel({
           smartTabSharingActive: true,
         });
         assertTrue(stsModel.hasTabs());
+        assertTrue(stsModel.hasMultipleFiles());
 
         const unimodalModel = new ComposeboxInputModel({
           attachedContext: new Map([[unimodalFile.uuid, unimodalFile]]),
@@ -2649,10 +2653,13 @@ suite('ComposeboxMixinTest', () => {
         assertFalse(element.hasTabs());
         assertFalse(element.hasNonTabFiles());
         assertFalse(element.hasFiles());
+        assertFalse(element.hasMultipleFiles());
         assertEquals(element.inputModel.hasTabs(), element.hasTabs());
         assertEquals(
             element.inputModel.hasNonTabFiles(), element.hasNonTabFiles());
         assertEquals(element.inputModel.hasFiles(), element.hasFiles());
+        assertEquals(
+            element.inputModel.hasMultipleFiles(), element.hasMultipleFiles());
         assertEquals(
             element.inputModel.canSubmit(), element.computeSubmitEnabled());
 
@@ -2666,11 +2673,14 @@ suite('ComposeboxMixinTest', () => {
         assertTrue(element.hasTabs());
         assertTrue(element.hasNonTabFiles());
         assertTrue(element.hasFiles());
+        assertTrue(element.hasMultipleFiles());
         assertTrue(element.computeSubmitEnabled());
         assertEquals(element.inputModel.hasTabs(), element.hasTabs());
         assertEquals(
             element.inputModel.hasNonTabFiles(), element.hasNonTabFiles());
         assertEquals(element.inputModel.hasFiles(), element.hasFiles());
+        assertEquals(
+            element.inputModel.hasMultipleFiles(), element.hasMultipleFiles());
         assertEquals(
             element.inputModel.canSubmit(), element.computeSubmitEnabled());
       });

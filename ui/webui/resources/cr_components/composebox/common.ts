@@ -311,6 +311,10 @@ export class ComposeboxInputModel {
     return this.attachedContext.size > 0;
   }
 
+  hasMultipleFiles(): boolean {
+    return this.attachedContext.size > 1 || this.smartTabSharingActive;
+  }
+
   hasOnlyAutoAddedTabs(): boolean {
     return hasOnlyAutoAddedTabs(this.attachedContext);
   }

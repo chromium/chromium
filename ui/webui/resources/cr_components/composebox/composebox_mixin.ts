@@ -583,7 +583,8 @@ export const ComposeboxEmbedderMixin =
           if (changedPrivateProperties.has('input') ||
               changedPrivateProperties.has('result') ||
               changedPrivateProperties.has('attachedContext') ||
-              changedPrivateProperties.has('errorMessage')) {
+              changedPrivateProperties.has('errorMessage') ||
+              changedPrivateProperties.has('smartTabSharingActive')) {
             this.showFileCarousel = this.tabFaviconChipsToCoinsEnabled ?
                 this.getFilteredCarouselFiles().length > 0 :
                 this.attachedContext.size > 0;
@@ -2505,6 +2506,10 @@ export const ComposeboxEmbedderMixin =
           return this.inputModel.hasFiles();
         }
 
+        hasMultipleFiles(): boolean {
+          return this.inputModel.hasMultipleFiles();
+        }
+
         resetSmartComposeStats() {
           this.smartComposeStats = {
             enabled: loadTimeData.getBoolean('composeboxSmartComposeEnabled'),
@@ -3209,8 +3214,12 @@ export const ComposeboxEmbedderMixin =
         }
 
         computeShowDropdown() {
-          // Don't show dropdown if there's multiple files.
-          if (this.attachedContext.size > 1) {
+          // TODO(crbug.com/568429302): Avoid querying autocomplete when
+          // multiple files are attached or Smart Tab Sharing is active, rather
+          // than querying autocomplete and hiding the dropdown.
+          // Don't show dropdown if there's multiple files or Smart Tab Sharing
+          // is active (since relevant tabs will be attached on submit).
+          if (this.hasMultipleFiles()) {
             return false;
           }
 
@@ -3492,6 +3501,7 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   selectFirstMatch(): void;
   readonly inputModel: ComposeboxInputModel;
   hasFiles(): boolean;
+  hasMultipleFiles(): boolean;
   hasTabs(): boolean;
   hasNonTabFiles(): boolean;
   resetSmartComposeStats(): void;
