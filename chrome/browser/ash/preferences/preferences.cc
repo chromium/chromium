@@ -614,12 +614,6 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(prefs::kShowTouchpadScrollScreenEnabled, true);
 
-  // Settings HaTS survey prefs for Settings and Settings Search features.
-  registry->RegisterInt64Pref(ash::prefs::kHatsOsSettingsSearchSurveyCycleEndTs,
-                              0);
-  registry->RegisterBooleanPref(
-      ash::prefs::kHatsOsSettingsSearchSurveyIsSelected, false);
-
   registry->RegisterBooleanPref(prefs::kShowDisplaySizeScreenEnabled, true);
 
   registry->RegisterDictionaryPref(ash::prefs::kTotalUniqueOsSettingsChanged);

@@ -1134,6 +1134,10 @@ inline constexpr char kHatsPhotosExperienceCycleEndTs[] =
     "hats_photos_experience_cycle_end_timestamp";
 inline constexpr char kHatsPhotosExperienceIsSelected[] =
     "hats_photos_experience_is_selected";
+inline constexpr char kHatsOsSettingsSearchSurveyCycleEndTs[] =
+    "hats_os_settings_search_cycle_end_timestamp";
+inline constexpr char kHatsOsSettingsSearchSurveyIsSelected[] =
+    "hats_os_settings_search_is_selected";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Register local state used only for migration (clearing or moving to a new
@@ -1606,6 +1610,8 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kHatsMediaAppPdfIsSelected, false);
   registry->RegisterInt64Pref(kHatsPhotosExperienceCycleEndTs, 0);
   registry->RegisterBooleanPref(kHatsPhotosExperienceIsSelected, false);
+  registry->RegisterInt64Pref(kHatsOsSettingsSearchSurveyCycleEndTs, 0);
+  registry->RegisterBooleanPref(kHatsOsSettingsSearchSurveyIsSelected, false);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -3027,6 +3033,8 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kHatsMediaAppPdfIsSelected);
   profile_prefs->ClearPref(kHatsPhotosExperienceCycleEndTs);
   profile_prefs->ClearPref(kHatsPhotosExperienceIsSelected);
+  profile_prefs->ClearPref(kHatsOsSettingsSearchSurveyCycleEndTs);
+  profile_prefs->ClearPref(kHatsOsSettingsSearchSurveyIsSelected);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

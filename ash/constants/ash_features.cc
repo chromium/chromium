@@ -1988,10 +1988,6 @@ BASE_FEATURE(kHappinessTrackingGeneralCamera,
 BASE_FEATURE(kHappinessTrackingGeneralCameraPrioritized,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the Happiness Tracking System for OS Settings Search survey.
-BASE_FEATURE(kHappinessTrackingOsSettingsSearch,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the Happiness Tracking System for the slow and laggy survery.
 BASE_FEATURE(kHappinessTrackingSystemSlowAndLaggyDeepDive,
              base::FEATURE_DISABLED_BY_DEFAULT);
