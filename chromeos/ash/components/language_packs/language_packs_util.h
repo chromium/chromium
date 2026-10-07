@@ -21,7 +21,7 @@ namespace ash::language_packs {
 
 // Returns the enum value of a feature ID that matches the corresponding value
 // in the UMA Histogram enum.
-FeatureIdsEnum GetFeatureIdValueForUma(const std::string& feature_id);
+FeatureIdsEnum GetFeatureIdValueForUma(std::string_view feature_id);
 
 // Returns the enum value of a success or failure for a given Feature ID.
 // These values match the corresponding UMA histogram enum

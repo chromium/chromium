@@ -14,7 +14,6 @@
 #include "base/check_is_test.h"
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
-#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -23,7 +22,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"
@@ -83,11 +81,11 @@ void InstallDlc(std::string_view dlc_id,
   }
 }
 
-void GetDlcState(const std::string& dlc_id,
+void GetDlcState(std::string_view dlc_id,
                  DlcserviceClient::GetDlcStateCallback callback) {
   DlcserviceClient* client = DlcserviceClient::Get();
   if (client) {
-    client->GetDlcState(dlc_id, std::move(callback));
+    client->GetDlcState(std::string(dlc_id), std::move(callback));
   } else {
     CHECK_IS_TEST();
     dlcservice::DlcState state;
@@ -98,11 +96,11 @@ void GetDlcState(const std::string& dlc_id,
   }
 }
 
-void UninstallDlc(const std::string& dlc_id,
+void UninstallDlc(std::string_view dlc_id,
                   DlcserviceClient::UninstallCallback callback) {
   DlcserviceClient* client = DlcserviceClient::Get();
   if (client) {
-    client->Uninstall(dlc_id, std::move(callback));
+    client->Uninstall(std::string(dlc_id), std::move(callback));
   } else {
     CHECK_IS_TEST();
     RunCallbackLater(
@@ -261,159 +259,39 @@ void OnGetExistingDlcs(PrefService* prefs,
       InputMethodManager::Get()->GetInputMethodUtil(), prefs);
 }
 
-}  // namespace
-
-const base::flat_map<PackSpecPair, std::string>& GetAllLanguagePackDlcIds() {
-  // Map of all DLCs and corresponding IDs.
-  // It's a map from PackSpecPair to DLC ID. The pair is <feature id, locale>.
-  // Whenever a new DLC is created, it needs to be added here.
-  // Clients of Language Packs don't need to know the IDs.
-  static const base::NoDestructor<base::flat_map<PackSpecPair, std::string>>
-      all_dlc_ids({
-          // Handwriting Recognition.
-          {{kHandwritingFeatureId, "am"}, "handwriting-am"},
-          {{kHandwritingFeatureId, "ar"}, "handwriting-ar"},
-          {{kHandwritingFeatureId, "be"}, "handwriting-be"},
-          {{kHandwritingFeatureId, "bg"}, "handwriting-bg"},
-          {{kHandwritingFeatureId, "bn"}, "handwriting-bn"},
-          {{kHandwritingFeatureId, "ca"}, "handwriting-ca"},
-          {{kHandwritingFeatureId, "cs"}, "handwriting-cs"},
-          {{kHandwritingFeatureId, "da"}, "handwriting-da"},
-          {{kHandwritingFeatureId, "de"}, "handwriting-de"},
-          {{kHandwritingFeatureId, "el"}, "handwriting-el"},
-          {{kHandwritingFeatureId, "en"}, "handwriting-en"},
-          {{kHandwritingFeatureId, "es"}, "handwriting-es"},
-          {{kHandwritingFeatureId, "et"}, "handwriting-et"},
-          {{kHandwritingFeatureId, "fa"}, "handwriting-fa"},
-          {{kHandwritingFeatureId, "fi"}, "handwriting-fi"},
-          {{kHandwritingFeatureId, "fil"}, "handwriting-fil"},
-          {{kHandwritingFeatureId, "fr"}, "handwriting-fr"},
-          {{kHandwritingFeatureId, "ga"}, "handwriting-ga"},
-          {{kHandwritingFeatureId, "gu"}, "handwriting-gu"},
-          {{kHandwritingFeatureId, "hi"}, "handwriting-hi"},
-          {{kHandwritingFeatureId, "hr"}, "handwriting-hr"},
-          {{kHandwritingFeatureId, "hu"}, "handwriting-hu"},
-          {{kHandwritingFeatureId, "hy"}, "handwriting-hy"},
-          {{kHandwritingFeatureId, "id"}, "handwriting-id"},
-          {{kHandwritingFeatureId, "is"}, "handwriting-is"},
-          {{kHandwritingFeatureId, "it"}, "handwriting-it"},
-          {{kHandwritingFeatureId, "iw"}, "handwriting-iw"},
-          {{kHandwritingFeatureId, "ja"}, "handwriting-ja"},
-          {{kHandwritingFeatureId, "ka"}, "handwriting-ka"},
-          {{kHandwritingFeatureId, "kk"}, "handwriting-kk"},
-          {{kHandwritingFeatureId, "km"}, "handwriting-km"},
-          {{kHandwritingFeatureId, "kn"}, "handwriting-kn"},
-          {{kHandwritingFeatureId, "ko"}, "handwriting-ko"},
-          {{kHandwritingFeatureId, "lo"}, "handwriting-lo"},
-          {{kHandwritingFeatureId, "lt"}, "handwriting-lt"},
-          {{kHandwritingFeatureId, "lv"}, "handwriting-lv"},
-          {{kHandwritingFeatureId, "ml"}, "handwriting-ml"},
-          {{kHandwritingFeatureId, "mn"}, "handwriting-mn"},
-          {{kHandwritingFeatureId, "mr"}, "handwriting-mr"},
-          {{kHandwritingFeatureId, "ms"}, "handwriting-ms"},
-          {{kHandwritingFeatureId, "mt"}, "handwriting-mt"},
-          {{kHandwritingFeatureId, "my"}, "handwriting-my"},
-          {{kHandwritingFeatureId, "ne"}, "handwriting-ne"},
-          {{kHandwritingFeatureId, "nl"}, "handwriting-nl"},
-          {{kHandwritingFeatureId, "no"}, "handwriting-no"},
-          {{kHandwritingFeatureId, "or"}, "handwriting-or"},
-          {{kHandwritingFeatureId, "pa"}, "handwriting-pa"},
-          {{kHandwritingFeatureId, "pl"}, "handwriting-pl"},
-          {{kHandwritingFeatureId, "pt"}, "handwriting-pt"},
-          {{kHandwritingFeatureId, "ro"}, "handwriting-ro"},
-          {{kHandwritingFeatureId, "ru"}, "handwriting-ru"},
-          {{kHandwritingFeatureId, "si"}, "handwriting-si"},
-          {{kHandwritingFeatureId, "sk"}, "handwriting-sk"},
-          {{kHandwritingFeatureId, "sl"}, "handwriting-sl"},
-          {{kHandwritingFeatureId, "sr"}, "handwriting-sr"},
-          {{kHandwritingFeatureId, "sv"}, "handwriting-sv"},
-          {{kHandwritingFeatureId, "ta"}, "handwriting-ta"},
-          {{kHandwritingFeatureId, "te"}, "handwriting-te"},
-          {{kHandwritingFeatureId, "th"}, "handwriting-th"},
-          {{kHandwritingFeatureId, "ti"}, "handwriting-ti"},
-          {{kHandwritingFeatureId, "tr"}, "handwriting-tr"},
-          {{kHandwritingFeatureId, "uk"}, "handwriting-uk"},
-          {{kHandwritingFeatureId, "ur"}, "handwriting-ur"},
-          {{kHandwritingFeatureId, "vi"}, "handwriting-vi"},
-          {{kHandwritingFeatureId, "zh"}, "handwriting-zh"},
-          {{kHandwritingFeatureId, "zh-HK"}, "handwriting-zh-HK"},
-
-          // Text-To-Speech.
-          {{kTtsFeatureId, "bn"}, "tts-bn-bd-c"},
-          {{kTtsFeatureId, "cs"}, "tts-cs-cz-c"},
-          {{kTtsFeatureId, "da"}, "tts-da-dk-c"},
-          {{kTtsFeatureId, "de"}, "tts-de-de-c"},
-          {{kTtsFeatureId, "el"}, "tts-el-gr-c"},
-          {{kTtsFeatureId, "en-au"}, "tts-en-au-c"},
-          {{kTtsFeatureId, "en-gb"}, "tts-en-gb-c"},
-          {{kTtsFeatureId, "en-us"}, "tts-en-us-d"},
-          {{kTtsFeatureId, "es-es"}, "tts-es-es-c"},
-          {{kTtsFeatureId, "es-us"}, "tts-es-us-c"},
-          {{kTtsFeatureId, "fi"}, "tts-fi-fi-c"},
-          {{kTtsFeatureId, "fil"}, "tts-fil-ph-c"},
-          {{kTtsFeatureId, "fr"}, "tts-fr-fr-c"},
-          {{kTtsFeatureId, "hi"}, "tts-hi-in-c"},
-          {{kTtsFeatureId, "hu"}, "tts-hu-hu-c"},
-          {{kTtsFeatureId, "id"}, "tts-id-id-c"},
-          {{kTtsFeatureId, "it"}, "tts-it-it-c"},
-          {{kTtsFeatureId, "ja"}, "tts-ja-jp-c"},
-          {{kTtsFeatureId, "km"}, "tts-km-kh-c"},
-          {{kTtsFeatureId, "ko"}, "tts-ko-kr-c"},
-          {{kTtsFeatureId, "nb"}, "tts-nb-no-c"},
-          {{kTtsFeatureId, "ne"}, "tts-ne-np-c"},
-          {{kTtsFeatureId, "nl"}, "tts-nl-nl-c"},
-          {{kTtsFeatureId, "pl"}, "tts-pl-pl-c"},
-          {{kTtsFeatureId, "pt-br"}, "tts-pt-br-c"},
-          {{kTtsFeatureId, "pt-pt"}, "tts-pt-pt-c"},
-          {{kTtsFeatureId, "si"}, "tts-si-lk-c"},
-          {{kTtsFeatureId, "sk"}, "tts-sk-sk-c"},
-          {{kTtsFeatureId, "sv"}, "tts-sv-se-c"},
-          {{kTtsFeatureId, "th"}, "tts-th-th-c"},
-          {{kTtsFeatureId, "tr"}, "tts-tr-tr-c"},
-          {{kTtsFeatureId, "uk"}, "tts-uk-ua-c"},
-          {{kTtsFeatureId, "vi"}, "tts-vi-vn-c"},
-          {{kTtsFeatureId, "yue"}, "tts-yue-hk-c"},
-
-          // Fonts.
-          {{kFontsFeatureId, "ja"}, "extrafonts-ja"},
-          {{kFontsFeatureId, "ko"}, "extrafonts-ko"},
-      });
-
-  return *all_dlc_ids;
-}
-
-// TODO: b/294162606 - Calling this function with a `std::string_view` or a
-// `const char*` argument causes two string copies per argument - one to call
-// the function, and one to create the `PackSpecPair` to look up in the map.
-// Either refactor this function to take in a `std::string_view` to reduce it
-// down to one string copy per argument, use heterogeneous lookup
-// (https://abseil.io/tips/144) to reduce it down to zero string copies, or
-// rewrite this function completely.
-std::optional<std::string> GetDlcIdForLanguagePack(
-    const std::string& feature_id,
-    const std::string& locale) {
-  // We search in the static list for the given Pack spec.
-  const PackSpecPair spec(feature_id, locale);
-  const auto it = GetAllLanguagePackDlcIds().find(spec);
-
-  if (it == GetAllLanguagePackDlcIds().end()) {
+template <size_t N>
+std::optional<std::string_view> FindDlcId(
+    const base::fixed_flat_map<std::string_view, std::string_view, N>& map,
+    std::string_view locale) {
+  const auto it = map.find(locale);
+  if (it == map.end()) {
     return std::nullopt;
   }
-
   return it->second;
 }
 
-std::optional<std::string> DlcToTtsLocale(std::string_view dlc_id) {
-  const base::flat_map<PackSpecPair, std::string>& all_ids =
-      GetAllLanguagePackDlcIds();
-  // Relies on the fact that TTS `PackSpecPair`s are "grouped together" in the
-  // sorted `flat_map`.
-  auto it = all_ids.upper_bound({kTtsFeatureId, ""});
-  while (it != all_ids.end() && it->first.feature_id == kTtsFeatureId) {
-    if (it->second == dlc_id) {
-      return it->first.locale;
+}  // namespace
+
+std::optional<std::string_view> GetDlcIdForLanguagePack(
+    std::string_view feature_id,
+    std::string_view locale) {
+  switch (GetFeatureIdValueForUma(feature_id)) {
+    case FeatureIdsEnum::kHandwriting:
+      return FindDlcId(kHandwritingDlcIds, locale);
+    case FeatureIdsEnum::kTts:
+      return FindDlcId(kTtsDlcIds, locale);
+    case FeatureIdsEnum::kFonts:
+      return FindDlcId(kFontsDlcIds, locale);
+    case FeatureIdsEnum::kUnknown:
+      return std::nullopt;
+  }
+}
+
+std::optional<std::string_view> DlcToTtsLocale(std::string_view dlc_id) {
+  for (const auto& [locale, tts_dlc_id] : kTtsDlcIds) {
+    if (tts_dlc_id == dlc_id) {
+      return locale;
     }
-    ++it;
   }
 
   return std::nullopt;
@@ -433,17 +311,14 @@ PackResult::PackResult(const PackResult&) = default;
 bool LanguagePackManager::IsPackAvailable(const std::string& feature_id,
                                           const std::string& input_locale) {
   const std::string locale = ResolveLocale(feature_id, input_locale);
-
-  // We search in the static list for the given Pack spec.
-  const PackSpecPair spec(feature_id, locale);
-  return GetAllLanguagePackDlcIds().contains(spec);
+  return GetDlcIdForLanguagePack(feature_id, locale).has_value();
 }
 
 void LanguagePackManager::InstallPack(const std::string& feature_id,
                                       const std::string& input_locale,
                                       OnInstallCompleteCallback callback) {
   const std::string locale = ResolveLocale(feature_id, input_locale);
-  const std::optional<std::string> dlc_id =
+  const std::optional<std::string_view> dlc_id =
       GetDlcIdForLanguagePack(feature_id, locale);
 
   // If the given Language Pack doesn't exist, run callback and don't reach the
@@ -461,7 +336,7 @@ void LanguagePackManager::GetPackState(const std::string& feature_id,
                                        const std::string& input_locale,
                                        GetPackStateCallback callback) {
   const std::string locale = ResolveLocale(feature_id, input_locale);
-  const std::optional<std::string> dlc_id =
+  const std::optional<std::string_view> dlc_id =
       GetDlcIdForLanguagePack(feature_id, locale);
 
   // If the given Language Pack doesn't exist, run callback and don't reach the
@@ -486,7 +361,7 @@ void LanguagePackManager::RemovePack(const std::string& feature_id,
                                      const std::string& input_locale,
                                      OnUninstallCompleteCallback callback) {
   const std::string locale = ResolveLocale(feature_id, input_locale);
-  const std::optional<std::string> dlc_id =
+  const std::optional<std::string_view> dlc_id =
       GetDlcIdForLanguagePack(feature_id, locale);
 
   // If the given Language Pack doesn't exist, run callback and don't reach the
@@ -534,7 +409,7 @@ void LanguagePackManager::UpdatePacksForOobe(
   // In the future we'll have a function that returns the list of features to
   // install.
   const std::string locale = ResolveLocale(kTtsFeatureId, input_locale);
-  const std::optional<std::string> dlc_id =
+  const std::optional<std::string_view> dlc_id =
       GetDlcIdForLanguagePack(kTtsFeatureId, locale);
 
   if (dlc_id) {
@@ -594,14 +469,15 @@ void LanguagePackManager::OnDlcStateChanged(
     const dlcservice::DlcState& dlc_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const std::optional<std::string> handwriting_locale =
+  const std::optional<std::string_view> handwriting_locale =
       DlcToHandwritingLocale(dlc_state.id());
   if (handwriting_locale.has_value()) {
     NotifyPackStateChanged(kHandwritingFeatureId, *handwriting_locale,
                            dlc_state);
   }
 
-  const std::optional<std::string> tts_locale = DlcToTtsLocale(dlc_state.id());
+  const std::optional<std::string_view> tts_locale =
+      DlcToTtsLocale(dlc_state.id());
   if (tts_locale.has_value()) {
     NotifyPackStateChanged(kTtsFeatureId, *tts_locale, dlc_state);
   }

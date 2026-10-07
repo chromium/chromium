@@ -275,7 +275,7 @@ TEST_F(LanguagePackManagerTest, GetPackStateSuccessTest) {
 }
 
 TEST_F(LanguagePackManagerTest, GetPackStateSuccessNotInstalledButVerified) {
-  std::string dlc_id =
+  std::string_view dlc_id =
       GetDlcIdForLanguagePack(kHandwritingFeatureId, kSupportedLocale).value();
   dlcservice_client_.set_get_dlc_state_error(dlc_id, dlcservice::kErrorNone);
   dlcservice::DlcState dlc_state;

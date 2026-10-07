@@ -9,7 +9,7 @@
 #include <string>
 #include <string_view>
 
-#include "base/containers/flat_map.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -116,50 +116,80 @@ struct PackResult {
   std::string path;
 };
 
-// We define an internal type to identify a Language Pack.
-// It's a pair of featured_id and locale that is hashable.
-struct PackSpecPair {
-  std::string feature_id;
-  std::string locale;
-
-  PackSpecPair(std::string feature_id, std::string locale)
-      : feature_id(std::move(feature_id)), locale(std::move(locale)) {}
-
-  bool operator==(const PackSpecPair& other) const {
-    return (feature_id == other.feature_id && locale == other.locale);
-  }
-
-  bool operator!=(const PackSpecPair& other) const { return !(*this == other); }
-
-  // Allows PackSpecPair to be used as a key in STL containers, like flat_map.
-  bool operator<(const PackSpecPair& other) const {
-    if (feature_id == other.feature_id) {
-      return locale < other.locale;
-    }
-
-    return feature_id < other.feature_id;
-  }
-
-  // Simple hash function: XOR the string hash.
-  struct HashFunction {
-    size_t operator()(const PackSpecPair& obj) const {
-      size_t first_hash = std::hash<std::string>()(obj.feature_id);
-      size_t second_hash = std::hash<std::string>()(obj.locale) << 1;
-      return first_hash ^ second_hash;
-    }
-  };
-};
-
-// Returns a static mapping from `PackSpecPair`s to DLC IDs.
-// Internal only, do not use - this function will likely be removed in the
+// Static mappings from locale to DLC ID for each feature.
+// Whenever a new DLC is created, it needs to be added here.
+// Clients of Language Packs don't need to know the IDs.
+// Internal only, do not use - these mappings will likely be removed in the
 // future.
-const base::flat_map<PackSpecPair, std::string>& GetAllLanguagePackDlcIds();
+inline constexpr auto kHandwritingDlcIds =
+    base::MakeFixedFlatMap<std::string_view, std::string_view>({
+        {"am", "handwriting-am"}, {"ar", "handwriting-ar"},
+        {"be", "handwriting-be"}, {"bg", "handwriting-bg"},
+        {"bn", "handwriting-bn"}, {"ca", "handwriting-ca"},
+        {"cs", "handwriting-cs"}, {"da", "handwriting-da"},
+        {"de", "handwriting-de"}, {"el", "handwriting-el"},
+        {"en", "handwriting-en"}, {"es", "handwriting-es"},
+        {"et", "handwriting-et"}, {"fa", "handwriting-fa"},
+        {"fi", "handwriting-fi"}, {"fil", "handwriting-fil"},
+        {"fr", "handwriting-fr"}, {"ga", "handwriting-ga"},
+        {"gu", "handwriting-gu"}, {"hi", "handwriting-hi"},
+        {"hr", "handwriting-hr"}, {"hu", "handwriting-hu"},
+        {"hy", "handwriting-hy"}, {"id", "handwriting-id"},
+        {"is", "handwriting-is"}, {"it", "handwriting-it"},
+        {"iw", "handwriting-iw"}, {"ja", "handwriting-ja"},
+        {"ka", "handwriting-ka"}, {"kk", "handwriting-kk"},
+        {"km", "handwriting-km"}, {"kn", "handwriting-kn"},
+        {"ko", "handwriting-ko"}, {"lo", "handwriting-lo"},
+        {"lt", "handwriting-lt"}, {"lv", "handwriting-lv"},
+        {"ml", "handwriting-ml"}, {"mn", "handwriting-mn"},
+        {"mr", "handwriting-mr"}, {"ms", "handwriting-ms"},
+        {"mt", "handwriting-mt"}, {"my", "handwriting-my"},
+        {"ne", "handwriting-ne"}, {"nl", "handwriting-nl"},
+        {"no", "handwriting-no"}, {"or", "handwriting-or"},
+        {"pa", "handwriting-pa"}, {"pl", "handwriting-pl"},
+        {"pt", "handwriting-pt"}, {"ro", "handwriting-ro"},
+        {"ru", "handwriting-ru"}, {"si", "handwriting-si"},
+        {"sk", "handwriting-sk"}, {"sl", "handwriting-sl"},
+        {"sr", "handwriting-sr"}, {"sv", "handwriting-sv"},
+        {"ta", "handwriting-ta"}, {"te", "handwriting-te"},
+        {"th", "handwriting-th"}, {"ti", "handwriting-ti"},
+        {"tr", "handwriting-tr"}, {"uk", "handwriting-uk"},
+        {"ur", "handwriting-ur"}, {"vi", "handwriting-vi"},
+        {"zh", "handwriting-zh"}, {"zh-HK", "handwriting-zh-HK"},
+    });
+
+inline constexpr auto kTtsDlcIds =
+    base::MakeFixedFlatMap<std::string_view, std::string_view>({
+        {"bn", "tts-bn-bd-c"},    {"cs", "tts-cs-cz-c"},
+        {"da", "tts-da-dk-c"},    {"de", "tts-de-de-c"},
+        {"el", "tts-el-gr-c"},    {"en-au", "tts-en-au-c"},
+        {"en-gb", "tts-en-gb-c"}, {"en-us", "tts-en-us-d"},
+        {"es-es", "tts-es-es-c"}, {"es-us", "tts-es-us-c"},
+        {"fi", "tts-fi-fi-c"},    {"fil", "tts-fil-ph-c"},
+        {"fr", "tts-fr-fr-c"},    {"hi", "tts-hi-in-c"},
+        {"hu", "tts-hu-hu-c"},    {"id", "tts-id-id-c"},
+        {"it", "tts-it-it-c"},    {"ja", "tts-ja-jp-c"},
+        {"km", "tts-km-kh-c"},    {"ko", "tts-ko-kr-c"},
+        {"nb", "tts-nb-no-c"},    {"ne", "tts-ne-np-c"},
+        {"nl", "tts-nl-nl-c"},    {"pl", "tts-pl-pl-c"},
+        {"pt-br", "tts-pt-br-c"}, {"pt-pt", "tts-pt-pt-c"},
+        {"si", "tts-si-lk-c"},    {"sk", "tts-sk-sk-c"},
+        {"sv", "tts-sv-se-c"},    {"th", "tts-th-th-c"},
+        {"tr", "tts-tr-tr-c"},    {"uk", "tts-uk-ua-c"},
+        {"vi", "tts-vi-vn-c"},    {"yue", "tts-yue-hk-c"},
+    });
+
+inline constexpr auto kFontsDlcIds =
+    base::MakeFixedFlatMap<std::string_view, std::string_view>({
+        {"ja", "extrafonts-ja"},
+        {"ko", "extrafonts-ko"},
+    });
 
 // Finds the ID of the DLC corresponding to the given spec.
 // Returns the DLC ID if the DLC exists or std::nullopt otherwise.
-std::optional<std::string> GetDlcIdForLanguagePack(
-    const std::string& feature_id,
-    const std::string& locale);
+std::optional<std::string_view> GetDlcIdForLanguagePack(
+    std::string_view feature_id,
+    std::string_view locale);
 
 using OnInstallCompleteCallback =
     base::OnceCallback<void(const PackResult& pack_result)>;

@@ -49,7 +49,7 @@ const std::string ResolveLocaleForTts(const std::string& input_locale) {
 
 }  // namespace
 
-FeatureIdsEnum GetFeatureIdValueForUma(const std::string& feature_id) {
+FeatureIdsEnum GetFeatureIdValueForUma(std::string_view feature_id) {
   if (feature_id == kHandwritingFeatureId) {
     return FeatureIdsEnum::kHandwriting;
   }

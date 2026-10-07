@@ -42,11 +42,11 @@ std::optional<std::string> MapInputMethodIdToHandwritingLocale(
 // This function takes in handwriting locales as given in the Google ChromeOS 1P
 // IME manifest. If the locale is not of that form, consider converting it to
 // one using `ResolveLocale`.
-std::optional<std::string> HandwritingLocaleToDlc(std::string_view locale);
+std::optional<std::string_view> HandwritingLocaleToDlc(std::string_view locale);
 
 // Given a DLC ID, returns the handwriting recognition locale for it if it
 // exists.
-std::optional<std::string> DlcToHandwritingLocale(std::string_view dlc_id);
+std::optional<std::string_view> DlcToHandwritingLocale(std::string_view dlc_id);
 
 // Given a DLC ID, returns whether it is a DLC for handwriting recognition.
 // Intended to be used to filter a list of DLCs that a user has installed to

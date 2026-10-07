@@ -4,9 +4,11 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/hash/hash.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -18,10 +20,17 @@ namespace ash::language_packs {
 
 TEST(LanguagePackMetricsTest, CheckLanguageCodes) {
   std::vector<std::string> language_codes;
-  for (auto& [pack_spec_pair, unused_dlc_id] : GetAllLanguagePackDlcIds()) {
-    language_codes.push_back(pack_spec_pair.locale);
+  language_codes.reserve(kHandwritingDlcIds.size() + kTtsDlcIds.size() +
+                         kFontsDlcIds.size());
+  for (const auto& [locale, unused_dlc_id] : kHandwritingDlcIds) {
+    language_codes.emplace_back(locale);
   }
-
+  for (const auto& [locale, unused_dlc_id] : kTtsDlcIds) {
+    language_codes.emplace_back(locale);
+  }
+  for (const auto& [locale, unused_dlc_id] : kFontsDlcIds) {
+    language_codes.emplace_back(locale);
+  }
   std::optional<base::HistogramEnumEntryMap> language_codes_map =
       base::ReadEnumFromEnumsXml("LanguagePackLanguageCodes",
                                  /*subdirectory=*/"chromeos");

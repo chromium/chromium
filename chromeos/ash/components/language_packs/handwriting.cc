@@ -10,10 +10,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
-#include "base/no_destructor.h"
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
 #include "chromeos/ash/components/language_packs/language_packs_util.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
@@ -45,36 +45,23 @@ std::optional<std::string> MapInputMethodIdToHandwritingLocale(
   return descriptor->handwriting_language();
 }
 
-std::optional<std::string> HandwritingLocaleToDlc(std::string_view locale) {
-  // TODO: b/285993323 - Replace this with a set lookup (to see if it is a valid
-  // locale) and concatenation (to produce the DLC ID) to eventually deprecate
-  // `GetAllLanguagePackDlcIds`.
-  return GetDlcIdForLanguagePack(kHandwritingFeatureId, std::string(locale));
+std::optional<std::string_view> HandwritingLocaleToDlc(
+    std::string_view locale) {
+  return GetDlcIdForLanguagePack(kHandwritingFeatureId, locale);
 }
 
-std::optional<std::string> DlcToHandwritingLocale(std::string_view dlc_id) {
-  static const base::NoDestructor<
-      const base::flat_map<std::string, std::string>>
-      handwriting_locale_from_dlc([] {
-        std::vector<std::pair<std::string, std::string>> handwriting_dlcs;
+std::optional<std::string_view> DlcToHandwritingLocale(
+    std::string_view dlc_id) {
+  static constexpr auto kHandwritingLocaleFromDlc =
+      []<size_t... Is>(std::index_sequence<Is...>) {
+        return base::MakeFixedFlatMap<std::string_view, std::string_view>({
+            {kHandwritingDlcIds.begin()[Is].second,
+             kHandwritingDlcIds.begin()[Is].first}...,
+        });
+      }(std::make_index_sequence<kHandwritingDlcIds.size()>{});
 
-        const base::flat_map<PackSpecPair, std::string>& all_ids =
-            GetAllLanguagePackDlcIds();
-
-        // Relies on the fact that handwriting `PackSpecPair`s are "grouped
-        // together" in the sorted `flat_map`.
-        auto it = all_ids.upper_bound({kHandwritingFeatureId, ""});
-        while (it != all_ids.end() &&
-               it->first.feature_id == kHandwritingFeatureId) {
-          handwriting_dlcs.emplace_back(it->second, it->first.locale);
-          it++;
-        }
-
-        return handwriting_dlcs;
-      }());
-
-  auto it = handwriting_locale_from_dlc->find(dlc_id);
-  if (it == handwriting_locale_from_dlc->end()) {
+  const auto it = kHandwritingLocaleFromDlc.find(dlc_id);
+  if (it == kHandwritingLocaleFromDlc.end()) {
     return std::nullopt;
   }
   return it->second;
@@ -89,9 +76,10 @@ base::flat_set<std::string> ConvertDlcsWithContentToHandwritingLocales(
   std::vector<std::string> dlc_locales;
 
   for (const auto& dlc_info : dlcs_with_content.dlc_infos()) {
-    const auto& locale = DlcToHandwritingLocale(dlc_info.id());
+    const std::optional<std::string_view> locale =
+        DlcToHandwritingLocale(dlc_info.id());
     if (locale.has_value()) {
-      dlc_locales.push_back(*locale);
+      dlc_locales.emplace_back(*locale);
     }
   }
 
