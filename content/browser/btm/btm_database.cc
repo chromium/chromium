@@ -622,7 +622,9 @@ std::set<std::string> BtmDatabase::FilterSites(
   const std::string kReadSql = absl::StrFormat(
       kReadSqlFmt,
       base::JoinString(std::vector<std::string_view>(sites.size(), "?"), ","));
-  CHECK(db_->IsSQLValid(kReadSql), base::NotFatalUntil::M158);
+  // TODO(crbug.com/570257021): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(db_->IsSQLValid(kReadSql));
 
   std::string histogram_name;
   switch (filter) {
