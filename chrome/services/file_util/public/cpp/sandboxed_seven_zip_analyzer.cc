@@ -66,7 +66,7 @@ SandboxedSevenZipAnalyzer::SandboxedSevenZipAnalyzer(
       callback_(std::move(callback)),
       service_(std::move(service)),
       file_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
   DCHECK(callback_);
   service_->BindSafeArchiveAnalyzer(
