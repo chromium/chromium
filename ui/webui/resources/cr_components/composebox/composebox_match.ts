@@ -232,6 +232,19 @@ export class ComposeboxMatchElement extends CrLitElement {
   protected onRemoveButtonMousedown_(e: Event) {
     e.preventDefault();  // Prevents default browser action (focus).
   }
+
+  isRemoveButtonFocused(): boolean {
+    return this.shadowRoot?.activeElement === this.$.remove;
+  }
+
+  /**
+   * Returns whether pressing forward Tab while this match is active will move
+   * focus outside of this match element rather than to an internal focusable
+   * control (such as the remove button).
+   */
+  willTabExitMatch(): boolean {
+    return !this.match.supportsDeletion || this.isRemoveButtonFocused();
+  }
 }
 
 declare global {

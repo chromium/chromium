@@ -54,6 +54,7 @@
 #include "components/omnibox/browser/suggest_template_info.mojom.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
@@ -226,6 +227,22 @@ TEST_F(SearchboxHandlerTest, GetWebUIDataSourceDictSetsVirtualFocusFlags) {
     EXPECT_TRUE(*strings.FindBool("lensOverlayVirtualFocusNavigation"));
     EXPECT_TRUE(*strings.FindBool("omniboxEverywhereVirtualFocusNavigation"));
     EXPECT_TRUE(*strings.FindBool("webuiBrowserVirtualFocusNavigation"));
+  }
+}
+
+TEST_F(SearchboxHandlerTest, GetWebUIDataSourceDictSetsUnselectMatchOnTabExit) {
+  {
+    base::DictValue strings =
+        SearchboxHandler::GetWebUIDataSourceDict(profile());
+    EXPECT_FALSE(*strings.FindBool("composeboxUnselectMatchOnTabExit"));
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list(
+        omnibox::kComposeboxUnselectMatchOnTabExit);
+    base::DictValue strings =
+        SearchboxHandler::GetWebUIDataSourceDict(profile());
+    EXPECT_TRUE(*strings.FindBool("composeboxUnselectMatchOnTabExit"));
   }
 }
 

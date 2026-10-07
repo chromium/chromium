@@ -269,4 +269,34 @@ suite('ComposeboxMatch', () => {
 
     assertStyle(matchElement.$.iconContainer, 'flex-shrink', '0');
   });
+
+  test(
+      'willTabExitMatch accounts for supportsDeletion and remove button focus',
+      async () => {
+        // When supportsDeletion is false, forward Tab exits the match.
+        matchElement.match = createAutocompleteMatch({
+          supportsDeletion: false,
+        });
+        await microtasksFinished();
+        assertTrue(matchElement.willTabExitMatch());
+
+        // When supportsDeletion is true and focus is on the match row (not the
+        // remove button), forward Tab moves to the remove button rather than
+        // exiting the match.
+        matchElement.match = createAutocompleteMatch({
+          supportsDeletion: true,
+        });
+        matchElement.toggleAttribute('selected', true);
+        await microtasksFinished();
+
+        assertFalse(matchElement.isRemoveButtonFocused());
+        assertFalse(matchElement.willTabExitMatch());
+
+        // When focus is on the remove button, forward Tab exits the match.
+        matchElement.$.remove.focus();
+        await microtasksFinished();
+
+        assertTrue(matchElement.isRemoveButtonFocused());
+        assertTrue(matchElement.willTabExitMatch());
+      });
 });

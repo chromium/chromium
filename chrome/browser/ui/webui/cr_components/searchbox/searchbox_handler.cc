@@ -76,6 +76,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/extension_features.h"
 #endif
+#include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/input_state.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -575,6 +576,9 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
                                  GetIsSmartTabSharingEnabled(profile));
   dict.Set("stsMegaplusShareRelevantOpenTabs",
            GetSmartTabSharingMegaplusString());
+  dict.Set(
+      "composeboxUnselectMatchOnTabExit",
+      base::FeatureList::IsEnabled(omnibox::kComposeboxUnselectMatchOnTabExit));
 
   return dict;
 }
