@@ -22,6 +22,7 @@
 #include "partition_alloc/partition_alloc_for_testing.h"
 #include "partition_alloc/partition_freelist_entry.h"
 #include "partition_alloc/partition_lock.h"
+#include "partition_alloc/partition_tls.h"
 #include "partition_alloc/tagging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -574,6 +575,71 @@ TEST_P(PartitionAllocThreadCacheTest, ThreadCacheRegistry) {
   internal::ScopedGuard lock(ThreadCacheRegistry::GetLock());
   EXPECT_EQ(parent_thread_tcache->prev_for_testing(), nullptr);
   EXPECT_EQ(parent_thread_tcache->next_for_testing(), nullptr);
+#endif
+}
+
+namespace {
+
+class ThreadDelegateForPartitionTlsRegistry
+    : public internal::base::PlatformThreadForTesting::Delegate {
+ public:
+  ThreadDelegateForPartitionTlsRegistry(std::atomic<bool>& tls_touched,
+                                        std::atomic<bool>& can_finish)
+      : tls_touched_(tls_touched), can_finish_(can_finish) {}
+
+  void ThreadMain() override {
+    // Touch TLS on this thread.
+    PartitionTls* tls = internal::GetTls();
+    EXPECT_NE(tls, nullptr);
+    EXPECT_TRUE(PartitionTlsRegistry::Instance().IsRegisteredForTesting(tls));
+    tls_ = tls;
+
+    tls_touched_.store(true, std::memory_order_release);
+    while (!can_finish_.load(std::memory_order_acquire)) {
+      internal::base::PlatformThreadForTesting::YieldCurrentThread();
+    }
+  }
+
+  PartitionTls* tls() const { return tls_; }
+
+ private:
+  std::atomic<bool>& tls_touched_;
+  std::atomic<bool>& can_finish_;
+  PartitionTls* tls_ = nullptr;
+};
+
+}  // namespace
+
+TEST_P(PartitionAllocThreadCacheTest, PartitionTlsRegistry) {
+  PartitionTls* parent_thread_tls = internal::GetTls();
+  ASSERT_NE(parent_thread_tls, nullptr);
+  EXPECT_TRUE(PartitionTlsRegistry::Instance().IsRegisteredForTesting(
+      parent_thread_tls));
+
+  std::atomic<bool> tls_touched{false};
+  std::atomic<bool> can_finish{false};
+  ThreadDelegateForPartitionTlsRegistry delegate(tls_touched, can_finish);
+
+  internal::base::PlatformThreadHandle thread_handle;
+  ASSERT_TRUE(internal::base::PlatformThreadForTesting::Create(0, &delegate,
+                                                               &thread_handle));
+
+  while (!tls_touched.load(std::memory_order_acquire)) {
+    internal::base::PlatformThreadForTesting::YieldCurrentThread();
+  }
+
+  PartitionTls* other_thread_tls = delegate.tls();
+  ASSERT_NE(other_thread_tls, nullptr);
+  EXPECT_NE(other_thread_tls, parent_thread_tls);
+  EXPECT_TRUE(PartitionTlsRegistry::Instance().IsRegisteredForTesting(
+      other_thread_tls));
+
+  can_finish.store(true, std::memory_order_release);
+  internal::base::PlatformThreadForTesting::Join(thread_handle);
+
+#if !PA_BUILDFLAG(IS_FUCHSIA)
+  EXPECT_FALSE(PartitionTlsRegistry::Instance().IsRegisteredForTesting(
+      other_thread_tls));
 #endif
 }
 

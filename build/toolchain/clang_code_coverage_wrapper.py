@@ -188,6 +188,8 @@ _DEFAULT_COVERAGE_EXCLUSION_LIST = [
     '../../base/allocator/partition_allocator/src/partition_alloc/partition_page.cc',
     '../../base/allocator/partition_allocator/src/partition_alloc/partition_root.cc',
     '../../base/allocator/partition_allocator/src/partition_alloc/partition_stats.cc',
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_tls.cc',
+    '../../base/allocator/partition_allocator/src/partition_alloc/partition_tls_posix.cc',
     '../../base/allocator/partition_allocator/src/partition_alloc/partition_tls_win.cc',
     '../../base/allocator/partition_allocator/src/partition_alloc/pointers/empty.cc',
     '../../base/allocator/partition_allocator/src/partition_alloc/pointers/instance_tracer.cc',
