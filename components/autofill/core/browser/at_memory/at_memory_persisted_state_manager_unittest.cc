@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -43,8 +44,11 @@
 namespace autofill {
 namespace {
 
+using ::testing::AllOf;
+using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::Optional;
+using ::testing::SizeIs;
 
 url::Origin FieldOrigin() {
   return url::Origin::Create(GURL("https://example.com"));
@@ -187,8 +191,9 @@ TEST_F(AtMemoryPersistedStateManagerTest,
       state_manager().GetStateForField(field_id(), FieldOrigin());
   ASSERT_TRUE(restored_state.has_value());
   EXPECT_EQ(restored_state->filter, u"address");
-  ASSERT_EQ(restored_state->suggestions.size(), 1u);
-  EXPECT_EQ(restored_state->suggestions[0].main_text.value, u"123 Main St");
+  EXPECT_THAT(restored_state->suggestions,
+              ElementsAre(EqualsSuggestion(
+                  SuggestionType::kAddressEntry, u"123 Main St")));
   EXPECT_FALSE(restored_state->is_searching);
   EXPECT_EQ(state_manager().field_origin(), FieldOrigin());
 }
@@ -287,11 +292,12 @@ TEST_F(AtMemoryPersistedStateManagerTest, StoresPreviouslyFilledSuggestions) {
   state_manager().OnSuggestionAccepted(s1);
   state_manager().OnSuggestionAccepted(s2);
 
-  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 2u);
-  EXPECT_EQ(state_manager().previously_filled_suggestions()[0].main_text.value,
-            u"Suggestion 1");
-  EXPECT_EQ(state_manager().previously_filled_suggestions()[1].main_text.value,
-            u"Suggestion 2");
+  EXPECT_THAT(
+      state_manager().previously_filled_suggestions(),
+      ElementsAre(EqualsSuggestion(SuggestionType::kAtMemorySearchResult,
+                                   u"Suggestion 1"),
+                  EqualsSuggestion(SuggestionType::kAtMemorySearchResult,
+                                   u"Suggestion 2")));
 }
 
 // Tests that `OnSuggestionAccepted` does not store accepted suggestions in
@@ -324,9 +330,9 @@ TEST_F(AtMemoryPersistedStateManagerTest, RetrievedSuggestion) {
 
   state_manager().OnSuggestionAccepted(primary_suggestion);
 
-  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
-  EXPECT_EQ(state_manager().previously_filled_suggestions()[0].main_text.value,
-            u"Passport");
+  EXPECT_THAT(state_manager().previously_filled_suggestions(),
+              ElementsAre(EqualsSuggestion(
+                  SuggestionType::kAtMemorySearchResult, u"Passport")));
 }
 
 // Tests that accepting a previously filled suggestion stores it in
@@ -348,9 +354,9 @@ TEST_F(AtMemoryPersistedStateManagerTest, PreviouslyFilledSuggestion) {
   state_manager().GetStateForField(field_id(), FieldOrigin());
   state_manager().OnSuggestionAccepted(primary_suggestion);
 
-  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
-  EXPECT_EQ(state_manager().previously_filled_suggestions()[0].main_text.value,
-            u"Passport");
+  EXPECT_THAT(state_manager().previously_filled_suggestions(),
+              ElementsAre(EqualsSuggestion(
+                  SuggestionType::kAtMemorySearchResult, u"Passport")));
 }
 
 // Tests that accepting a child of a retrieved suggestion gets stored as a new
@@ -372,11 +378,11 @@ TEST_F(AtMemoryPersistedStateManagerTest, ChildOfRetrievedSuggestion) {
 
   state_manager().OnSuggestionAccepted(child_suggestion);
 
-  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
-  EXPECT_EQ(state_manager().previously_filled_suggestions()[0].main_text.value,
-            u"Passport");
-  EXPECT_EQ(state_manager().previously_filled_suggestions()[0].children.size(),
-            1u);
+  EXPECT_THAT(
+      state_manager().previously_filled_suggestions(),
+      ElementsAre(AllOf(
+          EqualsSuggestion(SuggestionType::kAtMemorySearchResult, u"Passport"),
+          Field(&Suggestion::children, SizeIs(1u)))));
 }
 
 // Tests that accepting a child of a previously filled suggestion gets stored as
@@ -403,11 +409,11 @@ TEST_F(AtMemoryPersistedStateManagerTest, ChildOfPreviouslyFilledSuggestion) {
 
   // Verify that `previously_filled_suggestions` contains the deduplicated
   // primary suggestion (not `child_suggestion`).
-  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
-  EXPECT_EQ(state_manager().previously_filled_suggestions()[0].main_text.value,
-            u"Passport");
-  EXPECT_EQ(state_manager().previously_filled_suggestions()[0].children.size(),
-            1u);
+  EXPECT_THAT(
+      state_manager().previously_filled_suggestions(),
+      ElementsAre(AllOf(
+          EqualsSuggestion(SuggestionType::kAtMemorySearchResult, u"Passport"),
+          Field(&Suggestion::children, SizeIs(1u)))));
 }
 
 // Tests that accepting an already existing suggestion deduplicates and moves it
@@ -421,19 +427,21 @@ TEST_F(AtMemoryPersistedStateManagerTest, DeduplicatesAndPreservesMruOrder) {
 
   state_manager().OnSuggestionAccepted(s1);
   state_manager().OnSuggestionAccepted(s2);
-  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 2u);
-  EXPECT_EQ(state_manager().previously_filled_suggestions()[0].main_text.value,
-            u"Suggestion 1");
-  EXPECT_EQ(state_manager().previously_filled_suggestions()[1].main_text.value,
-            u"Suggestion 2");
+  EXPECT_THAT(
+      state_manager().previously_filled_suggestions(),
+      ElementsAre(EqualsSuggestion(SuggestionType::kAtMemorySearchResult,
+                                   u"Suggestion 1"),
+                  EqualsSuggestion(SuggestionType::kAtMemorySearchResult,
+                                   u"Suggestion 2")));
 
   // Re-accept s1 to verify it is deduplicated and moved to the back (MRU).
   state_manager().OnSuggestionAccepted(s1);
-  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 2u);
-  EXPECT_EQ(state_manager().previously_filled_suggestions()[0].main_text.value,
-            u"Suggestion 2");
-  EXPECT_EQ(state_manager().previously_filled_suggestions()[1].main_text.value,
-            u"Suggestion 1");
+  EXPECT_THAT(
+      state_manager().previously_filled_suggestions(),
+      ElementsAre(EqualsSuggestion(SuggestionType::kAtMemorySearchResult,
+                                   u"Suggestion 2"),
+                  EqualsSuggestion(SuggestionType::kAtMemorySearchResult,
+                                   u"Suggestion 1")));
 }
 
 // Tests that accepting more than `kMaxPreviouslyFilledSuggestions` evicts the
