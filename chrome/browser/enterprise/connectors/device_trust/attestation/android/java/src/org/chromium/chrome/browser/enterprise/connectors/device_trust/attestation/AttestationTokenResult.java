@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.enterprise.connectors.device_trust.attestation;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -18,10 +21,14 @@ public class AttestationTokenResult {
         mErrorMessage = errorMessage;
     }
 
+    @CalledByNative
+    @JniType("std::optional<std::vector<uint8_t>>")
     public byte @Nullable [] getToken() {
         return mToken;
     }
 
+    @CalledByNative
+    @JniType("std::optional<std::string>")
     public @Nullable String getErrorMessage() {
         return mErrorMessage;
     }

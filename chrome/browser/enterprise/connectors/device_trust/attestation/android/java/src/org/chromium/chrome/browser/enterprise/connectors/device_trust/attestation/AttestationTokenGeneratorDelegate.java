@@ -9,17 +9,22 @@ import org.chromium.build.annotations.NullMarked;
 /**
  * Delegate interface for generating attestation tokens. Downstream implementations provide
  * integration with Google Play Services.
+ *
+ * <p>Methods are called from native code on a background thread pool worker and may block, but
+ * implementations must return within a bounded time, since the worker is held until the call
+ * returns.
  */
 @NullMarked
 public interface AttestationTokenGeneratorDelegate {
     /**
-     * Generates an attestation token using the provided content binding hash.
+     * Generates an attestation token using the provided content binding hash. May block, but must
+     * return within a bounded time.
      *
      * @param contentBinding The content binding bytes.
      * @return The result containing the token or an error message.
      */
     AttestationTokenResult generateToken(byte[] contentBinding);
 
-    /** Triggers pre-warming of the integrity token cache asynchronously. */
+    /** Pre-warms the integrity token cache. May block, but must return within a bounded time. */
     void preWarmCache();
 }

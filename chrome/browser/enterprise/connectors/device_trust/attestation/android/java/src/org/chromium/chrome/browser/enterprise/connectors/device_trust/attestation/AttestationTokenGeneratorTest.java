@@ -8,6 +8,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -78,6 +79,32 @@ public class AttestationTokenGeneratorTest {
     public void testCustomDelegate_preWarmCache() {
         AttestationTokenGenerator.setDelegateForTesting(mMockDelegate);
 
+        AttestationTokenGenerator.preWarmCache();
+
+        verify(mMockDelegate).preWarmCache();
+    }
+
+    @Test
+    public void testCustomDelegate_generateTokenThrows() {
+        byte[] contentBinding = new byte[] {5, 6, 7, 8};
+        when(mMockDelegate.generateToken(contentBinding))
+                .thenThrow(new IllegalStateException("Delegate failure"));
+
+        AttestationTokenGenerator.setDelegateForTesting(mMockDelegate);
+
+        AttestationTokenResult result = AttestationTokenGenerator.generateToken(contentBinding);
+        assertNotNull(result);
+        assertNull(result.getToken());
+        assertEquals("java.lang.IllegalStateException: Delegate failure", result.getErrorMessage());
+    }
+
+    @Test
+    public void testCustomDelegate_preWarmCacheThrows() {
+        doThrow(new IllegalStateException("Delegate failure")).when(mMockDelegate).preWarmCache();
+
+        AttestationTokenGenerator.setDelegateForTesting(mMockDelegate);
+
+        // Must not throw.
         AttestationTokenGenerator.preWarmCache();
 
         verify(mMockDelegate).preWarmCache();
