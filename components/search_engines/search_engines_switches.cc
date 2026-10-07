@@ -77,7 +77,7 @@ const base::FeatureParam<std::string> kSearchEngineChoiceTriggerRepromptParams{
 
 
 BASE_FEATURE(kWipeChoicePrefsOnMissingDefaultSearchEngine,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrefetchParameterFix, base::FEATURE_ENABLED_BY_DEFAULT);
 

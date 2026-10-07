@@ -98,6 +98,17 @@ void ExpectHistogramsSampleCount(const base::HistogramTester& histogram_tester,
 }  // namespace
 
 class SearchEngineChoiceServiceTest : public SearchEngineChoiceServiceTestBase {
+ protected:
+  void SetUp() override {
+    SearchEngineChoiceServiceTestBase::SetUp();
+    // TODO(crbug.com/570916277): use better plumbing than empty data.
+    // Empty (default) value for this pref is equivalent to a situation where
+    // the prefs were just reset by anti-tampering mechanisms. Any value
+    // (including empty) is valid, untampered state.
+    pref_service()->SetDict(
+        DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+        base::DictValue());
+  }
 };
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
@@ -356,7 +367,8 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_NotOverwritten) {
       kSearchEngineChoiceWipeReasonHistogram, 0);
 }
 
-TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_DeviceChoiceImport_Initial) {
+TEST_F(SearchEngineChoiceServiceTest,
+       RecordChoiceMade_DeviceChoiceImport_Initial) {
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
       switches::kSearchEngineChoiceCountry);
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -371,11 +383,12 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_DeviceChoiceImport_Initia
       histogram_tester_,
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
       SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
+  // Recorded for DeviceChoiceImport based on alignment
   ExpectHistogramsSampleCount(
       histogram_tester_,
       search_engines::
           kSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
-      SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);  // Recorded for DeviceChoiceImport based on alignment
+      SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
 
   EXPECT_NEAR(pref_service()->GetInt64(
                   prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
@@ -386,7 +399,8 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_DeviceChoiceImport_Initia
             version_info::GetVersionNumber());
 }
 
-TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_DeviceChoiceImport_Redundant) {
+TEST_F(SearchEngineChoiceServiceTest,
+       RecordChoiceMade_DeviceChoiceImport_Redundant) {
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
       switches::kSearchEngineChoiceCountry);
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -407,7 +421,8 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_DeviceChoiceImport_Redund
 
   base::HistogramTester scoped_histogram_tester;
 
-  // Test that redundant DeviceChoiceImport calls are dropped safely (no crash) and do not overwrite prefs or log duplicate metrics.
+  // Test that redundant DeviceChoiceImport calls are dropped safely (no crash)
+  // and do not overwrite prefs or log duplicate metrics.
   search_engine_choice_service().RecordChoiceMade(
       search_engines::ChoiceMadeLocation::kDeviceChoiceImport,
       &template_url_service());
