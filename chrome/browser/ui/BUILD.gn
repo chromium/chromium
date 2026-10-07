@@ -1984,8 +1984,6 @@ source_set("ui") {
     "//ui/webui:buildflags",
   ]
 
-  allow_circular_includes_from = []
-
   # The AI overlay dialog Java class is pulled into every Android APK by
   # toolbar code, so its JNI must be registered in all Android builds. The
   # bridge itself no-ops when not Desktop Android.
@@ -2046,12 +2044,8 @@ source_set("ui") {
       "//chrome/browser/ui/views/scheduled_restart",
       "//chrome/browser/ui/views/scheduled_restart:impl",
     ]
-    allow_circular_includes_from +=
-        [ "//chrome/browser/ui/views/scheduled_restart:impl" ]
   }
 
-  # //chrome/browser/ui/views/relaunch_notification:impl sources include
-  # :ui headers (browser.h, views/frame/browser_view.h).
   if (!is_android && !is_chromeos) {
     deps += [
       "//chrome/browser/ui/webui/default_browser:default_browser_modal",
@@ -2455,11 +2449,6 @@ source_set("ui") {
       ]
     }
 
-    if (is_win || is_chromeos) {
-      allow_circular_includes_from +=
-          [ "//chrome/browser/ui/webui/signin:inline_login_impl" ]
-    }
-
     if (use_ozone && !is_chromeos) {
       deps += [ "//ui/ozone" ]
     }
@@ -2772,18 +2761,6 @@ source_set("ui") {
       "//chrome/browser/ui/views/profiles:signin_view_controller_delegate_views_impl",
       "//chrome/browser/ui/wallet",
     ]
-
-    allow_circular_includes_from += [
-      # profile_menu_coordinator.cc includes browser_view.h.
-      "//chrome/browser/ui/views/profiles:profile_menu_coordinator_impl",
-      "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_installer_view_controller",
-      "//chrome/browser/ui/wallet",
-      "//chrome/browser/ui/views/hats:impl",
-
-      # TODO(crbug.com/353332589): signin_view_controller_delegate_views.cc
-      # includes browser_view.h.
-      "//chrome/browser/ui/views/profiles:signin_view_controller_delegate_views_impl",
-    ]
   }
 
   if (!is_android || is_desktop_android) {
@@ -2822,16 +2799,6 @@ source_set("ui") {
       "//chrome/browser/ui/webui/updater",
     ]
 
-    # Any circular includes must depend on the target
-    # "//chrome/browser:browser_public_dependencies". Non-android and
-    # non-chromeos-ash circular deps.
-    allow_circular_includes_from += [
-      # TODO(crbug.com/364667551): Remove this circular dependency when the
-      # following header gets componentized:
-      # - c/b/ui/browser_tabstrip.h
-      "//chrome/browser/ui/webui/app_home:impl",
-    ]
-
     if (enable_dice_support) {
       deps += [
         "webui/signin/batch_upload:mojo_bindings",
@@ -2861,15 +2828,6 @@ source_set("ui") {
         "//chrome/browser/ui/webui/signin:batch_upload",
         "//services/audio/public/cpp",
       ]
-
-      # batch_upload includes headers from //chrome/browser/ui (e.g. browser.h)
-      # that can't be split out yet.
-      allow_circular_includes_from += [
-        # TODO(crbug.com/353332589): Remove this circular dependency when the
-        # following header gets componentized:
-        # - c/b/ui/browser_tabstrip.h
-        "//chrome/browser/ui/views/profiles:dice_web_signin_interception_bubble_view_impl",
-      ]
     }
   }
 
@@ -2887,7 +2845,13 @@ source_set("ui") {
       ":browser_commands_mac_impl",
       ":browser_mac",
       ":fullscreen_util_mac",
+      "//chrome/browser:app_controller_mac",
+      "//chrome/browser:chrome_browser_application_mac",
+      "//chrome/browser:global_keyboard_shortcuts_mac",
       "//chrome/browser/apps/app_shim",
+      "//chrome/browser/mac",
+      "//chrome/browser/renderer_host:delegate",
+      "//chrome/browser/renderer_host:history_swiping_control",
       "//chrome/browser/ui/cocoa",
       "//chrome/browser/ui/views:certificate_viewer_mac_views",
       "//chrome/browser/ui/views/frame:browser_frame_view_factory_mac",
@@ -2899,46 +2863,6 @@ source_set("ui") {
       "//chrome/browser/ui/views/frame:immersive_mode_controller_mac_impl",
       "//chrome/browser/ui/views/frame:immersive_mode_overlay_views_mac",
       "//chrome/browser/ui/views/frame:immersive_mode_overlay_views_mac_impl",
-    ]
-
-    # Any circular includes must depend on the target
-    # "//chrome/browser:browser_public_dependencies".
-    allow_circular_includes_from += [
-      ":browser_commands_mac_impl",
-      "//chrome/browser/apps/app_shim",
-      "//chrome/browser/ui/cocoa",
-
-      # browser_frame_view_factory_mac.mm includes browser_view.h and
-      # picture_in_picture_browser_frame_view.h from //chrome/browser/ui:ui.
-      "//chrome/browser/ui/views/frame:browser_frame_view_factory_mac",
-
-      # browser_frame_view_mac.h includes browser_frame_view.h, and
-      # browser_frame_view_mac.mm includes browser_view.h and browser_widget.h
-      # from //chrome/browser/ui:ui.
-      "//chrome/browser/ui/views/frame:browser_frame_view_mac",
-
-      # browser_native_widget_mac.mm includes browser_commands.h,
-      # views/frame/browser_frame_view.h, views/frame/browser_view.h, and
-      # views/frame/vertical_tab_strip_region_view.h which cannot be split out
-      # yet.
-      "//chrome/browser/ui/views/frame:browser_native_widget_mac_impl",
-
-      # immersive_mode_controller_mac.mm includes browser_view.h and
-      # top_container_view.h from //chrome/browser/ui:ui.
-      "//chrome/browser/ui/views/frame:immersive_mode_controller_mac_impl",
-
-      # immersive_mode_overlay_views_mac.mm includes browser_view.h from
-      # //chrome/browser/ui:ui.
-      "//chrome/browser/ui/views/frame:immersive_mode_overlay_views_mac_impl",
-    ]
-
-    deps += [
-      "//chrome/browser:app_controller_mac",
-      "//chrome/browser:chrome_browser_application_mac",
-      "//chrome/browser:global_keyboard_shortcuts_mac",
-      "//chrome/browser/mac",
-      "//chrome/browser/renderer_host:delegate",
-      "//chrome/browser/renderer_host:history_swiping_control",
       "//chrome/browser/web_applications/extensions",
       "//components/remote_cocoa/app_shim",
       "//components/remote_cocoa/app_shim:features",
@@ -2959,19 +2883,6 @@ source_set("ui") {
       "//chrome/browser/ui/search_promotion",
       "//chrome/browser/win",
       "//chrome/browser/win:jumplist",
-    ]
-
-    allow_circular_includes_from += [
-      "//chrome/browser/ui/views:network_profile_bubble_view",
-      "//chrome/browser/ui/views/frame:browser_caption_button_container_win",
-
-      # browser_frame_view_win.cc includes browser_view.h from
-      # //chrome/browser/ui:ui.
-      "//chrome/browser/ui/views/frame:browser_frame_view_win_impl",
-      "//chrome/browser/ui/views/frame:browser_native_widget_factory_aura",
-      "//chrome/browser/ui/views/frame:browser_window_property_manager_win",
-      "//chrome/browser/ui/views/frame:windows_taskbar_icon_updater_impl",
-      "//chrome/browser/win:impl",
     ]
 
     deps += [
@@ -3499,12 +3410,6 @@ source_set("ui") {
         "//chrome/browser/ui/views/frame:windows_caption_button",
         "//chrome/browser/ui/views/frame:windows_caption_button_impl",
       ]
-      allow_circular_includes_from += [
-        # browser_desktop_window_tree_host_win.cc includes browser_view.h and
-        # browser_widget.h from //chrome/browser/ui:ui.
-        "//chrome/browser/ui/views/frame:browser_desktop_window_tree_host_win_impl",
-        "//chrome/browser/ui/views/frame:windows_caption_button_impl",
-      ]
     }
 
     if (is_chromeos) {
@@ -3647,10 +3552,11 @@ source_set("ui") {
     deps += [ "//chrome/browser/ui/webui/tab_strip_internals:impl" ]
   }
 
-  # This target intentionally has no sources of its own; it only aggregates
-  # dependencies. Do NOT add sources here -- new code belongs in a dedicated,
-  # properly-scoped target. Kept last so an accidental `sources += [...]` above
-  # is reset to empty and is easy to catch in review.
+  # This target intentionally has no sources of its own and no
+  # allow_circular_includes_from; it only aggregates dependencies. Do NOT add
+  # sources here -- new code belongs in a dedicated, properly-scoped target.
+  # Kept last so an accidental `sources += [...]` above is reset to empty and
+  # is easy to catch in review.
   sources = []
 }
 
