@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -70,6 +71,7 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/test/ios/ui_image_test_utils.h"
 
@@ -81,6 +83,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 - (BOOL)isLensOverlayVisible;
 - (void)loadResultsURL:(GURL)url
            httpHeaders:(NSDictionary<NSString*, NSString*>*)httpHeaders;
+- (void)openURLInNewTab:(GURL)URL;
 @end
 
 namespace {
@@ -745,6 +748,27 @@ TEST_F(LensOverlayCoordinatorTest, StopDuringAnimatedExit) {
     return weak_container_vc == nil;
   }));
   EXPECT_FALSE([coordinator_ isUICreated]);
+}
+
+// Test that openURLInNewTab creates an OpenNewTabCommand with fromChrome set
+// to NO.
+TEST_F(LensOverlayCoordinatorTest, OpenURLInNewTabHasFromChromeNo) {
+  [coordinator_ start];
+
+  GURL test_url("https://www.example.com");
+  OCMExpect([application_handler_
+      openURLInNewTab:[OCMArg checkWithBlock:^BOOL(OpenNewTabCommand* command) {
+        EXPECT_EQ(command.URL, test_url);
+        EXPECT_FALSE(command.fromChrome);
+        EXPECT_FALSE(command.inIncognito);
+        EXPECT_FALSE(command.inBackground);
+        EXPECT_EQ(command.appendTo, OpenPosition::kLastTab);
+        return YES;
+      }]]);
+
+  [coordinator_ openURLInNewTab:test_url];
+
+  EXPECT_OCMOCK_VERIFY((id)application_handler_);
 }
 
 }  // namespace

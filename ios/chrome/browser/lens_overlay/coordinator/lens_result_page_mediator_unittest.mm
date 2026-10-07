@@ -276,6 +276,45 @@ TEST_F(LensResultPageMediatorTest, ShouldOpenOtherNavigationInNewTab) {
   EXPECT_TRUE(fake_delegate_.openInNewTabRequested);
 }
 
+// Tests that navigation to non-HTTP/HTTPS URLs (such as chrome://) is not
+// allowed and does not open in a new tab.
+TEST_F(LensResultPageMediatorTest,
+       ShouldNotOpenNonHTTPOrHTTPSNavigationInNewTab) {
+  EXPECT_FALSE(fake_delegate_.openInNewTabRequested);
+  EXPECT_FALSE(TestShouldAllowRequest(@"chrome://policy",
+                                      /*target_frame_is_main=*/true));
+  EXPECT_FALSE(fake_delegate_.openInNewTabRequested);
+
+  EXPECT_FALSE(TestShouldAllowRequest(@"chrome://flags",
+                                      /*target_frame_is_main=*/true));
+  EXPECT_FALSE(fake_delegate_.openInNewTabRequested);
+}
+
+// Tests that opening a new web state for non-HTTP/HTTPS URLs does not request
+// opening in a new tab.
+TEST_F(LensResultPageMediatorTest,
+       ShouldNotOpenNonHTTPOrHTTPSInNewTabFromPopup) {
+  AttachFakeWebState();
+  id<CRWWebStateDelegate> web_state_delegate =
+      static_cast<id<CRWWebStateDelegate>>(mediator_);
+
+  EXPECT_FALSE(fake_delegate_.openInNewTabRequested);
+  web::WebState* new_web_state =
+      [web_state_delegate webState:fake_web_state_
+           createNewWebStateForURL:GURL("chrome://policy")
+                         openerURL:GURL("https://www.google.com")
+                   initiatedByUser:YES];
+  EXPECT_EQ(new_web_state, nullptr);
+  EXPECT_FALSE(fake_delegate_.openInNewTabRequested);
+
+  new_web_state = [web_state_delegate webState:fake_web_state_
+                       createNewWebStateForURL:GURL("https://www.chromium.org")
+                                     openerURL:GURL("https://www.google.com")
+                               initiatedByUser:YES];
+  EXPECT_EQ(new_web_state, nullptr);
+  EXPECT_TRUE(fake_delegate_.openInNewTabRequested);
+}
+
 // Tests that any navigation that's not on main frame is allowed.
 TEST_F(LensResultPageMediatorTest, ShouldAllowAnyNavigationNotInMainFrame) {
   EXPECT_TRUE(TestShouldAllowRequest(@"https://www.chromium.com",

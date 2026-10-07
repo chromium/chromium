@@ -347,6 +347,10 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
       return;
     }
 
+    if (!URL.SchemeIsHTTPOrHTTPS()) {
+      return;
+    }
+
     [self.delegate lensResultPageOpenURLInNewTabRequested:URL];
     [self.delegate
          lensResultPageMediator:self
@@ -523,6 +527,11 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
       return nullptr;
     }
   }
+
+  if (!URL.SchemeIsHTTPOrHTTPS()) {
+    return nullptr;
+  }
+
   // Open the URL in a new tab.
   [self.delegate lensResultPageOpenURLInNewTabRequested:URL];
   [self.delegate
