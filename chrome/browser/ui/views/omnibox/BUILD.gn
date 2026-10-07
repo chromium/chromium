@@ -184,6 +184,14 @@ source_set("impl") {
   if (is_mac) {
     deps += [ ":native_widget_mac" ]
   }
+
+  if (is_chromeos) {
+    deps += [
+      "//ui/aura",
+      "//ui/wm",
+      "//ui/wm/public",
+    ]
+  }
 }
 
 if (is_mac) {
