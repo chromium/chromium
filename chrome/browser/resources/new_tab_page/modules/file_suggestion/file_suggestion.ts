@@ -12,6 +12,20 @@ import {recordEnumeration, recordSmallCount} from '../../metrics_utils.js';
 import {getCss} from './file_suggestion.css.js';
 import {getHtml} from './file_suggestion.html.js';
 
+/**
+ * Actions the user can perform within a file suggestion module (Drive,
+ * MicrosoftFiles). This enum must match the numbering for NTPFileAction in
+ * histogram/enums.xml. These values are persisted to logs. Entries should not
+ * be renumbered, removed or reused.
+ */
+// LINT.IfChange(FileAction)
+export enum FileAction {
+  FILE_SUGGESTION_CLICKED = 0,
+  SEE_MORE_CLICKED = 1,
+  MAX_VALUE = SEE_MORE_CLICKED,
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:NTPFileAction)
+
 export interface FileSuggestionElement {
   $: {
     files: HTMLElement,
@@ -51,6 +65,12 @@ export class FileSuggestionElement extends CrLitElement {
   accessor seeMoreText: string = '';
   accessor seeMoreAriaLabel: string = '';
 
+  private recordFileAction_(action: FileAction) {
+    recordEnumeration(
+        `NewTabPage.${this.moduleName}.UserAction`, action,
+        FileAction.MAX_VALUE + 1);
+  }
+
   protected onFileClick_(e: Event) {
     const clickFileEvent = new Event('usage', {composed: true, bubbles: true});
     this.dispatchEvent(clickFileEvent);
@@ -64,10 +84,12 @@ export class FileSuggestionElement extends CrLitElement {
           `NewTabPage.${this.moduleName}.RecommendationTypeClick`,
           file.recommendationType, RecommendationType.MAX_VALUE + 1);
     }
+    this.recordFileAction_(FileAction.FILE_SUGGESTION_CLICKED);
   }
 
   protected onSeeMoreClick_() {
     this.dispatchEvent(new Event('usage', {composed: true, bubbles: true}));
+    this.recordFileAction_(FileAction.SEE_MORE_CLICKED);
   }
 }
 
