@@ -81,7 +81,6 @@ class ContextualTasksPageHandler
                              GetCommonSearchParamsCallback callback) override;
   void OnboardingTooltipDismissed() override;
   void AskGTooltipDismissed() override;
-  void ReopenTabs() override;
   void OnContextMenuOpened() override;
   void NotifySmartTabSharingTryItIphResult(bool accepted) override;
   void NotifySmartTabSharingDefaultOnIphResult(bool accepted) override;

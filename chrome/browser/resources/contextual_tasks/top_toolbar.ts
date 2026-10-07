@@ -9,7 +9,6 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import '//resources/cr_elements/icons.html.js';
 import './favicon_group.js';
-import './reopen_tabs.js';
 import './sources_menu.js';
 import './overflow_menu.js';
 // <if expr="not is_android">
@@ -33,8 +32,6 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {ContextInfo} from './contextual_tasks_toolbar.mojom-webui.js';
-import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
-import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 import {ToolbarBrowserProxyImpl} from './contextual_tasks_toolbar_browser_proxy.js';
 import type {OverflowMenuElement} from './overflow_menu.js';
 import type {SourcesMenuElement} from './sources_menu.js';
@@ -91,7 +88,6 @@ export class TopToolbarElement extends TopToolbarElementBase {
       },
       title: {type: String},
       hideOverflowMenuButton_: {type: Boolean},
-      showReopenTabs_: {type: Boolean},
       isExpandButtonEnabled: {type: Boolean},
       isPinButtonEnabled: {type: Boolean},
       isPinned: {type: Boolean},
@@ -130,14 +126,11 @@ export class TopToolbarElement extends TopToolbarElementBase {
       loadTimeData.getBoolean('contextualTasksSidePanelRearchitectureEnabled');
   accessor isUserSignedIn: boolean = true;
   accessor enableOpenInNewTabButton: boolean = false;
-  accessor showReopenTabs_: boolean = false;
   accessor onboardingTooltipShowing: boolean = false;
   protected accessor permissionChipDelegate_: PermissionChipDelegate|null =
       null;
-  private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   private toolbarBrowserProxy_: ToolbarBrowserProxyImpl =
       ToolbarBrowserProxyImpl.getInstance();
-  private listenerIds_: number[] = [];
   private toolbarListenerIds_: number[] = [];
   // <if expr="not is_android">
   private sidePanelToolbarListenerIds_: number[] = [];
@@ -166,12 +159,6 @@ export class TopToolbarElement extends TopToolbarElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
-    const callbackRouter = this.browserProxy_.callbackRouter;
-    this.listenerIds_ = [
-      callbackRouter.setShowReopenTabs.addListener(show => {
-        this.showReopenTabs_ = show;
-      }),
-    ];
     this.toolbarListenerIds_ = [
       this.toolbarBrowserProxy_.callbackRouter.onSidePanelPinStateChanged
           .addListener((isPinned: boolean) => {
@@ -239,9 +226,6 @@ export class TopToolbarElement extends TopToolbarElementBase {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.listenerIds_.forEach(
-        id => this.browserProxy_.callbackRouter.removeListener(id));
-    this.listenerIds_ = [];
     this.toolbarListenerIds_.forEach(
         id => this.toolbarBrowserProxy_.callbackRouter.removeListener(id));
     this.toolbarListenerIds_ = [];
@@ -349,13 +333,6 @@ export class TopToolbarElement extends TopToolbarElementBase {
     this.toolbarBrowserProxy_.handler.moveTaskUiToNewTab();
   }
 
-  protected onReopenTabsReopenClick_() {
-    this.browserProxy_.handler.reopenTabs();
-  }
-
-  protected onReopenTabsDismissClick_() {
-    this.showReopenTabs_ = false;
-  }
 
   protected onLogoPointerdown_() {
     if (!this.isSidePanelRearchitectureEnabled_) {

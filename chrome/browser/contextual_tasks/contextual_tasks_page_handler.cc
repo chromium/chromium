@@ -551,10 +551,6 @@ void ContextualTasksPageHandler::AskGTooltipDismissed() {
       count + 1);
 }
 
-void ContextualTasksPageHandler::ReopenTabs() {
-  // TODO(crbug.com/489832161): Implement tab restoration logic.
-}
-
 void ContextualTasksPageHandler::PostAimMessage(
     const lens::ClientToAimMessage& message) {
   CHECK(web_ui_controller_->GetPageRemote(), base::NotFatalUntil::M161);

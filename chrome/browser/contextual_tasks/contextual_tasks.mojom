@@ -121,12 +121,6 @@ interface PageHandler {
   // dismissed.
   AskGTooltipDismissed();
 
-  // Called when the user clicks the 'Reopen tabs' button which will be
-  // displayed when user revisits an expired thread. Tabs which were added
-  // to context may or may not be opened in new tabs depending upon what
-  // option user selects.
-  ReopenTabs();
-
   // Called when the user opens the composebox contextual action menu dialog.
   OnContextMenuOpened();
 
@@ -254,10 +248,6 @@ interface Page {
   // Called by the browser process (C++) to unlock/enable the input in the
   // WebUI.
   UnlockInput();
-
-  // Called by the browser process (C++) to show or hide the reopen tabs
-  // section.
-  SetShowReopenTabs(bool show);
 
   // Called by the browser process to turn on smart tab sharing in the WebUI.
   TurnOnSmartTabSharing();

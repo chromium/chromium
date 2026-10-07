@@ -115,11 +115,6 @@ export function getHtml(this: TopToolbarElement) {
         @open-changed="${this.onOverflowMenuOpenChanged_}">
     </contextual-tasks-overflow-menu>`}">
   </cr-lazy-render-lit>
-  ${this.showReopenTabs_ ? html`
-    <reopen-tabs
-        @reopen-click="${this.onReopenTabsReopenClick_}"
-        @dismiss-click="${this.onReopenTabsDismissClick_}">
-    </reopen-tabs>` : ''}
   <!--_html_template_end_-->`;
 }
 // clang-format on
