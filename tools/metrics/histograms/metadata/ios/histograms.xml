@@ -4213,6 +4213,41 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.IsDefaultBrowser{NumberOfDays}.{Signal}.{SignalStatus}"
+    enum="Boolean" expires_after="2027-02-14">
+  <owner>fernandex@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Records whether the user was deemed to have set Chrome as the device's
+    default browser (opened a link in Chrome in the last {NumberOfDays} days),
+    sliced by the {Signal} signal and its status ({SignalStatus}). Logged once
+    per metrics log upload alongside IOS.IsDefaultBrowser{NumberOfDays} to
+    measure the precision and recall of segmentation signals.
+  </summary>
+  <token key="NumberOfDays">
+    <variant name="" summary="7"/>
+    <variant name="1"/>
+    <variant name="3"/>
+    <variant name="14"/>
+    <variant name="21"/>
+    <variant name="28"/>
+    <variant name="35"/>
+    <variant name="42"/>
+  </token>
+  <token key="Signal">
+    <variant name="SegmentationPlatform"
+        summary="segmentation platform device switcher"/>
+  </token>
+  <token key="SignalStatus">
+    <variant name="AndroidSwitcher"
+        summary="classified as an Android phone switcher"/>
+    <variant name="NotAndroidSwitcher"
+        summary="classified as not an Android phone switcher"/>
+    <variant name="Unknown"
+        summary="signal classification was not ready or unavailable"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.IsEnabled.Password.BottomSheet" enum="Boolean"
     expires_after="2026-04-26">
   <owner>sugoi@chromium.org</owner>
