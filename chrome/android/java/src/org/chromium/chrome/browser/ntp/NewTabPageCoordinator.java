@@ -607,12 +607,14 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                 this::onComposeplateButtonClicked);
         @NewTabPageUtils.ActionChips int chipType = NewTabPageUtils.getMerchandisingChipsType();
         if (chipType == NewTabPageUtils.ActionChips.CREATE_IMAGE) {
-            mComposeplateCoordinator.setOptionalButtonClickListener(this::onCreateButtonClicked);
+            mComposeplateCoordinator.setOptionalButtonClickListener(
+                    this::onCreateButtonClicked, chipType);
             mComposeplateCoordinator.setOptionalButtonIcon(R.drawable.image_create_24dp);
             mComposeplateCoordinator.setOptionalButtonText(
                     mActivity.getString(R.string.ntp_action_chip_create_image));
         } else if (chipType == NewTabPageUtils.ActionChips.CANVAS) {
-            mComposeplateCoordinator.setOptionalButtonClickListener(this::onCanvasButtonClicked);
+            mComposeplateCoordinator.setOptionalButtonClickListener(
+                    this::onCanvasButtonClicked, chipType);
         }
 
         updateComposeplateBackground();

@@ -16,6 +16,7 @@ import androidx.annotation.StyleRes;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils.ActionChips;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -240,10 +241,28 @@ public class ComposeplateCoordinator {
      * Sets the click listener for the optional button.
      *
      * @param optionalButtonClickListener The click listener for the optional button.
+     * @param actionChipsType The {@link ActionChips} type shown on the optional button, used to
+     *     record the click metric. Must be {@link ActionChips#CREATE_IMAGE} or {@link
+     *     ActionChips#CANVAS}.
      */
-    public void setOptionalButtonClickListener(View.OnClickListener optionalButtonClickListener) {
+    public void setOptionalButtonClickListener(
+            View.OnClickListener optionalButtonClickListener, @ActionChips int actionChipsType) {
         mModel.set(
-                ComposeplateProperties.OPTIONAL_BUTTON_CLICK_LISTENER, optionalButtonClickListener);
+                ComposeplateProperties.OPTIONAL_BUTTON_CLICK_LISTENER,
+                createEnhancedClickListener(
+                        optionalButtonClickListener, getModuleTypeForActionChips(actionChipsType)));
+    }
+
+    private static @ModuleTypeOnStartAndNtp int getModuleTypeForActionChips(
+            @ActionChips int actionChipsType) {
+        return switch (actionChipsType) {
+            case ActionChips.CREATE_IMAGE ->
+                    ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_CREATE_IMAGE_BUTTON;
+            case ActionChips.CANVAS -> ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_CANVAS_BUTTON;
+            default ->
+                    throw new IllegalArgumentException(
+                            "Unsupported action chips type: " + actionChipsType);
+        };
     }
 
     /**

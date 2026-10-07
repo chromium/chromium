@@ -22601,6 +22601,8 @@ from previous Chrome versions.
   <int value="11" label="Composeplate view incognito button"/>
   <int value="12" label="Composeplate view voice search button"/>
   <int value="13" label="Composeplate view lens button"/>
+  <int value="14" label="Merchandising chips - gallery button"/>
+  <int value="15" label="Merchandising chips - create image button"/>
 </enum>
 
 <!-- LINT.IfChange(MojoResult) -->

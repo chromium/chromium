@@ -43,6 +43,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils.ActionChips;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -134,6 +135,33 @@ public class ComposeplateCoordinatorUnitTest {
 
         histogramWatcher.assertExpected();
         verify(mOriginalOnClickListener).onClick(mComposeplateButton);
+    }
+
+    @Test
+    public void testOptionalButtonClickListener_CreateImage() {
+        testOptionalButtonClickListenerImpl(
+                ActionChips.CREATE_IMAGE,
+                ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_CREATE_IMAGE_BUTTON);
+    }
+
+    @Test
+    public void testOptionalButtonClickListener_Canvas() {
+        testOptionalButtonClickListenerImpl(
+                ActionChips.CANVAS, ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_CANVAS_BUTTON);
+    }
+
+    private void testOptionalButtonClickListenerImpl(
+            @ActionChips int actionChipsType, @ModuleTypeOnStartAndNtp int expectedModuleType) {
+        mCoordinator.setOptionalButtonClickListener(mOriginalOnClickListener, actionChipsType);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "NewTabPage.Module.Click", expectedModuleType);
+
+        mOptionalButton.performClick();
+
+        histogramWatcher.assertExpected();
+        verify(mOriginalOnClickListener).onClick(mOptionalButton);
     }
 
     @Test
