@@ -239,10 +239,11 @@ void ClientSharedImageInterface::CopyToGpuMemoryBuffer(
 
 #if BUILDFLAG(IS_WIN)
 void ClientSharedImageInterface::CopyToGpuMemoryBufferAsync(
-    const SyncToken& sync_token,
+    std::vector<SyncToken> sync_tokens,
     const Mailbox& mailbox,
     base::OnceCallback<void(bool)> callback) {
-  proxy_->CopyToGpuMemoryBufferAsync(sync_token, mailbox, std::move(callback));
+  proxy_->CopyToGpuMemoryBufferAsync(std::move(sync_tokens), mailbox,
+                                     std::move(callback));
 }
 
 void ClientSharedImageInterface::UpdateSharedImage(

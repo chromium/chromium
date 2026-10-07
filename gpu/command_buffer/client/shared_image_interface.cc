@@ -114,7 +114,7 @@ void SharedImageInterface::CopyToGpuMemoryBuffer(const SyncToken& sync_token,
 }
 
 void SharedImageInterface::CopyToGpuMemoryBufferAsync(
-    const SyncToken& sync_token,
+    std::vector<SyncToken> sync_tokens,
     const Mailbox& mailbox,
     base::OnceCallback<void(bool)> callback) {
   NOTREACHED();

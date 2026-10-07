@@ -247,12 +247,13 @@ void SharedImageInterfaceProxy::CopyToGpuMemoryBuffer(
 
 #if BUILDFLAG(IS_WIN)
 void SharedImageInterfaceProxy::CopyToGpuMemoryBufferAsync(
-    const SyncToken& sync_token,
+    std::vector<SyncToken> sync_tokens,
     const Mailbox& mailbox,
     base::OnceCallback<void(bool)> callback) {
   base::AutoLock lock(lock_);
   host_->CopyToGpuMemoryBufferAsync(
-      mailbox, GenerateDependenciesFromSyncToken(std::move(sync_token), host_),
+      mailbox,
+      GenerateDependenciesFromSyncTokens(std::move(sync_tokens), host_),
       ++next_release_id_, std::move(callback));
 }
 

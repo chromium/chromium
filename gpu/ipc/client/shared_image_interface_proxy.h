@@ -78,7 +78,7 @@ class SharedImageInterfaceProxy {
                              const Mailbox& mailbox);
 
 #if BUILDFLAG(IS_WIN)
-  void CopyToGpuMemoryBufferAsync(const SyncToken& sync_token,
+  void CopyToGpuMemoryBufferAsync(std::vector<SyncToken> sync_tokens,
                                   const Mailbox& mailbox,
                                   base::OnceCallback<void(bool)> callback);
   void UpdateSharedImage(const SyncToken& sync_token,

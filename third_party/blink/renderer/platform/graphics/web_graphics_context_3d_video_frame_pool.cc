@@ -173,7 +173,6 @@ void CopyToGpuMemoryBuffer(
 
   const bool use_async_copy =
       base::FeatureList::IsEnabled(kUseCopyToGpuMemoryBufferAsync);
-  const auto mailbox = dst_frame->shared_image()->mailbox();
   if (use_async_copy) {
     auto copy_to_gmb_done_lambda = [](base::OnceClosure callback,
                                       bool success) {
@@ -184,12 +183,12 @@ void CopyToGpuMemoryBuffer(
       std::move(callback).Run();
     };
 
-    sii->CopyToGpuMemoryBufferAsync(
-        blit_done_sync_token, mailbox,
-        base::BindOnce(std::move(copy_to_gmb_done_lambda),
-                       std::move(callback)));
+    dst_frame->shared_image()->CopyToGpuMemoryBufferAsync(
+        blit_done_sync_token, base::BindOnce(std::move(copy_to_gmb_done_lambda),
+                                             std::move(callback)));
   } else {
-    sii->CopyToGpuMemoryBuffer(blit_done_sync_token, mailbox);
+    sii->CopyToGpuMemoryBuffer(blit_done_sync_token,
+                               dst_frame->shared_image()->mailbox());
   }
 
   // Synchronize RasterInterface with SharedImageInterface.

@@ -820,6 +820,27 @@ gpu::SyncToken ClientSharedImage::BackingWasExternallyUpdated(
   return StoreSyncTokenInternal(sii->GenUnverifiedSyncToken());
 }
 
+void ClientSharedImage::CopyToGpuMemoryBufferAsync(
+    const SyncToken& sync_token,
+    base::OnceCallback<void(bool)> callback) {
+  CHECK(sii_holder_);
+  auto sii = GetSharedImageInterface();
+  if (!sii) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  std::vector<SyncToken> sync_tokens;
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    sync_tokens = CollectSyncTokens();
+  } else if (sync_token.HasData()) {
+    sync_tokens.push_back(sync_token);
+  }
+  sii->CopyToGpuMemoryBufferAsync(std::move(sync_tokens), mailbox(),
+                                  std::move(callback));
+}
+
 void ClientSharedImage::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd,
     const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,

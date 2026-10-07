@@ -199,12 +199,12 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageInterface
                                      const Mailbox& mailbox);
 
   // Update the GpuMemoryBuffer associated with the shared image |mailbox| after
-  // |sync_token| is released. The |callback| is run denoting if the copy was
-  // successful and the GpuMemoryBuffer is ready to be mapped by the client.
-  // This is needed when the GpuMemoryBuffer is backed by shared memory on
-  // platforms like Windows where the renderer cannot create native GMBs.
+  // all |sync_tokens| have been released. The |callback| is run denoting if the
+  // copy was successful and the GpuMemoryBuffer is ready to be mapped by the
+  // client. This is needed when the GpuMemoryBuffer is backed by shared memory
+  // on platforms like Windows where the renderer cannot create native GMBs.
   virtual void CopyToGpuMemoryBufferAsync(
-      const SyncToken& sync_token,
+      std::vector<SyncToken> sync_tokens,
       const Mailbox& mailbox,
       base::OnceCallback<void(bool)> callback);
 
