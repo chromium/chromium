@@ -122,7 +122,6 @@
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/trigger_creator.h"
 #endif
@@ -197,18 +196,14 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
   if (breadcrumbs::IsEnabled(g_browser_process->local_state())) {
     BreadcrumbManagerTabHelper::CreateForWebContents(web_contents);
   }
-  // Password manager and password reuse detection rely on ChromeAutofillClient
-  // initialized by browser autofill, which is gated by enable_browser_autofill.
+  // Password manager relies on ChromeAutofillClient initialized by browser
+  // autofill, which is gated by enable_browser_autofill.
   if (enable_browser_autofill) {
     autofill::AutofillClientProvider& autofill_client_provider =
         autofill::AutofillClientProviderFactory::GetForProfile(profile);
     if (!autofill_client_provider.uses_platform_autofill()) {
       ChromePasswordManagerClient::CreateForWebContents(web_contents);
     }
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-    ChromePasswordReuseDetectionManagerClient::CreateForWebContents(
-        web_contents);
-#endif
   }
   CreateSubresourceFilterWebContentsHelper(web_contents);
   ChromeTranslateClient::CreateForWebContents(web_contents);

@@ -158,6 +158,7 @@
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_tab_observer_delegate.h"
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_url_observer.h"
@@ -381,6 +382,9 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (autofill::ContentAutofillClient::FromWebContents(web_contents)) {
+    // Attach password reuse detection client when Autofill is present.
+    ChromePasswordReuseDetectionManagerClient::CreateForWebContents(
+        web_contents);
     safe_browsing_tab_observer_ =
         GetUserDataFactory()
             .CreateInstance<safe_browsing::SafeBrowsingTabObserver>(
