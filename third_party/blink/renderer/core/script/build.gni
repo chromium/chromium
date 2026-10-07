@@ -74,6 +74,7 @@ blink_core_sources_script = [
 
 blink_core_tests_script = [
   "document_modulator_impl_test.cc",
+  "document_write_intervention_test.cc",
   "dynamic_module_resolver_test.cc",
   "module_map_test.cc",
   "module_record_resolver_impl_test.cc",

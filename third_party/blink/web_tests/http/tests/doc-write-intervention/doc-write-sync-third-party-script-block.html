@@ -65,9 +65,7 @@
             if (window.internals) {
                 header = internals.getResourceHeader(src, 'Intervention',
                                                      document);
-                assert_equals(header,
-                    '<https://www.chromestatus.com/feature/5718547946799104>; level="warning"',
-                    'Intervention header');
+                assert_equals(header, '', 'Intervention header');
             }
 
             t.step_timeout(testNonCachedCrossOriginScriptBlocked.bind(undefined, t), 0);

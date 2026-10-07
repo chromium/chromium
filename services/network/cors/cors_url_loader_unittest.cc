@@ -29,6 +29,7 @@
 #include "services/network/cookie_manager.h"
 #include "services/network/cors/cors_url_loader_test_util.h"
 #include "services/network/network_context.h"
+#include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/cors.mojom.h"
@@ -41,6 +42,7 @@
 #include "services/network/url_loader_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_util.h"
 
@@ -3675,6 +3677,120 @@ TEST_F(CorsURLLoaderTest,
 
   CreateLoaderAndStart(request);
   RunUntilCreateLoaderAndStartCalled();
+  NotifyLoaderClientOnReceiveResponse(
+      {{"Access-Control-Allow-Origin", "https://foo.example"}});
+  NotifyLoaderClientOnComplete(net::OK);
+  RunUntilComplete();
+
+  EXPECT_THAT(client().completion_status().error_code, net::test::IsOk());
+}
+
+TEST_F(CorsURLLoaderTest, PreflightInterventionHeader) {
+  auto initiator = url::Origin::Create(GURL("https://foo.example"));
+  ResetFactory(initiator, kRendererProcessId);
+
+  ResourceRequest request;
+  request.method = "GET";
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+  request.url = GURL("https://example.com/");
+  request.request_initiator = initiator;
+  request.headers.SetHeader("Intervention",
+                            "<https://example.com>; level=\"warning\"");
+
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+
+  EXPECT_EQ(1, num_created_loaders());
+  EXPECT_EQ(GetRequest().url, GURL("https://example.com/"));
+  EXPECT_EQ(GetRequest().method, "OPTIONS");
+  EXPECT_THAT(GetRequest().headers.GetHeader("access-control-request-headers"),
+              Optional(std::string("intervention")));
+
+  NotifyLoaderClientOnReceiveResponse(
+      {{"Access-Control-Allow-Origin", "https://foo.example"},
+       {"Access-Control-Allow-Headers", "intervention"}});
+  RunUntilCreateLoaderAndStartCalled();
+
+  EXPECT_EQ(2, num_created_loaders());
+  EXPECT_EQ(GetRequest().url, GURL("https://example.com/"));
+  EXPECT_EQ(GetRequest().method, "GET");
+  EXPECT_THAT(
+      GetRequest().headers.GetHeader("Intervention"),
+      Optional(std::string("<https://example.com>; level=\"warning\"")));
+
+  NotifyLoaderClientOnReceiveResponse(
+      {{"Access-Control-Allow-Origin", "https://foo.example"}});
+  NotifyLoaderClientOnComplete(net::OK);
+  RunUntilComplete();
+
+  EXPECT_THAT(client().completion_status().error_code, net::test::IsOk());
+}
+
+TEST_F(CorsURLLoaderTest, PreflightInterventionHeaderDisallowedByServer) {
+  auto initiator = url::Origin::Create(GURL("https://foo.example"));
+  ResetFactory(initiator, kRendererProcessId);
+
+  ResourceRequest request;
+  request.method = "GET";
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+  request.url = GURL("https://example.com/");
+  request.request_initiator = initiator;
+  request.headers.SetHeader("Intervention",
+                            "<https://example.com>; level=\"warning\"");
+
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+
+  EXPECT_EQ(1, num_created_loaders());
+  EXPECT_EQ(GetRequest().url, GURL("https://example.com/"));
+  EXPECT_EQ(GetRequest().method, "OPTIONS");
+  EXPECT_THAT(GetRequest().headers.GetHeader("access-control-request-headers"),
+              Optional(std::string("intervention")));
+
+  // Preflight response omits "Intervention" from Access-Control-Allow-Headers.
+  NotifyLoaderClientOnReceiveResponse(
+      {{"Access-Control-Allow-Origin", "https://foo.example"}});
+  NotifyLoaderClientOnComplete(net::OK);
+  RunUntilComplete();
+
+  EXPECT_FALSE(client().has_received_response());
+  EXPECT_THAT(client().completion_status().error_code,
+              net::test::IsError(net::ERR_FAILED));
+  EXPECT_THAT(client().completion_status().cors_error_status,
+              Optional(CorsErrorStatus(
+                  mojom::CorsError::kHeaderDisallowedByPreflightResponse,
+                  /*failed_parameter=*/"intervention")));
+}
+
+TEST_F(CorsURLLoaderTest, NoPreflightInterventionHeaderWithKillSwitch) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kDisallowInterventionInCorsSafelistedHeaders);
+
+  auto initiator = url::Origin::Create(GURL("https://foo.example"));
+  ResetFactory(initiator, kRendererProcessId);
+
+  ResourceRequest request;
+  request.method = "GET";
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+  request.url = GURL("https://example.com/");
+  request.request_initiator = initiator;
+  request.headers.SetHeader("Intervention",
+                            "<https://example.com>; level=\"warning\"");
+
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+
+  EXPECT_EQ(1, num_created_loaders());
+  EXPECT_EQ(GetRequest().url, GURL("https://example.com/"));
+  EXPECT_EQ(GetRequest().method, "GET");
+  EXPECT_THAT(
+      GetRequest().headers.GetHeader("Intervention"),
+      Optional(std::string("<https://example.com>; level=\"warning\"")));
+
   NotifyLoaderClientOnReceiveResponse(
       {{"Access-Control-Allow-Origin", "https://foo.example"}});
   NotifyLoaderClientOnComplete(net::OK);

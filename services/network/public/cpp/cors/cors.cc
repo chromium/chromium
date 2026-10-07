@@ -297,12 +297,7 @@ bool IsCorsSafelistedHeader(const std::string& name,
       // https://fetch.spec.whatwg.org/#simple-range-header-value
       "range",
 
-      // [Block 2 - Intervention]
-      // Treat 'Intervention' as a CORS-safelisted header, since it is added by
-      // Chrome when an intervention is (or may be) applied.
-      "intervention",
-
-      // [Block 3 - Client Hints]
+      // [Block 2 - Client Hints]
       // Headers in this section are included in the order listed by:
       // services/network/public/mojom/web_client_hints_types.mojom
       // These four were deprecated and replaced by variants with a `sec-ch-`
@@ -374,10 +369,18 @@ bool IsCorsSafelistedHeader(const std::string& name,
   });
 
   // Check if the name of the header to send is safe.
-  if (!safe_names.contains(lower_name))
+  if (!safe_names.contains(lower_name)) {
+    // Emergency kill-switch: if the feature is disabled, allow 'intervention'
+    // without value validation as legacy behavior.
+    if (lower_name == "intervention" &&
+        !base::FeatureList::IsEnabled(
+            features::kDisallowInterventionInCorsSafelistedHeaders)) {
+      return true;
+    }
     return false;
+  }
 
-  // Verify the values of all non-secure headers (except `intervention`).
+  // Verify the values of all non-secure headers.
   const std::string lower_value = base::ToLowerASCII(value);
   if (lower_name == "accept") {
     return !std::ranges::any_of(value, IsCorsUnsafeRequestHeaderByte);

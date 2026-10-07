@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/script/document_write_intervention.h"
 
+#include "base/feature_list.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -62,14 +64,22 @@ void EmitErrorBlocked(const String& url, Document& document) {
       mojom::ConsoleMessageLevel::kError, message));
 }
 
-void AddWarningHeader(FetchParameters* params) {
+void MaybeAddWarningHeader(FetchParameters* params) {
+  if (base::FeatureList::IsEnabled(
+          network::features::kDisallowInterventionInCorsSafelistedHeaders)) {
+    return;
+  }
   params->MutableResourceRequest().AddHttpHeaderField(
       AtomicString("Intervention"),
       AtomicString("<https://www.chromestatus.com/feature/5718547946799104>; "
                    "level=\"warning\""));
 }
 
-void AddHeader(FetchParameters* params) {
+void MaybeAddHeader(FetchParameters* params) {
+  if (base::FeatureList::IsEnabled(
+          network::features::kDisallowInterventionInCorsSafelistedHeaders)) {
+    return;
+  }
   params->MutableResourceRequest().AddHttpHeaderField(
       AtomicString("Intervention"),
       AtomicString("<https://www.chromestatus.com/feature/5718547946799104>"));
@@ -162,7 +172,7 @@ bool MaybeDisallowFetchForDocWrittenScript(FetchParameters& params,
   // reloads the page.
   const WebFrameLoadType load_type = document.Loader()->LoadType();
   if (IsReloadLoadType(load_type)) {
-    AddWarningHeader(&params);
+    MaybeAddWarningHeader(&params);
     return false;
   }
 
@@ -174,11 +184,11 @@ bool MaybeDisallowFetchForDocWrittenScript(FetchParameters& params,
 
   if (!ShouldDisallowFetch(settings, GetNetworkStateNotifier().ConnectionType(),
                            GetNetworkStateNotifier().EffectiveType())) {
-    AddWarningHeader(&params);
+    MaybeAddWarningHeader(&params);
     return false;
   }
 
-  AddWarningHeader(&params);
+  MaybeAddWarningHeader(&params);
 
   params.MutableResourceRequest().SetCacheMode(
       mojom::FetchCacheMode::kOnlyIfCached);
@@ -207,7 +217,7 @@ void PossiblyFetchBlockedDocWriteScript(
       resource->Url(), context->GetSecurityOrigin(), context->GetCurrentWorld(),
       cross_origin, resource->Encoding(), FetchParameters::kIdleLoad, context));
   params.SetRenderBlockingBehavior(RenderBlockingBehavior::kNonBlocking);
-  AddHeader(&params);
+  MaybeAddHeader(&params);
 
   // If streaming is not allowed, no compile hints are needed either.
   constexpr v8_compile_hints::V8CrowdsourcedCompileHintsProducer*

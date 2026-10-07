@@ -179,6 +179,11 @@ BASE_FEATURE(kCorsNonWildcardRequestHeadersSupport,
 BASE_FEATURE(kCorsPreflightCacheKeyTaintedOrigin,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, the network service will disallow treating 'Intervention' as a
+// CORS-safelisted header, aligning with the WHATWG Fetch specification.
+BASE_FEATURE(kDisallowInterventionInCorsSafelistedHeaders,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Do not send TLS client certificates in CORS preflight. Omit all client certs
 // and continue the handshake without sending one if requested.
 BASE_FEATURE(kOmitCorsClientCert, base::FEATURE_DISABLED_BY_DEFAULT);
