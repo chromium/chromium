@@ -21,6 +21,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/permissions/scripting_permissions_modifier.h"
 #include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/browser/permissions_manager.h"
@@ -581,6 +582,37 @@ IN_PROC_BROWSER_TEST_F(
   // Menu should navigate back to main page.
   EXPECT_TRUE(IsMainPageOpened());
   EXPECT_FALSE(IsSitePermissionsPageOpened(extension->id()));
+}
+
+// Tests that uncommitted navigations (e.g. 204 No Content or aborted old frame
+// navigations) and subframe navigations do not close the site permissions page.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionsSitePermissionsPageViewBrowserTest,
+    UncommittedOrSubframeNavigationDoesNotCloseSitePermissionsPage) {
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+
+  NavigateAndCommit(
+      embedded_test_server()->GetURL("www.a.com", "/iframe.html"));
+  ShowSitePermissionsPage(extension->id());
+  ASSERT_FALSE(IsMainPageOpened());
+  ASSERT_TRUE(IsSitePermissionsPageOpened(extension->id()));
+
+  // An uncommitted main-frame navigation (204 No Content) should not cause the
+  // menu to navigate back to the main page.
+  EXPECT_FALSE(content::NavigateToURL(
+      web_contents(),
+      embedded_test_server()->GetURL("www.a.com", "/nocontent")));
+  EXPECT_FALSE(IsMainPageOpened());
+  EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
+
+  // Navigating a subframe should also not cause the menu to navigate back to
+  // the main page.
+  ASSERT_TRUE(content::NavigateIframeToURL(
+      web_contents(), "test",
+      embedded_test_server()->GetURL("www.b.com", "/title1.html")));
+  EXPECT_FALSE(IsMainPageOpened());
+  EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
 }
 
 // Tests that the site access radio buttons are mutually exclusive, and focusing
