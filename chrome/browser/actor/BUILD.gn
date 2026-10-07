@@ -68,6 +68,7 @@ source_set("actor") {
     "tools/translate_page_tool_request.h",
     "tools/type_tool_request.h",
     "tools/wait_tool_request.h",
+    "transport/actor_keyed_service_adapter.h",
   ]
   public_deps = [
     ":types",
@@ -85,6 +86,7 @@ source_set("actor") {
     "//components/actor/core",
     "//components/actor/core:journal",
     "//components/actor/core:task_id",
+    "//components/actor/transport",
     "//components/autofill/core/browser/integrators/actor:actor_form_filling_types",
     "//components/critical_actions/core/browser",
     "//components/download/content/public",
@@ -222,6 +224,7 @@ source_set("impl") {
     "tools/wait_tool.cc",
     "tools/wait_tool.h",
     "tools/wait_tool_request.cc",
+    "transport/actor_keyed_service_adapter.cc",
   ]
   deps = [
     ":actor",
