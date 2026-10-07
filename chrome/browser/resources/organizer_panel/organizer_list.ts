@@ -33,11 +33,19 @@ export class OrganizerListElement extends CrLitElement {
     return {
       sectionDelegates: {type: Array},
       searchQuery: {type: String},
+      allSectionsHidden_: {type: Boolean},
     };
   }
 
   accessor sectionDelegates: Array<OrganizerListSectionDelegate<unknown>> = [];
   accessor searchQuery: string = '';
+  protected accessor allSectionsHidden_: boolean = false;
+
+  protected onSectionHiddenChanged_() {
+    const sections = this.shadowRoot.querySelectorAll('organizer-list-section');
+    this.allSectionsHidden_ =
+        sections.length > 0 && Array.from(sections).every(s => s.hidden);
+  }
 }
 
 declare global {

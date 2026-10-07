@@ -4,7 +4,9 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
  * #scheme=relative
+ * #include=cr-hidden-style-lit
  * #css_wrapper_metadata_end */
 
 :host {
@@ -13,6 +15,17 @@
 
 .divider {
   background-color: var(--color-sys-divider, var(--cr-fallback-color-divider));
+  display: none;
   height: 1px;
+  margin: 8px 16px;
+}
+
+organizer-list-section:not([hidden]) ~ .divider:has(+ organizer-list-section:not([hidden])) {
+  display: block;
+}
+
+#noResults {
+  color: var(--cr-secondary-text-color);
+  font-size: 12px;
   margin: 8px 16px;
 }

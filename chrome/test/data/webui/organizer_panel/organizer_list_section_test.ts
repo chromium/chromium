@@ -405,7 +405,7 @@ suite('OrganizerListSectionTest', () => {
     let listItems =
         listSection.shadowRoot.querySelectorAll('organizer-list-section-item');
     assertEquals(2, listItems.length);
-    assertEquals(null, listSection.shadowRoot.querySelector('#noResults'));
+    assertFalse(listSection.hidden);
 
     async function setSearchQuery(query: string) {
       listSection.searchQuery = query;
@@ -417,45 +417,41 @@ suite('OrganizerListSectionTest', () => {
         listSection.shadowRoot.querySelectorAll('organizer-list-section-item');
     assertEquals(1, listItems.length);
     assertDeepEquals(['YouTube'], listItems[0]!.item.title);
-    assertEquals(null, listSection.shadowRoot.querySelector('#noResults'));
+    assertFalse(listSection.hidden);
 
     await setSearchQuery('google.com');
     listItems =
         listSection.shadowRoot.querySelectorAll('organizer-list-section-item');
     assertEquals(1, listItems.length);
     assertDeepEquals(['Google'], listItems[0]!.item.title);
-    assertEquals(null, listSection.shadowRoot.querySelector('#noResults'));
+    assertFalse(listSection.hidden);
 
     await setSearchQuery('nomatch');
     listItems =
         listSection.shadowRoot.querySelectorAll('organizer-list-section-item');
     assertEquals(0, listItems.length);
-    const noResults = listSection.shadowRoot.querySelector('#noResults');
-    assertTrue(!!noResults);
-    assertEquals('No results', noResults.textContent.trim());
+    assertTrue(listSection.hidden);
 
     await setSearchQuery('');
     listItems =
         listSection.shadowRoot.querySelectorAll('organizer-list-section-item');
     assertEquals(2, listItems.length);
-    assertEquals(null, listSection.shadowRoot.querySelector('#noResults'));
+    assertFalse(listSection.hidden);
   });
 
-  test(
-      'shows no results message only when search query has no matches',
-      async () => {
-        listSection.delegate = new TestSectionDelegate('Open Tabs', []);
-        await microtasksFinished();
+  test('hides section only when search query has no matches', async () => {
+    listSection.delegate = new TestSectionDelegate('Open Tabs', []);
+    await microtasksFinished();
 
-        assertEquals(null, listSection.shadowRoot.querySelector('#noResults'));
+    assertFalse(listSection.hidden);
+    assertEquals('block', getComputedStyle(listSection).display);
 
-        listSection.searchQuery = 'query';
-        await microtasksFinished();
+    listSection.searchQuery = 'query';
+    await microtasksFinished();
 
-        const noResults = listSection.shadowRoot.querySelector('#noResults');
-        assertTrue(!!noResults);
-        assertEquals('No results', noResults.textContent.trim());
-      });
+    assertTrue(listSection.hidden);
+    assertEquals('none', getComputedStyle(listSection).display);
+  });
 
   test(
       'force-expands section and disables header toggle when searching',
@@ -551,7 +547,7 @@ suite('OrganizerListSectionTest', () => {
     assertEquals(
         0,
         itemsContainer.querySelectorAll('organizer-list-section-item').length);
-    assertEquals(null, listSection.shadowRoot.querySelector('#noResults'));
+    assertFalse(listSection.hidden);
   });
 
   test(
@@ -572,14 +568,13 @@ suite('OrganizerListSectionTest', () => {
                 .querySelectorAll('organizer-list-section-item')
                 .length);
 
-        // Searching with no matches should show #noResults, not zero state.
+        // Searching with no matches should hide the section, not show zero
+        // state.
         listSection.searchQuery = 'nomatch';
         await microtasksFinished();
 
         assertEquals(null, listSection.shadowRoot.querySelector('#zeroState'));
-        const noResults = listSection.shadowRoot.querySelector('#noResults');
-        assertTrue(!!noResults);
-        assertEquals('No results', noResults.textContent.trim());
+        assertTrue(listSection.hidden);
       });
 
   test(

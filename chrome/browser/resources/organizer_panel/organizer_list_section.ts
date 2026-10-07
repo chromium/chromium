@@ -52,6 +52,11 @@ export class OrganizerListSectionElement extends CrLitElement implements
       searchQuery: {type: String},
       filteredItems_: {type: Array},
       filteredSearchQuery_: {type: String},
+      hidden: {
+        type: Boolean,
+        reflect: true,
+        notify: true,
+      },
     };
   }
 
@@ -69,6 +74,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
   // ensures that we don't show the full list of elements until after the search
   // has been applied and the list of items has been filtered.
   protected accessor filteredSearchQuery_: string = '';
+  override accessor hidden: boolean = false;
 
   private searchOptions_:
       SearchOptions<HighlightableOrganizerListSectionItem<unknown>> = {
@@ -134,6 +140,8 @@ export class OrganizerListSectionElement extends CrLitElement implements
         changedProperties.has('searchQuery')) {
       this.updateFilteredItems_();
     }
+
+    this.hidden = this.hasNoSearchResults_();
   }
 
   onItemsChanged(items: Array<OrganizerListSectionItem<unknown>>) {
@@ -198,7 +206,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
     return this.expanded_ || this.isSearching_();
   }
 
-  protected hasNoSearchResults_(): boolean {
+  private hasNoSearchResults_(): boolean {
     return this.isSearching_() && this.getFilteredItems_().length === 0;
   }
 
