@@ -97,10 +97,10 @@ struct Dualshock4InputReportUsb {
   uint8_t padding1[2];
   uint8_t touches_count;
   TouchPadData touches[3];
-  uint8_t padding2[4];
+  uint8_t padding2[3];
 };
 
-static_assert(sizeof(Dualshock4InputReportUsb) == 64,
+static_assert(sizeof(Dualshock4InputReportUsb) == 63,
               "Dualshock4InputReportUsb has incorrect size");
 
 struct PACKED_OBJ Dualshock4InputReportBluetooth {

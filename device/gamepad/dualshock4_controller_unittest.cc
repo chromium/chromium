@@ -276,8 +276,9 @@ TEST_F(Dualshock4ControllerTest, ResetVibrationBluetooth) {
 }
 
 TEST_F(Dualshock4ControllerTest, ProcessInputReportUsbTouch) {
-  // 64-byte report payload (excluding 1-byte report ID 0x01).
-  std::array<uint8_t, 64> report_data;
+  // 63-byte report payload (64-byte USB report excluding 1-byte report ID
+  // 0x01).
+  std::array<uint8_t, 63> report_data;
   std::ranges::fill(report_data, 0);
 
   // Set touches_count = 1 at offset 32.
