@@ -244,8 +244,17 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="EntityPreviewEmptyResult"/>
   <int value="3" label="StatisticsHasResult"/>
   <int value="4" label="StatisticsEmptyResult"/>
-  <int value="5" label="CompletedWithResults"/>
-  <int value="6" label="CompletedWithoutResults"/>
+  <int value="5" label="CompletedWithResults">
+    At least one requested endpoint succeeded (including when only partial
+    results were obtained).
+  </int>
+  <int value="6" label="CompletedWithoutResults">
+    All requested endpoints failed.
+  </int>
+  <int value="7" label="CompletedWithPartialResults">
+    Recorded in addition to CompletedWithResults when at least one requested
+    endpoint succeeded and at least one failed.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/core/browser/account_preview_data_fetcher.h:AccountPreviewDataFetchState) -->

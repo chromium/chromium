@@ -741,14 +741,24 @@ to monitor/debug fetching OAuth2 Token issues. -->
   <owner>rsult@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
-    Measures the duration of fetching sync preview data (including token
-    fetching and network requests) for a signed-in account, split by {Result}
-    fetches. Recorded when the fetch finishes.
+    Measures the duration of fetching sync preview data (or a specific phase
+    thereof, such as access token fetching or network requests) for a signed-in
+    account, split by {Result} fetches. Recorded when the corresponding phase or
+    overall fetch finishes.
   </summary>
   <token key="Result">
-    <variant name="Failure" summary="failed (network requests failed)"/>
-    <variant name="Success" summary="successful (at least some data returned)"/>
+    <variant name="Failure"
+        summary="failed overall (including token fetch and network requests)"/>
+    <variant name="NetworkFailure"
+        summary="failed during network requests (excluding token fetch)"/>
+    <variant name="NetworkSuccess"
+        summary="successful during network requests (excluding token fetch)"/>
+    <variant name="Success"
+        summary="successful overall (at least some data returned, including
+                 token fetch and network requests)"/>
     <variant name="TokenFailure" summary="failed during access token fetch"/>
+    <variant name="TokenSuccess"
+        summary="successful during access token fetch"/>
   </token>
 </histogram>
 

@@ -68,6 +68,8 @@ base::span<const syncer::DataType> GetRequestedDataTypes();
 // The fetching only starts when Start() is called.
 class AccountPreviewDataFetcher {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   // LINT.IfChange(AccountPreviewDataFetchState)
   enum class FetchState {
     kRequested = 0,
@@ -75,9 +77,15 @@ class AccountPreviewDataFetcher {
     kEntityPreviewEmptyResult = 2,
     kStatisticsHasResult = 3,
     kStatisticsEmptyResult = 4,
+    // Recorded when at least one requested endpoint succeeded (including when
+    // only partial results were obtained).
     kCompletedWithResults = 5,
+    // Recorded when all requested endpoints failed.
     kCompletedWithoutResults = 6,
-    kMaxValue = kCompletedWithoutResults,
+    // Recorded in addition to `kCompletedWithResults` when at least one
+    // requested endpoint succeeded and at least one failed.
+    kCompletedWithPartialResults = 7,
+    kMaxValue = kCompletedWithPartialResults,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:AccountPreviewDataFetchState)
 
@@ -132,6 +140,7 @@ class AccountPreviewDataFetcher {
   bool is_started_ = false;
   bool hit_429_error_ = false;
   std::optional<base::ElapsedTimer> fetch_timer_;
+  std::optional<base::ElapsedTimer> network_fetch_timer_;
 
   base::OnceClosure on_fetch_completed_for_testing_;
 

@@ -48,6 +48,12 @@ constexpr char kFetchDurationSuccessHistogram[] =
     "Signin.AccountPreviewData.FetchDuration.Success";
 constexpr char kFetchDurationFailureHistogram[] =
     "Signin.AccountPreviewData.FetchDuration.Failure";
+constexpr char kFetchDurationNetworkSuccessHistogram[] =
+    "Signin.AccountPreviewData.FetchDuration.NetworkSuccess";
+constexpr char kFetchDurationNetworkFailureHistogram[] =
+    "Signin.AccountPreviewData.FetchDuration.NetworkFailure";
+constexpr char kFetchDurationTokenSuccessHistogram[] =
+    "Signin.AccountPreviewData.FetchDuration.TokenSuccess";
 constexpr char kFetchDurationTokenFailureHistogram[] =
     "Signin.AccountPreviewData.FetchDuration.TokenFailure";
 
@@ -300,8 +306,8 @@ void AccountPreviewDataFetcher::OnAccessTokenReceived(
     GoogleServiceAuthError error,
     AccessTokenInfo token_info) {
   token_fetcher_.reset();
+  CHECK(fetch_timer_.has_value());
   if (error.state() != GoogleServiceAuthError::NONE) {
-    CHECK(fetch_timer_.has_value());
     base::UmaHistogramMediumTimes(kFetchDurationTokenFailureHistogram,
                                   fetch_timer_->Elapsed());
     fetched_data_ = std::nullopt;
@@ -309,6 +315,8 @@ void AccountPreviewDataFetcher::OnAccessTokenReceived(
     return;
   }
 
+  base::UmaHistogramMediumTimes(kFetchDurationTokenSuccessHistogram,
+                                fetch_timer_->Elapsed());
   StartNetworkRequests(token_info.token);
 }
 
@@ -319,6 +327,7 @@ void AccountPreviewDataFetcher::SetOnFetchCompletedForTesting(
 
 void AccountPreviewDataFetcher::StartNetworkRequests(
     const std::string& access_token) {
+  network_fetch_timer_ = base::ElapsedTimer();
   const bool fetch_previews = base::FeatureList::IsEnabled(
       switches::kEnableAccountPreviewEntityPreviews);
 
@@ -444,8 +453,9 @@ void AccountPreviewDataFetcher::OnPreviewsFetchCompleted(
 }
 
 void AccountPreviewDataFetcher::OnFetchCompleted(std::vector<bool> results) {
+  const size_t success_count = std::ranges::count(results, true);
   // If all requests failed, clear the fetched data.
-  if (std::ranges::none_of(results, [](bool success) { return success; })) {
+  if (success_count == 0) {
     fetched_data_ = std::nullopt;
   }
 
@@ -453,8 +463,18 @@ void AccountPreviewDataFetcher::OnFetchCompleted(std::vector<bool> results) {
                                 fetched_data_.has_value()
                                     ? FetchState::kCompletedWithResults
                                     : FetchState::kCompletedWithoutResults);
+  if (success_count > 0 && success_count < results.size()) {
+    base::UmaHistogramEnumeration(kFetchStateHistogram,
+                                  FetchState::kCompletedWithPartialResults);
+  }
 
   base::UmaHistogramBoolean(kFetchHit429Histogram, hit_429_error_);
+
+  CHECK(network_fetch_timer_.has_value());
+  base::UmaHistogramMediumTimes(fetched_data_.has_value()
+                                    ? kFetchDurationNetworkSuccessHistogram
+                                    : kFetchDurationNetworkFailureHistogram,
+                                network_fetch_timer_->Elapsed());
 
   CHECK(fetch_timer_.has_value());
   base::UmaHistogramMediumTimes(fetched_data_.has_value()
