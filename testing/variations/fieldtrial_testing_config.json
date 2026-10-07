@@ -5719,23 +5719,6 @@
             ]
         }
     ],
-    "DesktopAndroidAccountSettingsRefinements": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SignOutDeletesBrowsingData",
-                        "SignOutOfChrome",
-                        "SwitchToIncognitoInSettings"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopAndroidPolicy": [
         {
             "platforms": [
