@@ -70,7 +70,9 @@ std::vector<Printer> PrintersMap::Get() const {
 }
 
 void PrintersMap::Insert(PrinterClass printer_class, const Printer& printer) {
-  CHECK(!IsExistingPrinter(printer.id()), base::NotFatalUntil::M160);
+  // TODO(crbug.com/568768450): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!IsExistingPrinter(printer.id()));
 
   printers_[printer_class][printer.id()] = printer;
 }
