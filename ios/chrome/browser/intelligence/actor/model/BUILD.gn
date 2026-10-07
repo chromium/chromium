@@ -19,13 +19,15 @@ source_set("model") {
     "actor_web_state_policy_decider.h",
     "actor_web_state_policy_decider.mm",
   ]
-  public_deps = [ "//components/sessions:session_id" ]
+  public_deps = [
+    "//components/actor/core:journal",
+    "//components/sessions:session_id",
+  ]
   deps = [
     ":intervention_handler",
     ":tab_helper",
     "//base",
     "//components/actor/core",
-    "//components/actor/core:journal",
     "//components/actor/public/mojom:mojo_bindings",
     "//components/keyed_service/core",
     "//components/optimization_guide/proto:optimization_guide_proto",

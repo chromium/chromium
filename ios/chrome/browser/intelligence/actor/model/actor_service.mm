@@ -9,6 +9,7 @@
 #import <set>
 
 #import "base/barrier_callback.h"
+#import "base/base64.h"
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/ios/crb_protocol_observers.h"
@@ -16,6 +17,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/actor/core/aggregated_journal.h"
+#import "components/actor/core/journal_details_builder.h"
 #import "components/actor/core/task_source_info.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -186,6 +188,12 @@ void ActorService::RequestTabObservation(ActorTaskId task_id,
     return;
   }
 
+  const GURL last_committed_url = web_state->GetLastCommittedURL();
+  std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry =
+      journal_->CreatePendingAsyncEntry(
+          last_committed_url, task_id, MakeBrowserTrackUUID(task_id),
+          "RequestTabObservation", /*details=*/{});
+
   PageContextWrapperConfigBuilder builder;
   builder.SetUseRichExtraction(true);
   builder.SetUseRichExtractionWithActionable(true);
@@ -200,6 +208,7 @@ void ActorService::RequestTabObservation(ActorTaskId task_id,
       completionCallback:base::BindOnce(
                              &ActorService::OnPageContextExtractionComplete,
                              weak_ptr_factory_.GetWeakPtr(), web_state_id,
+                             last_committed_url, std::move(journal_entry),
                              std::move(callback))];
 
   pending_observations_[web_state_id] = page_context_wrapper;
@@ -362,9 +371,43 @@ void ActorService::AddControlledWebState(ActorTaskId task_id,
 
 void ActorService::OnPageContextExtractionComplete(
     web::WebStateID web_state_id,
+    const GURL& last_committed_url,
+    std::unique_ptr<AggregatedJournal::PendingAsyncEntry> pending_journal_entry,
     TabObservationCallback callback,
     PageContextWrapperCallbackResponse response) {
   pending_observations_.erase(web_state_id);
+
+  if (pending_journal_entry) {
+    if (!response.has_value() || !response.value()) {
+      pending_journal_entry->EndEntry(
+          JournalDetailsBuilder()
+              .AddError("Failed to extract page context")
+              .Build());
+    } else {
+      const optimization_guide::proto::PageContext& page_context =
+          *response.value();
+      if (page_context.has_annotated_page_content()) {
+        const auto& apc = page_context.annotated_page_content();
+        std::vector<uint8_t> buffer(apc.ByteSizeLong());
+        if (apc.SerializeToArray(buffer.data(), buffer.size())) {
+          pending_journal_entry->GetJournal().LogAnnotatedPageContent(
+              last_committed_url, pending_journal_entry->GetTaskId(), buffer);
+        }
+      }
+      if (page_context.has_tab_screenshot()) {
+        std::optional<std::vector<uint8_t>> decoded_screenshot =
+            base::Base64Decode(page_context.tab_screenshot());
+        if (decoded_screenshot.has_value()) {
+          pending_journal_entry->GetJournal().LogScreenshot(
+              last_committed_url, pending_journal_entry->GetTaskId(),
+              "image/png", *decoded_screenshot,
+              /*iframe_data=*/std::nullopt);
+        }
+      }
+      pending_journal_entry->EndEntry({});
+    }
+  }
+
   std::move(callback).Run(std::move(response));
 }
 

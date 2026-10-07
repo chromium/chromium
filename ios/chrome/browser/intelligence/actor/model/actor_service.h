@@ -14,6 +14,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
+#import "components/actor/core/aggregated_journal.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
@@ -177,6 +178,9 @@ class ActorService : public KeyedService {
   // Callback for when PageContext extraction completes.
   void OnPageContextExtractionComplete(
       web::WebStateID web_state_id,
+      const GURL& last_committed_url,
+      std::unique_ptr<AggregatedJournal::PendingAsyncEntry>
+          pending_journal_entry,
       TabObservationCallback callback,
       PageContextWrapperCallbackResponse response);
 
