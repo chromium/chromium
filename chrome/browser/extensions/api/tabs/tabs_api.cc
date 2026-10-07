@@ -2216,6 +2216,9 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
   // TODO(https://crbug.com/468223125): This isn't consistent, since sometimes
   // we *will* create a new browser below.
   if (!browser) {
+    if (error.empty()) {
+      error = ExtensionTabUtil::kTabStripNotEditableError;
+    }
     return RespondNow(Error(std::move(error)));
   }
 
