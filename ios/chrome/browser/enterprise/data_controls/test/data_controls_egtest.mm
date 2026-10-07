@@ -7,8 +7,10 @@
 #import "components/enterprise/data_controls/core/browser/features.h"
 #import "components/safe_browsing/core/common/safebrowsing_switches.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_constants.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/edit_menu_app_interface.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/edit_menu_matchers.h"
+#import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
 #import "ios/chrome/browser/enterprise/connectors/analysis/test/analysis_connectors_app_interface.h"
 #import "ios/chrome/browser/enterprise/data_controls/test/data_controls_app_interface.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
@@ -621,8 +623,21 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
                  chrome_test_util::AlertItemWithAccessibilityLabelId(
                      IDS_CONTINUE)] performAction:grey_tap()];
 
-  // Check that the search opened in a new tab.
-  [ChromeEarlGrey waitForMainTabCount:2];
+  if ([ChromeEarlGrey isAimCobrowseWebSelectionSearchEnabled]) {
+    // Check that the assistant container is shown instead of opening a new tab.
+    [ChromeEarlGrey
+        waitForUIElementToAppearWithMatcher:
+            grey_accessibilityID(kAssistantContainerAccessibilityIdentifier)];
+    GREYAssertEqual(1UL, [ChromeEarlGrey mainTabCount],
+                    @"Search should not have opened a new tab");
+    [[EarlGrey selectElementWithMatcher:
+                   grey_accessibilityID(
+                       kAssistantAIMCloseButtonAccessibilityIdentifier)]
+        performAction:grey_tap()];
+  } else {
+    // Check that the search opened in a new tab.
+    [ChromeEarlGrey waitForMainTabCount:2];
+  }
   [DataControlsAppInterface clearDataControlRules];
 }
 
@@ -679,8 +694,22 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   GREYAssertNotNil(matcher, @"Search with Google button not found");
   [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
 
-  // Check that the search opened in a new tab without any dialog interruption.
-  [ChromeEarlGrey waitForMainTabCount:2];
+  if ([ChromeEarlGrey isAimCobrowseWebSelectionSearchEnabled]) {
+    // Check that the assistant container is shown instead of opening a new tab.
+    [ChromeEarlGrey
+        waitForUIElementToAppearWithMatcher:
+            grey_accessibilityID(kAssistantContainerAccessibilityIdentifier)];
+    GREYAssertEqual(1UL, [ChromeEarlGrey mainTabCount],
+                    @"Search should not have opened a new tab");
+    [[EarlGrey selectElementWithMatcher:
+                   grey_accessibilityID(
+                       kAssistantAIMCloseButtonAccessibilityIdentifier)]
+        performAction:grey_tap()];
+  } else {
+    // Check that the search opened in a new tab without any dialog
+    // interruption.
+    [ChromeEarlGrey waitForMainTabCount:2];
+  }
   [DataControlsAppInterface clearDataControlRules];
 }
 

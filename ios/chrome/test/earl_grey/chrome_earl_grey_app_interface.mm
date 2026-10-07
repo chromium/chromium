@@ -1486,6 +1486,10 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
   return IsPinnedTabsEnabled();
 }
 
++ (BOOL)isAimCobrowseWebSelectionSearchEnabled {
+  return IsAimCobrowseWebSelectionSearchEnabled();
+}
+
 #pragma mark - ContentSettings
 
 + (ContentSetting)popupPrefValue {

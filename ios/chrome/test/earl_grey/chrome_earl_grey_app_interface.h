@@ -640,6 +640,9 @@ enum class TipsNotificationType;
 // Returns whether the Pinned Tabs feature is enabled.
 + (BOOL)isPinnedTabsEnabled;
 
+// Returns whether the aim cobrowse web selection search is enabled.
++ (BOOL)isAimCobrowseWebSelectionSearchEnabled;
+
 #pragma mark - ContentSettings
 
 // Gets the current value of the popup content setting preference for the

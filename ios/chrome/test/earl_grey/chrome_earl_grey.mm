@@ -1782,6 +1782,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isOverflowMenuNTPRefactorEnabled];
 }
 
+- (BOOL)isAimCobrowseWebSelectionSearchEnabled {
+  return [ChromeEarlGreyAppInterface isAimCobrowseWebSelectionSearchEnabled];
+}
 
 #pragma mark - ContentSettings
 
