@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.components.autofill.LoyaltyCard;
@@ -30,6 +31,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 /** Properties defined here reflect the visible state of the TouchToFillPaymentMethod component. */
+@NullMarked
 final class TouchToFillPaymentMethodProperties {
     static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey("visible");
     static final WritableIntPropertyKey CURRENT_SCREEN =

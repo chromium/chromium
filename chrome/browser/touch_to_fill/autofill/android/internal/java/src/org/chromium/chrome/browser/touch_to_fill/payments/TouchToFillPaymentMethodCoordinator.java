@@ -36,6 +36,8 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
@@ -58,6 +60,7 @@ import java.util.List;
  * Implements the TouchToFillPaymentMethodComponent. It uses a bottom sheet to let the user select a
  * credit card to be filled into the focused form.
  */
+@NullMarked
 public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMethodComponent {
     private final TouchToFillPaymentMethodMediator mMediator;
     private final PropertyModel mTouchToFillPaymentMethodModel;
@@ -124,7 +127,7 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
     @Override
     public void onPurchaseAmountExtracted(
             List<BnplIssuerContext> bnplIssuerContexts,
-            Long extractedAmount,
+            @Nullable Long extractedAmount,
             boolean isAmountSupportedByAnyIssuer) {
         mMediator.onPurchaseAmountExtracted(
                 bnplIssuerContexts, extractedAmount, isAmountSupportedByAnyIssuer);

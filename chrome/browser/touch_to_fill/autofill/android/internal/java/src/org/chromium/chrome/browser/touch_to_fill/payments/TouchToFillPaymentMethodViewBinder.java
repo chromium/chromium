@@ -80,6 +80,7 @@ import android.widget.TextView;
 import androidx.annotation.IdRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.touch_to_fill.R;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
@@ -92,6 +93,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Provides functions that map {@link TouchToFillPaymentMethodProperties} changes in a {@link
  * PropertyModel} to the suitable method in {@link TouchToFillPaymentMethodView}.
  */
+@NullMarked
 final class TouchToFillPaymentMethodViewBinder {
     static final float GRAYED_OUT_OPACITY_ALPHA = 0.38f;
     static final float COMPLETE_OPACITY_ALPHA = 1.0f;

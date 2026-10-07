@@ -55,6 +55,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -689,16 +690,17 @@ public class AutofillUiUtils {
     }
 
     /**
-     * Always show the Capital One virtual card icon for virtual cards if the card
-     * icon URL is available for the card. Never show the Capital One virtual card
-     * icon for FPAN.
-     * Otherwise, show rich card art.
+     * Always show the Capital One virtual card icon for virtual cards if the card icon URL is
+     * available for the card. Never show the Capital One virtual card icon for FPAN. Otherwise,
+     * show rich card art.
      *
      * @param customIconUrl {@link GURL} for fetching the custom icon.
      * @param isVirtualCard Whether or not the card is a virtual card.
      * @return True if the custom icon should be shown. False otherwise.
      */
-    public static boolean shouldShowCustomIcon(GURL customIconUrl, boolean isVirtualCard) {
+    @Contract("null, _ -> false")
+    public static boolean shouldShowCustomIcon(
+            @Nullable GURL customIconUrl, boolean isVirtualCard) {
         if (customIconUrl == null) {
             return false;
         }
