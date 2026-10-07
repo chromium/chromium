@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/mediastream/media_capture_element_constraints.h"
-
+#include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_string.h"
@@ -21,7 +20,10 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constrainlongrange_long.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
+#include "third_party/blink/renderer/core/html/html_camera_element.h"
+#include "third_party/blink/renderer/core/html/html_microphone_element.h"
 #include "third_party/blink/renderer/core/html/html_user_media_element.h"
+#include "third_party/blink/renderer/modules/mediastream/media_capture_element_constraints.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
@@ -49,6 +51,7 @@ TEST_F(UserMediaElementTest, SetConstraintsStoresValue) {
 
 TEST_F(UserMediaElementTest, SetConstraintsOnlySetsOnce) {
   V8TestingScope scope;
+  base::HistogramTester histogram_tester;
   auto* element =
       MakeGarbageCollected<HTMLUserMediaElement>(scope.GetDocument());
   HTMLMediaStreamConstraints* constraints = HTMLMediaStreamConstraints::Create();
@@ -59,6 +62,9 @@ TEST_F(UserMediaElementTest, SetConstraintsOnlySetsOnce) {
       MediaCaptureElementConstraints::From(*element).Constraints();
 
   EXPECT_TRUE(sanitized_constraints);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.CapabilityElement.UserMedia.SetConstraints.RepeatedCall", false,
+      1);
 
   HTMLMediaStreamConstraints* constraints2 =
       HTMLMediaStreamConstraints::Create();
@@ -66,6 +72,39 @@ TEST_F(UserMediaElementTest, SetConstraintsOnlySetsOnce) {
   MediaCaptureElementConstraints::setConstraints(*element, constraints2);
   EXPECT_EQ(MediaCaptureElementConstraints::From(*element).Constraints(),
             sanitized_constraints);
+  histogram_tester.ExpectBucketCount(
+      "Blink.CapabilityElement.UserMedia.SetConstraints.RepeatedCall", true, 1);
+}
+
+TEST_F(UserMediaElementTest, SetConstraintsRepeatedCallCameraAndMicrophone) {
+  V8TestingScope scope;
+  ScopedCameraAndMicrophoneElementsForTest scoped_feature(true);
+  base::HistogramTester histogram_tester;
+
+  auto* camera = MakeGarbageCollected<HTMLCameraElement>(scope.GetDocument());
+  auto* mic = MakeGarbageCollected<HTMLMicrophoneElement>(scope.GetDocument());
+
+  auto* camera_constraints = MediaTrackConstraintSet::Create();
+
+  MediaCaptureElementConstraints::setConstraints(*camera, camera_constraints);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.CapabilityElement.Camera.SetConstraints.RepeatedCall", false, 1);
+
+  MediaCaptureElementConstraints::setConstraints(*camera, camera_constraints);
+  histogram_tester.ExpectBucketCount(
+      "Blink.CapabilityElement.Camera.SetConstraints.RepeatedCall", true, 1);
+
+  auto* mic_constraints = MediaTrackConstraintSet::Create();
+
+  MediaCaptureElementConstraints::setConstraints(*mic, mic_constraints);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.CapabilityElement.Microphone.SetConstraints.RepeatedCall", false,
+      1);
+
+  MediaCaptureElementConstraints::setConstraints(*mic, mic_constraints);
+  histogram_tester.ExpectBucketCount(
+      "Blink.CapabilityElement.Microphone.SetConstraints.RepeatedCall", true,
+      1);
 }
 
 TEST_F(UserMediaElementTest, SanitizeTrackConstraints) {

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/html_user_media_element.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
@@ -13,6 +14,7 @@
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/html_capability_element_metrics_util.h"
 #include "third_party/blink/renderer/core/html/html_permission_element_test_helper.h"
 #include "third_party/blink/renderer/core/html/user_media_request_provider.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -403,6 +405,7 @@ TEST_F(HTMLUserMediaElementTest, UntrustedClickFiresError) {
   // Disable web test mode to force IsRunningWebTest() to return false,
   // so the untrusted event check is not bypassed.
   ScopedWebTestMode web_test_mode(false);
+  base::HistogramTester histogram_tester;
 
   GetDocument().domWindow()->GetSecurityContext().SetSecurityOriginForTesting(
       SecurityOrigin::CreateFromString("https://example.com"));
@@ -429,6 +432,29 @@ TEST_F(HTMLUserMediaElementTest, UntrustedClickFiresError) {
   EXPECT_EQ(element->error()->message(),
             "The permission element activation must be triggered by a user "
             "gesture.");
+  histogram_tester.ExpectUniqueSample(
+      "Blink.CapabilityElement.UserMedia.RequestOutcome",
+      CapabilityElementMediaRequestOutcome::kActivationFailed, 1);
+}
+
+TEST_F(HTMLUserMediaElementTest,
+       EmbeddedPermissionsDecidedDismissedOrDeniedMetrics) {
+  base::HistogramTester histogram_tester;
+  auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
+
+  element->OnEmbeddedPermissionsDecided(
+      mojom::blink::EmbeddedPermissionControlResult::kDismissed);
+
+  histogram_tester.ExpectBucketCount(
+      "Blink.CapabilityElement.UserMedia.RequestOutcome",
+      CapabilityElementMediaRequestOutcome::kNotAllowedError, 1);
+
+  element->OnEmbeddedPermissionsDecided(
+      mojom::blink::EmbeddedPermissionControlResult::kDenied);
+
+  histogram_tester.ExpectBucketCount(
+      "Blink.CapabilityElement.UserMedia.RequestOutcome",
+      CapabilityElementMediaRequestOutcome::kNotAllowedError, 2);
 }
 
 TEST_F(HTMLUserMediaElementTest, LegacyModeDoesNotRequestMediaStream) {
@@ -576,6 +602,66 @@ TEST_F(HTMLUserMediaElementTest, DisplayModeIconOnlyNotSupported) {
   EXPECT_FALSE(element->IsIconOnly());
   EXPECT_EQ(element->permission_text_span_for_testing()->innerText(),
             kCameraMicrophoneString);
+}
+
+TEST_F(HTMLUserMediaElementTest, RequestInitiationFlowMetrics) {
+  ScopedBypassPepcSecurityForTestingForTest bypass_pepc(true);
+  MockUserMediaRequestProvider* provider =
+      MockUserMediaRequestProvider::CreateAndProvideTo(
+          *GetDocument().domWindow());
+
+  base::HistogramTester histogram_tester;
+
+  // 1. Click with permission already granted.
+  auto* element1 = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
+  GetDocument().body()->AppendChild(element1);
+  test::RunPendingTasks();
+
+  HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
+      granted_map;
+  granted_map.insert(mojom::blink::PermissionName::VIDEO_CAPTURE,
+                     mojom::blink::PermissionStatus::GRANTED);
+  granted_map.insert(mojom::blink::PermissionName::AUDIO_CAPTURE,
+                     mojom::blink::PermissionStatus::GRANTED);
+  element1->OnPermissionStatusInitialized(granted_map);
+
+  EXPECT_CALL(*provider, StartRequest(element1, _)).Times(1);
+  element1->click();
+  ::testing::Mock::VerifyAndClearExpectations(provider);
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.CapabilityElement.UserMedia.RequestInitiationFlow",
+      CapabilityElementMediaRequestFlow::kClickWithPermissionAlreadyGranted, 1);
+
+  // 2. Click with prompt granted.
+  auto* element2 = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
+  GetDocument().body()->AppendChild(element2);
+  test::RunPendingTasks();
+
+  HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus> ask_map;
+  ask_map.insert(mojom::blink::PermissionName::VIDEO_CAPTURE,
+                 mojom::blink::PermissionStatus::ASK);
+  ask_map.insert(mojom::blink::PermissionName::AUDIO_CAPTURE,
+                 mojom::blink::PermissionStatus::ASK);
+  element2->OnPermissionStatusInitialized(ask_map);
+
+  // Simulate click to start request flow.
+  element2->click();
+
+  // Prompt granted for both camera and microphone.
+  EXPECT_CALL(*provider, StartRequest(element2, _)).Times(0);
+  element2->OnPermissionStatusChange(
+      mojom::blink::PermissionName::VIDEO_CAPTURE,
+      mojom::blink::PermissionStatus::GRANTED);
+  EXPECT_CALL(*provider, StartRequest(element2, _)).Times(1);
+  element2->OnPermissionStatusChange(
+      mojom::blink::PermissionName::AUDIO_CAPTURE,
+      mojom::blink::PermissionStatus::GRANTED);
+  ::testing::Mock::VerifyAndClearExpectations(provider);
+
+  histogram_tester.ExpectBucketCount(
+      "Blink.CapabilityElement.UserMedia.RequestInitiationFlow",
+      CapabilityElementMediaRequestFlow::kClickWithPromptGranted, 1);
 }
 
 }  // namespace blink

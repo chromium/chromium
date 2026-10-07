@@ -66,10 +66,19 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="CapabilityType">
+  <variant name="Camera" summary="HTML element for accessing camera"/>
   <variant name="Geolocation" summary="HTML element for accessing geolocation"/>
   <variant name="Install" summary="HTML element for installing web apps"/>
+  <variant name="Microphone" summary="HTML element for accessing microphone"/>
   <variant name="Permission"
       summary="Default HTML element for accessing permissions"/>
+  <variant name="UserMedia"
+      summary="HTML element for accessing camera and microphone"/>
+</variants>
+
+<variants name="MediaCapabilityType">
+  <variant name="Camera" summary="HTML element for accessing camera"/>
+  <variant name="Microphone" summary="HTML element for accessing microphone"/>
   <variant name="UserMedia"
       summary="HTML element for accessing camera and microphone"/>
 </variants>
@@ -800,6 +809,94 @@ chromium-metrics-reviews@google.com.
     Records the reason why the user interaction with the {CapabilityType}
     element was denied. Recorded when the element is clicked by the user.
   </summary>
+</histogram>
+
+<histogram
+    name="Blink.CapabilityElement.{MediaCapabilityType}.Constraints.ValidationError"
+    enum="CapabilityElementMediaConstraintsValidationError"
+    expires_after="2027-04-01">
+  <owner>tungnh@chromium.org</owner>
+  <owner>ravjit@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether constraint validation succeeded or failed (missing audio,
+    video, or both constraints) for the {MediaCapabilityType} element. Recorded
+    once per media stream request when validating constraints before calling
+    getUserMedia.
+  </summary>
+  <token key="MediaCapabilityType" variants="MediaCapabilityType"/>
+</histogram>
+
+<histogram
+    name="Blink.CapabilityElement.{MediaCapabilityType}.RequestInitiationFlow"
+    enum="CapabilityElementMediaRequestFlow" expires_after="2027-04-01">
+  <owner>tungnh@chromium.org</owner>
+  <owner>ravjit@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the trigger flow for media requests initiated by a
+    {MediaCapabilityType} element: whether the user clicked when permission was
+    already granted, or clicked and granted permission via prompt. Recorded once
+    per media stream request when the request is initiated.
+  </summary>
+  <token key="MediaCapabilityType" variants="MediaCapabilityType"/>
+</histogram>
+
+<histogram name="Blink.CapabilityElement.{MediaCapabilityType}.RequestOutcome"
+    enum="CapabilityElementMediaRequestOutcome" expires_after="2027-04-01">
+  <owner>tungnh@chromium.org</owner>
+  <owner>ravjit@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the outcome of a media request initiated by a {MediaCapabilityType}
+    element: success, constraints validation error, activation failure, or
+    specific DOMException error reason. Recorded once per media request attempt
+    when the request completes or fails.
+  </summary>
+  <token key="MediaCapabilityType" variants="MediaCapabilityType"/>
+</histogram>
+
+<histogram
+    name="Blink.CapabilityElement.{MediaCapabilityType}.SetConstraints.RepeatedCall"
+    enum="Boolean" expires_after="2027-04-01">
+  <owner>tungnh@chromium.org</owner>
+  <owner>ravjit@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether setConstraints() was called on a {MediaCapabilityType}
+    element for the first time (false) or repeatedly after already being
+    configured (true). Recorded every time setConstraints() is called on the
+    element.
+  </summary>
+  <token key="MediaCapabilityType" variants="MediaCapabilityType"/>
+</histogram>
+
+<histogram name="Blink.CapabilityElement.{MediaCapabilityType}.TimeToError"
+    units="ms" expires_after="2027-04-01">
+  <owner>tungnh@chromium.org</owner>
+  <owner>ravjit@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the time elapsed from when a {MediaCapabilityType} element initiates
+    a media request to when an error occurs (validation error or getUserMedia
+    error). Recorded once per failed media stream request when the error occurs.
+  </summary>
+  <token key="MediaCapabilityType" variants="MediaCapabilityType"/>
+</histogram>
+
+<histogram
+    name="Blink.CapabilityElement.{MediaCapabilityType}.TimeToStreamOrTrack"
+    units="ms" expires_after="2027-04-01">
+  <owner>tungnh@chromium.org</owner>
+  <owner>ravjit@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the time elapsed from when a {MediaCapabilityType} element initiates
+    a media request to when the MediaStream (or track) is successfully
+    delivered. Recorded once per successful media stream request when the stream
+    or track is delivered.
+  </summary>
+  <token key="MediaCapabilityType" variants="MediaCapabilityType"/>
 </histogram>
 
 <histogram name="Blink.ChildURLLoaderFactoryBundle.CloneTime"

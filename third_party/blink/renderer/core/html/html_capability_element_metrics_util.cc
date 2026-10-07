@@ -120,4 +120,62 @@ void RecordGeolocationAccuracyMode(
       "Blink.CapabilityElement.Geolocation.AccuracyMode", mode);
 }
 
+void RecordCapabilityElementConstraintsValidationError(
+    const QualifiedName& tag_name,
+    CapabilityElementMediaConstraintsValidationError error) {
+  base::UmaHistogramEnumeration(
+      base::StringPrintf(kCapabilityElementBaseHistogramPattern,
+                         GetCapabilityNameForHistogram(tag_name)) +
+          ".Constraints.ValidationError",
+      error);
+}
+
+void RecordCapabilityElementSetConstraintsRepeatedCall(
+    const QualifiedName& tag_name,
+    RepeatedCall repeated) {
+  base::UmaHistogramBoolean(
+      base::StringPrintf(kCapabilityElementBaseHistogramPattern,
+                         GetCapabilityNameForHistogram(tag_name)) +
+          ".SetConstraints.RepeatedCall",
+      repeated.value());
+}
+
+void RecordCapabilityElementMediaRequestFlow(
+    const QualifiedName& tag_name,
+    CapabilityElementMediaRequestFlow flow) {
+  base::UmaHistogramEnumeration(
+      base::StringPrintf(kCapabilityElementBaseHistogramPattern,
+                         GetCapabilityNameForHistogram(tag_name)) +
+          ".RequestInitiationFlow",
+      flow);
+}
+
+void RecordCapabilityElementMediaRequestOutcome(
+    const QualifiedName& tag_name,
+    CapabilityElementMediaRequestOutcome outcome) {
+  base::UmaHistogramEnumeration(
+      base::StringPrintf(kCapabilityElementBaseHistogramPattern,
+                         GetCapabilityNameForHistogram(tag_name)) +
+          ".RequestOutcome",
+      outcome);
+}
+
+void RecordCapabilityElementTimeToStreamOrTrack(const QualifiedName& tag_name,
+                                                base::TimeDelta duration) {
+  base::UmaHistogramTimes(
+      base::StringPrintf(kCapabilityElementBaseHistogramPattern,
+                         GetCapabilityNameForHistogram(tag_name)) +
+          ".TimeToStreamOrTrack",
+      duration);
+}
+
+void RecordCapabilityElementMediaTimeToError(const QualifiedName& tag_name,
+                                             base::TimeDelta duration) {
+  base::UmaHistogramTimes(
+      base::StringPrintf(kCapabilityElementBaseHistogramPattern,
+                         GetCapabilityNameForHistogram(tag_name)) +
+          ".TimeToError",
+      duration);
+}
+
 }  // namespace blink

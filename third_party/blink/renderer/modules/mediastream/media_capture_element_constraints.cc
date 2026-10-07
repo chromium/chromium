@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constraindoublerange_double.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constrainlongrange_long.h"
 #include "third_party/blink/renderer/core/html/html_camera_element.h"
+#include "third_party/blink/renderer/core/html/html_capability_element_metrics_util.h"
 #include "third_party/blink/renderer/core/html/html_media_track_element_base.h"
 #include "third_party/blink/renderer/core/html/html_microphone_element.h"
 #include "third_party/blink/renderer/core/html/html_user_media_element.h"
@@ -138,9 +139,12 @@ void MediaCaptureElementConstraints::setConstraints(
     const HTMLMediaStreamConstraints* constraints) {
   MediaCaptureElementConstraints& self = From(element);
   if (self.DidSetConstraints()) {
+    RecordCapabilityElementSetConstraintsRepeatedCall(element.TagQName(),
+                                                      RepeatedCall(true));
     return;
   }
-
+  RecordCapabilityElementSetConstraintsRepeatedCall(element.TagQName(),
+                                                    RepeatedCall(false));
   HTMLMediaStreamConstraints* sanitized_constraints =
       HTMLMediaStreamConstraints::Create();
 
@@ -159,8 +163,12 @@ void MediaCaptureElementConstraints::setConstraints(
     const MediaTrackConstraintSet* constraints) {
   MediaCaptureElementConstraints& self = From(element);
   if (self.DidSetConstraints()) {
+    RecordCapabilityElementSetConstraintsRepeatedCall(element.TagQName(),
+                                                      RepeatedCall(true));
     return;
   }
+  RecordCapabilityElementSetConstraintsRepeatedCall(element.TagQName(),
+                                                    RepeatedCall(false));
 
   HTMLMediaStreamConstraints* sanitized_constraints =
       HTMLMediaStreamConstraints::Create();

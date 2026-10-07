@@ -168,6 +168,43 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/core/html/html_capability_element_metrics_util.h:CapabilityElementGeolocationResult) -->
 
+<!-- LINT.IfChange(CapabilityElementMediaConstraintsValidationError) -->
+
+<enum name="CapabilityElementMediaConstraintsValidationError">
+  <int value="0" label="No Error"/>
+  <int value="1" label="Audio Missing"/>
+  <int value="2" label="Video Missing"/>
+  <int value="3" label="Both Missing"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/html/html_capability_element_metrics_util.h:CapabilityElementMediaConstraintsValidationError) -->
+
+<!-- LINT.IfChange(CapabilityElementMediaRequestFlow) -->
+
+<enum name="CapabilityElementMediaRequestFlow">
+  <int value="0" label="Click with permission already granted"/>
+  <int value="1" label="Click with prompt granted"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/html/html_capability_element_metrics_util.h:CapabilityElementMediaRequestFlow) -->
+
+<!-- LINT.IfChange(CapabilityElementMediaRequestOutcome) -->
+
+<enum name="CapabilityElementMediaRequestOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Constraints Validation Error"/>
+  <int value="2" label="Activation Failed (e.g. missing user gesture)"/>
+  <int value="3" label="NotAllowedError (Permission denied or dismissed)"/>
+  <int value="4" label="NotFoundError (No device found)"/>
+  <int value="5" label="NotReadableError (Device in use or OS/hardware error)"/>
+  <int value="6" label="OverconstrainedError"/>
+  <int value="7" label="SecurityError"/>
+  <int value="8" label="AbortError"/>
+  <int value="9" label="Other Error"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/html/html_capability_element_metrics_util.h:CapabilityElementMediaRequestOutcome) -->
+
 <enum name="CompositorAnimationsFailureReason">
   <int value="0" label="No failure"/>
   <int value="1" label="Accelerated animations disabled"/>

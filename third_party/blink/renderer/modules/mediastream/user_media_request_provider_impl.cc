@@ -16,15 +16,16 @@
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_camera_element.h"
+#include "third_party/blink/renderer/core/html/html_capability_element_metrics_util.h"
 #include "third_party/blink/renderer/core/html/html_media_capture_element_base.h"
 #include "third_party/blink/renderer/core/html/html_media_track_element_base.h"
 #include "third_party/blink/renderer/core/html/html_microphone_element.h"
 #include "third_party/blink/renderer/modules/mediastream/html_media_track_element_media_track.h"
 #include "third_party/blink/renderer/modules/mediastream/html_user_media_element_media_stream.h"
+#include "third_party/blink/renderer/modules/mediastream/media_capture_element_constraints.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/overconstrained_error.h"
-#include "third_party/blink/renderer/modules/mediastream/media_capture_element_constraints.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_request.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
@@ -42,7 +43,15 @@ void UserMediaRequestProviderCallbacks::OnSuccess(
     return;
   }
 
+  base::TimeTicks start_time = element_->MediaStreamRequestStartTime();
   element_->ResetMediaStreamRequestTime();
+  if (!start_time.is_null()) {
+    RecordCapabilityElementTimeToStreamOrTrack(
+        element_->TagQName(), base::TimeTicks::Now() - start_time);
+  }
+  RecordCapabilityElementMediaRequestOutcome(
+      element_->TagQName(), CapabilityElementMediaRequestOutcome::kSuccess);
+
   if (streams.empty()) {
     return;
   }
@@ -81,6 +90,7 @@ void UserMediaRequestProviderCallbacks::OnError(
     CaptureController* capture_controller,
     UserMediaRequestResult result) {
   if (element_ && element_->GetExecutionContext()) {
+    base::TimeTicks start_time = element_->MediaStreamRequestStartTime();
     element_->ResetMediaStreamRequestTime();
     DOMException* dom_exception = nullptr;
     if (error) {
@@ -91,6 +101,51 @@ void UserMediaRequestProviderCallbacks::OnError(
       }
     }
     element_->SetError(dom_exception);
+
+    if (!start_time.is_null()) {
+      RecordCapabilityElementMediaTimeToError(
+          element_->TagQName(), base::TimeTicks::Now() - start_time);
+    }
+    CapabilityElementMediaRequestOutcome outcome =
+        CapabilityElementMediaRequestOutcome::kOtherError;
+    switch (result) {
+      case UserMediaRequestResult::kOk:
+        outcome = CapabilityElementMediaRequestOutcome::kSuccess;
+        break;
+      case UserMediaRequestResult::kNotAllowedError:
+      case UserMediaRequestResult::kNotAllowedByUserError:
+        outcome = CapabilityElementMediaRequestOutcome::kNotAllowedError;
+        break;
+      case UserMediaRequestResult::kNotFoundError:
+        outcome = CapabilityElementMediaRequestOutcome::kNotFoundError;
+        break;
+      case UserMediaRequestResult::kNotReadableError:
+        outcome = CapabilityElementMediaRequestOutcome::kNotReadableError;
+        break;
+      case UserMediaRequestResult::kOverConstrainedError:
+        outcome = CapabilityElementMediaRequestOutcome::kOverconstrainedError;
+        break;
+      case UserMediaRequestResult::kSecurityError:
+        outcome = CapabilityElementMediaRequestOutcome::kSecurityError;
+        break;
+      case UserMediaRequestResult::kAbortError:
+        outcome = CapabilityElementMediaRequestOutcome::kAbortError;
+        break;
+      case UserMediaRequestResult::kTimedOut:
+      case UserMediaRequestResult::kInvalidConstraints:
+      case UserMediaRequestResult::kContextDestroyed:
+      case UserMediaRequestResult::kNotSupportedError:
+      case UserMediaRequestResult::kInsecureContext:
+      case UserMediaRequestResult::kInvalidStateError:
+        if (error && error->IsOverconstrainedError()) {
+          outcome = CapabilityElementMediaRequestOutcome::kOverconstrainedError;
+        } else {
+          outcome = CapabilityElementMediaRequestOutcome::kOtherError;
+        }
+        break;
+    }
+    RecordCapabilityElementMediaRequestOutcome(element_->TagQName(), outcome);
+
     if (result == UserMediaRequestResult::kNotAllowedByUserError) {
       element_->EnqueueEvent(*Event::Create(event_type_names::kCancel),
                              TaskType::kDOMManipulation);
@@ -183,6 +238,16 @@ void UserMediaRequestProviderImpl::StartRequest(
   if (permission_descriptors.size() == 2) {
     // Both camera and microphone requested.
     if (!constraints->hasAudio() && !constraints->hasVideo()) {
+      RecordCapabilityElementConstraintsValidationError(
+          element->TagQName(),
+          CapabilityElementMediaConstraintsValidationError::kBothMissing);
+      RecordCapabilityElementMediaRequestOutcome(
+          element->TagQName(),
+          CapabilityElementMediaRequestOutcome::kConstraintsValidationError);
+      RecordCapabilityElementMediaTimeToError(
+          element->TagQName(),
+          base::TimeTicks::Now() - element->MediaStreamRequestStartTime());
+      element->ResetMediaStreamRequestTime();
       element->SetError(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError, "No constraints set"));
       element->EnqueueEvent(*Event::Create(event_type_names::kError),
@@ -193,6 +258,16 @@ void UserMediaRequestProviderImpl::StartRequest(
              mojom::blink::PermissionName::AUDIO_CAPTURE) {
     // Microphone / audio-only element.
     if (!constraints->hasAudio()) {
+      RecordCapabilityElementConstraintsValidationError(
+          element->TagQName(),
+          CapabilityElementMediaConstraintsValidationError::kAudioMissing);
+      RecordCapabilityElementMediaRequestOutcome(
+          element->TagQName(),
+          CapabilityElementMediaRequestOutcome::kConstraintsValidationError);
+      RecordCapabilityElementMediaTimeToError(
+          element->TagQName(),
+          base::TimeTicks::Now() - element->MediaStreamRequestStartTime());
+      element->ResetMediaStreamRequestTime();
       element->SetError(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError, "No audio constraints set"));
       element->EnqueueEvent(*Event::Create(event_type_names::kError),
@@ -204,6 +279,16 @@ void UserMediaRequestProviderImpl::StartRequest(
     CHECK_EQ(permission_descriptors[0]->name,
              mojom::blink::PermissionName::VIDEO_CAPTURE);
     if (!constraints->hasVideo()) {
+      RecordCapabilityElementConstraintsValidationError(
+          element->TagQName(),
+          CapabilityElementMediaConstraintsValidationError::kVideoMissing);
+      RecordCapabilityElementMediaRequestOutcome(
+          element->TagQName(),
+          CapabilityElementMediaRequestOutcome::kConstraintsValidationError);
+      RecordCapabilityElementMediaTimeToError(
+          element->TagQName(),
+          base::TimeTicks::Now() - element->MediaStreamRequestStartTime());
+      element->ResetMediaStreamRequestTime();
       element->SetError(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError, "No video constraints set"));
       element->EnqueueEvent(*Event::Create(event_type_names::kError),
@@ -211,6 +296,10 @@ void UserMediaRequestProviderImpl::StartRequest(
       return;
     }
   }
+
+  RecordCapabilityElementConstraintsValidationError(
+      element->TagQName(),
+      CapabilityElementMediaConstraintsValidationError::kNoError);
 
   MediaStreamConstraints* request_constraints =
       MediaStreamConstraints::Create();
@@ -232,6 +321,12 @@ void UserMediaRequestProviderImpl::StartRequest(
       exception_state);
 
   if (exception_state.HadException()) {
+    RecordCapabilityElementMediaRequestOutcome(
+        element->TagQName(), CapabilityElementMediaRequestOutcome::kOtherError);
+    RecordCapabilityElementMediaTimeToError(
+        element->TagQName(),
+        base::TimeTicks::Now() - element->MediaStreamRequestStartTime());
+    element->ResetMediaStreamRequestTime();
     element->SetError(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kOperationError, "Stream creation failed"));
     element->EnqueueEvent(*Event::Create(event_type_names::kError),

@@ -45,6 +45,12 @@ class CORE_EXPORT HTMLMediaCaptureElementBase
   void OnActivationFailed(const String& error_message) override;
 
   void ResetMediaStreamRequestTime();
+  base::TimeTicks MediaStreamRequestStartTime() const {
+    return media_stream_request_start_time_;
+  }
+  void SetMediaStreamRequestStartTimeForTesting(base::TimeTicks time) {
+    media_stream_request_start_time_ = time;
+  }
 
   void UpdateAppearance() override;
   void UpdateIcon(mojom::blink::PermissionName permission) override;

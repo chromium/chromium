@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediastream/user_media_request_provider_impl.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_html_media_stream_constraints.h"
@@ -17,15 +18,17 @@
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_camera_element.h"
+#include "third_party/blink/renderer/core/html/html_capability_element_metrics_util.h"
+#include "third_party/blink/renderer/core/html/html_microphone_element.h"
 #include "third_party/blink/renderer/core/html/html_permission_element_test_helper.h"
 #include "third_party/blink/renderer/core/html/html_user_media_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/mediastream/html_media_track_element_media_track.h"
 #include "third_party/blink/renderer/modules/mediastream/html_user_media_element_media_stream.h"
-#include "third_party/blink/renderer/modules/mediastream/mock_media_stream_track.h"
-#include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_capture_element_constraints.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream.h"
+#include "third_party/blink/renderer/modules/mediastream/mock_media_stream_track.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
@@ -234,5 +237,214 @@ TEST_F(UserMediaRequestProviderImplTest, CallbacksOnSuccessWithNullTrack) {
   EXPECT_EQ(stored_error->name(), "NotFoundError");
 }
 
+TEST_F(UserMediaRequestProviderImplTest,
+       MetricsUserMediaConstraintsValidation) {
+  V8TestingScope scope;
+  auto* provider = UserMediaRequestProvider::From(*GetDocument().domWindow());
+
+  // 1. Audio and Video: valid
+  {
+    base::HistogramTester histogram_tester;
+    auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
+    HTMLMediaStreamConstraints* constraints =
+        HTMLMediaStreamConstraints::Create();
+    constraints->setVideo(MediaTrackConstraintSet::Create());
+    constraints->setAudio(MediaTrackConstraintSet::Create());
+    MediaCaptureElementConstraints::setConstraints(*element, constraints);
+
+    provider->StartRequest(element, element->GetPermissionDescriptors());
+
+    histogram_tester.ExpectUniqueSample(
+        "Blink.CapabilityElement.UserMedia.Constraints.ValidationError",
+        CapabilityElementMediaConstraintsValidationError::kNoError, 1);
+  }
+
+  // 2. Audio only: video missing (valid for usermedia)
+  {
+    base::HistogramTester histogram_tester;
+    auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
+    auto* missing_video = HTMLMediaStreamConstraints::Create();
+    missing_video->setAudio(MediaTrackConstraints::Create());
+    MediaCaptureElementConstraints::From(*element).SetConstraints(
+        missing_video);
+
+    provider->StartRequest(element, element->GetPermissionDescriptors());
+
+    histogram_tester.ExpectUniqueSample(
+        "Blink.CapabilityElement.UserMedia.Constraints.ValidationError",
+        CapabilityElementMediaConstraintsValidationError::kNoError, 1);
+  }
+
+  // 3. Video only: audio missing (valid for usermedia)
+  {
+    base::HistogramTester histogram_tester;
+    auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
+    auto* missing_audio = HTMLMediaStreamConstraints::Create();
+    missing_audio->setVideo(MediaTrackConstraints::Create());
+    MediaCaptureElementConstraints::From(*element).SetConstraints(
+        missing_audio);
+
+    provider->StartRequest(element, element->GetPermissionDescriptors());
+
+    histogram_tester.ExpectUniqueSample(
+        "Blink.CapabilityElement.UserMedia.Constraints.ValidationError",
+        CapabilityElementMediaConstraintsValidationError::kNoError, 1);
+  }
+
+  // 4. Neither: both missing
+  {
+    base::HistogramTester histogram_tester;
+    auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
+    auto* missing_both = HTMLMediaStreamConstraints::Create();
+    MediaCaptureElementConstraints::From(*element).SetConstraints(missing_both);
+
+    provider->StartRequest(element, element->GetPermissionDescriptors());
+
+    histogram_tester.ExpectUniqueSample(
+        "Blink.CapabilityElement.UserMedia.Constraints.ValidationError",
+        CapabilityElementMediaConstraintsValidationError::kBothMissing, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Blink.CapabilityElement.UserMedia.RequestOutcome",
+        CapabilityElementMediaRequestOutcome::kConstraintsValidationError, 1);
+  }
+}
+
+TEST_F(UserMediaRequestProviderImplTest,
+       MetricsCameraAndMicrophoneConstraintsValidation) {
+  V8TestingScope scope;
+  ScopedCameraAndMicrophoneElementsForTest scoped_feature(true);
+  auto* provider = UserMediaRequestProvider::From(*GetDocument().domWindow());
+
+  // 1. Camera: valid (video only)
+  {
+    base::HistogramTester histogram_tester;
+    auto* element = MakeGarbageCollected<HTMLCameraElement>(GetDocument());
+    auto* constraints = MediaTrackConstraintSet::Create();
+    MediaCaptureElementConstraints::setConstraints(*element, constraints);
+
+    provider->StartRequest(element, element->GetPermissionDescriptors());
+
+    histogram_tester.ExpectUniqueSample(
+        "Blink.CapabilityElement.Camera.Constraints.ValidationError",
+        CapabilityElementMediaConstraintsValidationError::kNoError, 1);
+  }
+
+  // 2. Camera: missing video
+  {
+    base::HistogramTester histogram_tester;
+    auto* element = MakeGarbageCollected<HTMLCameraElement>(GetDocument());
+    auto* constraints = HTMLMediaStreamConstraints::Create();
+    MediaCaptureElementConstraints::From(*element).SetConstraints(constraints);
+
+    provider->StartRequest(element, element->GetPermissionDescriptors());
+
+    histogram_tester.ExpectUniqueSample(
+        "Blink.CapabilityElement.Camera.Constraints.ValidationError",
+        CapabilityElementMediaConstraintsValidationError::kVideoMissing, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Blink.CapabilityElement.Camera.RequestOutcome",
+        CapabilityElementMediaRequestOutcome::kConstraintsValidationError, 1);
+  }
+
+  // 3. Microphone: valid (audio only)
+  {
+    base::HistogramTester histogram_tester;
+    auto* element = MakeGarbageCollected<HTMLMicrophoneElement>(GetDocument());
+    auto* constraints = MediaTrackConstraintSet::Create();
+    MediaCaptureElementConstraints::setConstraints(*element, constraints);
+
+    provider->StartRequest(element, element->GetPermissionDescriptors());
+
+    histogram_tester.ExpectUniqueSample(
+        "Blink.CapabilityElement.Microphone.Constraints.ValidationError",
+        CapabilityElementMediaConstraintsValidationError::kNoError, 1);
+  }
+
+  // 4. Microphone: missing audio
+  {
+    base::HistogramTester histogram_tester;
+    auto* element = MakeGarbageCollected<HTMLMicrophoneElement>(GetDocument());
+    auto* constraints = HTMLMediaStreamConstraints::Create();
+    MediaCaptureElementConstraints::From(*element).SetConstraints(constraints);
+
+    provider->StartRequest(element, element->GetPermissionDescriptors());
+
+    histogram_tester.ExpectUniqueSample(
+        "Blink.CapabilityElement.Microphone.Constraints.ValidationError",
+        CapabilityElementMediaConstraintsValidationError::kAudioMissing, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Blink.CapabilityElement.Microphone.RequestOutcome",
+        CapabilityElementMediaRequestOutcome::kConstraintsValidationError, 1);
+  }
+}
+
+TEST_F(UserMediaRequestProviderImplTest, MetricsCallbacksOnSuccess) {
+  base::HistogramTester histogram_tester;
+
+  auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
+  element->SetMediaStreamRequestStartTimeForTesting(base::TimeTicks::Now());
+  auto* callbacks =
+      MakeGarbageCollected<UserMediaRequestProviderCallbacks>(element);
+
+  auto* stream = MediaStream::Create(GetDocument().GetExecutionContext());
+  MediaStreamVector streams = {stream};
+
+  callbacks->OnSuccess(streams, /*capture_controller=*/nullptr);
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.CapabilityElement.UserMedia.RequestOutcome",
+      CapabilityElementMediaRequestOutcome::kSuccess, 1);
+  histogram_tester.ExpectTotalCount(
+      "Blink.CapabilityElement.UserMedia.TimeToStreamOrTrack", 1);
+}
+
+TEST_F(UserMediaRequestProviderImplTest, MetricsCallbacksOnErrorAndCancel) {
+  V8TestingScope scope;
+  base::HistogramTester histogram_tester;
+
+  // 1. Error callback with NotFoundError
+  {
+    auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
+    element->SetMediaStreamRequestStartTimeForTesting(base::TimeTicks::Now());
+    auto* callbacks =
+        MakeGarbageCollected<UserMediaRequestProviderCallbacks>(element);
+
+    DOMException* dom_exception =
+        DOMException::Create("Some error message", "NotFoundError");
+    V8MediaStreamError* error =
+        MakeGarbageCollected<V8UnionDOMExceptionOrOverconstrainedError>(
+            dom_exception);
+    callbacks->OnError(nullptr, error, nullptr,
+                       UserMediaRequestResult::kNotFoundError);
+
+    histogram_tester.ExpectUniqueSample(
+        "Blink.CapabilityElement.UserMedia.RequestOutcome",
+        CapabilityElementMediaRequestOutcome::kNotFoundError, 1);
+    histogram_tester.ExpectTotalCount(
+        "Blink.CapabilityElement.UserMedia.TimeToError", 1);
+  }
+
+  // 2. Cancel callback with NotAllowedByUserError
+  {
+    auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
+    element->SetMediaStreamRequestStartTimeForTesting(base::TimeTicks::Now());
+    auto* callbacks =
+        MakeGarbageCollected<UserMediaRequestProviderCallbacks>(element);
+
+    DOMException* cancel_exception =
+        DOMException::Create("User denied", "NotAllowedError");
+    V8MediaStreamError* cancel_error =
+        MakeGarbageCollected<V8UnionDOMExceptionOrOverconstrainedError>(
+            cancel_exception);
+    callbacks->OnError(nullptr, cancel_error, nullptr,
+                       UserMediaRequestResult::kNotAllowedByUserError);
+
+    histogram_tester.ExpectBucketCount(
+        "Blink.CapabilityElement.UserMedia.RequestOutcome",
+        CapabilityElementMediaRequestOutcome::kNotAllowedError, 1);
+    histogram_tester.ExpectTotalCount(
+        "Blink.CapabilityElement.UserMedia.TimeToError", 2);
+  }
+}
 
 }  // namespace blink
