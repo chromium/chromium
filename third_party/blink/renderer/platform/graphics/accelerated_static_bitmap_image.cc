@@ -151,8 +151,7 @@ scoped_refptr<StaticBitmapImage> AcceleratedStaticBitmapImage::CreateFromRaster(
   // elsewhere assumes RGBA. OTOH the software path seems to be assuming N32
   // somewhere in the later pipeline but for offscreen canvas only.
   bool should_force_bgra8_to_rgba =
-      !shared_image_usage_flags.HasAny(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-                                       gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE);
+      !shared_image_usage_flags.Has(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ);
 #if BUILDFLAG(IS_WIN)
   // Concurrent read/write on Windows results in a swapchain backing, which
   // supports BGRA; hence there is no need to force to RGBA in this case.
