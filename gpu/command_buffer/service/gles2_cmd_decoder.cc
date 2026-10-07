@@ -3883,8 +3883,6 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
   ShCompileOptions driver_bug_workarounds{};
   if (workarounds().init_gl_position_in_vertex_shader)
     driver_bug_workarounds.initGLPosition = true;
-  if (workarounds().scalarize_vec_and_mat_constructor_args)
-    driver_bug_workarounds.scalarizeVecAndMatConstructorArgs = true;
   if (workarounds().dont_use_loops_to_initialize_variables)
     driver_bug_workarounds.dontUseLoopsToInitializeVariables = true;
   if (workarounds().remove_dynamic_indexing_of_swizzled_vector)
