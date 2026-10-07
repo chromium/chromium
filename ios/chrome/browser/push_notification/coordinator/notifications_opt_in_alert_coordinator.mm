@@ -4,12 +4,15 @@
 
 #import "ios/chrome/browser/push_notification/coordinator/notifications_opt_in_alert_coordinator.h"
 
+#import <algorithm>
+
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
+#import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/push_notification/coordinator/prominence_notification_setting_alert_coordinator.h"
@@ -33,6 +36,8 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -76,6 +81,14 @@ GaiaId GetGaiaIdForProfile(ProfileIOS* profile) {
 
 - (void)start {
   CHECK(self.clientIds.has_value());
+  if (std::ranges::contains(self.clientIds.value(),
+                            PushNotificationClientId::kTips)) {
+    if (TipsManagerIOS* tipsManager =
+            TipsManagerIOSFactory::GetForProfile(self.profile)) {
+      tipsManager->NotifySignal(segmentation_platform::tips_manager::signals::
+                                    kTipsNotificationOptInPromptReceived);
+    }
+  }
 
   [self requestPushNotificationPermission];
 }

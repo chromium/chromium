@@ -6,5 +6,6 @@ include_rules = [
   "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model/device_info_sync_service_factory.h",
+  "+ios/chrome/browser/tips_manager/model",
   # keep-sorted end
 ]
