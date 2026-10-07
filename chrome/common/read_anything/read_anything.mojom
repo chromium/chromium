@@ -307,6 +307,10 @@ interface UntrustedPageHandler {
   // playing.
   OnReadAloudAudioStateChange(bool playing);
 
+  // Informs the browser controller that the user has toggled AI playback
+  // via the webui toolbar.
+  OnAiPlaybackStateChanged(bool enabled);
+
   // Informs the browser controller that a link was clicked in the WebUI. The
   // browser controller responds by performing a click action on the link in
   // the target tree, which is in the main frame of the currently active web

@@ -832,6 +832,20 @@ void ReadAnythingController::MaybeShowAiPlaybackIph() {
   }
 }
 
+void ReadAnythingController::OnAiPlaybackStateChanged(bool enabled) {
+  if (!features::IsReadAnythingReadAloudExperimentalPlaybackUiEnabled() ||
+      !enabled) {
+    return;
+  }
+  ai_playback_iph_timer_.Stop();
+  if (auto* user_ed = BrowserUserEducationInterface::From(
+          tab_->GetBrowserWindowInterface())) {
+    user_ed->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHReadingModeAiPlaybackFeature,
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  }
+}
+
 void ReadAnythingController::OnDistillationStatus(
     read_anything::mojom::DistillationStatus status,
     int word_count) {

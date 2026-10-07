@@ -64,6 +64,7 @@ export class TestAudioBrowserProxy extends TestBrowserProxy implements
       'sendUninstallVoiceRequest',
       'onIsSpeechActiveChanged',
       'onIsAudioCurrentlyPlayingChanged',
+      'onAiPlaybackStateChanged',
       'onSpeechEngineFirstStall',
       'onSpeechEngineStalled',
       'getKeyboardShortcutStopSource',
@@ -190,6 +191,10 @@ export class TestAudioBrowserProxy extends TestBrowserProxy implements
   onIsAudioCurrentlyPlayingChanged(isAudioCurrentlyPlaying: boolean): void {
     this.methodCalled(
         'onIsAudioCurrentlyPlayingChanged', isAudioCurrentlyPlaying);
+  }
+
+  onAiPlaybackStateChanged(enabled: boolean): void {
+    this.methodCalled('onAiPlaybackStateChanged', enabled);
   }
 
   onSpeechEngineFirstStall(): void {

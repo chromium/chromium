@@ -296,6 +296,9 @@ declare namespace chrome {
     function onIsAudioCurrentlyPlayingChanged(isAudioCurrentlyPlaying: boolean):
         void;
 
+    // Called when AI playback is toggled via the webui toolbar.
+    function onAiPlaybackStateChanged(enabled: boolean): void;
+
     // Called when the Read Anything panel is scrolled.
     function onScroll(onSelection: boolean): void;
 

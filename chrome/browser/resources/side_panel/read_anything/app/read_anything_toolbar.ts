@@ -371,6 +371,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   protected onAiPlaybackClick_() {
     this.isAiPlaybackActive = !this.isAiPlaybackActive;
+    this.audioBrowserProxy_.onAiPlaybackStateChanged(this.isAiPlaybackActive);
   }
 
   protected onMoreOptionsClick_(event: MouseEvent) {

@@ -147,6 +147,7 @@ class MockReadAnythingUntrustedPageHandler
               (const ::ui::AXTreeID& target_tree_id, int32_t target_node_id),
               (override));
   MOCK_METHOD(void, OnReadAloudAudioStateChange, (bool playing), (override));
+  MOCK_METHOD(void, OnAiPlaybackStateChanged, (bool enabled), (override));
   MOCK_METHOD(void, LogExtensionState, (), (override));
   MOCK_METHOD(void,
               OnDistillationStatus,

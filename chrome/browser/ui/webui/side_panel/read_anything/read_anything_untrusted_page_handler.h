@@ -228,6 +228,7 @@ class ReadAnythingUntrustedPageHandler :
                      const std::string& lang) override;
   void OnLanguagePrefChange(const std::string& lang, bool enabled) override;
   void OnReadAloudAudioStateChange(bool playing) override;
+  void OnAiPlaybackStateChanged(bool enabled) override;
   void OnSpeechRateChange(double rate) override;
   void OnImageDataRequested(const ui::AXTreeID& target_tree_id,
                             ui::AXNodeID target_node_id) override;

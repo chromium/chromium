@@ -185,6 +185,8 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
 
   void OnDistillationStateChanged(DistillationState new_state);
 
+  void OnAiPlaybackStateChanged(bool enabled);
+
   static constexpr base::TimeDelta kAiPlaybackIphDefaultDelay =
       base::Seconds(30);
 

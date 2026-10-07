@@ -1092,6 +1092,15 @@ void ReadAnythingUntrustedPageHandler::OnLineFocusChanged(
   }
 }
 
+void ReadAnythingUntrustedPageHandler::OnAiPlaybackStateChanged(bool enabled) {
+  if (!features::IsReadAnythingReadAloudExperimentalPlaybackUiEnabled()) {
+    return;
+  }
+  if (auto* ra_controller = GetReadAnythingController()) {
+    ra_controller->OnAiPlaybackStateChanged(enabled);
+  }
+}
+
 void ReadAnythingUntrustedPageHandler::UpdateForListenToThisPage(
     bool& playing) {
   if (playing) {

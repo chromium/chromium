@@ -352,6 +352,7 @@ class ReadAnythingAppController
   v8::Local<v8::Value> GetImageBitmap(ui::AXNodeID node_id);
   void OnIsSpeechActiveChanged(bool is_speech_active);
   void OnIsAudioCurrentlyPlayingChanged(bool is_audio_currently_playing);
+  void OnAiPlaybackStateChanged(bool enabled);
   std::string GetValidatedFontName(const std::string& font) const;
   std::vector<std::string> GetAllFonts() const;
   void OnNoTextContent();

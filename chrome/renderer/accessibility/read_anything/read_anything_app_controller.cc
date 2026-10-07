@@ -1444,6 +1444,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::OnIsSpeechActiveChanged)
       .SetMethod("onIsAudioCurrentlyPlayingChanged",
                  &ReadAnythingAppController::OnIsAudioCurrentlyPlayingChanged)
+      .SetMethod("onAiPlaybackStateChanged",
+                 &ReadAnythingAppController::OnAiPlaybackStateChanged)
       .SetMethod("getAccessibleBoundary",
                  &ReadAnythingAppController::GetAccessibleBoundary)
       .SetMethod("movePositionToNextGranularity",
@@ -2812,6 +2814,10 @@ void ReadAnythingAppController::OnIsAudioCurrentlyPlayingChanged(
   }
   read_aloud_model_.SetAudioCurrentlyPlaying(is_audio_currently_playing);
   page_handler_->OnReadAloudAudioStateChange(is_audio_currently_playing);
+}
+
+void ReadAnythingAppController::OnAiPlaybackStateChanged(bool enabled) {
+  page_handler_->OnAiPlaybackStateChanged(enabled);
 }
 
 int ReadAnythingAppController::GetAccessibleBoundary(const std::u16string& text,

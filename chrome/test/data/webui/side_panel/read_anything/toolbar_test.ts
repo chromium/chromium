@@ -346,11 +346,16 @@ suite('Toolbar', () => {
         await microtasksFinished();
 
         assertTrue(aiPlaybackButton.classList.contains('active'));
+        assertTrue(
+            await audioBrowserProxy.whenCalled('onAiPlaybackStateChanged'));
+        audioBrowserProxy.resetResolver('onAiPlaybackStateChanged');
 
         aiPlaybackButton.click();
         await microtasksFinished();
 
         assertFalse(aiPlaybackButton.classList.contains('active'));
+        assertFalse(
+            await audioBrowserProxy.whenCalled('onAiPlaybackStateChanged'));
       });
     });
   });
