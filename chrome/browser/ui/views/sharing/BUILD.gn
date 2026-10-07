@@ -84,3 +84,29 @@ source_set("unit_tests") {
     "//ui/views:test_support",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "remote_copy_browsertest.cc",
+    "sharing_browsertest.cc",
+    "sharing_browsertest.h",
+  ]
+
+  deps = [
+    ":sharing",
+    "//chrome/browser/gcm",
+    "//chrome/browser/sharing/shared_clipboard",
+    "//chrome/browser/sync:factories",
+    "//chrome/browser/sync/test/integration:sync_integration_test_support",
+    "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/test:test_support",
+    "//components/sharing_message/shared_clipboard",
+    "//components/sync_device_info:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base/clipboard:clipboard_test_support",
+  ]
+}

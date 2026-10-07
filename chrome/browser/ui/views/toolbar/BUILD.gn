@@ -521,6 +521,15 @@ if (!is_android) {
         sources += [ "webui_media_toolbar_button_browsertest.cc" ]
       }
 
+      if (is_win) {
+        # Accessibility event tests rely on Aura APIs (EventGenerator,
+        # TooltipControllerTestHelper).
+        sources += [
+          "browser_app_menu_button_dump_accessibility_events_browsertest.cc",
+        ]
+        deps += [ "//chrome/browser/ui/views/accessibility:dump_accessibility_events_views_browsertest_base" ]
+      }
+
       deps += [
         "//chrome/browser/ui:toolbar_controller_util",
         "//chrome/browser/ui/global_media_controls",

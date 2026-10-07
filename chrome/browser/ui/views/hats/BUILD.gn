@@ -53,3 +53,20 @@ source_set("impl") {
     "//url",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "hats_browsertest.cc" ]
+
+  deps = [
+    ":hats",
+    "//chrome/browser/devtools:test_support",
+    "//chrome/browser/ui/hats:test_support",
+    "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

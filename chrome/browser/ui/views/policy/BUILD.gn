@@ -54,4 +54,18 @@ if (!is_chromeos) {
       "//ui/gfx/geometry",
     ]
   }
+
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "enterprise_startup_dialog_view_browsertest.cc" ]
+
+    deps = [
+      ":enterprise_startup_dialog",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
 }

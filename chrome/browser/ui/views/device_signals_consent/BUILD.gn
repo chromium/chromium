@@ -36,3 +36,20 @@ source_set("impl") {
     deps += [ "//chrome/browser/ui/profiles" ]
   }
 }
+
+if (is_win || is_mac || is_linux || is_chromeos) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "consent_dialog_browsertest.cc" ]
+
+    deps = [
+      ":device_signals_consent",
+      "//chrome/test:test_support",
+      "//chrome/test/base:testing_browser_process",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+}

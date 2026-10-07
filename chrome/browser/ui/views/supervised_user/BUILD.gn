@@ -50,3 +50,25 @@ source_set("impl") {
     "//ui/gfx",
   ]
 }
+
+if (is_win || is_mac || is_linux) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "parent_permission_dialog_view_browsertest.cc",
+      "parent_permission_extension_flow_view_browsertest.cc",
+    ]
+
+    deps = [
+      ":supervised_user",
+      "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui/extensions:browser_tests",
+      "//chrome/test:test_support",
+      "//chrome/test/supervised_user:test_support",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+}

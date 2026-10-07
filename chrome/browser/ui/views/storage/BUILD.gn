@@ -46,3 +46,18 @@ source_set("impl") {
   # allow_circular_includes_from entry on //chrome/browser/ui:ui.
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "storage_pressure_bubble_view_browsertest.cc" ]
+
+  deps = [
+    ":storage",
+    "//chrome/browser/ui:storage_pressure_bubble",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -35,3 +35,19 @@ source_set("impl") {
     "//url",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "dse_reset_dialog_view_browsertest.cc" ]
+
+  deps = [
+    ":search_engines",
+    "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//services/preferences/tracked",
+    "//testing/gtest",
+  ]
+}

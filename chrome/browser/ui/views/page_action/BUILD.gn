@@ -216,3 +216,18 @@ source_set("interactive_ui_tests") {
     "//ui/views:test_support",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "zoom_view_browsertest.cc" ]
+
+  deps = [
+    ":page_action",
+    "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

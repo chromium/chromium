@@ -43,12 +43,13 @@ namespace {
 
 // The product specific data expected by the test survey. The boolean values are
 // checked in hats_next_mock.html.
-const SurveyBitsData kHatsNextTestSurveyProductSpecificBitsData{
-    {"Test Field 1", true},
-    {"Test Field 2", false}};
+SurveyBitsData GetHatsNextTestSurveyProductSpecificBitsData() {
+  return {{"Test Field 1", true}, {"Test Field 2", false}};
+}
 
-const SurveyStringData kHatsNextTestSurveyProductSpecificStringData{
-    {"Test Field 3", "Test value"}};
+SurveyStringData GetHatsNextTestSurveyProductSpecificStringData() {
+  return {{"Test Field 3", "Test value"}};
+}
 
 // The locale expected by the test survey. This value is checked in
 // hats_next_mock.html for tests that expect a loaded response.
@@ -156,8 +157,8 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoaded) {
       browser(), kHatsNextSurveyTriggerIDTesting, std::nullopt, std::nullopt,
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::Seconds(100), GetSuccessClosure(), GetFailureClosure(),
-      kHatsNextTestSurveyProductSpecificBitsData,
-      kHatsNextTestSurveyProductSpecificStringData);
+      GetHatsNextTestSurveyProductSpecificBitsData(),
+      GetHatsNextTestSurveyProductSpecificStringData());
 
   // Check that no record of a survey being shown is present.
   {
@@ -216,8 +217,8 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
       browser(), kHatsNextSurveyTriggerIDTesting, kTestHistogramName,
       std::nullopt, embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::Seconds(100), GetSuccessClosure(), GetFailureClosure(),
-      kHatsNextTestSurveyProductSpecificBitsData,
-      kHatsNextTestSurveyProductSpecificStringData);
+      GetHatsNextTestSurveyProductSpecificBitsData(),
+      GetHatsNextTestSurveyProductSpecificStringData());
 
   // Check that no record of a survey being shown is present.
   {
@@ -303,8 +304,8 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoadedThenClosed) {
       browser(), kHatsNextSurveyTriggerIDTesting, std::nullopt, std::nullopt,
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::Seconds(100), GetSuccessClosure(), GetFailureClosure(),
-      kHatsNextTestSurveyProductSpecificBitsData,
-      kHatsNextTestSurveyProductSpecificStringData);
+      GetHatsNextTestSurveyProductSpecificBitsData(),
+      GetHatsNextTestSurveyProductSpecificStringData());
   dialog->WaitForClose();
 
   EXPECT_EQ(1, success_count);
@@ -487,8 +488,8 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, ZoomLevel) {
       browser(), kHatsNextSurveyTriggerIDTesting, std::nullopt, std::nullopt,
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::Seconds(100), GetSuccessClosure(), GetFailureClosure(),
-      kHatsNextTestSurveyProductSpecificBitsData,
-      kHatsNextTestSurveyProductSpecificStringData);
+      GetHatsNextTestSurveyProductSpecificBitsData(),
+      GetHatsNextTestSurveyProductSpecificStringData());
 
   // Allow the dialog to open before checking the zoom level of the contents.
   base::RunLoop run_loop;

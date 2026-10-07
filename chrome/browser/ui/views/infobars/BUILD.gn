@@ -62,6 +62,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
+    "confirm_infobar_custom_layout_browsertest.cc",
     "infobar_container_view_browsertest.cc",
     "infobar_view_browsertest.cc",
   ]
