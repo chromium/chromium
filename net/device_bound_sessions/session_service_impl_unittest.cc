@@ -2329,6 +2329,8 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
   unexportable_keys::UnexportableSigningKeyId key = *key_future.Take();
   provider_session->set_unexportable_key_id(key);
 
+  base::HistogramTester histograms;
+
   // Attempt a registration with a session provider
   auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
       "RelyingSession", "https://rp.com/refresh", "https://rp.com");
@@ -2348,6 +2350,50 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
   Session* relying_session = service().GetSession(
       {SchemefulSite(GURL("https://rp.com")), Session::Id("RelyingSession")});
   EXPECT_EQ(relying_session, nullptr);
+
+  histograms.ExpectUniqueSample("Net.DeviceBoundSessions.RegistrationResult",
+                                SessionError::kFederatedKeyThumbprintMismatch,
+                                1);
+}
+
+TEST_F(SessionServiceImplTestWithFederatedSessions,
+       FederatedRegistrationInvalidProviderKey) {
+  // Create the provider session
+  SchemefulSite site(kTestUrl);
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+  Session* provider_session =
+      service().GetSession({site, Session::Id(kSessionId)});
+  ASSERT_NE(provider_session, nullptr);
+
+  // Bind the provider session to a key id that is unknown to the key service,
+  // so that computing its thumbprint fails.
+  provider_session->set_unexportable_key_id(
+      unexportable_keys::UnexportableSigningKeyId());
+
+  base::HistogramTester histograms;
+
+  // Attempt a registration with a session provider
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      "RelyingSession", "https://rp.com/refresh", "https://rp.com");
+  auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+      kTestUrl, {crypto::sign::ECDSA_SHA256}, "challenge",
+      /*authorization=*/std::nullopt,
+      ProviderRegistrationParams{
+          .provider_key = "key-thumbprint",
+          .provider_url = kTestRefreshUrl,
+          .provider_session_id = Session::Id(kSessionId)});
+  service().RegisterBoundSession(
+      SessionService::OnAccessCallback(), std::move(fetch_param),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
+      NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
+
+  // Validate the relying session does not exist
+  Session* relying_session = service().GetSession(
+      {SchemefulSite(GURL("https://rp.com")), Session::Id("RelyingSession")});
+  EXPECT_EQ(relying_session, nullptr);
+
+  histograms.ExpectUniqueSample("Net.DeviceBoundSessions.RegistrationResult",
+                                SessionError::kInvalidFederatedKey, 1);
 }
 
 TEST_F(SessionServiceImplTestWithFederatedSessions,
