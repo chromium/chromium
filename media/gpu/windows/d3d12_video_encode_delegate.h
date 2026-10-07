@@ -11,6 +11,7 @@
 #include <wrl.h>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/encoder_status.h"
@@ -274,7 +275,9 @@ class D3D12VideoEncodeDecodedPictureBuffers {
   size_t size_ = 0;
   absl::InlinedVector<Microsoft::WRL::ComPtr<ID3D12Resource>, maxDpbSize + 1>
       resources_;
-  absl::InlinedVector<ID3D12Resource*, maxDpbSize + 1> raw_resources_;
+  // Exclusion: Used for OS structure interop with D3D12 API.
+  RAW_PTR_EXCLUSION absl::InlinedVector<ID3D12Resource*, maxDpbSize + 1>
+      raw_resources_;
   absl::InlinedVector<UINT, maxDpbSize + 1> subresources_;
 };
 
