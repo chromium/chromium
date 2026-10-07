@@ -18415,6 +18415,7 @@
                     "name": "Enabled_20260828",
                     "enable_features": [
                         "OffscreenCanvasPropagateVisibility",
+                        "WebGLDeleteBuffersInBackground",
                         "WebGLDiscardBackBuffer"
                     ]
                 }
