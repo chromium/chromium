@@ -3893,18 +3893,9 @@ void View::LayoutImmediately() {
   ++layouts_since_last_paint_;
   base::AutoReset performing_layout(&performing_layout_, true);
 
-  ++current_layout_call_depth_;
-  ++max_layout_call_depth_;
-
   Layout(PassKey());
   UMA_HISTOGRAM_COUNTS_100("Views.InvalidatesDuringLayout",
                            invalidates_during_layout_);
-  --current_layout_call_depth_;
-  if (current_layout_call_depth_ == 0) {
-    UMA_HISTOGRAM_EXACT_LINEAR("Views.LayoutCallDepth", max_layout_call_depth_,
-                               6);
-    max_layout_call_depth_ = 0;
-  }
 }
 
 // Input -----------------------------------------------------------------------

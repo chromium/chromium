@@ -2555,17 +2555,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // fix the problem with FlexLayout. Remove this.
   bool layout_manager_use_constrained_space_ = true;
 
-  // Used to generate an UMA metric for the maximum reentrant call depth seen
-  // during layout. Normally the metric value will be one (Layout() was not
-  // reentered). But, we know Layout() is reentered at least sometimes and
-  // want to measure how often that is. We also want to know if it is ever
-  // reentered more than two deep.
-  int max_layout_call_depth_ = 0;
-
-  // Current Layout() reentrant call depth (used to help determine the
-  // max_layout_call_depth_, above).
-  int current_layout_call_depth_ = 0;
-
   // How many times this view has done layout since the last time it was
   // painted. This is used to compute metrics around unnecessary layout calls.
   int layouts_since_last_paint_ = 0;
