@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/feature_list.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -310,15 +309,9 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolNoTimeout,
   actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
 
   // Wait for the task to be paused. The Act() call has not returned yet.
-  if (base::FeatureList::IsEnabled(kActorFormScriptToolInterrupt)) {
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return actor_task().GetState() == ActorTask::State::kWaitingOnUser;
-    }));
-  } else {
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return actor_task().GetState() == ActorTask::State::kPausedByActor;
-    }));
-  }
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return actor_task().GetState() == ActorTask::State::kWaitingOnUser;
+  }));
 
   // Wait for more than the timeout (1s).
   base::RunLoop run_loop;
@@ -327,11 +320,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolNoTimeout,
   run_loop.Run();
 
   // Verify that the task is still paused and has not timed out.
-  if (base::FeatureList::IsEnabled(kActorFormScriptToolInterrupt)) {
-    EXPECT_EQ(actor_task().GetState(), ActorTask::State::kWaitingOnUser);
-  } else {
-    EXPECT_EQ(actor_task().GetState(), ActorTask::State::kPausedByActor);
-  }
+  EXPECT_EQ(actor_task().GetState(), ActorTask::State::kWaitingOnUser);
 
   EXPECT_FALSE(result.IsReady());
 
@@ -900,15 +889,9 @@ IN_PROC_BROWSER_TEST_F(
                                       declarative_input);
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
-  if (base::FeatureList::IsEnabled(kActorFormScriptToolInterrupt)) {
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return actor_task().GetState() == ActorTask::State::kWaitingOnUser;
-    }));
-  } else {
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return actor_task().GetState() == ActorTask::State::kPausedByActor;
-    }));
-  }
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return actor_task().GetState() == ActorTask::State::kWaitingOnUser;
+  }));
 
   content::TestNavigationObserver nav_observer(web_contents());
   web_contents()->GetController().GoBack();
@@ -1061,15 +1044,9 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
 
-  if (base::FeatureList::IsEnabled(kActorFormScriptToolInterrupt)) {
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return actor_task().GetState() == ActorTask::State::kWaitingOnUser;
-    }));
-  } else {
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return actor_task().GetState() == ActorTask::State::kPausedByActor;
-    }));
-  }
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return actor_task().GetState() == ActorTask::State::kWaitingOnUser;
+  }));
 
   EXPECT_EQ(true,
             content::EvalJs(

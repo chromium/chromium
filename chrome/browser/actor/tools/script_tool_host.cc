@@ -466,9 +466,7 @@ void ScriptToolHost::TearDown() {
   // tool form.  This is a no-op if the task is not in this state.
   // TODO(crbug.com/484367299): Implement a proper actor task state for
   // interrupt-with-user-control.
-  if (base::FeatureList::IsEnabled(kActorFormScriptToolInterrupt)) {
-    tool_delegate().UninterruptFromTool();
-  }
+  tool_delegate().UninterruptFromTool();
   timeout_timer_.Stop();
   cross_document_timeout_timer_.Stop();
   Observe(nullptr);

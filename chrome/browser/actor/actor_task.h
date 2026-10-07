@@ -223,11 +223,9 @@ class ActorTask : public base::SupportsUserData {
   void Stop(StoppedReason stop_reason);
 
   // Pause() is called to indicate that either the actor or user is pausing
-  // actor actions, determined by the `from_actor` flag. If the
-  // `cancel_existing_action` flag is true, any in-progress action will be
-  // cancelled. If there is an existing action and it's not canceled, its
-  // completion will resume the task.
-  void Pause(bool from_actor, bool cancel_existing_action = true);
+  // actor actions, determined by the `from_actor` flag. This will cancel any
+  // in-progress action.
+  void Pause(bool from_actor);
 
   // Resume() puts the task back into an actor-controlled state. The caller is
   // responsible for updating the actor with the latest state of the browser.

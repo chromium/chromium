@@ -48,8 +48,7 @@ class ActorTaskTest : public testing::Test {
   ActorTaskTest()
       : task_environment_(
             content::BrowserTaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kGlicActor, kActorFormScriptToolInterrupt}, {});
+    scoped_feature_list_.InitAndEnableFeature(features::kGlicActor);
   }
 
   void SetUp() override {

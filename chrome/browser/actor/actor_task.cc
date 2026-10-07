@@ -314,8 +314,7 @@ void ActorTask::SetState(State new_state) {
     ActorTask::State ui_task_state = new_state;
     // TODO(crbug.com/484367299): Implement a proper actor task state for
     // interrupt-with-user-control.
-    if (base::FeatureList::IsEnabled(kActorFormScriptToolInterrupt) &&
-        new_state == kWaitingOnUser && interrupted_task_needs_user_control_) {
+    if (new_state == kWaitingOnUser && interrupted_task_needs_user_control_) {
       ui_task_state = kPausedByActor;
     }
     ui_event_dispatcher_->OnActorTaskSyncChange(
@@ -423,7 +422,7 @@ void ActorTask::OnFinishedAct(
     // purposes.
     journal_->Log(GURL(), id(), "ActorTask::OnFinishedAct",
                   JournalDetailsBuilder()
-                      .Add("result", result ? ToDebugString(*result) : "null")
+                      .Add("result", ToDebugString(*result))
                       .Add("Not in kActing state", base::ToString(state_))
                       .Build());
   }
@@ -440,22 +439,18 @@ void ActorTask::OnFinishedAct(
 
   // The callback may already have been called, if the task was stopped or
   // paused.
-  const bool is_paused_result =
-      result && result->code == mojom::ActionResultCode::kTaskPaused;
   if (callback_for_act_) {
-    // Interruption (WaitingOnUser) can happen while acting, but in that case
-    // the tool is the source and must not finish before uninterrupting.
-    DCHECK(state_ == State::kCreated || state_ == State::kActing ||
-           IsUnderUserControl());
-    if (result) {
-      action_tracker_for_metrics_->OnFinishedAct(*result);
-    }
+    // A task can finish while still in `kCreated` if early tab addition fails
+    // before transitioning to `kActing`. Interruption (`kWaitingOnUser`) can
+    // happen while acting, but completion is deferred until the task is
+    // uninterrupted back to `kActing`.
+    DCHECK(state_ == State::kCreated || state_ == State::kActing);
+    action_tracker_for_metrics_->OnFinishedAct(*result);
     std::move(callback_for_act_)
         .Run(std::move(action_results), std::move(observation_strategy));
   }
 
-  if (state_ == State::kActing ||
-      (state_ == State::kPausedByActor && !is_paused_result)) {
+  if (state_ == State::kActing) {
     SetState(State::kReflecting);
   }
 }
@@ -503,14 +498,14 @@ void ActorTask::Stop(StoppedReason stop_reason) {
       .feature_mode = feature_mode_});
 }
 
-void ActorTask::Pause(bool from_actor, bool cancel_existing_action) {
+void ActorTask::Pause(bool from_actor) {
   if (IsCompleted()) {
     return;
   }
 
   // Invoke the callback before changing states so that the client sees the Act
   // result before seeing the state transition.
-  if (callback_for_act_ && cancel_existing_action) {
+  if (callback_for_act_) {
     // A task can be paused while still in `kCreated` if an Act request is
     // waiting on asynchronous tab addition (e.g. via `kGlicEarlyAddTaskTabs`)
     // before transitioning to `kActing`.
@@ -523,11 +518,7 @@ void ActorTask::Pause(bool from_actor, bool cancel_existing_action) {
         .Run(MakeResultVector(std::move(result)), TabObservationStrategy());
   }
 
-  if (cancel_existing_action) {
-    CancelOngoingActions(mojom::ActionResultCode::kTaskPaused);
-  } else {
-    execution_engine_->PauseOngoingActions();
-  }
+  CancelOngoingActions(mojom::ActionResultCode::kTaskPaused);
   if (from_actor) {
     SetState(State::kPausedByActor);
   } else {
@@ -549,6 +540,8 @@ void ActorTask::Interrupt(bool retain_user_control,
   if (GetState() != State::kReflecting && GetState() != State::kActing) {
     return;
   }
+  // TODO(crbug.com/484367299): Implement a proper actor task state for
+  // interrupt-with-user-control.
   interrupted_task_needs_user_control_ = retain_user_control;
   execution_engine_->PauseOngoingActions();
   interrupt_reason_ = interrupt_reason;

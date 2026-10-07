@@ -180,8 +180,6 @@ BASE_FEATURE(kActorScriptToolDelayObservation,
 const base::FeatureParam<int> kActorScriptToolDelayObservationMillis{
     &kActorScriptToolDelayObservation, "script_tool_delay_observation_ms", 0};
 
-BASE_FEATURE(kActorFormScriptToolInterrupt, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kActorObserveScreenshotDefault, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorObservePageContentDefault, base::FEATURE_ENABLED_BY_DEFAULT);
 
