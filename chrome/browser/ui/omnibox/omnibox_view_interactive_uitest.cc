@@ -12,7 +12,7 @@
 #include <optional>
 #include <string>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -106,27 +106,25 @@ const char16_t kSearchKeyword[] = u"foo";
 const char16_t kSearchKeyword2[] = u"footest.com";
 const char16_t kSiteSearchPolicyKeyword[] = u"work";
 const char16_t kSiteSearchPolicyKeywordWithAtPrefix[] = u"@work";
-const ui::KeyboardCode kSearchKeywordKeys[] = {ui::VKEY_F, ui::VKEY_O,
-                                               ui::VKEY_O, ui::VKEY_UNKNOWN};
-const ui::KeyboardCode kSiteSearchPolicyKeywordKeys[] = {
-    ui::VKEY_W, ui::VKEY_O, ui::VKEY_R, ui::VKEY_K, ui::VKEY_UNKNOWN};
+constexpr std::array kSearchKeywordKeys = {ui::VKEY_F, ui::VKEY_O, ui::VKEY_O};
+constexpr std::array kSiteSearchPolicyKeywordKeys = {ui::VKEY_W, ui::VKEY_O,
+                                                     ui::VKEY_R, ui::VKEY_K};
 const char kSearchURL[] = "http://www.foo.com/search?q={searchTerms}";
 const char kSiteSearchPolicyURL[] =
     "http://www.work.com/search?q={searchTerms}";
 const char16_t kSearchShortName[] = u"foo";
 const char16_t kSiteSearchPolicyName[] = u"Work";
 const char16_t kSearchText[] = u"abc";
-const ui::KeyboardCode kSearchTextKeys[] = {ui::VKEY_A, ui::VKEY_B, ui::VKEY_C,
-                                            ui::VKEY_UNKNOWN};
+constexpr std::array kSearchTextKeys = {ui::VKEY_A, ui::VKEY_B, ui::VKEY_C};
 const char kSearchTextURL[] = "http://www.foo.com/search?q=abc";
 const char kSiteSearchPolicyTextURL[] = "http://www.work.com/search?q=abc";
 const char kSearchAggregatorPolicyIconUrl[] =
     "https://www.aggregator.com/icon.png";
 const char16_t kSearchAggregatorPolicyKeyword[] = u"aggregator";
 const char16_t kSearchAggregatorPolicyKeywordWithAtPrefix[] = u"@aggregator";
-const ui::KeyboardCode kSearchAggregatorPolicyKeywordKeys[] = {
-    ui::VKEY_A, ui::VKEY_G, ui::VKEY_G, ui::VKEY_R, ui::VKEY_E,      ui::VKEY_G,
-    ui::VKEY_A, ui::VKEY_T, ui::VKEY_O, ui::VKEY_R, ui::VKEY_UNKNOWN};
+constexpr std::array kSearchAggregatorPolicyKeywordKeys = {
+    ui::VKEY_A, ui::VKEY_G, ui::VKEY_G, ui::VKEY_R, ui::VKEY_E,
+    ui::VKEY_G, ui::VKEY_A, ui::VKEY_T, ui::VKEY_O, ui::VKEY_R};
 const char kSearchAggregatorPolicySearchUrl[] =
     "https://www.aggregator.com/search?q={searchTerms}";
 const char kSearchAggregatorPolicySuggestUrl[] =
@@ -136,8 +134,8 @@ const char kSearchAggregatorPolicyTextURL[] =
     "https://www.aggregator.com/search?q=abc";
 
 const char kInlineAutocompleteText[] = "def";
-const ui::KeyboardCode kInlineAutocompleteTextKeys[] = {
-    ui::VKEY_D, ui::VKEY_E, ui::VKEY_F, ui::VKEY_UNKNOWN};
+constexpr std::array kInlineAutocompleteTextKeys = {ui::VKEY_D, ui::VKEY_E,
+                                                    ui::VKEY_F};
 
 // Hostnames that shall be blocked by host resolver.
 constexpr const char* kBlockedHostnames[] = {
@@ -402,9 +400,9 @@ class OmniboxViewTest : public InProcessBrowserTest {
     SendKeyForBrowser(browser(), key, modifiers);
   }
 
-  void SendKeySequence(const ui::KeyboardCode* keys) {
-    for (; *keys != ui::VKEY_UNKNOWN; UNSAFE_TODO(++keys)) {
-      ASSERT_NO_FATAL_FAILURE(SendKey(*keys, 0));
+  void SendKeySequence(base::span<const ui::KeyboardCode> keys) {
+    for (ui::KeyboardCode key : keys) {
+      ASSERT_NO_FATAL_FAILURE(SendKey(key, 0));
     }
   }
 
@@ -764,9 +762,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_DesiredTLD) {
   ASSERT_TRUE(GetOmniboxController()->IsPopupOpen());
 
   // Test ctrl-Enter.
-  const ui::KeyboardCode kKeys[] = {ui::VKEY_B, ui::VKEY_A, ui::VKEY_R,
-                                    ui::VKEY_UNKNOWN};
-  ASSERT_NO_FATAL_FAILURE(SendKeySequence(kKeys));
+  ASSERT_NO_FATAL_FAILURE(
+      SendKeySequence({ui::VKEY_B, ui::VKEY_A, ui::VKEY_R}));
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
   ASSERT_TRUE(GetOmniboxController()->IsPopupOpen());
 
@@ -796,9 +793,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_DesiredTLDWithTemporaryText) {
   template_url_service->Add(std::make_unique<TemplateURL>(data));
 
   // Send "ab", so that an "abc" entry appears in the popup.
-  const ui::KeyboardCode kSearchTextPrefixKeys[] = {ui::VKEY_A, ui::VKEY_B,
-                                                    ui::VKEY_UNKNOWN};
-  ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchTextPrefixKeys));
+  ASSERT_NO_FATAL_FAILURE(SendKeySequence({ui::VKEY_A, ui::VKEY_B}));
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
   ASSERT_TRUE(GetOmniboxController()->IsPopupOpen());
 
@@ -1762,9 +1757,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
   ASSERT_TRUE(GetOmniboxController()->IsPopupOpen());
 
   // Input something to trigger results.
-  const ui::KeyboardCode kKeys[] = {ui::VKEY_B, ui::VKEY_A, ui::VKEY_R,
-                                    ui::VKEY_UNKNOWN};
-  ASSERT_NO_FATAL_FAILURE(SendKeySequence(kKeys));
+  ASSERT_NO_FATAL_FAILURE(
+      SendKeySequence({ui::VKEY_B, ui::VKEY_A, ui::VKEY_R}));
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
   ASSERT_TRUE(GetOmniboxController()->IsPopupOpen());
 
