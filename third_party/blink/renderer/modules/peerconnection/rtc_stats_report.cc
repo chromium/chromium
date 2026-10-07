@@ -310,8 +310,6 @@ RTCOutboundRtpStreamStats* ToV8Stat(
            v8_stat->setRetransmittedBytesSent);
   SET_STAT(webrtc_stat.rtx_ssrc, v8_stat->setRtxSsrc);
   SET_STAT(webrtc_stat.target_bitrate, v8_stat->setTargetBitrate);
-  SET_STAT(webrtc_stat.total_encoded_bytes_target,
-           v8_stat->setTotalEncodedBytesTarget);
   SET_STAT(webrtc_stat.frame_width, v8_stat->setFrameWidth);
   SET_STAT(webrtc_stat.frame_height, v8_stat->setFrameHeight);
   SET_STAT(webrtc_stat.frames_per_second, v8_stat->setFramesPerSecond);
