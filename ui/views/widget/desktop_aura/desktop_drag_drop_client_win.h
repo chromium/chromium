@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -53,6 +54,9 @@ class VIEWS_EXPORT DesktopDragDropClientWin
   bool IsDragDropInProgress() override;
   void AddObserver(aura::client::DragDropClientObserver* observer) override;
   void RemoveObserver(aura::client::DragDropClientObserver* observer) override;
+
+  static void SetOnDragStartedCallbackForTesting(
+      base::RepeatingClosure callback);
 
   void OnNativeWidgetDestroying(HWND window);
 

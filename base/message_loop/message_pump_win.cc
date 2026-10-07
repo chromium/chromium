@@ -297,6 +297,19 @@ void MessagePumpForUI::DoRunLoop() {
 
     WaitForWork(next_work_info);
   }
+
+  // The `should_quit` breaks above can skip the KillNativeTimer() call in the
+  // loop body. This happens when the work that quits this RunLoop is also the
+  // work that entered a nested native loop (e.g. a task that ran
+  // ::DoDragDrop() and then called RunLoop::Quit()). Without this, the
+  // WM_TIMER leaks past this RunLoop. It then fires in the next RunLoop, which
+  // runs DoWork() from HandleTimerMessage() and calls ScheduleNativeTimer()
+  // outside a nested native loop, failing its
+  // `in_nested_native_loop_with_application_tasks_` DCHECK. Tests that drag
+  // with ui_controls and then quit hit this.
+  if (installed_native_timer_) {
+    KillNativeTimer();
+  }
 }
 
 void MessagePumpForUI::WaitForWork(Delegate::NextWorkInfo next_work_info) {

@@ -13,12 +13,25 @@ class Point;
 
 namespace ui {
 
+// Values passed as `dwExtraInfo` on synthetic mouse events so hooks can
+// identify them.
+enum class MouseEventExtraInfo {
+  kNone = 0,
+  // Marks synthetic mouse moves injected by `QueueDragUnblockNudge()` so that
+  // `InputDispatcher` ignores them when waiting for test-initiated moves.
+  kDragUnblockNudge = 0x4E554447,  // 'NUDG'
+};
+
 // Send a mouse event to Windows input queue using ::SendInput, to screen
 // point |point|. Returns true if the mouse event was sent, false if not.
 // The coordinates will be translated to absolute screen coordinates and the
-// MOUSEEVENTF_ABSOLUTE flag will be set on the events.
+// MOUSEEVENTF_ABSOLUTE flag will be set on the events. `extra_info` is passed
+// as the event's dwExtraInfo, which hooks can read to identify the event.
 COMPONENT_EXPORT(UI_BASE)
-bool SendMouseEvent(const gfx::Point& point, int flags);
+bool SendMouseEvent(
+    const gfx::Point& point,
+    int flags,
+    MouseEventExtraInfo extra_info = MouseEventExtraInfo::kNone);
 
 }  // namespace ui
 

@@ -11,9 +11,11 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <optional>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -27,16 +29,97 @@
 #include "base/threading/thread_checker.h"
 #include "base/win/win_util.h"
 #include "ui/base/win/event_creation_utils.h"
+#include "ui/display/display.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/events/keycodes/keyboard_code_conversion_win.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace {
 
 bool IsKeyEvent(WPARAM message_type) {
   return message_type == WM_KEYDOWN || message_type == WM_KEYUP;
 }
+
+// Last screen position (in physical pixels) sent via SendMouseMoveImpl().
+// Used by QueueDragUnblockNudge() instead of ::GetCursorPos() so that hardware
+// cursor jitter on bots cannot desynchronize the nudge coordinates from the
+// most recent test-injected mouse position.
+std::optional<gfx::Point> g_last_sent_mouse_location;
+
+}  // namespace
+
+namespace ui_controls::internal {
+
+// Queues an extra mouse event so that a modal drag loop has something to
+// consume when it starts.
+//
+// ::DoDragDrop() runs a modal loop that does not dispatch the message pump's
+// kMsgHaveWork message until it has received an input event. A test that
+// injects its input from posted tasks therefore deadlocks as soon as a drag
+// begins: the drag loop waits for input, and the task that would send that
+// input waits for the drag loop to let the pump run. Breaking the cycle
+// requires an input event to already be in the queue when the modal loop
+// starts.
+//
+// The events are tagged with MouseEventExtraInfo::kDragUnblockNudge so that
+// InputDispatcher ignores them. Otherwise, if the drag loop does not consume
+// both events before dispatching kMsgHaveWork, the remaining event may be
+// dispatched after the next InputDispatcher is created and mistaken for the
+// move it waits for.
+void QueueDragUnblockNudge() {
+  if (!g_last_sent_mouse_location.has_value()) {
+    LOG(ERROR) << "ui_controls: no prior mouse move recorded before queueing "
+                  "a drag unblock nudge. The modal drag loop will not be "
+                  "unblocked and the test will likely hang.";
+    return;
+  }
+  const gfx::Point cursor_pos = *g_last_sent_mouse_location;
+
+  display::win::ScreenWin* screen = display::win::GetScreenWin();
+  CHECK(screen);
+  const gfx::Point dip_pos =
+      gfx::ToFlooredPoint(screen->ScreenToDIPPoint(gfx::PointF(cursor_pos)));
+  const display::Display display =
+      static_cast<const display::Screen*>(screen)->GetDisplayNearestPoint(
+          dip_pos);
+  const gfx::Rect work_area =
+      screen->DIPToScreenRect(nullptr, display.work_area());
+  const gfx::Rect screen_bounds =
+      screen->DIPToScreenRect(nullptr, display.bounds());
+
+  const gfx::Point nudge_down(cursor_pos.x(), cursor_pos.y() + 1);
+  const gfx::Point nudge_up(cursor_pos.x(), cursor_pos.y() - 1);
+  gfx::Point nudge_pos = nudge_down;
+  if (!work_area.Contains(nudge_pos)) {
+    if (work_area.Contains(nudge_up) || !screen_bounds.Contains(nudge_pos)) {
+      nudge_pos = nudge_up;
+    }
+  }
+  if (!screen_bounds.Contains(nudge_pos)) {
+    LOG(ERROR) << "ui_controls: no room to nudge the cursor within the active "
+                  "display bounds. The modal drag loop will not be "
+                  "unblocked and the test will likely hang.";
+    return;
+  }
+
+  constexpr int kFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_VIRTUALDESK;
+  if (!ui::SendMouseEvent(nudge_pos, kFlags,
+                          ui::MouseEventExtraInfo::kDragUnblockNudge) ||
+      !ui::SendMouseEvent(cursor_pos, kFlags,
+                          ui::MouseEventExtraInfo::kDragUnblockNudge)) {
+    LOG(ERROR) << "ui_controls: ::SendInput() failed while queueing a drag "
+                  "unblock nudge. The modal drag loop will not be unblocked "
+                  "and the test will likely hang.";
+  }
+}
+
+}  // namespace ui_controls::internal
+
+namespace {
 
 // InputDispatcher ------------------------------------------------------------
 
@@ -294,6 +377,14 @@ void InputDispatcher::DispatchedMessage(
     UINT message_id,
     const MOUSEHOOKSTRUCT* mouse_hook_struct) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // Ignore the events injected by QueueDragUnblockNudge(); they never
+  // correspond to the input a test is waiting for.
+  if (mouse_hook_struct->dwExtraInfo ==
+      static_cast<ULONG_PTR>(ui::MouseEventExtraInfo::kDragUnblockNudge)) {
+    return;
+  }
+
   if (message_id == message_waiting_for_) {
     bool definitively_done = false;
     if (message_id == WM_MOUSEMOVE) {
@@ -762,6 +853,7 @@ bool SendMouseMoveImpl(int screen_x, int screen_y, base::OnceClosure task) {
   if (other_process_window_under_mouse) {
     HWND chrome_hwnd = FindChromeWindowAtPoint(pt);
     if (chrome_hwnd) {
+      g_last_sent_mouse_location = screen_point;
       SendMouseEventByPostMessage(chrome_hwnd, hwnd_under_mouse, pid,
                                   screen_point, WM_MOUSEMOVE, std::move(task));
       return true;
@@ -772,6 +864,7 @@ bool SendMouseMoveImpl(int screen_x, int screen_y, base::OnceClosure task) {
                           MOUSEEVENTF_MOVE | MOUSEEVENTF_VIRTUALDESK)) {
     return false;
   }
+  g_last_sent_mouse_location = screen_point;
 
   if (task)
     InputDispatcher::CreateForMouseMove(std::move(task),

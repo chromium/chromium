@@ -25,6 +25,7 @@ bool SendMouseEventsImpl(MouseButton type,
                          base::OnceClosure task,
                          int accelerator_state);
 bool SendTouchEventsImpl(int action, int num, int x, int y);
+void QueueDragUnblockNudge();
 
 }  // namespace internal
 }  // namespace ui_controls

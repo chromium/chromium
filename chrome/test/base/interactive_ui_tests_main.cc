@@ -40,9 +40,12 @@
 #endif  // defined(USE_AURA) && BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_WIN)
+#include "base/functional/bind.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
 #include "chrome/test/base/always_on_top_window_killer_win.h"
+#include "ui/base/test/ui_controls_internal_win.h"
+#include "ui/views/widget/desktop_aura/desktop_drag_drop_client_win.h"
 #endif
 
 class InteractiveUITestSuite : public ChromeTestSuite {
@@ -60,6 +63,8 @@ class InteractiveUITestSuite : public ChromeTestSuite {
 #elif BUILDFLAG(IS_WIN)
     com_initializer_ = std::make_unique<base::win::ScopedCOMInitializer>();
     aura::test::EnableUIControlsAuraWin();
+    views::DesktopDragDropClientWin::SetOnDragStartedCallbackForTesting(
+        base::BindRepeating(&ui_controls::internal::QueueDragUnblockNudge));
 #elif BUILDFLAG(IS_OZONE)
     // Notifies the platform that test config is needed. For Wayland, for
     // example, makes it possible to use emulated input.
@@ -100,6 +105,8 @@ class InteractiveUITestSuite : public ChromeTestSuite {
 
   void Shutdown() override {
 #if BUILDFLAG(IS_WIN)
+    views::DesktopDragDropClientWin::SetOnDragStartedCallbackForTesting(
+        base::NullCallback());
     com_initializer_.reset();
 #endif
   }

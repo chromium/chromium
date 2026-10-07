@@ -945,10 +945,12 @@ component("views") {
         "widget/desktop_aura/desktop_window_tree_host.cc",
       ]
       if (is_win) {
-        public += [ "widget/desktop_aura/desktop_window_tree_host_win.h" ]
+        public += [
+          "widget/desktop_aura/desktop_drag_drop_client_win.h",
+          "widget/desktop_aura/desktop_window_tree_host_win.h",
+        ]
         sources += [
           "widget/desktop_aura/desktop_drag_drop_client_win.cc",
-          "widget/desktop_aura/desktop_drag_drop_client_win.h",
           "widget/desktop_aura/desktop_drop_target_win.cc",
           "widget/desktop_aura/desktop_native_cursor_manager_win.cc",
           "widget/desktop_aura/desktop_native_cursor_manager_win.h",

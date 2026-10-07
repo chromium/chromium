@@ -14,7 +14,9 @@
 
 namespace ui {
 
-bool SendMouseEvent(const gfx::Point& point, int flags) {
+bool SendMouseEvent(const gfx::Point& point,
+                    int flags,
+                    MouseEventExtraInfo extra_info) {
   INPUT input = {INPUT_MOUSE};
   // Get the max screen coordinate for use in computing the normalized absolute
   // coordinates required by SendInput.
@@ -44,6 +46,7 @@ bool SendMouseEvent(const gfx::Point& point, int flags) {
       std::max(1.0, std::ceil((screen_y - screen_top) *
                               (kNormalizedScreenSize / screen_height))));
   input.mi.dwFlags = static_cast<DWORD>(flags | MOUSEEVENTF_ABSOLUTE);
+  input.mi.dwExtraInfo = static_cast<ULONG_PTR>(extra_info);
   return ::SendInput(1, &input, sizeof(input)) == 1;
 }
 

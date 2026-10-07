@@ -5,8 +5,11 @@
 #include "ui/views/widget/desktop_aura/desktop_drag_drop_client_win.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/auto_reset.h"
+#include "base/functional/callback.h"
+#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/scoped_observation.h"
 #include "base/threading/hang_watcher.h"
@@ -26,6 +29,11 @@
 namespace views {
 
 namespace {
+
+base::RepeatingClosure& GetOnDragStartedCallback() {
+  static base::NoDestructor<base::RepeatingClosure> callback;
+  return *callback;
+}
 
 class SourceWindowObserver : public aura::WindowObserver {
  public:
@@ -117,6 +125,10 @@ ui::mojom::DragOperation DesktopDragDropClientWin::StartDragAndDrop(
   // drag. (http://crbug.com/806174)
   base::HangWatcher::InvalidateActiveExpectations();
 
+  if (auto& callback = GetOnDragStartedCallback()) {
+    callback.Run();
+  }
+
   HRESULT result = ::DoDragDrop(
       ui::OSExchangeDataProviderWin::GetIDataObject(*data.get()),
       drag_source_.Get(),
@@ -160,6 +172,12 @@ void DesktopDragDropClientWin::AddObserver(
 void DesktopDragDropClientWin::RemoveObserver(
     aura::client::DragDropClientObserver* observer) {
   NOTIMPLEMENTED();
+}
+
+// static
+void DesktopDragDropClientWin::SetOnDragStartedCallbackForTesting(
+    base::RepeatingClosure callback) {
+  GetOnDragStartedCallback() = std::move(callback);
 }
 
 void DesktopDragDropClientWin::OnNativeWidgetDestroying(HWND window) {
