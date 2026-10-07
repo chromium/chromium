@@ -104,4 +104,9 @@ void LogPersonalContextPrefetchEntityValidationResult(
       result);
 }
 
+void LogEntitySuppressionEntitiesFilteredPerPrefetch(size_t count) {
+  base::UmaHistogramCounts100(
+      "Autofill.Ai.Suppression.EntitiesFilteredPerPrefetch", count);
+}
+
 }  // namespace autofill

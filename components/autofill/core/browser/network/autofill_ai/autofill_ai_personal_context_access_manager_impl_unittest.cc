@@ -384,6 +384,8 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest, PrefetchContextSuccess) {
                   HasAttributeWithValue(AttributeTypeName::kOrderId, u"12345"),
                   HasAttributeWithValue(AttributeTypeName::kOrderMerchantName,
                                         u"Amazon"))));
+  histogram_tester().ExpectUniqueSample(
+      "Autofill.Ai.Suppression.EntitiesFilteredPerPrefetch", 0, 1);
 }
 
 // Tests that PrefetchContext ignores entity types in the response that were
@@ -1600,6 +1602,9 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
                          AttributeTypeName::kOrderId, u"ORD2")))));
 
   PrefetchContextSync({kOrderType}, {}, response);
+
+  histogram_tester().ExpectUniqueSample(
+      "Autofill.Ai.Suppression.EntitiesFilteredPerPrefetch", 1, 1);
 }
 
 // Tests that suppressing an entity evicts cached masked entities and re-emits

@@ -2308,6 +2308,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram name="Autofill.Ai.Suppression.EntitiesFilteredPerPrefetch"
+    units="entities" expires_after="2027-01-01">
+  <owner>tobson@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the number of entities returned by a Personal Context prefetch that
+    were filtered out because the user suppressed them. Emitted when a prefetch
+    completes successfully.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.Ai.TimingInterval.LoadedServerPredictionsToFirstInteraction"
     units="ms" expires_after="2027-03-07">
