@@ -222,7 +222,7 @@ class alignas(internal::kPartitionCachelineSize)
     std::optional<RawAllocResult> raw_alloc_result = std::nullopt;
   };
 
-  enum class BucketDistribution : uint8_t { kNeutral, kDenser };
+  using BucketDistribution = ::partition_alloc::BucketDistribution;
 
   // Root settings_ accessed on fast paths.
   //

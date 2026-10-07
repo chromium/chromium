@@ -1223,13 +1223,7 @@ PartitionRoot::InSlotMetadataPointerFromObjectForTesting(void* object) const {
 PA_ALWAYS_INLINE uint16_t
 PartitionRoot::SizeToBucketIndex(size_t size,
                                  BucketDistribution bucket_distribution) {
-  switch (bucket_distribution) {
-    case BucketDistribution::kNeutral:
-      return BucketIndexLookup::GetIndexForNeutralBuckets(size);
-    case BucketDistribution::kDenser:
-      return BucketIndexLookup::GetIndexForDenserBuckets(size);
-  }
-  PA_NOTREACHED();
+  return BucketIndexLookup::GetIndex(size, bucket_distribution);
 }
 
 PA_ALWAYS_INLINE internal::BucketSizeDetails
