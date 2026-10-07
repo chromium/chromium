@@ -20,7 +20,7 @@ std::vector<AndroidSessionDurationsService*> GetForAllActiveProfiles() {
   std::vector<AndroidSessionDurationsService*> services;
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   services.push_back(
       AndroidSessionDurationsServiceFactory::GetForProfile(profile));
 

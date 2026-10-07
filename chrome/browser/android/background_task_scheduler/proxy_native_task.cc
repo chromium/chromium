@@ -64,7 +64,7 @@ void ProxyNativeTask::StartBackgroundTaskInReducedMode(
   }
 
   ProfileKey* key = ProfileKeyAndroid::FromProfileKeyAndroid(jkey);
-  DCHECK(key);
+  CHECK(key, base::NotFatalUntil::M161);
   background_task_->OnStartTaskInReducedMode(task_params_,
                                              std::move(finish_callback_), key);
 }
@@ -76,7 +76,7 @@ void ProxyNativeTask::StartBackgroundTaskWithFullBrowser(JNIEnv* env,
     return;
   }
 
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   background_task_->OnStartTaskWithFullBrowser(
       task_params_, std::move(finish_callback_), profile);
 }
@@ -86,7 +86,7 @@ void ProxyNativeTask::OnFullBrowserLoaded(JNIEnv* env,
   if (!background_task_)
     return;
 
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   background_task_->OnFullBrowserLoaded(profile);
 }
 

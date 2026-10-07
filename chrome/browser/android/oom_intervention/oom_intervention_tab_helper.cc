@@ -203,7 +203,7 @@ void OomInterventionTabHelper::OnCrashDumpProcessed(
     return;
   }
 
-  DCHECK(IsLastVisibleWebContents(web_contents()));
+  CHECK(IsLastVisibleWebContents(web_contents()), base::NotFatalUntil::M161);
   if (near_oom_detected_time_) {
     ResetInterventionState();
   }
@@ -261,9 +261,9 @@ void OomInterventionTabHelper::StartDetectionInRenderer() {
       web_contents()->GetPrimaryPage().GetMainDocument();
 
   content::RenderProcessHost* render_process_host = main_frame.GetProcess();
-  DCHECK(render_process_host);
+  CHECK(render_process_host, base::NotFatalUntil::M161);
   render_process_host->BindReceiver(intervention_.BindNewPipeAndPassReceiver());
-  DCHECK(!receiver_.is_bound());
+  CHECK(!receiver_.is_bound(), base::NotFatalUntil::M161);
   blink::mojom::DetectionArgsPtr detection_args =
       config->GetRendererOomDetectionArgs();
   intervention_->StartDetection(

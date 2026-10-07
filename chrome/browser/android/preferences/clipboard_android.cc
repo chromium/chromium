@@ -29,7 +29,7 @@ void RegisterClipboardAndroidPrefs(PrefRegistrySimple* registry) {
 }
 
 void InitClipboardAndroidFromLocalState(PrefService* local_state) {
-  DCHECK(local_state);
+  CHECK(local_state, base::NotFatalUntil::M161);
   // Given the context, the cast is guaranteed to succeed.
   ui::ClipboardAndroid* clipboard =
       static_cast<ui::ClipboardAndroid*>(ui::Clipboard::GetForCurrentThread());

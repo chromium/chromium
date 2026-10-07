@@ -201,7 +201,7 @@ void EmbeddedA11yExtensionLoader::MaybeInstallExtension(
     const base::FilePath& extension_path,
     const base::FilePath::CharType* manifest_name,
     bool should_localize) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   auto* component_loader = extensions::ComponentLoader::Get(profile);
   if (!component_loader || component_loader->Exists(extension_id)) {
     return;
@@ -221,7 +221,7 @@ void EmbeddedA11yExtensionLoader::InstallExtension(
     const base::FilePath& path,
     const std::string& extension_id,
     std::optional<base::DictValue> manifest) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (component_loader->Exists(extension_id)) {
     // Because this is async and called from another thread, it's possible we
     // already installed the extension. Don't try and reinstall in that case.

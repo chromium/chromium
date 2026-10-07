@@ -63,7 +63,7 @@ static int64_t JNI_CompositorView_Init(
   TabContentManager* tab_content_manager =
       TabContentManager::FromJavaObject(jtab_content_manager);
 
-  DCHECK(tab_content_manager);
+  CHECK(tab_content_manager, base::NotFatalUntil::M161);
 
   // TODO(clholgat): Remove the compositor tabstrip flag.
   view = new CompositorView(env, obj, window_android, tab_content_manager);
@@ -212,7 +212,7 @@ std::optional<int> CompositorView::SurfaceChanged(
   }
 
   std::optional<int> surface_handle;
-  DCHECK(surface);
+  CHECK(surface, base::NotFatalUntil::M161);
   if (current_surface_format_ != format) {
     current_surface_format_ = format;
     surface_handle = compositor_->SetSurface(

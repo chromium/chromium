@@ -47,7 +47,7 @@ const void* LanguagePersistedTabDataAndroid::UserDataKey() {
 
 void LanguagePersistedTabDataAndroid::RegisterTranslateDriver(
     translate::TranslateDriver* translate_driver) {
-  DCHECK(translate_driver);
+  CHECK(translate_driver, base::NotFatalUntil::M161);
   if (translate_driver_ == translate_driver) {
     return;
   }

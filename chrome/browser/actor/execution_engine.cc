@@ -1518,7 +1518,7 @@ void ExecutionEngine::FailedOnTabBeforeToolCreation() {
 
 void ExecutionEngine::ExecuteNextAction() {
   TRACE_EVENT0("actor", "ExecutionEngine::ExecuteNextAction");
-  DCHECK_EQ(state_, State::kStartAction);
+  CHECK_EQ(state_, State::kStartAction, base::NotFatalUntil::M161);
   CHECK(!action_sequence_.empty());
   CHECK(tool_controller_);
 
@@ -1545,7 +1545,7 @@ void ExecutionEngine::PostToolCreate(mojom::ActionResultPtr result) {
 
 void ExecutionEngine::FinishedUiPreInvoke(mojom::ActionResultPtr result) {
   TRACE_EVENT0("actor", "ExecutionEngine::FinishedUiPreInvoke");
-  DCHECK_EQ(state_, State::kUiPreInvoke);
+  CHECK_EQ(state_, State::kUiPreInvoke, base::NotFatalUntil::M161);
   if (!IsOk(*result)) {
     CompleteActions(std::move(result), InProgressActionIndex());
     return;
@@ -1568,7 +1568,7 @@ void ExecutionEngine::FinishedUiPreInvoke(mojom::ActionResultPtr result) {
 
 void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
   TRACE_EVENT0("actor", "ExecutionEngine::FinishedToolInvoke");
-  DCHECK_EQ(state_, State::kToolInvoke);
+  CHECK_EQ(state_, State::kToolInvoke, base::NotFatalUntil::M161);
 
   if (tool_invoke_complete_callback_for_testing_) {
     std::move(tool_invoke_complete_callback_for_testing_).Run();
@@ -1647,7 +1647,7 @@ void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
 
 void ExecutionEngine::FinishedUiPostInvoke(mojom::ActionResultPtr result) {
   TRACE_EVENT0("actor", "ExecutionEngine::FinishedUiPostInvoke");
-  DCHECK_EQ(state_, State::kUiPostInvoke);
+  CHECK_EQ(state_, State::kUiPostInvoke, base::NotFatalUntil::M161);
   CHECK(!action_sequence_.empty());
   CHECK(deferred_finish_tool_invoke_.is_null());
 

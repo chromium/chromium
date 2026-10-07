@@ -77,21 +77,21 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayUITest,
 IN_PROC_BROWSER_TEST_F(ActorOverlayUITest,
                        SetBorderGlowVisibilityCrashesIfHandlerNull) {
   std::unique_ptr<ActorOverlayUI> controller = CreateController();
-  EXPECT_DCHECK_DEATH(controller->SetBorderGlowVisibility(true));
+  EXPECT_DEATH(controller->SetBorderGlowVisibility(true), "");
 }
 
 IN_PROC_BROWSER_TEST_F(ActorOverlayUITest, MoveCursorToCrashesIfHandlerNull) {
   std::unique_ptr<ActorOverlayUI> controller = CreateController();
   base::test::TestFuture<void> future;
-  EXPECT_DCHECK_DEATH(
-      controller->MoveCursorTo(gfx::Point(10, 10), future.GetCallback()));
+  EXPECT_DEATH(
+      controller->MoveCursorTo(gfx::Point(10, 10), future.GetCallback()), "");
 }
 
 IN_PROC_BROWSER_TEST_F(ActorOverlayUITest,
                        TriggerClickAnimationCrashesIfHandlerNull) {
   std::unique_ptr<ActorOverlayUI> controller = CreateController();
   base::test::TestFuture<void> future;
-  EXPECT_DCHECK_DEATH(controller->TriggerClickAnimation(future.GetCallback()));
+  EXPECT_DEATH(controller->TriggerClickAnimation(future.GetCallback()), "");
 }
 
 }  // namespace actor::ui

@@ -281,7 +281,7 @@ void ActorUiTabController::OnWindowOmniboxPopupVisibilityChanged() {
 }
 
 void ActorUiTabController::OnModalUIChanged(tabs::TabInterface* tab) {
-  DCHECK_EQ(tab, base::to_address(tab_));
+  CHECK_EQ(tab, base::to_address(tab_), base::NotFatalUntil::M161);
   UpdateUi(base::BindOnce(&LogAndIgnoreCallbackError, "OnModalUIChanged"));
 }
 

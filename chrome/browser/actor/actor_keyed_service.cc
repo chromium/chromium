@@ -587,26 +587,26 @@ void ActorKeyedService::NotifyTaskStateChanged(ActorTask& task) {
 base::CallbackListSubscription
 ActorKeyedService::AddTaskVisibilityChangedCallback(
     TaskVisibilityChangedCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   return task_visibility_change_callback_list_.Add(std::move(callback));
 }
 
 void ActorKeyedService::NotifyTaskVisibilityChanged(ActorTask& task) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   task_visibility_change_callback_list_.Notify(task);
 }
 
 base::CallbackListSubscription
 ActorKeyedService::AddTaskStepProgressChangedCallback(
     TaskStepProgressChangedCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   return task_step_progress_change_callback_list_.Add(std::move(callback));
 }
 
 void ActorKeyedService::NotifyTaskStepProgressChanged(
     ActorTask& task,
     const std::string& step_progress) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   task_step_progress_change_callback_list_.Notify(task, step_progress);
 }
 

@@ -17,7 +17,7 @@ SensitivityPersistedTabDataAndroid::SensitivityPersistedTabDataAndroid(
 void SensitivityPersistedTabDataAndroid::RegisterPCAService(
     page_content_annotations::PageContentAnnotationsService*
         page_content_annotations_service) {
-  DCHECK(page_content_annotations_service);
+  CHECK(page_content_annotations_service, base::NotFatalUntil::M161);
   if (page_content_annotations_service_ == page_content_annotations_service) {
     return;
   }

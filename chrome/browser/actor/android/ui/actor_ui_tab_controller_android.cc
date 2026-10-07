@@ -59,7 +59,7 @@ void ActorUiTabControllerAndroid::OnUiTabStateChange(
     NotifyActorTabIndicatorStateChanged(ui_tab_state.tab_indicator);
   }
 
-  DCHECK(tab_->GetContents());
+  CHECK(tab_->GetContents(), base::NotFatalUntil::M161);
   TabAndroid* tab_android = TabAndroid::FromWebContents(tab_->GetContents());
   bool success = false;
   if (tab_android) {
@@ -96,7 +96,7 @@ bool ActorUiTabControllerAndroid::MaybeDeferNavigation(
     tabs::TabInterface* tab,
     const GURL& url,
     NavigationConfirmedCallback callback) {
-  DCHECK(tab_->GetContents());
+  CHECK(tab_->GetContents(), base::NotFatalUntil::M161);
   TabAndroid* tab_android = TabAndroid::FromWebContents(tab_->GetContents());
   if (!tab_android) {
     return false;

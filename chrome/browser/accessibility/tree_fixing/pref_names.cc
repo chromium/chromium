@@ -11,7 +11,7 @@
 namespace tree_fixing {
 
 void InitOffTheRecordPrefs(Profile* off_the_record_profile) {
-  DCHECK(off_the_record_profile->IsOffTheRecord());
+  CHECK(off_the_record_profile->IsOffTheRecord(), base::NotFatalUntil::M161);
   off_the_record_profile->GetPrefs()->SetBoolean(
       prefs::kAccessibilityAXTreeFixingEnabled, false);
 }

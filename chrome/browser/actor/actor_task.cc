@@ -217,13 +217,13 @@ Profile* ActorTask::GetProfile() const {
 
 #if BUILDFLAG(IS_ANDROID)
 void ActorTask::SetIsInPip(bool is_in_pip) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   is_in_pip_ = is_in_pip;
 }
 #endif
 
 ActorUiMode ActorTask::GetUiMode() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (is_in_pip_) {
     return ActorUiMode::kPip;
   }
@@ -444,7 +444,8 @@ void ActorTask::OnFinishedAct(
     // before transitioning to `kActing`. Interruption (`kWaitingOnUser`) can
     // happen while acting, but completion is deferred until the task is
     // uninterrupted back to `kActing`.
-    DCHECK(state_ == State::kCreated || state_ == State::kActing);
+    CHECK(state_ == State::kCreated || state_ == State::kActing,
+          base::NotFatalUntil::M161);
     action_tracker_for_metrics_->OnFinishedAct(*result);
     std::move(callback_for_act_)
         .Run(std::move(action_results), std::move(observation_strategy));
@@ -467,8 +468,9 @@ void ActorTask::Stop(StoppedReason stop_reason) {
     // A task can be stopped while still in `kCreated` if an Act request is
     // waiting on asynchronous tab addition (e.g. via `kGlicEarlyAddTaskTabs`)
     // before transitioning to `kActing`.
-    DCHECK(state_ == State::kActing || state_ == State::kWaitingOnUser ||
-           state_ == State::kCreated);
+    CHECK(state_ == State::kActing || state_ == State::kWaitingOnUser ||
+              state_ == State::kCreated,
+          base::NotFatalUntil::M161);
     mojom::ActionResultPtr result = MakeResult(result_code);
     action_tracker_for_metrics_->OnFinishedAct(*result);
     std::move(callback_for_act_)
@@ -509,8 +511,9 @@ void ActorTask::Pause(bool from_actor) {
     // A task can be paused while still in `kCreated` if an Act request is
     // waiting on asynchronous tab addition (e.g. via `kGlicEarlyAddTaskTabs`)
     // before transitioning to `kActing`.
-    DCHECK(state_ == State::kActing || state_ == State::kWaitingOnUser ||
-           state_ == State::kCreated);
+    CHECK(state_ == State::kActing || state_ == State::kWaitingOnUser ||
+              state_ == State::kCreated,
+          base::NotFatalUntil::M161);
     mojom::ActionResultPtr result =
         MakeResult(mojom::ActionResultCode::kTaskPaused);
     action_tracker_for_metrics_->OnFinishedAct(*result);
@@ -876,7 +879,7 @@ absl::flat_hash_set<tabs::TabHandle> ActorTask::GetTabs() const {
 }
 
 void ActorTask::DidTabEnterActorControl(tabs::TabHandle handle) {
-  DCHECK(IsActingOnTab(handle));
+  CHECK(IsActingOnTab(handle), base::NotFatalUntil::M161);
   tabs::TabInterface* tab = handle.Get();
   if (!tab) {
     // This happens in unittests.
@@ -926,7 +929,7 @@ void ActorTask::DidContentsEnterActorControl(
 void ActorTask::DidTabExitActorControl(tabs::TabHandle handle) {
   // Note that the state_ may still be in an actor controlled state if we are
   // just removing this tab (e.g. close the tab).
-  DCHECK(controlled_tabs_.contains(handle));
+  CHECK(controlled_tabs_.contains(handle), base::NotFatalUntil::M161);
   tabs::TabInterface* tab = handle.Get();
   if (!tab) {
     // This happens in unittests.

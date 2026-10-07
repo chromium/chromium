@@ -1957,7 +1957,8 @@ void AIManager::RenderWidgetHostVisibilityChanged(
 
 void AIManager::RenderWidgetHostDestroyed(
     content::RenderWidgetHost* widget_host) {
-  DCHECK(widget_observer_.IsObservingSource(widget_host));
+  CHECK(widget_observer_.IsObservingSource(widget_host),
+        base::NotFatalUntil::M161);
   widget_observer_.Reset();
 }
 

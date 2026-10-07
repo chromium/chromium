@@ -45,7 +45,7 @@ void LocaleTemplateUrlLoader::OnProfileWillBeDestroyed(Profile* profile) {
 }
 
 bool LocaleTemplateUrlLoader::LoadTemplateUrls() {
-  DCHECK(locale_.length() == 2);
+  CHECK(locale_.length() == 2, base::NotFatalUntil::M161);
 
   if (!template_url_service_) {
     // TODO(b/318339172): Test profile state from Java, switch to CHECK here.

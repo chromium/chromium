@@ -174,7 +174,7 @@ void DecorationTitle::setBounds(const gfx::Size& bounds, int start_space) {
 }
 
 scoped_refptr<cc::slim::Layer> DecorationTitle::layer() {
-  DCHECK(layer_.get());
+  CHECK(layer_.get(), base::NotFatalUntil::M161);
   return layer_;
 }
 

@@ -125,7 +125,7 @@ void AutofillObserverImpl::OnAfterFormsSeen(
 
 void AutofillObserverImpl::Invalidate() {
   if (IsInObserverList()) {
-    DCHECK(autofill_manager_);
+    CHECK(autofill_manager_, base::NotFatalUntil::M161);
     autofill_manager_->RemoveObserver(this);
     autofill_manager_ = nullptr;
   }

@@ -94,9 +94,10 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
             resource_manager_->GetAndRetainStaticResourceWithTint(
                 url_bar_background_resource_id,
                 toolbar_textbox_background_color));
-    DCHECK(last_url_bar_background_resource_id_ == kInvalidResourceId ||
-           last_url_bar_background_resource_id_ ==
-               url_bar_background_resource_id);
+    CHECK(last_url_bar_background_resource_id_ == kInvalidResourceId ||
+              last_url_bar_background_resource_id_ ==
+                  url_bar_background_resource_id,
+          base::NotFatalUntil::M161);
     last_url_bar_background_resource_id_ = url_bar_background_resource_id;
 
     gfx::Size draw_size(url_bar_background_resource->DrawSize(

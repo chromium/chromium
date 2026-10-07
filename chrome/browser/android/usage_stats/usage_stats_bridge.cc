@@ -194,7 +194,7 @@ void UsageStatsBridge::SetTokenMappings(JNIEnv* j_env,
   AppendJavaStringArrayToStringVector(j_env, j_tokens, &tokens);
   AppendJavaStringArrayToStringVector(j_env, j_fqdns, &fqdns);
 
-  DCHECK(tokens.size() == fqdns.size());
+  CHECK(tokens.size() == fqdns.size(), base::NotFatalUntil::M161);
 
   // Zip tokens (keys) and FQDNs (values) into a map.
   UsageStatsDatabase::TokenMap mappings;

@@ -24,7 +24,7 @@ std::unique_ptr<KeyedService> CreateWrapperTrackerFactory(
 
 static base::android::ScopedJavaLocalRef<jobject>
 JNI_TrackerFactory_GetTrackerForProfile(JNIEnv* env, Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   return feature_engagement::Tracker::GetJavaObject(
       feature_engagement::TrackerFactory::GetInstance()->GetForBrowserContext(
           profile));
@@ -34,7 +34,7 @@ static void JNI_TrackerFactory_SetTestingFactory(
     JNIEnv* env,
     Profile* profile,
     const base::android::JavaRef<jobject>& jtracker) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
 
   feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
       profile, base::BindRepeating(

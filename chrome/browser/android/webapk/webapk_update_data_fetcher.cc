@@ -257,7 +257,8 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
   // Each entry contains the icon data for the corresponding entry in
   // |shortcuts|.
   std::vector<std::string> shortcut_icon_data;
-  DCHECK_EQ(info_.shortcut_items.size(), info_.best_shortcut_icon_urls.size());
+  CHECK_EQ(info_.shortcut_items.size(), info_.best_shortcut_icon_urls.size(),
+           base::NotFatalUntil::M161);
 
   for (size_t i = 0; i < info_.shortcut_items.size(); i++) {
     const auto& shortcut = info_.shortcut_items[i];

@@ -174,7 +174,7 @@ void ContextualSearchLayer::SetProperties(
     // Grabs the Related Searches in-bar resource.
     ui::Resource* related_searches_resource = resource_manager_->GetResource(
         ui::ANDROID_RESOURCE_TYPE_DYNAMIC, related_searches_in_bar_resource_id);
-    DCHECK(related_searches_resource);
+    CHECK(related_searches_resource, base::NotFatalUntil::M161);
     if (related_searches_resource) {
       gfx::Size related_searches_size(
           search_panel_width, related_searches_resource->size().height());
@@ -383,9 +383,9 @@ int ContextualSearchLayer::SetupTextLayer(float content_top,
   // Setup the Drawing Hierarchy
   // ---------------------------------------------------------------------------
   // Search Term
-  DCHECK(text_layer_.get());
-  DCHECK(bar_text_.get());
-  DCHECK(search_caption_.get());
+  CHECK(text_layer_.get(), base::NotFatalUntil::M161);
+  CHECK(bar_text_.get(), base::NotFatalUntil::M161);
+  CHECK(search_caption_.get(), base::NotFatalUntil::M161);
   bool bar_text_visible = search_term_opacity > 0.0f;
   if (bar_text_visible && bar_text_->parent() != text_layer_)
     text_layer_->AddChild(bar_text_);

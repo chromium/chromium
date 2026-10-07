@@ -536,7 +536,7 @@ AccessibilityPrivateMagnifierCenterOnPointFunction::Run() {
   gfx::Point point_in_screen(params->point.x, params->point.y);
 
   auto* magnification_manager = ash::MagnificationManager::Get();
-  DCHECK(magnification_manager);
+  CHECK(magnification_manager, base::NotFatalUntil::M161);
   magnification_manager->HandleMagnifierCenterOnPointIfEnabled(point_in_screen);
 
   return RespondNow(NoArguments());
@@ -551,7 +551,7 @@ AccessibilityPrivateMoveMagnifierToRectFunction::Run() {
                    params->rect.height);
 
   auto* magnification_manager = ash::MagnificationManager::Get();
-  DCHECK(magnification_manager);
+  CHECK(magnification_manager, base::NotFatalUntil::M161);
   magnification_manager->HandleMoveMagnifierToRectIfEnabled(bounds);
 
   return RespondNow(NoArguments());
@@ -628,7 +628,7 @@ AccessibilityPrivateSendSyntheticKeyEventFunction::Run() {
 
   auto* host = ash::GetWindowTreeHostForDisplay(
       display::Screen::Get()->GetPrimaryDisplay().id());
-  DCHECK(host);
+  CHECK(host, base::NotFatalUntil::M161);
 
   bool dictation_enabled = AccessibilityManager::Get()->IsDictationEnabled();
   bool from_accessibility_common =

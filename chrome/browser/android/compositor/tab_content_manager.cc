@@ -179,7 +179,7 @@ class TabContentManager::TabReadbackRequest : public RetryableTask {
   void OnRetryLoopFinished(bool success) {
     if (success) {
       // result_callback_ should have already been consumed on the success path.
-      DCHECK(!result_callback_);
+      CHECK(!result_callback_, base::NotFatalUntil::M161);
       return;
     }
 
@@ -330,9 +330,9 @@ void TabContentManager::CaptureThumbnail(
     bool return_bitmap,
     const base::android::JavaRef<jobject>& j_callback) {
   // Ensure capture only happens on UI thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
-  DCHECK(tab_android);
+  CHECK(tab_android, base::NotFatalUntil::M161);
   const int tab_id = tab_android->GetAndroidId();
   bool has_pending_readback = pending_tab_readbacks_.contains(tab_id);
 
@@ -362,7 +362,7 @@ void TabContentManager::CacheTabWithBitmap(JNIEnv* env,
                                            TabAndroid* tab_android,
                                            const JavaRef<jobject>& bitmap,
                                            float thumbnail_scale) {
-  DCHECK(tab_android);
+  CHECK(tab_android, base::NotFatalUntil::M161);
   int tab_id = tab_android->GetAndroidId();
   GURL url = tab_android->GetURL();
 
@@ -521,7 +521,7 @@ static int64_t JNI_TabContentManager_Init(JNIEnv* env,
                                           int32_t write_queue_max_size,
                                           bool save_jpeg_thumbnails) {
   // Ensure this and its thumbnail cache are created on the UI thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   TabContentManager* manager = new TabContentManager(
       env, obj, default_cache_size, compression_queue_max_size,

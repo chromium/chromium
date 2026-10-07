@@ -67,7 +67,7 @@ void NearOomReductionMessageDelegate::HandleDeclineInterventionClicked() {
 
 void NearOomReductionMessageDelegate::HandleMessageDismissed(
     messages::DismissReason dismiss_reason) {
-  DCHECK(message_);
+  CHECK(message_, base::NotFatalUntil::M161);
   message_.reset();
 }
 

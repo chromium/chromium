@@ -325,7 +325,7 @@ void TabStripSceneLayer::UpdateNewTabButton(
     bool is_keyboard_focused,
     int32_t keyboard_focus_ring_resource_id,
     int32_t keyboard_focus_ring_color) {
-  DCHECK(resource_manager_);
+  CHECK(resource_manager_, base::NotFatalUntil::M161);
   ui::Resource* button_resource =
       resource_manager_->GetStaticResourceWithTint(resource_id, tint);
   ui::Resource* background_resource =
@@ -395,7 +395,7 @@ void TabStripSceneLayer::UpdateGlicButton(
     bool dismiss_is_keyboard_focused,
     int32_t dismiss_keyboard_focus_ring_resource_id,
     int32_t dismiss_keyboard_focus_ring_color) {
-  DCHECK(resource_manager_);
+  CHECK(resource_manager_, base::NotFatalUntil::M161);
 
   // Glic button outer edge is left in LTR (matches base asset), right in RTL.
   bool should_flip_keyboard_focus_ring = l10n_util::IsLayoutRtl();
@@ -439,7 +439,7 @@ void TabStripSceneLayer::UpdateModelSelectorButton(
     bool is_keyboard_focused,
     int32_t keyboard_focus_ring_resource_id,
     int32_t keyboard_focus_ring_color) {
-  DCHECK(resource_manager_);
+  CHECK(resource_manager_, base::NotFatalUntil::M161);
   ui::Resource* button_resource =
       resource_manager_->GetStaticResourceWithTint(resource_id, tint);
   ui::Resource* background_resource =
@@ -471,7 +471,7 @@ void TabStripSceneLayer::UpdateTabSearchButton(
     bool is_keyboard_focused,
     int32_t keyboard_focus_ring_resource_id,
     int32_t keyboard_focus_ring_color) {
-  DCHECK(resource_manager_);
+  CHECK(resource_manager_, base::NotFatalUntil::M161);
   ui::Resource* button_resource =
       resource_manager_->GetStaticResourceWithTint(resource_id, tint);
   ui::Resource* background_resource =
@@ -550,7 +550,7 @@ void TabStripSceneLayer::UpdateGlicButtonInternal(
     float icon_text_padding,
     float corner_radius_outer,
     float corner_radius_inner) {
-  DCHECK(resource_manager_);
+  CHECK(resource_manager_, base::NotFatalUntil::M161);
   ui::Resource* icon_resource;
   if (should_tint) {
     icon_resource =
@@ -837,7 +837,7 @@ void TabStripSceneLayer::PutStripTabLayer(
     int32_t underline_start_color,
     int32_t underline_end_color,
     int32_t underline_width_threshold) {
-  DCHECK(layer_title_cache_);
+  CHECK(layer_title_cache_, base::NotFatalUntil::M161);
   scoped_refptr<TabHandleLayer> layer = GetNextTabLayer(layer_title_cache_);
 
   if (foreground != layer->foreground() || is_pinned != layer->is_pinned()) {
@@ -850,7 +850,7 @@ void TabStripSceneLayer::PutStripTabLayer(
     }
   }
 
-  DCHECK(resource_manager_);
+  CHECK(resource_manager_, base::NotFatalUntil::M161);
   ui::NinePatchResource* tab_handle_resource =
       ui::NinePatchResource::From(resource_manager_->GetStaticResourceWithTint(
           handle_resource_id, handle_tint, true));
@@ -938,7 +938,7 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
     int32_t keyboard_focus_ring_color,
     int32_t keyboard_focus_ring_offset,
     int32_t keyboard_focus_ring_width) {
-  DCHECK(layer_title_cache_);
+  CHECK(layer_title_cache_, base::NotFatalUntil::M161);
 
   // Reuse existing layer if it exists.
   scoped_refptr<GroupIndicatorLayer> layer =

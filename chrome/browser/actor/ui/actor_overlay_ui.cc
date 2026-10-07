@@ -90,7 +90,7 @@ void ActorOverlayUI::SetOverlayBackground(bool is_visible) {
 }
 
 void ActorOverlayUI::SetBorderGlowVisibility(bool is_visible) {
-  DCHECK(handler_);
+  CHECK(handler_, base::NotFatalUntil::M161);
   handler_->SetBorderGlowVisibility(is_visible);
 }
 
@@ -105,12 +105,12 @@ bool ActorOverlayUI::IsActorOverlayWebContents(
 
 void ActorOverlayUI::MoveCursorTo(const gfx::Point& point,
                                   base::OnceClosure callback) {
-  DCHECK(handler_);
+  CHECK(handler_, base::NotFatalUntil::M161);
   handler_->MoveCursorTo(point, std::move(callback));
 }
 
 void ActorOverlayUI::TriggerClickAnimation(base::OnceClosure callback) {
-  DCHECK(handler_);
+  CHECK(handler_, base::NotFatalUntil::M161);
   handler_->TriggerClickAnimation(std::move(callback));
 }
 

@@ -160,7 +160,7 @@ void SodaInstallerImpl::OnEvent(const update_client::CrxUpdateItem& item) {
   if (item.id !=
       component_updater::SodaComponentInstallerPolicy::GetExtensionId()) {
     language_code = GetLanguageCodeByComponentId(item.id);
-    DCHECK_NE(language_code, LanguageCode::kNone);
+    CHECK_NE(language_code, LanguageCode::kNone, base::NotFatalUntil::M161);
   }
 
   switch (item.state) {

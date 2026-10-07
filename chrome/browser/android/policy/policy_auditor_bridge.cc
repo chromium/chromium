@@ -48,7 +48,7 @@ void PolicyAuditorBridge::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
   if (navigation_handle->IsInPrimaryMainFrame()) {
     JNIEnv* env = AttachCurrentThread();
-    DCHECK(HasPolicyAuditor(env));
+    CHECK(HasPolicyAuditor(env), base::NotFatalUntil::M161);
     Java_PolicyAuditorBridge_notifyAuditEventForDidFinishNavigation(
         env, navigation_handle->GetJavaNavigationHandle());
   }
@@ -58,7 +58,7 @@ void PolicyAuditorBridge::DidFinishLoad(RenderFrameHost* render_frame_host,
                                         const GURL& validated_url) {
   if (render_frame_host->IsInPrimaryMainFrame()) {
     JNIEnv* env = AttachCurrentThread();
-    DCHECK(HasPolicyAuditor(env));
+    CHECK(HasPolicyAuditor(env), base::NotFatalUntil::M161);
     Java_PolicyAuditorBridge_notifyAuditEventForDidFinishLoad(
         env, GURLAndroid::FromNativeGURL(env, validated_url));
   }

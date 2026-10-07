@@ -119,7 +119,7 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
     bool java_is_app_identity_update_supported,
     const std::vector<int32_t>& java_update_reasons,
     base::OnceCallback<void(bool)> java_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   webapps::ShortcutInfo info((GURL(java_start_url)));
   info.scope = GURL(java_scope);
@@ -205,11 +205,12 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
   base::android::JavaArrayOfByteArrayToStringVector(
       env, java_shortcut_icon_data, &shortcut_icon_data);
 
-  DCHECK_EQ(shortcuts.size(), shortcut_icon_data.size());
+  CHECK_EQ(shortcuts.size(), shortcut_icon_data.size(),
+           base::NotFatalUntil::M161);
 
   for (size_t i = 0; i < shortcuts.size(); i++) {
     const auto& shortcut_data = shortcuts[i];
-    DCHECK_EQ(shortcut_data.size(), 5u);
+    CHECK_EQ(shortcut_data.size(), 5u, base::NotFatalUntil::M161);
 
     blink::Manifest::ShortcutItem shortcut_item;
     shortcut_item.name = shortcut_data[0];

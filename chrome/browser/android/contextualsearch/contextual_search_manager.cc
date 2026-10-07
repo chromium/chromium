@@ -72,7 +72,7 @@ void ContextualSearchManager::StartSearchTermResolutionRequest(
     const JavaRef<jobject>& j_base_web_contents) {
   WebContents* base_web_contents =
       WebContents::FromJavaWebContents(j_base_web_contents);
-  DCHECK(base_web_contents);
+  CHECK(base_web_contents, base::NotFatalUntil::M161);
   base::WeakPtr<NativeContextualSearchContext> contextual_search_context =
       NativeContextualSearchContext::FromJavaContextualSearchContext(
           j_contextual_search_context);
@@ -90,7 +90,7 @@ void ContextualSearchManager::GatherSurroundingText(
     const JavaRef<jobject>& j_base_web_contents) {
   WebContents* base_web_contents =
       WebContents::FromJavaWebContents(j_base_web_contents);
-  DCHECK(base_web_contents);
+  CHECK(base_web_contents, base::NotFatalUntil::M161);
   base::WeakPtr<NativeContextualSearchContext> contextual_search_context =
       NativeContextualSearchContext::FromJavaContextualSearchContext(
           j_contextual_search_context);

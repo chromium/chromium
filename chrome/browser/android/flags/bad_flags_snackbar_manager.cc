@@ -16,7 +16,7 @@ void ShowBadFlagsSnackbar(content::WebContents* web_contents,
                           const std::u16string& message) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ui::ViewAndroid* view_android = web_contents->GetNativeView();
-  DCHECK(view_android);
+  CHECK(view_android, base::NotFatalUntil::M161);
   ui::WindowAndroid* window_android = view_android->GetWindowAndroid();
   if (!window_android)
     return;

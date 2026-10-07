@@ -233,7 +233,7 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::Classify(
   Start(nullptr, text, -1, "", GURL(), ::metrics::OmniboxEventProto::OTHER,
         omnibox::TOOL_MODE_UNSPECIFIED, true, false, false, false);
   inside_synchronous_start_ = false;
-  DCHECK(autocomplete_controller_->done());
+  CHECK(autocomplete_controller_->done(), base::NotFatalUntil::M161);
   AutocompleteResult& result =
       const_cast<AutocompleteResult&>(autocomplete_controller_->result());
   PostProcessResult(result);
@@ -544,7 +544,8 @@ void AutocompleteControllerAndroid::SetVoiceMatches(
       << "Voice matches received with no registered VoiceSuggestProvider. "
       << "Either disable voice input, or provision VoiceSuggestProvider.";
 
-  DCHECK(voice_matches.size() == confidence_scores.size());
+  CHECK(voice_matches.size() == confidence_scores.size(),
+        base::NotFatalUntil::M161);
 
   voice_suggest_provider->ClearCache();
   for (size_t index = 0; index < voice_matches.size(); ++index) {

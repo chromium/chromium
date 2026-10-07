@@ -38,7 +38,7 @@ NativeContextualSearchContext::AsWeakPtr() {
 base::WeakPtr<NativeContextualSearchContext>
 NativeContextualSearchContext::FromJavaContextualSearchContext(
     const base::android::JavaRef<jobject>& j_contextual_search_context) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (j_contextual_search_context.is_null())
     return nullptr;
 

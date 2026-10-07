@@ -37,7 +37,7 @@ std::optional<ArCore::InitializeResult> FakeArCore::Initialize(
         optional_features,
     const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
     std::optional<ArCore::DepthSensingConfiguration> depth_sensing_config) {
-  DCHECK(IsOnGlThread());
+  CHECK(IsOnGlThread(), base::NotFatalUntil::M161);
 
   std::unordered_set<device::mojom::XRSessionFeature> enabled_features;
   enabled_features.insert(required_features.begin(), required_features.end());
@@ -58,7 +58,7 @@ std::optional<ArCore::InitializeResult> FakeArCore::Initialize(
 void FakeArCore::SetDisplayGeometry(
     const gfx::Size& frame_size,
     display::Display::Rotation display_rotation) {
-  DCHECK(IsOnGlThread());
+  CHECK(IsOnGlThread(), base::NotFatalUntil::M161);
 
   display_rotation_ = display_rotation;
   frame_size_ = frame_size;
@@ -69,7 +69,7 @@ gfx::Size FakeArCore::GetUncroppedCameraImageSize() const {
 }
 
 void FakeArCore::SetCameraTexture(uint32_t texture) {
-  DCHECK(IsOnGlThread());
+  CHECK(IsOnGlThread(), base::NotFatalUntil::M161);
   // This is a no-op for the FakeArCore implementation. We might want to
   // store the textureid for use in unit tests, but currently ArCoreDeviceTest
   // is using mocked image transport so the actual texture doesn't have to
@@ -109,10 +109,10 @@ std::vector<float> FakeArCore::TransformDisplayUvCoords(
   // the details.
 
   // SetDisplayGeometry should have been called first.
-  DCHECK(frame_size_.width());
-  DCHECK(frame_size_.height());
+  CHECK(frame_size_.width(), base::NotFatalUntil::M161);
+  CHECK(frame_size_.height(), base::NotFatalUntil::M161);
 
-  DCHECK_GE(uvs.size(), 6u);
+  CHECK_GE(uvs.size(), 6u, base::NotFatalUntil::M161);
 
   // Do clipping calculations in orientation ROTATE_0. screen U is left=0,
   // right=1. Screen V is bottom=0, top=1. We'll apply screen rotation later.
@@ -155,7 +155,7 @@ std::vector<float> FakeArCore::TransformDisplayUvCoords(
   }
 
   size_t num_elements = uvs.size();
-  DCHECK(num_elements % 2 == 0);
+  CHECK(num_elements % 2 == 0, base::NotFatalUntil::M161);
   std::vector<float> uvs_out;
   uvs_out.reserve(num_elements);
   for (size_t i = 0; i < num_elements; i += 2) {
@@ -189,7 +189,7 @@ std::vector<float> FakeArCore::TransformDisplayUvCoords(
 }
 
 gfx::Transform FakeArCore::GetProjectionMatrix(float near, float far) {
-  DCHECK(IsOnGlThread());
+  CHECK(IsOnGlThread(), base::NotFatalUntil::M161);
   // Get a projection matrix matching the current screen orientation and
   // aspect. Currently, this uses a hardcoded FOV angle for the smaller screen
   // dimension, and adjusts the other angle to preserve the aspect. A better
@@ -221,8 +221,8 @@ gfx::Transform FakeArCore::GetProjectionMatrix(float near, float far) {
 }
 
 mojom::VRPosePtr FakeArCore::Update(bool* camera_updated) {
-  DCHECK(IsOnGlThread());
-  DCHECK(camera_updated);
+  CHECK(IsOnGlThread(), base::NotFatalUntil::M161);
+  CHECK(camera_updated, base::NotFatalUntil::M161);
 
   *camera_updated = true;
 
@@ -366,7 +366,7 @@ void FakeArCore::ProcessAnchorCreationRequests(
 
 void FakeArCore::DetachAnchor(AnchorId anchor_id) {
   auto count = anchors_.erase(anchor_id);
-  DCHECK_EQ(1u, count);
+  CHECK_EQ(1u, count, base::NotFatalUntil::M161);
 }
 
 mojom::XRTrackedImagesDataPtr FakeArCore::GetTrackedImages() {
@@ -375,11 +375,11 @@ mojom::XRTrackedImagesDataPtr FakeArCore::GetTrackedImages() {
 }
 
 void FakeArCore::Pause() {
-  DCHECK(IsOnGlThread());
+  CHECK(IsOnGlThread(), base::NotFatalUntil::M161);
 }
 
 void FakeArCore::Resume() {
-  DCHECK(IsOnGlThread());
+  CHECK(IsOnGlThread(), base::NotFatalUntil::M161);
 }
 
 bool FakeArCore::IsOnGlThread() const {

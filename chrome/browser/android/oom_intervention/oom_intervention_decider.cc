@@ -76,7 +76,7 @@ OomInterventionDecider::OomInterventionDecider(
     std::unique_ptr<Delegate> delegate,
     PrefService* prefs)
     : delegate_(std::move(delegate)), prefs_(prefs) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M161);
 
   PrefService::PrefInitializationStatus pref_status =
       prefs_->GetInitializationStatus();

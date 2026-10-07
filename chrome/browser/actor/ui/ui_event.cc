@@ -24,7 +24,7 @@ StopTask::StopTask(actor::TaskId id,
       last_acted_on_tab_handle(last_acted_on_tab_handle),
       duration(duration),
       feature_mode(feature_mode) {
-  DCHECK(ActorTask::IsCompletedState(final_state));
+  CHECK(ActorTask::IsCompletedState(final_state), base::NotFatalUntil::M161);
 }
 StopTask::~StopTask() = default;
 StopTask::StopTask(const StopTask&) = default;

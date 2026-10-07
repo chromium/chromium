@@ -260,7 +260,7 @@ static int64_t JNI_ContextMenuNativeDelegateImpl_Init(
     JNIEnv* env,
     content::WebContents* web_contents,
     const JavaRef<jobject>& jcontext_menu_params) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
   auto* params =
       context_menu::ContextMenuParamsFromJavaObject(jcontext_menu_params);
   return reinterpret_cast<intptr_t>(

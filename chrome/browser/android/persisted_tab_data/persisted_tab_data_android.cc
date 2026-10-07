@@ -53,7 +53,7 @@ void PersistedTabDataAndroid::From(base::WeakPtr<TabAndroid> tab_android,
                                    const void* user_data_key,
                                    SupplierCallback supplier_callback,
                                    FromCallback from_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!tab_android) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(from_callback), nullptr));
@@ -120,7 +120,8 @@ void PersistedTabDataAndroid::From(base::WeakPtr<TabAndroid> tab_android,
               [](base::WeakPtr<TabAndroid> tab_android,
                  SupplierCallback supplier_callback, const void* user_data_key,
                  const std::vector<uint8_t>& data) {
-                DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+                CHECK_CURRENTLY_ON(content::BrowserThread::UI,
+                                   base::NotFatalUntil::M161);
                 if (!tab_android) {
                   return;
                 }
@@ -198,7 +199,8 @@ void PersistedTabDataAndroid::OnDeferredStartup() {
           [](FromCallback from_callback,
              PersistedTabDataAndroid* persisted_tab_data_android) {
             // Callbacks should have been posted to the UI thread.
-            DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+            CHECK_CURRENTLY_ON(content::BrowserThread::UI,
+                               base::NotFatalUntil::M161);
             std::move(from_callback).Run(persisted_tab_data_android);
 
             // Recursive call to clear rest of queue (if it's non-empty).
@@ -238,7 +240,7 @@ PersistedTabDataAndroid::GetCachedCallbackMap() {
 void PersistedTabDataAndroid::RunCallbackOnUIThread(
     const TabAndroid* tab_android,
     const void* user_data_key) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(tab_android);
   std::string cached_callback_key =
       GetCachedCallbackKey(tab_android, user_data_key);

@@ -42,7 +42,7 @@ static bool JNI_UmaUtils_IsClientInSampleForCrashes(JNIEnv* env) {
 
 static void JNI_UmaUtils_RecordMetricsReportingDefaultOptIn(JNIEnv* env,
                                                             bool opt_in) {
-  DCHECK(g_browser_process);
+  CHECK(g_browser_process, base::NotFatalUntil::M161);
   PrefService* local_state = g_browser_process->local_state();
 
   // Users can easily accept ToS multiple times by using the back button, only

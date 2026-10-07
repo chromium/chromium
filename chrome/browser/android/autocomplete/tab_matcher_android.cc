@@ -62,7 +62,7 @@ class AutocompleteClientTabAndroidUserData
 
  private:
   explicit AutocompleteClientTabAndroidUserData(TabAndroid* tab) : tab_(tab) {
-    DCHECK(tab);
+    CHECK(tab, base::NotFatalUntil::M161);
     tab->AddObserver(this);
   }
   friend class TabAndroidUserData<AutocompleteClientTabAndroidUserData>;
@@ -88,7 +88,7 @@ TabMatcherAndroid::~TabMatcherAndroid() = default;
 
 bool TabMatcherAndroid::IsTabOpenWithURL(const GURL& url,
                                          const AutocompleteInput* input) const {
-  DCHECK(input);
+  CHECK(input, base::NotFatalUntil::M161);
   const AutocompleteInput empty_input;
   if (!input)
     input = &empty_input;
@@ -107,8 +107,8 @@ bool TabMatcherAndroid::IsTabOpenWithURL(const GURL& url,
 
 void TabMatcherAndroid::FindMatchingTabs(GURLToTabInfoMap* map,
                                          const AutocompleteInput* input) const {
-  DCHECK(map);
-  DCHECK(input);
+  CHECK(map, base::NotFatalUntil::M161);
+  CHECK(input, base::NotFatalUntil::M161);
   const AutocompleteInput empty_input;
   if (!input)
     input = &empty_input;
@@ -225,7 +225,7 @@ TabMatcher::GURLToTabInfoMap TabMatcherAndroid::GetAllHiddenAndNonCCTTabInfos(
     AutocompleteClientTabAndroidUserData::CreateForTabAndroid(tab);
     AutocompleteClientTabAndroidUserData* user_data =
         AutocompleteClientTabAndroidUserData::FromTabAndroid(tab);
-    DCHECK(user_data);
+    CHECK(user_data, base::NotFatalUntil::M161);
     if (!user_data->IsInitialized()) {
       user_data->UpdateStrippedURL(tab->GetURL(), template_url_service_,
                                    /*keep_search_intent_params=*/true);

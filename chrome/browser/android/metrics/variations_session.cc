@@ -22,7 +22,7 @@ bool g_on_app_enter_foreground_called = false;
 static void JNI_VariationsSession_StartVariationsSession(
     JNIEnv* env,
     const std::string& restrict_mode) {
-  DCHECK(g_browser_process);
+  CHECK(g_browser_process, base::NotFatalUntil::M161);
 
   variations::VariationsService* variations_service =
       g_browser_process->variations_service();

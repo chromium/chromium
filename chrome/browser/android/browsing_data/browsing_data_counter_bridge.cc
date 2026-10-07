@@ -25,9 +25,10 @@ BrowsingDataCounterBridge::BrowsingDataCounterBridge(
     int32_t selected_time_period,
     int32_t data_type)
     : jobject_(obj) {
-  DCHECK_GE(data_type, 0);
-  DCHECK_LE(data_type,
-            static_cast<int>(browsing_data::BrowsingDataType::MAX_VALUE));
+  CHECK_GE(data_type, 0, base::NotFatalUntil::M161);
+  CHECK_LE(data_type,
+           static_cast<int>(browsing_data::BrowsingDataType::MAX_VALUE),
+           base::NotFatalUntil::M161);
   TRACE_EVENT1("browsing_data",
                "BrowsingDataCounterBridge::BrowsingDataCounterBridge",
                "data_type", data_type);

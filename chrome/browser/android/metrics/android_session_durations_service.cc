@@ -93,10 +93,10 @@ void AndroidSessionDurationsService::InitializeForRegularProfile(
     syncer::SyncService* sync_service,
     signin::IdentityManager* identity_manager,
     metrics::ProfileMetricsService* profile_metrics_service) {
-  DCHECK(!incognito_session_metrics_recorder_);
-  DCHECK(!sync_session_metrics_recorder_);
+  CHECK(!incognito_session_metrics_recorder_, base::NotFatalUntil::M161);
+  CHECK(!sync_session_metrics_recorder_, base::NotFatalUntil::M161);
   CHECK(!password_session_duration_metrics_recorder_);
-  DCHECK(!msbb_session_metrics_recorder_);
+  CHECK(!msbb_session_metrics_recorder_, base::NotFatalUntil::M161);
 
   sync_session_metrics_recorder_ =
       std::make_unique<syncer::SyncSessionDurationsMetricsRecorder>(
@@ -118,10 +118,10 @@ void AndroidSessionDurationsService::InitializeForRegularProfile(
 }
 
 void AndroidSessionDurationsService::InitializeForIncognitoProfile() {
-  DCHECK(!incognito_session_metrics_recorder_);
-  DCHECK(!sync_session_metrics_recorder_);
+  CHECK(!incognito_session_metrics_recorder_, base::NotFatalUntil::M161);
+  CHECK(!sync_session_metrics_recorder_, base::NotFatalUntil::M161);
   CHECK(!password_session_duration_metrics_recorder_);
-  DCHECK(!msbb_session_metrics_recorder_);
+  CHECK(!msbb_session_metrics_recorder_, base::NotFatalUntil::M161);
 
   incognito_session_metrics_recorder_ =
       std::make_unique<IncognitoSessionDurationsMetricsRecorder>();
@@ -198,7 +198,7 @@ void AndroidSessionDurationsService::SetSessionStartTimeForTesting(
 void AndroidSessionDurationsService::GetIncognitoSessionData(
     base::Time& session_start,
     base::TimeDelta& last_reported_duration) {
-  DCHECK(incognito_session_metrics_recorder_);
+  CHECK(incognito_session_metrics_recorder_, base::NotFatalUntil::M161);
   incognito_session_metrics_recorder_->GetStatusForSessionRestore(
       session_start, last_reported_duration);
 }
@@ -206,7 +206,7 @@ void AndroidSessionDurationsService::GetIncognitoSessionData(
 void AndroidSessionDurationsService::RestoreIncognitoSession(
     base::Time session_start,
     base::TimeDelta last_reported_duration) {
-  DCHECK(incognito_session_metrics_recorder_);
+  CHECK(incognito_session_metrics_recorder_, base::NotFatalUntil::M161);
   incognito_session_metrics_recorder_->RestoreSession(session_start,
                                                       last_reported_duration);
 }

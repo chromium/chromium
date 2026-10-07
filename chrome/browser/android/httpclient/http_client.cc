@@ -59,7 +59,7 @@ std::unique_ptr<network::SimpleURLLoader> MakeLoader(
   simple_loader->SetTimeoutDuration(base::Seconds(kTimeoutDurationSeconds));
 
   if (!request_body.empty()) {
-    DCHECK(!content_type.empty());
+    CHECK(!content_type.empty(), base::NotFatalUntil::M161);
     PopulateRequestBodyAndContentType(simple_loader.get(),
                                       std::move(request_body), content_type);
   }
@@ -84,7 +84,7 @@ void HttpClient::Send(
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
     HttpClient::ResponseCallback callback) {
   // SimpleUrlLoader can only be called on the UI thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   std::unique_ptr<network::SimpleURLLoader> simple_loader =
       MakeLoader(gurl, request_type, std::move(request_body),
@@ -102,7 +102,7 @@ void HttpClient::Send(
 }
 
 void HttpClient::ReleaseUrlLoader(network::SimpleURLLoader* simple_loader) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   // Release the current loader.
   auto loader_iter = url_loaders_.find(simple_loader);
   CHECK(loader_iter != url_loaders_.end());
@@ -113,7 +113,7 @@ void HttpClient::OnSimpleLoaderComplete(
     HttpClient::ResponseCallback response_callback,
     network::SimpleURLLoader* simple_loader,
     std::optional<std::string> response) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   int32_t response_code = 0;
   int32_t net_error_code = simple_loader->NetError();
 

@@ -22,7 +22,7 @@ scoped_refptr<cc::slim::Layer> OverlayPanelLayer::GetIconLayer() {
     return nullptr;
   ui::Resource* panel_icon_resource = resource_manager_->GetResource(
       ui::ANDROID_RESOURCE_TYPE_STATIC, panel_icon_resource_id_);
-  DCHECK(panel_icon_resource);
+  CHECK(panel_icon_resource, base::NotFatalUntil::M161);
 
   if (panel_icon_->parent() != layer_) {
     layer_->AddChild(panel_icon_);
@@ -131,13 +131,13 @@ void OverlayPanelLayer::SetProperties(
     ui::NinePatchResource* panel_shadow_resource =
         ui::NinePatchResource::From(resource_manager_->GetResource(
             ui::ANDROID_RESOURCE_TYPE_STATIC, panel_shadow_resource_id_));
-    DCHECK(panel_shadow_resource);
+    CHECK(panel_shadow_resource, base::NotFatalUntil::M161);
 
     gfx::Size shadow_res_size = panel_shadow_resource->size();
     panel_shadow_->SetUIResourceId(panel_shadow_resource->ui_resource()->id());
     panel_shadow_->SetAperture(panel_shadow_resource->aperture());
 
-    DCHECK(rounded_bar_top_resource);
+    CHECK(rounded_bar_top_resource, base::NotFatalUntil::M161);
 
     int shadow_thickness = shadow_res_size.height() - rounded_top_height;
 
@@ -154,10 +154,11 @@ void OverlayPanelLayer::SetProperties(
   // Rounded Bar Top
   // ---------------------------------------------------------------------------
 
-  DCHECK(rounded_bar_top_resource_id_ != kInvalidResourceID);
+  CHECK(rounded_bar_top_resource_id_ != kInvalidResourceID,
+        base::NotFatalUntil::M161);
   rounded_bar_top_->SetIsDrawable(true);
 
-  DCHECK(rounded_bar_top_resource);
+  CHECK(rounded_bar_top_resource, base::NotFatalUntil::M161);
 
   gfx::Size bounds(panel_width, rounded_bar_top_resource->size().height());
 
@@ -386,8 +387,8 @@ void OverlayPanelLayer::SetProgressBar(int progress_bar_background_resource_id,
         resource_manager_->GetStaticResourceWithTint(progress_bar_resource_id,
                                                      progress_bar_tint));
 
-    DCHECK(progress_bar_background_resource);
-    DCHECK(progress_bar_resource);
+    CHECK(progress_bar_background_resource, base::NotFatalUntil::M161);
+    CHECK(progress_bar_resource, base::NotFatalUntil::M161);
 
     // Progress Bar Background
     if (progress_bar_background_->parent() != layer_)

@@ -102,7 +102,7 @@ std::string CreateWebsiteEventKey(int64_t seconds_since_unix_epoch,
   char unixTime[kUnixTimeDigits + 1];
   ssize_t printed = base::strings::SafeSPrintf(unixTime, kUnixTimeFormat,
                                                seconds_since_unix_epoch);
-  DCHECK(printed == kUnixTimeDigits);
+  CHECK(printed == kUnixTimeDigits, base::NotFatalUntil::M161);
 
   // Create the key from the time and fqdn (example: 01548276551_foo.com).
   return base::StrCat({unixTime, kKeySeparator, fqdn});

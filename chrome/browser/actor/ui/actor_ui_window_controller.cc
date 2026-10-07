@@ -236,7 +236,7 @@ void ActorUiContentsContainerController::ApplyOverlayState(
     // If we have a mouse target, we should not ALSO have a mouse_down state.
     // This DCHECK ensures that the ActorOverlayState will only request a mouse
     // movement OR a click, never both.
-    DCHECK(!state.mouse_down);
+    CHECK(!state.mouse_down, base::NotFatalUntil::M161);
     overlay_->MoveCursorTo(state.mouse_target.value(), runner.Release());
     return;
   } else if (state.mouse_down) {

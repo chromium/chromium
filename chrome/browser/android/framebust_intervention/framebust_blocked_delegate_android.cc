@@ -58,7 +58,8 @@ bool FramebustBlockedMessageDelegate::ShowMessage(
 
   messages::MessageDispatcherBridge* message_dispatcher_bridge =
       messages::MessageDispatcherBridge::Get();
-  DCHECK(message_dispatcher_bridge->IsMessagesEnabledForEmbedder());
+  CHECK(message_dispatcher_bridge->IsMessagesEnabledForEmbedder(),
+        base::NotFatalUntil::M161);
 
   message->SetSecondaryIconResourceId(
       message_dispatcher_bridge->MapToJavaDrawableId(IDR_ANDROID_SETTINGS));

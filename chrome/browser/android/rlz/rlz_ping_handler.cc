@@ -41,7 +41,7 @@ namespace chrome {
 namespace android {
 
 RlzPingHandler::RlzPingHandler(Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   url_loader_factory_ = profile->GetDefaultStoragePartition()
                             ->GetURLLoaderFactoryForBrowserProcess();
 }
@@ -64,9 +64,9 @@ void RlzPingHandler::Ping(const std::string& brand,
 
   callback_ = std::move(callback);
 
-  DCHECK_EQ(brand.length(), 4u);
-  DCHECK_EQ(language.length(), 2u);
-  DCHECK_EQ(id.length(), 50u);
+  CHECK_EQ(brand.length(), 4u, base::NotFatalUntil::M161);
+  CHECK_EQ(language.length(), 2u, base::NotFatalUntil::M161);
+  CHECK_EQ(id.length(), 50u, base::NotFatalUntil::M161);
 
   GURL request_url(base::StringPrintf(
       "https://%s%s?", rlz_lib::kFinancialServer, rlz_lib::kFinancialPingPath));

@@ -57,10 +57,10 @@ void ContextualSearchTabHelper::InstallUnhandledTapNotifierIfNeeded(
     JNIEnv* env,
     const JavaRef<jobject>& j_base_web_contents,
     float device_scale_factor) {
-  DCHECK(j_base_web_contents);
+  CHECK(j_base_web_contents, base::NotFatalUntil::M161);
   content::WebContents* base_web_contents =
       content::WebContents::FromJavaWebContents(j_base_web_contents);
-  DCHECK(base_web_contents);
+  CHECK(base_web_contents, base::NotFatalUntil::M161);
 
   if (!UnhandledTapWebContentsObserver::FromWebContents(base_web_contents)) {
     // Create an UnhandledTapWebContentsObserver owned by |base_web_contents|.

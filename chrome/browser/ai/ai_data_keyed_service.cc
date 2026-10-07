@@ -174,7 +174,7 @@ void GetInnerTextForModelPrototyping(
     content::WebContents* web_contents,
     AiDataKeyedService::AiDataCallback continue_callback) {
   TRACE_EVENT0("browser", "GetInnerTextForModelPrototyping");
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
   // If the tab has not actually navigated, then the remote interfaces will be
   // null, just leave off inner text in this case.
   if (!web_contents->GetPrimaryMainFrame() ||
@@ -282,7 +282,7 @@ void RequestAxTreeSnapshotForModelPrototyping(
     content::WebContents* web_contents,
     AiDataKeyedService::AiDataCallback continue_callback) {
   TRACE_EVENT0("browser", "RequestAxTreeSnapshotForModelPrototyping");
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
   ui::AXTreeUpdate update;
   web_contents->RequestAXTreeSnapshot(
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
@@ -330,7 +330,7 @@ void RequestPdfBytesForModelPrototyping(
     content::WebContents* web_contents,
     AiDataKeyedService::AiDataCallback continue_callback) {
   TRACE_EVENT0("browser", "RequestPdfBytesForModelPrototyping");
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
 
   pdf::PDFDocumentHelper* pdf_helper = MaybeGetFullPagePdfHelper(web_contents);
   if (!pdf_helper) {
@@ -355,7 +355,7 @@ void OnDataCollectionsComplete(AiDataKeyedService::AiDataCallback callback,
                                AiDataKeyedService::AiData data,
                                std::vector<AiDataKeyedService::AiData> datas) {
   TRACE_EVENT0("browser", "OnDataCollectionsComplete");
-  DCHECK(data);
+  CHECK(data, base::NotFatalUntil::M161);
   for (const auto& data_slice : datas) {
     if (!data_slice) {
       // Return an empty data to indicate an error.
@@ -392,7 +392,7 @@ void FillTabInfo(content::WebContents* web_contents,
                  std::string title,
                  std::string url) {
   TRACE_EVENT0("browser", "FillTabInfo");
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
   // If the tab has not actually navigated, then the remote interfaces will be
   // null, just leave off inner text in this case.
   if (!web_contents->GetPrimaryMainFrame() ||
@@ -605,7 +605,7 @@ void GetModelPrototypingAiData(AiDataKeyedService::AiDataSpecifier specifiers,
                                content::WebContents* web_contents,
                                AiDataKeyedService::AiDataCallback callback) {
   TRACE_EVENT0("browser", "GetModelPrototypingAiData");
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
 
   // Fill data with synchronous information.
   AiDataKeyedService::BrowserData data;

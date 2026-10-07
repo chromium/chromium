@@ -110,8 +110,9 @@ class ActorTask : public base::SupportsUserData {
   // Used for late registration/backfilling of the source-defined ID (e.g. Glic
   // conversation ID) when it is not yet known at task creation time.
   void SetSourceId(std::string id) {
-    DCHECK(!id.empty());
-    DCHECK(!source_info_.id.has_value() || source_info_.id == id);
+    CHECK(!id.empty(), base::NotFatalUntil::M161);
+    CHECK(!source_info_.id.has_value() || source_info_.id == id,
+          base::NotFatalUntil::M161);
     source_info_.id = std::move(id);
   }
 

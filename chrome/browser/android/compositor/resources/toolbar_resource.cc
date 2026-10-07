@@ -15,7 +15,7 @@ ToolbarResource* ToolbarResource::From(ui::Resource* resource) {
   if (!resource)
     return nullptr;
 
-  DCHECK_EQ(Type::TOOLBAR, resource->type());
+  CHECK_EQ(Type::TOOLBAR, resource->type(), base::NotFatalUntil::M161);
   return static_cast<ToolbarResource*>(resource);
 }
 

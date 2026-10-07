@@ -44,12 +44,12 @@ static void JNI_CustomTabsConnection_CreateAndStartDetachedResourceRequest(
     const std::string& origin,
     int32_t referrer_policy,
     int32_t motivation) {
-  DCHECK(native_profile);
+  CHECK(native_profile, base::NotFatalUntil::M161);
 
   GURL native_url(url);
   GURL native_origin(origin);
-  DCHECK(native_url.is_valid());
-  DCHECK(native_origin.is_valid());
+  CHECK(native_url.is_valid(), base::NotFatalUntil::M161);
+  CHECK(native_origin.is_valid(), base::NotFatalUntil::M161);
 
   // Java only knows about the blink referrer policy.
   net::ReferrerPolicy url_request_referrer_policy =

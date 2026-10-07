@@ -116,7 +116,7 @@ void ConnectivityChecker::OnURLLoadComplete(
     return;
   is_being_destroyed_ = true;
 
-  DCHECK(url_loader_);
+  CHECK(url_loader_, base::NotFatalUntil::M161);
   bool connected = headers && headers->response_code() == net::HTTP_NO_CONTENT;
   if (connected)
     ExecuteCallback(java_callback_, CONNECTIVITY_CHECK_RESULT_CONNECTED);

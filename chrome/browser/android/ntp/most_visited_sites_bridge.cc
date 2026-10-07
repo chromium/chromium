@@ -74,11 +74,11 @@ JavaHomepageClient::JavaHomepageClient(JNIEnv* env,
                                        const JavaRef<jobject>& obj,
                                        Profile* profile)
     : client_(env, obj), profile_(profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
 }
 
 void JavaHomepageClient::QueryHomepageTitle(TitleCallback title_callback) {
-  DCHECK(!title_callback.is_null());
+  CHECK(!title_callback.is_null(), base::NotFatalUntil::M161);
   GURL url = GetHomepageUrl();
   if (url.is_empty()) {
     std::move(title_callback).Run(std::nullopt);
@@ -170,7 +170,7 @@ MostVisitedSitesBridge::MostVisitedSitesBridge(Profile* profile,
                                                bool enable_custom_links)
     : most_visited_(ChromeMostVisitedSitesFactory::NewForProfile(profile)),
       profile_(profile) {
-  DCHECK(!profile->IsOffTheRecord());
+  CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M161);
   most_visited_->EnableTileTypes(
       ntp_tiles::MostVisitedSites::EnableTileTypesOptions()
           .with_top_sites(true)

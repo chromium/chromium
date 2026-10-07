@@ -74,9 +74,9 @@ void AndroidAtomsLogger::LogAtom(int atom_id,
 }
 
 void AndroidAtomsLogger::InitializePrefRegistrar() {
-  DCHECK(g_browser_process);
+  CHECK(g_browser_process, base::NotFatalUntil::M161);
   PrefService* local_state = g_browser_process->local_state();
-  DCHECK(local_state);
+  CHECK(local_state, base::NotFatalUntil::M161);
   // TODO: crbug.com/516867526 - Migrate to
   // metrics::MetricsReportingChoiceService when it's available to be used.
   metrics_reporting_enabled_ =

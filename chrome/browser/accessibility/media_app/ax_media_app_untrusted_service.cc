@@ -111,7 +111,7 @@ AXMediaAppUntrustedService::~AXMediaAppUntrustedService() {
     const float reading_progression_in_ratio =
         static_cast<float>(greatest_visited_page_number_) /
         page_metadata_.size();
-    DCHECK_LE(reading_progression_in_ratio, 1.0f);
+    CHECK_LE(reading_progression_in_ratio, 1.0f, base::NotFatalUntil::M161);
     base::UmaHistogramPercentage(
         "Accessibility.PdfOcr.MediaApp.PercentageReadingProgression",
         reading_progression_in_ratio * 100);
@@ -177,7 +177,7 @@ void AXMediaAppUntrustedService::PerformAction(
   if (!document_ || !document_->GetRoot()) {
     return;
   }
-  DCHECK(document_->ax_tree());
+  CHECK(document_->ax_tree(), base::NotFatalUntil::M161);
   switch (action_data.action) {
     case ax::mojom::Action::kBlur:
     case ax::mojom::Action::kClearAccessibilityFocus:
@@ -272,9 +272,11 @@ void AXMediaAppUntrustedService::PerformAction(
 
       // Some pages might not be in the document yet, because of page
       // batching.
-      DCHECK_GE(pages_.size(), document_->GetRoot()->GetUnignoredChildCount() -
-                                   (has_landmark_node_ ? 1u : 0u) -
-                                   (has_postamble_page_ ? 1u : 0u));
+      CHECK_GE(pages_.size(),
+               document_->GetRoot()->GetUnignoredChildCount() -
+                   (has_landmark_node_ ? 1u : 0u) -
+                   (has_postamble_page_ ? 1u : 0u),
+               base::NotFatalUntil::M161);
       for (const auto& page : pages_) {
         const std::unique_ptr<ui::AXTreeManager>& page_manager = page.second;
         if (page_manager->GetTreeID() != action_data.target_tree_id) {
@@ -285,7 +287,7 @@ void AXMediaAppUntrustedService::PerformAction(
         if (!target_node) {
           break;
         }
-        DCHECK(page_manager->ax_tree());
+        CHECK(page_manager->ax_tree(), base::NotFatalUntil::M161);
 
         if (page_metadata_.contains(page.first) &&
             page_metadata_.at(page.first).page_num >
@@ -374,11 +376,11 @@ void AXMediaAppUntrustedService::PerformAction(
       }
       const std::unique_ptr<ui::AXTreeManager>& page_manager =
           *page_manager_ptr;
-      DCHECK(page_manager->ax_tree());
-      DCHECK(page_manager->GetRoot());
+      CHECK(page_manager->ax_tree(), base::NotFatalUntil::M161);
+      CHECK(page_manager->GetRoot(), base::NotFatalUntil::M161);
       std::unique_ptr<TreeSerializer>& page_serializer =
           page_serializers_.at(page_id);
-      DCHECK(page_serializer.get());
+      CHECK(page_serializer.get(), base::NotFatalUntil::M161);
       ui::AXNode* anchor_node =
           page_manager->GetNode(action_data.anchor_node_id);
       if (!anchor_node) {
@@ -441,7 +443,7 @@ void AXMediaAppUntrustedService::PerformAction(
       if (!document_) {
         return;
       }
-      DCHECK(document_->GetRoot());
+      CHECK(document_->GetRoot(), base::NotFatalUntil::M161);
       ui::AXTreeID hit_tree_id = ui::AXTreeIDUnknown();
       ui::AXNodeID hit_node_id = ui::kInvalidAXNodeID;
       gfx::Point viewport_point = action_data.target_point;
@@ -455,7 +457,7 @@ void AXMediaAppUntrustedService::PerformAction(
       }
       ui::AXNode* hit_node = HitTest(document_point, *document_->GetRoot());
       if (hit_node) {
-        DCHECK(hit_node->tree());
+        CHECK(hit_node->tree(), base::NotFatalUntil::M161);
         hit_tree_id = hit_node->tree()->GetAXTreeID();
         hit_node_id = hit_node->id();
         last_hit_test_node_for_testing_ = hit_node;
@@ -472,7 +474,7 @@ void AXMediaAppUntrustedService::PerformAction(
       last_hit_test_event_for_testing_ = event_to_fire;
 #if defined(USE_AURA)
       auto* event_router = extensions::AutomationEventRouter::GetInstance();
-      DCHECK(event_router);
+      CHECK(event_router, base::NotFatalUntil::M161);
       const gfx::Point& mouse_location =
           aura::Env::GetInstance()->last_mouse_location();
       event_router->DispatchAccessibilityEvents(hit_tree_id, {}, mouse_location,
@@ -513,7 +515,7 @@ void AXMediaAppUntrustedService::AccessibilityEventReceived(
   if (const ui::AXNode* parent_node = document_->GetParentNodeFromParentTree();
       !parent_node || !parent_node->data().HasChildTreeID()) {
     StitchDocumentTree();
-    DCHECK(document_serializer_);
+    CHECK(document_serializer_, base::NotFatalUntil::M161);
     // It turns out that the document serializer does not send the updated tree
     // data containing the Media App's render frame host's tree ID, so stitching
     // won't work unless we first reset it.
@@ -631,7 +633,7 @@ content::WebContents* AXMediaAppUntrustedService::GetMediaAppWebContents()
   }
   content::WebContents* web_contents =
       browser->GetTabStripModel()->GetActiveWebContents();
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
   return web_contents;
 }
 
@@ -649,7 +651,7 @@ AXMediaAppUntrustedService::GetMediaAppRenderFrameHost() const {
 }
 
 size_t AXMediaAppUntrustedService::ComputePagesPerBatch() const {
-  DCHECK_LE(min_pages_per_batch_, kMaxPagesPerBatch);
+  CHECK_LE(min_pages_per_batch_, kMaxPagesPerBatch, base::NotFatalUntil::M161);
   size_t page_count = page_metadata_.size();
   return std::clamp<size_t>(page_count * 0.1, min_pages_per_batch_,
                             kMaxPagesPerBatch);
@@ -809,12 +811,12 @@ void AXMediaAppUntrustedService::SendAllAXTreesToAccessibilityService() {
     case OcrStatus::kCompletedWithNoTextExtracted:
     case OcrStatus::kCompletedWithTextExtracted:
       for (auto& [page_id, tree_manager] : pages_) {
-        DCHECK(tree_manager);
+        CHECK(tree_manager, base::NotFatalUntil::M161);
         const auto iter = page_serializers_.find(page_id);
-        DCHECK(iter != std::cend(page_serializers_));
+        CHECK(iter != std::cend(page_serializers_), base::NotFatalUntil::M161);
         std::unique_ptr<TreeSerializer>& serializer = iter->second;
-        DCHECK(serializer);
-        DCHECK(page_sources_.contains(page_id));
+        CHECK(serializer, base::NotFatalUntil::M161);
+        CHECK(page_sources_.contains(page_id), base::NotFatalUntil::M161);
         auto new_serializer = std::make_unique<TreeSerializer>(
             page_sources_.at(page_id).get(), /* crash_on_error */ true);
         serializer.swap(new_serializer);
@@ -829,7 +831,7 @@ void AXMediaAppUntrustedService::SendAllAXTreesToAccessibilityService() {
 
 void AXMediaAppUntrustedService::RemoveAllAXTreesFromAccessibilityService() {
   for (auto& [page_id, tree_manager] : pages_) {
-    DCHECK(tree_manager);
+    CHECK(tree_manager, base::NotFatalUntil::M161);
     // Keep the OCR results to avoid recomputing them in case accessibility is
     // turned on again.
     ui::AXActionHandlerRegistry::GetInstance()->RemoveAXTreeID(
@@ -851,7 +853,7 @@ void AXMediaAppUntrustedService::RemoveDocumentTree() {
 void AXMediaAppUntrustedService::SendAXTreeToAccessibilityService(
     const ui::AXTreeManager& manager,
     TreeSerializer& serializer) {
-  DCHECK(manager.GetRoot());
+  CHECK(manager.GetRoot(), base::NotFatalUntil::M161);
   ui::AXTreeUpdate update;
   serializer.MarkSubtreeDirty(manager.GetRoot()->id());
   if (!serializer.SerializeChanges(manager.GetRoot(), &update)) {
@@ -867,7 +869,7 @@ void AXMediaAppUntrustedService::SendAXTreeToAccessibilityService(
   }
 #if defined(USE_AURA)
   auto* event_router = extensions::AutomationEventRouter::GetInstance();
-  DCHECK(event_router);
+  CHECK(event_router, base::NotFatalUntil::M161);
   const gfx::Point& mouse_location =
       aura::Env::GetInstance()->last_mouse_location();
   if (!update.nodes.empty()) {
@@ -933,7 +935,7 @@ void AXMediaAppUntrustedService::ViewportUpdated(const gfx::RectF& viewport_box,
   if (!document_ || !document_->GetRoot()) {
     return;
   }
-  DCHECK(document_->ax_tree());
+  CHECK(document_->ax_tree(), base::NotFatalUntil::M161);
   ui::AXNodeData document_root_data = document_->GetRoot()->data();
   document_root_data.AddIntAttribute(
       ax::mojom::IntAttribute::kScrollXMax,
@@ -967,12 +969,12 @@ void AXMediaAppUntrustedService::UpdatePageLocation(
     return;
   }
   if (!pages_.contains(page_id)) {
-    DCHECK(page_metadata_.contains(page_id));
+    CHECK(page_metadata_.contains(page_id), base::NotFatalUntil::M161);
     page_metadata_[page_id].rect = page_location;
     return;
   }
   ui::AXTree* tree = pages_.at(page_id)->ax_tree();
-  DCHECK(tree->root());
+  CHECK(tree->root(), base::NotFatalUntil::M161);
   ui::AXNodeData root_data = tree->root()->data();
   root_data.relative_bounds.bounds = page_location;
   ui::AXTreeUpdate location_update;
@@ -994,7 +996,8 @@ void AXMediaAppUntrustedService::UpdatePageLocation(
 }
 
 void AXMediaAppUntrustedService::ShowOcrServiceFailedToInitializeMessage() {
-  DCHECK_EQ(ocr_status_, OcrStatus::kInitializationFailed);
+  CHECK_EQ(ocr_status_, OcrStatus::kInitializationFailed,
+           base::NotFatalUntil::M161);
   ui::AXTreeUpdate document_update;
   ui::AXNodeData& document_root_data = document_update.nodes.emplace_back();
   document_root_data.id = kDocumentRootNodeId;
@@ -1003,7 +1006,7 @@ void AXMediaAppUntrustedService::ShowOcrServiceFailedToInitializeMessage() {
 
   std::vector<ui::AXNodeData> status_nodes;
   status_nodes = CreateStatusNodesWithLandmark();
-  DCHECK_GE(status_nodes.size(), 1u);
+  CHECK_GE(status_nodes.size(), 1u, base::NotFatalUntil::M161);
   document_root_data.child_ids.push_back(status_nodes.at(0).id);
 
   document_update.nodes.insert(std::end(document_update.nodes),
@@ -1063,7 +1066,7 @@ void AXMediaAppUntrustedService::ShowDocumentTree() {
   std::vector<ui::AXNodeData> status_nodes;
   if (has_landmark_node_) {
     status_nodes = CreateStatusNodesWithLandmark();
-    DCHECK_GE(status_nodes.size(), 1u);
+    CHECK_GE(status_nodes.size(), 1u, base::NotFatalUntil::M161);
     child_ids.at(0) = status_nodes.at(0).id;
   }
   std::iota(std::begin(child_ids) + (has_landmark_node_ ? 1u : 0u),
@@ -1071,7 +1074,7 @@ void AXMediaAppUntrustedService::ShowDocumentTree() {
   std::vector<ui::AXNodeData> postamble_page_nodes;
   if (has_postamble_page_) {
     postamble_page_nodes = CreatePostamblePage();
-    DCHECK_GE(postamble_page_nodes.size(), 1u);
+    CHECK_GE(postamble_page_nodes.size(), 1u, base::NotFatalUntil::M161);
     child_ids.push_back(postamble_page_nodes.at(0).id);
   }
   document_root_data.child_ids.swap(child_ids);
@@ -1205,7 +1208,7 @@ bool AXMediaAppUntrustedService::IsOcrServiceEnabled() const {
   switch (ocr_status_) {
     case OcrStatus::kUninitialized:
     case OcrStatus::kInitializationFailed:
-      DCHECK(!ocr_ || !ocr_->is_ready());
+      CHECK(!ocr_ || !ocr_->is_ready(), base::NotFatalUntil::M161);
       return false;
     case OcrStatus::kInProgressWithNoTextExtractedYet:
     case OcrStatus::kInProgressWithTextExtracted:
@@ -1384,8 +1387,8 @@ void AXMediaAppUntrustedService::OnPageOcred(
       return;
     }
   }
-  DCHECK_NE(pages_it->second->GetTreeID().type(),
-            ax::mojom::AXTreeIDType::kUnknown);
+  CHECK_NE(pages_it->second->GetTreeID().type(),
+           ax::mojom::AXTreeIDType::kUnknown, base::NotFatalUntil::M161);
 
   // Update the page location again - running the page through OCR overwrites
   // the previous `AXTree` it was given and thus the page location it was
@@ -1441,7 +1444,7 @@ ui::AXNode* AXMediaAppUntrustedService::HitTest(
       // support tables in the future.
       continue;
     }
-    DCHECK(child_node.tree());
+    CHECK(child_node.tree(), base::NotFatalUntil::M161);
     // Passing an empty `RectF` for the node bounds will initialize it
     // automatically to `child.data().relative_bounds.bounds`.
     gfx::RectF child_node_bounds = child_node.tree()->RelativeToTreeBounds(

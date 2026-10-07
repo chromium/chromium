@@ -55,8 +55,9 @@ PersistedTabDataConfigAndroid::GetAllStorage(Profile* profile) {
   std::unique_ptr<std::vector<PersistedTabDataStorageAndroid*>> storage =
       std::make_unique<std::vector<PersistedTabDataStorageAndroid*>>();
   if (profile) {
-    DCHECK(LevelDBPersistedTabDataStorageAndroidFactory::GetInstance()
-               ->GetForBrowserContext(profile));
+    CHECK(LevelDBPersistedTabDataStorageAndroidFactory::GetInstance()
+              ->GetForBrowserContext(profile),
+          base::NotFatalUntil::M161);
     storage->push_back(
         LevelDBPersistedTabDataStorageAndroidFactory::GetInstance()
             ->GetForBrowserContext(profile));

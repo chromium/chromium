@@ -88,7 +88,7 @@ class UmaSessionStatsExternalExperimentRegistrar {
 };
 
 void UmaSessionStats::UmaResumeSession() {
-  DCHECK(g_browser_process);
+  CHECK(g_browser_process, base::NotFatalUntil::M161);
   if (++active_session_count_ == 1) {
     const bool had_background_session =
         session_time_tracker_.BeginForegroundSession();
@@ -125,7 +125,7 @@ void UmaSessionStats::UmaEndSession() {
     const base::TimeDelta duration =
         session_time_tracker_.EndForegroundSession();
 
-    DCHECK(g_browser_process);
+    CHECK(g_browser_process, base::NotFatalUntil::M161);
     // Tell the metrics services they were cleanly shutdown.
     metrics::MetricsService* metrics = g_browser_process->metrics_service();
     if (metrics) {
@@ -153,7 +153,7 @@ void UmaSessionStats::UmaEndSession() {
   // Decrement session count after collecting session metrics or
   // Session.IsActive2 will be wrong.
   --active_session_count_;
-  DCHECK_GE(active_session_count_, 0);
+  CHECK_GE(active_session_count_, 0, base::NotFatalUntil::M161);
 }
 
 void UmaSessionStats::ProvideCurrentSessionData() {
@@ -302,7 +302,7 @@ static void JNI_UmaSessionStats_ChangeMetricsReportingState(
 
 // Initialize the local consent bool variable to false. Used only for testing.
 static void JNI_UmaSessionStats_InitMetricsAndCrashReportingForTesting() {
-  DCHECK(g_browser_process);
+  CHECK(g_browser_process, base::NotFatalUntil::M161);
 
   g_metrics_consent_for_testing = false;
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
@@ -312,7 +312,7 @@ static void JNI_UmaSessionStats_InitMetricsAndCrashReportingForTesting() {
 // Clears the boolean consent pointer for ChromeMetricsServiceAccessor to
 // original setting. Used only for testing.
 static void JNI_UmaSessionStats_UnsetMetricsAndCrashReportingForTesting() {
-  DCHECK(g_browser_process);
+  CHECK(g_browser_process, base::NotFatalUntil::M161);
 
   g_metrics_consent_for_testing = false;
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
@@ -323,7 +323,7 @@ static void JNI_UmaSessionStats_UnsetMetricsAndCrashReportingForTesting() {
 // repeatedly. Used only for testing.
 static void JNI_UmaSessionStats_UpdateMetricsAndCrashReportingForTesting(
     bool consent) {
-  DCHECK(g_browser_process);
+  CHECK(g_browser_process, base::NotFatalUntil::M161);
 
   g_metrics_consent_for_testing = consent;
   g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions();

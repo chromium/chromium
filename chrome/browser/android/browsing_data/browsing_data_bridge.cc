@@ -252,9 +252,10 @@ static bool JNI_BrowsingDataBridge_GetBrowsingDataDeletionPreference(
     JNIEnv* env,
     Profile* profile,
     int32_t data_type) {
-  DCHECK_GE(data_type, 0);
-  DCHECK_LE(data_type,
-            static_cast<int>(browsing_data::BrowsingDataType::MAX_VALUE));
+  CHECK_GE(data_type, 0, base::NotFatalUntil::M161);
+  CHECK_LE(data_type,
+           static_cast<int>(browsing_data::BrowsingDataType::MAX_VALUE),
+           base::NotFatalUntil::M161);
 
   // If there is no corresponding preference for this |data_type|, pretend
   // that it's set to false.
@@ -274,9 +275,10 @@ static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionPreference(
     Profile* profile,
     int32_t data_type,
     bool value) {
-  DCHECK_GE(data_type, 0);
-  DCHECK_LE(data_type,
-            static_cast<int>(browsing_data::BrowsingDataType::MAX_VALUE));
+  CHECK_GE(data_type, 0, base::NotFatalUntil::M161);
+  CHECK_LE(data_type,
+           static_cast<int>(browsing_data::BrowsingDataType::MAX_VALUE),
+           base::NotFatalUntil::M161);
 
   std::string pref;
   if (!browsing_data::GetDeletionPreferenceFromDataType(
@@ -298,9 +300,10 @@ static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionTimePeriod(
     JNIEnv* env,
     Profile* profile,
     int32_t time_period) {
-  DCHECK_GE(time_period, 0);
-  DCHECK_LE(time_period,
-            static_cast<int>(browsing_data::TimePeriod::TIME_PERIOD_LAST));
+  CHECK_GE(time_period, 0, base::NotFatalUntil::M161);
+  CHECK_LE(time_period,
+           static_cast<int>(browsing_data::TimePeriod::TIME_PERIOD_LAST),
+           base::NotFatalUntil::M161);
   const char* pref_name = browsing_data::GetTimePeriodPreferenceName();
   PrefService* prefs = GetPrefService(profile);
   int previous_value = prefs->GetInteger(pref_name);

@@ -48,7 +48,7 @@ static int64_t JNI_OmniboxPrerender_Init(
 }
 
 void OmniboxPrerender::Clear(Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   if (!profile)
     return;
   AutocompleteActionPredictor* action_predictor =
@@ -134,10 +134,10 @@ void OmniboxPrerender::PrerenderMaybe(const std::u16string& url_string,
 void OmniboxPrerender::DoPrerender(const AutocompleteMatch& match,
                                    Profile* profile,
                                    content::WebContents* web_contents) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   if (!profile)
     return;
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
   if (!web_contents)
     return;
 
@@ -146,7 +146,8 @@ void OmniboxPrerender::DoPrerender(const AutocompleteMatch& match,
   // more information.
   // SearchPrefetchService is responsible for handling search
   // AutocompleteMatches and preloading search result pages when needed.
-  DCHECK(!AutocompleteMatch::IsSearchType(match.type));
+  CHECK(!AutocompleteMatch::IsSearchType(match.type),
+        base::NotFatalUntil::M161);
   predictors::AutocompleteActionPredictorFactory::GetForProfile(profile)
       ->StartPrerendering(match.destination_url, *web_contents);
 }

@@ -58,7 +58,7 @@ void DetachedResourceRequest::CreateAndStart(
     Motivation motivation,
     const std::string& package_name,
     DetachedResourceRequest::OnResultCallback cb) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   std::unique_ptr<DetachedResourceRequest> detached_request(
       new DetachedResourceRequest(url, site_for_referrer, referrer_policy,
                                   motivation, package_name, std::move(cb)));
@@ -189,7 +189,7 @@ void DetachedResourceRequest::OnRedirectCallback(
 
 void DetachedResourceRequest::OnResponseCallback(
     std::optional<std::string> response_body) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   int net_error = url_loader_->NetError();
   net_error = std::abs(net_error);
 

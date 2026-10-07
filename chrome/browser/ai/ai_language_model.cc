@@ -269,7 +269,8 @@ class AILanguageModel::PromptState
     // Clamp max_output_tokens_ to the remaining available context and any
     // config-specific maximum per-response limit.
     if (configured_max_output_tokens.has_value()) {
-      DCHECK_GT(configured_max_output_tokens.value(), 0u);
+      CHECK_GT(configured_max_output_tokens.value(), 0u,
+               base::NotFatalUntil::M161);
       max_output_tokens_ =
           std::min(max_output_tokens_, configured_max_output_tokens.value());
     }

@@ -28,8 +28,8 @@ static void JNI_ConsentAuditorBridge_RecordConsent(
     const JavaRef<jintArray>& j_consent_description,
     int32_t j_consent_confirmation) {
   // TODO(markusheintz): Update the ConsentAuditorBridgeInterface.
-  DCHECK_EQ(static_cast<consent_auditor::Feature>(j_feature),
-            consent_auditor::Feature::CHROME_SYNC);
+  CHECK_EQ(static_cast<consent_auditor::Feature>(j_feature),
+           consent_auditor::Feature::CHROME_SYNC, base::NotFatalUntil::M161);
 
   std::vector<int> consent_description;
   base::android::JavaIntArrayToIntVector(env, j_consent_description,

@@ -98,7 +98,7 @@ SearchPermissionsService::Factory::BuildServiceInstanceForBrowserContext(
 
 SearchPermissionsService::SearchPermissionsService(Profile* profile) {
   // This class should never be constructed in incognito.
-  DCHECK(!profile->IsOffTheRecord());
+  CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M161);
 
   delegate_ = std::make_unique<SearchEngineDelegateImpl>(profile);
 
