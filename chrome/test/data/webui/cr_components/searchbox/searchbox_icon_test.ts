@@ -62,7 +62,7 @@ suite('CrComponentsSearchboxIconTest', () => {
 
   test('entity image shown on load', async () => {
     const match = createAutocompleteMatch();
-    match.imageUrl = '#';
+    match.suggestTemplate.image = {url: '#', dominantColor: ''};
     icon.match = match;
 
     await microtasksFinished();
@@ -80,7 +80,7 @@ suite('CrComponentsSearchboxIconTest', () => {
     // Regression test for crbug.com/501729582.
     const match = createAutocompleteMatch();
     const unsafeUrl = 'https://example.com/image.png?a=b&c=d';
-    match.imageUrl = unsafeUrl;
+    match.suggestTemplate.image = {url: unsafeUrl, dominantColor: ''};
     match.iconUrl = unsafeUrl;
     icon.match = match;
 
@@ -99,7 +99,7 @@ suite('CrComponentsSearchboxIconTest', () => {
 
   test('entity image hidden on error', async () => {
     const match = createAutocompleteMatch();
-    match.imageUrl = '#';
+    match.suggestTemplate.image = {url: '#', dominantColor: ''};
     icon.match = match;
 
     await microtasksFinished();

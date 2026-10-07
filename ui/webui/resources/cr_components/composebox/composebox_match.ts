@@ -125,7 +125,7 @@ export class ComposeboxMatchElement extends CrLitElement {
     switch (this.match.suggestStyle) {
       case SuggestStyle.kRichImage:
         return (this.richImageSuggestionsEnabled &&
-                Boolean(this.match.imageUrl)) ?
+                Boolean(this.match.suggestTemplate.image?.url)) ?
             'rich-image' :
             'default';
       case SuggestStyle.kDefault:
@@ -169,7 +169,7 @@ export class ComposeboxMatchElement extends CrLitElement {
     if (!this.isRichImage) {
       return '';
     }
-    const src = this.computeImageUrl_(this.match.imageUrl);
+    const src = this.computeImageUrl_(this.match.suggestTemplate.image?.url);
     return src ? `background-image: ${getUrlForCss(src)};` : '';
   }
 

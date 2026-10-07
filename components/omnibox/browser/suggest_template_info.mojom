@@ -4,6 +4,8 @@
 
 module suggest_template_info.mojom;
 
+import "url/mojom/url.mojom";
+
 // Where to display the secondary text relative to the primary text.
 // Maps to SuggestTemplateInfo.SecondaryTextPlacement in
 // //third_party/omnibox_proto/suggest_template_info.proto.
@@ -16,6 +18,16 @@ enum SecondaryTextPlacement {
   kBelowPrimaryText = 2,
 };
 // LINT.ThenChange(//third_party/omnibox_proto/suggest_template_info.proto:SecondaryTextPlacement)
+
+// An image to display with the suggestion. Maps to SuggestTemplateInfo.Image in
+// //third_party/omnibox_proto/suggest_template_info.proto.
+struct Image {
+  // The URL of the image. Either an external URL or a data URI.
+  url.mojom.Url url;
+  // The dominant color of the image (e.g. "#757575"). Used to paint a
+  // placeholder while the image is loading.
+  string dominant_color;
+};
 
 // Presentation template for a suggestion. Its fields correspond to the
 // client-supported, rendering-relevant subset of the SuggestTemplateInfo proto
@@ -30,4 +42,6 @@ struct SuggestTemplateInfo {
   // Where to display the secondary text relative to the primary text.
   SecondaryTextPlacement secondary_text_placement =
       SecondaryTextPlacement.kUnspecified;
+  // The image to display with the suggestion, if any.
+  Image? image;
 };

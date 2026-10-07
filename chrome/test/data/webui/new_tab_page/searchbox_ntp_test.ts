@@ -7,7 +7,7 @@ import 'chrome://new-tab-page/new_tab_page.js';
 import type {NtpSearchboxElement, SearchboxIconElement, SearchboxMatchElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {BrowserProxyImpl, InputSource, MetricsReporterImpl, SearchboxBrowserProxy, SearchboxOverride} from 'chrome://new-tab-page/new_tab_page.js';
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
-import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {createAutocompleteResultForTesting, createSearchMatchForTesting, createSuggestTemplateInfo} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
@@ -608,11 +608,10 @@ suite('SearchboxTest', () => {
           createUrlMatch({iconPath: 'page.svg'}),
           createSearchMatchForTesting({
             iconPath: 'clock.svg',
-            imageUrl: 'https://gstatic.com/',
-            imageDominantColor: '#757575',
-            suggestTemplate: {
+            suggestTemplate: createSuggestTemplateInfo({
               secondaryTextPlacement: SecondaryTextPlacement.kBelowPrimaryText,
-            },
+              image: {url: 'https://gstatic.com/', dominantColor: '#757575'},
+            }),
           }),
         ];
         testProxy.callbackRouterRemote.autocompleteResultChanged(
@@ -666,7 +665,7 @@ suite('SearchboxTest', () => {
         assertEquals(
             matchEls[1]!.$.icon.$.image.getAttribute('src'),
             `//image?staticEncode=true&encodeType=webp&url=${
-                encodeURIComponent(matches[1]!.imageUrl)}`);
+                encodeURIComponent(matches[1]!.suggestTemplate.image!.url)}`);
 
         // Mock image finishing loading, which should remove the temporary
         // background color.
@@ -772,11 +771,10 @@ suite('SearchboxTest', () => {
           createSearchMatchForTesting({
             iconUrl: 'https://helloworld.com/search.png',
             iconPath: 'clock.svg',
-            imageUrl: 'https://gstatic.com/',
-            imageDominantColor: '#757575',
-            suggestTemplate: {
+            suggestTemplate: createSuggestTemplateInfo({
               secondaryTextPlacement: SecondaryTextPlacement.kBelowPrimaryText,
-            },
+              image: {url: 'https://gstatic.com/', dominantColor: '#757575'},
+            }),
           }),
         ];
         testProxy.callbackRouterRemote.autocompleteResultChanged(

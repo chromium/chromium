@@ -8,7 +8,7 @@ import 'chrome://resources/cr_components/searchbox/searchbox_dropdown.js';
 import 'chrome://resources/cr_components/searchbox/searchbox_input.js';
 
 import {KeywordModeEntryMethod} from 'chrome://resources/cr_components/searchbox/keyword_mode_manager.js';
-import {createAutocompleteMatch, createAutocompleteResultForTesting, createMatchKeywordModelForTesting, createSearchMatchForTesting, SearchboxBrowserProxy} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {createAutocompleteMatch, createAutocompleteResultForTesting, createMatchKeywordModelForTesting, createSearchMatchForTesting, createSuggestTemplateInfo, SearchboxBrowserProxy} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {ComposeClickEventDetail} from 'chrome://resources/cr_components/searchbox/searchbox_compose_button.js';
 import type {SearchboxDropdownElement} from 'chrome://resources/cr_components/searchbox/searchbox_dropdown.js';
 import type {SearchboxInputElement} from 'chrome://resources/cr_components/searchbox/searchbox_input.js';
@@ -1351,9 +1351,9 @@ suite('SearchboxMixinTest', () => {
   test('match calculator answer type', async () => {
     const mockInput = element.getInputElement();
     const matches = [createCalculatorMatch({
-      suggestTemplate: {
+      suggestTemplate: createSuggestTemplateInfo({
         secondaryTextPlacement: SecondaryTextPlacement.kBelowPrimaryText,
-      },
+      }),
     })];
 
     await simulateUserTextInput(mockInput, '2 + 3');

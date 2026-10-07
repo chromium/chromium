@@ -470,7 +470,7 @@ export class SearchboxMatchElement extends CrLitElement {
   }
 
   private computeHasImage_(): boolean {
-    return this.match && !!this.match.imageUrl;
+    return this.match && !!this.match.suggestTemplate.image?.url;
   }
 
   private computeIsContextualSuggestion_(): boolean {

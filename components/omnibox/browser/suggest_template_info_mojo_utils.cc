@@ -41,12 +41,21 @@ mojom::SecondaryTextPlacement GetSecondaryTextPlacement(
   return mojom::SecondaryTextPlacement::kUnspecified;
 }
 
+// Returns the image to display with `match`, or null if it has none.
+mojom::ImagePtr GetImage(const AutocompleteMatch& match) {
+  if (!match.image_url.is_valid()) {
+    return nullptr;
+  }
+  return mojom::Image::New(match.image_url, match.image_dominant_color);
+}
+
 }  // namespace
 
 mojom::SuggestTemplateInfoPtr CreateSuggestTemplateInfo(
     const AutocompleteMatch& match) {
   auto suggest_template = mojom::SuggestTemplateInfo::New();
   suggest_template->secondary_text_placement = GetSecondaryTextPlacement(match);
+  suggest_template->image = GetImage(match);
   return suggest_template;
 }
 

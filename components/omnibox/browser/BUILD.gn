@@ -1175,6 +1175,7 @@ if (!is_ios) {
   mojom("suggest_template_info_mojo_bindings") {
     sources = [ "suggest_template_info.mojom" ]
     webui_module_path = "chrome://resources/mojo/components/omnibox/browser"
+    public_deps = [ "//url/mojom:url_mojom_gurl" ]
   }
 
   source_set("suggest_template_info_mojo_utils") {

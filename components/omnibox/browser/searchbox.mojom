@@ -89,13 +89,6 @@ struct AutocompleteMatch {
   // The url for the suggestion icon. |icon_url| is an external url or
   // a data URI.
   url.mojom.Url icon_url;
-  // Used to paint a placeholder while fetching |image_url|. These two fields
-  // are valid for entity suggestions only. Entity suggestions have a |type| of
-  // 'search-suggest-entity'.
-  string image_dominant_color;
-  // The image url for entity suggestions. |image_url| is an external url or
-  // a data URI.
-  string image_url;
   // Used to determine if the match is a contextual suggestion.
   bool is_contextual_suggestion;
   // Presentation template for this match. Populated for every match, including

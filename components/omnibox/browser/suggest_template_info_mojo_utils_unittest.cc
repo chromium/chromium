@@ -87,5 +87,41 @@ TEST(SuggestTemplateInfoMojoUtilsTest, SynthesizesSecondaryTextPlacement) {
   }
 }
 
+TEST(SuggestTemplateInfoMojoUtilsTest, PopulatesImageFromMatch) {
+  // Matches without an image have no image.
+  {
+    AutocompleteMatch match;
+    EXPECT_FALSE(CreateSuggestTemplateInfo(match)->image);
+  }
+  // The image URL and dominant color of the match are forwarded.
+  {
+    AutocompleteMatch match;
+    match.image_url = GURL("https://example.com/image.png");
+    match.image_dominant_color = "#757575";
+    mojom::SuggestTemplateInfoPtr suggest_template =
+        CreateSuggestTemplateInfo(match);
+    ASSERT_TRUE(suggest_template->image);
+    EXPECT_EQ(suggest_template->image->url,
+              GURL("https://example.com/image.png"));
+    EXPECT_EQ(suggest_template->image->dominant_color, "#757575");
+  }
+  // The image is read from the match rather than from its SuggestTemplateInfo,
+  // so that images dropped by providers (e.g. ablated ones) are not shown.
+  {
+    AutocompleteMatch match;
+    omnibox::SuggestTemplateInfo suggest_template;
+    suggest_template.mutable_image()->set_url("https://example.com/image.png");
+    suggest_template.mutable_image()->set_dominant_color("#757575");
+    match.suggest_template = suggest_template;
+    EXPECT_FALSE(CreateSuggestTemplateInfo(match)->image);
+  }
+  // A dominant color without an image URL is dropped.
+  {
+    AutocompleteMatch match;
+    match.image_dominant_color = "#757575";
+    EXPECT_FALSE(CreateSuggestTemplateInfo(match)->image);
+  }
+}
+
 }  // namespace
 }  // namespace suggest_template_info

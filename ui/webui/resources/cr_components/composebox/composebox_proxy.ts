@@ -29,8 +29,6 @@ export function createAutocompleteMatch(
     fillIntoEdit: '',
     iconPath: '',
     iconUrl: '',
-    imageDominantColor: '',
-    imageUrl: '',
     removeButtonA11yLabel: '',
     type: '',
     isContextualSuggestion: false,
@@ -40,6 +38,7 @@ export function createAutocompleteMatch(
     suggestStyle: SuggestStyle.kUnspecified,
     suggestTemplate: {
       secondaryTextPlacement: SecondaryTextPlacement.kUnspecified,
+      image: null,
     },
     ...config,
   };

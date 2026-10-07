@@ -8,6 +8,7 @@ import 'chrome://resources/cr_components/composebox/composebox_match.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxMatchElement} from 'chrome://resources/cr_components/composebox/composebox_match.js';
 import {ComposeboxProxyImpl, createAutocompleteMatch} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
+import {createSuggestTemplateInfo} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SuggestStyle} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {SecondaryTextPlacement} from 'chrome://resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -59,9 +60,9 @@ suite('ComposeboxMatch', () => {
     matchElement.match = createAutocompleteMatch({
       contents: 'test contents',
       description: 'test description',
-      suggestTemplate: {
+      suggestTemplate: createSuggestTemplateInfo({
         secondaryTextPlacement: SecondaryTextPlacement.kBelowPrimaryText,
-      },
+      }),
     });
     await microtasksFinished();
 
@@ -82,17 +83,17 @@ suite('ComposeboxMatch', () => {
 
   test('does not apply two-row styling to rich image matches', async () => {
     // SearchboxHandler places the secondary text below the primary text for
-    // every match that has an image_url, which is also what makes a match
+    // every match that has an image, which is also what makes a match
     // eligible for the rich image style, so rich image matches carry the
     // attribute too. The two-row rules are qualified with the suggest style so
     // that they do not pick it up.
     matchElement.richImageSuggestionsEnabled = true;
     matchElement.match = createAutocompleteMatch({
       contents: 'test contents',
-      imageUrl: 'https://example.com/image.png',
-      suggestTemplate: {
+      suggestTemplate: createSuggestTemplateInfo({
         secondaryTextPlacement: SecondaryTextPlacement.kBelowPrimaryText,
-      },
+        image: {url: 'https://example.com/image.png', dominantColor: ''},
+      }),
       suggestStyle: SuggestStyle.kRichImage,
     });
     await microtasksFinished();
@@ -119,9 +120,9 @@ suite('ComposeboxMatch', () => {
     el.match = createAutocompleteMatch({
       contents: 'Very long text '.repeat(20),
       description: 'test description',
-      suggestTemplate: {
+      suggestTemplate: createSuggestTemplateInfo({
         secondaryTextPlacement: SecondaryTextPlacement.kBelowPrimaryText,
-      },
+      }),
     });
     await microtasksFinished();
 
@@ -144,7 +145,9 @@ suite('ComposeboxMatch', () => {
       async () => {
         matchElement.richImageSuggestionsEnabled = true;
         matchElement.match = createAutocompleteMatch({
-          imageUrl: 'https://example.com/image.png',
+          suggestTemplate: createSuggestTemplateInfo({
+            image: {url: 'https://example.com/image.png', dominantColor: ''},
+          }),
           suggestStyle: SuggestStyle.kRichImage,
         });
         await microtasksFinished();
@@ -161,7 +164,9 @@ suite('ComposeboxMatch', () => {
       async () => {
         matchElement.richImageSuggestionsEnabled = true;
         matchElement.match = createAutocompleteMatch({
-          imageUrl: 'https://example.com/image.png',
+          suggestTemplate: createSuggestTemplateInfo({
+            image: {url: 'https://example.com/image.png', dominantColor: ''},
+          }),
           suggestStyle: SuggestStyle.kDefault,
         });
         await microtasksFinished();
@@ -175,7 +180,9 @@ suite('ComposeboxMatch', () => {
   test('does not render background image when flag is disabled', async () => {
     matchElement.richImageSuggestionsEnabled = false;
     matchElement.match = createAutocompleteMatch({
-      imageUrl: 'https://example.com/image.png',
+      suggestTemplate: createSuggestTemplateInfo({
+        image: {url: 'https://example.com/image.png', dominantColor: ''},
+      }),
       suggestStyle: SuggestStyle.kRichImage,
     });
     await microtasksFinished();

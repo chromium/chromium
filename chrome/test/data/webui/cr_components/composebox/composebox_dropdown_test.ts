@@ -7,7 +7,7 @@ import 'chrome://resources/cr_components/composebox/composebox_dropdown.js';
 
 import type {ComposeboxDropdownElement} from 'chrome://resources/cr_components/composebox/composebox_dropdown.js';
 import {createAutocompleteMatch} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
-import {createAutocompleteResultForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {createAutocompleteResultForTesting, createSuggestTemplateInfo} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {RenderType, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -66,12 +66,16 @@ suite('ComposeboxDropdown', () => {
         }),
         createAutocompleteMatch({
           contents: 'image match 1',
-          imageUrl: 'https://example.com/image1.png',
+          suggestTemplate: createSuggestTemplateInfo({
+            image: {url: 'https://example.com/image1.png', dominantColor: ''},
+          }),
           suggestionGroupId: 101,
         }),
         createAutocompleteMatch({
           contents: 'image match 2',
-          imageUrl: 'https://example.com/image2.png',
+          suggestTemplate: createSuggestTemplateInfo({
+            image: {url: 'https://example.com/image2.png', dominantColor: ''},
+          }),
           suggestionGroupId: 101,
         }),
       ],

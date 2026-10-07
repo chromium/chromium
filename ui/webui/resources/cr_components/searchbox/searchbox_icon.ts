@@ -398,7 +398,7 @@ export class SearchboxIconElement extends CrLitElement {
   }
 
   private computeHasImage_(): boolean {
-    return !!this.match && !!this.match.imageUrl;
+    return !!this.match && !!this.match.suggestTemplate.image?.url;
   }
 
   private computeIsEnterpriseSearchAggregatorPeopleType_(): boolean {
@@ -544,17 +544,17 @@ export class SearchboxIconElement extends CrLitElement {
   }
 
   private computeImageSrc_(): string {
-    return this.computeSrc_(this.match?.imageUrl);
+    return this.computeSrc_(this.match?.suggestTemplate.image?.url);
   }
 
   protected getContainerBgColor_(): string {
     // If the match has an image dominant color, show that color in place of the
     // image until it loads. This helps the image appear to load more smoothly.
-    return ((this.imageLoading_ || this.imageError_) &&
-            this.match?.imageDominantColor) ?
+    const dominantColor = this.match?.suggestTemplate.image?.dominantColor;
+    return ((this.imageLoading_ || this.imageError_) && dominantColor) ?
         // .25 opacity matching c/b/u/views/omnibox/omnibox_match_cell_view.cc.
-        (this.match.imageDominantColor ?
-             `${this.match.imageDominantColor}40` :
+        (dominantColor ?
+             `${dominantColor}40` :
              'var(--cr-searchbox-match-icon-container-background-fallback)') :
         'transparent';
   }
