@@ -2807,8 +2807,6 @@ void CookieMonster::RecordPeriodicStats(base::Time current_time) {
 bool CookieMonster::DoRecordPeriodicStats() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  SCOPED_UMA_HISTOGRAM_TIMER("Cookie.TimeToRecordPeriodicStats");
-
   // These values are all bogus if we have only partially loaded the cookies.
   if (started_fetching_all_cookies_ && !finished_fetching_all_cookies_)
     return false;
