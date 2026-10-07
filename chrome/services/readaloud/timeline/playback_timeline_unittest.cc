@@ -286,6 +286,43 @@ TEST_F(PlaybackTimelineTest, UpdateSentenceDurationOverwritesPreviousDeviation) 
   EXPECT_EQ(pos1->time.start_time, base::Milliseconds(1000));
 }
 
+TEST_F(PlaybackTimelineTest, GetTotalDurationIsZeroWhenEmpty) {
+  EXPECT_EQ(timeline_.GetTotalDuration(), base::TimeDelta());
+}
+
+TEST_F(PlaybackTimelineTest, GetTotalDurationIsCharacterEstimateBeforeUpdates) {
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  // Chunks: "First sentence." (15 chars), "Second sentence." (16 chars).
+  segments.push_back(MakeSegment(0, u"First sentence. Second sentence."));
+
+  timeline_.SetTextContent(segments);
+
+  EXPECT_EQ(timeline_.GetTotalDuration(),
+            31 * PlaybackTimeline::kEstimatedDurationPerChar);
+}
+
+TEST_F(PlaybackTimelineTest, GetTotalDurationFollowsUpdateSentenceDuration) {
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  // Chunks: "Sentence one." (13 chars), "Sentence two." (13 chars).
+  segments.push_back(MakeSegment(0, u"Sentence one. Sentence two."));
+
+  timeline_.SetTextContent(segments);
+  timeline_.UpdateSentenceDuration(/*sentence_index=*/1,
+                                   base::Milliseconds(1200));
+
+  EXPECT_EQ(timeline_.GetTotalDuration(),
+            13 * PlaybackTimeline::kEstimatedDurationPerChar +
+                base::Milliseconds(1200));
+
+  // A later update for the same chunk replaces the earlier one.
+  timeline_.UpdateSentenceDuration(/*sentence_index=*/1,
+                                   base::Milliseconds(700));
+
+  EXPECT_EQ(timeline_.GetTotalDuration(),
+            13 * PlaybackTimeline::kEstimatedDurationPerChar +
+                base::Milliseconds(700));
+}
+
 TEST_F(PlaybackTimelineTest, ResolveTimeOffsetSnapsMidWordToWordStart) {
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
   // Chunk 0: "First sentence." (15 chars)

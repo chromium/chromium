@@ -166,6 +166,22 @@ void PlaybackTimeline::UpdateSentenceDuration(
   sentence_word_timings_[sentence_index] = std::move(word_timings);
 }
 
+base::TimeDelta PlaybackTimeline::GetTotalDuration() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(chunks_.size(), static_est_start_times_1_0x_.size());
+  DCHECK_EQ(chunks_.size(), deviations_1_0x_.size());
+  if (chunks_.empty()) {
+    return base::TimeDelta();
+  }
+  base::TimeDelta total =
+      static_est_start_times_1_0x_.back() +
+      chunks_.back().text.size() * kEstimatedDurationPerChar;
+  for (const base::TimeDelta& deviation : deviations_1_0x_) {
+    total += deviation;
+  }
+  return total;
+}
+
 uint32_t PlaybackTimeline::ResolveCharOffsetInChunk(
     size_t chunk_index,
     base::TimeDelta offset_in_chunk,
@@ -268,11 +284,7 @@ std::optional<TimelinePosition> PlaybackTimeline::ResolveTimeOffset(
   // Target time is at or beyond total timeline duration; clamp to end of final
   // sentence chunk.
   size_t last_idx = chunks_.size() - 1;
-  base::TimeDelta last_chunk_start =
-      static_est_start_times_1_0x_[last_idx] + cumulative_deviation -
-      deviations_1_0x_[last_idx];
-  base::TimeDelta total_duration =
-      last_chunk_start + GetChunkDuration(last_idx);
+  base::TimeDelta total_duration = GetTotalDuration();
   return TimelinePosition(
       static_cast<uint32_t>(last_idx), chunks_[last_idx],
       static_cast<uint32_t>(chunks_[last_idx].text.size()),

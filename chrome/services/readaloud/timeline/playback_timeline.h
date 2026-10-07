@@ -73,6 +73,13 @@ class PlaybackTimeline {
                               base::TimeDelta actual_duration,
                               std::vector<WordTiming> word_timings = {});
 
+  // Returns the estimated 1.0x duration of the whole document: the
+  // per-character estimate (`kEstimatedDurationPerChar`) of every chunk, plus
+  // the deviations recorded by UpdateSentenceDuration() so far. It converges
+  // to the actual duration as chunks are synthesized. Returns zero if the
+  // timeline is empty.
+  base::TimeDelta GetTotalDuration() const;
+
  private:
   base::TimeDelta GetChunkDuration(size_t chunk_index) const;
   uint32_t ResolveCharOffsetInChunk(size_t chunk_index,
