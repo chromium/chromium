@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SEARCH_AI_MODE_SIGNIN_PROMO_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SEARCH_AI_MODE_SIGNIN_PROMO_VIEW_H_
 
+#include <memory>
+
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -12,6 +14,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 
 class AIModeSignInPromoControllerBase;
+class BubbleSignInPromoDelegate;
 class SearchAIModeSignInPromoController;
 class ComposeboxDriveSignInPromoController;
 
@@ -19,11 +22,13 @@ class ComposeboxDriveSignInPromoController;
 class AIModeSignInPromoViewBase : public LocationBarBubbleDelegateView {
   METADATA_HEADER(AIModeSignInPromoViewBase, LocationBarBubbleDelegateView)
  public:
+  // `delegate` handles the sign-in button and must not be null.
   AIModeSignInPromoViewBase(
       views::BubbleAnchor anchor,
       content::WebContents* web_contents,
       base::WeakPtr<AIModeSignInPromoControllerBase> controller,
-      signin_metrics::AccessPoint access_point);
+      signin_metrics::AccessPoint access_point,
+      std::unique_ptr<BubbleSignInPromoDelegate> delegate);
   AIModeSignInPromoViewBase(const AIModeSignInPromoViewBase&) = delete;
   AIModeSignInPromoViewBase& operator=(const AIModeSignInPromoViewBase&) =
       delete;

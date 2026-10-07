@@ -193,7 +193,10 @@ if (!is_android) {
       "//ui/gfx",
     ]
     if (enable_dice_support) {
-      deps += [ "//chrome/browser/ui/views/search_ai_mode" ]
+      deps += [
+        "//chrome/browser/ui/signin",
+        "//chrome/browser/ui/views/search_ai_mode",
+      ]
     }
   }
 }

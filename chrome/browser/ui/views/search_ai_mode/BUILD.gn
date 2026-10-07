@@ -34,7 +34,9 @@ source_set("impl") {
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/toolbar",
+    "//chrome/common:constants",
     "//components/omnibox/common",
+    "//components/tabs:public",
   ]
 }
 
