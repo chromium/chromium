@@ -16,9 +16,11 @@ found in the LICENSE file.
         style="@style/AppMenuItemText"
         android:textAppearance="@style/TextAppearance.DensityAdaptive.TextLarge.Primary"
         android:layout_weight="1"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
+        android:maxLines="1"
+        android:ellipsize="end"
         android:minHeight="?attr/listItemHeight"
         android:duplicateParentState="true" />
 
@@ -43,5 +45,16 @@ found in the LICENSE file.
         android:tint="@macro/default_icon_color_secondary"
         android:duplicateParentState="true"
         android:importantForAccessibility="no"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/menu_item_shortcut"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:maxLines="1"
+        android:paddingStart="@dimen/menu_item_shortcut_padding_start"
+        android:duplicateParentState="true"
         android:visibility="gone" />
 </LinearLayout>

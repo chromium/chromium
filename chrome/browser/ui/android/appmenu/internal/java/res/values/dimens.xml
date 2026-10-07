@@ -22,6 +22,7 @@ found in the LICENSE file.
 
     <!-- Menu item text dimensions. -->
     <dimen name="menu_item_text_padding_start">12dp</dimen>
+    <dimen name="menu_item_shortcut_padding_start">12dp</dimen>
 
     <!-- Menu divider dimens -->
     <dimen name="overflow_menu_divider_line_padding">5dp</dimen>

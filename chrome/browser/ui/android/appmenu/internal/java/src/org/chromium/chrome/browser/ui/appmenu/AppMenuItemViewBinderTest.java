@@ -230,6 +230,33 @@ public class AppMenuItemViewBinderTest {
     }
 
     @Test
+    public void testStandardMenuItem_WithShortcutText() {
+        String shortcut = "Ctrl+T";
+        PropertyModel standardModel = createStandardMenuItem(MENU_ID1, TITLE_1);
+
+        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
+        View view = mModelListAdapter.getView(0, null, parentView);
+        TextView shortcutView = view.findViewById(R.id.menu_item_shortcut);
+
+        assertNotNull("Shortcut view should exist", shortcutView);
+        assertEquals(
+                "Shortcut view should be gone by default", View.GONE, shortcutView.getVisibility());
+
+        standardModel.set(AppMenuItemProperties.SHORTCUT_TEXT, shortcut);
+        assertEquals(
+                "Shortcut view should be visible when shortcut text is set",
+                View.VISIBLE,
+                shortcutView.getVisibility());
+        assertEquals("Incorrect shortcut text", shortcut, shortcutView.getText());
+
+        standardModel.set(AppMenuItemProperties.SHORTCUT_TEXT, null);
+        assertEquals(
+                "Shortcut view should be gone when shortcut text is cleared",
+                View.GONE,
+                shortcutView.getVisibility());
+    }
+
+    @Test
     public void testStandardMenuItem_WithCheckedAndCheckable() {
         PropertyModel standardModel = createStandardMenuItem(MENU_ID1, TITLE_1);
 

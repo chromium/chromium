@@ -39,4 +39,14 @@ found in the LICENSE file.
         android:duplicateParentState="true"
         android:importantForAccessibility="no"
         android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/menu_item_shortcut"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:paddingStart="@dimen/menu_item_shortcut_padding_start"
+        android:duplicateParentState="true"
+        android:visibility="gone" />
 </LinearLayout>

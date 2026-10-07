@@ -43,6 +43,10 @@ public class AppMenuItemProperties {
     public static final WritableObjectPropertyKey<CharSequence> TITLE_CONDENSED =
             new WritableObjectPropertyKey<>("TITLE_CONDENSED");
 
+    /** The keyboard shortcut hint text for the menu item. */
+    public static final WritableObjectPropertyKey<@Nullable CharSequence> SHORTCUT_TEXT =
+            new WritableObjectPropertyKey<>("SHORTCUT_TEXT");
+
     /** The max lines of the title. */
     public static final WritableIntPropertyKey TITLE_MAX_LINES =
             new WritableIntPropertyKey("TITLE_MAX_LINES");
@@ -151,6 +155,7 @@ public class AppMenuItemProperties {
                 TITLE,
                 TITLE_ID,
                 TITLE_CONDENSED,
+                SHORTCUT_TEXT,
                 TITLE_MAX_LINES,
                 ENABLED,
                 HIGHLIGHTED,
