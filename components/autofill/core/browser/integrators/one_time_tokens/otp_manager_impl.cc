@@ -20,6 +20,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
+#include "components/affiliations/core/browser/domain_matching/domain_relation_checker.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -137,7 +139,25 @@ void OtpManagerImpl::GetRecentOtpsAndRenewSubscription() {
 
   // This may call OnOneTimeTokenReceived() zero times, but ...
   one_time_token_service_->GetRecentOneTimeTokens(base::BindRepeating(
-      &OtpManagerImpl::OnOneTimeTokenReceived, weak_ptr_factory_.GetWeakPtr()));
+      [](base::WeakPtr<OtpManagerImpl> self, OneTimeTokenSource source,
+         base::expected<OneTimeToken, OneTimeTokenRetrievalError> result) {
+        if (!self) {
+          return;
+        }
+        // When AffiliationService and GmailOtpBackend are both available,
+        // Gmail OTPs are retrieved directly via GmailOtpRetriever (verifying
+        // domain affiliation against the frame origin); therefore,
+        // raw/unaffiliated Gmail tokens from
+        // OneTimeTokenService::GetRecentOneTimeTokens must be dropped to
+        // prevent duplicate or unverified suggestions.
+        if (source == OneTimeTokenSource::kGmail &&
+            self->owner_->client().GetAffiliationService() &&
+            self->owner_->client().GetGmailOtpBackend()) {
+          return;
+        }
+        self->OnOneTimeTokenReceived(source, std::move(result));
+      },
+      weak_ptr_factory_.GetWeakPtr()));
 
   // ... this guarantees at least one call of OnOneTimeTokenReceived().
   if (sms_otp_subscription_.IsAlive()) {
@@ -175,6 +195,24 @@ void OtpManagerImpl::GetRecentOtpsAndRenewSubscription() {
             base::Time::Now() + kGmailOtpTickleSubscriptionDuration,
             base::BindRepeating(&OtpManagerImpl::OnTickleReceived,
                                 weak_ptr_factory_.GetWeakPtr()));
+  }
+  affiliations::AffiliationService* affiliation_service =
+      owner_->client().GetAffiliationService();
+  one_time_tokens::GmailOtpBackend* gmail_otp_backend =
+      owner_->client().GetGmailOtpBackend();
+  if (std::optional<OneTimeToken> token =
+          SelectMostRecentToken(OneTimeTokenType::kGmail);
+      affiliation_service && gmail_otp_backend &&
+      (!token || token->value().empty()) && UserOptedIntoGmailOtpFilling()) {
+    auto checker = std::make_unique<affiliations::DomainRelationChecker>(
+        *affiliation_service);
+    const url::Origin frame_origin =
+        owner_->client().GetLastCommittedPrimaryMainFrameOrigin();
+    gmail_otp_retriever_ = one_time_tokens::GmailOtpRetriever::CreateAndStart(
+        *gmail_otp_backend, std::move(checker), frame_origin,
+        /*is_login_flow=*/true,
+        base::BindOnce(&OtpManagerImpl::OnGmailOtpRetrieved,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -291,6 +329,39 @@ void OtpManagerImpl::OnTickleReceived(OneTimeTokenSource source) {
   }
 }
 
+void OtpManagerImpl::OnGmailOtpRetrieved(
+    base::expected<one_time_tokens::GmailOtpRetriever::Result,
+                   OneTimeTokenRetrievalError> result) {
+  if (gmail_otp_retriever_) {
+    // OnGmailOtpRetrieved is invoked as a callback by gmail_otp_retriever_
+    // which means that gmail_otp_retriever_ is still on call stack at this
+    // point.
+    // Its deletion has to happen later, so we have to post a task instead of
+    // deleting it right here.
+    base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(gmail_otp_retriever_));
+  }
+  // TODO(crbug.com/556170395): figure out correct behaviour for cases when OTP
+  // values are absent, or fetching resulted in an error. Running the callback
+  // right here has a potential of breaking the case when the page is actually
+  // waiting for an SMS OTP which ends up arriving a bit later.
+  if (!result) {
+    LOG_AF(owner_->client().GetCurrentLogManager())
+        << LoggingScope::kOneTimeTokens
+        << "OTP retrieval resulted in a failure. Error code: "
+        << std::to_underlying(result.error());
+    return;
+  }
+  if (result->token.value().empty()) {
+    LOG_AF(owner_->client().GetCurrentLogManager())
+        << LoggingScope::kOneTimeTokens
+        << "Retrieved an empty OTP value, no suggestions will be generated.";
+    return;
+  }
+
+  OnOneTimeTokenReceived(OneTimeTokenSource::kGmail, std::move(result->token));
+}
+
 void OtpManagerImpl::OnOneTimeTokenReceived(
     OneTimeTokenSource backend_type,
     base::expected<OneTimeToken, OneTimeTokenRetrievalError> token_or_error) {
@@ -311,7 +382,7 @@ void OtpManagerImpl::OnOneTimeTokenReceived(
   }
 
   // If token_or_error holds an error, run the callback with empty otp value.
-  if (!token_or_error.has_value()) {
+  if (!token_or_error) {
     if (last_pending_get_suggestions_callback_) {
       std::move(last_pending_get_suggestions_callback_).Run({});
     }

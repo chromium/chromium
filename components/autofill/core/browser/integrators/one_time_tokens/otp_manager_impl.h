@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_retriever.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
@@ -109,6 +110,11 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   // Called when an incoming OTP tickle push notification arrives.
   void OnTickleReceived(one_time_tokens::OneTimeTokenSource source);
 
+  // Callback for `one_time_tokens::GmailOtpRetriever`.
+  void OnGmailOtpRetrieved(
+      base::expected<one_time_tokens::GmailOtpRetriever::Result,
+                     one_time_tokens::OneTimeTokenRetrievalError> result);
+
   // TODO(crbug.com/415273270): Update UI (dropdown or keyboard accessory) when
   // a new token is received.
   void OnOneTimeTokenReceived(
@@ -154,6 +160,13 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   // May be nullptr on platforms that don't support SMS OTP fetching.
   raw_ptr<one_time_tokens::OneTimeTokenService> one_time_token_service_ =
       nullptr;
+
+  // Manages single retrieval of Gmail OTP for the target origin.
+  // A retrieval is started when we detect an OTP field present on the page
+  // and the user focuses it.
+  // Do not overwrite this retriever in other cases, e.g. for retrieving an OTP
+  // proactively in response to tickles.
+  std::unique_ptr<one_time_tokens::GmailOtpRetriever> gmail_otp_retriever_;
 
   // Subscriptions to a `OneTimeTokenService`.
   one_time_tokens::ExpiringSubscription sms_otp_subscription_;

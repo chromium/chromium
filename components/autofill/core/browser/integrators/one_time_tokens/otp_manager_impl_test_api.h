@@ -77,6 +77,16 @@ class OtpManagerImplTestApi {
     manager_->OnTickleReceived(source);
   }
 
+  one_time_tokens::GmailOtpRetriever* gmail_otp_retriever() const {
+    return manager_->gmail_otp_retriever_.get();
+  }
+
+  void OnGmailOtpRetrieved(
+      base::expected<one_time_tokens::GmailOtpRetriever::Result,
+                     one_time_tokens::OneTimeTokenRetrievalError> result) {
+    manager_->OnGmailOtpRetrieved(std::move(result));
+  }
+
  private:
   raw_ref<OtpManagerImpl> manager_;
 };
