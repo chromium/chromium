@@ -80,4 +80,11 @@ public interface AppMenuPropertiesDelegate {
 
     /** Returns whether the icon row is showing. */
     boolean shouldShowIconRow();
+
+    /**
+     * Returns whether the app menu should avoid growing over the top browser controls. False on the
+     * NTP, regular and incognito, where the omnibox shows no URL. Only consulted when the menu is
+     * anchored to the bottom bar and the controls are at the top.
+     */
+    boolean shouldKeepMenuBelowTopControls();
 }

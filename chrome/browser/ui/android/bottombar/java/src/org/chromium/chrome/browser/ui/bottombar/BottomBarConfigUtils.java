@@ -130,7 +130,7 @@ public class BottomBarConfigUtils {
      * starts, but the native page is only swapped when it commits. Frozen tabs keep a
      * FrozenNativePage with the original host.
      */
-    private static boolean isNtp(@Nullable Tab tab) {
+    public static boolean isNtp(@Nullable Tab tab) {
         NativePage nativePage = tab == null ? null : tab.getNativePage();
         return nativePage != null && UrlConstants.NTP_HOST.equals(nativePage.getHost());
     }

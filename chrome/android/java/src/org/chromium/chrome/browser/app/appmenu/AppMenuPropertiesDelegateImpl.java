@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuRecentEntryItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTabGroupItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTabItemProperties;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
@@ -948,6 +949,11 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     @Override
     public boolean shouldShowIconRow() {
         return false;
+    }
+
+    @Override
+    public boolean shouldKeepMenuBelowTopControls() {
+        return !BottomBarConfigUtils.isNtp(mActivityTabProvider.get());
     }
 
     /**

@@ -29,6 +29,7 @@ class TestAppMenuPropertiesDelegate implements AppMenuPropertiesDelegate {
     public int headerResourceId;
     public boolean enableAppIconRow;
     public boolean iconBeforeItem;
+    public boolean keepMenuBelowTopControls;
 
     TestAppMenuPropertiesDelegate(Context context) {
         mContext = context;
@@ -165,6 +166,11 @@ class TestAppMenuPropertiesDelegate implements AppMenuPropertiesDelegate {
     @Override
     public boolean shouldShowIconRow() {
         return false;
+    }
+
+    @Override
+    public boolean shouldKeepMenuBelowTopControls() {
+        return keepMenuBelowTopControls;
     }
 
     @Override
