@@ -37,10 +37,6 @@ public final class BindService {
         public int mUpdateServiceGroupCount;
     }
 
-    static boolean supportVariableConnections() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
-    }
-
     // Note that handler is not guaranteed to be used, and client still need to correctly handle
     // callbacks on the UI thread.
     static boolean doBindService(
@@ -66,7 +62,7 @@ public final class BindService {
         if (sBinderCallCounter != null) {
             sBinderCallCounter.mBindServiceCount++;
         }
-        if (supportVariableConnections() && instanceName != null) {
+        if (instanceName != null) {
             return context.bindIsolatedService(intent, flags, instanceName, executor, connection);
         }
 

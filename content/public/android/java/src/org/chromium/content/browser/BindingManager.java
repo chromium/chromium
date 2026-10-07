@@ -22,14 +22,12 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 /**
- * Manages oom bindings used to bound child services.
- * This object must only be accessed from the launcher thread.
+ * Manages oom bindings used to bound child services. This object must only be accessed from the
+ * launcher thread.
  */
 @NullMarked
 class BindingManager implements ComponentCallbacks2 {
     private static final String TAG = "BindingManager";
-
-    public static final int NO_MAX_SIZE = -1;
 
     // Low reduce ratio of bindings.
     private static final float BINDING_LOW_REDUCE_RATIO = 0.25f;
@@ -40,8 +38,6 @@ class BindingManager implements ComponentCallbacks2 {
     private static final long BINDING_POOL_CLEARER_DELAY_MILLIS = 10 * 1000;
 
     private final Set<ChildProcessConnection> mConnections = new ArraySet<ChildProcessConnection>();
-    // Can be -1 to mean no max size.
-    private final int mMaxSize;
     private final Iterable<ChildProcessConnection> mRanking;
     private final Runnable mDelayedClearer;
     private final @Nullable Consumer<ChildProcessConnection> mOnChangedImplicitly;
@@ -202,7 +198,6 @@ class BindingManager implements ComponentCallbacks2 {
      * Construct instance with maxSize.
      *
      * @param context Android's context.
-     * @param maxSize The maximum number of connections or NO_MAX_SIZE for unlimited connections.
      * @param ranking The ranking of {@link ChildProcessConnection}s based on importance.
      * @param onChangedImplicitly A callback that is run when connections are bound/unbound to/from
      *     a service binding implicitly. Note that this does not report the binding change is for
@@ -213,19 +208,13 @@ class BindingManager implements ComponentCallbacks2 {
      */
     BindingManager(
             Context context,
-            int maxSize,
             Iterable<ChildProcessConnection> ranking,
             @Nullable Consumer<ChildProcessConnection> onChangedImplicitly) {
         assert LauncherThread.runningOnLauncherThread();
-        Log.i(TAG, "Visible binding enabled: maxSize=%d", maxSize);
+        Log.i(TAG, "Visible binding enabled");
 
-        mMaxSize = maxSize;
         mOnChangedImplicitly = onChangedImplicitly;
         mRanking = ranking;
-        if (mMaxSize <= 0 && mMaxSize != NO_MAX_SIZE) {
-            throw new IllegalArgumentException(
-                    "maxSize must be a positive integer or NO_MAX_SIZE. Was " + maxSize);
-        }
 
         mDelayedClearer =
                 new Runnable() {
@@ -250,13 +239,6 @@ class BindingManager implements ComponentCallbacks2 {
         if (alreadyInQueue) return;
 
         addBinding(connection);
-
-        if (mMaxSize != NO_MAX_SIZE && mConnections.size() == mMaxSize + 1) {
-            mConnectionsDroppedDueToMaxSize++;
-            removeOldConnections(1);
-            ensureLowestRankIsWaived();
-        }
-        assert mMaxSize == NO_MAX_SIZE || mConnections.size() <= mMaxSize;
     }
 
     public void removeConnection(ChildProcessConnection connection) {

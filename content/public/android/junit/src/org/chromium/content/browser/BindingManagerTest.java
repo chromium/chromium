@@ -68,7 +68,6 @@ public class BindingManagerTest {
     Activity mActivity;
 
     // Created in setUp() for convenience.
-    BindingManager mManager;
     BindingManager mVariableManager;
 
     List<ChildProcessConnection> mIterable;
@@ -80,15 +79,8 @@ public class BindingManagerTest {
         LauncherThread.setCurrentThreadAsLauncherThread();
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mIterable = new ArrayList<>();
-        mManager =
-                new BindingManager(
-                        mActivity, BINDING_COUNT_LIMIT, mIterable, /* onChangedImplicitly= */ null);
         mVariableManager =
-                new BindingManager(
-                        mActivity,
-                        BindingManager.NO_MAX_SIZE,
-                        mIterable,
-                        /* onChangedImplicitly= */ null);
+                new BindingManager(mActivity, mIterable, /* onChangedImplicitly= */ null);
     }
 
     @After
@@ -116,12 +108,6 @@ public class BindingManagerTest {
      * Verifies that onSentToBackground() drops all the moderate bindings after some delay, and
      * onBroughtToForeground() doesn't recover them.
      */
-    @Test
-    @Feature({"ProcessManagement"})
-    public void testNotPerceptibleBindingDropOnBackground() {
-        doTestBindingDropOnBackground(mManager);
-    }
-
     @Test
     @Feature({"ProcessManagement"})
     public void testNotPerceptibleBindingDropOnBackgroundWithVariableSize() {
@@ -164,12 +150,6 @@ public class BindingManagerTest {
 
     @Test
     @Feature({"ProcessManagement"})
-    public void testNotPerceptibleBindingDropOnLowMemory() {
-        doTestBindingDropOnLowMemory(mManager);
-    }
-
-    @Test
-    @Feature({"ProcessManagement"})
     public void testNotPerceptibleBindingDropOnLowMemoryVariableSize() {
         doTestBindingDropOnLowMemory(mVariableManager);
     }
@@ -191,12 +171,6 @@ public class BindingManagerTest {
     }
 
     /** Verifies that onTrimMemory() drops moderate bindings properly. */
-    @Test
-    @Feature({"ProcessManagement"})
-    public void testNotPerceptibleBindingDropOnTrimMemory() {
-        doTestBindingDropOnTrimMemory(mManager);
-    }
-
     @Test
     @Feature({"ProcessManagement"})
     public void testNotPerceptibleBindingDropOnTrimMemoryWithVariableSize() {
@@ -249,12 +223,6 @@ public class BindingManagerTest {
      */
     @Test
     @Feature({"ProcessManagement"})
-    public void testNotPerceptibleBindingTillBackgroundedSentToBackground() {
-        doTestBindingTillBackgroundedSentToBackground(mManager);
-    }
-
-    @Test
-    @Feature({"ProcessManagement"})
     public void testNotPerceptibleBindingTillBackgroundedSentToBackgroundWithVariableSize() {
         doTestBindingTillBackgroundedSentToBackground(mVariableManager);
     }
@@ -271,12 +239,6 @@ public class BindingManagerTest {
         // Bringing Chrome to the foreground should not re-add the moderate bindings.
         manager.onBroughtToForeground();
         checkConnections(connection, /* isConnected= */ false);
-    }
-
-    @Test
-    @Feature({"ProcessManagement"})
-    public void testOneWaivedConnection_NotPerceptibleBinding() {
-        doTestOneWaivedConnection(mManager);
     }
 
     @Test
@@ -318,12 +280,6 @@ public class BindingManagerTest {
 
     @Test
     @Feature({"ProcessManagement"})
-    public void testBindingCountLimit_NotPerceptibleBinding() {
-        doTestBindingCountLimit(mManager, /* limited= */ true);
-    }
-
-    @Test
-    @Feature({"ProcessManagement"})
     public void testNoBindingCountLimitWithVariableSize_NotPerceptibleBinding() {
         doTestBindingCountLimit(mVariableManager, /* limited= */ false);
     }
@@ -339,12 +295,6 @@ public class BindingManagerTest {
         } else {
             checkConnections(connections, new boolean[] {false, true, true, true, true, true});
         }
-    }
-
-    @Test
-    @Feature({"ProcessManagement"})
-    public void testBindingCountLimitLowestRankAddedLast_NotPerceptibleBinding() {
-        doTestBindingCountLimitLowestRankAddedLast(mManager, /* limited= */ true);
     }
 
     @Test
@@ -381,10 +331,7 @@ public class BindingManagerTest {
         final List<ChildProcessConnection> changedConnections = new ArrayList<>();
         BindingManager manager =
                 new BindingManager(
-                        mActivity,
-                        6,
-                        mIterable,
-                        (connection) -> changedConnections.add(connection));
+                        mActivity, mIterable, (connection) -> changedConnections.add(connection));
 
         ChildProcessConnection[] connections = new ChildProcessConnection[6];
         for (int i = 0; i < connections.length; i++) {
@@ -477,13 +424,6 @@ public class BindingManagerTest {
         manager.addConnection(connection);
         // Removes the lowest ranked connection (connections[0]) without unbinding.
         Assert.assertTrue(changedConnections.isEmpty());
-        changedConnections.clear();
-
-        connection = createTestChildProcessConnection(8, null, mIterable);
-        // A new connection exceeds the max size, trigger rotating.
-        manager.addConnection(connection);
-        // Removes the lowest ranked connection (connections[1]) and unbind it.
-        Assert.assertEquals(Arrays.asList(connections[1]), changedConnections);
         changedConnections.clear();
     }
 }

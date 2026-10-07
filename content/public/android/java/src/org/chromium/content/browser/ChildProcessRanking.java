@@ -199,8 +199,6 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
     private static final RankComparator COMPARATOR = new RankComparator();
 
     private final Handler mHandler = new Handler();
-    // |mMaxSize| can be -1 to indicate there can be arbitrary number of connections.
-    private final int mMaxSize;
     // ArrayList is not the most theoretically efficient data structure, but is good enough
     // for sizes in production and more memory efficient than linked data structures.
     private final List<ConnectionWithRank> mRankings = new ArrayList<>();
@@ -223,15 +221,7 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
         return ContentFeatureList.sSpareRendererLowestRanking.getValue();
     }
 
-    public ChildProcessRanking() {
-        mMaxSize = -1;
-    }
-
-    /** Create with a maxSize. Trying to insert more will throw exceptions. */
-    public ChildProcessRanking(int maxSize) {
-        assert maxSize > 0;
-        mMaxSize = maxSize;
-    }
+    public ChildProcessRanking() {}
 
     public void enableServiceGroupImportance() {
         assert !mEnableServiceGroupImportance;
@@ -313,10 +303,6 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
             @ChildProcessImportance int importance) {
         assert connection != null;
         assert indexOf(connection) == -1;
-        if (mMaxSize != -1 && mRankings.size() >= mMaxSize) {
-            throw new RuntimeException(
-                    "mRankings.size:" + mRankings.size() + " mMaxSize:" + mMaxSize);
-        }
         mRankings.add(
                 new ConnectionWithRank(
                         connection,

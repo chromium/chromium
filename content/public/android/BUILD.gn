@@ -54,7 +54,7 @@ action_with_pydeps("generate_sandboxed_service_srcjar") {
   _rebased_srcjar_path = rebase_path(_srcjar_path, root_build_dir)
 
   args = [
-    "40",
+    "2",
     _rebased_srcjar_path,
   ]
   outputs = [ _srcjar_path ]

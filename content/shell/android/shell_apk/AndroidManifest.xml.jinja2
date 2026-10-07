@@ -55,10 +55,7 @@ found in the LICENSE file.
 
         <!-- NOTE: If you change the values of "android:process" for any of the below services,
              you also need to update kHelperProcessExecutableName in chrome_constants.cc. -->
-        {% set num_sandboxed_services = 40 %}
-        <meta-data android:name="org.chromium.content.browser.NUM_SANDBOXED_SERVICES"
-                   android:value="{{ num_sandboxed_services }}"/>
-        {% for i in range(num_sandboxed_services) %}
+        {% for i in range(2) %}
         <service android:name="org.chromium.content.app.SandboxedProcessService{{ i }}"
                  android:process=":sandboxed_process{{ i }}"
                  {% if (i == 0) %}

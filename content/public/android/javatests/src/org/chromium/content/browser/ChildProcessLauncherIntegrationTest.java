@@ -168,7 +168,7 @@ public class ChildProcessLauncherIntegrationTest {
         final TestChildProcessConnectionFactory factory = new TestChildProcessConnectionFactory();
         final List<TestChildProcessConnection> connections = factory.getConnections();
         ChildProcessLauncherHelperImpl.setSandboxServicesSettingsForTesting(
-                factory, 10 /* arbitrary number, only really need 2 */, serviceName);
+                factory, 2 /* only really need 2 */, serviceName);
 
         // TODO(boliu,nasko): Ensure navigation is actually successful
         // before proceeding.

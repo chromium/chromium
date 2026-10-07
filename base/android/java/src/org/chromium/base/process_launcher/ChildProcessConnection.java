@@ -181,11 +181,6 @@ public class ChildProcessConnection {
         }
     }
 
-    /** Run time check if variable number of connections is supported. */
-    public static boolean supportVariableConnections() {
-        return BindService.supportVariableConnections();
-    }
-
     /** The string passed to bindToCaller to identify this class loader. */
     @VisibleForTesting
     public static String getBindToCallerClazz() {

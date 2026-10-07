@@ -71,8 +71,6 @@ public final class ChildProcessLauncherHelperImpl {
     private static final String TAG = "ChildProcLH";
 
     // Manifest values used to specify the service names.
-    private static final String NUM_SANDBOXED_SERVICES_KEY =
-            "org.chromium.content.browser.NUM_SANDBOXED_SERVICES";
     private static final String NUM_PRIVILEGED_SERVICES_KEY =
             "org.chromium.content.browser.NUM_PRIVILEGED_SERVICES";
 
@@ -504,25 +502,11 @@ public final class ChildProcessLauncherHelperImpl {
                     @Override
                     public void run() {
                         assumeNonNull(sSandboxedChildConnectionRanking);
-                        ChildConnectionAllocator allocator =
-                                getConnectionAllocator(context, /* sandboxed= */ true);
-                        if (ChildProcessConnection.supportVariableConnections()) {
-                            sBindingManager =
-                                    new BindingManager(
-                                            context,
-                                            BindingManager.NO_MAX_SIZE,
-                                            sSandboxedChildConnectionRanking,
-                                            ChildProcessLauncherHelperImpl
-                                                    ::onBindingChangedImplicitly);
-                        } else {
-                            sBindingManager =
-                                    new BindingManager(
-                                            context,
-                                            allocator.getMaxNumberOfAllocations(),
-                                            sSandboxedChildConnectionRanking,
-                                            ChildProcessLauncherHelperImpl
-                                                    ::onBindingChangedImplicitly);
-                        }
+                        sBindingManager =
+                                new BindingManager(
+                                        context,
+                                        sSandboxedChildConnectionRanking,
+                                        ChildProcessLauncherHelperImpl::onBindingChangedImplicitly);
                         ChildProcessConnectionMetrics.getInstance()
                                 .setBindingManager(sBindingManager);
                     }
@@ -691,7 +675,7 @@ public final class ChildProcessLauncherHelperImpl {
                                 bindAsExternalService,
                                 /* fallbackToNextSlot= */ false,
                                 sandboxed);
-            } else if (ChildProcessConnection.supportVariableConnections()) {
+            } else {
                 final int maxIsolatedServices;
                 if (SysUtils.hasLargeProcessCountSupport()
                         && ContentFeatureList.sSandboxedProcessServiceLimitOnAndroid.isEnabled()) {
@@ -711,32 +695,13 @@ public final class ChildProcessLauncherHelperImpl {
                                 bindAsExternalService,
                                 sandboxed,
                                 maxIsolatedServices);
-            } else {
-                connectionAllocator =
-                        ChildConnectionAllocator.create(
-                                context,
-                                LauncherThread.getHandler(),
-                                freeSlotRunnable,
-                                packageName,
-                                ChildProcessCreationParamsImpl.getSandboxedServicesName(),
-                                NUM_SANDBOXED_SERVICES_KEY,
-                                bindToCaller,
-                                bindAsExternalService,
-                                /* fallbackToNextSlot= */ false,
-                                sandboxed);
             }
             if (sSandboxedServiceFactoryForTesting != null) {
                 connectionAllocator.setConnectionFactoryForTesting(
                         sSandboxedServiceFactoryForTesting);
             }
             sSandboxedChildConnectionAllocator = connectionAllocator;
-            if (ChildProcessConnection.supportVariableConnections()) {
-                sSandboxedChildConnectionRanking = new ChildProcessRanking();
-            } else {
-                sSandboxedChildConnectionRanking =
-                        new ChildProcessRanking(
-                                sSandboxedChildConnectionAllocator.getMaxNumberOfAllocations());
-            }
+            sSandboxedChildConnectionRanking = new ChildProcessRanking();
         }
         return sSandboxedChildConnectionAllocator;
     }

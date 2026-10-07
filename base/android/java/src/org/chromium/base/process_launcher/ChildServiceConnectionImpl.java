@@ -96,15 +96,13 @@ import java.util.concurrent.Executor;
         if (!isBound()) {
             return false;
         }
-        if (BindService.supportVariableConnections()) {
-            try {
-                BindService.doUpdateServiceGroup(mContext, this, group, importanceInGroup);
-                return true;
-            } catch (IllegalArgumentException e) {
-                // There is an unavoidable race here binding might be removed for example due to a
-                // crash, which has not been processed on the launcher thread.
-                // Ignore these. See crbug.com/1026626 and crbug.com/1026626 for context.
-            }
+        try {
+            BindService.doUpdateServiceGroup(mContext, this, group, importanceInGroup);
+            return true;
+        } catch (IllegalArgumentException e) {
+            // There is an unavoidable race here binding might be removed for example due to a
+            // crash, which has not been processed on the launcher thread.
+            // Ignore these. See crbug.com/1026626 and crbug.com/1026626 for context.
         }
         return false;
     }

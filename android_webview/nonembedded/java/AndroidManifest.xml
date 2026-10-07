@@ -223,10 +223,7 @@ by a child template that "extends" this file.
             {% endblock %}
         {% endmacro %}
         {{ common(manifest_package|default('com.android.webview'), library|default('libwebviewchromium.so')) }}
-        {% set num_sandboxed_services = 40 %}
-        <meta-data android:name="org.chromium.content.browser.NUM_SANDBOXED_SERVICES"
-                   android:value="{{ num_sandboxed_services }}" />
-        {% for i in range(num_sandboxed_services) %}
+        {% for i in range(2) %}
             <service android:name="org.chromium.content.app.SandboxedProcessService{{ i }}"
                      android:process=":sandboxed_process{{ i }}"
                      android:isolatedProcess="true"
