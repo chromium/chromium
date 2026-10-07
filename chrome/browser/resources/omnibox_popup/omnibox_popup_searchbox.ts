@@ -785,6 +785,17 @@ export class OmniboxPopupSearchboxElement extends
     return !this.$.input.lastInput()!.text.trim();
   }
 
+  /**
+   * Returns true if `value` should be treated as a cleared input, i.e. the
+   * dropdown should close and the backend should be told the draft was
+   * cleared. Empty text while in keyword mode is NOT a cleared input: the
+   * keyword is still active and an empty query should show keyword-scoped
+   * zero-suggest, so the dropdown must stay open.
+   */
+  private isInputCleared_(value: string): boolean {
+    return !value.trim() && !this.keywordModeManager.isInKeywordMode;
+  }
+
   protected shouldShowVoiceLens_(isEnabled: boolean): boolean {
     if (!isEnabled) {
       return false;
@@ -1010,7 +1021,7 @@ export class OmniboxPopupSearchboxElement extends
     this.popupPageHandler_.onPaste(
         newValue, selectionRange, this.currentSequenceNum_);
 
-    if (newValue.trim()) {
+    if (!this.isInputCleared_(newValue)) {
       this.queryAutocomplete(
           newValue, /*preventInlineAutocomplete=*/ true, /*isOnFocus=*/ false);
     } else {
@@ -1046,7 +1057,7 @@ export class OmniboxPopupSearchboxElement extends
       this.getInputElement().setInput({text: newValue, inline: ''});
       this.getInputElement().setSelectionRange(cursorPos, cursorPos);
 
-      if (newValue.trim()) {
+      if (!this.isInputCleared_(newValue)) {
         this.queryAutocomplete(
             newValue, /*preventInlineAutocomplete=*/ true,
             /*isOnFocus=*/ false);
@@ -1528,7 +1539,7 @@ export class OmniboxPopupSearchboxElement extends
 
     this.updateAimButtonCollapse_();
 
-    if (!e.detail.value.trim()) {
+    if (this.isInputCleared_(e.detail.value)) {
       // Notify the backend when the user clears all input (`onInputCleared`) so
       // it knows the draft was manually cleared and can revert empty drafts on
       // tab switch (restoring the permanent URL instead of a blank string).
@@ -1622,7 +1633,7 @@ export class OmniboxPopupSearchboxElement extends
       inputEl.setInput({text: result.text, inline: '', isDeletingInput: false});
       inputEl.setSelectionRange(result.selection.start, result.selection.end);
 
-      if (!result.text.trim()) {
+      if (this.isInputCleared_(result.text)) {
         this.clearAutocompleteMatches();
         this.popupPageHandler_.onInputCleared(this.currentSequenceNum_);
       } else {

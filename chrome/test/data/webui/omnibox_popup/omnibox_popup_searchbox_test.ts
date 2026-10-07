@@ -2408,6 +2408,193 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertEquals('google.com', keyword);
  });
 
+ test('BackspaceToEmptyInKeywordModeKeepsDropdownOpen', async () => {
+   // Register the default search engine's keyword so Ctrl+K can resolve it.
+   testProxy.page.setAvailableKeywordModels(
+       [{
+         type: KeywordType.kChip,
+         keyword: 'google.com',
+         displayText: 'Search Google',
+         iconPath: '',
+         placeholder: 'Search Google',
+       }],
+       'google.com');
+   await microtasksFinished();
+
+   // Start on a page with its URL shown and no user input.
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text: 'https://example.com',
+     userInputInProgress: false,
+     isFocused: true,
+   }));
+   await microtasksFinished();
+
+   // Ctrl+K enters keyword mode for the default search engine.
+   callbackRouter.focusSearchWithDefaultSearchEngineKeywordMode();
+   await microtasksFinished();
+   assertTrue(searchbox.keywordModeManager.isInKeywordMode);
+
+   // Type a character and deliver results so the dropdown is open.
+   const inputEl = searchbox.getInputElement().inputElement;
+   inputEl.value = 'a';
+   inputEl.setSelectionRange(1, 1);
+   inputEl.dispatchEvent(
+       new InputEvent('input', {bubbles: true, composed: true}));
+   await microtasksFinished();
+
+   testProxy.page.autocompleteResultChanged(createAutocompleteResultForTesting({
+     queryId: searchbox.activeQueryId,
+     input: 'a',
+     matches: [
+       createSearchMatchForTesting({
+         allowedToBeDefaultMatch: true,
+         fillIntoEdit: 'a',
+         keywordModel: createMatchKeywordModelForTesting({
+           type: KeywordType.kInKeyword,
+           keyword: 'google.com',
+         }),
+       }),
+     ],
+   }));
+   await microtasksFinished();
+   assertTrue(searchbox.dropdownIsVisible);
+
+   handler.reset();
+   testProxy.handler.reset();
+
+   // Backspace until the input is empty.
+   inputEl.value = '';
+   inputEl.setSelectionRange(0, 0);
+   inputEl.dispatchEvent(new InputEvent(
+       'input',
+       {inputType: 'deleteContentBackward', bubbles: true, composed: true}));
+   await microtasksFinished();
+
+   // Keyword mode is preserved and the dropdown stays open. The empty input
+   // is not treated as cleared; a keyword-scoped query is issued instead.
+   assertTrue(searchbox.keywordModeManager.isInKeywordMode);
+   assertTrue(searchbox.dropdownIsVisible);
+   assertEquals(0, testProxy.handler.getCallCount('stopAutocomplete'));
+   assertEquals(0, handler.getCallCount('onInputCleared'));
+   assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+   const [, , queryText, , , , , queryKeyword] =
+       testProxy.handler.getArgs('queryAutocomplete')[0];
+   assertEquals('', queryText);
+   assertEquals('google.com', queryKeyword);
+ });
+
+ test('CutAndUndoToEmptyInKeywordModeKeepsDropdownOpen', async () => {
+   // Same invariant as `BackspaceToEmptyInKeywordModeKeepsDropdownOpen`, but
+   // for the cut and undo/redo edit paths, which have their own "is the input
+   // now empty?" checks.
+   testProxy.page.setAvailableKeywordModels(
+       [{
+         type: KeywordType.kChip,
+         keyword: 'google.com',
+         displayText: 'Search Google',
+         iconPath: '',
+         placeholder: 'Search Google',
+       }],
+       'google.com');
+   await microtasksFinished();
+
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text: '',
+     userInputInProgress: false,
+     isFocused: true,
+   }));
+   await microtasksFinished();
+
+   callbackRouter.focusSearchWithDefaultSearchEngineKeywordMode();
+   await microtasksFinished();
+   assertTrue(searchbox.keywordModeManager.isInKeywordMode);
+
+   // Type a query and deliver results so the dropdown is open.
+   const inputEl = searchbox.getInputElement().inputElement;
+   inputEl.value = 'cats';
+   inputEl.setSelectionRange(4, 4);
+   inputEl.dispatchEvent(
+       new InputEvent('input', {bubbles: true, composed: true}));
+   await microtasksFinished();
+
+   testProxy.page.autocompleteResultChanged(createAutocompleteResultForTesting({
+     queryId: searchbox.activeQueryId,
+     input: 'cats',
+     matches: [
+       createSearchMatchForTesting({
+         allowedToBeDefaultMatch: true,
+         fillIntoEdit: 'cats',
+         keywordModel: createMatchKeywordModelForTesting({
+           type: KeywordType.kInKeyword,
+           keyword: 'google.com',
+         }),
+       }),
+     ],
+   }));
+   await microtasksFinished();
+   assertTrue(searchbox.dropdownIsVisible);
+
+   // Cut all text (Ctrl+A, Ctrl+X).
+   handler.reset();
+   testProxy.handler.reset();
+   inputEl.setSelectionRange(0, 4);
+   inputEl.dispatchEvent(new ClipboardEvent('cut', {
+     clipboardData: new DataTransfer(),
+     bubbles: true,
+     composed: true,
+     cancelable: true,
+   }));
+   await microtasksFinished();
+
+   assertEquals('', inputEl.value);
+   assertTrue(searchbox.keywordModeManager.isInKeywordMode);
+   assertTrue(searchbox.dropdownIsVisible);
+   assertEquals(0, testProxy.handler.getCallCount('stopAutocomplete'));
+   assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+   const [, , cutQueryText, , , , , cutQueryKeyword] =
+       testProxy.handler.getArgs('queryAutocomplete')[0];
+   assertEquals('', cutQueryText);
+   assertEquals('google.com', cutQueryKeyword);
+
+   // Undo restores the text; redo empties it again. Redo-to-empty must also
+   // keep the dropdown open.
+   handler.reset();
+   testProxy.handler.reset();
+   inputEl.dispatchEvent(new KeyboardEvent('keydown', {
+     key: 'z',
+     ctrlKey: !isMac,
+     metaKey: isMac,
+     bubbles: true,
+     composed: true,
+   }));
+   await microtasksFinished();
+   assertEquals('cats', inputEl.value);
+   assertTrue(searchbox.keywordModeManager.isInKeywordMode);
+
+   handler.reset();
+   testProxy.handler.reset();
+   inputEl.dispatchEvent(new KeyboardEvent('keydown', {
+     key: 'z',
+     shiftKey: true,
+     ctrlKey: !isMac,
+     metaKey: isMac,
+     bubbles: true,
+     composed: true,
+   }));
+   await microtasksFinished();
+
+   assertEquals('', inputEl.value);
+   assertTrue(searchbox.keywordModeManager.isInKeywordMode);
+   assertTrue(searchbox.dropdownIsVisible);
+   assertEquals(0, testProxy.handler.getCallCount('stopAutocomplete'));
+   assertEquals(0, handler.getCallCount('onInputCleared'));
+   assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+   const [, , redoQueryText, , , , , redoQueryKeyword] =
+       testProxy.handler.getArgs('queryAutocomplete')[0];
+   assertEquals('', redoQueryText);
+   assertEquals('google.com', redoQueryKeyword);
+ });
+
  test('UndoRedoBeforeInput', async () => {
    const inputEl = searchbox.getInputElement().inputElement;
    inputEl.focus();
