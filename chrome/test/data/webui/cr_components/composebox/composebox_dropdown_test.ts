@@ -206,4 +206,59 @@ suite('ComposeboxDropdown', () => {
 
         assertTrue(scrollCalled);
       });
+
+  test('unselectOnTabExit unselects when tabbing past last match', async () => {
+    dropdown.result = createAutocompleteResultForTesting({
+      input: '',
+      matches: [
+        createAutocompleteMatch({supportsDeletion: false}),
+        createAutocompleteMatch({supportsDeletion: false}),
+      ],
+    });
+    await microtasksFinished();
+
+    // Forward Tab on non-last visible match does not unselect.
+    dropdown.selectedMatchIndex = 0;
+    dropdown.unselectOnTabExit(new KeyboardEvent('keydown', {key: 'Tab'}));
+    assertEquals(0, dropdown.selectedMatchIndex);
+
+    // Shift-Tab on last visible match does not unselect.
+    dropdown.selectedMatchIndex = 1;
+    dropdown.unselectOnTabExit(
+        new KeyboardEvent('keydown', {key: 'Tab', shiftKey: true}));
+    assertEquals(1, dropdown.selectedMatchIndex);
+
+    // Forward Tab on last visible match unselects.
+    dropdown.selectedMatchIndex = 1;
+    dropdown.unselectOnTabExit(new KeyboardEvent('keydown', {key: 'Tab'}));
+    assertEquals(-1, dropdown.selectedMatchIndex);
+
+    // When matches support deletion, forward Tab accounts for the inner
+    // remove button focus state.
+    dropdown.result = createAutocompleteResultForTesting({
+      input: '',
+      matches: [
+        createAutocompleteMatch({supportsDeletion: true}),
+        createAutocompleteMatch({supportsDeletion: true}),
+      ],
+    });
+    dropdown.selectedMatchIndex = 1;
+    await microtasksFinished();
+
+    const matches = dropdown.shadowRoot.querySelectorAll('cr-composebox-match');
+
+    // Forward Tab on the last match row moves focus to its remove button
+    // rather than exiting the dropdown.
+    matches[1]!.focus();
+    await microtasksFinished();
+    dropdown.unselectOnTabExit(new KeyboardEvent('keydown', {key: 'Tab'}));
+    assertEquals(1, dropdown.selectedMatchIndex);
+
+    // Forward Tab while focused on the last match's remove button exits
+    // the dropdown and unselects.
+    matches[1]!.$.remove.focus();
+    await microtasksFinished();
+    dropdown.unselectOnTabExit(new KeyboardEvent('keydown', {key: 'Tab'}));
+    assertEquals(-1, dropdown.selectedMatchIndex);
+  });
 });

@@ -164,6 +164,7 @@ export const ComposeboxEmbedderMixin =
             closeOnEscape: {type: Boolean},
             composeboxNoFlickerSuggestionsFix: {type: Boolean},
             composeboxSkillsEnabled: {type: Boolean},
+            unselectMatchOnTabExit: {type: Boolean},
             queryZpsOnLoad: {type: Boolean},
             showFileCarousel: {
               reflect: true,
@@ -297,6 +298,8 @@ export const ComposeboxEmbedderMixin =
         accessor composeboxNoFlickerSuggestionsFix: boolean = false;
         accessor composeboxSkillsEnabled: boolean =
             getLoadTimeBoolean('composeboxSkillsEnabled', false);
+        accessor unselectMatchOnTabExit: boolean =
+            getLoadTimeBoolean('composeboxUnselectMatchOnTabExit', false);
         accessor contextMenuEnabled: boolean =
             loadTimeData.getBoolean('composeboxShowContextMenu');
         accessor errorMessage: string = '';
@@ -1171,7 +1174,13 @@ export const ComposeboxEmbedderMixin =
             return;
           }
 
-          if (this.hasMatches() && this.dropdownNeeded && !hasKeyModifiers(e)) {
+          if (!this.hasMatches() || !this.dropdownNeeded) {
+            return;
+          }
+
+          if (this.unselectMatchOnTabExit) {
+            this.getDropdownElement().unselectOnTabExit(e);
+          } else if (!hasKeyModifiers(e)) {
             // If focus goes past the last match, unselect the last match.
             if (this.selectedMatchIndex === this.result!.matches.length - 1) {
               if (this.selectedMatch!.supportsDeletion) {
@@ -3333,6 +3342,7 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   transcript: string;
   uploadButtonDisabled: boolean;
   composeboxNoFlickerSuggestionsFix: boolean;
+  unselectMatchOnTabExit: boolean;
   searchboxListenerIds: number[];
   showTypedSuggest: boolean;
   tabFaviconChipsToCoinsEnabled: boolean;
