@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.SystemClock;
 import android.view.ViewConfiguration;
 
@@ -35,6 +36,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -378,5 +380,33 @@ public class DownloadUtilsUnitTest {
         assertFalse(
                 "in AAP, EXTRA_MENU_ITEMS should not be added.",
                 startedIntent.hasExtra(CustomTabsIntent.EXTRA_MENU_ITEMS));
+    }
+
+    @Test
+    @Feature({"Download"})
+    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    @EnableFeatures({ChromeFeatureList.OPEN_DOWNLOAD_IN_PREFERRED_APP})
+    public void testOpenDownload_PdfOpensInlineEvenWithPreferredAppEnabled() {
+        DownloadOpenRequest req = createTestDownloadOpenRequest(TEST_MIME_TYPE);
+        Intent targetIntent = DownloadUtils.createViewIntent(req);
+        registerIntentHandler(targetIntent, EXTERNAL_APP_PACKAGE, EXTERNAL_APP_CLASS);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.Download.OpenTarget")
+                        .build();
+
+        DownloadUtils.openDownload(
+                TEST_FILE_PATH,
+                TEST_MIME_TYPE,
+                TEST_GUID,
+                TEST_OTR_PROFILE_ID,
+                TEST_ORIGINAL_URL,
+                TEST_REFERRER,
+                DownloadOpenSource.UNKNOWN,
+                "downloaded_file.pdf");
+
+        watcher.assertExpected();
+        verify(mMockDownloadManagerService, times(0)).updateLastAccessTime(any(), any());
     }
 }

@@ -725,9 +725,8 @@ public class DownloadUtils {
         }
         boolean isIncognito = OtrProfileId.isOffTheRecord(otrProfileId);
         // TODO(https://crbug.com/327680567): Ensure the pdf page is opened in the intended window.
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.OPEN_DOWNLOAD_IN_PREFERRED_APP)
-                && PdfUtils.shouldOpenPdfInline(isIncognito)
-                && newMimeType.equals(MimeTypeUtils.PDF_MIME_TYPE)) {
+        if (PdfUtils.shouldOpenPdfInline(isIncognito)
+                && MimeTypeUtils.PDF_MIME_TYPE.equalsIgnoreCase(newMimeType)) {
             String fileUri = getUriForItem(filePath).toString();
             String encodedPdfUrl = PdfUtils.encodePdfPageUrl(fileUri);
             assertNonNull(encodedPdfUrl);
