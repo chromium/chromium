@@ -819,8 +819,7 @@ export class ToolbarAppElement extends AppElementBase {
 
   private onKeyDown_(event: KeyboardEvent) {
     if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight' &&
-        // TODO(crbug.com/510825650): When app menu button enabled:
-        // (event.key !== 'End' || !this.isAppMenuButtonEnabled_) &&
+        (event.key !== 'End' || !this.isAppMenuButtonEnabled_) &&
         (event.key !== 'Home' || !this.isBackForwardButtonEnabled_)) {
       return;
     }
@@ -851,24 +850,29 @@ export class ToolbarAppElement extends AppElementBase {
 
     if (event.key === 'Home') {
       nextIndex = 0;
-      // TODO(crbug.com/510825650): When app menu button enabled:
-      // } else if (event.key === 'End') {
-      //   nextIndex = focusableElements.length - 1;
+    } else if (event.key === 'End') {
+      nextIndex = focusableElements.length - 1;
     } else if (shouldAdvance) {
       nextIndex = currentIndex + 1;
-      // Let parent handle this for now.
-      // TODO(crbug.com/510825650): Handle wrap around when app menu button is
-      // WebUI.
       if (nextIndex >= focusableElements.length) {
-        return;
+        // If full WebUI toolbar, handle wrap around.
+        if (this.isBackForwardButtonEnabled_ && this.isAppMenuButtonEnabled_) {
+          nextIndex = 0;
+        } else {
+          // Let parent handle this for now.
+          return;
+        }
       }
     } else if (shouldReverse) {
       nextIndex = currentIndex - 1;
-      // Let parent handle this for now.
-      // TODO(crbug.com/510825650): Handle wrap around when app menu button is
-      // WebUI.
       if (nextIndex < 0) {
-        return;
+        // If full WebUI toolbar, handle wrap around.
+        if (this.isBackForwardButtonEnabled_ && this.isAppMenuButtonEnabled_) {
+          nextIndex = focusableElements.length - 1;
+        } else {
+          // Let parent handle this for now.
+          return;
+        }
       }
     }
 
