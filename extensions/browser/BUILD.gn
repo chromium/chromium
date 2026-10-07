@@ -1321,10 +1321,6 @@ source_set("unit_tests") {
     "//tools/metrics/histograms/metadata/extensions/enums.xml",
     "//extensions/browser/api/declarative_net_request/flat/extension_ruleset.fbs",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (enable_desktop_android_extensions) {

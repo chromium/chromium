@@ -21,7 +21,7 @@
 namespace extensions {
 
 namespace {
-const std::string kGoogleUrl = "https://google.com";
+constexpr char kGoogleUrl[] = "https://google.com";
 }
 
 class BrowserFrameContextDataTest : public ExtensionsTest {

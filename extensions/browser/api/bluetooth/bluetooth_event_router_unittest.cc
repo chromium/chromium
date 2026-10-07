@@ -26,9 +26,7 @@
 
 namespace {
 
-const char kTestExtensionId[] = "test extension id";
-const device::BluetoothUUID kAudioProfileUuid("1234");
-const device::BluetoothUUID kHealthProfileUuid("4321");
+constexpr char kTestExtensionId[] = "test extension id";
 
 MATCHER_P(IsFilterEqual, a, "") {
   return arg.Equals(*a);

@@ -44,24 +44,24 @@ using testing::StrictMock;
 
 namespace {
 
-const std::string kFakeKey = "fake key";
-const std::string kFakeValue = "fake value";
-const std::string kTabTitleValue = "some sensitive info";
+constexpr char kFakeKey[] = "fake key";
+constexpr char kFakeValue[] = "fake value";
+constexpr char kTabTitleValue[] = "some sensitive info";
 #if BUILDFLAG(IS_CHROMEOS)
 constexpr char kVariationsFetchHpkeKey[] =
     "https://www.gstatic.com/chromeos-feedback-variations-encryption-key/"
     "public_keyset.json";
-const std::string kTestPublicKeyResponseBody =
+constexpr char kTestPublicKeyResponseBody[] =
     "{\"primaryKeyId\":123,\"key\":[{\"keyData\":{\"typeUrl\":\"type."
     "googleapis.com/"
     "google.crypto.tink.HpkePublicKey\",\"value\":"
     "\"EgYIARABGAIaIKeVK4N3icUhM5YF+Pp5S6PWAg9OlY8zP9oLL9qv4IYS\","
     "\"keyMaterialType\":\"ASYMMETRIC_PUBLIC\"},\"status\":\"ENABLED\","
     "\"keyId\":456,\"outputPrefixType\":\"RAW\"}]}";
-const std::string kTestBase64HpkePrivateKey =
+constexpr char kTestBase64HpkePrivateKey[] =
     "IHbZB+CCrEXra2WGQx/jFQ+a0NSpVCauqy2uC9NH8Hs=";
 // Command line variation string returned during testing.
-const std::string kTestCommandLineVariations =
+constexpr char kTestCommandLineVariations[] =
     " --enable-features=\"*TestBlinkFeatureDefault,"
     "TestFeatureForBrowserTest1\" "
     "--disable-features=\"TestFeatureForBrowserTest2\" "

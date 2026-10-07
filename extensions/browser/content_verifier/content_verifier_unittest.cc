@@ -43,14 +43,14 @@ enum class BackgroundManifestType {
   kBackgroundPage,
 };
 
-base::FilePath kBackgroundScriptPath(FILE_PATH_LITERAL("foo/bg.js"));
-base::FilePath kContentScriptPath(FILE_PATH_LITERAL("foo/content.js"));
-base::FilePath kBackgroundPagePath(FILE_PATH_LITERAL("foo/page.html"));
-base::FilePath kScriptFilePath(FILE_PATH_LITERAL("bar/code.js"));
-base::FilePath kUnknownTypeFilePath(FILE_PATH_LITERAL("bar/code.txt"));
-base::FilePath kHTMLFilePath(FILE_PATH_LITERAL("bar/page.html"));
-base::FilePath kHTMFilePath(FILE_PATH_LITERAL("bar/page.htm"));
-base::FilePath kIconPath(FILE_PATH_LITERAL("bar/16.png"));
+constexpr char kBackgroundScriptPath[] = "foo/bg.js";
+constexpr char kContentScriptPath[] = "foo/content.js";
+constexpr char kBackgroundPagePath[] = "foo/page.html";
+constexpr char kScriptFilePath[] = "bar/code.js";
+constexpr char kUnknownTypeFilePath[] = "bar/code.txt";
+constexpr char kHTMLFilePath[] = "bar/page.html";
+constexpr char kHTMFilePath[] = "bar/page.htm";
+constexpr char kIconPath[] = "bar/16.png";
 
 base::FilePath ToUppercasePath(const base::FilePath& path) {
   return base::FilePath(base::ToUpperASCII(path.value()));
@@ -266,13 +266,13 @@ class ContentVerifierTest : public ExtensionsTest {
     if (background_manifest_type_ ==
         BackgroundManifestType::kBackgroundScript) {
       base::ListValue background_scripts;
-      background_scripts.Append(kBackgroundScriptPath.AsUTF8Unsafe());
+      background_scripts.Append(kBackgroundScriptPath);
       manifest.SetByDottedPath(manifest_keys::kBackgroundScripts,
                                std::move(background_scripts));
     } else if (background_manifest_type_ ==
                BackgroundManifestType::kBackgroundPage) {
       manifest.SetByDottedPath(manifest_keys::kBackgroundPage,
-                               kBackgroundPagePath.AsUTF8Unsafe());
+                               kBackgroundPagePath);
     }
 
     base::ListValue content_scripts;
@@ -320,11 +320,15 @@ class ContentVerifierTestWithBackgroundType
 // Verifies that |ContentVerifier::ShouldVerifyAnyPaths| returns true for
 // some file paths even if those paths are specified as browser images.
 TEST_P(ContentVerifierTestWithBackgroundType, BrowserImagesShouldBeVerified) {
-  std::vector<base::FilePath> files_to_be_verified = {
-      kContentScriptPath, kScriptFilePath,       kHTMLFilePath,
-      kHTMFilePath,       kBackgroundScriptPath, kBackgroundPagePath};
-  std::vector<base::FilePath> files_not_to_be_verified{kIconPath,
-                                                       kUnknownTypeFilePath};
+  std::vector<base::FilePath> files_to_be_verified;
+  for (const char* path :
+       {kContentScriptPath, kScriptFilePath, kHTMLFilePath, kHTMFilePath,
+        kBackgroundScriptPath, kBackgroundPagePath}) {
+    files_to_be_verified.push_back(base::FilePath::FromASCII(path));
+  }
+  std::vector<base::FilePath> files_not_to_be_verified{
+      base::FilePath::FromASCII(kIconPath),
+      base::FilePath::FromASCII(kUnknownTypeFilePath)};
 
   auto generate_test_cases = [](const std::vector<base::FilePath>& input) {
     std::set<base::FilePath> output;
