@@ -289,8 +289,9 @@ export class PowerBookmarksDragManager {
 
     const bookmark =
         (e.composedPath().find(target => (target as HTMLElement).draggable) as
-         PowerBookmarkRowElement)
-            .bookmark;
+             PowerBookmarkRowElement |
+         undefined)
+            ?.bookmark;
     if (!bookmark ||
         /* Cannot drag root's children. */ bookmark.parentId ===
             loadTimeData.getString('rootBookmarkId') ||

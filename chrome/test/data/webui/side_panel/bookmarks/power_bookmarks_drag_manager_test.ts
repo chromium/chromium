@@ -230,6 +230,20 @@ suite('SidePanelPowerBookmarkDragManagerTest', () => {
     assertEquals(undefined, calledIds);
   });
 
+  test('DragStartOnNonDraggableDoesNotThrow', () => {
+    let calledIds;
+    chrome.bookmarkManagerPrivate.startDrag = (ids: string[]) => {
+      calledIds = ids;
+    };
+
+    delegate.$.heading.dispatchEvent(new DragEvent(
+        'dragstart',
+        {bubbles: true, composed: true, clientX: 100, clientY: 200}));
+
+    assertEquals(undefined, calledIds);
+    assertFalse(delegate.getDragManagerForTesting().hasActiveDrag());
+  });
+
   test('DragOverUpdatesAttributes', () => {
     chrome.bookmarkManagerPrivate.startDrag = () => {};
     const draggedBookmark = getBookmarkRow('4')!;
