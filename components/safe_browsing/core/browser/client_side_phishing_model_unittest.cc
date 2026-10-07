@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
@@ -31,6 +32,8 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
@@ -63,6 +66,7 @@ class ClientSidePhishingModelObserverTracker
         optimization_guide::proto::OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING) {
       EXPECT_FALSE(model_observer_);
       model_observer_ = observer;
+      model_task_runner_ = std::move(model_task_runner);
     }
   }
 
@@ -112,10 +116,15 @@ class ClientSidePhishingModelObserverTracker
     model_observer_->OnModelUpdated(optimization_target, std::nullopt);
   }
 
+  base::SequencedTaskRunner* model_task_runner() {
+    return model_task_runner_.get();
+  }
+
  private:
   // The observer that is registered to receive model validation optimzation
   // target events.
   raw_ptr<optimization_guide::OptimizationTargetModelObserver> model_observer_;
+  scoped_refptr<base::SequencedTaskRunner> model_task_runner_;
 };
 
 class ClientSidePhishingModelTest : public testing::Test {
@@ -197,6 +206,24 @@ class ClientSidePhishingModelTest : public testing::Test {
 
   ClientSidePhishingModel* service() {
     return client_side_phishing_model_.get();
+  }
+
+  void ResetModel() { client_side_phishing_model_.reset(); }
+
+  // Two passes are needed: the first waits for the background load task and
+  // its UI-thread reply (which posts a background file-close task), and the
+  // second waits for that background file-close task to complete.
+  void FlushBackgroundTaskRunner() {
+    for (int i = 0; i < 2; ++i) {
+      base::test::TestFuture<void> future;
+      model_observer_tracker_->model_task_runner()->PostTaskAndReply(
+          FROM_HERE, base::DoNothing(), future.GetCallback());
+      ASSERT_TRUE(future.Wait());
+    }
+  }
+
+  ClientSidePhishingModelObserverTracker* observer_tracker() {
+    return model_observer_tracker_.get();
   }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
@@ -764,6 +791,76 @@ TEST_F(ClientSidePhishingModelTest, FlatbufferOnFollowingUpdate) {
 #if !(BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
   BASE_EXPECT_DEATH(memory_span[0] = 'G', "");
 #endif
+}
+
+// Test that when `ClientSidePhishingModel` is destroyed before the background
+// model load's UI-thread reply runs, the loaded `base::File` is closed on the
+// background task runner without triggering assertion failures under
+// `base::ScopedDisallowBlocking` on the UI thread.
+TEST_F(ClientSidePhishingModelTest,
+       ModelFilesClosedOnBackgroundThreadWhenModelDestroyedEarly) {
+  base::FilePath model_file_path;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &model_file_path);
+  model_file_path = model_file_path.AppendASCII("components")
+                        .AppendASCII("test")
+                        .AppendASCII("data")
+                        .AppendASCII("safe_browsing")
+                        .AppendASCII("client_model.pb");
+
+  base::FilePath additional_files_path;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &additional_files_path);
+  additional_files_path = additional_files_path.AppendASCII("components")
+                              .AppendASCII("test")
+                              .AppendASCII("data")
+                              .AppendASCII("safe_browsing")
+#if BUILDFLAG(IS_ANDROID)
+                              .AppendASCII("visual_model_android.tflite");
+#else
+                              .AppendASCII("visual_model_desktop.tflite");
+#endif
+
+  // Trigger model loading.
+  observer_tracker()->NotifyModelFileUpdate(
+      optimization_guide::proto::OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING,
+      model_file_path, {additional_files_path});
+
+  // Destroy the model before the UI-thread reply can run.
+  ResetModel();
+
+  // Disallow blocking on the UI thread. Closing loaded files must happen on the
+  // background task runner and not trigger a `ScopedBlockingCall` crash here.
+  base::ScopedDisallowBlocking disallow_blocking;
+  FlushBackgroundTaskRunner();
+}
+
+// Test that when `ClientSidePhishingModel` is destroyed before the image
+// embedding model load's UI-thread reply runs, the loaded `base::File` is
+// closed on the background task runner without triggering
+// `base::ScopedDisallowBlocking` assertion failures on the UI thread.
+TEST_F(
+    ClientSidePhishingModelTest,
+    ImageEmbeddingModelFilesClosedOnBackgroundThreadWhenModelDestroyedEarly) {
+  base::FilePath image_embedding_model_file_path;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT,
+                         &image_embedding_model_file_path);
+  image_embedding_model_file_path =
+      image_embedding_model_file_path.AppendASCII("components")
+          .AppendASCII("test")
+          .AppendASCII("data")
+          .AppendASCII("safe_browsing")
+          .AppendASCII("image_embedding.tflite");
+
+  // Trigger image embedding model loading.
+  observer_tracker()->NotifyModelFileUpdate(
+      optimization_guide::proto::
+          OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING_IMAGE_EMBEDDER,
+      image_embedding_model_file_path, {});
+
+  // Destroy the model before the UI-thread reply can run.
+  ResetModel();
+
+  base::ScopedDisallowBlocking disallow_blocking;
+  FlushBackgroundTaskRunner();
 }
 
 class ClientSidePhishingModelFeatureTest

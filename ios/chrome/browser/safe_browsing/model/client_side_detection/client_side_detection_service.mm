@@ -123,14 +123,26 @@ void ClientSideDetectionService::OnModelUpdated() {
   base::UmaHistogramBoolean("SBClientPhishing.ImageEmbeddingModelVersionMatch",
                             image_embedding_model_version_match);
 
+  // Do not bind `OnScorerCreated` directly to a `WeakPtr`: if this service is
+  // destroyed while `CreateScorerOnBackgroundThread` is in flight,
+  // `PostTaskAndReplyWithResult` would drop the canceled reply and destroy the
+  // returned `Scorer` on the UI thread, triggering a blocking I/O crash.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(
           &CreateScorerOnBackgroundThread, std::move(region),
           visual_model.Duplicate(), std::move(embedding_model_duplicate),
           GetImageEmbeddingInputWidth(), GetImageEmbeddingInputHeight()),
-      base::BindOnce(&ClientSideDetectionService::OnScorerCreated,
-                     weak_factory_.GetWeakPtr(), current_model_generation_));
+      base::BindOnce(
+          [](base::WeakPtr<ClientSideDetectionService> weak_service,
+             int generation_id, std::unique_ptr<Scorer> scorer) {
+            if (!weak_service) {
+              DestroyScorerOnBackgroundThread(std::move(scorer));
+              return;
+            }
+            weak_service->OnScorerCreated(generation_id, std::move(scorer));
+          },
+          weak_factory_.GetWeakPtr(), current_model_generation_));
 }
 
 void ClientSideDetectionService::OnScorerCreated(
