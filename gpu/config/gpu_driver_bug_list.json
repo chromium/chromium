@@ -1035,22 +1035,6 @@
       ]
     },
     {
-      "id": 220,
-      "description": "NV12 DXGI video displays incorrect colors on older AMD drivers",
-      "cr_bugs": [644293],
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x1002",
-      "driver_version": {
-        "op": "<",
-        "value": "21.19.519.2"
-      },
-      "features": [
-        "disable_nv12_dxgi_video"
-      ]
-    },
-    {
       "id": 221,
       "description": "Very large instanced draw calls crash on some Adreno 3xx drivers",
       "cr_bugs": [701682],
@@ -1159,18 +1143,6 @@
       "gl_renderer": "Adreno \\(TM\\) [45].*",
       "features": [
         "multisample_renderbuffer_resize_emulation"
-      ]
-    },
-    {
-      "id": 235,
-      "description": "Avoid waiting on a egl fence before pageflipping and rely on implicit sync.",
-      "cr_bugs": [721463],
-      "os": {
-        "type": "chromeos"
-      },
-      "gl_vendor": "Intel.*",
-      "features": [
-        "rely_on_implicit_sync_for_swap_buffers"
       ]
     },
     {
@@ -1421,17 +1393,6 @@
       ]
     },
     {
-      "id": 269,
-      "cr_bugs": [841755],
-      "description": "glFlush error on Mac",
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "disable_2d_canvas_auto_flush"
-      ]
-    },
-    {
       "id": 272,
       "cr_bugs": [858879],
       "description": "A deleted query id for GL_TIMESTAMP cannot be reused for other query targets",
@@ -1540,30 +1501,6 @@
       "gl_vendor": "NVIDIA.*",
       "features": [
         "adjust_src_dst_region_for_blitframebuffer"
-      ]
-    },
-    {
-      "id": 295,
-      "description": "Avoid waiting on a egl fence before swapping buffers and rely on implicit sync on Intel GPUs",
-      "cr_bugs": [938286],
-      "os": {
-        "type": "linux"
-      },
-      "gl_vendor": "Intel.*",
-      "features": [
-        "rely_on_implicit_sync_for_swap_buffers"
-      ]
-    },
-    {
-      "id": 296,
-      "description": "Avoid waiting on a egl fence before swapping buffers and rely on implicit sync on Broadcom GPUs",
-      "cr_bugs": [938286],
-      "os": {
-        "type": "linux"
-      },
-      "gl_vendor": "Broadcom.*",
-      "features": [
-        "rely_on_implicit_sync_for_swap_buffers"
       ]
     },
     {
@@ -2525,48 +2462,6 @@
         "disable_accelerated_av1_decode",
         "disable_accelerated_vp8_decode",
         "disable_accelerated_vp9_decode"
-      ]
-    },
-    {
-      "id": 389,
-      "description": "Avoid waiting on a egl fence before pageflipping and rely on implicit sync.",
-      "os": {
-        "type": "chromeos"
-      },
-      "gl_vendor": "nouveau.*",
-      "features": [
-        "rely_on_implicit_sync_for_swap_buffers"
-      ]
-    },
-    {
-      "id": 390,
-      "description": "AVC/AV1 hardware encoder MFT output bitrate incorrect upon framerate update on Intel GPUs.",
-      "cr_bugs": [1295815],
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x8086",
-      "multi_gpu_category": "any",
-      "driver_version": {
-        "op": "<",
-        "value": "30.0.101.1340"
-      },
-      "features": [
-        "disable_dynamic_video_encode_framerate_update"
-      ]
-    },
-    {
-      "id": 391,
-      "description": "Skia ReduceOpsTaskSplitting causes artifacts on Intel Skylake",
-      "cr_bugs": [1298809],
-      "os": {
-        "type": "win"
-      },
-      "intel_gpu_series": [
-        "skylake"
-      ],
-      "features": [
-        "disable_skia_reduce_ops_task_splitting"
       ]
     },
     {
