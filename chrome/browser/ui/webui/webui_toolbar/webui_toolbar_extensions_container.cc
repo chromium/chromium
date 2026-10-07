@@ -315,9 +315,11 @@ void WebUIToolbarExtensionsContainer::ShowPinnedByDefaultIPH(
   // Wait for the button to register kExtensionsPinnedByDefaultElementId and,
   // like views, for any animations to finish so that the button is in its
   // final location.
-  NotifyActionPoppedOut(base::BindOnce(
-      &WebUIToolbarExtensionsContainer::ShowPinnedByDefaultIPHNow,
-      weak_ptr_factory_.GetWeakPtr(), extension_id));
+  NotifyActionPoppedOut(
+      base::BindOnce(
+          &WebUIToolbarExtensionsContainer::ShowPinnedByDefaultIPHNow,
+          weak_ptr_factory_.GetWeakPtr(), extension_id),
+      /*is_iph=*/true);
 }
 
 void WebUIToolbarExtensionsContainer::ShowPinnedByDefaultIPHNow(
@@ -402,6 +404,10 @@ void WebUIToolbarExtensionsContainer::UndoPopOut() {
   std::string old_popped_out = std::move(popped_out_action_).value();
   popped_out_action_ = std::nullopt;
   NotifyOfOneAction(old_popped_out);
+  // This synchronously runs the pending PopOutAction() callback, if any.
+  if (observer_) {
+    observer_->OnPopOutCancelled();
+  }
 }
 
 void WebUIToolbarExtensionsContainer::SetPopupOwner(
@@ -418,7 +424,7 @@ void WebUIToolbarExtensionsContainer::PopOutAction(
   DCHECK(!popped_out_action_.has_value());
   popped_out_action_ = action_id;
   NotifyOfOneAction(action_id);
-  NotifyActionPoppedOut(std::move(closure));
+  NotifyActionPoppedOut(std::move(closure), /*is_iph=*/false);
 }
 
 void WebUIToolbarExtensionsContainer::ShowContextMenuAsFallback(
@@ -481,8 +487,10 @@ void WebUIToolbarExtensionsContainer::OnToolbarActionAdded(
 
 void WebUIToolbarExtensionsContainer::OnToolbarActionRemoved(
     const ToolbarActionsModel::ActionId& id) {
+  bool pop_out_cancelled = false;
   if (popped_out_action_ == id) {
     popped_out_action_ = std::nullopt;
+    pop_out_cancelled = true;
   }
   if (context_menu_ && context_menu_->action_id() == id) {
     context_menu_.reset();
@@ -502,6 +510,13 @@ void WebUIToolbarExtensionsContainer::OnToolbarActionRemoved(
     page_->ActionRemoved(std::move(icon_updates), id);
   } else if (observer_) {
     observer_->OnActionRemoved(std::move(icon_updates), id);
+  }
+
+  // Notify after the action has been fully removed. This also means that the
+  // pending PopOutAction() callback, if bound to the removed action's delegate,
+  // will be a no-op.
+  if (pop_out_cancelled && observer_) {
+    observer_->OnPopOutCancelled();
   }
 }
 
@@ -600,6 +615,11 @@ ui::ElementIdentifier WebUIToolbarExtensionsContainer::GetElementId(
                               : kToolbarActionViewElementId;
 }
 
+std::string WebUIToolbarExtensionsContainer::GetSecondaryElementId(
+    std::string_view extension_id) {
+  return base::StrCat({"ext:", extension_id});
+}
+
 ui::TrackedElement* WebUIToolbarExtensionsContainer::GetExtensionAnchor(
     std::string_view extension_id) const {
   return GetExtensionElement(GetElementId(extension_id), extension_id);
@@ -608,7 +628,7 @@ ui::TrackedElement* WebUIToolbarExtensionsContainer::GetExtensionAnchor(
 ui::TrackedElement* WebUIToolbarExtensionsContainer::GetExtensionElement(
     ui::ElementIdentifier element_id,
     std::string_view extension_id) const {
-  const std::string secondary_id = base::StrCat({"ext:", extension_id});
+  const std::string secondary_id = GetSecondaryElementId(extension_id);
   for (ui::TrackedElement* element :
        ui::ElementTracker::GetElementTracker()->GetAllMatchingElements(
            element_id,
@@ -625,11 +645,12 @@ views::Widget* WebUIToolbarExtensionsContainer::GetWidget() const {
 }
 
 void WebUIToolbarExtensionsContainer::NotifyActionPoppedOut(
-    base::OnceClosure closure) {
+    base::OnceClosure closure,
+    bool is_iph) {
   if (page_) {
     page_->ActionPoppedOut(std::move(closure));
   } else if (observer_) {
-    observer_->OnActionPoppedOut(std::move(closure));
+    observer_->OnActionPoppedOut(std::move(closure), is_iph);
   } else {
     std::move(closure).Run();
   }

@@ -10,7 +10,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/function_ref.h"
-#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
 #include "build/build_config.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_controller.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/toolbar/webui_media_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_extensions_container.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
@@ -260,11 +261,9 @@ WebUIToolbarWebViewTestBase::WebUIToolbarWebViewTestBase(
 }
 
 scoped_refptr<const extensions::Extension>
-WebUIToolbarWebViewTestBase::LoadAndPinExtension(
-    WebUIToolbarWebView* webui_toolbar_view,
-    base::ScopedTempDir& temp_dir,
-    bool has_background_script,
-    bool has_popup) {
+WebUIToolbarWebViewTestBase::LoadAndPinExtension(base::ScopedTempDir& temp_dir,
+                                                 bool has_background_script,
+                                                 bool has_popup) {
   scoped_refptr<const extensions::Extension> extension =
       LoadExtension(temp_dir, has_background_script, has_popup);
   if (!extension) {
@@ -275,10 +274,16 @@ WebUIToolbarWebViewTestBase::LoadAndPinExtension(
   ToolbarActionsModel::Get(browser()->GetProfile())
       ->SetActionVisibility(extension->id(), true);
 
-  base::RunLoop run_loop;
-  webui_toolbar_view->extensions_container_.OnActionPoppedOut(
-      run_loop.QuitClosure());
-  run_loop.Run();
+  // Wait for the extension's button to be shown. The anchor is only registered
+  // once the button's animations complete, so this also waits for it to finish
+  // animating in.
+  auto* container = static_cast<WebUIToolbarExtensionsContainer*>(
+      ExtensionsContainer::From(*browser()));
+  if (!base::test::RunUntil([&]() {
+        return container->GetExtensionAnchor(extension->id()) != nullptr;
+      })) {
+    return nullptr;
+  }
 
   return extension;
 }
