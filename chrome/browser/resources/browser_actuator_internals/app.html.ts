@@ -19,8 +19,8 @@ export function getHtml(this: BrowserActuatorInternalsAppElement) {
 
 ${this.sessions_.length === 0 ? html`
   <div id="empty-state">
-    No sessions yet. Recording starts when Chrome starts with the
-    BrowserActuatorInternals feature enabled.
+    No sessions recorded yet. A session is recorded when it receives its first
+    downstream message.
   </div>
 ` : html`
   <div id="sessions-list">

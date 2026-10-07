@@ -198,8 +198,8 @@ suite('BrowserActuatorInternalsAppTest', () => {
     await render([]);
 
     assertEquals(
-        'No sessions yet. Recording starts when Chrome starts with the ' +
-            'BrowserActuatorInternals feature enabled.',
+        'No sessions recorded yet. A session is recorded when it receives ' +
+            'its first downstream message.',
         getText(app.shadowRoot, '#empty-state'));
     assertEquals(
         'Total Sessions: 0', getText(app.shadowRoot, '.session-count'));
