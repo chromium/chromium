@@ -56,7 +56,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ANGLEPurgeableBufferPool"
+                        "ANGLEPurgeableBufferPool",
+                        "ANGLETrimMemoryOnIdle"
                     ]
                 }
             ]
