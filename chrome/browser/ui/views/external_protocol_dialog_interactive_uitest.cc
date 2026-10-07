@@ -2,31 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/external_protocol_dialog.h"
+
 #include <memory>
 #include <string>
 
-#include "build/build_config.h"
-#include "chrome/browser/external_protocol/external_protocol_handler.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/views/external_protocol_dialog.h"
 #include "chrome/browser/ui/views/external_protocol_dialog_test_harness.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/test/widget_test.h"
+#include "ui/views/window/dialog_client_view.h"
 
 // Tests that keyboard focus works when the dialog is shown. Regression test for
 // https://crbug.com/40659150.
 IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest, TestFocus) {
   ShowUi(std::string("https://example.test"));
-  gfx::NativeWindow window = browser()->GetWindow()->GetNativeWindow();
-  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
-  views::FocusManager* focus_manager = widget->GetFocusManager();
-#if BUILDFLAG(IS_MAC)
-  // This dialog's default focused control is the Cancel button, but on Mac,
-  // the cancel button cannot have initial keyboard focus. Advance focus once
-  // on Mac to test whether keyboard focus advancement works there rather than
-  // testing for initial focus.
-  focus_manager->AdvanceFocus(false);
-#endif
-  const views::View* focused_view = focus_manager->GetFocusedView();
-  EXPECT_TRUE(focused_view);
+
+  EXPECT_TRUE(browser()->IsActive());
+  EXPECT_TRUE(dialog_->GetCancelButton()->HasFocus());
+
+  // Bypass input protection cooldown.
+  dialog_->GetDialogClientView()->ResetViewShownTimeStampForTesting();
+
+  views::test::WidgetDestroyedWaiter waiter(dialog_->GetWidget());
+  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_SPACE, false,
+                                              false, false, false));
+  waiter.Wait();
 }
