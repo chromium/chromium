@@ -219,39 +219,76 @@
 
 @end
 
+@interface ActuationHeaderItem ()
+
+- (instancetype)initWithStyle:(ActuationHeaderItemStyle)style
+                         icon:(UIImage*)icon
+                        title:(NSString*)title
+      accessibilityIdentifier:(NSString*)accessibilityIdentifier
+                       action:(UIAction*)action
+                         menu:(UIMenu*)menu NS_DESIGNATED_INITIALIZER;
+
+@end
+
 @implementation ActuationHeaderItem
 
-- (instancetype)initWithIcon:(UIImage*)icon
++ (instancetype)itemWithIcon:(UIImage*)icon
                        title:(NSString*)title
      accessibilityIdentifier:(NSString*)accessibilityIdentifier
                       action:(UIAction*)action {
   CHECK(icon);
-  CHECK(title);
   CHECK(action);
-
-  self = [super init];
-  if (self) {
-    _icon = icon;
-    _title = [title copy];
-    _accessibilityIdentifier = [accessibilityIdentifier copy];
-    _action = action;
-  }
-  return self;
+  return [[self alloc] initWithStyle:ActuationHeaderItemStyleIcon
+                                icon:icon
+                               title:title
+             accessibilityIdentifier:accessibilityIdentifier
+                              action:action
+                                menu:nil];
 }
 
-- (instancetype)initWithIcon:(UIImage*)icon
++ (instancetype)itemWithIcon:(UIImage*)icon
                        title:(NSString*)title
      accessibilityIdentifier:(NSString*)accessibilityIdentifier
                         menu:(UIMenu*)menu {
   CHECK(icon);
-  CHECK(title);
   CHECK(menu);
+  return [[self alloc] initWithStyle:ActuationHeaderItemStyleIcon
+                                icon:icon
+                               title:title
+             accessibilityIdentifier:accessibilityIdentifier
+                              action:nil
+                                menu:menu];
+}
+
++ (instancetype)callToActionWithTitle:(NSString*)title
+              accessibilityIdentifier:(NSString*)accessibilityIdentifier
+                               action:(UIAction*)action {
+  CHECK(action);
+  return [[self alloc] initWithStyle:ActuationHeaderItemStyleCallToAction
+                                icon:nil
+                               title:title
+             accessibilityIdentifier:accessibilityIdentifier
+                              action:action
+                                menu:nil];
+}
+
+#pragma mark - Private
+
+- (instancetype)initWithStyle:(ActuationHeaderItemStyle)style
+                         icon:(UIImage*)icon
+                        title:(NSString*)title
+      accessibilityIdentifier:(NSString*)accessibilityIdentifier
+                       action:(UIAction*)action
+                         menu:(UIMenu*)menu {
+  CHECK(title);
 
   self = [super init];
   if (self) {
+    _style = style;
     _icon = icon;
     _title = [title copy];
     _accessibilityIdentifier = [accessibilityIdentifier copy];
+    _action = action;
     _menu = menu;
   }
   return self;

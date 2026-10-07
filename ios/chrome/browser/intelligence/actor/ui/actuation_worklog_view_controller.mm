@@ -164,8 +164,8 @@ using intelligence::actor::kSpacingLarge;
   UIAction* closeAction = [UIAction actionWithHandler:^(UIAction*) {
     [weakSelf stopActuationButtonTapped];
   }];
-  return [[ActuationHeaderItem alloc]
-                 initWithIcon:SymbolWithPointSize(SymbolXMark,
+  return [ActuationHeaderItem
+                 itemWithIcon:SymbolWithPointSize(SymbolXMark,
                                                   kCloseButtonPointSize)
                         title:l10n_util::GetNSString(IDS_CLOSE)
       accessibilityIdentifier:kActuationHeaderCloseButtonAccessibilityIdentifier

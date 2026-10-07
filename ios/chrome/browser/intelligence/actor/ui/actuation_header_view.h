@@ -17,12 +17,19 @@
 // |      Subtitle (optional)                           |
 // +----------------------------------------------------+
 //
-// Two or more secondary items:
+// Two or more icon secondary items:
 // +----------------------------------------------------+
 // | (*)  Task Title              ( [a] [b] ) [primary] |
 // |      Subtitle (optional)                           |
 // +----------------------------------------------------+
-// (*) = Icon, [x] = Accessory button, ( [a] [b] ) = Grouped capsule
+//
+// Call-to-action secondary item:
+// +----------------------------------------------------+
+// | (*)  Task Title             [ Call to action ] [x] |
+// |      Subtitle (optional)                           |
+// +----------------------------------------------------+
+// (*) = Icon, [x] = Accessory button, ( [a] [b] ) = Grouped capsule,
+// [ Call to action ] = Blue text capsule
 @interface ActuationHeaderView : UIView
 
 // Main title text.
@@ -34,12 +41,14 @@
 // Whether actuation is currently in progress. Default is NO (static logo).
 @property(nonatomic, assign, getter=isActuating) BOOL actuating;
 
-// Primary accessory button. Setting nil removes the button from the header.
+// Primary accessory button, rendered according to its `style`. Setting nil
+// removes the button from the header.
 @property(nonatomic, strong) ActuationHeaderItem* primaryItem;
 
-// Items displayed before `primaryItem`. A single item is shown as a standalone
-// button; two or more are grouped in a capsule. Setting nil or an empty array
-// removes them from the header.
+// Items displayed before `primaryItem`, in the given order. Two or more items
+// that are all `ActuationHeaderItemStyleIcon` are grouped in a capsule; any
+// other composition renders each item as a standalone button according to its
+// `style`. Setting nil or an empty array removes them from the header.
 @property(nonatomic, copy) NSArray<ActuationHeaderItem*>* secondaryItems;
 
 - (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;

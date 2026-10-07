@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
@@ -41,14 +42,10 @@ UIImage* DefaultGeminiLogo() {
 #endif
 }
 
-// Creates an icon button styled by `buttonConfig` and wired to `item`. The
+// Wires `button` to `item`'s action or menu and accessibility properties. The
 // action is added as a target rather than passed to the button initializer,
-// since the latter would render the action title next to the icon.
-UIButton* CreateButton(UIButtonConfiguration* buttonConfig,
-                       ActuationHeaderItem* item) {
-  buttonConfig.image = item.icon;
-  UIButton* button = [UIButton buttonWithConfiguration:buttonConfig
-                                         primaryAction:nil];
+// since the latter would override the configuration's image and title.
+void ConfigureButtonForItem(UIButton* button, ActuationHeaderItem* item) {
   button.translatesAutoresizingMaskIntoConstraints = NO;
   button.accessibilityLabel = item.title;
   button.accessibilityIdentifier = item.accessibilityIdentifier;
@@ -59,6 +56,15 @@ UIButton* CreateButton(UIButtonConfiguration* buttonConfig,
     [button addAction:item.action
         forControlEvents:UIControlEventPrimaryActionTriggered];
   }
+}
+
+// Creates an icon button styled by `buttonConfig` and wired to `item`.
+UIButton* CreateIconButton(UIButtonConfiguration* buttonConfig,
+                           ActuationHeaderItem* item) {
+  buttonConfig.image = item.icon;
+  UIButton* button = [UIButton buttonWithConfiguration:buttonConfig
+                                         primaryAction:nil];
+  ConfigureButtonForItem(button, item);
   AddSquareConstraints(button, kInnerContentSize);
   return button;
 }
@@ -71,7 +77,7 @@ UIButton* CreateCircularButton(ActuationHeaderItem* item) {
   buttonConfig.baseForegroundColor = [UIColor colorNamed:kTextPrimaryColor];
   buttonConfig.baseBackgroundColor = [UIColor colorNamed:kSolidWhiteColor];
 
-  UIButton* button = CreateButton(buttonConfig, item);
+  UIButton* button = CreateIconButton(buttonConfig, item);
   button.layer.shadowColor = [UIColor blackColor].CGColor;
   button.layer.shadowOffset = CGSizeMake(0, kButtonShadowOffset);
   button.layer.shadowOpacity = kButtonShadowOpacity;
@@ -83,6 +89,40 @@ UIButton* CreateCircularButton(ActuationHeaderItem* item) {
   return button;
 }
 
+// Creates a blue capsule button displaying `item.title`. Its height matches the
+// icon buttons so all accessories stay vertically aligned; its width hugs the
+// title.
+UIButton* CreateCallToActionButton(ActuationHeaderItem* item) {
+  UIButtonConfiguration* buttonConfig =
+      [UIButtonConfiguration filledButtonConfiguration];
+  buttonConfig.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+  buttonConfig.baseForegroundColor = [UIColor colorNamed:kSolidButtonTextColor];
+  buttonConfig.baseBackgroundColor = [UIColor colorNamed:kBlueColor];
+  buttonConfig.title = item.title;
+  buttonConfig.titleLineBreakMode = NSLineBreakByTruncatingTail;
+  buttonConfig.contentInsets =
+      NSDirectionalEdgeInsetsMake(0.0, kSpacingMedium, 0.0, kSpacingMedium);
+  UIButton* button = [UIButton buttonWithConfiguration:buttonConfig
+                                         primaryAction:nil];
+  UIFont* titleFont = PreferredFontForTextStyle(UIFontTextStyleSubheadline,
+                                                UIFontWeightSemibold);
+  SetConfigurationFont(button, titleFont);
+  ConfigureButtonForItem(button, item);
+  [button.heightAnchor constraintEqualToConstant:kInnerContentSize].active =
+      YES;
+  return button;
+}
+
+// Creates a standalone button rendered according to `item.style`.
+UIButton* CreateStandaloneButton(ActuationHeaderItem* item) {
+  switch (item.style) {
+    case ActuationHeaderItemStyleIcon:
+      return CreateCircularButton(item);
+    case ActuationHeaderItemStyleCallToAction:
+      return CreateCallToActionButton(item);
+  }
+}
+
 // Creates a gray capsule grouping one borderless icon button per item. Its
 // height matches the circular buttons so both styles stay vertically aligned.
 UIView* CreateGroupedCapsule(NSArray<ActuationHeaderItem*>* items) {
@@ -92,7 +132,7 @@ UIView* CreateGroupedCapsule(NSArray<ActuationHeaderItem*>* items) {
         [UIButtonConfiguration plainButtonConfiguration];
     buttonConfig.baseForegroundColor = [UIColor colorNamed:kTextPrimaryColor];
     buttonConfig.contentInsets = NSDirectionalEdgeInsetsZero;
-    [capsule addArrangedSubview:CreateButton(buttonConfig, item)];
+    [capsule addArrangedSubview:CreateIconButton(buttonConfig, item)];
   }
   capsule.backgroundColor = [UIColor colorNamed:kGrey100Color];
   capsule.layer.cornerRadius = kInnerContentSize / 2.0;
@@ -100,6 +140,21 @@ UIView* CreateGroupedCapsule(NSArray<ActuationHeaderItem*>* items) {
       NSDirectionalEdgeInsetsMake(0.0, kSpacingTiny, 0.0, kSpacingTiny);
   capsule.layoutMarginsRelativeArrangement = YES;
   return capsule;
+}
+
+// Returns whether `items` should be rendered as a grouped capsule. Grouping
+// only applies to two or more icon items; any other combination is rendered as
+// standalone buttons in the given order.
+bool ShouldGroupItems(NSArray<ActuationHeaderItem*>* items) {
+  if (items.count < 2) {
+    return false;
+  }
+  for (ActuationHeaderItem* item in items) {
+    if (item.style != ActuationHeaderItemStyleIcon) {
+      return false;
+    }
+  }
+  return true;
 }
 
 }  // namespace
@@ -252,21 +307,23 @@ UIView* CreateGroupedCapsule(NSArray<ActuationHeaderItem*>* items) {
 
 // Rebuilds the accessory buttons stack in deterministic order:
 // `[secondaryItems (leading), primaryItem (trailing)]`. Buttons are recreated
-// because their style depends on the number of secondary items.
+// because their style depends on the composition of the secondary items.
 - (void)updateAccessoryStack {
   for (UIView* view in _accessoryStackView.arrangedSubviews) {
     [view removeFromSuperview];
   }
 
-  if (_secondaryItems.count == 1) {
-    [_accessoryStackView
-        addArrangedSubview:CreateCircularButton(_secondaryItems.firstObject)];
-  } else if (_secondaryItems.count > 1) {
+  if (ShouldGroupItems(_secondaryItems)) {
     [_accessoryStackView
         addArrangedSubview:CreateGroupedCapsule(_secondaryItems)];
+  } else {
+    for (ActuationHeaderItem* item in _secondaryItems) {
+      [_accessoryStackView addArrangedSubview:CreateStandaloneButton(item)];
+    }
   }
   if (_primaryItem) {
-    [_accessoryStackView addArrangedSubview:CreateCircularButton(_primaryItem)];
+    [_accessoryStackView
+        addArrangedSubview:CreateStandaloneButton(_primaryItem)];
   }
   _accessoryStackView.hidden =
       (_accessoryStackView.arrangedSubviews.count == 0);

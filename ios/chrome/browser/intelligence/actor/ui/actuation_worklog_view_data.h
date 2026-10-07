@@ -202,14 +202,28 @@ enum class ActuationInterventionAction {
 
 @end
 
+// Visual style of an `ActuationHeaderItem`.
+typedef NS_ENUM(NSInteger, ActuationHeaderItemStyle) {
+  // Icon-only button. `title` is used as the accessibility label.
+  ActuationHeaderItemStyleIcon,
+  // Prominent text-only capsule button displaying `title`.
+  ActuationHeaderItemStyleCallToAction,
+};
+
 // View data object describing a button in the actuation header. The button will
 // trigger `action` or presents `menu` on tap; exactly one of them is non-nil.
 @interface ActuationHeaderItem : NSObject
 
-// Icon displayed in the button.
+// Visual style of the button, determined by the factory used.
+@property(nonatomic, assign, readonly) ActuationHeaderItemStyle style;
+
+// Icon displayed in the button. Nil for
+// `ActuationHeaderItemStyleCallToAction` items.
 @property(nonatomic, strong, readonly) UIImage* icon;
 
-// Title of the item, used as the accessibility label of the icon-only button.
+// Title of the item. Displayed as the button text for
+// `ActuationHeaderItemStyleCallToAction` items, otherwise used as the
+// accessibility label of the icon-only button.
 @property(nonatomic, copy, readonly) NSString* title;
 
 // Optional accessibility identifier of the button.
@@ -221,19 +235,26 @@ enum class ActuationInterventionAction {
 // Menu presented on tap. Nil when `action` is set.
 @property(nonatomic, strong, readonly) UIMenu* menu;
 
-// Creates an item triggering `action` on tap.
-- (instancetype)initWithIcon:(UIImage*)icon
+// Creates an `ActuationHeaderItemStyleIcon` item triggering `action` on tap.
++ (instancetype)itemWithIcon:(UIImage*)icon
                        title:(NSString*)title
      accessibilityIdentifier:(NSString*)accessibilityIdentifier
-                      action:(UIAction*)action NS_DESIGNATED_INITIALIZER;
+                      action:(UIAction*)action;
 
-// Creates an item presenting `menu` on tap.
-- (instancetype)initWithIcon:(UIImage*)icon
+// Creates an `ActuationHeaderItemStyleIcon` item presenting `menu` on tap.
++ (instancetype)itemWithIcon:(UIImage*)icon
                        title:(NSString*)title
      accessibilityIdentifier:(NSString*)accessibilityIdentifier
-                        menu:(UIMenu*)menu NS_DESIGNATED_INITIALIZER;
+                        menu:(UIMenu*)menu;
+
+// Creates an `ActuationHeaderItemStyleCallToAction` item displaying `title`
+// and triggering `action` on tap.
++ (instancetype)callToActionWithTitle:(NSString*)title
+              accessibilityIdentifier:(NSString*)accessibilityIdentifier
+                               action:(UIAction*)action;
 
 - (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
 
 @end
 
