@@ -185,8 +185,8 @@ TEST(CPUDeathTest, VerifyModifyingCPUInstanceNoAllocationCrashes) {
   // Any write to any byte of CPU should crash. Thus this test is used to
   // precisely manipulate and target the memory to cause a crash. Here we just
   // wrap it into a span for convenience.
-  // TODO(sergiosolano): Use base::byte_span_from_ref() here once base::CPU is
-  // trivially copyable.
+  // TODO(crbug.com/570746342): Use base::byte_span_from_ref() here once
+  // base::CPU is trivially copyable.
   const base::span<uint8_t> bytes = UNSAFE_BUFFERS(
       base::span(const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>(&cpu)),
                  sizeof(cpu)));

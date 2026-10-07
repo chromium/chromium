@@ -35,7 +35,6 @@
 //    build. While core logic tests (e.g., comparison operators) are retained
 //    for parity, these "extra" integration tests were omitted to minimize
 //    the test-only dependency footprint.
-//    TODO(sergiosolano): Port more tests if needed.
 // -----------------------------------------------------------------------------
 
 #include "partition_alloc/partition_alloc_base/containers/span.h"

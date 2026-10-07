@@ -1875,7 +1875,7 @@ template <typename ElementType,
   // [intro.object]: https://eel.is/c++draft/intro.object
   // [obj.lifetime] https://eel.is/c++draft/obj.lifetime
   //
-  // TODO(arthursonzogni): use std::start_lifetime_as_array.
+  // TODO(crbug.com/570737624): use std::start_lifetime_as_array.
   //
   // std::start_lifetime_as_array is part of C++23, but not yet implemented by
   // CLang as of January 2026. `std::launder` helps with pointer provenance
