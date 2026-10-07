@@ -35,13 +35,13 @@ union CrossOriginStorageOrigins {
 
 // Interface exposed to the renderer to access Cross-Origin Storage.
 interface CrossOriginStorageManager {
-  // Requests a handle to a file in Cross-Origin Storage identified by `hash`.
+  // Gets a handle to a file in Cross-Origin Storage identified by `hash`.
   // - When `create_origins` is null (`create: false`), looks up an existing
   //   committed resource for reading.
   // - When `create_origins` is non-null (`create: true`), returns a writable
   //   handle staged in quarantine until verified on `close()`.
-  RequestFileHandle(CrossOriginStorageHash hash,
-                    CrossOriginStorageOrigins? create_origins) =>
+  GetFileHandle(CrossOriginStorageHash hash,
+                CrossOriginStorageOrigins? create_origins) =>
       (FileSystemAccessError result,
        pending_remote<FileSystemAccessFileHandle>? file_handle);
 };

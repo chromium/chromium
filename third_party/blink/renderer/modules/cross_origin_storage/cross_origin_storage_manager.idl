@@ -8,7 +8,7 @@
     SecureContext,
     RuntimeEnabled=CrossOriginStorage
 ] interface CrossOriginStorageManager {
-    [CallWith=ScriptState, RaisesException] Promise<FileSystemFileHandle> requestFileHandle(
-        CrossOriginStorageRequestFileHandleHash hash,
-        optional CrossOriginStorageRequestFileHandleOptions options = {});
+    [CallWith=ScriptState, RaisesException] Promise<FileSystemFileHandle> getFileHandle(
+        CrossOriginStorageGetFileHandleHash hash,
+        optional CrossOriginStorageGetFileHandleOptions options = {});
 };

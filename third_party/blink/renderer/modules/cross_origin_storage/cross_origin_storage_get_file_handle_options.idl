@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://wicg.github.io/cross-origin-storage/#dictdef-crossoriginstoragerequestfilehandleoptions
-dictionary CrossOriginStorageRequestFileHandleOptions {
+// https://wicg.github.io/cross-origin-storage/#dictdef-crossoriginstoragegetfilehandleoptions
+dictionary CrossOriginStorageGetFileHandleOptions {
     boolean create = false;
     (DOMString or sequence<DOMString>) origins;
 };

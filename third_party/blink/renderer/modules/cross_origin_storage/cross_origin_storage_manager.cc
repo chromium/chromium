@@ -13,8 +13,8 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_cross_origin_storage_request_file_handle_hash.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_cross_origin_storage_request_file_handle_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_cross_origin_storage_get_file_handle_hash.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_cross_origin_storage_get_file_handle_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
@@ -75,11 +75,10 @@ CrossOriginStorageManager::CrossOriginStorageManager(NavigatorBase& navigator)
     : Supplement<NavigatorBase>(navigator),
       service_(navigator.GetExecutionContext()) {}
 
-ScriptPromise<FileSystemFileHandle>
-CrossOriginStorageManager::requestFileHandle(
+ScriptPromise<FileSystemFileHandle> CrossOriginStorageManager::getFileHandle(
     ScriptState* script_state,
-    const CrossOriginStorageRequestFileHandleHash* hash,
-    const CrossOriginStorageRequestFileHandleOptions* options,
+    const CrossOriginStorageGetFileHandleHash* hash,
+    const CrossOriginStorageGetFileHandleOptions* options,
     ExceptionState& exception_state) {
   auto* context = GetSupplementable()->GetExecutionContext();
   if (!context || context->IsContextDestroyed()) {
@@ -197,9 +196,9 @@ CrossOriginStorageManager::requestFileHandle(
   auto mojom_hash = mojom::blink::CrossOriginStorageHash::New(
       mojom::blink::CrossOriginStorageAlgorithm::kSha256, value);
 
-  service->RequestFileHandle(
+  service->GetFileHandle(
       std::move(mojom_hash), std::move(create_origins),
-      blink::BindOnce(&CrossOriginStorageManager::OnRequestFileHandleComplete,
+      blink::BindOnce(&CrossOriginStorageManager::OnGetFileHandleComplete,
                       WrapPersistent(this), WrapPersistent(resolver), value));
 
   return promise;
@@ -240,7 +239,7 @@ void CrossOriginStorageManager::OnConnectionError() {
   }
 }
 
-void CrossOriginStorageManager::OnRequestFileHandleComplete(
+void CrossOriginStorageManager::OnGetFileHandleComplete(
     ScriptPromiseResolver<FileSystemFileHandle>* resolver,
     const String& name,
     mojom::blink::FileSystemAccessErrorPtr result,

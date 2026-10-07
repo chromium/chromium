@@ -16,8 +16,8 @@
 
 namespace blink {
 
-class CrossOriginStorageRequestFileHandleHash;
-class CrossOriginStorageRequestFileHandleOptions;
+class CrossOriginStorageGetFileHandleHash;
+class CrossOriginStorageGetFileHandleOptions;
 class ExceptionState;
 class FileSystemFileHandle;
 class NavigatorBase;
@@ -43,10 +43,10 @@ class MODULES_EXPORT CrossOriginStorageManager final
       delete;
 
   // Web-exposed API
-  ScriptPromise<FileSystemFileHandle> requestFileHandle(
+  ScriptPromise<FileSystemFileHandle> getFileHandle(
       ScriptState*,
-      const CrossOriginStorageRequestFileHandleHash* hash,
-      const CrossOriginStorageRequestFileHandleOptions* options,
+      const CrossOriginStorageGetFileHandleHash* hash,
+      const CrossOriginStorageGetFileHandleOptions* options,
       ExceptionState&);
 
   void Trace(Visitor*) const override;
@@ -54,7 +54,7 @@ class MODULES_EXPORT CrossOriginStorageManager final
  private:
   mojom::blink::CrossOriginStorageManager* GetService();
   void OnConnectionError();
-  void OnRequestFileHandleComplete(
+  void OnGetFileHandleComplete(
       ScriptPromiseResolver<FileSystemFileHandle>* resolver,
       const String& name,
       mojom::blink::FileSystemAccessErrorPtr result,
