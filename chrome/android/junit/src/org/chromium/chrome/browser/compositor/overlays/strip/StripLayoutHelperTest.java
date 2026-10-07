@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -498,7 +499,10 @@ public class StripLayoutHelperTest {
         // Verify.
         String expectedDescription = "1 tab tab group - Tab 1 - Expanded";
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue("First should be a group title.", views[0] instanceof StripLayoutGroupTitle);
+        assertThat(
+                "First should be a group title.",
+                views[0],
+                instanceOf(StripLayoutGroupTitle.class));
         assertEquals(
                 "A11y description for group title was wrong.",
                 expectedDescription,
@@ -515,7 +519,10 @@ public class StripLayoutHelperTest {
         // Verify.
         String expectedDescription = "3 tabs tab group - Tab 1 and 2 other tabs - Expanded";
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue("First should be a group title.", views[0] instanceof StripLayoutGroupTitle);
+        assertThat(
+                "First should be a group title.",
+                views[0],
+                instanceOf(StripLayoutGroupTitle.class));
         assertEquals(
                 "A11y description for group title was wrong.",
                 expectedDescription,
@@ -533,7 +540,10 @@ public class StripLayoutHelperTest {
         // Verify.
         String expectedDescription = "Group name tab group - Tab 1 and 2 other tabs - Expanded";
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue("First should be a group title.", views[0] instanceof StripLayoutGroupTitle);
+        assertThat(
+                "First should be a group title.",
+                views[0],
+                instanceOf(StripLayoutGroupTitle.class));
         assertEquals(
                 "A11y description for group title was wrong.",
                 expectedDescription,
@@ -2564,9 +2574,10 @@ public class StripLayoutHelperTest {
         StripLayoutView interactingView =
                 startReorderAtIndexAndCaptureInteractingView(/* index= */ 0);
 
-        assertTrue(
+        assertThat(
                 "Dragging the last tab in a group should reorder the group, not the tab.",
-                interactingView instanceof StripLayoutGroupTitle);
+                interactingView,
+                instanceOf(StripLayoutGroupTitle.class));
         assertEquals(
                 "Should reorder the group that the dragged tab belongs to.",
                 TAB_GROUP_ID_1,
@@ -2592,9 +2603,10 @@ public class StripLayoutHelperTest {
                         any(),
                         eq(ReorderType.START_DRAG_DROP));
         StripLayoutView interactingView = mStripLayoutViewCaptor.getValue();
-        assertTrue(
+        assertThat(
                 "Dragging the last tab in a group via drag and drop should drag the group.",
-                interactingView instanceof StripLayoutGroupTitle);
+                interactingView,
+                instanceOf(StripLayoutGroupTitle.class));
         assertEquals(
                 "Should drag the group that the dragged tab belongs to.",
                 TAB_GROUP_ID_1,
@@ -2636,9 +2648,10 @@ public class StripLayoutHelperTest {
         StripLayoutView interactingView =
                 startReorderAtIndexAndCaptureInteractingView(/* index= */ 0);
 
-        assertTrue(
+        assertThat(
                 "A solely selected last tab in a group should still reorder the group.",
-                interactingView instanceof StripLayoutGroupTitle);
+                interactingView,
+                instanceOf(StripLayoutGroupTitle.class));
         assertEquals(
                 "Should reorder the group that the dragged tab belongs to.",
                 TAB_GROUP_ID_1,
@@ -2932,7 +2945,7 @@ public class StripLayoutHelperTest {
                 .showMenu(rectProviderArgumentCaptor.capture(), any());
         // Verify anchorView coordinates.
         StripLayoutView view = mStripLayoutHelper.getViewAtPositionX(10f, true);
-        assertTrue(view instanceof StripLayoutGroupTitle);
+        assertThat(view, instanceOf(StripLayoutGroupTitle.class));
         StripLayoutGroupTitle titleView = (StripLayoutGroupTitle) view;
         Rect expectedRect =
                 new Rect(
@@ -3033,7 +3046,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.tabClosureCancelled(TIMESTAMP, mModel.getTabAt(0).getId());
 
         StripLayoutView[] viewsAfter = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue(viewsAfter[0] instanceof StripLayoutGroupTitle);
+        assertThat(viewsAfter[0], instanceOf(StripLayoutGroupTitle.class));
         StripLayoutGroupTitle newGroupTitle = (StripLayoutGroupTitle) viewsAfter[0];
 
         assertNotEquals(oldGroupTitle, newGroupTitle);
@@ -3324,7 +3337,7 @@ public class StripLayoutHelperTest {
 
         // Assert: first view should be group title.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
+        assertThat(EXPECTED_TITLE, views[0], instanceOf(StripLayoutGroupTitle.class));
         StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[0]);
 
         // Update layout and set up animation.
@@ -3379,7 +3392,7 @@ public class StripLayoutHelperTest {
 
         // Assert: first view should be a GroupTitle.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
+        assertThat(EXPECTED_TITLE, views[0], instanceOf(StripLayoutGroupTitle.class));
         StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[0]);
 
         resizeStrip(STRIP_WIDTH);
@@ -3433,8 +3446,8 @@ public class StripLayoutHelperTest {
 
         // Assert: the first and fourth view should be group title.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
-        assertTrue(EXPECTED_TITLE, views[4] instanceof StripLayoutGroupTitle);
+        assertThat(EXPECTED_TITLE, views[0], instanceOf(StripLayoutGroupTitle.class));
+        assertThat(EXPECTED_TITLE, views[4], instanceOf(StripLayoutGroupTitle.class));
         StripLayoutGroupTitle groupTitle1 = ((StripLayoutGroupTitle) views[0]);
         StripLayoutGroupTitle groupTitle2 = ((StripLayoutGroupTitle) views[4]);
 
@@ -3507,7 +3520,7 @@ public class StripLayoutHelperTest {
 
         // Collapse the tab group.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue(views[1] instanceof StripLayoutGroupTitle);
+        assertThat(views[1], instanceOf(StripLayoutGroupTitle.class));
         StripLayoutGroupTitle groupTitle = (StripLayoutGroupTitle) views[1];
         mStripLayoutHelper.collapseTabGroupForTesting(groupTitle, true);
 
@@ -3581,7 +3594,7 @@ public class StripLayoutHelperTest {
 
         // Group title doesn't need to hide as close is immediate.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
+        assertThat(EXPECTED_TITLE, views[0], instanceOf(StripLayoutGroupTitle.class));
         assertFalse("Tab should not be closing yet", tabs[0].isDying());
         continuePendingTabClosure(tabs[0]);
         forceClosePreparedTabs();
@@ -3607,7 +3620,7 @@ public class StripLayoutHelperTest {
 
         // Group title doesn't need to hide as close is immediate.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
+        assertThat(EXPECTED_TITLE, views[0], instanceOf(StripLayoutGroupTitle.class));
         assertFalse("Tab should not be closing yet", tabs[0].isDying());
 
         // Simulate the continuation of the operation.
@@ -3630,7 +3643,7 @@ public class StripLayoutHelperTest {
 
         // Verify group title is temporarily disappeared from the tab strip.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertFalse(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
+        assertThat(EXPECTED_NON_TITLE, views[0], not(instanceOf(StripLayoutGroupTitle.class)));
         assertFalse("Tab should not be closing yet", tabs[0].isDying());
 
         // Simulate the operation interrupted by the dialog being continued.
@@ -3653,7 +3666,7 @@ public class StripLayoutHelperTest {
 
         // Verify group title is temporarily disappeared from the tab strip.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertFalse(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
+        assertThat(EXPECTED_NON_TITLE, views[0], not(instanceOf(StripLayoutGroupTitle.class)));
 
         // Simulate the operation interrupted by the dialog being stopped.
         mTabModelActionListenerCaptor
@@ -3664,7 +3677,7 @@ public class StripLayoutHelperTest {
 
         // Verify group title is restored.
         views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
+        assertThat(EXPECTED_TITLE, views[0], instanceOf(StripLayoutGroupTitle.class));
     }
 
     /**
@@ -3716,7 +3729,7 @@ public class StripLayoutHelperTest {
 
         // Assert: View should be group title.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue(EXPECTED_TITLE, views[groupStartIndex] instanceof StripLayoutGroupTitle);
+        assertThat(EXPECTED_TITLE, views[groupStartIndex], instanceOf(StripLayoutGroupTitle.class));
     }
 
     @Test
@@ -3985,7 +3998,7 @@ public class StripLayoutHelperTest {
 
         // Verify group title is present.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
+        assertThat(EXPECTED_TITLE, views[0], instanceOf(StripLayoutGroupTitle.class));
         StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[0]);
         @TabGroupColorId int color = TabGroupColorId.GREY;
         groupTitle.updateTint(color);
@@ -5309,18 +5322,18 @@ public class StripLayoutHelperTest {
         // Verify.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         assertEquals("Should be 12 views (10 tabs and 2 titles).", 12, views.length);
-        assertTrue(EXPECTED_TAB, views[0] instanceof StripLayoutTab);
-        assertTrue(EXPECTED_TITLE, views[1] instanceof StripLayoutGroupTitle);
-        assertTrue(EXPECTED_TAB, views[2] instanceof StripLayoutTab);
-        assertTrue(EXPECTED_TAB, views[3] instanceof StripLayoutTab);
-        assertTrue(EXPECTED_TAB, views[4] instanceof StripLayoutTab);
-        assertTrue(EXPECTED_TITLE, views[5] instanceof StripLayoutGroupTitle);
-        assertTrue(EXPECTED_TAB, views[6] instanceof StripLayoutTab);
-        assertTrue(EXPECTED_TAB, views[7] instanceof StripLayoutTab);
-        assertTrue(EXPECTED_TAB, views[8] instanceof StripLayoutTab);
-        assertTrue(EXPECTED_TAB, views[9] instanceof StripLayoutTab);
-        assertTrue(EXPECTED_TAB, views[10] instanceof StripLayoutTab);
-        assertTrue(EXPECTED_TAB, views[11] instanceof StripLayoutTab);
+        assertThat(EXPECTED_TAB, views[0], instanceOf(StripLayoutTab.class));
+        assertThat(EXPECTED_TITLE, views[1], instanceOf(StripLayoutGroupTitle.class));
+        assertThat(EXPECTED_TAB, views[2], instanceOf(StripLayoutTab.class));
+        assertThat(EXPECTED_TAB, views[3], instanceOf(StripLayoutTab.class));
+        assertThat(EXPECTED_TAB, views[4], instanceOf(StripLayoutTab.class));
+        assertThat(EXPECTED_TITLE, views[5], instanceOf(StripLayoutGroupTitle.class));
+        assertThat(EXPECTED_TAB, views[6], instanceOf(StripLayoutTab.class));
+        assertThat(EXPECTED_TAB, views[7], instanceOf(StripLayoutTab.class));
+        assertThat(EXPECTED_TAB, views[8], instanceOf(StripLayoutTab.class));
+        assertThat(EXPECTED_TAB, views[9], instanceOf(StripLayoutTab.class));
+        assertThat(EXPECTED_TAB, views[10], instanceOf(StripLayoutTab.class));
+        assertThat(EXPECTED_TAB, views[11], instanceOf(StripLayoutTab.class));
 
         // verify bottom indicator width.
         float tabWidth = views[0].getWidth() - TAB_OVERLAP_WIDTH_DP;
@@ -5536,7 +5549,7 @@ public class StripLayoutHelperTest {
 
         // Assert: the fourth view should be group title.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue(EXPECTED_TITLE, views[3] instanceof StripLayoutGroupTitle);
+        assertThat(EXPECTED_TITLE, views[3], instanceOf(StripLayoutGroupTitle.class));
 
         // Click to collapse the first tab group.
         mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[3], true);
@@ -5559,7 +5572,7 @@ public class StripLayoutHelperTest {
 
         // Assert: the first view should be group title.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
+        assertThat(EXPECTED_TITLE, views[0], instanceOf(StripLayoutGroupTitle.class));
 
         // Click to collapse the first tab group.
         mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[0], true);
@@ -5582,7 +5595,7 @@ public class StripLayoutHelperTest {
 
         // Assert: the fourth view should be group title.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue(EXPECTED_TITLE, views[3] instanceof StripLayoutGroupTitle);
+        assertThat(EXPECTED_TITLE, views[3], instanceOf(StripLayoutGroupTitle.class));
 
         // Click to collapse the first tab group.
         mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[3], true);
@@ -5605,7 +5618,7 @@ public class StripLayoutHelperTest {
 
         // Assert: the first view should be group title.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
+        assertThat(EXPECTED_TITLE, views[0], instanceOf(StripLayoutGroupTitle.class));
 
         // Click to collapse the first tab group.
         mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[0], true);
