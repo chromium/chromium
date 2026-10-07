@@ -159,6 +159,8 @@ class WebViewChromium
 
     private static boolean sRecordWholeDocumentEnabledByApi;
 
+    private static AwWebContent sSharedDestroyedAwWebContent;
+
     private boolean mEvaluateJavaScriptCalled;
     private boolean mGetAccessibilityNodeProviderCalledWhenAwContentsNull;
     private boolean mIsDestroyed;
@@ -578,10 +580,21 @@ class WebViewChromium
 
         mIsDestroyed = true;
 
-        // TODO(bewise): Replace this stubbed AwContents approach with better state management
-        // so that long term we can clean up the default profile when it isn't in use.
-        mAwContents = mFactory.getSharedDestroyedAwContents();
+        AwWebContent webContent = getSharedDestroyedAwWebContent();
+        mAwContents = webContent.getAwContents();
         mSharedWebViewChromium.setAwContentsForTransfer(mAwContents);
+    }
+
+    /** Returns the process-wide destroyed {@link AwWebContent} that detached instances point at. */
+    private AwWebContent getSharedDestroyedAwWebContent() {
+        if (sSharedDestroyedAwWebContent == null) {
+            sSharedDestroyedAwWebContent =
+                    AwWebContent.createDestroyedAwWebContent(
+                            awContents ->
+                                    new WebViewContentsClientAdapter(
+                                            awContents, mFactory.getWebViewDelegate()));
+        }
+        return sSharedDestroyedAwWebContent;
     }
 
     @Override
