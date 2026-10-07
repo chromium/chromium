@@ -192,8 +192,9 @@ void AlarmManager::RemoveAllAlarms(const ExtensionId& extension_id,
 void AlarmManager::AddAlarmWhenReady(Alarm alarm,
                                      AddAlarmCallback callback,
                                      const ExtensionId& extension_id) {
-  AddAlarmImpl(extension_id, std::move(alarm));
-  WriteToStorage(extension_id);
+  if (AddAlarmImpl(extension_id, std::move(alarm))) {
+    WriteToStorage(extension_id);
+  }
   std::move(callback).Run();
 }
 
@@ -345,11 +346,34 @@ void AlarmManager::OnAlarm(AlarmIterator it) {
   }
 }
 
-void AlarmManager::AddAlarmImpl(const ExtensionId& extension_id, Alarm alarm) {
+// This operator compares two alarms without serializing them. It extends the
+// underlying Alarm struct auto-generated from WebIDL. Keep in sync with
+// extensions/common/api/alarms.webidl dictionary Alarm. Tested by
+// AlarmsObjectTest.OperatorEqualsEquals.
+bool alarms::operator==(const alarms::Alarm& lhs, const alarms::Alarm& rhs) {
+  return std::tie(lhs.name, lhs.scheduled_time, lhs.period_in_minutes,
+                  lhs.persist_across_sessions) ==
+         std::tie(rhs.name, rhs.scheduled_time, rhs.period_in_minutes,
+                  rhs.persist_across_sessions);
+}
+
+// Returns true if a persistent alarm was modified (persistent alarm
+// overwritten by a non-persistent alarm, persistent alarm updated, or
+// persistent alarm was added).
+bool AlarmManager::AddAlarmImpl(const ExtensionId& extension_id, Alarm alarm) {
   // Override any old alarm with the same name.
   AlarmIterator old_alarm =
       GetAlarmIterator(extension_id, alarm.js_alarm->name);
+  bool modified_persistent_alarm = alarm.js_alarm->persist_across_sessions;
   if (old_alarm.first != alarms_.end()) {
+    if (*old_alarm.second->js_alarm == *alarm.js_alarm) {
+      // If extension already has an identical alarm, this call is a no-op.
+      // We do not need to delete and re-create alarm and re-schedule the poll.
+      return false;
+    }
+    modified_persistent_alarm =
+        modified_persistent_alarm ||
+        old_alarm.second->js_alarm->persist_across_sessions;
     RemoveAlarmIterator(old_alarm);
   }
 
@@ -359,6 +383,7 @@ void AlarmManager::AddAlarmImpl(const ExtensionId& extension_id, Alarm alarm) {
   if (next_poll_time_.is_null() || alarm_time < next_poll_time_) {
     SetNextPollTime(alarm_time);
   }
+  return modified_persistent_alarm;
 }
 
 void AlarmManager::WriteToStorage(const ExtensionId& extension_id) {

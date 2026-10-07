@@ -63,6 +63,10 @@ struct Alarm {
   base::TimeDelta minimum_granularity;
 };
 
+namespace api::alarms {
+bool operator==(const api::alarms::Alarm&, const api::alarms::Alarm&);
+}  //  namespace api::alarms
+
 // Manages the currently pending alarms for every extension in a profile.
 // There is one manager per virtual Profile.
 class AlarmManager : public BrowserContextKeyedAPI,
@@ -157,6 +161,8 @@ class AlarmManager : public BrowserContextKeyedAPI,
   FRIEND_TEST_ALL_PREFIXES(ExtensionAlarmsSchedulingTest,
                            PollWritesToStorageOncePerExtension);
   FRIEND_TEST_ALL_PREFIXES(ExtensionAlarmsSchedulingTest, ClearAll);
+  FRIEND_TEST_ALL_PREFIXES(ExtensionAlarmsCreateStateStoreWriteEfficiency,
+                           CreateAlarmStateStoreWriteEfficiency);
   FRIEND_TEST_ALL_PREFIXES(ExtensionAlarmsTest, OldPersistentAlarmFromStorage);
   friend class BrowserContextKeyedAPIFactory<AlarmManager>;
 
@@ -209,7 +215,10 @@ class AlarmManager : public BrowserContextKeyedAPI,
   void OnAlarm(AlarmIterator iter);
 
   // Internal helper to add an alarm and start the timer with the given delay.
-  void AddAlarmImpl(const ExtensionId& extension_id, Alarm alarm);
+  // Returns true if a persistent alarm was modified (persistent alarm
+  // overwritten by a non-persistent alarm, persistent alarm updated, or
+  // persistent alarm was added).
+  bool AddAlarmImpl(const ExtensionId& extension_id, Alarm alarm);
 
   // Internal helper to remove all alarms for an extension from memory.
   // Returns true if an extension had at least one persistent alarm.

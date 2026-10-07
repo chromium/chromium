@@ -21,6 +21,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -34,6 +35,7 @@
 #include "extensions/browser/api/alarms/alarms_api_constants.h"
 #include "extensions/browser/api_unittest.h"
 #include "extensions/browser/state_store.h"
+#include "extensions/common/api/alarms.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
@@ -43,6 +45,62 @@
 typedef extensions::api::alarms::Alarm JsAlarm;
 
 namespace extensions {
+
+class AlarmsObjectTest : public testing::Test {
+ protected:
+  JsAlarm CreateAlarm(std::string name,
+                      double scheduled_time,
+                      std::optional<double> period_in_minutes,
+                      bool persist_across_sessions) {
+    base::DictValue value =
+        base::DictValue()
+            .Set("name", name)
+            .Set("scheduledTime", scheduled_time)
+            .Set("persistAcrossSessions", persist_across_sessions);
+    if (period_in_minutes) {
+      value.Set("periodInMinutes", *period_in_minutes);
+    }
+    std::optional<JsAlarm> alarm = api::alarms::Alarm::FromValue(value);
+    CHECK(alarm);
+    return std::move(*alarm);
+  }
+};
+
+TEST_F(AlarmsObjectTest, OperatorEqualsEquals) {
+  // Everything is the same.
+  EXPECT_TRUE(CreateAlarm("name", 10, 10, true) ==
+              CreateAlarm("name", 10, 10, true));
+  EXPECT_TRUE(CreateAlarm("name", 10, std::nullopt, true) ==
+              CreateAlarm("name", 10, std::nullopt, true));
+
+  // Different name.
+  EXPECT_TRUE(CreateAlarm("name", 10, std::nullopt, true) !=
+              CreateAlarm("none", 10, std::nullopt, true));
+  // Different scheduledTime.
+  EXPECT_TRUE(CreateAlarm("name", 10, std::nullopt, true) !=
+              CreateAlarm("name", 20, std::nullopt, true));
+  // Different periodInMinutes.
+  EXPECT_TRUE(CreateAlarm("name", 10, 10, true) !=
+              CreateAlarm("name", 10, std::nullopt, true));
+  EXPECT_TRUE(CreateAlarm("name", 10, 10, true) !=
+              CreateAlarm("name", 10, 20, true));
+  // Different persistAcrossSessions.
+  EXPECT_TRUE(CreateAlarm("name", 10, 10, true) !=
+              CreateAlarm("name", 10, 10, false));
+}
+
+// If this test fails, please update api::alarms::Alarm comparison method in
+// alarm_manager.cc.
+TEST_F(AlarmsObjectTest, EnumerateMembers) {
+  // If Alarm object WebIDL changes, so will its DictValue representation.
+  JsAlarm alarm = CreateAlarm("name", 10, 10, true);
+  const base::DictValue dict = alarm.ToValue();
+  EXPECT_EQ(4u, dict.size());
+  EXPECT_TRUE(dict.contains("name"));
+  EXPECT_TRUE(dict.contains("scheduledTime"));
+  EXPECT_TRUE(dict.contains("periodInMinutes"));
+  EXPECT_TRUE(dict.contains("persistAcrossSessions"));
+}
 
 namespace {
 
@@ -70,9 +128,9 @@ class AlarmsStorageWriteCounter : public StateStore::TestObserver {
  public:
   void WillSetExtensionValue(const ExtensionId& extension_id,
                              const std::string& key) override {
-    if (key == "alarms") {
-      ++write_counts[extension_id];
-    }
+    // AlarmManager modifies only its own data.
+    CHECK_EQ("alarms", key);
+    ++write_counts[extension_id];
   }
   std::map<ExtensionId, int> write_counts;
 };
@@ -1108,7 +1166,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, ClearAll) {
   EXPECT_EQ(0, write_counter.write_counts[extension3->id()]);
   EXPECT_EQ(base::Time(), alarm_manager_->next_poll_time_);
 
-  // Since extension 3 has no alarms, alarms.clarAll() call is a no-op.
+  // Since extension 3 has no alarms, alarms.clearAll() call is a no-op.
   set_extension(extension3);
   ClearAllAlarms();
   EXPECT_EQ(1, write_counter.write_counts[extension1->id()]);
@@ -1140,27 +1198,110 @@ TEST_F(ExtensionAlarmsSchedulingTest, RemoveAlarmStorageWrite) {
     CreateAlarm(
         "[null, {\"name\": \"session\", \"periodInMinutes\": 10, "
         "\"persistAcrossSessions\": false}]");
-    // TODO(crbug.com/560730188): Edit this test after alarms.create() learns to
-    // skip non-persistent alarms.
-    int after_create = write_counter.write_counts[extension()->id()];
     const bool found = ClearAlarm("session");
     EXPECT_TRUE(found);
-    EXPECT_EQ(after_create, write_counter.write_counts[extension()->id()]);
+    EXPECT_EQ(0, write_counter.write_counts[extension()->id()]);
   }
 
   // Deleting of a persistent alarm causes storage write.
   {
-    // TODO(crbug.com/560730188): Edit this test after alarms.create() learns to
-    // skip non-persistent alarms.
-    int before_create = write_counter.write_counts[extension()->id()];
     CreateAlarm(
         "[null, {\"name\": \"persistent\", \"periodInMinutes\": 10, "
         "\"persistAcrossSessions\": true}]");
-    EXPECT_EQ(before_create + 1, write_counter.write_counts[extension()->id()]);
+    EXPECT_EQ(1, write_counter.write_counts[extension()->id()]);
     const bool found = ClearAlarm("persistent");
     EXPECT_TRUE(found);
-    EXPECT_EQ(before_create + 2, write_counter.write_counts[extension()->id()]);
+    EXPECT_EQ(2, write_counter.write_counts[extension()->id()]);
   }
 }
+
+class ExtensionAlarmsCreateStateStoreWriteEfficiency
+    : public ExtensionAlarmsSchedulingTest,
+      public testing::WithParamInterface<std::tuple<int64_t, bool, bool>> {
+ protected:
+  int64_t alarm_offset_in_hrs() const { return std::get<0>(GetParam()); }
+  bool alarm1_is_persistent() const { return std::get<1>(GetParam()); }
+  bool alarm2_is_persistent() const { return std::get<2>(GetParam()); }
+};
+
+// Repeated alarm creations with the same alarm or same time.
+TEST_P(ExtensionAlarmsCreateStateStoreWriteEfficiency,
+       CreateAlarmStateStoreWriteEfficiency) {
+  // Install the StateStore observer.
+  extension_system()->SetStateStore(std::make_unique<StateStore>(
+      browser_context(),
+      base::MakeRefCounted<value_store::TestValueStoreFactory>(),
+      StateStore::BackendType::STATE, /*deferred_load=*/false));
+  AlarmsStorageWriteCounter write_counter;
+  base::ScopedObservation<StateStore, StateStore::TestObserver>
+      write_observation(&write_counter);
+  write_observation.Observe(extension_system()->state_store());
+
+  constexpr int64_t millis_in_hour = 60 * 60 * 1000;
+  const int64_t alarm1_time = 20 * millis_in_hour;
+  const int64_t alarm2_time = (20 + alarm_offset_in_hrs()) * millis_in_hour;
+
+  const int write_count_before = write_counter.write_counts[extension()->id()];
+  // Write to StateStore after the first alarm if first alarm is persistent.
+  const int write_count_after_first =
+      alarm1_is_persistent() ? (write_count_before + 1) : write_count_before;
+  // Write to StateStore after the second alarm if alarms are different and
+  // at least one of them is persistent.
+  const int write_count_after_second =
+      (((alarm1_time != alarm2_time) ||
+        (alarm1_is_persistent() != alarm2_is_persistent())) &&
+       (alarm1_is_persistent() || alarm2_is_persistent()))
+          ? (write_count_after_first + 1)
+          : write_count_after_first;
+
+  // Create first alarm.
+  CreateAlarm(base::StringPrintf(
+      "[null, {\"when\": %" PRId64 ", \"persistAcrossSessions\": %s}]",
+      alarm1_time, alarm1_is_persistent() ? "true" : "false"));
+
+  // StateStore is written iff first alarm is persistent.
+  EXPECT_EQ(write_count_after_first,
+            write_counter.write_counts[extension()->id()]);
+
+  // Timer is set to alarm 1 time.
+  EXPECT_TRUE(alarm_manager_->timer_.IsRunning());
+  EXPECT_EQ(alarm_manager_->next_poll_time_,
+            alarm_manager_->timer_.desired_run_time());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(alarm1_time),
+            alarm_manager_->next_poll_time_);
+
+  // Create second alarm (overwrite first alarm).
+  CreateAlarm(base::StringPrintf(
+      "[null, {\"when\": %" PRId64 ", \"persistAcrossSessions\": %s}]",
+      alarm2_time, alarm2_is_persistent() ? "true" : "false"));
+
+  // StateStore is written to iff alarms are not equal and at least one is
+  // persistent.
+  EXPECT_EQ(write_count_after_second,
+            write_counter.write_counts[extension()->id()]);
+
+  // Timer is set to alarm 2 time.
+  EXPECT_TRUE(alarm_manager_->timer_.IsRunning());
+  EXPECT_EQ(alarm_manager_->next_poll_time_,
+            alarm_manager_->timer_.desired_run_time());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(alarm2_time),
+            alarm_manager_->next_poll_time_);
+
+  // Reset AlarmManager for the next test case.
+  RunFunctionAndReturnValue(base::MakeRefCounted<AlarmsClearAllFunction>(),
+                            "[]");
+  EXPECT_FALSE(alarm_manager_->timer_.IsRunning());
+}
+
+// We have 12 = 3 * 2 * 2 possible test cases:
+//  - Alarms can be at the same time (0), the first alarm can be earlier (1),
+//    or the second alarm can be earlier (-1).
+//  - First alarm can be persistent (true) or not persistent (false).
+//  - Second alarm can be persistent (true) or not persistent (false).
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExtensionAlarmsCreateStateStoreWriteEfficiency,
+                         testing::Combine(testing::Values<int64_t>(0, 1, -1),
+                                          testing::Bool(),
+                                          testing::Bool()));
 
 }  // namespace extensions
