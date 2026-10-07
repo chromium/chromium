@@ -10,12 +10,16 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_listener.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "v8/include/v8.h"
@@ -192,6 +196,123 @@ TEST(JSEventListenerTest, CrossOriginListenerBlockedBySecurity) {
 
   invoked_object = Eval(scope_listener, "window.invokedObject;");
   EXPECT_TRUE(invoked_object->BooleanValue(isolate));
+}
+
+class JSEventListenerSourceLocationTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    holder_ = DummyPageHolder::CreateAndCommitNavigation(
+        KURL("https://example.com/"));
+  }
+
+  ScriptState* GetScriptState() {
+    return ToScriptStateForMainWorld(&holder_->GetFrame());
+  }
+
+  JSEventListener* CreateListener(const char* source) {
+    ScriptState* script_state = GetScriptState();
+    ScriptState::Scope scope(script_state);
+    V8DoNotRunMicrotasksScope microtasks_scope(script_state);
+    v8::Isolate* isolate = script_state->GetIsolate();
+    v8::ScriptOrigin origin(V8String(isolate, "listener.js"));
+    v8::Local<v8::Value> object =
+        v8::Script::Compile(script_state->GetContext(),
+                            V8String(isolate, source), &origin)
+            .ToLocalChecked()
+            ->Run(script_state->GetContext())
+            .ToLocalChecked();
+    return JSEventListener::CreateOrNull(
+        V8EventListener::Create(object.As<v8::Object>()));
+  }
+
+  test::TaskEnvironment task_environment_;
+  std::unique_ptr<DummyPageHolder> holder_;
+};
+
+TEST_F(JSEventListenerSourceLocationTest, SourceLocationWithoutEnteredContext) {
+  v8::Isolate* isolate = GetScriptState()->GetIsolate();
+  v8::HandleScope handle_scope(isolate);
+  auto* listener = CreateListener("({handleEvent: function handler() {}})");
+
+  ASSERT_FALSE(isolate->InContext());
+  SourceLocation* location =
+      listener->GetSourceLocation(holder_->GetDocument());
+
+  ASSERT_NE(nullptr, location);
+  EXPECT_EQ("listener.js", location->Url());
+  EXPECT_EQ(1u, location->LineNumber());
+  EXPECT_FALSE(isolate->InContext());
+}
+
+TEST_F(JSEventListenerSourceLocationTest,
+       EffectiveFunctionRestoresEnteredContext) {
+  v8::Isolate* isolate = GetScriptState()->GetIsolate();
+  v8::HandleScope handle_scope(isolate);
+  Persistent<JSEventListener> listener =
+      CreateListener("({handleEvent: function handler() {}})");
+  auto other_holder = DummyPageHolder::CreateAndCommitNavigation(
+      KURL("https://example.com/other"));
+  ScriptState* other_state =
+      ToScriptStateForMainWorld(&other_holder->GetFrame());
+  ScriptState::Scope other_scope(other_state);
+
+  v8::Local<v8::Value> function =
+      listener->GetEffectiveFunction(holder_->GetDocument());
+
+  ASSERT_TRUE(function->IsFunction());
+  EXPECT_EQ(GetScriptState()->GetContext(),
+            function.As<v8::Function>()->GetCreationContextChecked(isolate));
+  EXPECT_EQ(other_state->GetContext(), isolate->GetCurrentContext());
+  EXPECT_TRUE(function.As<v8::Function>()->GetName()->StrictEquals(
+      V8String(isolate, "handler")));
+}
+
+TEST_F(JSEventListenerSourceLocationTest, ThrowingHandleEventGetter) {
+  v8::Isolate* isolate = GetScriptState()->GetIsolate();
+  v8::HandleScope handle_scope(isolate);
+  auto* listener = CreateListener(
+      "({get handleEvent() { throw new Error('getter failed'); }})");
+  v8::TryCatch try_catch(isolate);
+
+  ASSERT_FALSE(isolate->InContext());
+  EXPECT_EQ(nullptr, listener->GetSourceLocation(holder_->GetDocument()));
+  EXPECT_FALSE(try_catch.HasCaught());
+  EXPECT_FALSE(isolate->InContext());
+}
+
+TEST_F(JSEventListenerSourceLocationTest, DestroyedContext) {
+  v8::Isolate* isolate = GetScriptState()->GetIsolate();
+  v8::HandleScope handle_scope(isolate);
+  Persistent<JSEventListener> listener =
+      CreateListener("({handleEvent: function handler() {}})");
+  Persistent<ScriptState> script_state = GetScriptState();
+  Persistent<Document> target = &holder_->GetDocument();
+  holder_.reset();
+
+  ASSERT_FALSE(script_state->ContextIsValid());
+  ASSERT_FALSE(isolate->InContext());
+  EXPECT_EQ(nullptr, listener->GetSourceLocation(*target));
+}
+
+TEST_F(JSEventListenerSourceLocationTest, CrossOriginListener) {
+  v8::Isolate* isolate = GetScriptState()->GetIsolate();
+  v8::HandleScope handle_scope(isolate);
+  auto other_holder = DummyPageHolder::CreateAndCommitNavigation(
+      KURL("https://other.example/"));
+  ScriptState* other_state =
+      ToScriptStateForMainWorld(&other_holder->GetFrame());
+  JSEventListener* listener;
+  {
+    ScriptState::Scope scope(GetScriptState());
+    listener = JSEventListener::CreateOrNull(
+        V8EventListener::Create(other_state->GetContext()->Global()));
+  }
+  v8::TryCatch try_catch(isolate);
+
+  ASSERT_FALSE(isolate->InContext());
+  EXPECT_EQ(nullptr, listener->GetSourceLocation(holder_->GetDocument()));
+  EXPECT_FALSE(try_catch.HasCaught());
+  EXPECT_FALSE(isolate->InContext());
 }
 
 }  // namespace

@@ -5,12 +5,14 @@
 #include "third_party/blink/renderer/bindings/core/v8/js_event_listener.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
 
@@ -28,13 +30,27 @@ v8::Local<v8::Value> JSEventListener::GetEffectiveFunction(
     // Do not propagate any exceptions.
     v8::TryCatch try_catch(isolate);
 
+    if (!event_listener_->IncumbentScriptState()->ContextIsValid()) {
+      return v8::Undefined(isolate);
+    }
+    ScriptState* script_state =
+        event_listener_->CallbackRelevantScriptStateOrThrowException(
+            "EventListener", "handleEvent");
+    if (!script_state || !script_state->ContextIsValid()) {
+      return v8::Undefined(isolate);
+    }
+
+    // Reporting an input delay can reach here after Invoke() has exited the
+    // listener's context. Keep returned handles in the caller's HandleScope.
+    v8::Context::Scope context_scope(script_state->GetContext());
+    V8DoNotRunMicrotasksScope microtasks_scope(script_state);
     v8::Local<v8::Value> property;
 
     // Try the "handleEvent" method (EventListener interface).
     // v8::Object::Get() may throw if "handleEvent" is an accessor and its
     // getter throws.
     if (v8_listener.As<v8::Object>()
-            ->Get(isolate->GetCurrentContext(),
+            ->Get(script_state->GetContext(),
                   V8AtomicString(isolate, "handleEvent"))
             .ToLocal(&property) &&
         property->IsFunction()) {
