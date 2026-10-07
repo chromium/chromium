@@ -118,7 +118,7 @@ class PredictionModelComponentInstallerPolicy
   // LINT.IfChange(TfliteEngineVersion)
   update_client::InstallerAttributes GetInstallerAttributes() const override {
     return update_client::InstallerAttributes{
-        {"tflite_engine_version", "2.22.0"}};
+        {"tflite_engine_version", "2.22.1"}};
   }
   // LINT.ThenChange(//components/optimization_guide/core/delivery/prediction_manager.cc:TfliteEngineVersion)
 

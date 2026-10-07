@@ -351,6 +351,10 @@ enum ModelEngineVersion {
   // This, along with 2.21.0, adds int2/4/8, and uint4 support to a bunch
   // of operations.
   MODEL_ENGINE_VERSION_TFLITE_2_22_0 = 22;
+  // A model using only operations that are supported by 2.22.1.
+  // This adds CUMSUM, CALL_ONCE, VAR_HANDLE, READ_VARIABLE, and
+  // ASSIGN_VARIABLE to the supported operations.
+  MODEL_ENGINE_VERSION_TFLITE_2_22_1 = 23;
 }
 
 // The set of parameters that the server can use to vary the served model for
