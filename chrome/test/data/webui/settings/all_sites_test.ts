@@ -817,6 +817,42 @@ suite('WithoutRelatedWebsiteSetsData', function() {
     assertEquals(5, testElement.$.allSitesList.items![0].numCookies);
   });
 
+  test('remove last origin keeps eTLD+1 cookies placeholder', function() {
+    // A group with a single origin and additional cookies scoped to the
+    // eTLD+1 itself.
+    const siteGroup = createSiteGroup('foo.com', 'foo.com', [
+      'https://www.foo.com/',
+    ]);
+    siteGroup.origins[0]!.numCookies = 1;
+    siteGroup.numCookies = 3;
+    siteGroup.rwsEnterpriseManaged = true;
+    testElement.siteGroupMap.set(
+        siteGroup.groupingKey, structuredClone(siteGroup));
+    testElement.forceListUpdateForTesting();
+    flush();
+
+    const siteEntries =
+        testElement.$.listContainer.querySelectorAll('site-entry');
+    assertEquals(1, siteEntries.length);
+    const originList = siteEntries[0]!.$.originList.get();
+    flush();
+    const originEntries = originList.querySelectorAll('.hr');
+    assertEquals(1, originEntries.length);
+    originEntries[0]!.querySelector<HTMLElement>(
+                         '#removeOriginButton')!.click();
+    confirmDialog();
+
+    // The remaining cookies are held by a placeholder origin for the eTLD+1,
+    // matching what the backend sends, not by the removed origin.
+    const updatedGroup = testElement.$.allSitesList.items![0];
+    assertEquals('foo.com', updatedGroup.etldPlus1);
+    assertTrue(!!updatedGroup.rwsEnterpriseManaged);
+    assertEquals(2, updatedGroup.numCookies);
+    assertEquals(1, updatedGroup.origins.length);
+    assertEquals('http://foo.com/', updatedGroup.origins[0]!.origin);
+    assertEquals(2, updatedGroup.origins[0]!.numCookies);
+  });
+
   test('cancel remove site group', function() {
     testElement.siteGroupMap.set(
         TEST_MULTIPLE_SITE_GROUP.groupingKey,

@@ -509,12 +509,7 @@ export class AllSitesElement extends AllSitesElementBase {
     const siteGroupToUpdate = this.filteredList_[index];
 
     const updatedSiteGroup: SiteGroup = {
-      groupingKey: siteGroupToUpdate.groupingKey,
-      displayName: siteGroupToUpdate.displayName,
-      hasInstalledPWA: siteGroupToUpdate.hasInstalledPWA,
-      numCookies: siteGroupToUpdate.numCookies,
-      rwsOwner: siteGroupToUpdate.rwsOwner,
-      rwsNumMembers: siteGroupToUpdate.rwsNumMembers,
+      ...siteGroupToUpdate,
       origins: [],
     };
 
@@ -804,12 +799,8 @@ export class AllSitesElement extends AllSitesElementBase {
   private clearDataForSiteGroupIndex_(index: number) {
     const siteGroupToUpdate = this.filteredList_[index];
     const updatedSiteGroup: SiteGroup = {
-      groupingKey: siteGroupToUpdate.groupingKey,
-      displayName: siteGroupToUpdate.displayName,
-      hasInstalledPWA: siteGroupToUpdate.hasInstalledPWA,
+      ...siteGroupToUpdate,
       numCookies: 0,
-      rwsOwner: siteGroupToUpdate.rwsOwner,
-      rwsNumMembers: siteGroupToUpdate.rwsNumMembers,
       origins: [],
     };
 
