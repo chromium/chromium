@@ -1474,31 +1474,37 @@ public class LocationBarCoordinator
     private void updateOptionalButtonState() {
         if (mOptionalButtonCoordinator == null) return;
 
-        var locationBarDataProvider = mLocationBarMediator.getLocationBarDataProvider();
-        boolean isNtp = locationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible();
-        if (shouldHideOptionalButton(isNtp)) {
-            mOptionalButtonCoordinator.hideButton();
-        } else {
+        if (shouldShowOptionalButton()) {
+            LocationBarDataProvider locationBarDataProvider =
+                    mLocationBarMediator.getLocationBarDataProvider();
             mOptionalButtonCoordinator.setBrandedColorScheme(
                     mLocationBarMediator.getBrandedColorScheme());
             mOptionalButtonCoordinator.setBackgroundColorFilter(
                     locationBarDataProvider.getPrimaryColor());
             mOptionalButtonCoordinator.updateButton(
                     mOptionalButtonData, locationBarDataProvider.isIncognitoBranded());
+        } else {
+            mOptionalButtonCoordinator.hideButton();
         }
 
         updateUrlBarNextFocusForwardId();
     }
 
-    private boolean shouldHideOptionalButton(boolean isNtp) {
+    private boolean shouldShowOptionalButton() {
+        // The location bar only hosts the optional button when the toolbar UI refactor is enabled.
         if (!ToolbarVariationUtils.isToolbarUiRefactorEnabled(mLocationBarLayout.getContext())) {
-            return true;
+            return false;
         }
-        return isNtp
-                || mLocationBarMediator.isUrlBarFocused()
-                || mMiniOriginMode
-                || mOptionalButtonData == null
-                || mOptionalButtonData.isIdentityDisc();
+        // Identity disc is only shown on the NTP toolbar, never inside the location bar.
+        if (mOptionalButtonData == null || mOptionalButtonData.isIdentityDisc()) {
+            return false;
+        }
+        boolean isNtp =
+                mLocationBarMediator
+                        .getLocationBarDataProvider()
+                        .getNewTabPageDelegate()
+                        .isCurrentlyVisible();
+        return !isNtp && !mLocationBarMediator.isUrlBarFocused() && !mMiniOriginMode;
     }
 
     private void updateUrlBarNextFocusForwardId() {
