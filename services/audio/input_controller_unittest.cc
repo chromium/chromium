@@ -1177,10 +1177,10 @@ TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
 
 TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
        VoiceIsolationEnabledInConfig) {
-  SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
-  processing_config_->settings.voice_isolation = true;
   params_.Reset(params_.format(), params_.channel_layout_config(),
                 kVoiceIsolationSampleRateHz, kVoiceIsolationFramesPerBuffer);
+  SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
+  processing_config_->settings.voice_isolation = true;
   EXPECT_CALL(event_handler_, OnCreated(_));
 
   CreateAudioController();
@@ -1201,10 +1201,10 @@ TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
 
 TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
        VoiceIsolationCreationFailsIfModelNotAvailable) {
-  SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
-  processing_config_->settings.voice_isolation = true;
   params_.Reset(params_.format(), params_.channel_layout_config(),
                 kVoiceIsolationSampleRateHz, kVoiceIsolationFramesPerBuffer);
+  SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
+  processing_config_->settings.voice_isolation = true;
   ON_CALL(ml_model_manager_,
           GetModel(mojom::MlModelType::kVoiceIsolationDenoiser))
       .WillByDefault(Return(nullptr));
