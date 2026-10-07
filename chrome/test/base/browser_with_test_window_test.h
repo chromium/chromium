@@ -146,12 +146,6 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
       std::unique_ptr<ProfileManager> profile_manager = nullptr);
 
  protected:
-  BrowserWindow* window() const { return window_.get(); }
-
-  BrowserWindowInterface* browser() const { return browser_.get(); }
-
-  std::unique_ptr<BrowserWindowInterface> release_browser();
-
   TestingProfile* profile() const { return profile_.get(); }
 
   TestingProfile* GetProfile() { return profile_.get(); }
@@ -180,12 +174,6 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   // The context to help determine desktop type when creating new Widgets.
   gfx::NativeWindow GetContext();
 
-  // Adds a tab to |browser| with the given URL and commits the load.
-  // This is a convenience function. The new tab will be added at index 0.
-  // WARNING: this creates a real WebContents. If you want to add a test
-  // WebContents create it directly and insert it into the TabStripModel.
-  void AddTab(BrowserWindowInterface* browser, const GURL& url);
-
   // Commits the pending load on the given controller. It will keep the
   // URL of the pending load. If there is no pending load, this does nothing.
   void CommitPendingLoad(content::NavigationController* controller);
@@ -195,17 +183,10 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   // than any seen. This emulates what happens on a new navigation.
   void NavigateAndCommit(content::WebContents* web_contents, const GURL& url);
 
-  // Navigates the current tab. This is a wrapper around NavigateAndCommit.
-  void NavigateAndCommitActiveTab(const GURL& url);
-
   // Set the |title| of the current tab.
   void NavigateAndCommitActiveTabWithTitle(BrowserWindowInterface* browser,
                                            const GURL& url,
                                            const std::u16string& title);
-
-  // Sets the focused frame to the main frame of the active WebContents, for
-  // tests that rely on the focused frame not being null.
-  void FocusMainFrameOfActiveWebContents();
 
   // Returns the profile name used for the profile created in SetUp() by
   // default.  Subclasses can override to change the profile name. If it returns
@@ -217,36 +198,12 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   virtual TestingProfile* CreateProfile(const std::string& profile_name);
 
   // Deletes the specified profile.
-  // If `profile_name` is the one returned from GetDefaultProfileName(),
-  // because this instance creates Browser for the profile in SetUp() and keeps
-  // it in a member, the Browser instance will also be destroyed to avoid leak.
   virtual void DeleteProfile(const std::string& profile_name);
 
   // Returns a vector of testing factories to be used when creating the profile.
   // This is only used by CreateProfile(), and will be irrelevant if that
   // method is overridden.
   virtual TestingProfile::TestingFactories GetTestingFactories();
-
-  // Creates the BrowserWindow used by this test. Subclasses can provide their
-  // own test BrowserWindow. If the provided BrowserWindow is null then Browser
-  // will create a production BrowserWindow and the subclass is responsible for
-  // cleaning it up (usually by NativeWidget destruction).
-  virtual std::unique_ptr<BrowserWindow> CreateBrowserWindow();
-
-  // Creates the browser given |profile|, |browser_type|, |hosted_app|, and
-  // |browser_window|.
-  virtual std::unique_ptr<BrowserWindowInterface> CreateBrowser(
-      Profile* profile,
-      BrowserWindowInterface::Type browser_type,
-      bool hosted_app,
-      BrowserWindow* browser_window);
-
-  // Creates the browser given `profile`, `browser_type` and `hosted_app` and
-  // a window created via `CreateBrowserWindow()`.
-  virtual std::unique_ptr<BrowserWindowInterface> CreateBrowser(
-      Profile* profile,
-      BrowserWindowInterface::Type browser_type,
-      bool hosted_app);
 
 #if defined(TOOLKIT_VIEWS)
   views::TestViewsDelegate* test_views_delegate() {
@@ -316,9 +273,6 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   network::TestURLLoaderFactory test_url_loader_factory_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  // Usually a TestBrowserWindow, owned by Browser.
-  raw_ptr<BrowserWindow> window_;
-  std::unique_ptr<BrowserWindowInterface> browser_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   std::optional<ash::AshTestHelper> ash_test_helper_;
@@ -336,12 +290,6 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
 #if BUILDFLAG(IS_WIN)
   ui::ScopedOleInitializer ole_initializer_;
 #endif
-
-  // The type of browser to create (tabbed or popup).
-  const BrowserWindowInterface::Type browser_type_;
-
-  // Whether the browser is part of a hosted app.
-  const bool hosted_app_;
 
   // Initialize the variations provider.
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{

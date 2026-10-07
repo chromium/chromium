@@ -140,7 +140,6 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/test_browser_window_aura.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -748,10 +747,6 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
     ash::ConciergeClient::Shutdown();
     app_list::AppListSyncableServiceFactory::SetUseInTesting(false);
-  }
-
-  std::unique_ptr<BrowserWindow> CreateBrowserWindow() override {
-    return CreateTestBrowserWindowAura();
   }
 
   // Create an uninitialized controller instance.
@@ -1405,18 +1400,6 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
       app_registry_cache_observer_{this};
 
  private:
-  std::unique_ptr<TestBrowserWindow> CreateTestBrowserWindowAura() {
-    auto window = std::make_unique<aura::Window>(
-        nullptr, aura::client::WINDOW_TYPE_NORMAL);
-    window->SetId(0);
-    window->Init(ui::LAYER_TEXTURED);
-    aura::client::ParentWindowWithContext(window.get(), GetContext(),
-                                          gfx::Rect(200, 200),
-                                          display::kInvalidDisplayId);
-
-    return std::make_unique<TestBrowserWindowAura>(std::move(window));
-  }
-
   ash::SessionTerminationManager session_termination_manager_;
   std::unique_ptr<ash::MultiUserWindowManagerBrowserAdaptor>
       multi_user_window_manager_browser_adaptor_;
