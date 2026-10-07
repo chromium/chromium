@@ -13,15 +13,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.UiThread;
+
 import org.chromium.android_webview.AwContents.DependencyFactory;
 import org.chromium.android_webview.AwContents.InternalAccessDelegate;
 import org.chromium.android_webview.gfx.AwDrawFnImpl.DrawFnAccess;
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-/** Represents underlying Chromium web contents state that can survive moving across WebViews. */
+/**
+ * Represents underlying Chromium web contents state that can survive moving across WebViews.
+ *
+ * <p>`AwWebContent` can be constructed even before Chromium startup runs.
+ *
+ * <p>Any methods on this class must only be called on the UI thread.
+ */
+@UiThread
 @NullMarked
 public class AwWebContent {
     /**
@@ -171,6 +181,15 @@ public class AwWebContent {
         }
     }
 
+    /**
+     * Returns a new AwContents instance if this is the first time this AwWebContent is being
+     * adopted, or the existing instance if this AwWebContent has been adopted before.
+     *
+     * <p>This method must only be called after Chromium startup has completed.
+     *
+     * <p>Note for future: This method returning `AwContents` is temporary. Once all callers are
+     * migrated to not refer to `AwContents` directly, we will no longer return `AwContents`.
+     */
     public AwContents adopt(
             ViewHost host,
             AwBrowserContext browserContext,
@@ -215,6 +234,17 @@ public class AwWebContent {
         return mAwContents;
     }
 
+    public void evaluateJavaScript(String script, @Nullable Callback<String> callback) {
+        ensureStartedAndGetAdoptedAwContents(StartupCallSite.WEBVIEW_INSTANCE_EVALUATE_JAVASCRIPT)
+                .evaluateJavaScript(script, callback);
+    }
+
+    private AwContents ensureStartedAndGetAdoptedAwContents(@StartupCallSite int callSite) {
+        StartupController.getInstance().triggerAndWaitForChromiumStarted(callSite);
+        assert mAwContents != null;
+        return mAwContents;
+    }
+
     public void destroy() {
         if (mIsDestroyed) return;
         mIsDestroyed = true;
@@ -225,7 +255,6 @@ public class AwWebContent {
         mCurrentHost = null;
         if (mAwContents != null) {
             mAwContents.destroy();
-            mAwContents = null;
         }
     }
 }

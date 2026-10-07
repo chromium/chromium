@@ -911,8 +911,6 @@ class WebViewChromium
     public void evaluateJavaScript(
             final String script, final ValueCallback<String> resultCallback) {
         forbidBuilderConfiguration();
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_EVALUATE_JAVASCRIPT);
         checkThread();
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.EVALUATE_JAVASCRIPT")) {
@@ -926,7 +924,7 @@ class WebViewChromium
             } else {
                 ApiCallLogger.recordWebViewApiCallWithoutUserAction(ApiCall.EVALUATE_JAVASCRIPT);
             }
-            mAwContents.evaluateJavaScript(
+            mAwWebContent.evaluateJavaScript(
                     script, CallbackConverter.fromValueCallback(resultCallback));
         }
     }
