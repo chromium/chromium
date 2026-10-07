@@ -15,11 +15,11 @@ import {createSampleSearchEngine, TestSearchEnginesBrowserProxy} from './test_se
 
 function generateActiveSiteShortcuts(): SearchEngine[] {
   const searchEngines0 = createSampleSearchEngine(
-      {canBeDefault: true, isPrepopulated: true, id: 0});
+      {canBeDefault: true, isPrepopulated: true, id: 'db:0'});
   const searchEngines1 = createSampleSearchEngine(
-      {canBeDefault: true, isPrepopulated: true, id: 1});
+      {canBeDefault: true, isPrepopulated: true, id: 'db:1'});
   const searchEngines2 = createSampleSearchEngine(
-      {canBeDefault: true, isPrepopulated: false, default: true, id: 2});
+      {canBeDefault: true, isPrepopulated: false, default: true, id: 'db:2'});
 
   return [searchEngines0, searchEngines1, searchEngines2];
 }
@@ -49,7 +49,7 @@ suite('SearchEngineListDialog', function() {
     // The engine marked as default is selected.
     const radioGroupElement = dialog.shadowRoot.querySelector('cr-radio-group');
     assertTrue(!!radioGroupElement);
-    assertEquals('2', radioGroupElement.selected);
+    assertEquals('db:2', radioGroupElement.selected);
   });
 
   test('Search engine list dialog sets default engine', async function() {
@@ -58,7 +58,7 @@ suite('SearchEngineListDialog', function() {
     // Initially, the engine marked as default is selected.
     const radioGroupElement = dialog.shadowRoot.querySelector('cr-radio-group');
     assertTrue(!!radioGroupElement);
-    assertEquals('2', radioGroupElement.selected);
+    assertEquals('db:2', radioGroupElement.selected);
 
     // Simulate a user initiated change of the default search engine.
     const radioButtons = dialog.shadowRoot.querySelectorAll('cr-radio-button');
@@ -75,16 +75,16 @@ suite('SearchEngineListDialog', function() {
     // The other search engine in the list is now selected as default.
     const [id, choiceMadeLocation] =
         await browserProxy.whenCalled('setDefaultSearchEngine');
-    assertEquals(1, id);
+    assertEquals('db:1', id);
     assertEquals(choiceMadeLocation, ChoiceMadeLocation.SEARCH_SETTINGS);
-    assertEquals('1', radioGroupElement.selected);
+    assertEquals('db:1', radioGroupElement.selected);
   });
 
   test('Search engine list dialog reacts to changes', async function() {
     // Initially, the engine marked as default is selected.
     const radioGroupElement = dialog.shadowRoot.querySelector('cr-radio-group');
     assertTrue(!!radioGroupElement);
-    assertEquals('2', radioGroupElement.selected);
+    assertEquals('db:2', radioGroupElement.selected);
 
     // Simulate setting a different default engine in a different tab.
     const activeSiteShortcuts = generateActiveSiteShortcuts();
@@ -97,7 +97,7 @@ suite('SearchEngineListDialog', function() {
     await microtasksFinished();
 
     // The change in the other tab is reflected in the dialog.
-    assertEquals('0', radioGroupElement.selected);
+    assertEquals('db:0', radioGroupElement.selected);
   });
 
   test(

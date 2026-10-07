@@ -68,7 +68,7 @@ export class SettingsSearchEngineEntryElement extends
     default: false,
     displayName: '',
     iconPath: '',
-    id: -1,
+    id: '',
     isManaged: false,
     isRecommendedFromPolicy: false,
     isOmniboxExtension: false,

@@ -55,7 +55,7 @@ export class SettingsOmniboxExtensionEntryElement extends CrLitElement {
     default: false,
     displayName: '',
     iconPath: '',
-    id: -1,
+    id: '',
     isManaged: false,
     isRecommendedFromPolicy: false,
     isOmniboxExtension: false,

@@ -30,9 +30,11 @@ function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
 
 function generateSearchEngineInfo(): SearchEnginesInfo {
   const searchEngines0 =
-      createSampleSearchEngine({canBeDefault: true, default: true, id: 0});
-  const searchEngines1 = createSampleSearchEngine({canBeDefault: true, id: 1});
-  const searchEngines2 = createSampleSearchEngine({canBeDefault: true, id: 2});
+      createSampleSearchEngine({canBeDefault: true, default: true, id: 'db:0'});
+  const searchEngines1 =
+      createSampleSearchEngine({canBeDefault: true, id: 'db:1'});
+  const searchEngines2 =
+      createSampleSearchEngine({canBeDefault: true, id: 'db:2'});
 
   return {
     defaults: [searchEngines0, searchEngines1, searchEngines2],
@@ -44,10 +46,11 @@ function generateSearchEngineInfo(): SearchEnginesInfo {
 
 function generateCategorizedTemplateUrls(): CategorizedTemplateUrls {
   const searchEngines0 = createSampleSearchEngine(
-      {canBeDefault: true, isPrepopulated: true, default: true, id: 0});
+      {canBeDefault: true, isPrepopulated: true, default: true, id: 'db:0'});
   const searchEngines1 = createSampleSearchEngine(
-      {canBeDefault: true, id: 1, isPrepopulated: true});
-  const searchEngines2 = createSampleSearchEngine({canBeDefault: true, id: 2});
+      {canBeDefault: true, id: 'db:1', isPrepopulated: true});
+  const searchEngines2 =
+      createSampleSearchEngine({canBeDefault: true, id: 'db:2'});
 
   return {
     activeSiteShortcuts: [searchEngines0, searchEngines1, searchEngines2],

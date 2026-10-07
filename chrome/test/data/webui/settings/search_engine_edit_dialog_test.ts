@@ -82,7 +82,9 @@ suite('SearchEngineEditDialog', function() {
   // Tests that the dialog calls 'searchEngineEditStarted' and
   // 'searchEngineEditCancelled' when closed from the 'cancel' button.
   test('DialogOpenAndCancel', async function() {
-    await browserProxy.whenCalled('searchEngineEditStarted');
+    // No model is set, so an empty ID is passed to signal a new engine.
+    const id = await browserProxy.whenCalled('searchEngineEditStarted');
+    assertEquals('', id);
     dialog.$.cancel.click();
     await browserProxy.whenCalled('searchEngineEditCancelled');
   });
@@ -138,10 +140,11 @@ suite('SearchEngineEditDialog', function() {
   });
 
   test('DialogCloseWhenEnginesChangedModelEngineNotFound', function() {
-    dialog.model = createSampleSearchEngine({id: 0, name: 'G'});
+    dialog.model = createSampleSearchEngine({id: 'db:0', name: 'G'});
     webUIListenerCallback('search-engines-changed', {
       activeSiteShortcuts: [],
-      inactiveSiteShortcuts: [createSampleSearchEngine({id: 1, name: 'H'})],
+      inactiveSiteShortcuts:
+          [createSampleSearchEngine({id: 'db:1', name: 'H'})],
       activeFeatureShortcuts: [],
       inactiveFeatureShortcuts: [],
     });
@@ -163,7 +166,7 @@ suite('SearchEngineEditDialog', function() {
 
   test('EditSearchEngineDialog_IsManaged', function() {
     const engine = createSampleSearchEngine({
-      id: 1,
+      id: 'db:1',
       name: 'search_engine_active_E',
       displayName: 'E displayName',
       keyword: 'active E',
@@ -180,7 +183,7 @@ suite('SearchEngineEditDialog', function() {
 
   test('EditSearchEngineDialog_IsManaged_Readonly', function() {
     const engine = createSampleSearchEngine({
-      id: 2,
+      id: 'db:2',
       name: 'search_engine_active_F',
       displayName: 'F displayName',
       keyword: 'active F',
@@ -197,7 +200,7 @@ suite('SearchEngineEditDialog', function() {
 
   test('EditSearchEngineDialog_Prepopulated_IsManaged', function() {
     const engine = createSampleSearchEngine({
-      id: 3,
+      id: 'db:3',
       name: 'search_engine_default_B',
       displayName: 'B displayName',
       keyword: 'default B',
@@ -215,7 +218,7 @@ suite('SearchEngineEditDialog', function() {
 
   test('EditSearchEngineDialog_Prepopulated_IsManaged_Readonly', function() {
     const engine = createSampleSearchEngine({
-      id: 4,
+      id: 'db:4',
       name: 'search_engine_default_D',
       displayName: 'D displayName',
       keyword: 'default D',
@@ -233,7 +236,7 @@ suite('SearchEngineEditDialog', function() {
 
   test('EditSearchEngineDialog_UrlLocked', function() {
     const engine = createSampleSearchEngine({
-      id: 5,
+      id: 'db:5',
       name: 'search_engine_default_B',
       displayName: 'B displayName',
       keyword: 'default B',
@@ -275,11 +278,11 @@ suite('SearchEngineEditDialogInSearchEnginesPage', function() {
   });
 
   test('DialogCloseWhenEnginesChangedModelEngineNotFound', function() {
-    dialog.model = createSampleSearchEngine({id: 0, name: 'G'});
+    dialog.model = createSampleSearchEngine({id: 'db:0', name: 'G'});
     webUIListenerCallback('search-engines-changed', {
       defaults: [],
       actives: [],
-      others: [createSampleSearchEngine({id: 1, name: 'H'})],
+      others: [createSampleSearchEngine({id: 'db:1', name: 'H'})],
       extensions: [],
     });
     return browserProxy.whenCalled('searchEngineEditCancelled');

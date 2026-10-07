@@ -26,7 +26,7 @@ function generateCategorizedTemplateUrls(): CategorizedTemplateUrls {
     activeFeatureShortcuts: [
       createSampleSearchEngine({
         name: 'Feature 1',
-        id: 30,
+        id: 'db:30',
         url: 'chrome://feature1',
         keyword: 'f1',
       }),
@@ -34,7 +34,7 @@ function generateCategorizedTemplateUrls(): CategorizedTemplateUrls {
     inactiveFeatureShortcuts: [
       createSampleSearchEngine({
         name: 'Inactive Feature 1',
-        id: 40,
+        id: 'db:40',
         url: 'chrome://infeature1',
         keyword: 'if1',
       }),

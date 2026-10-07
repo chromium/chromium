@@ -44,21 +44,21 @@ export class TestSearchEnginesBrowserProxy extends TestBrowserProxy implements
   }
 
   setDefaultSearchEngine(
-      id: number, choiceMadeLocation: ChoiceMadeLocation,
+      id: string, choiceMadeLocation: ChoiceMadeLocation,
       saveGuestChoice?: boolean|null) {
     this.methodCalled(
         'setDefaultSearchEngine', id, choiceMadeLocation, saveGuestChoice);
   }
 
-  setIsActiveSearchEngine(id: number, isActive: boolean) {
+  setIsActiveSearchEngine(id: string, isActive: boolean) {
     this.methodCalled('setIsActiveSearchEngine', [id, isActive]);
   }
 
-  removeSearchEngine(id: number) {
+  removeSearchEngine(id: string) {
     this.methodCalled('removeSearchEngine', id);
   }
 
-  searchEngineEditStarted(id: number) {
+  searchEngineEditStarted(id: string) {
     this.methodCalled('searchEngineEditStarted', id);
   }
 
@@ -134,7 +134,7 @@ export function createSampleSearchEngine(override?: Partial<SearchEngine>):
         //                    are unified.
         iconURL: 'http://www.google.com/favicon.ico',
         iconPath: 'images/foo.png',
-        id: 0,
+        id: 'db:0',
         isManaged: false,
         isRecommendedFromPolicy: false,
         isOmniboxExtension: false,
@@ -167,7 +167,7 @@ export function createSampleOmniboxExtension(override?: Partial<SearchEngine>):
           name: 'Omnibox extension',
           canBeDisabled: true,
         },
-        id: 0,
+        id: 'db:0',
         isManaged: false,
         isRecommendedFromPolicy: false,
         isOmniboxExtension: true,

@@ -347,7 +347,7 @@ suite('EnterpriseSiteSearchEntryTests', function() {
    */
   const createSampleManagedSearchEngine = (): SearchEngine => {
     return createSampleSearchEngine({
-      id: 1,
+      id: 'db:1',
       name: 'managed',
       canBeEdited: false,
       displayName: 'Managed',
@@ -361,7 +361,7 @@ suite('EnterpriseSiteSearchEntryTests', function() {
   const createSampleOverridableSearchEngine =
       (isFeatured: boolean): SearchEngine => {
         return createSampleSearchEngine({
-          id: 1,
+          id: 'db:1',
           name: 'recommended',
           canBeEdited: !isFeatured,
           canBeRemoved: !isFeatured,

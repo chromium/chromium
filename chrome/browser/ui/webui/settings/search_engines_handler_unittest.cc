@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -140,10 +141,14 @@ class SearchEnginesHandlerTest : public testing::Test {
 
   TestingProfileManager& profile_manager() { return profile_manager_; }
 
-  int bing_id() {
-    // TODO(crbug.com/568731926): Casts int64 -> int. Find a way to avoid it.
-    return static_cast<int>(bing_engine_->id().value());
+  TemplateURL* bing_engine() { return bing_engine_; }
+
+  std::string bing_id() {
+    return base::StrCat(
+        {"db:", base::NumberToString(bing_engine_->id().value())});
   }
+
+  bool has_edit_controller() const { return !!handler_->edit_controller_; }
 
  private:
   base::HistogramTester histogram_tester_;
@@ -543,6 +548,116 @@ TEST_F(SearchEnginesHandlerTest, IsRecommendedFromPolicy) {
     }
   }
   EXPECT_TRUE(found_rec);
+}
+
+TEST_F(SearchEnginesHandlerTest, EngineIdsAreSerializedAsPrefixedStrings) {
+  ConfigureTestWithRegularProfile();
+
+  base::ListValue args;
+  args.Append("callback_id");
+  web_ui()->HandleReceivedMessage("getCategorizedTemplateUrls", args);
+
+  const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
+  ASSERT_TRUE(call_data.arg3()->is_dict());
+  const base::DictValue& response = call_data.arg3()->GetDict();
+
+  bool found_bing = false;
+  for (const char* list_name :
+       {"activeSiteShortcuts", "inactiveSiteShortcuts",
+        "activeFeatureShortcuts", "inactiveFeatureShortcuts"}) {
+    const base::ListValue* engines = response.FindList(list_name);
+    ASSERT_TRUE(engines);
+    for (const auto& entry : *engines) {
+      const base::DictValue& dict = entry.GetDict();
+      const std::string* id = dict.FindString("id");
+      ASSERT_TRUE(id);
+      EXPECT_TRUE(id->starts_with("db:")) << *id;
+      if (*dict.FindString("name") == "bing") {
+        found_bing = true;
+        EXPECT_EQ(bing_id(), *id);
+      }
+    }
+  }
+  EXPECT_TRUE(found_bing);
+}
+
+TEST_F(SearchEnginesHandlerTest, SetDefaultSearchEngine) {
+  ConfigureTestWithRegularProfile();
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile());
+  ASSERT_NE(bing_engine(), template_url_service->GetDefaultSearchProvider());
+
+  base::ListValue args;
+  args.Append(bing_id());
+  args.Append(
+      static_cast<int>(search_engines::ChoiceMadeLocation::kSearchSettings));
+  args.Append(base::Value());  // saveGuestChoice
+  web_ui()->HandleReceivedMessage("setDefaultSearchEngine", args);
+  EXPECT_EQ(bing_engine(), template_url_service->GetDefaultSearchProvider());
+}
+
+TEST_F(SearchEnginesHandlerTest, RemoveSearchEngine) {
+  ConfigureTestWithRegularProfile();
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile());
+  TemplateURL* template_url = AddSearchEngine(template_url_service, "bar.com",
+                                              u"bar_com", /*prepopulated_id=*/0,
+                                              /*url=*/std::nullopt);
+
+  base::ListValue args;
+  args.Append(
+      base::StrCat({"db:", base::NumberToString(template_url->id().value())}));
+  web_ui()->HandleReceivedMessage("removeSearchEngine", args);
+  EXPECT_FALSE(template_url_service->GetTemplateURLForKeyword(u"bar_com"));
+}
+
+TEST_F(SearchEnginesHandlerTest, SetIsActiveSearchEngine) {
+  ConfigureTestWithRegularProfile();
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile());
+  TemplateURL* template_url = AddSearchEngine(template_url_service, "bar.com",
+                                              u"bar_com", /*prepopulated_id=*/0,
+                                              /*url=*/std::nullopt);
+  ASSERT_NE(TemplateURLData::ActiveStatus::kFalse, template_url->is_active());
+
+  base::ListValue args;
+  args.Append(
+      base::StrCat({"db:", base::NumberToString(template_url->id().value())}));
+  args.Append(false);
+  web_ui()->HandleReceivedMessage("setIsActiveSearchEngine", args);
+  EXPECT_EQ(
+      TemplateURLData::ActiveStatus::kFalse,
+      template_url_service->GetTemplateURLForKeyword(u"bar_com")->is_active());
+}
+
+TEST_F(SearchEnginesHandlerTest, SearchEngineEditStartedWithEmptyId) {
+  ConfigureTestWithRegularProfile();
+
+  base::ListValue args;
+  args.Append("");
+  web_ui()->HandleReceivedMessage("searchEngineEditStarted", args);
+  EXPECT_TRUE(has_edit_controller());
+}
+
+TEST_F(SearchEnginesHandlerTest, SearchEngineEditStartedWithExistingEngine) {
+  ConfigureTestWithRegularProfile();
+
+  base::ListValue args;
+  args.Append(bing_id());
+  web_ui()->HandleReceivedMessage("searchEngineEditStarted", args);
+  EXPECT_TRUE(has_edit_controller());
+}
+
+// Well-formed IDs may still be stale, e.g. if the engine was removed from
+// another tab. This is not a bug and should be handled gracefully.
+TEST_F(SearchEnginesHandlerTest, SearchEngineEditStartedWithUnknownEngine) {
+  ConfigureTestWithRegularProfile();
+
+  base::ListValue args;
+  args.Append(base::StrCat(
+      {"db:", base::NumberToString(bing_engine()->id().value() + 1000)}));
+  web_ui()->HandleReceivedMessage("searchEngineEditStarted", args);
+  EXPECT_FALSE(has_edit_controller());
 }
 
 }  // namespace settings

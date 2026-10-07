@@ -28,9 +28,11 @@ function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
 
 function generateSearchEngineInfo(): SearchEnginesInfo {
   const searchEngines0 =
-      createSampleSearchEngine({canBeDefault: true, default: true, id: 0});
-  const searchEngines1 = createSampleSearchEngine({canBeDefault: true, id: 1});
-  const searchEngines2 = createSampleSearchEngine({canBeDefault: true, id: 2});
+      createSampleSearchEngine({canBeDefault: true, default: true, id: 'db:0'});
+  const searchEngines1 =
+      createSampleSearchEngine({canBeDefault: true, id: 'db:1'});
+  const searchEngines2 =
+      createSampleSearchEngine({canBeDefault: true, id: 'db:2'});
 
   return {
     defaults: [searchEngines0, searchEngines1, searchEngines2],
@@ -42,17 +44,17 @@ function generateSearchEngineInfo(): SearchEnginesInfo {
 
 const sampleEngines = {
   defaultPrepopulated: createSampleSearchEngine(
-      {canBeDefault: true, isPrepopulated: true, default: true, id: 0}),
+      {canBeDefault: true, isPrepopulated: true, default: true, id: 'db:0'}),
   prepopulated: createSampleSearchEngine(
-      {canBeDefault: true, id: 1, isPrepopulated: true}),
+      {canBeDefault: true, id: 'db:1', isPrepopulated: true}),
   // A standard user-added custom site search shortcut (e.g., github.com or
   // wikipedia.org keyword). This is excluded from the default search engine
   // choice dialog so custom keywords do not clutter the default engine options.
-  custom: createSampleSearchEngine({canBeDefault: true, id: 2}),
-  managed:
-      createSampleSearchEngine({canBeDefault: true, id: 3, isManaged: true}),
+  custom: createSampleSearchEngine({canBeDefault: true, id: 'db:2'}),
+  managed: createSampleSearchEngine(
+      {canBeDefault: true, id: 'db:3', isManaged: true}),
   recommended: createSampleSearchEngine(
-      {canBeDefault: true, id: 4, isRecommendedFromPolicy: true}),
+      {canBeDefault: true, id: 'db:4', isRecommendedFromPolicy: true}),
 };
 
 function generateCategorizedTemplateUrls(): CategorizedTemplateUrls {
@@ -122,7 +124,7 @@ suite('SearchPageTests', function() {
 
     const radioGroupElement =
         searchEngineListDialog.shadowRoot.querySelector('cr-radio-group')!;
-    assertEquals('0', radioGroupElement.selected);
+    assertEquals('db:0', radioGroupElement.selected);
 
     const saveGuestChoiceCheckbox =
         searchEngineListDialog.shadowRoot.querySelector(
@@ -143,7 +145,7 @@ suite('SearchPageTests', function() {
         await browserProxy.whenCalled('setDefaultSearchEngine');
     assertEquals(saveGuestChoice, null);
 
-    assertEquals('1', radioGroupElement.selected);
+    assertEquals('db:1', radioGroupElement.selected);
 
     // Simulate a change that happened in a different tab.
     const searchEnginesInfo = generateSearchEngineInfo();
@@ -154,7 +156,7 @@ suite('SearchPageTests', function() {
     browserProxy.resetResolver('setDefaultSearchEngine');
     webUIListenerCallback('search-engines-changed', searchEnginesInfo);
     await microtasksFinished();
-    assertEquals('2', radioGroupElement.selected);
+    assertEquals('db:2', radioGroupElement.selected);
 
     browserProxy.whenCalled('setDefaultSearchEngine').then(function() {
       // Since the change happened in a different tab, there should be

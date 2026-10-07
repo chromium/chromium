@@ -21,28 +21,28 @@ function generateCategorizedTemplateUrls(): CategorizedTemplateUrls {
     activeSiteShortcuts: [
       createSampleSearchEngine({
         name: 'Prepopulated Site 1',
-        id: 10,
+        id: 'db:10',
         url: 'https://site1.com/{searchTerms}',
         keyword: 's1',
         isPrepopulated: true,
       }),
       createSampleSearchEngine({
         name: 'Prepopulated Site 2',
-        id: 11,
+        id: 'db:11',
         url: 'https://site1.com/{searchTerms}',
         keyword: 's1',
         isPrepopulated: true,
       }),
       createSampleSearchEngine({
         name: 'Active Site 1',
-        id: 12,
+        id: 'db:12',
         url: 'https://site1.com/{searchTerms}',
         keyword: 's1',
         default: true,
       }),
       createSampleSearchEngine({
         name: 'Active Site 2',
-        id: 13,
+        id: 'db:13',
         url: 'https://site2.com/{searchTerms}',
         keyword: 's2',
       }),
@@ -50,7 +50,7 @@ function generateCategorizedTemplateUrls(): CategorizedTemplateUrls {
     inactiveSiteShortcuts: [
       createSampleSearchEngine({
         name: 'Inactive Site 1',
-        id: 20,
+        id: 'db:20',
         url: 'https://in1.com/{searchTerms}',
         keyword: 'in1',
       }),
@@ -190,7 +190,7 @@ suite('SiteShortcutsPageTest', function() {
   });
 
   test('EditSearchEngineEventOpensEditDialog', async function() {
-    const testEngine = createSampleSearchEngine({id: 10, name: 'Edit Me'});
+    const testEngine = createSampleSearchEngine({id: 'db:10', name: 'Edit Me'});
     page.fire('view-or-edit-search-engine', {
       engine: testEngine,
       anchorElement: page.$.activeShortcutsRow,
@@ -202,7 +202,8 @@ suite('SiteShortcutsPageTest', function() {
   });
 
   test('DeleteSearchEngineEventOpensConfirmationDialog', async function() {
-    const testEngine = createSampleSearchEngine({id: 20, name: 'Delete Me'});
+    const testEngine =
+        createSampleSearchEngine({id: 'db:20', name: 'Delete Me'});
     page.fire('delete-search-engine', {
       engine: testEngine,
       anchorElement: page.$.activeShortcutsRow,
@@ -214,7 +215,8 @@ suite('SiteShortcutsPageTest', function() {
   });
 
   test('ConfirmDeleteCallsBrowserProxy', async function() {
-    const testEngine = createSampleSearchEngine({id: 20, name: 'Delete Me'});
+    const testEngine =
+        createSampleSearchEngine({id: 'db:20', name: 'Delete Me'});
     page.fire('delete-search-engine', {
       engine: testEngine,
       anchorElement: page,
@@ -229,11 +231,12 @@ suite('SiteShortcutsPageTest', function() {
     await microtasksFinished();
 
     const args = await browserProxy.whenCalled('removeSearchEngine');
-    assertEquals(20, args);
+    assertEquals('db:20', args);
   });
 
   test('CancelDeleteDoesNotCallBrowserProxy', async function() {
-    const testEngine = createSampleSearchEngine({id: 20, name: 'Delete Me'});
+    const testEngine =
+        createSampleSearchEngine({id: 'db:20', name: 'Delete Me'});
     page.fire('delete-search-engine', {
       engine: testEngine,
       anchorElement: page,
