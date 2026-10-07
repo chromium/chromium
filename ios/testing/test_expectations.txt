@@ -223,3 +223,6 @@ crbug.com/568721511 [ iPad Simulator ] SaveProfileEGTest/testUserData_LocalUpdat
 
 # Gardening suppression 2026-10-05
 crbug.com/570028794 [ Device ] WebDragDropTestCase [ Pass Failure ]
+
+# Gardening suppression 2026-10-06
+crbug.com/570563895 [ Simulator ] SigninCoordinatorTestCase/testSignInDisabledAtStartupWithManagedAccount [ Skip ]
