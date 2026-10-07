@@ -21,6 +21,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_split.h"
@@ -291,6 +292,12 @@ bool VaryMatches(const blink::FetchAPIRequestHeadersMap& request,
 // Checks a batch operation list for duplicate entries. Returns any duplicate
 // URL strings that were found. If the return value is empty, then there were no
 // duplicates.
+//
+// The URLs are reported in normalized (fragment-stripped) form, since that is
+// what the duplicates collided on.  It is also deterministic: std::sort()
+// below is not stable, so among operations sharing a URL the relative order
+// is unspecified, and reporting the raw URL of one member of a duplicate pair
+// could name either fragment.
 std::vector<std::string> FindDuplicateOperations(
     const std::vector<blink::mojom::BatchOperationPtr>& operations) {
   using blink::mojom::BatchOperation;
@@ -301,22 +308,32 @@ std::vector<std::string> FindDuplicateOperations(
     return duplicate_url_list;
   }
 
+  // An operation paired with the URL used to compare it against the others.
+  struct SortedOperation {
+    raw_ptr<const BatchOperation> op;
+    std::string normalized_url;
+  };
+
   // Create a temporary sorted vector of the operations to support quickly
   // finding potentially duplicate entries.  Multiple entries may have the
   // same URL, but differ by VARY header, so a sorted list is easier to
   // work with than a map.
   //
+  // Per the spec the URL comparison ignores fragments, so the URL is
+  // normalized once here instead of at each comparison below.
+  //
   // Note, this will use 512 bytes of stack space on 64-bit devices.  The
   // static size attempts to accommodate most typical Cache.addAll() uses in
-  // service worker install events while not blowing up the stack too much.
-  absl::InlinedVector<BatchOperation*, 64> sorted;
+  // service worker install events while not blowing up the stack too much;
+  // larger precache manifests spill to the heap.
+  absl::InlinedVector<SortedOperation, 16> sorted;
   sorted.reserve(operations.size());
   for (const auto& op : operations) {
-    sorted.push_back(op.get());
+    sorted.push_back({op.get(), NormalizeCacheUrl(op->request->url).spec()});
   }
   std::sort(sorted.begin(), sorted.end(),
-            [](BatchOperation* left, BatchOperation* right) {
-              return left->request->url < right->request->url;
+            [](const SortedOperation& left, const SortedOperation& right) {
+              return left.normalized_url < right.normalized_url;
             });
 
   // Check each entry in the sorted vector for any duplicates.  Since the
@@ -325,7 +342,7 @@ std::vector<std::string> FindDuplicateOperations(
   // If the entire list has entries with the same URL and different VARY
   // headers then this devolves into O(n^2).
   for (size_t i = 0; i < sorted.size(); ++i) {
-    const BatchOperation* outer_op = sorted[i];
+    const BatchOperation* outer_op = sorted[i].op;
 
     // Note, the spec checks CacheQueryOptions like ignoreSearch, etc, but
     // currently there is no way for script to trigger a batch operation with
@@ -338,15 +355,15 @@ std::vector<std::string> FindDuplicateOperations(
     // If this entry already matches a duplicate we found, then just skip
     // ahead to find any remaining duplicates.
     if (!duplicate_url_list.empty() &&
-        outer_op->request->url.spec() == duplicate_url_list.back()) {
+        sorted[i].normalized_url == duplicate_url_list.back()) {
       continue;
     }
 
     for (size_t j = i + 1; j < sorted.size(); ++j) {
-      const BatchOperation* inner_op = sorted[j];
+      const BatchOperation* inner_op = sorted[j].op;
       // Since the list is sorted we can stop looking at neighbors after
       // the first different URL.
-      if (outer_op->request->url != inner_op->request->url) {
+      if (sorted[i].normalized_url != sorted[j].normalized_url) {
         break;
       }
 
@@ -360,7 +377,7 @@ std::vector<std::string> FindDuplicateOperations(
           VaryMatches(outer_op->request->headers, inner_op->request->headers,
                       outer_op->response->response_type,
                       outer_op->response->headers)) {
-        duplicate_url_list.push_back(inner_op->request->url.spec());
+        duplicate_url_list.push_back(sorted[j].normalized_url);
         break;
       }
     }

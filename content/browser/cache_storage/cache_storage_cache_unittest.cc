@@ -70,6 +70,7 @@
 #include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/common/quota/padding_key.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "url/origin.h"
@@ -616,6 +617,15 @@ blink::mojom::FetchAPIResponsePtr SetCacheName(
   return response;
 }
 
+blink::mojom::BatchOperationPtr CreatePutOperation(
+    const blink::mojom::FetchAPIRequestPtr& request,
+    blink::mojom::FetchAPIResponsePtr response) {
+  return blink::mojom::BatchOperation::New(
+      blink::mojom::OperationType::kPut,
+      BackgroundFetchSettledFetch::CloneRequest(request), std::move(response),
+      /*match_options=*/nullptr);
+}
+
 void OnBadMessage(std::string* result) {
   *result = "CSDH_UNEXPECTED_OPERATION";
 }
@@ -950,18 +960,31 @@ class CacheStorageCacheTest : public testing::Test {
   bool Put(const blink::mojom::FetchAPIRequestPtr& request,
            blink::mojom::FetchAPIResponsePtr response) {
     base::HistogramTester histogram_tester;
-    blink::mojom::BatchOperationPtr operation =
-        blink::mojom::BatchOperation::New();
-    operation->operation_type = blink::mojom::OperationType::kPut;
-    operation->request = BackgroundFetchSettledFetch::CloneRequest(request);
-    operation->response = std::move(response);
-
     std::vector<blink::mojom::BatchOperationPtr> operations;
-    operations.emplace_back(std::move(operation));
+    operations.emplace_back(CreatePutOperation(request, std::move(response)));
     CacheStorageError error = BatchOperation(std::move(operations));
     if (callback_error_ == CacheStorageError::kSuccess)
       CheckOpHistograms(histogram_tester, "Put");
     return error == CacheStorageError::kSuccess;
+  }
+
+  // Puts `first` and then `second` in one batch, and expects the batch to be
+  // rejected as a duplicate of BodyUrl() with nothing stored.  The message
+  // must name the normalized URL, without any fragment.
+  void ExpectDuplicatePutsRejected(
+      const blink::mojom::FetchAPIRequestPtr& first,
+      const blink::mojom::FetchAPIRequestPtr& second) {
+    std::vector<blink::mojom::BatchOperationPtr> operations;
+    operations.push_back(CreatePutOperation(first, CreateNoBodyResponse()));
+    operations.push_back(CreatePutOperation(second, CreateBlobBodyResponse()));
+    EXPECT_EQ(CacheStorageError::kErrorDuplicateOperation,
+              BatchOperation(std::move(operations)));
+    EXPECT_EQ(callback_message_.value_or(""),
+              base::StrCat({"duplicate requests (", BodyUrl().spec(), ")"}));
+
+    // Neither operation should have completed.
+    EXPECT_TRUE(Keys());
+    EXPECT_TRUE(callback_strings_.empty());
   }
 
   bool Match(const blink::mojom::FetchAPIRequestPtr& request,
@@ -1637,6 +1660,92 @@ TEST_P(CacheStorageCacheTestP, PutReplaceInBatchFails) {
 
   // Neither operation should have completed.
   EXPECT_FALSE(Match(body_request_));
+}
+
+TEST_P(CacheStorageCacheTestP, PutDifferentFragmentsInBatchFails) {
+  // The spec compares URLs with the exclude fragment flag set, so these two
+  // entries are duplicates even though the URLs the caller passed differ.  The
+  // message reports the normalized URL, which names neither fragment.
+  ExpectDuplicatePutsRejected(body_request_with_fragment_,
+                              body_request_with_different_fragment_);
+}
+
+TEST_P(CacheStorageCacheTestP, PutFragmentAndNoFragmentInBatchFails) {
+  // A URL without a fragment collides with the same URL with one.
+  ExpectDuplicatePutsRejected(body_request_, body_request_with_fragment_);
+}
+
+TEST_P(CacheStorageCacheTestP, PutSameFragmentInBatchFails) {
+  // Two puts of the same URL, fragment included, are duplicates as well.
+  ExpectDuplicatePutsRejected(body_request_with_fragment_,
+                              body_request_with_fragment_);
+}
+
+TEST_P(CacheStorageCacheTestP, PutDifferentUrlsWithFragmentsInBatchSucceeds) {
+  // Entries at different URLs are not duplicates just because they carry
+  // fragments, and the fragments must survive the round trip through storage.
+  const char* kUrls[] = {"http://example.com/1#a", "http://example.com/2#b",
+                         "http://example.com/3#c"};
+
+  std::vector<blink::mojom::BatchOperationPtr> operations;
+  for (const char* url : kUrls) {
+    blink::mojom::BatchOperationPtr operation =
+        CreatePutOperation(body_request_, CreateBlobBodyResponse());
+    operation->request->url = GURL(url);
+    operation->response->url_list = {GURL(url)};
+    operations.push_back(std::move(operation));
+  }
+
+  EXPECT_EQ(CacheStorageError::kSuccess, BatchOperation(std::move(operations)));
+  EXPECT_FALSE(callback_message_);
+
+  EXPECT_TRUE(Keys());
+  EXPECT_THAT(callback_strings_, testing::UnorderedElementsAreArray(kUrls));
+}
+
+TEST_P(CacheStorageCacheTestP, PutDifferentVaryInBatchSucceeds) {
+  // Entries that share a URL but differ by a header named in the response's
+  // VARY header are not duplicates.
+  blink::mojom::BatchOperationPtr operation1 =
+      CreatePutOperation(body_request_, CreateNoBodyResponse());
+  operation1->request->headers["vary_foo"] = "foo";
+  operation1->response->headers["vary"] = "vary_foo";
+
+  blink::mojom::BatchOperationPtr operation2 =
+      CreatePutOperation(body_request_, CreateBlobBodyResponse());
+  operation2->request->headers["vary_foo"] = "bar";
+  operation2->response->headers["vary"] = "vary_foo";
+
+  std::vector<blink::mojom::BatchOperationPtr> operations;
+  operations.push_back(std::move(operation1));
+  operations.push_back(std::move(operation2));
+
+  EXPECT_EQ(CacheStorageError::kSuccess, BatchOperation(std::move(operations)));
+  EXPECT_FALSE(callback_message_);
+
+  // Per the spec both entries should be stored, since Query Cache would not
+  // match one against the other.  Today only the last one written is:
+  // cache_storage keys disk entries on the URL alone and cannot hold multiple
+  // VARY variants of a single URL, so the second put replaces the first.  The
+  // duplicate check exercised above is correct; the storage layer is what
+  // drops the entry.
+  // TODO(crbug.com/41340002): Expect both variants once multiple VARY
+  // variants per URL are supported.
+  blink::mojom::CacheQueryOptionsPtr match_options =
+      blink::mojom::CacheQueryOptions::New();
+  match_options->ignore_vary = true;
+  EXPECT_TRUE(Keys(body_request_, std::move(match_options)));
+  EXPECT_EQ(1u, callback_strings_.size());
+
+  blink::mojom::FetchAPIRequestPtr foo_request =
+      BackgroundFetchSettledFetch::CloneRequest(body_request_);
+  foo_request->headers["vary_foo"] = "foo";
+  EXPECT_FALSE(Match(foo_request));
+
+  blink::mojom::FetchAPIRequestPtr bar_request =
+      BackgroundFetchSettledFetch::CloneRequest(body_request_);
+  bar_request->headers["vary_foo"] = "bar";
+  EXPECT_TRUE(Match(bar_request));
 }
 
 TEST_P(CacheStorageCacheTestP, MatchNoBody) {
