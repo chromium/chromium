@@ -1943,6 +1943,7 @@ if (!is_chromeos_device) {
       "web_dialog_view_interactive_uitest.cc",
       "webview_interactive_uitest.cc",
     ]
+    deps = []
 
     if (!is_linux) {
       # TODO(port): This times out on desktop Linux.
@@ -1958,6 +1959,7 @@ if (!is_chromeos_device) {
         "drag_and_drop_interactive_uitest.cc",
         "tooltip/tooltip_interactive_uitest.cc",
       ]
+      deps += [ "//chrome/test/base:drag_and_drop_test_utils" ]
     }
 
     if (is_win) {
@@ -1967,7 +1969,7 @@ if (!is_chromeos_device) {
       ]
     }
 
-    deps = [
+    deps += [
       ":content_setting_bubble_contents",
       ":external_protocol_dialog",
       ":external_protocol_dialog_test_support",

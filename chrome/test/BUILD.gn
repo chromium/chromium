@@ -509,10 +509,6 @@ static_library("test_support") {
     ]
   }
 
-  if (use_aura || is_android) {
-    public_deps += [ "//chrome/test/base:drag_and_drop_test_utils" ]
-  }
-
   if (is_win) {
     sources += [ "//chrome/app/chrome_crash_reporter_client_win.cc" ]
     public_deps += [
