@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/i18n/chinese_helpers.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/legacy_language_tag_helpers.h"
@@ -21,6 +22,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/version.h"
 #include "build/build_config.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/crx_file/id_util.h"
@@ -44,6 +46,45 @@ constexpr auto kChineseLocaleMap =
          {"zh-hans-cn", "cmn-Hans-CN"},
          {"zh-hant-tw", "cmn-Hant-TW"},
          {"zh-tw", "cmn-Hant-TW"}});
+
+// Returns the subdirectory of `parent_dir` whose name is the highest version
+// number, or an empty path if there isn't one. Directories that aren't named
+// after a version are ignored. Directories that actually contain
+// `expected_subpath` win over ones that don't, so that a partially installed or
+// partially cleaned up component doesn't shadow a working one.
+base::FilePath GetLatestVersionDirectory(
+    const base::FilePath& parent_dir,
+    const base::FilePath::CharType* expected_subpath) {
+  if (parent_dir.empty()) {
+    return base::FilePath();
+  }
+
+  base::FileEnumerator enumerator(parent_dir, /*recursive=*/false,
+                                  base::FileEnumerator::DIRECTORIES);
+  base::FilePath latest_dir;
+  base::Version latest_version;
+  base::FilePath latest_verified_dir;
+  base::Version latest_verified_version;
+  for (base::FilePath version_dir = enumerator.Next(); !version_dir.empty();
+       version_dir = enumerator.Next()) {
+    const base::Version version(version_dir.BaseName().MaybeAsASCII());
+    if (!version.IsValid()) {
+      continue;
+    }
+    if (!latest_version.IsValid() || latest_version < version) {
+      latest_version = version;
+      latest_dir = version_dir;
+    }
+    if ((!latest_verified_version.IsValid() ||
+         latest_verified_version < version) &&
+        base::PathExists(version_dir.Append(expected_subpath))) {
+      latest_verified_version = version;
+      latest_verified_dir = version_dir;
+    }
+  }
+
+  return latest_verified_dir.empty() ? latest_dir : latest_verified_dir;
+}
 
 }  // namespace
 
@@ -145,33 +186,17 @@ const base::FilePath GetSodaTestResourcesDirectory() {
 
 const base::FilePath GetLatestSodaLanguagePackDirectory(
     std::string_view language) {
-  base::FileEnumerator enumerator(
-      GetSodaLanguagePacksDirectory().AppendASCII(language), false,
-      base::FileEnumerator::DIRECTORIES);
-
-  // Use the lexographical order of the directory names to determine the latest
-  // version. This mirrors the logic in the component updater.
-  base::FilePath latest_version_dir;
-  for (base::FilePath version_dir = enumerator.Next(); !version_dir.empty();
-       version_dir = enumerator.Next()) {
-    latest_version_dir =
-        latest_version_dir < version_dir ? version_dir : latest_version_dir;
-  }
-
-  return latest_version_dir.Append(kSodaLanguagePackDirectoryRelativePath);
+  base::FilePath latest_version_dir = GetLatestVersionDirectory(
+      GetSodaLanguagePacksDirectory().AppendASCII(language),
+      kSodaLanguagePackDirectoryRelativePath);
+  return latest_version_dir.empty()
+             ? base::FilePath()
+             : latest_version_dir.Append(
+                   kSodaLanguagePackDirectoryRelativePath);
 }
 
 const base::FilePath GetLatestSodaDirectory() {
-  base::FileEnumerator enumerator(GetSodaDirectory(), false,
-                                  base::FileEnumerator::DIRECTORIES);
-  base::FilePath latest_version_dir;
-  for (base::FilePath version_dir = enumerator.Next(); !version_dir.empty();
-       version_dir = enumerator.Next()) {
-    latest_version_dir =
-        latest_version_dir < version_dir ? version_dir : latest_version_dir;
-  }
-
-  return latest_version_dir;
+  return GetLatestVersionDirectory(GetSodaDirectory(), kSodaBinaryRelativePath);
 }
 
 const base::FilePath GetSodaBinaryPath() {

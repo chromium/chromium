@@ -23,7 +23,10 @@ namespace {
 std::vector<BrokerFilePermission> GetSodaFilePermissions() {
   auto soda_dir = GetSodaDirectory();
   std::vector<BrokerFilePermission> permissions{
-      BrokerFilePermission::ReadOnly("/dev/urandom")};
+      BrokerFilePermission::ReadOnly("/dev/urandom"),
+      // Read by the memory allocator bundled with libsoda.so when it is loaded
+      // after the sandbox has been engaged. Without it the allocator aborts.
+      BrokerFilePermission::ReadOnly("/sys/devices/system/cpu/possible")};
 
   // This may happen if a user doesn't have a SODA installation.
   if (!soda_dir.empty()) {
@@ -51,7 +54,12 @@ std::vector<BrokerFilePermission> GetSodaFilePermissions() {
 
 }  // namespace
 
+const char* GetSodaBinaryPathSwitch() {
+  return kSodaBinaryPathSwitch;
+}
+
 bool SpeechRecognitionPreSandboxHook(
+    base::FilePath binary_path,
     sandbox::policy::SandboxLinux::Options options) {
 #if BUILDFLAG(ENABLE_SODA_INTEGRATION_TESTS)
   base::FilePath test_binary_path = GetSodaTestBinaryPath();
@@ -61,7 +69,13 @@ bool SpeechRecognitionPreSandboxHook(
   DCHECK(soda_test_library);
 #endif
 
-  void* soda_library = dlopen(GetSodaBinaryPath().value().c_str(),
+  // Fall back to the latest installed binary for embedders that don't pass the
+  // path of the binary that they will ask this process to load.
+  if (binary_path.empty()) {
+    binary_path = GetSodaBinaryPath();
+  }
+
+  void* soda_library = dlopen(binary_path.value().c_str(),
                               RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE);
   DCHECK(soda_library);
 

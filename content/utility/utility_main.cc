@@ -346,7 +346,9 @@ int UtilityMain(MainFunctionParams parameters) {
       break;
     case sandbox::mojom::Sandbox::kSpeechRecognition:
       pre_sandbox_hook =
-          base::BindOnce(&speech::SpeechRecognitionPreSandboxHook);
+          base::BindOnce(&speech::SpeechRecognitionPreSandboxHook,
+                         parameters.command_line->GetSwitchValuePath(
+                             speech::GetSodaBinaryPathSwitch()));
       break;
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(ENABLE_VR)
     case sandbox::mojom::Sandbox::kXrCompositing:

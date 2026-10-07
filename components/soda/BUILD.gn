@@ -88,12 +88,17 @@ source_set("utils") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "soda_util_unittest.cc" ]
+  sources = [
+    "constants_unittest.cc",
+    "soda_util_unittest.cc",
+  ]
 
   deps = [
+    ":constants",
     ":utils",
     "//base",
     "//base/test:test_support",
+    "//components/component_updater:component_updater_paths",
     "//testing/gtest",
   ]
 
@@ -101,7 +106,6 @@ source_set("unit_tests") {
     sources += [ "soda_installer_impl_chromeos_unittest.cc" ]
 
     deps += [
-      ":constants",
       ":soda",
       "//ash/constants",
       "//chromeos/ash/components/dbus/dlcservice",
