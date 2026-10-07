@@ -2643,8 +2643,6 @@ crbug.com/526682332 external/wpt/css/css-anchor-position/anchor-abspos-to-fixedp
 crbug.com/526682332 external/wpt/css/css-anchor-position/anchor-abspos-to-fixedpos-003.html [ Failure ]
 crbug.com/526669136 external/wpt/css/css-fonts/small-caps-letter-spacing-001.html [ Failure ]
 crbug.com/526669136 external/wpt/css/css-fonts/small-caps-letter-spacing-002.html [ Failure ]
-crbug.com/526682330 external/wpt/digital-credentials/webdriver/create.https.html [ Failure ]
-crbug.com/526682330 external/wpt/digital-credentials/webdriver/get.https.html [ Failure ]
 crbug.com/526677154 [ Win ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?1-2 [ Crash Pass ]
 crbug.com/526669164 external/wpt/mathml/presentation-markup/operators/mo-fallback-font.html [ Failure ]
 crbug.com/526682331 external/wpt/svg/shapes/reftests/ellipse-auto-rx-clip-path.html [ Failure ]
