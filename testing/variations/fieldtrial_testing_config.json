@@ -1525,28 +1525,6 @@
             ]
         }
     ],
-    "AutofillAddressUserPerceptionSurveyUS": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "en_site_id": "Q13fLRHym0ugnJ3q1cK0Tm5d8fMW",
-                        "probability": "1"
-                    },
-                    "enable_features": [
-                        "AutofillAddressUserPerceptionSurvey"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillAiEditEntitiesFromSaveUpdatePrompt": [
         {
             "platforms": [
@@ -1802,28 +1780,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillComplementCountryUsingPhoneNumber"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillCreditCardUserPerceptionSurvey": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "en_site_id": "Q13fLRHym0ugnJ3q1cK0Tm5d8fMW",
-                        "probability": "1"
-                    },
-                    "enable_features": [
-                        "AutofillCreditCardUserPerceptionSurvey"
                     ]
                 }
             ]
@@ -2212,28 +2168,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillOptimizeIsNormalizedNameVariantOf"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillPasswordUserPerceptionSurvey": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "en_site_id": "cLnNGzEX59NNVVEtwumiSF",
-                        "probability": "1"
-                    },
-                    "enable_features": [
-                        "AutofillPasswordUserPerceptionSurvey"
                     ]
                 }
             ]
