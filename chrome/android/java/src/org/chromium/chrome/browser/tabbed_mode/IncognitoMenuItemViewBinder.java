@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
@@ -45,6 +47,11 @@ class IncognitoMenuItemViewBinder {
         } else if (key == AppMenuItemProperties.TITLE_CONDENSED) {
             CharSequence titleCondensed = model.get(AppMenuItemProperties.TITLE_CONDENSED);
             view.findViewById(R.id.title).setContentDescription(titleCondensed);
+        } else if (key == AppMenuItemProperties.SHORTCUT_TEXT) {
+            TextView shortcutView = view.findViewById(R.id.menu_item_shortcut);
+            CharSequence shortcutText = model.get(AppMenuItemProperties.SHORTCUT_TEXT);
+            shortcutView.setText(shortcutText);
+            shortcutView.setVisibility(TextUtils.isEmpty(shortcutText) ? View.GONE : View.VISIBLE);
         } else if (key == AppMenuItemProperties.ICON) {
             ((TextViewWithCompoundDrawables) view.findViewById(R.id.title))
                     .setCompoundDrawablesRelative(
