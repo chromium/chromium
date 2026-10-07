@@ -183,16 +183,14 @@ ModuleSystemTestEnvironment::ModuleSystemTestEnvironment(
   module_system->RegisterNativeHandler(
       "assert", std::unique_ptr<NativeHandler>(assert_natives_));
   module_system->RegisterNativeHandler(
-      "logging",
-      std::unique_ptr<NativeHandler>(new LoggingNativeHandler(context_)));
+      "logging", std::make_unique<LoggingNativeHandler>(context_));
   module_system->RegisterNativeHandler(
-      "utils",
-      std::unique_ptr<NativeHandler>(new UtilsNativeHandler(context_)));
+      "utils", std::make_unique<UtilsNativeHandler>(context_));
   module_system->RegisterNativeHandler(
       "apiGetter",
       std::make_unique<GetAPINatives>(context_, bindings_system_.get()));
   module_system->SetExceptionHandlerForTest(
-      std::unique_ptr<ModuleSystem::ExceptionHandler>(new FailsOnException));
+      std::make_unique<FailsOnException>());
 
   bindings_system_->DidCreateScriptContext(context_);
   bindings_system_->UpdateBindingsForContext(context_);
