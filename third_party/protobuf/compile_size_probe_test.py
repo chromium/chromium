@@ -6,8 +6,11 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+import io
 import json
 import os
+import stat
 import sys
 import tempfile
 import unittest
@@ -27,8 +30,69 @@ def _WriteFileWithByteSize(file_path: str, byte_size: int) -> None:
         file_handle.write(b'x' * byte_size)
 
 
+def _CreateSyntheticNinjaWorkspace(
+        repository_root: str,
+        build_directory: str,
+        translation_units: Sequence[str]) -> None:
+    """Populates `.ninja` rules and source files for `translation_units`."""
+    for index, translation_unit in enumerate(translation_units):
+        if translation_unit.startswith('gen/'):
+            source_path = os.path.join(build_directory, translation_unit)
+            ninja_source = translation_unit
+        else:
+            source_path = os.path.join(repository_root, translation_unit)
+            ninja_source = os.path.relpath(
+                source_path, build_directory).replace(os.sep, '/')
+        _WriteFileWithByteSize(source_path, 500 + index * 100)
+
+        relative_without_gen = translation_unit.removeprefix('gen/')
+        target_parent = os.path.dirname(relative_without_gen)
+        ninja_directory = os.path.join(build_directory, 'obj', target_parent)
+        os.makedirs(ninja_directory, exist_ok=True)
+        ninja_file_path = os.path.join(ninja_directory, f'target_{index}.ninja')
+        object_target = (
+            f'obj/{target_parent}/target_{index}/'
+            f'{os.path.basename(translation_unit)}.o')
+        ninja_contents = (
+            'defines = -DDUMMY\n'
+            'include_dirs = -I../.. -Igen\n'
+            'cflags = -O2\n'
+            'cflags_cc = -std=c++20\n'
+            f'build {object_target}: cxx {ninja_source}\n'
+        )
+        with open(ninja_file_path, 'w', encoding='utf-8') as file_handle:
+            file_handle.write(ninja_contents)
+
+
+_SKIP_ON_WINDOWS = unittest.skipIf(
+    sys.platform == 'win32',
+    'compile_size_probe.py drives clang++ -M -H, which the clang-cl Windows '
+    'toolchain does not use.',
+)
+
+
+def _WriteFakeClangScript(script_path: str) -> str:
+    """Writes an executable fake `clang++` script that mimics `-M -H`."""
+    script_contents = """#!/usr/bin/env python3
+import sys
+
+source_path = sys.argv[-1]
+dependencies = [
+    source_path,
+    "../../third_party/protobuf/src/google/protobuf/extension_set.h",
+]
+sys.stdout.write("target.o: " + " \\\\\\n  ".join(dependencies) + "\\n")
+sys.stderr.write(
+    ". ../../third_party/protobuf/src/google/protobuf/extension_set.h\\n")
+"""
+    with open(script_path, 'w', encoding='utf-8') as file_handle:
+        file_handle.write(script_contents)
+    os.chmod(script_path, stat.S_IRWXU)
+    return script_path
+
+
 class CompileSizeProbeTest(unittest.TestCase):
-    """Tests path normalization, Ninja parsing, and clang -M -H measurement."""
+    """Tests Ninja parsing, dependency measurement, and baseline storage."""
 
     def testUnescapeNinjaValueReplacesEscapedColonsSpacesAndDollarSigns(self):
         raw_value = 'path$:with$ spaces/and$$dollars'
@@ -700,6 +764,687 @@ class CompileSizeProbeTest(unittest.TestCase):
                         repository_root=temporary_directory,
                         clang_binary='/bin/clang++',
                     )
+
+    def testBuildObjectTargetsRedirectsAutoninjaStdoutToStderr(self):
+        with mock.patch(
+                'compile_size_probe.ResolveAutoninjaBinary',
+                return_value='/bin/autoninja'):
+            with mock.patch('subprocess.check_call') as mock_check_call:
+                compile_size_probe.BuildObjectTargets(
+                    build_directory='/out/Release',
+                    repository_root='/src',
+                    object_targets=['gen/net/duration.pb.cc'],
+                )
+
+        mock_check_call.assert_called_once_with(
+            ['/bin/autoninja', '-C', '/out/Release', 'gen/net/duration.pb.cc'],
+            stdout=sys.stderr,
+        )
+
+    def testMeasureProbeBaselineBuildsPrerequisiteTargetsByDefault(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            build_directory = os.path.join(
+                temporary_directory, 'out', 'Default')
+            _CreateSyntheticNinjaWorkspace(
+                temporary_directory,
+                build_directory,
+                ('gen/net/cert/root_store_proto_lite/duration.pb.cc',),
+            )
+            fake_snapshot = compile_size_probe.TranslationUnitSnapshot(
+                translation_unit=(
+                    'gen/net/cert/root_store_proto_lite/duration.pb.cc'),
+                total_bytes=500,
+                included_files={
+                    'gen/net/cert/root_store_proto_lite/duration.pb.cc': 500,
+                },
+                include_chains={},
+            )
+
+            with (
+                mock.patch(
+                    'compile_size_probe.BuildObjectTargets') as mock_build,
+                mock.patch(
+                    'compile_size_probe.MeasureTranslationUnit',
+                    return_value=fake_snapshot),
+            ):
+                compile_size_probe.MeasureProbeBaseline(
+                    build_directory=build_directory,
+                    repository_root=temporary_directory,
+                    translation_units=(
+                        'gen/net/cert/root_store_proto_lite/duration.pb.cc',
+                    ),
+                    clang_binary='/bin/clang++',
+                )
+
+        mock_build.assert_called_once_with(
+            build_directory=build_directory,
+            repository_root=temporary_directory,
+            object_targets=[
+                'gen/net/cert/root_store_proto_lite/duration.pb.cc',
+            ],
+        )
+
+    def testMeasureProbeBaselineSkipsBuildWhenShouldBuildTargetsIsFalse(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            build_directory = os.path.join(
+                temporary_directory, 'out', 'Default')
+            _CreateSyntheticNinjaWorkspace(
+                temporary_directory,
+                build_directory,
+                ('gen/net/cert/root_store_proto_lite/duration.pb.cc',),
+            )
+            fake_snapshot = compile_size_probe.TranslationUnitSnapshot(
+                translation_unit=(
+                    'gen/net/cert/root_store_proto_lite/duration.pb.cc'),
+                total_bytes=500,
+                included_files={
+                    'gen/net/cert/root_store_proto_lite/duration.pb.cc': 500,
+                },
+                include_chains={},
+            )
+
+            with (
+                mock.patch(
+                    'compile_size_probe.BuildObjectTargets') as mock_build,
+                mock.patch(
+                    'compile_size_probe.MeasureTranslationUnit',
+                    return_value=fake_snapshot),
+            ):
+                compile_size_probe.MeasureProbeBaseline(
+                    build_directory=build_directory,
+                    repository_root=temporary_directory,
+                    translation_units=(
+                        'gen/net/cert/root_store_proto_lite/duration.pb.cc',
+                    ),
+                    clang_binary='/bin/clang++',
+                    should_build_targets=False,
+                )
+
+        self.assertEqual(
+            0,
+            mock_build.call_count,
+            msg=(
+                'Expected MeasureProbeBaseline to skip BuildObjectTargets '
+                'when should_build_targets is False.'),
+        )
+
+    def testSaveAndLoadProbeBaselineRoundTripsThroughBuildDirectory(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            baseline_directory = (
+                compile_size_probe.ResolveBaselineStorageDirectory(
+                    temporary_directory))
+            original_baseline = compile_size_probe.ProbeBaseline(
+                translation_units=(
+                    compile_size_probe.TranslationUnitSnapshot(
+                        translation_unit='gen/net/cert/duration.pb.cc',
+                        total_bytes=1500,
+                        included_files={
+                            'gen/net/cert/duration.pb.cc': 500,
+                            'gen/net/cert/duration.pb.h': 1000,
+                        },
+                        include_chains={
+                            'gen/net/cert/duration.pb.h': (
+                                'gen/net/cert/duration.pb.cc',
+                                'gen/net/cert/duration.pb.h',
+                            ),
+                        },
+                    ),
+                ))
+
+            compile_size_probe.SaveProbeBaseline(
+                baseline=original_baseline,
+                baseline_directory=baseline_directory,
+                baseline_name='before_roll',
+            )
+            loaded_baseline = compile_size_probe.LoadProbeBaseline(
+                baseline_directory=baseline_directory,
+                baseline_name='before_roll',
+            )
+
+        self.assertEqual(
+            original_baseline,
+            loaded_baseline,
+            msg=(
+                'Expected SaveProbeBaseline and LoadProbeBaseline to '
+                'round-trip snapshots and include chains losslessly under '
+                '<build_directory>/.compile_size_probe.'),
+        )
+
+    def testSaveProbeBaselineRaisesFileExistsErrorWithoutOverwriteFlag(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            baseline_directory = (
+                compile_size_probe.ResolveBaselineStorageDirectory(
+                    temporary_directory))
+            baseline = compile_size_probe.ProbeBaseline(translation_units=())
+            compile_size_probe.SaveProbeBaseline(
+                baseline=baseline,
+                baseline_directory=baseline_directory,
+                baseline_name='before_roll',
+            )
+
+            with self.assertRaises(
+                    FileExistsError,
+                    msg=(
+                        'Expected SaveProbeBaseline to raise FileExistsError '
+                        'when overwriting an existing baseline without '
+                        'should_overwrite=True.')):
+                compile_size_probe.SaveProbeBaseline(
+                    baseline=baseline,
+                    baseline_directory=baseline_directory,
+                    baseline_name='before_roll',
+                )
+
+    def testResolveBaselineStorageDirectoryPlacesBaselinesUnderBuildDirectory(
+            self):
+        build_directory = '/workspace/src/out_linux/Release'
+        storage_directory = compile_size_probe.ResolveBaselineStorageDirectory(
+            build_directory)
+        self.assertEqual(
+            os.path.join(
+                os.path.abspath(build_directory), '.compile_size_probe'),
+            storage_directory,
+            msg=(
+                'Expected ResolveBaselineStorageDirectory to place saved '
+                'baselines under <build_directory>/.compile_size_probe.'),
+        )
+
+    def testBaselineFilePathRejectsPathTraversalNames(self):
+        with self.assertRaises(
+                ValueError,
+                msg=(
+                    'Expected BaselineFilePath to reject names containing '
+                    'path separators or parent-directory traversal.')):
+            compile_size_probe.BaselineFilePath('/tmp/baselines', '../escape')
+
+    def testBaselineFilePathRejectsSingleDotBaselineName(self):
+        with self.assertRaises(
+                ValueError,
+                msg='Expected BaselineFilePath to reject "." as a name.'):
+            compile_size_probe.BaselineFilePath('/tmp/baselines', '.')
+
+    def testBaselineFilePathRejectsConsecutiveDotsInBaselineName(self):
+        with self.assertRaises(
+                ValueError,
+                msg=(
+                    'Expected BaselineFilePath to reject names containing '
+                    '".." even without path separators.')):
+            compile_size_probe.BaselineFilePath(
+                '/tmp/baselines', 'before..after')
+
+    def testLoadProbeBaselineRaisesValueErrorOnUnsupportedFormatVersion(
+            self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            target_path = compile_size_probe.BaselineFilePath(
+                temporary_directory, 'future')
+            with open(target_path, 'w', encoding='utf-8') as file_handle:
+                json.dump(
+                    {'format_version': 99, 'translation_units': []},
+                    file_handle,
+                )
+            with self.assertRaisesRegex(
+                    ValueError,
+                    r'Unsupported baseline format_version 99',
+                    msg=(
+                        'Expected LoadProbeBaseline to reject baselines with '
+                        'an unsupported format_version.')):
+                compile_size_probe.LoadProbeBaseline(
+                    temporary_directory, 'future')
+
+    def testLoadProbeBaselineRaisesValueErrorOnMalformedPayload(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            target_path = compile_size_probe.BaselineFilePath(
+                temporary_directory, 'malformed')
+            with open(target_path, 'w', encoding='utf-8') as file_handle:
+                json.dump(
+                    {
+                        'format_version': 1,
+                        'translation_units': [{'translation_unit': 'a.cc'}],
+                    },
+                    file_handle,
+                )
+            with self.assertRaisesRegex(
+                    ValueError,
+                    r'Malformed baseline JSON',
+                    msg=(
+                        'Expected LoadProbeBaseline to convert missing keys '
+                        'or wrong types in baseline JSON into ValueError.')):
+                compile_size_probe.LoadProbeBaseline(
+                    temporary_directory, 'malformed')
+
+    def testBaselineFilePathRejectsTrailingNewlineInBaselineName(self):
+        with self.assertRaises(
+                ValueError,
+                msg=(
+                    'Expected BaselineFilePath to reject baseline names '
+                    'with a trailing newline via fullmatch.')):
+            compile_size_probe.BaselineFilePath('/tmp/baselines', 'valid\n')
+
+    def testMeasureProbeBaselineRaisesFileNotFoundErrorForMissingBuildDirectory(
+            self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            missing_build_directory = os.path.join(
+                temporary_directory, 'no_such_build_directory')
+            with self.assertRaises(
+                    FileNotFoundError,
+                    msg=(
+                        'Expected MeasureProbeBaseline to raise '
+                        'FileNotFoundError when build_directory is missing.')):
+                compile_size_probe.MeasureProbeBaseline(
+                    build_directory=missing_build_directory,
+                    repository_root=temporary_directory,
+                    translation_units=(
+                        compile_size_probe.DEFAULT_TRANSLATION_UNITS),
+                    clang_binary='clang++',
+                    should_build_targets=False,
+                )
+
+    def testFormatHumanByteSizeFormatsMebibytesForOneMebibyteAndAbove(self):
+        formatted = compile_size_probe.FormatHumanByteSize(1024 * 1024)
+        self.assertEqual(
+            '1.00 MiB (1,048,576 B)',
+            formatted,
+            msg=(
+                'Expected FormatHumanByteSize to format 1,048,576 bytes as '
+                '"1.00 MiB (1,048,576 B)".'),
+        )
+
+    def testFormatHumanByteSizeFormatsNegativeKilobytesWithLeadingMinusSign(
+            self):
+        formatted = compile_size_probe.FormatHumanByteSize(-2048)
+        self.assertEqual(
+            '-2.00 KiB (-2,048 B)',
+            formatted,
+            msg=(
+                'Expected FormatHumanByteSize to format -2,048 bytes as '
+                '"-2.00 KiB (-2,048 B)".'),
+        )
+
+    def testFormatBaselineSummaryRendersSavedPathAndUnitCounts(self):
+        baseline = compile_size_probe.ProbeBaseline(
+            translation_units=(
+                compile_size_probe.TranslationUnitSnapshot(
+                    translation_unit='gen/net/duration.pb.cc',
+                    total_bytes=1536,
+                    included_files={
+                        'gen/net/duration.pb.cc': 512,
+                        'gen/net/duration.pb.h': 1024,
+                    },
+                    include_chains={},
+                ),
+            ))
+
+        summary = compile_size_probe.FormatBaselineSummary(
+            baseline, saved_path='/out/Default/.compile_size_probe/base.json')
+
+        self.assertEqual(
+            (
+                'Saved compile-size baseline to '
+                '/out/Default/.compile_size_probe/base.json\n'
+                'Total compiler inputs size across 1 translation unit: '
+                '1.50 KiB (1,536 B)\n'
+                '  gen/net/duration.pb.cc: 1.50 KiB (1,536 B) (2 files)'
+            ),
+            summary,
+            msg=(
+                'Expected FormatBaselineSummary to include the saved path '
+                'line, singular translation unit label, and file count.'),
+        )
+
+    def testMainExitsOneOnWindowsPlatform(self):
+        captured_stderr = io.StringIO()
+        with (
+            mock.patch.object(sys, 'platform', 'win32'),
+            mock.patch(
+                'compile_size_probe.MeasureProbeBaseline',
+                side_effect=AssertionError(
+                    'MeasureProbeBaseline should not be called on win32.'),
+            ),
+            mock.patch('sys.stderr', captured_stderr),
+        ):
+            exit_code = compile_size_probe.main(['-C', '/out/Default'])
+
+        self.assertEqual(
+            1,
+            exit_code,
+            msg=(
+                'Expected main() to return exit code 1 on win32 before '
+                'running MeasureProbeBaseline.'),
+        )
+
+    def testMainWritesWindowsUnsupportedErrorToStderrOnWin32(self):
+        captured_stderr = io.StringIO()
+        with (
+            mock.patch.object(sys, 'platform', 'win32'),
+            mock.patch('sys.stderr', captured_stderr),
+        ):
+            compile_size_probe.main(['-C', '/out/Default'])
+
+        self.assertIn(
+            'not supported on Windows',
+            captured_stderr.getvalue(),
+            msg=(
+                'Expected main() on win32 to explain on stderr that '
+                'compile_size_probe.py is not supported on Windows.'),
+        )
+
+    def testMainRejectsEmptySaveBaselineNameWithExitCodeOne(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            captured_stderr = io.StringIO()
+            with (
+                mock.patch.object(sys, 'platform', 'linux'),
+                mock.patch(
+                    'compile_size_probe.MeasureProbeBaseline',
+                    side_effect=AssertionError(
+                        'MeasureProbeBaseline should not be called when '
+                        '--save name is empty.'),
+                ),
+                mock.patch('sys.stderr', captured_stderr),
+            ):
+                exit_code = compile_size_probe.main([
+                    '-C',
+                    temporary_directory,
+                    '--save',
+                    '',
+                ])
+
+        self.assertEqual(
+            1,
+            exit_code,
+            msg=(
+                'Expected main(["-C", ..., "--save", ""]) to reject an '
+                'empty baseline name and return exit code 1 before '
+                'running MeasureProbeBaseline.'),
+        )
+
+    def testMainWritesInvalidBaselineNameErrorToStderrForEmptySaveName(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            captured_stderr = io.StringIO()
+            with (
+                mock.patch.object(sys, 'platform', 'linux'),
+                mock.patch('sys.stderr', captured_stderr),
+            ):
+                compile_size_probe.main([
+                    '-C',
+                    temporary_directory,
+                    '--save',
+                    '',
+                ])
+
+        self.assertIn(
+            'Invalid baseline name',
+            captured_stderr.getvalue(),
+            msg=(
+                'Expected main(["-C", ..., "--save", ""]) to report '
+                '"Invalid baseline name" on stderr.'),
+        )
+
+    def testMainRejectsExistingBaselineBeforeRunningMeasurement(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            baseline_directory = (
+                compile_size_probe.ResolveBaselineStorageDirectory(
+                    temporary_directory))
+            compile_size_probe.SaveProbeBaseline(
+                baseline=compile_size_probe.ProbeBaseline(translation_units=()),
+                baseline_directory=baseline_directory,
+                baseline_name='existing',
+            )
+            captured_stderr = io.StringIO()
+            with (
+                mock.patch.object(sys, 'platform', 'linux'),
+                mock.patch(
+                    'compile_size_probe.MeasureProbeBaseline',
+                    side_effect=AssertionError(
+                        'MeasureProbeBaseline should not be called when '
+                        'the target baseline file already exists.'),
+                ),
+                mock.patch('sys.stderr', captured_stderr),
+            ):
+                exit_code = compile_size_probe.main([
+                    '-C',
+                    temporary_directory,
+                    '--save',
+                    'existing',
+                ])
+
+        self.assertEqual(
+            1,
+            exit_code,
+            msg=(
+                'Expected main --save to fail with exit code 1 before calling '
+                'MeasureProbeBaseline when the baseline already exists.'),
+        )
+
+    def testMainWritesAlreadyExistsErrorToStderrWhenBaselineExists(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            baseline_directory = (
+                compile_size_probe.ResolveBaselineStorageDirectory(
+                    temporary_directory))
+            compile_size_probe.SaveProbeBaseline(
+                baseline=compile_size_probe.ProbeBaseline(translation_units=()),
+                baseline_directory=baseline_directory,
+                baseline_name='existing',
+            )
+            captured_stderr = io.StringIO()
+            with (
+                mock.patch.object(sys, 'platform', 'linux'),
+                mock.patch('sys.stderr', captured_stderr),
+            ):
+                compile_size_probe.main([
+                    '-C',
+                    temporary_directory,
+                    '--save',
+                    'existing',
+                ])
+
+        self.assertIn(
+            'already exists',
+            captured_stderr.getvalue(),
+            msg=(
+                'Expected main --save to report on stderr that the target '
+                'baseline already exists.'),
+        )
+
+    def testMainRejectsOverwriteWithoutSaveFlag(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            captured_stderr = io.StringIO()
+            with (
+                mock.patch.object(sys, 'platform', 'linux'),
+                mock.patch(
+                    'compile_size_probe.MeasureProbeBaseline',
+                    side_effect=AssertionError(
+                        'MeasureProbeBaseline should not be called when '
+                        '--overwrite is passed without --save.'),
+                ),
+                mock.patch('sys.stderr', captured_stderr),
+            ):
+                exit_code = compile_size_probe.main([
+                    '-C',
+                    temporary_directory,
+                    '--overwrite',
+                ])
+
+        self.assertEqual(
+            1,
+            exit_code,
+            msg=(
+                'Expected main() to reject --overwrite without --save and '
+                'return exit code 1.'),
+        )
+
+    def testMainWritesOverwriteRequiresSaveErrorToStderr(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            captured_stderr = io.StringIO()
+            with (
+                mock.patch.object(sys, 'platform', 'linux'),
+                mock.patch(
+                    'compile_size_probe.MeasureProbeBaseline',
+                    side_effect=AssertionError(
+                        'MeasureProbeBaseline should not be called when '
+                        '--overwrite is passed without --save.'),
+                ),
+                mock.patch('sys.stderr', captured_stderr),
+            ):
+                compile_size_probe.main([
+                    '-C',
+                    temporary_directory,
+                    '--overwrite',
+                ])
+
+        self.assertIn(
+            '--overwrite can only be used with --save.',
+            captured_stderr.getvalue(),
+            msg=(
+                'Expected main() to write the "--overwrite can only be used '
+                'with --save." error message to stderr.'),
+        )
+
+    @_SKIP_ON_WINDOWS
+    def testCommandLineSaveWritesBaselineUnderBuildDirectory(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            build_directory = os.path.join(
+                temporary_directory, 'out', 'Default')
+            _CreateSyntheticNinjaWorkspace(
+                temporary_directory,
+                build_directory,
+                compile_size_probe.DEFAULT_TRANSLATION_UNITS,
+            )
+            extension_set_header = os.path.join(
+                temporary_directory,
+                'third_party',
+                'protobuf',
+                'src',
+                'google',
+                'protobuf',
+                'extension_set.h',
+            )
+            _WriteFileWithByteSize(extension_set_header, 2000)
+            fake_clang_path = _WriteFakeClangScript(
+                os.path.join(temporary_directory, 'fake_clang.py'))
+
+            with (
+                mock.patch.object(
+                    compile_size_probe,
+                    '_DEFAULT_REPOSITORY_ROOT',
+                    temporary_directory,
+                ),
+                mock.patch.object(
+                    compile_size_probe,
+                    '_ResolveDefaultClangBinary',
+                    return_value=fake_clang_path,
+                ),
+                mock.patch('sys.stdout', io.StringIO()),
+            ):
+                compile_size_probe.main([
+                    '-C',
+                    build_directory,
+                    '--no-build',
+                    '--save',
+                    'before_roll',
+                ])
+            saved_on_disk = compile_size_probe.LoadProbeBaseline(
+                compile_size_probe.ResolveBaselineStorageDirectory(
+                    build_directory),
+                'before_roll',
+            )
+
+        self.assertEqual(
+            7800,
+            saved_on_disk.TotalBytes(),
+            msg=(
+                'Expected main --save to write the measured 7800-byte '
+                'baseline under <build_directory>/.compile_size_probe.'),
+        )
+
+    @_SKIP_ON_WINDOWS
+    def testCommandLineSaveWithOverwriteReplacesExistingBaseline(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            build_directory = os.path.join(
+                temporary_directory, 'out', 'Default')
+            _CreateSyntheticNinjaWorkspace(
+                temporary_directory,
+                build_directory,
+                compile_size_probe.DEFAULT_TRANSLATION_UNITS,
+            )
+            baseline_directory = (
+                compile_size_probe.ResolveBaselineStorageDirectory(
+                    build_directory))
+            compile_size_probe.SaveProbeBaseline(
+                baseline=compile_size_probe.ProbeBaseline(translation_units=()),
+                baseline_directory=baseline_directory,
+                baseline_name='before_roll',
+            )
+            extension_set_header = os.path.join(
+                temporary_directory,
+                'third_party',
+                'protobuf',
+                'src',
+                'google',
+                'protobuf',
+                'extension_set.h',
+            )
+            _WriteFileWithByteSize(extension_set_header, 2000)
+            fake_clang_path = _WriteFakeClangScript(
+                os.path.join(temporary_directory, 'fake_clang.py'))
+
+            captured_stdout = io.StringIO()
+            with (
+                mock.patch.object(
+                    compile_size_probe,
+                    '_DEFAULT_REPOSITORY_ROOT',
+                    temporary_directory,
+                ),
+                mock.patch.object(
+                    compile_size_probe,
+                    '_ResolveDefaultClangBinary',
+                    return_value=fake_clang_path,
+                ),
+                mock.patch('sys.stdout', captured_stdout),
+            ):
+                compile_size_probe.main([
+                    '-C',
+                    build_directory,
+                    '--no-build',
+                    '--save',
+                    'before_roll',
+                    '--overwrite',
+                    '--json',
+                ])
+            parsed_output = json.loads(captured_stdout.getvalue())
+
+        self.assertEqual(
+            7800,
+            parsed_output['total_bytes'],
+            msg=(
+                'Expected main --save --overwrite --json to replace the '
+                'existing baseline and emit 7800 total_bytes in JSON.'),
+        )
+
+    def testWriteJsonAtomicallyRemovesTemporaryFileWhenReplaceFails(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            target_path = os.path.join(temporary_directory, 'baseline.json')
+            with (
+                mock.patch(
+                    'os.replace',
+                    side_effect=OSError('simulated disk error'),
+                ),
+                self.assertRaises(
+                    OSError,
+                    msg=(
+                        'Expected _WriteJsonAtomically to propagate '
+                        'OSError when os.replace fails.'),
+                ),
+            ):
+                compile_size_probe._WriteJsonAtomically(
+                    target_path, {'format_version': 1})
+            remaining_entries = os.listdir(temporary_directory)
+
+        self.assertEqual(
+            [],
+            remaining_entries,
+            msg=(
+                'Expected _WriteJsonAtomically to delete its temporary '
+                '.tmp.<pid> file when os.replace raises an error.'),
+        )
 
 
 if __name__ == '__main__':

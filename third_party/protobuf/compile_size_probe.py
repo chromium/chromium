@@ -41,14 +41,32 @@ See https://crbug.com/568074904 for full background.
 
 from __future__ import annotations
 
+import argparse
 from collections.abc import Mapping, Sequence
 import dataclasses
+import json
 import os
 import pathlib
 import re
 import shlex
+import shutil
 import subprocess
+import sys
 from typing import Any
+
+_THIS_DIRECTORY = os.path.abspath(os.path.dirname(__file__))
+_DEFAULT_REPOSITORY_ROOT = os.path.abspath(
+    os.path.join(_THIS_DIRECTORY, '..', '..'))
+_DEFAULT_CLANG_RELATIVE_PATH = (
+    'third_party/llvm-build/Release+Asserts/bin/clang++')
+_DEPOT_TOOLS_AUTONINJA_RELATIVE_PATH = 'third_party/depot_tools/autoninja'
+_BASELINE_SUBDIRECTORY_NAME = '.compile_size_probe'
+
+DEFAULT_TRANSLATION_UNITS: tuple[str, ...] = (
+    'gen/net/cert/root_store_proto_lite/duration.pb.cc',
+    'gen/components/sync/protocol/sync_entity.pb.cc',
+    'components/sync/model/processor_entity.cc',
+)
 
 _TOP_LEVEL_VARIABLE_PATTERN = re.compile(
     r'^([A-Za-z0-9_]+)[ \t]*=[ \t]*(.*)$', re.MULTILINE)
@@ -58,6 +76,8 @@ _BUILD_CXX_LINE_PATTERN = re.compile(
     r'^build\s+(\S+)\s*:\s*\S*cxx\s+(\S+)(.*)$')
 _MODULE_FILE_FLAG_PATTERN = re.compile(r'-fmodule-file=(?:[^=\s]+=)?([^\s]+)')
 _CLANG_HEADER_TRACE_LINE_PATTERN = re.compile(r'^(\.+)\s+(.+)$')
+_SAFE_BASELINE_NAME_PATTERN = re.compile(r'^[A-Za-z0-9_.-]+$')
+_BASELINE_FORMAT_VERSION = 1
 
 
 @dataclasses.dataclass(frozen=True)
@@ -139,6 +159,56 @@ class TranslationUnitSnapshot:
             included_files=included_files,
             include_chains=include_chains,
         )
+
+
+@dataclasses.dataclass(frozen=True)
+class ProbeBaseline:
+    """Holds snapshots for all translation units in a probe run.
+
+    Attributes:
+      translation_units: Ordered tuple of per-unit snapshots captured in the
+        probe run.
+    """
+
+    translation_units: tuple[TranslationUnitSnapshot, ...]
+
+    def TotalBytes(self) -> int:
+        """Returns the sum of `total_bytes` across all translation units."""
+        return sum(unit.total_bytes for unit in self.translation_units)
+
+    def ToDict(self) -> dict[str, Any]:
+        """Serializes this baseline to a JSON-compatible dictionary."""
+        return {
+            'format_version': _BASELINE_FORMAT_VERSION,
+            'total_bytes': self.TotalBytes(),
+            'translation_units': [
+                unit.ToDict() for unit in self.translation_units
+            ],
+        }
+
+    @classmethod
+    def FromDict(cls, raw_dictionary: Mapping[str, Any]) -> ProbeBaseline:
+        """Reconstructs a ProbeBaseline from a parsed JSON dictionary."""
+        if not isinstance(raw_dictionary, Mapping):
+            raise ValueError(
+                'Malformed baseline JSON: top-level value must be an object.')
+        format_version = raw_dictionary.get('format_version')
+        if format_version != _BASELINE_FORMAT_VERSION:
+            raise ValueError(
+                f'Unsupported baseline format_version {format_version!r}; '
+                f'expected {_BASELINE_FORMAT_VERSION}.')
+        try:
+            raw_units = raw_dictionary['translation_units']
+            if not isinstance(raw_units, list):
+                raise TypeError('translation_units must be a list.')
+            snapshots = tuple(
+                TranslationUnitSnapshot.FromDict(entry) for entry in raw_units
+            )
+        except (KeyError, TypeError, AttributeError, ValueError) as error:
+            raise ValueError(
+                f'Malformed baseline JSON ({error}); re-run with '
+                f'--save NAME --overwrite.') from error
+        return cls(translation_units=snapshots)
 
 
 def UnescapeNinjaValue(raw_value: str) -> str:
@@ -583,6 +653,32 @@ def _MeasureFileByteSizes(
     }
 
 
+def ResolveAutoninjaBinary(repository_root: str) -> str:
+    """Finds `autoninja` on `PATH` or in `//third_party/depot_tools`."""
+    autoninja_on_path = shutil.which('autoninja')
+    if autoninja_on_path is not None:
+        return autoninja_on_path
+    bundled_autoninja = os.path.join(
+        repository_root, *_DEPOT_TOOLS_AUTONINJA_RELATIVE_PATH.split('/'))
+    if os.path.isfile(bundled_autoninja):
+        return bundled_autoninja
+    return 'autoninja'
+
+
+def BuildObjectTargets(
+        build_directory: str,
+        repository_root: str,
+        object_targets: Sequence[str]) -> None:
+    """Builds the specified Ninja targets with `autoninja -C`."""
+    if not object_targets:
+        return
+    autoninja_binary = ResolveAutoninjaBinary(repository_root)
+    subprocess.check_call(
+        [autoninja_binary, '-C', build_directory, *object_targets],
+        stdout=sys.stderr,
+    )
+
+
 def MeasureTranslationUnit(
         compile_rule: NinjaCompileRule,
         build_directory: str,
@@ -624,3 +720,388 @@ def MeasureTranslationUnit(
         included_files=included_files,
         include_chains=include_chains,
     )
+
+
+def _ValidateBuildDirectory(build_directory: str) -> None:
+    """Raises FileNotFoundError if `build_directory` does not exist."""
+    if not os.path.isdir(build_directory):
+        raise FileNotFoundError(
+            f'Build directory does not exist: {build_directory}')
+
+
+def _CollectPrerequisiteTargetsToBuild(
+        compile_rules: Sequence[NinjaCompileRule]) -> list[str]:
+    """Collects deduplicated prerequisite targets across `compile_rules`."""
+    targets_to_build: list[str] = []
+    for rule in compile_rules:
+        rule_targets = (
+            rule.prerequisite_targets
+            if rule.prerequisite_targets else (rule.object_target,)
+        )
+        targets_to_build = MergeTranslationUnits(targets_to_build, rule_targets)
+    return targets_to_build
+
+
+def MeasureProbeBaseline(
+        build_directory: str,
+        repository_root: str,
+        translation_units: Sequence[str],
+        clang_binary: str,
+        should_build_targets: bool = True) -> ProbeBaseline:
+    """Measures all requested translation units and returns a ProbeBaseline.
+
+    Resolves the Ninja `cxx` compile rule for each translation unit, runs
+    `autoninja` on the deduplicated prerequisite targets when
+    `should_build_targets` is True so generated `.pb.h`/`.pb.cc` files and
+    prebuilt `.pcm` Clang modules are up to date, and runs `clang++ -M -H` on
+    each unit.
+
+    Args:
+      build_directory: Path to the GN/Ninja build output directory.
+      repository_root: Path to the Chromium `src/` checkout root.
+      translation_units: Normalized translation unit paths to measure.
+      clang_binary: Path to the `clang++` executable.
+      should_build_targets: When True (the default), builds each compile rule's
+        prerequisite targets via `autoninja` before measuring.
+
+    Returns:
+      A `ProbeBaseline` containing a `TranslationUnitSnapshot` per unit.
+
+    Raises:
+      FileNotFoundError: If `build_directory` does not exist.
+      RuntimeError: If any translation unit's Ninja rule or `clang++ -M -H`
+        invocation fails.
+      subprocess.CalledProcessError: If `autoninja` fails.
+    """
+    _ValidateBuildDirectory(build_directory)
+    compile_rules = [
+        FindNinjaCompileRule(
+            build_directory, repository_root, translation_unit)
+        for translation_unit in translation_units
+    ]
+    if should_build_targets:
+        BuildObjectTargets(
+            build_directory=build_directory,
+            repository_root=repository_root,
+            object_targets=_CollectPrerequisiteTargetsToBuild(compile_rules),
+        )
+
+    snapshots = tuple(
+        MeasureTranslationUnit(
+            compile_rule=rule,
+            build_directory=build_directory,
+            repository_root=repository_root,
+            clang_binary=clang_binary,
+        )
+        for rule in compile_rules
+    )
+    return ProbeBaseline(translation_units=snapshots)
+
+
+def ResolveBaselineStorageDirectory(build_directory: str) -> str:
+    """Returns `<build_directory>/.compile_size_probe` for saved baselines.
+
+    Storing baselines inside the `-C <out_dir>` directory keeps snapshots
+    outside the tracked Git tree (so branch switches during a roll do not touch
+    them) and scopes each baseline to the exact GN build configuration that
+    produced it.
+    """
+    return os.path.join(
+        os.path.abspath(build_directory), _BASELINE_SUBDIRECTORY_NAME)
+
+
+def _ValidateBaselineName(baseline_name: str) -> None:
+    """Raises ValueError if `baseline_name` is empty or unsafe."""
+    if (not _SAFE_BASELINE_NAME_PATTERN.fullmatch(baseline_name)
+            or baseline_name == '.'
+            or '..' in baseline_name):
+        raise ValueError(
+            f'Invalid baseline name "{baseline_name}": must contain only '
+            f'alphanumerics, underscores, hyphens, or single dots.')
+
+
+def BaselineFilePath(baseline_directory: str, baseline_name: str) -> str:
+    """Returns the validated JSON file path for `baseline_name`."""
+    _ValidateBaselineName(baseline_name)
+    return os.path.join(baseline_directory, f'{baseline_name}.json')
+
+
+def _CheckBaselineSaveTarget(
+        baseline_directory: str,
+        baseline_name: str,
+        should_overwrite: bool) -> str:
+    """Validates `baseline_name` and checks for an existing baseline file.
+
+    Raises:
+      ValueError: If `baseline_name` is empty or contains unsafe characters.
+      FileExistsError: If `<baseline_directory>/<baseline_name>.json` already
+        exists and `should_overwrite` is False.
+    """
+    target_path = BaselineFilePath(baseline_directory, baseline_name)
+    if os.path.exists(target_path) and not should_overwrite:
+        raise FileExistsError(
+            f'Baseline "{baseline_name}" already exists at {target_path}; '
+            f'pass --overwrite to replace it.')
+    return target_path
+
+
+def _WriteJsonAtomically(
+        target_path: str, payload: Mapping[str, Any]) -> None:
+    """Writes `payload` as formatted JSON to `target_path` atomically.
+
+    Serializes `payload` to `<target_path>.tmp.<pid>` and replaces `target_path`
+    via `os.replace`, deleting the temporary file if an exception occurs.
+    """
+    os.makedirs(os.path.dirname(target_path), exist_ok=True)
+    temporary_path = f'{target_path}.tmp.{os.getpid()}'
+    try:
+        with open(temporary_path, 'w', encoding='utf-8') as file_handle:
+            json.dump(payload, file_handle, indent=2, sort_keys=True)
+            file_handle.write('\n')
+        os.replace(temporary_path, target_path)
+    except BaseException:
+        if os.path.exists(temporary_path):
+            os.remove(temporary_path)
+        raise
+
+
+def SaveProbeBaseline(
+        baseline: ProbeBaseline,
+        baseline_directory: str,
+        baseline_name: str,
+        should_overwrite: bool = False) -> str:
+    """Writes `baseline` atomically to `<baseline_directory>/<name>.json`.
+
+    Args:
+      baseline: Measured `ProbeBaseline` to persist.
+      baseline_directory: Directory where baseline JSON files are stored.
+      baseline_name: Validated baseline identifier (without `.json`).
+      should_overwrite: When False, raises `FileExistsError` if the target
+        baseline file already exists.
+
+    Returns:
+      The absolute path to the written `<baseline_name>.json` file.
+
+    Raises:
+      ValueError: If `baseline_name` is invalid.
+      FileExistsError: If `should_overwrite` is False and a file exists.
+    """
+    target_path = _CheckBaselineSaveTarget(
+        baseline_directory, baseline_name, should_overwrite)
+    _WriteJsonAtomically(target_path, baseline.ToDict())
+    return target_path
+
+
+def LoadProbeBaseline(
+        baseline_directory: str, baseline_name: str) -> ProbeBaseline:
+    """Loads a saved ProbeBaseline from `<baseline_directory>/<name>.json`."""
+    target_path = BaselineFilePath(baseline_directory, baseline_name)
+    if not os.path.isfile(target_path):
+        raise FileNotFoundError(
+            f'Saved baseline "{baseline_name}" not found at {target_path}.')
+    with open(target_path, 'r', encoding='utf-8') as file_handle:
+        return ProbeBaseline.FromDict(json.load(file_handle))
+
+
+def _ByteSignPrefix(byte_count: int, should_include_sign: bool) -> str:
+    """Returns `'+'`, `'-'`, or `''` for `byte_count`."""
+    if byte_count < 0:
+        return '-'
+    if should_include_sign and byte_count > 0:
+        return '+'
+    return ''
+
+
+def FormatHumanByteSize(
+        byte_count: int, should_include_sign: bool = False) -> str:
+    """Formats `byte_count` with both KiB/MiB and exact bytes.
+
+    Args:
+      byte_count: Signed byte count to format.
+      should_include_sign: When True, prefixes positive counts with `'+'`.
+    """
+    sign_prefix = _ByteSignPrefix(byte_count, should_include_sign)
+    absolute_bytes = abs(byte_count)
+    if absolute_bytes >= 1024 * 1024:
+        scaled = f'{absolute_bytes / (1024 * 1024):.2f} MiB'
+    elif absolute_bytes >= 1024:
+        scaled = f'{absolute_bytes / 1024:.2f} KiB'
+    else:
+        return f'{sign_prefix}{absolute_bytes:,} B'
+    return f'{sign_prefix}{scaled} ({sign_prefix}{absolute_bytes:,} B)'
+
+
+def FormatBaselineSummary(
+        baseline: ProbeBaseline, saved_path: str | None = None) -> str:
+    """Formats a human-readable summary of a measured ProbeBaseline."""
+    lines: list[str] = []
+    if saved_path is not None:
+        lines.append(f'Saved compile-size baseline to {saved_path}')
+    unit_count = len(baseline.translation_units)
+    unit_label = 'translation unit' if unit_count == 1 else 'translation units'
+    lines.append(
+        f'Total compiler inputs size across '
+        f'{unit_count} {unit_label}: '
+        f'{FormatHumanByteSize(baseline.TotalBytes())}')
+    for snapshot in baseline.translation_units:
+        lines.append(
+            f'  {snapshot.translation_unit}: '
+            f'{FormatHumanByteSize(snapshot.total_bytes)} '
+            f'({len(snapshot.included_files)} files)')
+    return '\n'.join(lines)
+
+
+def _ParseCommandLineArguments(
+        command_line_arguments: Sequence[str] | None) -> argparse.Namespace:
+    """Parses command-line arguments for `compile_size_probe.py`."""
+    parser = argparse.ArgumentParser(
+        description=(
+            'Measures compiler input sizes and #include chains for '
+            'representative //third_party/protobuf translation units.'))
+    parser.add_argument(
+        '-C',
+        dest='build_directory',
+        required=True,
+        metavar='OUT_DIR',
+        help='Ninja build directory (for example, out/Default).',
+    )
+    parser.add_argument(
+        '--save',
+        dest='save_name',
+        metavar='NAME',
+        help=(
+            'Save the measured baseline under '
+            '<OUT_DIR>/.compile_size_probe/<NAME>.json.'),
+    )
+    parser.add_argument(
+        '--overwrite',
+        dest='should_overwrite',
+        action='store_true',
+        help='Overwrite an existing baseline when used with --save.',
+    )
+    parser.add_argument(
+        '--tu',
+        dest='extra_translation_units',
+        action='append',
+        default=[],
+        metavar='PATH',
+        help=(
+            'Additional translation unit path to measure (repeatable, added '
+            'to the 3 default representative translation units; gen/... '
+            'resolves under OUT_DIR and other relative paths resolve against '
+            'the Chromium src/ root).'),
+    )
+    parser.add_argument(
+        '--json',
+        dest='should_output_json',
+        action='store_true',
+        help='Emit machine-readable JSON output to stdout.',
+    )
+    parser.add_argument(
+        '--no-build',
+        dest='should_skip_build',
+        action='store_true',
+        help='Skip running autoninja on probe prerequisites before measuring.',
+    )
+    return parser.parse_args(command_line_arguments)
+
+
+def _ResolveDefaultClangBinary(repository_root: str) -> str:
+    """Returns the absolute path to Chromium's bundled `clang++` binary."""
+    return os.path.abspath(
+        os.path.join(repository_root, *_DEFAULT_CLANG_RELATIVE_PATH.split('/')))
+
+
+def _SelectTranslationUnitsToMeasure(
+        parsed_arguments: argparse.Namespace,
+        build_directory: str,
+        repository_root: str) -> list[str]:
+    """Determines the ordered list of normalized translation units to probe."""
+    normalized_extras = [
+        NormalizeTranslationUnitPath(
+            raw_path, build_directory, repository_root)
+        for raw_path in parsed_arguments.extra_translation_units
+    ]
+    return MergeTranslationUnits(DEFAULT_TRANSLATION_UNITS, normalized_extras)
+
+
+def _EmitBaselineOutput(
+        baseline: ProbeBaseline,
+        saved_path: str | None,
+        should_output_json: bool) -> None:
+    """Prints either JSON or human-readable output for `baseline`."""
+    if should_output_json:
+        payload = baseline.ToDict()
+        if saved_path is not None:
+            payload['saved_path'] = saved_path
+        print(json.dumps(payload, indent=2, sort_keys=True))
+        return
+    print(FormatBaselineSummary(baseline, saved_path=saved_path))
+
+
+def main(command_line_arguments: Sequence[str] | None = None) -> int:
+    """Entry point for the `compile_size_probe.py` CLI."""
+    parsed_arguments = _ParseCommandLineArguments(command_line_arguments)
+    if sys.platform == 'win32':
+        print(
+            'compile_size_probe.py is not supported on Windows: the '
+            'clang-cl toolchain does not accept clang++ -M -H.',
+            file=sys.stderr,
+        )
+        return 1
+
+    build_directory = os.path.abspath(parsed_arguments.build_directory)
+    repository_root = _DEFAULT_REPOSITORY_ROOT
+    clang_binary = _ResolveDefaultClangBinary(repository_root)
+    baseline_directory = ResolveBaselineStorageDirectory(build_directory)
+
+    try:
+        if (parsed_arguments.should_overwrite
+                and parsed_arguments.save_name is None):
+            raise ValueError('--overwrite can only be used with --save.')
+        if parsed_arguments.save_name is not None:
+            _CheckBaselineSaveTarget(
+                baseline_directory=baseline_directory,
+                baseline_name=parsed_arguments.save_name,
+                should_overwrite=parsed_arguments.should_overwrite,
+            )
+
+        translation_units = _SelectTranslationUnitsToMeasure(
+            parsed_arguments, build_directory, repository_root)
+        baseline = MeasureProbeBaseline(
+            build_directory=build_directory,
+            repository_root=repository_root,
+            translation_units=translation_units,
+            clang_binary=clang_binary,
+            should_build_targets=not parsed_arguments.should_skip_build,
+        )
+
+        saved_path: str | None = None
+        if parsed_arguments.save_name is not None:
+            saved_path = SaveProbeBaseline(
+                baseline=baseline,
+                baseline_directory=baseline_directory,
+                baseline_name=parsed_arguments.save_name,
+                should_overwrite=parsed_arguments.should_overwrite,
+            )
+    except (
+            FileNotFoundError,
+            FileExistsError,
+            ValueError,
+            RuntimeError,
+            subprocess.CalledProcessError,
+            OSError,
+    ) as error:
+        print(f'Error: {error}', file=sys.stderr)
+        return 1
+
+    _EmitBaselineOutput(
+        baseline=baseline,
+        saved_path=saved_path,
+        should_output_json=parsed_arguments.should_output_json,
+    )
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
