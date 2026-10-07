@@ -19,7 +19,9 @@
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/event.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/controls/menu/menu_config.h"
@@ -106,7 +108,7 @@ AppMenuFooterView::AppMenuFooterView(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   auto bottom_container = std::make_unique<views::BoxLayoutView>();
-  bottom_container->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+  bottom_container->SetOrientation(views::BoxLayout::Orientation::kVertical);
   bottom_container->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
 
@@ -161,7 +163,6 @@ AppMenuFooterView::AppMenuFooterView(
       case FooterContainer::kBottom: {
         auto* button_ptr = bottom_container->AddChildView(std::move(button));
         button_ptr->SetUseRowStyle(true);
-        bottom_container->SetFlexForView(button_ptr, 1);
         break;
       }
       case FooterContainer::kRight: {
@@ -191,6 +192,13 @@ AppMenuFooterView::AppMenuFooterView(
 
     bottom_container->SetInsideBorderInsets(provider->GetInsetsMetric(
         INSETS_ACTION_APP_MENU_FOOTER_BOTTOM_CONTAINER));
+    bottom_container->SetPaintToLayer();
+    bottom_container->layer()->SetFillsBoundsOpaquely(false);
+    const int menu_radius =
+        provider->GetCornerRadiusMetric(views::ShapeContextTokens::kMenuRadius);
+    bottom_container->layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(0, 0, menu_radius, menu_radius));
+    bottom_container->layer()->SetIsFastRoundedCorner(true);
     bottom_container_ = AddChildView(std::move(bottom_container));
   }
 }
