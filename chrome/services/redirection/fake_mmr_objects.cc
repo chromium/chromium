@@ -112,4 +112,46 @@ IFACEMETHODIMP FakeMmrSession::CreateStream(UINT32 stream_id,
   return E_NOTIMPL;
 }
 
+FakeMmrStream::FakeMmrStream() = default;
+
+FakeMmrStream::~FakeMmrStream() = default;
+
+IFACEMETHODIMP FakeMmrStream::AppendBuffer(BYTE* data,
+                                           UINT32 data_size,
+                                           LONGLONG timestamp,
+                                           LONGLONG duration,
+                                           BOOL is_key_frame) {
+  if (FAILED(result_)) {
+    return result_;
+  }
+
+  // SAFETY: AppendBuffer() documents `data_size` as the number of valid bytes
+  // in `data`.
+  frames_.push_back(
+      Frame{base::ToVector(UNSAFE_BUFFERS(base::span(data, size_t{data_size}))),
+            timestamp, duration, is_key_frame != FALSE});
+  return S_OK;
+}
+
+IFACEMETHODIMP FakeMmrStream::EndOfStream() {
+  if (FAILED(result_)) {
+    return result_;
+  }
+
+  ++end_of_stream_count_;
+  return S_OK;
+}
+
+IFACEMETHODIMP FakeMmrStream::SetVideoRect(HWND parent,
+                                           UINT32 x,
+                                           UINT32 y,
+                                           UINT32 width,
+                                           UINT32 height) {
+  return E_NOTIMPL;
+}
+
+IFACEMETHODIMP FakeMmrStream::GetStats(MMR_STREAM_STATS* stats) {
+  return E_NOTIMPL;
+}
+
 }  // namespace redirection

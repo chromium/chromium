@@ -23,6 +23,7 @@ source_set("config_conversions") {
 }
 
 source_set("decoder_buffer_reader") {
+  visibility += [ "//chrome/services/redirection:redirection_service" ]
   public = [ "decoder_buffer_reader.h" ]
   sources = [ "decoder_buffer_reader.cc" ]
   public_deps = [

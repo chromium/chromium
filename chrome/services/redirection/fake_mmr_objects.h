@@ -42,7 +42,7 @@ class FakeMmrSession final
     response_handler_result_ = result;
   }
 
-  // Delivers |message| to whatever handler is currently registered.
+  // Delivers `message` to whatever handler is currently registered.
   void SendResponse(base::span<uint8_t> message);
 
   // IMMRSession implementation.
@@ -81,6 +81,45 @@ class FakeMmrSession final
   Microsoft::WRL::ComPtr<IMMRResponseHandler> response_handler_;
   HRESULT send_message_result_ = S_OK;
   HRESULT response_handler_result_ = S_OK;
+};
+
+// Records everything written to one elementary stream.
+class FakeMmrStream final : public FakeComObject<IMMRStream> {
+ public:
+  struct Frame {
+    std::vector<uint8_t> data;
+    int64_t timestamp_hns = 0;
+    int64_t duration_hns = 0;
+    bool is_key_frame = false;
+  };
+
+  FakeMmrStream();
+  ~FakeMmrStream() override;
+
+  const std::vector<Frame>& frames() const { return frames_; }
+  int end_of_stream_count() const { return end_of_stream_count_; }
+
+  // Sets the HRESULT returned by AppendBuffer() and EndOfStream().
+  void set_result(HRESULT result) { result_ = result; }
+
+  // IMMRStream implementation.
+  IFACEMETHODIMP AppendBuffer(BYTE* data,
+                              UINT32 data_size,
+                              LONGLONG timestamp,
+                              LONGLONG duration,
+                              BOOL is_key_frame) override;
+  IFACEMETHODIMP EndOfStream() override;
+  IFACEMETHODIMP SetVideoRect(HWND parent,
+                              UINT32 x,
+                              UINT32 y,
+                              UINT32 width,
+                              UINT32 height) override;
+  IFACEMETHODIMP GetStats(MMR_STREAM_STATS* stats) override;
+
+ private:
+  std::vector<Frame> frames_;
+  int end_of_stream_count_ = 0;
+  HRESULT result_ = S_OK;
 };
 
 }  // namespace redirection
