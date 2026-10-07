@@ -36,6 +36,7 @@
 #include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
+#include "components/one_time_tokens/core/browser/one_time_token_type.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
 #include "components/one_time_tokens/core/common/one_time_token_switches.h"
 
@@ -43,6 +44,7 @@ using one_time_tokens::OneTimeToken;
 using one_time_tokens::OneTimeTokenRetrievalError;
 using one_time_tokens::OneTimeTokenService;
 using one_time_tokens::OneTimeTokenSource;
+using one_time_tokens::OneTimeTokenType;
 
 namespace autofill {
 
@@ -89,7 +91,9 @@ void OtpManagerLegacyImpl::GetOtpSuggestions(
     LOG_AF(owner_->client().GetCurrentLogManager())
         << LoggingScope::kOneTimeTokens
         << "Using mock OTP value from command line switch.";
-    std::move(callback).Run({std::move(mock_otp)});
+    std::move(callback).Run(
+        {OneTimeToken(OneTimeTokenType::kSmsOtp, std::move(mock_otp),
+                      base::TimeTicks::Now())});
     return;
   }
 
@@ -194,7 +198,7 @@ void OtpManagerLegacyImpl::OnBeforeFocusOnFormField(AutofillManager& manager,
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(last_pending_get_suggestions_callback_),
-                     std::vector<std::string>{}));
+                     std::vector<OneTimeToken>{}));
 }
 
 // This is a workaround to prevent the Keyboard Accessory from popping up when
@@ -212,7 +216,7 @@ void OtpManagerLegacyImpl::OnBeforeFocusOnNonFormField(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(last_pending_get_suggestions_callback_),
-                     std::vector<std::string>{}));
+                     std::vector<OneTimeToken>{}));
 }
 
 void OtpManagerLegacyImpl::OnOneTimeTokenReceived(
@@ -304,9 +308,9 @@ void OtpManagerLegacyImpl::MaybeShowOtpSuggestionsForSms(
     return;
   }
 
-  std::vector<std::string> suggestions;
+  std::vector<OneTimeToken> suggestions;
   if (!token.value().empty()) {
-    suggestions.emplace_back(std::move(token).value());
+    suggestions.push_back(std::move(token));
   }
 
   if (IsOtpDeliveryBlocked()) {
@@ -323,7 +327,7 @@ void OtpManagerLegacyImpl::MaybeShowOtpSuggestionsForSms(
     LOG_AF(owner_->client().GetCurrentLogManager())
         << LoggingScope::kOneTimeTokens
         << "Delivering OTP suggestion to UI. Token length: "
-        << suggestions[0].size() << " (value omitted for privacy).";
+        << suggestions[0].value().size() << " (value omitted for privacy).";
   }
 
   std::move(last_pending_get_suggestions_callback_).Run(std::move(suggestions));

@@ -32,6 +32,7 @@
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_metrics_tracker.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_phish_guard_delegate.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -108,7 +109,9 @@ void OtpManagerImpl::GetOtpSuggestions(
     LOG_AF(owner_->client().GetCurrentLogManager())
         << LoggingScope::kOneTimeTokens
         << "Using mock OTP value from command line switch.";
-    std::move(callback).Run({std::move(mock_otp)});
+    std::move(callback).Run(
+        {OneTimeToken(OneTimeTokenType::kSmsOtp, std::move(mock_otp),
+                      base::TimeTicks::Now())});
     return;
   }
 
@@ -119,8 +122,15 @@ void OtpManagerImpl::GetOtpSuggestions(
   last_pending_get_suggestions_callback_ = std::move(callback);
 
   if (UserOptedIntoGmailOtpFilling()) {
-    if (std::optional<OneTimeToken> token = SelectMostRecentToken();
-        token && token->type() == OneTimeTokenType::kGmail &&
+    std::optional<OneTimeToken> token = SelectMostRecentToken();
+    if (!token && base::FeatureList::IsEnabled(
+                      features::kAutofillShowGmailOtpSuggestions)) {
+      // TODO(crbug.com/556170646): Replace hardcoded OTP with Gmail OTP
+      // retrieval.
+      token = OneTimeToken(OneTimeTokenType::kGmail, "123456",
+                           base::TimeTicks::Now(), "otp@example.com");
+    }
+    if (token && token->type() == OneTimeTokenType::kGmail &&
         !token->value().empty()) {
       LOG_AF(owner_->client().GetCurrentLogManager())
           << LoggingScope::kOneTimeTokens
@@ -278,7 +288,7 @@ void OtpManagerImpl::OnBeforeFocusOnFormField(AutofillManager& manager,
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(last_pending_get_suggestions_callback_),
-                       std::vector<std::string>{}));
+                       std::vector<OneTimeToken>{}));
   }
 }
 
@@ -298,7 +308,7 @@ void OtpManagerImpl::OnBeforeFocusOnNonFormField(AutofillManager& manager) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(last_pending_get_suggestions_callback_),
-                       std::vector<std::string>{}));
+                       std::vector<OneTimeToken>{}));
   }
 }
 
@@ -327,6 +337,8 @@ void OtpManagerImpl::OnTickleReceived(OneTimeTokenSource source) {
            "Skipping payload fetch.";
     return;
   }
+  // TODO(crbug.com/556170646): Retrieve the Gmail OTP on tickle arrival and
+  // proactively trigger suggestions via the renderer.
 }
 
 void OtpManagerImpl::OnGmailOtpRetrieved(
@@ -475,9 +487,9 @@ void OtpManagerImpl::MaybeShowOtpSuggestionsForSms(
     return;
   }
 
-  std::vector<std::string> suggestions;
+  std::vector<OneTimeToken> suggestions;
   if (!token.value().empty()) {
-    suggestions.emplace_back(std::move(token).value());
+    suggestions.push_back(std::move(token));
   }
 
   if (IsOtpDeliveryBlocked()) {
@@ -494,7 +506,7 @@ void OtpManagerImpl::MaybeShowOtpSuggestionsForSms(
     LOG_AF(owner_->client().GetCurrentLogManager())
         << LoggingScope::kOneTimeTokens
         << "Delivering OTP suggestion to UI. Token length: "
-        << suggestions[0].size() << " (value omitted for privacy).";
+        << suggestions[0].value().size() << " (value omitted for privacy).";
   }
 
   std::move(last_pending_get_suggestions_callback_).Run(std::move(suggestions));
@@ -520,7 +532,7 @@ void OtpManagerImpl::MaybeShowOtpSuggestionsForGmail(
     if (last_pending_frame_token_ != frame_token) {
       return;
     }
-    std::vector<std::string> suggestions;
+    std::vector<OneTimeToken> suggestions;
     if (verdict == OneTimeTokensPhishGuardVerdict::kPhishing) {
       LOG_AF(owner_->client().GetCurrentLogManager())
           << LoggingScope::kOneTimeTokens << LogMessage::kSuggestionSuppressed
@@ -531,7 +543,7 @@ void OtpManagerImpl::MaybeShowOtpSuggestionsForGmail(
           << "Delivering OTP suggestion to UI. Token length: "
           << token.value().size() << " (value omitted for privacy).";
       last_triggered_otp_value_ = token.value();
-      suggestions.emplace_back(std::move(token).value());
+      suggestions.push_back(std::move(token));
     }
     std::move(last_pending_get_suggestions_callback_)
         .Run(std::move(suggestions));

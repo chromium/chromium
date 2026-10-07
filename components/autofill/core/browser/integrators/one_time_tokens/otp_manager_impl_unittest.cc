@@ -50,6 +50,7 @@ using ::one_time_tokens::OneTimeTokenServiceImpl;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::NiceMock;
+using ::testing::Property;
 using ::testing::Return;
 using ::testing::Test;
 
@@ -313,11 +314,11 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_TriggersFirstRetrieval) {
   const FormStructure* form = AddFormWithOtpField();
   ASSERT_TRUE(form);
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
 
   ASSERT_EQ(future.Get().size(), 1u);
-  EXPECT_EQ(future.Get()[0], otp.value());
+  EXPECT_EQ(future.Get()[0].value(), otp.value());
 }
 
 // Tests that `GetOtpSuggestions` waits with the callback if an SMS OTP
@@ -345,7 +346,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_DoesNotTriggerWhileInProgress) {
   const FormStructure* form = AddFormWithOtpField();
   ASSERT_TRUE(form);
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
 
   // The future should not be ready yet, as the SMS backend has not responded.
@@ -357,7 +358,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_DoesNotTriggerWhileInProgress) {
   // The future should now be ready, and contain the OTP.
   EXPECT_TRUE(future.IsReady());
   ASSERT_EQ(future.Get().size(), 1u);
-  EXPECT_EQ(future.Get()[0], otp.value());
+  EXPECT_EQ(future.Get()[0].value(), otp.value());
 }
 
 // Tests that `GetOtpSuggestions` immediately returns any OTPs that have
@@ -377,11 +378,11 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_FetchesSmsOnlyOnce) {
   const FormStructure* form1 = AddFormWithOtpField();
   ASSERT_TRUE(form1);
 
-  base::test::TestFuture<const std::vector<std::string>> future1;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future1;
   otp_manager.GetOtpSuggestions(*form1, test_field_, future1.GetCallback());
 
   ASSERT_EQ(future1.Get().size(), 1u);
-  EXPECT_EQ(future1.Get()[0], otp.value());
+  EXPECT_EQ(future1.Get()[0].value(), otp.value());
 
   // Adding a second OTP form should not trigger a new SMS OTP retrieval.
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp).Times(0);
@@ -389,11 +390,11 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_FetchesSmsOnlyOnce) {
   ASSERT_TRUE(form2);
 
   // The results of the first result should still be delivered.
-  base::test::TestFuture<const std::vector<std::string>> future2;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future2;
   otp_manager.GetOtpSuggestions(*form2, test_field_, future2.GetCallback());
 
   ASSERT_EQ(future2.Get().size(), 1u);
-  EXPECT_EQ(future2.Get()[0], otp.value());
+  EXPECT_EQ(future2.Get()[0].value(), otp.value());
 }
 
 // Tests that if `GetOtpSuggestions` is called twice, only the callback from
@@ -421,7 +422,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_NewCallInvalidatesOldCallback) {
   const FormStructure* form = AddFormWithOtpField();
   ASSERT_TRUE(form);
 
-  base::test::TestFuture<const std::vector<std::string>> future1;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future1;
   otp_manager.GetOtpSuggestions(*form, test_field_, future1.GetCallback());
 
   // The future should not be ready yet, as the SMS backend has not responded.
@@ -429,7 +430,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_NewCallInvalidatesOldCallback) {
 
   // Call GetOtpSuggestions again. This should invalidate the first callback by
   // running it with empty suggestions.
-  base::test::TestFuture<const std::vector<std::string>> future2;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future2;
   otp_manager.GetOtpSuggestions(*form, test_field_, future2.GetCallback());
 
   // The first future should be resolved with empty suggestions.
@@ -444,7 +445,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_NewCallInvalidatesOldCallback) {
   // The second future should now be ready, and contain the OTP.
   EXPECT_TRUE(future2.IsReady());
   ASSERT_EQ(future2.Get().size(), 1u);
-  EXPECT_EQ(future2.Get()[0], otp.value());
+  EXPECT_EQ(future2.Get()[0].value(), otp.value());
 }
 
 // Tests that an empty OTP value received from the backend is not stored.
@@ -464,7 +465,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_EmptyOtpIsNotStored) {
   const FormStructure* form = AddFormWithOtpField();
   ASSERT_TRUE(form);
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
 
   EXPECT_TRUE(future.Get().empty());
@@ -497,7 +498,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_FiltersExpiredOtps) {
 
   // Request suggestions. The future should not be ready yet, as the SMS
   // backend has not responded.
-  base::test::TestFuture<const std::vector<std::string>> future1;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future1;
   otp_manager.GetOtpSuggestions(*form, test_field_, future1.GetCallback());
   EXPECT_FALSE(future1.IsReady());
 
@@ -506,13 +507,13 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_FiltersExpiredOtps) {
 
   // The future should now be ready, and contain the fresh OTP.
   ASSERT_EQ(future1.Get().size(), 1u);
-  EXPECT_EQ(future1.Get()[0], otp.value());
+  EXPECT_EQ(future1.Get()[0].value(), otp.value());
 
   // Advance the clock by 6 minutes to make the OTP expire.
   task_environment_.AdvanceClock(base::Minutes(6));
 
   // Verify that the OTP is now expired and not returned.
-  base::test::TestFuture<const std::vector<std::string>> future2;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future2;
   otp_manager.GetOtpSuggestions(*form, test_field_, future2.GetCallback());
   EXPECT_FALSE(future2.IsReady());
 }
@@ -539,7 +540,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_SafetyCheckReturnsFalse) {
         phish_guard_callback = std::move(callback);
       });
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
 
   // The phish guard check is in progress, so the future should not be ready.
@@ -581,7 +582,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_SafetyCheckReturnsTrue) {
         phish_guard_callback = std::move(callback);
       });
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
 
   // The phish guard check is in progress, so the future should not be ready.
@@ -592,7 +593,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_SafetyCheckReturnsTrue) {
   std::move(phish_guard_callback).Run(false);  // Safe (no phishing)
 
   ASSERT_EQ(future.Get().size(), 1u);
-  EXPECT_EQ(future.Get()[0], otp.value());
+  EXPECT_EQ(future.Get()[0].value(), otp.value());
 
   histogram_tester_.ExpectUniqueSample(kPhishGuardCheckPerformedHistogram, true,
                                        1);
@@ -613,7 +614,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_OpaqueOriginReturnsEmpty) {
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp).Times(0);
   EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck).Times(0);
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   FormFieldData field = test_field_;
   field.set_origin(url::Origin());
   otp_manager.GetOtpSuggestions(*form, field, future.GetCallback());
@@ -645,11 +646,11 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_PhishGuardCheckPassesFrameToken) {
         std::move(callback).Run(false);
       });
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, field, future.GetCallback());
 
   ASSERT_EQ(future.Get().size(), 1u);
-  EXPECT_EQ(future.Get()[0], otp.value());
+  EXPECT_EQ(future.Get()[0].value(), otp.value());
 }
 
 // Tests that suggestions are returned if there is no phishing check delegate,
@@ -668,11 +669,11 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_NoPhishingDelegate) {
   const FormStructure* form = AddFormWithOtpField();
   ASSERT_TRUE(form);
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
 
   ASSERT_EQ(future.Get().size(), 1u);
-  EXPECT_EQ(future.Get()[0], otp.value());
+  EXPECT_EQ(future.Get()[0].value(), otp.value());
 
   histogram_tester_.ExpectUniqueSample(kPhishGuardCheckPerformedHistogram,
                                        false, 1);
@@ -702,7 +703,7 @@ TEST_F(OtpManagerImplTest, OnOtpAvailable_LoggedEvenIfPhishGuardBlocks) {
   const FormStructure* form = AddFormWithOtpField();
   ASSERT_TRUE(form);
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
 
   // Simulate unsafe site (phishing detection).
@@ -740,7 +741,7 @@ TEST_F(OtpManagerImplTest, OnOtpAvailable_NotLoggedIfNoPendingCallback) {
   const FormStructure* form = AddFormWithOtpField();
   ASSERT_TRUE(form);
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
 
   // Simulate a focus on a form field. This should clear the pending callback.
@@ -781,7 +782,7 @@ TEST_F(OtpManagerImplTest, OnBeforeFocusOnFormField_ClearsPendingCallback) {
   const FormStructure* form = AddFormWithOtpField();
   ASSERT_TRUE(form);
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
 
   // The future should not be ready yet, as the SMS backend has not responded.
@@ -823,7 +824,7 @@ TEST_F(OtpManagerImplTest, OnBeforeFocusOnNonFormField_ClearsPendingCallback) {
   const FormStructure* form = AddFormWithOtpField();
   ASSERT_TRUE(form);
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
 
   // The future should not be ready yet, as the SMS backend has not responded.
@@ -992,12 +993,12 @@ TEST_F(OtpManagerImplTest,
   EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck)
       .WillOnce(RunOnceCallback<1>(/*is_phishing=*/false));
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
 
   EXPECT_TRUE(future.IsReady());
   ASSERT_EQ(future.Get().size(), 1u);
-  EXPECT_EQ(future.Get()[0], "654321");
+  EXPECT_EQ(future.Get()[0].value(), "654321");
   EXPECT_TRUE(autofill_manager()
                   .GetOtpFormEventLogger()
                   .HasLoggedDataToFillAvailableForTesting());
@@ -1032,7 +1033,7 @@ TEST_F(OtpManagerImplTest,
   EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck)
       .WillOnce(RunOnceCallback<1>(/*is_phishing=*/true));
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
 
   EXPECT_TRUE(future.IsReady());
@@ -1078,12 +1079,12 @@ TEST_F(OtpManagerImplTest,
   EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck)
       .WillOnce(RunOnceCallback<1>(/*is_phishing=*/false));
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
 
   EXPECT_TRUE(future.IsReady());
   ASSERT_EQ(future.Get().size(), 1u);
-  EXPECT_EQ(future.Get()[0], "654321");
+  EXPECT_EQ(future.Get()[0].value(), "654321");
 }
 
 // Tests that `GetOtpSuggestions` does not synchronously serve cached non-Gmail
@@ -1106,7 +1107,7 @@ TEST_F(OtpManagerImplTest,
 
   EXPECT_CALL(mock_service, GetRecentOneTimeTokens).Times(1);
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
 
   EXPECT_FALSE(future.IsReady());
@@ -1133,7 +1134,7 @@ TEST_F(OtpManagerImplTest,
 
   EXPECT_CALL(mock_service, GetRecentOneTimeTokens).Times(1);
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
 
   EXPECT_FALSE(future.IsReady());
@@ -1164,7 +1165,7 @@ TEST_F(OtpManagerImplTest,
 
   EXPECT_CALL(mock_service, GetRecentOneTimeTokens).Times(1);
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
 
   EXPECT_FALSE(future.IsReady());
@@ -1206,7 +1207,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestionsCrossOriginFormReturnsEmpty) {
       /*main_frame_origin=*/url::Origin::Create(GURL("https://example.test")));
   ASSERT_TRUE(form);
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, *form->field(0), future.GetCallback());
 
   EXPECT_TRUE(future.IsReady());
@@ -1242,7 +1243,7 @@ TEST_F(OtpManagerImplTest, EmbeddedFrameTreeGetOtpSuggestionsReturnsEmpty) {
       /*main_frame_origin=*/url::Origin::Create(GURL("https://example.test")));
   ASSERT_TRUE(form);
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, *form->field(0), future.GetCallback());
 
   EXPECT_TRUE(future.IsReady());
@@ -1266,11 +1267,11 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestionsSameTldPlusOneFormReturnsOtp) {
       /*main_frame_origin=*/url::Origin::Create(GURL("https://example.test")));
   ASSERT_TRUE(form);
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, *form->field(0), future.GetCallback());
 
   ASSERT_EQ(future.Get().size(), 1u);
-  EXPECT_EQ(future.Get()[0], otp.value());
+  EXPECT_EQ(future.Get()[0].value(), otp.value());
 }
 
 // Tests that `GetOtpSuggestions` immediately returns empty suggestions if the
@@ -1286,7 +1287,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestionsUnfocusableOtpFieldReturnsEmpty) {
       /*is_focusable=*/false);
   ASSERT_TRUE(form);
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, *form->field(0), future.GetCallback());
 
   EXPECT_TRUE(future.IsReady());
@@ -1313,11 +1314,13 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_ReturnsMockOtpWhenSwitchIsSet) {
   // is returned immediately without triggering PhishGuard checks.
   EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck).Times(0);
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
 
   EXPECT_TRUE(future.IsReady());
-  EXPECT_THAT(future.Get(), ElementsAre("987654"));
+  EXPECT_THAT(
+      future.Get(),
+      ElementsAre(Property(&one_time_tokens::OneTimeToken::value, "987654")));
 }
 
 // Tests that `GetOtpSuggestions` returns empty suggestions when the form is not
@@ -1337,7 +1340,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_MockOtpIgnoredForNonOtpForm) {
       "Username", "username", "john_doe", FormControlType::kInputText)});
   auto form = std::make_unique<FormStructure>(form_data);
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
 
   EXPECT_TRUE(future.IsReady());
@@ -1630,7 +1633,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_NullServiceInvokesCallback) {
   OtpManagerImpl otp_manager(autofill_manager(),
                              /*one_time_token_service=*/nullptr);
   const FormStructure* form = AddFormWithOtpField();
-  base::test::TestFuture<std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
   EXPECT_TRUE(future.IsReady());
   EXPECT_TRUE(future.Get().empty());
@@ -1644,7 +1647,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_NullSmsBackendInvokesCallback) {
       /*gmail_otp_backend=*/nullptr);
   OtpManagerImpl otp_manager(autofill_manager(), &service_without_backend);
   const FormStructure* form = AddFormWithOtpField();
-  base::test::TestFuture<std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
   EXPECT_TRUE(future.IsReady());
   EXPECT_TRUE(future.Get().empty());
@@ -1657,11 +1660,13 @@ TEST_F(OtpManagerImplTest,
   OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
   const FormStructure* form = AddFormWithOtpField();
 
-  base::test::TestFuture<std::vector<std::string>> first_future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>>
+      first_future;
   otp_manager.GetOtpSuggestions(*form, test_field_, first_future.GetCallback());
   EXPECT_FALSE(first_future.IsReady());
 
-  base::test::TestFuture<std::vector<std::string>> second_future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>>
+      second_future;
   otp_manager.GetOtpSuggestions(*form, test_field_,
                                 second_future.GetCallback());
   EXPECT_TRUE(first_future.IsReady());
@@ -1771,7 +1776,8 @@ class OtpManagerImplDeliveryTest : public OtpManagerImplTest {
   const FormStructure& form() const LIFETIME_BOUND { return *form_; }
 
   void RequestOtpSuggestions(
-      base::test::TestFuture<std::vector<std::string>>& future) {
+      base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>>&
+          future) {
     otp_manager().GetOtpSuggestions(form(), test_field_, future.GetCallback());
     EXPECT_FALSE(future.IsReady());
   }
@@ -1785,7 +1791,7 @@ class OtpManagerImplDeliveryTest : public OtpManagerImplTest {
 // the pending callback when PhishGuard approves.
 TEST_F(OtpManagerImplDeliveryTest,
        MaybeShowOtpSuggestionsForSms_DeliversSuggestionsWhenNotPhishing) {
-  base::test::TestFuture<std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   RequestOtpSuggestions(future);
 
   EXPECT_CALL(otp_phish_guard_delegate(),
@@ -1800,7 +1806,9 @@ TEST_F(OtpManagerImplDeliveryTest,
                               std::move(token));
 
   EXPECT_TRUE(future.IsReady());
-  EXPECT_THAT(future.Get(), ElementsAre(kDefaultOtpValue));
+  EXPECT_THAT(future.Get(),
+              ElementsAre(Property(&one_time_tokens::OneTimeToken::value,
+                                   kDefaultOtpValue)));
   histogram_tester_.ExpectUniqueSample(
       kPhishGuardVerdictHistogram, OneTimeTokensPhishGuardVerdict::kNotPhishing,
       1);
@@ -1811,7 +1819,7 @@ TEST_F(OtpManagerImplDeliveryTest,
 // phishing.
 TEST_F(OtpManagerImplDeliveryTest,
        MaybeShowOtpSuggestionsForSms_SuppressedWhenPhishing) {
-  base::test::TestFuture<std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   RequestOtpSuggestions(future);
 
   EXPECT_CALL(otp_phish_guard_delegate(),
@@ -1836,7 +1844,7 @@ TEST_F(OtpManagerImplDeliveryTest,
 // the pending callback when PhishGuard approves.
 TEST_F(OtpManagerImplDeliveryTest,
        MaybeShowOtpSuggestionsForGmail_DeliversSuggestionsWhenNotPhishing) {
-  base::test::TestFuture<std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   RequestOtpSuggestions(future);
 
   EXPECT_CALL(otp_phish_guard_delegate(),
@@ -1851,7 +1859,9 @@ TEST_F(OtpManagerImplDeliveryTest,
                               std::move(token));
 
   EXPECT_TRUE(future.IsReady());
-  EXPECT_THAT(future.Get(), ElementsAre(kDefaultOtpValue));
+  EXPECT_THAT(future.Get(),
+              ElementsAre(Property(&one_time_tokens::OneTimeToken::value,
+                                   kDefaultOtpValue)));
   histogram_tester_.ExpectUniqueSample(
       kPhishGuardVerdictHistogram, OneTimeTokensPhishGuardVerdict::kNotPhishing,
       1);
@@ -1862,7 +1872,7 @@ TEST_F(OtpManagerImplDeliveryTest,
 // reports phishing.
 TEST_F(OtpManagerImplDeliveryTest,
        MaybeShowOtpSuggestionsForGmail_SuppressedWhenPhishing) {
-  base::test::TestFuture<std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   RequestOtpSuggestions(future);
 
   EXPECT_CALL(otp_phish_guard_delegate(),
@@ -1887,7 +1897,7 @@ TEST_F(OtpManagerImplDeliveryTest,
 // suggestions if the token value is empty.
 TEST_F(OtpManagerImplDeliveryTest,
        MaybeShowOtpSuggestionsForGmail_EmptyTokenInvokesCallbackWithEmpty) {
-  base::test::TestFuture<std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   RequestOtpSuggestions(future);
 
   EXPECT_CALL(otp_phish_guard_delegate(),
@@ -1911,7 +1921,7 @@ TEST_F(OtpManagerImplDeliveryTest,
 TEST_F(OtpManagerImplDeliveryTest,
        OnOneTimeTokenReceived_GmailSuppressedWhenUserNotOptedIn) {
   prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), false);
-  base::test::TestFuture<std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   RequestOtpSuggestions(future);
 
   EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck).Times(0);
@@ -1944,7 +1954,7 @@ TEST_F(OtpManagerImplDeliveryTest, PhishGuardLatency_PerRequestMeasurement) {
         phish_guard_callback_2 = std::move(callback);
       });
 
-  base::test::TestFuture<std::vector<std::string>> future1;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future1;
   RequestOtpSuggestions(future1);
 
   // Check 1 starts at t=0.
@@ -1955,7 +1965,7 @@ TEST_F(OtpManagerImplDeliveryTest, PhishGuardLatency_PerRequestMeasurement) {
       .OnOneTimeTokenReceived(one_time_tokens::OneTimeTokenSource::kGmail,
                               std::move(token1));
 
-  base::test::TestFuture<std::vector<std::string>> future2;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future2;
   RequestOtpSuggestions(future2);
 
   // Check 2 starts at t=20ms.
@@ -2316,7 +2326,7 @@ TEST_F(OtpManagerImplTest,
   const FormStructure* form = AddFormWithOtpField();
   ASSERT_TRUE(form);
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
 
   EXPECT_NE(test_api(otp_manager).gmail_otp_retriever(), nullptr);
@@ -2336,7 +2346,7 @@ TEST_F(
   const FormStructure* form = AddFormWithOtpField();
   ASSERT_TRUE(form);
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
 
   EXPECT_EQ(test_api(otp_manager).gmail_otp_retriever(), nullptr);
@@ -2356,7 +2366,7 @@ TEST_F(
   const FormStructure* form = AddFormWithOtpField();
   ASSERT_TRUE(form);
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
 
   EXPECT_EQ(test_api(otp_manager).gmail_otp_retriever(), nullptr);
@@ -2376,7 +2386,7 @@ TEST_F(OtpManagerImplTest,
   const FormStructure* form = AddFormWithOtpField();
   ASSERT_TRUE(form);
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
 
   EXPECT_EQ(test_api(otp_manager).gmail_otp_retriever(), nullptr);
@@ -2410,11 +2420,13 @@ TEST_F(OtpManagerImplTest,
   EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck)
       .WillOnce(RunOnceCallback<1>(/*is_phishing=*/false));
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
 
   EXPECT_TRUE(future.IsReady());
-  EXPECT_THAT(future.Get(), testing::ElementsAre("654321"));
+  EXPECT_THAT(
+      future.Get(),
+      ElementsAre(Property(&one_time_tokens::OneTimeToken::value, "654321")));
   EXPECT_EQ(test_api(otp_manager).gmail_otp_retriever(), nullptr);
 }
 
@@ -2429,7 +2441,7 @@ TEST_F(OtpManagerImplTest, OnGmailOtpRetrieved_DeliversSuggestionsOnSuccess) {
   EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck)
       .WillOnce(RunOnceCallback<1>(/*is_phishing=*/false));
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
@@ -2442,7 +2454,9 @@ TEST_F(OtpManagerImplTest, OnGmailOtpRetrieved_DeliversSuggestionsOnSuccess) {
       });
 
   EXPECT_TRUE(future.IsReady());
-  EXPECT_THAT(future.Get(), testing::ElementsAre("789012"));
+  EXPECT_THAT(
+      future.Get(),
+      ElementsAre(Property(&one_time_tokens::OneTimeToken::value, "789012")));
   EXPECT_TRUE(autofill_manager()
                   .GetOtpFormEventLogger()
                   .HasLoggedDataToFillAvailableForTesting());
@@ -2457,7 +2471,7 @@ TEST_F(OtpManagerImplTest, OnGmailOtpRetrieved_DoesNotInvokeCallbackOnFailure) {
   const FormStructure* form = AddFormWithOtpField();
   ASSERT_TRUE(form);
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
@@ -2479,7 +2493,7 @@ TEST_F(OtpManagerImplTest,
   const FormStructure* form = AddFormWithOtpField();
   ASSERT_TRUE(form);
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
@@ -2519,7 +2533,7 @@ TEST_F(
 
   OtpManagerImpl otp_manager(autofill_manager(), &mock_service);
 
-  base::test::TestFuture<const std::vector<std::string>> future;
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
 
   ASSERT_FALSE(get_recent_callback.is_null());

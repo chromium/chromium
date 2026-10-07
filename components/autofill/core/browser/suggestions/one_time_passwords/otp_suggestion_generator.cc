@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -25,6 +24,8 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/one_time_tokens/core/browser/one_time_token.h"
+#include "components/one_time_tokens/core/browser/one_time_token_type.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -34,15 +35,17 @@ namespace {
 // Builds Suggestion for given `otp_value`.
 Suggestion BuildOtpSuggestion(const std::string& otp_value,
                               SuggestionType type,
-                              std::string_view account_email) {
+                              std::string_view sender_address) {
   Suggestion suggestion(base::UTF8ToUTF16(otp_value), type);
   if (type == SuggestionType::kGmailOneTimePasswordEntry) {
     suggestion.icon = Suggestion::Icon::kMailAsterisk;
     suggestion.minor_texts = {Suggestion::Text(l10n_util::GetStringUTF16(
         IDS_AUTOFILL_GMAIL_OTP_VERIFICATION_CODE_LABEL))};
+    // TODO(crbug.com/570459643): Elide long sender email addresses before
+    // displaying them in the suggestion label.
     suggestion.labels = {{Suggestion::Text(
         l10n_util::GetStringFUTF16(IDS_AUTOFILL_GMAIL_OTP_FROM_ACCOUNT_LABEL,
-                                   base::UTF8ToUTF16(account_email)))}};
+                                   base::UTF8ToUTF16(sender_address)))}};
   }
 #if BUILDFLAG(IS_ANDROID)
   // Choose the right icon and A11Y label when more OTP options are supported
@@ -62,24 +65,27 @@ Suggestion BuildOtpSuggestion(const std::string& otp_value,
 }  // namespace
 
 std::vector<Suggestion> BuildOtpSuggestions(
-    base::span<const std::string> one_time_passwords,
-    SuggestionType type,
-    std::string_view account_email) {
-  CHECK(type == SuggestionType::kGmailOneTimePasswordEntry ||
-        type == SuggestionType::kOneTimePasswordEntry);
-  if (one_time_passwords.empty() ||
-      (type == SuggestionType::kGmailOneTimePasswordEntry &&
-       account_email.empty())) {
-    return {};
-  }
+    base::span<const one_time_tokens::OneTimeToken> one_time_tokens) {
   std::vector<Suggestion> suggestions;
-  suggestions.reserve(
-      one_time_passwords.size() +
-      (type == SuggestionType::kGmailOneTimePasswordEntry ? 2 : 0));
-  for (const std::string& otp_value : one_time_passwords) {
-    suggestions.push_back(BuildOtpSuggestion(otp_value, type, account_email));
+  suggestions.reserve(one_time_tokens.size() + 2);
+  bool has_gmail_otp = false;
+  for (const one_time_tokens::OneTimeToken& token : one_time_tokens) {
+    const SuggestionType type =
+        token.type() == one_time_tokens::OneTimeTokenType::kGmail
+            ? SuggestionType::kGmailOneTimePasswordEntry
+            : SuggestionType::kOneTimePasswordEntry;
+    std::string_view sender_address =
+        token.sender_address() ? *token.sender_address() : std::string_view();
+    if (type == SuggestionType::kGmailOneTimePasswordEntry) {
+      if (sender_address.empty()) {
+        continue;
+      }
+      has_gmail_otp = true;
+    }
+    suggestions.push_back(
+        BuildOtpSuggestion(token.value(), type, sender_address));
   }
-  if (type == SuggestionType::kGmailOneTimePasswordEntry) {
+  if (has_gmail_otp) {
     suggestions.emplace_back(SuggestionType::kSeparator);
     Suggestion& open_gmail = suggestions.emplace_back(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_OPEN_GMAIL_FOR_OTP),
@@ -125,13 +131,9 @@ void OtpSuggestionGenerator::GenerateSuggestions(
 
 void OtpSuggestionGenerator::OnOtpReturned(
     base::OnceCallback<void(ReturnedSuggestions)> callback,
-    std::vector<std::string> one_time_passwords) {
-  // TODO(crbug.com/565217441): Pass
-  // `SuggestionType::kGmailOneTimePasswordEntry` and the signed-in primary
-  // account email from `IdentityManager` once `OtpManager` distinguishes Gmail
-  // vs. SMS OTP tokens.
+    std::vector<one_time_tokens::OneTimeToken> one_time_tokens) {
   std::move(callback).Run({SuggestionDataSource::kOneTimePassword,
-                           BuildOtpSuggestions(one_time_passwords)});
+                           BuildOtpSuggestions(one_time_tokens)});
 }
 
 }  // namespace autofill

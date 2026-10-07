@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_ONE_TIME_PASSWORDS_OTP_SUGGESTION_GENERATOR_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_ONE_TIME_PASSWORDS_OTP_SUGGESTION_GENERATOR_H_
 
-#include <string>
-#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -17,21 +15,22 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
-#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+
+namespace one_time_tokens {
+class OneTimeToken;
+}  // namespace one_time_tokens
 
 namespace autofill {
 
 class OtpManager;
 
-// Generates OTP suggestions from the provided span of retrieved OTP values.
+// Generates OTP suggestions from the provided span of retrieved OTP tokens.
 // TODO(crbug.com/409962888): Cleanup once AutofillNewSuggestionGeneration is
 // launched.
 std::vector<Suggestion> BuildOtpSuggestions(
-    base::span<const std::string> one_time_passwords,
-    SuggestionType type = SuggestionType::kOneTimePasswordEntry,
-    std::string_view account_email = "");
+    base::span<const one_time_tokens::OneTimeToken> one_time_tokens);
 
 // A `SuggestionGenerator` for `FillingProduct::kOneTimePassword`.
 class OtpSuggestionGenerator : public SuggestionGenerator {
@@ -48,8 +47,9 @@ class OtpSuggestionGenerator : public SuggestionGenerator {
       base::OnceCallback<void(ReturnedSuggestions)> callback) override;
 
  private:
-  void OnOtpReturned(base::OnceCallback<void(ReturnedSuggestions)> callback,
-                     std::vector<std::string> one_time_passwords);
+  void OnOtpReturned(
+      base::OnceCallback<void(ReturnedSuggestions)> callback,
+      std::vector<one_time_tokens::OneTimeToken> one_time_tokens);
 
   raw_ref<OtpManager> otp_manager_;
 

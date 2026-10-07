@@ -10,6 +10,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -18,6 +19,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
 #include "components/autofill/core/common/autofill_test_util.h"
+#include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,6 +29,8 @@
 namespace autofill {
 
 using ::base::test::RunOnceCallback;
+using ::one_time_tokens::OneTimeToken;
+using ::one_time_tokens::OneTimeTokenType;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
@@ -55,7 +59,36 @@ TEST_F(OtpSuggestionGeneratorTest, GenerateOtpSuggestions) {
   form_structure.field(0)->SetTypeTo(AutofillType(ONE_TIME_CODE), std::nullopt);
 
   EXPECT_CALL(otp_manager(), GetOtpSuggestions)
-      .WillOnce(RunOnceCallback<2>(std::vector<std::string>{"123456"}));
+      .WillOnce(RunOnceCallback<2>(std::vector<OneTimeToken>{OneTimeToken(
+          OneTimeTokenType::kSmsOtp, "123456", base::TimeTicks::Now())}));
+
+  base::MockCallback<
+      base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
+      suggestions_generated_callback;
+
+  EXPECT_CALL(
+      suggestions_generated_callback,
+      Run(Pair(
+          SuggestionGenerator::SuggestionDataSource::kOneTimePassword,
+          ElementsAre(AllOf(Field(&Suggestion::main_text,
+                                  Field(&Suggestion::Text::value, u"123456")),
+                            Field(&Suggestion::type,
+                                  SuggestionType::kOneTimePasswordEntry))))));
+
+  generator().GenerateSuggestions(form, form.fields()[0], &form_structure,
+                                  form_structure.field(0), client(),
+                                  suggestions_generated_callback.Get());
+}
+
+TEST_F(OtpSuggestionGeneratorTest, GenerateOtpSuggestions_GmailOtp) {
+  FormData form = test::GetFormData({.fields = {{.role = ONE_TIME_CODE}}});
+  FormStructure form_structure(form);
+  form_structure.field(0)->SetTypeTo(AutofillType(ONE_TIME_CODE), std::nullopt);
+
+  EXPECT_CALL(otp_manager(), GetOtpSuggestions)
+      .WillOnce(RunOnceCallback<2>(std::vector<OneTimeToken>{
+          OneTimeToken(OneTimeTokenType::kGmail, "123456",
+                       base::TimeTicks::Now(), "sender@example.com")}));
 
   base::MockCallback<
       base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
@@ -69,7 +102,12 @@ TEST_F(OtpSuggestionGeneratorTest, GenerateOtpSuggestions) {
               AllOf(Field(&Suggestion::main_text,
                           Field(&Suggestion::Text::value, u"123456")),
                     Field(&Suggestion::type,
-                          SuggestionType::kOneTimePasswordEntry))))));
+                          SuggestionType::kGmailOneTimePasswordEntry),
+                    Field(&Suggestion::labels,
+                          ElementsAre(ElementsAre(
+                              Suggestion::Text(u"From sender@example.com"))))),
+              Field(&Suggestion::type, SuggestionType::kSeparator),
+              Field(&Suggestion::type, SuggestionType::kOpenGmailForOtps)))));
 
   generator().GenerateSuggestions(form, form.fields()[0], &form_structure,
                                   form_structure.field(0), client(),
@@ -82,7 +120,7 @@ TEST_F(OtpSuggestionGeneratorTest, GenerateOtpSuggestions_EmptyOtpList) {
   form_structure.field(0)->SetTypeTo(AutofillType(ONE_TIME_CODE), std::nullopt);
 
   EXPECT_CALL(otp_manager(), GetOtpSuggestions)
-      .WillOnce(RunOnceCallback<2>(std::vector<std::string>{}));
+      .WillOnce(RunOnceCallback<2>(std::vector<OneTimeToken>{}));
 
   base::MockCallback<
       base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
@@ -99,18 +137,20 @@ TEST_F(OtpSuggestionGeneratorTest, GenerateOtpSuggestions_EmptyOtpList) {
 }
 
 TEST_F(OtpSuggestionGeneratorTest, EmptyInput) {
-  std::vector<Suggestion> suggestions =
-      BuildOtpSuggestions(/*one_time_passwords=*/{});
-  EXPECT_TRUE(suggestions.empty());
+  EXPECT_TRUE(BuildOtpSuggestions(base::span<const OneTimeToken>{}).empty());
 }
 
 TEST_F(OtpSuggestionGeneratorTest, GmailOtps) {
-  std::vector<std::string> otps = {"123456", "789012"};
-  std::vector<Suggestion> suggestions = BuildOtpSuggestions(
-      otps, SuggestionType::kGmailOneTimePasswordEntry, "user@gmail.com");
+  std::vector<OneTimeToken> otps = {
+      OneTimeToken(OneTimeTokenType::kGmail, "123456", base::TimeTicks::Now(),
+                   "user@gmail.com"),
+      OneTimeToken(OneTimeTokenType::kGmail, "789012", base::TimeTicks::Now(),
+                   "user@gmail.com"),
+  };
+  std::vector<Suggestion> suggestions = BuildOtpSuggestions(otps);
 
   ASSERT_EQ(suggestions.size(), 4U);
-  EXPECT_EQ(suggestions[0].main_text.value, base::UTF8ToUTF16(otps[0]));
+  EXPECT_EQ(suggestions[0].main_text.value, u"123456");
   EXPECT_EQ(suggestions[0].type, SuggestionType::kGmailOneTimePasswordEntry);
   EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kMailAsterisk);
   EXPECT_THAT(suggestions[0].minor_texts,
@@ -121,7 +161,7 @@ TEST_F(OtpSuggestionGeneratorTest, GmailOtps) {
   EXPECT_EQ(suggestions[0].voice_over, u"Verification code: 123456");
   EXPECT_EQ(suggestions[0].acceptance_a11y_announcement, u"Autofilled code");
 
-  EXPECT_EQ(suggestions[1].main_text.value, base::UTF8ToUTF16(otps[1]));
+  EXPECT_EQ(suggestions[1].main_text.value, u"789012");
   EXPECT_EQ(suggestions[1].type, SuggestionType::kGmailOneTimePasswordEntry);
   EXPECT_EQ(suggestions[1].icon, Suggestion::Icon::kMailAsterisk);
   EXPECT_THAT(suggestions[1].minor_texts,
@@ -142,19 +182,55 @@ TEST_F(OtpSuggestionGeneratorTest, GmailOtps) {
 }
 
 TEST_F(OtpSuggestionGeneratorTest, GmailOtps_EmptyAccountEmailReturnsEmpty) {
-  std::vector<std::string> otps = {"123456"};
-  std::vector<Suggestion> suggestions = BuildOtpSuggestions(
-      otps, SuggestionType::kGmailOneTimePasswordEntry, /*account_email=*/"");
+  std::vector<OneTimeToken> otps = {
+      OneTimeToken(OneTimeTokenType::kGmail, "123456", base::TimeTicks::Now(),
+                   /*sender_address=*/""),
+  };
+  std::vector<Suggestion> suggestions = BuildOtpSuggestions(otps);
 
   EXPECT_TRUE(suggestions.empty());
 }
 
+TEST_F(OtpSuggestionGeneratorTest, BuildOtpSuggestions_MixedOneTimeTokens) {
+  std::vector<OneTimeToken> tokens = {
+      OneTimeToken(OneTimeTokenType::kSmsOtp, "111111", base::TimeTicks::Now()),
+      OneTimeToken(OneTimeTokenType::kGmail, "222222", base::TimeTicks::Now(),
+                   "sender1@example.com"),
+      OneTimeToken(OneTimeTokenType::kGmail, "333333", base::TimeTicks::Now(),
+                   "sender2@example.com"),
+  };
+  std::vector<Suggestion> suggestions = BuildOtpSuggestions(tokens);
+
+  ASSERT_EQ(suggestions.size(), 5U);
+  EXPECT_EQ(suggestions[0].main_text.value, u"111111");
+  EXPECT_EQ(suggestions[0].type, SuggestionType::kOneTimePasswordEntry);
+  EXPECT_TRUE(suggestions[0].labels.empty());
+
+  EXPECT_EQ(suggestions[1].main_text.value, u"222222");
+  EXPECT_EQ(suggestions[1].type, SuggestionType::kGmailOneTimePasswordEntry);
+  EXPECT_THAT(
+      suggestions[1].labels,
+      ElementsAre(ElementsAre(Suggestion::Text(u"From sender1@example.com"))));
+
+  EXPECT_EQ(suggestions[2].main_text.value, u"333333");
+  EXPECT_EQ(suggestions[2].type, SuggestionType::kGmailOneTimePasswordEntry);
+  EXPECT_THAT(
+      suggestions[2].labels,
+      ElementsAre(ElementsAre(Suggestion::Text(u"From sender2@example.com"))));
+
+  EXPECT_EQ(suggestions[3].type, SuggestionType::kSeparator);
+  EXPECT_EQ(suggestions[4].type, SuggestionType::kOpenGmailForOtps);
+}
+
 TEST_F(OtpSuggestionGeneratorTest, SmsOtps) {
-  std::vector<std::string> otps = {"123456", "789012"};
+  std::vector<OneTimeToken> otps = {
+      OneTimeToken(OneTimeTokenType::kSmsOtp, "123456", base::TimeTicks::Now()),
+      OneTimeToken(OneTimeTokenType::kSmsOtp, "789012", base::TimeTicks::Now()),
+  };
   std::vector<Suggestion> suggestions = BuildOtpSuggestions(otps);
 
   ASSERT_EQ(suggestions.size(), 2U);
-  EXPECT_EQ(suggestions[0].main_text.value, base::UTF8ToUTF16(otps[0]));
+  EXPECT_EQ(suggestions[0].main_text.value, u"123456");
   EXPECT_EQ(suggestions[0].type, SuggestionType::kOneTimePasswordEntry);
   EXPECT_EQ(suggestions[0].voice_over, u"Verification code: 123456");
   EXPECT_EQ(suggestions[0].acceptance_a11y_announcement, u"Autofilled code");
@@ -164,7 +240,7 @@ TEST_F(OtpSuggestionGeneratorTest, SmsOtps) {
   EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kNoIcon);
 #endif
 
-  EXPECT_EQ(suggestions[1].main_text.value, base::UTF8ToUTF16(otps[1]));
+  EXPECT_EQ(suggestions[1].main_text.value, u"789012");
   EXPECT_EQ(suggestions[1].type, SuggestionType::kOneTimePasswordEntry);
   EXPECT_EQ(suggestions[1].voice_over, u"Verification code: 789012");
   EXPECT_EQ(suggestions[1].acceptance_a11y_announcement, u"Autofilled code");

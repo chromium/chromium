@@ -58,6 +58,10 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "ui/gfx/image/image.h"
 
+namespace one_time_tokens {
+class OneTimeToken;
+}  // namespace one_time_tokens
+
 namespace autofill {
 
 class AutofillField;
@@ -515,7 +519,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FormFieldData& field,
       const AutofillField& autofill_field,
       AutofillSuggestionTriggerSource trigger_source,
-      const std::vector<std::string>& one_time_passwords);
+      const std::vector<one_time_tokens::OneTimeToken>& one_time_tokens);
 
   // Called when all suggestion generators have finished generating their
   // suggestions. It combines the returned suggestions respecting their
@@ -565,7 +569,6 @@ class BrowserAutofillManager : public AutofillManager {
       const AutofillField* trigger_field,
       AutofillSuggestionTriggerSource trigger_source);
 
-
   // Combines autocomplete suggestions and existing suggestions into a
   // single list, prioritizing address suggestions and filtering out
   // autocomplete suggestions that are unlikely to match the field type.
@@ -599,7 +602,7 @@ class BrowserAutofillManager : public AutofillManager {
       AutofillSuggestionTriggerSource trigger_source,
       base::TimeTicks suggestion_generator_start_time,
       base::ScopedClosureRunner scoped_on_after,
-      std::vector<std::string> one_time_passwords);
+      std::vector<one_time_tokens::OneTimeToken> one_time_tokens);
   void GenerateFooter(const FormData& form,
                       const FormFieldData& field,
                       AutofillSuggestionTriggerSource trigger_source,

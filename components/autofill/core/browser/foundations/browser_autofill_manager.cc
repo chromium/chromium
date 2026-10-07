@@ -160,6 +160,7 @@
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -1590,7 +1591,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     AutofillSuggestionTriggerSource trigger_source,
     base::TimeTicks suggestion_generation_start_time,
     base::ScopedClosureRunner scoped_on_after,
-    std::vector<std::string> one_time_passwords) {
+    std::vector<one_time_tokens::OneTimeToken> one_time_tokens) {
   // In case we cannot fetch the parsed `FormStructure` and `AutofillField`, we
   // still need to offer Autocomplete.
   // TODO(crbug.com/433224307): Consider early returning here when the cache
@@ -1612,7 +1613,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
       !do_not_generate_autofill_suggestions
           ? GetAvailableSuggestions(form, *form_structure, field,
                                     *autofill_field, trigger_source,
-                                    one_time_passwords)
+                                    one_time_tokens)
           : std::vector<Suggestion>{};
 
   if (autofill_field &&
@@ -3254,7 +3255,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
     const FormFieldData& field,
     const AutofillField& autofill_field,
     AutofillSuggestionTriggerSource trigger_source,
-    const std::vector<std::string>& one_time_passwords) {
+    const std::vector<one_time_tokens::OneTimeToken>& one_time_tokens) {
   // TODO(crbug.com/489659527): This currently overrides Autofill suggestions if
   // suggestions were presented to the user after typing started. Fix that.
   if (trigger_source ==
@@ -3311,7 +3312,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
       break;
     case FillingProduct::kOneTimePassword:
       if (client().IsContextSecure()) {
-        suggestions = BuildOtpSuggestions(one_time_passwords);
+        suggestions = BuildOtpSuggestions(one_time_tokens);
       }
       break;
     case FillingProduct::kAtMemory:

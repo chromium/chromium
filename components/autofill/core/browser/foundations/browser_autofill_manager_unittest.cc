@@ -342,6 +342,12 @@ TestAddressFillData GetElvisAddressFillData() {
           "RCA"};
 }
 
+one_time_tokens::OneTimeToken CreateOneTimeToken() {
+  return one_time_tokens::OneTimeToken(
+      one_time_tokens::OneTimeTokenType::kSmsOtp, "123456",
+      base::TimeTicks::Now());
+}
+
 // Matches a AskForValuesToFillFieldLogEvent by equality of fields.
 auto Equal(const AskForValuesToFillFieldLogEvent& expected) {
   return VariantWith<AskForValuesToFillFieldLogEvent>(AllOf(
@@ -7000,15 +7006,39 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest, OtpSuggestions) {
 
   // Check that suggestions are offered for the first field if the OTP delegate
   // suggests that.
-  const std::vector<std::string> otp_values = {"123456"};
+  const std::vector<one_time_tokens::OneTimeToken> otp_tokens = {
+      one_time_tokens::OneTimeToken(one_time_tokens::OneTimeTokenType::kSmsOtp,
+                                    "123456", base::TimeTicks::Now())};
   EXPECT_CALL(otp_manager(), GetOtpSuggestions)
-      .WillOnce(RunOnceCallback<2>(otp_values));
+      .WillOnce(RunOnceCallback<2>(otp_tokens));
   OnAskForValuesToFill(form, form.fields()[0]);
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
 
   // Also check that there are no suggestions for the second field.
   OnAskForValuesToFill(form, form.fields()[1]);
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
+}
+
+TEST_F(BrowserAutofillManagerOtpSuggestionsTest, GmailOtpSuggestions) {
+  FormData form = CreateAndSeeOtpForm();
+
+  const std::vector<one_time_tokens::OneTimeToken> otp_tokens = {
+      one_time_tokens::OneTimeToken(one_time_tokens::OneTimeTokenType::kGmail,
+                                    "123456", base::TimeTicks::Now(),
+                                    "sender@example.com")};
+  EXPECT_CALL(otp_manager(), GetOtpSuggestions)
+      .WillOnce(RunOnceCallback<2>(otp_tokens));
+
+  OnAskForValuesToFill(form, form.fields()[0]);
+
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+  EXPECT_THAT(external_delegate()->suggestions(),
+              ElementsAre(EqualsSuggestion(
+                              SuggestionType::kGmailOneTimePasswordEntry,
+                              u"123456", Suggestion::Icon::kMailAsterisk,
+                              {{Suggestion::Text(u"From sender@example.com")}}),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsSuggestion(SuggestionType::kOpenGmailForOtps)));
 }
 
 TEST_F(BrowserAutofillManagerOtpSuggestionsTest, OtpFilling) {
@@ -7075,7 +7105,7 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest,
   FormData form = CreateAndSeeOtpForm();
 
   EXPECT_CALL(otp_manager(), GetOtpSuggestions)
-      .WillOnce(RunOnceCallback<2>(std::vector<std::string>{"123456"}));
+      .WillOnce(RunOnceCallback<2>(std::vector{CreateOneTimeToken()}));
 
   OnAskForValuesToFill(
       form, form.fields()[0],
@@ -7102,7 +7132,7 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest,
   FormData form = CreateAndSeeOtpForm();
 
   EXPECT_CALL(otp_manager(), GetOtpSuggestions)
-      .WillOnce(RunOnceCallback<2>(std::vector<std::string>{"123456"}));
+      .WillOnce(RunOnceCallback<2>(std::vector{CreateOneTimeToken()}));
 
   OnAskForValuesToFill(
       form, form.fields()[0],
@@ -7138,7 +7168,7 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest,
   // Now an OTP arrives in the background for an OTP field.
   FormData otp_form = CreateAndSeeOtpForm();
   EXPECT_CALL(otp_manager(), GetOtpSuggestions)
-      .WillOnce(RunOnceCallback<2>(std::vector<std::string>{"123456"}));
+      .WillOnce(RunOnceCallback<2>(std::vector{CreateOneTimeToken()}));
 
   OnAskForValuesToFill(
       otp_form, otp_form.fields()[0],
@@ -7160,7 +7190,7 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest,
   FormData form = CreateAndSeeOtpForm();
 
   EXPECT_CALL(otp_manager(), GetOtpSuggestions)
-      .WillOnce(RunOnceCallback<2>(std::vector<std::string>{"123456"}));
+      .WillOnce(RunOnceCallback<2>(std::vector{CreateOneTimeToken()}));
 
   // Trigger suggestions with Gmail OTP.
   OnAskForValuesToFill(

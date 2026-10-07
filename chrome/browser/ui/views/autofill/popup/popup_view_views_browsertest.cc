@@ -23,7 +23,6 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
-#include "components/autofill/core/browser/suggestions/one_time_passwords/otp_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/tabbed_pane_enums.h"
@@ -646,9 +645,23 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        InvokeUi_GmailOneTimePassword) {
-  PrepareSuggestions(
-      BuildOtpSuggestions({"1234"}, SuggestionType::kGmailOneTimePasswordEntry,
-                          "elisa.becket@gmail.com"));
+  Suggestion otp_suggestion(u"1234",
+                            SuggestionType::kGmailOneTimePasswordEntry);
+  otp_suggestion.icon = Suggestion::Icon::kMailAsterisk;
+  otp_suggestion.minor_texts = {Suggestion::Text(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_GMAIL_OTP_VERIFICATION_CODE_LABEL))};
+  otp_suggestion.labels = {{Suggestion::Text(l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_GMAIL_OTP_FROM_ACCOUNT_LABEL, u"elisa.becket@gmail.com"))}};
+
+  Suggestion open_gmail(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_OPEN_GMAIL_FOR_OTP),
+      SuggestionType::kOpenGmailForOtps);
+  open_gmail.icon = Suggestion::Icon::kGmail;
+  open_gmail.trailing_icon = Suggestion::Icon::kOpenInNew;
+
+  PrepareSuggestions({std::move(otp_suggestion),
+                      Suggestion(SuggestionType::kSeparator),
+                      std::move(open_gmail)});
   ShowAndVerifyUi();
 }
 
