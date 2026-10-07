@@ -40,6 +40,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
@@ -59,7 +60,10 @@ import org.chromium.content_public.common.ContentSwitches;
     ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
     "ignore-certificate-errors"
 })
-@EnableFeatures({PermissionsAndroidFeatureList.PERMISSIONS_ANDROID_CLAPPER_LOUD})
+@DisableFeatures({ChromeFeatureList.SETTINGS_MULTI_COLUMN})
+@EnableFeatures({
+    PermissionsAndroidFeatureList.PERMISSIONS_ANDROID_CLAPPER_LOUD
+})
 @Batch(Batch.PER_CLASS)
 public class PermissionClapperQuietTest {
 

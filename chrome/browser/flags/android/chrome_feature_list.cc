@@ -492,7 +492,9 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSettingsInTab,
     &kSettingsInTabDesktop,
     &kSettingsInTabUrlNav,
+    &kSettingsMultiColumn,
     &kSettingsSearchCollapsibleSearchBox,
+    &kSettingsSingleActivity,
     &kShareCustomActionsInCCT,
     &kShortCircuitUnfocusAnimation,
     &kShowTabListAnimations,
@@ -924,7 +926,9 @@ BASE_FEATURE(kSettingsInTab, base::FEATURE_DISABLED_BY_DEFAULT);
 // SettingsInTab kill switch for desktop Android. https://crbug.com/556881398
 BASE_FEATURE(kSettingsInTabDesktop, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSettingsInTabUrlNav, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSettingsMultiColumn, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSettingsSearchCollapsibleSearchBox, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSettingsSingleActivity, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kShareCustomActionsInCCT, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kShortCircuitUnfocusAnimation, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kShowTabListAnimations, base::FEATURE_DISABLED_BY_DEFAULT);

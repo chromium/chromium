@@ -10,12 +10,10 @@ import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -80,6 +78,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.PayloadCallbackHelper;
@@ -138,6 +137,7 @@ import java.util.Set;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "Manages sign-in state, which is global.")
+@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 public class ClearBrowsingDataFragmentTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
@@ -210,9 +210,7 @@ public class ClearBrowsingDataFragmentTest {
 
     @After
     public void tearDown() {
-        if (mUserActionTester != null) {
-            mUserActionTester.tearDown();
-        }
+        mUserActionTester.tearDown();
     }
 
     /** Waits for the progress dialog to disappear from the given CBD preference. */
@@ -255,12 +253,9 @@ public class ClearBrowsingDataFragmentTest {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         final ClearBrowsingDataFragment preferences =
                 (ClearBrowsingDataFragment) startPreferences().getMainFragment();
-        if (!SettingsInTab.shouldOpenSettingsInTab()) {
-            ViewUtils.waitForVisibleView(withId(R.id.menu_id_targeted_help));
-        }
+        ViewUtils.waitForVisibleView(withId(R.id.menu_id_targeted_help));
 
-        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
-                .perform(RecyclerViewActions.scrollToLastPosition());
+        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
         onView(withText(preferences.buildSignOutOfChromeText().toString()))
                 .perform(clickOnSignOutLink());
 
@@ -290,12 +285,9 @@ public class ClearBrowsingDataFragmentTest {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         final ClearBrowsingDataFragment preferences =
                 (ClearBrowsingDataFragment) startPreferences().getMainFragment();
-        if (!SettingsInTab.shouldOpenSettingsInTab()) {
-            ViewUtils.waitForVisibleView(withId(R.id.menu_id_targeted_help));
-        }
+        ViewUtils.waitForVisibleView(withId(R.id.menu_id_targeted_help));
 
-        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
-                .perform(RecyclerViewActions.scrollToLastPosition());
+        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
         onView(withText(preferences.buildSignOutOfChromeText().toString()))
                 .perform(clickOnSignOutLink());
 
@@ -509,11 +501,8 @@ public class ClearBrowsingDataFragmentTest {
     @MediumTest
     public void testTitleShown() {
         startPreferences();
-        if (!SettingsInTab.shouldOpenSettingsInTab()) {
-            ViewUtils.waitForVisibleView(withId(R.id.menu_id_targeted_help));
-        }
-        ViewUtils.waitForVisibleView(
-                allOf(withText(R.string.clear_browsing_data_title), isDisplayed()));
+        ViewUtils.waitForVisibleView(withId(R.id.menu_id_targeted_help));
+        onView(withText(R.string.clear_browsing_data_title)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -1207,12 +1196,12 @@ public class ClearBrowsingDataFragmentTest {
     }
 
     private void clickOnPrefWithTitle(String title) {
-        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
+        onView(withId(R.id.recycler_view))
                 .perform(RecyclerViewActions.actionOnItem(hasDescendant(withText(title)), click()));
     }
 
     private void verifyPrefWithTextVisible(String text) {
-        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
+        onView(withId(R.id.recycler_view))
                 .perform(RecyclerViewActions.scrollTo(hasDescendant(withText(text))));
         onView(withText(text)).check(matches(isDisplayed()));
     }

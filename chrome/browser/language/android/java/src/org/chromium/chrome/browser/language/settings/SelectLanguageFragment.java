@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -304,12 +305,19 @@ public abstract class SelectLanguageFragment extends Fragment
                         return;
                     }
 
-                    Bundle result = new Bundle();
-                    result.putString(KEY_SELECTED_LANGUAGE, item.getCode());
-                    var fragmentManager = getFragmentManager();
-                    assumeNonNull(fragmentManager);
-                    fragmentManager.setFragmentResult(FRAGMENT_RESULT_TAG, result);
-                    fragmentManager.popBackStack();
+                    if (ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
+                        Bundle result = new Bundle();
+                        result.putString(KEY_SELECTED_LANGUAGE, item.getCode());
+                        var fragmentManager = getFragmentManager();
+                        assumeNonNull(fragmentManager);
+                        fragmentManager.setFragmentResult(FRAGMENT_RESULT_TAG, result);
+                        fragmentManager.popBackStack();
+                    } else {
+                        Intent intent = new Intent();
+                        intent.putExtra(KEY_SELECTED_LANGUAGE, item.getCode());
+                        activity.setResult(Activity.RESULT_OK, intent);
+                        activity.finish();
+                    }
                 };
         mAdapter = new LanguageSearchListAdapter(activity, mProfile);
 

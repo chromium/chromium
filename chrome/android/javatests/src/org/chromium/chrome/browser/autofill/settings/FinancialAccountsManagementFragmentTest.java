@@ -513,29 +513,34 @@ public class FinancialAccountsManagementFragmentTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testActivityTriggered_noArgs_emptyTitle() {
-        mSettingsActivityTestRule.startSettingsActivity();
+        SettingsActivityInterface activity = mSettingsActivityTestRule.startSettingsActivity();
 
-        assertThat(mSettingsActivityTestRule.getFragment().getPageTitle().get()).isEmpty();
+        assertThat(activity.getTitle().toString()).isEmpty();
     }
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testActivityTriggered_titlePresentInArgs_titleSet() {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putString(FinancialAccountsManagementFragment.TITLE_KEY, "Title");
 
-        mSettingsActivityTestRule.startSettingsActivity(fragmentArgs);
+        SettingsActivityInterface activity =
+                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs);
 
-        assertThat(mSettingsActivityTestRule.getFragment().getPageTitle().get()).isEqualTo("Title");
+        assertThat(activity.getTitle().toString()).isEqualTo("Title");
     }
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testActivityTriggered_titleNotPresentInArgs_emptyTitle() {
-        mSettingsActivityTestRule.startSettingsActivity(new Bundle());
+        SettingsActivityInterface activity =
+                mSettingsActivityTestRule.startSettingsActivity(new Bundle());
 
-        assertThat(mSettingsActivityTestRule.getFragment().getPageTitle().get()).isEmpty();
+        assertThat(activity.getTitle().toString()).isEmpty();
     }
 
     // Test that the icon for the Pix bank account preference is not set if the icon is not already

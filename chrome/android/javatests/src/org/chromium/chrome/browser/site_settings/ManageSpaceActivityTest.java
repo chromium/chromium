@@ -10,8 +10,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.Matchers.allOf;
-
 import android.app.Activity;
 import android.content.Intent;
 
@@ -55,6 +53,7 @@ import java.util.concurrent.TimeoutException;
 /** Tests for ManageSpaceActivity. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 @Batch(Batch.PER_CLASS)
 public class ManageSpaceActivityTest {
     @Rule
@@ -203,8 +202,7 @@ public class ManageSpaceActivityTest {
         ManageSpaceActivity manageSpaceActivity = startManageSpaceActivity();
         waitForClearButtonEnabled(manageSpaceActivity);
         onView(withId(R.id.manage_site_data_storage)).perform(click());
-        Espresso.onView(allOf(withText("Data stored"), isDisplayed()))
-                .check(ViewAssertions.matches(isDisplayed()));
+        Espresso.onView(withText("Data stored")).check(ViewAssertions.matches(isDisplayed()));
         ApplicationTestUtils.finishActivity(manageSpaceActivity);
     }
 

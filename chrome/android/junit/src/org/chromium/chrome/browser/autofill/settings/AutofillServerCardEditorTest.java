@@ -56,7 +56,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -76,7 +75,6 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtilsJni;
-import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsIntentUtil;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -84,14 +82,16 @@ import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
-import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 
 /** Unit tests for {@link AutofillServerCardEditor}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_WALLET_BRANDING_V2)
+@DisableFeatures({
+    ChromeFeatureList.AUTOFILL_ENABLE_WALLET_BRANDING_V2,
+    ChromeFeatureList.SETTINGS_MULTI_COLUMN
+})
 @EnableFeatures(ChromeFeatureList.CCT_DONT_OVERRIDE_INTENT_MIME_TYPE)
 public class AutofillServerCardEditorTest {
 
@@ -211,8 +211,6 @@ public class AutofillServerCardEditorTest {
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
         AutofillImageFetcherFactory.setInstanceForTesting(mImageFetcher);
-        SettingsIndexData.createInstance().resetNeedsIndexing();
-        MainSettings.setSkipPreferencesForTesting(true);
     }
 
     @After
@@ -220,7 +218,6 @@ public class AutofillServerCardEditorTest {
         if (mActivityScenario != null) {
             mActivityScenario.close();
         }
-        SettingsIndexData.reset();
     }
 
     private void initEditor(CreditCard card) {
@@ -247,10 +244,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @DisabledTest(
-            message =
-                    "TODO(crbug.com/404074032): Re-enable after fixing SlidingPaneLayout state in"
-                            + " Robolectric.")
     public void virtualCardEnrolled_virtualCardRemoveButtonShown() {
         initEditor(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD);
 
@@ -264,10 +257,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @DisabledTest(
-            message =
-                    "TODO(crbug.com/404074032): Re-enable after fixing SlidingPaneLayout state in"
-                            + " Robolectric.")
     public void virtualCardUnenrolledAndEligible_virtualCardAddButtonShown() {
         initEditor(SAMPLE_VIRTUAL_CARD_UNENROLLED_AND_ELIGIBLE_CARD);
 
@@ -289,10 +278,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @DisabledTest(
-            message =
-                    "TODO(crbug.com/404074032): Re-enable after fixing SlidingPaneLayout state in"
-                            + " Robolectric.")
     public void
             virtualCardUnenrolledAndEligible_virtualCardAddButtonClicked_enrollAccepted_enrollmentSuccessful() {
         initEditor(SAMPLE_VIRTUAL_CARD_UNENROLLED_AND_ELIGIBLE_CARD);
@@ -408,10 +393,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @DisabledTest(
-            message =
-                    "TODO(crbug.com/404074032): Re-enable after fixing SlidingPaneLayout state in"
-                            + " Robolectric.")
     public void
             virtualCardUnenrolledAndEligible_virtualCardAddButtonClicked_enrollAccepted_enrollmentFailure() {
         initEditor(SAMPLE_VIRTUAL_CARD_UNENROLLED_AND_ELIGIBLE_CARD);
@@ -489,10 +470,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @DisabledTest(
-            message =
-                    "TODO(crbug.com/404074032): Re-enable after fixing SlidingPaneLayout state in"
-                            + " Robolectric.")
     public void virtualCardUnenrolledAndEligible_virtualCardAddButtonClicked_enrollRejected() {
         initEditor(SAMPLE_VIRTUAL_CARD_UNENROLLED_AND_ELIGIBLE_CARD);
 
@@ -566,10 +543,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @DisabledTest(
-            message =
-                    "TODO(crbug.com/404074032): Re-enable after fixing SlidingPaneLayout state in"
-                            + " Robolectric.")
     public void
             virtualCardUnenrolledAndEligible_virtualCardAddButtonClicked_enrollAccepted_editorExited() {
         initEditor(SAMPLE_VIRTUAL_CARD_UNENROLLED_AND_ELIGIBLE_CARD);
@@ -639,10 +612,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @DisabledTest(
-            message =
-                    "TODO(crbug.com/404074032): Re-enable after fixing SlidingPaneLayout state in"
-                            + " Robolectric.")
     public void virtualCardEnrolled_virtualCardRemoveButtonClicked_dialogShown() {
         initEditor(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD);
 
@@ -665,10 +634,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @DisabledTest(
-            message =
-                    "TODO(crbug.com/404074032): Re-enable after fixing SlidingPaneLayout state in"
-                            + " Robolectric.")
     public void virtualCardEnrolled_virtualCardRemoveButtonClicked_unenrollCancelled() {
         initEditor(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD);
 
@@ -715,10 +680,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @DisabledTest(
-            message =
-                    "TODO(crbug.com/404074032): Re-enable after fixing SlidingPaneLayout state in"
-                            + " Robolectric.")
     public void
             virtualCardEnrolled_virtualCardRemoveButtonClicked_unenrollAccepted_unenrollmentSuccessful() {
         initEditor(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD);
@@ -791,10 +752,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @DisabledTest(
-            message =
-                    "TODO(crbug.com/404074032): Re-enable after fixing SlidingPaneLayout state in"
-                            + " Robolectric.")
     public void
             virtualCardEnrolled_virtualCardRemoveButtonClicked_unenrollAccepted_unenrollmentFailure() {
         initEditor(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD);
@@ -852,10 +809,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @DisabledTest(
-            message =
-                    "TODO(crbug.com/404074032): Re-enable after fixing SlidingPaneLayout state in"
-                            + " Robolectric.")
     public void virtualCardEnrolled_virtualCardRemoveButtonClicked_unenrollAccepted_editorExited() {
         initEditor(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD);
 
@@ -925,10 +878,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @DisabledTest(
-            message =
-                    "TODO(crbug.com/404074032): Re-enable after fixing SlidingPaneLayout state in"
-                            + " Robolectric.")
     public void testCustomUrlForServerCardEditPage() {
         initEditor(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD);
 
@@ -952,10 +901,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @DisabledTest(
-            message =
-                    "TODO(crbug.com/404074032): Re-enable after fixing SlidingPaneLayout state in"
-                            + " Robolectric.")
     @CommandLineFlags.Add({ChromeSwitches.USE_SANDBOX_WALLET_ENVIRONMENT})
     public void testCustomUrlForServerCardEditPage_sandboxEnabled() {
         initEditor(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD);

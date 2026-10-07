@@ -64,6 +64,7 @@ import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(ChromeFeatureList.UNIVERSAL_OPT_OUT_SETTINGS)
+@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 public class UniversalOptOutSettingsFragmentTest {
     @Rule
     public final SettingsActivityTestRule<UniversalOptOutSettings> mSettingsActivityTestRule =

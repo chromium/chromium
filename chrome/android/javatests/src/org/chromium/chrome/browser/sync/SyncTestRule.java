@@ -7,11 +7,8 @@ package org.chromium.chrome.browser.sync;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
-import static org.hamcrest.CoreMatchers.allOf;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -387,7 +384,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
     // UI interaction convenience methods.
     public void togglePreference(final TwoStatePreference pref) {
-        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
+        onView(withId(R.id.recycler_view))
                 .perform(
                         RecyclerViewActions.actionOnItem(
                                 hasDescendant(withText(pref.getTitle().toString())), click()));

@@ -20,9 +20,9 @@ public interface SettingsActivityInterface {
     @Nullable Fragment getMainFragment();
 
     /**
-     * Returns the MultiColumnSettings fragment if not in standalone mode. Returns it as a generic
-     * Fragment to avoid circular dependencies. Callers may safely cast the return value to a
-     * MultiColumnSettings object.
+     * Returns the MultiColumnSettings fragment if it is running in SettingsMultiColumn mode.
+     * Returns it as a generic Fragment to avoid circular dependencies. Callers may safely cast the
+     * return value to a MultiColumnSettings object.
      */
     @Nullable Fragment getMultiColumnSettings();
 

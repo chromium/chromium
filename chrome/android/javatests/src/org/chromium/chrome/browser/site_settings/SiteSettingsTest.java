@@ -9,11 +9,9 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
-import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -112,6 +110,7 @@ import java.util.concurrent.TimeoutException;
 })
 @DisableFeatures({
     ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE,
+    ChromeFeatureList.SETTINGS_MULTI_COLUMN,
     ChromeFeatureList.ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER
 })
 public class SiteSettingsTest {
@@ -1544,7 +1543,7 @@ public class SiteSettingsTest {
         final SettingsActivity settingsActivity = SiteSettingsTestUtils.startSiteSettingsMenu("");
 
         // Scroll to permission autorevocation preference and click it.
-        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
+        onView(withId(R.id.recycler_view))
                 .perform(
                         RecyclerViewActions.scrollTo(
                                 hasDescendant(

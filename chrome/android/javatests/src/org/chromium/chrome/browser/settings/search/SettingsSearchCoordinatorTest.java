@@ -31,8 +31,10 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivityInterface;
 import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -88,10 +90,6 @@ public class SettingsSearchCoordinatorTest {
                 () -> {
                     try {
                         SettingsSearchCoordinator searchCoordinator = getSearchCoordinator();
-                        if (searchCoordinator == null
-                                || searchCoordinator.findViewById(R.id.search_box) == null) {
-                            return false;
-                        }
 
                         searchCoordinator.enterSearchState(/* isRestored= */ false);
                         searchCoordinator.performSearch(
@@ -111,6 +109,7 @@ public class SettingsSearchCoordinatorTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testBasicSearch() throws Exception {
         mSettingsTestRule.startSettingsActivity();
 
@@ -118,10 +117,7 @@ public class SettingsSearchCoordinatorTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     SettingsSearchCoordinator searchCoordinator = getSearchCoordinator();
-                    if (searchCoordinator == null
-                            || searchCoordinator.findViewById(R.id.search_box) == null) {
-                        return false;
-                    }
+                    if (searchCoordinator == null) return false;
 
                     try {
                         searchCoordinator.enterSearchState(/* isRestored= */ false);
@@ -142,6 +138,7 @@ public class SettingsSearchCoordinatorTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testRecentSearchIsRestored() throws Throwable {
         mSettingsTestRule.startSettingsActivity();
         SettingsActivityInterface activity = waitForSettingsActivity();
@@ -164,11 +161,12 @@ public class SettingsSearchCoordinatorTest {
         SettingsActivityInterface activity2 = waitForSettingsActivity();
         SettingsSearchCoordinator searchCoordinator2 =
                 (SettingsSearchCoordinator) activity2.getSearchCoordinator();
-        CriteriaHelper.pollUiThread(searchCoordinator2::hasRecentSearchEntriesForTesting);
+        assertTrue(searchCoordinator2.hasRecentSearchEntriesForTesting());
     }
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testHistograms_clickedResult() throws Exception {
         mSettingsTestRule.startSettingsActivity();
         SettingsActivityInterface activity = waitForSettingsActivity();
@@ -208,6 +206,7 @@ public class SettingsSearchCoordinatorTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testHistograms_abandonedResults() throws Exception {
         mSettingsTestRule.startSettingsActivity();
         SettingsActivityInterface activity = waitForSettingsActivity();
@@ -235,6 +234,7 @@ public class SettingsSearchCoordinatorTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testHistograms_abandonedNoResults() throws Exception {
         mSettingsTestRule.startSettingsActivity();
         SettingsActivityInterface activity = waitForSettingsActivity();

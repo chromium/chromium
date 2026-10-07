@@ -37,6 +37,9 @@ public class SettingsInTab {
      * use {@link SettingsHost#isShownInTab()}, usually via {@link SettingsHostUtil}.
      */
     public static boolean isFeatureEnabled() {
+        // SettingsInTab requires SettingsMultiColumn, which is disabled by some tests.
+        if (!ChromeFeatureList.sSettingsMultiColumn.isEnabled()) return false;
+
         // Desktop uses SettingsInTabDesktop; tablet uses SettingsInTab.
         return DeviceInfo.isDesktop()
                 ? ChromeFeatureList.sSettingsInTabDesktop.isEnabled()

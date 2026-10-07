@@ -15,7 +15,6 @@ import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.hasFocus;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
-import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -160,6 +159,7 @@ import java.util.Set;
 // Avoids UserActionableError.NEEDS_UPM_BACKEND_UPGRADE for most tests. Specific tests can still
 // trigger the error by overriding getUserActionableError()
 @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 public class ManageSyncSettingsTest {
     private static final int RENDER_TEST_REVISION = 13;
 
@@ -432,8 +432,7 @@ public class ManageSyncSettingsTest {
 
         startManageSyncPreferences();
 
-        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
-                .perform(RecyclerViewActions.scrollToLastPosition());
+        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
         onView(withId(R.id.sign_out_button)).perform(click());
         Assert.assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount());
     }
@@ -453,8 +452,7 @@ public class ManageSyncSettingsTest {
 
         startManageSyncPreferences();
 
-        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
-                .perform(RecyclerViewActions.scrollToLastPosition());
+        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
         onView(withId(R.id.sign_out_button)).perform(click());
         onView(withText(R.string.sign_out)).inRoot(isDialog()).perform(click());
         Assert.assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount());
@@ -887,7 +885,7 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
         Assert.assertEquals(
-                fragment.getPageTitle().get(),
+                fragment.getActivity().getTitle(),
                 fragment.getActivity().getString(R.string.account_settings_title));
     }
 
@@ -898,8 +896,7 @@ public class ManageSyncSettingsTest {
     public void testBottomOfAccountSyncSettingsPage() throws Exception {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
-        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
-                .perform(RecyclerViewActions.scrollToLastPosition());
+        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
         render(fragment, "bottom_of_account_sync_settings_page");
     }
 
@@ -909,8 +906,7 @@ public class ManageSyncSettingsTest {
     public void testSignoutButton() throws Exception {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
-        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
-                .perform(RecyclerViewActions.scrollToLastPosition());
+        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
         ViewUtils.waitForVisibleView(withId(R.id.sign_out_button));
         View view =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -1281,11 +1277,7 @@ public class ManageSyncSettingsTest {
         // There are 4 non-selectable preferences in the preference screen: central_account_card,
         // account_section_header, account_section_footer, and account_advanced_header.
         for (int i = 0; i < recyclerView.getAdapter().getItemCount() - 4; ++i) {
-            onView(
-                            allOf(
-                                    withId(R.id.recycler_view),
-                                    isDescendantOfA(withId(R.id.preferences_detail))))
-                    .perform(pressKey(KeyEvent.KEYCODE_DPAD_DOWN));
+            onView(withId(R.id.recycler_view)).perform(pressKey(KeyEvent.KEYCODE_DPAD_DOWN));
         }
         onView(withId(R.id.sign_out_button)).check(matches(hasFocus()));
     }
@@ -1297,8 +1289,7 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         startManageSyncPreferences();
         // Focus on the first element that can receive focus in the settings page.
-        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
-                .perform(pressKey(KeyEvent.KEYCODE_DPAD_DOWN));
+        onView(withId(R.id.recycler_view)).perform(pressKey(KeyEvent.KEYCODE_DPAD_DOWN));
         onView(withId(R.id.history_and_tabs_toggle)).check(matches(hasFocus()));
     }
 
@@ -1335,8 +1326,7 @@ public class ManageSyncSettingsTest {
         ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
 
         // Focus on the first element that can receive focus in the settings page.
-        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
-                .perform(pressKey(KeyEvent.KEYCODE_DPAD_DOWN));
+        onView(withId(R.id.recycler_view)).perform(pressKey(KeyEvent.KEYCODE_DPAD_DOWN));
         onView(withId(R.id.signin_settings_card_button)).check(matches(hasFocus()));
     }
 
@@ -1355,8 +1345,7 @@ public class ManageSyncSettingsTest {
         ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
 
         // Focus on the first element that can receive focus in the settings page.
-        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
-                .perform(pressKey(KeyEvent.KEYCODE_DPAD_DOWN));
+        onView(withId(R.id.recycler_view)).perform(pressKey(KeyEvent.KEYCODE_DPAD_DOWN));
         onView(withId(R.id.signin_settings_card_button)).check(matches(hasFocus()));
     }
 
@@ -1589,7 +1578,7 @@ public class ManageSyncSettingsTest {
     }
 
     private void scrollToAndVerifyPresence(@StringRes int textId) {
-        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
+        onView(withId(R.id.recycler_view))
                 .perform(RecyclerViewActions.scrollTo(hasDescendant(withText(textId))));
         onView(withText(textId)).check(matches(isDisplayed()));
     }
@@ -1683,10 +1672,7 @@ public class ManageSyncSettingsTest {
                     .respondWith(new ActivityResult(Activity.RESULT_OK, null));
 
             // Scroll to the preference row containing the summary link
-            onView(
-                            allOf(
-                                    withId(R.id.recycler_view),
-                                    isDescendantOfA(withId(R.id.preferences_detail))))
+            onView(withId(R.id.recycler_view))
                     .perform(
                             RecyclerViewActions.scrollTo(
                                     hasDescendant(
@@ -1782,10 +1768,7 @@ public class ManageSyncSettingsTest {
                     .respondWith(new ActivityResult(Activity.RESULT_OK, null));
 
             // Click the preference row
-            onView(
-                            allOf(
-                                    withId(R.id.recycler_view),
-                                    isDescendantOfA(withId(R.id.preferences_detail))))
+            onView(withId(R.id.recycler_view))
                     .perform(
                             RecyclerViewActions.scrollTo(
                                     hasDescendant(
@@ -1793,6 +1776,7 @@ public class ManageSyncSettingsTest {
                                                     R.string
                                                             .account_settings_switch_to_incognito))));
             onView(withText(R.string.account_settings_switch_to_incognito)).perform(click());
+
             intended(expectedIntentMatcher);
         } finally {
             Intents.release();

@@ -7,11 +7,9 @@ package org.chromium.chrome.browser.password_manager.settings;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -66,6 +64,9 @@ import org.chromium.ui.test.util.DeviceRestriction;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
+@DisableFeatures({
+    ChromeFeatureList.SETTINGS_MULTI_COLUMN
+})
 public class CredentialManagerIntegrationTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
@@ -126,7 +127,7 @@ public class CredentialManagerIntegrationTest {
     @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testUseCredentialManagerFromChromeSettings() {
         mSettingsActivityTestRule.startSettingsActivity();
-        scrollToHeaderSetting(withText(R.string.password_manager_settings_title));
+        scrollToSetting(withText(R.string.password_manager_settings_title));
         onView(withText(R.string.password_manager_settings_title)).perform(click());
 
         // Verify that success callback was called.
@@ -143,9 +144,9 @@ public class CredentialManagerIntegrationTest {
     @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testUseCredentialManagerFromChromeSettings_savedInfoEnabled() {
         mSettingsActivityTestRule.startSettingsActivity();
-        scrollToHeaderSetting(withText(R.string.autofill_and_passwords_settings_title));
+        scrollToSetting(withText(R.string.autofill_and_passwords_settings_title));
         onView(withText(R.string.autofill_and_passwords_settings_title)).perform(click());
-        scrollToDetailSetting(withText(R.string.password_manager_settings_title));
+        scrollToSetting(withText(R.string.password_manager_settings_title));
         onView(withText(R.string.password_manager_settings_title)).perform(click());
 
         // Verify that success callback was called.
@@ -163,7 +164,7 @@ public class CredentialManagerIntegrationTest {
     public void testUseCredentialManagerFromChromeSettingsPreUpm() {
         DeviceInfo.setGmsVersionCodeForTest("230000000");
         mSettingsActivityTestRule.startSettingsActivity();
-        scrollToHeaderSetting(withText(R.string.password_manager_settings_title));
+        scrollToSetting(withText(R.string.password_manager_settings_title));
         onView(withText(R.string.password_manager_settings_title)).perform(click());
 
         // CredentialManager is not used (and thus success callback is not triggered).
@@ -181,9 +182,9 @@ public class CredentialManagerIntegrationTest {
     public void testUseCredentialManagerFromChromeSettingsPreUpm_savedInfoEnabled() {
         DeviceInfo.setGmsVersionCodeForTest("230000000");
         mSettingsActivityTestRule.startSettingsActivity();
-        scrollToHeaderSetting(withText(R.string.autofill_and_passwords_settings_title));
+        scrollToSetting(withText(R.string.autofill_and_passwords_settings_title));
         onView(withText(R.string.autofill_and_passwords_settings_title)).perform(click());
-        scrollToDetailSetting(withText(R.string.password_manager_settings_title));
+        scrollToSetting(withText(R.string.password_manager_settings_title));
         onView(withText(R.string.password_manager_settings_title)).perform(click());
 
         // CredentialManager is not used (and thus success callback is not triggered).
@@ -240,7 +241,7 @@ public class CredentialManagerIntegrationTest {
         launcher.setCredentialManagerError(new Exception("Simulated GMS Failure"));
 
         mSettingsActivityTestRule.startSettingsActivity();
-        scrollToHeaderSetting(withText(R.string.password_manager_settings_title));
+        scrollToSetting(withText(R.string.password_manager_settings_title));
         onView(withText(R.string.password_manager_settings_title)).perform(click());
 
         // Verify that failure callback was called.
@@ -263,9 +264,9 @@ public class CredentialManagerIntegrationTest {
         launcher.setCredentialManagerError(new Exception("Simulated GMS Failure"));
 
         mSettingsActivityTestRule.startSettingsActivity();
-        scrollToHeaderSetting(withText(R.string.autofill_and_passwords_settings_title));
+        scrollToSetting(withText(R.string.autofill_and_passwords_settings_title));
         onView(withText(R.string.autofill_and_passwords_settings_title)).perform(click());
-        scrollToDetailSetting(withText(R.string.password_manager_settings_title));
+        scrollToSetting(withText(R.string.password_manager_settings_title));
         onView(withText(R.string.password_manager_settings_title)).perform(click());
 
         // Verify that failure callback was called.
@@ -320,13 +321,8 @@ public class CredentialManagerIntegrationTest {
         assertEquals(0, mSuccessCallbackHelper.getCallCount());
     }
 
-    private void scrollToHeaderSetting(Matcher<View> matcher) {
-        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_header))))
-                .perform(RecyclerViewActions.scrollTo(hasDescendant(matcher)));
-    }
-
-    private void scrollToDetailSetting(Matcher<View> matcher) {
-        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
+    private void scrollToSetting(Matcher<View> matcher) {
+        onView(withId(R.id.recycler_view))
                 .perform(RecyclerViewActions.scrollTo(hasDescendant(matcher)));
     }
 }

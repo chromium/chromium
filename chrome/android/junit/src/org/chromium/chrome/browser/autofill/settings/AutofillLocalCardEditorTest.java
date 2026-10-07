@@ -46,6 +46,7 @@ import org.mockito.stubbing.Answer;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.build.NullUtil;
@@ -58,11 +59,11 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerJni;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtilsJni;
-import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsIntentUtil;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -70,7 +71,6 @@ import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.ScanCreditCardPromptEntryPoint;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
-import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
@@ -78,6 +78,7 @@ import java.util.List;
 
 /** Unit tests for {@link AutofillLocalCardEditorTest}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 public class AutofillLocalCardEditorTest {
     // This is a non-amex card without a CVC code.
     private static CreditCard getSampleLocalCard() {
@@ -226,8 +227,6 @@ public class AutofillLocalCardEditorTest {
         mActionTester = new UserActionTester();
 
         CreditCardScanner.setFactory(delegate -> mMockScanner);
-        SettingsIndexData.createInstance().resetNeedsIndexing();
-        MainSettings.setSkipPreferencesForTesting(true);
     }
 
     @After
@@ -236,7 +235,6 @@ public class AutofillLocalCardEditorTest {
             mActivityScenario.close();
         }
         mActionTester.tearDown();
-        SettingsIndexData.reset();
     }
 
     private void initFragment(CreditCard card) {

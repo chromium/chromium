@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.privacy_guide;
 
 import static org.chromium.chrome.browser.privacy_guide.PrivacyGuideUtils.getFragmentFocusViewId;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,6 +18,7 @@ import android.view.accessibility.AccessibilityEvent;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IntDef;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
@@ -32,6 +34,7 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -237,7 +240,18 @@ public class PrivacyGuideFragment extends Fragment
     }
 
     private void modifyAppBar() {
+        Activity activity = requireActivity();
         mPageTitle.set(getString(R.string.privacy_guide_fragment_title));
+
+        // Tests may not use a SettingsActivity or ChromeTabbedActivity.
+        if (activity instanceof AppCompatActivity appCompatActivity) {
+            var actionBar = appCompatActivity.getSupportActionBar();
+            if (actionBar != null && !ChromeFeatureList.sSettingsMultiColumn.isEnabled()) {
+                // Hides the back arrow button only when multi-column mode is disabled.
+                // In multi-column mode, the back button works to close the activity.
+                actionBar.setDisplayHomeAsUpEnabled(false);
+            }
+        }
     }
 
     private void nextStep() {
@@ -317,11 +331,18 @@ public class PrivacyGuideFragment extends Fragment
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
+        if (!ChromeFeatureList.sSettingsMultiColumn.isEnabled()) {
+            // Hide the close button on multi-column mode.
+            // In multi-column mode, the back arrow button works to close the activity.
+            inflater.inflate(R.menu.privacy_guide_toolbar_menu, menu);
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
+        if (item.getItemId() == R.id.close_menu_id
+                || (ChromeFeatureList.sSettingsMultiColumn.isEnabled()
+                        && item.getItemId() == android.R.id.home)) {
             SettingsNavigationFactory.createSettingsNavigation(requireActivity())
                     .finishCurrentSettings(this);
             return true;

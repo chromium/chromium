@@ -140,12 +140,13 @@ public class AutofillCardBenefitsFragmentTest {
     // Test to verify that the Preference screen is displayed and its title is visible as expected.
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testCardBenefitsPreferenceScreen_shownWithTitle() throws Exception {
         SettingsActivityInterface activity = mSettingsTestRule.startSettingsActivity();
 
         assertNotNull(getPreferenceScreen(activity));
         assertEquals(
-                mSettingsTestRule.getFragment().getPageTitle().get(),
+                activity.getTitle().toString(),
                 activity.getString(R.string.autofill_card_benefits_settings_page_title));
     }
 

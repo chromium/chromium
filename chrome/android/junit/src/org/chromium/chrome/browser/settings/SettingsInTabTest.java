@@ -40,6 +40,14 @@ public class SettingsInTabTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+    @Config(qualifiers = "sw600dp")
+    public void testShouldOpenSettingsInTab_SettingsMultiColumnDisabled_ReturnsFalse() {
+        assertFalse(SettingsInTab.shouldOpenSettingsInTab());
+    }
+
+    @Test
     @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
     @Config(qualifiers = "sw600dp")
     public void testShouldOpenSettingsInTab_FeatureDisabledOnTablet_ReturnsFalse() {
@@ -136,6 +144,13 @@ public class SettingsInTabTest {
     @Test
     @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
     public void testIsFeatureEnabled_FeatureDisabled_ReturnsFalse() {
+        assertFalse(SettingsInTab.isFeatureEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+    public void testIsFeatureEnabled_SettingsMultiColumnDisabled_ReturnsFalse() {
         assertFalse(SettingsInTab.isFeatureEnabled());
     }
 

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+  <item
+      android:id="@+id/close_menu_id"
+      android:icon="@drawable/btn_close"
+      android:title="@string/close"
+      android:showAsAction="ifRoom"
+      app:iconTint="@color/default_icon_color_tint_list" />
+
+</menu>

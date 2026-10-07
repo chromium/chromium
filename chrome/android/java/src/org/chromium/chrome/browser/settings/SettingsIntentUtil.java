@@ -150,7 +150,7 @@ public class SettingsIntentUtil {
             intent.setClass(context, SettingsActivity.class);
             if (isStandaloneFragment) {
                 intent.putExtra(EXTRA_SHOW_FRAGMENT_STANDALONE, true);
-            } else {
+            } else if (ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
                 // Note that this intent will be delivered to an existing settings activity (if it
                 // exists) even if it is hosting a standalone fragment. In this case, the activity
                 // will resend the intent without the flag to start a new activity. See

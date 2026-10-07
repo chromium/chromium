@@ -133,6 +133,7 @@ public class MultiWindowAppMenuTest {
     @Test
     @LargeTest
     @DisableFeatures({
+        ChromeFeatureList.SETTINGS_MULTI_COLUMN,
         ChromeFeatureList.SETTINGS_IN_TAB, // crbug.com/521895796
         ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP // crbug.com/556881398
     })

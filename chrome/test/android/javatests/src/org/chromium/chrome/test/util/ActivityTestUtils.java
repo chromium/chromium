@@ -21,7 +21,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -225,8 +224,7 @@ public class ActivityTestUtils {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Fragment fragment =
-                            findFragmentByTagRecursive(
-                                    activity.getSupportFragmentManager(), fragmentTag);
+                            activity.getSupportFragmentManager().findFragmentByTag(fragmentTag);
                     Criteria.checkThat(fragment, Matchers.notNullValue());
                     if (fragment instanceof DialogFragment) {
                         DialogFragment dialogFragment = (DialogFragment) fragment;
@@ -243,24 +241,11 @@ public class ActivityTestUtils {
         return fragmentRef.get();
     }
 
-    private static Fragment findFragmentByTagRecursive(FragmentManager fm, String fragmentTag) {
-        Fragment fragment = fm.findFragmentByTag(fragmentTag);
-        if (fragment != null) return fragment;
-        for (Fragment parent : fm.getFragments()) {
-            if (parent != null && parent.isAdded()) {
-                fragment =
-                        findFragmentByTagRecursive(parent.getChildFragmentManager(), fragmentTag);
-                if (fragment != null) return fragment;
-            }
-        }
-        return null;
-    }
-
     /**
-     * Waits until the specified fragment has been attached to the specified activity. Note that we
-     * don't guarantee that the fragment is visible. Some UI operations can happen too quickly and
-     * we can miss the time that a fragment is visible. This method allows you to get a reference to
-     * any fragment that was attached to the activity at any point.
+     * Waits until the specified fragment has been attached to the specified activity. Note that
+     * we don't guarantee that the fragment is visible. Some UI operations can happen too
+     * quickly and we can miss the time that a fragment is visible. This method allows you to get a
+     * reference to any fragment that was attached to the activity at any point.
      *
      * @param <T> A subclass of {@link Fragment}.
      * @param activity An instance or subclass of {@link SettingsActivity}.
