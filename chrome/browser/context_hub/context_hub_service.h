@@ -230,6 +230,24 @@ class ContextHubService : public KeyedService,
   std::vector<browser::context_hub::mojom::AutoTodoItemFeedbackPtr>
   GetTodoFeedbacks() const;
 
+  // Fishfood Topic feedback, persisted in the
+  // prefs::kContextHubTopicsFishfoodFeedback profile pref so ratings survive
+  // tab closure and browser restarts. The pref is cleared on service creation
+  // when features::kTopicsFishfoodFeedback is disabled.
+  //
+  // Stores or replaces the feedback for the Topic identified by `feedback->id`.
+  // Overwrites `feedback->snapshot->time_rated` with the current time.
+  void SetTopicFeedback(browser::context_hub::mojom::TopicFeedbackPtr feedback);
+  // Deletes the feedback for `topic_id`, if any.
+  void DeleteTopicFeedback(const std::string& topic_id);
+  // Deletes all Topic feedback.
+  void ClearTopicFeedbacks();
+  // Returns all stored Topic feedback, ordered by topic id. Entries whose
+  // required fields fail to deserialize are omitted; see
+  // topics/topic_feedback_conversions.h.
+  std::vector<browser::context_hub::mojom::TopicFeedbackPtr> GetTopicFeedbacks()
+      const;
+
   using GroupTabsCallback =
       base::OnceCallback<void(std::vector<TabGroupEntry> groups,
                               std::vector<TabData> ungrouped_tabs,

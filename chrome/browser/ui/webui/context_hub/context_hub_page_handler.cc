@@ -1082,6 +1082,57 @@ void ContextHubPageHandler::OpenGlicPanel(
 #endif
 }
 
+void ContextHubPageHandler::SetTopicFeedback(
+    browser::context_hub::mojom::TopicFeedbackPtr feedback,
+    SetTopicFeedbackCallback callback) {
+  if (feedback->id.empty()) {
+    receiver_.ReportBadMessage("SetTopicFeedback requires a topic id.");
+    return;
+  }
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  if (service) {
+    service->SetTopicFeedback(std::move(feedback));
+  }
+  std::move(callback).Run();
+}
+
+void ContextHubPageHandler::DeleteTopicFeedback(
+    const std::string& topic_id,
+    DeleteTopicFeedbackCallback callback) {
+  if (topic_id.empty()) {
+    receiver_.ReportBadMessage("DeleteTopicFeedback requires a topic id.");
+    return;
+  }
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  if (service) {
+    service->DeleteTopicFeedback(topic_id);
+  }
+  std::move(callback).Run();
+}
+
+void ContextHubPageHandler::GetTopicFeedbacks(
+    GetTopicFeedbacksCallback callback) {
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  if (service) {
+    std::move(callback).Run(service->GetTopicFeedbacks());
+    return;
+  }
+  std::move(callback).Run({});
+}
+
+void ContextHubPageHandler::ClearTopicFeedbacks(
+    ClearTopicFeedbacksCallback callback) {
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  if (service) {
+    service->ClearTopicFeedbacks();
+  }
+  std::move(callback).Run();
+}
+
 void ContextHubPageHandler::RunTodoTask(const std::string& prompt,
                                         RunTodoTaskCallback callback) {
 #if !BUILDFLAG(IS_ANDROID)

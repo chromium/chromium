@@ -46,6 +46,7 @@ source_set("context_hub") {
     "//chrome/browser/context_hub/storage",
     "//chrome/browser/context_hub/tab_group_store",
     "//chrome/browser/context_hub/tab_group_store:impl",
+    "//chrome/browser/context_hub/topics",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/page_content_annotations",
     "//chrome/browser/personal_context",

@@ -166,6 +166,12 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
   void OpenTopic(
       browser::context_hub::mojom::TopicIdOrUrlPtr topic_id_or_url) override;
   void OpenGlicPanel(const std::vector<std::string>& prompts) override;
+  void SetTopicFeedback(browser::context_hub::mojom::TopicFeedbackPtr feedback,
+                        SetTopicFeedbackCallback callback) override;
+  void DeleteTopicFeedback(const std::string& topic_id,
+                           DeleteTopicFeedbackCallback callback) override;
+  void GetTopicFeedbacks(GetTopicFeedbacksCallback callback) override;
+  void ClearTopicFeedbacks(ClearTopicFeedbacksCallback callback) override;
   void RunTodoTask(const std::string& prompt,
                    RunTodoTaskCallback callback) override;
 

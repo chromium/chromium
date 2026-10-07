@@ -1,0 +1,28 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("topics") {
+  sources = [
+    "topic_feedback_conversions.cc",
+    "topic_feedback_conversions.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/webui/context_hub:mojo_bindings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "topic_feedback_conversions_unittest.cc" ]
+
+  deps = [
+    ":topics",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

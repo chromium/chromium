@@ -25,15 +25,18 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/context_hub/auto_todos/auto_todo_entry.h"
 #include "chrome/browser/context_hub/auto_todos/auto_todos_store.h"
 #include "chrome/browser/context_hub/features.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
+#include "chrome/browser/context_hub/prefs.h"
 #include "chrome/browser/context_hub/storage/context_hub_backend.h"
 #include "chrome/browser/context_hub/tab_group_store/tab_group_entry.h"
 #include "chrome/browser/context_hub/tab_group_store/tab_group_entry_conversions.h"
 #include "chrome/browser/context_hub/tab_group_store/tab_group_store.h"
+#include "chrome/browser/context_hub/topics/topic_feedback_conversions.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -52,6 +55,8 @@
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/proto/features/auto_todos.pb.h"
 #include "components/personal_context/proto/features/smart_search.pb.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
@@ -257,6 +262,11 @@ ContextHubService::ContextHubService(
   CHECK(memory_bank_);
   memory_bank_observation_.Observe(memory_bank_.get());
   identity_manager_observation_.Observe(&identity_manager_.get());
+  // Ratings are only collected during the fishfood experiment. Once the param
+  // is turned off (e.g. via Finch at teardown), wipe anything left behind.
+  if (!features::kTopicsFishfoodFeedback.Get()) {
+    profile_->GetPrefs()->ClearPref(prefs::kContextHubTopicsFishfoodFeedback);
+  }
   if (auto_todos_store_) {
     auto_todos_store_->AddObserver(this);
     // Observe system suspend and resume events so that sleep duration can be
@@ -938,6 +948,55 @@ ContextHubService::GetTodoFeedbacks() const {
     feedback->todo_id = todo_id;
     feedback->liked = liked;
     feedbacks.push_back(std::move(feedback));
+  }
+  return feedbacks;
+}
+
+void ContextHubService::SetTopicFeedback(
+    browser::context_hub::mojom::TopicFeedbackPtr feedback) {
+  if (!feedback || !feedback->snapshot || feedback->id.empty()) {
+    return;
+  }
+  // The rating time is a browser-side fact; never trust the WebUI's value.
+  feedback->snapshot->time_rated = base::Time::Now();
+  // TODO(crbug.com/568422896): Cap the number of stored entries (e.g. via a
+  // FeatureParam), evicting the oldest by `time_rated`, and record UMA for
+  // the stored count and eviction frequency.
+  ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                              prefs::kContextHubTopicsFishfoodFeedback);
+  update->Set(feedback->id, TopicFeedbackToDict(*feedback));
+}
+
+void ContextHubService::DeleteTopicFeedback(const std::string& topic_id) {
+  PrefService* pref_service = profile_->GetPrefs();
+  // Avoid scheduling a pref write when there is nothing to remove.
+  if (!pref_service->GetDict(prefs::kContextHubTopicsFishfoodFeedback)
+           .contains(topic_id)) {
+    return;
+  }
+  ScopedDictPrefUpdate update(pref_service,
+                              prefs::kContextHubTopicsFishfoodFeedback);
+  update->Remove(topic_id);
+}
+
+void ContextHubService::ClearTopicFeedbacks() {
+  profile_->GetPrefs()->ClearPref(prefs::kContextHubTopicsFishfoodFeedback);
+}
+
+std::vector<browser::context_hub::mojom::TopicFeedbackPtr>
+ContextHubService::GetTopicFeedbacks() const {
+  std::vector<browser::context_hub::mojom::TopicFeedbackPtr> feedbacks;
+  const base::DictValue& dict =
+      profile_->GetPrefs()->GetDict(prefs::kContextHubTopicsFishfoodFeedback);
+  feedbacks.reserve(dict.size());
+  for (const auto [topic_id, value] : dict) {
+    const base::DictValue* feedback_dict = value.GetIfDict();
+    if (!feedback_dict) {
+      continue;
+    }
+    if (auto feedback = TopicFeedbackFromDict(topic_id, *feedback_dict)) {
+      feedbacks.push_back(std::move(feedback));
+    }
   }
   return feedbacks;
 }

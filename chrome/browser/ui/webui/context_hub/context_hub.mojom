@@ -262,6 +262,95 @@ union TopicIdOrUrl {
   url.mojom.Url topic_url;
 };
 
+// Defect categories a fishfood rater can select when disliking a Topic. The
+// comment on each value is the label shown to raters.
+// Persisted in profile prefs by integer value, so existing values must not be
+// renumbered.
+enum TopicDefectCategory {
+  // "Irrelevant information included"
+  kIrrelevantInformationIncluded = 0,
+  // "Related information missing"
+  kRelatedInformationMissing = 1,
+  // "Title wrong/vague"
+  kTitleWrongOrVague = 2,
+  // "Emoji wrong"
+  kEmojiWrong = 3,
+  // "Overview inaccurate"
+  kOverviewInaccurate = 4,
+  // "Too broad"
+  kTooBroad = 5,
+  // "Combines separate topics"
+  kCombinesSeparateTopics = 6,
+  // "Too narrow / fragmented"
+  kTooNarrowOrFragmented = 7,
+  // "Incidental browsing (not intended)"
+  kIncidentalBrowsing = 8,
+  // "Duplicate of another topic"
+  kDuplicateOfAnotherTopic = 9,
+  // "Sensitive topic shouldn't be shown"
+  kSensitiveTopic = 10,
+  // "Other"; `TopicFeedback.comment` is required when selected.
+  kOther = 11,
+};
+
+// What a Topic looked like when it was rated. Stored alongside the rating so
+// feedback remains interpretable if the Topic's id or contents later change.
+struct TopicSnapshot {
+  string title;
+  // Empty if the Topic had no emoji / overview when rated.
+  string emoji;
+  string overview;
+  // Visit times of the Topic's visits, used to join the rating back to
+  // history visits in the exported feedback bundle.
+  array<mojo_base.mojom.Time> visit_times;
+  // When the rating was last saved. Set by the browser in SetTopicFeedback();
+  // any value supplied by the WebUI is ignored.
+  mojo_base.mojom.Time time_rated;
+};
+
+// A fishfood rating of one of a Topic's continuation queries.
+struct TopicQueryFeedback {
+  // Index of the query in `Topic.continuation_queries` at rating time.
+  int32 index;
+  // Text of the rated query, so the rating is interpretable if queries change.
+  string query_text;
+  bool liked;
+};
+
+// Snapshot of the Topic a rater flagged as a duplicate of the rated Topic.
+struct DuplicateTopicSnapshot {
+  string id;
+  string title;
+  array<mojo_base.mojom.Time> visit_times;
+};
+
+// A fishfood rater's overall thumbs up/down on a Topic.
+// Persisted in profile prefs by integer value, so existing values must not be
+// renumbered.
+enum TopicRating {
+  // The rater has not given a thumbs up or down.
+  kUnrated = 0,
+  kLiked = 1,
+  kDisliked = 2,
+};
+
+// A fishfood rater's complete feedback on one Topic. Only collected when the
+// `fishfood_feedback` param of kTopics is enabled.
+struct TopicFeedback {
+  // Id of the rated Topic.
+  string id;
+  TopicSnapshot snapshot;
+  TopicRating rating;
+  array<TopicDefectCategory> defects;
+  // Free-text comment; empty if none. Required to be non-empty when `defects`
+  // contains kOther.
+  string comment;
+  array<TopicQueryFeedback> query_feedbacks;
+  // Visit times of visits the rater flagged as not belonging to the Topic.
+  array<mojo_base.mojom.Time> rejected_visits;
+  DuplicateTopicSnapshot? duplicate_of;
+};
+
 // Interface for the browser process to push updates to the WebUI page.
 // Implemented in the renderer process (the Context Hub WebUI).
 interface Page {
@@ -480,6 +569,25 @@ interface PageHandler {
   // unavailable for the profile or if the page is not hosted in a tab.
   [RuntimeFeature=kTopics]
   OpenGlicPanel(array<string> prompts);
+
+  // Stores or replaces the fishfood feedback for the Topic identified by
+  // `feedback.id`, which must be non-empty. Persists across browser restarts
+  // while the `fishfood_feedback` param of kTopics is enabled.
+  [RuntimeFeature=kTopics]
+  SetTopicFeedback(TopicFeedback feedback) => ();
+
+  // Deletes the stored fishfood feedback for `topic_id` (must be non-empty),
+  // if any.
+  [RuntimeFeature=kTopics]
+  DeleteTopicFeedback(string topic_id) => ();
+
+  // Returns all stored fishfood Topic feedback.
+  [RuntimeFeature=kTopics]
+  GetTopicFeedbacks() => (array<TopicFeedback> feedbacks);
+
+  // Deletes all stored fishfood Topic feedback.
+  [RuntimeFeature=kTopics]
+  ClearTopicFeedbacks() => ();
 
   // Invokes Glic with auto-submit in actuation (AutoBrowse) mode to execute
   // `prompt`.

@@ -2159,6 +2159,113 @@ TEST_F(ContextHubPageHandlerTest, DeleteTodoFeedback) {
   EXPECT_FALSE(feedbacks[0]->liked);
 }
 
+namespace {
+
+using browser::context_hub::mojom::TopicRating;
+
+browser::context_hub::mojom::TopicFeedbackPtr MakeTopicFeedback(
+    const std::string& topic_id,
+    TopicRating rating) {
+  auto feedback = browser::context_hub::mojom::TopicFeedback::New();
+  feedback->id = topic_id;
+  feedback->snapshot = browser::context_hub::mojom::TopicSnapshot::New(
+      "Title " + topic_id, "🔵", /*overview=*/"",
+      std::vector<base::Time>{base::Time::Now() - base::Hours(1)},
+      base::Time::Now());
+  feedback->rating = rating;
+  if (rating == TopicRating::kDisliked) {
+    feedback->defects = {
+        browser::context_hub::mojom::TopicDefectCategory::kTooBroad};
+  }
+  return feedback;
+}
+
+}  // namespace
+
+TEST_F(ContextHubPageHandlerTest, SetAndGetTopicFeedbacks) {
+  auto expected = MakeTopicFeedback("topic_1", TopicRating::kDisliked);
+
+  base::test::TestFuture<void> set_future;
+  handler_->SetTopicFeedback(expected.Clone(), set_future.GetCallback());
+  EXPECT_TRUE(set_future.Wait());
+
+  base::test::TestFuture<
+      std::vector<browser::context_hub::mojom::TopicFeedbackPtr>>
+      get_future;
+  handler_->GetTopicFeedbacks(get_future.GetCallback());
+  std::vector<browser::context_hub::mojom::TopicFeedbackPtr> feedbacks =
+      get_future.Take();
+  ASSERT_EQ(1u, feedbacks.size());
+  EXPECT_TRUE(mojo::Equals(expected, feedbacks[0]));
+}
+
+TEST_F(ContextHubPageHandlerTest, DeleteTopicFeedback) {
+  base::test::TestFuture<void> set_future1;
+  handler_->SetTopicFeedback(MakeTopicFeedback("topic_1", TopicRating::kLiked),
+                             set_future1.GetCallback());
+  EXPECT_TRUE(set_future1.Wait());
+  base::test::TestFuture<void> set_future2;
+  handler_->SetTopicFeedback(
+      MakeTopicFeedback("topic_2", TopicRating::kDisliked),
+      set_future2.GetCallback());
+  EXPECT_TRUE(set_future2.Wait());
+
+  base::test::TestFuture<void> delete_future;
+  handler_->DeleteTopicFeedback("topic_1", delete_future.GetCallback());
+  EXPECT_TRUE(delete_future.Wait());
+
+  base::test::TestFuture<
+      std::vector<browser::context_hub::mojom::TopicFeedbackPtr>>
+      get_future;
+  handler_->GetTopicFeedbacks(get_future.GetCallback());
+  std::vector<browser::context_hub::mojom::TopicFeedbackPtr> feedbacks =
+      get_future.Take();
+  ASSERT_EQ(1u, feedbacks.size());
+  EXPECT_EQ("topic_2", feedbacks[0]->id);
+  EXPECT_EQ(TopicRating::kDisliked, feedbacks[0]->rating);
+}
+
+TEST_F(ContextHubPageHandlerTest, ClearTopicFeedbacks) {
+  ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+
+  base::test::TestFuture<void> set_future;
+  handler_->SetTopicFeedback(MakeTopicFeedback("topic_1", TopicRating::kLiked),
+                             set_future.GetCallback());
+  EXPECT_TRUE(set_future.Wait());
+  EXPECT_EQ(1u, service->GetTopicFeedbacks().size());
+
+  base::test::TestFuture<void> clear_future;
+  handler_->ClearTopicFeedbacks(clear_future.GetCallback());
+  EXPECT_TRUE(clear_future.Wait());
+  EXPECT_TRUE(service->GetTopicFeedbacks().empty());
+}
+
+TEST_F(ContextHubPageHandlerTest, SetTopicFeedback_EmptyId_ReportsBadMessage) {
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+  handler_->SetTopicFeedback(
+      MakeTopicFeedback(/*topic_id=*/"", TopicRating::kLiked),
+      base::DoNothing());
+  EXPECT_EQ("SetTopicFeedback requires a topic id.",
+            bad_message_observer.WaitForBadMessage());
+
+  ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+  EXPECT_TRUE(service->GetTopicFeedbacks().empty());
+}
+
+TEST_F(ContextHubPageHandlerTest,
+       DeleteTopicFeedback_EmptyId_ReportsBadMessage) {
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+  handler_->DeleteTopicFeedback(/*topic_id=*/"", base::DoNothing());
+  EXPECT_EQ("DeleteTopicFeedback requires a topic id.",
+            bad_message_observer.WaitForBadMessage());
+}
+
 TEST_F(ContextHubPageHandlerTest, GetConfirmedTabGroups) {
   auto* sync_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(&profile_);

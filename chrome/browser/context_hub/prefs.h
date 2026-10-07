@@ -15,6 +15,12 @@ inline constexpr char kContextHubLastAutoTodosGenerationTime[] =
 inline constexpr char kContextHubTabContextSyncContainerId[] =
     "context_hub.tab_context_sync.container_id";
 
+// Dictionary of fishfood Topic feedback keyed by topic id. Only populated
+// while the `fishfood_feedback` param of kTopics is enabled; cleared on startup
+// otherwise. See ContextHubService::SetTopicFeedback().
+inline constexpr char kContextHubTopicsFishfoodFeedback[] =
+    "context_hub.topics.fishfood_feedback";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace context_hub::prefs
