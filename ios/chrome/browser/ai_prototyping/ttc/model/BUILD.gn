@@ -34,6 +34,9 @@ source_set("model") {
     "ttc_session_controller.mm",
     "ttc_session_controller_observer.h",
     "ttc_states.h",
+    "ttc_websocket_backend+Testing.h",
+    "ttc_websocket_backend.h",
+    "ttc_websocket_backend.mm",
   ]
   deps = [
     "//base",
@@ -41,6 +44,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/public/provider/chrome/browser/intelligence:intelligence_api",
     "//url",
   ]
   frameworks = [
@@ -62,6 +66,7 @@ source_set("unit_tests") {
     "ttc_conversation_unittest.mm",
     "ttc_keyed_service_unittest.mm",
     "ttc_session_controller_unittest.mm",
+    "ttc_websocket_backend_unittest.mm",
   ]
   deps = [
     ":model",
@@ -70,6 +75,8 @@ source_set("unit_tests") {
     "//components/keyed_service/core",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test/providers/intelligence",
+    "//ios/public/provider/chrome/browser/intelligence:intelligence_api",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",

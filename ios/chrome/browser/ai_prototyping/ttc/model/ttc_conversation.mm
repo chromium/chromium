@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_backend.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation_delegate.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_websocket_backend.h"
 
 NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
 
@@ -54,7 +55,7 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
 
 - (instancetype)init {
   return [self initWithAudioController:[[TTCAudioEngine alloc] init]
-                               backend:nil];
+                               backend:[[TTCWebSocketBackend alloc] init]];
 }
 
 #pragma mark - Public
