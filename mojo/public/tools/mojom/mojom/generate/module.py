@@ -1608,6 +1608,12 @@ class Module:
     return feature
 
   def Stylize(self, stylizer):
+    self._Stylize(stylizer, set())
+
+  def _Stylize(self, stylizer, visited):
+    if self in visited:
+      return
+    visited.add(self)
     self.namespace = stylizer.StylizeModule(self.mojom_namespace)
     for struct in self.structs:
       struct.Stylize(stylizer)
@@ -1623,7 +1629,7 @@ class Module:
       feature.Stylize(stylizer)
 
     for imported_module in self.imports:
-      imported_module.Stylize(stylizer)
+      imported_module._Stylize(stylizer, visited)
 
   def Dump(self, f):
     _MojomPickler(f).dump(self)
