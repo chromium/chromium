@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ExtensionPageCallbackRouter, PageCallbackRouter} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
-import type {ComposeboxPosition, ContextInfo, ContextualTaskId, ContextualWindowId, ExtensionPageHandlerInterface, ExtensionPageRemote, InjectedInput, PageHandlerInterface, PageInterface, PageRemote} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
+import type {ComposeboxPosition, ContextualTaskId, ContextualWindowId, ExtensionPageHandlerInterface, ExtensionPageRemote, InjectedInput, PageHandlerInterface, PageInterface, PageRemote} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
 import type {BrowserProxy, ExtensionBrowserProxy} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import {ContextualTasksToolbarUIObserverCallbackRouter, PageCallbackRouter as ToolbarPageCallbackRouter} from 'chrome://contextual-tasks/contextual_tasks_toolbar.mojom-webui.js';
 import type {ContextualTasksToolbarUIObserverRemote, ContextualTasksToolbarUIServiceInterface, InitialState, PageHandlerInterface as ToolbarPageHandlerInterface, PageRemote as ToolbarPageRemote} from 'chrome://contextual-tasks/contextual_tasks_toolbar.mojom-webui.js';
@@ -25,7 +25,6 @@ class MockPage extends TestBrowserProxy implements PageInterface {
     super([
       'hideInput',
       'postAimMessage',
-      'onContextUpdated',
       'onHandshakeComplete',
       'onLensOverlayStateChanged',
       'onSidePanelStateChanged',
@@ -65,11 +64,6 @@ class MockPage extends TestBrowserProxy implements PageInterface {
 
   postAimMessage(message: number[]) {
     this.methodCalled('postAimMessage', message);
-  }
-
-
-  onContextUpdated(message: ContextInfo[]) {
-    this.methodCalled('onContextUpdated', message);
   }
 
   onHandshakeComplete() {

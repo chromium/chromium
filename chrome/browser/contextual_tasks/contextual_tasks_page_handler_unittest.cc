@@ -194,6 +194,12 @@ class ContextualTasksPageHandlerTest : public ChromeRenderViewHostTestHarness {
     // Bind the mock page to the controller.
     contextual_tasks_ui_->GetPageRemote().Bind(page_.BindAndGetRemote());
 
+    mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler>
+        toolbar_handler_remote;
+    contextual_tasks_ui_->CreatePageHandler(
+        toolbar_page_.BindAndGetRemote(),
+        toolbar_handler_remote.BindNewPipeAndPassReceiver());
+
     mock_contextual_tasks_service_ = static_cast<MockContextualTasksService*>(
         ContextualTasksServiceFactory::GetForProfile(profile()));
     mock_contextual_tasks_ui_service_ =
@@ -231,6 +237,7 @@ class ContextualTasksPageHandlerTest : public ChromeRenderViewHostTestHarness {
   raw_ptr<MockContextualTasksUiServiceForThreadLink>
       mock_contextual_tasks_ui_service_;
   NiceMock<MockContextualTasksPage> page_;
+  NiceMock<MockContextualTasksToolbarPage> toolbar_page_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
@@ -1122,8 +1129,9 @@ TEST_F(ContextualTasksPageHandlerTest,
           });
 
   base::RunLoop run_loop;
-  EXPECT_CALL(page_, OnContextUpdated(_))
-      .WillOnce([&](std::vector<mojom::ContextInfoPtr> context) {
+  EXPECT_CALL(toolbar_page_, OnContextUpdated(_))
+      .WillOnce([&](std::vector<contextual_tasks_toolbar::mojom::ContextInfoPtr>
+                        context) {
         // Only the first 3 valid items should be present.
         ASSERT_EQ(context.size(), 4u);
 

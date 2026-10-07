@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_toolbar.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_types.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -42,10 +43,6 @@ class MockContextualTasksPage : public mojom::Page {
               (const std::string& oauth_token),
               (override));
   MOCK_METHOD(void, OnCookieSyncCompleted, (), (override));
-  MOCK_METHOD(void,
-              OnContextUpdated,
-              (std::vector<mojom::ContextInfoPtr> context),
-              (override));
   MOCK_METHOD(void, HideInput, (), (override));
   MOCK_METHOD(void, RestoreInput, (), (override));
   MOCK_METHOD(void, EnterBasicMode, (), (override));
@@ -109,6 +106,26 @@ class MockContextualTasksExtensionPage : public mojom::ExtensionPage {
 
  private:
   mojo::Receiver<mojom::ExtensionPage> receiver_{this};
+};
+
+class MockContextualTasksToolbarPage
+    : public contextual_tasks_toolbar::mojom::Page {
+ public:
+  MockContextualTasksToolbarPage();
+  ~MockContextualTasksToolbarPage() override;
+
+  mojo::PendingRemote<contextual_tasks_toolbar::mojom::Page> BindAndGetRemote();
+
+  MOCK_METHOD(void, OnSidePanelPinStateChanged, (bool is_pinned), (override));
+  MOCK_METHOD(void, OnAiPageStatusChanged, (bool is_ai_page), (override));
+  MOCK_METHOD(
+      void,
+      OnContextUpdated,
+      (std::vector<contextual_tasks_toolbar::mojom::ContextInfoPtr> context),
+      (override));
+
+ private:
+  mojo::Receiver<contextual_tasks_toolbar::mojom::Page> receiver_{this};
 };
 
 }  // namespace contextual_tasks

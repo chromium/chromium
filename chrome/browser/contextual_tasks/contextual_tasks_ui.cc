@@ -1672,6 +1672,10 @@ ContextualTasksUI::GetPageRemote() {
   return page_;
 }
 
+contextual_tasks_toolbar::mojom::Page*
+ContextualTasksUI::GetToolbarPageRemote() {
+  return ContextualTasksUIBase::GetToolbarPageRemote();
+}
 
 ContextualTasksUI::FrameNavObserver::FrameNavObserver(
     content::WebContents* web_contents,

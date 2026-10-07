@@ -22,6 +22,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom-shared.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_toolbar.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
@@ -99,12 +100,12 @@ void OpenUrlWithDisposition(Profile* profile,
   Navigate(&params);
 }
 
-std::vector<contextual_tasks::mojom::ContextInfoPtr>
+std::vector<contextual_tasks_toolbar::mojom::ContextInfoPtr>
 PopulateContextualResources(contextual_tasks::ContextualTaskContext* context) {
   if (!context) {
     return {};
   }
-  std::vector<contextual_tasks::mojom::ContextInfoPtr> context_items;
+  std::vector<contextual_tasks_toolbar::mojom::ContextInfoPtr> context_items;
   const std::vector<contextual_tasks::UrlAttachment>& attachments =
       base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)
           ? context->GetUrlAttachments()
@@ -123,29 +124,33 @@ PopulateContextualResources(contextual_tasks::ContextualTaskContext* context) {
 
     switch (attachment.GetResourceType()) {
       case contextual_tasks::ResourceType::kWebpage: {
-        auto tab_context = contextual_tasks::mojom::TabContext::New();
+        auto tab_context = contextual_tasks_toolbar::mojom::TabContext::New();
         tab_context->title = title;
         tab_context->url = url;
         tab_context->tab_id = attachment.GetTabSessionId().id();
         tab_context->has_chrome_tab_data = attachment.HasChromeTabData();
-        context_items.push_back(contextual_tasks::mojom::ContextInfo::NewTab(
-            std::move(tab_context)));
+        context_items.push_back(
+            contextual_tasks_toolbar::mojom::ContextInfo::NewTab(
+                std::move(tab_context)));
         break;
       }
       case contextual_tasks::ResourceType::kPdf: {
-        auto file_context = contextual_tasks::mojom::FileContext::New();
+        auto file_context = contextual_tasks_toolbar::mojom::FileContext::New();
         file_context->title = title;
         file_context->url = url;
-        context_items.push_back(contextual_tasks::mojom::ContextInfo::NewFile(
-            std::move(file_context)));
+        context_items.push_back(
+            contextual_tasks_toolbar::mojom::ContextInfo::NewFile(
+                std::move(file_context)));
         break;
       }
       case contextual_tasks::ResourceType::kImage: {
-        auto image_context = contextual_tasks::mojom::ImageContext::New();
+        auto image_context =
+            contextual_tasks_toolbar::mojom::ImageContext::New();
         image_context->title = title;
         image_context->url = url;
-        context_items.push_back(contextual_tasks::mojom::ContextInfo::NewImage(
-            std::move(image_context)));
+        context_items.push_back(
+            contextual_tasks_toolbar::mojom::ContextInfo::NewImage(
+                std::move(image_context)));
         break;
       }
       case contextual_tasks::ResourceType::kUnknown:
@@ -612,7 +617,9 @@ void ContextualTasksPageHandler::UpdateContextForTask(
     const base::Uuid& task_id) {
   if (!base::FeatureList::IsEnabled(
           contextual_tasks::kContextualTasksContextLibrary)) {
-    web_ui_controller_->GetPageRemote()->OnContextUpdated({});
+    if (auto* toolbar_page = web_ui_controller_->GetToolbarPageRemote()) {
+      toolbar_page->OnContextUpdated({});
+    }
     return;
   }
   contextual_tasks_service_->GetContextForTask(
@@ -621,11 +628,13 @@ void ContextualTasksPageHandler::UpdateContextForTask(
       base::BindOnce(
           [](base::WeakPtr<ContextualTasksPageHandler> self,
              std::unique_ptr<contextual_tasks::ContextualTaskContext> context) {
-            if (self && self->web_ui_controller_->GetPageRemote()) {
-              std::vector<contextual_tasks::mojom::ContextInfoPtr>
-                  context_items = PopulateContextualResources(context.get());
-              self->web_ui_controller_->GetPageRemote()->OnContextUpdated(
-                  std::move(context_items));
+            if (self && self->web_ui_controller_) {
+              if (auto* toolbar_page =
+                      self->web_ui_controller_->GetToolbarPageRemote()) {
+                std::vector<contextual_tasks_toolbar::mojom::ContextInfoPtr>
+                    context_items = PopulateContextualResources(context.get());
+                toolbar_page->OnContextUpdated(std::move(context_items));
+              }
             }
           },
           weak_ptr_factory_.GetWeakPtr()));
@@ -684,7 +693,7 @@ void ContextualTasksPageHandler::OnReceivedUpdatedThreadContextLibrary(
                std::unique_ptr<contextual_tasks::ContextualTaskContext>
                    context) {
               if (self && self->web_ui_controller_) {
-                std::vector<contextual_tasks::mojom::ContextInfoPtr>
+                std::vector<contextual_tasks_toolbar::mojom::ContextInfoPtr>
                     context_items = PopulateContextualResources(context.get());
 
                 std::vector<searchbox::mojom::TabInfoPtr> tabs;

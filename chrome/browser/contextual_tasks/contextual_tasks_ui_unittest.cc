@@ -2394,6 +2394,11 @@ class MockToolbarPage : public contextual_tasks_toolbar::mojom::Page {
 
   MOCK_METHOD(void, OnSidePanelPinStateChanged, (bool is_pinned), (override));
   MOCK_METHOD(void, OnAiPageStatusChanged, (bool is_ai_page), (override));
+  MOCK_METHOD(
+      void,
+      OnContextUpdated,
+      (std::vector<contextual_tasks_toolbar::mojom::ContextInfoPtr> context),
+      (override));
 
  private:
   mojo::Receiver<contextual_tasks_toolbar::mojom::Page> receiver_{this};

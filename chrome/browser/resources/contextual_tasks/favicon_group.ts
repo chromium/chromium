@@ -10,7 +10,7 @@ import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {ContextInfo} from './contextual_tasks.mojom-webui.js';
+import type {ContextInfo} from './contextual_tasks_toolbar.mojom-webui.js';
 import {getCss} from './favicon_group.css.js';
 import {getHtml} from './favicon_group.html.js';
 

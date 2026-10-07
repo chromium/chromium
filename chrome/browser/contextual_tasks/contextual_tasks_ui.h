@@ -234,6 +234,7 @@ class ContextualTasksUI
       contextual_tasks::ContextualTasksComposeboxHandlerInterface* handler)
       override;
   mojo::Remote<contextual_tasks::mojom::Page>& GetPageRemote() override;
+  contextual_tasks_toolbar::mojom::Page* GetToolbarPageRemote() override;
   const GURL& GetInnerFrameUrl() const override;
   content::WebContents* GetInnerWebContents() const override;
 
