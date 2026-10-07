@@ -7,7 +7,6 @@
 
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager_legacy_impl.h"
 

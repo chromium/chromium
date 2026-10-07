@@ -4,8 +4,8 @@
 
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager_legacy_impl.h"
 
-#include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -39,7 +39,6 @@
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
 #include "components/one_time_tokens/core/common/one_time_token_switches.h"
 
-using one_time_tokens::ExpiringSubscriptionHandle;
 using one_time_tokens::OneTimeToken;
 using one_time_tokens::OneTimeTokenRetrievalError;
 using one_time_tokens::OneTimeTokenService;

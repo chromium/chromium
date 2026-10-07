@@ -10,10 +10,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -39,7 +37,6 @@
 using ::autofill::test::FormDescription;
 using ::autofill::test::GetServerTypes;
 using ::base::test::RunOnceCallback;
-using ::base::test::RunOnceCallbackRepeatedly;
 using ::one_time_tokens::OneTimeTokenServiceImpl;
 using ::testing::_;
 using ::testing::ElementsAre;
@@ -80,20 +77,6 @@ class MockOtpPhishGuardDelegate : public OtpPhishGuardDelegate {
               (override));
 };
 
-class MockAutofillDriver : public TestAutofillDriver {
- public:
-  explicit MockAutofillDriver(TestAutofillClient* client)
-      : TestAutofillDriver(client) {}
-  MockAutofillDriver(const MockAutofillDriver&) = delete;
-  MockAutofillDriver& operator=(const MockAutofillDriver&) = delete;
-  ~MockAutofillDriver() override = default;
-
-  MOCK_METHOD(void,
-              RendererShouldTriggerSuggestions,
-              (const FieldGlobalId&, AutofillSuggestionTriggerSource),
-              (override));
-};
-
 void SetUpTickleSubscription(
     one_time_tokens::MockOneTimeTokenService& mock_ott_service,
     one_time_tokens::ExpiringSubscriptionManager<
@@ -114,7 +97,7 @@ void SetUpTickleSubscription(
 class OtpManagerLegacyImplTest
     : public Test,
       public WithTestAutofillClientDriverManager<TestAutofillClient,
-                                                 MockAutofillDriver> {
+                                                 TestAutofillDriver> {
  public:
   OtpManagerLegacyImplTest()
       : one_time_token_service_(&sms_otp_backend_, nullptr) {}
