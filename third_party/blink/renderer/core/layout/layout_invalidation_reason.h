@@ -18,7 +18,6 @@ extern const char kTextChanged[];
 extern const char kPrintingChanged[];
 extern const char kPaintPreview[];
 extern const char kAttributeChanged[];
-extern const char kChildAnonymousBlockChanged[];
 extern const char kAnonymousBlockChange[];
 extern const char kFontsChanged[];
 extern const char kChildChanged[];

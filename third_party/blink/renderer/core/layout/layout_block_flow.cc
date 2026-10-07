@@ -393,13 +393,11 @@ void LayoutBlockFlow::CollapseAnonymousBlockChild(LayoutBlockFlow* child) {
   NOT_DESTROYED();
   if (!AllowsCollapseAnonymousBlockChild(*this, *child))
     return;
-  SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
-      layout_invalidation_reason::kChildAnonymousBlockChanged);
 
-  child->MoveAllChildrenTo(this, child->NextSibling(), child->HasLayer());
+  LayoutObject* next_sibling = child->NextSibling();
+  Children()->RemoveChildNode(this, child);
   SetChildrenInline(child->ChildrenInline());
-
-  Children()->RemoveChildNode(this, child, child->HasLayer());
+  child->MoveAllChildrenTo(this, next_sibling, true);
   child->Destroy();
 }
 

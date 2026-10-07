@@ -14,7 +14,6 @@ const char kTextChanged[] = "Text changed";
 const char kPrintingChanged[] = "Printing changed";
 const char kPaintPreview[] = "Enter/exit paint preview";
 const char kAttributeChanged[] = "Attribute changed";
-const char kChildAnonymousBlockChanged[] = "Child anonymous block changed";
 const char kAnonymousBlockChange[] = "Anonymous block change";
 const char kFontsChanged[] = "Fonts changed";
 const char kChildChanged[] = "Child changed";
