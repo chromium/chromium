@@ -20,8 +20,8 @@
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_gateway_manager.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_page_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_view_controller.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -36,7 +36,6 @@
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 
 @interface GeminiContainerCoordinator () <GeminiContainerMediatorDelegate>
 @end
@@ -127,23 +126,15 @@
       authenticationService:AuthenticationServiceFactory::GetForProfile(
                                 self.browser->GetProfile())
                eventHandler:GeminiBrowserAgent::FromBrowser(self.browser)];
-  _containerHandler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                                         AssistantContainerCommands);
-  _mediator.containerHandler = _containerHandler;
   _mediator.delegate = self;
+  _mediator.startupState = _startupState;
+  // TODO(crbug.com/537730178): Delegate the permission prompt request up to
+  // a delegate protocol implemented by GeminiContainerCoordinator, which will
+  // present the UIAlertController using its own baseViewController.
+  [_mediator.gatewayManager.pageStateChangeHandler
+      setBaseViewController:self.baseViewController];
 
   [self setSessionCommandHandlers];
-
-  GeminiConfiguration* config = [_mediator
-      createGeminiConfigurationForActiveWebState:_startupState
-                              baseViewController:self.baseViewController];
-
-  // TODO(crbug.com/522834798): Add all the applicable logic from
-  // StartGeminiFlow, PresentFloaty and InvokeFloaty before presenting the
-  // container view.
-  // TODO(crbug.com/535968300): Move floaty request to the mediator.
-  UIViewController* geminiViewController =
-      ios::provider::GetFloatyViewControllerWithConfiguration(config);
 
   ActuationWorklogViewController* worklogViewController = nil;
   if (IsGeminiActorEnabled()) {
@@ -155,8 +146,7 @@
   }
 
   _viewController = [[GeminiContainerViewController alloc]
-      initWithGeminiViewController:geminiViewController
-             worklogViewController:worklogViewController];
+      initWithWorklogViewController:worklogViewController];
   _viewController.mutator = _mediator;
   _mediator.consumer = _viewController;
 
@@ -183,6 +173,10 @@
       HandlerForProtocol(dispatcher, GeminiCommands);
   _mediator.gatewayManager.sessionHandler.geminiHandler = geminiHandler;
   _mediator.geminiHandler = geminiHandler;
+
+  _containerHandler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                                         AssistantContainerCommands);
+  _mediator.containerHandler = _containerHandler;
 }
 
 // Dismisses Gemini from all other windows and executes `completion`.

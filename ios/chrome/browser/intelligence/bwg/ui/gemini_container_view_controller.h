@@ -22,12 +22,9 @@
 // The child zero-state view controller.
 @property(nonatomic, weak) UIViewController* zeroStateViewController;
 
-// Initializes the container with the Gemini backend view controller and an
-// optional actuation worklog view controller.
-- (instancetype)
-    initWithGeminiViewController:(UIViewController*)geminiViewController
-           worklogViewController:
-               (ActuationWorklogViewController*)worklogViewController
+// Initializes the container with an optional actuation worklog view controller.
+- (instancetype)initWithWorklogViewController:
+    (ActuationWorklogViewController*)worklogViewController
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

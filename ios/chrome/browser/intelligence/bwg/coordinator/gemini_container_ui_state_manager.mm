@@ -103,14 +103,20 @@ GeminiContainerUIState::WorklogDisplayMode() const {
   return self;
 }
 
-- (void)setupInitialUIState {
+- (void)setupInitialUIStateWithConversation:(BOOL)hasConversation {
   // Default values for mode and processing status. Actual values driven by SDK.
   // TODO(crbug.com/546065071): Pass the default mode with init UI
   // config/startup config.
   _viewMode = GeminiViewMode::kFloaty;
-  _processingStatus = GeminiClientMode::kDormant;
-
-  [self resetToZeroStateWithDetent:AssistantContainerDetent::kMedium];
+  if (hasConversation) {
+    _processingStatus = GeminiClientMode::kPreviousConversationLoading;
+    if (IsIOSGeminiBottomSheetMigrationEnabled()) {
+      [self updateProcessingStatusForFloatyMode];
+    }
+  } else {
+    _processingStatus = GeminiClientMode::kDormant;
+    [self resetToZeroStateWithDetent:AssistantContainerDetent::kMedium];
+  }
 }
 
 - (void)handleActuationStateChanged:(BOOL)actuating {

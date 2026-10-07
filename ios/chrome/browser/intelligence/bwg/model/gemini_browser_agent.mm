@@ -908,9 +908,11 @@ void GeminiBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
     SetSessionCommandHandlers();
 
     CHECK(gemini_container_mediator_, base::NotFatalUntil::M155);
+    [gemini_container_mediator_.gatewayManager.pageStateChangeHandler
+        setBaseViewController:base_view_controller];
     GeminiConfiguration* config = [gemini_container_mediator_
-        createGeminiConfigurationForActiveWebState:startup_state
-                                baseViewController:base_view_controller];
+        createGeminiConfigurationForActiveWebState:startup_state];
+    config.baseViewController = base_view_controller;
     config.initialBottomOffset = GetFloatyOffset();
     config.hostWindowScene = browser_->GetSceneState().scene;
 

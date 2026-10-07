@@ -31,15 +31,14 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
   // to hide all of gemini UI without forcing a collapse with the default
   // handling of `hidden` by the stack view.
   UIView* _geminiContentView;
+  // Stack view containing the zero-state and Gemini child views.
+  UIStackView* _containerStack;
 }
 
-- (instancetype)
-    initWithGeminiViewController:(UIViewController*)geminiViewController
-           worklogViewController:
-               (ActuationWorklogViewController*)worklogViewController {
+- (instancetype)initWithWorklogViewController:
+    (ActuationWorklogViewController*)worklogViewController {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
-    _geminiViewController = geminiViewController;
     _worklogViewController = worklogViewController;
   }
   return self;
@@ -70,19 +69,19 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
         constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor]
   ]];
 
-  UIStackView* containerStack = [[UIStackView alloc] init];
-  containerStack.translatesAutoresizingMaskIntoConstraints = NO;
-  containerStack.axis = UILayoutConstraintAxisVertical;
-  containerStack.alignment = UIStackViewAlignmentFill;
-  [_geminiContentView addSubview:containerStack];
-  AddSameConstraints(containerStack, _geminiContentView);
+  _containerStack = [[UIStackView alloc] init];
+  _containerStack.translatesAutoresizingMaskIntoConstraints = NO;
+  _containerStack.axis = UILayoutConstraintAxisVertical;
+  _containerStack.alignment = UIStackViewAlignmentFill;
+  [_geminiContentView addSubview:_containerStack];
+  AddSameConstraints(_containerStack, _geminiContentView);
 
   if (self.zeroStateViewController) {
-    [self addZeroStateToContainer:containerStack];
+    [self addZeroStateToContainer:_containerStack];
   }
 
   if (_geminiViewController) {
-    [self addGeminiToContainer:containerStack];
+    [self addGeminiToContainer:_containerStack];
   }
 
   if (_worklogViewController) {
@@ -99,6 +98,21 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
 }
 
 #pragma mark - GeminiContainerConsumer
+
+- (void)setGeminiViewController:(UIViewController*)geminiViewController {
+  if (_geminiViewController == geminiViewController) {
+    return;
+  }
+  if (_geminiViewController.parentViewController == self) {
+    [_geminiViewController willMoveToParentViewController:nil];
+    [_geminiViewController.view removeFromSuperview];
+    [_geminiViewController removeFromParentViewController];
+  }
+  _geminiViewController = geminiViewController;
+  if (_containerStack && _geminiViewController) {
+    [self addGeminiToContainer:_containerStack];
+  }
+}
 
 - (void)updateZeroStateVisibility:(BOOL)visible {
   self.zeroStateViewController.view.hidden = !visible;

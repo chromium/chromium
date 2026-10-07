@@ -33,8 +33,8 @@ class GeminiContainerViewControllerTest : public PlatformTest {
     [child_view_controller_.view addSubview:internal_text_field_];
 
     container_view_controller_ = [[GeminiContainerViewController alloc]
-        initWithGeminiViewController:child_view_controller_
-               worklogViewController:nil];
+        initWithWorklogViewController:nil];
+    [container_view_controller_ setGeminiViewController:child_view_controller_];
     mutator_ = [[FakeGeminiContainerMutator alloc] init];
     container_view_controller_.mutator = mutator_;
 
@@ -115,12 +115,11 @@ TEST_F(GeminiContainerViewControllerTest, TestUpdateZeroStateVisibility) {
       .active = YES;
 
   GeminiContainerViewController* container =
-      [[GeminiContainerViewController alloc]
-          initWithGeminiViewController:child_view_controller_
-                 worklogViewController:nil];
+      [[GeminiContainerViewController alloc] initWithWorklogViewController:nil];
   container.zeroStateViewController = zero_state_view_controller;
   [scoped_key_window_.Get() addSubview:container.view];
   [container loadViewIfNeeded];
+  [container setGeminiViewController:child_view_controller_];
 
   [container updateZeroStateVisibility:YES];
   EXPECT_FALSE(zero_state_view_controller.view.hidden);
