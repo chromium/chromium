@@ -306,7 +306,7 @@ enum class ItemIdentifier {
           DequeueTableViewHeaderFooter<TableViewLinkHeaderFooterView>(
               tableView);
       [header setText:l10n_util::GetNSString(
-                          IDS_AUTOFILL_AT_MEMORY_YOUR_SAVED_AUTOFILL_INFO)
+                          IDS_AUTOFILL_AT_MEMORY_YOUR_SAVED_INFO)
             withColor:[UIColor colorNamed:kTextSecondaryColor]];
       return header;
     }
