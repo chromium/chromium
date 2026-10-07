@@ -7,12 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation_state.h"
-
 @class TTCConversation;
 
-// Delegate protocol for observing state changes, captured audio chunks, energy
-// updates, and errors from a `TTCConversation`.
+// Delegate protocol for observing initialization, energy updates, and errors
+// from a `TTCConversation`.
 @protocol TTCConversationDelegate <NSObject>
 
 @optional
@@ -20,16 +18,6 @@
 // Invoked when the conversation backend has initialized and the session is
 // ready for user interaction.
 - (void)conversationDidInitialize:(TTCConversation*)conversation;
-
-// Invoked when the conversation state transitions (e.g. from `kListening` to
-// `kTalking`, or to `kStopped`).
-- (void)conversation:(TTCConversation*)conversation
-      didChangeState:(TTCConversationState)state;
-
-// Invoked on the UI thread when a 16kHz mono linear PCM chunk is captured from
-// the microphone.
-- (void)conversation:(TTCConversation*)conversation
-    didCaptureAudioChunk:(NSData*)pcmData;
 
 // Invoked on the UI thread when the input perceptual RMS energy level
 // in [0.0, 1.0] has been updated.

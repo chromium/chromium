@@ -23,7 +23,6 @@ source_set("model") {
     "ttc_conversation.h",
     "ttc_conversation.mm",
     "ttc_conversation_delegate.h",
-    "ttc_conversation_state.h",
     "ttc_error_codes.h",
     "ttc_error_codes.mm",
     "ttc_keyed_service.h",

@@ -7,7 +7,6 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_backend.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation_delegate.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation_state.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -133,9 +132,6 @@
 
 @interface FakeTTCConversationDelegate : NSObject <TTCConversationDelegate>
 
-@property(nonatomic, assign) TTCConversationState lastState;
-@property(nonatomic, assign) NSInteger stateChangeCount;
-@property(nonatomic, strong) NSData* lastCapturedChunk;
 @property(nonatomic, assign) float lastEnergy;
 @property(nonatomic, strong) NSError* lastError;
 @property(nonatomic, assign) BOOL didInitialize;
@@ -147,22 +143,9 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _lastState = TTCConversationState::kStopped;
-    _stateChangeCount = 0;
     _lastEnergy = -1.0f;
   }
   return self;
-}
-
-- (void)conversation:(TTCConversation*)conversation
-      didChangeState:(TTCConversationState)state {
-  self.lastState = state;
-  self.stateChangeCount++;
-}
-
-- (void)conversation:(TTCConversation*)conversation
-    didCaptureAudioChunk:(NSData*)pcmData {
-  self.lastCapturedChunk = pcmData;
 }
 
 - (void)conversation:(TTCConversation*)conversation
@@ -202,24 +185,15 @@ class TTCConversationTest : public PlatformTest {
   TTCConversation* conversation_ = nil;
 };
 
-// Tests that initial state is stopped with no error.
-TEST_F(TTCConversationTest, TestInitialState) {
-  EXPECT_EQ(conversation_.state, TTCConversationState::kStopped);
-  EXPECT_NSEQ(conversation_.lastError, nil);
-  EXPECT_EQ(delegate_.stateChangeCount, 0);
-}
-
-// Tests that start successfully begins capture and transitions to listening.
+// Tests that start successfully begins capture and connects the backend.
 TEST_F(TTCConversationTest, TestStartSuccess) {
   [conversation_ start];
 
-  EXPECT_EQ(conversation_.state, TTCConversationState::kListening);
-  EXPECT_EQ(delegate_.lastState, TTCConversationState::kListening);
-  EXPECT_EQ(delegate_.stateChangeCount, 1);
   EXPECT_TRUE(fake_audio_controller_.isCapturing);
+  EXPECT_TRUE(fake_backend_.didConnect);
 }
 
-// Tests that start failure transitions to stopped and forwards error to
+// Tests that start failure stops the conversation and forwards error to
 // delegate.
 TEST_F(TTCConversationTest, TestStartFailure) {
   NSError* simulated_error = [NSError errorWithDomain:@"TestDomain"
@@ -232,22 +206,18 @@ TEST_F(TTCConversationTest, TestStartFailure) {
 
   [conversation_ start];
 
-  EXPECT_EQ(conversation_.state, TTCConversationState::kStopped);
-  EXPECT_NSEQ(conversation_.lastError, simulated_error);
   EXPECT_NSEQ(delegate_.lastError, simulated_error);
 }
 
-// Tests that stop halts capture and playback and transitions to stopped.
+// Tests that stop halts capture and playback and disconnects the backend.
 TEST_F(TTCConversationTest, TestStopHaltsCaptureAndPlayback) {
   [conversation_ start];
-  EXPECT_EQ(conversation_.state, TTCConversationState::kListening);
 
   [conversation_ stop];
 
-  EXPECT_EQ(conversation_.state, TTCConversationState::kStopped);
-  EXPECT_EQ(delegate_.lastState, TTCConversationState::kStopped);
   EXPECT_TRUE(fake_audio_controller_.didStopCapture);
   EXPECT_TRUE(fake_audio_controller_.didStopPlayback);
+  EXPECT_TRUE(fake_backend_.didDisconnect);
 }
 
 // Tests that calling stop while capture is starting invalidates the async
@@ -260,72 +230,17 @@ TEST_F(TTCConversationTest, TestStopInvalidatesAsyncStartCallback) {
       };
 
   [conversation_ start];
-  EXPECT_EQ(conversation_.state, TTCConversationState::kStopped);
   ASSERT_TRUE(saved_completion != nil);
 
   [conversation_ stop];
-  EXPECT_EQ(conversation_.state, TTCConversationState::kStopped);
 
-  // Invoke the delayed start completion; should be ignored due to generation
-  // increment.
-  saved_completion(YES, nil);
-  EXPECT_EQ(conversation_.state, TTCConversationState::kStopped);
-}
-
-// Tests that delivering response audio transitions state to talking and passes
-// PCM chunks to the audio controller.
-TEST_F(TTCConversationTest, TestOnResponseTransitionsToTalking) {
-  [conversation_ start];
-  EXPECT_EQ(conversation_.state, TTCConversationState::kListening);
-
-  const uint8_t raw_pcm[] = {0x12, 0x34, 0x56, 0x78};
-  NSData* chunk = [NSData dataWithBytes:raw_pcm length:sizeof(raw_pcm)];
-
-  [conversation_ playResponseAudio:chunk];
-
-  EXPECT_EQ(conversation_.state, TTCConversationState::kTalking);
-  EXPECT_EQ(delegate_.lastState, TTCConversationState::kTalking);
-  EXPECT_NSEQ(fake_audio_controller_.lastPlayedChunk, chunk);
-  EXPECT_TRUE(fake_audio_controller_.isPlaying);
-}
-
-// Tests that natural playback completion transitions state back to listening
-// once the server turn is complete.
-TEST_F(TTCConversationTest, TestPlaybackCompletionTransitionsToListening) {
-  [conversation_ start];
-  const uint8_t raw_pcm[] = {0x00, 0x01};
-  [conversation_ playResponseAudio:[NSData dataWithBytes:raw_pcm length:2]];
-  EXPECT_EQ(conversation_.state, TTCConversationState::kTalking);
-
-  // Server signals turn completion.
-  [conversation_ backend:fake_backend_
-      didChangeGenerationStateStarted:NO
-                            completed:YES
-                          interrupted:NO];
-
-  // Audio player finishes rendering queued buffers.
-  [conversation_ audioControllerDidStopPlayback:fake_audio_controller_];
-
-  EXPECT_EQ(conversation_.state, TTCConversationState::kListening);
-  EXPECT_EQ(delegate_.lastState, TTCConversationState::kListening);
-}
-
-// Tests that explicitly finishing a turn transitions state from talking back to
-// listening, and is a no-op when not in talking state.
-TEST_F(TTCConversationTest, TestFinishTurnTransitionsToListening) {
-  [conversation_ start];
-  const uint8_t raw_pcm[] = {0x00, 0x01};
-  [conversation_ playResponseAudio:[NSData dataWithBytes:raw_pcm length:2]];
-  EXPECT_EQ(conversation_.state, TTCConversationState::kTalking);
-
-  [conversation_ finishTurn];
-
-  EXPECT_EQ(conversation_.state, TTCConversationState::kListening);
-  EXPECT_EQ(delegate_.lastState, TTCConversationState::kListening);
-
-  // Repeated call when already listening is a no-op.
-  [conversation_ finishTurn];
-  EXPECT_EQ(conversation_.state, TTCConversationState::kListening);
+  // Invoke the delayed start completion with an error; should be ignored due
+  // to generation increment.
+  NSError* late_error = [NSError errorWithDomain:@"TestDomain"
+                                            code:-1
+                                        userInfo:nil];
+  saved_completion(NO, late_error);
+  EXPECT_NSEQ(delegate_.lastError, nil);
 }
 
 // Tests that barge-in is disallowed: loud microphone input does NOT
@@ -333,38 +248,23 @@ TEST_F(TTCConversationTest, TestFinishTurnTransitionsToListening) {
 TEST_F(TTCConversationTest, TestBargeInDisallowedDuringPlayback) {
   [conversation_ start];
   const uint8_t raw_pcm[] = {0x00, 0x01};
-  [conversation_ playResponseAudio:[NSData dataWithBytes:raw_pcm length:2]];
-  EXPECT_EQ(conversation_.state, TTCConversationState::kTalking);
+  [conversation_ backend:fake_backend_
+      didReceiveAudioOutput:[NSData dataWithBytes:raw_pcm length:2]];
 
   // Simulate loud microphone energy while talking.
   [conversation_ audioController:fake_audio_controller_
             didUpdateInputEnergy:0.95f];
 
-  // State must remain talking and playback must NOT be stopped.
-  EXPECT_EQ(conversation_.state, TTCConversationState::kTalking);
+  // Playback must NOT be stopped.
   EXPECT_FALSE(fake_audio_controller_.didStopPlayback);
   EXPECT_FALSE(fake_audio_controller_.didClearPlaybackQueue);
   EXPECT_FLOAT_EQ(delegate_.lastEnergy, 0.95f);
-}
-
-// Tests that microphone PCM chunks are delivered to the delegate.
-TEST_F(TTCConversationTest, TestMicAudioChunkForwarding) {
-  [conversation_ start];
-
-  const uint8_t mic_pcm[] = {0xAA, 0xBB};
-  NSData* chunk = [NSData dataWithBytes:mic_pcm length:sizeof(mic_pcm)];
-
-  [conversation_ audioController:fake_audio_controller_
-            didCaptureAudioChunk:chunk];
-
-  EXPECT_NSEQ(delegate_.lastCapturedChunk, chunk);
 }
 
 // Tests that audio controller errors halt the conversation and notify the
 // delegate.
 TEST_F(TTCConversationTest, TestAudioControllerErrorHandling) {
   [conversation_ start];
-  EXPECT_EQ(conversation_.state, TTCConversationState::kListening);
 
   NSError* error = [NSError errorWithDomain:@"TestAudioDomain"
                                        code:-50
@@ -372,30 +272,27 @@ TEST_F(TTCConversationTest, TestAudioControllerErrorHandling) {
   [conversation_ audioController:fake_audio_controller_
                didEncounterError:error];
 
-  EXPECT_EQ(conversation_.state, TTCConversationState::kStopped);
-  EXPECT_NSEQ(conversation_.lastError, error);
+  EXPECT_TRUE(fake_audio_controller_.didStopCapture);
   EXPECT_NSEQ(delegate_.lastError, error);
 }
 
 // Tests that external capture termination stops the conversation.
 TEST_F(TTCConversationTest, TestAudioControllerExternalStopCapture) {
   [conversation_ start];
-  EXPECT_EQ(conversation_.state, TTCConversationState::kListening);
 
   [conversation_ audioControllerDidStopCapture:fake_audio_controller_];
 
-  EXPECT_EQ(conversation_.state, TTCConversationState::kStopped);
+  EXPECT_TRUE(fake_audio_controller_.didStopPlayback);
+  EXPECT_TRUE(fake_backend_.didDisconnect);
 }
 
 // Tests that disconnect stops capture and playback, disconnects the audio
 // controller, clears delegates, and is idempotent.
 TEST_F(TTCConversationTest, TestDisconnect) {
   [conversation_ start];
-  EXPECT_EQ(conversation_.state, TTCConversationState::kListening);
   EXPECT_TRUE(fake_audio_controller_.isCapturing);
 
   [conversation_ disconnect];
-  EXPECT_EQ(conversation_.state, TTCConversationState::kStopped);
   EXPECT_TRUE(fake_audio_controller_.didStopCapture);
   EXPECT_TRUE(fake_audio_controller_.didStopPlayback);
   EXPECT_TRUE(fake_audio_controller_.didDisconnect);
@@ -444,30 +341,26 @@ TEST_F(TTCConversationTest, TestBackendDidInitializeForwardsToDelegate) {
   EXPECT_TRUE(delegate_.didInitialize);
 }
 
-// Tests that receiving audio output from the backend plays audio and
-// transitions to talking state.
+// Tests that receiving audio output from the backend plays audio.
 TEST_F(TTCConversationTest, TestBackendAudioOutputPlaysResponseAudio) {
   [conversation_ start];
-  EXPECT_EQ(conversation_.state, TTCConversationState::kListening);
 
   const uint8_t raw_pcm[] = {0x12, 0x34};
   NSData* chunk = [NSData dataWithBytes:raw_pcm length:sizeof(raw_pcm)];
 
   [conversation_ backend:fake_backend_ didReceiveAudioOutput:chunk];
 
-  EXPECT_EQ(conversation_.state, TTCConversationState::kTalking);
   EXPECT_NSEQ(fake_audio_controller_.lastPlayedChunk, chunk);
   EXPECT_TRUE(fake_audio_controller_.isPlaying);
 }
 
-// Tests that generation interruption clears playback and returns to listening.
+// Tests that generation interruption clears playback.
 TEST_F(TTCConversationTest, TestBackendGenerationInterruptedClearsPlayback) {
   [conversation_ start];
 
   const uint8_t raw_pcm[] = {0x12, 0x34};
   NSData* chunk = [NSData dataWithBytes:raw_pcm length:sizeof(raw_pcm)];
   [conversation_ backend:fake_backend_ didReceiveAudioOutput:chunk];
-  EXPECT_EQ(conversation_.state, TTCConversationState::kTalking);
 
   [conversation_ backend:fake_backend_
       didChangeGenerationStateStarted:NO
@@ -476,35 +369,30 @@ TEST_F(TTCConversationTest, TestBackendGenerationInterruptedClearsPlayback) {
 
   EXPECT_TRUE(fake_audio_controller_.didClearPlaybackQueue);
   EXPECT_TRUE(fake_audio_controller_.didStopPlayback);
-  EXPECT_EQ(conversation_.state, TTCConversationState::kListening);
 }
 
 // Tests that backend errors stop the conversation and notify the delegate.
 TEST_F(TTCConversationTest, TestBackendErrorHaltsConversation) {
   [conversation_ start];
-  EXPECT_EQ(conversation_.state, TTCConversationState::kListening);
 
   [conversation_ backend:fake_backend_
         didFailWithError:TTCErrorCode::kNetworkError];
 
-  EXPECT_EQ(conversation_.state, TTCConversationState::kStopped);
-  ASSERT_TRUE(conversation_.lastError != nil);
-  EXPECT_NSEQ(conversation_.lastError.domain, kTTCErrorDomain);
-  EXPECT_EQ(conversation_.lastError.code,
+  ASSERT_TRUE(delegate_.lastError != nil);
+  EXPECT_NSEQ(delegate_.lastError.domain, kTTCErrorDomain);
+  EXPECT_EQ(delegate_.lastError.code,
             static_cast<NSInteger>(TTCErrorCode::kNetworkError));
-  EXPECT_NSEQ(delegate_.lastError, conversation_.lastError);
 }
 
 // Tests that microphone chunks captured by the audio controller are suppressed
-// and dropped while in talking state (barge-in disabled).
-TEST_F(TTCConversationTest, TestAudioCaptureSuppressedWhileTalking) {
+// and dropped while response audio is playing (barge-in disabled).
+TEST_F(TTCConversationTest, TestAudioCaptureSuppressedWhilePlaying) {
   [conversation_ start];
-  EXPECT_EQ(conversation_.state, TTCConversationState::kListening);
 
   const uint8_t raw_pcm[] = {0x12, 0x34};
-  [conversation_ playResponseAudio:[NSData dataWithBytes:raw_pcm
-                                                  length:sizeof(raw_pcm)]];
-  EXPECT_EQ(conversation_.state, TTCConversationState::kTalking);
+  [conversation_ backend:fake_backend_
+      didReceiveAudioOutput:[NSData dataWithBytes:raw_pcm
+                                           length:sizeof(raw_pcm)]];
 
   const uint8_t mic_pcm[] = {0xAA, 0xBB};
   NSData* chunk = [NSData dataWithBytes:mic_pcm length:sizeof(mic_pcm)];
@@ -512,84 +400,16 @@ TEST_F(TTCConversationTest, TestAudioCaptureSuppressedWhileTalking) {
             didCaptureAudioChunk:chunk];
 
   EXPECT_NSEQ(fake_backend_.lastSentAudioChunk, nil);
-  EXPECT_NSEQ(delegate_.lastCapturedChunk, nil);
-}
-
-// Tests that receiving `turnComplete` from the backend does NOT switch to
-// listening if playback is still draining through the speaker, and that
-// subsequent playback completion finishes the turn.
-TEST_F(TTCConversationTest, TestTurnCompleteWaitsForPlaybackDrained) {
-  [conversation_ start];
-  const uint8_t raw_pcm[] = {0x12, 0x34};
-  [conversation_ backend:fake_backend_
-      didReceiveAudioOutput:[NSData dataWithBytes:raw_pcm
-                                           length:sizeof(raw_pcm)]];
-  EXPECT_EQ(conversation_.state, TTCConversationState::kTalking);
-  EXPECT_TRUE(fake_audio_controller_.isPlaying);
-
-  // Server signals generation complete while audio buffers are still playing.
-  [conversation_ backend:fake_backend_
-      didChangeGenerationStateStarted:NO
-                            completed:YES
-                          interrupted:NO];
-
-  // State must remain talking to prevent microphone from capturing speaker
-  // audio.
-  EXPECT_EQ(conversation_.state, TTCConversationState::kTalking);
-
-  // Playback naturally drains.
-  fake_audio_controller_.playing = NO;
-  [conversation_ audioControllerDidStopPlayback:fake_audio_controller_];
-
-  EXPECT_EQ(conversation_.state, TTCConversationState::kListening);
-  EXPECT_EQ(delegate_.lastState, TTCConversationState::kListening);
-}
-
-// Tests that receiving `turnComplete` from the backend transitions immediately
-// to listening if playback is not active.
-TEST_F(TTCConversationTest,
-       TestTurnCompleteTransitionsImmediatelyIfPlaybackAlreadyStopped) {
-  [conversation_ start];
-  const uint8_t raw_pcm[] = {0x12, 0x34};
-  [conversation_ backend:fake_backend_
-      didReceiveAudioOutput:[NSData dataWithBytes:raw_pcm
-                                           length:sizeof(raw_pcm)]];
-  EXPECT_EQ(conversation_.state, TTCConversationState::kTalking);
-
-  // Simulate playback already stopped before turnComplete arrives.
-  fake_audio_controller_.playing = NO;
-
-  [conversation_ backend:fake_backend_
-      didChangeGenerationStateStarted:NO
-                            completed:YES
-                          interrupted:NO];
-
-  EXPECT_EQ(conversation_.state, TTCConversationState::kListening);
-}
-
-// Tests that backend initialization (handshake complete) transitions the
-// conversation state to listening so audio capture and telemetry are not
-// muted.
-TEST_F(TTCConversationTest, TestBackendDidInitializeTransitionsToListening) {
-  EXPECT_EQ(conversation_.state, TTCConversationState::kStopped);
-
-  [conversation_ backendDidInitialize:fake_backend_];
-
-  EXPECT_EQ(conversation_.state, TTCConversationState::kListening);
-  EXPECT_EQ(delegate_.lastState, TTCConversationState::kListening);
-  EXPECT_TRUE(delegate_.didInitialize);
 }
 
 // Tests that calling `stop` is idempotent and safe against re-entrancy loops.
 TEST_F(TTCConversationTest, TestStopIdempotentAndNoReentrantLoop) {
   [conversation_ start];
-  EXPECT_EQ(conversation_.state, TTCConversationState::kListening);
 
   [conversation_ stop];
-  EXPECT_EQ(conversation_.state, TTCConversationState::kStopped);
 
   // Calling stop again or receiving closure must not trigger loops or crashes.
   [conversation_ stop];
   [conversation_ backendDidClose:fake_backend_];
-  EXPECT_EQ(conversation_.state, TTCConversationState::kStopped);
+  EXPECT_TRUE(fake_audio_controller_.didStopCapture);
 }

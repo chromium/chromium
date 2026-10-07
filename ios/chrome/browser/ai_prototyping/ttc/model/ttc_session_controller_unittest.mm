@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation_delegate.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation_state.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -326,9 +325,8 @@ TEST_F(TTCSessionControllerTest, TestStartSessionDrivesConversation) {
   TTCSessionController* controller =
       [[TTCSessionController alloc] initWithConversation:conversation];
 
-  EXPECT_EQ(conversation.state, TTCConversationState::kStopped);
+  EXPECT_FALSE(fake_audio.isCapturing);
   [controller startSession];
-  EXPECT_EQ(conversation.state, TTCConversationState::kListening);
   EXPECT_TRUE(fake_audio.isCapturing);
 
   [controller disconnect];
@@ -344,10 +342,9 @@ TEST_F(TTCSessionControllerTest, TestStopSessionDrivesConversationStop) {
       [[TTCSessionController alloc] initWithConversation:conversation];
 
   [controller startSession];
-  EXPECT_EQ(conversation.state, TTCConversationState::kListening);
+  EXPECT_TRUE(fake_audio.isCapturing);
 
   [controller stopSession];
-  EXPECT_EQ(conversation.state, TTCConversationState::kStopped);
   EXPECT_TRUE(fake_audio.didStopCapture);
   EXPECT_TRUE(fake_audio.didStopPlayback);
 
@@ -414,10 +411,10 @@ TEST_F(TTCSessionControllerTest, TestDisconnectCleansUpConversation) {
       [[TTCSessionController alloc] initWithConversation:conversation];
 
   [controller startSession];
-  EXPECT_EQ(conversation.state, TTCConversationState::kListening);
+  EXPECT_TRUE(fake_audio.isCapturing);
 
   [controller disconnect];
-  EXPECT_EQ(conversation.state, TTCConversationState::kStopped);
+  EXPECT_TRUE(fake_audio.didStopCapture);
   EXPECT_EQ(conversation.delegate, nil);
   EXPECT_EQ(fake_audio.delegate, nil);
 }
