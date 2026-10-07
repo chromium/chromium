@@ -6,10 +6,10 @@
 
 #include <algorithm>
 #include <memory>
+#include <ranges>
 #include <string>
 #include <utility>
 
-#include "base/containers/adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
@@ -393,7 +393,7 @@ void DOMAgent::SearchDomTree(const DOMAgent::Query& query_data,
       element_root()->children();
   DCHECK(root_list.size());
   // Children are accessed from bottom to top. So iterate backwards.
-  for (ui_devtools::UIElement* root : base::Reversed(root_list)) {
+  for (ui_devtools::UIElement* root : std::views::reverse(root_list)) {
     stack.push_back(root);
   }
 
@@ -404,7 +404,7 @@ void DOMAgent::SearchDomTree(const DOMAgent::Query& query_data,
     std::vector<raw_ptr<UIElement, VectorExperimental>> children_array =
         node->children();
     // Children are accessed from bottom to top. So iterate backwards.
-    for (ui_devtools::UIElement* child : base::Reversed(children_array)) {
+    for (ui_devtools::UIElement* child : std::views::reverse(children_array)) {
       stack.push_back(child);
     }
     bool found_match = false;

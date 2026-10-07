@@ -5,9 +5,9 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 
 #include <algorithm>
+#include <ranges>
 
 #include "base/compiler_specific.h"
-#include "base/containers/adapters.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
@@ -1096,8 +1096,8 @@ void InlineCursor::MoveToLastChild() {
 
 void InlineCursor::MoveToLastLine() {
   DCHECK(HasRoot());
-  auto iter = std::ranges::find(base::Reversed(items_), FragmentItem::kLine,
-                                &FragmentItem::Type);
+  auto iter = std::ranges::find(std::views::reverse(items_),
+                                FragmentItem::kLine, &FragmentItem::Type);
   if (iter != items_.rend())
     MoveToItem(std::next(iter).base());
   else

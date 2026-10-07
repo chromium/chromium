@@ -8,11 +8,11 @@
 #include <iomanip>
 #include <map>
 #include <memory>
+#include <ranges>
 #include <string_view>
 #include <utility>
 #include <vector>
 
-#include "base/containers/adapters.h"
 #include "base/containers/heap_array.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -366,7 +366,8 @@ TEST(ModuleCacheTest, CheckAgainstProcMaps) {
 
   const auto find_last_executable_region = [](const RegionVector& regions) {
     const auto rloc = std::ranges::find_if(
-        base::Reversed(regions), [](const debug::MappedMemoryRegion* region) {
+        std::views::reverse(regions),
+        [](const debug::MappedMemoryRegion* region) {
           return static_cast<bool>(region->permissions &
                                    debug::MappedMemoryRegion::EXECUTE);
         });

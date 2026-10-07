@@ -4,11 +4,11 @@
 
 #include "content/browser/service_worker/service_worker_client.h"
 
+#include <ranges>
 #include <set>
 #include <variant>
 
 #include "base/check_is_test.h"
-#include "base/containers/adapters.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -371,7 +371,8 @@ void ServiceWorkerClient::RemoveMatchingRegistration(
 
 ServiceWorkerRegistration* ServiceWorkerClient::MatchRegistration() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (const auto& registration : base::Reversed(matching_registrations_)) {
+  for (const auto& registration :
+       std::views::reverse(matching_registrations_)) {
     if (registration.second->is_uninstalled()) {
       continue;
     }

@@ -11,12 +11,12 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -1637,7 +1637,8 @@ void TabRestoreServiceImpl::PersistenceDelegate::ValidateAndDeleteEmptyEntries(
   std::vector<std::unique_ptr<tab_restore::Entry>> valid_entries;
 
   // Iterate from the back so that we keep the most recently closed entries.
-  for (std::unique_ptr<tab_restore::Entry>& entry : base::Reversed(*entries)) {
+  for (std::unique_ptr<tab_restore::Entry>& entry :
+       std::views::reverse(*entries)) {
     if (TabRestoreServiceHelper::ValidateEntry(*entry)) {
       valid_entries.push_back(std::move(entry));
     }

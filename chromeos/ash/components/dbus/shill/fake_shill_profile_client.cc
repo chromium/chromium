@@ -5,9 +5,9 @@
 #include "chromeos/ash/components/dbus/shill/fake_shill_profile_client.h"
 
 #include <memory>
+#include <ranges>
 #include <utility>
 
-#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -282,7 +282,7 @@ std::optional<base::DictValue> FakeShillProfileClient::GetService(
   DCHECK(profile_path);
 
   // Returns the entry added latest.
-  for (const auto& profile : base::Reversed(profiles_)) {
+  for (const auto& profile : std::views::reverse(profiles_)) {
     const base::DictValue* entry = profile.entries.FindDict(service_path);
     if (!entry) {
       continue;

@@ -5,8 +5,8 @@
 #include "remoting/base/protobuf_http_test_responder.h"
 
 #include <algorithm>
+#include <ranges>
 
-#include "base/containers/adapters.h"
 #include "base/run_loop.h"
 #include "net/http/http_status_code.h"
 #include "remoting/base/http_status.h"
@@ -107,7 +107,7 @@ bool ProtobufHttpTestResponder::GetRequestMessage(
     google::protobuf::MessageLite* out_message) {
   base::RunLoop().RunUntilIdle();
   auto pending_request_it = std::ranges::find(
-      base::Reversed(*test_url_loader_factory_.pending_requests()), url,
+      std::views::reverse(*test_url_loader_factory_.pending_requests()), url,
       [](const network::TestURLLoaderFactory::PendingRequest& request) {
         return request.request.url.spec();
       });

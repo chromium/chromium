@@ -26,8 +26,8 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 
 #include <iterator>
+#include <ranges>
 
-#include "base/containers/adapters.h"
 #include "base/containers/enum_set.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -2293,7 +2293,7 @@ PopoverHideResult HTMLElement::CloseEntirePopoverStack(
     // order.
     CHECK(probe::ToCoreProbeSink(popover_stack_for_inspector.back())
               ->HasDevToolsSessions());
-    stack.append_range(base::Reversed(popover_stack_for_inspector));
+    stack.append_range(std::views::reverse(popover_stack_for_inspector));
     return PopoverHideResult::kForcedOpenByInspector;
   }
   return PopoverHideResult::kHidden;
@@ -2430,7 +2430,7 @@ PopoverHideResult HTMLElement::HideAllPopoversUntil(
       }
 
       if (!popover_stack_for_inspector->empty()) {
-        stack.append_range(base::Reversed(*popover_stack_for_inspector));
+        stack.append_range(std::views::reverse(*popover_stack_for_inspector));
         result = PopoverHideResult::kForcedOpenByInspector;
       }
     } while (repeating_hide);

@@ -4,8 +4,9 @@
 
 #include "ui/aura/window_occlusion_tracker.h"
 
+#include <ranges>
+
 #include "base/auto_reset.h"
-#include "base/containers/adapters.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRegion.h"
@@ -526,7 +527,7 @@ bool WindowOcclusionTracker::RecomputeOcclusionImpl(
   SkRegion region_for_forced_visible_windows;
   SkRegion* occluded_region_for_children =
       force_visible ? &region_for_forced_visible_windows : occluded_region;
-  for (aura::Window* child : base::Reversed(window->children())) {
+  for (aura::Window* child : std::views::reverse(window->children())) {
     has_visible_child |= RecomputeOcclusionImpl(
         child, transform_relative_to_root, clipped_bounds_for_children,
         occluded_region_for_children);

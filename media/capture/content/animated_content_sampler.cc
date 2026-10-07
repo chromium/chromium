@@ -8,8 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
-
-#include "base/containers/adapters.h"
+#include <ranges>
 
 namespace media {
 
@@ -215,7 +214,7 @@ bool AnimatedContentSampler::AnalyzeObservations(
   size_t count_frame_durations = 0;
   base::TimeTicks first_event_time;
   base::TimeTicks last_event_time;
-  for (const auto& observation : base::Reversed(observations_)) {
+  for (const auto& observation : std::views::reverse(observations_)) {
     const int area = observation.damage_rect.size().GetArea();
     num_pixels_damaged_in_all += area;
     if (observation.damage_rect != elected_rect)

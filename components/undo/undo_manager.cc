@@ -5,11 +5,11 @@
 #include "components/undo/undo_manager.h"
 
 #include <memory>
+#include <ranges>
 #include <utility>
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
-#include "base/containers/adapters.h"
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
 #include "components/strings/grit/components_strings.h"
@@ -44,8 +44,9 @@ void UndoGroup::AddOperation(std::unique_ptr<UndoOperation> operation) {
 
 void UndoGroup::Undo() {
   for (const std::unique_ptr<UndoOperation>& operation :
-       base::Reversed(operations_))
+       std::views::reverse(operations_)) {
     operation->Undo();
+  }
 }
 
 // UndoManager ----------------------------------------------------------------

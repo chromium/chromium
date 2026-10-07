@@ -7,9 +7,9 @@
 
 #include <string.h>
 
+#include <ranges>
 #include <string>
 
-#include "base/containers/adapters.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_split.h"
@@ -88,7 +88,7 @@ std::string GetEvents() {
   const auto& events = BreadcrumbManager::GetInstance().GetEvents();
   std::vector<std::string> breadcrumbs;
   size_t breadcrumbs_size = 0;
-  for (const std::string& event : base::Reversed(events)) {
+  for (const std::string& event : std::views::reverse(events)) {
     // Reduce saved events to only the amount that can be included in a crash
     // report. This allows future events to be appended up to
     // `kPersistedFilesizeInBytes`, reducing the number of resizes needed.

@@ -13,6 +13,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <ranges>
 #include <set>
 #include <utility>
 #include <vector>
@@ -22,7 +23,6 @@
 #include "base/byte_size.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
-#include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/map_util.h"
 #include "base/debug/alias.h"
@@ -1145,7 +1145,8 @@ class UnmatchedServiceWorkerProcessTracker
 
   std::optional<SiteProcessIDPair> FindFreshestProcessForSite(
       SiteInstanceImpl* site_instance) const {
-    const auto reversed_site_process_set = base::Reversed(site_process_set_);
+    const auto reversed_site_process_set =
+        std::views::reverse(site_process_set_);
     if (site_instance->IsDefaultSiteInstance()) {
       // See if we can find an entry that maps to a site associated with the
       // default SiteInstance. This allows the default SiteInstance to reuse a

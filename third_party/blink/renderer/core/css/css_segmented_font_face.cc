@@ -25,6 +25,8 @@
 
 #include "third_party/blink/renderer/core/css/css_segmented_font_face.h"
 
+#include <ranges>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
@@ -292,12 +294,12 @@ void FontFaceList::ForEach(
 
 void FontFaceList::ForEachReverseUntilTrue(
     base::FunctionRef<bool(const Member<FontFace>&)> func) const {
-  for (auto& font_face : base::Reversed(non_css_connected_face_)) {
+  for (auto& font_face : std::views::reverse(non_css_connected_face_)) {
     if (func(font_face)) {
       return;
     }
   }
-  for (auto& font_face : base::Reversed(css_connected_face_)) {
+  for (auto& font_face : std::views::reverse(css_connected_face_)) {
     if (func(font_face)) {
       return;
     }
@@ -306,10 +308,10 @@ void FontFaceList::ForEachReverseUntilTrue(
 
 void FontFaceList::ForEachReverse(
     base::FunctionRef<void(const Member<FontFace>&)> func) const {
-  for (auto& font_face : base::Reversed(non_css_connected_face_)) {
+  for (auto& font_face : std::views::reverse(non_css_connected_face_)) {
     func(font_face);
   }
-  for (auto& font_face : base::Reversed(css_connected_face_)) {
+  for (auto& font_face : std::views::reverse(css_connected_face_)) {
     func(font_face);
   }
 }

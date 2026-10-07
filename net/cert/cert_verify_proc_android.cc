@@ -4,12 +4,12 @@
 
 #include "net/cert/cert_verify_proc_android.h"
 
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/adapters.h"
 #include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -395,7 +395,7 @@ bool VerifyFromAndroidTrustManager(
   // Extract the public key hashes and check whether or not any are known
   // roots. Walk from the end of the chain (root) to leaf, to optimize for
   // known root checks.
-  for (const auto& cert : base::Reversed(verified_chain)) {
+  for (const auto& cert : std::views::reverse(verified_chain)) {
     std::string_view spki_bytes;
     if (!asn1::ExtractSPKIFromDERCert(cert, &spki_bytes)) {
       verify_result->cert_status |= CERT_STATUS_INVALID;

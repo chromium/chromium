@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/flex/line_flexer.h"
 
+#include <ranges>
+
 namespace blink {
 
 LineFlexer::LineFlexer(base::span<FlexItem> line_items,
@@ -136,7 +138,7 @@ bool LineFlexer::ResolveFlexibleLengths() {
   //
   // This method converges, and avoids rounding issues.
   LayoutUnit total_violation;
-  for (auto& item : base::Reversed(line_items_)) {
+  for (auto& item : std::views::reverse(line_items_)) {
     if (item.state == FlexerState::kFrozen) {
       continue;
     }

@@ -6,9 +6,9 @@
 
 #include <algorithm>
 #include <optional>
+#include <ranges>
 #include <utility>
 
-#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -887,7 +887,8 @@ void HttpServerPropertiesManager::SaveQuicServerInfoMapToServerPrefs(
   if (quic_server_info_map.empty())
     return;
   base::ListValue quic_servers_list;
-  for (const auto& [key, server_info] : base::Reversed(quic_server_info_map)) {
+  for (const auto& [key, server_info] :
+       std::views::reverse(quic_server_info_map)) {
     base::Value network_anonymization_key_value;
     // Don't save entries with ephemeral NAKs.
     if (!key.network_anonymization_key.ToValue(
@@ -934,7 +935,7 @@ void HttpServerPropertiesManager::SaveBrokenAlternativeServicesToPrefs(
 
   if (!recently_broken_alternative_services.empty()) {
     for (const auto& [broken_alt_service, broken_count] :
-         base::Reversed(recently_broken_alternative_services)) {
+         std::views::reverse(recently_broken_alternative_services)) {
       base::DictValue entry_dict;
       if (!TryAddBrokenAlternativeServiceFieldsToDictionaryValue(
               broken_alt_service, entry_dict)) {

@@ -6,8 +6,8 @@
 
 #include <algorithm>
 #include <numeric>
+#include <ranges>
 
-#include "base/containers/adapters.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
@@ -91,8 +91,9 @@ unsigned Mismatch(const String& old_text, const String& new_text) {
 
 template <typename Span1, typename Span2>
 unsigned MismatchFromEnd(const Span1& span1, const Span2& span2) {
-  auto rspan1 = base::Reversed(span1);
-  const auto old_new = std::ranges::mismatch(rspan1, base::Reversed(span2));
+  auto rspan1 = std::views::reverse(span1);
+  const auto old_new =
+      std::ranges::mismatch(rspan1, std::views::reverse(span2));
   return static_cast<unsigned>(old_new.in1 - rspan1.begin());
 }
 

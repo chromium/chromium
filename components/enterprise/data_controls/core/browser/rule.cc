@@ -6,10 +6,10 @@
 
 #include <algorithm>
 #include <array>
+#include <ranges>
 #include <string_view>
 #include <vector>
 
-#include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -143,7 +143,7 @@ std::vector<std::string_view> AnyOfConditions(const base::DictValue& value) {
 // Returns true if `error_path` indicates that the attribute being validated is
 // nested inside a "destinations" dictionary.
 bool IsDestinationCondition(const policy::PolicyErrorPath& error_path) {
-  for (const auto& element : base::Reversed(error_path)) {
+  for (const auto& element : std::views::reverse(error_path)) {
     if (std::holds_alternative<std::string>(element)) {
       const std::string& path_string = std::get<std::string>(element);
       if (path_string == kKeyDestinations) {

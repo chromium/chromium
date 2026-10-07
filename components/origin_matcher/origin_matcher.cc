@@ -4,7 +4,8 @@
 
 #include "components/origin_matcher/origin_matcher.h"
 
-#include "base/containers/adapters.h"
+#include <ranges>
+
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "components/origin_matcher/origin_matcher_internal.h"
@@ -131,7 +132,7 @@ bool OriginMatcher::Matches(const url::Origin& origin) const {
   GURL origin_url = origin.GetURL();
   // Since we only do kInclude vs kNoMatch, the order doesn't actually matter.
   for (const std::unique_ptr<OriginMatcherRule>& rule :
-       base::Reversed(rules_)) {
+       std::views::reverse(rules_)) {
     net::SchemeHostPortMatcherResult result = rule->Evaluate(origin_url);
     if (result == net::SchemeHostPortMatcherResult::kInclude) {
       return true;

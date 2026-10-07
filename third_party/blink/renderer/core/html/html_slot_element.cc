@@ -30,7 +30,8 @@
 
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 
-#include "base/containers/adapters.h"
+#include <ranges>
+
 #include "third_party/blink/renderer/bindings/core/v8/v8_assigned_nodes_options.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -444,7 +445,7 @@ void HTMLSlotElement::RebuildDistributedChildrenLayoutTrees(
   // one described in ContainerNode::RebuildChildrenLayoutTrees().
   // Defensive copy to prevent UAF from sync recalc. See crbug.com/520167277.
   const HeapVector<Member<Node>> flat_tree_children = flat_tree_children_;
-  for (const auto& child : base::Reversed(flat_tree_children)) {
+  for (const auto& child : std::views::reverse(flat_tree_children)) {
     RebuildLayoutTreeForChild(child, whitespace_attacher);
   }
 }

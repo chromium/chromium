@@ -5,8 +5,8 @@
 #include "services/resource_coordinator/memory_instrumentation/graph.h"
 
 #include <algorithm>
+#include <ranges>
 
-#include "base/containers/adapters.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_tokenizer.h"
@@ -56,7 +56,7 @@ Node* GlobalDumpGraph::CreateNode(Process* process_graph, Node* parent) {
 PreOrderIterator GlobalDumpGraph::VisitInDepthFirstPreOrder() {
   std::vector<raw_ptr<Node, VectorExperimental>> roots;
   for (const auto& [process_id, process] :
-       base::Reversed(process_dump_graphs_)) {
+       std::views::reverse(process_dump_graphs_)) {
     roots.push_back(process->root());
   }
   roots.push_back(shared_memory_graph_->root());
@@ -66,7 +66,7 @@ PreOrderIterator GlobalDumpGraph::VisitInDepthFirstPreOrder() {
 PostOrderIterator GlobalDumpGraph::VisitInDepthFirstPostOrder() {
   std::vector<raw_ptr<Node, VectorExperimental>> roots;
   for (const auto& [process_id, process] :
-       base::Reversed(process_dump_graphs_)) {
+       std::views::reverse(process_dump_graphs_)) {
     roots.push_back(process->root());
   }
   roots.push_back(shared_memory_graph_->root());
@@ -221,13 +221,13 @@ Node* PreOrderIterator::next() {
       continue;
 
     // Visit all children of this node.
-    for (const auto& [name, child] : base::Reversed(*node->children())) {
+    for (const auto& [name, child] : std::views::reverse(*node->children())) {
       to_visit_.push_back(child);
     }
 
     // Visit all owners of this node.
     for (memory_instrumentation::GlobalDumpGraph::Edge* edge :
-         base::Reversed(*node->owned_by_edges())) {
+         std::views::reverse(*node->owned_by_edges())) {
       to_visit_.push_back(edge->source());
     }
 
@@ -276,13 +276,13 @@ Node* PostOrderIterator::next() {
     to_visit_.push_back(node);
 
     // Visit all children of this node.
-    for (const auto& [name, child] : base::Reversed(*node->children())) {
+    for (const auto& [name, child] : std::views::reverse(*node->children())) {
       to_visit_.push_back(child);
     }
 
     // Visit all owners of this node.
     for (memory_instrumentation::GlobalDumpGraph::Edge* edge :
-         base::Reversed(*node->owned_by_edges())) {
+         std::views::reverse(*node->owned_by_edges())) {
       to_visit_.push_back(edge->source());
     }
   }

@@ -5,10 +5,10 @@
 #include "extensions/common/message_bundle.h"
 
 #include <memory>
+#include <ranges>
 #include <string>
 #include <vector>
 
-#include "base/containers/adapters.h"
 #include "base/i18n/rtl.h"
 #include "base/lazy_instance.h"
 #include "base/strings/string_util.h"
@@ -69,7 +69,7 @@ bool MessageBundle::Init(const CatalogVector& locale_catalogs,
                          std::string* error) {
   dictionary_.clear();
 
-  for (const auto& catalog : base::Reversed(locale_catalogs)) {
+  for (const auto& catalog : std::views::reverse(locale_catalogs)) {
     for (auto message_it : catalog) {
       std::string key(base::ToLowerASCII(message_it.first));
       if (!IsValidName(message_it.first)) {

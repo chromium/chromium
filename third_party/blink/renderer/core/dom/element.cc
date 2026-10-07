@@ -30,9 +30,9 @@
 #include <bitset>
 #include <limits>
 #include <memory>
+#include <ranges>
 #include <utility>
 
-#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "components/viz/common/surfaces/tracked_element_rects.h"
@@ -9031,7 +9031,7 @@ void Element::LoseInterestInAllElements(Document& document) {
   HeapLinkedHashSet<Member<Element>> elements = document.ElementsWithInterest();
   // For each element source in document's active interest sources set, in
   // reverse order:
-  for (auto& element : base::Reversed(elements)) {
+  for (auto& element : std::views::reverse(elements)) {
     if (auto* target = element->InterestForElement()) {
       // 1. Lose interest in source given source's active interest target.
       element->InterestLost(target, InterestLostCancelable::kNotCancelable);
@@ -10489,7 +10489,7 @@ const ComputedStyle* Element::EnsureComputedStyle(
                                   : StyleRecalcContext();
 
   SelectorFilter::Mark mark = filter.SetMark();
-  for (Element* ancestor : base::Reversed(ancestors)) {
+  for (Element* ancestor : std::views::reverse(ancestors)) {
     const ComputedStyle* style =
         ancestor->EnsureOwnComputedStyle(style_recalc_context, kPseudoIdNone);
     filter.PushParent(*ancestor);

@@ -8,12 +8,12 @@
 
 #include <optional>
 #include <queue>
+#include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -409,7 +409,7 @@ void MakePipeline(
   // Assemble the pipelines from last to first.
   scoped_refptr<Pipeline> fallback = nullptr;
   for (const ProtocolParser::Pipeline& pipeline :
-       base::Reversed(result.pipelines)) {
+       std::views::reverse(result.pipelines)) {
     // First, scan the operations to find any to-be-installed CRX so that
     // downloads can be skipped if it is already in cache.
     auto cache_check = base::BindRepeating(

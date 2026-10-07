@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/modules/accessibility/inspector_accessibility_agent.h"
 
 #include <memory>
+#include <ranges>
 
-#include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -44,7 +44,7 @@ void AddChildren(AXObject& ax_object,
                  std::unique_ptr<protocol::Array<AXNode>>& nodes,
                  AXObjectCacheImpl& cache) {
   HeapVector<Member<AXObject>> reachable(
-      base::Reversed(ax_object.ChildrenIncludingIgnored()));
+      std::views::reverse(ax_object.ChildrenIncludingIgnored()));
 
   while (!reachable.empty()) {
     AXObject* descendant = reachable.back();
@@ -58,7 +58,7 @@ void AddChildren(AXObject& ax_object,
     if (follow_ignored &&
         (descendant->IsIgnoredButIncludedInTree() || !descendant->GetNode())) {
       reachable.append_range(
-          base::Reversed(descendant->ChildrenIncludingIgnored()));
+          std::views::reverse(descendant->ChildrenIncludingIgnored()));
     }
     auto child_node = BuildProtocolAXNodeForAXObject(*descendant);
     nodes->emplace_back(std::move(child_node));
@@ -458,7 +458,7 @@ void InspectorAccessibilityAgent::CompleteQuery(
     reachable.pop_back();
     const AXObject::AXObjectVector& children =
         ax_object->ChildrenIncludingIgnored();
-    reachable.append_range(base::Reversed(children));
+    reachable.append_range(std::views::reverse(children));
 
     const bool ignored = ax_object->IsIgnored();
     // if querying by name: skip if name of current object does not match.
@@ -612,7 +612,7 @@ void InspectorAccessibilityAgent::AXObjectModified(AXObject* ax_object,
         continue;
       const AXObject::AXObjectVector& children =
           descendant->ChildrenIncludingIgnored();
-      reachable.append_range(base::Reversed(children));
+      reachable.append_range(std::views::reverse(children));
     }
   } else {
     MarkAXObjectDirty(ax_object);

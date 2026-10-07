@@ -4,12 +4,12 @@
 
 #include "components/page_load_metrics/browser/soft_navigation_tracker.h"
 
+#include <ranges>
 #include <set>
 #include <utility>
 
 #include "base/check_deref.h"
 #include "base/check_op.h"
-#include "base/containers/adapters.h"
 #include "base/containers/span.h"
 #include "content/public/browser/global_routing_id.h"
 
@@ -332,7 +332,7 @@ SoftNavigationData* SoftNavigationTracker::FindCommittedNavigationForTimestamp(
   }
   // Iterate in reverse from the latest navigation backwards to find the latest
   // committed soft navigation whose slicing time is <= `timestamp`.
-  for (const auto& [id, nav] : base::Reversed(navigations_)) {
+  for (const auto& [id, nav] : std::views::reverse(navigations_)) {
     if (nav->metrics && nav->metrics->commit) {
       if (timestamp >= nav->metrics->commit->soft_navigation_slicing_time) {
         return nav.get();

@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 
 #include <memory>
+#include <ranges>
 
-#include "base/containers/adapters.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
@@ -2203,7 +2203,7 @@ class AccessibilityReplaceRangesTest : public AccessibilitySelectionTest {
     // Traversing the selections in reverse order so that we can safely apply
     // the replacement strings without interfering with replacements that appear
     // later in document.
-    for (const AXSelection& selection : base::Reversed(selections)) {
+    for (const AXSelection& selection : std::views::reverse(selections)) {
       const AXPosition anchor = selection.Anchor();
       EXPECT_TRUE(anchor.IsValid());
       EXPECT_TRUE(anchor.IsTextPosition());

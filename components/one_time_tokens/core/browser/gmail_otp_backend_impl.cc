@@ -4,10 +4,10 @@
 
 #include "components/one_time_tokens/core/browser/gmail_otp_backend_impl.h"
 
+#include <ranges>
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/adapters.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -192,7 +192,7 @@ void GmailOtpBackendImpl::ProcessCachedNotifications() {
   auto items = notification_cache_.TakeItems();
   LOG_OTT(log_sink_) << "Processing " << items.size()
                      << " cached notification(s) for active subscribers.";
-  for (const auto& notification : base::Reversed(items)) {
+  for (const auto& notification : std::views::reverse(items)) {
     base::UmaHistogramMediumTimes(
         "Autofill.OneTimeTokens.Backend.Gmail.SubscriptionWaitLatency",
         base::TimeTicks::Now() - notification.notification_received_timeticks);

@@ -7,8 +7,8 @@
 #import <AppKit/AppKit.h>
 
 #include <optional>
+#include <ranges>
 
-#include "base/containers/adapters.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -199,7 +199,7 @@ void WebUIToolbarEventForwarder::PressMonitor::OnEvent(const ui::Event& event) {
 ui::MouseEvent*
 WebUIToolbarEventForwarder::PressMonitor::LastAdjustedDisregarding(
     const ui::Event& to_disregard) {
-  for (const auto& event : base::Reversed(adjusted_events_)) {
+  for (const auto& event : std::views::reverse(adjusted_events_)) {
     if (event->time_stamp() == to_disregard.time_stamp()) {
       continue;
     }

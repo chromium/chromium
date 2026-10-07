@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/core/layout/inline/inline_items_builder.h"
 
+#include <ranges>
 #include <type_traits>
 
 #include "base/compiler_specific.h"
-#include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_span.h"
@@ -205,7 +205,7 @@ inline bool MoveToEndOfCollapsibleSpaces(const StringView& string,
 // open/close or bidi controls are ignored.
 // Returns nullptr if there were no previous items.
 InlineItem* LastItemToCollapseWith(InlineItems* items) {
-  for (auto& item : base::Reversed(*items)) {
+  for (auto& item : std::views::reverse(*items)) {
     if (item->EndCollapseType() != InlineItem::kOpaqueToCollapsing) {
       return item;
     }
@@ -1180,7 +1180,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendForcedBreak(
     typename MappingBuilder::SourceNodeScope scope(&mapping_builder_, nullptr);
     // These bidi controls need to be associated with the |layout_object| so
     // that items from a LayoutObject are consecutive.
-    for (const auto& bidi : base::Reversed(bidi_context_)) {
+    for (const auto& bidi : std::views::reverse(bidi_context_)) {
       AppendOpaque(InlineItem::kBidiControl, bidi.exit, layout_object);
     }
   }
@@ -1237,8 +1237,9 @@ void InlineItemsBuilderTemplate<MappingBuilder>::ExitAndEnterSvgTextChunk(
   typename MappingBuilder::SourceNodeScope scope(&mapping_builder_, nullptr);
   // These bidi controls need to be associated with the |layout_text| so
   // that items from a LayoutObject are consecutive.
-  for (const auto& bidi : base::Reversed(bidi_context_))
+  for (const auto& bidi : std::views::reverse(bidi_context_)) {
     AppendOpaque(InlineItem::kBidiControl, bidi.exit, &layout_text);
+  }
 
   // Then re-add bidi controls to restore the bidi context.
   for (const auto& bidi : bidi_context_)

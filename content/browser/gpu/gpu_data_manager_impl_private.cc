@@ -19,10 +19,10 @@
 #include <array>
 #include <iterator>
 #include <memory>
+#include <ranges>
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/adapters.h"
 #include "base/containers/circular_deque.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -1363,7 +1363,7 @@ void GpuDataManagerImplPrivate::UpdateGpuPreferences(
   }
 
   bool has_software_mode = false;
-  for (gpu::GpuMode mode : base::Reversed(fallback_modes_)) {
+  for (gpu::GpuMode mode : std::views::reverse(fallback_modes_)) {
     gpu::GrContextType type = gpu::GpuModeToGrContextType(mode);
     // kNone might be duplicated between SOFTWARE_GL and DISPLAY_COMPOSITOR gpu
     // modes, both of which can return kNone.

@@ -9,13 +9,13 @@
 #include <algorithm>
 #include <functional>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -353,7 +353,7 @@ bool NoStatePrefetchManager::HasRecentlyBeenNavigatedTo(Origin origin,
 
   CleanUpOldNavigations(&navigations_,
                         base::Milliseconds(kNavigationRecordWindowMs));
-  for (const NavigationRecord& navigation : base::Reversed(navigations_)) {
+  for (const NavigationRecord& navigation : std::views::reverse(navigations_)) {
     if (navigation.url == url) {
       return true;
     }
@@ -853,7 +853,7 @@ bool NoStatePrefetchManager::GetPrefetchInformation(
     *origin = ORIGIN_NONE;
   }
 
-  for (const NavigationRecord& prefetch : base::Reversed(prefetches_)) {
+  for (const NavigationRecord& prefetch : std::views::reverse(prefetches_)) {
     if (prefetch.url == url) {
       if (prefetch_age) {
         *prefetch_age = GetCurrentTimeTicks() - prefetch.time;
@@ -873,7 +873,7 @@ bool NoStatePrefetchManager::GetPrefetchInformation(
 void NoStatePrefetchManager::SetPrefetchFinalStatusForUrl(
     const GURL& url,
     FinalStatus final_status) {
-  for (NavigationRecord& prefetch : base::Reversed(prefetches_)) {
+  for (NavigationRecord& prefetch : std::views::reverse(prefetches_)) {
     if (prefetch.url == url) {
       prefetch.final_status = final_status;
       break;

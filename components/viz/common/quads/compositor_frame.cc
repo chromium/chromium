@@ -4,9 +4,9 @@
 
 #include "components/viz/common/quads/compositor_frame.h"
 
+#include <ranges>
 #include <unordered_map>
 
-#include "base/containers/adapters.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
@@ -27,7 +27,7 @@ CompositorFrame& CompositorFrame::operator=(CompositorFrame&& other) = default;
 bool CompositorFrame::HasCopyOutputRequests() const {
   // Iterate the RenderPasses back-to-front, because CopyOutputRequests tend to
   // be made on the later passes.
-  for (const auto& pass : base::Reversed(render_pass_list)) {
+  for (const auto& pass : std::views::reverse(render_pass_list)) {
     if (!pass->copy_requests.empty()) {
       return true;
     }

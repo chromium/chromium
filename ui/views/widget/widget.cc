@@ -6,12 +6,12 @@
 
 #include <algorithm>
 #include <optional>
+#include <ranges>
 #include <set>
 #include <utility>
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
-#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
@@ -2606,7 +2606,7 @@ bool Widget::ShouldDescendIntoChildForEventHandlingDeprecated(
     return true;
   }
 
-  for (View* view : base::Reversed(views_with_layers)) {
+  for (View* view : std::views::reverse(views_with_layers)) {
     // Skip views that don't process events.
     if (!view->GetCanProcessEventsWithinSubtree()) {
       continue;

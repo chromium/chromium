@@ -6,11 +6,11 @@
 
 #include <algorithm>
 #include <memory>
+#include <ranges>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
@@ -769,7 +769,7 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::HitTestSync(
   if (!virtual_children().empty()) {
     // Search the greater indices first, since they're on top in the z-order.
     for (const std::unique_ptr<AXVirtualView>& child :
-         base::Reversed(virtual_children())) {
+         std::views::reverse(virtual_children())) {
       gfx::NativeViewAccessible result =
           child->HitTestSync(screen_physical_pixel_x, screen_physical_pixel_y);
       if (result) {
@@ -797,8 +797,8 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::HitTestSync(
     v->ConvertPointToTarget(v, child, &point_in_child_coords);
     return child->HitTestPoint(point_in_child_coords);
   };
-  const auto i =
-      std::ranges::find_if(base::Reversed(v->children()), is_point_in_child);
+  const auto i = std::ranges::find_if(std::views::reverse(v->children()),
+                                      is_point_in_child);
   // If it's not inside any of our children, it's inside this view.
   return (i == v->children().rend()) ? GetNativeViewAccessible()
                                      : (*i)->GetNativeViewAccessible();

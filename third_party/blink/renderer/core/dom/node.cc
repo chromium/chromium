@@ -27,8 +27,8 @@
 #include "third_party/blink/renderer/core/dom/node.h"
 
 #include <algorithm>
+#include <ranges>
 
-#include "base/containers/adapters.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_root_node_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_node_string_trustedscript.h"
@@ -668,7 +668,7 @@ Node* Node::PseudoAwareLastChild() const {
                                                name);
     }
 
-    for (PseudoId pseudo_id : base::Reversed(kElementChildPseudoOrder)) {
+    for (PseudoId pseudo_id : std::views::reverse(kElementChildPseudoOrder)) {
       switch (pseudo_id) {
         case kPseudoIdColumn:
           // kPseudoIdColumn is an array of indexed pseudo-elements.  Return

@@ -6,10 +6,10 @@
 
 #include <algorithm>
 #include <memory>
+#include <ranges>
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
@@ -961,7 +961,7 @@ void LayerTreeImpl::DrawChildrenAndAppendQuads(
   {
     base::AutoReset reset(&data.subtree_property_changed_from_parent,
                           subtree_property_changed);
-    for (auto& child : base::Reversed(layer.children())) {
+    for (auto& child : std::views::reverse(layer.children())) {
       Draw(*child, render_pass, data, transform_to_root, transform_to_target,
            clip_in_target, clip_in_layer, opacity);
     }

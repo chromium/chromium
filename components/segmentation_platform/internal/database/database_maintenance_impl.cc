@@ -6,12 +6,12 @@
 
 #include <deque>
 #include <memory>
+#include <ranges>
 #include <set>
 #include <utility>
 #include <vector>
 
 #include "base/check_is_test.h"
-#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -71,7 +71,7 @@ base::OnceClosure LinkTasks(
   // nothing.
   base::OnceClosure first_task = base::DoNothing();
   for (base::OnceCallback<void(base::OnceClosure)>& curr_task :
-       base::Reversed(tasks)) {
+       std::views::reverse(tasks)) {
     // We need to first perform the current task, and then move on to the next
     // task which was previously stored in first_task.
     first_task = base::BindOnce(std::move(curr_task), std::move(first_task));

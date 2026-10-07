@@ -32,6 +32,7 @@
 
 #include <algorithm>
 #include <bitset>
+#include <ranges>
 #include <tuple>
 
 #include "third_party/blink/public/platform/platform.h"
@@ -3328,7 +3329,7 @@ const ComputedStyle& CSSAnimations::EnsureAfterChangeStyle(
   StyleResolver& resolver = animating_element.GetDocument().GetStyleResolver();
   StyleRecalcContext context =
       StyleRecalcContext::FromAncestors(*ancestors.back());
-  for (Element* ancestor : base::Reversed(ancestors)) {
+  for (Element* ancestor : std::views::reverse(ancestors)) {
     // Set the old_style to make sure @starting-style rules do not apply. Even
     // when cascading for before-change style, @starting-style should not apply
     // to ancestors.

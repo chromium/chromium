@@ -5,10 +5,10 @@
 #include "components/payments/content/payment_request_spec.h"
 
 #include <algorithm>
+#include <ranges>
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
@@ -403,7 +403,7 @@ void PaymentRequestSpec::UpdateSelectedShippingOption(bool after_update) {
   // one in the array that has its selected field set to true. If none are
   // selected by the merchant, |selected_shipping_option_| stays nullptr.
   auto selected_shipping_option_it =
-      std::ranges::find_if(base::Reversed(*details_->shipping_options),
+      std::ranges::find_if(std::views::reverse(*details_->shipping_options),
                            &payments::mojom::PaymentShippingOption::selected);
   if (selected_shipping_option_it != details_->shipping_options->rend()) {
     selected_shipping_option_ = selected_shipping_option_it->get();

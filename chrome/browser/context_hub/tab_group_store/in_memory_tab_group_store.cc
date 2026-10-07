@@ -5,9 +5,9 @@
 #include "chrome/browser/context_hub/tab_group_store/in_memory_tab_group_store.h"
 
 #include <algorithm>
+#include <ranges>
 #include <utility>
 
-#include "base/containers/adapters.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
@@ -27,7 +27,7 @@ void InMemoryTabGroupStore::GetAllGroups(
     GetAllGroupsCallback callback) const {
   std::vector<TabGroupEntry> result;
   result.reserve(groups_.size());
-  for (const auto& [id, group] : base::Reversed(groups_)) {
+  for (const auto& [id, group] : std::views::reverse(groups_)) {
     result.push_back(group);
   }
   if (callback) {
