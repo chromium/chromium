@@ -52,8 +52,8 @@ void DownloadFileWithCopy::RenameAndUniquify(
     const base::FilePath& full_path,
     RenameCompletionCallback callback) {
   base::File file(file_path_to_copy_,
-                  base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ);
-  int64_t file_size = file.GetLength();
+                  base::File::FLAG_OPEN | base::File::FLAG_READ);
+  int64_t file_size = file.IsValid() ? file.GetLength() : -1;
   OnRenameComplete(full_path, main_task_runner_, std::move(callback));
 
   main_task_runner_->PostTask(

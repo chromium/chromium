@@ -26,6 +26,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "build/build_config.h"
+#include "components/download/internal/common/download_file_with_copy.h"
 #include "components/download/public/common/download_create_info.h"
 #include "components/download/public/common/download_destination_observer.h"
 #include "components/download/public/common/download_features.h"
@@ -1389,6 +1390,34 @@ TEST_F(DownloadFileTest, DataUrlSourcePassesInitiatorToQuarantine) {
 
   FinishStream(DOWNLOAD_INTERRUPT_REASON_NONE, true, kEmptyHash);
   DestroyDownloadFile(0);
+}
+
+TEST_F(DownloadFileTest, DownloadFileWithCopyMissingSourceDoesNotCreateFile) {
+  base::FilePath missing_source =
+      download_dir_.GetPath().AppendASCII("missing_source.bin");
+  base::FilePath target_path =
+      download_dir_.GetPath().AppendASCII("target.bin");
+  DownloadFileWithCopy file_with_copy(missing_source,
+                                      observer_factory_.GetWeakPtr());
+
+  EXPECT_CALL(*observer_, MockDestinationCompleted(-1, std::string()));
+
+  base::RunLoop loop_runner;
+  DownloadInterruptReason result_reason = DOWNLOAD_INTERRUPT_REASON_FILE_FAILED;
+  file_with_copy.RenameAndUniquify(
+      target_path,
+      base::BindOnce(
+          [](base::OnceClosure quit, DownloadInterruptReason* out,
+             DownloadInterruptReason reason, const base::FilePath&) {
+            *out = reason;
+            std::move(quit).Run();
+          },
+          loop_runner.QuitClosure(), &result_reason));
+  loop_runner.Run();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_NONE, result_reason);
+  EXPECT_FALSE(base::PathExists(missing_source));
 }
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
