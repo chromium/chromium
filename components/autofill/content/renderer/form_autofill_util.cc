@@ -1838,10 +1838,9 @@ std::vector<SelectOption> GetDataListOptions(const WebInputElement& element) {
   return options;
 }
 
-// Returns whether `node` has a shadow-tree-including ancestor that is a
-// `<form>`.
-bool HasFormAncestor(WebNode node) {
-  node = node.ParentOrShadowHostNode();
+// Returns whether `node` is a `<form>` itself or has a shadow-tree-including
+// ancestor that is a `<form>`.
+bool HasFormInclusiveAncestor(WebNode node) {
   while (node) {
     if (HasTagName<kForm>(node)) {
       return true;
@@ -2379,7 +2378,7 @@ std::vector<WebFormControlElement> GetOwnedFormControls(
     // A form control element may be unassociated inside its Shadow DOM, but
     // owned (in the Autofill sense) by a <form> containing the shadow host.
     std::erase_if(form_controls, [](const WebFormControlElement& e) {
-      return e.OwnerShadowHost() && HasFormAncestor(e);
+      return HasFormInclusiveAncestor(e.OwnerShadowHost());
     });
   }
   std::erase_if(form_controls, std::not_fn(&IsAccessible));

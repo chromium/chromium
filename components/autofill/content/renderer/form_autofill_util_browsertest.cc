@@ -1333,6 +1333,42 @@ TEST_F(FormAutofillUtilsTest,
                                     ElementsAre(HasRendererIdOf(t)))))));
 }
 
+// Tests that a form control inside a <form> in a Shadow DOM whose `form`
+// attribute points to a non-existent form is treated as unowned when the
+// shadow host has no <form> ancestor.
+// Regression test for crbug.com/347059988.
+TEST_F(FormAutofillUtilsTest,
+       FindFormAndFieldForFormControlElement_UnassociatedInShadowForm) {
+  LoadHTML(R"(
+    <!DOCTYPE html>
+    <div id=host>
+      <template shadowrootmode=open>
+        <form id=f>
+          <input id=t form=nonexistent>
+        </form>
+      </template>
+    </div>
+  )");
+
+  WebDocument doc = GetDocument();
+  WebNode shadow_root = GetElementById(doc, "host").ShadowRoot();
+  WebFormElement f = GetFormElementById(shadow_root, "f");
+  WebFormControlElement t = GetFormControlElementById(shadow_root, "t");
+
+  ASSERT_EQ(t.Form(), WebFormElement());  // nocheck
+  ASSERT_EQ(t.GetOwningFormForAutofill(), WebFormElement());
+  EXPECT_THAT(GetOwnedFormControlsForTesting(doc, f), IsEmpty());
+  EXPECT_THAT(GetOwnedFormControlsForTesting(doc, WebFormElement()),
+              ElementsAre(t));
+
+  EXPECT_THAT(
+      FindFormAndFieldForFormControlElement(t),
+      Optional(Field(&FormAndField::form,
+                     AllOf(HasRendererIdOf(WebFormElement()),
+                           Property(&FormData::fields,
+                                    ElementsAre(HasRendererIdOf(t)))))));
+}
+
 // Tests the fallback mechanism where FindFormAndFieldForFormControlElement()
 // constructs a form with a single field if it is unable to extract the form
 // containing a control element.
