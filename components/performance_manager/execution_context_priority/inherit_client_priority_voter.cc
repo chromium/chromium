@@ -56,7 +56,8 @@ void InheritClientPriorityVoter::InitializeOnGraph(
     Graph* graph,
     VotingChannel voting_channel) {
   voter_id_ = voting_channel.voter_id();
-  max_vote_aggregator_.SetUpstreamVotingChannel(std::move(voting_channel));
+  voting_channel_ = std::move(voting_channel);
+  max_vote_aggregator_.AddObserver(this);
 
   graph->AddFrameNodeObserver(this);
   graph->AddWorkerNodeObserver(this);
@@ -67,7 +68,14 @@ void InheritClientPriorityVoter::TearDownOnGraph(Graph* graph) {
   graph->RemoveFrameNodeObserver(this);
 
   voter_id_ = VoterId();
-  max_vote_aggregator_.ResetUpstreamVotingChannel();
+  max_vote_aggregator_.RemoveObserver(this);
+  voting_channel_.Reset();
+}
+
+void InheritClientPriorityVoter::OnWorkerTopVoteChanged(
+    const WorkerNode* worker_node,
+    const std::optional<Vote>& vote) {
+  voting_channel_.SetVote(worker_node, vote);
 }
 
 void InheritClientPriorityVoter::OnFrameNodeAdded(const FrameNode* frame_node) {

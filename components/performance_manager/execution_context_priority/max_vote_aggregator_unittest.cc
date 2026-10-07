@@ -4,7 +4,13 @@
 
 #include "components/performance_manager/public/execution_context_priority/max_vote_aggregator.h"
 
+#include <optional>
+#include <utility>
+#include <variant>
+
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
+#include "base/test/gtest_util.h"
 #include "components/performance_manager/test_support/voting.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,6 +53,28 @@ static const Vote kHighPriorityVote0(base::Process::Priority::kMaxValue,
 static const Vote kHighPriorityVote1(base::Process::Priority::kMaxValue,
                                      "high reason 1");
 
+// Forwards the top votes of the aggregator to `voting_channel`.
+class ForwardingObserver : public MaxVoteAggregator::Observer {
+ public:
+  explicit ForwardingObserver(VotingChannel voting_channel)
+      : voting_channel_(std::move(voting_channel)) {}
+
+  VoterId voter_id() const { return voting_channel_.voter_id(); }
+
+  // MaxVoteAggregator::Observer:
+  void OnFrameTopVoteChanged(const FrameNode* frame_node,
+                             const std::optional<Vote>& vote) override {
+    voting_channel_.SetVote(frame_node, vote);
+  }
+  void OnWorkerTopVoteChanged(const WorkerNode* worker_node,
+                              const std::optional<Vote>& vote) override {
+    voting_channel_.SetVote(worker_node, vote);
+  }
+
+ private:
+  VotingChannel voting_channel_;
+};
+
 }  // namespace
 
 class MaxVoteAggregatorTest : public testing::Test {
@@ -54,15 +82,15 @@ class MaxVoteAggregatorTest : public testing::Test {
   MaxVoteAggregatorTest() = default;
   ~MaxVoteAggregatorTest() override = default;
 
-  void SetUp() override {
-    VotingChannel channel = observer_.BuildVotingChannel();
-    aggregator_voter_id_ = channel.voter_id();
-    aggregator_.SetUpstreamVotingChannel(std::move(channel));
+  void SetUp() override { aggregator_.AddObserver(&forwarding_observer_); }
+
+  void TearDown() override {
+    aggregator_.RemoveObserver(&forwarding_observer_);
   }
 
-  void TearDown() override {}
-
-  VoterId aggregator_voter_id() const { return aggregator_voter_id_; }
+  VoterId aggregator_voter_id() const {
+    return forwarding_observer_.voter_id();
+  }
 
   const DummyVoteObserver& observer() const { return observer_; }
 
@@ -70,8 +98,8 @@ class MaxVoteAggregatorTest : public testing::Test {
 
  private:
   DummyVoteObserver observer_;
+  ForwardingObserver forwarding_observer_{observer_.BuildVotingChannel()};
   MaxVoteAggregator aggregator_;
-  VoterId aggregator_voter_id_;
 };
 
 // Tests that in the case of a single voter, the vote is simply propagated
@@ -238,6 +266,93 @@ TEST_F(MaxVoteAggregatorTest, LotsOfVoters) {
     voter.InvalidateVote(kVoteContext0);
 
   EXPECT_EQ(observer().GetVoteCount(), 0u);
+}
+
+TEST_F(MaxVoteAggregatorTest, HasVotes) {
+  VotingChannel voter0 = aggregator()->GetVotingChannel();
+  VotingChannel voter1 = aggregator()->GetVotingChannel();
+  EXPECT_FALSE(aggregator()->HasVotes(kVoteContext0));
+
+  voter0.SetVote(kVoteContext0, kLowPriorityVote0);
+  voter1.SetVote(kVoteContext0, kHighPriorityVote1);
+  EXPECT_TRUE(aggregator()->HasVotes(kVoteContext0));
+  EXPECT_FALSE(aggregator()->HasVotes(kVoteContext1));
+
+  // Still has a vote as long as one voter has a vote.
+  voter1.SetVote(kVoteContext0, std::nullopt);
+  EXPECT_TRUE(aggregator()->HasVotes(kVoteContext0));
+
+  voter0.SetVote(kVoteContext0, std::nullopt);
+  EXPECT_FALSE(aggregator()->HasVotes(kVoteContext0));
+}
+
+namespace {
+
+// Casts `vote_to_cast` on `to_context`, back into the aggregator, while
+// `from_frame_node` has a top vote.
+class LoopbackObserver : public MaxVoteAggregator::Observer {
+ public:
+  LoopbackObserver(MaxVoteAggregator* aggregator,
+                   const FrameNode* from_frame_node,
+                   VoteContext to_context,
+                   const Vote& vote_to_cast)
+      : aggregator_(aggregator),
+        loopback_(aggregator->GetVotingChannel()),
+        from_frame_node_(from_frame_node),
+        to_context_(to_context),
+        vote_to_cast_(vote_to_cast) {
+    aggregator_->AddObserver(this);
+  }
+
+  ~LoopbackObserver() override { aggregator_->RemoveObserver(this); }
+
+  // MaxVoteAggregator::Observer:
+  void OnFrameTopVoteChanged(const FrameNode* frame_node,
+                             const std::optional<Vote>& vote) override {
+    if (frame_node == from_frame_node_) {
+      loopback_.SetVote(*to_context_, vote.has_value()
+                                          ? std::make_optional(vote_to_cast_)
+                                          : std::nullopt);
+    }
+  }
+
+ private:
+  raw_ptr<MaxVoteAggregator> aggregator_;
+  VotingChannel loopback_;
+  raw_ptr<const FrameNode> from_frame_node_;
+  std::optional<VoteContext> to_context_;
+  Vote vote_to_cast_;
+};
+
+}  // namespace
+
+// Tests that an observer can re-entrantly cast a vote on another vote context.
+TEST_F(MaxVoteAggregatorTest, ReentrantVoteOnOtherContext) {
+  LoopbackObserver loopback(aggregator(),
+                            std::get<const FrameNode*>(kVoteContext0),
+                            kVoteContext1, kMediumPriorityVote1);
+  VotingChannel voter0 = aggregator()->GetVotingChannel();
+
+  voter0.SetVote(kVoteContext0, kHighPriorityVote0);
+  EXPECT_EQ(observer().GetVoteCount(), 2u);
+  EXPECT_TRUE(observer().HasVote(aggregator_voter_id(), kVoteContext0,
+                                 kHighPriorityVote0));
+  EXPECT_TRUE(observer().HasVote(aggregator_voter_id(), kVoteContext1,
+                                 kMediumPriorityVote1));
+
+  voter0.SetVote(kVoteContext0, std::nullopt);
+  EXPECT_EQ(observer().GetVoteCount(), 0u);
+}
+
+// Tests that an observer re-entrantly changing the top vote of the vote context
+// being notified is caught.
+TEST_F(MaxVoteAggregatorTest, ReentrantVoteOnSameContext) {
+  LoopbackObserver loopback(aggregator(),
+                            std::get<const FrameNode*>(kVoteContext0),
+                            kVoteContext0, kHighPriorityVote1);
+  VotingChannel voter0 = aggregator()->GetVotingChannel();
+
+  EXPECT_CHECK_DEATH(voter0.SetVote(kVoteContext0, kLowPriorityVote0));
 }
 
 }  // namespace execution_context_priority

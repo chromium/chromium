@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_INHERIT_CLIENT_PRIORITY_VOTER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_INHERIT_CLIENT_PRIORITY_VOTER_H_
 
+#include <optional>
+
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/execution_context_priority/max_vote_aggregator.h"
 #include "components/performance_manager/public/execution_context_priority/priority_voting_system.h"
@@ -18,7 +20,8 @@ namespace execution_context_priority {
 // workers.
 class InheritClientPriorityVoter : public PriorityVoter,
                                    public FrameNodeObserver,
-                                   public WorkerNodeObserver {
+                                   public WorkerNodeObserver,
+                                   private MaxVoteAggregator::Observer {
  public:
   static const char kPriorityInheritedReason[];
 
@@ -59,6 +62,14 @@ class InheritClientPriorityVoter : public PriorityVoter,
   VoterId voter_id() const { return voter_id_; }
 
  private:
+  // MaxVoteAggregator::Observer: Casts the top vote of the clients of a child
+  // worker on that worker. Only workers are voted on in `max_vote_aggregator_`.
+  void OnWorkerTopVoteChanged(const WorkerNode* worker_node,
+                              const std::optional<Vote>& vote) override;
+
+  // Casts the aggregated votes of the clients of each child worker.
+  VotingChannel voting_channel_;
+
   // Aggregates the votes from multiple clients of the same child worker.
   MaxVoteAggregator max_vote_aggregator_;
 

@@ -11,7 +11,9 @@
 
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/execution_context_priority/max_vote_aggregator.h"
+#include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
+#include "components/performance_manager/public/graph/worker_node.h"
 
 namespace performance_manager {
 
@@ -19,7 +21,7 @@ class Graph;
 
 namespace execution_context_priority {
 
-class RootVoteObserver;
+class PrioritySetter;
 
 // Base interface for creating a voter class that can submit a vote to influence
 // the priority of a graph node.
@@ -39,9 +41,19 @@ class PriorityVoter {
 };
 
 // This class owns the voters that are responsible for deciding the priority of
-// graph nodes.
+// graph nodes, and the MaxVoteAggregator that aggregates their votes. The top
+// vote of a node in the aggregator is its final priority. Each component is
+// built from the aggregator, observes the final priority of nodes in it, and/or
+// casts votes into it:
+//   - The PrioritySetter sets the priority of frames and workers.
+//
+// It also verifies that no votes are leaked.
+//
+// See README.md for an overview.
 class PriorityVotingSystem
-    : public GraphOwnedAndRegistered<PriorityVotingSystem> {
+    : public GraphOwnedAndRegistered<PriorityVotingSystem>,
+      private FrameNodeObserver,
+      private WorkerNodeObserver {
  public:
   PriorityVotingSystem();
   ~PriorityVotingSystem() override;
@@ -53,17 +65,30 @@ class PriorityVotingSystem
   }
 
   // GraphOwned:
-  void OnPassedToGraph(Graph* graph) override {}
+  void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
 
  private:
   void AddPriorityVoter(std::unique_ptr<PriorityVoter> priority_voter);
 
-  // Takes in the aggregated votes and applies them to the nodes in the graph.
-  std::unique_ptr<RootVoteObserver> root_vote_observer_;
+  // FrameNodeObserver:
+  void OnFrameNodeRemoved(
+      const FrameNode* frame_node,
+      const FrameNode* previous_parent_frame_node,
+      const PageNode* previous_page_node,
+      const ProcessNode* previous_process_node,
+      const FrameNode* previous_parent_or_outer_document_or_embedder) override;
 
-  // Aggregates all the votes from the voters.
+  // WorkerNodeObserver:
+  void OnWorkerNodeRemoved(const WorkerNode* worker_node,
+                           const ProcessNode* previous_process_node) override;
+
+  // Aggregates the votes from the voters. Declared first, since everything else
+  // observes it or holds voting channels issued by it.
   MaxVoteAggregator max_vote_aggregator_;
+
+  // Observes `max_vote_aggregator_`.
+  std::unique_ptr<PrioritySetter> priority_setter_;
 
   std::vector<std::unique_ptr<PriorityVoter>> priority_voters_;
 };

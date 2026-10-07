@@ -6,7 +6,10 @@
 
 #include <algorithm>
 #include <tuple>
+#include <variant>
 
+#include "base/check.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace performance_manager {
 namespace execution_context_priority {
@@ -19,20 +22,30 @@ VotingChannel MaxVoteAggregator::GetVotingChannel() {
   return voting_channel_factory_.BuildVotingChannel();
 }
 
-void MaxVoteAggregator::SetUpstreamVotingChannel(VotingChannel channel) {
-  CHECK(!channel_.IsValid());
-  CHECK(channel.IsValid());
-  channel_ = std::move(channel);
+void MaxVoteAggregator::AddObserver(Observer* observer) {
+  // Observers can't be added or removed while being notified.
+  CHECK(notifying_vote_contexts_.empty());
+  observers_.AddObserver(observer);
 }
 
-void MaxVoteAggregator::ResetUpstreamVotingChannel() {
-  CHECK(channel_.IsValid());
-  channel_.Reset();
+void MaxVoteAggregator::RemoveObserver(Observer* observer) {
+  // Observers can't be added or removed while being notified.
+  CHECK(notifying_vote_contexts_.empty());
+  observers_.RemoveObserver(observer);
+}
+
+bool MaxVoteAggregator::HasVotes(VoteContext vote_context) const {
+  // Entries are erased when their last vote is removed.
+  return vote_data_map_.contains(vote_context);
 }
 
 void MaxVoteAggregator::OnVoteSet(VoterId voter_id,
                                   VoteContext vote_context,
                                   const std::optional<Vote>& vote) {
+  // `NotifyTopVoteChanged()` may re-entrantly call this method for other vote
+  // contexts, which may insert or erase entries in `vote_data_map_`. So the
+  // map must be up to date before it, and no iterator or reference into
+  // `vote_data_map_` may be used after it.
   if (!vote.has_value()) {
     // Vote removal.
     auto it = vote_data_map_.find(vote_context);
@@ -46,11 +59,13 @@ void MaxVoteAggregator::OnVoteSet(VoterId voter_id,
     vote_data.RemoveVote(voter_id);
     const std::optional<Vote> new_top_vote = vote_data.GetTopVote();
 
-    if (old_top_vote != new_top_vote) {
-      channel_.SetVote(vote_context, new_top_vote);
-    }
+    // Erase the entry before notifying, since `it` must not be used after
+    // `NotifyTopVoteChanged()` (see above).
     if (!new_top_vote.has_value()) {
       vote_data_map_.erase(it);
+    }
+    if (old_top_vote != new_top_vote) {
+      NotifyTopVoteChanged(vote_context, new_top_vote);
     }
     return;
   }
@@ -66,8 +81,29 @@ void MaxVoteAggregator::OnVoteSet(VoterId voter_id,
   const std::optional<Vote> new_top_vote = vote_data.GetTopVote();
 
   if (old_top_vote != new_top_vote) {
-    channel_.SetVote(vote_context, new_top_vote);
+    NotifyTopVoteChanged(vote_context, new_top_vote);
   }
+}
+
+void MaxVoteAggregator::NotifyTopVoteChanged(VoteContext vote_context,
+                                             const std::optional<Vote>& vote) {
+  CHECK(!std::ranges::contains(notifying_vote_contexts_, vote_context))
+      << "A top vote changed while its observers were being notified, which "
+         "indicates a cycle";
+
+  notifying_vote_contexts_.push_back(vote_context);
+  for (Observer& observer : observers_) {
+    std::visit(absl::Overload{
+                   [&](const FrameNode* frame_node) {
+                     observer.OnFrameTopVoteChanged(frame_node, vote);
+                   },
+                   [&](const WorkerNode* worker_node) {
+                     observer.OnWorkerTopVoteChanged(worker_node, vote);
+                   },
+               },
+               vote_context);
+  }
+  notifying_vote_contexts_.pop_back();
 }
 
 MaxVoteAggregator::StampedVote::StampedVote() = default;
