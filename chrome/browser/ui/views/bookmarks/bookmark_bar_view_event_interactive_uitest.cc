@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
@@ -34,18 +35,21 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_controller.h"
+#include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_controller_impl.h"
+#include "chrome/browser/ui/bookmarks/controllers/desktop_bookmark_bar_ui_controller_injector.h"
 #include "chrome/browser/ui/bookmarks/test_bookmark_navigation_wrapper.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
-#include "chrome/browser/ui/ui_controller_factory.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_observer.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_context_menu.h"
@@ -54,7 +58,6 @@
 #include "chrome/browser/ui/views/test/view_event_test_base.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -65,12 +68,14 @@
 #include "components/gcm_driver/fake_gcm_profile_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/page_navigator.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/test/mock_base_window.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/compositor/compositor.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -386,17 +391,31 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase,
     profile_builder.AddTestingFactory(
         BookmarkMergedSurfaceServiceFactory::GetInstance(),
         BookmarkMergedSurfaceServiceFactory::GetDefaultFactory());
+    profile_builder.AddTestingFactory(
+        tab_groups::TabGroupSyncServiceFactory::GetInstance(),
+        BrowserContextKeyedServiceFactory::TestingFactory());
     profile_ = profile_builder.Build();
     model_ = BookmarkModelFactory::GetForBrowserContext(profile_.get());
     WaitForBookmarkMergedSurfaceServiceToLoad(
         BookmarkMergedSurfaceServiceFactory::GetForProfile(profile_.get()));
     profile_->GetPrefs()->SetBoolean(bookmarks::prefs::kShowBookmarkBar, true);
 
-    BrowserWindowCreateParams native_params(profile_.get(), true);
-    browser_ = CreateBrowserWithTestWindowForParams(std::move(native_params));
+    tab_strip_model_ = std::make_unique<TabStripModel>(
+        &tab_strip_model_delegate_, profile_.get());
+    tab_strip_model_delegate_.SetBrowserWindowInterface(
+        &browser_window_interface_);
+    ON_CALL(browser_window_interface_, GetProfile())
+        .WillByDefault(testing::Return(profile_.get()));
+    ON_CALL(browser_window_interface_, GetWindow())
+        .WillByDefault(testing::Return(&mock_window_));
+    ON_CALL(browser_window_interface_, GetTabStripModel())
+        .WillByDefault(testing::Return(tab_strip_model_.get()));
+    ON_CALL(browser_window_interface_, GetWeakPtr()).WillByDefault([this]() {
+      return browser_weak_ptr_factory_.GetWeakPtr();
+    });
 
     model_->DisableWritesToDiskForTest();
-    PinnedToolbarActionsModel::Get(browser_->GetProfile())
+    PinnedToolbarActionsModel::Get(profile_.get())
         ->UpdatePinnedState(kActionShowChromeLabs, false);
 
     AddTestData(CreateBigMenu());
@@ -416,8 +435,9 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase,
     is_pre_target_handler_registered_ = true;
 #endif
 
-    static_cast<TestBrowserWindow*>(browser_->GetWindow())
-        ->SetNativeWindow(window()->GetNativeWindow());
+    ON_CALL(mock_window_, GetNativeWindow()).WillByDefault([this]() {
+      return window() ? window()->GetNativeWindow() : gfx::NativeWindow();
+    });
 
     bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting(&wrapper_);
 
@@ -441,8 +461,9 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase,
     }
     actions::ActionIdMap::ResetMapsForTesting();
 
-    browser_->GetTabStripModel()->CloseAllTabs();
-    browser_.reset();
+    tab_strip_model_->CloseAllTabs();
+    tab_strip_model_.reset();
+    browser_weak_ptr_factory_.InvalidateWeakPtrs();
     profile_.reset();
 
     // Run the message loop to ensure we delete all tasks and fully shut down.
@@ -466,10 +487,12 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase,
     auto container = std::make_unique<views::View>();
     container->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
-    auto* factory = UIControllerFactory::From(browser_.get());
-    auto controller = factory->CreateBookmarkBarController();
+    auto injector = std::make_unique<DesktopBookmarkBarUIControllerInjector>(
+        &browser_window_interface_);
+    auto controller =
+        std::make_unique<BookmarkBarUIControllerImpl>(std::move(injector));
     auto bb_view = std::make_unique<BookmarkBarView>(
-        browser_.get(), std::move(controller), nullptr);
+        &browser_window_interface_, std::move(controller), nullptr);
     // Real bookmark bars get a BookmarkBarViewBackground. Set an opaque
     // background here just to avoid triggering subpixel rendering issues.
     bb_view->SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
@@ -612,7 +635,12 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase,
   std::unique_ptr<ChromeContentClient> content_client_;
   std::unique_ptr<ChromeContentBrowserClient> browser_content_client_;
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<BrowserWindowInterface> browser_;
+  testing::NiceMock<ui::MockBaseWindow> mock_window_;
+  TestTabStripModelDelegate tab_strip_model_delegate_;
+  std::unique_ptr<TabStripModel> tab_strip_model_;
+  testing::NiceMock<MockBrowserWindowInterface> browser_window_interface_;
+  base::WeakPtrFactory<BrowserWindowInterface> browser_weak_ptr_factory_{
+      &browser_window_interface_};
   // When true, `OnMouseEvent()` drops `kMouseMoved` events while a menu is
   // showing. Set on `kKeyPressed` while a menu is open (and reset by
   // `OpenMenuByClick()` or mouse press/release) so delayed synthetic Windows
