@@ -900,16 +900,16 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(2, access_count_);
 }
 
-// When an issuance request is made in no-cors mode, a cross-origin redirect
-// from issuer A to issuer B should result in recycling the original issuance
-// request, obtaining issuer A tokens on success.
+// When an issuance request is made in no-cors mode and the issuer responds
+// with a cross-origin redirect, the request headers attached for the original
+// issuer must be removed before following the redirect, so the operation
+// fails.
 //
 // Note: For more on the interaction between Trust Tokens and redirects, see the
 // "Handling redirects" section in the design doc
 // https://docs.google.com/document/d/1TNnya6B8pyomDK2F1R9CL3dY10OAmqWlnCxsWyOBDVQ/edit#heading=h.5erfr3uo012t
-IN_PROC_BROWSER_TEST_F(
-    TrustTokenBrowsertest,
-    NoCorsModeCrossOriginRedirectIssuanceUsesOriginalOriginAsIssuer) {
+IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
+                       NoCorsModeCrossOriginRedirectIssuanceFails) {
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
 
   GURL start_url = server_.GetURL("a.test", "/title1.html");
@@ -923,13 +923,14 @@ IN_PROC_BROWSER_TEST_F(
                              .catch(error => error.name);)";
 
   EXPECT_EQ(
-      "Success",
+      "OperationError",
       EvalJs(shell(),
              JsReplace(command,
                        server_.GetURL("a.test", "/cross-site/b.test/issue"))));
 
-  EXPECT_EQ(true, EvalJs(shell(), JsReplace("document.hasPrivateToken($1);",
-                                            IssuanceOriginFromHost("a.test"))));
+  EXPECT_EQ(false,
+            EvalJs(shell(), JsReplace("document.hasPrivateToken($1);",
+                                      IssuanceOriginFromHost("a.test"))));
   EXPECT_EQ(false,
             EvalJs(shell(), JsReplace("document.hasPrivateToken($1);",
                                       IssuanceOriginFromHost("b.test"))));
@@ -1401,18 +1402,16 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(6, access_count_);
 }
 
-// When a redemption request is made in no-cors mode, a cross-origin redirect
-// from issuer A to issuer B should result in recycling the original redemption
-// request, obtaining an issuer A redemption record on success.
+// When a redemption request is made in no-cors mode and the issuer responds
+// with a cross-origin redirect, the request headers attached for the original
+// issuer must be removed before following the redirect. As a result, the
+// redirect target sees no redemption request and the operation fails.
 //
-// Note: This isn't necessarily the behavior we'll end up wanting here; the test
-// serves to document how redemption and redirects currently interact.  For more
-// on the interaction between Trust Tokens and redirects, see the "Handling
-// redirects" section in the design doc
+// Note: For more on the interaction between Trust Tokens and redirects, see the
+// "Handling redirects" section in the design doc
 // https://docs.google.com/document/d/1TNnya6B8pyomDK2F1R9CL3dY10OAmqWlnCxsWyOBDVQ/edit#heading=h.5erfr3uo012t
-IN_PROC_BROWSER_TEST_F(
-    TrustTokenBrowsertest,
-    NoCorsModeCrossOriginRedirectRedemptionUsesOriginalOriginAsIssuer) {
+IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
+                       NoCorsModeCrossOriginRedirectRedemptionFails) {
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
 
   ASSERT_TRUE(NavigateToURL(shell(), server_.GetURL("a.test", "/title1.html")));
@@ -1423,15 +1422,17 @@ IN_PROC_BROWSER_TEST_F(
                         operation: 'token-request' } })
         .then(()=>'Success'); )"));
 
-  // `mode: 'no-cors'` on redemption has the effect that that redirecting a
-  // request will maintain the request's Trust Tokens state.
-  EXPECT_EQ("Success", EvalJs(shell(), R"(
+  // The redirect target receives no Sec-Private-State-Token request header, so
+  // the redemption response is empty and the operation fails.
+  EXPECT_EQ("OperationError", EvalJs(shell(), R"(
       fetch('/cross-site/b.test/redeem',
         { mode: 'no-cors',
           privateToken: { version: 1,
                         operation: 'token-redemption' } })
-        .then(()=>'Success'); )"));
+        .then(()=>'Success').catch(err => err.name); )"));
 
+  // When a signing operation fails, it isn't fatal, so the requests
+  // should always get sent successfully.
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(
       fetch('/sign',
@@ -1442,14 +1443,11 @@ IN_PROC_BROWSER_TEST_F(
         .then(()=>'Success'); )",
                                       IssuanceOriginFromHost("a.test"))));
 
-  EXPECT_THAT(
-      request_handler_.last_incoming_signed_request(),
-      Optional(AllOf(
-          HasHeader(network::kTrustTokensRequestHeaderSecRedemptionRecord),
-          HasHeader(network::kTrustTokensSecTrustTokenVersionHeader))));
+  // There shouldn't have been an a.test redemption record attached to the
+  // request.
+  EXPECT_THAT(request_handler_.last_incoming_signed_request(),
+              Optional(ReflectsSigningFailure()));
 
-  // When a signing operation fails, it isn't fatal, so the requests
-  // should always get sent successfully.
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(
       fetch('/sign',
@@ -1465,47 +1463,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(request_handler_.last_incoming_signed_request(),
               Optional(ReflectsSigningFailure()));
 
-  // Expect four accesses, two for issuance and two for redemption.
+  // Expect four accesses: one for issuance, one for redemption, and two for
+  // signing.
   EXPECT_EQ(4, access_count_);
-}
-
-// When a redemption request is made in no-cors mode, a cross-origin redirect
-// from issuer A to issuer B should result in recycling the original redemption
-// request and, in particular, sending the same token.
-//
-// Note: This isn't necessarily the behavior we'll end up wanting here; the test
-// serves to document how redemption and redirects currently interact.
-IN_PROC_BROWSER_TEST_F(
-    TrustTokenBrowsertest,
-    NoCorsModeCrossOriginRedirectRedemptionRecyclesSameRedemptionRequest) {
-  // Have issuance provide only a single token so that, if the redemption logic
-  // searches for a new token after redirect, the redemption will fail.
-  TrustTokenRequestHandler::Options options;
-  options.batch_size = 1;
-  request_handler_.UpdateOptions(std::move(options));
-
-  ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
-
-  ASSERT_TRUE(NavigateToURL(shell(), server_.GetURL("a.test", "/title1.html")));
-
-  EXPECT_EQ("Success", EvalJs(shell(), R"(
-      fetch('/issue',
-        { privateToken: { version: 1,
-                        operation: 'token-request' } })
-        .then(()=>'Success'); )"));
-
-  // The redemption should succeed after the redirect, yielding an a.test
-  // redemption record (the redemption record correctly corresponding to a.test
-  // is covered by a prior test case).
-  EXPECT_EQ("Success", EvalJs(shell(), R"(
-      fetch('/cross-site/b.test/redeem',
-        { mode: 'no-cors',
-          privateToken: { version: 1,
-                        operation: 'token-redemption' } })
-        .then(()=>'Success'); )"));
-
-  // Expect two accesses, one for issuance and one for redemption.
-  EXPECT_EQ(2, access_count_);
 }
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,

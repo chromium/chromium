@@ -105,4 +105,30 @@
         });
     }, 'Token issuance fails with missing issuer keys.');
 
+    promise_test(function (t) {
+        const host_info = get_host_info();
+        const redirect_url = '/common/redirect.py?location=' +
+            encodeURIComponent(host_info.HTTPS_REMOTE_ORIGIN + '/common/blank.html');
+
+        return promise_rejects_dom(t, 'OperationError', fetch(redirect_url, {
+            mode: 'no-cors',
+            privateToken: { version: 1, operation: 'token-request' }
+        }));
+    }, 'Cross-origin redirect in no-cors mode fails token issuance with OperationError.');
+
+    promise_test(async function (t) {
+        // Ensure there is a token available to redeem so that BeginOperation succeeds
+        // and sends the request to the network rather than failing locally with kResourceExhausted.
+        await issue_token();
+
+        const host_info = get_host_info();
+        const redirect_url = '/common/redirect.py?location=' +
+            encodeURIComponent(host_info.HTTPS_REMOTE_ORIGIN + '/common/blank.html');
+
+        return promise_rejects_dom(t, 'OperationError', fetch(redirect_url, {
+            mode: 'no-cors',
+            privateToken: { version: 1, operation: 'token-redemption', refreshPolicy: 'refresh' }
+        }));
+    }, 'Cross-origin redirect in no-cors mode fails token redemption with OperationError.');
+
 </script>

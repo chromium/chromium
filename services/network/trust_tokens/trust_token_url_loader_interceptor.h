@@ -95,6 +95,12 @@ class TrustTokenUrlLoaderInterceptor {
   void FinalizeOperation(net::HttpResponseHeaders& response_headers,
                          base::OnceCallback<void(net::Error)> callback);
 
+  // Handles a cross-origin redirect. This flags the operation as failed so that
+  // incoming response headers from the redirect target will not be processed,
+  // sets the operation status to kBadResponse, and ensures that
+  // FinalizeOperation immediately fails.
+  void OnCrossOriginRedirect();
+
   // Returns the status of the last Trust Token operation step executed.
   const std::optional<mojom::TrustTokenOperationStatus>& status() const {
     return status_;
@@ -143,6 +149,7 @@ class TrustTokenUrlLoaderInterceptor {
   // Stores the status of the last completed Trust Token step (Begin or
   // Finalize).
   std::optional<mojom::TrustTokenOperationStatus> status_;
+  bool operation_failed_due_to_cross_origin_redirect_ = false;
   base::WeakPtrFactory<TrustTokenUrlLoaderInterceptor> weak_ptr_factory_{this};
 };
 

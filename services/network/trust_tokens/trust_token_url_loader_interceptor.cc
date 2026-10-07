@@ -189,9 +189,22 @@ void TrustTokenUrlLoaderInterceptor::OnDoneBeginningOperation(
   std::move(callback).Run(base::unexpected(err));
 }
 
+void TrustTokenUrlLoaderInterceptor::OnCrossOriginRedirect() {
+  status_ = mojom::TrustTokenOperationStatus::kBadResponse;
+  if (dev_tools_report_callback_getter_ && helper_) {
+    MaybeSendTrustTokenOperationResultToDevTools();
+  }
+  operation_failed_due_to_cross_origin_redirect_ = true;
+}
+
 void TrustTokenUrlLoaderInterceptor::FinalizeOperation(
     net::HttpResponseHeaders& response_headers,
     base::OnceCallback<void(net::Error)> callback) {
+  if (operation_failed_due_to_cross_origin_redirect_) {
+    std::move(callback).Run(net::ERR_TRUST_TOKEN_OPERATION_FAILED);
+    return;
+  }
+
   // Finalize should only be called if the Begin step completed successfully
   // and required sending the request.
   CHECK(status_);

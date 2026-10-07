@@ -116,6 +116,7 @@
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/loading_params.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/trust_token_http_headers.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
@@ -6937,6 +6938,9 @@ class MockTrustTokenRequestHelper : public TrustTokenRequestHelper {
     std::optional<net::HttpRequestHeaders> headers;
     if (result == mojom::TrustTokenOperationStatus::kOk) {
       headers.emplace();
+      headers->SetHeader(kTrustTokensSecTrustTokenHeader, "mock-pst-value");
+      headers->SetHeader(kTrustTokensSecTrustTokenVersionHeader,
+                         "mock-pst-version");
     }
 
     switch (operation_synchrony_) {
@@ -7490,6 +7494,104 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
       trust_token_observer.observed_tokens(),
       testing::ElementsAre(MatchesTrustTokenDetails(
           test_server()->GetOrigin(), test_server()->GetOrigin(), true)));
+}
+
+// Request headers attached by the Trust Tokens helper should not be forwarded
+// to a cross-origin redirect target.
+TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
+       RemovesTrustTokenHeadersOnCrossOriginRedirect) {
+  GURL url = test_server()->GetURL(
+      "/server-redirect?" +
+      test_server()->GetURL("other.test", "/echo").spec());
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  request.trust_token_params =
+      OptionalTrustTokenParams(mojom::TrustTokenParams::New());
+
+  base::RunLoop delete_run_loop;
+  mojo::Remote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id =
+      OriginatingProcessId::browser();
+
+  URLLoaderOptions url_loader_options;
+  url_loader_options.trust_token_helper_factory =
+      std::make_unique<MockTrustTokenRequestHelperFactory>(
+          mojom::TrustTokenOperationStatus::kOk /* on_begin */,
+          std::nullopt /* on_finalize */, GetParam(),
+          &outbound_trust_token_operation_was_successful_);
+  url_loader = url_loader_options.MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.BindNewPipeAndPassReceiver(), request, client()->CreateRemote());
+
+  client()->RunUntilRedirectReceived();
+
+  const auto& request_headers1 = sent_request().headers;
+  EXPECT_NE(request_headers1.end(),
+            request_headers1.find(kTrustTokensSecTrustTokenHeader));
+  EXPECT_NE(request_headers1.end(),
+            request_headers1.find(kTrustTokensSecTrustTokenVersionHeader));
+
+  loader->FollowRedirect(/*headers_update_params=*/{},
+                         /*new_url=*/std::nullopt);
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
+
+  const auto& request_headers2 = sent_request().headers;
+  EXPECT_EQ(request_headers2.end(),
+            request_headers2.find(kTrustTokensSecTrustTokenHeader));
+  EXPECT_EQ(request_headers2.end(),
+            request_headers2.find(kTrustTokensSecTrustTokenVersionHeader));
+
+  EXPECT_EQ(client()->completion_status().error_code,
+            net::ERR_TRUST_TOKEN_OPERATION_FAILED);
+  EXPECT_EQ(client()->completion_status().trust_token_operation_status,
+            mojom::TrustTokenOperationStatus::kBadResponse);
+}
+
+// Request headers attached by the Trust Tokens helper should be retained on a
+// same-origin redirect.
+TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
+       RetainsTrustTokenHeadersOnSameOriginRedirect) {
+  GURL url = test_server()->GetURL("/server-redirect?" +
+                                   test_server()->GetURL("/echo").spec());
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  request.trust_token_params =
+      OptionalTrustTokenParams(mojom::TrustTokenParams::New());
+
+  base::RunLoop delete_run_loop;
+  mojo::Remote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id =
+      OriginatingProcessId::browser();
+
+  URLLoaderOptions url_loader_options;
+  url_loader_options.trust_token_helper_factory =
+      std::make_unique<MockTrustTokenRequestHelperFactory>(
+          mojom::TrustTokenOperationStatus::kOk /* on_begin */,
+          mojom::TrustTokenOperationStatus::kOk /* on_finalize */, GetParam(),
+          &outbound_trust_token_operation_was_successful_);
+  url_loader = url_loader_options.MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.BindNewPipeAndPassReceiver(), request, client()->CreateRemote());
+
+  client()->RunUntilRedirectReceived();
+
+  const auto& request_headers1 = sent_request().headers;
+  EXPECT_NE(request_headers1.end(),
+            request_headers1.find(kTrustTokensSecTrustTokenHeader));
+  EXPECT_NE(request_headers1.end(),
+            request_headers1.find(kTrustTokensSecTrustTokenVersionHeader));
+
+  loader->FollowRedirect(/*headers_update_params=*/{},
+                         /*new_url=*/std::nullopt);
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
+
+  const auto& request_headers2 = sent_request().headers;
+  EXPECT_NE(request_headers2.end(),
+            request_headers2.find(kTrustTokensSecTrustTokenHeader));
+  EXPECT_NE(request_headers2.end(),
+            request_headers2.find(kTrustTokensSecTrustTokenVersionHeader));
 }
 
 TEST_F(URLLoaderTest, OnRawRequestClientSecurityStateFactory) {

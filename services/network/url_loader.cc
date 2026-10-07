@@ -108,6 +108,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/sri_message_signatures.h"
 #include "services/network/public/cpp/synthetic_response_util.h"
+#include "services/network/public/cpp/trust_token_http_headers.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -1035,6 +1036,18 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
         net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader);
     url_request_->cookie_setting_overrides().Remove(
         net::CookieSettingOverride::kStorageAccessGrantEligible);
+
+    // Request headers added by `trust_token_interceptor_` are computed for the
+    // initial request origin and must not be sent to a different origin. In
+    // addition, `trust_token_interceptor_` must handle the cross-origin
+    // redirect so that subsequent responses are not processed against the
+    // initial request origin and the operation fails.
+    if (trust_token_interceptor_) {
+      for (std::string_view header : TrustTokensRequestHeaders()) {
+        url_request_->RemoveRequestHeaderByName(header);
+      }
+      trust_token_interceptor_->OnCrossOriginRedirect();
+    }
   }
 
   DCHECK_EQ(emitted_devtools_raw_request_, emitted_devtools_raw_response_);
