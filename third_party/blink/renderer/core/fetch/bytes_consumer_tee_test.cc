@@ -4,13 +4,18 @@
 
 #include "third_party/blink/renderer/core/fetch/bytes_consumer_tee.h"
 
+#include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/fetch/bytes_consumer_test_util.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
+#include "third_party/blink/renderer/platform/loader/fetch/response_body_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/response_body_loader_client.h"
 #include "third_party/blink/renderer/platform/loader/testing/bytes_consumer_test_reader.h"
 #include "third_party/blink/renderer/platform/loader/testing/replaying_bytes_consumer.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
@@ -503,6 +508,101 @@ TEST_F(BytesConsumerTeeTest,
   test::RunPendingTasks();
   EXPECT_EQ(0, client->NumOnStateChangeCalled());
   EXPECT_EQ(BytesConsumer::PublicState::kClosed, dest1->GetPublicState());
+}
+
+TEST_F(BytesConsumerTeeTest,
+       AsyncCloseNotificationShouldBeCancelledBySubsequentCancelCall) {
+  ReplayingBytesConsumer* src = MakeGarbageCollected<ReplayingBytesConsumer>(
+      GetDocument().GetTaskRunner(TaskType::kNetworking));
+  src->Add(Command(Command::kData, "a"));
+  src->Add(Command(Command::kDone));
+  BytesConsumerTestClient* client =
+      MakeGarbageCollected<BytesConsumerTestClient>();
+
+  BytesConsumer* dest1 = nullptr;
+  BytesConsumer* dest2 = nullptr;
+  BytesConsumerTee(GetFrame().DomWindow(), src, &dest1, &dest2);
+
+  dest1->SetClient(client);
+
+  base::span<const char> buffer;
+  ASSERT_EQ(Result::kOk, dest1->BeginRead(buffer));
+  ASSERT_EQ(1u, buffer.size());
+  EXPECT_EQ('a', buffer[0]);
+
+  test::RunPendingTasks();
+  ASSERT_EQ(Result::kOk, dest1->EndRead(1));
+  EXPECT_EQ(BytesConsumer::PublicState::kReadableOrWaiting,
+            dest1->GetPublicState());
+
+  dest1->Cancel();
+  EXPECT_EQ(0, client->NumOnStateChangeCalled());
+  EXPECT_EQ(BytesConsumer::PublicState::kClosed, dest1->GetPublicState());
+  test::RunPendingTasks();
+  EXPECT_EQ(0, client->NumOnStateChangeCalled());
+  EXPECT_EQ(BytesConsumer::PublicState::kClosed, dest1->GetPublicState());
+}
+
+class NoopResponseBodyLoaderClient final
+    : public GarbageCollected<NoopResponseBodyLoaderClient>,
+      public ResponseBodyLoaderClient {
+ public:
+  void DidReceiveData(base::span<const char>) override {}
+  void DidReceiveDecodedData(const String&,
+                             std::unique_ptr<SecureStringDigest>) override {}
+  void DidFinishLoadingBody() override {}
+  void DidFailLoadingBody() override {}
+  void DidCancelLoadingBody() override {}
+};
+
+// Regression test for b/564248014:
+// When a teed ResponseBodyLoader::DelegatingBytesConsumer finishes reading all
+// bytes (`PublicState::kClosed` / `State::kDone`) and a TeeHelper::Destination
+// branch posts `Destination::Close()` asynchronously in `EndRead()`, aborting
+// the `ResponseBodyLoader` before `Destination::Close()` executes must not flip
+// `DelegatingBytesConsumer::GetPublicState()` from `kClosed` to `kErrored`.
+TEST_F(BytesConsumerTeeTest,
+       AbortResponseBodyLoaderWhileDestinationCloseTaskIsPending) {
+  auto task_runner = GetDocument().GetTaskRunner(TaskType::kNetworking);
+  ReplayingBytesConsumer* underlying =
+      MakeGarbageCollected<ReplayingBytesConsumer>(task_runner);
+  underlying->Add(Command(Command::kData, "a"));
+  underlying->Add(Command(Command::kDone));
+
+  auto* loader_client = MakeGarbageCollected<NoopResponseBodyLoaderClient>();
+  auto* body_loader = MakeGarbageCollected<ResponseBodyLoader>(
+      *underlying, *loader_client, task_runner,
+      /*back_forward_cache_loader_helper=*/nullptr);
+  BytesConsumer& src = body_loader->DrainAsBytesConsumer();
+
+  BytesConsumer* dest1 = nullptr;
+  BytesConsumer* dest2 = nullptr;
+  BytesConsumerTee(GetFrame().DomWindow(), &src, &dest1, &dest2);
+
+  // Run pending tasks so `DelegatingBytesConsumer::OnStateChange` peeks "a",
+  // feeds it to `TeeHelper`, and reaches `State::kDone` (`kClosed`).
+  test::RunPendingTasks();
+  EXPECT_EQ(BytesConsumer::PublicState::kClosed, src.GetPublicState());
+
+  // Consume the last chunk from `dest1`. `Destination::EndRead` sees
+  // `chunks_.empty()` and `tee_->GetPublicState() == PublicState::kClosed`,
+  // so it posts `Destination::Close()` to `TaskType::kNetworking`.
+  base::span<const char> buffer;
+  ASSERT_EQ(Result::kOk, dest1->BeginRead(buffer));
+  ASSERT_EQ(1u, buffer.size());
+  EXPECT_EQ('a', buffer[0]);
+  ASSERT_EQ(Result::kOk, dest1->EndRead(1));
+
+  // Before the posted `Destination::Close()` task runs, abort the loader.
+  body_loader->Abort();
+  EXPECT_EQ(BytesConsumer::PublicState::kClosed, src.GetPublicState());
+
+  // Running the queued `Destination::Close()` task must not trigger a DCHECK
+  // (`PublicState::kClosed == tee_->GetPublicState()`).
+  test::RunPendingTasks();
+  EXPECT_EQ(BytesConsumer::PublicState::kClosed, dest1->GetPublicState());
+  EXPECT_EQ(BytesConsumer::PublicState::kReadableOrWaiting,
+            dest2->GetPublicState());
 }
 
 TEST(BytesConusmerTest, ClosedBytesConsumer) {

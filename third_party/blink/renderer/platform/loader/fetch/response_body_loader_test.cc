@@ -1381,6 +1381,107 @@ TEST_F(ResponseBodyLoaderTestAllowDrainAsBytesConsumerInBFCache,
   EXPECT_FALSE(client->LoadingIsFailed());
 }
 
+// Regression test for b/564248014:
+// Once a drained `DelegatingBytesConsumer` reaches `State::kDone`
+// (`PublicState::kClosed`), aborting the `ResponseBodyLoader` before
+// `DidFinishLoadingBody` runs must not retroactively flip `GetPublicState()`
+// from `PublicState::kClosed` to `PublicState::kErrored`.
+TEST_F(ResponseBodyLoaderTest,
+       AbortAfterDrainedBytesConsumerDoneDoesNotFlipStateToErrored) {
+  auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
+  auto* original_consumer =
+      MakeGarbageCollected<ReplayingBytesConsumer>(task_runner);
+  original_consumer->Add(Command(Command::kData, "hello"));
+  original_consumer->Add(Command(Command::kDone));
+
+  auto* client = MakeGarbageCollected<TestClient>();
+  auto* body_loader =
+      MakeResponseBodyLoader(*original_consumer, *client, task_runner);
+
+  BytesConsumer& consumer = body_loader->DrainAsBytesConsumer();
+  auto* reader = MakeGarbageCollected<BytesConsumerTestReader>(&consumer);
+  auto result = reader->Run(task_runner.get());
+  EXPECT_EQ(result.first, Result::kDone);
+  EXPECT_EQ(String(result.second), "hello");
+  EXPECT_EQ(PublicState::kClosed, consumer.GetPublicState());
+
+  // Abort the loader after the drained consumer has already reached kClosed.
+  body_loader->Abort();
+
+  // Terminal state kClosed must be preserved.
+  EXPECT_EQ(PublicState::kClosed, consumer.GetPublicState());
+  base::span<const char> buffer;
+  EXPECT_EQ(Result::kDone, consumer.BeginRead(buffer));
+}
+
+// Verifies that when the underlying BytesConsumer is already kClosed while
+// DelegatingBytesConsumer is still in State::kLoading, aborting the loader
+// keeps both GetPublicState() as kClosed and BeginRead() returning kDone.
+TEST_F(ResponseBodyLoaderTest,
+       AbortWhenUnderlyingConsumerAlreadyClosedPreservesClosedState) {
+  auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
+  auto* closed_underlying = BytesConsumer::CreateClosed();
+  auto* client = MakeGarbageCollected<TestClient>();
+  auto* body_loader =
+      MakeResponseBodyLoader(*closed_underlying, *client, task_runner);
+  BytesConsumer& consumer = body_loader->DrainAsBytesConsumer();
+  EXPECT_EQ(PublicState::kClosed, consumer.GetPublicState());
+
+  body_loader->Abort();
+  EXPECT_EQ(PublicState::kClosed, consumer.GetPublicState());
+  base::span<const char> buffer;
+  EXPECT_EQ(Result::kDone, consumer.BeginRead(buffer));
+}
+
+// Verifies that when the underlying BytesConsumer is kReadableOrWaiting when
+// Abort() is called, closing the underlying consumer or cancelling later does
+// not retroactively flip PublicState::kErrored to PublicState::kClosed.
+TEST_F(ResponseBodyLoaderTest,
+       AbortWhenUnderlyingConsumerReadablePreservesErroredState) {
+  auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
+  auto* replaying_underlying =
+      MakeGarbageCollected<ReplayingBytesConsumer>(task_runner);
+  replaying_underlying->Add(Command(Command::kDone));
+  auto* client = MakeGarbageCollected<TestClient>();
+  auto* body_loader =
+      MakeResponseBodyLoader(*replaying_underlying, *client, task_runner);
+  BytesConsumer& consumer = body_loader->DrainAsBytesConsumer();
+  EXPECT_EQ(PublicState::kReadableOrWaiting, consumer.GetPublicState());
+
+  body_loader->Abort();
+  EXPECT_EQ(PublicState::kErrored, consumer.GetPublicState());
+
+  // Advance underlying consumer to kClosed and attempt Cancel().
+  base::span<const char> buffer;
+  EXPECT_EQ(Result::kDone, replaying_underlying->BeginRead(buffer));
+  EXPECT_EQ(PublicState::kClosed, replaying_underlying->GetPublicState());
+  consumer.Cancel();
+
+  EXPECT_EQ(PublicState::kErrored, consumer.GetPublicState());
+  EXPECT_EQ(Result::kError, consumer.BeginRead(buffer));
+}
+
+// Verifies that calling Cancel() after the underlying BytesConsumer has already
+// errored (while DelegatingBytesConsumer is still in State::kLoading) preserves
+// PublicState::kErrored instead of flipping it to PublicState::kClosed.
+TEST_F(ResponseBodyLoaderTest,
+       CancelWhenUnderlyingConsumerAlreadyErroredPreservesErroredState) {
+  auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
+  auto* errored_underlying =
+      BytesConsumer::CreateErrored(BytesConsumer::Error("error"));
+  auto* client = MakeGarbageCollected<TestClient>();
+  auto* body_loader =
+      MakeResponseBodyLoader(*errored_underlying, *client, task_runner);
+  BytesConsumer& consumer = body_loader->DrainAsBytesConsumer();
+  EXPECT_EQ(PublicState::kErrored, consumer.GetPublicState());
+
+  consumer.Cancel();
+
+  EXPECT_EQ(PublicState::kErrored, consumer.GetPublicState());
+  base::span<const char> buffer;
+  EXPECT_EQ(Result::kError, consumer.BeginRead(buffer));
+}
+
 }  // namespace
 
 }  // namespace blink

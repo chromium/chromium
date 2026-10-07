@@ -281,13 +281,13 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
 
    private:
     void Close() {
-      DCHECK_EQ(PublicState::kClosed, tee_->GetPublicState());
-      DCHECK(chunks_.empty());
       if (is_closed_ || is_cancelled_) {
         // It's possible to reach here because this function can be
         // called asynchronously.
         return;
       }
+      DCHECK_EQ(PublicState::kClosed, tee_->GetPublicState());
+      DCHECK(chunks_.empty());
       DCHECK_EQ(PublicState::kReadableOrWaiting, GetPublicState());
       is_closed_ = true;
       if (client_) {
