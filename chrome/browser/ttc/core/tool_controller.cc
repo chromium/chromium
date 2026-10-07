@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
@@ -19,6 +20,13 @@
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
+#include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
+#include "chrome/browser/actor/tools/history_tool_request.h"
+#include "chrome/browser/actor/tools/media_control_tool_request.h"
+#include "chrome/browser/actor/tools/navigate_tool_request.h"
+#include "chrome/browser/actor/tools/perform_search_tool_request.h"
+#include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/actor/tools/translate_page_tool_request.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
 #include "chrome/browser/ttc/core/session_journal.h"
@@ -26,24 +34,17 @@
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/core/journal_details_builder.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
+#include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
-#include "chrome/browser/actor/tools/history_tool_request.h"
-#include "chrome/browser/actor/tools/media_control_tool_request.h"
-#include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/open_known_page_tool_request.h"
-#include "chrome/browser/actor/tools/perform_search_tool_request.h"
 #include "chrome/browser/actor/tools/switch_tab_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
-#include "chrome/browser/actor/tools/tool_request.h"
-#include "chrome/browser/actor/tools/translate_page_tool_request.h"
 #include "chrome/browser/actor/tools/window_management_tool_request.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/sessions/core/session_id.h"
-#include "url/gurl.h"
 #endif
 
 namespace ttc {
@@ -118,7 +119,6 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
               .Build()),
       std::move(callback));
 
-#if !BUILDFLAG(IS_ANDROID)
   if (tool_request.name == "open_url") {
     OpenUrl(tool_request.arguments, std::move(callback));
     return;
@@ -127,10 +127,12 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
     PerformSearch(tool_request.arguments, std::move(callback));
     return;
   }
+#if !BUILDFLAG(IS_ANDROID)
   if (tool_request.name == "close_current_tab") {
     CloseCurrentTab(std::move(callback));
     return;
   }
+#endif
   if (tool_request.name == "go_back") {
     GoBack(std::move(callback));
     return;
@@ -143,6 +145,7 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
     ReloadPage(std::move(callback));
     return;
   }
+#if !BUILDFLAG(IS_ANDROID)
   if (tool_request.name == "switch_tab") {
     SwitchTab(tool_request.arguments, std::move(callback));
     return;
@@ -151,6 +154,7 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
     OpenKnownPage(tool_request.arguments, std::move(callback));
     return;
   }
+#endif
   if (tool_request.name == "find_and_highlight") {
     FindAndHighlight(tool_request.arguments, std::move(callback));
     return;
@@ -176,6 +180,7 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
     return;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   if (tool_request.name == "set_fullscreen") {
     SetFullscreen(tool_request.arguments, std::move(callback));
     return;
@@ -189,7 +194,6 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
 std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   std::vector<ToolDefinition> tools;
 
-#if !BUILDFLAG(IS_ANDROID)
   ToolDefinition open_url;
   open_url.name = "open_url";
   open_url.description = "Opens a URL in the browser.";
@@ -237,6 +241,7 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   perform_search.verbalization = ToolDefinition::Verbalization::kSilentAction;
   tools.push_back(std::move(perform_search));
 
+#if !BUILDFLAG(IS_ANDROID)
   ToolDefinition close_current_tab;
   close_current_tab.name = "close_current_tab";
   close_current_tab.description = "Close the current browser tab.";
@@ -245,6 +250,7 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   close_current_tab.verbalization =
       ToolDefinition::Verbalization::kSilentAction;
   tools.push_back(std::move(close_current_tab));
+#endif
 
   ToolDefinition go_back;
   go_back.name = "go_back";
@@ -270,6 +276,7 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   reload_page.verbalization = ToolDefinition::Verbalization::kSilentAction;
   tools.push_back(std::move(reload_page));
 
+#if !BUILDFLAG(IS_ANDROID)
   ToolDefinition switch_tab;
   switch_tab.name = "switch_tab";
   switch_tab.description =
@@ -311,6 +318,7 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   open_known_page.behavior = ToolDefinition::Behavior::kBlocking;
   open_known_page.verbalization = ToolDefinition::Verbalization::kSilentAction;
   tools.push_back(std::move(open_known_page));
+#endif
 
   ToolDefinition find_and_highlight;
   find_and_highlight.name = "find_and_highlight";
@@ -389,6 +397,7 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   translate_page.verbalization = ToolDefinition::Verbalization::kSilentAction;
   tools.push_back(std::move(translate_page));
 
+#if !BUILDFLAG(IS_ANDROID)
   ToolDefinition set_fullscreen;
   set_fullscreen.name = "set_fullscreen";
   set_fullscreen.description =
@@ -447,7 +456,6 @@ void ToolController::EnsureTaskCreated(
   }
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void ToolController::OpenUrl(const base::DictValue& arguments,
                              ToolResponseCallback callback) {
   const std::string* url = arguments.FindString("url");
@@ -468,7 +476,7 @@ void ToolController::OpenUrl(const base::DictValue& arguments,
     return;
   }
 
-  PerformActionOnActiveTab(
+  PerformActionOnTrackedContents(
       [&url](
           tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
         return std::make_unique<actor::NavigateToolRequest>(tab_handle,
@@ -497,7 +505,7 @@ void ToolController::PerformSearch(const base::DictValue& arguments,
     return;
   }
 
-  PerformActionOnActiveTab(
+  PerformActionOnTrackedContents(
       [&query](
           tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
         return std::make_unique<actor::PerformSearchToolRequest>(tab_handle,
@@ -506,16 +514,18 @@ void ToolController::PerformSearch(const base::DictValue& arguments,
       std::move(callback));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void ToolController::CloseCurrentTab(ToolResponseCallback callback) {
-  PerformActionOnActiveTab(
+  PerformActionOnTrackedContents(
       [](tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
         return std::make_unique<actor::CloseTabToolRequest>(tab_handle);
       },
       std::move(callback));
 }
+#endif
 
 void ToolController::GoBack(ToolResponseCallback callback) {
-  PerformActionOnActiveTab(
+  PerformActionOnTrackedContents(
       [](tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
         return std::make_unique<actor::HistoryBackToolRequest>(tab_handle);
       },
@@ -523,7 +533,7 @@ void ToolController::GoBack(ToolResponseCallback callback) {
 }
 
 void ToolController::GoForward(ToolResponseCallback callback) {
-  PerformActionOnActiveTab(
+  PerformActionOnTrackedContents(
       [](tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
         return std::make_unique<actor::HistoryForwardToolRequest>(tab_handle);
       },
@@ -531,13 +541,14 @@ void ToolController::GoForward(ToolResponseCallback callback) {
 }
 
 void ToolController::ReloadPage(ToolResponseCallback callback) {
-  PerformActionOnActiveTab(
+  PerformActionOnTrackedContents(
       [](tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
         return std::make_unique<actor::ReloadPageToolRequest>(tab_handle);
       },
       std::move(callback));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void ToolController::SwitchTab(const base::DictValue& arguments,
                                ToolResponseCallback callback) {
   const std::string* query = arguments.FindString("query");
@@ -565,6 +576,7 @@ void ToolController::OpenKnownPage(const base::DictValue& arguments,
   PerformAction(std::make_unique<actor::OpenKnownPageToolRequest>(*query),
                 std::move(callback));
 }
+#endif
 
 void ToolController::FindAndHighlight(const base::DictValue& arguments,
                                       ToolResponseCallback callback) {
@@ -576,7 +588,7 @@ void ToolController::FindAndHighlight(const base::DictValue& arguments,
     return;
   }
 
-  PerformActionOnActiveTab(
+  PerformActionOnTrackedContents(
       [&query](
           tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
         return std::make_unique<actor::FindAndHighlightToolRequest>(tab_handle,
@@ -586,7 +598,7 @@ void ToolController::FindAndHighlight(const base::DictValue& arguments,
 }
 
 void ToolController::PlayVideo(ToolResponseCallback callback) {
-  PerformActionOnActiveTab(
+  PerformActionOnTrackedContents(
       [](tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
         return std::make_unique<actor::PlayMediaToolRequest>(tab_handle);
       },
@@ -594,7 +606,7 @@ void ToolController::PlayVideo(ToolResponseCallback callback) {
 }
 
 void ToolController::PauseVideo(ToolResponseCallback callback) {
-  PerformActionOnActiveTab(
+  PerformActionOnTrackedContents(
       [](tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
         return std::make_unique<actor::PauseMediaToolRequest>(tab_handle);
       },
@@ -619,7 +631,7 @@ void ToolController::SeekToTimestamp(const base::DictValue& arguments,
     return;
   }
 
-  PerformActionOnActiveTab(
+  PerformActionOnTrackedContents(
       [&seek_time](
           tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
         return std::make_unique<actor::SeekMediaToolRequest>(tab_handle,
@@ -640,7 +652,7 @@ void ToolController::TranslatePage(const base::DictValue& arguments,
     return;
   }
 
-  PerformActionOnActiveTab(
+  PerformActionOnTrackedContents(
       [&target_language](
           tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
         return std::make_unique<actor::TranslatePageToolRequest>(
@@ -649,6 +661,7 @@ void ToolController::TranslatePage(const base::DictValue& arguments,
       std::move(callback));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void ToolController::SetFullscreen(const base::DictValue& arguments,
                                    ToolResponseCallback callback) {
   std::optional<bool> fullscreen = arguments.FindBool("fullscreen");
@@ -659,9 +672,12 @@ void ToolController::SetFullscreen(const base::DictValue& arguments,
     return;
   }
 
-  PerformActionOnActiveWindow(
-      [&fullscreen](BrowserWindowInterface& browser)
-          -> std::unique_ptr<actor::ToolRequest> {
+  PerformActionOnTrackedContents(
+      [&fullscreen](
+          tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
+        // The tracked tab is always in a window, so this can't be null.
+        const BrowserWindowInterface& browser =
+            CHECK_DEREF(tab_handle.Get()->GetBrowserWindowInterface());
         const int32_t window_id = browser.GetSessionID().id();
         if (*fullscreen) {
           return std::make_unique<actor::EnterFullscreenToolRequest>(window_id);
@@ -670,27 +686,20 @@ void ToolController::SetFullscreen(const base::DictValue& arguments,
       },
       std::move(callback));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-BrowserWindowInterface* ToolController::GetActiveBrowser() {
-  // TODO(b/561651267): Get BrowserWindowInterface* from SessionControllerImpl
-  // (or a class that manages the active window for the session).
-  auto* collection = ProfileBrowserCollection::GetForProfile(GetProfile());
-  return collection ? collection->GetLastActiveBrowser() : nullptr;
-}
-
-void ToolController::PerformActionOnActiveTab(
+void ToolController::PerformActionOnTrackedContents(
     base::FunctionRef<std::unique_ptr<actor::ToolRequest>(tabs::TabHandle)>
         create_action,
     ToolResponseCallback callback) {
-  BrowserWindowInterface* browser = GetActiveBrowser();
-  if (!browser) {
-    std::move(callback).Run(
-        ToolResponse::Error(actor::mojom::ActionResultCode::kWindowWentAway,
-                            "No active browser window"));
-    return;
-  }
-
-  tabs::TabInterface* active_tab = browser->GetTabStripModel()->GetActiveTab();
+  // Resolved via the session's VoiceFocusedContentsTracker rather than a
+  // TabStripModel, which Android doesn't have.
+  // TODO(crbug.com/570587982): The Android tracker and the tools routed
+  // through it here are only covered by tests on desktop.
+  content::WebContents* contents =
+      session_controller_->GetVoiceFocusedWebContents();
+  tabs::TabInterface* active_tab =
+      contents ? tabs::TabInterface::MaybeGetFromContents(contents) : nullptr;
   if (!active_tab) {
     std::move(callback).Run(ToolResponse::Error(
         actor::mojom::ActionResultCode::kTabWentAway, "No active tab"));
@@ -698,21 +707,6 @@ void ToolController::PerformActionOnActiveTab(
   }
 
   PerformAction(create_action(active_tab->GetHandle()), std::move(callback));
-}
-
-void ToolController::PerformActionOnActiveWindow(
-    base::FunctionRef<std::unique_ptr<actor::ToolRequest>(
-        BrowserWindowInterface&)> create_action,
-    ToolResponseCallback callback) {
-  BrowserWindowInterface* browser = GetActiveBrowser();
-  if (!browser) {
-    std::move(callback).Run(
-        ToolResponse::Error(actor::mojom::ActionResultCode::kWindowWentAway,
-                            "No active browser window"));
-    return;
-  }
-
-  PerformAction(create_action(*browser), std::move(callback));
 }
 
 void ToolController::PerformAction(std::unique_ptr<actor::ToolRequest> action,
@@ -743,7 +737,5 @@ void ToolController::OnActionsFinished(
   }
   std::move(callback).Run(ToolResponse::Success());
 }
-
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace ttc

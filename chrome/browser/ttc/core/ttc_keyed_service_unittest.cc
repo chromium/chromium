@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/app/public/conversation.h"
 #include "chrome/browser/ttc/core/features.h"
@@ -18,8 +19,10 @@
 #include "chrome/browser/ttc/core/states.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/ttc/app/public/error_codes.h"
+#include "components/ttc/app/public/tool_types.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -167,6 +170,24 @@ TEST_F(TtcKeyedServiceUnitTest, FatalErrorEndsSession) {
 
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return service_->session_controller() == nullptr; }));
+}
+
+// Tools that act on the tracked tab fail cleanly when the session has no tab
+// to act on, on every platform.
+TEST_F(TtcKeyedServiceUnitTest, TabToolWithoutTrackedContentsFails) {
+  service_->StartSession();
+  SessionController* controller = service_->session_controller();
+  ASSERT_NE(controller, nullptr);
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "reload_page";
+  controller->ProcessToolCall(tool_request, future.GetCallback());
+
+  ToolResponse response = future.Take();
+  ASSERT_FALSE(response.Ok());
+  EXPECT_EQ(response.error().code,
+            actor::mojom::ActionResultCode::kTabWentAway);
 }
 
 }  // namespace ttc

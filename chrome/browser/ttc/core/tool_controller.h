@@ -19,7 +19,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/ttc/app/public/tool_types.h"
 
-class BrowserWindowInterface;
 class Profile;
 
 namespace actor {
@@ -55,18 +54,12 @@ class ToolController {
   // Creates the actor task used to invoke tools, if one isn't already active.
   void EnsureTaskCreated(actor::ActorKeyedService* actor_service);
 
-#if !BUILDFLAG(IS_ANDROID)
   void OpenUrl(const base::DictValue& arguments, ToolResponseCallback callback);
   void PerformSearch(const base::DictValue& arguments,
                      ToolResponseCallback callback);
-  void CloseCurrentTab(ToolResponseCallback callback);
   void GoBack(ToolResponseCallback callback);
   void GoForward(ToolResponseCallback callback);
   void ReloadPage(ToolResponseCallback callback);
-  void SwitchTab(const base::DictValue& arguments,
-                 ToolResponseCallback callback);
-  void OpenKnownPage(const base::DictValue& arguments,
-                     ToolResponseCallback callback);
   void FindAndHighlight(const base::DictValue& arguments,
                         ToolResponseCallback callback);
   void PlayVideo(ToolResponseCallback callback);
@@ -75,27 +68,29 @@ class ToolController {
                        ToolResponseCallback callback);
   void TranslatePage(const base::DictValue& arguments,
                      ToolResponseCallback callback);
+
+  // TODO(crbug.com/470475787): The actor tools backing these haven't been
+  // ported to Android yet (see `skip_android_unmigrated_actor_files` in
+  // //chrome/browser/actor/BUILD.gn), so they're neither declared to the model
+  // nor dispatched there. Drop the guard once they are.
+#if !BUILDFLAG(IS_ANDROID)
+  void CloseCurrentTab(ToolResponseCallback callback);
+  void SwitchTab(const base::DictValue& arguments,
+                 ToolResponseCallback callback);
+  void OpenKnownPage(const base::DictValue& arguments,
+                     ToolResponseCallback callback);
   void SetFullscreen(const base::DictValue& arguments,
                      ToolResponseCallback callback);
+#endif
 
-  // Returns the browser window the session is acting on, or null if there
-  // isn't one.
-  BrowserWindowInterface* GetActiveBrowser();
-
-  // Runs the tool request returned by `create_action` against the session's
-  // active tab, replying to `callback` with the result. Replies with an error
-  // if there's no window or tab to act on, in which case `create_action` isn't
-  // invoked.
-  void PerformActionOnActiveTab(
+  // Runs the tool request returned by `create_action` against the contents
+  // tracked by the session (see
+  // SessionControllerImpl::GetVoiceFocusedWebContents()), replying to
+  // `callback` with the result. Replies with an error if there's no tab to act
+  // on, in which case `create_action` isn't invoked.
+  void PerformActionOnTrackedContents(
       base::FunctionRef<std::unique_ptr<actor::ToolRequest>(tabs::TabHandle)>
           create_action,
-      ToolResponseCallback callback);
-
-  // Like PerformActionOnActiveTab(), but for tool requests that target the
-  // session's active browser window rather than a tab.
-  void PerformActionOnActiveWindow(
-      base::FunctionRef<std::unique_ptr<actor::ToolRequest>(
-          BrowserWindowInterface&)> create_action,
       ToolResponseCallback callback);
 
   // Runs `action` in the actor task, creating the task if needed, and replies
@@ -107,7 +102,6 @@ class ToolController {
       ToolResponseCallback callback,
       std::vector<actor::ActionResultWithLatencyInfo> results,
       actor::TabObservationStrategy strategy);
-#endif
 
   // Owns this object.
   const raw_ref<SessionControllerImpl> session_controller_;

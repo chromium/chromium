@@ -58,6 +58,10 @@ class SessionControllerImpl : public SessionController,
   void OnVoiceFocusedContentsChanged(
       content::WebContents* web_contents) override;
 
+  // The contents of the tab this session acts on, or null. Same tab the page
+  // context is read from.
+  content::WebContents* GetVoiceFocusedWebContents();
+
   // TODO(bokan): Android doesn't yet have a session_view so calling
   // this will crash there.
   SessionView& session_view() { return CHECK_DEREF(session_view_.get()); }

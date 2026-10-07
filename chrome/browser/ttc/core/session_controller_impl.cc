@@ -207,6 +207,10 @@ void SessionControllerImpl::OnVoiceFocusedContentsChanged(
   conversation_->OnPageContextInvalidated();
 }
 
+content::WebContents* SessionControllerImpl::GetVoiceFocusedWebContents() {
+  return voice_focused_contents_tracker_->GetActiveWebContents();
+}
+
 void SessionControllerImpl::OnPageContextFetched(
     const PageContextResult& result) {
   if (!result.has_value()) {
