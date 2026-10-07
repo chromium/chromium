@@ -81,16 +81,21 @@ source_set("util_bridge") {
     "uikit_ui_util_bridge.h",
     "uikit_ui_util_bridge.mm",
   ]
-  deps = [ ":util" ]
+  deps = [
+    ":util",
+    "//ios/chrome/browser/shared/public/features",
+  ]
 }
 
 swift_source_set("util_swift") {
+  bridge_header = "uikit_ui_util_bridge.h"
   sources = [
     "UIView+WindowCoordinates.swift",
     "UIView+WindowObserving.swift",
     "frame_layout_guide.swift",
     "layout_guide_center.swift",
   ]
+  deps = [ ":util_bridge" ]
   frameworks = [ "UIKit.framework" ]
 }
 

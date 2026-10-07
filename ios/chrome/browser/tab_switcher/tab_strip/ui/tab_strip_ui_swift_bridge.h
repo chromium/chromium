@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/public/metrics/user_metrics_bridge.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util_bridge.h"
 #import "ios/chrome/browser/tab_switcher/tab_strip/ui/context_menu/tab_strip_context_menu_provider.h"
 #import "ios/chrome/browser/tab_switcher/tab_strip/ui/tab_strip_group_cell.h"
 #import "ios/chrome/browser/tab_switcher/tab_strip/ui/tab_strip_group_cell_data_source.h"

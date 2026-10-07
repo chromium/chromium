@@ -15,6 +15,9 @@
 // Returns the memory footprint of an image in KB.
 + (size_t)memoryFootprintForImage:(UIImage*)image;
 
+// Returns whether the Chrome Next IA feature flag is enabled.
++ (BOOL)isChromeNextIaEnabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_UIKIT_UI_UTIL_BRIDGE_H_

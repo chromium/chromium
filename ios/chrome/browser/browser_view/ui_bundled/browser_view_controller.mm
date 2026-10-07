@@ -284,6 +284,9 @@ bool IsFullscreenNextIAEnabled() {
   NSArray<NSLayoutConstraint*>* _NTPConstraints;
   // The last recorded view size to avoid redundant updates on layout.
   CGSize _lastViewSize;
+  // The last recorded top inset with corner adaptation to avoid redundant
+  // toolbar state updates on every layout pass.
+  CGFloat _lastTopInsetWithCornerAdaptation;
 }
 
 // Activates/deactivates the object. This will enable/disable the ability for
@@ -501,7 +504,14 @@ bool IsFullscreenNextIAEnabled() {
 }
 
 - (void)setBroadcasting:(BOOL)broadcasting {
+  if (_broadcasting == broadcasting && IsChromeNextIaEnabled()) {
+    return;
+  }
+
   if (IsFullscreenRefactoringEnabled()) {
+    if (IsChromeNextIaEnabled()) {
+      _broadcasting = broadcasting;
+    }
     if (broadcasting && _fullscreenBrowserAgent) {
       _fullscreenBrowserAgent->InvalidateInsetRange();
     }
@@ -1046,7 +1056,24 @@ bool IsFullscreenNextIAEnabled() {
   self.primaryToolbarHeightConstraint.constant =
       [self primaryToolbarHeightWithInset];
 
-  if ([self topInsetWithCornerAdaptation] - self.rootSafeAreaInsets.top > 0) {
+  if (IsChromeNextIaEnabled()) {
+    const CGFloat topInsetWithCornerAdaptation =
+        [self topInsetWithCornerAdaptation];
+    if (topInsetWithCornerAdaptation != _lastTopInsetWithCornerAdaptation) {
+      const BOOL hadCornerAdaptation =
+          _lastTopInsetWithCornerAdaptation > self.rootSafeAreaInsets.top;
+      _lastTopInsetWithCornerAdaptation = topInsetWithCornerAdaptation;
+      if (hadCornerAdaptation ||
+          topInsetWithCornerAdaptation > self.rootSafeAreaInsets.top) {
+        // On iOS 26, the safe area layout guide doesn't automatically adjust
+        // for the control setting island's dimensions.
+        // Update the collapsedTopToolbarHeight when the dynamic island has
+        // moved.
+        [self updateToolbarState];
+      }
+    }
+  } else if ([self topInsetWithCornerAdaptation] - self.rootSafeAreaInsets.top >
+             0) {
     // On iOS 26, the safe area layout guide doesn't automatically adjust
     // for the control setting island's dimensions.
     // Update the collapsedTopToolbarHeight when the dynamic island has moved.
@@ -1628,7 +1655,7 @@ bool IsFullscreenNextIAEnabled() {
       }
     } else {
       self.browserContentViewController.contentView = view;
-      if (IsFullscreenRefactoringEnabled()) {
+      if (IsFullscreenRefactoringEnabled() && !IsChromeNextIaEnabled()) {
         view.translatesAutoresizingMaskIntoConstraints = NO;
         AddSameConstraints(self.browserContentViewController.view, view);
       }

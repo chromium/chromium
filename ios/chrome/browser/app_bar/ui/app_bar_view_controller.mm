@@ -752,7 +752,11 @@ UIColor* AssistantHighlightBackgroundColor() {
     return;
   }
   if (self.layoutState.appBarPosition == AppBarPosition::kNone) {
-    [self.layoutGuideCenter referenceView:nil underName:kTabSwitcherGuide];
+    if (!IsChromeNextIaEnabled() ||
+        [self.layoutGuideCenter referencedViewUnderName:kTabSwitcherGuide] ==
+            _tabGridButton) {
+      [self.layoutGuideCenter referenceView:nil underName:kTabSwitcherGuide];
+    }
   } else {
     [self.layoutGuideCenter referenceView:_tabGridButton
                                 underName:kTabSwitcherGuide];

@@ -13,6 +13,12 @@
 @property(nonatomic) UIEdgeInsets obscuredContentInsets API_AVAILABLE(ios(26.0))
     ;
 
+// The web view's minimum viewport inset.
+@property(nonatomic, readonly) UIEdgeInsets minimumViewportInset;
+
+// The web view's maximum viewport inset.
+@property(nonatomic, readonly) UIEdgeInsets maximumViewportInset;
+
 // Sets the web view's min and max viewport insets.
 - (void)setMinimumViewportInset:(UIEdgeInsets)minInset
            maximumViewportInset:(UIEdgeInsets)maxInset;
