@@ -120,7 +120,10 @@ class OriginGatingChecker {
     cache_.AllowNavigationTo(origins);
   }
 
-  const OriginGatingCache& cache() const { return cache_; }
+  OriginGatingCache::SizeMetrics GetCacheSizeMetrics() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return cache_.GetSizeMetrics();
+  }
 
   // Returns references to the task policy config slot.
   const TaskPolicyConfigSlot& task_policy_config_slot() const {

@@ -841,7 +841,7 @@ std::unique_ptr<ExecutionEngine> ExecutionEngine::Create(
 ExecutionEngine::~ExecutionEngine() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   origin_gating::OriginGatingCache::SizeMetrics metrics =
-      GetOriginGatingCache().GetSizeMetrics();
+      GetOriginGatingChecker().GetCacheSizeMetrics();
   RecordActorNavigationGatingListSize(metrics.allow_list_size,
                                       metrics.confirmed_list_size);
 
@@ -2024,11 +2024,6 @@ ExecutionEngine::GetOriginGatingCheckerInternal() const {
   CHECK(origin_gating_registration_);
   return CHECK_DEREF(origin_gating_registration_->service().GetChecker(
       origin_gating_registration_->id()));
-}
-
-const origin_gating::OriginGatingCache& ExecutionEngine::GetOriginGatingCache()
-    const {
-  return GetOriginGatingChecker().cache();
 }
 
 const origin_gating::OriginGatingChecker&

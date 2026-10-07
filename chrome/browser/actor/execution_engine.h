@@ -320,8 +320,6 @@ class ExecutionEngine : public ToolDelegate,
                                        : origin_gating::CheckerId();
   }
 
-  const origin_gating::OriginGatingCache& GetOriginGatingCache() const;
-
   const origin_gating::OriginGatingChecker& GetOriginGatingChecker() const;
   origin_gating::OriginGatingChecker& GetOriginGatingChecker();
 

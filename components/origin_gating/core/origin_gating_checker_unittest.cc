@@ -15,6 +15,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/origin_gating/core/origin_gating_cache.h"
 #include "components/origin_gating/core/origin_gating_configuration.h"
 #include "components/origin_gating/core/task_policy_config.h"
 #include "components/origin_gating/core/task_policy_config_slot.h"
@@ -1029,8 +1030,8 @@ TEST_F(OriginGatingCheckerTest, BuiltInPredicate_EnterprisePolicy_Allowed) {
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
-  url::Origin source_origin = url::Origin::Create(source);
-  url::Origin destination_origin = url::Origin::Create(destination);
+  GateableEvent event(
+      NavigationResponseEvent{.source = source, .destination = destination});
 
   EXPECT_CALL(delegate_, EvaluateEnterprisePolicy(destination, _))
       .WillOnce(base::test::RunOnceCallback<1>(DecisionWithMetadata{
@@ -1038,16 +1039,27 @@ TEST_F(OriginGatingCheckerTest, BuiltInPredicate_EnterprisePolicy_Allowed) {
   EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _)).Times(0);
   EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
+  GatingDecision decision =
+      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event);
 
   EXPECT_TRUE(decision.is_allowed);
   EXPECT_EQ(decision.attribution, DecisionSource::kEnterprisePolicy);
-  // With bypass_cache set, the allow decision must not be persisted.
-  EXPECT_FALSE(
-      checker->cache().IsNavigationAllowed(source_origin, destination_origin));
+
+  // With bypass_cache set, the allow decision must not be persisted. A
+  // subsequent evaluation where enterprise policy makes no decision should miss
+  // the cache and fall back to the delegate.
+  EXPECT_CALL(delegate_, EvaluateEnterprisePolicy(destination, _))
+      .WillOnce(base::test::RunOnceCallback<1>(
+          DecisionWithMetadata{.decision = Decision::kNoDecision}));
+  SetUpDelegateExpectations(event,
+                            /*requires_user_confirmation=*/false,
+                            /*is_allowed=*/false,
+                            /*did_prompt_user=*/false);
+
+  GatingDecision second_decision =
+      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event);
+  EXPECT_FALSE(second_decision.is_allowed);
+  EXPECT_EQ(second_decision.attribution, DecisionSource::kNoVerdict);
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -1062,23 +1074,34 @@ TEST_F(OriginGatingCheckerTest,
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
-  url::Origin source_origin = url::Origin::Create(source);
-  url::Origin destination_origin = url::Origin::Create(destination);
+  GateableEvent event(
+      NavigationResponseEvent{.source = source, .destination = destination});
 
   EXPECT_CALL(delegate_, EvaluateEnterprisePolicy(destination, _))
       .WillOnce(base::test::RunOnceCallback<1>(DecisionWithMetadata{
           .decision = Decision::kAllowed, .bypass_cache = false}));
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
+  GatingDecision decision =
+      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event);
 
   EXPECT_TRUE(decision.is_allowed);
   EXPECT_EQ(decision.attribution, DecisionSource::kEnterprisePolicy);
-  // Without bypass_cache, the allow decision must be persisted.
-  EXPECT_TRUE(
-      checker->cache().IsNavigationAllowed(source_origin, destination_origin));
+
+  // Without bypass_cache, the allow decision must be persisted. A subsequent
+  // evaluation where enterprise policy makes no decision should hit the cache.
+  EXPECT_CALL(delegate_, EvaluateEnterprisePolicy(destination, _))
+      .WillOnce(base::test::RunOnceCallback<1>(
+          DecisionWithMetadata{.decision = Decision::kNoDecision}));
+  EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, event, _))
+      .WillOnce(
+          base::test::RunOnceCallback<2>(/*requires_user_confirmation=*/false));
+  EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
+
+  GatingDecision second_decision =
+      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event);
+  EXPECT_TRUE(second_decision.is_allowed);
+  EXPECT_EQ(second_decision.attribution,
+            DecisionSource::kCacheWithoutUserConfirmation);
 }
 
 TEST_F(
@@ -1092,8 +1115,6 @@ TEST_F(
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
-  url::Origin source_origin = url::Origin::Create(source);
-  url::Origin destination_origin = url::Origin::Create(destination);
 
   EXPECT_CALL(delegate_, EvaluateEnterprisePolicy(destination, _))
       .WillOnce(base::test::RunOnceCallback<1>(DecisionWithMetadata{
@@ -1108,8 +1129,9 @@ TEST_F(
   EXPECT_EQ(decision.attribution, DecisionSource::kEnterprisePolicy);
   // Without a cache predicate in the configuration, the allow decision must not
   // be persisted to the cache even when bypass_cache is false.
-  EXPECT_FALSE(
-      checker->cache().IsNavigationAllowed(source_origin, destination_origin));
+  OriginGatingCache::SizeMetrics metrics = checker->GetCacheSizeMetrics();
+  EXPECT_EQ(metrics.allow_list_size, 0u);
+  EXPECT_EQ(metrics.confirmed_list_size, 0u);
 }
 
 TEST_F(OriginGatingCheckerTest, BuiltInPredicate_EnterprisePolicy_Blocked) {
@@ -1592,35 +1614,33 @@ TEST_F(OriginGatingCheckerTest, BypassCache_SuppressesCacheWrite) {
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
-  url::Origin source_origin = url::Origin::Create(source);
-  url::Origin destination_origin = url::Origin::Create(destination);
+  GateableEvent event(
+      NavigationResponseEvent{.source = source, .destination = destination});
 
-  EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(
-                             _,
-                             GateableEvent(NavigationResponseEvent{
-                                 .source = source, .destination = destination}),
-                             _))
+  EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, event, _))
       .WillOnce(base::test::RunOnceCallback<2>(false));
-  EXPECT_CALL(delegate_,
-              OnNoVerdict(_,
-                          GateableEvent(NavigationResponseEvent{
-                              .source = source, .destination = destination}),
-                          false, _))
+  EXPECT_CALL(delegate_, OnNoVerdict(_, event, false, _))
       .WillOnce(base::test::RunOnceCallback<3>(
           OriginGatingChecker::Delegate::NoVerdictResult{
               .is_allowed = true,
               .did_prompt_user = false,
               .bypass_cache = true}));
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
+  GatingDecision decision =
+      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event);
 
   EXPECT_TRUE(decision.is_allowed);
-  // The allow decision must not have been persisted.
-  EXPECT_FALSE(
-      checker->cache().IsNavigationAllowed(source_origin, destination_origin));
+  // The allow decision must not have been persisted. A subsequent evaluation
+  // should miss the cache and fall back to the delegate.
+  SetUpDelegateExpectations(event,
+                            /*requires_user_confirmation=*/false,
+                            /*is_allowed=*/false,
+                            /*did_prompt_user=*/false);
+
+  GatingDecision second_decision =
+      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event);
+  EXPECT_FALSE(second_decision.is_allowed);
+  EXPECT_EQ(second_decision.attribution, DecisionSource::kNoVerdict);
 }
 
 TEST_F(OriginGatingCheckerTest, NoBypassCache_PersistsCacheWrite) {
@@ -1632,35 +1652,33 @@ TEST_F(OriginGatingCheckerTest, NoBypassCache_PersistsCacheWrite) {
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
-  url::Origin source_origin = url::Origin::Create(source);
-  url::Origin destination_origin = url::Origin::Create(destination);
+  GateableEvent event(
+      NavigationResponseEvent{.source = source, .destination = destination});
 
-  EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(
-                             _,
-                             GateableEvent(NavigationResponseEvent{
-                                 .source = source, .destination = destination}),
-                             _))
+  EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, event, _))
       .WillOnce(base::test::RunOnceCallback<2>(false));
-  EXPECT_CALL(delegate_,
-              OnNoVerdict(_,
-                          GateableEvent(NavigationResponseEvent{
-                              .source = source, .destination = destination}),
-                          false, _))
+  EXPECT_CALL(delegate_, OnNoVerdict(_, event, false, _))
       .WillOnce(base::test::RunOnceCallback<3>(
           OriginGatingChecker::Delegate::NoVerdictResult{
               .is_allowed = true,
               .did_prompt_user = false,
               .bypass_cache = false}));
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
+  GatingDecision decision =
+      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event);
 
   EXPECT_TRUE(decision.is_allowed);
-  // The allow decision must have been persisted.
-  EXPECT_TRUE(
-      checker->cache().IsNavigationAllowed(source_origin, destination_origin));
+  // The allow decision must have been persisted. A subsequent evaluation should
+  // hit the cache.
+  EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, event, _))
+      .WillOnce(base::test::RunOnceCallback<2>(false));
+  EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
+
+  GatingDecision second_decision =
+      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event);
+  EXPECT_TRUE(second_decision.is_allowed);
+  EXPECT_EQ(second_decision.attribution,
+            DecisionSource::kCacheWithoutUserConfirmation);
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -1671,8 +1689,6 @@ TEST_F(OriginGatingCheckerTest,
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
-  url::Origin source_origin = url::Origin::Create(source);
-  url::Origin destination_origin = url::Origin::Create(destination);
 
   EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(
                              _,
@@ -1699,8 +1715,9 @@ TEST_F(OriginGatingCheckerTest,
   EXPECT_TRUE(decision.is_allowed);
   // Without a cache predicate in the configuration, the allow decision must not
   // be persisted to the cache even when bypass_cache is false.
-  EXPECT_FALSE(
-      checker->cache().IsNavigationAllowed(source_origin, destination_origin));
+  OriginGatingCache::SizeMetrics metrics = checker->GetCacheSizeMetrics();
+  EXPECT_EQ(metrics.allow_list_size, 0u);
+  EXPECT_EQ(metrics.confirmed_list_size, 0u);
 }
 
 TEST_F(OriginGatingCheckerTest,
@@ -1709,18 +1726,38 @@ TEST_F(OriginGatingCheckerTest,
       delegate_.GetWeakPtr(),
       OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
 
-  url::Origin source_origin = url::Origin::Create(GURL("https://example.com"));
   url::Origin destination_origin = url::Origin::Create(GURL("https://foo.com"));
 
   checker->AllowNavigationTo(destination_origin, /*is_user_confirmed=*/true);
-  EXPECT_FALSE(
-      checker->cache().IsNavigationAllowed(source_origin, destination_origin));
-  EXPECT_FALSE(
-      checker->cache().IsNavigationConfirmedByUser(destination_origin));
+  OriginGatingCache::SizeMetrics metrics = checker->GetCacheSizeMetrics();
+  EXPECT_EQ(metrics.allow_list_size, 0u);
+  EXPECT_EQ(metrics.confirmed_list_size, 0u);
 
   checker->AllowNavigationTo({destination_origin});
-  EXPECT_FALSE(
-      checker->cache().IsNavigationAllowed(source_origin, destination_origin));
+  metrics = checker->GetCacheSizeMetrics();
+  EXPECT_EQ(metrics.allow_list_size, 0u);
+  EXPECT_EQ(metrics.confirmed_list_size, 0u);
+}
+
+TEST_F(OriginGatingCheckerTest, GetCacheSizeMetrics) {
+  auto checker = OriginGatingChecker::CreateForTesting(
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration({{DecisionSource::kCacheWithoutUserConfirmation,
+                                  GateableEventSet::All()}},
+                                /*use_site_keyed_cache=*/false));
+
+  OriginGatingCache::SizeMetrics metrics = checker->GetCacheSizeMetrics();
+  EXPECT_EQ(metrics.allow_list_size, 0u);
+  EXPECT_EQ(metrics.confirmed_list_size, 0u);
+
+  checker->AllowNavigationTo(url::Origin::Create(GURL("https://foo.com")),
+                             /*is_user_confirmed=*/true);
+  checker->AllowNavigationTo(url::Origin::Create(GURL("https://bar.com")),
+                             /*is_user_confirmed=*/false);
+
+  metrics = checker->GetCacheSizeMetrics();
+  EXPECT_EQ(metrics.allow_list_size, 2u);
+  EXPECT_EQ(metrics.confirmed_list_size, 1u);
 }
 
 TEST_F(OriginGatingCheckerTest, BypassCache_IgnoredWhenBlocked) {
@@ -1732,35 +1769,33 @@ TEST_F(OriginGatingCheckerTest, BypassCache_IgnoredWhenBlocked) {
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
-  url::Origin source_origin = url::Origin::Create(source);
-  url::Origin destination_origin = url::Origin::Create(destination);
+  GateableEvent event(
+      NavigationResponseEvent{.source = source, .destination = destination});
 
-  EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(
-                             _,
-                             GateableEvent(NavigationResponseEvent{
-                                 .source = source, .destination = destination}),
-                             _))
+  EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, event, _))
       .WillOnce(base::test::RunOnceCallback<2>(false));
-  EXPECT_CALL(delegate_,
-              OnNoVerdict(_,
-                          GateableEvent(NavigationResponseEvent{
-                              .source = source, .destination = destination}),
-                          false, _))
+  EXPECT_CALL(delegate_, OnNoVerdict(_, event, false, _))
       .WillOnce(base::test::RunOnceCallback<3>(
           OriginGatingChecker::Delegate::NoVerdictResult{
               .is_allowed = false,
               .did_prompt_user = false,
               .bypass_cache = false}));
 
-  GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
-      *checker, nullptr,
-      GateableEvent(NavigationResponseEvent{.source = source,
-                                            .destination = destination}));
+  GatingDecision decision =
+      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event);
 
   EXPECT_FALSE(decision.is_allowed);
-  // A blocked decision is never persisted regardless of bypass_cache.
-  EXPECT_FALSE(
-      checker->cache().IsNavigationAllowed(source_origin, destination_origin));
+  // A blocked decision is never persisted regardless of bypass_cache. A
+  // subsequent evaluation should miss the cache and fall back to the delegate.
+  SetUpDelegateExpectations(event,
+                            /*requires_user_confirmation=*/false,
+                            /*is_allowed=*/false,
+                            /*did_prompt_user=*/false);
+
+  GatingDecision second_decision =
+      ComputeGatingDecisionAndVerifyAsynchrony(*checker, nullptr, event);
+  EXPECT_FALSE(second_decision.is_allowed);
+  EXPECT_EQ(second_decision.attribution, DecisionSource::kNoVerdict);
 }
 
 TEST_F(OriginGatingCheckerTest, DelegateDestroyedBeforeEvaluation) {
