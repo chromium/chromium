@@ -404,6 +404,8 @@ inline constexpr wchar_t kCmdStoreDMToken[] = L"store-dmtoken";
 inline constexpr wchar_t kCmdDeleteDMToken[] = L"delete-dmtoken";
 inline constexpr wchar_t kCmdInstallPEH[] = L"install-peh";
 inline constexpr wchar_t kCmdInstallComponent[] = L"install-component";
+inline constexpr wchar_t kCmdInstallComponentForUser[] =
+    L"install-component-for-user";
 
 // LINT.IfChange(kEulaSentinelFile)
 inline constexpr wchar_t kEulaSentinelFile[] = L"EULA Accepted";

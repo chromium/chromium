@@ -592,6 +592,48 @@ void AddInstallComponentWorkItems(const InstallerState& installer_state,
   cmd.set_is_web_accessible(true);
   cmd.AddCreateAppCommandWorkItems(installer_state.root_key(), install_list);
 }
+
+// Adds work items to add the "install-component-for-user" command to Chrome's
+// version key. This method is a no-op if this is anything other than
+// system-level Chrome. The command is used to securely verify and copy a
+// component that is specific to a user and User Data directory (e.g., a dynamic
+// patch) to the system Chrome installation directory.
+//
+// The registered command line template is:
+//   "...\setup.exe" --install-component=%1 --user-sid=%CALLER_SID% --udd=%2
+//       --system-level --verbose-logging
+//
+// "%1" is the path to the component and "%2" is the canonicalized User Data
+// directory; both are quoted by the AppCommandRunner as described above. The
+// updater replaces "%CALLER_SID%" with the SID of the user that invoked the
+// command, which satisfies the requirement that --user-sid be derived from the
+// authenticated token of the user on whose behalf the component is installed.
+//
+// This is a separate command because the updater fails to run a command that
+// has a placeholder for which no substitution is provided. Adding "%2" to
+// "install-component" would therefore break callers that provide only "%1"
+// (including browsers of older versions that are still running after an
+// update). For the same reason, the parameters of this command must not change
+// incompatibly once it has shipped.
+void AddInstallComponentForUserWorkItems(const InstallerState& installer_state,
+                                         const base::FilePath& setup_path,
+                                         WorkItemList* install_list) {
+  if (!installer_state.system_install()) {
+    return;
+  }
+
+  base::CommandLine cmd_line(setup_path);
+  cmd_line.AppendSwitchASCII(switches::kInstallComponent, "%1");
+  cmd_line.AppendSwitchASCII(switches::kUserSid, "%CALLER_SID%");
+  cmd_line.AppendSwitchASCII(switches::kUdd, "%2");
+  cmd_line.AppendSwitch(switches::kSystemLevel);
+  cmd_line.AppendSwitch(switches::kVerboseLogging);
+  InstallUtil::AppendModeAndChannelSwitches(&cmd_line);
+
+  AppCommand cmd(kCmdInstallComponentForUser,
+                 cmd_line.GetCommandLineStringWithUnsafeInsertSequences());
+  cmd.AddCreateAppCommandWorkItems(installer_state.root_key(), install_list);
+}
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace
@@ -1387,6 +1429,7 @@ void AddFinalizeUpdateWorkItems(const InstallationState& original_state,
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   AddInstallComponentWorkItems(installer_state, setup_path, list);
+  AddInstallComponentForUserWorkItems(installer_state, setup_path, list);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 

@@ -120,6 +120,28 @@
       },
       "wow_key": "KEY_WOW64_32KEY"
     },
+    "HKEY_LOCAL_MACHINE\\$CHROME_UPDATE_REGISTRY_SUBKEY\\Commands\\install-component": {
+      "condition": "'$CHROME_SHORT_NAME' == 'Chrome'",
+      "exists": "required",
+      "values": {
+        "CommandLine": {
+          "type": "SZ",
+          "data": "\"$PROGRAM_FILES\\$CHROME_DIR\\Application\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION\\Installer\\setup.exe\" --install-component=%1 --system-level --verbose-logging"
+        }
+      },
+      "wow_key": "KEY_WOW64_32KEY"
+    },
+    "HKEY_LOCAL_MACHINE\\$CHROME_UPDATE_REGISTRY_SUBKEY\\Commands\\install-component-for-user": {
+      "condition": "'$CHROME_SHORT_NAME' == 'Chrome'",
+      "exists": "required",
+      "values": {
+        "CommandLine": {
+          "type": "SZ",
+          "data": "\"$PROGRAM_FILES\\$CHROME_DIR\\Application\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION\\Installer\\setup.exe\" --install-component=%1 --user-sid=%CALLER_SID% --udd=%2 --system-level --verbose-logging"
+        }
+      },
+      "wow_key": "KEY_WOW64_32KEY"
+    },
     "HKEY_LOCAL_MACHINE\\$BINARIES_UPDATE_REGISTRY_SUBKEY": {
       "exists": "forbidden",
       "wow_key": "KEY_WOW64_32KEY"
