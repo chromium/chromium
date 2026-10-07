@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>Ensure modifying video readyState / loading while updating cue display does not crash</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<video controls></video>
+<script>
+async_test(function(t) {
+    const video = document.querySelector("video");
+    const track = video.addTextTrack("captions", "test", "en");
+    track.mode = "showing";
+
+    const cue1 = new VTTCue(0, 10, "cue 1");
+    const cue2 = new VTTCue(0, 10, "cue 2");
+    track.addCue(cue1);
+    track.addCue(cue2);
+
+    // Initial render layout update or seeking triggers UpdateDisplay.
+    // Changing playback / loading resets the active cues.
+    video.currentTime = 1;
+    video.load();
+
+    t.step_timeout(() => {
+        t.done();
+    }, 100);
+});
+</script>
