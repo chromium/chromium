@@ -1534,18 +1534,28 @@ void BrowserViewTabbedLayoutImpl::ConfigureTopContainerBackground(
   // By default, this is just a flat background.
   CustomCornersBackground::Corners corners;
 
-  // Rounded corners are drawn in vertical tab strip mode when not maximized or
-  // fullscreen.
-  if (layout_data_->tab_strip_type == TabStripType::kVertical &&
-      layout_data_->window_state == WindowState::kNormal) {
-    corners[CornerOrientation::kTopTrailing] =
-        background->GetWindowCorner(/*upper=*/true);
-    const bool vertical_tab_strip_reaches_top =
-        GetVerticalTabStripCollapsedState() !=
-            VerticalTabStripCollapsedState::kCollapsed ||
-        params.leading_exclusion.IsEmpty();
-    if (!vertical_tab_strip_reaches_top) {
+  // Round top corners when `top_container` reaches the top edge of a
+  // non-maximized, non-fullscreen window.
+  if (layout_data_->window_state == WindowState::kNormal) {
+    if (layout_data_->tab_strip_type == TabStripType::kVertical) {
+      corners[CornerOrientation::kTopTrailing] =
+          background->GetWindowCorner(/*upper=*/true);
+      const bool vertical_tab_strip_reaches_top =
+          GetVerticalTabStripCollapsedState() !=
+              VerticalTabStripCollapsedState::kCollapsed ||
+          params.leading_exclusion.IsEmpty();
+      if (!vertical_tab_strip_reaches_top) {
+        corners[CornerOrientation::kTopLeading] =
+            background->GetWindowCorner(/*upper=*/true);
+      }
+    } else if (layout_data_->tab_strip_type == TabStripType::kHorizontal &&
+               IsParentedTo(views().horizontal_tab_strip_region_view,
+                            views().top_container)) {
+      // When the horizontal tab strip is in `top_container` (e.g. ChromeOS
+      // touch UI in float mode), `top_container` covers the frame header.
       corners[CornerOrientation::kTopLeading] =
+          background->GetWindowCorner(/*upper=*/true);
+      corners[CornerOrientation::kTopTrailing] =
           background->GetWindowCorner(/*upper=*/true);
     }
   }
