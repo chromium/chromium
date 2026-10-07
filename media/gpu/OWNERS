@@ -5,8 +5,9 @@ liberato@chromium.org
 # For chromeos/, v4l2/, and vaapi/ -specific changes.
 andrescj@chromium.org
 frkoenig@chromium.org
-greenjustin@google.com
 hiroh@chromium.org
-mcasas@chromium.org
 nhebert@chromium.org
 pmolinalopez@chromium.org
+
+# Legacy owners (use as last resort)
+mcasas@chromium.org
