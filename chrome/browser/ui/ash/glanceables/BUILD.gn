@@ -94,7 +94,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//components/account_id",
     "//components/session_manager/core",

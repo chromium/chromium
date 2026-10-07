@@ -73,7 +73,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
     "//chrome/browser/signin",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/ash/new_window",
     "//chrome/browser/ui/ash/session",
     "//chrome/test:test_support",

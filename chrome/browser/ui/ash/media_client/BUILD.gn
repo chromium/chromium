@@ -63,7 +63,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/browser_delegate:impl",
     "//chrome/browser/ash/extensions",
     "//chrome/browser/ash/login/users:test_support",
-    "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//components/account_id",

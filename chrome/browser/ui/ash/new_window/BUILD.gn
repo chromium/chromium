@@ -85,7 +85,6 @@ source_set("browser_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/prefs",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_window_header",
     "//chrome/common",
     "//chrome/test:test_support",

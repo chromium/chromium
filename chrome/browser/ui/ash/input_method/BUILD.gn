@@ -135,7 +135,6 @@ source_set("browser_tests") {
   deps = [
     ":input_method",
     "//base",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/test:test_support",
     "//content/public/common",

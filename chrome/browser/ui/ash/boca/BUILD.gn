@@ -37,7 +37,6 @@ source_set("browser_tests") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/apps/platform_apps:browser_test_support",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_tabstrip",
     "//chrome/browser/ui:browser_window_header",
     "//chrome/test:test_support",
