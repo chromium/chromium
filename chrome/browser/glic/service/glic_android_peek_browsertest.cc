@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -80,21 +82,28 @@ IN_PROC_BROWSER_TEST_F(GlicAndroidPeekBrowserTest,
       "with a peek side panel."));
 }
 
-// TODO(b/508340459): Fix flakiness on x64.
 IN_PROC_BROWSER_TEST_F(GlicAndroidPeekBrowserTest,
-                       DISABLED_NotShowingOnTabSwitchIfPreviouslyClosed) {
+                       NotShowingOnTabSwitchIfPreviouslyClosed) {
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
 
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  ASSERT_OK(
+      WaitForSidePanelState(tab1, GlicSidePanelCoordinator::State::kShown));
 
-  PreventDeletionOnClose();
-  instance->CloseAllEmbedders();
+  ASSERT_OK(CloseAllEmbeddersAndWait(instance));
   ASSERT_OK(
       WaitForSidePanelState(tab1, GlicSidePanelCoordinator::State::kClosed));
 
   CreateAndActivateTab(GetSimpleTestUrl());
 
   GetTabListInterface()->ActivateTab(tab1->GetHandle());
+  // The panel is already closed, so WaitForSidePanelState() would return
+  // immediately. Flush tasks posted by the tab switch so that an incorrect
+  // re-show has a chance to happen before checking the state.
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
 
   ASSERT_OK(
       WaitForSidePanelState(tab1, GlicSidePanelCoordinator::State::kClosed));
@@ -134,11 +143,12 @@ IN_PROC_BROWSER_TEST_F(GlicAndroidPeekBrowserTest,
       WaitForSidePanelState(new_tab, GlicSidePanelCoordinator::State::kPeek));
 }
 
-// TODO(crbug.com/533364604): Fix flakiness.
 IN_PROC_BROWSER_TEST_F(GlicAndroidPeekBrowserTest,
-                       DISABLED_ShowDoesNotDeactivateActiveEmbedder) {
+                       ShowDoesNotDeactivateActiveEmbedder) {
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_OK(
+      WaitForSidePanelState(tab, GlicSidePanelCoordinator::State::kShown));
 
   EXPECT_TRUE(instance->IsShowing());
   EXPECT_EQ(instance->GetActiveEmbedderTabForTesting(), tab);
