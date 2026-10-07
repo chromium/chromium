@@ -24,6 +24,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -38,6 +39,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.TabTestUtils;
+import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -49,6 +51,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.TabRestoreServiceUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -72,6 +75,10 @@ public class HistoricalTabSaverImplTest {
     private static final String TEST_PAGE_2 = "/chrome/test/data/android/simple.html";
     private static final String TEST_PAGE_3 = "/chrome/test/data/android/google.html";
     private static final String TEST_PAGE_4 = "/chrome/test/data/android/theme_color_test.html";
+
+    private static final String SAVE_DURATION_TAB = "Tabs.HistoricalTabSaver.SaveDuration.Tab";
+    private static final String SAVE_DURATION_GROUP = "Tabs.HistoricalTabSaver.SaveDuration.Group";
+    private static final String SAVE_DURATION_BULK = "Tabs.HistoricalTabSaver.SaveDuration.Bulk";
 
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
@@ -109,7 +116,9 @@ public class HistoricalTabSaverImplTest {
     @MediumTest
     public void testCreateHistoricalTab_NotFrozen_HistoricalTabCreated() {
         mActivityTestRule.loadUrl(getUrl(TEST_PAGE_1));
+        HistogramWatcher watcher = expectOnlySaveDuration(SAVE_DURATION_TAB);
         @TabRestoreEntryId int id = TabRestoreServiceUtils.createTabEntry(mTabModel, mTab);
+        watcher.assertExpected();
 
         ArrayList<HistoricalEntry> expectedEntries = new ArrayList<>();
         expectedEntries.add(new HistoricalEntry(mTab));
@@ -156,7 +165,39 @@ public class HistoricalTabSaverImplTest {
         // Clear the entry created by freezing the tab.
         TabRestoreServiceUtils.clearEntries(mTabModelSelector);
 
-        @TabRestoreEntryId int id = TabRestoreServiceUtils.createTabEntry(mTabModel, frozenTab);
+        int id = TabRestoreServiceUtils.createTabEntry(mTabModel, frozenTab);
+
+        List<List<HistoricalEntry>> empty = new ArrayList<>();
+        assertEntriesAre(empty);
+        assertEquals(HistoricalTabSaver.INVALID_TAB_RESTORE_ENTRY_ID, id);
+    }
+
+    /**
+     * Tests that a save which reaches native but stores nothing still records its duration. The
+     * frozen tab's state is non-null (so Java does not filter it) but invalid, so native falls back
+     * to an empty WebContents with no navigations and TabRestoreService adds no entry.
+     */
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.LOAD_ALL_TABS_AT_STARTUP)
+    public void testCreateHistoricalTab_NothingStored_RecordsSaveDuration() {
+        final Tab tab =
+                mActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_1), /* incognito= */ false);
+        final Tab frozenTab = freezeTab(tab);
+
+        runOnUiThreadBlocking(
+                () ->
+                        TabTestUtils.setWebContentsState(
+                                frozenTab,
+                                new WebContentsState(
+                                        ByteBuffer.allocateDirect(0),
+                                        WebContentsState.INVALID_BUFFER_VERSION)));
+        // Clear the entry created by freezing the tab.
+        TabRestoreServiceUtils.clearEntries(mTabModelSelector);
+
+        HistogramWatcher watcher = expectOnlySaveDuration(SAVE_DURATION_TAB);
+        int id = TabRestoreServiceUtils.createTabEntry(mTabModel, frozenTab);
+        watcher.assertExpected();
 
         List<List<HistoricalEntry>> empty = new ArrayList<>();
         assertEntriesAre(empty);
@@ -178,7 +219,9 @@ public class HistoricalTabSaverImplTest {
                         "Foo",
                         TabGroupColorId.GREY,
                         Arrays.asList(new Tab[] {tab0, tab1}));
+        HistogramWatcher watcher = expectOnlySaveDuration(SAVE_DURATION_GROUP);
         @TabRestoreEntryId int id = TabRestoreServiceUtils.createTabOrGroupEntry(mTabModel, group);
+        watcher.assertExpected();
 
         ArrayList<HistoricalEntry> expectedEntries = new ArrayList<>();
         expectedEntries.add(group);
@@ -306,8 +349,10 @@ public class HistoricalTabSaverImplTest {
                         TabGroupColorId.GREY,
                         Arrays.asList(new Tab[] {tab1, tab2})));
         expectedEntries.add(new HistoricalEntry(tab3));
+        HistogramWatcher watcher = expectOnlySaveDuration(SAVE_DURATION_BULK);
         @TabRestoreEntryId
         int id = TabRestoreServiceUtils.createWindowEntry(mTabModel, expectedEntries);
+        watcher.assertExpected();
 
         assertEntriesAre(Collections.singletonList(expectedEntries));
         RecentlyClosedBulkEvent entry =
@@ -597,6 +642,22 @@ public class HistoricalTabSaverImplTest {
 
     private String getUrl(String relativeUrl) {
         return mActivityTestRule.getTestServer().getURL(relativeUrl);
+    }
+
+    /**
+     * Returns a watcher expecting exactly one sample of {@code histogram} and none of the other
+     * SaveDuration histograms. The samples are recorded in native.
+     */
+    private static HistogramWatcher expectOnlySaveDuration(String histogram) {
+        HistogramWatcher.Builder builder = HistogramWatcher.newBuilder();
+        for (String name : List.of(SAVE_DURATION_TAB, SAVE_DURATION_GROUP, SAVE_DURATION_BULK)) {
+            if (name.equals(histogram)) {
+                builder.expectAnyRecordTimes(name, 1);
+            } else {
+                builder.expectNoRecords(name);
+            }
+        }
+        return builder.build();
     }
 
     private void selectFirstTab() {

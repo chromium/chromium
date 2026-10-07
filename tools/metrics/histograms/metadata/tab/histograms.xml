@@ -28,6 +28,12 @@ chromium-metrics-reviews@google.com.
   <variant name=".PluggedIn"/>
 </variants>
 
+<variants name="HistoricalTabSaverSaveType">
+  <variant name="Bulk" summary="a bulk closure of several tabs and groups"/>
+  <variant name="Group" summary="a single tab group"/>
+  <variant name="Tab" summary="a single tab"/>
+</variants>
+
 <variants name="RecentlyClosedType">
   <variant name="Bulk" summary="RecentlyClosedBulkEvent"/>
   <variant name="Group" summary="RecentlyClosedGroup"/>
@@ -2321,6 +2327,22 @@ chromium-metrics-reviews@google.com.
     appended to. Success indicates that the append succeeded. Failure indicates
     it was not possible to freeze the tab and we had to fallback to a lazy load.
   </summary>
+</histogram>
+
+<histogram
+    name="Tabs.HistoricalTabSaver.SaveDuration.{HistoricalTabSaverSaveType}"
+    units="microseconds" expires_after="2027-10-04">
+  <owner>hitarthkothari@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <summary>
+    [Android] Time spent in native code saving {HistoricalTabSaverSaveType} to
+    TabRestoreService on close, including recreating a WebContents for frozen
+    tabs. Recorded once per save attempt, whether or not an entry was stored.
+    Excludes Java-side validation. Only reported for clients with
+    high-resolution clocks.
+  </summary>
+  <token key="HistoricalTabSaverSaveType"
+      variants="HistoricalTabSaverSaveType"/>
 </histogram>
 
 <histogram name="Tabs.InactiveCountAtStartup" units="tabs"

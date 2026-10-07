@@ -18,7 +18,10 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
+#include "base/timer/elapsed_timer.h"
+#include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
@@ -305,12 +308,17 @@ static int32_t JNI_HistoricalTabSaverImpl_CreateHistoricalTab(
     int32_t index,
     const JavaRef<jobject>& state,
     int32_t saved_state_version) {
+  TRACE_EVENT("browser", "HistoricalTabSaver::CreateHistoricalTab");
+  base::ElapsedTimer timer;
   WebContentsStateByteBuffer web_contents_state =
       WebContentsStateByteBuffer(ScopedJavaLocalRef<jobject>(state),
                                  static_cast<int>(saved_state_version));
-  return ToJavaSessionId(CreateHistoricalTab(
+  int32_t session_id = ToJavaSessionId(CreateHistoricalTab(
       TabAndroid::GetNativeTab(env, jtab_android), static_cast<int>(index),
       std::move(web_contents_state)));
+  base::UmaHistogramMicrosecondsTimes(
+      "Tabs.HistoricalTabSaver.SaveDuration.Tab", timer.Elapsed());
+  return session_id;
 }
 
 static int32_t JNI_HistoricalTabSaverImpl_CreateHistoricalGroup(
@@ -323,6 +331,8 @@ static int32_t JNI_HistoricalTabSaverImpl_CreateHistoricalGroup(
     const std::vector<TabAndroid*>& tabs_android,
     const std::vector<ScopedJavaLocalRef<jobject>>& byte_buffers,
     const std::vector<int32_t>& saved_state_versions) {
+  TRACE_EVENT("browser", "HistoricalTabSaver::CreateHistoricalGroup");
+  base::ElapsedTimer timer;
   tab_groups::TabGroupId tab_group_id =
       tab_groups::TabGroupId::FromRawToken(tab_group_id_token);
   std::optional<base::Uuid> saved_tab_group_id =
@@ -334,9 +344,12 @@ static int32_t JNI_HistoricalTabSaverImpl_CreateHistoricalGroup(
 
   std::vector<WebContentsStateByteBuffer> web_contents_states =
       AllTabsWebContentsStateByteBuffer(byte_buffers, saved_state_versions);
-  return ToJavaSessionId(CreateHistoricalGroup(
+  int32_t session_id = ToJavaSessionId(CreateHistoricalGroup(
       model, tab_group_id, saved_tab_group_id, title, static_cast<int>(jcolor),
       tabs_android, std::move(web_contents_states)));
+  base::UmaHistogramMicrosecondsTimes(
+      "Tabs.HistoricalTabSaver.SaveDuration.Group", timer.Elapsed());
+  return session_id;
 }
 
 static int32_t JNI_HistoricalTabSaverImpl_CreateHistoricalBulkClosure(
@@ -351,6 +364,8 @@ static int32_t JNI_HistoricalTabSaverImpl_CreateHistoricalBulkClosure(
     const std::vector<TabAndroid*>& tabs,
     const std::vector<ScopedJavaLocalRef<jobject>>& byte_buffers,
     const std::vector<int32_t>& saved_state_versions) {
+  TRACE_EVENT("browser", "HistoricalTabSaver::CreateHistoricalBulkClosure");
+  base::ElapsedTimer timer;
   std::vector<std::optional<tab_groups::TabGroupId>> tab_group_ids =
       TokensToTabGroupIds(tab_group_token_ids);
   std::vector<std::optional<base::Uuid>> saved_tab_group_ids =
@@ -365,11 +380,14 @@ static int32_t JNI_HistoricalTabSaverImpl_CreateHistoricalBulkClosure(
 
   std::vector<WebContentsStateByteBuffer> web_contents_states =
       AllTabsWebContentsStateByteBuffer(byte_buffers, saved_state_versions);
-  return ToJavaSessionId(CreateHistoricalBulkClosure(
+  int32_t session_id = ToJavaSessionId(CreateHistoricalBulkClosure(
       model, std::move(tab_group_ids), std::move(saved_tab_group_ids),
       std::move(group_titles), std::move(group_colors),
       std::move(per_tab_optional_tab_group_ids), tabs,
       std::move(web_contents_states)));
+  base::UmaHistogramMicrosecondsTimes(
+      "Tabs.HistoricalTabSaver.SaveDuration.Bulk", timer.Elapsed());
+  return session_id;
 }
 
 }  // namespace historical_tab_saver
