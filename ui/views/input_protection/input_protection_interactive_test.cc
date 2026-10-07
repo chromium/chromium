@@ -25,6 +25,7 @@
 #include "ui/views/input_event_activation_protector.h"
 #include "ui/views/input_protection/input_protection_policy.h"
 #include "ui/views/input_protection/input_protection_specification.h"
+#include "ui/views/input_protection/widget_stationarity_monitor.h"
 #include "ui/views/metrics.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
@@ -638,6 +639,50 @@ InputProtectionTestApi::MultiStep InputProtectionTestApi::ShowWindow(
                             WaitForShow(element_id));
   AddDescriptionPrefix(steps, "ShowWindow()");
   return steps;
+}
+
+ui::InteractionSequence::StepBuilder
+InputProtectionTestApi::TrackWidgetStationarity(
+    ui::ElementIdentifier element_id) {
+  auto step = WithView(element_id, [](View* view) {
+    Widget* widget = view->GetWidget();
+    CHECK(widget);
+    WidgetStationarityMonitor::GetInstance().TrackWidget(*widget);
+  });
+  step.SetDescription("TrackWidgetStationarity()");
+  return step;
+}
+
+ui::InteractionSequence::StepBuilder InputProtectionTestApi::MoveWidgetBy(
+    ui::ElementIdentifier element_id,
+    const gfx::Vector2d& offset) {
+  auto step = WithView(element_id, [offset](View* view) {
+    Widget* widget = view->GetWidget();
+    CHECK(widget);
+    const gfx::Rect target_bounds = widget->GetWindowBoundsInScreen() + offset;
+    WidgetBoundsWaiter waiter(widget, target_bounds);
+    widget->SetBounds(target_bounds);
+    waiter.Wait();
+  });
+  step.SetDescription("MoveWidgetBy()");
+  return step;
+}
+
+ui::InteractionSequence::StepBuilder InputProtectionTestApi::ResizeWidgetBy(
+    ui::ElementIdentifier element_id,
+    const gfx::Vector2d& size_delta) {
+  auto step = WithView(element_id, [size_delta](View* view) {
+    Widget* widget = view->GetWidget();
+    CHECK(widget);
+    gfx::Rect target_bounds = widget->GetWindowBoundsInScreen();
+    target_bounds.set_size(gfx::Size(target_bounds.width() + size_delta.x(),
+                                     target_bounds.height() + size_delta.y()));
+    WidgetBoundsWaiter waiter(widget, target_bounds);
+    widget->SetBounds(target_bounds);
+    waiter.Wait();
+  });
+  step.SetDescription("ResizeWidgetBy()");
+  return step;
 }
 
 ui::InteractionSequence::StepBuilder

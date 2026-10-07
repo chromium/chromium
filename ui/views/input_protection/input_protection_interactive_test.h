@@ -226,6 +226,24 @@ class InputProtectionTestApi
   [[nodiscard]] ui::InteractionSequence::StepBuilder ShowAuxiliaryWindow(
       ui::ElementIdentifier button_id);
 
+  // Registers the widget containing `element_id` with
+  // `WidgetStationarityMonitor` so that widget bounds changes trigger input
+  // protection cooldowns.
+  [[nodiscard]] ui::InteractionSequence::StepBuilder TrackWidgetStationarity(
+      ui::ElementIdentifier element_id);
+
+  // Offsets the position of the widget containing `element_id` by `offset` and
+  // waits for the bounds change to complete.
+  [[nodiscard]] ui::InteractionSequence::StepBuilder MoveWidgetBy(
+      ui::ElementIdentifier element_id,
+      const gfx::Vector2d& offset);
+
+  // Adjusts the size of the widget containing `element_id` by `size_delta` and
+  // waits for the bounds change to complete.
+  [[nodiscard]] ui::InteractionSequence::StepBuilder ResizeWidgetBy(
+      ui::ElementIdentifier element_id,
+      const gfx::Vector2d& size_delta);
+
   // Installs custom protected bounds on the view identified by `element_id`.
   [[nodiscard]] ui::InteractionSequence::StepBuilder
   InstallInputProtectionSpecification(

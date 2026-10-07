@@ -305,6 +305,27 @@ TEST_F(InputProtectionInteractiveUiTest, MovedAotWindowEnforcesCooldown) {
       ClickExpectingAllowed(kPrimaryButtonId, primary_click_count()));
 }
 
+// Verifies that moving or resizing a tracked widget resets the input
+// protection cooldown via `WidgetStationarityMonitor`, blocking clicks during
+// the cooldown and allowing them after it expires.
+TEST_F(InputProtectionInteractiveUiTest,
+       WidgetStationarityChangeEnforcesCooldown) {
+  RunTestSequence(
+      EnableInputEventActivationProtection(),
+      TrackWidgetStationarity(kPrimaryButtonId),
+      AdvancePastInputProtectionInterval(),
+      // Moving the widget triggers a stationarity cooldown.
+      MoveWidgetBy(kPrimaryButtonId, gfx::Vector2d(20, 20)),
+      ClickExpectingBlocked(kPrimaryButtonId, primary_click_count()),
+      AdvancePastInputProtectionInterval(),
+      ClickExpectingAllowed(kPrimaryButtonId, primary_click_count()),
+      // Resizing the widget also triggers a stationarity cooldown.
+      ResizeWidgetBy(kPrimaryButtonId, gfx::Vector2d(20, 20)),
+      ClickExpectingBlocked(kPrimaryButtonId, primary_click_count()),
+      AdvancePastInputProtectionInterval(),
+      ClickExpectingAllowed(kPrimaryButtonId, primary_click_count()));
+}
+
 // Verifies that view defined protected bounds via
 // `InputProtectionSpecification` are respected by occlusion detection.
 TEST_F(InputProtectionInteractiveUiTest, CustomProtectedBoundsEnforced) {
