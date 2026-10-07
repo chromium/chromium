@@ -20,7 +20,6 @@
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
@@ -711,7 +710,7 @@ class ShowIdentityNameStateProvider : public StateProvider,
   ~ShowIdentityNameStateProvider() override = default;
 
   // StateProvider:
-  bool IsActive() const override { return show_identity_request_count_ > 0; }
+  bool IsActive() const override { return active_; }
 
   void Init() override {
     if (IdentityManagerFactory::GetForProfile(&profile())
@@ -730,7 +729,7 @@ class ShowIdentityNameStateProvider : public StateProvider,
     return GetShortProfileName(profile());
   }
 
-  void ClearForTesting() override { OnIdentityAnimationTimeout(); }
+  void ClearForTesting() override { Clear(); }
 
   // IdentityManager::Observer:
   void OnRefreshTokensLoaded() override {
@@ -827,28 +826,25 @@ class ShowIdentityNameStateProvider : public StateProvider,
   // Shows the name in the identity pill. If the name is already showing, this
   // extends the duration.
   void ShowIdentityName() {
-    ++show_identity_request_count_;
+    active_ = true;
     waiting_for_image_ = false;
 
     RequestUpdate();
 
-    // Hide the pill after a while.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
+    // Hide the pill after a while. Starting the timer while it is already
+    // running resets it and extends the duration.
+    collapse_timer_.Start(
+        FROM_HERE, g_show_name_duration_for_testing.value_or(kShowNameDuration),
         base::BindOnce(
-            &ShowIdentityNameStateProvider::OnIdentityAnimationTimeout,
-            weak_ptr_factory_.GetWeakPtr()),
-        g_show_name_duration_for_testing.value_or(kShowNameDuration));
-  }
-
-  void OnIdentityAnimationTimeout() {
-    --show_identity_request_count_;
-    MaybeHideIdentityAnimation();
+            &ShowIdentityNameStateProvider::MaybeHideIdentityAnimation,
+            // This is safe because `ShowIdentityNameStateProvider` owns
+            // `collapse_timer_`.
+            base::Unretained(this)));
   }
 
   // Called after the user interacted with the button or after some timeout.
   void MaybeHideIdentityAnimation() {
-    if (show_identity_request_count_ > 0) {
+    if (!active_ || collapse_timer_.IsRunning()) {
       return;
     }
 
@@ -865,7 +861,8 @@ class ShowIdentityNameStateProvider : public StateProvider,
 
   // Clears the effects of the state being active.
   void Clear() {
-    show_identity_request_count_ = 0;
+    collapse_timer_.Stop();
+    active_ = false;
     waiting_for_image_ = false;
     has_in_product_help_promo_ = false;
 
@@ -874,11 +871,8 @@ class ShowIdentityNameStateProvider : public StateProvider,
 
   const raw_ref<AvatarToolbarButtonInterface> avatar_control_;
 
-  // Count of the show identity pill name timeouts that are currently scheduled.
-  // Multiple timeouts are scheduled when multiple show requests triggers happen
-  // in a quick sequence (before the first timeout passes). The identity pill
-  // tries to close when this reaches 0.
-  int show_identity_request_count_ = 0;
+  base::OneShotTimer collapse_timer_;
+  bool active_ = false;
   bool waiting_for_image_ = false;
   bool has_in_product_help_promo_ = false;
   bool refresh_tokens_loaded_ = false;
@@ -886,8 +880,6 @@ class ShowIdentityNameStateProvider : public StateProvider,
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
-
-  base::WeakPtrFactory<ShowIdentityNameStateProvider> weak_ptr_factory_{this};
 };
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
