@@ -6,7 +6,6 @@
 
 #include "base/compiler_specific.h"
 #include "third_party/skia/include/private/SkHdrMetadata.h"
-#include "ui/gl/gpu_switching_manager.h"
 
 namespace {
 
@@ -23,11 +22,11 @@ HDRMetadataHelperWin::HDRMetadataHelperWin(
     Microsoft::WRL::ComPtr<IDXGIFactory> factory)
     : dxgi_factory_(std::move(factory)) {
   UpdateDisplayMetadata();
-  ui::GpuSwitchingManager::GetInstance()->AddObserver(this);
+  DirectCompositionOverlayCapsMonitor::GetInstance()->AddObserver(this);
 }
 
 HDRMetadataHelperWin::~HDRMetadataHelperWin() {
-  ui::GpuSwitchingManager::GetInstance()->RemoveObserver(this);
+  DirectCompositionOverlayCapsMonitor::GetInstance()->RemoveObserver(this);
 }
 
 std::unique_ptr<HDRMetadataHelperWin> HDRMetadataHelperWin::Create() {
@@ -164,11 +163,7 @@ DXGI_HDR_METADATA_HDR10 HDRMetadataHelperWin::OutputDESC1ToDXGI(
   return metadata;
 }
 
-void HDRMetadataHelperWin::OnDisplayAdded() {
-  UpdateDisplayMetadata();
-}
-
-void HDRMetadataHelperWin::OnDisplayRemoved() {
+void HDRMetadataHelperWin::OnOverlayCapsChanged() {
   UpdateDisplayMetadata();
 }
 }  // namespace gl

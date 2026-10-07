@@ -17,7 +17,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/mojom/dxgi_info.mojom.h"
 #include "ui/gl/gl_export.h"
-#include "ui/gl/gpu_switching_observer.h"
 #include "ui/gl/solid_color_pool_base.h"
 
 namespace gl {
@@ -227,12 +226,11 @@ class GL_EXPORT DirectCompositionOverlayCapsObserver
   ~DirectCompositionOverlayCapsObserver() override = default;
 };
 
-// Upon receiving display notifications from ui::GpuSwitchingManager,
-// DirectCompositionOverlayCapsMonitor updates its overlay caps with the new
-// display setting and notifies DirectCompositionOverlayCapsObserver for the
-// overlay cap change.
-class GL_EXPORT DirectCompositionOverlayCapsMonitor
-    : public ui::GpuSwitchingObserver {
+// Upon receiving display change notifications, which the GPU service forwards
+// from the browser process, DirectCompositionOverlayCapsMonitor updates its
+// overlay caps with the new display setting and notifies
+// DirectCompositionOverlayCapsObserver for the overlay cap change.
+class GL_EXPORT DirectCompositionOverlayCapsMonitor {
  public:
   DirectCompositionOverlayCapsMonitor(
       const DirectCompositionOverlayCapsMonitor&) = delete;
@@ -249,16 +247,17 @@ class GL_EXPORT DirectCompositionOverlayCapsMonitor
   // Called when the overlay caps have changed.
   void NotifyOverlayCapsChanged();
 
-  // Implements GpuSwitchingObserver.
-  void OnDisplayAdded() override;
-  void OnDisplayRemoved() override;
-  void OnDisplayMetricsChanged() override;
+  // Called on the GPU main thread when a monitor is plugged in or unplugged,
+  // or when the display metrics change.
+  void OnDisplayAdded();
+  void OnDisplayRemoved();
+  void OnDisplayMetricsChanged();
 
  private:
   friend class base::NoDestructor<DirectCompositionOverlayCapsMonitor>;
 
   DirectCompositionOverlayCapsMonitor();
-  ~DirectCompositionOverlayCapsMonitor() override;
+  ~DirectCompositionOverlayCapsMonitor();
 
   scoped_refptr<
       base::ObserverListThreadSafe<DirectCompositionOverlayCapsObserver>>

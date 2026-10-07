@@ -23,7 +23,6 @@
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
-#include "ui/gl/gpu_switching_manager.h"
 
 namespace gl {
 namespace {
@@ -1281,13 +1280,10 @@ bool DirectCompositionTextureSupported() {
 // For DirectComposition Display Monitor.
 DirectCompositionOverlayCapsMonitor::DirectCompositionOverlayCapsMonitor()
     : observer_list_(new base::ObserverListThreadSafe<
-                     DirectCompositionOverlayCapsObserver>()) {
-  ui::GpuSwitchingManager::GetInstance()->AddObserver(this);
-}
+                     DirectCompositionOverlayCapsObserver>()) {}
 
-DirectCompositionOverlayCapsMonitor::~DirectCompositionOverlayCapsMonitor() {
-  ui::GpuSwitchingManager::GetInstance()->RemoveObserver(this);
-}
+DirectCompositionOverlayCapsMonitor::~DirectCompositionOverlayCapsMonitor() =
+    default;
 
 // static
 DirectCompositionOverlayCapsMonitor*
@@ -1312,7 +1308,7 @@ void DirectCompositionOverlayCapsMonitor::NotifyOverlayCapsChanged() {
       FROM_HERE, &DirectCompositionOverlayCapsObserver::OnOverlayCapsChanged);
 }
 
-// Called from GpuSwitchingObserver on the GPU main thread.
+// Called from GpuServiceImpl on the GPU main thread.
 void DirectCompositionOverlayCapsMonitor::OnDisplayAdded() {
   SetOverlayCapsValid(false);
   UpdateOverlaySupport();
@@ -1322,7 +1318,7 @@ void DirectCompositionOverlayCapsMonitor::OnDisplayAdded() {
   NotifyOverlayCapsChanged();
 }
 
-// Called from GpuSwitchingObserver on the GPU main thread.
+// Called from GpuServiceImpl on the GPU main thread.
 void DirectCompositionOverlayCapsMonitor::OnDisplayRemoved() {
   SetOverlayCapsValid(false);
   UpdateOverlaySupport();
@@ -1332,7 +1328,7 @@ void DirectCompositionOverlayCapsMonitor::OnDisplayRemoved() {
   NotifyOverlayCapsChanged();
 }
 
-// Called from GpuSwitchingObserver on the GPU main thread.
+// Called from GpuServiceImpl on the GPU main thread.
 void DirectCompositionOverlayCapsMonitor::OnDisplayMetricsChanged() {
   UpdateMonitorInfo();
 

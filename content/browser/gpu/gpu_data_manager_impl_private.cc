@@ -82,7 +82,6 @@
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
-#include "ui/gl/gpu_switching_manager.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
@@ -1445,8 +1444,6 @@ void GpuDataManagerImplPrivate::OnDisplayAdded(
     const display::Display& new_display) {
   base::AutoUnlock unlock(owner_->lock_);
 
-  // Notify observers in the browser process.
-  ui::GpuSwitchingManager::GetInstance()->NotifyDisplayAdded();
   // Pass the notification to the GPU process to notify observers there.
   GpuProcessHost::CallOnUI(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
                            /*force_create=*/false ,
@@ -1460,8 +1457,6 @@ void GpuDataManagerImplPrivate::OnDisplaysRemoved(
     const display::Displays& removed_displays) {
   base::AutoUnlock unlock(owner_->lock_);
 
-  // Notify observers in the browser process.
-  ui::GpuSwitchingManager::GetInstance()->NotifyDisplayRemoved();
   // Pass the notification to the GPU process to notify observers there.
   GpuProcessHost::CallOnUI(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
                            /*force_create=*/false ,
@@ -1476,8 +1471,6 @@ void GpuDataManagerImplPrivate::OnDisplayMetricsChanged(
     uint32_t changed_metrics) {
   base::AutoUnlock unlock(owner_->lock_);
 
-  // Notify observers in the browser process.
-  ui::GpuSwitchingManager::GetInstance()->NotifyDisplayMetricsChanged();
   // Pass the notification to the GPU process to notify observers there.
   GpuProcessHost::CallOnUI(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
                            /*force_create=*/false ,

@@ -12,12 +12,13 @@
 #include <unordered_map>
 
 #include "ui/gfx/hdr_metadata.h"
+#include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_export.h"
-#include "ui/gl/gpu_switching_observer.h"
 
 namespace gl {
 
-class GL_EXPORT HDRMetadataHelperWin : ui::GpuSwitchingObserver {
+class GL_EXPORT HDRMetadataHelperWin
+    : public DirectCompositionOverlayCapsObserver {
  public:
   HDRMetadataHelperWin() = delete;
   explicit HDRMetadataHelperWin(Microsoft::WRL::ComPtr<IDXGIFactory> factory);
@@ -49,9 +50,9 @@ class GL_EXPORT HDRMetadataHelperWin : ui::GpuSwitchingObserver {
   static DXGI_HDR_METADATA_HDR10 OutputDESC1ToDXGI(
       const DXGI_OUTPUT_DESC1& desc1);
 
-  // Implements GpuSwitchingObserver
-  void OnDisplayAdded() override;
-  void OnDisplayRemoved() override;
+  // DirectCompositionOverlayCapsObserver implementation. The overlay caps
+  // monitor notifies after every display change, so refresh the metadata.
+  void OnOverlayCapsChanged() override;
 
  private:
   Microsoft::WRL::ComPtr<IDXGIFactory> dxgi_factory_;

@@ -80,7 +80,6 @@
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
-#include "ui/gl/gpu_switching_manager.h"
 #include "ui/gl/init/create_gr_gl_interface.h"
 #include "ui/gl/init/gl_factory.h"
 #include "url/gurl.h"
@@ -1070,8 +1069,9 @@ void GpuServiceImpl::DisplayAdded() {
   }
   DVLOG(1) << "GPU: A monitor is plugged in";
 
-  if (!in_host_process())
-    ui::GpuSwitchingManager::GetInstance()->NotifyDisplayAdded();
+#if BUILDFLAG(IS_WIN)
+  gl::DirectCompositionOverlayCapsMonitor::GetInstance()->OnDisplayAdded();
+#endif
 }
 
 void GpuServiceImpl::DisplayRemoved() {
@@ -1082,8 +1082,9 @@ void GpuServiceImpl::DisplayRemoved() {
   }
   DVLOG(1) << "GPU: A monitor is unplugged ";
 
-  if (!in_host_process())
-    ui::GpuSwitchingManager::GetInstance()->NotifyDisplayRemoved();
+#if BUILDFLAG(IS_WIN)
+  gl::DirectCompositionOverlayCapsMonitor::GetInstance()->OnDisplayRemoved();
+#endif
 }
 
 void GpuServiceImpl::DisplayMetricsChanged() {
@@ -1095,8 +1096,10 @@ void GpuServiceImpl::DisplayMetricsChanged() {
   }
   DVLOG(1) << "GPU: Display Metrics changed";
 
-  if (!in_host_process())
-    ui::GpuSwitchingManager::GetInstance()->NotifyDisplayMetricsChanged();
+#if BUILDFLAG(IS_WIN)
+  gl::DirectCompositionOverlayCapsMonitor::GetInstance()
+      ->OnDisplayMetricsChanged();
+#endif
 }
 
 void GpuServiceImpl::DestroyAllChannels() {

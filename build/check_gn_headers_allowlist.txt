@@ -203,6 +203,5 @@ ui/gl/gl_bindings_api_autogen_egl.h
 ui/gl/gl_bindings_api_autogen_gl.h
 ui/gl/gl_bindings_api_autogen_glx.h
 ui/gl/gpu_preference.h
-ui/gl/gpu_switching_observer.h
 ui/gl/progress_reporter.h
 ui/ozone/public/ozone_switches.h
