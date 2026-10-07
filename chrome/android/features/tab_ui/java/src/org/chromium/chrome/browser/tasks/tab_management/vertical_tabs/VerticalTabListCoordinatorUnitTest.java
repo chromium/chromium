@@ -1974,7 +1974,7 @@ public class VerticalTabListCoordinatorUnitTest {
                 ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
         verify(mMainTabSwitcherDragHandler, atLeastOnce()).setDragHandlerDelegate(captor.capture());
 
-        captor.getValue().handleDragStart(10f, 10f);
+        captor.getValue().handleDragStart(mCoordinator.getView(), 10f, 10f);
 
         verify(mTabHoverCardView).hide();
     }
@@ -2335,7 +2335,7 @@ public class VerticalTabListCoordinatorUnitTest {
         verify(mMainTabSwitcherDragHandler, atLeastOnce())
                 .setDragHandlerDelegate(delegateCaptor.capture());
 
-        delegateCaptor.getValue().handleDragExit();
+        delegateCaptor.getValue().handleDragStart(mCoordinator.getView(), 0f, 0f);
         verify(mTabModel).moveTab(TAB_ID_1, 2);
     }
 
@@ -2359,7 +2359,7 @@ public class VerticalTabListCoordinatorUnitTest {
         verify(mMainTabSwitcherDragHandler, atLeastOnce())
                 .setDragHandlerDelegate(delegateCaptor.capture());
 
-        delegateCaptor.getValue().handleDragExit();
+        delegateCaptor.getValue().handleDragStart(mCoordinator.getView(), 0f, 0f);
         verify(mTabModel, never()).moveTab(anyInt(), anyInt());
     }
 
@@ -2381,7 +2381,7 @@ public class VerticalTabListCoordinatorUnitTest {
         verify(mMainTabSwitcherDragHandler, atLeastOnce())
                 .setDragHandlerDelegate(delegateCaptor.capture());
 
-        delegateCaptor.getValue().handleDragExit();
+        delegateCaptor.getValue().handleDragStart(mCoordinator.getView(), 0f, 0f);
         verify(mTabModel, never()).moveTab(anyInt(), anyInt());
     }
 
@@ -2392,15 +2392,17 @@ public class VerticalTabListCoordinatorUnitTest {
         when(mTabModel.getPinnedTabsCount()).thenReturn(1);
 
         createCoordinator();
+        layOutLists(/* mainHeight= */ 300, /* pinnedHeight= */ 100);
         PropertyModel model = createTabPropertyModel();
         model.set(TabProperties.TAB_ID, TAB_ID_1);
         model.set(TabProperties.IS_PINNED, true);
 
-        getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
+        getPinnedOnDragOutListener()
+                .onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
 
         ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
                 ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
-        verify(mMainTabSwitcherDragHandler, atLeastOnce())
+        verify(mPinnedTabSwitcherDragHandler, atLeastOnce())
                 .setDragHandlerDelegate(delegateCaptor.capture());
         TabSwitcherDragHandler.DragHandlerDelegate delegate = delegateCaptor.getValue();
 
@@ -2412,21 +2414,24 @@ public class VerticalTabListCoordinatorUnitTest {
                         .getResources()
                         .getDimensionPixelSize(R.dimen.pinned_tab_strip_item_favicon_height);
 
-        delegate.handleDragStart(0f, 0f);
-        assertEquals(expectedMinHeight, pinnedRecyclerView.getMinimumHeight());
-
-        delegate.handleDragEnter();
+        // Starts inside the pinned grid: min height is not set.
+        delegate.handleDragStart(pinnedRecyclerView, 50f, 50f);
         assertEquals(0, pinnedRecyclerView.getMinimumHeight());
 
-        delegate.handleDragExit();
+        // Moves outside the pinned grid (over main list): sets min height.
+        delegate.handleDragLocation(pinnedRecyclerView, 50f, 150f);
         assertEquals(expectedMinHeight, pinnedRecyclerView.getMinimumHeight());
 
-        delegate.handleExternalDragEnd(0f, 0f, /* isOSNewWindowDrop= */ true);
+        // Re-enters pinned grid: clears min height.
+        delegate.handleDragLocation(pinnedRecyclerView, 50f, 50f);
         assertEquals(0, pinnedRecyclerView.getMinimumHeight());
 
-        delegate.handleDragStart(0f, 0f);
+        // Exits pinned grid again: sets min height.
+        delegate.handleDragLocation(pinnedRecyclerView, 50f, 150f);
         assertEquals(expectedMinHeight, pinnedRecyclerView.getMinimumHeight());
-        delegate.handleExternalDragEnd(0f, 0f, /* isOSNewWindowDrop= */ false);
+        // External drag end: clears min height.
+        delegate.handleExternalDragEnd(
+                pinnedRecyclerView, 50f, 150f, /* isOSNewWindowDrop= */ true);
         assertEquals(0, pinnedRecyclerView.getMinimumHeight());
     }
 
@@ -2438,6 +2443,7 @@ public class VerticalTabListCoordinatorUnitTest {
         when(mTabModel.getTabById(TAB_ID_1)).thenReturn(mMockTab1);
 
         createCoordinator();
+        layOutLists(/* mainHeight= */ 300, /* pinnedHeight= */ 100);
         PropertyModel model = createTabPropertyModel();
         model.set(TabProperties.TAB_ID, TAB_ID_1);
         model.set(TabProperties.IS_PINNED, false);
@@ -2457,32 +2463,35 @@ public class VerticalTabListCoordinatorUnitTest {
                         .getResources()
                         .getDimensionPixelSize(R.dimen.pinned_tab_strip_item_favicon_height);
 
-        delegate.handleDragStart(0f, 0f);
-        assertEquals(expectedMinHeight, mainRecyclerView.getMinimumHeight());
-
-        delegate.handleDragEnter();
+        // Starts inside the main list: min height is not set.
+        delegate.handleDragStart(mainRecyclerView, 50f, 150f);
         assertEquals(0, mainRecyclerView.getMinimumHeight());
 
-        delegate.handleDragExit();
+        // Moves outside main list (over pinned grid): sets min height.
+        delegate.handleDragLocation(mainRecyclerView, 50f, -50f);
         assertEquals(expectedMinHeight, mainRecyclerView.getMinimumHeight());
 
-        delegate.handleExternalDragEnd(0f, 0f, /* isOSNewWindowDrop= */ true);
+        // Re-enters main list: clears min height.
+        delegate.handleDragLocation(mainRecyclerView, 50f, 150f);
         assertEquals(0, mainRecyclerView.getMinimumHeight());
 
-        delegate.handleDragStart(0f, 0f);
+        // Exits main list again: sets min height.
+        delegate.handleDragLocation(mainRecyclerView, 50f, -50f);
         assertEquals(expectedMinHeight, mainRecyclerView.getMinimumHeight());
-        delegate.handleExternalDragEnd(0f, 0f, /* isOSNewWindowDrop= */ false);
+        // External drag end: clears min height.
+        delegate.handleExternalDragEnd(mainRecyclerView, 50f, -50f, /* isOSNewWindowDrop= */ true);
         assertEquals(0, mainRecyclerView.getMinimumHeight());
     }
 
     @Test
-    public void testOriginatingDrag_DragEnterExitOnNonListViews_DoesNotToggleShadowOrMinHeight() {
+    public void testOriginatingDrag_RegionTransitionsDrivenByLocationAndContainerExit() {
         prepareMockTab(mMockTab1, TAB_ID_1);
         when(mTabModel.getCount()).thenReturn(1);
         when(mTabModel.getPinnedTabsCount()).thenReturn(0);
         when(mTabModel.getTabById(TAB_ID_1)).thenReturn(mMockTab1);
 
         createCoordinator();
+        layOutLists(/* mainHeight= */ 300, /* pinnedHeight= */ 100);
         PropertyModel model = createTabPropertyModel();
         model.set(TabProperties.TAB_ID, TAB_ID_1);
         model.set(TabProperties.IS_PINNED, false);
@@ -2497,52 +2506,81 @@ public class VerticalTabListCoordinatorUnitTest {
 
         View container = mCoordinator.getView();
         TabListRecyclerView mainRecyclerView = container.findViewById(R.id.tab_list_recycler_view);
-        View newTabButton = container.findViewById(R.id.new_tab_button);
-        assertNotNull(newTabButton);
         int expectedMinHeight =
                 mActivity
                         .getResources()
                         .getDimensionPixelSize(R.dimen.pinned_tab_strip_item_favicon_height);
 
-        delegate.handleDragStart(0f, 0f);
-        assertEquals(expectedMinHeight, mainRecyclerView.getMinimumHeight());
-
-        // Exiting the main RecyclerView should show shadow and maintain list min height.
+        // 1. Drag starts inside mainRecyclerView (y=150 in container space, mapped to y=50 in
+        // list):
+        // Remains in State.INSIDE, shadow stays hidden, min height is not set.
         clearInvocations(mMainTabSwitcherDragHandler);
-        delegate.handleDragExit(mainRecyclerView);
+        delegate.handleDragStart(container, 50f, 150f);
+        verify(mMainTabSwitcherDragHandler).showDragShadow(eq(mainRecyclerView), eq(false));
+        assertEquals(0, mainRecyclerView.getMinimumHeight());
+
+        // 2. Pointer moves over rail margin / newTabButton (y=450 in container space):
+        // Main-list drag stays in State.INSIDE, shadow remains hidden, min height not set.
+        clearInvocations(mMainTabSwitcherDragHandler);
+        delegate.handleDragLocation(container, 50f, 450f);
+        verify(mMainTabSwitcherDragHandler, never()).showDragShadow(any(), anyBoolean());
+        assertEquals(0, mainRecyclerView.getMinimumHeight());
+
+        // 3. Pointer moves over pinnedRecyclerView (y=50 in container space):
+        // Transitions INSIDE -> OUTSIDE. Shadow is shown, min height is set.
+        clearInvocations(mMainTabSwitcherDragHandler);
+        delegate.handleDragLocation(container, 50f, 50f);
         verify(mMainTabSwitcherDragHandler).showDragShadow(eq(mainRecyclerView), eq(true));
         assertEquals(expectedMinHeight, mainRecyclerView.getMinimumHeight());
 
-        // Entering newTabButton or container (non-list views) should NOT hide shadow or clear min
-        // height.
+        // 4. Pointer re-enters mainRecyclerView (y=150 in container space):
+        // Transitions OUTSIDE -> INSIDE. Shadow is hidden, min height is cleared.
         clearInvocations(mMainTabSwitcherDragHandler);
-        delegate.handleDragEnter(newTabButton);
-        verify(mMainTabSwitcherDragHandler, never()).showDragShadow(any(), anyBoolean());
-        assertEquals(expectedMinHeight, mainRecyclerView.getMinimumHeight());
-
-        // Exiting newTabButton should NOT re-trigger shadow or collapse logic.
-        clearInvocations(mMainTabSwitcherDragHandler);
-        delegate.handleDragExit(newTabButton);
-        verify(mMainTabSwitcherDragHandler, never()).showDragShadow(any(), anyBoolean());
-        assertEquals(expectedMinHeight, mainRecyclerView.getMinimumHeight());
-
-        // Entering container should NOT hide shadow.
-        clearInvocations(mMainTabSwitcherDragHandler);
-        delegate.handleDragEnter(container);
-        verify(mMainTabSwitcherDragHandler, never()).showDragShadow(any(), anyBoolean());
-        assertEquals(expectedMinHeight, mainRecyclerView.getMinimumHeight());
-
-        // Exiting container should NOT re-trigger shadow.
-        clearInvocations(mMainTabSwitcherDragHandler);
-        delegate.handleDragExit(container);
-        verify(mMainTabSwitcherDragHandler, never()).showDragShadow(any(), anyBoolean());
-        assertEquals(expectedMinHeight, mainRecyclerView.getMinimumHeight());
-
-        // Re-entering mainRecyclerView SHOULD hide shadow and restore min height.
-        clearInvocations(mMainTabSwitcherDragHandler);
-        delegate.handleDragEnter(mainRecyclerView);
+        delegate.handleDragLocation(container, 50f, 150f);
         verify(mMainTabSwitcherDragHandler).showDragShadow(eq(mainRecyclerView), eq(false));
         assertEquals(0, mainRecyclerView.getMinimumHeight());
+
+        // 5. Container exit event delivered:
+        // Transitions INSIDE -> OUTSIDE. Shadow is shown, min height is set.
+        clearInvocations(mMainTabSwitcherDragHandler);
+        delegate.handleDragExit(container);
+        verify(mMainTabSwitcherDragHandler).showDragShadow(eq(mainRecyclerView), eq(true));
+        assertEquals(expectedMinHeight, mainRecyclerView.getMinimumHeight());
+    }
+
+    @Test
+    public void testOriginatingDrag_DuplicateDragStart_IsIdempotent() {
+        prepareMockTab(mMockTab1, TAB_ID_1);
+        when(mTabModel.getCount()).thenReturn(1);
+        when(mTabModel.getPinnedTabsCount()).thenReturn(0);
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(mMockTab1);
+
+        createCoordinator();
+        layOutLists(/* mainHeight= */ 300, /* pinnedHeight= */ 100);
+        PropertyModel model = createTabPropertyModel();
+        model.set(TabProperties.TAB_ID, TAB_ID_1);
+        model.set(TabProperties.IS_PINNED, false);
+
+        getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
+
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mMainTabSwitcherDragHandler, atLeastOnce())
+                .setDragHandlerDelegate(delegateCaptor.capture());
+        TabSwitcherDragHandler.DragHandlerDelegate delegate = delegateCaptor.getValue();
+
+        View container = mCoordinator.getView();
+        TabListRecyclerView mainRecyclerView = container.findViewById(R.id.tab_list_recycler_view);
+
+        clearInvocations(mMainTabSwitcherDragHandler);
+        assertTrue(delegate.handleDragStart(container, 50f, 150f));
+        verify(mMainTabSwitcherDragHandler, times(1))
+                .showDragShadow(eq(mainRecyclerView), eq(false));
+
+        // Duplicate ACTION_DRAG_STARTED delivered by another view in the window.
+        clearInvocations(mMainTabSwitcherDragHandler);
+        assertTrue(delegate.handleDragStart(mainRecyclerView, 50f, 50f));
+        verify(mMainTabSwitcherDragHandler, never()).showDragShadow(any(), anyBoolean());
     }
 
     @Test
@@ -2553,6 +2591,7 @@ public class VerticalTabListCoordinatorUnitTest {
         when(mTabModel.getPinnedTabsCount()).thenReturn(2);
 
         createCoordinator();
+        layOutLists(/* mainHeight= */ 300, /* pinnedHeight= */ 100);
         PropertyModel model = createTabPropertyModel();
         model.set(TabProperties.TAB_ID, TAB_ID_1);
         model.set(TabProperties.IS_PINNED, true);
@@ -2567,15 +2606,16 @@ public class VerticalTabListCoordinatorUnitTest {
                 .getModelList()
                 .add(new MVCListAdapter.ListItem(UiType.TAB, createTabPropertyModel()));
 
-        getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
+        getPinnedOnDragOutListener()
+                .onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
 
         ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
                 ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
-        verify(mMainTabSwitcherDragHandler, atLeastOnce())
+        verify(mPinnedTabSwitcherDragHandler, atLeastOnce())
                 .setDragHandlerDelegate(delegateCaptor.capture());
         TabSwitcherDragHandler.DragHandlerDelegate delegate = delegateCaptor.getValue();
 
-        delegate.handleDragStart(0f, 0f);
+        delegate.handleDragStart(pinnedRecyclerView, 50f, 150f);
         assertEquals(0, pinnedRecyclerView.getMinimumHeight());
 
         PropertyModel regModel = createTabPropertyModel();
@@ -2590,7 +2630,12 @@ public class VerticalTabListCoordinatorUnitTest {
                 .getModelList()
                 .add(new MVCListAdapter.ListItem(UiType.TAB, createTabPropertyModel()));
 
-        delegate.handleDragStart(0f, 0f);
+        getOnDragOutListener().onDragOut(createViewHolder(regModel), /* dX= */ 100f, /* dY= */ 50f);
+        verify(mMainTabSwitcherDragHandler, atLeastOnce())
+                .setDragHandlerDelegate(delegateCaptor.capture());
+        TabSwitcherDragHandler.DragHandlerDelegate regDelegate = delegateCaptor.getValue();
+
+        regDelegate.handleDragStart(mainRecyclerView, 50f, -50f);
         assertEquals(0, mainRecyclerView.getMinimumHeight());
     }
 
@@ -3083,7 +3128,7 @@ public class VerticalTabListCoordinatorUnitTest {
         TabSwitcherDragHandler.DragHandlerDelegate activeDelegate = activeCaptor.getValue();
         assertNotSame(nonOriginatingDelegate, activeDelegate);
 
-        activeDelegate.handleExternalDragEnd(0f, 0f, false);
+        activeDelegate.handleExternalDragEnd(mCoordinator.getView(), 0f, 0f, false);
 
         ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> restoredCaptor =
                 ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
@@ -4360,12 +4405,24 @@ public class VerticalTabListCoordinatorUnitTest {
         return listener;
     }
 
+    private VerticalTabListItemTouchHelperCallback.OnDragOutListener getPinnedOnDragOutListener() {
+        VerticalTabListItemTouchHelperCallback callback =
+                mCoordinator.getPinnedTouchHelperCallbackForTesting();
+        assertNotNull("Pinned touch helper callback must not be null.", callback);
+        VerticalTabListItemTouchHelperCallback.OnDragOutListener listener =
+                callback.getOnDragOutListenerForTesting();
+        assertNotNull("Pinned OnDragOutListener must not be null.", listener);
+        return listener;
+    }
+
     /** Helper to construct a {@link SimpleRecyclerViewAdapter.ViewHolder} with model. */
     private SimpleRecyclerViewAdapter.ViewHolder createViewHolder(PropertyModel model) {
         View view = new View(mActivity);
-        view.setLayoutParams(new RecyclerView.LayoutParams(100, 100));
+        RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(100, 100);
+        view.setLayoutParams(lp);
         SimpleRecyclerViewAdapter.ViewHolder viewHolder =
                 new SimpleRecyclerViewAdapter.ViewHolder(view, /* binder= */ null);
+        ReflectionHelpers.setField(lp, "mViewHolder", viewHolder);
         viewHolder.model = model;
         return viewHolder;
     }
@@ -4517,7 +4574,7 @@ public class VerticalTabListCoordinatorUnitTest {
                 .setDragHandlerDelegate(delegateCaptor.capture());
         TabSwitcherDragHandler.DragHandlerDelegate delegate = delegateCaptor.getValue();
 
-        delegate.handleDragStart(0f, 0f);
+        delegate.handleDragStart(mCoordinator.getView(), 0f, 0f);
         verify(mTabModel).setIndex(1, TabSelectionType.FROM_DRAG);
     }
 
@@ -4540,7 +4597,7 @@ public class VerticalTabListCoordinatorUnitTest {
                 .setDragHandlerDelegate(delegateCaptor.capture());
         TabSwitcherDragHandler.DragHandlerDelegate delegate = delegateCaptor.getValue();
 
-        delegate.handleDragStart(0f, 0f);
+        delegate.handleDragStart(mCoordinator.getView(), 0f, 0f);
         // Deselect should not occur, so next tab (index 1) is never selected by deselect.
         verify(mTabModel, never()).setIndex(eq(1), anyInt());
     }
@@ -4552,6 +4609,7 @@ public class VerticalTabListCoordinatorUnitTest {
         setupMockTabModelWithTabs(List.of(tab1, tab2), 0);
 
         createCoordinator();
+        layOutLists(/* mainHeight= */ 300, /* pinnedHeight= */ 100);
         PropertyModel model = createTabPropertyModel();
         model.set(TabProperties.TAB_ID, TAB_ID_1);
         model.set(TabProperties.IS_PINNED, false);
@@ -4564,13 +4622,15 @@ public class VerticalTabListCoordinatorUnitTest {
                 .setDragHandlerDelegate(delegateCaptor.capture());
         TabSwitcherDragHandler.DragHandlerDelegate delegate = delegateCaptor.getValue();
 
-        delegate.handleDragStart(0f, 0f);
+        delegate.handleDragStart(mCoordinator.getView(), 50f, 150f);
+
+        delegate.handleDragLocation(mCoordinator.getView(), 50f, 50f);
         verify(mTabModel).setIndex(1, TabSelectionType.FROM_DRAG);
 
-        delegate.handleDragEnter();
+        delegate.handleDragLocation(mCoordinator.getView(), 50f, 150f);
         verify(mTabModel).setIndex(0, TabSelectionType.FROM_DRAG);
 
-        delegate.handleDragExit();
+        delegate.handleDragExit(mCoordinator.getView());
         verify(mTabModel, times(2)).setIndex(1, TabSelectionType.FROM_DRAG);
     }
 
@@ -4594,10 +4654,11 @@ public class VerticalTabListCoordinatorUnitTest {
         TabSwitcherDragHandler.DragHandlerDelegate delegate = delegateCaptor.getValue();
         assertFalse(delegate.isDragInProcess());
 
-        delegate.handleDragStart(0f, 0f);
+        delegate.handleDragStart(mCoordinator.getView(), 0f, 0f);
         verify(mTabModel).setIndex(1, TabSelectionType.FROM_DRAG);
 
-        delegate.handleExternalDragEnd(0f, 0f, /* isOSNewWindowDrop= */ false);
+        delegate.handleExternalDragEnd(
+                mCoordinator.getView(), 0f, 0f, /* isOSNewWindowDrop= */ false);
         verify(mTabModel).setIndex(0, TabSelectionType.FROM_DRAG);
     }
 
@@ -4620,10 +4681,11 @@ public class VerticalTabListCoordinatorUnitTest {
                 .setDragHandlerDelegate(delegateCaptor.capture());
         TabSwitcherDragHandler.DragHandlerDelegate delegate = delegateCaptor.getValue();
 
-        delegate.handleDragStart(0f, 0f);
+        delegate.handleDragStart(mCoordinator.getView(), 0f, 0f);
         verify(mTabModel).setIndex(1, TabSelectionType.FROM_DRAG);
 
-        delegate.handleExternalDragEnd(0f, 0f, /* isOSNewWindowDrop= */ true);
+        delegate.handleExternalDragEnd(
+                mCoordinator.getView(), 0f, 0f, /* isOSNewWindowDrop= */ true);
         verify(mTabModel, never()).setIndex(eq(0), anyInt());
     }
 
@@ -4638,6 +4700,7 @@ public class VerticalTabListCoordinatorUnitTest {
         when(mTabModel.getRepresentativeTabList()).thenReturn(List.of(tab1, tab3));
 
         createCoordinator();
+        layOutLists(/* mainHeight= */ 300, /* pinnedHeight= */ 100);
         PropertyModel model = createTabPropertyModel();
         model.set(TabProperties.TAB_GROUP_HEADER_ID, tabGroupId);
         model.set(TabProperties.IS_COLLAPSED, false);
@@ -4650,10 +4713,12 @@ public class VerticalTabListCoordinatorUnitTest {
                 .setDragHandlerDelegate(delegateCaptor.capture());
         TabSwitcherDragHandler.DragHandlerDelegate delegate = delegateCaptor.getValue();
 
-        delegate.handleDragStart(0f, 0f);
+        delegate.handleDragStart(mCoordinator.getView(), 50f, 150f);
+
+        delegate.handleDragLocation(mCoordinator.getView(), 50f, 50f);
         verify(mTabModel).setIndex(2, TabSelectionType.FROM_DRAG);
 
-        delegate.handleDragEnter();
+        delegate.handleDragLocation(mCoordinator.getView(), 50f, 150f);
         verify(mTabModel).setIndex(0, TabSelectionType.FROM_DRAG);
     }
 
@@ -4799,5 +4864,34 @@ public class VerticalTabListCoordinatorUnitTest {
         mCoordinator.destroy();
 
         assertNull(getOnDragListener(decorView));
+    }
+
+    private void layOutLists(int mainHeight, int pinnedHeight) {
+        VerticalTabDragUtils.setLocationProviderForTesting(
+                (view, out) -> {
+                    int x = 0;
+                    int y = 0;
+                    for (View v = view; v != null; ) {
+                        x += v.getLeft();
+                        y += v.getTop();
+                        Object parent = v.getParent();
+                        if (parent instanceof View) {
+                            v = (View) parent;
+                        } else {
+                            break;
+                        }
+                    }
+                    out[0] = x;
+                    out[1] = y;
+                });
+        View container = mCoordinator.getView();
+        TabListRecyclerView mainRecyclerView = container.findViewById(R.id.tab_list_recycler_view);
+        TabListRecyclerView pinnedRecyclerView =
+                container.findViewById(R.id.pinned_tabs_recycler_view);
+        int width = 100;
+        int containerHeight = pinnedHeight + mainHeight + 100;
+        container.layout(0, 0, width, containerHeight);
+        pinnedRecyclerView.layout(0, 0, width, pinnedHeight);
+        mainRecyclerView.layout(0, pinnedHeight, width, pinnedHeight + mainHeight);
     }
 }

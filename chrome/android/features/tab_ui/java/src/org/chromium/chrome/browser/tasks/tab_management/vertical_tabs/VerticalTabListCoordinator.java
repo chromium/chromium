@@ -1696,8 +1696,32 @@ public class VerticalTabListCoordinator {
         }
         final int selectedDraggedTabId = originallySelectedTabId;
 
+        // The list this drag did not come from. The region predicate is expressed relative to the
+        // origin, because what it selects is where this delegate's ItemTouchHelper2 is the
+        // authority on coordinates.
+        final RecyclerView otherRecyclerView =
+                recyclerView == mRecyclerView ? mPinnedTabsRecyclerView : mRecyclerView;
+        final boolean originIsMainList = recyclerView == mRecyclerView;
+
         return new DragHandlerDelegate() {
             private final float[] mTempCoords = new float[2];
+
+            private final VerticalTabDragRegionTracker mRegionTracker =
+                    new VerticalTabDragRegionTracker(
+                            this::onEnterOriginatingList, this::onExitOriginatingList);
+
+            /**
+             * Whether this drag session's start has already been handled. Every view registered
+             * with this handler receives its own ACTION_DRAG_STARTED, so without this the
+             * drag-start effects run once per registered view.
+             *
+             * <p>This is a per-session flag, not a test for "a drag is in progress": the drag token
+             * is set by startDrag() before ACTION_DRAG_STARTED is delivered, so any check against
+             * it would suppress every originating drag. It needs no explicit clearing, because a
+             * fresh delegate is created for each drag-out and discarded when the drag ends or fails
+             * to start.
+             */
+            private boolean mDragStartHandled;
 
             private void deselectDraggedTabIfNeeded() {
                 if (tabModel == null || selectedDraggedTabId == Tab.INVALID_TAB_ID) return;
@@ -1730,94 +1754,99 @@ public class VerticalTabListCoordinator {
                 }
             }
 
-            private float[] toRvCoordinates(View view, float x, float y) {
-                VerticalTabDragUtils.mapCoordinatesToView(view, x, y, recyclerView, mTempCoords);
-                return mTempCoords;
+            private boolean computeIsInsideOriginatingRegion(View view, float xPx, float yPx) {
+                if (recyclerView.getWidth() <= 0 || recyclerView.getHeight() <= 0) {
+                    VerticalTabDragUtils.mapCoordinatesToView(
+                            view, xPx, yPx, recyclerView, mTempCoords);
+                    return false;
+                }
+                boolean insideListBounds =
+                        VerticalTabDragUtils.mapCoordinatesAndCheckBounds(
+                                view, xPx, yPx, recyclerView, mTempCoords);
+                // Precondition: mRecyclerView and mPinnedTabsRecyclerView are spatially disjoint in
+                // layout. For a main-list drag, points within the outer rail container but not
+                // inside otherRecyclerView (rail margin, header, new-tab button) remain inside the
+                // region with coordinates clamped to [0, size - 1].
+                return insideListBounds
+                        || (originIsMainList
+                                && VerticalTabDragUtils.isPointInsideView(
+                                        view, xPx, yPx, mContainerView)
+                                && !VerticalTabDragUtils.isPointInsideView(
+                                        view, xPx, yPx, otherRecyclerView));
+            }
+
+            private float clampX(float x) {
+                return MathUtils.clamp(x, 0f, Math.max(0f, recyclerView.getWidth() - 1f));
+            }
+
+            private float clampY(float y) {
+                return MathUtils.clamp(y, 0f, Math.max(0f, recyclerView.getHeight() - 1f));
             }
 
             @Override
             public boolean handleDragStart(View view, float xPx, float yPx) {
-                float[] coords = toRvCoordinates(view, xPx, yPx);
-                return handleDragStart(coords[0], coords[1]);
-            }
+                if (mDragStartHandled) return true;
+                mDragStartHandled = true;
 
-            @Override
-            public boolean handleDragStart(float xPx, float yPx) {
+                boolean isInsideRegion = computeIsInsideOriginatingRegion(view, xPx, yPx);
+                mRegionTracker.onDragStarted(isInsideRegion);
+
                 mTabItemHoverController.resetHoverState();
-                itemTouchHelper.onExternalDragStart(xPx, yPx, /* hideItemWhileDragging= */ true);
-                deselectDraggedTabIfNeeded();
+                float startX = isInsideRegion ? clampX(mTempCoords[0]) : mTempCoords[0];
+                float startY = isInsideRegion ? clampY(mTempCoords[1]) : mTempCoords[1];
+                itemTouchHelper.onExternalDragStart(
+                        startX, startY, /* hideItemWhileDragging= */ true);
 
-                moveDraggedPinnedTabToEndIfNeeded(model);
-                // Keep a minimum height during external drag so a single-item list does not
-                // collapse to 0px.
-                updateSingleTabListMinHeight(model, /* useMinHeight= */ true);
-
-                // Since the OS-level drag-and-drop only initiates after the cursor has moved
-                // outside the bounds of the RecyclerView, we will never receive an
-                // ACTION_DRAG_EXITED event. Therefore, we must explicitly trigger the collapse of
-                // the drag gap right away.
-                touchHelperCallback.collapseDraggedItem(viewHolder);
+                if (isInsideRegion) {
+                    dragHandler.showDragShadow(recyclerView, false);
+                } else {
+                    onExitOriginatingList();
+                }
                 return true;
             }
 
             @Override
             public boolean handleDragLocation(View view, float xPx, float yPx) {
-                float[] coords = toRvCoordinates(view, xPx, yPx);
-                return handleDragLocation(coords[0], coords[1]);
-            }
+                boolean isInsideRegion = computeIsInsideOriginatingRegion(view, xPx, yPx);
+                mRegionTracker.onLocation(isInsideRegion);
 
-            @Override
-            public boolean handleDragLocation(float xPx, float yPx) {
-                itemTouchHelper.onExternalDragLocation(xPx, yPx);
+                if (isInsideRegion) {
+                    itemTouchHelper.onExternalDragLocation(
+                            clampX(mTempCoords[0]), clampY(mTempCoords[1]));
+                }
                 return true;
             }
 
-            @Override
-            public boolean handleDragEnter(View view) {
-                if (view != recyclerView) {
-                    return true;
-                }
-                return handleDragEnter();
-            }
-
-            @Override
-            public boolean handleDragEnter() {
+            private void onEnterOriginatingList() {
                 dragHandler.showDragShadow(recyclerView, false);
                 reselectDraggedTabIfNeeded();
                 updateSingleTabListMinHeight(model, /* useMinHeight= */ false);
                 touchHelperCallback.restoreDraggedItem(/* isOSNewWindowDrop= */ false);
-                return true;
             }
 
-            @Override
-            public boolean handleDragExit(View view) {
-                if (view != recyclerView) {
-                    return true;
-                }
-                return handleDragExit();
-            }
-
-            @Override
-            public boolean handleDragExit() {
+            private void onExitOriginatingList() {
                 dragHandler.showDragShadow(recyclerView, true);
                 deselectDraggedTabIfNeeded();
                 moveDraggedPinnedTabToEndIfNeeded(model);
                 // Keep a minimum height during external drag so a single-item list does not
                 // collapse to 0px.
                 updateSingleTabListMinHeight(model, /* useMinHeight= */ true);
-                touchHelperCallback.collapseDraggedItem(null);
+                touchHelperCallback.collapseDraggedItem(viewHolder);
+            }
+
+            @Override
+            public boolean handleDragExit(View view) {
+                // Unlike ACTION_DRAG_ENTERED, this edge cannot be recovered from a later
+                // ACTION_DRAG_LOCATION: when the pointer leaves the window there is no later
+                // location. It is taken on faith and forces the outside state.
+                mRegionTracker.onExitedContainer();
                 return true;
             }
 
             @Override
             public boolean handleExternalDragEnd(
                     View view, float xPx, float yPx, boolean isOSNewWindowDrop) {
-                float[] coords = toRvCoordinates(view, xPx, yPx);
-                return handleExternalDragEnd(coords[0], coords[1], isOSNewWindowDrop);
-            }
-
-            @Override
-            public boolean handleExternalDragEnd(float xPx, float yPx, boolean isOSNewWindowDrop) {
+                mRegionTracker.onDragEnded();
                 if (!isOSNewWindowDrop) {
                     reselectDraggedTabIfNeeded();
                 }
@@ -1830,12 +1859,6 @@ public class VerticalTabListCoordinator {
 
                 dragHandler.setDragHandlerDelegate(nonOriginatingDelegate);
                 return true;
-            }
-
-            @Override
-            public boolean handleDrop(View view, float xPx, float yPx) {
-                float[] coords = toRvCoordinates(view, xPx, yPx);
-                return handleDrop(coords[0], coords[1]);
             }
         };
     }
@@ -2399,6 +2422,11 @@ public class VerticalTabListCoordinator {
     /** Returns the main touch helper callback for testing. */
     @Nullable VerticalTabListItemTouchHelperCallback getMainTouchHelperCallbackForTesting() {
         return mMainTouchHelperCallback;
+    }
+
+    /** Returns the pinned touch helper callback for testing. */
+    @Nullable VerticalTabListItemTouchHelperCallback getPinnedTouchHelperCallbackForTesting() {
+        return mTouchHelperCallbacks.size() > 1 ? mTouchHelperCallbacks.get(1) : null;
     }
 
     /** Returns the active tab switcher drag handlers for testing. */
