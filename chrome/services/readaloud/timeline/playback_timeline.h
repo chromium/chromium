@@ -48,6 +48,9 @@ class PlaybackTimeline {
 
   // Resolves a 0-based chunk index (from highlighter.js) and character offset
   // within that chunk into a complete TimelinePosition in O(1) time.
+  // `time.start_time` is the 1.0x time at `character_offset`: the start time of
+  // the first word kept after `character_offset` when word timings are present,
+  // or the character-estimated offset from the chunk start otherwise.
   // Returns std::nullopt if `segment_index` is out of bounds or
   // `character_offset` exceeds the chunk length.
   // TODO(b/565884306): Unify 'sentence'/'segment' naming to 'chunk' in a
@@ -85,6 +88,10 @@ class PlaybackTimeline {
   uint32_t ResolveCharOffsetInChunk(size_t chunk_index,
                                     base::TimeDelta offset_in_chunk,
                                     base::TimeDelta chunk_duration) const;
+  base::TimeDelta ResolveTimeInChunkForCharOffset(
+      size_t chunk_index,
+      uint32_t char_offset_in_chunk,
+      base::TimeDelta chunk_duration) const;
 
   bool is_initialized_ = false;
   std::u16string document_text_;

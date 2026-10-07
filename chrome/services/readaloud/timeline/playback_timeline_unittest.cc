@@ -192,9 +192,73 @@ TEST_F(PlaybackTimelineTest, ResolveSegmentOffsetMidSentence) {
   EXPECT_EQ(pos->global_char.start_offset, 23u);
   EXPECT_EQ(pos->global_char.end_offset, 32u);
   EXPECT_EQ(pos->time.start_time,
-            15 * PlaybackTimeline::kEstimatedDurationPerChar);
+            (15 + 7) * PlaybackTimeline::kEstimatedDurationPerChar);
   EXPECT_EQ(pos->time.end_time,
             31 * PlaybackTimeline::kEstimatedDurationPerChar);
+}
+
+TEST_F(PlaybackTimelineTest,
+       ResolveSegmentOffsetMidSentenceUsesSynthesizedWordTimings) {
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  // Chunk 0: "First." (6 chars, [0, 6)).
+  // Chunk 1: "Hello world again." (18 chars, global start 7).
+  //   "Hello" [7, 12), "world" [13, 18), "again" [19, 24).
+  segments.push_back(MakeSegment(0, u"First. Hello world again."));
+
+  timeline_.SetTextContent(segments);
+
+  std::vector<WordTiming> timings = {
+      {.start_time = base::Milliseconds(0),
+       .end_time = base::Milliseconds(700),
+       .start_character_offset = 7u,
+       .end_character_offset = 12u},
+      {.start_time = base::Milliseconds(700),
+       .end_time = base::Milliseconds(1100),
+       .start_character_offset = 13u,
+       .end_character_offset = 18u},
+      {.start_time = base::Milliseconds(1100),
+       .end_time = base::Milliseconds(1800),
+       .start_character_offset = 19u,
+       .end_character_offset = 24u},
+  };
+  timeline_.UpdateSentenceDuration(/*sentence_index=*/1,
+                                   base::Milliseconds(1800), timings);
+
+  const base::TimeDelta chunk1_start =
+      6 * PlaybackTimeline::kEstimatedDurationPerChar;
+
+  // Offset 6 in chunk 1 ("world", global offset 13): "Hello" [7, 12) ends
+  // before 13 and is skipped by the sequencer, so audio starts at "world"
+  // (700 ms into chunk 1).
+  std::optional<TimelinePosition> pos_world = timeline_.ResolveSegmentOffset(
+      /*segment_index=*/1, /*character_offset=*/6);
+  ASSERT_TRUE(pos_world.has_value());
+  EXPECT_EQ(pos_world->time.start_time, chunk1_start + base::Milliseconds(700));
+  EXPECT_EQ(pos_world->time.end_time, chunk1_start + base::Milliseconds(1800));
+
+  // Offset 17 in chunk 1 (trailing "." after the last word "again" [19, 24),
+  // global offset 24): every word in chunk 1 is skipped, so `start_time`
+  // reaches the end of chunk 1.
+  std::optional<TimelinePosition> pos_trailing = timeline_.ResolveSegmentOffset(
+      /*segment_index=*/1, /*character_offset=*/17);
+  ASSERT_TRUE(pos_trailing.has_value());
+  EXPECT_EQ(pos_trailing->time.start_time,
+            chunk1_start + base::Milliseconds(1800));
+}
+
+TEST_F(PlaybackTimelineTest, ResolveSegmentOffsetAtChunkEndEqualsChunkEndTime) {
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  segments.push_back(MakeSegment(0, u"First sentence. Second sentence."));
+
+  timeline_.SetTextContent(segments);
+
+  std::optional<TimelinePosition> pos = timeline_.ResolveSegmentOffset(
+      /*segment_index=*/0, /*character_offset=*/15);
+  ASSERT_TRUE(pos.has_value());
+  EXPECT_EQ(pos->time.start_time,
+            15 * PlaybackTimeline::kEstimatedDurationPerChar);
+  EXPECT_EQ(pos->time.end_time,
+            15 * PlaybackTimeline::kEstimatedDurationPerChar);
 }
 
 TEST_F(PlaybackTimelineTest, ResolveSegmentOffsetAcrossSegments) {

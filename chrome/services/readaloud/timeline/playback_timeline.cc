@@ -226,6 +226,44 @@ uint32_t PlaybackTimeline::ResolveCharOffsetInChunk(
   return static_cast<uint32_t>(SnapToWordStart(chunk.text, raw_char_offset));
 }
 
+base::TimeDelta PlaybackTimeline::ResolveTimeInChunkForCharOffset(
+    size_t chunk_index,
+    uint32_t char_offset_in_chunk,
+    base::TimeDelta chunk_duration) const {
+  DCHECK_LT(chunk_index, chunks_.size());
+  const TextChunk& chunk = chunks_[chunk_index];
+  if (char_offset_in_chunk == 0 || chunk.text.empty() ||
+      chunk_duration <= base::TimeDelta()) {
+    return base::TimeDelta();
+  }
+  if (char_offset_in_chunk >= chunk.text.size()) {
+    return chunk_duration;
+  }
+
+  // 1. When synthesized WordTimings are present, `ReadAloudDecoderSequencer`
+  // drops words that end at or before `min_global_char_offset` (while keeping a
+  // zero-length word anchored at `min_global_char_offset`). Return the start
+  // time of the first word that is kept, so `time.start_time` matches the audio
+  // that will actually play.
+  const std::vector<WordTiming>& timings = sentence_word_timings_[chunk_index];
+  if (!timings.empty()) {
+    const size_t min_global_offset =
+        chunk.start_code_unit_offset + char_offset_in_chunk;
+    for (const WordTiming& word : timings) {
+      if (word.end_character_offset <= min_global_offset &&
+          word.start_character_offset < min_global_offset) {
+        continue;
+      }
+      return std::clamp(word.start_time, base::TimeDelta(), chunk_duration);
+    }
+    return chunk_duration;
+  }
+
+  // 2. Fallback for unsynthesized chunks: interpolate proportionally across the
+  // chunk's estimated duration.
+  return (chunk_duration * char_offset_in_chunk) / chunk.text.size();
+}
+
 std::optional<TimelinePosition> PlaybackTimeline::ResolveSegmentOffset(
     uint32_t segment_index,
     uint32_t character_offset) const {
@@ -241,16 +279,18 @@ std::optional<TimelinePosition> PlaybackTimeline::ResolveSegmentOffset(
     return std::nullopt;
   }
 
-  base::TimeDelta accumulated_time =
+  base::TimeDelta chunk_start_time =
       static_est_start_times_1_0x_[segment_index];
   for (size_t i = 0; i < segment_index; ++i) {
-    accumulated_time += deviations_1_0x_[i];
+    chunk_start_time += deviations_1_0x_[i];
   }
-  base::TimeDelta chunk_end_time =
-      accumulated_time + GetChunkDuration(segment_index);
+  base::TimeDelta chunk_duration = GetChunkDuration(segment_index);
+  base::TimeDelta offset_in_chunk = ResolveTimeInChunkForCharOffset(
+      segment_index, character_offset, chunk_duration);
+  base::TimeDelta chunk_end_time = chunk_start_time + chunk_duration;
 
   return TimelinePosition(segment_index, chunk, character_offset,
-                          accumulated_time, chunk_end_time);
+                          chunk_start_time + offset_in_chunk, chunk_end_time);
 }
 
 std::optional<TimelinePosition> PlaybackTimeline::ResolveTimeOffset(
