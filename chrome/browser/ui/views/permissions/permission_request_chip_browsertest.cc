@@ -72,6 +72,18 @@ LocationBar* GetLocationBar(BrowserWindowInterface* browser) {
   return BrowserView::GetBrowserViewForBrowser(browser)->GetLocationBar();
 }
 
+// A `WebUIPermissionChip` resolves the prompt bubble's anchor asynchronously,
+// once the WebUI has registered the chip element over Mojo. Waits for it so
+// that any pending prompt bubble exists by the time this returns. With the
+// Views location bar the anchor resolves synchronously, so this returns
+// immediately. Returns false if the anchor did not resolve before timing out;
+// callers should wrap this in `ASSERT_TRUE` to abort the test in that case.
+[[nodiscard]] bool WaitForBubbleAnchor(LocationBar* lb) {
+  return base::test::RunUntil([lb] {
+    return !lb->GetChipController()->is_waiting_for_anchor_for_testing();
+  });
+}
+
 }  // namespace
 
 class PermissionRequestChipGestureSensitiveBrowserTest
@@ -82,6 +94,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
   RequestPermission(browser());
   LocationBar* lb = GetLocationBar(browser());
   lb->GetChipController()->chip()->EndAnimationForTesting();
+  ASSERT_TRUE(WaitForBubbleAnchor(lb));
 
   // After animation ended, the chip is expanded and the bubble is shown because
   // the gesture sensitive request feature is enabled.
@@ -308,6 +321,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureInsensitiveBrowserTest,
   RequestPermission(browser());
   LocationBar* lb = GetLocationBar(browser());
   lb->GetChipController()->chip()->EndAnimationForTesting();
+  ASSERT_TRUE(WaitForBubbleAnchor(lb));
 
   // After animation ended, the chip is expanded and a bubble is shown.
   EXPECT_TRUE(lb->GetChipController()->IsPermissionPromptChipVisible());
@@ -390,6 +404,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipBrowserUiTest,
                        TestDisabledAnimation) {
   RequestPermission(browser());
   LocationBar* lb = GetLocationBar(browser());
+  ASSERT_TRUE(WaitForBubbleAnchor(lb));
 
   // The chip is expanded and a bubble is shown.
   EXPECT_TRUE(lb->GetChipController()->IsPermissionPromptChipVisible());
