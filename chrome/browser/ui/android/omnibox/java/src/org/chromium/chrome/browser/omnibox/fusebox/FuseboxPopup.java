@@ -164,6 +164,7 @@ class FuseboxPopup {
                     topPadding,
                     mViewGroup.getPaddingEnd(),
                     mViewGroup.getPaddingBottom());
+            contentView.findViewById(R.id.fusebox_drag_handle).setVisibility(View.VISIBLE);
         } else {
             // Row highlights span the full width, so keep them inside the rounded corners.
             ListMenuUtils.clipContentViewOutline(mScrollView, R.attr.popupBgCornerRadius);

@@ -522,6 +522,30 @@ public class FuseboxPopupUnitTest {
                 mFuseboxPopup.mViewGroup.getPaddingTop());
     }
 
+    @Test
+    public void bottomSheet_showsDragHandle() {
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ true,
+                /* useCarousel= */ true,
+                /* useScrollableCarousel= */ false,
+                CurrentTabPlacement.WITH_ATTACHMENTS);
+        assertEquals(View.VISIBLE, getDragHandleVisibility());
+    }
+
+    @Test
+    public void popover_hidesDragHandle() {
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ false,
+                /* useCarousel= */ false,
+                /* useScrollableCarousel= */ false,
+                CurrentTabPlacement.WITH_ATTACHMENTS);
+        assertEquals(View.GONE, getDragHandleVisibility());
+    }
+
+    private int getDragHandleVisibility() {
+        return mFuseboxPopup.mViewGroup.findViewById(R.id.fusebox_drag_handle).getVisibility();
+    }
+
     private int getTileHeight(View button) {
         return button.findViewById(R.id.start_icon_background).getLayoutParams().height;
     }
