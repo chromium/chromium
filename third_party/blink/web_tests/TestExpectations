@@ -2118,14 +2118,6 @@ crbug.com/626703 external/wpt/webdriver/tests/bidi/input/set_files/invalid.py [ 
 crbug.com/1316344 virtual/threaded/external/wpt/requestidlecallback/deadline-max-timeout-dynamic.html [ Failure ]
 crbug.com/1329296 virtual/threaded/external/wpt/requestidlecallback/deadline-max-rAF-dynamic.html [ Failure Pass ]
 
-# AudioWorklet GC test is flaky.
-crbug.com/40268415 [ Mac13 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Failure Pass ]
-crbug.com/40268415 [ Debug Mac13-arm64 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Failure Pass ]
-crbug.com/40268415 [ Mac14-arm64 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Failure Pass ]
-crbug.com/40268415 [ Debug Win11-arm64 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Failure Pass ]
-crbug.com/40268415 [ Mac13-arm64 Release ] webaudio/internals/audioworkletprocessor-gc.https.html [ Failure Pass ]
-crbug.com/40268415 [ Release Win11-arm64 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Failure Pass ]
-
 # Test Expectations for Chrome Android/WebView
 # Incompatible with both Chrome Android and Webview
 # SharedWorker interface
@@ -5921,7 +5913,6 @@ crbug.com/1406896 [ Debug Linux ] http/tests/inspector-protocol/cpu-profiler/rec
 crbug.com/1422340 [ Win ] virtual/media-foundation-for-clear-dcomp/media/video-move-to-document-pip.html [ Failure ]
 crbug.com/1434123 media/video-source-type.html [ Failure Pass Timeout ]
 crbug.com/1434123 media/video-source-type-params.html [ Failure Pass ]
-crbug.com/1445674 [ Linux ] webaudio/internals/audioworkletprocessor-gc.https.html [ Failure Pass ]
 crbug.com/1407279 [ Win ] external/wpt/fullscreen/api/element-request-fullscreen-cross-origin.sub.html [ Failure ]
 crbug.com/1407279 [ Mac ] external/wpt/fullscreen/api/element-request-fullscreen-cross-origin.sub.html [ Failure ]
 crbug.com/1407279 [ Linux ] external/wpt/fullscreen/api/element-request-fullscreen-cross-origin.sub.html [ Failure ]
@@ -6964,7 +6955,6 @@ crbug.com/432218257 [ Mac14 ] jquery/event.html [ Failure Skip Timeout ]
 [ Mac14 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-entry.html [ Failure ]
 [ Mac14 ] webaudio/AudioParam/worklet-warnings.html [ Failure ]
 [ Mac14 ] webaudio/AudioWorkletProcessor/invalid-audioworkletprocessor-constructor.html [ Failure ]
-[ Mac14 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Failure ]
 [ Mac14-arm64 ] compositing/draws-content/webgl-simple-background.html [ Failure ]
 [ Mac14-arm64 ] compositing/webgl/webgl-with-accelerated-background-color.html [ Timeout ]
 [ Mac14-arm64 ] external/wpt/css/css-content/quotes-020.html [ Failure ]
@@ -8771,9 +8761,6 @@ crbug.com/501845333 [ Linux ] virtual/scalefactor200/external/wpt/css/filter-eff
 # Gardener 2026-04-20
 crbug.com/40318224 http/tests/perf/large-inlined-script.html [ Timeout ]
 
-# Gardener 2026-04-23
-crbug.com/504695891 [ Mac15 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Failure Pass ]
-
 
 # Gardener 2026-05-05
 crbug.com/466779939 [ Debug Linux ] http/tests/inspector-protocol/tracing/user-marks.js [ Failure Pass ]
@@ -8820,12 +8807,10 @@ crbug.com/523199907 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context
 
 # Gardener 2026-06-15
 crbug.com/523408974 [ Mac15-arm64 ] inspector-protocol/layout-fonts/lang-fallback.js [ Failure Pass ]
-crbug.com/40268242 [ Mac15-arm64 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Failure Pass ]
 crbug.com/523258432 [ Win11 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/add.https.any.html?cpu [ Failure Pass ]
 
 # Gardener 2026-06-16
 crbug.com/523408974 [ Mac26-arm64 ] inspector-protocol/layout-fonts/lang-fallback.js [ Failure Pass ]
-crbug.com/40268242 [ Mac26-arm64 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Failure Pass ]
 crbug.com/524577269 [ Mac26 ] fast/forms/datetimelocal/datetimelocal-appearance-l10n.html [ Failure Pass ]
 crbug.com/524577269 [ Mac26 ] fast/forms/placeholder-position.html [ Failure Pass ]
 crbug.com/524577269 [ Mac26 ] fast/ruby/ruby-position-modern-japanese-fonts.html [ Failure Pass ]

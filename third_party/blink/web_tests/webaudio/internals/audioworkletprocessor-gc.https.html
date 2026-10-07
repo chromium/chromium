@@ -70,6 +70,11 @@ promise_test(async (t) => {
   assert_equals(internals.audioWorkletProcessorCount(), 1,
                 'the worklet processor after gc count should be 1.');
 
+  // Perform GC again and close the context to force the deferred task
+  // handler to clean up orphaned AudioHandlers.
+  await asyncGC();
+  await context.close();
+
   assert_equals(internals.audioHandlerCount(), 2,
                 'the handler count after gc should be 2.');
 }, 'Test GC of AudioWorkletProcessor');
