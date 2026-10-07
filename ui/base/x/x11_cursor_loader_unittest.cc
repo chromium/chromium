@@ -149,10 +149,10 @@ TEST(XCursorLoaderTest, BestSize) {
       // delay
       0,
       // chunk data (ARGB image)
-      0xffffffff,
-      0xffffffff,
-      0xffffffff,
-      0xffffffff,
+      0xff112233,
+      0xff445566,
+      0xff778899,
+      0xffaabbcc,
 
       // bytes in header
       16,
@@ -185,8 +185,12 @@ TEST(XCursorLoaderTest, BestSize) {
   };
   auto images = ParseFile(file, 2);
   ASSERT_EQ(images.size(), 1ul);
-  EXPECT_EQ(images[0].bitmap.width(), 2);
-  EXPECT_EQ(images[0].bitmap.height(), 2);
+  ASSERT_EQ(images[0].bitmap.width(), 2);
+  ASSERT_EQ(images[0].bitmap.height(), 2);
+  EXPECT_EQ(images[0].bitmap.getColor(0, 0), 0xff112233);
+  EXPECT_EQ(images[0].bitmap.getColor(1, 0), 0xff445566);
+  EXPECT_EQ(images[0].bitmap.getColor(0, 1), 0xff778899);
+  EXPECT_EQ(images[0].bitmap.getColor(1, 1), 0xffaabbcc);
 }
 
 TEST(XCursorLoaderTest, Animated) {
