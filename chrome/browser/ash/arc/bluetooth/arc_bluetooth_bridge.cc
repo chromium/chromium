@@ -33,9 +33,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/bluetooth/arc_bluez_bridge.h"
 #include "chrome/browser/ash/arc/bluetooth/arc_floss_bridge.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/bluetooth/bluetooth_pairing_dialog.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/bluetooth/bluetooth_type_converters.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
@@ -45,6 +43,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_gatt_connection.h"
@@ -2845,12 +2845,13 @@ void ArcBluetoothBridge::SetPrimaryUserBluetoothPowerSetting(
   const auto* primary_session =
       session_manager::SessionManager::Get()->GetPrimarySession();
   CHECK(primary_session, base::NotFatalUntil::M160);
-  Profile* profile = Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-          primary_session->account_id()));
-  CHECK(profile, base::NotFatalUntil::M160);
-  profile->GetPrefs()->SetBoolean(ash::prefs::kUserBluetoothAdapterEnabled,
-                                  enabled);
+  user_manager::User* const user =
+      user_manager::UserManager::Get()->FindUserAndModify(
+          primary_session->account_id());
+  CHECK(user, base::NotFatalUntil::M160);
+  PrefService* const prefs = user->GetProfilePrefs();
+  CHECK(prefs, base::NotFatalUntil::M160);
+  prefs->SetBoolean(ash::prefs::kUserBluetoothAdapterEnabled, enabled);
 }
 
 ArcBluetoothBridge::GattConnection::GattConnection(
