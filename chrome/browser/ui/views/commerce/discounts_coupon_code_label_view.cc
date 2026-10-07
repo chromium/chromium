@@ -16,6 +16,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
@@ -37,6 +38,10 @@ DiscountsCouponCodeLabelView::DiscountsCouponCodeLabelView(
       copy_button_clicked_callback_(std::move(copy_button_clicked_callback)) {
   SetInteriorMargin(gfx::Insets::TLBR(kInteriorMarginPx, kInteriorMarginPx,
                                       kInteriorMarginPx, kInteriorMarginPx));
+  SetBackground(views::CreateRoundedRectBackground(
+      ui::kColorSysNeutralContainer,
+      ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+          views::Emphasis::kHigh)));
 
   // TODO(crbug.com/40227597): Remove the view wrappers when the bug is
   // resolved.
@@ -82,16 +87,6 @@ void DiscountsCouponCodeLabelView::UpdateCopyButtonTooltipsAndAccessibleNames(
   copy_button_->SetTooltipText(tooltip);
   copy_button_->GetViewAccessibility().SetName(
       base::StrCat({copy_button_->GetText(), u" ", tooltip}));
-}
-
-void DiscountsCouponCodeLabelView::OnThemeChanged() {
-  views::FlexLayoutView::OnThemeChanged();
-
-  const auto* const color_provider = GetColorProvider();
-  SetBackground(views::CreateRoundedRectBackground(
-      color_provider->GetColor(ui::kColorSysNeutralContainer),
-      ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-          views::Emphasis::kHigh)));
 }
 
 gfx::Size DiscountsCouponCodeLabelView::CalculatePreferredSize(

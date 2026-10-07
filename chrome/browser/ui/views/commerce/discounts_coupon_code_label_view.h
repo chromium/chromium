@@ -25,8 +25,6 @@ class DiscountsCouponCodeLabelView : public views::FlexLayoutView {
 
   void UpdateCopyButtonTooltipsAndAccessibleNames(std::u16string tooltip);
 
-  // views::View
-  void OnThemeChanged() override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 
