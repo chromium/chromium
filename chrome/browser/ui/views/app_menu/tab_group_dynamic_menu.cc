@@ -233,6 +233,9 @@ void TabGroupDynamicMenu::BuildTabGroupCommands(
                                                   : kZoomInMapOldIcon))
             .SetProperty(AppMenuActionItem::kDisplayTypeKey,
                          AppMenuActionItem::DisplayType::kRow)
+            .SetProperty(
+                views::kElementIdentifierKey,
+                tab_groups::STGTabsMenuModel::kToggleGroupFocusStateMenuItem)
             .Build();
 
     focus_item->SetProperty(kSavedTabGroupGuidKey,

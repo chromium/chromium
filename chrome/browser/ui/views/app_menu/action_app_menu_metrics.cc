@@ -257,6 +257,7 @@ void ActionAppMenuMetrics::LogMenuActionWithId(actions::ActionId action_id) {
     case kActionShowChromeLabs:
       RecordAction(MENU_ACTION_SHOW_CHROME_LABS, "ShowChromeLabs");
       break;
+    case kActionSidePanelShowHistory:
     case kActionSidePanelShowHistoryCluster:
       RecordAction(MENU_ACTION_SHOW_HISTORY_CLUSTER_SIDE_PANEL,
                    "ShowHistoryClustersSidePanel");

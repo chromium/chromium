@@ -735,6 +735,11 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
     menu_item->SetTitle(*text_override);
   }
 
+  if (!action_item->GetAccessibleName().empty()) {
+    menu_item->GetViewAccessibility().SetName(
+        std::u16string(action_item->GetAccessibleName()));
+  }
+
   if (std::u16string* secondary_text =
           child_base->GetProperty(AppMenuActionItem::kSecondaryTextKey)) {
     menu_item->SetSecondaryTitle(*secondary_text);

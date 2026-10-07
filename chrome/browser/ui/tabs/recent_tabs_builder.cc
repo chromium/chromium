@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/side_panel/history/history_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/history/core/common/pref_names.h"
@@ -365,7 +366,8 @@ std::vector<RecentTabItem> RecentTabsBuilder::BuildHistoryEntries(
   items.push_back(std::move(history));
 
   if (SidePanelUI::From(browser)) {
-    if (HistoryClustersSidePanelCoordinator::IsSupported(profile)) {
+    if (HistoryClustersSidePanelCoordinator::IsSupported(profile) &&
+        !HistorySidePanelCoordinator::IsSupported()) {
       RecentTabItem clusters(
           RecentTabItem::Type::kCommand,
           l10n_util::GetStringUTF16(IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL));
@@ -376,6 +378,17 @@ std::vector<RecentTabItem> RecentTabsBuilder::BuildHistoryEntries(
               : vector_icons::kHistoryChromeRefreshOldIcon,
           ui::kColorMenuIcon, gfx::kFaviconSize));
       items.push_back(std::move(clusters));
+    } else if (HistorySidePanelCoordinator::IsSupported()) {
+      RecentTabItem history_side_panel(
+          RecentTabItem::Type::kCommand,
+          l10n_util::GetStringUTF16(IDS_HISTORY_SHOW_SIDE_PANEL));
+      history_side_panel.set_action_id(kActionSidePanelShowHistory);
+      history_side_panel.set_icon(ui::ImageModel::FromVectorIcon(
+          features::IsRoundedIconsEnabled()
+              ? vector_icons::kHistoryIcon
+              : vector_icons::kHistoryChromeRefreshOldIcon,
+          ui::kColorMenuIcon, gfx::kFaviconSize));
+      items.push_back(std::move(history_side_panel));
     }
   }
 

@@ -11,10 +11,13 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/command_updater_delegate.h"
 #include "chrome/browser/command_updater_impl.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_attributes_storage_observer.h"
 #include "chrome/browser/ttc/core/states.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -48,7 +51,8 @@ namespace chrome {
 class BrowserCommandController : public CommandUpdater,
                                  public CommandUpdaterDelegate,
                                  public TabStripModelObserver,
-                                 public sessions::TabRestoreServiceObserver {
+                                 public sessions::TabRestoreServiceObserver,
+                                 public ProfileAttributesStorageObserver {
  public:
   DECLARE_USER_DATA(BrowserCommandController);
 
@@ -161,6 +165,13 @@ class BrowserCommandController : public CommandUpdater,
       sessions::TabRestoreService* service) override;
   void TabRestoreServiceLoaded(sessions::TabRestoreService* service) override;
 
+  // Overridden from ProfileAttributesStorageObserver:
+  void OnProfileAdded(const base::FilePath& profile_path) override;
+  void OnProfileNameChanged(const base::FilePath& profile_path,
+                            const std::u16string& old_profile_name) override;
+  void OnProfileAiSubscriptionTierUpdated(const base::FilePath& profile_path,
+                                          int tier) override;
+
   // Returns true if the regular Chrome UI (not the fullscreen one and
   // not the single-tab one) is shown. Used for updating window command states
   // only. Consider using SupportsWindowFeature if you need the mentioned
@@ -270,6 +281,9 @@ class BrowserCommandController : public CommandUpdater,
   // Updates commands and actions for profiling.
   void UpdateCommandsForProfiling();
 
+  // Updates commands and actions for the profile menu.
+  void UpdateCommandsForProfile();
+
   void UpdateCommandAndActionEnabled(int command_id,
                                      actions::ActionId action_id,
                                      bool enabled);
@@ -318,6 +332,10 @@ class BrowserCommandController : public CommandUpdater,
   // Observes for extension state changes (load/unload).
   class ExtensionStateObserver;
   std::unique_ptr<ExtensionStateObserver> extension_state_observer_;
+
+  base::ScopedObservation<ProfileAttributesStorage,
+                          ProfileAttributesStorageObserver>
+      profile_attributes_observation_{this};
 
   ui::ScopedUnownedUserData<BrowserCommandController> scoped_unowned_user_data_;
 

@@ -197,6 +197,7 @@ void ActionAppMenuTestBase::SetUp() {
   add_action(kActionRecentTabsSeeDeviceTabs, u"See Device Tabs");
   add_action(kActionRecentTabsLoginForDeviceTabs, u"Login for Device Tabs");
   add_action(kActionSidePanelShowHistoryCluster, u"History Clusters");
+  add_action(kActionSidePanelShowHistory, u"History");
   add_action(kActionOptions, u"Settings");
   add_action(kActionHelpSubmenu, u"Help");
   add_action(kActionAbout, u"About");

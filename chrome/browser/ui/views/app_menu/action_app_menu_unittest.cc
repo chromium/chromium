@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safe_browsing_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
+#include "chrome/browser/ui/side_panel/mock_side_panel_ui.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -3465,6 +3466,35 @@ TEST_F(ActionAppMenuTest, AppMenuSearchQueryShortQueryShowsNormalMenu) {
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
   EXPECT_FALSE(menu.IsShowing());
+}
+
+TEST_F(ActionAppMenuTest, RecentTabsByDateHistoryInSidePanel) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kByDateHistoryInSidePanel);
+
+  testing::NiceMock<MockSidePanelUI> mock_side_panel_ui(
+      mock_window_interface_.GetUnownedUserDataHost());
+
+  RecentTabsDynamicMenu dynamic_menu(&mock_window_interface_);
+  auto parent = actions::ActionItem::Builder().Build();
+  dynamic_menu.BuildRecentTabsActions(parent.get());
+
+  const auto& children = parent->GetChildren().children();
+  ASSERT_GE(children.size(), 2u);
+  EXPECT_EQ(children[0]->GetActionItem()->GetActionId(), kActionShowHistory);
+  EXPECT_EQ(children[1]->GetActionItem()->GetActionId(),
+            kActionSidePanelShowHistory);
+  EXPECT_EQ(children[1]->GetActionItem()->GetText(),
+            l10n_util::GetStringUTF16(IDS_HISTORY_SHOW_SIDE_PANEL));
+
+  base::HistogramTester histogram_tester;
+  ActionAppMenuMetrics metrics;
+  metrics.OnMenuOpened();
+  metrics.LogMenuAction(children[1].get());
+  histogram_tester.ExpectBucketCount(
+      "WrenchMenu.MenuAction", MENU_ACTION_SHOW_HISTORY_CLUSTER_SIDE_PANEL, 1);
+  histogram_tester.ExpectTotalCount(
+      "WrenchMenu.TimeToAction.ShowHistoryClustersSidePanel", 1);
 }
 
 }  // namespace
