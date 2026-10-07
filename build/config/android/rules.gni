@@ -3345,11 +3345,7 @@ if (!is_robolectric && enable_java_templates) {
 
       # TODO(smaier) - there were some remaining usages of this in angle. Once
       # they are removed, remove this line.
-      not_needed(invoker,
-                 [
-                   "generate_final_jni",
-                   "never_incremental",
-                 ])
+      not_needed(invoker, [ "generate_final_jni" ])
     }
   }
 
@@ -3500,7 +3496,6 @@ if (!is_robolectric && enable_java_templates) {
   #     apk_under_test: ":bar"
   #   }
   template("instrumentation_test_runner") {
-    not_needed(invoker, [ "never_incremental" ])
     if (use_rts) {
       action("${invoker.target_name}__rts_filters") {
         script = "//build/add_rts_filters.py"
