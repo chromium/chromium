@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/external_protocol/features.h"
+#include "chrome/browser/platform_util_internal.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -29,6 +30,11 @@
 
 class ExternalProtocolHandlerBrowserTest : public InProcessBrowserTest {
  public:
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    platform_util::internal::DisableShellOperationsForTesting();
+  }
+
   content::WebContents* web_content() {
     return browser()->GetTabStripModel()->GetActiveWebContents();
   }

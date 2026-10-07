@@ -26,6 +26,7 @@ include_rules = [
 specific_include_rules = {
   ".*(test|test_utils)\\.cc": [
     "+chrome/browser/browser_features.h",
+    "+chrome/browser/platform_util_internal.h",
     "+chrome/browser/policy/policy_test_utils.h",
     "+chrome/browser/prefs/browser_prefs.h",
     "+chrome/browser/ui/tabs/tab_strip_model_observer.h",

@@ -88,6 +88,10 @@ void ShowItemInFolderOnWorkerThread(const base::FilePath& full_path) {
 void OpenExternalOnWorkerThread(const GURL& url) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
+  if (!platform_util::internal::AreShellOperationsAllowed()) {
+    return;
+  }
+
   // Quote the input scheme to be sure that the command does not have
   // parameters unexpected by the external program. This url should already
   // have been escaped.
@@ -118,7 +122,8 @@ void OpenExternalOnWorkerThread(const GURL& url) {
 
 void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
   base::ThreadPool::CreateCOMSTATaskRunner(
-      {base::MayBlock(), base::TaskPriority::USER_BLOCKING})
+      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
       ->PostTask(FROM_HERE,
                  base::BindOnce(&ShowItemInFolderOnWorkerThread, full_path));
 }
@@ -146,7 +151,8 @@ void OpenExternal(const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   base::ThreadPool::CreateCOMSTATaskRunner(
-      {base::MayBlock(), base::TaskPriority::USER_BLOCKING})
+      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
       ->PostTask(FROM_HERE, base::BindOnce(&OpenExternalOnWorkerThread, url));
 }
 

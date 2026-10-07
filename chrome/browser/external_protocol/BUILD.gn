@@ -105,6 +105,7 @@ if (!is_android && !is_chromeos) {
       ":impl",
       "//base",
       "//chrome/browser:browser_features",
+      "//chrome/browser:platform_util_internal",
       "//chrome/browser:shell_integration",
       "//chrome/browser/policy:test_support",
       "//chrome/browser/profiles:profile",
