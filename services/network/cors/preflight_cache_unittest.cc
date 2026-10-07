@@ -4,21 +4,31 @@
 
 #include "services/network/cors/preflight_cache.h"
 
-#include <array>
+#include <stddef.h>
 
-#include "base/test/simple_test_tick_clock.h"
+#include <array>
+#include <iterator>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/http/http_request_headers.h"
 #include "net/log/net_log.h"
+#include "net/log/net_log_entry.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
 #include "net/log/test_net_log_util.h"
+#include "services/network/cors/preflight_result.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -26,6 +36,12 @@
 namespace network::cors {
 
 namespace {
+
+constexpr size_t kMaxEntriesPerTopFrameSite =
+    PreflightCache::kMaxEntriesPerTopFrameSite;
+constexpr size_t kPurgeUnitPerTopFrameSite =
+    PreflightCache::kPurgeUnitPerTopFrameSite;
+constexpr size_t kMaxTopFrameSites = PreflightCache::kMaxTopFrameSites;
 
 struct CacheTestEntry {
   const char* origin;
@@ -51,10 +67,18 @@ class PreflightCacheTest : public testing::Test {
 
  protected:
   size_t CountEntries() const { return cache_.CountEntriesForTesting(); }
-  void MayPurge(size_t max_entries, size_t purge_unit) {
-    cache_.MayPurgeForTesting(max_entries, purge_unit);
+  size_t CountTopFrameSites() const {
+    return cache_.CountTopFrameSitesForTesting();
   }
-  PreflightCache* cache() { return &cache_; }
+  size_t CountEntriesForTopFrameSite(
+      const std::optional<net::SchemefulSite>& top_frame_site) const {
+    return cache_.CountEntriesForTopFrameSiteForTesting(top_frame_site);
+  }
+  void MayPurge(const std::optional<net::SchemefulSite>& top_frame_site,
+                size_t max_entries,
+                size_t purge_unit) {
+    cache_.MayPurgeForTesting(top_frame_site, max_entries, purge_unit);
+  }
 
   std::unique_ptr<PreflightResult> CreateEntry() {
     return PreflightResult::Create(mojom::CredentialsMode::kInclude,
@@ -94,12 +118,14 @@ class PreflightCacheTest : public testing::Test {
     cache_.ClearCache(std::move(url_filter));
   }
 
-  bool DoesEntryExists(const url::Origin& origin, const std::string& url) {
-    return cache_.DoesEntryExistForTesting(origin, url,
-                                           net::NetworkIsolationKey());
+  bool DoesEntryExist(const url::Origin& origin,
+                      const std::string& url,
+                      const net::NetworkIsolationKey& network_isolation_key =
+                          net::NetworkIsolationKey()) {
+    return cache_.DoesEntryExistForTesting(origin, url, network_isolation_key);
   }
 
-  void Advance(int seconds) { clock_.Advance(base::Seconds(seconds)); }
+  void Advance(int seconds) { env_.FastForwardBy(base::Seconds(seconds)); }
 
   size_t PopulateCache() {
     for (auto entry : kCacheEntries) {
@@ -109,14 +135,9 @@ class PreflightCacheTest : public testing::Test {
     return std::size(kCacheEntries);
   }
 
-  // testing::Test implementation.
-  void SetUp() override { PreflightResult::SetTickClockForTesting(&clock_); }
-  void TearDown() override { PreflightResult::SetTickClockForTesting(nullptr); }
-
- protected:
-  base::test::TaskEnvironment env_;
+  base::test::TaskEnvironment env_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   PreflightCache cache_;
-  base::SimpleTestTickClock clock_;
   net::NetLogWithSource net_log_;
 };
 
@@ -126,36 +147,38 @@ TEST_F(PreflightCacheTest, CacheSize) {
       url::Origin::Create(GURL("http://www.other.com:80"));
   const GURL url("http://www.test.com/A");
   const GURL other_url("http://www.test.com/B");
+  const net::NetworkIsolationKey nik;
 
   EXPECT_EQ(0u, CountEntries());
 
-  AppendEntry(origin, url, net::NetworkIsolationKey());
+  AppendEntry(origin, url, nik);
 
   EXPECT_EQ(1u, CountEntries());
 
-  AppendEntry(origin, other_url, net::NetworkIsolationKey());
+  AppendEntry(origin, other_url, nik);
 
   EXPECT_EQ(2u, CountEntries());
 
-  AppendEntry(other_origin, url, net::NetworkIsolationKey());
+  AppendEntry(other_origin, url, nik);
 
   EXPECT_EQ(3u, CountEntries());
 
   // Num of entries is 3, that is not greater than the limit 3u.
   // It results in doing nothing.
-  MayPurge(3u, 2u);
+  MayPurge(nik.GetTopFrameSite(), 3u, 2u);
   EXPECT_EQ(3u, CountEntries());
 
   // Num of entries is 3, that is greater than the limit 2u.
   // It results in purging entries by the specified unit 2u, thus only one entry
   // remains.
-  MayPurge(2u, 2u);
+  MayPurge(nik.GetTopFrameSite(), 2u, 2u);
   EXPECT_EQ(1u, CountEntries());
 
   // This will make the cache empty. Note that the cache expects the num of
   // remaining entries should be greater than the specified purge unit.
-  MayPurge(0u, 1u);
+  MayPurge(nik.GetTopFrameSite(), 0u, 1u);
   EXPECT_EQ(0u, CountEntries());
+  EXPECT_EQ(0u, CountTopFrameSites());
 }
 
 TEST_F(PreflightCacheTest, CacheTimeout) {
@@ -166,15 +189,21 @@ TEST_F(PreflightCacheTest, CacheTimeout) {
   EXPECT_EQ(0u, CountEntries());
 
   AppendEntry(origin, url, net::NetworkIsolationKey());
+
+  EXPECT_EQ(1u, CountEntries());
+
+  Advance(1);
+
   AppendEntry(origin, other_url, net::NetworkIsolationKey());
 
   EXPECT_EQ(2u, CountEntries());
 
-  // Cache entry should still be valid.
+  // Both entries should still be valid.
   EXPECT_TRUE(
       CheckEntryAndRefreshCache(origin, url, net::NetworkIsolationKey()));
+  EXPECT_TRUE(
+      CheckEntryAndRefreshCache(origin, other_url, net::NetworkIsolationKey()));
 
-  // Advance time by ten seconds.
   Advance(10);
 
   // Cache entry should now be expired.
@@ -188,6 +217,7 @@ TEST_F(PreflightCacheTest, CacheTimeout) {
       CheckEntryAndRefreshCache(origin, other_url, net::NetworkIsolationKey()));
 
   EXPECT_EQ(0u, CountEntries());
+  EXPECT_EQ(0u, CountTopFrameSites());
 }
 
 TEST_F(PreflightCacheTest, RespectsNetworkIsolationKeys) {
@@ -220,6 +250,48 @@ TEST_F(PreflightCacheTest, RespectsNetworkIsolationKeys) {
 
   // Check that an entry we never inserted is not found in the cache.
   EXPECT_FALSE(CheckEntryAndRefreshCache(kOrigin1, kUrl2, kNik));
+
+  // Advance time by ten seconds. Both entries should now be expired.
+  Advance(10);
+
+  // Cache entries should be removed when found to be expired.
+  EXPECT_FALSE(CheckEntryAndRefreshCache(kOrigin1, kUrl1, kNik));
+  EXPECT_FALSE(
+      CheckEntryAndRefreshCache(kOrigin1, kUrl1, net::NetworkIsolationKey()));
+
+  // The cache is now empty.
+  EXPECT_EQ(0u, CountEntries());
+  EXPECT_EQ(0u, CountTopFrameSites());
+}
+
+TEST_F(PreflightCacheTest, LargeKey) {
+  const url::Origin origin;
+  // Make a url that spec length is 1024.
+  const std::string path(1024 - 20, 'a');
+  const GURL url("http://www.test.com/" + path);
+  ASSERT_EQ(1024u, url.spec().length());
+
+  AppendEntry(origin, url, net::NetworkIsolationKey());
+
+  // Cache entry size is larger than the limit, and it results in doing nothing.
+  EXPECT_EQ(0u, CountEntries());
+  EXPECT_FALSE(
+      CheckEntryAndRefreshCache(origin, url, net::NetworkIsolationKey()));
+}
+
+TEST_F(PreflightCacheTest, MaxKeyLength) {
+  const url::Origin origin;
+  // Make a url that spec length is 1023.
+  const std::string path(1024 - 21, 'a');
+  const GURL url("http://www.test.com/" + path);
+  ASSERT_EQ(1023u, url.spec().length());
+
+  AppendEntry(origin, url, net::NetworkIsolationKey());
+
+  // Cache entry size is the same as the limit, and it results in caching.
+  EXPECT_EQ(1u, CountEntries());
+  EXPECT_TRUE(
+      CheckEntryAndRefreshCache(origin, url, net::NetworkIsolationKey()));
 }
 
 TEST_F(PreflightCacheTest, RespectsIsAdAuctionTrustedSignalsRequest) {
@@ -281,6 +353,7 @@ TEST_F(PreflightCacheTest, HandlesOpaqueOrigins) {
 
   AppendEntry(kOrigin1, kUrl, kNik1);
   EXPECT_EQ(1u, CountEntries());
+  EXPECT_EQ(1u, CountTopFrameSites());
   EXPECT_TRUE(CheckEntryAndRefreshCache(kOrigin1, kUrl, kNik1));
 
   // The cache should report a miss if we use a new opaque origin and the same
@@ -291,6 +364,7 @@ TEST_F(PreflightCacheTest, HandlesOpaqueOrigins) {
   // increase the size of the cache.
   AppendEntry(kOrigin1, kUrl, kNik2);
   EXPECT_EQ(2u, CountEntries());
+  EXPECT_EQ(1u, CountTopFrameSites());
   EXPECT_TRUE(CheckEntryAndRefreshCache(kOrigin1, kUrl, kNik2));
   EXPECT_FALSE(
       CheckEntryAndRefreshCache(kOrigin1, kUrl, net::NetworkIsolationKey()));
@@ -300,8 +374,10 @@ TEST_F(PreflightCacheTest, HandlesOpaqueOrigins) {
 }
 
 TEST_F(PreflightCacheTest, NetLogCheckCacheExist) {
-  const url::Origin kOrigin;
+  const url::Origin kOrigin =
+      url::Origin::Create(GURL("http://www.test.com/A"));
   const GURL kUrl("http://www.test.com/A");
+  const GURL kUncachedUrl("http://www.test.com/Uncached");
   const net::SchemefulSite kSite = net::SchemefulSite(kOrigin);
   const net::NetworkIsolationKey kNik(kSite, kSite);
   net::RecordingNetLogObserver net_log_observer;
@@ -311,10 +387,16 @@ TEST_F(PreflightCacheTest, NetLogCheckCacheExist) {
   // Cache entry's method is POST.
   EXPECT_EQ(CountEntries(), 1u);
   EXPECT_TRUE(CheckEntryAndRefreshCache(kOrigin, kUrl, kNik));
+  // Querying an uncached URL within the existing top-frame site partition
+  // exercises the partition-hit but entry-miss branch.
+  EXPECT_FALSE(CheckEntryAndRefreshCache(kOrigin, kUncachedUrl, kNik));
   EXPECT_FALSE(CheckOptionMethodEntryAndRefreshCache(kOrigin, kUrl, kNik));
 
   // Cache entry is removed once it was not sufficient to a request.
   EXPECT_EQ(CountEntries(), 0u);
+  EXPECT_EQ(CountTopFrameSites(), 0u);
+  // Querying when the partition is absent exercises the outer cache miss
+  // branch.
   EXPECT_FALSE(CheckEntryAndRefreshCache(kOrigin, kUrl, kNik));
 
   AppendEntry(kOrigin, kUrl, kNik);
@@ -324,9 +406,11 @@ TEST_F(PreflightCacheTest, NetLogCheckCacheExist) {
 
   EXPECT_EQ(CountEntries(), 1u);
   EXPECT_FALSE(CheckEntryAndRefreshCache(kOrigin, kUrl, kNik));
+  EXPECT_EQ(CountEntries(), 0u);
+  EXPECT_EQ(CountTopFrameSites(), 0u);
 
   std::vector<net::NetLogEntry> entries = net_log_observer.GetEntries();
-  ASSERT_EQ(entries.size(), 5u);
+  ASSERT_EQ(entries.size(), 6u);
   for (const auto& entry : entries) {
     EXPECT_EQ(entry.source.type, net::NetLogSourceType::URL_REQUEST);
   }
@@ -342,12 +426,14 @@ TEST_F(PreflightCacheTest, NetLogCheckCacheExist) {
       net::GetStringValueFromParams(entries[1], "access-control-allow-methods"),
       "POST");
   EXPECT_EQ(entries[2].type, net::NetLogEventType::CHECK_CORS_PREFLIGHT_CACHE);
-  EXPECT_EQ(net::GetStringValueFromParams(entries[2], "status"),
-            "hit-and-fail");
+  EXPECT_EQ(net::GetStringValueFromParams(entries[2], "status"), "miss");
   EXPECT_EQ(entries[3].type, net::NetLogEventType::CHECK_CORS_PREFLIGHT_CACHE);
-  EXPECT_EQ(net::GetStringValueFromParams(entries[3], "status"), "miss");
+  EXPECT_EQ(net::GetStringValueFromParams(entries[3], "status"),
+            "hit-and-fail");
   EXPECT_EQ(entries[4].type, net::NetLogEventType::CHECK_CORS_PREFLIGHT_CACHE);
-  EXPECT_EQ(net::GetStringValueFromParams(entries[4], "status"), "stale");
+  EXPECT_EQ(net::GetStringValueFromParams(entries[4], "status"), "miss");
+  EXPECT_EQ(entries[5].type, net::NetLogEventType::CHECK_CORS_PREFLIGHT_CACHE);
+  EXPECT_EQ(net::GetStringValueFromParams(entries[5], "status"), "stale");
 }
 
 TEST_F(PreflightCacheTest, ClearCacheNoFilter) {
@@ -395,8 +481,8 @@ TEST_F(PreflightCacheTest, ClearCacheWithDeleteFilterOrigins) {
   EXPECT_EQ(remaining_entries, CountEntries());
   for (auto i : filtered_entries) {
     ASSERT_FALSE(
-        DoesEntryExists(url::Origin::Create(GURL(kCacheEntries[i].origin)),
-                        kCacheEntries[i].url));
+        DoesEntryExist(url::Origin::Create(GURL(kCacheEntries[i].origin)),
+                       kCacheEntries[i].url));
   }
 }
 
@@ -416,8 +502,8 @@ TEST_F(PreflightCacheTest, ClearCacheWithDeleteFilterDomains) {
   EXPECT_EQ(4u, CountEntries());
   for (auto i : filtered_entries) {
     ASSERT_FALSE(
-        DoesEntryExists(url::Origin::Create(GURL(kCacheEntries[i].origin)),
-                        kCacheEntries[i].url));
+        DoesEntryExist(url::Origin::Create(GURL(kCacheEntries[i].origin)),
+                       kCacheEntries[i].url));
   }
 }
 
@@ -443,8 +529,8 @@ TEST_F(PreflightCacheTest, ClearCacheWithDeleteFilterOriginsAndDomains) {
   EXPECT_EQ(remaining_entries, CountEntries());
   for (auto i : matched_entries) {
     ASSERT_FALSE(
-        DoesEntryExists(url::Origin::Create(GURL(kCacheEntries[i].origin)),
-                        kCacheEntries[i].url));
+        DoesEntryExist(url::Origin::Create(GURL(kCacheEntries[i].origin)),
+                       kCacheEntries[i].url));
   }
 }
 
@@ -483,8 +569,8 @@ TEST_F(PreflightCacheTest, ClearCacheWithKeepFilterOrigins) {
   EXPECT_EQ(remaining_entries, CountEntries());
   for (auto i : filtered_entries) {
     ASSERT_TRUE(
-        DoesEntryExists(url::Origin::Create(GURL(kCacheEntries[i].origin)),
-                        kCacheEntries[i].url));
+        DoesEntryExist(url::Origin::Create(GURL(kCacheEntries[i].origin)),
+                       kCacheEntries[i].url));
   }
 }
 
@@ -504,8 +590,8 @@ TEST_F(PreflightCacheTest, ClearCacheWithKeepFilterDomains) {
   EXPECT_EQ(std::size(matched_entries), CountEntries());
   for (auto i : matched_entries) {
     ASSERT_TRUE(
-        DoesEntryExists(url::Origin::Create(GURL(kCacheEntries[i].origin)),
-                        kCacheEntries[i].url));
+        DoesEntryExist(url::Origin::Create(GURL(kCacheEntries[i].origin)),
+                       kCacheEntries[i].url));
   }
 }
 
@@ -531,9 +617,287 @@ TEST_F(PreflightCacheTest, ClearCacheWithKeepFilterOriginsAndDomains) {
   EXPECT_EQ(remaining_entries, CountEntries());
   for (auto i : matched_entries) {
     ASSERT_TRUE(
-        DoesEntryExists(url::Origin::Create(GURL(kCacheEntries[i].origin)),
-                        kCacheEntries[i].url));
+        DoesEntryExist(url::Origin::Create(GURL(kCacheEntries[i].origin)),
+                       kCacheEntries[i].url));
   }
+}
+
+TEST_F(PreflightCacheTest, ClearCachePrunesEmptyTopFrameSites) {
+  const url::Origin kOriginA = url::Origin::Create(GURL("https://a.test"));
+  const net::SchemefulSite kSiteA(kOriginA);
+  const net::NetworkIsolationKey kNikA(kSiteA, kSiteA);
+
+  const url::Origin kOriginB = url::Origin::Create(GURL("https://b.test"));
+  const net::SchemefulSite kSiteB(kOriginB);
+  const net::NetworkIsolationKey kNikB(kSiteB, kSiteB);
+
+  const GURL kUrl("https://api.test/resource");
+  AppendEntry(kOriginA, kUrl, kNikA);
+  AppendEntry(kOriginB, kUrl, kNikB);
+  EXPECT_EQ(2u, CountTopFrameSites());
+  EXPECT_EQ(2u, CountEntries());
+
+  mojom::ClearDataFilterPtr filter = mojom::ClearDataFilter::New();
+  filter->type = mojom::ClearDataFilter::Type::DELETE_MATCHES;
+  filter->origins.push_back(kOriginA);
+
+  ClearCache(std::move(filter));
+
+  EXPECT_EQ(1u, CountTopFrameSites());
+  EXPECT_EQ(1u, CountEntries());
+  EXPECT_EQ(0u, CountEntriesForTopFrameSite(kSiteA));
+  EXPECT_EQ(1u, CountEntriesForTopFrameSite(kSiteB));
+}
+
+TEST_F(PreflightCacheTest, SubframeIsolationUnderSameTopFrameSite) {
+  const url::Origin kTopOrigin = url::Origin::Create(GURL("https://top.test"));
+  const net::SchemefulSite kTopSite(kTopOrigin);
+
+  const url::Origin kSubOrigin1 =
+      url::Origin::Create(GURL("https://sub1.test"));
+  const net::SchemefulSite kSubSite1(kSubOrigin1);
+  const net::NetworkIsolationKey kNik1(kTopSite, kSubSite1);
+
+  const url::Origin kSubOrigin2 =
+      url::Origin::Create(GURL("https://sub2.test"));
+  const net::SchemefulSite kSubSite2(kSubOrigin2);
+  const net::NetworkIsolationKey kNik2(kTopSite, kSubSite2);
+
+  const GURL kUrl("https://api.test/resource");
+
+  AppendEntry(kSubOrigin1, kUrl, kNik1);
+  AppendEntry(kSubOrigin2, kUrl, kNik2);
+
+  // Both entries are scoped under the same top-frame site.
+  EXPECT_EQ(1u, CountTopFrameSites());
+  EXPECT_EQ(2u, CountEntriesForTopFrameSite(kTopSite));
+
+  // Individual subframe partitions exist and preserve cross-subframe lookup
+  // isolation.
+  EXPECT_TRUE(DoesEntryExist(kSubOrigin1, kUrl.spec(), kNik1));
+  EXPECT_TRUE(DoesEntryExist(kSubOrigin2, kUrl.spec(), kNik2));
+  EXPECT_FALSE(DoesEntryExist(kSubOrigin1, kUrl.spec(), kNik2));
+  EXPECT_FALSE(DoesEntryExist(kSubOrigin2, kUrl.spec(), kNik1));
+
+  EXPECT_TRUE(CheckEntryAndRefreshCache(kSubOrigin1, kUrl, kNik1));
+  EXPECT_FALSE(CheckEntryAndRefreshCache(kSubOrigin1, kUrl, kNik2));
+  EXPECT_TRUE(CheckEntryAndRefreshCache(kSubOrigin2, kUrl, kNik2));
+}
+
+TEST_F(PreflightCacheTest, CrossSiteEvictionIsolation) {
+  const url::Origin kOriginA = url::Origin::Create(GURL("https://a.test"));
+  const net::SchemefulSite kSiteA(kOriginA);
+  const net::NetworkIsolationKey kNikA(kSiteA, kSiteA);
+
+  const url::Origin kOriginB = url::Origin::Create(GURL("https://b.test"));
+  const net::SchemefulSite kSiteB(kOriginB);
+  const net::NetworkIsolationKey kNikB(kSiteB, kSiteB);
+
+  for (size_t i = 0; i < kMaxEntriesPerTopFrameSite; ++i) {
+    AppendEntry(kOriginA, GURL(base::StringPrintf("https://api.test/%zu", i)),
+                kNikA);
+  }
+  EXPECT_EQ(kMaxEntriesPerTopFrameSite, CountEntriesForTopFrameSite(kSiteA));
+
+  // Exceeding capacity under top-frame site B triggers a purge only under site
+  // B.
+  for (size_t i = 0; i < kMaxEntriesPerTopFrameSite + 1; ++i) {
+    AppendEntry(kOriginB, GURL(base::StringPrintf("https://api.test/%zu", i)),
+                kNikB);
+  }
+
+  EXPECT_EQ(2u, CountTopFrameSites());
+  EXPECT_EQ(kMaxEntriesPerTopFrameSite, CountEntriesForTopFrameSite(kSiteA));
+  EXPECT_EQ(kMaxEntriesPerTopFrameSite - kPurgeUnitPerTopFrameSite + 1,
+            CountEntriesForTopFrameSite(kSiteB));
+
+  for (size_t i = 0; i < kMaxEntriesPerTopFrameSite; ++i) {
+    EXPECT_TRUE(CheckEntryAndRefreshCache(
+        kOriginA, GURL(base::StringPrintf("https://api.test/%zu", i)), kNikA));
+  }
+}
+
+TEST_F(PreflightCacheTest, SubframeProliferationCannotEvictOtherTopFrameSites) {
+  // Top-frame site A: attacker site that embeds 50 different subframe origins.
+  const url::Origin kTopOriginA =
+      url::Origin::Create(GURL("https://attacker.test"));
+  const net::SchemefulSite kTopSiteA(kTopOriginA);
+
+  // Top-frame site B: victim site with a single entry.
+  const url::Origin kTopOriginB =
+      url::Origin::Create(GURL("https://victim.test"));
+  const net::SchemefulSite kTopSiteB(kTopOriginB);
+  const net::NetworkIsolationKey kNikB(kTopSiteB, kTopSiteB);
+  const GURL kVictimUrl("https://api.victim.test/data");
+  AppendEntry(kTopOriginB, kVictimUrl, kNikB);
+
+  EXPECT_EQ(1u, CountTopFrameSites());
+  EXPECT_EQ(1u, CountEntriesForTopFrameSite(kTopSiteB));
+
+  // Attacker issues preflight requests across 50 distinct subframe origins
+  // with distinct registrable domains, all under the same top-frame site A.
+  constexpr size_t kSubframeCount = 50u;
+  for (size_t i = 0; i < kSubframeCount; ++i) {
+    url::Origin subframe_origin = url::Origin::Create(
+        GURL(base::StringPrintf("https://sub-%zu.test", i)));
+    net::SchemefulSite subframe_site(subframe_origin);
+    net::NetworkIsolationKey subframe_nik(kTopSiteA, subframe_site);
+    AppendEntry(subframe_origin,
+                GURL(base::StringPrintf("https://api.test/%zu", i)),
+                subframe_nik);
+  }
+
+  // Attacker entries are capped under top-frame site A without exceeding
+  // kMaxEntriesPerTopFrameSite or evicting victim site B.
+  EXPECT_EQ(2u, CountTopFrameSites());
+  EXPECT_GE(CountEntriesForTopFrameSite(kTopSiteA),
+            kMaxEntriesPerTopFrameSite - kPurgeUnitPerTopFrameSite);
+  EXPECT_LE(CountEntriesForTopFrameSite(kTopSiteA), kMaxEntriesPerTopFrameSite);
+  EXPECT_EQ(1u, CountEntriesForTopFrameSite(kTopSiteB));
+  EXPECT_TRUE(CheckEntryAndRefreshCache(kTopOriginB, kVictimUrl, kNikB));
+}
+
+TEST_F(PreflightCacheTest, LocalPurgeWithinTopFrameSite) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://origin.test"));
+  const net::SchemefulSite kSite(kOrigin);
+  const net::NetworkIsolationKey kNik(kSite, kSite);
+
+  for (size_t i = 0; i < kMaxEntriesPerTopFrameSite; ++i) {
+    AppendEntry(kOrigin, GURL(base::StringPrintf("https://api.test/%zu", i)),
+                kNik);
+  }
+  EXPECT_EQ(kMaxEntriesPerTopFrameSite, CountEntriesForTopFrameSite(kSite));
+
+  const GURL kExtraUrl("https://api.test/extra");
+  AppendEntry(kOrigin, kExtraUrl, kNik);
+
+  EXPECT_EQ(kMaxEntriesPerTopFrameSite - kPurgeUnitPerTopFrameSite + 1,
+            CountEntriesForTopFrameSite(kSite));
+  EXPECT_TRUE(CheckEntryAndRefreshCache(kOrigin, kExtraUrl, kNik));
+}
+
+TEST_F(PreflightCacheTest, OverwritingEntryAtCapacityDoesNotPurge) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://origin.test"));
+  const net::SchemefulSite kSite(kOrigin);
+  const net::NetworkIsolationKey kNik(kSite, kSite);
+
+  for (size_t i = 0; i < kMaxEntriesPerTopFrameSite; ++i) {
+    AppendEntry(kOrigin, GURL(base::StringPrintf("https://api.test/%zu", i)),
+                kNik);
+  }
+  EXPECT_EQ(kMaxEntriesPerTopFrameSite, CountEntriesForTopFrameSite(kSite));
+
+  // Overwriting an existing key in a full partition updates in place without
+  // purging other entries.
+  AppendEntry(kOrigin, GURL("https://api.test/0"), kNik);
+
+  EXPECT_EQ(kMaxEntriesPerTopFrameSite, CountEntriesForTopFrameSite(kSite));
+  for (size_t i = 0; i < kMaxEntriesPerTopFrameSite; ++i) {
+    EXPECT_TRUE(CheckEntryAndRefreshCache(
+        kOrigin, GURL(base::StringPrintf("https://api.test/%zu", i)), kNik));
+  }
+}
+
+TEST_F(PreflightCacheTest, GlobalTopFrameSiteLimit) {
+  const GURL kUrl("https://api.test/resource");
+
+  std::vector<url::Origin> origins;
+  std::vector<net::NetworkIsolationKey> niks;
+  std::vector<net::SchemefulSite> sites;
+  origins.reserve(kMaxTopFrameSites);
+  niks.reserve(kMaxTopFrameSites);
+  sites.reserve(kMaxTopFrameSites);
+
+  for (size_t i = 0; i < kMaxTopFrameSites; ++i) {
+    url::Origin origin = url::Origin::Create(
+        GURL(base::StringPrintf("https://site-%zu.test", i)));
+    net::SchemefulSite site(origin);
+    net::NetworkIsolationKey nik(site, site);
+    AppendEntry(origin, kUrl, nik);
+    origins.push_back(std::move(origin));
+    niks.push_back(std::move(nik));
+    sites.push_back(std::move(site));
+  }
+
+  EXPECT_EQ(kMaxTopFrameSites, CountTopFrameSites());
+  EXPECT_EQ(kMaxTopFrameSites, CountEntries());
+
+  // Querying an uncached URL under site 0 peeks without promoting it to MRU,
+  // so site 0 remains the least-recently used.
+  const GURL kUncachedUrl("https://api.test/uncached");
+  EXPECT_FALSE(CheckEntryAndRefreshCache(origins[0], kUncachedUrl, niks[0]));
+
+  // Querying a cached URL under site 1 promotes it to MRU.
+  EXPECT_TRUE(CheckEntryAndRefreshCache(origins[1], kUrl, niks[1]));
+
+  // Inserting an extra site evicts site 0, verifying that the miss under site 0
+  // did not refresh its LRU lease while the hit under site 1 did.
+  const url::Origin kExtraOrigin1 =
+      url::Origin::Create(GURL("https://site-extra-1.test"));
+  const net::SchemefulSite kExtraSite1(kExtraOrigin1);
+  const net::NetworkIsolationKey kExtraNik1(kExtraSite1, kExtraSite1);
+  AppendEntry(kExtraOrigin1, kUrl, kExtraNik1);
+
+  EXPECT_EQ(kMaxTopFrameSites, CountTopFrameSites());
+  EXPECT_EQ(0u, CountEntriesForTopFrameSite(sites[0]));
+  EXPECT_EQ(1u, CountEntriesForTopFrameSite(sites[1]));
+  EXPECT_EQ(1u, CountEntriesForTopFrameSite(kExtraSite1));
+
+  // Inserting another extra site evicts site 2 (the next LRU site), while site
+  // 1 remains intact.
+  const url::Origin kExtraOrigin2 =
+      url::Origin::Create(GURL("https://site-extra-2.test"));
+  const net::SchemefulSite kExtraSite2(kExtraOrigin2);
+  const net::NetworkIsolationKey kExtraNik2(kExtraSite2, kExtraSite2);
+  AppendEntry(kExtraOrigin2, kUrl, kExtraNik2);
+
+  EXPECT_EQ(kMaxTopFrameSites, CountTopFrameSites());
+  EXPECT_EQ(1u, CountEntriesForTopFrameSite(sites[1]));
+  EXPECT_EQ(0u, CountEntriesForTopFrameSite(sites[2]));
+  EXPECT_EQ(1u, CountEntriesForTopFrameSite(kExtraSite2));
+}
+
+TEST_F(PreflightCacheTest,
+       AppendEntryInExistingTopFrameSiteAtGlobalLimitRefreshesLru) {
+  const GURL kUrl("https://api.test/resource");
+  const GURL kOtherUrl("https://api.test/other");
+
+  std::vector<url::Origin> origins;
+  std::vector<net::NetworkIsolationKey> niks;
+  std::vector<net::SchemefulSite> sites;
+  origins.reserve(kMaxTopFrameSites);
+  niks.reserve(kMaxTopFrameSites);
+  sites.reserve(kMaxTopFrameSites);
+
+  for (size_t i = 0; i < kMaxTopFrameSites; ++i) {
+    url::Origin origin = url::Origin::Create(
+        GURL(base::StringPrintf("https://site-%zu.test", i)));
+    net::SchemefulSite site(origin);
+    net::NetworkIsolationKey nik(site, site);
+    AppendEntry(origin, kUrl, nik);
+    origins.push_back(std::move(origin));
+    niks.push_back(std::move(nik));
+    sites.push_back(std::move(site));
+  }
+
+  EXPECT_EQ(kMaxTopFrameSites, CountTopFrameSites());
+
+  // Appending to an existing top-frame site at `kMaxTopFrameSites` must not
+  // evict any site and must refresh site 0's LRU position.
+  AppendEntry(origins[0], kOtherUrl, niks[0]);
+  EXPECT_EQ(kMaxTopFrameSites, CountTopFrameSites());
+  EXPECT_EQ(2u, CountEntriesForTopFrameSite(sites[0]));
+
+  const url::Origin kExtraOrigin =
+      url::Origin::Create(GURL("https://site-extra.test"));
+  const net::SchemefulSite kExtraSite(kExtraOrigin);
+  const net::NetworkIsolationKey kExtraNik(kExtraSite, kExtraSite);
+  AppendEntry(kExtraOrigin, kUrl, kExtraNik);
+
+  EXPECT_EQ(kMaxTopFrameSites, CountTopFrameSites());
+  EXPECT_EQ(2u, CountEntriesForTopFrameSite(sites[0]));
+  EXPECT_EQ(0u, CountEntriesForTopFrameSite(sites[1]));
+  EXPECT_EQ(1u, CountEntriesForTopFrameSite(kExtraSite));
 }
 
 }  // namespace

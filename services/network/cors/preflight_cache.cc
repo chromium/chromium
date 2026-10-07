@@ -4,15 +4,23 @@
 
 #include "services/network/cors/preflight_cache.h"
 
-#include <iterator>
-#include <string>
+#include <stddef.h>
 
+#include <iterator>
+#include <map>
+#include <optional>
+#include <string>
+#include <tuple>
+#include <utility>
+
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/rand_util.h"
-#include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/does_url_match_filter.h"
-#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
 #include "services/network/data_remover_util.h"
@@ -23,9 +31,7 @@ namespace network::cors {
 
 namespace {
 
-constexpr size_t kMaxCacheEntries = 1024u;
 constexpr size_t kMaxKeyLength = 1024u;
-constexpr size_t kPurgeUnit = 10u;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -66,7 +72,8 @@ void RecordCacheMetricNetLog(CacheMetric metric,
 
 }  // namespace
 
-PreflightCache::PreflightCache() = default;
+PreflightCache::PreflightCache() : cache_(kMaxTopFrameSites) {}
+
 PreflightCache::~PreflightCache() = default;
 
 void PreflightCache::AppendEntry(
@@ -82,15 +89,25 @@ void PreflightCache::AppendEntry(
     return;
   }
 
-  auto key = std::make_tuple(origin, url_spec, network_isolation_key);
-  const auto existing_entry = cache_.find(key);
-  if (existing_entry == cache_.end()) {
-    // Since one new entry is always added below, let's purge one cache entry
-    // if cache size is larger than kMaxCacheEntries - 1 so that the size to be
-    // kMaxCacheEntries at maximum.
-    MayPurge(kMaxCacheEntries - 1, kPurgeUnit);
+  const std::optional<net::SchemefulSite>& top_frame_site =
+      network_isolation_key.GetTopFrameSite();
+  auto cache_it = cache_.Get(top_frame_site);
+  if (cache_it == cache_.end()) {
+    cache_it = cache_.Put(top_frame_site, EntryMap());
   }
-  cache_[key] = std::move(preflight_result);
+
+  EntryMap& entries = cache_it->second;
+  EntryKey key(origin, url_spec, network_isolation_key);
+  auto it = entries.find(key);
+  if (it != entries.end()) {
+    it->second = std::move(preflight_result);
+    return;
+  }
+  // Purge entries in this top-frame site partition if its size reaches
+  // `kMaxEntriesPerTopFrameSite` so the per-site partition size stays
+  // bounded.
+  MayPurge(entries, kMaxEntriesPerTopFrameSite - 1, kPurgeUnitPerTopFrameSite);
+  entries.emplace(std::move(key), std::move(preflight_result));
 }
 
 bool PreflightCache::CheckIfRequestCanSkipPreflight(
@@ -104,10 +121,18 @@ bool PreflightCache::CheckIfRequestCanSkipPreflight(
     const net::NetLogWithSource& net_log,
     bool acam_preflight_spec_conformant,
     bool is_ad_auction_trusted_signals_request) {
-  // Check if the entry exists in the cache.
-  auto key = std::make_tuple(origin, url.spec(), network_isolation_key);
-  auto cache_entry = cache_.find(key);
-  if (cache_entry == cache_.end()) {
+  const std::optional<net::SchemefulSite>& top_frame_site =
+      network_isolation_key.GetTopFrameSite();
+  auto cache_it = cache_.Peek(top_frame_site);
+  if (cache_it == cache_.end()) {
+    RecordCacheMetricNetLog(CacheMetric::kMiss, net_log);
+    return false;
+  }
+
+  EntryMap& entries = cache_it->second;
+  EntryKey key(origin, url.spec(), network_isolation_key);
+  auto cache_entry = entries.find(key);
+  if (cache_entry == entries.end()) {
     RecordCacheMetricNetLog(CacheMetric::kMiss, net_log);
     return false;
   }
@@ -121,6 +146,7 @@ bool PreflightCache::CheckIfRequestCanSkipPreflight(
             NonWildcardRequestHeadersSupport(true),
             acam_preflight_spec_conformant,
             is_ad_auction_trusted_signals_request)) {
+      cache_.Get(top_frame_site);
       // Note that we always use the "with non-wildcard request headers"
       // variant, because it is hard to generate the correct error information
       // from here, and cache miss is in most case recoverable.
@@ -137,7 +163,10 @@ bool PreflightCache::CheckIfRequestCanSkipPreflight(
 
   // The cache entry is either stale or not sufficient. Remove the item from the
   // cache.
-  cache_.erase(cache_entry);
+  entries.erase(cache_entry);
+  if (entries.empty()) {
+    cache_.Erase(cache_it);
+  }
   return false;
 }
 
@@ -148,10 +177,10 @@ bool PreflightCache::CheckIfRequestCanSkipPreflight(
 // value for CORS-preflight responses to 2hrs it doesn't make sense to add the
 // granularity to remove only entries created in the last 1hr.
 // Always clears the whole PreflightCache regardless the range selected for
-// Clear Browsing history
+// Clear Browsing history.
 void PreflightCache::ClearCache(mojom::ClearDataFilterPtr url_filter) {
   if (url_filter.is_null()) {
-    cache_.clear();
+    cache_.Clear();
     return;
   }
   if (url_filter->origins.empty() && url_filter->domains.empty()) {
@@ -159,7 +188,7 @@ void PreflightCache::ClearCache(mojom::ClearDataFilterPtr url_filter) {
       case mojom::ClearDataFilter_Type::DELETE_MATCHES:
         return;  // Nothing to do
       case mojom::ClearDataFilter_Type::KEEP_MATCHES:
-        cache_.clear();  // Remove all
+        cache_.Clear();  // Remove all
         return;
     }
   }
@@ -170,45 +199,76 @@ void PreflightCache::ClearCache(mojom::ClearDataFilterPtr url_filter) {
   const base::flat_set<std::string> domains(url_filter->domains.begin(),
                                             url_filter->domains.end());
 
-  for (auto it = cache_.begin(); it != cache_.end();) {
-    auto next_it = std::next(it);
-    auto cached_url = std::get<0>(it->first).GetURL();
-    if (net::DoesUrlMatchFilter(url_filter_type, origins, domains,
-                                cached_url)) {
-      cache_.erase(it);
+  for (auto site_it = cache_.begin(); site_it != cache_.end();) {
+    EntryMap& entries = site_it->second;
+    std::erase_if(entries, [&](const auto& entry) {
+      return net::DoesUrlMatchFilter(url_filter_type, origins, domains,
+                                     std::get<0>(entry.first).GetURL());
+    });
+    if (entries.empty()) {
+      site_it = cache_.Erase(site_it);
+    } else {
+      ++site_it;
     }
-    it = next_it;
   }
 }
 
 size_t PreflightCache::CountEntriesForTesting() const {
+  size_t total = 0;
+  for (const auto& [site, entries] : cache_) {
+    total += entries.size();
+  }
+  return total;
+}
+
+size_t PreflightCache::CountTopFrameSitesForTesting() const {
   return cache_.size();
+}
+
+size_t PreflightCache::CountEntriesForTopFrameSiteForTesting(
+    const std::optional<net::SchemefulSite>& top_frame_site) const {
+  auto it = cache_.Peek(top_frame_site);
+  return it != cache_.end() ? it->second.size() : 0u;
 }
 
 bool PreflightCache::DoesEntryExistForTesting(
     const url::Origin& origin,
     const std::string& url,
-    const net::NetworkIsolationKey& network_isolation_key) {
-  std::tuple<url::Origin, std::string, net::NetworkIsolationKey> entry_key =
-      std::make_tuple(origin, url, network_isolation_key);
-  return cache_.find(entry_key) != cache_.end();
+    const net::NetworkIsolationKey& network_isolation_key) const {
+  auto it = cache_.Peek(network_isolation_key.GetTopFrameSite());
+  if (it == cache_.end()) {
+    return false;
+  }
+  return it->second.contains(EntryKey(origin, url, network_isolation_key));
 }
 
-void PreflightCache::MayPurgeForTesting(size_t max_entries, size_t purge_unit) {
-  MayPurge(max_entries, purge_unit);
-}
-
-void PreflightCache::MayPurge(size_t max_entries, size_t purge_unit) {
-  if (cache_.size() <= max_entries) {
+void PreflightCache::MayPurgeForTesting(
+    const std::optional<net::SchemefulSite>& top_frame_site,
+    size_t max_entries,
+    size_t purge_unit) {
+  auto it = cache_.Peek(top_frame_site);
+  if (it == cache_.end()) {
     return;
   }
-  DCHECK_GE(cache_.size(), purge_unit);
-  auto purge_begin_entry = cache_.begin();
+  MayPurge(it->second, max_entries, purge_unit);
+  if (it->second.empty()) {
+    cache_.Erase(it);
+  }
+}
+
+void PreflightCache::MayPurge(EntryMap& entries,
+                              size_t max_entries,
+                              size_t purge_unit) {
+  if (entries.size() <= max_entries) {
+    return;
+  }
+  DCHECK_GE(entries.size(), purge_unit);
+  auto purge_begin_entry = entries.begin();
   std::advance(purge_begin_entry,
-               base::RandIntInclusive(0, cache_.size() - purge_unit));
+               base::RandIntInclusive(0, entries.size() - purge_unit));
   auto purge_end_entry = purge_begin_entry;
   std::advance(purge_end_entry, purge_unit);
-  cache_.erase(purge_begin_entry, purge_end_entry);
+  entries.erase(purge_begin_entry, purge_end_entry);
 }
 
 }  // namespace network::cors
