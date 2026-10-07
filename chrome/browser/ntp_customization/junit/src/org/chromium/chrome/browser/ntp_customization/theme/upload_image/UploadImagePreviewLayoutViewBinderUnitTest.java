@@ -4,15 +4,19 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme.upload_image;
 
-import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ImageView;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,8 +25,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -30,17 +37,13 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Unit tests for {@link UploadImagePreviewLayoutViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class UploadImagePreviewLayoutViewBinderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private UploadImagePreviewLayout mLayoutView;
-    @Mock private CropImageView mCropImageView;
-    @Mock private TextView mSaveButton;
-    @Mock private TextView mCancelButton;
     @Mock private View.OnClickListener mOnClickListener;
-    @Mock private View mLogoView;
 
+    private UploadImagePreviewLayout mLayoutView;
+    private ImageView mLogoView;
     private PropertyModel mModel;
     private Bitmap mBitmap;
 
@@ -48,10 +51,14 @@ public class UploadImagePreviewLayoutViewBinderUnitTest {
     public void setUp() {
         mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
 
-        when(mLayoutView.findViewById(R.id.preview_image)).thenReturn(mCropImageView);
-        when(mLayoutView.findViewById(R.id.save_button)).thenReturn(mSaveButton);
-        when(mLayoutView.findViewById(R.id.cancel_button)).thenReturn(mCancelButton);
-        when(mLayoutView.findViewById(R.id.default_search_engine_logo)).thenReturn(mLogoView);
+        Activity activity = Robolectric.buildActivity(Activity.class).create().get();
+        mLayoutView =
+                (UploadImagePreviewLayout)
+                        LayoutInflater.from(activity)
+                                .inflate(
+                                        R.layout.ntp_customization_theme_preview_dialog_layout,
+                                        null);
+        mLogoView = mLayoutView.findViewById(R.id.default_search_engine_logo);
 
         mModel = new PropertyModel(NtpThemeProperty.PREVIEW_KEYS);
         PropertyModelChangeProcessor.create(
@@ -61,37 +68,46 @@ public class UploadImagePreviewLayoutViewBinderUnitTest {
     @Test
     public void testSetBitmapForPreview() {
         mModel.set(NtpThemeProperty.BITMAP_FOR_PREVIEW, mBitmap);
-        verify(mCropImageView).setImageBitmap(eq(mBitmap));
+        CropImageView cropImageView = mLayoutView.findViewById(R.id.preview_image);
+        assertEquals(mBitmap, ((BitmapDrawable) cropImageView.getDrawable()).getBitmap());
     }
 
     @Test
     public void testSetSaveClickListener() {
         mModel.set(NtpThemeProperty.PREVIEW_SAVE_CLICK_LISTENER, mOnClickListener);
-        verify(mSaveButton).setOnClickListener(eq(mOnClickListener));
+        View saveButton = mLayoutView.findViewById(R.id.save_button);
+        saveButton.performClick();
+        verify(mOnClickListener).onClick(saveButton);
     }
 
     @Test
     public void testSetCancelClickListener() {
         mModel.set(NtpThemeProperty.PREVIEW_CANCEL_CLICK_LISTENER, mOnClickListener);
-        verify(mCancelButton).setOnClickListener(eq(mOnClickListener));
+        View cancelButton = mLayoutView.findViewById(R.id.cancel_button);
+        cancelButton.performClick();
+        verify(mOnClickListener).onClick(cancelButton);
     }
 
     @Test
     public void testSetLogoBitmap() {
         mModel.set(NtpThemeProperty.LOGO_BITMAP, mBitmap);
-        verify(mLayoutView).setLogo(eq(mBitmap));
+        assertEquals(mBitmap, ((BitmapDrawable) mLogoView.getDrawable()).getBitmap());
 
+        // A null bitmap falls back to the default Google logo.
         mModel.set(NtpThemeProperty.LOGO_BITMAP, null);
-        verify(mLayoutView).setLogo(eq(null));
+        assertEquals(
+                Shadows.shadowOf(LogoUtils.getGoogleLogoDrawable(mLayoutView.getContext()))
+                        .getCreatedFromResId(),
+                Shadows.shadowOf(mLogoView.getDrawable()).getCreatedFromResId());
     }
 
     @Test
     public void testSetLogoVisibility() {
         mModel.set(NtpThemeProperty.LOGO_VISIBILITY, View.VISIBLE);
-        verify(mLayoutView).setLogoVisibility(eq(View.VISIBLE));
+        assertEquals(View.VISIBLE, mLogoView.getVisibility());
 
         mModel.set(NtpThemeProperty.LOGO_VISIBILITY, View.GONE);
-        verify(mLayoutView).setLogoVisibility(eq(View.GONE));
+        assertEquals(View.GONE, mLogoView.getVisibility());
     }
 
     @Test
@@ -101,15 +117,12 @@ public class UploadImagePreviewLayoutViewBinderUnitTest {
         int expectedTopMargin = 40;
         int[] params = new int[] {expectedHeight, expectedTopMargin};
 
-        ViewGroup.MarginLayoutParams initialParams = new ViewGroup.MarginLayoutParams(100, 100);
-        initialParams.topMargin = 3; // Ensure it's different from expected
-        when(mLogoView.getLayoutParams()).thenReturn(initialParams);
-
         mModel.set(NtpThemeProperty.LOGO_PARAMS, params);
 
-        // Verifies that the binder called the correct method on the layout view with the correct
-        // parameters.
-        verify(mLayoutView).setLogoViewLayoutParams(eq(expectedHeight), eq(expectedTopMargin));
+        ViewGroup.MarginLayoutParams logoParams =
+                (ViewGroup.MarginLayoutParams) mLogoView.getLayoutParams();
+        assertEquals(expectedHeight, logoParams.height);
+        assertEquals(expectedTopMargin, logoParams.topMargin);
     }
 
     @Test
@@ -117,7 +130,7 @@ public class UploadImagePreviewLayoutViewBinderUnitTest {
         int expectedMargin = 45;
         mModel.set(NtpThemeProperty.SEARCH_BOX_TOP_MARGIN, expectedMargin);
 
-        verify(mLayoutView).setSearchBoxContainerTopMargin(eq(expectedMargin));
+        assertEquals(expectedMargin, getSearchBoxContainerParams().topMargin);
     }
 
     @Test
@@ -125,21 +138,34 @@ public class UploadImagePreviewLayoutViewBinderUnitTest {
         int expectedHeight = 56;
         mModel.set(NtpThemeProperty.SEARCH_BOX_HEIGHT, expectedHeight);
 
-        verify(mLayoutView).setSearchBoxContainerHeight(eq(expectedHeight));
+        assertEquals(expectedHeight, getSearchBoxContainerParams().height);
     }
 
     @Test
     public void testTopGuidelineBegin() {
         int topMargin = 105;
         mModel.set(NtpThemeProperty.TOP_GUIDELINE_BEGIN, topMargin);
-        verify(mLayoutView).setTopGuidelineBegin(eq(topMargin));
+        ConstraintLayout.LayoutParams params =
+                (ConstraintLayout.LayoutParams)
+                        mLayoutView.findViewById(R.id.guideline_top).getLayoutParams();
+        assertEquals(topMargin, params.guideBegin);
     }
 
     @Test
     public void testSetSideAndBottomInsets() {
+        int originalTopPadding = 7;
+        mLayoutView.setPadding(0, originalTopPadding, 0, 0);
         Rect expectedInsets =
                 new Rect(/* left= */ 10, /* top= */ 0, /* right= */ 20, /* bottom= */ 30);
         mModel.set(NtpThemeProperty.SIDE_AND_BOTTOM_INSETS, expectedInsets);
-        verify(mLayoutView).setSideAndBottomInsets(eq(expectedInsets));
+        assertEquals(10, mLayoutView.getPaddingLeft());
+        assertEquals(originalTopPadding, mLayoutView.getPaddingTop());
+        assertEquals(20, mLayoutView.getPaddingRight());
+        assertEquals(30, mLayoutView.getPaddingBottom());
+    }
+
+    private ViewGroup.MarginLayoutParams getSearchBoxContainerParams() {
+        return (ViewGroup.MarginLayoutParams)
+                mLayoutView.findViewById(R.id.search_box_container).getLayoutParams();
     }
 }

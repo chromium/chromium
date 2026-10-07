@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.toolbar.extensions;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.os.SystemClock;
@@ -29,15 +31,18 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.widget.AnchoredPopupWindow;
 
 import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link ExtensionActionDragHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ExtensionActionDragHelperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -46,9 +51,11 @@ public class ExtensionActionDragHelperTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock ItemTouchHelper mItemTouchHelper;
-    @Mock ListMenuButton mItemView;
 
-    RecyclerView.ViewHolder mViewHolder;
+    private ListMenuButton mItemView;
+    private RecyclerView.ViewHolder mViewHolder;
+    private int mClickCount;
+    private int mLongClickCount;
     private Activity mActivity;
     private ExtensionActionDragHelper mDragHelper;
     private int mTouchSlop;
@@ -57,9 +64,14 @@ public class ExtensionActionDragHelperTest {
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
 
+        mItemView = new ListMenuButton(mActivity, null);
+        mItemView.setOnClickListener(v -> mClickCount++);
+        mItemView.setOnLongClickListener(
+                v -> {
+                    mLongClickCount++;
+                    return true;
+                });
         mViewHolder = new RecyclerView.ViewHolder(mItemView) {};
-
-        when(mItemView.getContext()).thenReturn(mActivity);
 
         mTouchSlop = ViewConfiguration.get(mActivity).getScaledTouchSlop();
 
@@ -71,7 +83,7 @@ public class ExtensionActionDragHelperTest {
         mDragHelper.onTouch(
                 mItemView, obtainTouchEvent(MotionEvent.ACTION_DOWN, /* x= */ 50f, /* y= */ 50f));
 
-        verify(mItemView).setPressed(true);
+        assertTrue(mItemView.isPressed());
 
         // Advance time less than long press threshold (e.g., 100ms).
         ShadowLooper.idleMainLooper(100, TimeUnit.MILLISECONDS);
@@ -80,12 +92,12 @@ public class ExtensionActionDragHelperTest {
                 mItemView, obtainTouchEvent(MotionEvent.ACTION_UP, /* x= */ 50f, /* y= */ 50f));
 
         // Verify click performed and pressed state cleared.
-        verify(mItemView).performClick();
-        verify(mItemView).setPressed(false);
+        assertEquals(1, mClickCount);
+        assertFalse(mItemView.isPressed());
 
         // Verify no drag or long click occurred.
         verify(mItemTouchHelper, never()).startDrag(any());
-        verify(mItemView, never()).performLongClick();
+        assertEquals(0, mLongClickCount);
     }
 
     @Test
@@ -94,20 +106,34 @@ public class ExtensionActionDragHelperTest {
                 mItemView, obtainTouchEvent(MotionEvent.ACTION_DOWN, /* x= */ 50f, /* y= */ 50f));
 
         // Advance time past the system long press threshold.
-        ShadowLooper.idleMainLooper(ViewConfiguration.getLongPressTimeout(), TimeUnit.MILLISECONDS);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // Verify Long Click triggered.
-        verify(mItemView).performLongClick();
+        assertEquals(1, mLongClickCount);
 
         mDragHelper.onTouch(
                 mItemView, obtainTouchEvent(MotionEvent.ACTION_UP, /* x= */ 50f, /* y= */ 50f));
 
-        verify(mItemView, never()).performClick();
-        verify(mItemView).setPressed(false);
+        assertEquals(0, mClickCount);
+        assertFalse(mItemView.isPressed());
     }
 
     @Test
     public void testTouch_TouchDrag() {
+        // Like production, show the context menu on long press.
+        AnchoredPopupWindow.setShowHookForTesting(() -> {});
+        mActivity.setContentView(mItemView);
+        mItemView.setDelegate(
+                () ->
+                        BrowserUiListMenuUtils.getBasicListMenu(
+                                mActivity, new ModelList(), /* delegate= */ null),
+                /* overrideOnClickListener= */ false);
+        mItemView.setOnLongClickListener(
+                v -> {
+                    mItemView.showMenu();
+                    return true;
+                });
+
         mDragHelper.onTouch(
                 mItemView, obtainTouchEvent(MotionEvent.ACTION_DOWN, /* x= */ 50f, /* y= */ 50f));
 
@@ -120,7 +146,8 @@ public class ExtensionActionDragHelperTest {
         verify(mItemTouchHelper, never()).startDrag(any());
 
         // Advance time past the system longpress threshold.
-        ShadowLooper.idleMainLooper(ViewConfiguration.getLongPressTimeout(), TimeUnit.MILLISECONDS);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        assertTrue(mItemView.getHost().isMenuShowing());
 
         // Move slightly (within slop). Nothing should happen.
         float smallMove = mTouchSlop / 2.0f;
@@ -136,10 +163,11 @@ public class ExtensionActionDragHelperTest {
 
         // Verify drag started and pressed state cleared.
         verify(mItemTouchHelper).startDrag(mViewHolder);
-        verify(mItemView).setPressed(false);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertFalse(mItemView.isPressed());
 
         // Verify that starting a drag dismisses the context menu.
-        verify(mItemView).dismiss();
+        assertFalse(mItemView.getHost().isMenuShowing());
     }
 
     @Test
@@ -162,7 +190,7 @@ public class ExtensionActionDragHelperTest {
 
         // Verify drag started and pressed state cleared even without longpress.
         verify(mItemTouchHelper).startDrag(mViewHolder);
-        verify(mItemView).setPressed(false);
+        assertFalse(mItemView.isPressed());
     }
 
     @Test
@@ -173,13 +201,12 @@ public class ExtensionActionDragHelperTest {
         mDragHelper.onTouch(
                 mItemView, obtainTouchEvent(MotionEvent.ACTION_CANCEL, /* x= */ 50f, /* y= */ 50f));
 
-        verify(mItemView).setPressed(false);
-        verify(mItemView, never()).performClick();
+        assertFalse(mItemView.isPressed());
+        assertEquals(0, mClickCount);
 
         // Ensure timer is killed.
-        ShadowLooper.idleMainLooper(
-                ViewConfiguration.getLongPressTimeout() * 2, TimeUnit.MILLISECONDS);
-        verify(mItemView, never()).performLongClick();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        assertEquals(0, mLongClickCount);
     }
 
     @Test
@@ -219,7 +246,7 @@ public class ExtensionActionDragHelperTest {
 
         // The event should be process by Android, not the helper.
         assert !consumed;
-        verify(mItemView, never()).setPressed(true);
+        assertFalse(mItemView.isPressed());
     }
 
     private MotionEvent obtainTouchEvent(int action, float x, float y) {

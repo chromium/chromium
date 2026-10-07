@@ -4,14 +4,12 @@
 
 package org.chromium.chrome.browser.toolbar.adaptive;
 
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
+import android.app.Activity;
 import android.view.View;
-
-import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,15 +28,23 @@ import org.chromium.ui.widget.AnchoredPopupWindow;
 
 /** Unit tests for the {@link AdaptiveButtonActionMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AdaptiveButtonActionMenuCoordinatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Callback<Integer> mCallback;
 
+    private ListMenuButton mMenuView;
+    private int mMenuShownCount;
+
     @Before
     public void setUp() {
         AnchoredPopupWindow.setShowHookForTesting(() -> {});
+
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        mMenuView = new ListMenuButton(activity, /* attrs= */ null);
+        // ListMenuButton only shows its menu when attached to a window.
+        activity.setContentView(mMenuView);
+        mMenuView.addPopupListener(() -> mMenuShownCount++);
     }
 
     @Test
@@ -46,20 +52,11 @@ public class AdaptiveButtonActionMenuCoordinatorTest {
         var coordinator = new AdaptiveButtonActionMenuCoordinator(/* showMenu= */ true);
         View.OnLongClickListener listener = coordinator.createOnLongClickListener(mCallback);
 
-        ListMenuButton menuView =
-                spy(
-                        new ListMenuButton(
-                                ApplicationProvider.getApplicationContext(),
-                                Robolectric.buildAttributeSet().build()));
-        doReturn(ApplicationProvider.getApplicationContext().getResources())
-                .when(menuView)
-                .getResources();
-
-        listener.onLongClick(menuView);
+        listener.onLongClick(mMenuView);
 
         coordinator.getListMenuForTesting().clickItemForTesting(0);
 
-        verify(menuView).showMenu();
+        assertEquals(1, mMenuShownCount);
         verify(mCallback).onResult(R.id.customize_adaptive_button_menu_id);
     }
 
@@ -68,23 +65,14 @@ public class AdaptiveButtonActionMenuCoordinatorTest {
         var coordinator = new AdaptiveButtonActionMenuCoordinator(/* showMenu= */ true);
         View.OnLongClickListener listener = coordinator.createOnLongClickListener(mCallback);
 
-        ListMenuButton menuView =
-                spy(
-                        new ListMenuButton(
-                                ApplicationProvider.getApplicationContext(),
-                                Robolectric.buildAttributeSet().build()));
-        doReturn(ApplicationProvider.getApplicationContext().getResources())
-                .when(menuView)
-                .getResources();
-
         // Long click menuView, menu should be shown.
-        listener.onLongClick(menuView);
+        listener.onLongClick(mMenuView);
 
         // Click menuView, nothing should happen.
-        menuView.performClick();
+        mMenuView.performClick();
 
         // Menu should have been shown once (on long click).
-        verify(menuView).showMenu();
+        assertEquals(1, mMenuShownCount);
     }
 
     @Test
@@ -92,20 +80,12 @@ public class AdaptiveButtonActionMenuCoordinatorTest {
         var coordinator = spy(new AdaptiveButtonActionMenuCoordinator(/* showMenu= */ false));
         View.OnLongClickListener listener = coordinator.createOnLongClickListener(mCallback);
 
-        ListMenuButton menuView =
-                spy(
-                        new ListMenuButton(
-                                ApplicationProvider.getApplicationContext(),
-                                Robolectric.buildAttributeSet().build()));
-        doReturn(ApplicationProvider.getApplicationContext().getResources())
-                .when(menuView)
-                .getResources();
         String contentDescription = "Test Content Description";
-        menuView.setContentDescription(contentDescription);
+        mMenuView.setContentDescription(contentDescription);
 
-        listener.onLongClick(menuView);
+        listener.onLongClick(mMenuView);
 
-        verify(coordinator).showAnchoredToastInternal(menuView, contentDescription);
-        verify(menuView, never()).showMenu();
+        verify(coordinator).showAnchoredToastInternal(mMenuView, contentDescription);
+        assertEquals(0, mMenuShownCount);
     }
 }
