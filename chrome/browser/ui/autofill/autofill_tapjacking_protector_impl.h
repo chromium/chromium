@@ -5,17 +5,20 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_TAPJACKING_PROTECTOR_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_TAPJACKING_PROTECTOR_IMPL_H_
 
+#include <string>
+
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/ui/autofill_tapjacking_protector.h"
 
 namespace autofill {
 
-class AutofillClient;
+class AutofillDialogController;
 
 class AutofillTapjackingProtectorImpl : public AutofillTapjackingProtector {
  public:
-  explicit AutofillTapjackingProtectorImpl(AutofillClient* autofill_client);
+  explicit AutofillTapjackingProtectorImpl(
+      AutofillDialogController* autofill_dialog_controller);
 
   AutofillTapjackingProtectorImpl(const AutofillTapjackingProtectorImpl&) =
       delete;
@@ -28,7 +31,11 @@ class AutofillTapjackingProtectorImpl : public AutofillTapjackingProtector {
             AuthorizationCallback callback) override;
 
  private:
-  const raw_ref<AutofillClient> autofill_client_;
+  std::u16string GetDialogTitle(AuthorizationType authorization_type) const;
+  std::u16string GetDialogDescription(
+      AuthorizationType authorization_type) const;
+
+  const raw_ptr<AutofillDialogController> autofill_dialog_controller_;
 };
 
 }  // namespace autofill

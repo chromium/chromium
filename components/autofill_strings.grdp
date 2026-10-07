@@ -2180,4 +2180,20 @@ You can remove this suggestion from Chrome. Your original source won't be delete
       Smarter autofill, kept private notice closed
     </message>
   </if>
+
+  <!-- TODO(crbug.com/561395976): Finalize tapjacking strings. -->
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_TAPJACKING_CREDIT_CARD_CONFIRMATION_DIALOG_TITLE" desc="The title shown in the confirmation dialog which asks the user to authorize filling a credit card. The dialog notifies the user that some UI surface is currently overlaying Chrome." translateable="false">
+      Confirm action
+    </message>
+    <message name="IDS_AUTOFILL_TAPJACKING_CREDIT_CARD_CONFIRMATION_DIALOG_DESCRIPTION" desc="The description shown in the confirmation dialog which asks the user to authorize filling a credit card. The dialog notifies the user that some UI surface is currently overlaying Chrome." translateable="false">
+      Your credit card data is about to be filled, please confirm the action. This additional confirmation is required because the Chrome window is currently overlaid by another application.
+    </message>
+    <message name="IDS_AUTOFILL_TAPJACKING_CONFIRMATION_DIALOG_POSITIVE_BUTTON" desc="The positive button text shown in the confirmation dialog which asks the user to authorize filling some sensitive data. The dialog notifies the user that some UI surface is currently overlaying Chrome." translateable="false">
+      Confirm
+    </message>
+    <message name="IDS_AUTOFILL_TAPJACKING_CONFIRMATION_DIALOG_NEGATIVE_BUTTON" desc="The negative button text shown in the confirmation dialog which asks the user to authorize filling some sensitive data. The dialog notifies the user that some UI surface is currently overlaying Chrome." translateable="false">
+      Cancel
+    </message>
+  </if>
 </grit-part>
