@@ -1,0 +1,18 @@
+<!--
+@BLINK-ALLOW:backgroundColor=*
+@BLINK-ALLOW:ignored*
+@BLINK-ALLOW:textStyle=*
+-->
+<!DOCTYPE html>
+<html>
+  <body>
+
+<!-- crbug.com/421462039: the 'italic' static text should inherit the
+     yellow background from its ancestor span. -->
+<p id="italic">Some <span style="background-color: yellow;">background color and <span style="font-style: italic;">italic</span> text</span></p>
+
+<!-- Control: same nesting without font-style. -->
+<p id="plain">Some <span style="background-color: yellow;">background color and <span>plain</span> text</span></p>
+
+  </body>
+</html>

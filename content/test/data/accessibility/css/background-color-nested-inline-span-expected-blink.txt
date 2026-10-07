@@ -1,0 +1,21 @@
+rootWebArea backgroundColor=ffffff
+++genericContainer ignored backgroundColor=ffffff
+++++genericContainer ignored backgroundColor=ffffff
+++++++paragraph backgroundColor=ffffff
+++++++++staticText name='Some ' backgroundColor=ffffff
+++++++++++inlineTextBox name='Some ' backgroundColor=ffffff
+++++++++staticText name='background color and ' backgroundColor=ffff00
+++++++++++inlineTextBox name='background color and ' backgroundColor=ffff00
+++++++++staticText name='italic' backgroundColor=ffff00 textStyle=4
+++++++++++inlineTextBox name='italic' backgroundColor=ffff00
+++++++++staticText name=' text' backgroundColor=ffff00
+++++++++++inlineTextBox name=' text' backgroundColor=ffff00
+++++++paragraph backgroundColor=ffffff
+++++++++staticText name='Some ' backgroundColor=ffffff
+++++++++++inlineTextBox name='Some ' backgroundColor=ffffff
+++++++++staticText name='background color and ' backgroundColor=ffff00
+++++++++++inlineTextBox name='background color and ' backgroundColor=ffff00
+++++++++staticText name='plain' backgroundColor=ffff00
+++++++++++inlineTextBox name='plain' backgroundColor=ffff00
+++++++++staticText name=' text' backgroundColor=ffff00
+++++++++++inlineTextBox name=' text' backgroundColor=ffff00

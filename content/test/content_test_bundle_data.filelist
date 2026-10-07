@@ -2921,6 +2921,8 @@ data/accessibility/css/anchor-positioning-position-fallback.html
 data/accessibility/css/anchor-positioning-without-details-expected-blink.txt
 data/accessibility/css/anchor-positioning-without-details.html
 data/accessibility/css/anchor-positioning.html
+data/accessibility/css/background-color-nested-inline-span-expected-blink.txt
+data/accessibility/css/background-color-nested-inline-span.html
 data/accessibility/css/background-color-transparent-expected-android-assist-data.txt
 data/accessibility/css/background-color-transparent-expected-android-external.txt
 data/accessibility/css/background-color-transparent-expected-android.txt

@@ -304,6 +304,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCSSBackgroundColorNestedInlineSpan) {
+  RunCSSTest(FILE_PATH_LITERAL("background-color-nested-inline-span.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityCSSBeforeAfterBlock) {
   RunCSSTest(FILE_PATH_LITERAL("before-after-block.html"));
 }

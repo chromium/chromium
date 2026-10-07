@@ -4431,11 +4431,34 @@ RGBA32 AXNodeObject::BackgroundColor() const {
   }
 
   const ComputedStyle& style = layout_object->StyleRef();
-  if (!style.HasBackground()) {
-    return Color::kTransparent.Rgb();
+  if (style.HasBackground()) {
+    return style.VisitedDependentColor(GetCSSPropertyBackgroundColor()).Rgb();
   }
 
-  return style.VisitedDependentColor(GetCSSPropertyBackgroundColor()).Rgb();
+  // Spans that only set a background-color are not in the accessibility tree,
+  // so the browser can't blend their color into descendants. Walk the layout
+  // tree instead to find the nearest inline ancestor's background.
+  // See crbug.com/421462039.
+  if (layout_object->IsText() || layout_object->IsLayoutInline()) {
+    for (const LayoutObject* ancestor = layout_object->Parent();
+         ancestor && ancestor->IsLayoutInline();
+         ancestor = ancestor->Parent()) {
+      // The browser already blends the colors of ancestors in the tree; using
+      // them here too would double-blend translucent backgrounds.
+      if (AXObject* ax_ancestor = AXObjectCache().Get(ancestor);
+          ax_ancestor && ax_ancestor->CachedIsIncludedInTree()) {
+        break;
+      }
+      const ComputedStyle& ancestor_style = ancestor->StyleRef();
+      if (ancestor_style.HasBackground()) {
+        return ancestor_style
+            .VisitedDependentColor(GetCSSPropertyBackgroundColor())
+            .Rgb();
+      }
+    }
+  }
+
+  return Color::kTransparent.Rgb();
 }
 
 RGBA32 AXNodeObject::GetColor() const {
