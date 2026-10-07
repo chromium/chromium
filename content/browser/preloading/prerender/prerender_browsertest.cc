@@ -71,6 +71,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
+#include "content/common/frame.mojom.h"
 #include "content/common/input/synthetic_tap_gesture.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -111,6 +112,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/theme_change_waiter.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "content/public/test/web_contents_observer_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -137,6 +139,7 @@
 #include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/page/display_cutout.mojom.h"
 #include "ui/color/color_id.h"
@@ -10673,6 +10676,52 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, EmbedderPrerenderToNonHttpUrl) {
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
       "EmbedderSuffixForTest",
       PrerenderFinalStatus::kInvalidSchemeNavigation, 1);
+}
+
+// OpenURL requests from a prerendering main frame are ignored without
+// terminating the renderer. Regression test for crbug.com/492163889.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, OpenURLFromPrerenderingMainFrame) {
+  const GURL initial_url = GetUrl("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  const GURL prerender_url = GetUrl("/title2.html");
+  PrerenderHostId host_id = AddPrerender(prerender_url);
+  auto* prerender_rfh = GetPrerenderedMainFrameHost(host_id);
+  ASSERT_TRUE(prerender_rfh);
+  ASSERT_EQ(prerender_rfh->lifecycle_state(),
+            RenderFrameHostLifecycleStateImpl::kPrerendering);
+  ASSERT_FALSE(prerender_rfh->GetParentOrOuterDocument());
+
+  const auto prerender_rfh_id = prerender_rfh->GetGlobalId();
+
+  {
+    NavigationStartObserver navigation_observer(
+        web_contents(), base::BindLambdaForTesting([](NavigationHandle*) {
+          ADD_FAILURE() << "The OpenURL request should be ignored";
+        }));
+    auto params = blink::mojom::OpenURLParams::New();
+    params->url = GetUrl("/title3.html");
+    params->disposition = WindowOpenDisposition::CURRENT_TAB;
+    params->should_replace_current_entry = false;
+    params->user_gesture = true;
+    params->initiator_state_token =
+        prerender_rfh->current_initiator_state_token();
+    params->initiator_document_token = prerender_rfh->GetDocumentToken();
+    static_cast<mojom::FrameHost*>(prerender_rfh)->OpenURL(std::move(params));
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+    EXPECT_EQ(initial_url, web_contents()->GetLastCommittedURL());
+  }
+
+  auto* remaining_prerender_rfh = GetPrerenderedMainFrameHost(host_id);
+  ASSERT_TRUE(remaining_prerender_rfh);
+  EXPECT_TRUE(remaining_prerender_rfh->IsRenderFrameLive());
+  EXPECT_EQ(prerender_url, remaining_prerender_rfh->GetLastCommittedURL());
+
+  // The ignored request must leave the prerendered page usable for activation.
+  NavigatePrimaryPage(prerender_url);
+  EXPECT_EQ(prerender_rfh_id,
+            web_contents()->GetPrimaryMainFrame()->GetGlobalId());
+  EXPECT_EQ(prerender_url, web_contents()->GetLastCommittedURL());
 }
 
 // Ensures WebContents::OpenURL targeting a frame in a prerendered host will

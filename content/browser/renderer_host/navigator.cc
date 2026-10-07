@@ -1117,12 +1117,15 @@ void Navigator::RequestOpenURL(
         render_frame_host->frame_tree_node()->frame_tree_node_id();
   }
 
-  // Prerendering frames need to have an FTN id set, so OpenURL() can find
-  // the correct frame tree for the navigation. Due to the above logic, that
-  // means this function currently can't be called for prerendering main frames.
-  DCHECK(render_frame_host->lifecycle_state() !=
-             RenderFrameHostLifecycleStateImpl::kPrerendering ||
-         frame_tree_node_id);
+  // Prerendering frames need an FTN id so OpenURL() can find the correct frame
+  // tree. Allow requests with an FTN id, such as WindowClient.navigate() on an
+  // iframe in a prerendering page. Ignore requests without one, which can occur
+  // after a synthetic click in a prerendering page.
+  if (render_frame_host->lifecycle_state() ==
+          RenderFrameHostLifecycleStateImpl::kPrerendering &&
+      !frame_tree_node_id) {
+    return;
+  }
 
   OpenURLParams params = OpenURLParams::CreateRendererInitiated(
       url, disposition, ui::PAGE_TRANSITION_LINK, referrer,
