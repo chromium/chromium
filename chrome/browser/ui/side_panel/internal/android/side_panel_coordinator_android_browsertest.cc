@@ -975,6 +975,75 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(coordinator_->IsSidePanelShowing());
 }
 
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
+                       Destroy_WhileClosingWithAnimation_FinishesClosingFirst) {
+  // Arrange: Show a window-scoped entry.
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  std::unique_ptr<SidePanelEntry> entry =
+      CreateSidePanelEntry(entry_key, browser_);
+  TestSidePanelEntryObserver entry_observer(entry.get());
+  SidePanelRegistry::From(browser_)->Register(std::move(entry));
+
+  coordinator_->SidePanelUIBase::Show(entry_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/true);
+  WaitUntilOpened(coordinator_);
+
+  // Arrange: Start an animated close and leave it in progress.
+  coordinator_->Close(SidePanelEntryHideReason::kSidePanelClosed,
+                      /*suppress_animations=*/false);
+  ASSERT_EQ(SidePanelState::kClosing, coordinator_->GetStateForTesting());
+  ASSERT_EQ(0, entry_observer.num_on_entry_hidden_received_);
+
+  // Act: Destroy the coordinator (simulating window/activity destruction)
+  // while the close animation is in progress.
+  coordinator_.ExtractAsDangling()->Destroy();
+
+  // Assert: The close was finished before the coordinator was destroyed, so
+  // the entry received its hide notifications.
+  EXPECT_EQ(1, entry_observer.num_on_entry_hidden_received_);
+  EXPECT_EQ(1, entry_observer.num_on_entry_hidden_with_reason_received_);
+  EXPECT_EQ(SidePanelEntryHideReason::kSidePanelClosed,
+            entry_observer.reason_for_last_entry_hidden_with_reason_.value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    Destroy_WhileOpeningWithAnimation_KeepsEntryShownAndActive) {
+  // Arrange: Register a tab-scoped entry.
+  tabs::TabInterface* active_tab = tab_list_->GetActiveTab();
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kTestTabScopedEntry);
+  std::unique_ptr<SidePanelEntry> entry =
+      CreateSidePanelEntry(entry_key, browser_);
+  SidePanelEntry* entry_ptr = entry.get();
+  TestSidePanelEntryObserver entry_observer(entry.get());
+  auto* registry = SidePanelRegistry::From(active_tab);
+  registry->Register(std::move(entry));
+
+  // Arrange: Start an animated open and leave it in progress. Note that
+  // `OnEntryShown()` is called when the open starts.
+  coordinator_->SidePanelUIBase::Show(entry_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/false);
+  ASSERT_EQ(SidePanelState::kOpening, coordinator_->GetStateForTesting());
+  ASSERT_EQ(1, entry_observer.num_on_entry_shown_received_);
+
+  // Act: Destroy the coordinator (simulating Activity recreation, where the
+  // tab and its SidePanelRegistry survive) while the open animation is in
+  // progress.
+  coordinator_.ExtractAsDangling()->Destroy();
+
+  // Assert: Finishing the open on destruction doesn't notify the entry again
+  // or hide it...
+  EXPECT_EQ(1, entry_observer.num_on_entry_shown_received_);
+  EXPECT_EQ(0, entry_observer.num_on_entry_will_hide_received_);
+  EXPECT_EQ(0, entry_observer.num_on_entry_hidden_received_);
+
+  // ...and the entry stays active so it can be restored after the Activity is
+  // recreated.
+  EXPECT_EQ(entry_ptr, registry->GetActiveEntry().value_or(nullptr));
+}
+
 IN_PROC_BROWSER_TEST_F(
     SidePanelCoordinatorAndroidBrowserTest,
     Close_ClearsCachedEntryViewForInactiveEntriesInContextualRegistries) {

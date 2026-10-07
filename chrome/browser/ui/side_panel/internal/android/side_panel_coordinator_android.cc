@@ -96,7 +96,17 @@ SidePanelCoordinatorAndroid::~SidePanelCoordinatorAndroid() {
 }
 
 void SidePanelCoordinatorAndroid::Destroy() {
-  SPLOG("Destroy");
+  SPLOG("Destroy - state: " << ToString(state_));
+
+  // Settle any in-flight UI changes (open/close animations or content
+  // replacement) while this object and the SidePanelEntries are still alive.
+  //
+  // Otherwise, the Java side would end the animations later, e.g. when
+  // SideUiCoordinator is destroyed during Activity teardown, and the resulting
+  // callbacks would find no native object to notify, leaving SidePanelEntries
+  // without their final show/hide notifications.
+  CompletePendingUiChanges();
+
   delete this;
 }
 
