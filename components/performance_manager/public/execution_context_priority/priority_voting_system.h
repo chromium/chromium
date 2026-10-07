@@ -13,11 +13,13 @@
 #include "components/performance_manager/public/execution_context_priority/max_vote_aggregator.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
+#include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/graph/worker_node.h"
 
 namespace performance_manager {
 
 class Graph;
+class ProcessPriorityAggregator;
 
 namespace execution_context_priority {
 
@@ -45,7 +47,9 @@ class PriorityVoter {
 // vote of a node in the aggregator is its final priority. Each component is
 // built from the aggregator, observes the final priority of nodes in it, and/or
 // casts votes into it:
-//   - The PrioritySetter sets the priority of frames and workers.
+//   - The PrioritySetter sets the priority of frames, workers and processes.
+//   - The ProcessPriorityAggregator casts the highest priority of the frames
+//     and workers hosted by each process on that process.
 //
 // It also verifies that no votes are leaked.
 //
@@ -53,6 +57,7 @@ class PriorityVoter {
 class PriorityVotingSystem
     : public GraphOwnedAndRegistered<PriorityVotingSystem>,
       private FrameNodeObserver,
+      private ProcessNodeObserver,
       private WorkerNodeObserver {
  public:
   PriorityVotingSystem();
@@ -79,16 +84,24 @@ class PriorityVotingSystem
       const ProcessNode* previous_process_node,
       const FrameNode* previous_parent_or_outer_document_or_embedder) override;
 
+  // ProcessNodeObserver:
+  void OnProcessNodeRemoved(const ProcessNode* process_node) override;
+
   // WorkerNodeObserver:
   void OnWorkerNodeRemoved(const WorkerNode* worker_node,
                            const ProcessNode* previous_process_node) override;
 
-  // Aggregates the votes from the voters. Declared first, since everything else
-  // observes it or holds voting channels issued by it.
+  // Aggregates the votes from the voters and `process_priority_aggregator_`.
+  // Declared first, since everything else observes it or holds voting channels
+  // issued by it.
   MaxVoteAggregator max_vote_aggregator_;
 
   // Observes `max_vote_aggregator_`.
   std::unique_ptr<PrioritySetter> priority_setter_;
+
+  // Follows the priority of frames and workers, and casts the highest one on
+  // their process.
+  std::unique_ptr<ProcessPriorityAggregator> process_priority_aggregator_;
 
   std::vector<std::unique_ptr<PriorityVoter>> priority_voters_;
 };

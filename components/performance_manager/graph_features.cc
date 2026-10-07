@@ -13,7 +13,6 @@
 #include "components/performance_manager/decorators/page_aggregator.h"
 #include "components/performance_manager/decorators/page_load_tracker_decorator.h"
 #include "components/performance_manager/decorators/process_hosted_content_types_aggregator.h"
-#include "components/performance_manager/decorators/process_priority_aggregator.h"
 #include "components/performance_manager/freezing/frozen_frame_aggregator.h"
 #include "components/performance_manager/graph/frame_node_impl_describer.h"
 #include "components/performance_manager/graph/page_node_impl_describer.h"
@@ -64,7 +63,6 @@ void GraphFeatures::ConfigureGraph(Graph* graph) const {
     // The PriorityVotingSystem depends on FrameVisibilityDecorator and
     // ImportantFrameDecorator and so must be installed after.
     Install<execution_context_priority::PriorityVotingSystem>(graph);
-    Install<ProcessPriorityAggregator>(graph);
   }
   if (flags_.process_hosted_content_types_aggregator) {
     Install<ProcessHostedContentTypesAggregator>(graph);

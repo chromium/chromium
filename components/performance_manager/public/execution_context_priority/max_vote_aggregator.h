@@ -37,6 +37,8 @@ class MaxVoteAggregator : public VoteObserver {
                                        const std::optional<Vote>& vote) {}
     virtual void OnWorkerTopVoteChanged(const WorkerNode* worker_node,
                                         const std::optional<Vote>& vote) {}
+    virtual void OnProcessTopVoteChanged(const ProcessNode* process_node,
+                                         const std::optional<Vote>& vote) {}
   };
 
   MaxVoteAggregator();
@@ -137,8 +139,8 @@ class MaxVoteAggregator : public VoteObserver {
                             const std::optional<Vote>& vote);
 
   // Votes can be cast while observers are being notified (e.g. setting the
-  // priority of a frame changes the vote on its child frames), so notifications
-  // are re-entrant. Cycles are caught by `notifying_vote_contexts_` instead.
+  // priority of a frame changes the vote on its process), so notifications are
+  // re-entrant. Cycles are caught by `notifying_vote_contexts_` instead.
   base::ReentrantObserverList<Observer> observers_;
 
   // The vote contexts whose observers are being notified, innermost last.

@@ -100,6 +100,9 @@ void MaxVoteAggregator::NotifyTopVoteChanged(VoteContext vote_context,
                    [&](const WorkerNode* worker_node) {
                      observer.OnWorkerTopVoteChanged(worker_node, vote);
                    },
+                   [&](const ProcessNode* process_node) {
+                     observer.OnProcessTopVoteChanged(process_node, vote);
+                   },
                },
                vote_context);
   }

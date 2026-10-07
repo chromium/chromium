@@ -21,13 +21,19 @@ class WebContents;
 namespace performance_manager {
 
 class FrameNode;
+class ProcessNode;
 class WorkerNode;
 
 namespace execution_context_priority {
 
 // The graph nodes that a priority vote can target. Any node type not listed
 // here (e.g. SystemNode) is intentionally not votable.
-using VoteContext = std::variant<const FrameNode*, const WorkerNode*>;
+//
+// A vote on a ProcessNode is aggregated with the priority of the frames and
+// workers it hosts (see ProcessPriorityAggregator). Only renderer processes can
+// be voted on.
+using VoteContext =
+    std::variant<const FrameNode*, const WorkerNode*, const ProcessNode*>;
 
 // Helper function equivalent to strcmp, but that is safe to use with nullptr.
 int ReasonCompare(const char* reason1, const char* reason2);

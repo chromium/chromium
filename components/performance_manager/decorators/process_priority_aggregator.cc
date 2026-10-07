@@ -4,6 +4,9 @@
 
 #include "components/performance_manager/decorators/process_priority_aggregator.h"
 
+#include <optional>
+#include <utility>
+
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
@@ -14,13 +17,17 @@ namespace {
 
 const char kDescriberName[] = "ProcessPriorityAggregator";
 
+const char kPriorityReason[] = "hosted frame or worker priority";
+
 }  // namespace
 
-ProcessPriorityAggregator::ProcessPriorityAggregator() = default;
+ProcessPriorityAggregator::ProcessPriorityAggregator(
+    execution_context_priority::VotingChannel voting_channel)
+    : voting_channel_(std::move(voting_channel)) {}
 
 ProcessPriorityAggregator::~ProcessPriorityAggregator() = default;
 
-void ProcessPriorityAggregator::OnPassedToGraph(Graph* graph) {
+void ProcessPriorityAggregator::InitializeOnGraph(Graph* graph) {
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(this,
                                                            kDescriberName);
   graph->AddProcessNodeObserver(this);
@@ -32,7 +39,7 @@ void ProcessPriorityAggregator::OnPassedToGraph(Graph* graph) {
   registry->AddObserver(this);
 }
 
-void ProcessPriorityAggregator::OnTakenFromGraph(Graph* graph) {
+void ProcessPriorityAggregator::TearDownOnGraph(Graph* graph) {
   auto* registry =
       execution_context::ExecutionContextRegistry::GetFromGraph(graph);
   CHECK(registry);
@@ -60,6 +67,8 @@ void ProcessPriorityAggregator::OnBeforeProcessNodeRemoved(
   Data& data = Data::Get(process_node_impl);
   DCHECK(data.IsEmpty());
 #endif
+  // This is a nop if no execution context was ever added to the process.
+  voting_channel_.SetVote(process_node, std::nullopt);
 }
 
 void ProcessPriorityAggregator::OnExecutionContextAdded(
@@ -68,7 +77,9 @@ void ProcessPriorityAggregator::OnExecutionContextAdded(
   Data& data = Data::Get(process_node);
   data.Increment(ec->GetPriorityAndReason().priority());
   // This is a nop if the priority didn't actually change.
-  process_node->set_priority(data.GetPriority());
+  voting_channel_.SetVote(
+      process_node,
+      execution_context_priority::Vote(data.GetPriority(), kPriorityReason));
 }
 
 void ProcessPriorityAggregator::OnBeforeExecutionContextRemoved(
@@ -77,7 +88,9 @@ void ProcessPriorityAggregator::OnBeforeExecutionContextRemoved(
   Data& data = Data::Get(process_node);
   data.Decrement(ec->GetPriorityAndReason().priority());
   // This is a nop if the priority didn't actually change.
-  process_node->set_priority(data.GetPriority());
+  voting_channel_.SetVote(
+      process_node,
+      execution_context_priority::Vote(data.GetPriority(), kPriorityReason));
 }
 
 void ProcessPriorityAggregator::OnPriorityAndReasonChanged(
@@ -95,7 +108,9 @@ void ProcessPriorityAggregator::OnPriorityAndReasonChanged(
   data.Decrement(previous_value.priority());
   data.Increment(new_value.priority());
   // This is a nop if the priority didn't actually change.
-  process_node->set_priority(data.GetPriority());
+  voting_channel_.SetVote(
+      process_node,
+      execution_context_priority::Vote(data.GetPriority(), kPriorityReason));
 }
 
 }  // namespace performance_manager

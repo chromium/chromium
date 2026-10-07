@@ -70,6 +70,10 @@ class ForwardingObserver : public MaxVoteAggregator::Observer {
                               const std::optional<Vote>& vote) override {
     voting_channel_.SetVote(worker_node, vote);
   }
+  void OnProcessTopVoteChanged(const ProcessNode* process_node,
+                               const std::optional<Vote>& vote) override {
+    voting_channel_.SetVote(process_node, vote);
+  }
 
  private:
   VotingChannel voting_channel_;

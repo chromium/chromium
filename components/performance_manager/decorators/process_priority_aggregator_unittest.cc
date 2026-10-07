@@ -4,10 +4,12 @@
 
 #include "components/performance_manager/decorators/process_priority_aggregator.h"
 
-#include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
+#include <memory>
+
+#include "components/performance_manager/execution_context_priority/priority_setter.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/public/execution_context_priority/max_vote_aggregator.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,8 +28,15 @@ class ProcessPriorityAggregatorTest : public GraphTestHarness {
 
   void SetUp() override {
     Super::SetUp();
-    ppa_ = new ProcessPriorityAggregator();
-    graph()->PassToGraph(base::WrapUnique(ppa_.get()));
+    ppa_ = std::make_unique<ProcessPriorityAggregator>(
+        max_vote_aggregator_.GetVotingChannel());
+    ppa_->InitializeOnGraph(graph());
+  }
+
+  void TearDown() override {
+    ppa_->TearDownOnGraph(graph());
+    ppa_.reset();
+    Super::TearDown();
   }
 
   void ExpectPriorityCounts(ProcessNodeImpl* process_node,
@@ -49,7 +58,12 @@ class ProcessPriorityAggregatorTest : public GraphTestHarness {
 #endif
   }
 
-  raw_ptr<ProcessPriorityAggregator> ppa_ = nullptr;
+  // The aggregated priority is cast as a vote on the process, which the
+  // PrioritySetter applies.
+  execution_context_priority::MaxVoteAggregator max_vote_aggregator_;
+  execution_context_priority::PrioritySetter priority_setter_{
+      &max_vote_aggregator_};
+  std::unique_ptr<ProcessPriorityAggregator> ppa_;
 };
 
 }  // namespace

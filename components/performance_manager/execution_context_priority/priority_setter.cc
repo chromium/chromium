@@ -4,8 +4,10 @@
 
 #include "components/performance_manager/execution_context_priority/priority_setter.h"
 
+#include "base/check_op.h"
 #include "base/process/process.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
+#include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/graph/node_state.h"
 
@@ -48,6 +50,20 @@ void PrioritySetter::OnFrameTopVoteChanged(const FrameNode* frame_node,
 void PrioritySetter::OnWorkerTopVoteChanged(const WorkerNode* worker_node,
                                             const std::optional<Vote>& vote) {
   SetPriorityAndReason(WorkerNodeImpl::FromNode(worker_node), vote);
+}
+
+// A process has no priority reason, so the reason of the vote is dropped.
+void PrioritySetter::OnProcessTopVoteChanged(const ProcessNode* process_node,
+                                             const std::optional<Vote>& vote) {
+  ProcessNodeImpl* process_node_impl = ProcessNodeImpl::FromNode(process_node);
+  // The voting system only manages the priority of renderer processes.
+  CHECK_EQ(process_node_impl->GetProcessType(), content::PROCESS_TYPE_RENDERER);
+  // No property changes while the node is leaving graph.
+  if (process_node_impl->GetNodeState() == NodeState::kLeavingGraph) {
+    return;
+  }
+  process_node_impl->set_priority(
+      vote.has_value() ? vote->value() : base::Process::Priority::kMinValue);
 }
 
 }  // namespace performance_manager::execution_context_priority

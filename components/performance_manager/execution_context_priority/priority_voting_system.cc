@@ -5,27 +5,37 @@
 #include "components/performance_manager/public/execution_context_priority/priority_voting_system.h"
 
 #include "base/check.h"
+#include "components/performance_manager/decorators/process_priority_aggregator.h"
 #include "components/performance_manager/execution_context_priority/priority_setter.h"
 #include "components/performance_manager/public/graph/graph.h"
 
 namespace performance_manager::execution_context_priority {
 
 PriorityVotingSystem::PriorityVotingSystem()
-    : priority_setter_(
-          std::make_unique<PrioritySetter>(&max_vote_aggregator_)) {}
+    : priority_setter_(std::make_unique<PrioritySetter>(&max_vote_aggregator_)),
+      process_priority_aggregator_(std::make_unique<ProcessPriorityAggregator>(
+          max_vote_aggregator_.GetVotingChannel())) {}
 
 PriorityVotingSystem::~PriorityVotingSystem() = default;
 
 void PriorityVotingSystem::OnPassedToGraph(Graph* graph) {
+  // The ProcessPriorityAggregator tracks frames and workers from when they are
+  // added, so it would miss nodes that already exist.
+  CHECK(graph->HasOnlySystemNode());
+
   graph->AddFrameNodeObserver(this);
+  graph->AddProcessNodeObserver(this);
   graph->AddWorkerNodeObserver(this);
+  process_priority_aggregator_->InitializeOnGraph(graph);
 }
 
 void PriorityVotingSystem::OnTakenFromGraph(Graph* graph) {
   for (auto& priority_voter : priority_voters_) {
     priority_voter->TearDownOnGraph(graph);
   }
+  process_priority_aggregator_->TearDownOnGraph(graph);
   graph->RemoveWorkerNodeObserver(this);
+  graph->RemoveProcessNodeObserver(this);
   graph->RemoveFrameNodeObserver(this);
 }
 
@@ -49,6 +59,12 @@ void PriorityVotingSystem::OnFrameNodeRemoved(
     const FrameNode* previous_parent_or_outer_document_or_embedder) {
   CHECK(!max_vote_aggregator_.HasVotes(frame_node))
       << "A voter did not remove its vote on a removed frame";
+}
+
+void PriorityVotingSystem::OnProcessNodeRemoved(
+    const ProcessNode* process_node) {
+  CHECK(!max_vote_aggregator_.HasVotes(process_node))
+      << "A voter did not remove its vote on a removed process";
 }
 
 void PriorityVotingSystem::OnWorkerNodeRemoved(

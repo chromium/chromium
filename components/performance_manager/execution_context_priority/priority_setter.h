@@ -13,8 +13,9 @@
 
 namespace performance_manager::execution_context_priority {
 
-// Sets the priority of frames and workers from their top vote in the
-// MaxVoteAggregator, or to their default priority when they have no vote.
+// Sets the priority of frames, workers and renderer processes from their top
+// vote in the MaxVoteAggregator, or to their default priority when they have no
+// vote.
 class PrioritySetter : public MaxVoteAggregator::Observer {
  public:
   // `max_vote_aggregator` must outlive this.
@@ -29,6 +30,8 @@ class PrioritySetter : public MaxVoteAggregator::Observer {
                              const std::optional<Vote>& vote) override;
   void OnWorkerTopVoteChanged(const WorkerNode* worker_node,
                               const std::optional<Vote>& vote) override;
+  void OnProcessTopVoteChanged(const ProcessNode* process_node,
+                               const std::optional<Vote>& vote) override;
 
  private:
   const raw_ptr<MaxVoteAggregator> max_vote_aggregator_;
