@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxSta
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.MobileFuseboxPickerOutcome;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.SetActiveModelSource;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.AnchoringMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.BackgroundStyle;
@@ -1134,7 +1135,7 @@ import java.util.function.Supplier;
         switch (status) {
             case DisclaimerStatus.ACCEPTED -> launchDrivePicker(mProfile);
             case DisclaimerStatus.NOT_ACCEPTED -> showDriveConsentDialog(mProfile);
-            case DisclaimerStatus.RESTRICTED -> handlePickerCanceled();
+            case DisclaimerStatus.RESTRICTED -> onDrivePermissionDenied();
         }
     }
 
@@ -1154,8 +1155,13 @@ import java.util.function.Supplier;
         if (granted) {
             launchDrivePicker(requestProfile);
         } else {
-            handlePickerCanceled();
+            onDrivePermissionDenied();
         }
+    }
+
+    private void onDrivePermissionDenied() {
+        FuseboxMetrics.recordDrivePickerOutcome(MobileFuseboxPickerOutcome.PERMISSION_DENIED);
+        handlePickerCanceled();
     }
 
     /**
@@ -1181,10 +1187,17 @@ import java.util.function.Supplier;
                 .then(
                         metadata -> {
                             if (metadata == null) {
+                                FuseboxMetrics.recordDrivePickerOutcome(
+                                        MobileFuseboxPickerOutcome.MANUAL_USER_EXIT);
                                 handlePickerCanceled();
                                 return;
                             }
                             if (!isInInputSession()) return;
+
+                            FuseboxMetrics.recordDrivePickerOutcome(
+                                    MobileFuseboxPickerOutcome.ATTACHMENT_ADDED);
+                            FuseboxMetrics.recordDriveDocumentType(
+                                    metadata.mimeType, metadata.title);
 
                             var attachment =
                                     FuseboxAttachment.forDrive(
@@ -1194,7 +1207,11 @@ import java.util.function.Supplier;
                                             FuseboxAttachmentButtonType.DRIVE_FILES);
                             uploadAndAddAttachment(attachment);
                         },
-                        exception -> handlePickerCanceled());
+                        exception -> {
+                            FuseboxMetrics.recordDrivePickerOutcome(
+                                    MobileFuseboxPickerOutcome.LOCAL_ERROR);
+                            handlePickerCanceled();
+                        });
     }
 
     private void onFilePickerClicked() {

@@ -1692,6 +1692,7 @@ class AutocompleteMediator
             boolean openInNewTab,
             boolean openInNewWindow,
             boolean openInBackground) {
+        mOmniboxFocusResultedInNavigation = true;
         Callback<GURL> onUrlReady =
                 (finalUrl) -> {
                     mDelegate.loadUrl(

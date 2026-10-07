@@ -3022,6 +3022,17 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.MobileFusebox.AttachmentTypeAtSubmission"
+    enum="FuseboxAttachmentButtonType" expires_after="2027-09-01">
+  <owner>charlesyc@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Recorded for each attachment chip present in Fusebox when the omnibox
+    session results in navigation/submission. Records the attachment type
+    corresponding to the button type that added the attachment.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.MobileFusebox.AutocompleteRequestTypeAtAbandon"
     enum="AutocompleteRequestType" expires_after="2027-10-01">
   <owner>pnoland@google.com</owner>
@@ -3094,6 +3105,16 @@ Keep consistent with active providers. Doesn't need to include every provider in
     Composebox. {ComposeboxDragAndDropType}
   </summary>
   <token key="ComposeboxDragAndDropType" variants="ComposeboxDragAndDropType"/>
+</histogram>
+
+<histogram name="Omnibox.MobileFusebox.Drive.DocumentType"
+    enum="MobileFuseboxDriveDocumentType" expires_after="2027-09-01">
+  <owner>charlesyc@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Recorded when a Google Drive file is successfully selected from the Drive
+    picker in Fusebox, classifying the file by its document type.
+  </summary>
 </histogram>
 
 <histogram
@@ -3199,9 +3220,13 @@ Keep consistent with active providers. Doesn't need to include every provider in
 <histogram name="Omnibox.MobileFusebox.PickerOutcome{AttachmentType}"
     enum="MobileFuseboxPickerOutcome" expires_after="2027-09-01">
   <owner>erahmaoui@google.com</owner>
+  <owner>charlesyc@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
     Recorded when the user finishes an interaction with {AttachmentType}.
+    Recorded on Android and iOS. For Drive, the Permission denied bucket is
+    recorded when the user declines or dismisses the Drive consent flow, or when
+    the account is not allowed to use Drive.
   </summary>
   <token key="AttachmentType" variants="MobileFuseboxPickerAttachmentType"/>
 </histogram>

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.omnibox.fusebox;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.Mockito.doReturn;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,6 +22,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.MobileFuseboxPickerOutcome;
 import org.chromium.chrome.browser.omnibox.fusebox.PopupButtonData.PopupButtonType;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AimModelsProtoIntDef.ModelMode;
@@ -30,6 +33,7 @@ import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
+import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class FuseboxMetricsUnitTest {
@@ -38,6 +42,7 @@ public class FuseboxMetricsUnitTest {
 
     private final PropertyModel mPropertyModel = new PropertyModel(FuseboxProperties.ALL_KEYS);
     @Mock private Tracker mTracker;
+    @Mock private FuseboxAttachmentModelList mModelList;
     private FuseboxMetrics mMetrics;
 
     @Before
@@ -310,7 +315,10 @@ public class FuseboxMetricsUnitTest {
                         .build();
 
         mMetrics.notifyOmniboxSessionEnded(
-                true, AutocompleteRequestType.SEARCH, ModelMode.MODEL_MODE_GEMINI_REGULAR);
+                true,
+                AutocompleteRequestType.SEARCH,
+                ModelMode.MODEL_MODE_GEMINI_REGULAR,
+                /* modelList= */ null);
 
         histogramWatcher.assertExpected();
     }
@@ -333,7 +341,10 @@ public class FuseboxMetricsUnitTest {
                         .build();
 
         mMetrics.notifyOmniboxSessionEnded(
-                true, AutocompleteRequestType.AI_MODE, ModelMode.MODEL_MODE_GEMINI_REGULAR);
+                true,
+                AutocompleteRequestType.AI_MODE,
+                ModelMode.MODEL_MODE_GEMINI_REGULAR,
+                /* modelList= */ null);
 
         histogramWatcher.assertExpected();
     }
@@ -417,7 +428,10 @@ public class FuseboxMetricsUnitTest {
                 FuseboxMetrics.FuseboxAttachmentButtonType.SUGGESTED_TAB);
 
         mMetrics.notifyOmniboxSessionEnded(
-                false, AutocompleteRequestType.AI_MODE, ModelMode.MODEL_MODE_GEMINI_PRO);
+                false,
+                AutocompleteRequestType.AI_MODE,
+                ModelMode.MODEL_MODE_GEMINI_PRO,
+                /* modelList= */ null);
 
         histogramWatcher.assertExpected();
     }
@@ -516,7 +530,10 @@ public class FuseboxMetricsUnitTest {
                         .build();
 
         mMetrics.notifyOmniboxSessionEnded(
-                true, AutocompleteRequestType.SEARCH, ModelMode.MODEL_MODE_GEMINI_REGULAR);
+                true,
+                AutocompleteRequestType.SEARCH,
+                ModelMode.MODEL_MODE_GEMINI_REGULAR,
+                /* modelList= */ null);
         watcher.assertExpected();
     }
 
@@ -536,7 +553,10 @@ public class FuseboxMetricsUnitTest {
                         .build();
 
         mMetrics.notifyOmniboxSessionEnded(
-                true, AutocompleteRequestType.SEARCH, ModelMode.MODEL_MODE_GEMINI_REGULAR);
+                true,
+                AutocompleteRequestType.SEARCH,
+                ModelMode.MODEL_MODE_GEMINI_REGULAR,
+                /* modelList= */ null);
         watcher.assertExpected();
     }
 
@@ -554,7 +574,10 @@ public class FuseboxMetricsUnitTest {
                         .build();
 
         mMetrics.notifyOmniboxSessionEnded(
-                true, AutocompleteRequestType.SEARCH, ModelMode.MODEL_MODE_GEMINI_REGULAR);
+                true,
+                AutocompleteRequestType.SEARCH,
+                ModelMode.MODEL_MODE_GEMINI_REGULAR,
+                /* modelList= */ null);
         watcher.assertExpected();
     }
 
@@ -573,7 +596,10 @@ public class FuseboxMetricsUnitTest {
                         .build();
 
         mMetrics.notifyOmniboxSessionEnded(
-                true, AutocompleteRequestType.SEARCH, ModelMode.MODEL_MODE_GEMINI_REGULAR);
+                true,
+                AutocompleteRequestType.SEARCH,
+                ModelMode.MODEL_MODE_GEMINI_REGULAR,
+                /* modelList= */ null);
         watcher.assertExpected();
     }
 
@@ -613,5 +639,51 @@ public class FuseboxMetricsUnitTest {
         FuseboxMetrics.recordTabAttachmentEffectiveDuration(
                 startTime, /* loadDurationMs= */ 1500, /* isPartOfMultiTabSelection= */ true);
         watcher.assertExpected();
+    }
+
+    @Test
+    public void testRecordDrivePickerOutcome() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Omnibox.MobileFusebox.PickerOutcome",
+                                MobileFuseboxPickerOutcome.PERMISSION_DENIED)
+                        .expectIntRecord(
+                                "Omnibox.MobileFusebox.PickerOutcome.Drive",
+                                MobileFuseboxPickerOutcome.PERMISSION_DENIED)
+                        .build();
+
+        FuseboxMetrics.recordDrivePickerOutcome(MobileFuseboxPickerOutcome.PERMISSION_DENIED);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testNotifyOmniboxSessionEnded_Navigated_RecordsAttachmentTypes() {
+        mMetrics.notifyOmniboxSessionStarted();
+        List<FuseboxAttachment> attachments =
+                List.of(
+                        createAttachment(FuseboxAttachmentButtonType.FILES),
+                        createAttachment(FuseboxAttachmentButtonType.DRIVE_FILES));
+        doReturn(attachments.iterator()).when(mModelList).iterator();
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Omnibox.MobileFusebox.AttachmentTypeAtSubmission",
+                                FuseboxAttachmentButtonType.FILES,
+                                FuseboxAttachmentButtonType.DRIVE_FILES)
+                        .build();
+
+        mMetrics.notifyOmniboxSessionEnded(
+                true,
+                AutocompleteRequestType.SEARCH,
+                ModelMode.MODEL_MODE_GEMINI_REGULAR,
+                mModelList);
+        watcher.assertExpected();
+    }
+
+    private static FuseboxAttachment createAttachment(@FuseboxAttachmentButtonType int buttonType) {
+        return FuseboxAttachment.forFile(
+                /* thumbnail= */ null, "title", "text/plain", new byte[0], 0L, buttonType);
     }
 }

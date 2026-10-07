@@ -143,6 +143,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private final SnackbarManager mSnackbarManager;
     private @Nullable ViewportRectProvider mViewportRectProvider;
     private @Nullable FuseboxMetrics mMetrics;
+    private @Nullable FuseboxAttachmentModelList mModelList;
     private @Nullable BottomSheetRectProvider mBottomSheetRectProvider;
     private final Supplier<@Nullable View> mScrimAnchorViewSupplier;
     private final ScrimManager mScrimManager;
@@ -438,6 +439,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
 
         mInput = session.getAutocompleteInput();
         mMetrics = session.getMetrics();
+        mModelList = session.getFuseboxAttachmentModelList();
         mMediator.beginInput(session);
         if (mMetrics != null) {
             mMetrics.notifyOmniboxSessionStarted();
@@ -451,6 +453,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         }
         mInput = null;
         mMetrics = null;
+        mModelList = null;
         mPendingSession = null;
     }
 
@@ -529,7 +532,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         // Skip cases where session should not be recorded (e.g. unsupported page class).
         if (mInput == null || mMetrics == null) return;
         mMetrics.notifyOmniboxSessionEnded(
-                userDidNavigate, mInput.getRequestType(), mInput.getModelMode());
+                userDidNavigate, mInput.getRequestType(), mInput.getModelMode(), mModelList);
     }
 
     /** Resets the current input session back to search mode. */
