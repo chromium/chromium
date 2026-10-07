@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -156,6 +157,17 @@ class CONTENT_EXPORT BackgroundFetchJobController
     uint64_t downloaded = 0u;
   };
 
+  struct ActiveRequestState {
+    ActiveRequestState();
+    ActiveRequestState(ActiveRequestState&&);
+    ActiveRequestState& operator=(ActiveRequestState&&);
+    ~ActiveRequestState();
+
+    scoped_refptr<BackgroundFetchRequestInfo> request;
+    InProgressRequestBytes in_progress_bytes;
+    RequestFinishedCallback finished_callback;
+  };
+
   // Ensures that `url_loader_factory_` is initialized for the given
   // `registration`.
   void InitializeUrlLoaderFactory(
@@ -187,12 +199,8 @@ class CONTENT_EXPORT BackgroundFetchJobController
   // boundaries. It is owned by the BackgroundFetchContext.
   raw_ptr<BackgroundFetchDelegateProxy> delegate_proxy_;
 
-  // A map from the download GUID to the active request.
-  std::map<std::string, scoped_refptr<BackgroundFetchRequestInfo>>
-      active_request_map_;
-
-  // A map from the download GUID to the in-progress bytes.
-  std::map<std::string, InProgressRequestBytes> active_bytes_map_;
+  // A map from the download GUID to the active request state.
+  std::map<std::string, ActiveRequestState> active_requests_;
 
   // The registration ID of the fetch this controller represents.
   BackgroundFetchRegistrationId registration_id_;
@@ -202,11 +210,6 @@ class CONTENT_EXPORT BackgroundFetchJobController
 
   // Icon for the represented background fetch registration.
   SkBitmap icon_;
-
-  // Finished callback to invoke when the active request has finished mapped by
-  // its download GUID.
-  std::map<std::string, RequestFinishedCallback>
-      active_request_finished_callbacks_;
 
   // Cache of downloaded byte count stored by the DataManager, to enable
   // delivering progress events without having to read from the database.
