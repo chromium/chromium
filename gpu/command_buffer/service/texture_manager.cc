@@ -440,8 +440,6 @@ DecoderTextureState::DecoderTextureState(
       force_cube_map_positive_x_allocation(
           workarounds.force_cube_map_positive_x_allocation),
       force_cube_complete(workarounds.force_cube_complete),
-      force_int_or_srgb_cube_texture_complete(
-          workarounds.force_int_or_srgb_cube_texture_complete),
       unpack_alignment_workaround_with_unpack_buffer(
           workarounds.unpack_alignment_workaround_with_unpack_buffer),
       unpack_overlapping_rows_separately_unpack_buffer(
@@ -2601,8 +2599,7 @@ void TextureManager::DoCubeMapWorkaround(
     const DoTexImageArguments& args) {
   std::vector<GLenum> undefined_faces;
   Texture* texture = texture_ref->texture();
-  if (texture_state->force_cube_complete ||
-      texture_state->force_int_or_srgb_cube_texture_complete) {
+  if (texture_state->force_cube_complete) {
     int width = 0;
     int height = 0;
     for (unsigned i = 0; i < 6; i++) {
@@ -2658,14 +2655,6 @@ void TextureManager::ValidateAndDoTexImage(
       (texture_state->force_cube_complete ||
        (texture_state->force_cube_map_positive_x_allocation &&
         args.target != GL_TEXTURE_CUBE_MAP_POSITIVE_X));
-  // Force integer or srgb cube map texture complete, see crbug.com/712117.
-  need_cube_map_workaround =
-      need_cube_map_workaround ||
-      (texture->target() == GL_TEXTURE_CUBE_MAP &&
-       texture_state->force_int_or_srgb_cube_texture_complete &&
-       (GLES2Util::IsIntegerFormat(args.internal_format) ||
-        GLES2Util::GetColorEncodingFromInternalFormat(args.internal_format) ==
-            GL_SRGB));
 
   if (need_cube_map_workaround && !buffer) {
     DoCubeMapWorkaround(texture_state, state, error_state, framebuffer_state,

@@ -117,7 +117,6 @@ FAKE_GPU_INFO = {
     'driver_bug_workarounds':
         [
             'exit_on_context_lost',
-            'force_cube_complete',
             'scalarize_vec_and_mat_constructor_args',
         ]
 }

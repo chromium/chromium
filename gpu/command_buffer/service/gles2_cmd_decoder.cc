@@ -5482,11 +5482,6 @@ void GLES2DecoderImpl::ApplyRecreateFboWorkaroundIfNeeded() const {
 void GLES2DecoderImpl::OnFboChanged() const {
   state_.fbo_binding_for_scissor_workaround_dirty = true;
   state_.stencil_state_changed_since_validation = true;
-
-  if (workarounds().flush_on_framebuffer_change) {
-    api()->glFlushFn();
-    ApplyRecreateFboWorkaroundIfNeeded();
-  }
 }
 
 // Called after the FBO is checked for completeness.
@@ -14292,29 +14287,6 @@ void GLES2DecoderImpl::DoCopyTexImage2D(
 
   GLenum final_internal_format = TextureManager::AdjustTexInternalFormat(
       feature_info_.get(), internal_format, type);
-  if (workarounds().force_int_or_srgb_cube_texture_complete &&
-      texture->target() == GL_TEXTURE_CUBE_MAP &&
-      (GLES2Util::IsIntegerFormat(final_internal_format) ||
-       GLES2Util::GetColorEncodingFromInternalFormat(final_internal_format) ==
-           GL_SRGB)) {
-    TextureManager::DoTexImageArguments args = {
-        target,
-        level,
-        final_internal_format,
-        width,
-        height,
-        1,
-        border,
-        format,
-        type,
-        nullptr,
-        pixels_size,
-        0,
-        TextureManager::DoTexImageArguments::CommandType::kTexImage2D};
-    texture_manager()->WorkaroundCopyTexImageCubeMap(
-        &texture_state_, &state_, error_state_.get(), &framebuffer_state_,
-        texture_ref, func_name, args);
-  }
 
   if (src.x() != x || src.y() != y ||
       src.width() != width || src.height() != height ||

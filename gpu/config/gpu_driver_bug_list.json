@@ -120,19 +120,6 @@
       ]
     },
     {
-      "id": 37,
-      "cr_bugs": [286468],
-      "description": "Program link fails in NVIDIA Linux if gl_Position is not set",
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x10de",
-      "gl_vendor": "NVIDIA.*",
-      "features": [
-        "init_gl_position_in_vertex_shader"
-      ]
-    },
-    {
       "id": 42,
       "cr_bugs": [290876, 488463],
       "description": "Framebuffer discarding causes flickering on older IMG drivers",
@@ -581,31 +568,6 @@
       "gl_renderer": "Adreno.*",
       "features": [
         "force_cube_map_positive_x_allocation"
-      ]
-    },
-    {
-      "id": 128,
-      "description": "Linux ATI drivers crash on binding incomplete cube map texture to FBO",
-      "cr_bugs": [518889],
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x1002",
-      "features": [
-        "force_cube_map_positive_x_allocation"
-      ]
-    },
-    {
-      "id": 130,
-      "description": "NVIDIA fails glReadPixels from incomplete cube map texture",
-      "cr_bugs": [518889],
-      "vendor_id": "0x10de",
-      "os": {
-        "type": "linux"
-      },
-      "gl_vendor": "NVIDIA.*",
-      "features": [
-        "force_cube_complete"
       ]
     },
     {
@@ -1059,18 +1021,6 @@
       ]
     },
     {
-      "id": 223,
-      "description": "Force integer or srgb cube map texture complete on Linux AMD",
-      "cr_bugs": [712117],
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x1002",
-      "features": [
-        "force_int_or_srgb_cube_texture_complete"
-      ]
-    },
-    {
       "id": 224,
       "description": "VPx decoding isn't supported well before Windows 10 creators update.",
       "cr_bugs": [616318, 667532],
@@ -1185,24 +1135,6 @@
       "gl_renderer": "Mali.*",
       "features": [
         "disable_program_caching_for_transform_feedback"
-      ]
-    },
-    {
-      "id": 245,
-      "description": "Switching framebuffers without a flush can lead to crashes on Intel 9th Generation GPU Macs.",
-      "cr_bugs": [783979, 1472087],
-      "os": {
-        "type": "macosx"
-      },
-      "gl_renderer": "ANGLE.*OpenGL.*",
-      "intel_gpu_series": [
-        "skylake",
-        "kabylake",
-        "coffeelake"
-      ],
-      "multi_gpu_category": "any",
-      "features": [
-        "flush_on_framebuffer_change"
       ]
     },
     {

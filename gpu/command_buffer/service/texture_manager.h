@@ -707,7 +707,6 @@ struct DecoderTextureState {
 
   bool force_cube_map_positive_x_allocation;
   bool force_cube_complete;
-  bool force_int_or_srgb_cube_texture_complete;
   bool unpack_alignment_workaround_with_unpack_buffer;
   bool unpack_overlapping_rows_separately_unpack_buffer;
   bool split_level_0_pbo_full_sub_image_2d;
@@ -1129,17 +1128,6 @@ class GPU_GLES2_EXPORT TextureManager
 
   static GLenum AdjustTexStorageFormat(const gles2::FeatureInfo* feature_info,
                                        GLenum format);
-
-  void WorkaroundCopyTexImageCubeMap(DecoderTextureState* texture_state,
-                                     ContextState* state,
-                                     ErrorState* error_state,
-                                     DecoderFramebufferState* framebuffer_state,
-                                     TextureRef* texture_ref,
-                                     const char* function_name,
-                                     const DoTexImageArguments& args) {
-    DoCubeMapWorkaround(texture_state, state, error_state, framebuffer_state,
-                        texture_ref, function_name, args);
-  }
 
  private:
   friend class Texture;
