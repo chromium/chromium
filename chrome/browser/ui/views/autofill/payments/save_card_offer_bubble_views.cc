@@ -124,11 +124,12 @@ bool SaveCardOfferBubbleViews::IsDialogButtonEnabled(
     // Make sure we are not requesting cardholder name and expiration date at
     // the same time.
     DCHECK(!month_input_dropdown_ && !year_input_dropdown_);
-    // If requesting the user confirm the name, it cannot be blank.
+    // If requesting the user confirm the name, it cannot be blank and must be
+    // a valid cardholder name.
     std::u16string trimmed_text;
     base::TrimWhitespace(cardholder_name_textfield_->GetText(), base::TRIM_ALL,
                          &trimmed_text);
-    return !trimmed_text.empty();
+    return !trimmed_text.empty() && IsValidNameOnCard(trimmed_text);
   }
   // If requesting the user select the expiration date, it cannot be unselected
   // or expired.

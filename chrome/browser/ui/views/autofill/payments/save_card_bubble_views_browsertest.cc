@@ -1285,6 +1285,42 @@ IN_PROC_BROWSER_TEST_P(
             views::LabelButton::ButtonState::STATE_NORMAL);
 }
 
+// Tests the upload save bubble. Ensures that if the cardholder name textfield
+// contains an invalid cardholder name, the [Save] button is disabled.
+IN_PROC_BROWSER_TEST_P(
+    SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
+    Upload_SaveButtonIsDisabledIfInvalidCardholderNameAndCardholderNameRequested) {
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
+
+  FillFormWithoutName();
+  SubmitFormAndWaitForCardUploadSaveBubble();
+
+  views::Textfield* cardholder_name_textfield = static_cast<views::Textfield*>(
+      FindViewInBubbleById(DialogViewId::CARDHOLDER_NAME_TEXTFIELD));
+  ASSERT_NE(nullptr, cardholder_name_textfield);
+  views::LabelButton* save_button = static_cast<views::LabelButton*>(
+      FindViewInBubbleById(DialogViewId::OK_BUTTON));
+  ASSERT_NE(nullptr, save_button);
+
+  // Name containing digits disables the [Save] button.
+  cardholder_name_textfield->SetText(u"");
+  cardholder_name_textfield->InsertOrReplaceText(u"John 123");
+  EXPECT_EQ(save_button->GetState(),
+            views::LabelButton::ButtonState::STATE_DISABLED);
+
+  // Name containing prohibited special characters disables the [Save] button.
+  cardholder_name_textfield->SetText(u"");
+  cardholder_name_textfield->InsertOrReplaceText(u"John@Smith");
+  EXPECT_EQ(save_button->GetState(),
+            views::LabelButton::ButtonState::STATE_DISABLED);
+
+  // Valid name re-enables the [Save] button.
+  cardholder_name_textfield->SetText(u"");
+  cardholder_name_textfield->InsertOrReplaceText(u"John Smith");
+  EXPECT_EQ(save_button->GetState(),
+            views::LabelButton::ButtonState::STATE_NORMAL);
+}
+
 // Tests the upload save bubble. Ensures that if cardholder name is explicitly
 // requested, it is prefilled with the name from the user's Google Account.
 IN_PROC_BROWSER_TEST_P(
