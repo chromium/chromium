@@ -177,16 +177,16 @@ void PageSpecificContentSettingsDelegate::UpdateLocationBar() {
 
   if (state.Has(PageSpecificContentSettings::kCameraAccessed) ||
       state.Has(PageSpecificContentSettings::kMicrophoneAccessed)) {
-    auto* permission_tracker =
-        permissions::PermissionRecoverySuccessRateTracker::FromWebContents(
-            web_contents());
+    if (auto* permission_tracker =
+            permissions::PermissionRecoverySuccessRateTracker::FromWebContents(
+                web_contents())) {
+      if (state.Has(PageSpecificContentSettings::kMicrophoneAccessed)) {
+        permission_tracker->TrackUsage(ContentSettingsType::MEDIASTREAM_MIC);
+      }
 
-    if (state.Has(PageSpecificContentSettings::kMicrophoneAccessed)) {
-      permission_tracker->TrackUsage(ContentSettingsType::MEDIASTREAM_MIC);
-    }
-
-    if (state.Has(PageSpecificContentSettings::kCameraAccessed)) {
-      permission_tracker->TrackUsage(ContentSettingsType::MEDIASTREAM_CAMERA);
+      if (state.Has(PageSpecificContentSettings::kCameraAccessed)) {
+        permission_tracker->TrackUsage(ContentSettingsType::MEDIASTREAM_CAMERA);
+      }
     }
   }
 }

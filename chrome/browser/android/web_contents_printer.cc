@@ -7,6 +7,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/printing/print_view_manager_basic.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
+#include "chrome/browser/printing/printing_init.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -78,6 +79,10 @@ static bool JNI_WebContentsPrinter_InitiatePrint(
 
   PrintViewManagerBasic* print_view_manager =
       PrintViewManagerBasic::FromWebContents(web_contents);
+  if (!print_view_manager) {
+    InitializePrintingForWebContents(web_contents);
+    print_view_manager = PrintViewManagerBasic::FromWebContents(web_contents);
+  }
   return print_view_manager && print_view_manager->InitiatePrint(rfh);
 }
 
@@ -103,6 +108,10 @@ static bool JNI_WebContentsPrinter_Print(
 
   PrintViewManagerBasic* print_view_manager =
       PrintViewManagerBasic::FromWebContents(web_contents);
+  if (!print_view_manager) {
+    InitializePrintingForWebContents(web_contents);
+    print_view_manager = PrintViewManagerBasic::FromWebContents(web_contents);
+  }
   return print_view_manager &&
          print_view_manager->PrintNow(rfh, print_selection_only);
 }
