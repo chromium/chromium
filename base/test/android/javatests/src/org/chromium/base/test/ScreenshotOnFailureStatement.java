@@ -9,8 +9,12 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Build;
 import android.os.SystemClock;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 
+import androidx.core.view.OneShotPreDrawListener;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
 
@@ -18,16 +22,19 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 
 import java.io.File;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Statement that captures screenshots if |base| statement fails.
  *
- * If --screenshot-path commandline flag is given, this |Statement|
- * will save a screenshot to the specified path in the case of a test failure.
+ * <p>If --screenshot-path commandline flag is given, this |Statement| will save a screenshot to the
+ * specified path in the case of a test failure.
  */
 public class ScreenshotOnFailureStatement extends Statement {
     private static final String TAG = "ScreenshotOnFail";
@@ -86,7 +93,7 @@ public class ScreenshotOnFailureStatement extends Statement {
             }
 
             // Make screenshots work on incognito windows.
-            PostTask.runSynchronously(TaskTraits.UI_DEFAULT, ScreenshotOnFailureStatement::clearFlagSecure);
+            clearFlagSecureAndWaitForApply();
 
             // The Vega standalone VR headset can't take screenshots normally (they just show a
             // black screen with the VR overlay), so instead, use VrCore's RecorderService.
@@ -108,10 +115,60 @@ public class ScreenshotOnFailureStatement extends Statement {
         }
     }
 
-    private static void clearFlagSecure() {
-        for (Activity activity : ActivityFinisher.snapshotActivities()) {
-            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+    private static void clearFlagSecureAndWaitForApply() {
+        ThreadUtils.assertOnBackgroundThread();
+        // Clearing FLAG_SECURE only updates the window's LayoutParams. The change is sent to the
+        // WindowManager on the next ViewRootImpl traversal, and is then applied asynchronously by
+        // WindowManager / SurfaceFlinger. Wait for both, or else the screenshot will still be
+        // black.
+        CountDownLatch latch = new CountDownLatch(1);
+        boolean anySecure =
+                PostTask.runSynchronously(
+                        TaskTraits.UI_DEFAULT,
+                        () -> {
+                            View decorView = null;
+                            for (Activity activity : ActivityFinisher.snapshotActivities()) {
+                                Window window = activity.getWindow();
+                                View decor = window.getDecorView();
+                                boolean isSecure =
+                                        (window.getAttributes().flags
+                                                        & WindowManager.LayoutParams.FLAG_SECURE)
+                                                != 0;
+                                if (!isSecure || !decor.isAttachedToWindow()) {
+                                    continue;
+                                }
+                                decorView = decor;
+                                window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+                            }
+                            if (decorView == null) {
+                                return false;
+                            }
+                            // If multiple windows were secure, waiting on one is sufficient since
+                            // their traversals happen in the same frame.
+                            OneShotPreDrawListener.add(decorView, latch::countDown);
+                            return true;
+                        });
+        if (!anySecure) {
+            return;
         }
+        try {
+            // Guards against a hung UI thread. The sync below is still worth attempting.
+            if (!latch.await(1, TimeUnit.SECONDS)) {
+                Log.d(TAG, "Timed out waiting for pre-draw after clearing FLAG_SECURE.");
+            }
+        } catch (InterruptedException e) {
+            Log.d(TAG, "Interrupted waiting for pre-draw after clearing FLAG_SECURE.");
+        }
+        // The WindowManager applies the change on its own surface placement pass, which then
+        // needs to be committed by SurfaceFlinger. There is no public API to wait for this
+        // directly, but UiAutomation.injectInputEvent(sync=true) performs exactly this sync (see
+        // WindowManagerService.syncInputTransactions()) regardless of whether the event is
+        // accepted. Use an orphan key-up event, which InputDispatcher drops as inconsistent, so
+        // that the app never sees it.
+        KeyEvent event = new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_UNKNOWN);
+        InstrumentationRegistry.getInstrumentation()
+                .getUiAutomation()
+                .injectInputEvent(event, /* sync= */ true);
     }
 
     private void takeScreenshotVega(final File screenshotFile) {
