@@ -738,6 +738,10 @@ class EslintTsTest(unittest.TestCase):
     _MISSING_ID_ERROR = "Id '%(domId)s' is listed in the interface definition for %(className)s, but no element with that ID was found in the template file 'with_webui_plugin_lit_element_invalid_interface_violations.html.ts'"
 
     _MISSING_ID_NO_TEMPLATE_ERROR = "Id '%(domId)s' is listed in the interface definition for %(className)s, but no element with that ID was found in the template"
+
+    _CONDITIONAL_ID_ERROR = "Id '%(domId)s' is listed in the interface definition for %(className)s, but the element is conditionally rendered in the template file 'with_webui_plugin_lit_element_invalid_interface_violations.html.ts'"
+
+    _CONDITIONAL_ID_NO_TEMPLATE_ERROR = "Id '%(domId)s' is listed in the interface definition for %(className)s, but the element is conditionally rendered in the template"
     # The following strings *should* appear in the error output.
     errors = [
       _INCORRECT_NOTATION_ERROR
@@ -760,6 +764,16 @@ class EslintTsTest(unittest.TestCase):
       _MISSING_ID_NO_TEMPLATE_ERROR
       % {
         'domId': 'doesNotExistTest',
+        'className': 'MyDummyTestElement',
+      },
+      _CONDITIONAL_ID_ERROR
+      % {
+        'domId': 'conditionalOne',
+        'className': 'MyDummyElement',
+      },
+      _CONDITIONAL_ID_NO_TEMPLATE_ERROR
+      % {
+        'domId': 'conditionalTwo',
         'className': 'MyDummyTestElement',
       },
     ]

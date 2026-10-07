@@ -10,6 +10,7 @@ interface MyDummyTestElement {
   $: {
     one: HTMLElement,
     two: HTMLElement,
+    conditionalTwo: HTMLElement,
     doesNotExistTest: HTMLElement,
   };
 }
@@ -20,7 +21,8 @@ class MyDummyTestElement extends CrLitElement {
   }
 
   override render() {
-    return html`<div id="one">Hello</div><div id="two">Test</div>`;
+    return html`<div id="one">Hello</div><div id="two">Test</div>${
+        true ? html`<div id="conditionalTwo"></div>` : ''}`;
   }
 }
 

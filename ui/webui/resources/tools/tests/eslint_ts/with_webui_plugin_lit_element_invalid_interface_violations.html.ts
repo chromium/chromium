@@ -16,5 +16,6 @@ export function getHtml(this: MyDummyElement) {
   <option value="one">one</option>
   <option value="two">two</option>
 </select>
+${true ? html`<div id="conditionalOne">Conditional</div>` : ''}
 `;
 }

@@ -14,6 +14,7 @@ export interface MyDummyElement {
     two: HTMLElement,
     'three': HTMLElement,
     'four-four': HTMLElement,
+    conditionalOne: HTMLElement,
     doesNotExist: HTMLElement,
   };
 }

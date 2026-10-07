@@ -222,7 +222,7 @@ export class TestError12Element extends CrLitElement {
   }
 
   override render() {
-    return '';
+    return html``;
   }
 }
 

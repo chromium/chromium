@@ -66,7 +66,6 @@ export interface SettingsSecurityPageElement {
     safeBrowsingDisabled: SettingsCollapseRadioButtonElement,
     safeBrowsingEnhanced: SettingsCollapseRadioButtonElement,
     safeBrowsingRadioGroup: SettingsRadioGroupElement,
-    safeBrowsingReportingToggle: SettingsToggleButtonElement,
     safeBrowsingStandard: SettingsCollapseRadioButtonElement,
   };
 }
