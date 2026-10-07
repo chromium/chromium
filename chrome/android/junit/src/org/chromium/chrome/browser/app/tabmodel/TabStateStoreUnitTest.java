@@ -70,8 +70,6 @@ import java.util.List;
 
 /** Unit tests for {@link TabStateStore}. */
 @RunWith(BaseRobolectricTestRunner.class)
-// TODO(crbug.com/557401970): Re-enable glic background actuation feature flags
-@DisableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
 public class TabStateStoreUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
