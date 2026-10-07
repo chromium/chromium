@@ -44,6 +44,7 @@ public interface SetupListCompletable {
      * Gets the appropriate UI information for a given card provider, considering completion state.
      *
      * @param provider The EducationalTipCardProvider instance.
+     * @param moduleType The module type of the card.
      * @return CompletionState containing the drawable resource and completion status.
      */
     static @Nullable CompletionState getCompletionState(

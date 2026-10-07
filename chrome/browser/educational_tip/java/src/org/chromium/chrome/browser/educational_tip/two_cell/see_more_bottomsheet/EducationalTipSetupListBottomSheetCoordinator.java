@@ -40,6 +40,8 @@ public class EducationalTipSetupListBottomSheetCoordinator {
 
     /**
      * @param actionDelegate The instance of {@link EducationTipModuleActionDelegate}.
+     * @param rankedEducationalTipProviderSupplier Supplier of ranked setup list items for the
+     *     bottom sheet.
      */
     public EducationalTipSetupListBottomSheetCoordinator(
             EducationTipModuleActionDelegate actionDelegate,
