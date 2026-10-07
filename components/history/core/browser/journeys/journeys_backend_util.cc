@@ -11,7 +11,10 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
+#include "base/types/optional_util.h"
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_types.h"
 #include "url/gurl.h"
@@ -41,10 +44,10 @@ size_t GetUnresolvableJourneysCount(HistoryDatabase& db, size_t max_journeys) {
   return unresolvable_count;
 }
 
-}  // namespace
-
-std::optional<Journey> ResolveJourneyVisits(HistoryDatabase& db,
-                                            JourneyRow journey) {
+// Same as `ResolveJourneyVisits()`, but on failure reports which lookup
+// failed. The error is never `SyncedJourneyResolutionResult::kResolved`.
+base::expected<Journey, SyncedJourneyResolutionResult>
+ResolveJourneyVisitsWithResult(HistoryDatabase& db, JourneyRow journey) {
   std::vector<JourneyVisit> visits;
   visits.reserve(journey.history_entries.size());
 
@@ -54,7 +57,7 @@ std::optional<Journey> ResolveJourneyVisits(HistoryDatabase& db,
       VLOG(1) << "Skipping URL for journey_id=" << journey.journey_id
               << " with visit_time=" << entry.visit_time
               << ": not found in local visit database.";
-      return std::nullopt;
+      return base::unexpected(SyncedJourneyResolutionResult::kMissingVisit);
     }
 
     URLRow url_row;
@@ -62,7 +65,7 @@ std::optional<Journey> ResolveJourneyVisits(HistoryDatabase& db,
       VLOG(1) << "Skipping URL for journey_id=" << journey.journey_id
               << " with visit_time=" << entry.visit_time
               << ": URL not found for visit.";
-      return std::nullopt;
+      return base::unexpected(SyncedJourneyResolutionResult::kMissingUrl);
     }
 
     visits.emplace_back(
@@ -74,6 +77,14 @@ std::optional<Journey> ResolveJourneyVisits(HistoryDatabase& db,
                  journey.creation_time, std::move(journey.emoji),
                  std::move(journey.overview), std::move(journey.short_overview),
                  std::move(visits), std::move(journey.continuation_queries));
+}
+
+}  // namespace
+
+std::optional<Journey> ResolveJourneyVisits(HistoryDatabase& db,
+                                            JourneyRow journey) {
+  return base::OptionalFromExpected(
+      ResolveJourneyVisitsWithResult(db, std::move(journey)));
 }
 
 std::optional<Journey> GetJourneyWithResolvedVisits(
@@ -91,10 +102,14 @@ std::vector<Journey> GetAllJourneysWithResolvedVisits(HistoryDatabase& db) {
   std::vector<Journey> resolved_journeys;
   resolved_journeys.reserve(journeys.size());
   for (JourneyRow& journey : journeys) {
-    std::optional<Journey> resolved =
-        ResolveJourneyVisits(db, std::move(journey));
+    base::expected<Journey, SyncedJourneyResolutionResult> resolved =
+        ResolveJourneyVisitsWithResult(db, std::move(journey));
+    base::UmaHistogramEnumeration("History.SyncedJourneys.Resolution.Result",
+                                  resolved.has_value()
+                                      ? SyncedJourneyResolutionResult::kResolved
+                                      : resolved.error());
     if (resolved.has_value()) {
-      resolved_journeys.push_back(std::move(*resolved));
+      resolved_journeys.push_back(std::move(resolved).value());
     }
   }
   return resolved_journeys;

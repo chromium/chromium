@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/journeys/journey.h"
@@ -26,6 +27,9 @@ using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Optional;
+
+constexpr char kResolutionResultHistogram[] =
+    "History.SyncedJourneys.Resolution.Result";
 
 }  // namespace
 
@@ -183,7 +187,10 @@ TEST_F(JourneysBackendUtilTest,
 
 TEST_F(JourneysBackendUtilTest,
        GetAllJourneysWithResolvedVisits_EmptyDatabase) {
+  base::HistogramTester histogram_tester;
   EXPECT_THAT(GetAllJourneysWithResolvedVisits(db_), IsEmpty());
+
+  histogram_tester.ExpectTotalCount(kResolutionResultHistogram, 0);
 }
 
 TEST_F(JourneysBackendUtilTest,
@@ -210,9 +217,13 @@ TEST_F(JourneysBackendUtilTest,
 
   ASSERT_TRUE(db_.AddOrUpdateJourneys({older_journey, newer_journey}));
 
+  base::HistogramTester histogram_tester;
   EXPECT_THAT(GetAllJourneysWithResolvedVisits(db_),
               ElementsAre(Field(&Journey::journey_id, "journey_newer"),
                           Field(&Journey::journey_id, "journey_older")));
+
+  histogram_tester.ExpectUniqueSample(
+      kResolutionResultHistogram, SyncedJourneyResolutionResult::kResolved, 2);
 }
 
 TEST_F(JourneysBackendUtilTest,
@@ -239,10 +250,32 @@ TEST_F(JourneysBackendUtilTest,
       {visit_time,
        base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(9999))});
 
-  ASSERT_TRUE(db_.AddOrUpdateJourneys({complete_journey, incomplete_journey}));
+  // Journey whose visit references non-existent URLID 999.
+  base::Time orphaned_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(2000));
+  ASSERT_NE(AddTestVisit(999, orphaned_time), 0);
+  JourneyRow orphaned_journey = CreateJourneyRow(
+      "journey_orphaned", "Orphaned",
+      /*creation_time=*/
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(7000)),
+      /*visit_times=*/{orphaned_time});
 
+  ASSERT_TRUE(db_.AddOrUpdateJourneys(
+      {complete_journey, incomplete_journey, orphaned_journey}));
+
+  base::HistogramTester histogram_tester;
   EXPECT_THAT(GetAllJourneysWithResolvedVisits(db_),
               ElementsAre(Field(&Journey::journey_id, "journey_complete")));
+
+  histogram_tester.ExpectBucketCount(
+      kResolutionResultHistogram, SyncedJourneyResolutionResult::kResolved, 1);
+  histogram_tester.ExpectBucketCount(
+      kResolutionResultHistogram, SyncedJourneyResolutionResult::kMissingVisit,
+      1);
+  histogram_tester.ExpectBucketCount(kResolutionResultHistogram,
+                                     SyncedJourneyResolutionResult::kMissingUrl,
+                                     1);
+  histogram_tester.ExpectTotalCount(kResolutionResultHistogram, 3);
 }
 
 TEST_F(JourneysBackendUtilTest, GetJourneyWithResolvedVisits_Found) {
@@ -287,8 +320,12 @@ TEST_F(JourneysBackendUtilTest,
       /*visit_times=*/
       {base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(9999))})}));
 
+  base::HistogramTester histogram_tester;
   EXPECT_EQ(GetJourneyWithResolvedVisits(db_, "journey_incomplete"),
             std::nullopt);
+
+  // Only GetAllJourneysWithResolvedVisits() records the resolution histogram.
+  histogram_tester.ExpectTotalCount(kResolutionResultHistogram, 0);
 }
 
 TEST_F(JourneysBackendUtilTest, ResolveJourneyVisits_SetsIsForeign) {
@@ -326,6 +363,7 @@ TEST_F(JourneysBackendUtilTest, ResolveJourneyVisits_SetsIsForeign) {
 }
 
 TEST_F(JourneysBackendUtilTest, GetUnresolvableJourneysCountForFishfood) {
+  base::HistogramTester histogram_tester;
   EXPECT_EQ(GetUnresolvableJourneysCountForFishfood(db_), 0u);
 
   URLID url_id = AddTestURL(GURL("http://www.example.com/page1"), u"Page 1");
@@ -356,6 +394,7 @@ TEST_F(JourneysBackendUtilTest, GetUnresolvableJourneysCountForFishfood) {
   EXPECT_EQ(GetUnresolvableJourneysCountForFishfoodForTesting(
                 db_, /*max_journeys=*/2),
             1u);
+  histogram_tester.ExpectTotalCount(kResolutionResultHistogram, 0);
 }
 
 }  // namespace history::journeys

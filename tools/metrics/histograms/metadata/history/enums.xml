@@ -317,6 +317,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/storage_partition_impl.cc:TracingDataType) -->
 
+<!-- LINT.IfChange(SyncedJourneyResolutionResult) -->
+
+<enum name="SyncedJourneyResolutionResult">
+  <int value="0" label="Resolved"/>
+  <int value="1" label="Missing visit"/>
+  <int value="2" label="Missing URL"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/history/core/browser/journeys/journeys_backend_util.h:SyncedJourneyResolutionResult) -->
+
 <!-- LINT.IfChange(VisitContextMenuAction) -->
 
 <enum name="VisitContextMenuAction">

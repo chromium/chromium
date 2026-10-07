@@ -193,10 +193,12 @@ shrinks a journey leaves no stale visits or queries behind.
 These are free functions in `namespace history::journeys`, not members of a
 class. Resolution turns storage records ([`JourneyRow`][journey-row]) into fully
 populated domain models ([`Journey`][journey]) by looking up the local history
-tables. The diagram shows the all-journeys path;
+tables. The diagram shows the all-journeys path, which also records the
+resolution histogram (see [Metrics](#metrics));
 [`GetJourneyWithResolvedVisits`][get-one-resolved] (behind
-`HistoryService::GetJourney`) loads a single row by `journey_id` and runs the
-same `ResolveJourneyVisits` step on it:
+`HistoryService::GetJourney`) loads a single row by `journey_id` and resolves it
+through [`ResolveJourneyVisits`][resolve-visits], which returns
+`std::optional<Journey>` and records nothing:
 
 ```text
 HistoryBackend::GetAllJourneysWithVisits()
@@ -211,17 +213,18 @@ journeys::GetAllJourneysWithResolvedVisits(HistoryDatabase& db)
   ├─► for each JourneyRow row:                       ┄ outer loop ┄
   │      │
   │      ▼
-  │    ResolveJourneyVisits(db, std::move(row))  →  optional<Journey>
+  │    ResolveJourneyVisitsWithResult(db, std::move(row))
+  │      →  expected<Journey, SyncedJourneyResolutionResult>
   │      │
   │      ├─► for each JourneyHistoryEntry:           ┄ inner loop ┄
   │      │      │
   │      │      │  db.GetLastRowForVisitByVisitTime(entry.visit_time,
   │      │      │                                   &visit_row)
-  │      │      │    miss  ⇒  VLOG(1), return nullopt      ✗ bail out
+  │      │      │    miss  ⇒  VLOG(1), unexpected(kMissingVisit)  ✗ bail out
   │      │      │    hit   →  terminal visit of the redirect chain
   │      │      │
   │      │      │  db.GetURLRow(visit_row.url_id, &url_row)
-  │      │      │    miss  ⇒  VLOG(1), return nullopt      ✗ bail out
+  │      │      │    miss  ⇒  VLOG(1), unexpected(kMissingUrl)    ✗ bail out
   │      │      │    hit   →  visits.emplace_back(url_row.url(),
   │      │      │                                 url_row.title(),
   │      │      │                                 entry.visit_time)
@@ -234,8 +237,9 @@ journeys::GetAllJourneysWithResolvedVisits(HistoryDatabase& db)
   │                                         visits, continuation_queries)
   │      │
   │      ▼
-  │    nullopt?  ⇒  drop the whole journey   (all-or-nothing)
-  │    value?    →  push_back
+  │    UMA Resolution.Result  ←  kResolved, or the error
+  │    error?  ⇒  drop the whole journey             (all-or-nothing)
+  │    value?  →  push_back
   │
   ▼
 std::vector<Journey>   (size ≤ number of stored journeys)
@@ -356,7 +360,10 @@ HistoryBackend, so metadata and entity rows are committed together.
     by the bridge; the affected journeys simply stop resolving, and their rows
     remain until the server sends a deletion.
   - *Database error*: the bridge drops its database pointer and reports a model
-    error so the sync processor disconnects cleanly.
+    error so the sync processor disconnects cleanly. The outcome of every
+    journeys table write the bridge issues, including the one when sync is
+    disabled, is recorded in
+    `History.SyncedJourneys.DatabaseOperationSuccess.*`.
 
 ## Public APIs
 
@@ -475,9 +482,24 @@ end-to-end tests of the public APIs, and the schema-creation test. Avoid
 
 ### Metrics
 
-This component emits no UMA histograms of its own. Sync-level metrics are
-recorded generically by the sync infrastructure under the `JOURNEY` histogram
-suffix.
+The component's own histograms are prefixed `History.SyncedJourneys.` and
+defined in `tools/metrics/histograms/metadata/history/histograms.xml`. The
+prefix keeps them apart from the `History.Clusters.*` histograms of the old
+Journeys UI. See the histogram descriptions there for details:
+
+- `Resolution.Result`: outcome of resolving each stored journey in
+  [`GetAllJourneysWithResolvedVisits`][get-all-resolved].
+- `DatabaseOperationSuccess.*`: success of each journeys table write issued by
+  [`JourneysSyncBridge`][bridge].
+
+Everything else comes from the sync infrastructure under the `JOURNEY`
+histogram suffix and is not duplicated here:
+
+- `Sync.DataTypeEntityChange.JOURNEY`: incoming updates and deletions.
+- `Sync.DataTypeUpdateDrop.DroppedByBridge` (`JOURNEY` bucket): specifics
+  rejected by `IsEntityDataValid()`.
+- `Sync.ModelError.JOURNEY`: bridge errors such as `kJourneysDatabaseError`.
+- `Sync.DataTypeCount.JOURNEY`: number of entities tracked by sync.
 
 ### Feature flags
 

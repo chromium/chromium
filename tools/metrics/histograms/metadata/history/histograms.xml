@@ -2664,6 +2664,48 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="History.SyncedJourneys.DatabaseOperationSuccess.{JourneysDbOperation}"
+    enum="BooleanSuccess" expires_after="2027-01-05">
+  <owner>hempjudith@google.com</owner>
+  <owner>chrome-sequel-dev@google.com</owner>
+  <summary>
+    Whether a write to the synced journeys tables in the History database
+    succeeded. Recorded by JourneysSyncBridge {JourneysDbOperation}. Failures
+    include an unavailable History database. A failed add/update or delete stops
+    journeys sync with kJourneysDatabaseError until Chrome restarts; a failed
+    delete-all leaves journeys on disk after sync was turned off.
+  </summary>
+  <token key="JourneysDbOperation">
+    <variant name="AddOrUpdateJourneys"
+        summary="for the additions and updates of an incoming sync batch,
+                 only if the batch contains any"/>
+    <variant name="DeleteAllJourneys"
+        summary="when sync is disabled for the data type"/>
+    <variant name="DeleteJourneys"
+        summary="for the deletions of an incoming sync batch, only if the
+                 batch contains any"/>
+  </token>
+</histogram>
+
+<histogram name="History.SyncedJourneys.Resolution.Result"
+    enum="SyncedJourneyResolutionResult" expires_after="2027-01-05">
+  <owner>hempjudith@google.com</owner>
+  <owner>chrome-sequel-dev@google.com</owner>
+  <summary>
+    Outcome of resolving the visits of one stored synced journey against the
+    local visits and urls tables; only fully resolved journeys are returned to
+    callers. Recorded for every stored journey on each
+    HistoryService::GetAllJourneys() query, so the same journey is counted again
+    on every query. Not recorded for GetJourney(), which re-resolves a journey
+    from that list when its details page is opened. If several visits fail, only
+    the first failed lookup is recorded. Missing visit is expected after history
+    deletion or expiry, or before another device's visits have synced; Missing
+    URL indicates an inconsistent History database and should stay close to
+    zero.
+  </summary>
+</histogram>
+
 <histogram name="History.TopSites.QueryFromHistoryTime" units="ms"
     expires_after="2025-06-08">
   <owner>mahmadi@chromium.org</owner>

@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "components/history/core/browser/journeys/history_backend_for_journeys_sync.h"
 #include "components/history/core/browser/journeys/journeys_sync_metadata_database.h"
@@ -141,14 +142,23 @@ JourneysSyncBridge::ApplyIncrementalSyncChanges(
   // The processor squashes multiple changes to the same entity within a batch,
   // so deletions and additions/updates will not conflict.
   if (!journey_ids_to_delete.empty()) {
-    if (!backend_->DeleteJourneys(journey_ids_to_delete)) {
+    const bool success = backend_->DeleteJourneys(journey_ids_to_delete);
+    base::UmaHistogramBoolean(
+        "History.SyncedJourneys.DatabaseOperationSuccess.DeleteJourneys",
+        success);
+    if (!success) {
       return syncer::ModelError(
           FROM_HERE, syncer::ModelError::Type::kJourneysDatabaseError);
     }
   }
 
   if (!journeys_to_add_or_update.empty()) {
-    if (!backend_->AddOrUpdateJourneyRows(journeys_to_add_or_update)) {
+    const bool success =
+        backend_->AddOrUpdateJourneyRows(journeys_to_add_or_update);
+    base::UmaHistogramBoolean(
+        "History.SyncedJourneys.DatabaseOperationSuccess.AddOrUpdateJourneys",
+        success);
+    if (!success) {
       return syncer::ModelError(
           FROM_HERE, syncer::ModelError::Type::kJourneysDatabaseError);
     }
@@ -243,7 +253,10 @@ void JourneysSyncBridge::ApplyDisableSyncChanges(
     sync_metadata_database_->ClearAllEntityMetadata();
     sync_metadata_database_->ClearDataTypeState(syncer::JOURNEY);
   }
-  backend_->DeleteAllJourneys();
+  const bool success = backend_->DeleteAllJourneys();
+  base::UmaHistogramBoolean(
+      "History.SyncedJourneys.DatabaseOperationSuccess.DeleteAllJourneys",
+      success);
 }
 
 void JourneysSyncBridge::OnURLVisited(HistoryBackend* history_backend,
