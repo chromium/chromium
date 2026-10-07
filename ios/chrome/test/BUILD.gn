@@ -128,6 +128,17 @@ source_set("ios_chrome_test_with_web_state") {
   ]
 }
 
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "scoped_eg_traits_overrider_app_interface.h",
+    "scoped_eg_traits_overrider_app_interface.mm",
+  ]
+  visibility = [ "//ios/chrome/test/earl_grey:eg_app_support+eg2" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("eg_test_support+eg2") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
@@ -136,6 +147,8 @@ source_set("eg_test_support+eg2") {
     "scoped_eg_synchronization_disabler.mm",
     "scoped_eg_traits_overrider.h",
     "scoped_eg_traits_overrider.mm",
+    "scoped_eg_traits_overrider_app_interface.h",
+    "scoped_eg_traits_overrider_app_interface_stub.mm",
   ]
   deps = [
     "//base",
