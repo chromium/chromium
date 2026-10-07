@@ -53,12 +53,13 @@ class PaymentsChurnedUsersUiDelegateAndroid
   GetOrCreatePaymentsChurnedUsersBottomSheetBridge();
   AutofillMessageController& GetOrCreateAutofillMessageController();
 
-  void OnUiClosed(PaymentsUiClosedReason closed_reason);
+  void OnOptInUiClosed(PaymentsUiClosedReason closed_reason);
   void OnMessageAccepted();
   void OnMessageDismissed(messages::DismissReason dismiss_reason);
+  void ShowConfirmationSnackbar();
 
   const raw_ref<ContentAutofillClient> client_;
-  bool is_showing_ui_ = false;
+  bool is_showing_opt_in_ui_ = false;
   base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback_;
   std::unique_ptr<AutofillPaymentsChurnedUsersBottomSheetBridge>
       autofill_payments_churned_users_bottom_sheet_bridge_;

@@ -47,7 +47,6 @@ public class AutofillPaymentsChurnedUsersBottomSheetMediatorTest {
         mMediator =
                 new AutofillPaymentsChurnedUsersBottomSheetMediator(
                         mBottomSheetController, mBottomSheetContent, mModel, mDelegate);
-        verify(mBottomSheetController).addObserver(mMediator);
     }
 
     @Test
@@ -60,6 +59,7 @@ public class AutofillPaymentsChurnedUsersBottomSheetMediatorTest {
 
         verify(mBottomSheetController)
                 .requestShowContent(eq(mBottomSheetContent), /* animate= */ eq(true));
+        verify(mBottomSheetController).addObserver(mMediator);
     }
 
     @Test
@@ -80,6 +80,7 @@ public class AutofillPaymentsChurnedUsersBottomSheetMediatorTest {
 
         mMediator.requestShowContent();
 
+        verify(mBottomSheetController, times(0)).addObserver(mMediator);
         verify(mDelegate).onUiNotShown();
         verify(mBottomSheetController)
                 .hideContent(

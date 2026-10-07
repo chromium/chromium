@@ -35,14 +35,15 @@ import org.chromium.ui.modelutil.PropertyModel;
         model.set(
                 AutofillPaymentsChurnedUsersBottomSheetProperties.ON_CANCEL_CLICKED,
                 this::onCancelClicked);
-        mBottomSheetController.addObserver(this);
     }
 
     void requestShowContent() {
         if (mIsDestroyed) {
             return;
         }
-        if (!mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true)) {
+        if (mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true)) {
+            mBottomSheetController.addObserver(this);
+        } else {
             mDelegate.onUiNotShown();
             destroy();
         }

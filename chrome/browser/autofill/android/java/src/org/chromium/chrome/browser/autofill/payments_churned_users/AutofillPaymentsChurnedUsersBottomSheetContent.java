@@ -43,8 +43,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
     @Override
     public boolean hasCustomLifecycle() {
-        // Keeps the bottom sheet open during checkout page navigation.
-        return true;
+        return false;
     }
 
     @Override

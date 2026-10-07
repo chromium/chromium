@@ -243,6 +243,9 @@ public class AutofillPaymentsChurnedUsersBottomSheetModuleTest {
 
     @Test
     public void testOnSheetClosed_notifiesDelegate() {
+        when(mBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mCoordinator.requestShowContent();
+
         ArgumentCaptor<BottomSheetObserver> observerCaptor =
                 ArgumentCaptor.forClass(BottomSheetObserver.class);
         verify(mBottomSheetController).addObserver(observerCaptor.capture());

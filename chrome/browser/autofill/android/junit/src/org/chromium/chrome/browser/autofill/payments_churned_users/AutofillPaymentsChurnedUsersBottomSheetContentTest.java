@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill.payments_churned_users;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.view.View;
@@ -19,7 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.ui.base.TestActivity;
 
@@ -63,7 +64,7 @@ public class AutofillPaymentsChurnedUsersBottomSheetContentTest {
 
     @Test
     public void testHasCustomLifecycle() {
-        assertTrue(mContent.hasCustomLifecycle());
+        assertFalse(mContent.hasCustomLifecycle());
     }
 
     @Test
