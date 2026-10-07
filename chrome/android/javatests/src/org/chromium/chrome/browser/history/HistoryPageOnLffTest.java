@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -76,6 +77,7 @@ public class HistoryPageOnLffTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/570738449")
     public void testAutoFocusOnHistoryPageByTabSwitching() {
         DeviceInput.setSupportsKeyboardForTesting(true);
 
