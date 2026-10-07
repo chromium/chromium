@@ -45,7 +45,9 @@ const InputExpectedPair UnknownPair(std::string input) {
   return {.input = input, .expected = FatalCrashType::Unknown};
 }
 
-static const InputExpectedPair kEmptyPair = UnknownPair("");
+static const InputExpectedPair kEmptyPair = {
+    .input = "",
+    .expected = FatalCrashType::Unknown};
 
 class CrashUploadListChromeOSTest
     : public testing::TestWithParam<std::vector<InputExpectedPair>> {

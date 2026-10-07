@@ -1445,9 +1445,6 @@ if (is_chromeos) {
       "ash/web_ui_test_handler.h",
     ]
 
-    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-    # enable the diagnostic by removing this line.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
     public_deps = [
       ":devtools_coverage",
       ":javascript_browser_test",
@@ -1484,9 +1481,6 @@ if (is_chromeos) {
       "ash/extension_js_browser_test.h",
     ]
 
-    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-    # enable the diagnostic by removing this line.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
     public_deps = [
       ":devtools_coverage",
       ":javascript_browser_test",

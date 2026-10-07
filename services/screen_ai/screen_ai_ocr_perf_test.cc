@@ -58,11 +58,9 @@ constexpr char kOutputPathOption[] = "output_path";
 constexpr int kWarmUpIterationCount = 3;
 constexpr int kActualIterationCount = 5;
 
-base::FilePath kLibraryDirectoryPath = GetComponentDir();
-base::FilePath kLibraryName = GetComponentBinaryFileName();
 // The name of the file that contains a list of files that are required to
 // initialize the library. The file paths are separated by newlines and
-// relative to `kLibraryDirectoryPath`.
+// relative to the library directory.
 constexpr base::FilePath::CharType kFilePathsFileName[] =
     FILE_PATH_LITERAL("files_list_ocr.txt");
 
@@ -74,16 +72,13 @@ SkBitmap GetBitmap(const base::FilePath& path) {
 
 class OcrTestEnvironment : public ::testing::Environment {
  public:
-  // This is static since`ScreenAILibraryWrapperImpl` uses function pointers
+  // This is static since `ScreenAILibraryWrapperImpl` uses function pointers
   // to access data, and there's no way to pass context data through these
-  // pointers. It stores the model data the library needs. Keys are the file
-  // paths relative to the library directory, and values are the corresponding
-  // buffers.
-  static inline std::map<std::string, std::vector<uint8_t>> data_;
+  // pointers.
+  static inline OcrTestEnvironment* current_ = nullptr;
 
   static uint32_t GetDataSize(const char* relative_file_path) {
-    auto* data =
-        base::FindOrNull(OcrTestEnvironment::data_, relative_file_path);
+    auto* data = base::FindOrNull(current_->data_, relative_file_path);
     CHECK(data);
     return data->size();
   }
@@ -91,8 +86,7 @@ class OcrTestEnvironment : public ::testing::Environment {
   static void CopyData(const char* relative_file_path,
                        uint32_t buffer_size,
                        char* buffer) {
-    auto* data =
-        base::FindOrNull(OcrTestEnvironment::data_, relative_file_path);
+    auto* data = base::FindOrNull(current_->data_, relative_file_path);
     CHECK(data);
     CHECK_GE(buffer_size, data->size());
     UNSAFE_TODO(memcpy(buffer, data->data(), data->size()));
@@ -102,6 +96,7 @@ class OcrTestEnvironment : public ::testing::Environment {
                      const std::string& jpeg_image_path,
                      const std::string& image_folder)
       : output_path_(output_path) {
+    current_ = this;
     if (!jpeg_image_path.empty()) {
       jpeg_images_.push_back(GetBitmap(base::FilePath(jpeg_image_path)));
     } else if (!image_folder.empty()) {
@@ -115,11 +110,13 @@ class OcrTestEnvironment : public ::testing::Environment {
     }
   }
 
+  ~OcrTestEnvironment() override { current_ = nullptr; }
+
   void SetUp() override {
     CHECK(!jpeg_images_.empty());
 
-    base::FilePath directory_path(kLibraryDirectoryPath);
-    base::FilePath library_path = directory_path.Append(kLibraryName);
+    base::FilePath library_path =
+        GetComponentDir().Append(GetComponentBinaryFileName());
 #if BUILDFLAG(USE_FAKE_SCREEN_AI)
     library_ = std::make_unique<ScreenAILibraryWrapperFake>();
 #else
@@ -138,7 +135,7 @@ class OcrTestEnvironment : public ::testing::Environment {
   }
 
   void PrepareModelData() {
-    base::FilePath directory_path(kLibraryDirectoryPath);
+    base::FilePath directory_path = GetComponentDir();
     base::FilePath file_paths_path = directory_path.Append(kFilePathsFileName);
     std::string file_content;
     CHECK(base::ReadFileToString(file_paths_path, &file_content))
@@ -156,8 +153,8 @@ class OcrTestEnvironment : public ::testing::Environment {
       std::optional<std::vector<uint8_t>> buffer =
           base::ReadFileToBytes(directory_path.Append(relative_file_path));
       CHECK(buffer) << "Could not read file's content: " << relative_file_path;
-      auto [it, inserted] = OcrTestEnvironment::data_.insert(
-          {std::string(relative_file_path), std::move(*buffer)});
+      auto [it, inserted] =
+          data_.insert({std::string(relative_file_path), std::move(*buffer)});
       CHECK(inserted);
     }
   }
@@ -201,6 +198,9 @@ class OcrTestEnvironment : public ::testing::Environment {
   base::DictValue perf_values_;
   base::FilePath output_path_;
   std::vector<SkBitmap> jpeg_images_;
+  // Model data the library needs. Keys are the file paths relative to the
+  // library directory, and values are the corresponding buffers.
+  std::map<std::string, std::vector<uint8_t>> data_;
   std::unique_ptr<ScreenAILibraryWrapper> library_;
 };
 

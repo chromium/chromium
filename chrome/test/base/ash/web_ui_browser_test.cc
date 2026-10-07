@@ -301,9 +301,8 @@ void BaseWebUIBrowserTest::set_webui_host(const std::string& webui_host) {
 
 namespace {
 
-const GURL& DummyUrl() {
-  static GURL url(content::GetWebUIURLString("DummyURL"));
-  return url;
+GURL DummyUrl() {
+  return GURL(content::GetWebUIURLString("DummyURL"));
 }
 
 // DataSource for the dummy URL.  If no data source is provided then an error
