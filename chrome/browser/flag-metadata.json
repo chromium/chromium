@@ -8697,11 +8697,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "render-arc-notifications-by-chrome",
-    "owners": [ "shuminghao@google.com", "arc-framework@google.com" ],
-    "expiry_milestone": 152
-  },
-  {
     "name": "render-document",
     "owners": [ "rakina@chromium.org" ],
     "expiry_milestone": 150

@@ -8052,12 +8052,6 @@ inline constexpr char kReleaseNotesNotificationAlwaysEligibleDescription[] =
     "profile type, and whether or not the notification had already been shown "
     "this milestone. For testing.";
 
-inline constexpr char kRenderArcNotificationsByChromeName[] =
-    "Render ARC notifications by ChromeOS";
-inline constexpr char kRenderArcNotificationsByChromeDescription[] =
-    "Enables rendering ARC notifications using ChromeOS notification framework "
-    "if supported";
-
 inline constexpr char kArcWindowPredictorName[] = "Enable ARC window predictor";
 inline constexpr char kArcWindowPredictorDescription[] =
     "Enables the window state and bounds predictor for ARC task windows";

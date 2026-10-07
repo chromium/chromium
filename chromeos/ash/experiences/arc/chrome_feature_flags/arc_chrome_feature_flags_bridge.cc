@@ -81,8 +81,6 @@ void ArcChromeFeatureFlagsBridge::NotifyFeatureFlags() {
       mojom::RoundedWindowCompatStrategy::kLeftRightBottomGesture;
   flags->rounded_window_radius = chromeos::kRoundedWindowCornerRadius;
   flags->enable_pip_double_tap = true;
-  flags->render_arc_notifications_by_chrome =
-      ash::features::IsRenderArcNotificationsByChromeEnabled();
   flags->resize_compat = base::FeatureList::IsEnabled(arc::kResizeCompat);
   flags->ignore_hover_event_anr = true;
   // TODO(yunfanc): Remove this flag together with ARC++ side removal.

@@ -198,9 +198,9 @@ struct ArcNotificationData {
   // available for the user to trigger remote input.
   [MinVersion=27]
   bool is_inline_reply_enabled;
-  // True if rendering should be done on the Chrome side
+  // DEPRECATED: True if rendering should be done on the Chrome side
   [MinVersion=28]
-  bool render_on_chrome;
+  bool deprecated_render_on_chrome;
   [MinVersion=29]
   // Identifier of the group to which the notification is assigned
   string? group_key;

@@ -1516,10 +1516,6 @@ BASE_FEATURE(kReleaseNotesNotificationAllChannels,
 BASE_FEATURE(kReleaseNotesNotificationAlwaysEligible,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables rendering ARC notifications using ChromeOS notification framework
-BASE_FEATURE(kRenderArcNotificationsByChrome,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, will reset all shortcut customizations on startup.
 BASE_FEATURE(kResetShortcutCustomizations, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2826,10 +2822,6 @@ bool IsQuickDimEnabled() {
 
 bool IsRecoveryFlowReorderEnabled() {
   return base::FeatureList::IsEnabled(kRecoveryFlowReorder);
-}
-
-bool IsRenderArcNotificationsByChromeEnabled() {
-  return base::FeatureList::IsEnabled(kRenderArcNotificationsByChrome);
 }
 
 bool IsResetShortcutCustomizationsEnabled() {
