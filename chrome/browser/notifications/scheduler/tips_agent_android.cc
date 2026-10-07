@@ -4,6 +4,11 @@
 
 #include "chrome/browser/notifications/scheduler/tips_agent_android.h"
 
+#include <map>
+#include <string>
+#include <utility>
+
+#include "base/android/jni_string.h"
 #include "base/feature_list.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/notifications/scheduler/notification_schedule_service_factory.h"
@@ -119,26 +124,22 @@ void TipsAgentAndroid::RunGetClassificationResultCallback(
 // static
 void TipsAgentAndroid::ScheduleNewNotification(
     Profile* profile,
-    bool is_bottom_omnibox,
+    std::map<std::string, float> custom_signals,
     notifications::NotificationScheduleService* service) {
   if (!service) {
     return;
   }
 
   // Self-service approach: query TipsService to determine the best tip.
+  // `custom_signals` holds Java-only runtime signals contributed by each
+  // feature's TipsPromoHandler and is merged with native signals in
+  // TipsService.
   if (base::FeatureList::IsEnabled(chrome::android::kTipsSelfService)) {
     tips::TipsService* tips_service =
         tips::TipsServiceFactory::GetForProfile(profile);
     if (!tips_service) {
       return;
     }
-    // TODO(crbug.com/567362616): Update the plumbing for Java-only signals to
-    // pass a generic signal map across JNI, avoiding hardcoded feature signals
-    // in tips_agent_android.cc.
-    std::map<std::string, float> custom_signals = {
-        {segmentation_platform::kBottomOmniboxStatus,
-         is_bottom_omnibox ? 1.0f : 0.0f},
-    };
     // `service` and `tips_service` are KeyedServices scoped to `profile`.
     // The callback is owned by `tips_service` and guarded by its WeakPtr, so
     // it will be dropped if the Profile or services are destroyed, ensuring
@@ -183,6 +184,14 @@ void TipsAgentAndroid::ScheduleNewNotification(
       segmentation_platform::processing::ProcessedValue(
           quick_delete_ever_used));
 
+  // The bottom omnibox status is a Java-only runtime signal supplied via
+  // `custom_signals`. Default to false (omnibox in the top position) if not
+  // supplied, matching the pre-existing fallback when the controls position
+  // could not be determined.
+  auto bottom_omnibox_it =
+      custom_signals.find(segmentation_platform::kBottomOmniboxStatus);
+  bool is_bottom_omnibox = bottom_omnibox_it != custom_signals.end() &&
+                           bottom_omnibox_it->second != 0.0f;
   input_context->metadata_args.emplace(
       segmentation_platform::kBottomOmniboxStatus,
       segmentation_platform::processing::ProcessedValue(is_bottom_omnibox));
@@ -274,7 +283,7 @@ void TipsAgentAndroid::ScheduleNewNotification(
 // static
 void TipsAgentAndroid::OnGetClientOverview(
     Profile* profile,
-    bool is_bottom_omnibox,
+    std::map<std::string, float> custom_signals,
     notifications::NotificationScheduleService* service,
     notifications::ClientOverview overview) {
   // If there is a scheduled notification, reschedule it.
@@ -294,8 +303,8 @@ void TipsAgentAndroid::OnGetClientOverview(
         notifications::SchedulerClientType::kTips, std::move(data),
         std::move(params)));
   } else {
-    TipsAgentAndroid::ScheduleNewNotification(profile, is_bottom_omnibox,
-                                              service);
+    TipsAgentAndroid::ScheduleNewNotification(
+        profile, std::move(custom_signals), service);
   }
 }
 
@@ -324,14 +333,13 @@ void TipsAgentAndroid::ShowTipsPromo(
   Java_TipsAgent_showTipsPromo(env, static_cast<int32_t>(feature_type));
 }
 
-static void JNI_TipsAgent_MaybeScheduleNotification(JNIEnv* env,
-                                                    Profile* profile,
-                                                    bool j_is_bottom_omnibox) {
+static void JNI_TipsAgent_MaybeScheduleNotification(
+    JNIEnv* env,
+    Profile* profile,
+    std::map<std::string, float> custom_signals) {
   if (!profile) {
     return;
   }
-
-  bool is_bottom_omnibox = j_is_bottom_omnibox;
 
   // Check the cached pending notifications in the ClientOverview.
   notifications::NotificationScheduleService* service =
@@ -339,13 +347,14 @@ static void JNI_TipsAgent_MaybeScheduleNotification(JNIEnv* env,
   service->GetClientOverview(
       notifications::SchedulerClientType::kTips,
       base::BindOnce(
-          [](Profile* profile, bool is_bottom_omnibox,
+          [](Profile* profile, std::map<std::string, float> custom_signals,
              notifications::NotificationScheduleService* service,
              notifications::ClientOverview overview) {
-            TipsAgentAndroid::OnGetClientOverview(profile, is_bottom_omnibox,
+            TipsAgentAndroid::OnGetClientOverview(profile,
+                                                  std::move(custom_signals),
                                                   service, std::move(overview));
           },
-          profile, is_bottom_omnibox, base::Unretained(service)));
+          profile, std::move(custom_signals), base::Unretained(service)));
 }
 
 static void JNI_TipsAgent_RemovePendingNotifications(JNIEnv* env,

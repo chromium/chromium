@@ -27,10 +27,15 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tips.TipsNotificationsFeatureType;
+import org.chromium.chrome.browser.tips.TipsPromoHandler;
+import org.chromium.chrome.browser.tips.TipsPromoHandlerFactory;
 import org.chromium.chrome.browser.tips.TipsUtils;
+import org.chromium.components.segmentation_platform.SegmentationPlatformConstants;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /** Used by tips notifications to schedule and display tips through the Android UI. */
@@ -54,10 +59,12 @@ public class TipsAgent {
      * already scheduled, this will reschedule it.
      *
      * @param profile The current profile.
-     * @param isBottomOmnibox Whether the omnibox is in the bottom position or not.
+     * @param customSignals Java-only runtime signals, keyed by signal name, merged with natively
+     *     retrieved signals when determining tip eligibility.
      */
-    public static void maybeScheduleNotification(Profile profile, boolean isBottomOmnibox) {
-        TipsAgentJni.get().maybeScheduleNotification(profile, isBottomOmnibox);
+    public static void maybeScheduleNotification(
+            Profile profile, Map<String, Float> customSignals) {
+        TipsAgentJni.get().maybeScheduleNotification(profile, customSignals);
     }
 
     /**
@@ -105,7 +112,7 @@ public class TipsAgent {
         // have started shutting down. Avoid passing it across JNI in that case.
         if (profile.shutdownStarted() || windowAndroid.isDestroyed()) return;
 
-        boolean isBottomOmnibox = isBottomOmniboxActive(windowAndroid);
+        Map<String, Float> customSignals = collectCustomSignals(windowAndroid);
 
         TipsUtils.areTipsNotificationsEnabled(
                 (enabled) -> {
@@ -113,7 +120,7 @@ public class TipsAgent {
                     // scheduled before scheduling a task to run the reschedule logic.
                     if (enabled) {
                         // This function includes rescheduling a notification if one is pending.
-                        maybeScheduleNotification(profile, isBottomOmnibox);
+                        maybeScheduleNotification(profile, customSignals);
                         // Run this current function again in 1 hour since the scheduler will
                         // schedule a notification 4 hours out, so if the user is still active on
                         // Chrome then reschedule it. The remove call earlier in this function will
@@ -137,6 +144,25 @@ public class TipsAgent {
                 });
     }
 
+    /**
+     * Gathers the Java-only runtime signals to pass across JNI. Self-service handlers contribute
+     * their own signals via {@link TipsPromoHandler#getCustomSignals(WindowAndroid)}.
+     */
+    private static Map<String, Float> collectCustomSignals(WindowAndroid windowAndroid) {
+        Map<String, Float> customSignals = new HashMap<>();
+        // TODO(crbug.com/568415688): This seed exists only while the legacy (non self-service)
+        // ranker path still requires the bottom omnibox status, and until the bottom omnibox tip
+        // supplies this signal from its own TipsPromoHandler#getCustomSignals. Handler-provided
+        // values below take precedence over this seed. Once both are true, remove this seed and
+        // isBottomOmniboxActive(), which also drops this class's last chrome_java-internal
+        // dependency and unblocks moving the scheduling logic back into TipsUtils.
+        customSignals.put(
+                SegmentationPlatformConstants.BOTTOM_OMNIBOX_STATUS,
+                isBottomOmniboxActive(windowAndroid) ? 1.0f : 0.0f);
+        customSignals.putAll(TipsPromoHandlerFactory.collectCustomSignals(windowAndroid));
+        return customSignals;
+    }
+
     private static boolean isBottomOmniboxActive(WindowAndroid windowAndroid) {
         // Set the default fallback for controls position to be top.
         @ControlsPosition int controlsPosition = ControlsPosition.TOP;
@@ -153,7 +179,8 @@ public class TipsAgent {
     @NativeMethods
     interface Natives {
         void maybeScheduleNotification(
-                @JniType("Profile*") Profile profile, boolean isBottomOmnibox);
+                @JniType("Profile*") Profile profile,
+                @JniType("std::map<std::string, float>") Map<String, Float> customSignals);
 
         void removePendingNotifications(@JniType("Profile*") Profile profile);
     }

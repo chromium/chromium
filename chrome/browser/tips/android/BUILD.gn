@@ -99,6 +99,7 @@ robolectric_library("junit") {
   sources = [
     "junit/src/org/chromium/chrome/browser/tips/TipsOptInCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tips/TipsPromoCoordinatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tips/TipsPromoHandlerFactoryUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tips/TipsPromoViewBinderUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tips/TipsUtilsUnitTest.java",
   ]
