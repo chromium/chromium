@@ -209,7 +209,7 @@ public class TabSwitcherPaneMediator
         mOnTabClickCallback = onTabClickCallback;
         mTabModelSupplier = tabModelSupplier;
         var tabModel = mTabModelSupplier.addSyncObserverAndPostIfNonNull(mOnTabModelChanged);
-        mTryToShowOnFilterChanged = tabModel == null || !tabModel.isTabModelRestored();
+        mTryToShowOnFilterChanged = tabModel == null || !tabModel.isTabStateInitialized();
 
         mTabGridDialogControllerSupplier = tabGridDialogControllerSupplier;
         tabGridDialogControllerSupplier.onAvailable(

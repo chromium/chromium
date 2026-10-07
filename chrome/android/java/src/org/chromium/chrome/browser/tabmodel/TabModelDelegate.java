@@ -59,7 +59,7 @@ public interface TabModelDelegate {
      * Whether all the tabs in the tab model have been restored from disk. If this is false session
      * restore is still ongoing.
      */
-    boolean isTabModelRestored();
+    boolean isTabStateInitialized();
 
     void selectModel(boolean incognito);
 

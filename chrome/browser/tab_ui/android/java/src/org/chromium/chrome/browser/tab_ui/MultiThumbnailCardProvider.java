@@ -521,7 +521,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
             Callback<@Nullable Drawable> callback) {
         TabModel tabModel = mCurrentTabModelSupplier.get();
         assumeNonNull(tabModel);
-        assert tabModel.isTabModelRestored();
+        assert tabModel.isTabStateInitialized();
 
         if (metadata.tabId == Tab.INVALID_TAB_ID) {
             new MultiThumbnailFetcher(metadata, thumbnailSize, isSelected, callback).fetch();

@@ -686,7 +686,7 @@ public class TabListMediator implements TabListNotificationHandler {
                         assert mTrackingTabs;
 
                         TabModel tabModel = mCurrentTabModelSupplier.get();
-                        if (tabModel == null || !tabModel.isTabModelRestored()) {
+                        if (tabModel == null || !tabModel.isTabStateInitialized()) {
                             return;
                         }
 
@@ -1319,7 +1319,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
     boolean isTabInTabGroup(Tab tab) {
         TabModel tabModel = getCurrentTabModelChecked();
-        assert tabModel.isTabModelRestored();
+        assert tabModel.isTabStateInitialized();
 
         return tabModel.isTabInTabGroup(tab);
     }

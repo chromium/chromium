@@ -226,7 +226,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         GlicEnabling.setEnabledForTesting(false);
 
         mTabModel = spy(new MockTabModel(mProfile, null));
-        when(mTabModel.isTabModelRestored()).thenReturn(true);
+        when(mTabModel.isTabStateInitialized()).thenReturn(true);
         mTabModelSupplier.set(mTabModel);
 
         BookmarkModel.setInstanceForTesting(mBookmarkModel);

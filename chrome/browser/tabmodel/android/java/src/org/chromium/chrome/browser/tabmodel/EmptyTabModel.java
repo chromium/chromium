@@ -437,7 +437,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public boolean isTabModelRestored() {
+    public boolean isTabStateInitialized() {
         return false;
     }
 

@@ -166,7 +166,7 @@ class TabListEditorMediator
                             @TabCreationState int creationState,
                             boolean markedForSelection) {
                         TabModel tabModel = mCurrentTabModelSupplier.get();
-                        if (tabModel == null || !tabModel.isTabModelRestored()) return;
+                        if (tabModel == null || !tabModel.isTabStateInitialized()) return;
                         if (TabLaunchTypeUtils.shouldNavigateBackFromTabListEditor(type)) {
                             assumeNonNull(mNavigationProvider);
                             mNavigationProvider.goBack();

@@ -913,7 +913,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     @Override
     protected boolean isSessionRestoreInProgress() {
         assertOnUiThread();
-        return !mModelDelegate.isTabModelRestored();
+        return !mModelDelegate.isTabStateInitialized();
     }
 
     @Override
@@ -1385,8 +1385,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public boolean isTabModelRestored() {
-        return mModelDelegate.isTabModelRestored();
+    public boolean isTabStateInitialized() {
+        return mModelDelegate.isTabStateInitialized();
     }
 
     @Override
@@ -1968,7 +1968,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 tabLaunchType == TabLaunchType.FROM_TAB_LIST_INTERFACE
                         && parentTab.getTabGroupId() != null;
 
-        return mModelDelegate.isTabModelRestored()
+        return mModelDelegate.isTabStateInitialized()
                 && (TabLaunchTypeUtils.shouldLaunchAsGroupedTab(tabLaunchType)
                         || shouldGroupWithParentForTabListInterface);
     }

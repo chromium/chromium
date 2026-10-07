@@ -261,12 +261,12 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
         if (coordinator == null) return;
 
         @Nullable TabModel tabModel = mIncognitoTabModelSupplier.get();
-        if (tabModel == null || !tabModel.isTabModelRestored()) {
+        if (tabModel == null || !tabModel.isTabStateInitialized()) {
             // The tab list is trying to show without the filter being ready. This happens when
             // first trying to show a the pane. If this happens an attempt to show will be made
             // when the filter's restoreCompleted() method is invoked in TabSwitcherPaneMediator.
             // Start a timer to measure how long it takes for tab state to be initialized and for
-            // this UI to show i.e. isTabModelRestored becomes true. This timer will emit a
+            // this UI to show i.e. isTabStateInitialized becomes true. This timer will emit a
             // histogram when we successfully show. This timer is cancelled if: 1) the pane becomes
             // invisible in TabSwitcherPaneBase#notifyLoadHint, or 2) the filter becomes ready and
             // nothing gets shown.

@@ -77,7 +77,7 @@ public class FlatTabListDataProvider extends TabListDataProvider {
     @Override
     protected void rebuildItems() {
         mItems.clear();
-        TabModel model = getTabModelIfRestored();
+        TabModel model = getTabModelIfTabStateInitialized();
         if (model == null) return;
 
         Tab selectedTab = TabModelUtils.getCurrentTab(model);

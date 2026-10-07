@@ -107,9 +107,9 @@ public abstract class TabListDataProvider {
         mTabModelSupplier.addSyncObserver(mOnTabModelChanged);
     }
 
-    /** Returns the current {@link TabModel} if it has finished restoring, or null otherwise. */
-    protected @Nullable TabModel getTabModelIfRestored() {
-        return mAttachedTabModel != null && mAttachedTabModel.isTabModelRestored()
+    /** Returns the current {@link TabModel} if tab state is initialized, or null otherwise. */
+    protected @Nullable TabModel getTabModelIfTabStateInitialized() {
+        return mAttachedTabModel != null && mAttachedTabModel.isTabStateInitialized()
                 ? mAttachedTabModel
                 : null;
     }
@@ -152,7 +152,7 @@ public abstract class TabListDataProvider {
         @TabId int tabId = tab.getId();
         if (indexOfTabId(tabId) != TabList.INVALID_TAB_INDEX) return;
 
-        TabModel model = getTabModelIfRestored();
+        TabModel model = getTabModelIfTabStateInitialized();
         if (model == null) return;
 
         int index = getInsertionIndex(model, tabId);

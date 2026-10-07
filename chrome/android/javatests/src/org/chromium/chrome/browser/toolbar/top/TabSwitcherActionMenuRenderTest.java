@@ -112,7 +112,7 @@ public class TabSwitcherActionMenuRenderTest {
         when(mIncognitoModel.getCount()).thenReturn(0);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mCurrentModel);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
-        doReturn(true).when(mCurrentModel).isTabModelRestored();
+        doReturn(true).when(mCurrentModel).isTabStateInitialized();
         when(mTabModelSelector.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
     }
 

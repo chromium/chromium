@@ -152,12 +152,12 @@ public class FlatTabListDataProviderUnitTest {
 
     @Test
     public void testRestoreCompleted_PopulatesItemsAfterRestore() {
-        when(mTabModel.isTabModelRestored()).thenReturn(false);
+        when(mTabModel.isTabStateInitialized()).thenReturn(false);
         mSelectedTab = mTab1;
         setUpProviderWithTabs(/* filter= */ null, mTab1, mTab2);
         assertItems();
 
-        when(mTabModel.isTabModelRestored()).thenReturn(true);
+        when(mTabModel.isTabStateInitialized()).thenReturn(true);
         mTabModelObserver.restoreCompleted();
 
         assertResetWithItems(selected(TAB1_ID), item(TAB2_ID));
@@ -296,7 +296,7 @@ public class FlatTabListDataProviderUnitTest {
 
     @Test
     public void testDidAddTab_IgnoresUnrestoredDuplicateOrAbsentTab() {
-        when(mTabModel.isTabModelRestored()).thenReturn(false);
+        when(mTabModel.isTabStateInitialized()).thenReturn(false);
         setUpProviderWithTabs(/* filter= */ null);
 
         // Ignored while TabModel is not yet restored.
@@ -304,7 +304,7 @@ public class FlatTabListDataProviderUnitTest {
         verifyNoInteractions(mObserver);
         assertItems();
 
-        when(mTabModel.isTabModelRestored()).thenReturn(true);
+        when(mTabModel.isTabStateInitialized()).thenReturn(true);
         mTabModelObserver.restoreCompleted();
         assertResetWithItems(item(TAB1_ID));
         clearInvocations(mObserver);
@@ -361,7 +361,7 @@ public class FlatTabListDataProviderUnitTest {
     }
 
     private void stubBackedTabModel(TabModel model, List<Tab> tabs) {
-        when(model.isTabModelRestored()).thenReturn(true);
+        when(model.isTabStateInitialized()).thenReturn(true);
         when(model.iterator()).thenAnswer(invocation -> tabs.iterator());
         when(model.getTabAt(anyInt()))
                 .thenAnswer(

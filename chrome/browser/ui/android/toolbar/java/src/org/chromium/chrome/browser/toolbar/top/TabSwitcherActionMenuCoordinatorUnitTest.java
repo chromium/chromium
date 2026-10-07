@@ -106,7 +106,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
         when(mTabModelSelector.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
 
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
-        when(mNormalTabModel.isTabModelRestored()).thenReturn(true);
+        when(mNormalTabModel.isTabStateInitialized()).thenReturn(true);
 
         mCoordinator =
                 new TabSwitcherActionMenuCoordinator(
@@ -227,7 +227,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mIncognitoTabModel.getCount()).thenReturn(0);
         when(mNormalTabModel.getTabGroupCount()).thenReturn(1);
-        when(mNormalTabModel.isTabModelRestored()).thenReturn(true);
+        when(mNormalTabModel.isTabStateInitialized()).thenReturn(true);
 
         ModelList items = mCoordinator.buildMenuItems();
 
@@ -243,7 +243,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mIncognitoTabModel.getCount()).thenReturn(0);
         when(mNormalTabModel.getTabGroupCount()).thenReturn(0);
-        when(mNormalTabModel.isTabModelRestored()).thenReturn(true);
+        when(mNormalTabModel.isTabStateInitialized()).thenReturn(true);
 
         ModelList items = mCoordinator.buildMenuItems();
 
@@ -259,7 +259,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
         when(mIncognitoTabModel.getCount()).thenReturn(0);
         when(mNormalTabModel.getTabGroupCount()).thenReturn(-1);
-        when(mNormalTabModel.isTabModelRestored()).thenReturn(false);
+        when(mNormalTabModel.isTabStateInitialized()).thenReturn(false);
 
         ModelList items = mCoordinator.buildMenuItems();
 
@@ -276,7 +276,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mIncognitoTabModel.getCount()).thenReturn(0);
         when(mNormalTabModel.getTabGroupCount()).thenReturn(0);
-        when(mNormalTabModel.isTabModelRestored()).thenReturn(true);
+        when(mNormalTabModel.isTabStateInitialized()).thenReturn(true);
 
         TabModelSelector anotherSelector = Mockito.mock(TabModelSelector.class);
         TabModel anotherTabModel = Mockito.mock(TabModel.class);
@@ -306,7 +306,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mIncognitoTabModel.getCount()).thenReturn(0);
         when(mNormalTabModel.getTabGroupCount()).thenReturn(0);
-        when(mNormalTabModel.isTabModelRestored()).thenReturn(true);
+        when(mNormalTabModel.isTabStateInitialized()).thenReturn(true);
 
         TabModelSelector anotherSelector = Mockito.mock(TabModelSelector.class);
         TabModel anotherTabModel = Mockito.mock(TabModel.class);

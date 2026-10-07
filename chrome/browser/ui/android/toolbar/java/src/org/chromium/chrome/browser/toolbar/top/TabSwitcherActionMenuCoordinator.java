@@ -235,7 +235,7 @@ public class TabSwitcherActionMenuCoordinator {
         TabModelSelector selector = mTabModelSelectorSupplier.get();
         if (selector == null || !selector.isTabStateInitialized()) return;
         TabModel tabModel = selector.getCurrentModel();
-        if (!tabModel.isTabModelRestored()) return;
+        if (!tabModel.isTabStateInitialized()) return;
 
         if (doTabGroupsExist()) {
             itemList.add(buildListItemByMenuItemType(MenuItemType.ADD_TAB_TO_GROUP));

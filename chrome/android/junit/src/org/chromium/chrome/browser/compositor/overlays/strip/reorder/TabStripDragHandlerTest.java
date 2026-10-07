@@ -2049,7 +2049,7 @@ public class TabStripDragHandlerTest {
                         /* sourceWindowIndex= */ -1,
                         mGroupedTab1.getId());
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(mTabGroupBeingDragged);
-        when(mTabModel.isTabModelRestored()).thenReturn(true);
+        when(mTabModel.isTabStateInitialized()).thenReturn(true);
         when(mTabModel.isTabInTabGroup(mGroupedTab1)).thenReturn(true);
         when(mTabModel.isTabInTabGroup(groupedTab2)).thenReturn(true);
         when(mTabModel.getTabById(mGroupedTab1.getId())).thenReturn(mGroupedTab1);

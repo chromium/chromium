@@ -359,7 +359,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
             if (tabModel != null
                     && tabModel.isTabInTabGroup(sourceTab)
                     && !Objects.equals(newTab.getTabGroupId(), sourceTab.getTabGroupId())
-                    && tabModel.isTabModelRestored()) {
+                    && tabModel.isTabStateInitialized()) {
                 tabModel.mergeListOfTabsToGroup(
                         Collections.singletonList(newTab),
                         sourceTab,

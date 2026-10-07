@@ -71,7 +71,7 @@ public class StubTabModelUnitTest {
                             "getTabGroupColorWithFallback",
                             "getTabGroupCollapsed",
                             "isTabGroupHiding",
-                            "isTabModelRestored",
+                            "isTabStateInitialized",
                             "associateWithBrowserWindow",
                             "dissociateWithBrowserWindow",
                             "addIncognitoObserver",

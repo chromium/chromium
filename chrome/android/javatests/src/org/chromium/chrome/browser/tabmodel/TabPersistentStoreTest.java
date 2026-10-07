@@ -201,11 +201,6 @@ public class TabPersistentStoreTest {
         public void requestToShowTab(Tab tab, @TabSelectionType int type) {}
 
         @Override
-        public boolean isTabModelRestored() {
-            return true;
-        }
-
-        @Override
         public @Nullable Profile getProfile(boolean offTheRecord) {
             return getModel(offTheRecord).getProfile();
         }

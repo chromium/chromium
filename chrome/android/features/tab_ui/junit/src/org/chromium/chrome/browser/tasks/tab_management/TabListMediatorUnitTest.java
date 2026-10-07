@@ -574,8 +574,8 @@ public class TabListMediatorUnitTest {
 
         doNothing().when(mTabContentManager).getTabThumbnailWithCallback(anyInt(), any(), any());
         // Mock that tab restoring stage is over.
-        when(mTabModel.isTabModelRestored()).thenReturn(true);
-        when(mIncognitoTabModel.isTabModelRestored()).thenReturn(true);
+        when(mTabModel.isTabStateInitialized()).thenReturn(true);
+        when(mIncognitoTabModel.isTabStateInitialized()).thenReturn(true);
         when(mTabModel.getProfile()).thenReturn(mProfile);
 
         when(mTabModel.getTabUngrouper()).thenReturn(mTabUngrouper);
@@ -1824,7 +1824,7 @@ public class TabListMediatorUnitTest {
     public void tabAddition_FlatLayout_Dialog_End() {
         setUpTabListMediator(TabListMediatorType.TAB_GRID_DIALOG, TabListMode.GRID);
 
-        when(mTabModel.isTabModelRestored()).thenReturn(true);
+        when(mTabModel.isTabStateInitialized()).thenReturn(true);
 
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         createTabGroup(List.of(mTab1, mTab2, newTab), TAB_GROUP_ID);
@@ -1849,7 +1849,7 @@ public class TabListMediatorUnitTest {
     public void tabAddition_FlatLayout_Dialog_Middle() {
         setUpTabListMediator(TabListMediatorType.TAB_GRID_DIALOG, TabListMode.GRID);
 
-        when(mTabModel.isTabModelRestored()).thenReturn(true);
+        when(mTabModel.isTabStateInitialized()).thenReturn(true);
 
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         createTabGroup(List.of(mTab1, newTab, mTab2), TAB_GROUP_ID);
@@ -1874,7 +1874,7 @@ public class TabListMediatorUnitTest {
     public void tabAddition_FlatLayout_Dialog_Skip() {
         setUpTabListMediator(TabListMediatorType.TAB_GRID_DIALOG, TabListMode.GRID);
 
-        when(mTabModel.isTabModelRestored()).thenReturn(true);
+        when(mTabModel.isTabStateInitialized()).thenReturn(true);
 
         createTabGroup(List.of(mTab1, mTab2), TAB_GROUP_ID);
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);

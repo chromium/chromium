@@ -113,11 +113,6 @@ public class MockTabModelSelector extends TabModelSelectorBase {
     }
 
     @Override
-    public boolean isTabModelRestored() {
-        return true;
-    }
-
-    @Override
     public MockTab getCurrentTab() {
         return (MockTab) super.getCurrentTab();
     }

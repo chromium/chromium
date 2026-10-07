@@ -646,8 +646,8 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public boolean isTabModelRestored() {
-        return mDelegateModel.isTabModelRestored();
+    public boolean isTabStateInitialized() {
+        return mDelegateModel.isTabStateInitialized();
     }
 
     @Override

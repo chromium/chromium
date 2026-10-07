@@ -236,7 +236,7 @@ public class TabSwitcherPaneUnitTest {
         mProfileProviderSupplier.set(mProfileProvider);
 
         mTabModel = spy(new MockTabModel(mProfile, null));
-        when(mTabModel.isTabModelRestored()).thenReturn(true);
+        when(mTabModel.isTabStateInitialized()).thenReturn(true);
         mTabList = new ArrayList<>();
         mTabList.add(mock(Tab.class));
         when(mTabModel.getRepresentativeTabList()).thenReturn(mTabList);
@@ -401,7 +401,7 @@ public class TabSwitcherPaneUnitTest {
     @Test
     public void testLoadHintColdHot_TabStateNotInitialized() {
         mTabModel.setActive(true);
-        when(mTabModel.isTabModelRestored()).thenReturn(false);
+        when(mTabModel.isTabStateInitialized()).thenReturn(false);
 
         mTabSwitcherPane.notifyLoadHint(LoadHint.COLD);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
@@ -415,7 +415,7 @@ public class TabSwitcherPaneUnitTest {
         verify(coordinator).setInitialScrollIndexOffset();
         verify(coordinator).requestAccessibilityFocusOnCurrentTab();
 
-        when(mTabModel.isTabModelRestored()).thenReturn(true);
+        when(mTabModel.isTabStateInitialized()).thenReturn(true);
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.GridTabSwitcher.TimeToTabStateInitializedFromShown");
@@ -620,7 +620,7 @@ public class TabSwitcherPaneUnitTest {
         assertNotNull(mTabSwitcherPane.getTabSwitcherPaneCoordinator());
         mTabSwitcherPane.destroyTabSwitcherPaneCoordinator();
         mTabModel.setActive(true);
-        when(mTabModel.isTabModelRestored()).thenReturn(true);
+        when(mTabModel.isTabStateInitialized()).thenReturn(true);
 
         OnSharedPreferenceChangeListener listener = mPriceAnnotationsPrefListenerCaptor.getValue();
         // Check this doesn't crash if there is no coordinator.
@@ -635,17 +635,17 @@ public class TabSwitcherPaneUnitTest {
                 mSharedPreferences, PriceTrackingUtilities.TRACK_PRICES_ON_TABS);
         verify(coordinator).resetWithListOfTabs(mTabList);
 
-        when(mTabModel.isTabModelRestored()).thenReturn(false);
+        when(mTabModel.isTabStateInitialized()).thenReturn(false);
         listener.onSharedPreferenceChanged(
                 mSharedPreferences, PriceTrackingUtilities.TRACK_PRICES_ON_TABS);
         verify(coordinator).resetWithListOfTabs(mTabList);
-        when(mTabModel.isTabModelRestored()).thenReturn(true);
+        when(mTabModel.isTabStateInitialized()).thenReturn(true);
 
         mTabModel.setActive(false);
         listener.onSharedPreferenceChanged(
                 mSharedPreferences, PriceTrackingUtilities.TRACK_PRICES_ON_TABS);
         verify(coordinator).resetWithListOfTabs(mTabList);
-        when(mTabModel.isTabModelRestored()).thenReturn(true);
+        when(mTabModel.isTabStateInitialized()).thenReturn(true);
 
         listener.onSharedPreferenceChanged(mSharedPreferences, "foo");
         verify(coordinator).resetWithListOfTabs(mTabList);

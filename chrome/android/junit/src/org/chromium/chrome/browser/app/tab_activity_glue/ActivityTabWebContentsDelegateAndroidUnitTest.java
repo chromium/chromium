@@ -349,7 +349,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         when(mTabCreator.createTabWithWebContents(any(), anyBoolean(), any(), anyInt(), any()))
                 .thenReturn(newTab);
         when(mTabModel.isTabInTabGroup(any())).thenReturn(true);
-        when(mTabModel.isTabModelRestored()).thenReturn(true);
+        when(mTabModel.isTabStateInitialized()).thenReturn(true);
         Map<WebContents, Tab> tabMap = Map.of(mWebContents, parentTab, mNewWebContents, newTab);
         mTabWebContentsDelegateAndroid.setTabMap(tabMap);
 
@@ -510,7 +510,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         when(mTabCreator.createTabWithWebContents(any(), anyBoolean(), any(), anyInt(), any()))
                 .thenReturn(newTab);
         when(mTabModel.isTabInTabGroup(any())).thenReturn(true);
-        when(mTabModel.isTabModelRestored()).thenReturn(true);
+        when(mTabModel.isTabStateInitialized()).thenReturn(true);
         Map<WebContents, Tab> tabMap = Map.of(mWebContents, parentTab, mNewWebContents, newTab);
         mTabWebContentsDelegateAndroid.setTabMap(tabMap);
 

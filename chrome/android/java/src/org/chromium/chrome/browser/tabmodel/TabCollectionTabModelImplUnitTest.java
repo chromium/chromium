@@ -254,13 +254,13 @@ public class TabCollectionTabModelImplUnitTest {
     }
 
     @Test
-    public void testIsTabModelRestored() {
-        when(mTabModelDelegate.isTabModelRestored()).thenReturn(false);
-        assertFalse(mTabModel.isTabModelRestored());
+    public void testIsTabStateInitialized() {
+        when(mTabModelDelegate.isTabStateInitialized()).thenReturn(false);
+        assertFalse(mTabModel.isTabStateInitialized());
         assertTrue(mTabModel.isSessionRestoreInProgress());
 
-        when(mTabModelDelegate.isTabModelRestored()).thenReturn(true);
-        assertTrue(mTabModel.isTabModelRestored());
+        when(mTabModelDelegate.isTabStateInitialized()).thenReturn(true);
+        assertTrue(mTabModel.isTabStateInitialized());
         assertFalse(mTabModel.isSessionRestoreInProgress());
     }
 

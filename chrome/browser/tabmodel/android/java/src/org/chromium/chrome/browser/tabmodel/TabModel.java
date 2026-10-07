@@ -585,8 +585,8 @@ public interface TabModel extends TabList {
     /** Get all tab group IDs that are associated with tab groups. */
     Set<Token> getAllTabGroupIds();
 
-    /** Returns whether the tab model is fully restored. */
-    boolean isTabModelRestored();
+    /** Returns whether the tab state is initialized. */
+    boolean isTabStateInitialized();
 
     /** Returns whether the tab group is being hidden. */
     boolean isTabGroupHiding(@Nullable Token tabGroupId);

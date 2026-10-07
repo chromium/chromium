@@ -444,11 +444,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase {
     }
 
     @Override
-    public boolean isTabModelRestored() {
-        return isTabStateInitialized();
-    }
-
-    @Override
     public @Nullable Profile getProfile(boolean offTheRecord) {
         ProfileProvider profileProvider = mProfileProviderSupplier.get();
         if (profileProvider == null) return null;

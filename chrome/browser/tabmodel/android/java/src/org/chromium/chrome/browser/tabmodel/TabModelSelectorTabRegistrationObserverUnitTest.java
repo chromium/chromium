@@ -343,11 +343,6 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
         public void requestToShowTab(Tab tab, int type) {}
 
         @Override
-        public boolean isTabModelRestored() {
-            return true;
-        }
-
-        @Override
         public @Nullable Profile getProfile(boolean offTheRecord) {
             return null;
         }

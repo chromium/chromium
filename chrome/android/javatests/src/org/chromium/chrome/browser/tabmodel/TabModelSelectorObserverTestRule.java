@@ -82,11 +82,6 @@ public class TabModelSelectorObserverTestRule extends SigninTestRule {
                     public void requestToShowTab(Tab tab, int type) {}
 
                     @Override
-                    public boolean isTabModelRestored() {
-                        return true;
-                    }
-
-                    @Override
                     public Tab openNewTab(
                             LoadUrlParams loadUrlParams,
                             @TabLaunchType int type,
@@ -124,7 +119,7 @@ public class TabModelSelectorObserverTestRule extends SigninTestRule {
                     public void requestToShowTab(Tab tab, @TabSelectionType int type) {}
 
                     @Override
-                    public boolean isTabModelRestored() {
+                    public boolean isTabStateInitialized() {
                         return true;
                     }
 

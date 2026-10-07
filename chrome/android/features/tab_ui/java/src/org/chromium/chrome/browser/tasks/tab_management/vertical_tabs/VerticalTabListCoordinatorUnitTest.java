@@ -313,7 +313,7 @@ public class VerticalTabListCoordinatorUnitTest {
         when(mIncognitoTabModel.getCount()).thenReturn(0);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        when(mTabModel.isTabModelRestored()).thenReturn(true);
+        when(mTabModel.isTabStateInitialized()).thenReturn(true);
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
         when(mTabModel.iterator()).thenReturn(Collections.emptyIterator());
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
@@ -451,7 +451,7 @@ public class VerticalTabListCoordinatorUnitTest {
 
         // Swap to an empty tab model.
         when(mEmptyTabModel.getProfile()).thenReturn(mProfile);
-        when(mEmptyTabModel.isTabModelRestored()).thenReturn(true);
+        when(mEmptyTabModel.isTabStateInitialized()).thenReturn(true);
         when(mEmptyTabModel.getRepresentativeTabList()).thenReturn(Collections.emptyList());
         when(mEmptyTabModel.iterator()).thenReturn(Collections.emptyIterator());
 
@@ -543,7 +543,7 @@ public class VerticalTabListCoordinatorUnitTest {
         mCoordinator.destroy();
 
         when(mNewTabModel.getProfile()).thenReturn(mProfile);
-        when(mNewTabModel.isTabModelRestored()).thenReturn(true);
+        when(mNewTabModel.isTabStateInitialized()).thenReturn(true);
         Tab newTab = prepareMockTab(mMockTab1, TAB_ID_1);
         when(mNewTabModel.getRepresentativeTabList()).thenReturn(List.of(newTab));
 
@@ -1284,7 +1284,7 @@ public class VerticalTabListCoordinatorUnitTest {
         SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recycler.getAdapter();
 
         when(mNewTabModel.getProfile()).thenReturn(mProfile);
-        when(mNewTabModel.isTabModelRestored()).thenReturn(true);
+        when(mNewTabModel.isTabStateInitialized()).thenReturn(true);
         Tab newTab = prepareMockTab(mMockTab1, TAB_ID_1);
         when(mNewTabModel.getRepresentativeTabList()).thenReturn(List.of(newTab));
         when(mNewTabModel.iterator()).thenReturn(List.of(newTab).iterator());

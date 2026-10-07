@@ -144,7 +144,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
 
         mTabList = List.of(mock(Tab.class));
         when(mIncognitoTabModel.getRepresentativeTabList()).thenReturn(mTabList);
-        when(mIncognitoTabModel.isTabModelRestored()).thenReturn(true);
+        when(mIncognitoTabModel.isTabStateInitialized()).thenReturn(true);
         when(mTabSwitcherPaneCoordinator.getIsRecyclerViewAnimatorRunning())
                 .thenReturn(mIsRecyclerViewAnimatorRunningSupplier);
         when(mTabSwitcherPaneCoordinator.getRecentlySwipedTabIdSupplier())
@@ -336,7 +336,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
     @Test
     public void testLoadHintColdHot_TabStateNotInitialized() {
         when(mIncognitoTabModel.isActiveModel()).thenReturn(true);
-        when(mIncognitoTabModel.isTabModelRestored()).thenReturn(false);
+        when(mIncognitoTabModel.isTabStateInitialized()).thenReturn(false);
 
         mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.COLD);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
@@ -351,7 +351,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
         verify(coordinator).setInitialScrollIndexOffset();
         verify(coordinator).requestAccessibilityFocusOnCurrentTab();
 
-        when(mIncognitoTabModel.isTabModelRestored()).thenReturn(true);
+        when(mIncognitoTabModel.isTabStateInitialized()).thenReturn(true);
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.GridTabSwitcher.TimeToTabStateInitializedFromShown");

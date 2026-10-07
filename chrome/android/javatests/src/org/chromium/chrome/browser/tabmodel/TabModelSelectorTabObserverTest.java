@@ -148,11 +148,6 @@ public class TabModelSelectorTabObserverTest {
                                 public void requestToShowTab(Tab tab, int type) {}
 
                                 @Override
-                                public boolean isTabModelRestored() {
-                                    return true;
-                                }
-
-                                @Override
                                 public Tab openNewTab(
                                         LoadUrlParams loadUrlParams,
                                         @TabLaunchType int type,

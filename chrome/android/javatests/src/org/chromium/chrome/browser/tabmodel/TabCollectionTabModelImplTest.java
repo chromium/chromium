@@ -136,7 +136,7 @@ public class TabCollectionTabModelImplTest {
     public void testInitialState() {
         assertTrue(mCollectionModel.isActiveModel());
         assertTrue(mCollectionModel.isInitializationComplete());
-        assertTrue(mCollectionModel.isTabModelRestored());
+        assertTrue(mCollectionModel.isTabStateInitialized());
 
         assertEquals(1, mCollectionModel.getCount());
         assertEquals(0, mCollectionModel.index());
