@@ -18,7 +18,10 @@
 #include "components/prefs/pref_service.h"
 #include "components/url_formatter/url_fixer.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#else
 #include "chrome/browser/ui/startup/startup_tab.h"
 #endif
 
@@ -68,6 +71,14 @@ SessionStartupPref::Type SessionStartupPref::GetDefaultStartupType() {
 #else
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
   if (features::kSetDefaultToContinueSession.Get()) {
+    return SessionStartupPref::LAST;
+  }
+#elif BUILDFLAG(IS_ANDROID)
+  // On Android desktop, restoring the last session is the default startup
+  // behavior when the restore-on-startup pref is synced.
+  if (base::android::device_info::is_desktop() &&
+      base::FeatureList::IsEnabled(
+          chrome::android::kSyncRestoreOnStartupPref)) {
     return SessionStartupPref::LAST;
   }
 #endif
