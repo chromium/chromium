@@ -26,6 +26,7 @@
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/test_event.h"
+#include "ui/lottie/animation.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/image_button.h"
@@ -701,8 +702,14 @@ IN_PROC_BROWSER_TEST_F(
   views::BubbleFrameView* frame_view =
       GetDialogDelegate()->AsBubbleDialogDelegate()->GetBubbleFrameView();
   ASSERT_TRUE(frame_view);
-  EXPECT_TRUE(views::IsViewClass<views::ThemeTrackingAnimatedImageView>(
-      frame_view->GetHeaderViewForTesting()));
+  auto* animated_view =
+      views::AsViewClass<views::ThemeTrackingAnimatedImageView>(
+          frame_view->GetHeaderViewForTesting());
+  ASSERT_TRUE(animated_view);
+  ASSERT_TRUE(animated_view->animated_image());
+  ASSERT_TRUE(animated_view->animated_image()->GetPlaybackConfig());
+  EXPECT_EQ(animated_view->animated_image()->GetPlaybackConfig()->style,
+            lottie::Animation::Style::kLinear);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -716,8 +723,14 @@ IN_PROC_BROWSER_TEST_F(
   views::BubbleFrameView* frame_view =
       GetDialogDelegate()->AsBubbleDialogDelegate()->GetBubbleFrameView();
   ASSERT_TRUE(frame_view);
-  EXPECT_TRUE(views::IsViewClass<views::ThemeTrackingAnimatedImageView>(
-      frame_view->GetHeaderViewForTesting()));
+  auto* animated_view =
+      views::AsViewClass<views::ThemeTrackingAnimatedImageView>(
+          frame_view->GetHeaderViewForTesting());
+  ASSERT_TRUE(animated_view);
+  ASSERT_TRUE(animated_view->animated_image());
+  ASSERT_TRUE(animated_view->animated_image()->GetPlaybackConfig());
+  EXPECT_EQ(animated_view->animated_image()->GetPlaybackConfig()->style,
+            lottie::Animation::Style::kLinear);
 }
 
 }  // namespace
