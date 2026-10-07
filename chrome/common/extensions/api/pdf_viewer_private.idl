@@ -201,7 +201,8 @@ namespace pdfViewerPrivate {
 
     // Fired when the browser wants the listener to update the viewport based on
     // a different PDF URL.
+    // `streamUrl`: Unique ID for the instance that should update its viewport.
     // `pdfUrl`: The string of the PDF URL that should update the viewport.
-    static void onShouldUpdateViewport(DOMString pdfUrl);
+    static void onShouldUpdateViewport(DOMString streamUrl, DOMString pdfUrl);
   };
 };

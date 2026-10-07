@@ -1307,8 +1307,16 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   }
   // </if>
 
-  /** Handles updating viewport params based on the `newUrl` provided. */
-  private handleMaybeUpdateViewport_(newUrl: string) {
+  /**
+   * Handles updating viewport params based on the `newUrl` provided.
+   * @param streamUrl Unique identifier for a PDF Viewer instance.
+   * @param newUrl The new URL to parse viewport params from.
+   */
+  private handleMaybeUpdateViewport_(streamUrl: string, newUrl: string) {
+    if (streamUrl !== this.browserApi!.getStreamInfo().streamUrl) {
+      return;
+    }
+
     assert(this.paramsParser);
     this.paramsParser.getViewportFromUrlParams(newUrl).then(
         params => this.handleUrlParams(params));

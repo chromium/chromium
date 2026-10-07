@@ -56,7 +56,9 @@ bool MaybeDispatchSaveEvent(content::RenderFrameHost* embedder_host);
 
 // Dispatches an extension event to the PDF viewer containing an updated PDF URL
 // that was intended to be navigated to so the viewer can update its viewport
-// based on the fragment of that URL.
+// based on the fragment of that URL. Only the PDF viewer embedded in
+// `embedder_host` handles the event. Does nothing if `embedder_host` does not
+// embed a PDF viewer.
 void DispatchShouldUpdateViewportEvent(content::RenderFrameHost* embedder_host,
                                        const GURL& new_pdf_url);
 

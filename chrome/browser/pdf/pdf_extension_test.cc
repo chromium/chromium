@@ -32,6 +32,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/test/with_feature_override.h"
@@ -44,6 +45,7 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
+#include "chrome/browser/pdf/pdf_extension_util.h"
 #include "chrome/browser/pdf/test_mime_handler_stream_manager.h"
 #include "chrome/browser/permissions/chrome_permissions_client.h"
 #include "chrome/browser/plugins/plugin_test_utils.h"
@@ -61,6 +63,7 @@
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -108,12 +111,14 @@
 #include "extensions/browser/api/file_system/file_system_api.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_attach_helper.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h"
 #include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "extensions/browser/mime_handler/stream_container.h"
+#include "extensions/browser/test_event_router_observer.h"
 #include "extensions/common/constants.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -4729,6 +4734,68 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifBlockPdfFrameNavigationTest,
 
   ASSERT_TRUE(LoadPdfInFirstChild(url));
   TestBlockNavigationInContentHost(GURL());
+}
+
+// Verifies that the stream URL sent with `onShouldUpdateViewport` matches the
+// stream URL the target PDF viewer filters on.
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest,
+                       ShouldUpdateViewportEventStreamUrlMatchesViewer) {
+  const GURL url = embedded_test_server()->GetURL("/pdf/test.pdf");
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(url);
+  ASSERT_TRUE(extension_host);
+
+  extensions::TestEventRouterObserver observer(
+      extensions::EventRouter::Get(browser()->GetProfile()));
+  pdf_extension_util::DispatchShouldUpdateViewportEvent(
+      GetActiveWebContents()->GetPrimaryMainFrame(), url);
+
+  const std::string event_name =
+      extensions::api::pdf_viewer_private::OnShouldUpdateViewport::kEventName;
+  observer.WaitForEventWithName(event_name);
+  const base::ListValue& args = observer.events().at(event_name)->args();
+  ASSERT_EQ(2u, args.size());
+  ASSERT_TRUE(args[0].is_string());
+  const std::string& dispatched_stream_url = args[0].GetString();
+
+  EXPECT_FALSE(dispatched_stream_url.empty());
+  EXPECT_EQ(dispatched_stream_url,
+            content::EvalJs(extension_host,
+                            "window.viewer.browserApi.getStreamInfo()."
+                            "streamUrl"));
+  ASSERT_TRUE(args[1].is_string());
+  EXPECT_EQ(url.spec(), args[1].GetString());
+}
+
+// Verifies that `onShouldUpdateViewport` only updates the viewport of the PDF
+// viewer in the target tab, even though the event is delivered to every PDF
+// viewer in the profile. Both tabs show the same PDF, so the viewers share the
+// same original URL but have different stream URLs.
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest,
+                       ShouldUpdateViewportEventOnlyUpdatesTargetTab) {
+  const GURL url = embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf");
+  content::RenderFrameHost* other_extension_host =
+      LoadPdfGetExtensionHost(url);
+  ASSERT_TRUE(other_extension_host);
+  content::RenderFrameHost* target_extension_host =
+      LoadPdfInNewTabGetExtensionHost(url);
+  ASSERT_TRUE(target_extension_host);
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
+
+  static constexpr char kGetPageScript[] =
+      "window.viewer.viewport.getMostVisiblePage()";
+  ASSERT_EQ(0, content::EvalJs(target_extension_host, kGetPageScript));
+  ASSERT_EQ(0, content::EvalJs(other_extension_host, kGetPageScript));
+
+  // Ask the viewer in the active (target) tab to go to the third page.
+  pdf_extension_util::DispatchShouldUpdateViewportEvent(
+      GetActiveWebContents()->GetPrimaryMainFrame(),
+      GURL(url.spec() + "#page=3"));
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(target_extension_host, kGetPageScript)
+               .ExtractInt() == 2;
+  }));
+  EXPECT_EQ(0, content::EvalJs(other_extension_host, kGetPageScript));
 }
 
 // Test class that enables the RendererSideContentDecoding feature.

@@ -331,6 +331,34 @@ bool IsPdfSaveToDriveEnabled(content::BrowserContext* context) {
 }
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
+// Returns the `StreamContainer` for the PDF viewer embedded in
+// `embedder_host`, or null if there is none.
+base::WeakPtr<extensions::StreamContainer> GetStreamContainerForEmbedder(
+    content::RenderFrameHost* embedder_host) {
+  if (chrome_pdf::features::IsOopifPdfEnabled()) {
+    auto* mime_handler_stream_manager =
+        extensions::mime_handler::MimeHandlerStreamManager::
+            FromRenderFrameHost(embedder_host);
+    return mime_handler_stream_manager
+               ? mime_handler_stream_manager->GetStreamContainer(embedder_host)
+               : nullptr;
+  }
+
+  // For GuestView, the stream is owned by the `MimeHandlerViewGuest` that
+  // `embedder_host` embeds.
+  content::WebContents* embedder_contents =
+      content::WebContents::FromRenderFrameHost(embedder_host);
+  for (content::WebContents* inner_contents :
+       embedder_contents->GetInnerWebContents()) {
+    auto* guest = extensions::MimeHandlerViewGuest::FromWebContents(
+        inner_contents);
+    if (guest && guest->GetEmbedderFrame() == embedder_host) {
+      return guest->GetStreamWeakPtr();
+    }
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 std::string GetManifest() {
@@ -476,7 +504,16 @@ bool MaybeDispatchSaveEvent(content::RenderFrameHost* embedder_host) {
 
 void DispatchShouldUpdateViewportEvent(content::RenderFrameHost* embedder_host,
                                        const GURL& new_pdf_url) {
+  // The event is delivered to every PDF viewer in the profile, so include the
+  // stream URL, which uniquely identifies the target viewer instance.
+  base::WeakPtr<extensions::StreamContainer> stream =
+      GetStreamContainerForEmbedder(embedder_host);
+  if (!stream) {
+    return;
+  }
+
   base::ListValue args;
+  args.Append(stream->stream_url().spec());
   args.Append(new_pdf_url.spec());
 
   content::BrowserContext* context = embedder_host->GetBrowserContext();

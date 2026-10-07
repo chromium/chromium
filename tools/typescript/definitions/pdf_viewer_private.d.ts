@@ -118,7 +118,8 @@ declare global {
       export const onSaveToDriveProgress:
           ChromeEvent<(url: string, progress: SaveToDriveProgress) => void>;
       // </if>
-      export const onShouldUpdateViewport: ChromeEvent<(url: string) => void>;
+      export const onShouldUpdateViewport:
+          ChromeEvent<(streamUrl: string, url: string) => void>;
     }
   }
 }
