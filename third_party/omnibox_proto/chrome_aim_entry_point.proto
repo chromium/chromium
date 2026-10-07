@@ -114,4 +114,13 @@ enum ChromeAimEntryPoint {
 
   // AIM is entered from the omnibox composebox search with an attached tab.
   IOS_CHROME_COBROWSE_OMNIBOX_TAB_SEARCH = 217;
+
+  // AIM is entered from the "Ask Google" item in the page context menu.
+  DESKTOP_CHROME_PAGE_CONTEXT_MENU_ASK_GOOGLE = 224;
+
+  // AIM is entered from the "Ask Google" item in the app menu.
+  DESKTOP_CHROME_APP_MENU_ASK_GOOGLE = 225;
+
+  // AIM is entered from the Lens homework action chip.
+  DESKTOP_CHROME_CHROMNIENT_HOMEWORK_ACTION_CHIP = 226;
 }

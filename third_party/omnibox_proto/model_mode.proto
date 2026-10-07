@@ -30,7 +30,7 @@ enum ModelMode {
   MODEL_MODE_GEMINI_PRO_NO_GEN_UI = 4;
   // Gemini Flash Latest model mode.
   MODEL_MODE_GEMINI_FLASH_LATEST = 5;
-  // Gemini Pro Latest model mode (currently unused as of August 2026).
+  // Gemini Pro Latest model mode. Used for Barium (Gemini 4 Argon externally).
   MODEL_MODE_GEMINI_PRO_LATEST = 6;
   // Gemini Preview model mode, could be XS, S or M (currently unused as of
   // August 2026).

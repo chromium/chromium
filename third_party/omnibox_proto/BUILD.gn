@@ -33,8 +33,6 @@ _proto_files = [
   "navigational_intent.proto",
   "ntp_composebox_config.proto",
   "page_vertical.proto",
-  "rich_answer_template.proto",
-  "rich_suggest_template.proto",
   "rule_set.proto",
   "search_context.proto",
   "searchbox_config.proto",
