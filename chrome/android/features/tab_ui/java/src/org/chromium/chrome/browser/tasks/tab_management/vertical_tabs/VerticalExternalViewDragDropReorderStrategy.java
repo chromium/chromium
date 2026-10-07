@@ -156,8 +156,6 @@ public class VerticalExternalViewDragDropReorderStrategy {
     private final RecyclerView mRecyclerView;
     private final @Nullable RecyclerView mPinnedTabsRecyclerView;
 
-    private final int[] mTempSrcLoc = new int[2];
-    private final int[] mTempDestLoc = new int[2];
     private final float[] mTempRvCoords = new float[2];
 
     private @Nullable DropTargetResult mLastDropTargetResult;
@@ -235,7 +233,9 @@ public class VerticalExternalViewDragDropReorderStrategy {
         }
 
         int pinnedCount = tabModel.getPinnedTabsCount();
-        boolean isOverPinnedGrid = isTargetViewInPinnedGrid(targetView);
+        boolean isOverPinnedGrid =
+                VerticalTabDragUtils.mapCoordinatesAndCheckBounds(
+                        targetView, xPx, yPx, mPinnedTabsRecyclerView, mTempRvCoords);
 
         DropTargetResult result = null;
         if (isPinnedDrag) {
@@ -246,8 +246,8 @@ public class VerticalExternalViewDragDropReorderStrategy {
                 // Pinned tab dragged over regular list when pinned tabs exist -> reject
                 result = null;
             } else {
-                // Pinned tab dragged over pinned grid
-                mapCoordinatesToView(targetView, mPinnedTabsRecyclerView, xPx, yPx, mTempRvCoords);
+                // Pinned tab dragged over pinned grid; mTempRvCoords is already mapped by
+                // mapCoordinatesAndCheckBounds.
                 result =
                         calculatePinnedGridDropTarget(mTempRvCoords[0], mTempRvCoords[1], tabModel);
             }
@@ -261,7 +261,8 @@ public class VerticalExternalViewDragDropReorderStrategy {
                     result = null;
                 }
             } else {
-                mapCoordinatesToView(targetView, mRecyclerView, xPx, yPx, mTempRvCoords);
+                VerticalTabDragUtils.mapCoordinatesToView(
+                        targetView, xPx, yPx, mRecyclerView, mTempRvCoords);
                 if (isGroupDrag) {
                     result =
                             calculateGroupDragMainListDropTarget(
@@ -276,30 +277,6 @@ public class VerticalExternalViewDragDropReorderStrategy {
 
         mLastDropTargetResult = result;
         return result;
-    }
-
-    private boolean isTargetViewInPinnedGrid(View targetView) {
-        if (mPinnedTabsRecyclerView == null) return false;
-        if (targetView == mPinnedTabsRecyclerView) return true;
-        View parent = targetView;
-        while (parent != null && parent.getParent() instanceof View parentView) {
-            if (parentView == mPinnedTabsRecyclerView) return true;
-            parent = parentView;
-        }
-        return false;
-    }
-
-    private void mapCoordinatesToView(
-            View sourceView, @Nullable View destView, float srcX, float srcY, float[] outCoords) {
-        if (destView == null || sourceView == destView) {
-            outCoords[0] = srcX;
-            outCoords[1] = srcY;
-            return;
-        }
-        sourceView.getLocationOnScreen(mTempSrcLoc);
-        destView.getLocationOnScreen(mTempDestLoc);
-        outCoords[0] = srcX + mTempSrcLoc[0] - mTempDestLoc[0];
-        outCoords[1] = srcY + mTempSrcLoc[1] - mTempDestLoc[1];
     }
 
     private static float getViewCenterX(View view) {

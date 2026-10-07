@@ -1697,8 +1697,6 @@ public class VerticalTabListCoordinator {
         final int selectedDraggedTabId = originallySelectedTabId;
 
         return new DragHandlerDelegate() {
-            private final int[] mTempViewLoc = new int[2];
-            private final int[] mTempRvLoc = new int[2];
             private final float[] mTempCoords = new float[2];
 
             private void deselectDraggedTabIfNeeded() {
@@ -1733,15 +1731,7 @@ public class VerticalTabListCoordinator {
             }
 
             private float[] toRvCoordinates(View view, float x, float y) {
-                if (view == recyclerView) {
-                    mTempCoords[0] = x;
-                    mTempCoords[1] = y;
-                } else {
-                    view.getLocationOnScreen(mTempViewLoc);
-                    recyclerView.getLocationOnScreen(mTempRvLoc);
-                    mTempCoords[0] = x + mTempViewLoc[0] - mTempRvLoc[0];
-                    mTempCoords[1] = y + mTempViewLoc[1] - mTempRvLoc[1];
-                }
+                VerticalTabDragUtils.mapCoordinatesToView(view, x, y, recyclerView, mTempCoords);
                 return mTempCoords;
             }
 

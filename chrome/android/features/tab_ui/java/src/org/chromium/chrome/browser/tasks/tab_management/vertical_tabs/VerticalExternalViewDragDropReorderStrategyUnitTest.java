@@ -49,7 +49,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Unit tests for {@link VerticalExternalViewDragDropReorderStrategy}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -119,6 +121,7 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     private final TestAdapter mMainListAdapter = new TestAdapter();
     private final TestAdapter mPinnedGridAdapter = new TestAdapter();
     private final List<Tab> mMockTabs = new ArrayList<>();
+    private final Map<View, int[]> mScreenLocations = new HashMap<>();
 
     @Before
     public void setUp() {
@@ -128,9 +131,23 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
         mModelList = new TabListModel();
         mPinnedTabsModelList = new TabListModel();
         mMockTabs.clear();
+        mScreenLocations.clear();
+
+        VerticalTabDragUtils.setLocationProviderForTesting(
+                (view, outLoc) -> {
+                    int[] loc = mScreenLocations.get(view);
+                    if (loc != null) {
+                        outLoc[0] = loc[0];
+                        outLoc[1] = loc[1];
+                    }
+                });
 
         mRecyclerView = createRecyclerView(mMainListAdapter, 300, 1000);
         mPinnedTabsRecyclerView = createRecyclerView(mPinnedGridAdapter, 300, 200);
+        // Lay the two lists out as they are on screen: the pinned grid on top, the main list
+        // directly below it.
+        stubLocationOnScreen(mPinnedTabsRecyclerView, /* screenX= */ 0, /* screenY= */ 0);
+        stubLocationOnScreen(mRecyclerView, /* screenX= */ 0, /* screenY= */ 200);
         when(mTabModel.getCount()).thenAnswer(invocation -> mMockTabs.size());
 
         mStrategy =
@@ -164,6 +181,10 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
         adapter.mBounds.add(bounds);
         adapter.notifyItemInserted(adapter.getItemCount() - 1);
         layoutRecyclerView(recyclerView, recyclerView.getWidth(), recyclerView.getHeight());
+    }
+
+    private void stubLocationOnScreen(View view, int screenX, int screenY) {
+        mScreenLocations.put(view, new int[] {screenX, screenY});
     }
 
     private void addMainListItem(
@@ -1221,6 +1242,159 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
         assertFalse(result.isZeroPinnedState);
         assertTrue(result.isZeroNormalTabsState);
         assertNull(result.targetViewHolder);
+        assertTrue(result.insertBefore);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Pinned grid detection (point-based, not view-identity based)
+    // ---------------------------------------------------------------------------------------------
+
+    @Test
+    public void testPinnedGridDetection_PointOverPinnedGrid_DeliveredToRail_TreatedAsPinnedGrid() {
+        when(mTabModel.getCount()).thenReturn(4);
+        when(mTabModel.getPinnedTabsCount()).thenReturn(2);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(2);
+
+        // A view that contains both lists, such as the rail, rather than either list itself. It is
+        // not an ancestor-chain match for the pinned RecyclerView, so the old view-identity check
+        // would have called this point part of the main list.
+        View rail = new View(mActivity);
+        stubLocationOnScreen(rail, /* screenX= */ 0, /* screenY= */ 0);
+
+        DropTargetResult result =
+                mStrategy.calculateDropTarget(
+                        rail,
+                        /* xPx= */ 50,
+                        /* yPx= */ 50,
+                        /* isGroupDrag= */ false,
+                        /* isPinnedDrag= */ false);
+
+        // Rejected, which is the pinned-grid answer for a regular tab drag.
+        assertNull(result);
+    }
+
+    @Test
+    public void testPinnedGridDetection_PointOverPinnedGridPadding_TreatedAsPinnedGrid() {
+        when(mTabModel.getCount()).thenReturn(4);
+        when(mTabModel.getPinnedTabsCount()).thenReturn(2);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(2);
+
+        // No pinned children are registered, so nothing is under this point. Containment is a
+        // question about the RecyclerView's own bounds, so padding and empty space still count.
+        DropTargetResult result =
+                mStrategy.calculateDropTarget(
+                        mPinnedTabsRecyclerView,
+                        /* xPx= */ 50,
+                        /* yPx= */ 190,
+                        /* isGroupDrag= */ false,
+                        /* isPinnedDrag= */ false);
+
+        assertNull(result);
+    }
+
+    @Test
+    public void testPinnedGridDetection_PointBelowPinnedGrid_TreatedAsMainList() {
+        when(mTabModel.getCount()).thenReturn(4);
+        when(mTabModel.getPinnedTabsCount()).thenReturn(2);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(2);
+
+        // The pinned grid is 200px tall, so this point is past its bottom edge even though the
+        // event was delivered to the pinned RecyclerView. The old view-identity check keyed off
+        // the receiving view and would have called this the pinned grid.
+        DropTargetResult result =
+                mStrategy.calculateDropTarget(
+                        mPinnedTabsRecyclerView,
+                        /* xPx= */ 50,
+                        /* yPx= */ 500,
+                        /* isGroupDrag= */ false,
+                        /* isPinnedDrag= */ true);
+
+        // A pinned tab over the main list, with pinned tabs already present, is rejected.
+        assertNull(result);
+    }
+
+    @Test
+    public void testPinnedGridDetection_ZeroSizedPinnedGrid_NoPointIsOverIt() {
+        when(mTabModel.getCount()).thenReturn(4);
+        when(mTabModel.getPinnedTabsCount()).thenReturn(2);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(2);
+        // An empty pinned grid collapses to zero height.
+        layoutRecyclerView(mPinnedTabsRecyclerView, 0, 0);
+
+        DropTargetResult result =
+                mStrategy.calculateDropTarget(
+                        mPinnedTabsRecyclerView,
+                        /* xPx= */ 0,
+                        /* yPx= */ 0,
+                        /* isGroupDrag= */ false,
+                        /* isPinnedDrag= */ true);
+
+        assertNull(result);
+    }
+
+    @Test
+    public void testPinnedGridDetection_PinnedDragDeliveredToRail_ReturnsValidPinnedDropTarget() {
+        Tab tab1 = createMockTab(1, /* isPinned= */ true);
+        when(mTabModel.getPinnedTabsCount()).thenReturn(1);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(1);
+
+        PropertyModel pModel1 =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
+                        .with(
+                                TabListModel.CardProperties.CARD_TYPE,
+                                TabListModel.CardProperties.ModelType.TAB)
+                        .with(TabProperties.TAB_ID, 1)
+                        .with(TabProperties.IS_PINNED, true)
+                        .build();
+        addPinnedGridItem(pModel1, 0, 0, 100, 100);
+
+        View rail = new View(mActivity);
+        stubLocationOnScreen(rail, /* screenX= */ 0, /* screenY= */ 0);
+
+        DropTargetResult result =
+                mStrategy.calculateDropTarget(
+                        rail,
+                        /* xPx= */ 25,
+                        /* yPx= */ 50,
+                        /* isGroupDrag= */ false,
+                        /* isPinnedDrag= */ true);
+
+        assertNotNull(result);
+        assertEquals(DropTargetResult.TargetType.PINNED_GRID, result.targetType);
+        assertEquals(0, result.destTabIndex);
+        assertTrue(result.insertBefore);
+    }
+
+    @Test
+    public void
+            testPinnedGridDetection_RegularDragBelowPinnedGridDeliveredToPinnedRv_ReturnsValidMainListDropTarget() {
+        Tab tab10 = createMockTab(10, /* isPinned= */ false);
+        when(mTabModel.indexOf(tab10)).thenReturn(0);
+        when(mTabModel.getPinnedTabsCount()).thenReturn(1);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(0);
+
+        PropertyModel model =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
+                        .with(
+                                TabListModel.CardProperties.CARD_TYPE,
+                                TabListModel.CardProperties.ModelType.TAB)
+                        .with(TabProperties.TAB_ID, 10)
+                        .build();
+        addMainListItem(model, TabProperties.UiType.TAB, 0, 0, 300, 100);
+
+        // mPinnedTabsRecyclerView is at (0, 0) with height 200. mRecyclerView is at (0, 200).
+        // yPx = 225 relative to mPinnedTabsRecyclerView maps to y = 25 inside mRecyclerView.
+        DropTargetResult result =
+                mStrategy.calculateDropTarget(
+                        mPinnedTabsRecyclerView,
+                        /* xPx= */ 150,
+                        /* yPx= */ 225,
+                        /* isGroupDrag= */ false,
+                        /* isPinnedDrag= */ false);
+
+        assertNotNull(result);
+        assertEquals(DropTargetResult.TargetType.MAIN_LIST, result.targetType);
+        assertEquals(0, result.destTabIndex);
         assertTrue(result.insertBefore);
     }
 
