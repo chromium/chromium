@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.feed;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.AdditionalMatchers.leq;
@@ -11,21 +12,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
-import android.graphics.Rect;
-import android.os.Looper;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.view.Window;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,14 +33,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.mockito.stubbing.Answer;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 
 import java.util.Arrays;
@@ -54,25 +49,23 @@ import java.util.concurrent.TimeUnit;
 /** Unit tests for {@link FeedSliceViewTracker}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowSystemClock.class})
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class FeedSliceViewTrackerTest {
+    private static final int PARENT_SIZE = 1000;
+
     // Mocking dependencies that are always present, but using a real FeedListContentManager.
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock RecyclerView mParentView;
     @Mock FeedSliceViewTracker.Observer mObserver;
     @Mock LinearLayoutManager mLayoutManager;
     @Mock ListLayoutHelper mLayoutHelper;
-    @Mock ViewTreeObserver mViewTreeObserver;
-    @Mock Activity mActivity;
-    @Mock Window mWindow;
-    @Mock View mDecorView;
+    Activity mActivity;
+    RecyclerView mParentView;
     FeedListContentManager mContentManager;
 
     FeedSliceViewTracker mTracker;
 
-    // Child view mocks are used as needed in some tests.
-    @Mock View mChildA;
-    @Mock View mChildB;
+    // Child views are used as needed in some tests.
+    View mChildA;
+    View mChildB;
 
     boolean mChildAVisibleRunnable1Called;
     boolean mChildAVisibleRunnable2Called;
@@ -83,10 +76,15 @@ public class FeedSliceViewTrackerTest {
     @Before
     public void setUp() {
         mContentManager = new FeedListContentManager();
-        doReturn(mLayoutManager).when(mParentView).getLayoutManager();
-        doReturn(mViewTreeObserver).when(mParentView).getViewTreeObserver();
-        doReturn(mWindow).when(mActivity).getWindow();
-        doReturn(mDecorView).when(mWindow).getDecorView();
+        // The activity's decor view is not attached, so its visible display frame (the viewport)
+        // is the display size, which is controlled via @Config qualifiers.
+        mActivity = Robolectric.buildActivity(Activity.class).create().get();
+        mParentView = new RecyclerView(mActivity);
+        mParentView.setLayoutManager(mLayoutManager);
+        mParentView.setRight(PARENT_SIZE);
+        mParentView.setBottom(PARENT_SIZE);
+        mChildA = new View(mActivity);
+        mChildB = new View(mActivity);
         mTracker =
                 Mockito.spy(
                         new FeedSliceViewTracker(
@@ -105,75 +103,60 @@ public class FeedSliceViewTrackerTest {
 
     @Test
     public void testIsItemVisible_JustEnoughnViewport() {
-        mockViewDimensions(mChildA, 10, 10);
-        mockGetChildVisibleRect(mChildA, 0, 0, 10, 7);
+        setViewDimensions(mChildA, 10, 10);
+        setChildVisibleRect(mChildA, 0, 0, 10, 7);
         Assert.assertTrue(mTracker.isViewVisible(mChildA, 0.66f));
     }
 
     @Test
     public void testIsItemVisible_NotEnoughnViewport() {
-        mockViewDimensions(mChildA, 10, 10);
-        mockGetChildVisibleRect(mChildA, 0, 0, 10, 6);
+        setViewDimensions(mChildA, 10, 10);
+        setChildVisibleRect(mChildA, 0, 0, 10, 6);
         Assert.assertFalse(mTracker.isViewVisible(mChildA, 0.66f));
     }
 
     @Test
     public void testIsItemVisible_ZeroAreaInViewport() {
-        mockViewDimensions(mChildA, 10, 10);
-        mockGetChildVisibleRect(mChildA, 0, 0, 0, 0);
+        setViewDimensions(mChildA, 10, 10);
+        setChildVisibleRect(mChildA, 0, 0, 0, 0);
         Assert.assertFalse(mTracker.isViewVisible(mChildA, 0.66f));
     }
 
     @Test
     public void testIsItemVisible_getChildVisibleRectReturnsFalse() {
-        mockViewDimensions(mChildA, 10, 10);
-        mockGetChildVisibleRectIsEmpty(mChildA);
+        setViewDimensions(mChildA, 10, 10);
+        setChildOutsideParent(mChildA);
         Assert.assertFalse(mTracker.isViewVisible(mChildA, 0.66f));
     }
 
     @Test
     public void testIsItemVisible_ZeroArea() {
-        mockViewDimensions(mChildA, 0, 0);
-        mockGetChildVisibleRect(mChildA, 0, 0, 0, 0);
+        setViewDimensions(mChildA, 0, 0);
+        setChildVisibleRect(mChildA, 0, 0, 0, 0);
         Assert.assertFalse(mTracker.isViewVisible(mChildA, 0.66f));
     }
 
     @Test
-    public void testGetChildVisibleRectCalledWithChildRect() {
-        mockViewDimensions(mChildA, 10, 10);
-        mTracker.isViewVisible(mChildA, 0.66f);
-        verify(mParentView).getChildVisibleRect(eq(mChildA), eq(new Rect(0, 0, 10, 10)), eq(null));
-    }
-
-    @Test
+    @Config(qualifiers = "w100dp-h100dp")
     public void testIsItemCoveringViewport_JustEnough() {
-        mockViewDimensions(mChildA, 100, 100);
-        mockGetChildVisibleRect(mChildA, 0, 0, 100, 26);
-        mockViewportRect(0, 0, 100, 100);
+        setViewDimensions(mChildA, 100, 100);
+        setChildVisibleRect(mChildA, 0, 0, 100, 26);
         Assert.assertTrue(mTracker.isViewCoveringViewport(mChildA, 0.25f));
     }
 
     @Test
+    @Config(qualifiers = "w100dp-h100dp")
     public void testIsViewCoveringViewport_NotEnough() {
-        mockViewDimensions(mChildA, 100, 100);
-        mockGetChildVisibleRect(mChildA, 0, 0, 100, 24);
-        mockViewportRect(0, 0, 100, 100);
+        setViewDimensions(mChildA, 100, 100);
+        setChildVisibleRect(mChildA, 0, 0, 100, 24);
         Assert.assertFalse(mTracker.isViewCoveringViewport(mChildA, 0.25f));
     }
 
     @Test
+    @Config(qualifiers = "w100dp-h100dp")
     public void testIsContentCoveringViewport_ZeroArea() {
-        mockViewDimensions(mChildA, 0, 0);
-        mockGetChildVisibleRect(mChildA, 0, 0, 0, 0);
-        mockViewportRect(0, 0, 100, 100);
-        Assert.assertFalse(mTracker.isViewCoveringViewport(mChildA, 0.25f));
-    }
-
-    @Test
-    public void testIsContentCoveringViewport_NoViewport() {
-        mockViewDimensions(mChildA, 100, 100);
-        mockGetChildVisibleRect(mChildA, 0, 0, 100, 26);
-        mockViewportRect(0, 0, 0, 0);
+        setViewDimensions(mChildA, 0, 0);
+        setChildVisibleRect(mChildA, 0, 0, 0, 0);
         Assert.assertFalse(mTracker.isViewCoveringViewport(mChildA, 0.25f));
     }
 
@@ -295,9 +278,15 @@ public class FeedSliceViewTrackerTest {
 
     @Test
     public void testDestroy() {
-        doReturn(true).when(mViewTreeObserver).isAlive();
+        mTracker.bind();
+        mParentView.getViewTreeObserver().dispatchOnPreDraw();
+        verify(mTracker).onPreDraw();
+        clearInvocations(mTracker);
+
         mTracker.destroy();
-        verify(mViewTreeObserver).removeOnPreDrawListener(any());
+        // Ensure onPreDraw not called again after destroy().
+        mParentView.getViewTreeObserver().dispatchOnPreDraw();
+        verify(mTracker, never()).onPreDraw();
 
         // These calls shouldn't do anything.
         mTracker.destroy();
@@ -435,6 +424,7 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
+    @Config(qualifiers = "w100dp-h100dp")
     public void testReportContentVisibleTime_testSmallCardsCoveringEnough() {
         mContentManager.addContents(
                 0,
@@ -449,11 +439,10 @@ public class FeedSliceViewTrackerTest {
         doReturn(mChildB).when(mLayoutManager).findViewByPosition(eq(1));
 
         // Views are completely exposed so time is tracked.
-        mockViewportRect(0, 0, 100, 100);
-        mockViewDimensions(mChildA, 100, 15);
-        mockGetChildVisibleRect(mChildA, 0, 0, 100, 15);
-        mockViewDimensions(mChildB, 100, 15);
-        mockGetChildVisibleRect(mChildB, 0, 15, 100, 30);
+        setViewDimensions(mChildA, 100, 15);
+        setChildVisibleRect(mChildA, 0, 0, 100, 15);
+        setViewDimensions(mChildB, 100, 15);
+        setChildVisibleRect(mChildB, 0, 15, 100, 30);
 
         mTracker.onPreDraw();
         advanceByMs(1L);
@@ -462,6 +451,7 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
+    @Config(qualifiers = "w100dp-h100dp")
     public void testReportContentVisibleTime_testBigCardCoveringEnough() {
         mContentManager.addContents(
                 0,
@@ -474,9 +464,8 @@ public class FeedSliceViewTrackerTest {
         doReturn(mChildA).when(mLayoutManager).findViewByPosition(eq(0));
 
         // View is completely exposed and covers 30% of the viewport in total.
-        mockViewportRect(0, 0, 100, 100);
-        mockViewDimensions(mChildA, 100, 26);
-        mockGetChildVisibleRect(mChildA, 0, 0, 100, 26);
+        setViewDimensions(mChildA, 100, 26);
+        setChildVisibleRect(mChildA, 0, 0, 100, 26);
 
         mTracker.onPreDraw();
         advanceByMs(1L);
@@ -485,6 +474,7 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
+    @Config(qualifiers = "w100dp-h100dp")
     public void testReportContentVisibleTime_testBigCardExposedEnough() {
         mContentManager.addContents(
                 0,
@@ -497,9 +487,8 @@ public class FeedSliceViewTrackerTest {
         doReturn(mChildA).when(mLayoutManager).findViewByPosition(eq(0));
 
         // View is completely exposed but only covers 22% of the viewport.
-        mockViewportRect(0, 0, 100, 100);
-        mockViewDimensions(mChildA, 100, 22);
-        mockGetChildVisibleRect(mChildA, 0, 0, 100, 22);
+        setViewDimensions(mChildA, 100, 22);
+        setChildVisibleRect(mChildA, 0, 0, 100, 22);
 
         mTracker.onPreDraw();
         advanceByMs(1L);
@@ -508,6 +497,7 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
+    @Config(qualifiers = "w100dp-h100dp")
     public void testReportContentVisibleTime_testReportTimeOnUnbind() {
         mContentManager.addContents(
                 0,
@@ -520,9 +510,8 @@ public class FeedSliceViewTrackerTest {
         doReturn(mChildA).when(mLayoutManager).findViewByPosition(eq(0));
 
         // View is completely exposed but only covers 22% of the viewport.
-        mockViewportRect(0, 0, 100, 100);
-        mockViewDimensions(mChildA, 100, 22);
-        mockGetChildVisibleRect(mChildA, 0, 0, 100, 22);
+        setViewDimensions(mChildA, 100, 22);
+        setChildVisibleRect(mChildA, 0, 0, 100, 22);
 
         mTracker.onPreDraw();
         advanceByMs(1L);
@@ -531,6 +520,7 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
+    @Config(qualifiers = "w100dp-h100dp")
     public void testReportViewFirstVisibleAndRendered() {
         mContentManager.addContents(
                 0,
@@ -543,17 +533,17 @@ public class FeedSliceViewTrackerTest {
         doReturn(mChildA).when(mLayoutManager).findViewByPosition(eq(0));
 
         // View only covers 5% of the viewport.
-        mockViewportRect(0, 0, 100, 100);
-        mockViewDimensions(mChildA, 100, 5);
-        mockGetChildVisibleRect(mChildA, 0, 0, 100, 5);
+        setViewDimensions(mChildA, 100, 5);
+        setChildVisibleRect(mChildA, 0, 0, 100, 5);
 
         mTracker.onPreDraw();
         verify(mObserver, times(1)).reportViewFirstBarelyVisible(any());
-        shadowOf(Looper.getMainLooper()).idle();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mObserver, times(1)).reportViewFirstRendered(any());
     }
 
     @Test
+    @Config(qualifiers = "w500dp-h500dp")
     public void testReportLoadMoreIndicatorVisible() {
         mContentManager.addContents(
                 0,
@@ -569,32 +559,33 @@ public class FeedSliceViewTrackerTest {
         doReturn(mChildA).when(mLayoutManager).findViewByPosition(eq(0));
         doReturn(mChildB).when(mLayoutManager).findViewByPosition(eq(1));
 
-        mockViewportRect(0, 0, 500, 500);
-        mockViewDimensions(mChildA, 100, 100);
-        mockViewDimensions(mChildB, 100, 100);
+        setViewDimensions(mChildA, 100, 100);
+        setViewDimensions(mChildB, 100, 100);
+        setChildOutsideParent(mChildB);
 
         // No report when less than 5% visible.
-        mockGetChildVisibleRect(mChildA, 0, 0, 100, 4);
+        setChildVisibleRect(mChildA, 0, 0, 100, 4);
         mTracker.onPreDraw();
         verify(mObserver, times(0)).reportLoadMoreIndicatorVisible();
 
         // Report when 5% visible.
-        mockGetChildVisibleRect(mChildA, 0, 0, 100, 5);
+        setChildVisibleRect(mChildA, 0, 0, 100, 5);
         mTracker.onPreDraw();
         verify(mObserver, times(1)).reportLoadMoreIndicatorVisible();
 
         // No more report when more visible.
-        mockGetChildVisibleRect(mChildA, 0, 0, 100, 10);
+        setChildVisibleRect(mChildA, 0, 0, 100, 10);
         mTracker.onPreDraw();
         verify(mObserver, times(1)).reportLoadMoreIndicatorVisible();
 
         // Report for another indicator.
-        mockGetChildVisibleRect(mChildB, 0, 0, 100, 5);
+        setChildVisibleRect(mChildB, 0, 0, 100, 5);
         mTracker.onPreDraw();
         verify(mObserver, times(2)).reportLoadMoreIndicatorVisible();
     }
 
     @Test
+    @Config(qualifiers = "w500dp-h500dp")
     public void testReportLoadMoreAwayFromIndicator() {
         mContentManager.addContents(
                 0,
@@ -610,87 +601,62 @@ public class FeedSliceViewTrackerTest {
         doReturn(mChildA).when(mLayoutManager).findViewByPosition(eq(0));
         doReturn(mChildB).when(mLayoutManager).findViewByPosition(eq(1));
 
-        mockViewportRect(0, 0, 500, 500);
-        mockViewDimensions(mChildA, 100, 100);
-        mockViewDimensions(mChildB, 100, 100);
+        setViewDimensions(mChildA, 100, 100);
+        setViewDimensions(mChildB, 100, 100);
+        setChildOutsideParent(mChildB);
 
         // Report visible when 5% visible.
-        mockGetChildVisibleRect(mChildA, 0, 0, 100, 5);
+        setChildVisibleRect(mChildA, 0, 0, 100, 5);
         mTracker.onPreDraw();
         verify(mObserver, times(1)).reportLoadMoreIndicatorVisible();
         verify(mObserver, times(0)).reportLoadMoreUserScrolledAwayFromIndicator();
 
         // Report away when not visible.
-        mockGetChildVisibleRect(mChildA, 0, 0, 100, 0);
+        setChildVisibleRect(mChildA, 0, 0, 100, 0);
         mTracker.onPreDraw();
         verify(mObserver, times(1)).reportLoadMoreIndicatorVisible();
         verify(mObserver, times(1)).reportLoadMoreUserScrolledAwayFromIndicator();
 
         // No more report when further away.
-        mockGetChildVisibleRect(mChildA, 0, 0, 100, -10);
+        setChildVisibleRect(mChildA, 0, 0, 100, -10);
         mTracker.onPreDraw();
         verify(mObserver, times(1)).reportLoadMoreIndicatorVisible();
         verify(mObserver, times(1)).reportLoadMoreUserScrolledAwayFromIndicator();
 
         // Report for another indicator.
-        mockGetChildVisibleRect(mChildB, 0, 0, 100, 5);
+        setChildVisibleRect(mChildB, 0, 0, 100, 5);
         mTracker.onPreDraw();
         verify(mObserver, times(2)).reportLoadMoreIndicatorVisible();
         verify(mObserver, times(1)).reportLoadMoreUserScrolledAwayFromIndicator();
 
-        mockGetChildVisibleRect(mChildB, 0, 0, 100, 0);
+        setChildVisibleRect(mChildB, 0, 0, 100, 0);
         mTracker.onPreDraw();
         verify(mObserver, times(2)).reportLoadMoreIndicatorVisible();
         verify(mObserver, times(2)).reportLoadMoreUserScrolledAwayFromIndicator();
     }
 
-    void mockViewDimensions(View view, int width, int height) {
-        when(view.getWidth()).thenReturn(width);
-        when(view.getHeight()).thenReturn(height);
+    void setViewDimensions(View view, int width, int height) {
+        view.layout(0, 0, width, height);
     }
 
-    void mockGetChildVisibleRect(
-            View child, int rectLeft, int rectTop, int rectRight, int rectBottom) {
-        doAnswer(
-                        new Answer() {
-                            @Override
-                            public Object answer(InvocationOnMock invocation) {
-                                Rect rect = (Rect) invocation.getArguments()[1];
-                                rect.top = rectTop;
-                                rect.bottom = rectBottom;
-                                rect.left = rectLeft;
-                                rect.right = rectRight;
-                                return true;
-                            }
-                        })
-                .when(mParentView)
-                .getChildVisibleRect(eq(child), any(), any());
+    /**
+     * Positions {@code child} (whose size was set via {@link #setViewDimensions}) within the parent
+     * such that the part of it that is inside the parent is the given rect. The child is clipped by
+     * the parent's top / left edges as needed.
+     */
+    void setChildVisibleRect(View child, int rectLeft, int rectTop, int rectRight, int rectBottom) {
+        int width = child.getWidth();
+        int height = child.getHeight();
+        child.layout(rectRight - width, rectBottom - height, rectRight, rectBottom);
+        assertEquals(rectLeft, Math.max(child.getLeft(), 0));
+        assertEquals(rectTop, Math.max(child.getTop(), 0));
     }
 
-    void mockGetChildVisibleRectIsEmpty(View child) {
-        doAnswer(
-                        new Answer() {
-                            @Override
-                            public Object answer(InvocationOnMock invocation) {
-                                return false;
-                            }
-                        })
-                .when(mParentView)
-                .getChildVisibleRect(eq(child), any(), any());
-    }
-
-    void mockViewportRect(int left, int top, int right, int bottom) {
-        doAnswer(
-                        new Answer() {
-                            @Override
-                            public Object answer(InvocationOnMock invocation) {
-                                ((Rect) invocation.getArguments()[0])
-                                        .set(new Rect(left, top, right, bottom));
-                                return null;
-                            }
-                        })
-                .when(mDecorView)
-                .getWindowVisibleDisplayFrame(any());
+    /** Positions {@code child} entirely outside of the parent. */
+    void setChildOutsideParent(View child) {
+        int width = child.getWidth();
+        int height = child.getHeight();
+        child.layout(PARENT_SIZE, PARENT_SIZE, PARENT_SIZE + width, PARENT_SIZE + height);
     }
 
     void clearVisibleRunnableCalledStates() {
