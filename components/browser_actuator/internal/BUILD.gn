@@ -78,6 +78,8 @@ source_set("internal") {
     "browser_actuator_service_impl.h",
     "control_transport_handler.cc",
     "control_transport_handler.h",
+    "downstream_message_sequencer.cc",
+    "downstream_message_sequencer.h",
     "transport_channel_impl.cc",
     "transport_channel_impl.h",
     "transport_handler_factory_registry_impl.cc",
@@ -93,6 +95,7 @@ source_set("internal") {
     "//components/browser_actuator/internal/transport",
     "//components/browser_actuator/public",
     "//components/browser_actuator/public:payload_type_mapping",
+    "//components/sharing_message/proto",
   ]
 
   deps = [
@@ -117,6 +120,7 @@ source_set("unit_tests") {
     "browser_actuator_integration_test.cc",
     "browser_actuator_service_impl_unittest.cc",
     "control_transport_handler_unittest.cc",
+    "downstream_message_sequencer_unittest.cc",
     "session_stream_recorder_unittest.cc",
     "transport_channel_impl_unittest.cc",
     "transport_handler_factory_registry_impl_unittest.cc",
