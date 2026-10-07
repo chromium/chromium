@@ -104,7 +104,6 @@
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/safe_browsing/trigger_creator.h"
 #endif
 
 using content::WebContents;
@@ -258,8 +257,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
         safe_browsing::AsyncCheckTracker::
             IsPlatformEligibleForSyncCheckerCheckAllowlist());
   }
-  safe_browsing::TriggerCreator::MaybeCreateTriggersForWebContents(
-      profile, web_contents);
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   SafetyTipWebContentsObserver::CreateForWebContents(web_contents);
   if (site_engagement::SiteEngagementService::IsEnabled()) {

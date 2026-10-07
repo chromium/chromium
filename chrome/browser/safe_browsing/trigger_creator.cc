@@ -4,6 +4,8 @@
 
 #include "chrome/browser/safe_browsing/trigger_creator.h"
 
+#include <memory>
+
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,6 +19,7 @@
 #include "components/safe_browsing/content/browser/triggers/trigger_throttler.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/core/base_safe_browsing_error_ui.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -28,9 +31,9 @@ namespace safe_browsing {
 using SBErrorOptions =
     security_interstitials::BaseSafeBrowsingErrorUI::SBErrorDisplayOptions;
 
-void TriggerCreator::MaybeCreateTriggersForWebContents(
-    Profile* profile,
-    content::WebContents* web_contents) {
+TriggerCreator::TriggerCreator(tabs::TabInterface& tab,
+                               Profile* profile,
+                               content::WebContents* web_contents) {
   if (!g_browser_process->safe_browsing_service() ||
       !g_browser_process->safe_browsing_service()->trigger_manager()) {
     return;
@@ -39,10 +42,12 @@ void TriggerCreator::MaybeCreateTriggersForWebContents(
   TriggerManager* trigger_manager =
       g_browser_process->safe_browsing_service()->trigger_manager();
 
-  // Create the helper for listening to events for this webcontents, created for
-  // all tabs since reports could be triggered from other places besides here.
-  safe_browsing::TriggerManagerWebContentsHelper::CreateForWebContents(
-      web_contents, trigger_manager);
+  // Create the helper that notifies TriggerManager when this WebContents is
+  // detached or destroyed, created for all tabs since reports could be
+  // triggered from other places besides here.
+  trigger_manager_web_contents_helper_ =
+      std::make_unique<TriggerManagerWebContentsHelper>(web_contents,
+                                                        trigger_manager);
 
   // We only start triggers for this tab if they are eligible to collect data
   // (eg: because of opt-ins, available quota, etc). If we skip a trigger but
@@ -57,7 +62,7 @@ void TriggerCreator::MaybeCreateTriggersForWebContents(
           ->GetURLLoaderFactoryForBrowserProcess();
   if (trigger_manager->CanStartDataCollection(permissions,
                                               TriggerType::AD_SAMPLE)) {
-    safe_browsing::AdSamplerTrigger::CreateForWebContents(
+    ad_sampler_trigger_ = std::make_unique<AdSamplerTrigger>(
         web_contents, trigger_manager, profile->GetPrefs(), url_loader_factory,
         HistoryServiceFactory::GetForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS),
@@ -69,8 +74,9 @@ void TriggerCreator::MaybeCreateTriggersForWebContents(
           permissions, TriggerType::SUSPICIOUS_SITE, &reason) ||
       reason == TriggerManagerReason::DAILY_QUOTA_EXCEEDED) {
     bool monitor_mode = reason == TriggerManagerReason::DAILY_QUOTA_EXCEEDED;
-    safe_browsing::SuspiciousSiteTrigger::CreateForWebContents(
-        web_contents, trigger_manager, profile->GetPrefs(), url_loader_factory,
+    suspicious_site_trigger_ = std::make_unique<SuspiciousSiteTrigger>(
+        tab, web_contents, trigger_manager, profile->GetPrefs(),
+        url_loader_factory,
         HistoryServiceFactory::GetForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS),
         SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
@@ -78,5 +84,7 @@ void TriggerCreator::MaybeCreateTriggersForWebContents(
         monitor_mode);
   }
 }
+
+TriggerCreator::~TriggerCreator() = default;
 
 }  // namespace safe_browsing

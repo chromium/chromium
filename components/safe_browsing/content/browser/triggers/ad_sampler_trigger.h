@@ -9,7 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 class PrefService;
 
@@ -58,9 +57,15 @@ enum AdSamplerTriggerAction {
 
 // This class periodically checks for Google ads on the page and may decide to
 // send a report to Google with the ad's structure for further analysis.
-class AdSamplerTrigger : public content::WebContentsObserver,
-                         public content::WebContentsUserData<AdSamplerTrigger> {
+class AdSamplerTrigger : public content::WebContentsObserver {
  public:
+  AdSamplerTrigger(
+      content::WebContents* web_contents,
+      TriggerManager* trigger_manager,
+      PrefService* prefs,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      history::HistoryService* history_service,
+      ReferrerChainProvider* referrer_chain_provider);
   AdSamplerTrigger(const AdSamplerTrigger&) = delete;
   AdSamplerTrigger& operator=(const AdSamplerTrigger&) = delete;
 
@@ -74,15 +79,6 @@ class AdSamplerTrigger : public content::WebContentsObserver,
 
  private:
   friend class AdSamplerTriggerTest;
-  friend class content::WebContentsUserData<AdSamplerTrigger>;
-
-  AdSamplerTrigger(
-      content::WebContents* web_contents,
-      TriggerManager* trigger_manager,
-      PrefService* prefs,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      history::HistoryService* history_service,
-      ReferrerChainProvider* referrer_chain_provider);
 
   // Called to create an ad sample report.
   void CreateAdSampleReport();
@@ -120,8 +116,6 @@ class AdSamplerTrigger : public content::WebContentsObserver,
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<AdSamplerTrigger> weak_ptr_factory_{this};
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace safe_browsing

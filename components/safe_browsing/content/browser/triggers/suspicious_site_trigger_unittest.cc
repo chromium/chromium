@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/content/browser/triggers/suspicious_site_trigger.h"
 
+#include <memory>
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
@@ -13,6 +14,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/content/browser/triggers/mock_trigger_manager.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
@@ -55,14 +57,17 @@ class SuspiciousSiteTriggerTest : public content::RenderViewHostTestHarness {
     SetSafeBrowsingState(&prefs_, SafeBrowsingState::ENHANCED_PROTECTION);
   }
 
+  void TearDown() override {
+    trigger_.reset();
+    content::RenderViewHostTestHarness::TearDown();
+  }
+
   void CreateTrigger(bool monitor_mode) {
-    safe_browsing::SuspiciousSiteTrigger::CreateForWebContents(
-        web_contents(), &trigger_manager_, &prefs_, nullptr, nullptr, nullptr,
-        monitor_mode);
-    safe_browsing::SuspiciousSiteTrigger* trigger =
-        safe_browsing::SuspiciousSiteTrigger::FromWebContents(web_contents());
+    trigger_ = std::make_unique<safe_browsing::SuspiciousSiteTrigger>(
+        tab_, web_contents(), &trigger_manager_, &prefs_, nullptr, nullptr,
+        nullptr, monitor_mode);
     // Give the trigger a test task runner that we can synchronize on.
-    trigger->SetTaskRunnerForTest(task_runner_);
+    trigger_->SetTaskRunnerForTest(task_runner_);
   }
 
   // Returns the final RenderFrameHost after navigation commits.
@@ -102,21 +107,18 @@ class SuspiciousSiteTriggerTest : public content::RenderViewHostTestHarness {
   void StartNewFakeLoad() {
     // This fakes a new LoadStart event in the trigger, since the navigation
     // simulator doesn't restart the load when we start a new navigation.
-    safe_browsing::SuspiciousSiteTrigger::FromWebContents(web_contents())
-        ->DidStartLoading();
+    trigger_->DidStartLoading();
   }
 
   void FinishAllNavigations() {
     // Call the trigger's DidStopLoading event handler directly since it is not
     // called as part of the navigating individual frames.
-    safe_browsing::SuspiciousSiteTrigger::FromWebContents(web_contents())
-        ->DidStopLoading();
+    trigger_->DidStopLoading();
   }
 
   void TriggerSuspiciousSite() {
     // Notify the trigger that a suspicious site was detected.
-    safe_browsing::SuspiciousSiteTrigger::FromWebContents(web_contents())
-        ->SuspiciousSiteDetected();
+    trigger_->SuspiciousSiteDetected();
   }
 
   void WaitForTaskRunnerIdle() {
@@ -160,6 +162,8 @@ class SuspiciousSiteTriggerTest : public content::RenderViewHostTestHarness {
   }
 
   MockTriggerManager* get_trigger_manager() { return &trigger_manager_; }
+  tabs::MockTabInterface* tab() { return &tab_; }
+  SuspiciousSiteTrigger* trigger() { return trigger_.get(); }
 
  private:
   TestingPrefServiceSimple prefs_;
@@ -167,6 +171,8 @@ class SuspiciousSiteTriggerTest : public content::RenderViewHostTestHarness {
   base::HistogramTester histograms_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_ =
       base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  tabs::MockTabInterface tab_;
+  std::unique_ptr<SuspiciousSiteTrigger> trigger_;
 };
 
 TEST_F(SuspiciousSiteTriggerTest, RegularPageNonSuspicious) {
@@ -522,5 +528,13 @@ TEST_F(SuspiciousSiteTriggerTest, VisibleURLChangeMidLoad_Suspicious) {
       SuspiciousSiteTrigger::TriggerState::REPORT_STARTED, 1);
   ExpectEventHistogramCount(SuspiciousSiteTriggerEvent::REPORT_FINISHED, 1);
   ExpectNoReportRejection();
+}
+
+TEST_F(SuspiciousSiteTriggerTest, FromTab) {
+  EXPECT_EQ(nullptr, SuspiciousSiteTrigger::From(tab()));
+
+  CreateTrigger(/*monitor_mode=*/false);
+
+  EXPECT_EQ(trigger(), SuspiciousSiteTrigger::From(tab()));
 }
 }  // namespace safe_browsing

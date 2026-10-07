@@ -405,6 +405,7 @@ static_library("safe_browsing") {
       "//components/site_engagement/content",
       "//components/site_engagement/core/mojom:mojo_bindings",
       "//components/sync_user_events",
+      "//components/tabs:public",
       "//components/unified_consent",
       "//components/url_matcher",
       "//components/variations/service",

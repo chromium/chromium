@@ -368,6 +368,7 @@ class RecentTabHelper;
 namespace safe_browsing {
 class SafeBrowsingTabObserver;
 class TailoredSecurityUrlObserver;
+class TriggerCreator;
 }  // namespace safe_browsing
 #endif
 
@@ -988,6 +989,7 @@ class TabFeatures {
       safe_browsing_tab_observer_;
   std::unique_ptr<safe_browsing::TailoredSecurityUrlObserver>
       tailored_security_url_observer_;
+  std::unique_ptr<safe_browsing::TriggerCreator> trigger_creator_;
 #endif
 
   std::unique_ptr<AboutThisSiteTabHelper> about_this_site_tab_helper_;

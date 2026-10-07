@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class PrefService;
 
@@ -20,6 +20,10 @@ class HistoryService;
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 namespace safe_browsing {
 class ReferrerChainProvider;
@@ -83,10 +87,10 @@ void NotifySuspiciousSiteTriggerDetected(
 // indicate there was a hit on the suspicious site list. This trigger is
 // repsonsible for creating reports about the page at the right time, based on
 // the sequence of such events.
-class SuspiciousSiteTrigger
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<SuspiciousSiteTrigger> {
+class SuspiciousSiteTrigger : public content::WebContentsObserver {
  public:
+  DECLARE_USER_DATA(SuspiciousSiteTrigger);
+
   // The different states the trigger could be in.
   // These values are written to logs. New enum values can be added, but
   // existing enums must never be renumbered or deleted and reused.
@@ -109,10 +113,24 @@ class SuspiciousSiteTrigger
     kMaxValue = MONITOR_MODE
   };
 
+  SuspiciousSiteTrigger(
+      tabs::TabInterface& tab,
+      content::WebContents* web_contents,
+      TriggerManager* trigger_manager,
+      PrefService* prefs,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      history::HistoryService* history_service,
+      ReferrerChainProvider* referrer_chain_provider,
+      bool monitor_mode);
+
   SuspiciousSiteTrigger(const SuspiciousSiteTrigger&) = delete;
   SuspiciousSiteTrigger& operator=(const SuspiciousSiteTrigger&) = delete;
 
   ~SuspiciousSiteTrigger() override;
+
+  static SuspiciousSiteTrigger* From(tabs::TabInterface* tab);
+  static SuspiciousSiteTrigger* FromWebContents(
+      content::WebContents* web_contents);
 
   // content::WebContentsObserver implementations.
   void DidStartLoading() override;
@@ -123,17 +141,7 @@ class SuspiciousSiteTrigger
   void SuspiciousSiteDetected();
 
  private:
-  friend class content::WebContentsUserData<SuspiciousSiteTrigger>;
   friend class SuspiciousSiteTriggerTest;
-
-  SuspiciousSiteTrigger(
-      content::WebContents* web_contents,
-      TriggerManager* trigger_manager,
-      PrefService* prefs,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      history::HistoryService* history_service,
-      ReferrerChainProvider* referrer_chain_provider,
-      bool monitor_mode);
 
   // Tries to start a report. Returns whether a report started successfully.
   // If a report is started, a delayed callback will also begin to notify
@@ -178,9 +186,9 @@ class SuspiciousSiteTrigger
   // UI thread, but can be overwritten for tests.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  base::WeakPtrFactory<SuspiciousSiteTrigger> weak_ptr_factory_{this};
+  ui::ScopedUnownedUserData<SuspiciousSiteTrigger> scoped_unowned_user_data_;
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  base::WeakPtrFactory<SuspiciousSiteTrigger> weak_ptr_factory_{this};
 };
 
 }  // namespace safe_browsing

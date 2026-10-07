@@ -15,8 +15,6 @@
 #include "components/security_interstitials/core/base_safe_browsing_error_ui.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 class PrefService;
 
@@ -233,26 +231,23 @@ class TriggerManager {
   // WeakPtrFactory should be last, don't add any members below it.
 };
 
-// A helper class that listens for events happening on a WebContents and can
-// notify TriggerManager of any that are relevant.
-class TriggerManagerWebContentsHelper
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<TriggerManagerWebContentsHelper> {
+// A helper class that notifies TriggerManager when a WebContents is being
+// detached or destroyed.
+class TriggerManagerWebContentsHelper {
  public:
-  ~TriggerManagerWebContentsHelper() override;
-
-  // WebContentsObserver implementation.
-  void WebContentsDestroyed() override;
-
- private:
-  friend class content::WebContentsUserData<TriggerManagerWebContentsHelper>;
-
   TriggerManagerWebContentsHelper(content::WebContents* web_contents,
                                   TriggerManager* trigger_manager);
+  TriggerManagerWebContentsHelper(const TriggerManagerWebContentsHelper&) =
+      delete;
+  TriggerManagerWebContentsHelper& operator=(
+      const TriggerManagerWebContentsHelper&) = delete;
+  ~TriggerManagerWebContentsHelper();
 
-  // Trigger Manager will be notified of any relevant WebContents events.
+ private:
+  raw_ptr<content::WebContents> web_contents_;
+  // Trigger Manager will be notified when the tab's WebContents is detached or
+  // destroyed.
   raw_ptr<TriggerManager> trigger_manager_;
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace safe_browsing

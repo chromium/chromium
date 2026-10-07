@@ -126,6 +126,7 @@ class NoStatePrefetchTabHelper;
 namespace safe_browsing {
 class SafeBrowsingTabObserver;
 class TailoredSecurityUrlObserver;
+class TriggerCreator;
 }  // namespace safe_browsing
 #endif
 
@@ -294,6 +295,7 @@ class TabFeatures {
       safe_browsing_tab_observer_;
   std::unique_ptr<safe_browsing::TailoredSecurityUrlObserver>
       tailored_security_url_observer_;
+  std::unique_ptr<safe_browsing::TriggerCreator> trigger_creator_;
 #endif
   std::unique_ptr<OomInterventionTabHelper> oom_intervention_tab_helper_;
   std::unique_ptr<PolicyAuditorBridge> policy_auditor_bridge_;

@@ -327,6 +327,7 @@
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_tab_observer_delegate.h"
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_url_observer.h"
+#include "chrome/browser/safe_browsing/trigger_creator.h"
 #include "components/safe_browsing/content/browser/safe_browsing_tab_observer.h"
 #include "components/safe_browsing/core/common/features.h"
 #endif
@@ -1096,6 +1097,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
             safe_browsing::TailoredSecurityServiceFactory::GetForProfile(
                 profile));
   }
+  trigger_creator_ = std::make_unique<safe_browsing::TriggerCreator>(
+      tab, profile, tab.GetContents());
 #endif
 
   if (page_info::IsAboutThisSiteFeatureEnabled()) {
@@ -1653,6 +1656,9 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
             safe_browsing::TailoredSecurityServiceFactory::GetForProfile(
                 profile));
   }
+  trigger_creator_.reset();
+  trigger_creator_ = std::make_unique<safe_browsing::TriggerCreator>(
+      *tab, profile, new_contents);
 #endif
 
   if (about_this_site_tab_helper_) {

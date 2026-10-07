@@ -51,16 +51,18 @@ class AdSamplerTriggerTest : public content::RenderViewHostTestHarness {
     prefs_.SetBoolean(prefs::kSafeBrowsingScoutReportingEnabled, true);
   }
 
-  void CreateTriggerWithFrequency(const size_t denominator) {
-    safe_browsing::AdSamplerTrigger::CreateForWebContents(
-        web_contents(), &trigger_manager_, &prefs_, nullptr, nullptr, nullptr);
+  void TearDown() override {
+    ad_sampler_.reset();
+    content::RenderViewHostTestHarness::TearDown();
+  }
 
-    safe_browsing::AdSamplerTrigger* ad_sampler =
-        safe_browsing::AdSamplerTrigger::FromWebContents(web_contents());
-    ad_sampler->SetSamplerFrequencyForTest(denominator);
+  void CreateTriggerWithFrequency(const size_t denominator) {
+    ad_sampler_ = std::make_unique<safe_browsing::AdSamplerTrigger>(
+        web_contents(), &trigger_manager_, &prefs_, nullptr, nullptr, nullptr);
+    ad_sampler_->SetSamplerFrequencyForTest(denominator);
 
     // Give the trigger a test task runner that we can synchronize on.
-    ad_sampler->SetTaskRunnerForTest(task_runner_);
+    ad_sampler_->SetTaskRunnerForTest(task_runner_);
   }
 
   // Returns the final RenderFrameHost after navigation commits.
@@ -101,6 +103,7 @@ class AdSamplerTriggerTest : public content::RenderViewHostTestHarness {
   base::HistogramTester histograms_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_ =
       base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  std::unique_ptr<AdSamplerTrigger> ad_sampler_;
 };
 
 TEST_F(AdSamplerTriggerTest, TriggerDisabledBySamplingFrequency) {

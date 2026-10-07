@@ -173,6 +173,7 @@
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_tab_observer_delegate.h"
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_url_observer.h"
+#include "chrome/browser/safe_browsing/trigger_creator.h"
 #include "components/safe_browsing/content/browser/safe_browsing_tab_observer.h"
 #include "components/safe_browsing/core/common/features.h"
 #endif
@@ -418,6 +419,9 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
             safe_browsing::TailoredSecurityServiceFactory::GetForProfile(
                 profile));
   }
+  // Create Safe Browsing triggers for the tab.
+  trigger_creator_ = std::make_unique<safe_browsing::TriggerCreator>(
+      *tab, profile, web_contents);
 #endif
 
   if (OomInterventionTabHelper::IsEnabled()) {

@@ -18,6 +18,7 @@
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "components/security_interstitials/core/unsafe_resource_locator.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -58,7 +59,10 @@ void NotifySuspiciousSiteTriggerDetected(
   }
 }
 
+DEFINE_USER_DATA(SuspiciousSiteTrigger);
+
 SuspiciousSiteTrigger::SuspiciousSiteTrigger(
+    tabs::TabInterface& tab,
     content::WebContents* web_contents,
     TriggerManager* trigger_manager,
     PrefService* prefs,
@@ -67,7 +71,6 @@ SuspiciousSiteTrigger::SuspiciousSiteTrigger(
     ReferrerChainProvider* referrer_chain_provider,
     bool monitor_mode)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<SuspiciousSiteTrigger>(*web_contents),
       finish_report_delay_ms_(kSuspiciousSiteCollectionPeriodMilliseconds),
       current_state_(monitor_mode ? TriggerState::MONITOR_MODE
                                   : TriggerState::IDLE),
@@ -76,9 +79,21 @@ SuspiciousSiteTrigger::SuspiciousSiteTrigger(
       url_loader_factory_(url_loader_factory),
       history_service_(history_service),
       referrer_chain_provider_(referrer_chain_provider),
-      task_runner_(content::GetUIThreadTaskRunner({})) {}
+      task_runner_(content::GetUIThreadTaskRunner({})),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {}
 
 SuspiciousSiteTrigger::~SuspiciousSiteTrigger() = default;
+
+// static
+SuspiciousSiteTrigger* SuspiciousSiteTrigger::From(tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
+// static
+SuspiciousSiteTrigger* SuspiciousSiteTrigger::FromWebContents(
+    content::WebContents* web_contents) {
+  return From(tabs::TabInterface::MaybeGetFromContents(web_contents));
+}
 
 bool SuspiciousSiteTrigger::MaybeStartReport() {
   TriggerManager::DataCollectionPermissions permissions =
@@ -293,7 +308,5 @@ void SuspiciousSiteTrigger::SetTaskRunnerForTest(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   task_runner_ = task_runner;
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SuspiciousSiteTrigger);
 
 }  // namespace safe_browsing
