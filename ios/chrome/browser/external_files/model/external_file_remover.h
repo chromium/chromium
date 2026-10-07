@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_EXTERNAL_FILES_MODEL_EXTERNAL_FILE_REMOVER_H_
 #define IOS_CHROME_BROWSER_EXTERNAL_FILES_MODEL_EXTERNAL_FILE_REMOVER_H_
 
+#include "base/functional/callback_forward.h"
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 // ExternalFileRemover is responsible for removing documents received from
