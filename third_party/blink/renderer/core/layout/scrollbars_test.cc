@@ -3729,7 +3729,7 @@ class ScrollbarsTestWithMacScrollbarAnimatorProxy : public ScrollbarsTest {
 
    private:
     Member<MacScrollbarAnimator> animator_impl_;
-    raw_ptr<Counters, UnprotectedInRelease> counters_;
+    raw_ptr<Counters, UnprotectedInRelease | DanglingUntriaged> counters_;
   };
 
   void ProxyingMacScrollbarAnimator(ScrollableArea* scrollable_area,

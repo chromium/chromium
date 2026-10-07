@@ -6354,8 +6354,9 @@ class MojoTestHelper {
   WebViewImpl* WebView() const { return web_view_; }
 
  private:
-  raw_ptr<WebViewImpl, UnprotectedInRelease> web_view_;
-  const raw_ref<frame_test_helpers::WebViewHelper, UnprotectedInRelease>
+  raw_ptr<WebViewImpl, UnprotectedInRelease | DanglingUntriaged> web_view_;
+  const raw_ref<frame_test_helpers::WebViewHelper,
+                UnprotectedInRelease | DanglingUntriaged>
       web_view_helper_;
   frame_test_helpers::TestWebFrameClient web_frame_client_;
 };
@@ -6459,7 +6460,7 @@ class ShowUnhandledTapTest : public WebViewTest {
     EXPECT_EQ(expected, mock_notifier_.WasUnhandledTap());
   }
 
-  raw_ptr<WebViewImpl, UnprotectedInRelease> web_view_;
+  raw_ptr<WebViewImpl, UnprotectedInRelease | DanglingUntriaged> web_view_;
   MockUnhandledTapNotifierImpl mock_notifier_;
 
  private:

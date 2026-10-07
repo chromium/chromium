@@ -73,7 +73,7 @@ class DateTimeEditElement final : public HTMLDivElement,
     String fallback_date_time_format;
     // The Locale must be owned by the Document and come from
     // Document::GetCachedLocale.
-    raw_ptr<Locale, UnprotectedInRelease> locale;
+    raw_ptr<Locale, UnprotectedInRelease | DanglingUntriaged> locale;
     const StepRange step_range;
     DateComponents minimum;
     DateComponents maximum;
