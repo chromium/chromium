@@ -39,6 +39,8 @@
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/intelligence/zero_state_suggestions/zero_state_suggestions_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -290,7 +292,8 @@ class GeminiContainerMediatorTest : public PlatformTest {
 
     gemini::test::SetUpEligibleAccount(profile_.get());
 
-    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    scene_state_ = [[SceneState alloc] init];
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     mock_settings_handler_ = OCMProtocolMock(@protocol(SettingsCommands));
@@ -342,6 +345,7 @@ class GeminiContainerMediatorTest : public PlatformTest {
       web::WebTaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
+  SceneState* scene_state_;
   std::unique_ptr<TestBrowser> browser_;
   GeminiStartupState* startup_state_;
   FakeGeminiContainerMediatorEventHandler delegate_;
@@ -1555,6 +1559,32 @@ TEST_F(GeminiContainerMediatorTest,
                  conversationID:nil];
   EXPECT_EQ(2, fake_container_handler.setMediumDetentHeightCallCount);
   EXPECT_EQ(std::nullopt, fake_container_handler.mediumDetentHeight);
+}
+
+// Test that entering the Tab Grid minimizes the assistant container and stops
+// observing after `disconnect`.
+TEST_F(GeminiContainerMediatorTest, TestWillEnterTabGridMinimizesContainer) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
+
+  FakeGeminiContainerConsumer* consumer =
+      [[FakeGeminiContainerConsumer alloc] init];
+  mediator_.consumer = consumer;
+  [mediator_ connect];
+
+  OCMExpect([mock_container_handler_
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized]);
+  scene_state_.tabGridState.tabGridVisible = YES;
+  EXPECT_OCMOCK_VERIFY(mock_container_handler_);
+
+  scene_state_.tabGridState.tabGridVisible = NO;
+  [mediator_ disconnect];
+
+  [[mock_container_handler_ reject]
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized];
+  scene_state_.tabGridState.tabGridVisible = YES;
+  EXPECT_OCMOCK_VERIFY(mock_container_handler_);
 }
 
 }  // namespace

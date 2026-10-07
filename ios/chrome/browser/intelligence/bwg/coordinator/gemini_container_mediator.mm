@@ -40,6 +40,8 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/zero_state_suggestions/ui/gemini_zero_state_consumer.h"
 #import "ios/chrome/browser/intelligence/zero_state_suggestions/zero_state_suggestions_service.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -60,7 +62,8 @@ using ios::provider::GeminiViewMode;
 using ios::provider::GeminiViewState;
 
 @interface GeminiContainerMediator () <ActorTaskLifecycleObserver,
-                                       GeminiContainerUIStateManagerDelegate>
+                                       GeminiContainerUIStateManagerDelegate,
+                                       TabGridStateObserving>
 
 // Called when the active `WebState` changes.
 - (void)onActiveWebStateChanged:(web::WebState*)oldActive
@@ -152,6 +155,9 @@ class GeminiContainerMediatorTabHelperObserver
       _webStateListObserver;
   // Observer for `GeminiTabHelper` events.
   std::unique_ptr<GeminiContainerMediatorTabHelperObserver> _tabHelperObserver;
+  // Tab grid state observed to minimize the container when entering the tab
+  // grid.
+  TabGridState* _tabGridState;
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser
@@ -166,6 +172,7 @@ class GeminiContainerMediatorTabHelperObserver
     if (browser) {
       _webStateList = browser->GetWebStateList();
       _profile = browser->GetProfile();
+      _tabGridState = browser->GetSceneState().tabGridState;
     }
     _actorService = actorService;
     _gatewayManager = [[GeminiGatewayManager alloc] initWithBrowser:browser
@@ -258,6 +265,7 @@ class GeminiContainerMediatorTabHelperObserver
   if (_actorService) {
     _actorService->AddTaskLifecycleObserver(self);
   }
+  [_tabGridState addObserver:self];
   [self setupInitialUIState];
   [self requestActivePageContextGeneration];
   [self onFloatyInvoked];
@@ -302,6 +310,8 @@ class GeminiContainerMediatorTabHelperObserver
     _actorService = nullptr;
   }
   _actuationTaskId.reset();
+  [_tabGridState removeObserver:self];
+  _tabGridState = nil;
 
   self.zeroStateConsumer = nil;
   _startupState = nil;
@@ -669,6 +679,13 @@ class GeminiContainerMediatorTabHelperObserver
   if (_stateManager.currentUIState.detent == kMedium) {
     [self.containerHandler animateAssistantContainerToDetent:kMedium];
   }
+}
+
+#pragma mark - TabGridStateObserving
+
+- (void)willEnterTabGrid {
+  [self.containerHandler
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized];
 }
 
 #pragma mark - Private
