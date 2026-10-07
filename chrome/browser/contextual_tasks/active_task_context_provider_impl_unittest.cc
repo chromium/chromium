@@ -218,6 +218,103 @@ TEST_F(ActiveTaskContextProviderImplTest, RefreshContextWithTabs) {
   run_loop.Run();
 }
 
+// Regression test: the underline must survive even when the task context
+// (populated from server-echoed URL resources) has no attachment carrying a
+// tab id, as long as the session still holds the tab as submitted/persisted
+// context.
+TEST_F(ActiveTaskContextProviderImplTest,
+       RefreshContextUsesSessionSubmittedTabsWhenContextLacksTabId) {
+  tabs::TabInterface* tab1 = CreateMockTab();
+  SessionID id1 = sessions::SessionTabHelper::IdForTab(tab1->GetContents());
+  const GURL url("https://example.com");
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  // Server-style resource: same URL, but no tab id.
+  task.AddUrlResource(UrlResource(url, ResourceType::kWebpage));
+
+  contextual_search::FileInfo file_info;
+  file_info.tab_session_id = id1;
+  file_info.tab_url = url;
+  file_info.tab_title = "Example";
+  EXPECT_CALL(dummy_handle_, GetSubmittedContextFileInfos())
+      .WillRepeatedly(
+          Return(std::vector<contextual_search::FileInfo>{file_info}));
+
+  EXPECT_CALL(*contextual_tasks_panel_controller_,
+              GetSessionHandleForActiveTabOrPanel())
+      .WillOnce(Return(std::make_pair(task_id, &dummy_handle_)));
+
+  EXPECT_CALL(*contextual_tasks_service_, GetContextForTask(task_id, _, _, _))
+      .WillOnce([&task](const base::Uuid&,
+                        const std::set<ContextualTaskContextSource>&,
+                        std::unique_ptr<ContextDecorationParams>,
+                        base::OnceCallback<void(
+                            std::unique_ptr<ContextualTaskContext>)> callback) {
+        std::move(callback).Run(std::make_unique<ContextualTaskContext>(task));
+      });
+
+  EXPECT_CALL(*tab_list_, GetTabCount()).WillRepeatedly(Return(1));
+  EXPECT_CALL(*tab_list_, GetTab(0)).WillRepeatedly(Return(tab1));
+
+  std::set<tabs::TabHandle> expected_tabs = {tab1->GetHandle()};
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer_, OnContextTabsChanged(expected_tabs))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+
+  provider_->RefreshContext();
+  run_loop.Run();
+}
+
+// Session-sourced tabs are subject to the same token gate as context
+// attachments: if the session no longer has a token for the tab, it is not
+// underlined.
+TEST_F(ActiveTaskContextProviderImplTest,
+       RefreshContextIgnoresSessionSubmittedTabWithoutToken) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kContextManagementInComposebox);
+
+  tabs::TabInterface* tab1 = CreateMockTab();
+  SessionID id1 = sessions::SessionTabHelper::IdForTab(tab1->GetContents());
+  const GURL url("https://example.com");
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+
+  contextual_search::FileInfo file_info;
+  file_info.tab_session_id = id1;
+  file_info.tab_url = url;
+  EXPECT_CALL(dummy_handle_, GetSubmittedContextFileInfos())
+      .WillRepeatedly(
+          Return(std::vector<contextual_search::FileInfo>{file_info}));
+  // `dummy_handle_` holds no uploaded/submitted/persisted tokens, so
+  // GetTokenForTab(id1) is empty.
+
+  EXPECT_CALL(*contextual_tasks_panel_controller_,
+              GetSessionHandleForActiveTabOrPanel())
+      .WillOnce(Return(std::make_pair(task_id, &dummy_handle_)));
+
+  EXPECT_CALL(*contextual_tasks_service_, GetContextForTask(task_id, _, _, _))
+      .WillOnce([&task](const base::Uuid&,
+                        const std::set<ContextualTaskContextSource>&,
+                        std::unique_ptr<ContextDecorationParams>,
+                        base::OnceCallback<void(
+                            std::unique_ptr<ContextualTaskContext>)> callback) {
+        std::move(callback).Run(std::make_unique<ContextualTaskContext>(task));
+      });
+
+  EXPECT_CALL(*tab_list_, GetTabCount()).WillRepeatedly(Return(1));
+  EXPECT_CALL(*tab_list_, GetTab(0)).WillRepeatedly(Return(tab1));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer_, OnContextTabsChanged(std::set<tabs::TabHandle>()))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+
+  provider_->RefreshContext();
+  run_loop.Run();
+}
+
 TEST_F(ActiveTaskContextProviderImplTest,
        RefreshContextClearsUnderlinesWhenSmartTabSharingToggled) {
   base::test::ScopedFeatureList scoped_feature_list;
