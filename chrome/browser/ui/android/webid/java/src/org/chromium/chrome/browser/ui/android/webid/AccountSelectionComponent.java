@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.android.webid;
 
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
@@ -58,7 +59,7 @@ public interface AccountSelectionComponent {
          *
          * <p>For use by code running in the CCT popup.
          */
-        WebContents getWebContents();
+        @Nullable WebContents getWebContents();
 
         /** Called to associate the popup with the delegate. */
         void setPopupComponent(AccountSelectionComponent popupComponent);
@@ -174,7 +175,7 @@ public interface AccountSelectionComponent {
     String getTitle();
 
     /** Gets the sheet's subtitle, if any, or null.. */
-    String getSubtitle();
+    @Nullable String getSubtitle();
 
     /** Show the given URL in a popup window. */
     void showUrl(@IdentityRequestDialogLinkType int linkType, GURL url);
@@ -184,7 +185,7 @@ public interface AccountSelectionComponent {
      *
      * @param url The URL to be loaded in the dialog.
      */
-    WebContents showModalDialog(GURL url);
+    @Nullable WebContents showModalDialog(GURL url);
 
     /** Closes a modal dialog, if one is opened. */
     void closeModalDialog();
@@ -193,7 +194,7 @@ public interface AccountSelectionComponent {
     void onModalDialogClosed();
 
     /** Gets the WebContents for this object. */
-    WebContents getWebContents();
+    @Nullable WebContents getWebContents();
 
     /**
      * Gets the WebContents for the RP associated with this object.
@@ -201,7 +202,7 @@ public interface AccountSelectionComponent {
      * <p>This is intended to be called on the custom tab object to return the WebContents for the
      * RP, i.e. the WebContents for the object that showModalDialog was called on.
      */
-    WebContents getRpWebContents();
+    @Nullable WebContents getRpWebContents();
 
     /** Called to associate the popup with the delegate. */
     void setPopupComponent(AccountSelectionComponent popupComponent);

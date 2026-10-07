@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.res.Resources;
 
 import org.jni_zero.CalledByNative;
@@ -13,6 +15,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -36,10 +39,11 @@ import java.util.List;
  * This bridge creates and initializes a {@link AccountSelectionComponent} on construction and
  * forwards native calls to it.
  */
+@NullMarked
 class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     /**
-     * The size of the maskable icon's safe zone as a fraction of the icon's edge size as defined
-     * in https://www.w3.org/TR/appmanifest/
+     * The size of the maskable icon's safe zone as a fraction of the icon's edge size as defined in
+     * https://www.w3.org/TR/appmanifest/
      */
     public static final float MASKABLE_ICON_SAFE_ZONE_DIAMETER_RATIO = 0.8f;
 
@@ -90,7 +94,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
         if (bottomSheetController == null) return null;
-        Tab tab = TabUtils.fromWebContents(webContents);
+        Tab tab = assertNonNull(TabUtils.fromWebContents(webContents));
         return new AccountSelectionBridge(
                 nativeView, tab, windowAndroid, bottomSheetController, rpMode, canShowUi);
     }
@@ -215,7 +219,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     }
 
     @CalledByNative
-    private @JniType("std::optional<std::string>") String getSubtitle() {
+    private @JniType("std::optional<std::string>") @Nullable String getSubtitle() {
         return mAccountSelectionComponent.getSubtitle();
     }
 
@@ -311,7 +315,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     }
 
     @Override
-    public WebContents getWebContents() {
+    public @Nullable WebContents getWebContents() {
         return mAccountSelectionComponent.getWebContents();
     }
 

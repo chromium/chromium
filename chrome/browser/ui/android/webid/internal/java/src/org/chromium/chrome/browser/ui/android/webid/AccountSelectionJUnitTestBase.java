@@ -25,6 +25,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.tab.Tab;
@@ -474,10 +475,7 @@ public class AccountSelectionJUnitTestBase {
 
         mBottomSheetContent =
                 new AccountSelectionBottomSheetContent(
-                        /* contentView= */ null,
-                        /* bottomSheetController= */ null,
-                        /* scrollOffsetSupplier= */ null,
-                        mRpMode);
+                        mContentView, mMockBottomSheetController, SupplierUtils.of(0), mRpMode);
         mMockModalDialogManager = new MockModalDialogManager();
         resetMediator();
     }
@@ -493,11 +491,8 @@ public class AccountSelectionJUnitTestBase {
     }
 
     MVCListAdapter.ListItem buildIdpLoginItem(IdentityProviderData idpData, boolean showIdp) {
-        LoginButtonProperties.Properties properties = new LoginButtonProperties.Properties();
-        properties.mIdentityProvider = idpData;
-        properties.mOnClickListener = mIdpLoginCallback;
-        properties.mRpMode = mRpMode;
-        properties.mShowIdp = showIdp;
+        LoginButtonProperties.Properties properties =
+                new LoginButtonProperties.Properties(idpData, mIdpLoginCallback, mRpMode, showIdp);
         return new MVCListAdapter.ListItem(
                 AccountSelectionProperties.ITEM_TYPE_LOGIN,
                 new PropertyModel.Builder(LoginButtonProperties.ALL_KEYS)

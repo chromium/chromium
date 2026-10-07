@@ -8,9 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 
-import androidx.annotation.NonNull;
 import androidx.core.view.AccessibilityDelegateCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 
@@ -18,21 +18,22 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
  * An AccessibilityDelegate for AccountSelectionBottomSheetContent that disables the half sheet
  * state when a view gains accessibility focus.
  */
+@NullMarked
 public class ExpandOnFocusAccessibilityDelegate extends AccessibilityDelegateCompat {
 
     private final AccountSelectionBottomSheetContent mBottomSheetContent;
     private final BottomSheetController mBottomSheetController;
 
     public ExpandOnFocusAccessibilityDelegate(
-            @NonNull AccountSelectionBottomSheetContent bottomSheetContent,
-            @NonNull BottomSheetController bottomSheetController) {
+            AccountSelectionBottomSheetContent bottomSheetContent,
+            BottomSheetController bottomSheetController) {
         mBottomSheetContent = bottomSheetContent;
         mBottomSheetController = bottomSheetController;
     }
 
     @Override
     public boolean onRequestSendAccessibilityEvent(
-            @NonNull ViewGroup host, @NonNull View child, @NonNull AccessibilityEvent event) {
+            ViewGroup host, View child, AccessibilityEvent event) {
         // Check if the event type is a view gaining accessibility focus
         if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
             if (mBottomSheetController.getSheetState() != SheetState.FULL) {

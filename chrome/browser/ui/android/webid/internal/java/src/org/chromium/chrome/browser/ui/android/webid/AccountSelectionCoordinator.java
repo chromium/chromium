@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.ui.android.webid;
 import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK;
 import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +20,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -30,6 +31,8 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -70,6 +73,7 @@ import java.util.Map;
  * Creates the AccountSelection component. AccountSelection uses a bottom sheet to let the user
  * select an account.
  */
+@NullMarked
 public class AccountSelectionCoordinator
         implements AccountSelectionComponent, ActivityStateObserver {
     private static final String TAG = "AccountSelection";
@@ -112,8 +116,8 @@ public class AccountSelectionCoordinator
     private final AccountSelectionComponent.Delegate mDelegate;
     private final AccountSelectionMediator mMediator;
     private final RecyclerView mSheetItemListView;
-    private WeakReference<AccountSelectionComponent> mPopupComponent;
-    private WeakReference<AccountSelectionComponent.Delegate> mOpenerDelegate;
+    private @Nullable WeakReference<AccountSelectionComponent> mPopupComponent;
+    private @Nullable WeakReference<AccountSelectionComponent.Delegate> mOpenerDelegate;
 
     public AccountSelectionCoordinator(
             Tab tab,
@@ -126,7 +130,7 @@ public class AccountSelectionCoordinator
         mBottomSheetController = sheetController;
         mWindowAndroid = windowAndroid;
         mDelegate = delegate;
-        Context context = mWindowAndroid.getContext().get();
+        Context context = assertNonNull(mWindowAndroid.getContext().get());
 
         PropertyModel model =
                 new PropertyModel.Builder(AccountSelectionProperties.ItemProperties.ALL_KEYS)
@@ -162,7 +166,7 @@ public class AccountSelectionCoordinator
                         avatarSize,
                         rpMode,
                         context,
-                        windowAndroid.getModalDialogManager(),
+                        assertNonNull(windowAndroid.getModalDialogManager()),
                         canShowUi);
 
         // If this object is corresponding to the custom tab opened by showModalDialog, this
@@ -297,7 +301,7 @@ public class AccountSelectionCoordinator
     }
 
     @Override
-    public String getSubtitle() {
+    public @Nullable String getSubtitle() {
         TextView subtitle = mBottomSheetContent.getContentView().findViewById(R.id.header_subtitle);
         if (subtitle == null || subtitle.getText().length() == 0) return null;
         return String.valueOf(subtitle.getText());
@@ -305,12 +309,12 @@ public class AccountSelectionCoordinator
 
     @Override
     public void showUrl(@IdentityRequestDialogLinkType int linkType, GURL url) {
-        Context context = mWindowAndroid.getContext().get();
+        Context context = assertNonNull(mWindowAndroid.getContext().get());
         mMediator.showUrl(context, linkType, url);
     }
 
     @Override
-    public WebContents showModalDialog(GURL url) {
+    public @Nullable WebContents showModalDialog(GURL url) {
         if (ContentFeatureMap.isEnabled(ContentFeatures.FED_CM_NATIVE_ID_PS)) {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.addCategory(Intent.CATEGORY_BROWSABLE);
@@ -386,12 +390,12 @@ public class AccountSelectionCoordinator
     }
 
     @Override
-    public WebContents getWebContents() {
+    public @Nullable WebContents getWebContents() {
         return mTab.getWebContents();
     }
 
     @Override
-    public WebContents getRpWebContents() {
+    public @Nullable WebContents getRpWebContents() {
         if (mOpenerDelegate == null || mOpenerDelegate.get() == null) {
             return null;
         }
@@ -434,7 +438,8 @@ public class AccountSelectionCoordinator
      * Finds an installed app package that handles {@code queryIntent} and is verified via Digital
      * Asset Links for {@code url}'s origin.
      */
-    private void findVerifiedApp(Intent queryIntent, GURL url, Callback<String> callback) {
+    private void findVerifiedApp(
+            Intent queryIntent, GURL url, Callback<@Nullable String> callback) {
         List<String> packages = getNativeAppPackages(queryIntent);
         if (packages.isEmpty()) {
             callback.onResult(null);

@@ -28,6 +28,7 @@ import org.mockito.ArgumentCaptor;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -532,10 +533,12 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
                 };
 
         for (TokenError error : errors) {
-            ErrorProperties.Properties properties = new ErrorProperties.Properties();
-            properties.mIdpForDisplay = TEST_IDP_ETLD_PLUS_ONE;
-            properties.mRpForDisplay = TEST_RP_ETLD_PLUS_ONE;
-            properties.mError = new IdentityCredentialTokenError(error.mCode, error.mUrl);
+            ErrorProperties.Properties properties =
+                    new ErrorProperties.Properties(
+                            TEST_IDP_ETLD_PLUS_ONE,
+                            TEST_RP_ETLD_PLUS_ONE,
+                            new IdentityCredentialTokenError(error.mCode, error.mUrl),
+                            error.mUrl.isEmpty() ? null : CallbackUtils.emptyRunnable());
 
             AccountSelectionViewBinder.ErrorText actualError =
                     AccountSelectionViewBinder.getErrorText(
@@ -605,14 +608,14 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
     }
 
     private PropertyModel buildContinueButton(
-            Account account,
-            IdentityProviderMetadata idpMetadata,
-            HeaderProperties.HeaderType headerType) {
-        ContinueButtonProperties.Properties properties = new ContinueButtonProperties.Properties();
-        properties.mAccount = account;
-        properties.mIdpMetadata = idpMetadata;
-        properties.mOnClickListener = mAccountCallback;
-        properties.mHeaderType = headerType;
+            Account account, IdentityProviderMetadata idpMetadata, @HeaderType int headerType) {
+        ContinueButtonProperties.Properties properties =
+                new ContinueButtonProperties.Properties(
+                        account,
+                        idpMetadata,
+                        mAccountCallback,
+                        headerType,
+                        /* setFocusViewCallback= */ null);
         return new PropertyModel.Builder(ContinueButtonProperties.ALL_KEYS)
                 .with(ContinueButtonProperties.PROPERTIES, properties)
                 .build();
@@ -620,11 +623,14 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
 
     private PropertyModel buildDataSharingConsentItem(String idpEtldPlusOne) {
         DataSharingConsentProperties.Properties properties =
-                new DataSharingConsentProperties.Properties();
-        properties.mIdpForDisplay = idpEtldPlusOne;
-        properties.mTermsOfServiceUrl = new GURL("https://www.one.com/");
-        properties.mPrivacyPolicyUrl = new GURL("https://www.two.com/");
-        properties.mDisclosureFields = DEFAULT_DISCLOSURE_FIELDS;
+                new DataSharingConsentProperties.Properties(
+                        idpEtldPlusOne,
+                        new GURL("https://www.one.com/"),
+                        new GURL("https://www.two.com/"),
+                        context -> {},
+                        context -> {},
+                        /* setFocusViewCallback= */ null,
+                        DEFAULT_DISCLOSURE_FIELDS);
 
         return new PropertyModel.Builder(DataSharingConsentProperties.ALL_KEYS)
                 .with(DataSharingConsentProperties.PROPERTIES, properties)

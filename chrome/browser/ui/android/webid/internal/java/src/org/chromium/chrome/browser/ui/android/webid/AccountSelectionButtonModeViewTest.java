@@ -254,13 +254,13 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
 
     @Test
     public void testHeaderTypesWithRpIconHidden() {
-        List<HeaderType> headerTypesWithoutRpIcon =
+        List<@HeaderType Integer> headerTypesWithoutRpIcon =
                 Arrays.asList(
                         HeaderType.SIGN_IN,
                         HeaderType.SIGN_IN_TO_IDP_STATIC,
                         HeaderType.SIGN_IN_ERROR,
                         HeaderType.LOADING);
-        for (HeaderType headerType : headerTypesWithoutRpIcon) {
+        for (@HeaderType int headerType : headerTypesWithoutRpIcon) {
             mModel.set(
                     ItemProperties.HEADER,
                     new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
@@ -365,9 +365,9 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
     }
 
     private PropertyModel buildAddAccountButton() {
-        LoginButtonProperties.Properties properties = new LoginButtonProperties.Properties();
-        properties.mIdentityProvider = mIdpData;
-        properties.mRpMode = RpMode.ACTIVE;
+        LoginButtonProperties.Properties properties =
+                new LoginButtonProperties.Properties(
+                        mIdpData, mIdpLoginCallback, RpMode.ACTIVE, /* showIdp= */ false);
         return new PropertyModel.Builder(LoginButtonProperties.ALL_KEYS)
                 .with(LoginButtonProperties.PROPERTIES, properties)
                 .build();

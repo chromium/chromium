@@ -54,6 +54,7 @@ import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
@@ -79,6 +80,7 @@ public class NativeAppTest {
 
     @Mock private Tab mTab;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private ModalDialogManager mModalDialogManager;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private AccountSelectionComponent.Delegate mMockDelegate;
 
@@ -99,6 +101,7 @@ public class NativeAppTest {
         when(mWindowAndroid.getContext()).thenReturn(contextRef);
         WeakReference<Activity> activityRef = new WeakReference<>(mActivity);
         when(mWindowAndroid.getActivity()).thenReturn(activityRef);
+        when(mWindowAndroid.getModalDialogManager()).thenReturn(mModalDialogManager);
 
         mMockOriginVerifier = mock(ChromeOriginVerifier.class);
         ChromeOriginVerifierFactory.setInstanceForTesting(mMockOriginVerifier);

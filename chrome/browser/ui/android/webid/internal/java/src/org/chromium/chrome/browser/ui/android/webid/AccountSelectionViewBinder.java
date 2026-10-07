@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -32,6 +35,8 @@ import com.google.android.material.color.MaterialColors;
 import org.chromium.base.Callback;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ButtonData;
@@ -68,6 +73,7 @@ import java.util.function.Consumer;
  * Provides functions that map {@link AccountSelectionProperties} changes in a {@link PropertyModel}
  * to the suitable method in {@link AccountSelectionView}.
  */
+@NullMarked
 class AccountSelectionViewBinder {
     private static final String TAG = "AccountSelectionView";
 
@@ -357,7 +363,7 @@ class AccountSelectionViewBinder {
         iconView.setImageDrawable(plusIcon);
     }
 
-    static SpanApplier.SpanInfo createLink(
+    static SpanApplier.@Nullable SpanInfo createLink(
             Context context, String tag, GURL url, Consumer<Context> clickCallback) {
         if (GURL.isEmptyOrInvalid(url)) return null;
 
@@ -563,7 +569,10 @@ class AccountSelectionViewBinder {
             description +=
                     context.getString(R.string.signin_generic_error_dialog_more_details_prompt);
             return new ErrorText(
-                    summary, description, context, properties.mMoreDetailsClickRunnable);
+                    summary,
+                    description,
+                    context,
+                    assertNonNull(properties.mMoreDetailsClickRunnable));
         }
 
         if (url.isEmpty()) {
@@ -592,7 +601,10 @@ class AccountSelectionViewBinder {
 
         if (clickableText) {
             return new ErrorText(
-                    summary, description, context, properties.mMoreDetailsClickRunnable);
+                    summary,
+                    description,
+                    context,
+                    assertNonNull(properties.mMoreDetailsClickRunnable));
         }
         return new ErrorText(summary, description);
     }
@@ -668,7 +680,7 @@ class AccountSelectionViewBinder {
                     });
 
             String btnText;
-            HeaderProperties.HeaderType headerType = properties.mHeaderType;
+            @HeaderProperties.HeaderType int headerType = properties.mHeaderType;
             if (headerType == HeaderProperties.HeaderType.SIGN_IN_TO_IDP_STATIC) {
                 btnText = context.getString(R.string.signin_continue);
                 button.setContentDescription(
@@ -677,6 +689,7 @@ class AccountSelectionViewBinder {
             } else if (headerType == HeaderProperties.HeaderType.SIGN_IN_ERROR) {
                 btnText = context.getString(R.string.signin_error_dialog_got_it_button);
             } else {
+                assumeNonNull(account);
                 String givenName = account.getGivenName();
                 if (givenName.isEmpty()) {
                     btnText = context.getString(R.string.signin_continue);
@@ -723,7 +736,8 @@ class AccountSelectionViewBinder {
                     model.get(ItemProperties.DRAGBAR_HANDLE_VISIBLE) ? View.VISIBLE : View.GONE);
             return;
         }
-        PropertyModel itemModel = model.get((WritableObjectPropertyKey<PropertyModel>) key);
+        PropertyModel itemModel =
+                model.get((WritableObjectPropertyKey<@Nullable PropertyModel>) key);
         ViewBinder<PropertyModel, View, PropertyKey> itemBinder = null;
         if (key == ItemProperties.HEADER) {
             itemView = view.findViewById(R.id.header_view_item);
@@ -776,6 +790,7 @@ class AccountSelectionViewBinder {
     static void bindHeaderView(PropertyModel model, View view, PropertyKey key) {
         Resources resources = view.getResources();
         View headerView = view.findViewById(R.id.header);
+        Callback<View> setFocusViewCallback = model.get(HeaderProperties.SET_FOCUS_VIEW_CALLBACK);
 
         // Reuse the same header from previous dialog if active mode verify sheet.
         if (model.get(HeaderProperties.RP_MODE) == RpMode.ACTIVE
@@ -783,8 +798,8 @@ class AccountSelectionViewBinder {
                         || model.get(HeaderProperties.TYPE)
                                 == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN)) {
             headerView.setContentDescription(resources.getString(R.string.verify_sheet_title));
-            if (model.get(HeaderProperties.SET_FOCUS_VIEW_CALLBACK) != null) {
-                model.get(HeaderProperties.SET_FOCUS_VIEW_CALLBACK).onResult(headerView);
+            if (setFocusViewCallback != null) {
+                setFocusViewCallback.onResult(headerView);
             }
             return;
         }
@@ -800,7 +815,7 @@ class AccountSelectionViewBinder {
                 || key == HeaderProperties.IS_MULTIPLE_IDPS) {
             TextView headerTitleText = view.findViewById(R.id.header_title);
             TextView headerSubtitleText = view.findViewById(R.id.header_subtitle);
-            HeaderProperties.HeaderType headerType = model.get(HeaderProperties.TYPE);
+            @HeaderProperties.HeaderType int headerType = model.get(HeaderProperties.TYPE);
 
             String subtitle =
                     computeHeaderSubtitle(
@@ -814,9 +829,8 @@ class AccountSelectionViewBinder {
             if (!subtitle.isEmpty()) {
                 headerTitleText.setPadding(
                         /* left= */ 0, /* top= */ 12, /* right= */ 0, /* bottom= */ 0);
-                if (headerSubtitleText.getText() != subtitle
-                        && model.get(HeaderProperties.SET_FOCUS_VIEW_CALLBACK) != null) {
-                    model.get(HeaderProperties.SET_FOCUS_VIEW_CALLBACK).onResult(headerView);
+                if (headerSubtitleText.getText() != subtitle && setFocusViewCallback != null) {
+                    setFocusViewCallback.onResult(headerView);
                 }
                 headerSubtitleText.setText(subtitle);
                 headerSubtitleText.setMovementMethod(LinkMovementMethod.getInstance());
@@ -835,9 +849,8 @@ class AccountSelectionViewBinder {
                             model.get(HeaderProperties.RP_CONTEXT),
                             model.get(HeaderProperties.RP_MODE),
                             model.get(HeaderProperties.IS_MULTIPLE_IDPS));
-            if (headerTitleText.getText() != title
-                    && model.get(HeaderProperties.SET_FOCUS_VIEW_CALLBACK) != null) {
-                model.get(HeaderProperties.SET_FOCUS_VIEW_CALLBACK).onResult(headerView);
+            if (headerTitleText.getText() != title && setFocusViewCallback != null) {
+                setFocusViewCallback.onResult(headerView);
             }
             headerTitleText.setText(title);
             headerTitleText.setMovementMethod(LinkMovementMethod.getInstance());
@@ -959,10 +972,10 @@ class AccountSelectionViewBinder {
 
     private static String computeHeaderTitle(
             Resources resources,
-            HeaderProperties.HeaderType type,
+            @HeaderProperties.HeaderType int type,
             String topLevelUrl,
             String iframeUrl,
-            String idpUrl,
+            @Nullable String idpUrl,
             @RpContext.EnumType int rpContext,
             @RpMode.EnumType int rpMode,
             Boolean isMultipleIdps) {
@@ -1052,7 +1065,7 @@ class AccountSelectionViewBinder {
 
     private static String computeHeaderSubtitle(
             Resources resources,
-            HeaderProperties.HeaderType type,
+            @HeaderProperties.HeaderType int type,
             String rpUrl,
             String iframeUrl,
             @RpMode.EnumType int rpMode,

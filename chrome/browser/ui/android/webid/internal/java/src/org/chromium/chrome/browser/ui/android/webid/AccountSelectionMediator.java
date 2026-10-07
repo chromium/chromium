@@ -4,13 +4,15 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
@@ -18,6 +20,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
@@ -68,6 +73,7 @@ import java.util.Set;
  * Contains the logic for the AccountSelection component. It sets the state of the model and reacts
  * to events like clicks.
  */
+@NullMarked
 class AccountSelectionMediator {
     private boolean mRegisteredObservers;
     private boolean mWasDismissed;
@@ -95,34 +101,34 @@ class AccountSelectionMediator {
     // view.
     public static final long POTENTIALLY_UNINTENDED_INPUT_THRESHOLD = 500;
 
-    private HeaderType mHeaderType;
-    private RelyingPartyData mRpData;
-    private String mIdpForDisplay;
+    private @HeaderType int mHeaderType = HeaderType.NONE;
+    private @MonotonicNonNull RelyingPartyData mRpData;
+    private @Nullable String mIdpForDisplay;
     // The icon to be displayed in the title of the dialog. Corresponds to the IDP icon when one IDP
     // is involved or the RP icon when multiple IDPs are involved.
-    private Bitmap mHeaderIcon;
+    private @Nullable Bitmap mHeaderIcon;
     // The RP brand icon provided by the IDP. Used only in active mode.
     private @Nullable Bitmap mRpBrandIcon;
     private @RpContext.EnumType int mRpContext;
-    private IdentityCredentialTokenError mError;
-    private UkmRecorder mUkmRecorder;
+    private @MonotonicNonNull IdentityCredentialTokenError mError;
+    private @Nullable UkmRecorder mUkmRecorder;
 
     // All of the user's accounts. Populated only when showAccounts() is invoked.
-    private List<Account> mAccounts;
+    private @MonotonicNonNull List<Account> mAccounts;
 
     // All of the IDPs involved in the dialog. Populated only when showAccounts() is invoked, as
     // otherwise `mIdpMetadataForLoginOrError` is used.
-    private List<IdentityProviderData> mIdpDataListForShowAccounts;
+    private @Nullable List<IdentityProviderData> mIdpDataListForShowAccounts;
 
     // The metadata of the IDP involved in the dialog when we show something different from
     // showAccounts(): mismatch UI or error dialog.
-    private IdentityProviderMetadata mIdpMetadataForLoginOrError;
+    private @Nullable IdentityProviderMetadata mIdpMetadataForLoginOrError;
 
     // Whether the current state of the dialog involves multiple IDPs.
     private boolean mIsMultipleIdps;
 
     // The account that the user has selected.
-    private Account mSelectedAccount;
+    private @Nullable Account mSelectedAccount;
 
     // Stores the value of SystemClock.elapsedRealtime() at the time in which the accounts are shown
     // to the user.
@@ -133,7 +139,7 @@ class AccountSelectionMediator {
     private boolean mIsModalDialogOpen;
 
     // View to explicitly focus on for screen reader accessibility purposes.
-    private View mFocusView;
+    private @Nullable View mFocusView;
 
     // The current state of the account chooser if opened for metrics purposes. Histogram is only
     // recorded for active mode.
@@ -207,7 +213,8 @@ class AccountSelectionMediator {
                     // TODO(crbug.com/40262629): Add tests for TalkBack on FedCM.
                     private void focusForAccessibility() {
                         View contentView =
-                                mBottomSheetController.getCurrentSheetContent().getContentView();
+                                assumeNonNull(mBottomSheetController.getCurrentSheetContent())
+                                        .getContentView();
                         assert contentView != null;
                         View continueButton =
                                 contentView.findViewById(R.id.account_selection_continue_btn);
@@ -330,7 +337,7 @@ class AccountSelectionMediator {
                     }
 
                     @Override
-                    public void onSheetContentChanged(BottomSheetContent bottomSheet) {
+                    public void onSheetContentChanged(@Nullable BottomSheetContent bottomSheet) {
                         // Keep track of the latest sheet seen. Since this method is invoked before
                         // onSheetStateChanged() when the sheet is swiped out, we do not clear
                         // |mLastSheetSeen| if |bottomSheet| is null.
@@ -378,7 +385,7 @@ class AccountSelectionMediator {
         mBottomSheetContent.setCustomBackPressBehavior(
                 !mWasDismissed
                                 && ((mSelectedAccount != null
-                                                && mAccounts.size() != 1
+                                                && assumeNonNull(mAccounts).size() != 1
                                                 && mHeaderType != HeaderType.VERIFY)
                                         || mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL)
                         ? this::handleBackPress
@@ -398,10 +405,10 @@ class AccountSelectionMediator {
     }
 
     private PropertyModel createHeaderItem(
-            HeaderType headerType,
+            @HeaderType int headerType,
             String rpForDisplay,
             String iframeForDisplay,
-            String idpForDisplay,
+            @Nullable String idpForDisplay,
             @RpContext.EnumType int rpContext,
             Boolean isMultipleIdps) {
         Runnable closeOnClickRunnable = null;
@@ -433,18 +440,18 @@ class AccountSelectionMediator {
 
     private int getSheetType() {
         switch (mHeaderType) {
-            case SIGN_IN:
-            case REQUEST_PERMISSION_MODAL:
+            case HeaderType.SIGN_IN:
+            case HeaderType.REQUEST_PERMISSION_MODAL:
                 return SheetType.ACCOUNT_SELECTION;
-            case VERIFY:
+            case HeaderType.VERIFY:
                 return SheetType.VERIFYING;
-            case VERIFY_AUTO_REAUTHN:
+            case HeaderType.VERIFY_AUTO_REAUTHN:
                 return SheetType.AUTO_REAUTHN;
-            case SIGN_IN_TO_IDP_STATIC:
+            case HeaderType.SIGN_IN_TO_IDP_STATIC:
                 return SheetType.SIGN_IN_TO_IDP_STATIC;
-            case SIGN_IN_ERROR:
+            case HeaderType.SIGN_IN_ERROR:
                 return SheetType.SIGN_IN_ERROR;
-            case LOADING:
+            case HeaderType.LOADING:
                 return SheetType.LOADING;
         }
         assert false; // NOTREACHED
@@ -502,7 +509,7 @@ class AccountSelectionMediator {
         return currentTime - mComponentShowTime > POTENTIALLY_UNINTENDED_INPUT_THRESHOLD;
     }
 
-    private boolean isValidBrandIcon(Bitmap bitmap, boolean shouldCircleCrop) {
+    private boolean isValidBrandIcon(@Nullable Bitmap bitmap, boolean shouldCircleCrop) {
         return bitmap != null
                 && bitmap.getWidth() == bitmap.getHeight()
                 && (!shouldCircleCrop
@@ -758,12 +765,12 @@ class AccountSelectionMediator {
                                 onDismissed(IdentityRequestDialogDismissReason.OTHER);
                             }
                         });
-        ErrorProperties.Properties properties = new ErrorProperties.Properties();
-        properties.mIdpForDisplay = idpForDisplay;
-        properties.mRpForDisplay = mRpData.getRpForDisplay();
-        properties.mError = error;
-        properties.mMoreDetailsClickRunnable =
-                !error.getUrl().isEmpty() ? this::onMoreDetails : null;
+        ErrorProperties.Properties properties =
+                new ErrorProperties.Properties(
+                        idpForDisplay,
+                        mRpData.getRpForDisplay(),
+                        error,
+                        !error.getUrl().isEmpty() ? this::onMoreDetails : null);
         AccountSelectionViewBinder.ErrorText errorText =
                 AccountSelectionViewBinder.getErrorText(
                         mContext, properties, /* clickableText= */ false);
@@ -872,7 +879,8 @@ class AccountSelectionMediator {
     }
 
     @VisibleForTesting
-    HeaderType getHeaderType() {
+    @HeaderType
+    int getHeaderType() {
         return mHeaderType;
     }
 
@@ -919,7 +927,7 @@ class AccountSelectionMediator {
         // Show the selected account's IDP or only show the IDP if there is just one.
         if (mSelectedAccount != null) {
             mIdpForDisplay = mSelectedAccount.getIdentityProviderData().getIdpForDisplay();
-        } else if (mIdpDataListForShowAccounts.size() == 1) {
+        } else if (assumeNonNull(mIdpDataListForShowAccounts).size() == 1) {
             mIdpForDisplay = mIdpDataListForShowAccounts.get(0).getIdpForDisplay();
         } else {
             mIdpForDisplay = null;
@@ -928,8 +936,12 @@ class AccountSelectionMediator {
         // We want the accounts to be clickable if there is no preselected account or if we're not
         // going to show the disclosure text, which happens when fields is empty.
         if (!updateSheet(
-                mSelectedAccount != null ? Arrays.asList(mSelectedAccount) : mAccounts,
-                mSelectedAccount != null ? Collections.emptyList() : mIdpDataListForShowAccounts,
+                mSelectedAccount != null
+                        ? Arrays.asList(mSelectedAccount)
+                        : assertNonNull(mAccounts),
+                mSelectedAccount != null
+                        ? Collections.emptyList()
+                        : assertNonNull(mIdpDataListForShowAccounts),
                 /* areAccountsClickable= */ mSelectedAccount == null
                         || mSelectedAccount.getFields().length == 0)) {
             return false;
@@ -1052,7 +1064,9 @@ class AccountSelectionMediator {
                     isDataSharingConsentVisible
                             ? createDataSharingConsentItem(
                                     mIdpForDisplay,
-                                    mSelectedAccount.getIdentityProviderData().getClientMetadata(),
+                                    assumeNonNull(mSelectedAccount)
+                                            .getIdentityProviderData()
+                                            .getClientMetadata(),
                                     mSelectedAccount.getFields())
                             : null);
         }
@@ -1065,7 +1079,7 @@ class AccountSelectionMediator {
                                         ? mSelectedAccount
                                                 .getIdentityProviderData()
                                                 .getIdpMetadata()
-                                        : mIdpMetadataForLoginOrError,
+                                        : assertNonNull(mIdpMetadataForLoginOrError),
                                 continueButtonCallback)
                         : null);
         // On passive mode since the disclosure text is below the continue button, create the
@@ -1078,7 +1092,9 @@ class AccountSelectionMediator {
                     isDataSharingConsentVisible
                             ? createDataSharingConsentItem(
                                     mIdpForDisplay,
-                                    mSelectedAccount.getIdentityProviderData().getClientMetadata(),
+                                    assumeNonNull(mSelectedAccount)
+                                            .getIdentityProviderData()
+                                            .getClientMetadata(),
                                     mSelectedAccount.getFields())
                             : null);
         }
@@ -1090,18 +1106,19 @@ class AccountSelectionMediator {
         mModel.set(
                 ItemProperties.ERROR_TEXT,
                 mHeaderType == HeaderType.SIGN_IN_ERROR
-                        ? createErrorTextItem(mIdpForDisplay, mError)
+                        ? createErrorTextItem(mIdpForDisplay, assertNonNull(mError))
                         : null);
         // The add account button is added separately for active mode single account chooser.
         mModel.set(
                 ItemProperties.ADD_ACCOUNT_BUTTON,
                 showUseDifferentAccountInSingleAccountChooserActiveMode
-                        ? createLoginBtnItem(firstAccountIdp)
+                        ? createLoginBtnItem(assertNonNull(firstAccountIdp))
                         : null);
         mModel.set(
                 ItemProperties.ACCOUNT_CHIP,
                 mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL
-                        ? createAccountItem(mSelectedAccount, /* isAccountClickable= */ false)
+                        ? createAccountItem(
+                                assertNonNull(mSelectedAccount), /* isAccountClickable= */ false)
                         : null);
         mModel.set(
                 ItemProperties.SPINNER_ENABLED,
@@ -1125,12 +1142,14 @@ class AccountSelectionMediator {
         return true;
     }
 
-    private void updateHeader(Bitmap headerIcon, boolean shouldCircleCrop, Bitmap rpBrandIcon) {
+    private void updateHeader(
+            @Nullable Bitmap headerIcon, boolean shouldCircleCrop, @Nullable Bitmap rpBrandIcon) {
         mHeaderIcon = isValidBrandIcon(headerIcon, shouldCircleCrop) ? headerIcon : null;
         mRpBrandIcon =
                 isValidBrandIcon(rpBrandIcon, /* shouldCircleCrop= */ true) ? rpBrandIcon : null;
         String rpForDisplay = "";
         String iframeForDisplay = "";
+        assumeNonNull(mRpData);
         if (!mRpData.getDisplayStringsMayChange()) {
             rpForDisplay = mRpData.getRpForDisplay();
             iframeForDisplay = mRpData.getIframeForDisplay();
@@ -1354,7 +1373,7 @@ class AccountSelectionMediator {
     }
 
     private PropertyModel createContinueBtnItem(
-            Account account,
+            @Nullable Account account,
             IdentityProviderMetadata idpMetadata,
             Callback<ButtonData> onClickListener) {
         assert account != null
@@ -1362,73 +1381,66 @@ class AccountSelectionMediator {
                 || mHeaderType == HeaderProperties.HeaderType.SIGN_IN_ERROR
                 || mHeaderType == HeaderProperties.HeaderType.SIGN_IN;
 
-        ContinueButtonProperties.Properties properties = new ContinueButtonProperties.Properties();
-        properties.mAccount = account;
-        properties.mIdpMetadata = idpMetadata;
-        properties.mOnClickListener = onClickListener;
-        properties.mHeaderType = mHeaderType;
-        properties.mSetFocusViewCallback = this::setFocusView;
+        ContinueButtonProperties.Properties properties =
+                new ContinueButtonProperties.Properties(
+                        account, idpMetadata, onClickListener, mHeaderType, this::setFocusView);
         return new PropertyModel.Builder(ContinueButtonProperties.ALL_KEYS)
                 .with(ContinueButtonProperties.PROPERTIES, properties)
                 .build();
     }
 
     private PropertyModel createLoginBtnItem(IdentityProviderData identityProvider) {
-        LoginButtonProperties.Properties properties = new LoginButtonProperties.Properties();
-        properties.mIdentityProvider = identityProvider;
-        properties.mOnClickListener = this::onLoginToIdP;
-        properties.mRpMode = mRpMode;
-        properties.mShowIdp = mIsMultipleIdps;
+        LoginButtonProperties.Properties properties =
+                new LoginButtonProperties.Properties(
+                        identityProvider, this::onLoginToIdP, mRpMode, mIsMultipleIdps);
         return new PropertyModel.Builder(LoginButtonProperties.ALL_KEYS)
                 .with(LoginButtonProperties.PROPERTIES, properties)
                 .build();
     }
 
     private PropertyModel createDataSharingConsentItem(
-            String idpForDisplay,
+            @Nullable String idpForDisplay,
             ClientIdMetadata metadata,
             @IdentityRequestDialogDisclosureField int[] disclosureFields) {
         DataSharingConsentProperties.Properties properties =
-                new DataSharingConsentProperties.Properties();
-        properties.mIdpForDisplay = idpForDisplay;
-        properties.mTermsOfServiceUrl = metadata.getTermsOfServiceUrl();
-        properties.mPrivacyPolicyUrl = metadata.getPrivacyPolicyUrl();
-        properties.mTermsOfServiceClickCallback =
-                (Context context) -> {
-                    showUrl(
-                            context,
-                            IdentityRequestDialogLinkType.TERMS_OF_SERVICE,
-                            metadata.getTermsOfServiceUrl());
-                };
-        properties.mPrivacyPolicyClickCallback =
-                (Context context) -> {
-                    showUrl(
-                            context,
-                            IdentityRequestDialogLinkType.PRIVACY_POLICY,
-                            metadata.getPrivacyPolicyUrl());
-                };
-        properties.mSetFocusViewCallback = this::setFocusView;
-        properties.mDisclosureFields = disclosureFields;
+                new DataSharingConsentProperties.Properties(
+                        idpForDisplay,
+                        metadata.getTermsOfServiceUrl(),
+                        metadata.getPrivacyPolicyUrl(),
+                        (Context context) -> {
+                            showUrl(
+                                    context,
+                                    IdentityRequestDialogLinkType.TERMS_OF_SERVICE,
+                                    metadata.getTermsOfServiceUrl());
+                        },
+                        (Context context) -> {
+                            showUrl(
+                                    context,
+                                    IdentityRequestDialogLinkType.PRIVACY_POLICY,
+                                    metadata.getPrivacyPolicyUrl());
+                        },
+                        this::setFocusView,
+                        disclosureFields);
 
         return new PropertyModel.Builder(DataSharingConsentProperties.ALL_KEYS)
                 .with(DataSharingConsentProperties.PROPERTIES, properties)
                 .build();
     }
 
-    private PropertyModel createIdpSignInItem(String idpForDisplay) {
+    private PropertyModel createIdpSignInItem(@Nullable String idpForDisplay) {
         return new PropertyModel.Builder(IdpSignInProperties.ALL_KEYS)
                 .with(IdpSignInProperties.IDP_FOR_DISPLAY, idpForDisplay)
                 .build();
     }
 
     private PropertyModel createErrorTextItem(
-            String idpForDisplay, IdentityCredentialTokenError error) {
-        ErrorProperties.Properties properties = new ErrorProperties.Properties();
-        properties.mIdpForDisplay = idpForDisplay;
-        properties.mRpForDisplay = mRpData.getRpForDisplay();
-        properties.mError = error;
-        properties.mMoreDetailsClickRunnable =
-                !error.getUrl().isEmpty() ? this::onMoreDetails : null;
+            @Nullable String idpForDisplay, IdentityCredentialTokenError error) {
+        ErrorProperties.Properties properties =
+                new ErrorProperties.Properties(
+                        idpForDisplay,
+                        assumeNonNull(mRpData).getRpForDisplay(),
+                        error,
+                        !error.getUrl().isEmpty() ? this::onMoreDetails : null);
         return new PropertyModel.Builder(ErrorProperties.ALL_KEYS)
                 .with(ErrorProperties.PROPERTIES, properties)
                 .build();
