@@ -69,4 +69,19 @@ TEST(SetuidSandboxHost, GetSandboxBinaryPath) {
   std::ignore = setuid_sandbox_host->GetSandboxBinaryPath();
 }
 
+TEST(SetuidSandboxHost, DescribeExitCode) {
+  // Exit codes used by Chrome itself are not attributed to the helper.
+  EXPECT_EQ(SetuidSandboxHost::DescribeExitCode(0), nullptr);
+  EXPECT_EQ(SetuidSandboxHost::DescribeExitCode(1), nullptr);
+
+  for (int exit_code :
+       {kSuidSandboxExitFatalError, kSuidSandboxExitApiVersionFailure,
+        kSuidSandboxExitNamespaceFailure, kSuidSandboxExitChrootHelperFailure,
+        kSuidSandboxExitDropRootFailure, kSuidSandboxExitEnvironmentFailure,
+        kSuidSandboxExitExecFailure}) {
+    EXPECT_NE(SetuidSandboxHost::DescribeExitCode(exit_code), nullptr)
+        << exit_code;
+  }
+}
+
 }  // namespace sandbox

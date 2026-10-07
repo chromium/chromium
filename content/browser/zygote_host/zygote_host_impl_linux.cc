@@ -8,6 +8,8 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
+#include <string>
+
 #include "base/compiler_specific.h"
 #include "base/files/file_enumerator.h"
 #include "base/functional/bind.h"
@@ -15,6 +17,7 @@
 #include "base/posix/unix_domain_socket.h"
 #include "base/process/kill.h"
 #include "base/process/memory.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/types/fixed_array.h"
@@ -61,6 +64,17 @@ bool ReceiveFixedMessage(int fd,
   if (!fds_vec.empty())
     return false;
   return true;
+}
+
+// Returns a description of the sandbox a zygote that exited prematurely with
+// |exit_code| was launched in and, if the setuid sandbox helper failed to set
+// up the sandbox, why.
+std::string DescribeSandboxedZygoteExit(int exit_code, bool use_suid_sandbox) {
+  if (!use_suid_sandbox) {
+    return "namespace sandbox";
+  }
+  const char* reason = sandbox::SetuidSandboxHost::DescribeExitCode(exit_code);
+  return reason ? base::StrCat({"setuid sandbox: ", reason}) : "setuid sandbox";
 }
 
 }  // namespace
@@ -226,7 +240,9 @@ pid_t ZygoteHostImpl::FinishSandboxedZygoteLaunch(base::Process process,
     bool exited = process.WaitForExitWithTimeout(base::TimeDelta(), &exit_code);
     if (exited) {
       LOG(FATAL) << "Zygote process exited prematurely with exit code "
-                 << exit_code;
+                 << exit_code << " ("
+                 << DescribeSandboxedZygoteExit(exit_code, use_suid_sandbox_)
+                 << ")";
     } else {
       LOG(FATAL) << "Failed to receive boot message from zygote";
     }
@@ -249,7 +265,9 @@ pid_t ZygoteHostImpl::FinishSandboxedZygoteLaunch(base::Process process,
     bool exited = process.WaitForExitWithTimeout(base::TimeDelta(), &exit_code);
     if (exited) {
       LOG(FATAL) << "Zygote process exited prematurely with exit code "
-                 << exit_code;
+                 << exit_code << " ("
+                 << DescribeSandboxedZygoteExit(exit_code, use_suid_sandbox_)
+                 << ")";
     } else {
       LOG(FATAL) << "Failed to receive hello message from zygote";
     }

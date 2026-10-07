@@ -204,4 +204,26 @@ void SetuidSandboxHost::SetupLaunchEnvironment() {
   SetSandboxAPIEnvironmentVariable(env_.get());
 }
 
+// static
+const char* SetuidSandboxHost::DescribeExitCode(int exit_code) {
+  switch (exit_code) {
+    case kSuidSandboxExitFatalError:
+      return "fatal error";
+    case kSuidSandboxExitApiVersionFailure:
+      return "invalid API version";
+    case kSuidSandboxExitNamespaceFailure:
+      return "failed to move to new namespaces";
+    case kSuidSandboxExitChrootHelperFailure:
+      return "failed to spawn chroot helper";
+    case kSuidSandboxExitDropRootFailure:
+      return "failed to drop root";
+    case kSuidSandboxExitEnvironmentFailure:
+      return "failed to set up child environment";
+    case kSuidSandboxExitExecFailure:
+      return "exec failed";
+    default:
+      return nullptr;
+  }
+}
+
 }  // namespace sandbox

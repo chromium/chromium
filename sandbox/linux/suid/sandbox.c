@@ -70,7 +70,7 @@ static void FatalError(const char* msg, ...) {
   fprintf(stderr, ": %s\n", strerror(errno));
   fflush(stderr);
   va_end(ap);
-  _exit(1);
+  _exit(kSuidSandboxExitFatalError);
 }
 
 static void ExitWithErrorSignalHandler(int signal) {
@@ -472,7 +472,7 @@ int main(int argc, char** argv) {
 
   // Protect the core setuid sandbox functionality with an API version
   if (!CheckAndExportApiVersion()) {
-    return 1;
+    return kSuidSandboxExitApiVersionFailure;
   }
 
   if (geteuid() != 0) {
@@ -483,14 +483,15 @@ int main(int argc, char** argv) {
   }
 
   if (!MoveToNewNamespaces())
-    return 1;
+    return kSuidSandboxExitNamespaceFailure;
   if (!SpawnChrootHelper())
-    return 1;
+    return kSuidSandboxExitChrootHelperFailure;
   if (!DropRoot())
-    return 1;
+    return kSuidSandboxExitDropRootFailure;
   if (!SetupChildEnvironment())
-    return 1;
+    return kSuidSandboxExitEnvironmentFailure;
 
   execv(argv[1], &argv[1]);
-  FatalError("execv failed");
+  perror("execv failed");
+  return kSuidSandboxExitExecFailure;
 }

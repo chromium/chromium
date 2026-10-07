@@ -65,6 +65,11 @@ class SANDBOX_EXPORT SetuidSandboxHost {
   // helper.
   void SetupLaunchEnvironment();
 
+  // Returns a description of why the setuid sandbox helper failed if
+  // |exit_code| is one of the codes it exits with when it fails to set up the
+  // sandbox (see SuidSandboxExitCode), or nullptr otherwise.
+  static const char* DescribeExitCode(int exit_code);
+
  private:
   explicit SetuidSandboxHost(std::unique_ptr<base::Environment> env);
 
