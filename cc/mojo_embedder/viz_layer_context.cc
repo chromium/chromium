@@ -219,7 +219,7 @@ void ComputePropertyTreeNodeUpdate(
       old_node->has_masking_child == new_node.has_masking_child &&
       // Since |effect_changed| is transient, we only need to check for it's
       // current state instead of comparing to old one.
-      !new_node.effect_changed &&
+      !new_node.effect_changed() &&
       old_node->subtree_has_copy_request == new_node.subtree_has_copy_request &&
       old_node->is_fast_rounded_corner == new_node.is_fast_rounded_corner &&
       old_node->node_or_ancestor_has_fast_rounded_corner ==
@@ -292,7 +292,7 @@ void ComputePropertyTreeNodeUpdate(
       new_node.has_potential_backdrop_filter_animation;
   wire->has_potential_opacity_animation =
       new_node.has_potential_opacity_animation;
-  wire->effect_changed = new_node.effect_changed;
+  wire->effect_changed = new_node.effect_changed();
   wire->subtree_has_copy_request = new_node.subtree_has_copy_request;
   wire->is_fast_rounded_corner = new_node.is_fast_rounded_corner;
   wire->may_have_backdrop_effect = new_node.may_have_backdrop_effect;

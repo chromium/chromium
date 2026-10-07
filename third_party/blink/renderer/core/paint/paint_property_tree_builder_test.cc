@@ -6818,7 +6818,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SimpleOpacityChangeDoesNotCausePacUpdate) {
               properties->Effect()->GetCompositorElementId());
   ASSERT_TRUE(cc_effect);
   EXPECT_FLOAT_EQ(cc_effect->opacity, 0.5f);
-  EXPECT_TRUE(cc_effect->effect_changed);
+  EXPECT_TRUE(cc_effect->effect_changed());
   EXPECT_FALSE(GetChromeClient()
                    .layer_tree_host()
                    ->property_trees()
@@ -6831,7 +6831,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SimpleOpacityChangeDoesNotCausePacUpdate) {
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_FLOAT_EQ(properties->Effect()->Opacity(), 0.9f);
   EXPECT_FLOAT_EQ(cc_effect->opacity, 0.9f);
-  EXPECT_TRUE(cc_effect->effect_changed);
+  EXPECT_TRUE(cc_effect->effect_changed());
   EXPECT_EQ(pac->NeedsUpdate(), PaintArtifactCompositor::UpdateType::kNone);
   EXPECT_TRUE(GetChromeClient()
                   .layer_tree_host()

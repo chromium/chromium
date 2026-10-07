@@ -526,7 +526,9 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
   node->has_potential_opacity_animation = has_potential_opacity_animation;
   node->has_potential_filter_animation = has_potential_filter_animation;
   node->subtree_hidden = layer->hide_layer_and_subtree();
-  node->effect_changed = layer->subtree_property_changed();
+  if (layer->subtree_property_changed()) {
+    node->SetEffectChanged(DamageReason::kUntracked);
+  }
   node->subtree_has_copy_request = layer->subtree_has_copy_request();
   node->render_surface_reason = render_surface_reason;
   node->closest_ancestor_with_cached_render_surface_id =

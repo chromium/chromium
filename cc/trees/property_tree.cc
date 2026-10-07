@@ -1201,8 +1201,8 @@ void EffectTree::UpdateIsDrawn(EffectNode* node,
 
 void EffectTree::UpdateEffectChanged(EffectNode* node,
                                      const EffectNode* parent_node) {
-  if (parent_node && parent_node->effect_changed) {
-    node->effect_changed = true;
+  if (parent_node && parent_node->effect_changed()) {
+    node->CopyEffectChangedFrom(*parent_node);
   }
 }
 
@@ -1332,7 +1332,7 @@ bool EffectTree::OnOpacityAnimated(ElementId id, float opacity) {
   if (node->opacity == opacity)
     return false;
   node->opacity = opacity;
-  node->effect_changed = true;
+  node->SetEffectChanged(DamageReason::kCompositorAnimation);
   property_trees()->set_changed(true);
   property_trees()->effect_tree_mutable().set_needs_update(true);
   return true;
@@ -1349,7 +1349,7 @@ bool EffectTree::OnFilterAnimated(ElementId id,
   if (node->filters == filters)
     return false;
   node->filters = filters;
-  node->effect_changed = true;
+  node->SetEffectChanged(DamageReason::kCompositorAnimation);
   property_trees()->set_changed(true);
   property_trees()->effect_tree_mutable().set_needs_update(true);
   return true;
@@ -1367,7 +1367,7 @@ bool EffectTree::OnBackdropFilterAnimated(
   if (node->backdrop_filters == backdrop_filters)
     return false;
   node->backdrop_filters = backdrop_filters;
-  node->effect_changed = true;
+  node->SetEffectChanged(DamageReason::kCompositorAnimation);
   property_trees()->set_changed(true);
   property_trees()->effect_tree_mutable().set_needs_update(true);
   return true;
@@ -1568,7 +1568,7 @@ bool EffectTree::ContributesToDrawnSurface(int id) const {
 void EffectTree::ResetChangeTracking() {
   for (int id = kContentsRootPropertyNodeId; id < static_cast<int>(size());
        ++id) {
-    MutableNode(id).effect_changed = false;
+    MutableNode(id).ClearEffectChanged();
     // During a flush-only sync (TreesInViz), we skip expensive render surface
     // recomputations, so |render_surfaces_| might be smaller than |size()|.
     if (static_cast<size_t>(id) < render_surfaces_.size() &&
@@ -2785,7 +2785,7 @@ void PropertyTrees::GetChangedNodes(std::vector<int>& effect_nodes,
                                     std::vector<int>& transform_nodes) const {
   for (int id = kContentsRootPropertyNodeId;
        id < static_cast<int>(effect_tree().size()); ++id) {
-    if (effect_tree().Node(id).effect_changed) {
+    if (effect_tree().Node(id).effect_changed()) {
       effect_nodes.push_back(id);
     }
   }
@@ -2802,7 +2802,8 @@ void PropertyTrees::ApplyChangedNodes(
     const std::vector<int>& changed_transform_nodes) {
   if (changed_effect_nodes.size() || changed_transform_nodes.size()) {
     for (int i : changed_effect_nodes) {
-      effect_tree_mutable().MutableNode(i).effect_changed = true;
+      effect_tree_mutable().MutableNode(i).SetEffectChanged(
+          DamageReason::kUntracked);
     }
     for (int i : changed_transform_nodes) {
       transform_tree_mutable().MutableNode(i).SetTransformChanged(

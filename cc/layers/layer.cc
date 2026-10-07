@@ -627,7 +627,7 @@ void Layer::SetClipRect(const gfx::Rect& clip_rect) {
           property_trees->effect_tree_mutable().MutableNode(effect_id);
       node.mask_filter_info = gfx::MaskFilterInfo(
           effective_clip_rect, corner_radii(), gradient_mask());
-      node.effect_changed = true;
+      node.SetEffectChanged(DamageReason::kUntracked);
       property_trees->effect_tree_mutable().set_needs_update(true);
     }
   } else {
@@ -740,7 +740,7 @@ void Layer::UpdateMaskFilterInfo(const gfx::RoundedCornersF* corner_radii,
     effective_clip_rect += offset_to_transform_parent();
     node.mask_filter_info = gfx::MaskFilterInfo(
         effective_clip_rect, inputs.corner_radii, inputs.gradient_mask);
-    node.effect_changed = true;
+    node.SetEffectChanged(DamageReason::kUntracked);
     property_trees->effect_tree_mutable().set_needs_update(true);
   } else {
     SetPropertyTreesNeedRebuild();
@@ -800,7 +800,7 @@ void Layer::SetOpacity(float opacity) {
         EffectNode& node =
             property_trees->effect_tree_mutable().MutableNode(effect_id);
         node.opacity = opacity;
-        node.effect_changed = true;
+        node.SetEffectChanged(DamageReason::kUntracked);
         property_trees->effect_tree_mutable().set_needs_update(true);
       }
     } else {

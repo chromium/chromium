@@ -51,6 +51,7 @@ class TestLayerImpl : public LayerImpl {
 
   gfx::Rect damage_rect_;
   DamageReasonSet damage_reasons_;
+  bool custom_damage_reasons_set_ = false;
 };
 
 TestLayerImpl::TestLayerImpl(LayerTreeImpl* tree_impl, int id)
@@ -62,6 +63,7 @@ void TestLayerImpl::AddDamageRect(const gfx::Rect& damage_rect) {
 
 void TestLayerImpl::SetDamageReasons(DamageReasonSet reasons) {
   damage_reasons_ = reasons;
+  custom_damage_reasons_set_ = true;
 }
 
 gfx::Rect TestLayerImpl::GetDamageRect() const {
@@ -69,12 +71,16 @@ gfx::Rect TestLayerImpl::GetDamageRect() const {
 }
 
 DamageReasonSet TestLayerImpl::GetDamageReasons() const {
-  return damage_reasons_;
+  if (custom_damage_reasons_set_) {
+    return damage_reasons_;
+  }
+  return LayerImpl::GetDamageReasons();
 }
 
 void TestLayerImpl::ResetChangeTracking() {
   LayerImpl::ResetChangeTracking();
   damage_rect_.SetRect(0, 0, 0, 0);
+  custom_damage_reasons_set_ = false;
 }
 
 class TestViewTransitionContentLayerImpl
@@ -357,6 +363,20 @@ class DamageTrackerTest : public LayerTreeImplTestBase, public testing::Test {
     root->layer_tree_impl()->SetDeviceScaleFactor(device_scale_factor);
     root->layer_tree_impl()->set_needs_update_draw_properties();
     UpdateDrawProperties(root->layer_tree_impl());
+
+    DamageTracker::UpdateDamageTracking(root->layer_tree_impl());
+
+    root->layer_tree_impl()->ResetAllChangeTracking();
+  }
+
+  // Emulates an impl-only frame, e.g. a compositor animation tick, which does
+  // not go through commit or activation. Unlike EmulateDrawingOneFrame(), this
+  // does not call MoveChangeTrackingToLayers(), so property tree changes are
+  // not also recorded on layers as untracked damage.
+  void EmulateDrawingOneImplFrame(LayerImpl* root) {
+    root->layer_tree_impl()->set_needs_update_draw_properties();
+    root->layer_tree_impl()->UpdateDrawProperties(
+        /*update_tiles=*/true, /*update_image_animation_controller=*/true);
 
     DamageTracker::UpdateDamageTracking(root->layer_tree_impl());
 
@@ -2601,6 +2621,67 @@ TEST_F(DamageTrackerTest, VerifyDamageExpansionWithBackdropBlurFilters) {
   EXPECT_TRUE(GetRenderSurface(root)->damage_tracker()->GetDamageRectIfValid(
       &root_damage_rect));
   EXPECT_EQ(damage_rect, root_damage_rect);
+}
+
+TEST_F(DamageTrackerTest, VerifyDamageForCompositorAnimation) {
+  LayerImpl* root = CreateAndSetUpTestTreeWithOneSurface();
+  TestLayerImpl* child = child_layers_[0];
+
+  CreateEffectNode(child).render_surface_reason = RenderSurfaceReason::kTest;
+  EmulateDrawingOneFrame(root);
+  ClearDamageForAllSurfaces(root);
+
+  root->layer_tree_impl()->SetOpacityMutated(child->element_id(), 0.5f);
+  EmulateDrawingOneImplFrame(root);
+
+  EXPECT_EQ(GetRenderSurface(root)->damage_tracker()->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kCompositorAnimation});
+  EXPECT_TRUE(GetRenderSurface(root)
+                  ->damage_tracker()
+                  ->has_damage_from_contributing_content());
+  EXPECT_FALSE(GetRenderSurface(child)
+                   ->damage_tracker()
+                   ->has_damage_from_contributing_content());
+}
+
+TEST_F(DamageTrackerTest, VerifyDamageForMixedAnimationAndUntracked) {
+  LayerImpl* root = CreateAndSetUpTestTreeWithOneSurface();
+  TestLayerImpl* child = child_layers_[0];
+
+  CreateEffectNode(child).render_surface_reason = RenderSurfaceReason::kTest;
+  EmulateDrawingOneFrame(root);
+  ClearDamageForAllSurfaces(root);
+
+  root->layer_tree_impl()->SetOpacityMutated(child->element_id(), 0.5f);
+  root->UnionUpdateRect(gfx::Rect(10, 10, 20, 20));
+  EmulateDrawingOneImplFrame(root);
+
+  EXPECT_EQ(GetRenderSurface(root)->damage_tracker()->GetDamageReasons(),
+            (DamageReasonSet{DamageReason::kCompositorAnimation,
+                             DamageReason::kUntracked}));
+  EXPECT_TRUE(GetRenderSurface(root)
+                  ->damage_tracker()
+                  ->has_damage_from_contributing_content());
+}
+
+TEST_F(DamageTrackerTest, VerifyDamageForNonAnimatedOpacityChange) {
+  LayerImpl* root = CreateAndSetUpTestTreeWithOneSurface();
+  TestLayerImpl* child = child_layers_[0];
+
+  EffectNode& effect_node = CreateEffectNode(child);
+  effect_node.render_surface_reason = RenderSurfaceReason::kTest;
+  EmulateDrawingOneFrame(root);
+  ClearDamageForAllSurfaces(root);
+
+  effect_node.opacity = 0.5f;
+  effect_node.SetEffectChanged(DamageReason::kUntracked);
+  EmulateDrawingOneFrame(root);
+
+  EXPECT_EQ(GetRenderSurface(root)->damage_tracker()->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kUntracked});
+  EXPECT_TRUE(GetRenderSurface(root)
+                  ->damage_tracker()
+                  ->has_damage_from_contributing_content());
 }
 
 }  // namespace

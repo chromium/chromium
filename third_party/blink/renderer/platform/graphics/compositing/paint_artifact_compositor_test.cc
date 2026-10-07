@@ -5117,12 +5117,12 @@ TEST_P(PaintArtifactCompositorTest, EffectChange) {
   // TODO(wangxianzhu): Probably avoid setting this flag on Effect change.
   EXPECT_TRUE(layer->subtree_property_changed());
   // This is set by cc when propagating ancestor change flag to descendants.
-  EXPECT_TRUE(GetEffectNode(layer).effect_changed);
+  EXPECT_TRUE(GetEffectNode(layer).effect_changed());
   // This is set by PropertyTreeManager.
   EXPECT_TRUE(GetPropertyTrees()
                   .effect_tree()
                   .Node(GetEffectNode(layer).parent_id)
-                  .effect_changed);
+                  .effect_changed());
 
   // Change e2 but not e1.
   layer->ClearSubtreePropertyChangedForTesting();
@@ -5144,11 +5144,11 @@ TEST_P(PaintArtifactCompositorTest, EffectChange) {
   ASSERT_EQ(layer, LayerAt(0));
   // TODO(wangxianzhu): Probably avoid setting this flag on Effect change.
   EXPECT_TRUE(layer->subtree_property_changed());
-  EXPECT_TRUE(GetEffectNode(layer).effect_changed);
+  EXPECT_TRUE(GetEffectNode(layer).effect_changed());
   EXPECT_FALSE(GetPropertyTrees()
                    .effect_tree()
                    .Node(GetEffectNode(layer).parent_id)
-                   .effect_changed);
+                   .effect_changed());
 }
 
 TEST_P(PaintArtifactCompositorTest, DirectlySetScrollOffset) {

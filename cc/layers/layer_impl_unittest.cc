@@ -321,6 +321,47 @@ TEST_F(LayerImplTest, GetDamageReasons) {
                                  DamageReason::kCompositorScroll);
   EXPECT_EQ(root->GetDamageReasons(),
             DamageReasonSet{DamageReason::kCompositorScroll});
+
+  EffectNode& effect_node = CreateEffectNode(root);
+  effect_node.element_id = root->element_id();
+
+  root->layer_tree_impl()->ResetAllChangeTracking();
+  EXPECT_TRUE(root->GetDamageReasons().empty());
+  root->layer_tree_impl()->SetOpacityMutated(root->element_id(), 0.5f);
+  EXPECT_EQ(root->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kCompositorAnimation});
+
+  root->layer_tree_impl()->ResetAllChangeTracking();
+  EXPECT_TRUE(root->GetDamageReasons().empty());
+  FilterOperations filters;
+  filters.Append(FilterOperation::CreateBlurFilter(2.f));
+  root->layer_tree_impl()->SetFilterMutated(root->element_id(), filters);
+  EXPECT_EQ(root->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kCompositorAnimation});
+
+  root->layer_tree_impl()->ResetAllChangeTracking();
+  EXPECT_TRUE(root->GetDamageReasons().empty());
+  root->layer_tree_impl()->SetBackdropFilterMutated(root->element_id(),
+                                                    filters);
+  EXPECT_EQ(root->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kCompositorAnimation});
+
+  root->layer_tree_impl()->ResetAllChangeTracking();
+  EXPECT_TRUE(root->GetDamageReasons().empty());
+  effect_node.SetEffectChanged(DamageReason::kUntracked);
+  EXPECT_EQ(root->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kUntracked});
+
+  // Commit and activation move property tree changes onto layers (see
+  // LayerTreeImpl::MoveChangeTrackingToLayers()). That damage is
+  // conservatively untracked, but the animation provenance is kept.
+  root->layer_tree_impl()->ResetAllChangeTracking();
+  EXPECT_TRUE(root->GetDamageReasons().empty());
+  root->layer_tree_impl()->SetOpacityMutated(root->element_id(), 0.8f);
+  root->NoteLayerPropertyChangedFromPropertyTrees();
+  EXPECT_EQ(root->GetDamageReasons(),
+            (DamageReasonSet{DamageReason::kUntracked,
+                             DamageReason::kCompositorAnimation}));
 }
 
 class LayerImplScrollTest : public LayerImplTest {

@@ -297,7 +297,7 @@ void ScrollbarLayerImplBase::SetOverlayScrollbarLayerOpacityAnimated(
   }
 
   node.opacity = opacity;
-  node.effect_changed = true;
+  node.SetEffectChanged(DamageReason::kUntracked);
   property_trees->set_changed(true);
   property_trees->effect_tree_mutable().set_needs_update(true);
   layer_tree_impl()->set_needs_update_draw_properties();

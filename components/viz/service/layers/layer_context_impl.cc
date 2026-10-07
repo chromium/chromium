@@ -403,7 +403,7 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   // CalculateRenderProperties(). It should only be cleared in
   // ResetAllChangeTracking() which happens at the end of every frame.
   if (wire.effect_changed) {
-    node.effect_changed = true;
+    node.SetEffectChanged(cc::DamageReason::kUntracked);
   }
   node.render_surface_reason = wire.render_surface_reason;
   node.surface_contents_scale = wire.surface_contents_scale;

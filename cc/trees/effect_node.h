@@ -10,6 +10,7 @@
 #include "cc/cc_export.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"
+#include "cc/trees/damage_reason.h"
 #include "cc/trees/property_ids.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
@@ -184,9 +185,22 @@ struct CC_EXPORT EffectNode {
   // synced from clients for TreesInViz.
   bool has_masking_child : 1 = false;
 
-  // Whether this node's effect has been changed since the last
-  // frame. Needed in order to compute damage rect.
-  bool effect_changed : 1 = false;
+ private:
+  // Whether this node's effect has been changed since the last frame. Needed in
+  // order to compute damage rect. Private so that it is only set together with
+  // a damage reason (see SetEffectChanged() and CopyEffectChangedFrom()).
+  bool effect_changed_ : 1 = false;
+
+ public:
+  // Sets/clears `effect_changed_` and adds to / clears damage reasons. Mirrors
+  // TransformNode::SetTransformChanged / ClearTransformChanged.
+  void SetEffectChanged(DamageReason damage_reason);
+  void ClearEffectChanged();
+
+  // Copy `effect_changed_` and add damage reasons from `other`.
+  void CopyEffectChangedFrom(const EffectNode& other);
+
+  bool effect_changed() const { return effect_changed_; }
 
   // If set, the node's subtree has a copy request and the layer should
   // not be skipped for draw property computation.
@@ -220,6 +234,23 @@ struct CC_EXPORT EffectNode {
   // Whether this effect is triggered by a non-identity 2D scale transform
   // (and no other transform).
   bool needs_effect_for_2d_scale_transform : 1 = false;
+
+ private:
+  // Damage reasons accumulated for this node's effect change since the last
+  // frame: kCompositorAnimation from On{Opacity,Filter,BackdropFilter}Animated,
+  // kUntracked for all other changes (e.g. main-thread updates and changes
+  // preserved across commit or activation). Mirrors
+  // TransformNode::damage_reasons_.
+  //
+  // TODO(crbug.com/555345506): Unlike TransformNode, this set is not yet
+  // serialized for TreesInViz (see layer.mojom
+  // TransformNode.damage_reasons_bit_mask). Until the follow-up adds the mojom
+  // field + producer/consumer traits, effect animation provenance is lost
+  // Viz-side and falls back to kUntracked.
+  DamageReasonSet damage_reasons_;
+
+ public:
+  DamageReasonSet damage_reasons() const { return damage_reasons_; }
 
   bool HasRenderSurface() const {
     return render_surface_reason != RenderSurfaceReason::kNone;

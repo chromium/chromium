@@ -525,9 +525,7 @@ DamageReasonSet LayerImpl::GetDamageReasonsFromLayerPropertyChange() const {
   }
   if (effect_tree_index() != kInvalidPropertyNodeId) {
     const EffectNode& effect_node = GetEffectTree().Node(effect_tree_index());
-    if (effect_node.effect_changed) {
-      reasons.Put(DamageReason::kUntracked);
-    }
+    reasons.PutAll(effect_node.damage_reasons());
   }
   return reasons;
 }
@@ -551,7 +549,7 @@ bool LayerImpl::LayerPropertyChangedFromPropertyTrees() const {
   if (effect_tree_index() == kInvalidPropertyNodeId)
     return false;
   const EffectNode& effect_node = GetEffectTree().Node(effect_tree_index());
-  if (effect_node.effect_changed) {
+  if (effect_node.effect_changed()) {
     return true;
   }
   return false;

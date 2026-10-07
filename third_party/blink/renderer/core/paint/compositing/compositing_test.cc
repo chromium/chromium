@@ -1991,7 +1991,7 @@ TEST_P(CompositingSimTest, FastPathOpacityUpdateFromStyle) {
   auto effect_tree_index = div_cc_layer->effect_tree_index();
   const auto& effect_node =
       GetPropertyTrees()->effect_tree().Node(effect_tree_index);
-  EXPECT_FALSE(effect_node.effect_changed);
+  EXPECT_FALSE(effect_node.effect_changed());
   EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
             PaintArtifactCompositor::UpdateType::kNone);
   EXPECT_NEAR(0.1, effect_node.opacity, 0.001);
@@ -2010,15 +2010,15 @@ TEST_P(CompositingSimTest, FastPathOpacityUpdateFromStyle) {
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_NEAR(0.15, div_properties->Effect()->Opacity(), 0.001);
   EXPECT_NEAR(0.15, effect_node.opacity, 0.001);
-  EXPECT_TRUE(effect_node.effect_changed);
+  EXPECT_TRUE(effect_node.effect_changed());
   EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
   EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
             PaintArtifactCompositor::UpdateType::kNone);
-  EXPECT_TRUE(effect_node.effect_changed);
+  EXPECT_TRUE(effect_node.effect_changed());
 
   // After a frame the |opacity_changed| value should be reset.
   Compositor().BeginFrame();
-  EXPECT_FALSE(effect_node.effect_changed);
+  EXPECT_FALSE(effect_node.effect_changed());
 }
 
 TEST_P(CompositingSimTest,
@@ -2455,9 +2455,9 @@ TEST_P(CompositingSimTest, LayerSubtreeEffectPropertyChanged) {
 
   // Initially, no layer should have |subtree_property_changed| set.
   EXPECT_FALSE(outer_element_layer->subtree_property_changed());
-  EXPECT_FALSE(GetEffectNode(outer_element_layer)->effect_changed);
+  EXPECT_FALSE(GetEffectNode(outer_element_layer)->effect_changed());
   EXPECT_FALSE(inner_element_layer->subtree_property_changed());
-  EXPECT_FALSE(GetEffectNode(inner_element_layer)->effect_changed);
+  EXPECT_FALSE(GetEffectNode(inner_element_layer)->effect_changed());
 
   // Modifying the filter style should set |subtree_property_changed| on
   // both layers.
@@ -2466,16 +2466,16 @@ TEST_P(CompositingSimTest, LayerSubtreeEffectPropertyChanged) {
   UpdateAllLifecyclePhases();
   EXPECT_TRUE(outer_element_layer->subtree_property_changed());
   // Set by blink::PropertyTreeManager.
-  EXPECT_TRUE(GetEffectNode(outer_element_layer)->effect_changed);
+  EXPECT_TRUE(GetEffectNode(outer_element_layer)->effect_changed());
   EXPECT_TRUE(inner_element_layer->subtree_property_changed());
-  EXPECT_FALSE(GetEffectNode(inner_element_layer)->effect_changed);
+  EXPECT_FALSE(GetEffectNode(inner_element_layer)->effect_changed());
 
   // After a frame the |subtree_property_changed| value should be reset.
   Compositor().BeginFrame();
   EXPECT_FALSE(outer_element_layer->subtree_property_changed());
-  EXPECT_FALSE(GetEffectNode(outer_element_layer)->effect_changed);
+  EXPECT_FALSE(GetEffectNode(outer_element_layer)->effect_changed());
   EXPECT_FALSE(inner_element_layer->subtree_property_changed());
-  EXPECT_FALSE(GetEffectNode(inner_element_layer)->effect_changed);
+  EXPECT_FALSE(GetEffectNode(inner_element_layer)->effect_changed());
 }
 
 // This test is similar to |LayerSubtreeTransformPropertyChanged| but for

@@ -453,7 +453,7 @@ bool RenderSurfaceImpl::AncestorPropertyChanged() const {
          property_trees->transform_tree()
              .Node(TransformTreeIndex())
              .transform_changed() ||
-         property_trees->effect_tree().Node(EffectTreeIndex()).effect_changed;
+         property_trees->effect_tree().Node(EffectTreeIndex()).effect_changed();
 }
 
 void RenderSurfaceImpl::NoteAncestorPropertyChanged() {

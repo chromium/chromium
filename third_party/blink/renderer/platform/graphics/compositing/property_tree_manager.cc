@@ -108,7 +108,7 @@ bool PropertyTreeManager::DirectlyUpdateCompositedOpacityValue(
   auto& cc_effect = property_trees->effect_tree_mutable().MutableNode(cc_id);
 
   cc_effect.opacity = effect.Opacity();
-  cc_effect.effect_changed = true;
+  cc_effect.SetEffectChanged(cc::DamageReason::kUntracked);
   property_trees->effect_tree_mutable().set_needs_update(true);
   host.SetNeedsCommit();
   return true;
@@ -1369,8 +1369,11 @@ void PropertyTreeManager::PopulateCcEffectNode(
     effect_node.filters = filter->AsCcFilterOperations();
   }
   effect_node.double_sided = !transform.IsBackfaceHidden();
-  effect_node.effect_changed =
-      effect.NodeChanged() != PaintPropertyChangeType::kUnchanged;
+  if (effect.NodeChanged() != PaintPropertyChangeType::kUnchanged) {
+    effect_node.SetEffectChanged(cc::DamageReason::kUntracked);
+  } else {
+    effect_node.ClearEffectChanged();
+  }
 
   effect_node.view_transition_element_resource_id =
       effect.ViewTransitionElementResourceId();
