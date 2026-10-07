@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -33,15 +34,25 @@
 #include "components/enterprise/isolated_mode/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
+#include "components/send_tab_to_self/entry_point_display_reason.h"
+#include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
+#include "components/send_tab_to_self/features.h"
+#include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
+#include "components/send_tab_to_self/target_device_info.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/skills/features.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/sync_device_info/device_info.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "components/user_education/common/tutorial/tutorial_description.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view_class_properties.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -848,6 +859,125 @@ TEST_F(ActionAppMenuManagerTest, AlertedElementPropagatesToSubmenu) {
 
   ASSERT_NE(show_downloads, nullptr);
   EXPECT_FALSE(show_downloads->GetProperty(AppMenuActionItem::kIsAlertedKey));
+}
+
+TEST_F(ActionAppMenuManagerTest,
+       SendTabToSelfEnhancedDesktopUIv2SubmenuAndPromos) {
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2,
+       send_tab_to_self::kSendTabToSelfSubmenuSigninPromos,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+       send_tab_to_self::kSendTabToSelfNoTargetDeviceQrCode
+#endif
+      },
+      {});
+
+  auto* sync_service =
+      static_cast<send_tab_to_self::StubSendTabToSelfSyncService*>(
+          SendTabToSelfSyncServiceFactory::GetInstance()
+              ->SetTestingFactoryAndUse(
+                  profile_.get(),
+                  base::BindRepeating([](content::BrowserContext*)
+                                          -> std::unique_ptr<KeyedService> {
+                    return std::make_unique<
+                        send_tab_to_self::StubSendTabToSelfSyncService>();
+                  })));
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_.get(),
+                                                        nullptr);
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(GURL("https://example.com"));
+  tabs::MockTabInterface mock_tab;
+  ON_CALL(mock_tab, GetContents())
+      .WillByDefault(testing::Return(web_contents.get()));
+  ON_CALL(mock_window_interface_, GetActiveTabInterface())
+      .WillByDefault(testing::Return(&mock_tab));
+
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+
+  auto find_send_tab_to_self = [root]() -> actions::BaseAction* {
+    for (const auto& section : root->GetChildren().children()) {
+      for (const auto& item : section->GetChildren().children()) {
+        if (item->GetActionItem()->GetActionId() ==
+            kActionSaveAndShareSubmenu) {
+          for (const auto& child : item->GetChildren().children()) {
+            if (child->GetActionItem()->GetActionId() == kActionSendTabToSelf) {
+              return child.get();
+            }
+          }
+        }
+      }
+    }
+    return nullptr;
+  };
+
+  // 1. kOfferFeature with empty devices falls back to a flat item.
+  sync_service->SetEntryPointDisplayReason(
+      send_tab_to_self::EntryPointDisplayReason::kOfferFeature);
+  sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList({});
+  root->ResetActionList();
+  menu_manager.CreateMenuHierarchy();
+  actions::BaseAction* stts_action = find_send_tab_to_self();
+  ASSERT_NE(stts_action, nullptr);
+  EXPECT_FALSE(stts_action->HasPopulateChildActionsCallback());
+  EXPECT_TRUE(stts_action->GetChildren().children().empty());
+
+  // 2. kOfferFeature with non-empty devices creates a dynamic submenu.
+  sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
+      {send_tab_to_self::TargetDeviceInfo(
+          "My Phone", "guid1", syncer::DeviceInfo::FormFactor::kPhone,
+          syncer::DeviceInfo::OsType::kAndroid, base::Time::Now())});
+  root->ResetActionList();
+  menu_manager.CreateMenuHierarchy();
+  stts_action = find_send_tab_to_self();
+  ASSERT_NE(stts_action, nullptr);
+  EXPECT_TRUE(stts_action->HasPopulateChildActionsCallback());
+  ASSERT_EQ(stts_action->GetChildren().children().size(), 3u);
+  EXPECT_EQ(
+      stts_action->GetChildren().children()[2]->GetActionItem()->GetText(),
+      l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_MANAGE_DEVICES));
+
+  // 3. kOfferSignIn creates a sign-in promo submenu.
+  sync_service->SetEntryPointDisplayReason(
+      send_tab_to_self::EntryPointDisplayReason::kOfferSignIn);
+  root->ResetActionList();
+  menu_manager.CreateMenuHierarchy();
+  stts_action = find_send_tab_to_self();
+  ASSERT_NE(stts_action, nullptr);
+  EXPECT_TRUE(stts_action->HasPopulateChildActionsCallback());
+  ASSERT_EQ(stts_action->GetChildren().children().size(), 2u);
+  EXPECT_EQ(
+      stts_action->GetChildren().children()[0]->GetActionItem()->GetText(),
+      l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE));
+  EXPECT_EQ(
+      stts_action->GetChildren().children()[1]->GetActionItem()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_BUTTON_LABEL));
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // 4. kInformNoTargetDevice creates a no-target-device promo submenu.
+  sync_service->SetEntryPointDisplayReason(
+      send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice);
+  root->ResetActionList();
+  menu_manager.CreateMenuHierarchy();
+  stts_action = find_send_tab_to_self();
+  ASSERT_NE(stts_action, nullptr);
+  EXPECT_TRUE(stts_action->HasPopulateChildActionsCallback());
+  ASSERT_EQ(stts_action->GetChildren().children().size(), 2u);
+  EXPECT_EQ(
+      stts_action->GetChildren().children()[0]->GetActionItem()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_SEND_TAB_TO_SELF_NO_OTHER_DEVICE_FOUND_TITLE));
+  EXPECT_EQ(
+      stts_action->GetChildren().children()[1]->GetActionItem()->GetText(),
+      l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_SIGN_IN_ON_PHONE));
+#endif
 }
 
 }  // namespace

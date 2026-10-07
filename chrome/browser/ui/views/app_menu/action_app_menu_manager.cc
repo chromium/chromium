@@ -947,24 +947,7 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
                 if (!sharing_hub::SharingIsDisabledByPolicy(profile)) {
                   sub.AddAction(kActionCopyUrl);
 
-                  content::WebContents* web_contents =
-                      browser_window_interface_->GetTabStripModel()
-                          ? browser_window_interface_->GetTabStripModel()
-                                ->GetActiveWebContents()
-                          : nullptr;
-                  std::optional<send_tab_to_self::EntryPointDisplayReason>
-                      reason =
-                          web_contents
-                              ? send_tab_to_self::GetEntryPointDisplayReason(
-                                    web_contents)
-                              : std::nullopt;
-
-                  if (web_contents &&
-                      base::FeatureList::IsEnabled(
-                          send_tab_to_self::
-                              kSendTabToSelfEnhancedDesktopUIv2) &&
-                      reason == send_tab_to_self::EntryPointDisplayReason::
-                                    kOfferFeature) {
+                  if (send_tab_to_self_menu_->ShouldShowSubmenu()) {
                     sub.AddDynamicSubmenu(
                         kActionSendTabToSelf,
                         base::BindRepeating(

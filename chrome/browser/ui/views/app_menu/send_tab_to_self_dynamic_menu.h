@@ -26,6 +26,8 @@ class SendTabToSelfDynamicMenu {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  bool ShouldShowSubmenu() const;
+
   void BuildSendTabToSelfActions(actions::BaseAction* parent_item);
 
  private:
@@ -40,6 +42,9 @@ class SendTabToSelfDynamicMenu {
 
   void ExecuteManageDevices(actions::ActionItem* item,
                             actions::ActionInvocationContext context);
+
+  void ExecuteSignIn(actions::ActionItem* item,
+                     actions::ActionInvocationContext context);
 
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
   base::WeakPtrFactory<SendTabToSelfDynamicMenu> weak_ptr_factory_{this};
