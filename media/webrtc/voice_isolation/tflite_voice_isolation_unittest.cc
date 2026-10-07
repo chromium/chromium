@@ -109,15 +109,7 @@ class StatefulTestModelReference {
 
 }  // namespace
 
-// TODO(crbug.com/568298417): Enable on UBSan once the tests are fixed.
-#if defined(UNDEFINED_SANITIZER)
-#define MAYBE_CreateWorks DISABLED_CreateWorks
-#define MAYBE_ProcessAudioWorks DISABLED_ProcessAudioWorks
-#else
-#define MAYBE_CreateWorks CreateWorks
-#define MAYBE_ProcessAudioWorks ProcessAudioWorks
-#endif
-TEST(TfLiteVoiceIsolation, MAYBE_CreateWorks) {
+TEST(TfLiteVoiceIsolation, CreateWorks) {
   auto model = LoadVoiceIsolationTestModel();
   ASSERT_NE(model, nullptr);
 
@@ -127,7 +119,7 @@ TEST(TfLiteVoiceIsolation, MAYBE_CreateWorks) {
   EXPECT_EQ(voice_isolation->AlgorithmicDelay(), base::TimeDelta());
 }
 
-TEST(TfLiteVoiceIsolation, MAYBE_ProcessAudioWorks) {
+TEST(TfLiteVoiceIsolation, ProcessAudioWorks) {
   auto model = LoadVoiceIsolationTestModel();
   ASSERT_NE(model, nullptr);
 
