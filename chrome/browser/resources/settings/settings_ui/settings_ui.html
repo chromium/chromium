@@ -99,7 +99,6 @@
         }
       }
     </style>
-    <settings-prefs id="prefs" prefs="{{prefs}}"></settings-prefs>
     <cr-toolbar id="toolbar"
         page-name="$i18n{settings}"
         clear-label="$i18n{clearSearch}"
@@ -135,7 +134,7 @@
             on-iron-activate="onIronActivate_">
         </settings-menu>
       </div>
-      <settings-main id="main" prefs="{{prefs}}"
+      <settings-main id="main"
           toolbar-spinner-active="{{toolbarSpinnerActive_}}"
           on-search-finished="onSearchFinished_"
           on-search-result-interaction="onSearchResultInteraction_">

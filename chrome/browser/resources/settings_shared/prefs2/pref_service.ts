@@ -73,7 +73,7 @@ export class PrefService {
     }
 
     // Step3: Revert local change if backend call failed.
-    await this.updateCacheFromBackend_(key);
+    await this.refreshPrefFromBackend(key);
     return false;
   }
 
@@ -135,7 +135,7 @@ export class PrefService {
    * Get the current pref value from chrome.settingsPrivate to ensure the UI
    * stays up to date.
    */
-  private async updateCacheFromBackend_(key: string) {
+  async refreshPrefFromBackend(key: string) {
     const pref = await this.browserProxy_.getPref(key);
     this.onPrefsChanged_([pref]);
   }

@@ -50,17 +50,13 @@ suite('PrivacyPageIndex', function() {
     resetPageVisibilityForTesting();
     resetRouterForTesting();
 
-    const settingsPrefs = document.createElement('settings-prefs');
-    document.body.appendChild(settingsPrefs);
-    await CrSettingsPrefs.initialized;
-
     SiteSettingsBrowserProxyImpl.setInstance(
         new TestSiteSettingsBrowserProxy());
 
     index = document.createElement('settings-privacy-page-index');
-    index.prefs = settingsPrefs.prefs!;
     Router.getInstance().navigateTo(routes.BASIC);
     document.body.appendChild(index);
+    await CrSettingsPrefs.initialized;
     return flushTasks();
   }
 

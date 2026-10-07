@@ -433,4 +433,24 @@ suite('PrefService', function() {
   test('RemoveObserverFailure', function() {
     assertFalse(service.removeObserver(999));
   });
+
+  test('RefreshPrefFromBackend', async function() {
+    const key = 'browser.homepage';
+    let observedVal: string|null = null;
+
+    service.addObserver<string>(key, pref => {
+      observedVal = pref.value;
+    });
+    await Promise.resolve();
+    assertEquals('https://google.com', observedVal);
+
+    // Mutate the backend value directly without firing onPrefsChanged.
+    proxy.fakeApi.prefs[key]!.value = 'https://refreshed.example.com';
+    assertEquals('https://google.com', service.getPref<string>(key).value);
+
+    await service.refreshPrefFromBackend(key);
+    assertEquals(
+        'https://refreshed.example.com', service.getPref<string>(key).value);
+    assertEquals('https://refreshed.example.com', observedVal);
+  });
 });

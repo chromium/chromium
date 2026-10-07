@@ -458,7 +458,7 @@ export class SettingsAppearancePageElement extends
   }
 
   protected onDisableExtensionClick_() {
-    this.fire('refresh-pref', 'homepage');
+    PrefService.getInstance().refreshPrefFromBackend('homepage');
   }
 
   /**

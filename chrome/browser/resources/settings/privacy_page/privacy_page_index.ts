@@ -10,6 +10,7 @@ import '../settings_shared.css.js';
 import './privacy_guide/privacy_guide_promo.js';
 import './privacy_page.js';
 
+import type {SettingsPrefsElement} from '/shared/settings/prefs/prefs.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -39,6 +40,7 @@ import {getTopLevelRoute} from '../route.js';
 
 export interface SettingsPrivacyPageIndexElement {
   $: {
+    prefs: SettingsPrefsElement,
     viewManager: CrViewManagerElement,
   };
 }

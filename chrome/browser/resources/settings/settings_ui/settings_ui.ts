@@ -8,7 +8,7 @@
  *
  * Example:
  *
- *    <settings-ui prefs="{{prefs}}"></settings-ui>
+ *    <settings-ui></settings-ui>
  */
 import 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
@@ -17,14 +17,12 @@ import 'chrome://resources/cr_elements/cr_page_host_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_scrollable.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '/shared/settings/prefs/prefs.js';
 import '../icons.html.js';
 import '../settings_main/settings_main.js';
 import '../settings_menu/settings_menu.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
-import type {SettingsPrefsElement} from '/shared/settings/prefs/prefs.js';
 import {ColorChangeUpdater, COLORS_CSS_SELECTOR} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import type {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
@@ -46,12 +44,6 @@ import type {SettingsMenuElement} from '../settings_menu/settings_menu.js';
 
 import {getTemplate} from './settings_ui.html.js';
 
-declare global {
-  interface HTMLElementEventMap {
-    'refresh-pref': CustomEvent<string>;
-  }
-}
-
 export interface SettingsUiElement {
   $: {
     container: HTMLElement,
@@ -62,7 +54,6 @@ export interface SettingsUiElement {
     main: SettingsMainElement,
     scrollableShadow: HTMLElement,
     toolbar: CrToolbarElement,
-    prefs: SettingsPrefsElement,
   };
 }
 
@@ -82,11 +73,6 @@ export class SettingsUiElement extends SettingsUiElementBase {
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: Object,
-
       toolbarSpinnerActive_: {
         type: Boolean,
         value: false,
@@ -109,7 +95,6 @@ export class SettingsUiElement extends SettingsUiElementBase {
     };
   }
 
-  declare prefs: Record<string, unknown>;
   declare private toolbarSpinnerActive_: boolean;
   declare private narrow_: boolean;
   declare private lastSearchQuery_: string;
@@ -163,8 +148,6 @@ export class SettingsUiElement extends SettingsUiElementBase {
           loadTimeData.getString('controlledSettingNoOwner'),
       // </if>
     };
-
-    this.addEventListener('refresh-pref', this.onRefreshPref_.bind(this));
   }
 
   override connectedCallback() {
@@ -249,10 +232,6 @@ export class SettingsUiElement extends SettingsUiElementBase {
     return this.shadowRoot!.querySelector<CrToolbarElement>('cr-toolbar')!
         .getSearchField()
         .isSearchFocused();
-  }
-
-  private onRefreshPref_(e: CustomEvent<string>) {
-    return this.$.prefs.refresh(e.detail);
   }
 
   /**

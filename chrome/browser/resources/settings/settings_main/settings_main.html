@@ -64,8 +64,7 @@
     <div slot="view" id="privacy">
       <template is="dom-if" if="[[renderPlugin_(
           routes_.PRIVACY, lastRoute_, inSearchMode_)]]">
-        <settings-privacy-page-index prefs="{{prefs}}"
-            in-search-mode="[[inSearchMode_]]">
+        <settings-privacy-page-index in-search-mode="[[inSearchMode_]]">
         </settings-privacy-page-index>
       </template>
     </div>

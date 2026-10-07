@@ -211,7 +211,7 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
     // chrome://extensions or from the omnibox directly) will not update
     // |this.getPref('proxy')| directly (nor the UI). We should fix this
     // eventually.
-    this.fire('refresh-pref', 'proxy');
+    PrefService.getInstance().refreshPrefFromBackend('proxy');
   }
 
   protected onProxyClick_() {

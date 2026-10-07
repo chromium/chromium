@@ -4,8 +4,8 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {SettingsMainElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, Router, routes, setSearchManagerForTesting} from 'chrome://settings/settings.js';
+import type {SettingsMainElement} from 'chrome://settings/settings.js';
+import {loadTimeData, Router, routes, setSearchManagerForTesting} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -15,12 +15,6 @@ import {TestSearchManager} from './test_search_manager.js';
 suite('MainPageTests', function() {
   let searchManager: TestSearchManager;
   let settingsMain: SettingsMainElement;
-  let settingsPrefs: SettingsPrefsElement;
-
-  suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
 
   setup(function() {
     Router.getInstance().navigateTo(routes.BASIC);
@@ -28,7 +22,6 @@ suite('MainPageTests', function() {
     setSearchManagerForTesting(searchManager);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     settingsMain = document.createElement('settings-main');
-    settingsMain.prefs = settingsPrefs.prefs!;
     settingsMain.toolbarSpinnerActive = false;
     document.body.appendChild(settingsMain);
   });

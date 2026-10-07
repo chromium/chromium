@@ -6,7 +6,7 @@
 import {COLORS_CSS_SELECTOR} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrDrawerElement, CrToolbarElement, CrToolbarSearchFieldElement, SettingsUiElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, MAX_QUERY_LENGTH, Router, routes} from 'chrome://settings/settings.js';
+import {loadTimeData, MAX_QUERY_LENGTH, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, microtasksFinished, isVisible} from 'chrome://webui-test/test_util.js';
@@ -18,11 +18,10 @@ suite('SettingsUIToolbarAndDrawer', function() {
   let toolbar: CrToolbarElement;
   let drawer: CrDrawerElement;
 
-  setup(async function() {
+  setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     ui = document.createElement('settings-ui');
     document.body.appendChild(ui);
-    await CrSettingsPrefs.initialized;
     flush();
     toolbar = ui.$.toolbar;
     drawer = ui.$.drawer;
@@ -80,11 +79,10 @@ suite('SettingsUISearch', function() {
   let toolbar: CrToolbarElement;
   let searchField: CrToolbarSearchFieldElement;
 
-  setup(async function() {
+  setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     ui = document.createElement('settings-ui');
     document.body.appendChild(ui);
-    await CrSettingsPrefs.initialized;
     flush();
     toolbar = ui.$.toolbar;
     searchField = toolbar.getSearchField();

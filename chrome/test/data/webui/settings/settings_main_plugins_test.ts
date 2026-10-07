@@ -5,8 +5,8 @@
 import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {Route, SettingsMainElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, pageVisibility, resetPageVisibilityForTesting, resetRouterForTesting, Router, routes, setSearchManagerForTesting} from 'chrome://settings/settings.js';
+import type {Route, SettingsMainElement} from 'chrome://settings/settings.js';
+import {loadTimeData, pageVisibility, resetPageVisibilityForTesting, resetRouterForTesting, Router, routes, setSearchManagerForTesting} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -15,12 +15,6 @@ import {TestSearchManager} from './test_search_manager.js';
 suite('SettingsMain', function() {
   let searchManager: TestSearchManager;
   let settingsMain: SettingsMainElement;
-  let settingsPrefs: SettingsPrefsElement;
-
-  suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
 
   function createSettingsMain(overrides?: Record<string, unknown>) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -39,7 +33,6 @@ suite('SettingsMain', function() {
     setSearchManagerForTesting(searchManager);
     Router.getInstance().navigateTo(routes.BASIC);
     settingsMain = document.createElement('settings-main');
-    settingsMain.prefs = settingsPrefs.prefs!;
     settingsMain.toolbarSpinnerActive = false;
     document.body.appendChild(settingsMain);
     flush();
