@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
-namespace blink {
+namespace blink::unicode {
 
 testing::AssertionResult IsCjkIdeographOrSymbolWithMessage(UChar32 codepoint) {
   const size_t kFormatBufferSize = 10;
@@ -80,8 +80,8 @@ TEST(CharacterTest, Derived) {
     }
 
     if (!Character::MaybeHanKerningOpenOrCloseFast(ch)) {
-      DCHECK(!Character::internal::MaybeHanKerningOpenSlow(ch));
-      DCHECK(!Character::internal::MaybeHanKerningCloseSlow(ch));
+      DCHECK(!internal::MaybeHanKerningOpenSlow(ch));
+      DCHECK(!internal::MaybeHanKerningCloseSlow(ch));
     }
 
     // Test UTF-16 functions.
@@ -914,4 +914,4 @@ TEST_P(CanReceiveTextEmphasisTest, ToLowerWithoutOffset) {
   EXPECT_EQ(Character::CanReceiveTextEmphasis(data.character), data.expected);
 }
 
-}  // namespace blink
+}  // namespace blink::unicode

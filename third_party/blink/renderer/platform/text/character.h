@@ -356,10 +356,6 @@ inline bool MayNeedEastAsianSpacing(UChar32 ch) {
 // TODO(crbug.com/492927412): Stop using Character namespace. It's for backward
 // compatibility.
 namespace blink::Character {
-namespace internal {
-using unicode::internal::MaybeHanKerningCloseSlow;
-using unicode::internal::MaybeHanKerningOpenSlow;
-}  // namespace internal
 using unicode::CanReceiveTextEmphasis;
 using unicode::CanTextDecorationSkipInk;
 using unicode::EastAsianWidth;
