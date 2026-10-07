@@ -245,7 +245,8 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   feature_overrides.EnableFeature(::features::kSkipVulkanBlocklist);
   feature_overrides.EnableFeature(::features::kDefaultANGLEVulkan);
   feature_overrides.EnableFeature(::features::kVulkanFromANGLE);
-  feature_overrides.EnableFeature(::features::kDefaultPassthroughCommandDecoder);
+  feature_overrides.EnableFeature(
+      ::features::kDefaultPassthroughCommandDecoder);
 
   // Enable site-per-process by default for desktop platforms.
   // TODO(crbug.com/453856709): Remove when we determine how to ensure
@@ -302,10 +303,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // Enable timeout for TextClassifier calls.
   // TODO(crbug.com/504722790): Remove when experiment is complete.
   feature_overrides.EnableFeature(features::kTextClassifierTimeout);
-
-  // Enable graceful tab shutdown.
-  // TODO(crbug.com/532514154): Remove when experiment is complete.
-  feature_overrides.EnableFeature(chrome::android::kTabAndroidGracefulShutdown);
 
   // Enable desktop fling curve.
   feature_overrides.EnableFeature(features::kDesktopFlingCurveOnAndroid);
