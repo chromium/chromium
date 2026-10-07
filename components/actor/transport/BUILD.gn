@@ -13,8 +13,24 @@ source_set("transport") {
   public_deps = [
     "//base",
     "//components/actor/core:task_id",
+    "//components/actor/public/mojom:mojo_bindings",
     "//components/actor/transport/proto:actuation_transport_proto",
     "//components/browser_actuator/public",
     "//components/optimization_guide/proto:optimization_guide_proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "actuation_transport_handler_unittest.cc" ]
+  deps = [
+    ":transport",
+    "//base",
+    "//components/actor/core:task_id",
+    "//components/actor/public/mojom:mojo_bindings",
+    "//components/actor/transport/proto:actuation_transport_proto",
+    "//components/browser_actuator/public",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//testing/gtest",
   ]
 }

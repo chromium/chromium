@@ -9,6 +9,8 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/flat_set.h"
+#include "base/memory/weak_ptr.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/transport/actuation_delegate.h"
 #include "components/browser_actuator/public/transport_handler.h"
@@ -56,6 +58,10 @@ class ActuationTransportHandler : public browser_actuator::TransportHandler {
                  const optimization_guide::proto::Actions& actions);
   void OnActComplete(const std::string& request_id,
                      optimization_guide::proto::ActionsResult result);
+
+  std::unique_ptr<ActuationDelegate> delegate_;
+  base::flat_set<TaskId> active_tasks_;
+  base::WeakPtrFactory<ActuationTransportHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace actor
