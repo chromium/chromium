@@ -13,6 +13,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/files/file.h"
@@ -23,10 +24,13 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_ostream_operators.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "base/win/access_token.h"
 #include "base/win/security_descriptor.h"
+#include "base/win/sid.h"
 #include "chrome/installer/setup/component_interface.h"
 #include "chrome/installer/setup/installer_state.h"
 #include "chrome/installer/util/util_constants.h"
@@ -97,7 +101,8 @@ base::FilePath CreateTestCrx(const base::FilePath& base_dir,
 }
 
 // A component whose operations succeed or fail as directed. It is installed
-// into a directory named for its CRX ID.
+// into a directory named for its CRX ID. It checks that, as ComponentInterface
+// requires, its other methods are called only after ReadManifest succeeds.
 class FakeComponent : public ComponentInterface {
  public:
   struct Results {
@@ -111,13 +116,21 @@ class FakeComponent : public ComponentInterface {
   FakeComponent() : FakeComponent(Results()) {}
   explicit FakeComponent(const Results& results) : results_(results) {}
 
+  // Sets a DACL, in SDDL form, for InitializeDestinationRoot to apply to the
+  // destination root.
+  void set_destination_root_dacl(std::wstring dacl) {
+    destination_root_dacl_ = std::move(dacl);
+  }
+
   // ComponentInterface:
   bool ReadManifest(const base::DictValue& manifest) override {
-    return results_.read_manifest;
+    manifest_read_ = results_.read_manifest;
+    return manifest_read_;
   }
   base::expected<base::FilePath, InstallStatus> DetermineDestinationRoot(
       const InstallerState& installer_state,
       std::string_view crx_id) override {
+    EXPECT_TRUE(manifest_read_);
     if (results_.determine_destination_root_error) {
       return base::unexpected(*results_.determine_destination_root_error);
     }
@@ -126,11 +139,22 @@ class FakeComponent : public ComponentInterface {
   bool InitializeDestinationRoot(
       const InstallerState& installer_state,
       const base::FilePath& destination_root) override {
-    return results_.initialize_destination_root;
+    EXPECT_TRUE(manifest_read_);
+    if (!results_.initialize_destination_root) {
+      return false;
+    }
+    if (destination_root_dacl_.empty()) {
+      return true;
+    }
+    std::optional<base::win::SecurityDescriptor> sd =
+        base::win::SecurityDescriptor::FromSddl(destination_root_dacl_);
+    return sd && sd->WriteToFile(destination_root, DACL_SECURITY_INFORMATION);
   }
 
  private:
   const Results results_;
+  std::wstring destination_root_dacl_;
+  bool manifest_read_ = false;
 };
 
 // Returns a component whose operations all succeed if `hash` is that of the
@@ -160,14 +184,6 @@ TEST(InstallComponentTest, GetComponentVersion) {
   ASSERT_TRUE(base::CreateDirectory(no_manifest_dir));
   EXPECT_FALSE(GetComponentVersion(no_manifest_dir).IsValid());
 
-  // Valid version directory with temporary manifest only (e.g. interrupted
-  // installation).
-  base::FilePath temp_manifest_dir = temp_dir.GetPath().AppendASCII("3.0.0.0");
-  ASSERT_TRUE(base::CreateDirectory(temp_manifest_dir));
-  ASSERT_TRUE(base::WriteFile(
-      temp_manifest_dir.AppendASCII("manifest.json.tmp"), "dummy"));
-  EXPECT_FALSE(GetComponentVersion(temp_manifest_dir).IsValid());
-
   // Invalid version directory name with manifest.json.
   base::FilePath invalid_name_dir =
       temp_dir.GetPath().AppendASCII("not_a_version");
@@ -175,6 +191,13 @@ TEST(InstallComponentTest, GetComponentVersion) {
   ASSERT_TRUE(
       base::WriteFile(invalid_name_dir.AppendASCII("manifest.json"), "dummy"));
   EXPECT_FALSE(GetComponentVersion(invalid_name_dir).IsValid());
+
+  // Non-canonical version directory name with manifest.json.
+  base::FilePath non_canonical_dir = temp_dir.GetPath().AppendASCII("1.02.3.4");
+  ASSERT_TRUE(base::CreateDirectory(non_canonical_dir));
+  ASSERT_TRUE(
+      base::WriteFile(non_canonical_dir.AppendASCII("manifest.json"), "dummy"));
+  EXPECT_FALSE(GetComponentVersion(non_canonical_dir).IsValid());
 
   // Non-existent directory.
   base::FilePath non_existent_dir =
@@ -199,6 +222,7 @@ TEST(InstallComponentTest, FindHighestComponentVersion) {
   base::FilePath v1 = component_root.AppendASCII("1.0.0.0");
   base::FilePath v2 = component_root.AppendASCII("2.0.0.0");
   base::FilePath v3_corrupted = component_root.AppendASCII("3.0.0.0");
+  base::FilePath v4_non_canonical = component_root.AppendASCII("4.0.00.0");
   base::FilePath invalid_dir = component_root.AppendASCII("invalid_name");
 
   ASSERT_TRUE(base::CreateDirectory(v1));
@@ -209,6 +233,12 @@ TEST(InstallComponentTest, FindHighestComponentVersion) {
 
   // v3_corrupted has higher version name but lacks manifest.json.
   ASSERT_TRUE(base::CreateDirectory(v3_corrupted));
+
+  // v4_non_canonical has a higher version and manifest.json, but its name is
+  // not the canonical form of its version.
+  ASSERT_TRUE(base::CreateDirectory(v4_non_canonical));
+  ASSERT_TRUE(
+      base::WriteFile(v4_non_canonical.AppendASCII("manifest.json"), "dummy"));
 
   // invalid_dir has manifest.json but not a valid version name.
   ASSERT_TRUE(base::CreateDirectory(invalid_dir));
@@ -231,6 +261,7 @@ TEST(InstallComponentTest, DeleteInvalidComponentDirectories) {
   base::FilePath v3 = component_root.AppendASCII("3.0.0.0");
   base::FilePath v4_corrupted = component_root.AppendASCII("4.0.0.0");
   base::FilePath v5_interrupted = component_root.AppendASCII("5.0.0.0");
+  base::FilePath v6_non_canonical = component_root.AppendASCII("6.0.00.0");
   base::FilePath invalid_dir = component_root.AppendASCII("corrupted_dir");
 
   ASSERT_TRUE(base::CreateDirectory(v1));
@@ -245,11 +276,17 @@ TEST(InstallComponentTest, DeleteInvalidComponentDirectories) {
   ASSERT_TRUE(base::CreateDirectory(v4_corrupted));
   ASSERT_TRUE(base::WriteFile(v4_corrupted.AppendASCII("other.dll"), "dummy"));
 
+  // An interrupted installation: the payload was copied in, but not the
+  // manifest.
   ASSERT_TRUE(base::CreateDirectory(v5_interrupted));
-  ASSERT_TRUE(base::WriteFile(v5_interrupted.AppendASCII("manifest.json.tmp"),
-                              "dummy"));
   ASSERT_TRUE(
       base::WriteFile(v5_interrupted.AppendASCII("component.dll"), "dummy"));
+
+  // A complete installation, but in a directory whose name is not the
+  // canonical form of its version.
+  ASSERT_TRUE(base::CreateDirectory(v6_non_canonical));
+  ASSERT_TRUE(
+      base::WriteFile(v6_non_canonical.AppendASCII("manifest.json"), "dummy"));
 
   ASSERT_TRUE(base::CreateDirectory(invalid_dir));
 
@@ -258,12 +295,13 @@ TEST(InstallComponentTest, DeleteInvalidComponentDirectories) {
   ASSERT_TRUE(base::PathExists(v3));
   ASSERT_TRUE(base::PathExists(v4_corrupted));
   ASSERT_TRUE(base::PathExists(v5_interrupted));
+  ASSERT_TRUE(base::PathExists(v6_non_canonical));
   ASSERT_TRUE(base::PathExists(invalid_dir));
 
   // Keep version 2.0.0.0.
-  // v1 (< 2.0.0.0), v4_corrupted (missing manifest), v5_interrupted (only
-  // temporary manifest), and invalid_dir should be deleted. v2 (== 2.0.0.0)
-  // and v3 (> 2.0.0.0) should remain.
+  // v1 (< 2.0.0.0), v4_corrupted (missing manifest), v5_interrupted (missing
+  // manifest), v6_non_canonical (non-canonical name), and invalid_dir should be
+  // deleted. v2 (== 2.0.0.0) and v3 (> 2.0.0.0) should remain.
   DeleteInvalidComponentDirectories(component_root, base::Version("2.0.0.0"));
 
   EXPECT_FALSE(base::PathExists(v1));
@@ -271,6 +309,7 @@ TEST(InstallComponentTest, DeleteInvalidComponentDirectories) {
   EXPECT_TRUE(base::PathExists(v3));
   EXPECT_FALSE(base::PathExists(v4_corrupted));
   EXPECT_FALSE(base::PathExists(v5_interrupted));
+  EXPECT_FALSE(base::PathExists(v6_non_canonical));
   EXPECT_FALSE(base::PathExists(invalid_dir));
 }
 
@@ -531,8 +570,6 @@ TEST(InstallComponentTest, ArbitrarySourceFilePath) {
   EXPECT_TRUE(base::PathExists(installed_version_dir));
   EXPECT_TRUE(
       base::PathExists(installed_version_dir.AppendASCII("manifest.json")));
-  EXPECT_FALSE(
-      base::PathExists(installed_version_dir.AppendASCII("manifest.json.tmp")));
 }
 
 TEST(InstallComponentTest, UserLevelInstallation) {
@@ -550,7 +587,6 @@ TEST(InstallComponentTest, UserLevelInstallation) {
       temp_dir.GetPath().AppendASCII(kTestDeveloperCrxId).AppendASCII("394");
   EXPECT_TRUE(base::PathExists(target_dir));
   EXPECT_TRUE(base::PathExists(target_dir.AppendASCII("manifest.json")));
-  EXPECT_FALSE(base::PathExists(target_dir.AppendASCII("manifest.json.tmp")));
 }
 
 TEST(InstallComponentTest, IncompletePreviousInstallationOverwritten) {
@@ -564,17 +600,13 @@ TEST(InstallComponentTest, IncompletePreviousInstallationOverwritten) {
   ASSERT_TRUE(base::CreateDirectory(component_root));
 
   // Simulate an incomplete/interrupted installation of version 394 that left
-  // behind manifest.json.tmp and another file, but no manifest.json.
+  // behind part of its payload, but no manifest.json.
   base::FilePath v394_incomplete = component_root.AppendASCII("394");
   ASSERT_TRUE(base::CreateDirectory(v394_incomplete));
-  ASSERT_TRUE(base::WriteFile(v394_incomplete.AppendASCII("manifest.json.tmp"),
-                              "incomplete"));
   ASSERT_TRUE(
       base::WriteFile(v394_incomplete.AppendASCII("stale.dll"), "dummy"));
 
   ASSERT_TRUE(base::PathExists(v394_incomplete));
-  ASSERT_TRUE(
-      base::PathExists(v394_incomplete.AppendASCII("manifest.json.tmp")));
 
   base::FilePath src_file = GetTestCrxPath();
   ASSERT_TRUE(base::PathExists(src_file));
@@ -588,36 +620,72 @@ TEST(InstallComponentTest, IncompletePreviousInstallationOverwritten) {
 
   EXPECT_TRUE(base::PathExists(v394_incomplete));
   EXPECT_TRUE(base::PathExists(v394_incomplete.AppendASCII("manifest.json")));
-  EXPECT_FALSE(
-      base::PathExists(v394_incomplete.AppendASCII("manifest.json.tmp")));
   EXPECT_FALSE(base::PathExists(v394_incomplete.AppendASCII("stale.dll")));
 }
 
-// Verifies that the installed component directory inherits its ACL from the
-// parent application directory. This ensures that components installed by an
-// elevated process remain accessible to standard unprivileged user processes.
-TEST(InstallComponentTest, InstalledComponentDirectoryInheritsAcl) {
+// Verifies that the installed component's directories and files inherit their
+// access rights from the destination root (e.g., as set by
+// InitializeDestinationRoot) rather than retaining those of the temporary
+// directory into which the component was unpacked.
+TEST(InstallComponentTest, InstalledComponentInheritsDestinationRootAcl) {
   InstallerState installer_state(InstallerState::SYSTEM_LEVEL);
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   installer_state.set_target_path_for_testing(temp_dir.GetPath());
 
-  base::FilePath src_file = GetTestCrxPath();
-  ASSERT_TRUE(base::PathExists(src_file));
+  // Give the destination root a protected DACL ("P") that grants only the
+  // current user full control ("FA") of the root and the files ("OI") and
+  // directories ("CI") within it. This differs from the DACL of the temporary
+  // directory.
+  ASSERT_OK_AND_ASSIGN(const auto token,
+                       base::win::AccessToken::FromCurrentProcess());
+  ASSERT_OK_AND_ASSIGN(const std::wstring user_sid,
+                       token.User().ToSddlString());
+  const std::wstring root_dacl =
+      base::StrCat({L"D:P(A;OICI;FA;;;", user_sid, L")"});
+  auto factory =
+      [&root_dacl](const std::array<uint8_t, crypto::hash::kSha256Size>& hash)
+      -> std::unique_ptr<ComponentInterface> {
+    if (hash != kTestDeveloperPublicKeySHA256) {
+      return nullptr;
+    }
+    auto component = std::make_unique<FakeComponent>();
+    component->set_destination_root_dacl(root_dacl);
+    return component;
+  };
   ASSERT_EQ(INSTALL_COMPONENT_SUCCESS,
             InstallComponentForTesting(
-                src_file, installer_state, &TestComponentFactory,
+                GetTestCrxPath(), installer_state, factory,
                 crx_file::VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF));
 
-  base::FilePath installed_dir =
-      temp_dir.GetPath().AppendASCII(kTestDeveloperCrxId).AppendASCII("394");
-  ASSERT_TRUE(base::PathExists(installed_dir));
+  // Returns the DACL of `path` in SDDL form.
+  auto get_dacl = [](const base::FilePath& path) {
+    std::optional<base::win::SecurityDescriptor> sd =
+        base::win::SecurityDescriptor::FromFile(path,
+                                                DACL_SECURITY_INFORMATION);
+    return sd ? sd->ToSddl(DACL_SECURITY_INFORMATION) : std::nullopt;
+  };
 
-  std::optional<base::win::SecurityDescriptor> descriptor =
-      base::win::SecurityDescriptor::FromFile(installed_dir,
-                                              DACL_SECURITY_INFORMATION);
-  ASSERT_TRUE(descriptor.has_value());
-  EXPECT_FALSE(descriptor->dacl_protected());
+  // The version directory and everything within it, including the manifest,
+  // which is copied into place separately, have only the ACE that they inherit
+  // ("ID") from the root. Directories pass it on to their own contents.
+  const std::wstring expected_dir_dacl =
+      base::StrCat({L"D:AI(A;OICIID;FA;;;", user_sid, L")"});
+  const std::wstring expected_file_dacl =
+      base::StrCat({L"D:AI(A;ID;FA;;;", user_sid, L")"});
+  const base::FilePath version_dir =
+      temp_dir.GetPath().AppendASCII(kTestDeveloperCrxId).AppendASCII("394");
+  EXPECT_EQ(get_dacl(version_dir), expected_dir_dacl);
+  base::FileEnumerator enumerator(
+      version_dir, /*recursive=*/true,
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
+  for (base::FilePath path = enumerator.Next(); !path.empty();
+       path = enumerator.Next()) {
+    SCOPED_TRACE(path);
+    EXPECT_EQ(get_dacl(path), enumerator.GetInfo().IsDirectory()
+                                  ? expected_dir_dacl
+                                  : expected_file_dacl);
+  }
 }
 
 TEST(InstallComponentTest, InvalidManifestRejected) {
@@ -650,6 +718,8 @@ TEST(InstallComponentTest, InvalidManifestRejected) {
       {FPL("no_version"), R"({"name": "Test Component"})"},
       {FPL("invalid_version"),
        R"({"name": "Test Component", "version": "one"})"},
+      {FPL("non_canonical_version"),
+       R"({"name": "Test Component", "version": "1.02"})"},
       {FPL("non_string_version"),
        R"({"name": "Test Component", "version": 1})"},
   };
@@ -691,7 +761,7 @@ TEST(InstallComponentTest, FailedInstallationRollsBack) {
 
   {
     // Hold a file in the leftover directory open without FILE_SHARE_DELETE so
-    // that the directory can only be partially moved aside. Moving the new
+    // that the directory can only be partially moved aside. Copying the new
     // payload into place then fails since the directory still exists.
     base::File locked(v394.Append(FPL("locked.dll")),
                       base::File::FLAG_OPEN | base::File::FLAG_READ);

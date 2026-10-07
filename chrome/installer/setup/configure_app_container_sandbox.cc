@@ -6,7 +6,10 @@
 
 #include <windows.h>
 
+#include <optional>
+#include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -16,8 +19,7 @@
 
 namespace installer {
 
-bool ConfigureAppContainerSandbox(
-    base::span<const base::FilePath* const> paths) {
+std::optional<std::vector<base::win::Sid>> GetInstallFilesCapabilitySids() {
   static constexpr std::wstring_view kChromeInstallFilesCapabilitySid(
       L"S-1-15-3-1024-3424233489-972189580-2057154623-747635277-1604371224-"
       L"316187997-3786583170-1043257646");
@@ -25,9 +27,14 @@ bool ConfigureAppContainerSandbox(
       L"S-1-15-3-1024-2302894289-466761758-1166120688-1039016420-2430351297-"
       L"4240214049-4028510897-3317428798");
 
-  auto sids = base::win::Sid::FromSddlStringVector(
+  return base::win::Sid::FromSddlStringVector(
       {std::wstring(kChromeInstallFilesCapabilitySid),
        std::wstring(kLpacChromeInstallFilesCapabilitySid)});
+}
+
+bool ConfigureAppContainerSandbox(
+    base::span<const base::FilePath* const> paths) {
+  auto sids = GetInstallFilesCapabilitySids();
 
   if (!sids) {
     return false;

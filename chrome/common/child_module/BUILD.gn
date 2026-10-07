@@ -13,6 +13,14 @@ source_set("child_module") {
   public_deps = [ "//base" ]
 
   deps = [ "//chrome/common:constants" ]
+
+  if (is_win) {
+    sources += [ "child_module_helper_win.cc" ]
+    deps += [
+      "//components/base32",
+      "//crypto",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -22,6 +30,7 @@ source_set("unit_tests") {
   deps = [
     ":child_module",
     "//base",
+    "//base/test:test_support",
     "//chrome/common:constants",
     "//testing/gtest",
   ]

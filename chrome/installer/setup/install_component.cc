@@ -28,6 +28,8 @@
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "chrome/common/child_module/child_module_helper.h"
+#include "chrome/installer/setup/dynamic_patch_component.h"
 #include "chrome/installer/setup/installer_state.h"
 #include "chrome/installer/setup/platform_runtime_component.h"
 #include "chrome/installer/util/delete_after_reboot_helper.h"
@@ -43,10 +45,22 @@ namespace installer {
 
 namespace {
 
+// The component's manifest. It is copied into a version directory last, so
+// its presence there marks installation of that version as complete.
 constexpr base::FilePath::CharType kManifestFilename[] =
     FILE_PATH_LITERAL("manifest.json");
-constexpr base::FilePath::CharType kTempManifestFilename[] =
-    FILE_PATH_LITERAL("manifest.json.tmp");
+
+// The browser watches for the same file to know when a dynamic patch is ready.
+static_assert(base::FilePath::StringViewType(kManifestFilename) ==
+              base::FilePath::StringViewType(child_module::kManifestFilename));
+
+// Pinned SubjectPublicKeyInfo SHA256 of the production dynamic patch component
+// key (CRX ID: "binbghhnflgglfabhjocbobkiignbgfh").
+constexpr std::array<uint8_t, crypto::hash::kSha256Size>
+    kDynamicPatchPublicKeySHA256 = {
+        0x18, 0xd1, 0x67, 0x7d, 0x5b, 0x66, 0xb5, 0x01, 0x79, 0xe2, 0x1e,
+        0x1a, 0x88, 0x6d, 0x16, 0x57, 0x04, 0x67, 0x63, 0xf0, 0xa2, 0xd1,
+        0x0e, 0x39, 0xbf, 0x6d, 0xeb, 0x45, 0x33, 0xe8, 0xda, 0x82};
 
 // Pinned SubjectPublicKeyInfo SHA256 of the production PlatformRuntime
 // component key (CRX ID: "jidecimafobogahglicpmeajcaaaibib").
@@ -75,6 +89,7 @@ constexpr auto kSupportedComponents =
                            ComponentFactoryFunction>({
         {kPlatformRuntimePublicKeySHA256,
          &CreateComponent<PlatformRuntimeComponent>},
+        {kDynamicPatchPublicKeySHA256, &CreateComponent<DynamicPatchComponent>},
     });
 
 InstallStatus InstallComponentInternal(
@@ -191,10 +206,35 @@ InstallStatus InstallComponentInternal(
     LOG(ERROR) << "Failed to find version in manifest.json";
     return installer::INSTALL_COMPONENT_INVALID_INPUT;
   }
+  // Require the version to be in canonical form (e.g., reject "1.02") so that
+  // the name of the directory into which it is installed, which is derived
+  // from the parsed version, matches the version in the manifest.
   const base::Version component_version(*manifest_version);
-  if (!component_version.IsValid()) {
+  if (!component_version.IsValid() ||
+      component_version.GetString() != *manifest_version) {
     LOG(ERROR) << "Invalid version in manifest: " << *manifest_version;
     return installer::INSTALL_COMPONENT_INVALID_INPUT;
+  }
+
+  // Move the manifest out of the payload so that it can be copied into the
+  // destination last. The presence of the manifest marks the installation as
+  // complete and ready for use; if the process terminates while the payload is
+  // being copied, the destination will lack the manifest and will be ignored
+  // and eventually deleted. FileConductor retries on transient failures (e.g.,
+  // a scanner holding the file open), and a non-lenient move fails unless the
+  // manifest is removed from the payload.
+  base::FilePath staged_manifest_dir;
+  if (!base::CreateTemporaryDirInDir(temp_path.path(), L"Manifest",
+                                     &staged_manifest_dir)) {
+    PLOG(ERROR) << "Failed to create manifest staging subdirectory in "
+                << temp_path.path();
+    return installer::INSTALL_COMPONENT_FAILED_INTERNAL;
+  }
+  const base::FilePath staged_manifest_path =
+      staged_manifest_dir.Append(kManifestFilename);
+  if (!file_conductor.MoveEntry(manifest_path, staged_manifest_path)) {
+    PLOG(ERROR) << "Failed to move manifest.json out of unpacked component";
+    return installer::INSTALL_COMPONENT_FAILED_INTERNAL;
   }
 
   // Determine component destination root.
@@ -241,24 +281,20 @@ InstallStatus InstallComponentInternal(
                   << target_dir;
   }
 
-  // Rename manifest.json to a temporary name before moving unpack_dir to
-  // target_dir. This ensures that if the installation process terminates
-  // unexpectedly midway through moving or copying files, GetComponentVersion()
-  // will not detect target_dir as a valid installed component.
-  if (!file_conductor.MoveEntry(manifest_path,
-                                unpack_dir.Append(kTempManifestFilename))) {
-    PLOG(ERROR) << "Failed to rename manifest.json to manifest.json.tmp";
+  // Copy the payload (which no longer contains the manifest) to the versioned
+  // destination, then copy the manifest in last to mark the installation as
+  // complete. Copying rather than moving is essential: a move retains the
+  // security descriptor that an item had in the temp directory, whereas a copy
+  // creates new items that inherit their ACEs from the destination. This
+  // ensures that the installed files get the access rights set on the
+  // destination root (e.g., the protected DACL that InitializeDestinationRoot
+  // applies to a dynamic patch's per-user directory). The unpacked files in the
+  // temp directory are deleted along with it.
+  if (!file_conductor.CopyEntry(unpack_dir, target_dir)) {
+    PLOG(ERROR) << "Failed to copy component payload to " << target_dir;
     return installer::INSTALL_COMPONENT_FAILED_INTERNAL;
   }
-
-  // Atomic move to final versioned destination. Move the whole unpack_dir.
-  if (!file_conductor.MoveEntry(unpack_dir, target_dir,
-                                /*lenient_deletion=*/true)) {
-    return installer::INSTALL_COMPONENT_FAILED_INTERNAL;
-  }
-
-  // Restore manifest.json last to mark the component installation as complete.
-  if (!file_conductor.MoveEntry(target_dir.Append(kTempManifestFilename),
+  if (!file_conductor.CopyEntry(staged_manifest_path,
                                 target_dir.Append(kManifestFilename))) {
     PLOG(ERROR) << "Failed to finalize manifest.json in target directory: "
                 << target_dir;
@@ -300,8 +336,11 @@ InstallStatus InstallComponentForTesting(
 }
 
 base::Version GetComponentVersion(const base::FilePath& version_dir) {
-  base::Version version(version_dir.BaseName().MaybeAsASCII());
-  if (!version.IsValid() ||
+  // Version directories are named with the canonical form of their version, so
+  // reject any name that merely parses as one (e.g., "1.02").
+  const std::string name = version_dir.BaseName().MaybeAsASCII();
+  base::Version version(name);
+  if (!version.IsValid() || version.GetString() != name ||
       !base::PathExists(version_dir.Append(kManifestFilename))) {
     return base::Version();
   }

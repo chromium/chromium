@@ -54,9 +54,9 @@ InstallStatus InstallComponentForTesting(
     ComponentFactory component_factory,
     crx_file::VerifierFormat verifier_format);
 
-// Returns the parsed component version if `version_dir` has a valid version
-// directory name and contains a `manifest.json` file, or an invalid version
-// otherwise.
+// Returns the parsed component version if the name of `version_dir` is a
+// version in canonical form (as produced by `base::Version::GetString()`) and
+// it contains a `manifest.json` file, or an invalid version otherwise.
 base::Version GetComponentVersion(const base::FilePath& version_dir);
 
 // Returns the highest valid component version installed in `component_root`,

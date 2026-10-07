@@ -270,6 +270,22 @@ inline constexpr char kArchiveResourceType[] = "archive-resource-type";
 // install.
 inline constexpr char kUncompressedArchive[] = "uncompressed-archive";
 
+// Installs a Chrome component from the inner CRX at the specified path into
+// the Chrome application directory (system-level if kSystemLevel is present,
+// or user-level otherwise).
+inline constexpr char kInstallComponent[] = "install-component";
+
+// The Windows Security Identifier (SID) of the calling user for per-user
+// component installation. For a system-level install, the user identified by
+// this SID is granted access to the installed component. The process that
+// launches setup must therefore derive it from the authenticated token of the
+// user on whose behalf the component is installed, and never from input
+// supplied by that user or any other untrusted party.
+inline constexpr char kUserSid[] = "user-sid";
+
+// The canonicalized user data directory for per-user component installation.
+inline constexpr char kUdd[] = "udd";
+
 // Specify the file path of Chrome initial preference file.
 inline constexpr char kInstallerData[] = "installerdata";
 
@@ -340,10 +356,6 @@ inline constexpr char kShowEula[] = "show-eula";
 
 // Saves the specified device management token to the registry.
 inline constexpr char kStoreDMToken[] = "store-dmtoken";
-
-// Installs a Chrome component from the specified source path to the
-// system-level Chrome directory.
-inline constexpr char kInstallComponent[] = "install-component";
 
 // Install Chrome to system wise location. The default is per user install.
 inline constexpr char kSystemLevel[] = "system-level";
