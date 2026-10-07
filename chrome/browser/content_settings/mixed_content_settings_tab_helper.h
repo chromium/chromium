@@ -7,17 +7,30 @@
 
 #include <map>
 #include <memory>
+#include <optional>
+
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+namespace tabs {
+class TabInterface;
+}
 
 // Controls mixed content related settings for the associated WebContents,
 // working as the browser version of the mixed content state kept by
 // ContentSettingsObserver in the renderer.
-class MixedContentSettingsTabHelper
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<MixedContentSettingsTabHelper> {
+class MixedContentSettingsTabHelper : public content::WebContentsObserver {
  public:
+  DECLARE_USER_DATA(MixedContentSettingsTabHelper);
+
+  static MixedContentSettingsTabHelper* From(tabs::TabInterface* tab);
+  static MixedContentSettingsTabHelper* FromWebContents(
+      content::WebContents* web_contents);
+
+  MixedContentSettingsTabHelper(tabs::TabInterface& tab,
+                                content::WebContents* web_contents);
+  explicit MixedContentSettingsTabHelper(content::WebContents* tab);
   MixedContentSettingsTabHelper(const MixedContentSettingsTabHelper&) = delete;
   MixedContentSettingsTabHelper& operator=(
       const MixedContentSettingsTabHelper&) = delete;
@@ -36,10 +49,6 @@ class MixedContentSettingsTabHelper
       content::RenderFrameHost& render_frame_host);
 
  private:
-  friend class content::WebContentsUserData<MixedContentSettingsTabHelper>;
-
-  explicit MixedContentSettingsTabHelper(content::WebContents* tab);
-
   // content::WebContentsObserver
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
@@ -71,7 +80,8 @@ class MixedContentSettingsTabHelper
   std::map<raw_ptr<content::SiteInstance>, std::unique_ptr<SiteSettings>>
       settings_;
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  std::optional<ui::ScopedUnownedUserData<MixedContentSettingsTabHelper>>
+      scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_CONTENT_SETTINGS_MIXED_CONTENT_SETTINGS_TAB_HELPER_H_

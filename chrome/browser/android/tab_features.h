@@ -162,6 +162,7 @@ class FromGWSNavigationAndKeepAliveRequestObserver;
 class HistoryEmbeddingsTabHelper;
 class HttpAuthCacheStatus;
 class MediaStateObserver;
+class MixedContentSettingsTabHelper;
 class NavigationMetricsRecorder;
 class NavigationPredictorPreconnectClient;
 class OomInterventionTabHelper;
@@ -340,6 +341,8 @@ class TabFeatures {
       page_content_annotations_web_contents_observer_;
   std::unique_ptr<CoreTabHelper> core_tab_helper_;
   std::unique_ptr<vr::VrTabHelper> vr_tab_helper_;
+  std::unique_ptr<MixedContentSettingsTabHelper>
+      mixed_content_settings_tab_helper_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

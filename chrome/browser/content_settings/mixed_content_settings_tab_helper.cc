@@ -5,6 +5,7 @@
 #include "chrome/browser/content_settings/mixed_content_settings_tab_helper.h"
 
 #include "components/content_settings/common/content_settings_agent.mojom.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -17,9 +18,32 @@ using content::BrowserThread;
 using content::RenderFrameHost;
 using content::WebContents;
 
+DEFINE_USER_DATA(MixedContentSettingsTabHelper);
+
+// static
+MixedContentSettingsTabHelper* MixedContentSettingsTabHelper::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
+// static
+MixedContentSettingsTabHelper* MixedContentSettingsTabHelper::FromWebContents(
+    WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  return From(tabs::TabInterface::MaybeGetFromContents(web_contents));
+}
+
+MixedContentSettingsTabHelper::MixedContentSettingsTabHelper(
+    tabs::TabInterface& tab,
+    WebContents* web_contents)
+    : MixedContentSettingsTabHelper(web_contents) {
+  scoped_unowned_user_data_.emplace(tab.GetUnownedUserDataHost(), *this);
+}
+
 MixedContentSettingsTabHelper::MixedContentSettingsTabHelper(WebContents* tab)
-    : content::WebContentsObserver(tab),
-      content::WebContentsUserData<MixedContentSettingsTabHelper>(*tab) {
+    : content::WebContentsObserver(tab) {
   if (!tab->HasOpener())
     return;
 
@@ -125,5 +149,3 @@ void MixedContentSettingsTabHelper::SiteSettings::DecrementRenderFrameCount() {
   CHECK_GT(render_frame_count_, 0, base::NotFatalUntil::M161);
   render_frame_count_--;
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(MixedContentSettingsTabHelper);

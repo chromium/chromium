@@ -28,9 +28,10 @@
 #include "ui/views/widget/widget_observer.h"
 
 class ExclusiveAccessBubbleViews;
+class LocationBarModelImpl;
+class MixedContentSettingsTabHelper;
 class PresentationReceiverWindowDelegate;
 class PresentationReceiverWindowFrame;
-class LocationBarModelImpl;
 
 namespace views {
 class WebView;
@@ -170,6 +171,8 @@ class PresentationReceiverWindowView final
   ExclusiveAccessManager exclusive_access_manager_;
   ui::Accelerator fullscreen_accelerator_;
   std::unique_ptr<ExclusiveAccessBubbleViews> exclusive_access_bubble_;
+  std::unique_ptr<MixedContentSettingsTabHelper>
+      mixed_content_settings_tab_helper_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<FullscreenWindowObserver> window_observer_;

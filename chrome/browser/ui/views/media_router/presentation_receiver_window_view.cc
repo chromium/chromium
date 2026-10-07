@@ -167,7 +167,8 @@ void PresentationReceiverWindowView::Init() {
   infobars::ContentInfoBarManager::CreateForWebContents(web_contents);
 
   CreateSubresourceFilterWebContentsHelper(web_contents);
-  MixedContentSettingsTabHelper::CreateForWebContents(web_contents);
+  mixed_content_settings_tab_helper_ =
+      std::make_unique<MixedContentSettingsTabHelper>(web_contents);
   content_settings::PageSpecificContentSettings::CreateForWebContents(
       web_contents,
       std::make_unique<PageSpecificContentSettingsDelegate>(web_contents));
