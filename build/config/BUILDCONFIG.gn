@@ -626,9 +626,10 @@ foreach(_target_type,
 
       if (!defined(check_includes_strict)) {
         _current_label = get_label_info(":$target_name", "label_no_toolchain")
-        check_includes_strict =
-            filter_include([ _current_label ],
-                           CHECK_INCLUDES_STRICT_ALLOWLIST) != []
+        if (filter_include([ _current_label ],
+                           CHECK_INCLUDES_STRICT_ALLOWLIST) == []) {
+          check_includes_strict = false
+        }
       }
 
       if (use_libcxx_modules && is_clang) {
@@ -770,9 +771,10 @@ foreach(_target_type,
 
       if (!defined(check_includes_strict)) {
         _current_label = get_label_info(":$target_name", "label_no_toolchain")
-        check_includes_strict =
-            filter_include([ _current_label ],
-                           CHECK_INCLUDES_STRICT_ALLOWLIST) != []
+        if (filter_include([ _current_label ],
+                           CHECK_INCLUDES_STRICT_ALLOWLIST) == []) {
+          check_includes_strict = false
+        }
       }
 
       if (use_libcxx_modules && is_clang) {
