@@ -190,6 +190,7 @@ WebAppConfirmViewBrowserTest.*
 WebAppInstallDialogBrowserTest.*
 WebAppMenuBrowserTest.*
 WebAppUpdateReviewDialog.*
+WebUIToolbarGlicPixelInteractiveUiTest.*
 WebUIToolbarPixelInteractiveUiTest.*
 ZoomBubbleDialogTest.*
 

@@ -27,6 +27,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -68,6 +69,7 @@
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -128,6 +130,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user_names.h"  // nogncheck
 #endif
 
@@ -263,19 +266,47 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ClipboardTextObserver, kClipboardText);
 
 class WebUIToolbarPixelInteractiveUiTest : public InteractiveBrowserTest {
  public:
-  WebUIToolbarPixelInteractiveUiTest() {
+  explicit WebUIToolbarPixelInteractiveUiTest(bool enable_glic_button = false)
+      : enable_glic_button_(enable_glic_button) {
     // All features for Webium Production should be included here.
     // TODO(crbug.com/539786691): Re-enable kPrewarm once the feature is
     // compatible with the test.
-    feature_list_.InitWithFeatures(
-        {features::kInitialWebUI, features::kWebUIReloadButton,
-         features::kWebUISplitTabsButton, features::kWebUIBackForwardButton,
-         features::kWebUIHomeButton, features::kWebUIPinnedToolbarActions,
-         features::kWebUILocationBar, features::kWebUIAppMenuButton,
-         features::kWebUIGlicButton,
-         features::kSkipIPCChannelPausingForNonGuests,
-         features::kWebUIInProcessResourceLoadingV2},
-        {features::kPrewarm});
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kInitialWebUI,
+        features::kWebUIReloadButton,
+        features::kWebUISplitTabsButton,
+        features::kWebUIBackForwardButton,
+        features::kWebUIHomeButton,
+        features::kWebUIPinnedToolbarActions,
+        features::kWebUILocationBar,
+        features::kWebUIAppMenuButton,
+        features::kSkipIPCChannelPausingForNonGuests,
+        features::kWebUIInProcessResourceLoadingV2};
+    std::vector<base::test::FeatureRef> disabled_features = {
+        features::kPrewarm};
+    if (enable_glic_button_) {
+      enabled_features.push_back(features::kWebUIGlicButton);
+      enabled_features.push_back(features::kGlic);
+      enabled_features.push_back(features::kGlicHorizontalTabToolbarButton);
+#if BUILDFLAG(IS_CHROMEOS)
+      enabled_features.push_back(chromeos::features::kFeatureManagementGlic);
+#endif
+    } else {
+      disabled_features.push_back(features::kWebUIGlicButton);
+      disabled_features.push_back(features::kGlic);
+      disabled_features.push_back(features::kGlicHorizontalTabToolbarButton);
+#if BUILDFLAG(IS_CHROMEOS)
+      disabled_features.push_back(chromeos::features::kFeatureManagementGlic);
+#endif
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InteractiveBrowserTest::SetUpCommandLine(command_line);
+    if (enable_glic_button_) {
+      command_line->AppendSwitch(::switches::kGlicDev);
+    }
   }
 
   void SetUp() override {
@@ -317,6 +348,14 @@ class WebUIToolbarPixelInteractiveUiTest : public InteractiveBrowserTest {
     // Assert that WebContents is not loading, as it affects the state of the
     // reload button.
     ASSERT_FALSE(web_view->GetWebContents()->IsLoading());
+    if (enable_glic_button_) {
+      ASSERT_TRUE(
+          WaitForButtonVisible(web_view->GetWebContents(), "#glic-button"));
+    } else {
+      ASSERT_TRUE(
+          WaitForButtonHidden(web_view->GetWebContents(), "#glic-button"));
+    }
+    content::WaitForCopyableViewInWebContents(web_view->GetWebContents());
     // The WebView should be using the light color mode for regular windows,
     // and dark color mode for incognito windows.
     ASSERT_EQ(web_view->GetWidget()->GetColorMode(),
@@ -335,6 +374,7 @@ class WebUIToolbarPixelInteractiveUiTest : public InteractiveBrowserTest {
   }
 
  private:
+  const bool enable_glic_button_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -344,6 +384,18 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarPixelInteractiveUiTest, Basic) {
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarPixelInteractiveUiTest, IncognitoBasic) {
   BasicPixelTest(CreateIncognitoBrowser(), "IncognitoBasic");
+}
+
+class WebUIToolbarGlicPixelInteractiveUiTest
+    : public WebUIToolbarPixelInteractiveUiTest {
+ public:
+  WebUIToolbarGlicPixelInteractiveUiTest()
+      : WebUIToolbarPixelInteractiveUiTest(/*enable_glic_button=*/true) {}
+};
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarGlicPixelInteractiveUiTest,
+                       BasicWithGlicButton) {
+  BasicPixelTest(browser(), "BasicWithGlicButton");
 }
 
 // Tests for the old a new toolbar buttons. These tests unfortunately cannot

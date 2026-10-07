@@ -600,6 +600,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/bookmarks",
       "//chrome/browser/devtools",
       "//chrome/browser/extensions",
+      "//chrome/browser/glic",
       "//chrome/browser/preloading",
       "//chrome/browser/profiles:misc",
       "//chrome/browser/profiles:profile",
@@ -649,7 +650,10 @@ if (!is_android && !is_chromeos_device) {
       "//ui/views",
     ]
     if (is_chromeos) {
-      deps += [ "//components/user_manager" ]
+      deps += [
+        "//chromeos/constants",
+        "//components/user_manager",
+      ]
     }
     if (toolkit_views) {
       deps += [
