@@ -729,6 +729,14 @@ bool CastContentBrowserClient::ShouldEnableStrictSiteIsolation() {
   return false;
 }
 
+bool CastContentBrowserClient::ShouldIsolateErrorPage(bool in_main_frame) {
+  // Isolating subframe error pages requires out-of-process iframes, which Cast
+  // avoids by not enabling strict site isolation (see above) on its
+  // memory-constrained devices. Hence, only isolate main frame error pages,
+  // which don't require out-of-process iframes.
+  return in_main_frame;
+}
+
 scoped_refptr<net::X509Certificate> CastContentBrowserClient::DeviceCert() {
   return nullptr;
 }
