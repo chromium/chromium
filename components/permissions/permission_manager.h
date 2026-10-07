@@ -176,6 +176,10 @@ class PermissionManager : public KeyedService,
       const GURL& embedding_origin,
       bool should_include_device_status);
 
+  base::OnceCallback<void(content::PermissionResult)> CreatePermissionCallback(
+      ContentSettingsType permission,
+      std::unique_ptr<PermissionResponseCallback> response_callback);
+
   raw_ptr<content::BrowserContext> browser_context_;
 
   PendingRequestsMap pending_requests_;

@@ -95,14 +95,18 @@ GeolocationPermissionContextAndroid::~GeolocationPermissionContextAndroid() =
     default;
 
 void GeolocationPermissionContextAndroid::OnRequestsFinalized() {
-  std::vector<std::pair<std::unique_ptr<PermissionRequestData>,
-                        BrowserPermissionCallback>>
-      pending_reprompt_requests_local;
+  std::vector<PendingRepromptRequest> pending_reprompt_requests_local;
   pending_reprompt_requests_.swap(pending_reprompt_requests_local);
 
-  for (auto& [request_data, callback] : pending_reprompt_requests_local) {
-    GeolocationPermissionContext::RequestPermission(std::move(request_data),
-                                                    std::move(callback));
+  for (auto& request : pending_reprompt_requests_local) {
+    if (request.override_result) {
+      RequestPermissionInternal(std::move(request.request_data),
+                                request.override_result,
+                                std::move(request.callback));
+    } else {
+      GeolocationPermissionContext::RequestPermission(
+          std::move(request.request_data), std::move(request.callback));
+    }
   }
 }
 
@@ -114,9 +118,31 @@ void GeolocationPermissionContextAndroid::AddDayOffsetForTesting(int days) {
 void GeolocationPermissionContextAndroid::RequestPermission(
     std::unique_ptr<PermissionRequestData> request_data,
     BrowserPermissionCallback callback) {
+  RequestPermissionInternal(std::move(request_data),
+                            /*override_result=*/std::nullopt,
+                            std::move(callback));
+}
+
+void GeolocationPermissionContextAndroid::RequestPermissionWithResultOverride(
+    std::unique_ptr<PermissionRequestData> request_data,
+    content::PermissionResult override_result,
+    BrowserPermissionCallback callback) {
+  RequestPermissionInternal(std::move(request_data), override_result,
+                            std::move(callback));
+}
+
+void GeolocationPermissionContextAndroid::RequestPermissionInternal(
+    std::unique_ptr<PermissionRequestData> request_data,
+    std::optional<content::PermissionResult> override_result,
+    BrowserPermissionCallback callback) {
   content::RenderFrameHost* const render_frame_host =
       content::RenderFrameHost::FromID(
           request_data->id.global_render_frame_host_id());
+  if (!render_frame_host) {
+    std::move(callback).Run(content::PermissionResult(
+        PermissionStatus::ASK, content::PermissionStatusSource::UNSPECIFIED));
+    return;
+  }
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
@@ -140,10 +166,11 @@ void GeolocationPermissionContextAndroid::RequestPermission(
     return;
   }
 
-  DCHECK(render_frame_host);
   content::PermissionResult permission_result =
-      GeolocationPermissionContext::GetPermissionStatus(*request_data,
-                                                        render_frame_host);
+      override_result.has_value()
+          ? *override_result
+          : GeolocationPermissionContext::GetPermissionStatus(
+                *request_data, render_frame_host);
 
   if (!request_data->IsEmbeddedPermissionElementInitiated() &&
       (permission_result.status == PermissionStatus::GRANTED) &&
@@ -159,7 +186,9 @@ void GeolocationPermissionContextAndroid::RequestPermission(
           manager->Requests()[0]->request_type() == RequestType::kGeolocation) {
         manager->AddObserver(this);
         pending_reprompt_requests_.push_back(
-            std::make_pair(std::move(request_data), std::move(callback)));
+            PendingRepromptRequest{.request_data = std::move(request_data),
+                                   .override_result = override_result,
+                                   .callback = std::move(callback)});
         return;
       }
     }
@@ -186,6 +215,20 @@ void GeolocationPermissionContextAndroid::RequestPermission(
                                HandleUpdateAndroidPermissions,
                            weak_factory_.GetWeakPtr(), std::move(request_data),
                            prompt_options, std::move(callback)));
+    return;
+  }
+
+  if (override_result.has_value()) {
+    NotifyPermissionSet(
+        *request_data, std::move(callback), /*persist=*/false,
+        &*override_result,
+        PermissionPromptDecision{
+            .overall_decision =
+                override_result->status == PermissionStatus::GRANTED
+                    ? PermissionDecision::kAllow
+                    : PermissionDecision::kDeny,
+            .prompt_options = std::monostate(),
+            .is_final = true});
     return;
   }
 
@@ -237,8 +280,9 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
         content::WebContents::FromRenderFrameHost(
             content::RenderFrameHost::FromID(
                 request_data.id.global_render_frame_host_id()));
-    if (!web_contents)
+    if (!web_contents) {
       return;
+    }
 
     // Only show the location settings dialog if the tab for |web_contents| is
     // user-interactable (i.e. is the current tab, and Chrome is active and not
@@ -437,8 +481,9 @@ bool GeolocationPermissionContextAndroid::CanShowLocationSettingsDialog(
     return false;
   }
 
-  if (!ignore_backoff && IsInLocationSettingsBackOff(is_default_search))
+  if (!ignore_backoff && IsInLocationSettingsBackOff(is_default_search)) {
     return false;
+  }
 
   return location_settings_->CanPromptToEnableSystemLocationSetting();
 }
@@ -465,8 +510,9 @@ void GeolocationPermissionContextAndroid::OnLocationSettingsDialogShown(
 
   // If the permission was cancelled while the LSD was up, the callback has
   // already been dropped.
-  if (!location_settings_dialog_callback_)
+  if (!location_settings_dialog_callback_) {
     return;
+  }
 
   FinishNotifyPermissionSet(request_data,
                             std::move(location_settings_dialog_callback_),

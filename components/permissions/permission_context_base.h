@@ -32,7 +32,7 @@ class GURL;
 namespace permissions {
 struct PermissionPromptDecision;
 class PermissionRequestID;
-}
+}  // namespace permissions
 
 namespace content {
 class BrowserContext;
@@ -111,6 +111,16 @@ class PermissionContextBase : public content_settings::Observer {
   // is shown and ignored.
   virtual void RequestPermission(
       std::unique_ptr<PermissionRequestData> request_data,
+      BrowserPermissionCallback callback);
+
+  // Requests permission when a pre-determined `override_result` exists (e.g.
+  // from a PrivilegedWebContents delegate). Contexts that require device-level
+  // status checks/prompts (such as GeolocationPermissionContextAndroid) can
+  // override this method to perform those checks before finalizing the result.
+  // The default implementation resolves immediately with `override_result`.
+  virtual void RequestPermissionWithResultOverride(
+      std::unique_ptr<PermissionRequestData> request_data,
+      content::PermissionResult override_result,
       BrowserPermissionCallback callback);
 
   // Called in a permission request flow, to retrieve the current permission

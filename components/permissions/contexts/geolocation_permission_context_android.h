@@ -21,6 +21,7 @@
 //
 // Otherwise the permission is already decided.
 #include <memory>
+#include <optional>
 
 #include "base/memory/weak_ptr.h"
 #include "components/location/android/location_settings.h"
@@ -86,9 +87,15 @@ class GeolocationPermissionContextAndroid
   }
 
  private:
+  friend class GeolocationPermissionContextTestsBase;
+
   // GeolocationPermissionContext:
   void RequestPermission(std::unique_ptr<PermissionRequestData> request_data,
                          BrowserPermissionCallback callback) override;
+  void RequestPermissionWithResultOverride(
+      std::unique_ptr<PermissionRequestData> request_data,
+      content::PermissionResult override_result,
+      BrowserPermissionCallback callback) override;
   void UserMadePermissionDecision(const PermissionRequestID& id,
                                   const GURL& requesting_origin,
                                   const GURL& embedding_origin,
@@ -124,6 +131,11 @@ class GeolocationPermissionContextAndroid
 
   bool IsRequestingOriginDSE(const GURL& requesting_origin) const;
 
+  void RequestPermissionInternal(
+      std::unique_ptr<PermissionRequestData> request_data,
+      std::optional<content::PermissionResult> override_result,
+      BrowserPermissionCallback callback);
+
   void HandleUpdateAndroidPermissions(
       std::unique_ptr<PermissionRequestData> request_data,
       const PromptOptions& prompt_options,
@@ -156,9 +168,13 @@ class GeolocationPermissionContextAndroid
 
   BrowserPermissionCallback location_settings_dialog_callback_;
 
-  std::vector<std::pair<std::unique_ptr<PermissionRequestData>,
-                        BrowserPermissionCallback>>
-      pending_reprompt_requests_;
+  struct PendingRepromptRequest {
+    std::unique_ptr<PermissionRequestData> request_data;
+    std::optional<content::PermissionResult> override_result;
+    BrowserPermissionCallback callback;
+  };
+
+  std::vector<PendingRepromptRequest> pending_reprompt_requests_;
 
   // Must be the last member, to ensure that it will be destroyed first, which
   // will invalidate weak pointers.

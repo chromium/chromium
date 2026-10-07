@@ -284,6 +284,13 @@ void PermissionContextBase::RequestPermission(
   DecidePermission(std::move(request_data), std::move(callback));
 }
 
+void PermissionContextBase::RequestPermissionWithResultOverride(
+    std::unique_ptr<PermissionRequestData> request_data,
+    content::PermissionResult override_result,
+    BrowserPermissionCallback callback) {
+  std::move(callback).Run(override_result);
+}
+
 bool PermissionContextBase::IsRestrictedToSecureOrigins() const {
   return true;
 }

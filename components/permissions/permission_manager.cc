@@ -246,7 +246,6 @@ PermissionContextBase* PermissionManager::GetPermissionContext(
   return it == permission_contexts_.end() ? nullptr : it->second.get();
 }
 
-
 void PermissionManager::RequestPermissionsInternal(
     content::RenderFrameHost* render_frame_host,
     const content::PermissionRequestDescription& request_description,
@@ -287,7 +286,22 @@ void PermissionManager::RequestPermissionsInternal(
     if (auto override_result = GetPermissionResultOverride(
             render_frame_host, request_description.requesting_origin,
             permission)) {
-      response_callback->OnPermissionsRequestResponse(*override_result);
+      if (override_result->status != blink::mojom::PermissionStatus::GRANTED) {
+        response_callback->OnPermissionsRequestResponse(*override_result);
+        continue;
+      }
+      PermissionContextBase* context = GetPermissionContext(permission);
+      if (!context || !context->AlwaysIncludeDeviceStatus()) {
+        response_callback->OnPermissionsRequestResponse(*override_result);
+        continue;
+      }
+      context->RequestPermissionWithResultOverride(
+          std::make_unique<PermissionRequestData>(
+              request_id, request_description,
+              canonical_requesting_origin.DeprecatedGetOriginAsURL(), GURL(),
+              i),
+          *override_result,
+          CreatePermissionCallback(permission, std::move(response_callback)));
       continue;
     }
 
@@ -305,25 +319,31 @@ void PermissionManager::RequestPermissionsInternal(
         std::make_unique<PermissionRequestData>(
             request_id, request_description,
             canonical_requesting_origin.DeprecatedGetOriginAsURL(), GURL(), i),
-        base::BindOnce(
-            [](base::WeakPtr<PermissionManager> manager,
-               ContentSettingsType permission,
-               base::OnceCallback<void(content::PermissionResult)> callback,
-               content::PermissionResult result) {
-              if (!manager) {
-                return;
-              }
-
-              if (auto* context = manager->GetPermissionContext(permission)) {
-                context->MaybeOverridePermissionResultToReturn(result);
-              }
-              std::move(callback).Run(std::move(result));
-            },
-            weak_factory_.GetWeakPtr(), permission,
-            base::BindOnce(
-                &PermissionResponseCallback::OnPermissionsRequestResponse,
-                std::move(response_callback))));
+        CreatePermissionCallback(permission, std::move(response_callback)));
   }
+}
+
+base::OnceCallback<void(content::PermissionResult)>
+PermissionManager::CreatePermissionCallback(
+    ContentSettingsType permission,
+    std::unique_ptr<PermissionResponseCallback> response_callback) {
+  return base::BindOnce(
+      [](base::WeakPtr<PermissionManager> manager,
+         ContentSettingsType permission,
+         base::OnceCallback<void(content::PermissionResult)> callback,
+         content::PermissionResult result) {
+        if (!manager) {
+          return;
+        }
+
+        if (auto* context = manager->GetPermissionContext(permission)) {
+          context->MaybeOverridePermissionResultToReturn(result);
+        }
+        std::move(callback).Run(std::move(result));
+      },
+      weak_factory_.GetWeakPtr(), permission,
+      base::BindOnce(&PermissionResponseCallback::OnPermissionsRequestResponse,
+                     std::move(response_callback)));
 }
 
 void PermissionManager::ResetPermission(PermissionType permission,
@@ -333,8 +353,9 @@ void PermissionManager::ResetPermission(PermissionType permission,
   ContentSettingsType type =
       PermissionUtil::PermissionTypeToContentSettingsType(permission);
   PermissionContextBase* context = GetPermissionContext(type);
-  if (!context)
+  if (!context) {
     return;
+  }
   context->ResetPermission(PermissionUtil::GetCanonicalOrigin(
                                type, requesting_origin, embedding_origin),
                            embedding_origin.DeprecatedGetOriginAsURL());
@@ -512,8 +533,9 @@ bool PermissionManager::IsPermissionOverridable(
       PermissionUtil::PermissionTypeToContentSettingsTypeSafe(permission);
   PermissionContextBase* context = GetPermissionContext(type);
 
-  if (!context || context->IsPermissionKillSwitchOn())
+  if (!context || context->IsPermissionKillSwitchOn()) {
     return false;
+  }
 
   return !requesting_origin || !embedding_origin ||
          context->IsPermissionAvailableToOrigins(requesting_origin->GetURL(),
@@ -523,8 +545,9 @@ bool PermissionManager::IsPermissionOverridable(
 void PermissionManager::OnPermissionStatusChangeSubscriptionAdded(
     SubscriptionId subscription_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (is_shutting_down_)
+  if (is_shutting_down_) {
     return;
+  }
   if (!subscriptions() || subscriptions()->IsEmpty()) {
     return;
   }
@@ -582,16 +605,18 @@ void PermissionManager::OnPermissionStatusChangeSubscriptionAdded(
 void PermissionManager::UnsubscribeFromPermissionResultChange(
     SubscriptionId subscription_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (is_shutting_down_)
+  if (is_shutting_down_) {
     return;
+  }
 
   if (!subscriptions()) {
     return;
   }
   content::PermissionResultSubscription* subscription =
       subscriptions()->Lookup(subscription_id);
-  if (!subscription)
+  if (!subscription) {
     return;
+  }
 
   ContentSettingsType type =
       PermissionUtil::PermissionTypeToContentSettingsType(
@@ -629,8 +654,9 @@ void PermissionManager::OnPermissionsRequestResponse(
     int permission_id,
     content::PermissionResult permission_result) {
   PendingRequest* pending_request = pending_requests_.Lookup(request_local_id);
-  if (!pending_request)
+  if (!pending_request) {
     return;
+  }
 
   pending_request->SetPermissionResult(permission_id, permission_result);
 
@@ -807,7 +833,20 @@ content::PermissionResult PermissionManager::GetPermissionStatusInternal(
 
   if (auto override_result = GetPermissionResultOverride(
           render_frame_host, requesting_origin, content_settings_type)) {
-    return *override_result;
+    content::PermissionResult result = *override_result;
+    if (result.status != PermissionStatus::GRANTED) {
+      return result;
+    }
+    PermissionContextBase* context =
+        GetPermissionContext(content_settings_type);
+    if (!context || (!should_include_device_status &&
+                     !context->AlwaysIncludeDeviceStatus())) {
+      return result;
+    }
+    content::WebContents* const web_contents =
+        content::WebContents::FromRenderFrameHost(render_frame_host);
+    return context->UpdatePermissionStatusWithDeviceStatus(
+        web_contents, result, requesting_origin, embedding_origin);
   }
 
   // TODO(crbug.com/40218610): Move this to PermissionContextBase.

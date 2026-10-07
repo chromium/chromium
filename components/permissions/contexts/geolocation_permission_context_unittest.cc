@@ -26,6 +26,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "base/time/clock.h"
 #include "base/values.h"
@@ -1138,6 +1139,87 @@ TEST_P(GeolocationPermissionContextTests,
 
   ASSERT_FALSE(MockLocationSettings::HasShownLocationSettingsDialog());
   CheckPermissionMessageSent(1, true);
+}
+
+TEST_P(GeolocationPermissionContextTests,
+       RequestPermissionWithResultOverride_ShowsLSDWhenSystemLocationDisabled) {
+  GURL requesting_frame("https://www.example.com/geolocation");
+  NavigateAndCommit(requesting_frame);
+  RequestManagerDocumentLoadCompleted();
+  MockLocationSettings::ClearHasShownLocationSettingsDialog();
+
+  // Set system location disabled but allow LSD to be shown and granted.
+  MockLocationSettings::SetLocationStatus(
+      /*has_android_coarse_location_permission=*/true,
+      /*has_android_fine_location_permission=*/true,
+      /*is_system_location_setting_enabled=*/false);
+  MockLocationSettings::SetLocationSettingsDialogStatus(true /* enabled */,
+                                                        GRANTED);
+
+  // Content setting is ASK (no setting in HostContentSettingsMap).
+  ExpectGeolocationPermissionSettingAsk(requesting_frame, requesting_frame);
+
+  base::test::TestFuture<content::PermissionResult> future;
+  std::unique_ptr<PermissionRequestData> request_data =
+      std::make_unique<PermissionRequestData>(
+          RequestID(0),
+          content::PermissionRequestDescription(
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      blink::PermissionType::GEOLOCATION),
+              /*user_gesture=*/true, requesting_frame),
+          requesting_frame, requesting_frame, 0);
+
+  content::PermissionResult override_result(
+      blink::mojom::PermissionStatus::GRANTED,
+      content::PermissionStatusSource::UNSPECIFIED);
+
+  geolocation_permission_context_->RequestPermissionWithResultOverride(
+      std::move(request_data), override_result, future.GetCallback());
+
+  // LSD should have been shown.
+  EXPECT_TRUE(MockLocationSettings::HasShownLocationSettingsDialog());
+  // Result should be GRANTED after LSD is accepted.
+  EXPECT_EQ(blink::mojom::PermissionStatus::GRANTED, future.Get().status);
+  // Setting in HostContentSettingsMap should remain untouched (not persisted).
+  ExpectGeolocationPermissionSettingAsk(requesting_frame, requesting_frame);
+}
+
+TEST_P(GeolocationPermissionContextTests,
+       RequestPermissionWithResultOverride_DeniedDoesNotShowLSD) {
+  GURL requesting_frame("https://www.example.com/geolocation");
+  NavigateAndCommit(requesting_frame);
+  RequestManagerDocumentLoadCompleted();
+  MockLocationSettings::ClearHasShownLocationSettingsDialog();
+
+  MockLocationSettings::SetLocationStatus(
+      /*has_android_coarse_location_permission=*/true,
+      /*has_android_fine_location_permission=*/true,
+      /*is_system_location_setting_enabled=*/false);
+  MockLocationSettings::SetLocationSettingsDialogStatus(true /* enabled */,
+                                                        GRANTED);
+
+  base::test::TestFuture<content::PermissionResult> future;
+  std::unique_ptr<PermissionRequestData> request_data =
+      std::make_unique<PermissionRequestData>(
+          RequestID(0),
+          content::PermissionRequestDescription(
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      blink::PermissionType::GEOLOCATION),
+              /*user_gesture=*/true, requesting_frame),
+          requesting_frame, requesting_frame, 0);
+
+  content::PermissionResult override_result(
+      blink::mojom::PermissionStatus::DENIED,
+      content::PermissionStatusSource::UNSPECIFIED);
+
+  geolocation_permission_context_->RequestPermissionWithResultOverride(
+      std::move(request_data), override_result, future.GetCallback());
+
+  // LSD should not be shown.
+  EXPECT_FALSE(MockLocationSettings::HasShownLocationSettingsDialog());
+  EXPECT_EQ(blink::mojom::PermissionStatus::DENIED, future.Get().status);
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
