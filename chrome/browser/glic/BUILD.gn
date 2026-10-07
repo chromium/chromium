@@ -555,6 +555,7 @@ source_set("impl") {
     "//chrome/browser/resources/glic:resources",
     "//chrome/browser/resources/glic/experimental_opt_in:resources",
     "//chrome/browser/safe_browsing",
+    "//chrome/browser/search",
     "//chrome/browser/signin",
     "//chrome/browser/skills",
     "//chrome/browser/skills:public",

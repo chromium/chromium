@@ -45,9 +45,9 @@ class GlicExperimentalOptInUIHostAndroid : public GlicExperimentalOptInUIHost {
   raw_ptr<Delegate> delegate_;
   std::unique_ptr<content::WebContents> opt_in_web_contents_;
   base::android::ScopedJavaGlobalRef<jobject> java_dialog_;
-  // The tab created by GetOrCreateSuitableWebContents() for the currently
-  // showing dialog, if any. Held as a handle rather than a pointer so it
-  // resolves to null if the tab goes away underneath us.
+  // The tab selected or created by GetOrCreateSuitableWebContents() for the
+  // currently showing dialog, if any. Held as a handle rather than a pointer
+  // so it resolves to null if the tab goes away underneath us.
   tabs::TabHandle dialog_tab_;
   bool is_accepted_ = false;
   base::WeakPtrFactory<GlicExperimentalOptInUIHostAndroid> weak_ptr_factory_{

@@ -15,6 +15,7 @@
 #include "chrome/browser/glic/common/glic_navigation.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_ui_host_android.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -22,6 +23,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "ui/android/window_android.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -60,6 +62,12 @@ TabModel* GetActiveTabbedModel(Profile* profile) {
 tabs::TabInterface* GetActiveTab(Profile* profile) {
   TabModel* model = GetActiveTabModel(profile);
   return model ? model->GetActiveTab() : nullptr;
+}
+
+bool IsNewTabPageUrl(const GURL& url) {
+  return (url.SchemeIs(content::kChromeUIScheme) &&
+          url.host() == chrome::kChromeUINewTabHost) ||
+         search::IsNTPURL(url);
 }
 
 }  // namespace
@@ -172,7 +180,7 @@ void GlicExperimentalOptInUIHostAndroid::OpenLinkInNewTab(const GURL& url) {
 
 content::WebContents*
 GlicExperimentalOptInUIHostAndroid::GetOrCreateSuitableWebContents() {
-  // A dialog is already showing over a tab this host created. Hand that same
+  // A dialog is already showing over a tab this host selected. Hand that same
   // tab back instead of opening another one: Show() ignores the contents while
   // a dialog is up, so a second tab would be left stranded behind the dialog
   // after having pulled the user away from what they were looking at.
@@ -191,15 +199,20 @@ GlicExperimentalOptInUIHostAndroid::GetOrCreateSuitableWebContents() {
   // Show the dialog over an ordinary new tab page rather than over whatever
   // the user is currently looking at. This deliberately differs from the
   // desktop host, which anchors the dialog to a tab already showing the Gemini
-  // surface: on Clank a plain NTP is the intended backdrop.
-  tabs::TabInterface* new_tab =
-      model->OpenTab(GURL(chrome::kChromeUINewTabURL), model->GetTabCount(),
-                     /*foreground=*/true);
-  if (!new_tab) {
+  // surface: on Clank a plain NTP is the intended backdrop. If the active tab
+  // is already an NTP (for example, opened by the external trigger intent
+  // fallback), reuse it instead of opening a duplicate tab.
+  tabs::TabInterface* target_tab = model->GetActiveTab();
+  if (!target_tab || !IsNewTabPageUrl(target_tab->GetURL())) {
+    target_tab =
+        model->OpenTab(GURL(chrome::kChromeUINewTabURL), model->GetTabCount(),
+                       /*foreground=*/true);
+  }
+  if (!target_tab) {
     return nullptr;
   }
-  dialog_tab_ = new_tab->GetHandle();
-  return new_tab->GetContents();
+  dialog_tab_ = target_tab->GetHandle();
+  return target_tab->GetContents();
 }
 
 void GlicExperimentalOptInUIHostAndroid::SimulateDismissingForTesting() {
