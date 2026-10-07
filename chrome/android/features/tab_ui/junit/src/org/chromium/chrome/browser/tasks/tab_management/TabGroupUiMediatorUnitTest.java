@@ -931,6 +931,18 @@ public class TabGroupUiMediatorUnitTest {
     }
 
     @Test
+    public void destroy_RemovesDialogBackPressObserver() {
+        initAndAssertProperties(mTab1);
+        mDialogControllerSupplier.get();
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertTrue(mTabGridDialogBackPressSupplier.hasObservers());
+
+        mTabGroupUiMediator.destroy();
+
+        assertFalse(mTabGridDialogBackPressSupplier.hasObservers());
+    }
+
+    @Test
     public void uiNotVisibleAfterDragCurrentTabOutOfGroup() {
         initAndAssertProperties(mTab3);
 

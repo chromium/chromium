@@ -163,8 +163,10 @@ public class TabGroupUiMediator implements BackPressHandler {
     private final LayoutStateObserver mLayoutStateObserver;
     private final TabGroupObserver mTabGroupObserver;
     private final Callback<Boolean> mOmniboxFocusObserver;
+    private final Callback<Boolean> mDialogBackPressObserver;
 
     private CallbackController mCallbackController = new CallbackController();
+    private @Nullable NonNullObservableSupplier<Boolean> mDialogBackPressSupplier;
     private @Nullable LayoutStateProvider mLayoutStateProvider;
     private @Nullable TabModelSelectorTabObserver mTabModelSelectorTabObserver;
     private @Nullable Token mCurrentTabGroupId;
@@ -375,13 +377,16 @@ public class TabGroupUiMediator implements BackPressHandler {
         resetTabStrip();
 
         mHandleBackPressChangedSupplier = handleBackPressChangedSupplier;
+        mDialogBackPressObserver = mHandleBackPressChangedSupplier::set;
         if (mTabGridDialogControllerSupplier != null) {
             mTabGridDialogControllerSupplier.onAvailable(
-                    controller ->
-                            controller
-                                    .getHandleBackPressChangedSupplier()
-                                    .addSyncObserverAndPostIfNonNull(
-                                            mHandleBackPressChangedSupplier::set));
+                    mCallbackController.makeCancelable(
+                            controller -> {
+                                NonNullObservableSupplier<Boolean> supplier =
+                                        controller.getHandleBackPressChangedSupplier();
+                                supplier.addSyncObserverAndPostIfNonNull(mDialogBackPressObserver);
+                                mDialogBackPressSupplier = supplier;
+                            }));
         }
     }
 
@@ -611,6 +616,10 @@ public class TabGroupUiMediator implements BackPressHandler {
                     .getGroupMembersSupplier()
                     .removeObserver(mOnGroupMembersChanged);
             mTransitiveSharedGroupObserver.destroy();
+        }
+        if (mDialogBackPressSupplier != null) {
+            mDialogBackPressSupplier.removeObserver(mDialogBackPressObserver);
+            mDialogBackPressSupplier = null;
         }
         mChildTokenSupplier.removeObserver(mOnChildTokenChange);
         mWidthPxSupplier.removeObserver(mOnWidthChange);
