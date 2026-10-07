@@ -170,10 +170,10 @@ crbug.com/dawn/549 [ fuchsia ] WebGPUCachingTraceTest_* [ Skip ]
 [ fuchsia fuchsia-board-astro ] TraceTest_Video_HEVC [ Skip ]
 
 # WebGpu is not supported on x86 nvidia
-crbug.com/42240193 [ win10 nvidia target-cpu-32 ] WebGPUTraceTest_WebGPUCanvasDisableOneCopyCapture_Accelerated [ Skip ]
-crbug.com/42240193 [ win10 nvidia target-cpu-32 ] WebGPUTraceTest_WebGPUCanvasOneCopyCapture [ Skip ]
-crbug.com/42240193 [ win10 nvidia target-cpu-32 ] WebGPUTraceTest_WebGPUCanvasOneCopyCapture_Hidden [ Skip ]
-crbug.com/42240193 [ win10 nvidia target-cpu-32 ] WebGPUCachingTraceTest_* [ Skip ]
+crbug.com/42240193 [ win nvidia target-cpu-32 ] WebGPUTraceTest_WebGPUCanvasDisableOneCopyCapture_Accelerated [ Skip ]
+crbug.com/42240193 [ win nvidia target-cpu-32 ] WebGPUTraceTest_WebGPUCanvasOneCopyCapture [ Skip ]
+crbug.com/42240193 [ win nvidia target-cpu-32 ] WebGPUTraceTest_WebGPUCanvasOneCopyCapture_Hidden [ Skip ]
+crbug.com/42240193 [ win nvidia target-cpu-32 ] WebGPUCachingTraceTest_* [ Skip ]
 
 ###############################
 # Temporary Skip Expectations #
@@ -224,7 +224,7 @@ crbug.com/329138770 [ graphite-enabled no-clang-coverage nvidia-0x2184 nvidia_lt
 crbug.com/329138770 [ graphite-enabled no-clang-coverage nvidia-0x2184 nvidia_lt_32.0.15.8180 release target-cpu-32 win10 ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
 
 # Very Flaky on all win platforms
-crbug.com/517156647 [ no-clang-coverage release target-cpu-64 win ] SwapChainTraceTest_IsOpaque [ Failure ]
+crbug.com/517156647 [ no-clang-coverage release win ] SwapChainTraceTest_IsOpaque [ Failure ]
 
 # Win/AMD RX 7600 / RX 5500XT failures
 crbug.com/402989071 [ win11 amd ] TraceTest_MediaFoundationD3D11VideoCapture [ Failure ]

@@ -279,7 +279,7 @@ crbug.com/1372155 [ android android-sm-a137f ] Pixel_WebGLFloat [ Skip ]
 [ fuchsia ] Pixel_MeetEffects* [ Skip ]
 
 # WebGpu is not supported on x86 nvidia
-crbug.com/42240193 [ win10 nvidia target-cpu-32 ] Pixel_WebGPU* [ Skip ]
+crbug.com/42240193 [ win nvidia target-cpu-32 ] Pixel_WebGPU* [ Skip ]
 
 ###############################
 # Temporary Skip Expectations #
@@ -599,7 +599,7 @@ crbug.com/544795245 [ mac apple-angle-metal-renderer:-apple-m2 asan ] Pixel_View
 crbug.com/559557324 [ android android-Pixel-6 android-chromium ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
 
 # 32-bit GPU process virtual address space exhaustion (E_OUTOFMEMORY)
-crbug.com/417782068 [ win10 nvidia-0x2184 target-cpu-32 ] Pixel_MediaFoundationClearDirectComposition [ Failure ]
+crbug.com/417782068 [ win nvidia-0x2184 target-cpu-32 ] Pixel_MediaFoundationClearDirectComposition [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

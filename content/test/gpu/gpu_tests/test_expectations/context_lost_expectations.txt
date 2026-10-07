@@ -181,10 +181,10 @@ crbug.com/1334650 [ linux ] GpuCrash_InfoForHardwareGpu [ Skip ]
 crbug.com/1334650 [ linux ] GpuCrash_SoftwareFallbackDisabled [ Skip ]
 
 # WebGpu is not supported on x86 nvidia
-crbug.com/42240193 [ win10 nvidia target-cpu-32 ] ContextLost_WebGPUBlockedAfterJSNavigation [ Skip ]
-crbug.com/42240193 [ win10 nvidia target-cpu-32 ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
-crbug.com/42240193 [ win10 nvidia target-cpu-32 ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Skip ]
-crbug.com/42240193 [ win10 nvidia target-cpu-32 ] GpuNormalTermination_WebGPUNotBlocked [ Skip ]
+crbug.com/42240193 [ win nvidia target-cpu-32 ] ContextLost_WebGPUBlockedAfterJSNavigation [ Skip ]
+crbug.com/42240193 [ win nvidia target-cpu-32 ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
+crbug.com/42240193 [ win nvidia target-cpu-32 ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Skip ]
+crbug.com/42240193 [ win nvidia target-cpu-32 ] GpuNormalTermination_WebGPUNotBlocked [ Skip ]
 
 ###############################
 # Temporary Skip Expectations #
