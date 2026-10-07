@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <cmath>
 #include <memory>
 #include <string>
 #include <utility>
@@ -416,8 +417,9 @@ TEST_F(TextureLayerWithResourceTest, AffectedByHdr) {
   test_resource2_.ExpectRelease();
   EXPECT_CALL(*layer_tree_host_, SetNeedsCommit(_)).Times(AtLeast(1));
 
-  // sRGB with extended range is affected by HDR parameters.
-  test_resource1_.resource.hdr_metadata.extended_range.emplace(5.f, 5.f);
+  // sRGB with AGTM metadata is affected by HDR parameters.
+  test_resource1_.resource.hdr_metadata.SetExtendedRangeWithHeadroom(
+      std::log2(5.f));
   test_layer->SetTransferableResource(test_resource1_.resource,
                                       test_resource1_.release_callback);
   Mock::VerifyAndClearExpectations(layer_tree_host_.get());

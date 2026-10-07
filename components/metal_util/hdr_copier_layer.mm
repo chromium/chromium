@@ -570,7 +570,7 @@ bool ShouldUseHDRCopier(IOSurfaceRef buffer,
     return true;
   }
 
-  if (hdr_metadata.extended_range.has_value()) {
+  if (hdr_metadata.HasAgtm()) {
     return true;
   }
 

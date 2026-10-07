@@ -536,10 +536,6 @@ mojom("hdr_metadata") {
     {
       types = [
         {
-          mojom = "gfx.mojom.HdrMetadataExtendedRange"
-          cpp = "::gfx::HdrMetadataExtendedRange"
-        },
-        {
           mojom = "gfx.mojom.HDRMetadata"
           cpp = "::gfx::HDRMetadata"
         },

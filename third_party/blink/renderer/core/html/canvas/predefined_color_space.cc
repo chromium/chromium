@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
 
+#include <cmath>
+
 #include "third_party/blink/renderer/bindings/core/v8/v8_canvas_high_dynamic_range_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_canvas_smpte_st_2086_metadata.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_canvas_tone_mapping.h"
@@ -107,11 +109,8 @@ void ParseCanvasHighDynamicRangeOptions(
       case V8CanvasHighDynamicRangeMode::Enum::kDefault:
         break;
       case V8CanvasHighDynamicRangeMode::Enum::kExtended:
-        hdr_metadata.extended_range.emplace(
-            /*current_headroom=*/gfx::HdrMetadataExtendedRange::
-                kDefaultHdrHeadroom,
-            /*desired_headroom=*/gfx::HdrMetadataExtendedRange::
-                kDefaultHdrHeadroom);
+        hdr_metadata.SetExtendedRangeWithHeadroom(
+            std::log2(gfx::HDRMetadata::kDefaultHdrHeadroom));
         break;
     }
   }
@@ -150,11 +149,8 @@ void ParseCanvasToneMapping(const CanvasToneMapping* tone_mapping,
       case V8CanvasToneMappingMode::Enum::kStandard:
         break;
       case V8CanvasToneMappingMode::Enum::kExtended:
-        hdr_metadata.extended_range.emplace(
-            /*current_headroom=*/gfx::HdrMetadataExtendedRange::
-                kDefaultHdrHeadroom,
-            /*desired_headroom=*/gfx::HdrMetadataExtendedRange::
-                kDefaultHdrHeadroom);
+        hdr_metadata.SetExtendedRangeWithHeadroom(
+            std::log2(gfx::HDRMetadata::kDefaultHdrHeadroom));
         break;
     }
   }
@@ -162,7 +158,9 @@ void ParseCanvasToneMapping(const CanvasToneMapping* tone_mapping,
 
 CanvasToneMapping* CanvasToneMappingToV8(const gfx::HDRMetadata& hdr_metadata) {
   CanvasToneMapping* tone_mapping = CanvasToneMapping::Create();
-  if (hdr_metadata.extended_range.has_value()) {
+  // `extended` is the only supported non-`standard` mode, so report it for any
+  // AGTM metadata. Update this when more modes are added.
+  if (hdr_metadata.HasAgtm()) {
     tone_mapping->setMode(V8CanvasToneMappingMode::Enum::kExtended);
   } else {
     tone_mapping->setMode(V8CanvasToneMappingMode::Enum::kStandard);

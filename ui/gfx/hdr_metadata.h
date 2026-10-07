@@ -21,33 +21,6 @@ namespace gfx {
 
 class ColorSpace;
 
-// HDR metadata for extended range color spaces.
-struct COLOR_SPACE_EXPORT HdrMetadataExtendedRange {
-  constexpr HdrMetadataExtendedRange() = default;
-  constexpr HdrMetadataExtendedRange(float current_headroom,
-                                     float desired_headroom)
-      : current_headroom(current_headroom),
-        desired_headroom(desired_headroom) {}
-
-  // The HDR headroom of the contents of the current buffer.
-  float current_headroom = 1.f;
-
-  // The desired HDR headroom of the content in the current buffer. This may be
-  // greater than `current_headroom` if the content in the current buffer had
-  // to be tonemapped to fit into `current_headroom`.
-  float desired_headroom = 1.f;
-
-  // For HDR content that does not specify a headroom, this value is the
-  // headroom of HLG and most PQ content.
-  static constexpr float kDefaultHdrHeadroom = 1000.f / 203.f;
-
-  std::string ToString() const;
-
-  std::weak_ordering operator<=>(const HdrMetadataExtendedRange&) const;
-  friend bool operator==(const HdrMetadataExtendedRange&,
-                         const HdrMetadataExtendedRange&) = default;
-};
-
 // HDR metadata common for HDR10 and WebM/VP9-based HDR formats.
 struct COLOR_SPACE_EXPORT HDRMetadata {
   HDRMetadata();
@@ -77,6 +50,18 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
   // created first.
   void SetHdrReferenceWhite(float nits);
 
+  // Set the AGTM headroom-adaptive tone map (HATM) to specify only a baseline
+  // HDR headroom of `hdr_headroom` (in log2 stops), with no alternate images.
+  // This indicates that the content uses up to `hdr_headroom` of HDR headroom,
+  // and should be clamped (not tone mapped) when displayed with less headroom.
+  // Any existing HATM is replaced, but the AGTM HDR reference white is left
+  // unchanged (or set to the default if no AGTM was present).
+  void SetExtendedRangeWithHeadroom(float hdr_headroom);
+
+  // For HDR content that does not specify a headroom, this value is the
+  // (linear) headroom of HLG and most PQ content.
+  static constexpr float kDefaultHdrHeadroom = 1000.f / 203.f;
+
   // Mastering display color volume (MDCV) metadata.
   void SetMDCV(const skhdr::MasteringDisplayColorVolume& smpte) {
     mdcv_ = smpte;
@@ -95,9 +80,6 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
     return clli_.value();
   }
 
-  // Brightness points for extended range color spaces.
-  std::optional<HdrMetadataExtendedRange> extended_range;
-
   // Reset all metadata to be unspecified.
   void Reset();
 
@@ -109,8 +91,7 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
 
   // Return true if this structure holds no metadata.
   bool IsEmpty() const {
-    return !mdcv_.has_value() && !clli_.has_value() &&
-           !extended_range.has_value() && !agtm_.has_value();
+    return !mdcv_.has_value() && !clli_.has_value() && !agtm_.has_value();
   }
 
   // Compute the maximum luminance for the specified HDR metadata. This will

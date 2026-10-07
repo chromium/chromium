@@ -60,10 +60,10 @@ ToneMapInfo ComputeToneMapInfo(const skcms_TransferFunction& fn,
   const auto fn_type = skcms_TransferFunction_getType(&fn);
   ToneMapInfo info;
 
-  // The most common path is SDR content with no AGTM or extended range
-  // metadata, so handle that first.
+  // The most common path is SDR content with no AGTM metadata, so handle that
+  // first.
   if (fn_type != skcms_TFType_PQ && fn_type != skcms_TFType_HLG &&
-      !metadata.HasAgtm() && !metadata.extended_range) {
+      !metadata.HasAgtm()) {
     return info;
   }
 
@@ -96,14 +96,6 @@ ToneMapInfo ComputeToneMapInfo(const skcms_TransferFunction& fn,
       info.min_headroom = info.baseline_headroom;
       info.max_headroom = info.baseline_headroom;
     }
-    return info;
-  }
-
-  // Extended range is next-highest priority. Note that `current_headroom` is
-  // linear, while ToneMapInfo headrooms are in log2 stops.
-  if (metadata.extended_range) {
-    info.baseline_headroom = info.min_headroom = info.max_headroom =
-        std::log2(std::max(metadata.extended_range->current_headroom, 1.f));
     return info;
   }
 

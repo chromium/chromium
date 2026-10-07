@@ -590,7 +590,6 @@ _CONFIG = [
             'gfx::ColorSpace',
             'gfx::CubicBezier',
             'gfx::HDRMetadata',
-            'gfx::HdrMetadataExtendedRange',
             # For fast cos/sin functions
             'gfx::SinCosDegrees',
             # //base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h

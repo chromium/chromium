@@ -348,7 +348,7 @@ TEST(BaseRenderingContext2DTest, HdrMetadata) {
   V8TestingScope scope;
   const gfx::Size kSize(10, 10);
   gfx::HDRMetadata hdr_metadata;
-  hdr_metadata.extended_range = gfx::HdrMetadataExtendedRange(4.0f, 4.0f);
+  hdr_metadata.SetExtendedRangeWithHeadroom(2.f);
 
   CanvasContextCreationAttributesCore attrs;
   attrs.hdr_metadata = hdr_metadata;

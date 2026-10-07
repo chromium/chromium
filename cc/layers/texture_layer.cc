@@ -150,9 +150,9 @@ bool TextureLayer::RequiresSetNeedsDisplayOnHdrHeadroomChange() const {
     return true;
   }
 
-  // Extended range content also needs to be re-composited to limit itself to
-  // the new headroom.
-  if (resource.hdr_metadata.extended_range.has_value()) {
+  // Content with AGTM metadata also needs to be re-composited to adapt itself
+  // to the new headroom.
+  if (resource.hdr_metadata.HasAgtm()) {
     return true;
   }
 

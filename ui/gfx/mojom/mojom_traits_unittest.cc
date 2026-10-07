@@ -470,8 +470,8 @@ TEST_F(StructTraitsTest, HDRMetadata) {
   mojo::test::SerializeAndDeserialize<gfx::mojom::HDRMetadata>(input, output);
   EXPECT_EQ(input, output);
 
-  // Include extended range.
-  input.extended_range.emplace(10.f, 4.f);
+  // Include extended range AGTM.
+  input.SetExtendedRangeWithHeadroom(2.f);
   EXPECT_NE(input, output);
   mojo::test::SerializeAndDeserialize<gfx::mojom::HDRMetadata>(input, output);
   EXPECT_EQ(input, output);

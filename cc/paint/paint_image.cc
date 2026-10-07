@@ -519,7 +519,7 @@ float PaintImage::GetMaximumRenderedHdrHeadroom() const {
     return std::log2(max_ratio);
   }
   if (color_space() && gfx::ColorSpace(*color_space()).IsHDR()) {
-    return std::log2(gfx::HdrMetadataExtendedRange::kDefaultHdrHeadroom);
+    return std::log2(gfx::HDRMetadata::kDefaultHdrHeadroom);
   }
   return 0.0f;
 }

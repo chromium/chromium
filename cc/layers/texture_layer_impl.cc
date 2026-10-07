@@ -218,7 +218,7 @@ void TextureLayerImpl::ReleaseResources() {
 }
 
 gfx::ContentColorUsage TextureLayerImpl::GetContentColorUsage() const {
-  if (transferable_resource_.hdr_metadata.extended_range.has_value()) {
+  if (transferable_resource_.hdr_metadata.HasAgtm()) {
     return gfx::ContentColorUsage::kHDR;
   }
   return transferable_resource_.GetColorSpace().GetContentColorUsage();

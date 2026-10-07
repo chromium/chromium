@@ -228,7 +228,7 @@ OverlayCandidate OverlayProcessorInterface::CreatePrimaryPlane(
     // TODO(crbug.com/40263227): Track the actual brightness of the
     // content. For now, assume that all HDR content is 1,000 nits.
     overlay_plane.desired_brightness_ratio =
-        gfx::HdrMetadataExtendedRange::kDefaultHdrHeadroom;
+        gfx::HDRMetadata::kDefaultHdrHeadroom;
   }
 #endif
 

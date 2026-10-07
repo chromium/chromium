@@ -992,7 +992,7 @@ TEST_F(DrawingBufferDiscardBackBufferTest,
   // buffer and reset the discarded state so that MarkContentsChanged does not
   // crash.
   gfx::HDRMetadata hdr_metadata;
-  hdr_metadata.extended_range.emplace(2.f, 4.f);
+  hdr_metadata.SetExtendedRangeWithHeadroom(1.f);
   drawing_buffer_->SetHdrMetadata(hdr_metadata);
   EXPECT_TRUE(drawing_buffer_->HasBackColorBufferForTesting());
 
