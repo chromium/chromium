@@ -611,8 +611,8 @@ FeatureList::PrepareRuntimeMutableFeatureStateUpdate(
 }
 
 std::optional<FeatureList::RuntimeMutableFeatureUpdate>
-FeatureList::PrepareRuntimeMutableFeatureStateUpdate(
-    base::PassKey<base::test::ScopedFeatureList>,
+FeatureList::PrepareRuntimeMutableFeatureStateUpdateForTesting(
+    base::PassKey<base::test::ScopedFeatureList, FeatureListTest>,
     const RuntimeFieldTrialInfo* override_info,
     std::string_view feature_name,
     OverrideState override_state) {

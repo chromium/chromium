@@ -51,6 +51,9 @@ namespace internal {
 struct RuntimeMutableFeatureState;
 }  // namespace internal
 
+// Forward declarations for test classes granted PassKey access to internal
+// APIs.
+class FeatureListTest;
 namespace test {
 class ScopedFeatureList;
 }  // namespace test
@@ -368,14 +371,15 @@ class BASE_EXPORT FeatureList {
       std::string_view feature_name,
       OverrideState override_state);
 
-  // Same as above, but for tests that simulate runtime mutations without
-  // running the real variations machinery. Tests should not call this directly;
-  // use `base::test::ScopedFeatureList::MutateRuntimeMutableFeatures()`, which
-  // runs the same 3-phase sequence that the variations service does in
-  // production.
+  // Same as above, but for testing. Tests should generally not call this
+  // directly; use
+  // `base::test::ScopedFeatureList::MutateRuntimeMutableFeatures()`, which runs
+  // the same 3-phase sequence that the variations service does in production.
+  // Direct calls are intended for `FeatureListTest` verifying the internal
+  // validation logic.
   [[nodiscard]] std::optional<RuntimeMutableFeatureUpdate>
-  PrepareRuntimeMutableFeatureStateUpdate(
-      base::PassKey<base::test::ScopedFeatureList>,
+  PrepareRuntimeMutableFeatureStateUpdateForTesting(
+      base::PassKey<base::test::ScopedFeatureList, FeatureListTest>,
       const RuntimeFieldTrialInfo* override_info,
       std::string_view feature_name,
       OverrideState override_state);

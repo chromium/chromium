@@ -545,7 +545,7 @@ void ScopedFeatureList::MutateRuntimeMutableFeaturesWithParameters(
         params, nullptr);
 
     std::optional<FeatureList::RuntimeMutableFeatureUpdate> update =
-        feature_list->PrepareRuntimeMutableFeatureStateUpdate(
+        feature_list->PrepareRuntimeMutableFeatureStateUpdateForTesting(
             PassKey(), override_info.get(), feature.name,
             enable ? FeatureList::OVERRIDE_ENABLE_FEATURE
                    : FeatureList::OVERRIDE_DISABLE_FEATURE);
