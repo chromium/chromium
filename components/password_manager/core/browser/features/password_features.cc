@@ -45,10 +45,10 @@ BASE_FEATURE(kApplyClientsideModelPredictionsForPasswordTypes,
 BASE_FEATURE(kAutoApproveSharedPasswordUpdatesFromSameSender,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-BASE_FEATURE(kAutofillPasswordUserPerceptionSurvey,
+BASE_FEATURE(kAutofillPersonalizationAndTrustPasswordSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 BASE_FEATURE(kAwaitPageStabilityForPasswordChange,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<base::TimeDelta> kAwaitPageStabilityTimeout = {

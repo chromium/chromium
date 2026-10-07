@@ -519,7 +519,7 @@ class PasswordFormMetricsRecorder
   // used as part of hats survey answers information.
   // If the assistance holds a different variant type (i.e
   // `SingleUsernameFillingAssistance`), returns an empty string.
-  std::string FillingAssinstanceToHatsInProductDataString();
+  std::string_view FillingAssistanceToHatsInProductDataString();
 
   void set_username_updated_in_bubble(bool value) {
     username_updated_in_bubble_ = value;

@@ -1581,35 +1581,36 @@ TEST_F(ChromePasswordManagerClientTest, CanShowBubbleOnURL) {
 
 #if !BUILDFLAG(IS_ANDROID)
 // Test that the hats service is called with the expected params.
-TEST_F(ChromePasswordManagerClientTest,
-       TriggerUserPerceptionOfAutofillPasswordSurvey) {
+TEST_F(ChromePasswordManagerClientTest, TriggerPersonalizationAndTrustSurvey) {
   MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
       HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(), base::BindRepeating(&BuildMockHatsService)));
   EXPECT_CALL(*mock_hats_service, CanShowAnySurvey)
       .WillRepeatedly(Return(true));
 
-  const std::string filling_assistane = "Automatically filled";
-  const SurveyStringData filling_assistance_in_product_data = {
-      {"Filling assistance", filling_assistane}};
-  EXPECT_CALL(*mock_hats_service,
-              LaunchDelayedSurveyForWebContents(
-                  kHatsSurveyTriggerAutofillPasswordUserPerception, _, _, _,
-                  filling_assistance_in_product_data, _, _, _, _, _));
+  constexpr std::string_view kFillingAssistance = "Automatically filled";
+  EXPECT_CALL(
+      *mock_hats_service,
+      LaunchDelayedSurveyForWebContents(
+          kHatsSurveyTriggerAutofillPersonalizationAndTrustPasswordFilled, _, _,
+          _,
+          SurveyStringData{
+              {"Filling assistance", std::string(kFillingAssistance)}},
+          _, _, _, _, _));
 
-  GetClient()->TriggerUserPerceptionOfPasswordManagerSurvey(filling_assistane);
+  GetClient()->TriggerPersonalizationAndTrustSurvey(kFillingAssistance);
 }
 
 TEST_F(
     ChromePasswordManagerClientTest,
-    TriggerUserPerceptionOfAutofillPasswordSurvey_EmptyFillingAssistanceString_DoNotCallHats) {
+    TriggerPersonalizationAndTrustSurvey_EmptyFillingAssistance_DoNotCallHats) {
   MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
       HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(), base::BindRepeating(&BuildMockHatsService)));
 
   EXPECT_CALL(*mock_hats_service, LaunchDelayedSurveyForWebContents).Times(0);
 
-  GetClient()->TriggerUserPerceptionOfPasswordManagerSurvey("");
+  GetClient()->TriggerPersonalizationAndTrustSurvey("");
 }
 #endif
 

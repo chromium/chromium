@@ -1167,10 +1167,10 @@ void PasswordFormMetricsRecorder::RecordFillEvent(ManagerAutofillEvent event) {
   ukm_entry_builder_.SetManagerFill_Action(event);
 }
 
-std::string
-PasswordFormMetricsRecorder::FillingAssinstanceToHatsInProductDataString() {
+std::string_view
+PasswordFormMetricsRecorder::FillingAssistanceToHatsInProductDataString() {
   if (!std::holds_alternative<FillingAssistance>(filling_assistance_)) {
-    return std::string();
+    return "";
   }
 
   FillingAssistance filling_assistance =

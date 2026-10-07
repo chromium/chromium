@@ -309,8 +309,8 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (),
               (const, override));
   MOCK_METHOD(void,
-              TriggerUserPerceptionOfPasswordManagerSurvey,
-              (const std::string&),
+              TriggerPersonalizationAndTrustSurvey,
+              (std::string_view),
               (override));
   MOCK_METHOD(PasswordManagerMetricsRecorder*,
               GetMetricsRecorder,
@@ -7062,12 +7062,12 @@ TEST_P(PasswordManagerTest, ModelPredictionsEmptyMetric_NonEmpty) {
       false);
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Check that a happiness surney is triggered after the user has submitted
 // a manually filled form and logged in.
 TEST_P(PasswordManagerTest, HatsSurveyTriggeredOnSuccessfulLogin) {
   base::test::ScopedFeatureList feature_list{
-      password_manager::features::kAutofillPasswordUserPerceptionSurvey};
+      password_manager::features::
+          kAutofillPersonalizationAndTrustPasswordSurvey};
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
 
   // Simulate adding a credential that the user will fill.
@@ -7094,7 +7094,7 @@ TEST_P(PasswordManagerTest, HatsSurveyTriggeredOnSuccessfulLogin) {
           autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger);
   manager()->OnPasswordFormSubmitted(&driver_, observed_form);
 
-  EXPECT_CALL(client_, TriggerUserPerceptionOfPasswordManagerSurvey(
+  EXPECT_CALL(client_, TriggerPersonalizationAndTrustSurvey(
                            "Password was filled (automatically or manually), "
                            "known username was typed"));
   manager()->OnPasswordFormsRendered(&driver_, {});
@@ -7104,7 +7104,8 @@ TEST_P(PasswordManagerTest, HatsSurveyTriggeredOnSuccessfulLogin) {
 // a manually filled form, but failed to log in.
 TEST_P(PasswordManagerTest, HatsSurveyTriggeredOnFailedLogin) {
   base::test::ScopedFeatureList feature_list{
-      password_manager::features::kAutofillPasswordUserPerceptionSurvey};
+      password_manager::features::
+          kAutofillPersonalizationAndTrustPasswordSurvey};
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
 
   // Simulate adding a credential that the user will fill.
@@ -7131,7 +7132,7 @@ TEST_P(PasswordManagerTest, HatsSurveyTriggeredOnFailedLogin) {
           autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger);
   manager()->OnPasswordFormSubmitted(&driver_, observed_form);
 
-  EXPECT_CALL(client_, TriggerUserPerceptionOfPasswordManagerSurvey(
+  EXPECT_CALL(client_, TriggerPersonalizationAndTrustSurvey(
                            "Credentials were filled manually, without typing"));
   manager()->OnPasswordFormsRendered(&driver_, {MakeSimpleFormData()});
 }
@@ -7140,7 +7141,8 @@ TEST_P(PasswordManagerTest, HatsSurveyTriggeredOnFailedLogin) {
 // a form filled on a page load and logged in.
 TEST_P(PasswordManagerTest, HatsSurveyNotTriggeredAfterAutomaticFilling) {
   base::test::ScopedFeatureList feature_list{
-      password_manager::features::kAutofillPasswordUserPerceptionSurvey};
+      password_manager::features::
+          kAutofillPersonalizationAndTrustPasswordSurvey};
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
 
   // Simulate adding a credential that the user will fill.
@@ -7168,10 +7170,9 @@ TEST_P(PasswordManagerTest, HatsSurveyNotTriggeredAfterAutomaticFilling) {
           autofill::FieldPropertiesFlags::kAutofilledOnPageLoad);
   manager()->OnPasswordFormSubmitted(&driver_, observed_form);
 
-  EXPECT_CALL(client_, TriggerUserPerceptionOfPasswordManagerSurvey).Times(0);
+  EXPECT_CALL(client_, TriggerPersonalizationAndTrustSurvey).Times(0);
   manager()->OnPasswordFormsRendered(&driver_, {});
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_P(PasswordManagerTest, MarksHasPasswordFormForFirstCctPageLoad) {

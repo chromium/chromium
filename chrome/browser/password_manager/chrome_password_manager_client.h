@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -270,8 +271,8 @@ class ChromePasswordManagerClient
   safe_browsing::PasswordProtectionService* GetPasswordProtectionService()
       const override;
 #endif
-  void TriggerUserPerceptionOfPasswordManagerSurvey(
-      const std::string& filling_assistance) override;
+  void TriggerPersonalizationAndTrustSurvey(
+      std::string_view filling_assistance) override;
 
 #if defined(ON_FOCUS_PING_ENABLED) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   void CheckSafeBrowsingReputation(const GURL& form_action,

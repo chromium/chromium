@@ -93,6 +93,7 @@ source_set("impl") {
     "//components/content_settings/core/common",
     "//components/lens:features",
     "//components/metrics_services_manager",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common",
     "//components/permissions",
     "//components/permissions:permissions_common",

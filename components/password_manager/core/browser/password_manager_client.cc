@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/password_manager_client.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -195,8 +196,8 @@ PasswordManagerClient::GetWebAuthnCredentialsDelegateForDriver(
   return nullptr;
 }
 
-void PasswordManagerClient::TriggerUserPerceptionOfPasswordManagerSurvey(
-    const std::string& filling_assistance) {}
+void PasswordManagerClient::TriggerPersonalizationAndTrustSurvey(
+    std::string_view filling_assistance) {}
 
 #if BUILDFLAG(IS_ANDROID)
 webauthn::WebAuthnCredManDelegate*

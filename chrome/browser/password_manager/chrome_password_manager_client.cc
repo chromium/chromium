@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_deref.h"
@@ -53,6 +54,9 @@
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/passwords/password_cross_domain_confirmation_popup_controller_impl.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller_impl.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
@@ -186,9 +190,6 @@
 #include "chrome/browser/password_manager/factories/password_counter_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/hats/hats_service.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
-#include "chrome/browser/ui/hats/survey_config.h"
 #include "components/password_manager/core/browser/password_counter.h"
 #include "components/policy/core/common/features.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -380,9 +381,8 @@ bool ChromePasswordManagerClient::IsAutoSignInEnabled() const {
                                  PasswordManagerSetting::kAutoSignIn);
 }
 
-void ChromePasswordManagerClient::TriggerUserPerceptionOfPasswordManagerSurvey(
-    const std::string& filling_assistance) {
-#if !BUILDFLAG(IS_ANDROID)
+void ChromePasswordManagerClient::TriggerPersonalizationAndTrustSurvey(
+    std::string_view filling_assistance) {
   if (filling_assistance.empty()) {
     return;
   }
@@ -394,10 +394,10 @@ void ChromePasswordManagerClient::TriggerUserPerceptionOfPasswordManagerSurvey(
   }
 
   hats_service->LaunchDelayedSurveyForWebContents(
-      kHatsSurveyTriggerAutofillPasswordUserPerception, web_contents(),
-      /*timeout_ms=*/5000, /*product_specific_bits_data=*/
-      {}, {{"Filling assistance", filling_assistance}});
-#endif
+      kHatsSurveyTriggerAutofillPersonalizationAndTrustPasswordFilled,
+      web_contents(),
+      /*timeout_ms=*/5000, /*product_specific_bits_data=*/{},
+      {{"Filling assistance", std::string(filling_assistance)}});
 }
 
 bool ChromePasswordManagerClient::PromptUserToSaveOrUpdatePassword(

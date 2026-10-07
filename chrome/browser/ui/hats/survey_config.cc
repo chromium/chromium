@@ -18,6 +18,7 @@
 #include "components/lens/lens_features.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/page_info/core/features.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_hats_trigger_helper.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -34,8 +35,6 @@
 #include "chrome/browser/download/download_warning_desktop_hats_utils.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey.h"
 #include "chrome/browser/metrics/critical_user_journeys/features.h"
-#include "components/password_manager/core/browser/features/password_features.h"  // nogncheck
-#include "components/password_manager/core/browser/features/password_manager_features_util.h"  // nogncheck
 #include "components/performance_manager/public/features.h"  // nogncheck
 #include "components/permissions/constants.h"                // nogncheck
 #else
@@ -320,12 +319,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &::autofill::features::kAutofillAddressUserDeclinedSaveSurvey,
       kHatsSurveyTriggerAutofillAddressUserDeclinedSave);
-
-  survey_configs.emplace_back(
-      &password_manager::features::kAutofillPasswordUserPerceptionSurvey,
-      kHatsSurveyTriggerAutofillPasswordUserPerception,
-      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
-      std::vector<std::string>{"Filling assistance"});
 
   survey_configs.emplace_back(&features::kAutofillAddressSurvey,
                               kHatsSurveyTriggerAutofillAddress);
@@ -827,6 +820,14 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       /*presupplied_trigger_id=*/std::nullopt,
       /*product_specific_bits_data_fields=*/std::vector<std::string>{},
       autofill_personalization_and_trust_product_specific_data);
+  survey_configs.emplace_back(
+      &password_manager::features::
+          kAutofillPersonalizationAndTrustPasswordSurvey,
+      kHatsSurveyTriggerAutofillPersonalizationAndTrustPasswordFilled,
+      /*presupplied_trigger_id=*/std::nullopt,
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/
+      std::vector<std::string>{"Filling assistance"});
   survey_configs.emplace_back(
       &::autofill::features::kAutofillPersonalizationAndTrustAtMemorySurvey,
       kHatsSurveyTriggerAutofillPersonalizationAndTrustAtMemoryFilled,

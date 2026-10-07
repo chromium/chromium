@@ -24,8 +24,6 @@ inline constexpr char
         "autofill-address-users-perception";
 inline constexpr char kHatsSurveyTriggerAutofillAddressUserDeclinedSave[] =
     "autofill-address-user-declined-save";
-inline constexpr char kHatsSurveyTriggerAutofillPasswordUserPerception[] =
-    "autofill-password-users-perception";
 inline constexpr char kHatsSurveyTriggerAutofillCard[] = "autofill-card";
 inline constexpr char kHatsSurveyTriggerAutofillPassword[] =
     "autofill-password";
@@ -196,6 +194,9 @@ inline constexpr char
 inline constexpr char
     kHatsSurveyTriggerAutofillPersonalizationAndTrustOneTimePasswordFilled[] =
         "autofill-personalization-and-trust-one-time-password-filled";
+inline constexpr char
+    kHatsSurveyTriggerAutofillPersonalizationAndTrustPasswordFilled[] =
+        "autofill-personalization-and-trust-password-filled";
 inline constexpr char
     kHatsSurveyTriggerAutofillPersonalizationAndTrustAtMemoryFilled[] =
         "autofill-personalization-and-trust-at-memory-filled";
