@@ -94,10 +94,13 @@ void LogFileChooserSuppressedByWindowSize(WebContents* web_contents,
   }
 }
 
-void LogFileChooserCancelledByWindowResize(WebContents* web_contents) {
+void LogFileChooserCancelledByWindowResize(WebContents* web_contents,
+                                           bool cancelled) {
   base::UmaHistogramBoolean("Content.FileChooser.CancelledByWindowResize",
-                            true);
-  LogFileChooserWindowTooSmallDetails(web_contents);
+                            cancelled);
+  if (cancelled) {
+    LogFileChooserWindowTooSmallDetails(web_contents);
+  }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -489,6 +492,12 @@ FileSystemChooser::FileSystemChooser(
 
 FileSystemChooser::~FileSystemChooser() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#if !BUILDFLAG(IS_ANDROID)
+  if (canceller_) {
+    LogFileChooserCancelledByWindowResize(canceller_->web_contents(),
+                                          /*cancelled=*/false);
+  }
+#endif
   if (dialog_) {
     dialog_->ListenerDestroyed();
   }
@@ -527,7 +536,9 @@ void FileSystemChooser::OnCancelledByWebContents() {
   if (canceller_ &&
       WebContentsBasedCanceller::IsWindowTooSmall(
           canceller_->web_contents(), GetMinFileChooserWindowSize())) {
-    LogFileChooserCancelledByWindowResize(canceller_->web_contents());
+    LogFileChooserCancelledByWindowResize(canceller_->web_contents(),
+                                          /*cancelled=*/true);
+    canceller_.reset();
   }
 #endif
   FileSelectionCanceled();

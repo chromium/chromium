@@ -2484,6 +2484,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, MAYBE_ShowThenHide) {
       std::make_unique<ObservableSelectFileDialogFactory>(
           recorder.GetWeakPtr()));
 
+  base::HistogramTester histograms;
+
   // Open the dialog and wait until it's created.
   ASSERT_EQ(
       42,
@@ -2502,6 +2504,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, MAYBE_ShowThenHide) {
 
   // JS should see the dialog as aborted.
   EXPECT_EQ("AbortError", content::EvalJs(wc, "p"));
+  histograms.ExpectUniqueSample("Content.FileChooser.CancelledByWindowResize",
+                                false, 1);
 }
 
 #if BUILDFLAG(IS_ANDROID)

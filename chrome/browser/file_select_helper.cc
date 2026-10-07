@@ -117,10 +117,13 @@ void LogFileChooserSuppressedByWindowSize(content::WebContents* web_contents,
   }
 }
 
-void LogFileChooserCancelledByWindowResize(content::WebContents* web_contents) {
+void LogFileChooserCancelledByWindowResize(content::WebContents* web_contents,
+                                           bool cancelled) {
   base::UmaHistogramBoolean("Content.FileChooser.CancelledByWindowResize",
-                            true);
-  LogFileChooserWindowTooSmallDetails(web_contents);
+                            cancelled);
+  if (cancelled) {
+    LogFileChooserWindowTooSmallDetails(web_contents);
+  }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -836,6 +839,10 @@ void FileSelectHelper::RunFileChooserEnd() {
   // keep this instance alive for temporary files.
   scoped_disallow_picture_in_picture_.reset();
   scoped_tuck_picture_in_picture_.reset();
+
+  if (web_contents_based_canceller_) {
+    LogFileChooserCancelledByWindowResize(web_contents_, /*cancelled=*/false);
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   web_contents_based_canceller_.reset();
@@ -976,7 +983,8 @@ void FileSelectHelper::OnTabDeactivated(tabs::TabInterface* tab) {
 
 void FileSelectHelper::OnCancelledByWindowSize() {
 #if !BUILDFLAG(IS_ANDROID)
-  LogFileChooserCancelledByWindowResize(web_contents_);
+  LogFileChooserCancelledByWindowResize(web_contents_, /*cancelled=*/true);
+  web_contents_based_canceller_.reset();
 #endif
   RunFileChooserEnd();
 }

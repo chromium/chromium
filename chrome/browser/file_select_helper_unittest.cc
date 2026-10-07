@@ -833,12 +833,17 @@ TEST_F(FileSelectHelperTest,
   web_contents->SetDelegate(&delegate);
   web_contents->Resize(gfx::Rect(0, 0, 200, 600));
 
+  base::HistogramTester histograms;
   std::vector<blink::mojom::FileChooserFileInfoPtr> files;
   auto listener = base::MakeRefCounted<TestFileSelectListener>(&files);
 
   FileSelectHelper::EnumerateDirectory(web_contents, listener, data_dir_);
   EXPECT_FALSE(listener->canceled());
   ASSERT_TRUE(base::test::RunUntil([&]() { return !files.empty(); }));
+  histograms.ExpectUniqueSample("Content.FileChooser.SuppressedByWindowSize",
+                                false, 1);
+  histograms.ExpectUniqueSample("Content.FileChooser.CancelledByWindowResize",
+                                false, 1);
   web_contents->SetDelegate(nullptr);
 }
 

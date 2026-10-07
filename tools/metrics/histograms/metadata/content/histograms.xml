@@ -65,9 +65,10 @@ chromium-metrics-reviews@google.com.
   <owner>elkurin@chromium.org</owner>
   <owner>content-owners@chromium.org</owner>
   <summary>
-    Records true when an active file chooser dialog or directory enumeration is
+    Records whether an active file chooser dialog or directory enumeration was
     cancelled because the top-level window was dynamically resized smaller than
-    the minimum required size (400x300).
+    the minimum required size (400x300). Recorded when an opened file chooser
+    dialog or directory enumeration ends.
   </summary>
 </histogram>
 
