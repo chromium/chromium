@@ -113,7 +113,7 @@ def tot_mac_builder(*, name, is_rust = False, **kwargs):
             # The Chromium build doesn't need system Xcode, but the ToT
             # bots also build clang and llvm and that build does need system
             # Xcode.
-            "xcode_build_version": "14c18",
+            "xcode_build_version": "17a400",
         },
         contact_team_email = "lexan@google.com",
         description_html = "Builder that builds ToT " + desc_tool + " and uses it to build Chromium",
