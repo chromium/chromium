@@ -4248,9 +4248,6 @@ source_set("core_unit_tests") {
       "//chrome/common:channel_info",
       "//components/version_info:channel",
     ]
-    if (is_chrome_branded) {
-      deps += [ "//chrome/test/base:scoped_channel_override" ]
-    }
   }
 
   if (is_posix && !is_android) {
@@ -4286,9 +4283,6 @@ source_set("core_unit_tests") {
       "//components/webapps/common",
       "//ui/ozone",
     ]
-    if (is_chrome_branded) {
-      deps += [ "//chrome/test/base:scoped_channel_override" ]
-    }
 
     if (use_dbus) {
       sources += [ "dbus_memory_pressure_evaluator_linux_unittest.cc" ]

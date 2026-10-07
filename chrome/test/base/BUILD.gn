@@ -247,6 +247,22 @@ source_set("chrome_test_scoped_utils") {
   ]
   public_deps = [ "//base" ]
   deps = [ "//chrome/browser:browser_process" ]
+
+  if (is_chrome_branded && (is_mac || is_win || is_linux)) {
+    sources += [ "scoped_channel_override.h" ]
+    public_deps += [ "//build:branding_buildflags" ]
+    if (is_mac) {
+      sources += [ "scoped_channel_override_mac.cc" ]
+      deps += [ "//chrome/common" ]
+    } else if (is_win) {
+      sources += [ "scoped_channel_override_win.cc" ]
+      public_deps += [ "//chrome/install_static/test:test_support" ]
+      deps += [ "//chrome/install_static:install_static_util" ]
+    } else {
+      sources += [ "scoped_channel_override_posix.cc" ]
+      public_deps += [ "//base/test:test_support" ]
+    }
+  }
 }
 
 source_set("menu_model_test") {
@@ -748,26 +764,6 @@ source_set("web_ui_mocha_browser_test") {
       "//chrome/browser/ui",
       "//content/public/common",
     ]
-  }
-}
-
-if (is_chrome_branded && (is_mac || is_win || is_linux)) {
-  source_set("scoped_channel_override") {
-    testonly = true
-    sources = [ "scoped_channel_override.h" ]
-    public_deps = [ "//build:branding_buildflags" ]
-    if (is_mac) {
-      sources += [ "scoped_channel_override_mac.cc" ]
-      deps = [ "//chrome/common" ]
-    } else if (is_win) {
-      sources += [ "scoped_channel_override_win.cc" ]
-      public_deps += [ "//chrome/install_static/test:test_support" ]
-      deps = [ "//chrome/install_static:install_static_util" ]
-    } else {
-      sources += [ "scoped_channel_override_posix.cc" ]
-      public_deps += [ "//base/test:test_support" ]
-      deps = [ "//base" ]
-    }
   }
 }
 
