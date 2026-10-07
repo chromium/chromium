@@ -584,14 +584,17 @@ gfx::PointF GetSanitizedFlippedPoint(NSPoint point, CGFloat height) {
 }
 
 - (void)viewDidMoveToWindow {
+  [super viewDidMoveToWindow];
   [self updateWebContentsVisibility];
 }
 
 - (void)viewDidHide {
+  [super viewDidHide];
   [self updateWebContentsVisibility];
 }
 
 - (void)viewDidUnhide {
+  [super viewDidUnhide];
   [self updateWebContentsVisibility];
 }
 

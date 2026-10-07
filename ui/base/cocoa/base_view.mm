@@ -169,6 +169,17 @@ NSString* kSelectionDirection = @"Chromium.kSelectionDirection";
   [self mouseExited:exitEvent];
 }
 
+- (void)viewDidUnhide {
+  [super viewDidUnhide];
+  // Re-create the tracking area when unhiding so AppKit re-evaluates cursor
+  // containment and sends mouseEntered:/mouseMoved: if the cursor is inside
+  // the unhidden view (balancing the synthesized mouseExited: in -viewDidHide).
+  if (_trackingArea.get()) {
+    [self disableTracking];
+    [self enableTracking];
+  }
+}
+
 - (void)mouseEntered:(NSEvent*)theEvent {
   _mouseInside = YES;
   if (_pendingExitEvent) {

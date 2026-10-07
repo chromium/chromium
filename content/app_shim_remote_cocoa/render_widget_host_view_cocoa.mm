@@ -2902,6 +2902,7 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
 }
 
 - (void)viewDidMoveToWindow {
+  [super viewDidMoveToWindow];
   // Update the window's frame, the view's bounds, focus, and the display info,
   // as they have not been updated while unattached to a window.
   [self sendWindowFrameInScreenToHost];
