@@ -8,6 +8,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.RestrictionSkipCheck;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /**
  * DeviceRestrictions list device form factor restrictions, that are usable with the {@link
@@ -17,7 +18,7 @@ import org.chromium.base.test.util.RestrictionSkipCheck;
  */
 public final class DeviceRestriction {
     /** Specifies the test is only valid on automotive form factors. */
-    public static final String RESTRICTION_TYPE_AUTO = "Auto";
+    public static final String RESTRICTION_TYPE_AUTO = DeviceFormFactor.AUTOMOTIVE;
 
     /** Specifies the test is only valid on non-automotive form factors. */
     public static final String RESTRICTION_TYPE_NON_AUTO = "Non Auto";

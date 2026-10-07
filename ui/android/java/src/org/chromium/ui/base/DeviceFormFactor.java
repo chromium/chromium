@@ -72,6 +72,16 @@ public class DeviceFormFactor {
     public static final String PHONE_OR_TABLET = "PhoneOrTablet";
 
     /**
+     * Automotive form factor.
+     *
+     * <p>As identified by <code>DeviceInfo.isAutomotive() == true</code>. Use with <code>
+     * DisableIf.Device</code> to temporarily disable a test on automotive (reference a bug). For
+     * tests that are never relevant on automotive, use <code>
+     * Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)</code> instead.
+     */
+    public static final String AUTOMOTIVE = "Auto";
+
+    /**
      * Minimum screen size in dp to be considered a tablet. Matches the value used by res/
      * directories. E.g.: res/values-sw600dp/values.xml
      */

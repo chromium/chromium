@@ -39,6 +39,8 @@ public class UiDisableIfSkipCheck extends DisableIfSkipCheck {
                             return isTablet();
                         case DeviceFormFactor.PHONE_OR_TABLET:
                             return !DeviceInfo.isDesktop();
+                        case DeviceFormFactor.AUTOMOTIVE:
+                            return DeviceInfo.isAutomotive();
                         default:
                             return false;
                     }
