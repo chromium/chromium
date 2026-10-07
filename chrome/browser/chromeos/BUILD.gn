@@ -27,7 +27,6 @@ group("unit_tests") {
     "//chrome/browser/chromeos/extensions/odfs_config_private:unit_tests",
     "//chrome/browser/chromeos/extensions/telemetry:unit_tests",
     "//chrome/browser/chromeos/gemini_app:unit_tests",
-    "//chrome/browser/chromeos/office_web_app:unit_tests",
     "//chrome/browser/chromeos/policy/dlp:unit_tests",
     "//chrome/browser/chromeos/reporting:unit_tests",
     "//chrome/browser/chromeos/reporting/network:unit_tests",

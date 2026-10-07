@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/office_web_app/office_web_app.h"
+#include "chrome/browser/ash/office_web_app/office_web_app.h"
 
 #include "ash/constants/web_app_id_constants.h"
 #include "base/test/run_until.h"

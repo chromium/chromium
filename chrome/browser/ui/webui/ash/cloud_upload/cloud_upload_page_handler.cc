@@ -10,7 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
-#include "chrome/browser/chromeos/office_web_app/office_web_app.h"
+#include "chrome/browser/ash/office_web_app/office_web_app.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "components/webapps/browser/install_result_code.h"

@@ -137,6 +137,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/network_change_manager:unit_tests",
     "//chrome/browser/ash/note_taking:unit_tests",
     "//chrome/browser/ash/notifications:unit_tests",
+    "//chrome/browser/ash/office_web_app:unit_tests",
     "//chrome/browser/ash/os_feedback:unit_tests",
     "//chrome/browser/ash/ownership:unit_tests",
     "//chrome/browser/ash/phonehub:unit_tests",
