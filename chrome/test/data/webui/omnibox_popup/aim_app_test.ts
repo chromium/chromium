@@ -2,25 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {aimBrowserProxyFactory, OmniboxPopupAimPageHandlerRemote} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
+import {aimBrowserProxyFactory, ComposeboxProxyImpl, OmniboxPopupAimPageHandlerRemote, SearchboxBrowserProxy} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import type {OmniboxAimAppElement, OmniboxPopupAimPageRemote} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
+import {PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createDefaultInputState} from './test_searchbox_browser_proxy.js';
+import {createDefaultInputState, TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
 suite('AimAppTest', function() {
   let handler: TestMock<OmniboxPopupAimPageHandlerRemote>&
       OmniboxPopupAimPageHandlerRemote;
   let page: OmniboxPopupAimPageRemote;
+  let testProxy: TestSearchboxBrowserProxy;
   let metrics: MetricsTracker;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    testProxy = new TestSearchboxBrowserProxy();
+    SearchboxBrowserProxy.setInstance(testProxy);
+    const mockComposeboxHandler =
+        TestMock.fromClass(ComposeboxPageHandlerRemote);
+    ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+        mockComposeboxHandler,
+        testProxy.handler as unknown as SearchboxPageHandlerRemote,
+        testProxy.callbackRouter as unknown as SearchboxPageCallbackRouter));
     handler = TestMock.fromClass(OmniboxPopupAimPageHandlerRemote);
     const {instance, remote} = aimBrowserProxyFactory.createForTest(handler);
     aimBrowserProxyFactory.setInstance(instance);
@@ -142,6 +153,37 @@ suite('AimAppTest', function() {
     page.clearPopup();
     await microtasksFinished();
     assertTrue(!app.$.composebox.input);
+  });
+
+  test('ClearPopupResetsSmartTabSharingUnlessPreserved', async function() {
+    testProxy.handler.setPromiseResolveFor<'getSmartTabSharingActive'>(
+        'getSmartTabSharingActive', {active: true});
+    testProxy.handler.setPromiseResolveFor<'resetSmartTabSharing'>(
+        'resetSmartTabSharing', {active: false});
+
+    const app = document.createElement('omnibox-aim-app');
+    document.body.appendChild(app);
+    app.$.composebox.smartTabSharingVisible = true;
+    await testProxy.handler.whenCalled('getSmartTabSharingActive');
+    await microtasksFinished();
+    assertTrue(app.$.composebox.smartTabSharingActive);
+
+    // When preserveContextOnClose is true, clearPopup does not reset STS.
+    page.setPreserveContextOnClose(true);
+    await microtasksFinished();
+    page.clearPopup();
+    await microtasksFinished();
+    assertEquals(0, testProxy.handler.getCallCount('resetSmartTabSharing'));
+    assertTrue(app.$.composebox.smartTabSharingActive);
+
+    // When preserveContextOnClose is false, clearPopup resets STS.
+    page.setPreserveContextOnClose(false);
+    await microtasksFinished();
+    page.clearPopup();
+    await testProxy.handler.whenCalled('resetSmartTabSharing');
+    await microtasksFinished();
+    assertEquals(1, testProxy.handler.getCallCount('resetSmartTabSharing'));
+    assertFalse(app.$.composebox.smartTabSharingActive);
   });
 
   // Regression test for b/558982300: `AddContext` can be delivered while the

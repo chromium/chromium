@@ -89,6 +89,8 @@ suite('ComposeboxMixinTest', () => {
     // <if expr="not is_android">
     searchboxHandler.setResultMapperFor(
         'getSmartTabSharingActive', () => Promise.resolve({active: false}));
+    searchboxHandler.setResultMapperFor(
+        'resetSmartTabSharing', () => Promise.resolve({active: false}));
     // </if>
     searchboxHandler.setPromiseResolveFor('getInputState', {
       state: new MockInputState(),
@@ -2517,6 +2519,99 @@ suite('ComposeboxMixinTest', () => {
             [ModelMode.kUnspecified, /*isSetByServer=*/ false],
             searchboxHandler.getArgs('setActiveModelMode')[0]);
       });
+
+  // <if expr="not is_android">
+  test(
+      'resetSession resets smart tab sharing and adopts the browser value',
+      async () => {
+        element.smartTabSharingVisible = true;
+        element.smartTabSharingActive = true;
+        await microtasksFinished();
+        searchboxHandler.setResultMapperFor(
+            'resetSmartTabSharing', () => Promise.resolve({active: false}));
+
+        element.resetSession();
+        await searchboxHandler.whenCalled('resetSmartTabSharing');
+        await microtasksFinished();
+
+        assertEquals(1, searchboxHandler.getCallCount('resetSmartTabSharing'));
+        assertFalse(element.smartTabSharingActive);
+        // Not a user toggle.
+        assertEquals(
+            0, searchboxHandler.getCallCount('setSmartTabSharingActive'));
+      });
+
+  test(
+      'resetSession adopts the default-on value from the browser', async () => {
+        element.smartTabSharingVisible = true;
+        element.smartTabSharingActive = false;
+        await microtasksFinished();
+        searchboxHandler.setResultMapperFor(
+            'resetSmartTabSharing', () => Promise.resolve({active: true}));
+
+        element.resetSession();
+        await searchboxHandler.whenCalled('resetSmartTabSharing');
+        await microtasksFinished();
+
+        assertTrue(element.smartTabSharingActive);
+      });
+
+  test(
+      'resetSession does not reset smart tab sharing when not visible',
+      async () => {
+        element.smartTabSharingVisible = false;
+        await microtasksFinished();
+
+        element.resetSession();
+        await microtasksFinished();
+
+        assertEquals(0, searchboxHandler.getCallCount('resetSmartTabSharing'));
+      });
+
+  test('resetSession skips resetSmartTabSharing when submitting', async () => {
+    element.smartTabSharingVisible = true;
+    element.smartTabSharingActive = true;
+    element.submitting = true;
+    await microtasksFinished();
+
+    element.resetSession();
+    await microtasksFinished();
+
+    assertEquals(0, searchboxHandler.getCallCount('resetSmartTabSharing'));
+    assertFalse(element.submitting);
+  });
+
+  test(
+      'resetSession does not overwrite smart tab sharing updated before ' +
+          'reset resolves',
+      async () => {
+        element.smartTabSharingVisible = true;
+        element.smartTabSharingActive = true;
+        await microtasksFinished();
+
+        let resolveReset: (value: {active: boolean}) => void;
+        const resetPromise = new Promise<{active: boolean}>(resolve => {
+          resolveReset = resolve;
+        });
+        searchboxHandler.setResultMapperFor(
+            'resetSmartTabSharing', () => resetPromise);
+
+        element.resetSession();
+        await searchboxHandler.whenCalled('resetSmartTabSharing');
+
+        // An intervening update arrives before the reset resolves.
+        searchboxCallbackRouterRemote.updateSmartTabSharingActive(true);
+        await microtasksFinished();
+        assertTrue(element.smartTabSharingActive);
+
+        // Reset resolves with default-off.
+        resolveReset!({active: false});
+        await microtasksFinished();
+
+        // The stale reset reply is ignored.
+        assertTrue(element.smartTabSharingActive);
+      });
+  // </if>
 
   test(
       'hasTabs returns true when tab files are present and tabFaviconChipsToCoinsEnabled is true',

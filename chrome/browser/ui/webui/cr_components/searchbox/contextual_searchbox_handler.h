@@ -271,6 +271,9 @@ class ContextualSearchboxHandler
   void GetSmartTabSharingActive(
       searchbox::mojom::PageHandler::GetSmartTabSharingActiveCallback callback)
       override;
+  void ResetSmartTabSharing(
+      searchbox::mojom::PageHandler::ResetSmartTabSharingCallback callback)
+      override;
 #endif
 
   // Returns the list of selected tab IDs that should be transferred.

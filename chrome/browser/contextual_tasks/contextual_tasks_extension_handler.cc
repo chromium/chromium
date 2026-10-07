@@ -858,6 +858,10 @@ void ContextualTasksExtensionHandler::GetInputState(
     std::move(callback).Run(std::nullopt);
   }
 }
+void ContextualTasksExtensionHandler::ResetSmartTabSharing(
+    ResetSmartTabSharingCallback callback) {
+  std::move(callback).Run(false);
+}
 void ContextualTasksExtensionHandler::NotifySessionStarted() {}
 void ContextualTasksExtensionHandler::NotifySessionAbandoned() {}
 void ContextualTasksExtensionHandler::AddFileContext(

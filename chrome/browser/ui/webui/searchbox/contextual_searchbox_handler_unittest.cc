@@ -11,7 +11,9 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/callback_list.h"
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -2005,6 +2007,81 @@ TEST_F(SmartTabSharingTest, LogOptOutMidThread) {
       "ContextualSearch.SmartTabSharing.OptOutMidThread", true, 1);
 }
 
+TEST_F(SmartTabSharingTest, ResetSmartTabSharing_DeactivatesSts) {
+  EXPECT_CALL(mock_searchbox_page_, UpdateSmartTabSharingActive(true)).Times(1);
+  handler().SetSmartTabSharingActive(true);
+  mock_searchbox_page_.FlushForTesting();
+  ASSERT_TRUE(handler().IsSmartTabSharingActive());
+  ASSERT_EQ(contextual_session_handle_->smart_tab_sharing_active(), true);
+
+  // The page learns the new value from the reply, not from a push.
+  EXPECT_CALL(mock_searchbox_page_, UpdateSmartTabSharingActive(testing::_))
+      .Times(0);
+  base::test::TestFuture<bool> future;
+  handler().ResetSmartTabSharing(future.GetCallback());
+  mock_searchbox_page_.FlushForTesting();
+
+  EXPECT_FALSE(future.Get());
+  EXPECT_FALSE(handler().IsSmartTabSharingActive());
+  EXPECT_EQ(contextual_session_handle_->smart_tab_sharing_active(),
+            std::nullopt);
+  EXPECT_FALSE(
+      contextual_session_handle_->smart_tab_sharing_toggled_since_last_turn());
+  EXPECT_TRUE(
+      contextual_session_handle_->sts_toggled_removed_contexts().empty());
+  // Clearing the override is not a user toggle.
+  histogram_tester().ExpectBucketCount(
+      "ContextualSearch.SmartTabSharing.MenuOptionClicked",
+      contextual_tasks::SmartTabSharingToggleState::kToggledOff, 0);
+
+  // Subsequent activation pushes to the page again because last-sent was reset.
+  EXPECT_CALL(mock_searchbox_page_, UpdateSmartTabSharingActive(true)).Times(1);
+  handler().SetSmartTabSharingActive(true);
+  mock_searchbox_page_.FlushForTesting();
+}
+
+TEST_F(SmartTabSharingTest, ResetSmartTabSharing_RestoresPrefDefault) {
+  profile()->GetPrefs()->SetBoolean(
+      contextual_tasks::kContextualTasksShareOpenTabsEveryThread, true);
+  ASSERT_TRUE(handler().IsSmartTabSharingActive());
+
+  handler().SetSmartTabSharingActive(false);
+  ASSERT_FALSE(handler().IsSmartTabSharingActive());
+  ASSERT_TRUE(
+      contextual_session_handle_->smart_tab_sharing_toggled_since_last_turn());
+
+  base::test::TestFuture<bool> future;
+  handler().ResetSmartTabSharing(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+  EXPECT_TRUE(handler().IsSmartTabSharingActive());
+  EXPECT_EQ(contextual_session_handle_->smart_tab_sharing_active(),
+            std::nullopt);
+  EXPECT_FALSE(
+      contextual_session_handle_->smart_tab_sharing_toggled_since_last_turn());
+  EXPECT_TRUE(
+      contextual_session_handle_->sts_toggled_removed_contexts().empty());
+}
+
+TEST_F(SmartTabSharingTest, ResetSmartTabSharing_UpdatesInputState) {
+  handler().InitializeInputStateModel();
+  ASSERT_TRUE(handler().input_state_model());
+
+  handler().SetSmartTabSharingActive(true);
+  ASSERT_TRUE(handler().input_state_model()->IsSmartTabSharingActive());
+
+  // Subscribers must be told about the reset so dependent UI can update.
+  int notifications = 0;
+  base::CallbackListSubscription subscription =
+      handler().input_state_model()->subscribe(base::BindRepeating(
+          [](int* count, const omnibox::InputState&) { ++(*count); },
+          &notifications));
+
+  base::test::TestFuture<bool> future;
+  handler().ResetSmartTabSharing(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_FALSE(handler().input_state_model()->IsSmartTabSharingActive());
+  EXPECT_GT(notifications, 0);
+}
 
 TEST_F(ContextualSearchboxHandlerTest, OnInputStateChanged) {
   omnibox::InputState received_state_1;

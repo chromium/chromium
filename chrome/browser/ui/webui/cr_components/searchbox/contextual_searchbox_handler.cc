@@ -1035,6 +1035,31 @@ void ContextualSearchboxHandler::GetSmartTabSharingActive(
     searchbox::mojom::PageHandler::GetSmartTabSharingActiveCallback callback) {
   std::move(callback).Run(IsSmartTabSharingActive());
 }
+
+void ContextualSearchboxHandler::ResetSmartTabSharing(
+    searchbox::mojom::PageHandler::ResetSmartTabSharingCallback callback) {
+  smart_tab_sharing_active_for_thread_.reset();
+  if (auto* session_handle = GetContextualSessionHandle()) {
+    session_handle->set_smart_tab_sharing_active(std::nullopt);
+    session_handle->set_smart_tab_sharing_toggled_since_last_turn(false);
+    session_handle->set_sts_toggled_removed_contexts({});
+  }
+
+  // After clearing the per-thread and session overrides above,
+  // `IsSmartTabSharingActive()` recomputes the default state (from eligibility
+  // and the default-on preference).
+  const bool default_active = IsSmartTabSharingActive();
+  // The page updates itself from the reply, so there is no need to also push
+  // `UpdateSmartTabSharingActive()`. Record the value as sent first: the input
+  // state model notifies `OnInputStateChanged()`, which would otherwise push
+  // it.
+  last_sent_smart_tab_sharing_active_ = default_active;
+  if (input_state_model_) {
+    input_state_model_->SetSmartTabSharingActive(default_active);
+    input_state_model_->OnContextChanged();
+  }
+  std::move(callback).Run(default_active);
+}
 #endif
 
 std::vector<int32_t> ContextualSearchboxHandler::GetSelectedTabIds() const {

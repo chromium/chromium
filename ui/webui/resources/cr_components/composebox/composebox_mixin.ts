@@ -412,6 +412,9 @@ export const ComposeboxEmbedderMixin =
         private smartComposeAnnounceTimeout_: number|null = null;
         private updateStateComplete_: Promise<void> = Promise.resolve();
         private userInputGeneration_: number = 0;
+        // <if expr="not is_android">
+        private smartTabSharingUpdateGeneration_: number = 0;
+        // </if>
 
         get inputModel(): ComposeboxInputModel {
           return new ComposeboxInputModel({
@@ -462,6 +465,7 @@ export const ComposeboxEmbedderMixin =
           const listenerId =
               ComposeboxProxyImpl.getInstance().observeSmartTabSharingActive(
                   (active: boolean) => {
+                    this.smartTabSharingUpdateGeneration_++;
                     this.smartTabSharingActive = active;
                     if (this.smartTabSharingVisible && !active) {
                       this.addedTabsIds = this.automaticActiveTab?.tabId ?
@@ -564,11 +568,15 @@ export const ComposeboxEmbedderMixin =
           // <if expr="not is_android">
           if (changedPrivateProperties.has('smartTabSharingVisible')) {
             if (this.smartTabSharingVisible) {
+              const generation = ++this.smartTabSharingUpdateGeneration_;
               ComposeboxProxyImpl.getInstance().getSmartTabSharingActive().then(
                   ({active}) => {
-                    this.smartTabSharingActive = active;
+                    if (generation === this.smartTabSharingUpdateGeneration_) {
+                      this.smartTabSharingActive = active;
+                    }
                   });
             } else {
+              this.smartTabSharingUpdateGeneration_++;
               this.smartTabSharingActive = false;
             }
           }
@@ -1394,6 +1402,7 @@ export const ComposeboxEmbedderMixin =
         onSmartTabSharingActiveChanged(_e: CustomEvent<{active: boolean}>) {
           // <if expr="not is_android">
           const active = _e.detail.active;
+          this.smartTabSharingUpdateGeneration_++;
           this.smartTabSharingActive = active;
           ComposeboxProxyImpl.getInstance().setSmartTabSharingActive(active);
           if (!active) {
@@ -2559,12 +2568,32 @@ export const ComposeboxEmbedderMixin =
          * handover.
          */
         resetSession() {
+          // <if expr="not is_android">
+          const wasSubmitting = this.submitting;
+          // </if>
           this.submitting = false;
           this.clearAllInputs(
               /* querySubmitted= */ false,
               /* shouldBlockAutoSuggestedTabs= */ false);
           this.clearAutocompleteMatches();
           this.resetToolsAndModels();
+          // <if expr="not is_android">
+          // Smart tab sharing choices are per session, but the browser-side
+          // state outlives the page's session (e.g. a warm popup), so ask the
+          // browser to forget it and adopt the resulting default. Avoid
+          // resetting if the session was reset as part of a query submission
+          // (e.g. opening in a new tab via Ctrl+Enter), because the browser
+          // is still contextualizing the query with the submitted STS state.
+          if (this.smartTabSharingVisible && !wasSubmitting) {
+            const generation = ++this.smartTabSharingUpdateGeneration_;
+            ComposeboxProxyImpl.getInstance().resetSmartTabSharing().then(
+                ({active}) => {
+                  if (generation === this.smartTabSharingUpdateGeneration_) {
+                    this.smartTabSharingActive = active;
+                  }
+                });
+          }
+          // </if>
         }
 
         computeSubmitEnabled(): boolean {

@@ -2167,6 +2167,11 @@ void SearchboxHandler::GetSmartTabSharingActive(
     GetSmartTabSharingActiveCallback callback) {
   std::move(callback).Run(false);
 }
+
+void SearchboxHandler::ResetSmartTabSharing(
+    ResetSmartTabSharingCallback callback) {
+  std::move(callback).Run(false);
+}
 #endif
 
 void SearchboxHandler::StartScreenshare(bool prefer_entire_screen,

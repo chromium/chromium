@@ -112,6 +112,8 @@ setupComposeboxTest<T extends ComposeboxUnionElement = ComposeboxElement>():
     searchboxHandler.setPromiseResolveFor('getRecentTabs', {tabs: []});
     searchboxHandler.setPromiseResolveFor(
         'getSmartTabSharingActive', {active: false});
+    searchboxHandler.setPromiseResolveFor(
+        'resetSmartTabSharing', {active: false});
     searchboxHandler.setPromiseResolveFor('getInputState', {
       state: new MockInputState({
         toolConfigs: [],

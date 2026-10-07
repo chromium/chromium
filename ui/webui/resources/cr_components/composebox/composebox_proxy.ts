@@ -52,6 +52,7 @@ export interface ComposeboxProxy {
   // <if expr="not is_android">
   getSmartTabSharingActive(): Promise<{active: boolean}>;
   setSmartTabSharingActive(active: boolean): void;
+  resetSmartTabSharing(): Promise<{active: boolean}>;
   observeSmartTabSharingActive(callback: (active: boolean) => void): number;
   // </if>
 }
@@ -75,6 +76,10 @@ export class ComposeboxProxyImpl implements ComposeboxProxy {
 
   setSmartTabSharingActive(active: boolean): void {
     this.searchboxHandler.setSmartTabSharingActive(active);
+  }
+
+  resetSmartTabSharing(): Promise<{active: boolean}> {
+    return this.searchboxHandler.resetSmartTabSharing();
   }
 
   observeSmartTabSharingActive(callback: (active: boolean) => void): number {

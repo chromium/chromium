@@ -624,6 +624,15 @@ interface PageHandler {
   [EnableIfNot=is_android]
   GetSmartTabSharingActive() => (bool active);
 
+  // Called when the page resets its session without submitting. Forgets any
+  // Smart Tab Sharing choice made in the current session so the next session
+  // starts from the default state (e.g. the default-on pref). Unlike
+  // SetSmartTabSharingActive(), this is not a user action: it records no
+  // toggle metrics and does not clear attached context. Replies with the
+  // resulting effective state.
+  [EnableIfNot=is_android]
+  ResetSmartTabSharing() => (bool active);
+
   // Dispatched when an FRE stage is dismissed.
   DismissFre(FreStage stage);
 

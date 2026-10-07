@@ -213,6 +213,7 @@ class ContextualTasksExtensionHandler
   void WaitForTabFaviconLoad(int32_t tab_id,
                              WaitForTabFaviconLoadCallback callback) override;
   void GetInputState(GetInputStateCallback callback) override;
+  void ResetSmartTabSharing(ResetSmartTabSharingCallback callback) override;
   void NotifySessionStarted() override;
   void NotifySessionAbandoned() override;
   void AddFileContext(searchbox::mojom::SelectedFileInfoPtr file_info,

@@ -238,6 +238,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   void SetSmartTabSharingActive(bool active) override;
   void GetSmartTabSharingActive(
       GetSmartTabSharingActiveCallback callback) override;
+  void ResetSmartTabSharing(ResetSmartTabSharingCallback callback) override;
 #endif
   void DismissFre(searchbox::mojom::FreStage stage) override {}
   void ShowHotkeyDropdown(const gfx::Rect& anchor_bounds,
