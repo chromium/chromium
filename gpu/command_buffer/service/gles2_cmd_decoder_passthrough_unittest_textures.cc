@@ -5,6 +5,8 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
+#include "base/functional/callback.h"
+#include "base/test/bind.h"
 #include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
@@ -12,6 +14,9 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/test_image_backing.h"
+#include "ui/gl/gl_context.h"
+#include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/scoped_gl_framebuffer.h"
 
 namespace gpu {
@@ -396,6 +401,127 @@ TEST_F(GLES2DecoderPassthroughReadbackResetCheckTest,
   EXPECT_FALSE(GetDecoder()->WasContextLost());
 
   shared_image.reset();
+}
+
+namespace {
+
+// A pbuffer surface whose OnMakeCurrent() can be made to fail, causing
+// GLContext::MakeCurrent() with this surface to fail.
+class FailableMakeCurrentSurface : public gl::PbufferGLSurfaceEGL {
+ public:
+  FailableMakeCurrentSurface()
+      : gl::PbufferGLSurfaceEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(),
+                                gfx::Size(4, 4)) {}
+
+  void set_fail_make_current(bool fail) { fail_make_current_ = fail; }
+
+  bool OnMakeCurrent(gl::GLContext* context) override {
+    return !fail_make_current_ &&
+           gl::PbufferGLSurfaceEGL::OnMakeCurrent(context);
+  }
+
+ private:
+  ~FailableMakeCurrentSurface() override = default;
+
+  bool fail_make_current_ = false;
+};
+
+// A TestImageBacking that runs `callback` when a Skia representation is
+// requested, then fails to produce one.
+class CallbackOnProduceSkiaTestImageBacking : public TestImageBacking {
+ public:
+  CallbackOnProduceSkiaTestImageBacking(const Mailbox& mailbox,
+                                        const SharedImageInfo& si_info,
+                                        base::OnceClosure callback)
+      : TestImageBacking(mailbox, si_info, /*estimated_size=*/0),
+        callback_(std::move(callback)) {}
+
+ protected:
+  std::unique_ptr<SkiaGaneshImageRepresentation> ProduceSkiaGanesh(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      scoped_refptr<SharedContextState> context_state) override {
+    if (callback_) {
+      std::move(callback_).Run();
+    }
+    return nullptr;
+  }
+
+ private:
+  base::OnceClosure callback_;
+};
+
+SharedImageInfo MakeTestSharedImageInfo() {
+  return SharedImageInfo(
+      viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(10, 10), gfx::ColorSpace(),
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+      {SHARED_IMAGE_USAGE_GLES2_READ, SHARED_IMAGE_USAGE_GLES2_WRITE},
+      "TestLabel");
+}
+
+}  // namespace
+
+// Commands that temporarily switch to the decoder's shared context must leave
+// the decoder's context current afterwards.
+TEST_F(GLES2DecoderPassthroughTest, SharedContextCommandRestoresContext) {
+  gl::GLContext* decoder_context = gl::GLContext::GetCurrent();
+  ASSERT_TRUE(decoder_context);
+
+  // Unknown mailboxes; the copy fails, but only after switching contexts.
+  Mailbox mailboxes[2] = {Mailbox::Generate(), Mailbox::Generate()};
+  auto& cmd = *GetImmediateAs<cmds::CopySharedImageINTERNALImmediate>();
+  cmd.Init(0, 0, 0, 0, 1, 1, reinterpret_cast<const GLbyte*>(mailboxes));
+  EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailboxes)));
+  EXPECT_NE(static_cast<GLenum>(GL_NO_ERROR),
+            static_cast<GLenum>(GetGLError()));
+
+  EXPECT_FALSE(GetDecoder()->WasContextLost());
+  EXPECT_EQ(decoder_context, gl::GLContext::GetCurrent());
+  EXPECT_TRUE(decoder_context->IsCurrent(nullptr));
+}
+
+// If the decoder's context can't be made current again after a command used
+// the shared context, the decoder must lose its context.
+TEST_F(GLES2DecoderPassthroughTest, ContextLostWhenSharedContextRestoreFails) {
+  scoped_refptr<gl::GLContext> decoder_context = gl::GLContext::GetCurrent();
+  scoped_refptr<gl::GLSurface> decoder_surface = gl::GLSurface::GetCurrent();
+  ASSERT_TRUE(decoder_context);
+  ASSERT_TRUE(decoder_surface);
+
+  // Make the decoder's context current on a surface that can fail
+  // OnMakeCurrent(), so the restore at the end of the command can be made to
+  // fail.
+  auto failable_surface = base::MakeRefCounted<FailableMakeCurrentSurface>();
+  ASSERT_TRUE(failable_surface->Initialize(gl::GLSurfaceFormat()));
+  decoder_context->ReleaseCurrent(decoder_surface.get());
+  ASSERT_TRUE(decoder_context->MakeCurrent(failable_surface.get()));
+  ASSERT_EQ(failable_surface.get(), gl::GLSurface::GetCurrent());
+
+  bool produce_skia_called = false;
+  MemoryTypeTracker memory_tracker(nullptr);
+  Mailbox src_mailbox = Mailbox::Generate();
+  Mailbox dst_mailbox = Mailbox::Generate();
+  std::unique_ptr<SharedImageRepresentationFactoryRef> dst_shared_image =
+      GetSharedImageManager()->Register(
+          std::make_unique<CallbackOnProduceSkiaTestImageBacking>(
+              dst_mailbox, MakeTestSharedImageInfo(),
+              base::BindLambdaForTesting([&]() {
+                produce_skia_called = true;
+                failable_surface->set_fail_make_current(true);
+              })),
+          &memory_tracker);
+
+  Mailbox mailboxes[2] = {src_mailbox, dst_mailbox};
+  auto& cmd = *GetImmediateAs<cmds::CopySharedImageINTERNALImmediate>();
+  cmd.Init(0, 0, 0, 0, 1, 1, reinterpret_cast<const GLbyte*>(mailboxes));
+  EXPECT_EQ(error::kLostContext, ExecuteImmediateCmd(cmd, sizeof(mailboxes)));
+  EXPECT_TRUE(produce_skia_called);
+  EXPECT_TRUE(GetDecoder()->WasContextLost());
+
+  // Restore the decoder's original context and surface for teardown.
+  failable_surface->set_fail_make_current(false);
+  ASSERT_TRUE(decoder_context->MakeCurrent(decoder_surface.get()));
+  dst_shared_image.reset();
 }
 
 }  // namespace gles2

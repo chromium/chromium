@@ -526,6 +526,53 @@ GLES2DecoderPassthroughImpl::ScopedPixelLocalStorageInterrupt::
   }
 }
 
+GLES2DecoderPassthroughImpl::ScopedSharedContextCurrent::
+    ScopedSharedContextCurrent(GLES2DecoderPassthroughImpl* impl,
+                               gl::GLContext* context,
+                               gl::GLSurface* surface)
+    : impl_(impl),
+      decoder_context_was_current_(impl_->IsDecoderContextCurrent()) {
+  // Only interrupt pixel local storage on the decoder's own context.
+  if (decoder_context_was_current_ &&
+      impl_->has_activated_pixel_local_storage_) {
+    impl_->api()->glFramebufferPixelLocalStorageInterruptANGLEFn();
+    pixel_local_storage_interrupted_ = true;
+  }
+  scoped_make_current_.emplace(context, surface);
+}
+
+GLES2DecoderPassthroughImpl::ScopedSharedContextCurrent::
+    ~ScopedSharedContextCurrent() {
+  // Restore the previously current context.
+  scoped_make_current_.reset();
+
+  if (!impl_->IsDecoderContextCurrent()) {
+    if (decoder_context_was_current_) {
+      LOG(ERROR) << "GLES2DecoderPassthroughImpl: failed to restore context "
+                    "after using the shared context.";
+      impl_->MarkContextLost(error::kMakeCurrentFailed);
+    }
+    // Don't make further GL calls; they would run on the wrong context.
+    return;
+  }
+
+  if (pixel_local_storage_interrupted_) {
+    impl_->api()->glFramebufferPixelLocalStorageRestoreANGLEFn();
+  }
+}
+
+bool GLES2DecoderPassthroughImpl::ScopedSharedContextCurrent::
+    IsContextCurrent() {
+  return scoped_make_current_->IsContextCurrent();
+}
+
+bool GLES2DecoderPassthroughImpl::IsDecoderContextCurrent() const {
+  // Check Chromium's notion of the current context first; IsCurrent() DCHECKs
+  // that it matches when the native context is current.
+  return context_ && gl::GLContext::GetCurrent() == context_.get() &&
+         context_->IsCurrent(nullptr);
+}
+
 PassthroughResources::PassthroughResources() : texture_object_map(nullptr) {}
 PassthroughResources::~PassthroughResources() = default;
 
@@ -2132,9 +2179,9 @@ GLES2DecoderPassthroughImpl::LazySharedContextState::LazySharedContextState(
 
 GLES2DecoderPassthroughImpl::LazySharedContextState::~LazySharedContextState() {
   if (shared_context_state_) {
-    ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(impl_);
-    ui::ScopedMakeCurrent smc(shared_context_state_->context(),
-                              shared_context_state_->surface());
+    ScopedSharedContextCurrent scoped_current(impl_,
+                                              shared_context_state_->context(),
+                                              shared_context_state_->surface());
     shared_context_state_.reset();
   }
 }
@@ -2168,8 +2215,15 @@ bool GLES2DecoderPassthroughImpl::LazySharedContextState::Initialize() {
   }
 
   // Make current context using `gl_context` and `gl_surface`
-  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(impl_);
-  ui::ScopedMakeCurrent smc(gl_context.get(), gl_surface.get());
+  ScopedSharedContextCurrent scoped_current(impl_, gl_context.get(),
+                                            gl_surface.get());
+  if (!scoped_current.IsContextCurrent()) {
+    impl_->InsertError(
+        GL_INVALID_OPERATION,
+        "ContextResult::kFatalFailure: Failed to make SharedContextState "
+        "context current");
+    return false;
+  }
 
   ContextGroup* group = impl_->GetContextGroup();
   const GpuPreferences& gpu_preferences = group->gpu_preferences();

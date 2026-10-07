@@ -37,6 +37,7 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/scoped_make_current.h"
 
 namespace gl {
 class GLFence;
@@ -762,6 +763,37 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
   };
 
   std::unique_ptr<LazySharedContextState> lazy_context_;
+
+  // Makes `context` current for its lifetime, first interrupting pixel local
+  // storage if the decoder's context is current. On destruction, restores the
+  // previously current context and verifies that the decoder's context is
+  // current again. If it is not, the decoder's context is marked as lost and
+  // pixel local storage is not restored, so no further work runs on the wrong
+  // context.
+  class ScopedSharedContextCurrent {
+   public:
+    ScopedSharedContextCurrent(GLES2DecoderPassthroughImpl* impl,
+                               gl::GLContext* context,
+                               gl::GLSurface* surface);
+    ScopedSharedContextCurrent(const ScopedSharedContextCurrent&) = delete;
+    ScopedSharedContextCurrent& operator=(const ScopedSharedContextCurrent&) =
+        delete;
+    ~ScopedSharedContextCurrent();
+
+    // Returns whether `context` was successfully made current.
+    bool IsContextCurrent();
+
+   private:
+    raw_ptr<GLES2DecoderPassthroughImpl> impl_;
+    bool decoder_context_was_current_ = false;
+    bool pixel_local_storage_interrupted_ = false;
+    std::optional<ui::ScopedMakeCurrent> scoped_make_current_;
+  };
+
+  // Returns whether the decoder's context is current, according to both
+  // Chromium's and the underlying GL implementation's bookkeeping.
+  bool IsDecoderContextCurrent() const;
+
   // Tracing
   std::unique_ptr<GPUTracer> gpu_tracer_;
   int gpu_trace_level_;
