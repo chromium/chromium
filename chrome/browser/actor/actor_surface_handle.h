@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/types/pass_key.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace actor {
 
@@ -59,6 +60,17 @@ class ActorSurfaceHandle {
 
   // Returns the surface, or null if it no longer exists (or never did).
   ActorSurface* Get() const;
+
+  // Returns the tab currently backing this surface, or TabHandle::Null() if
+  // the surface no longer exists or is not backed by a tab. This is the
+  // inverse of From(); callers must not assume the two share a raw value.
+  tabs::TabHandle GetTabHandle() const;
+
+  // Returns the handle of the surface currently backed by `tab`, or Null() if
+  // there is none (e.g. the tab is gone, or belongs to a profile without an
+  // ActorKeyedService). This is the supported way to convert a tab to a
+  // surface: callers must not assume the two share a raw value.
+  static ActorSurfaceHandle From(tabs::TabHandle tab);
 
   // Mints the next unique handle (> 0, or < 0 for headless surfaces while
   // kUseTabHandleAsSurfaceHandle is enabled).

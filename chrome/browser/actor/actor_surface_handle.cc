@@ -58,6 +58,19 @@ class ActorSurfaceLookup {
     CHECK_EQ(registered_surfaces_.erase(handle), 1u);
   }
 
+  // Linear in the number of live surfaces (roughly the number of open tabs),
+  // which keeps this lookup consistent with each surface's current backing
+  // without a second index to maintain.
+  ActorSurfaceHandle GetForTab(tabs::TabHandle tab) const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    for (const auto& [handle, surface] : registered_surfaces_) {
+      if (surface->GetTabHandle() == tab) {
+        return handle;
+      }
+    }
+    return ActorSurfaceHandle::Null();
+  }
+
  private:
   // Map of all live surfaces across profiles, keyed by handle.
   base::flat_map<ActorSurfaceHandle, raw_ptr<ActorSurface>> registered_surfaces_
@@ -83,6 +96,22 @@ ActorSurface* ActorSurfaceHandle::Get() const {
     return nullptr;
   }
   return ActorSurfaceLookup::GetInstance().Get(*this);
+}
+
+tabs::TabHandle ActorSurfaceHandle::GetTabHandle() const {
+  ActorSurface* surface = Get();
+  if (!surface) {
+    return tabs::TabHandle::Null();
+  }
+  return surface->GetTabHandle().value_or(tabs::TabHandle::Null());
+}
+
+// static
+ActorSurfaceHandle ActorSurfaceHandle::From(tabs::TabHandle tab) {
+  if (tab == tabs::TabHandle::Null()) {
+    return Null();
+  }
+  return ActorSurfaceLookup::GetInstance().GetForTab(tab);
 }
 
 // static

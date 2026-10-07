@@ -286,5 +286,50 @@ TEST_F(ActorSurfaceRegistryTest,
   EXPECT_EQ(registry_->size(), 1u);
 }
 
+TEST_F(ActorSurfaceRegistryTest, FromTabReturnsTabSurfaceHandle) {
+  EXPECT_TRUE(ActorSurfaceHandle::From(tab_handle()).is_null());
+
+  registry_->OnTabCreated(mock_tab1_);
+  ActorSurface* surface = registry_->GetForTab(tab_handle());
+  ASSERT_TRUE(surface);
+
+  const ActorSurfaceHandle handle = ActorSurfaceHandle::From(tab_handle());
+  EXPECT_EQ(handle, surface->GetHandle());
+  EXPECT_EQ(handle.Get(), surface);
+  EXPECT_EQ(handle.GetTabHandle(), tab_handle());
+}
+
+TEST_F(ActorSurfaceRegistryTest, FromTabWithIndependentHandles) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kUseTabHandleAsSurfaceHandle);
+
+  // Mint a handle first so tab and surface raw values diverge.
+  registry_->CreateHeadlessWebContents();
+  registry_->OnTabCreated(mock_tab1_);
+  ActorSurface* surface = registry_->GetForTab(tab_handle());
+  ASSERT_TRUE(surface);
+  ASSERT_NE(surface->GetHandle().raw_value(), tab_handle().raw_value());
+
+  EXPECT_EQ(ActorSurfaceHandle::From(tab_handle()), surface->GetHandle());
+  EXPECT_EQ(surface->GetHandle().GetTabHandle(), tab_handle());
+}
+
+TEST_F(ActorSurfaceRegistryTest, FromTabReturnsNullWithoutSurface) {
+  EXPECT_TRUE(ActorSurfaceHandle::From(tabs::TabHandle::Null()).is_null());
+  EXPECT_EQ(ActorSurfaceHandle::Null().GetTabHandle(), tabs::TabHandle::Null());
+
+  registry_->OnTabCreated(mock_tab1_);
+  const ActorSurfaceHandle handle = ActorSurfaceHandle::From(tab_handle());
+  ASSERT_FALSE(handle.is_null());
+
+  // A tab without a surface (here: never registered) maps to null.
+  EXPECT_TRUE(ActorSurfaceHandle::From(mock_tab2_.GetHandle()).is_null());
+
+  // Both directions map to null once the surface is gone.
+  registry_->OnTabWillBeDestroyed(tab_handle());
+  EXPECT_TRUE(ActorSurfaceHandle::From(tab_handle()).is_null());
+  EXPECT_EQ(handle.GetTabHandle(), tabs::TabHandle::Null());
+}
+
 }  // namespace
 }  // namespace actor
