@@ -486,8 +486,13 @@ template("rust_target") {
     # consistency. However, this is currently incompatible with how Chromium
     # builds rust dependencies (https://crbug.com/469501106 documents the errors
     # encountered when trying this).
+    # Host build tools (proc-macro shared libraries and cargo build scripts in
+    # `toolchain_for_rust_host_build_tools`) are linked directly by `rustc`
+    # using the host's default allocator and do not use PartitionAlloc. Skipping
+    # `//build/rust/allocator` here avoids blocking the host proc-macro
+    # compilation chain on building host bindgen and allocator targets.
     if ((!defined(invoker.no_allocator_crate) || !invoker.no_allocator_crate) &&
-        !is_cronet_for_aosp_build) {
+        !is_cronet_for_aosp_build && !toolchain_for_rust_host_build_tools) {
       _rust_deps += [ "//build/rust/allocator" ]
     }
 

@@ -339,10 +339,14 @@ template("cargo_crate") {
       # entry (rather than a `configs` entry), because the group below both
       # 1) applies the warning-suppressing flags via `public_configs` and
       # 2) generates the response file that these flags point at.
-      if (!defined(deps)) {
-        deps = []
+      # Crates that already pass `--cap-lints=allow` (such as stdlib crates)
+      # do not need this response file.
+      if (filter_include(rustflags, [ "--cap-lints=allow" ]) == []) {
+        if (!defined(deps)) {
+          deps = []
+        }
+        deps += [ "//build/rust/gni_impl:allow_all_warnings" ]
       }
-      deps += [ "//build/rust/gni_impl:allow_all_warnings" ]
 
       if (!defined(build_native_rust_unit_tests)) {
         build_native_rust_unit_tests = _crate_type != "proc-macro"

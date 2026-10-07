@@ -44,6 +44,10 @@ import("//build/rust/rust_static_library.gni")
 #   be used sparingly - typically only in low-level, foundational libraries
 #   that cannot depend on Chromium prelude (such as `//build/rust/allocator`).
 #
+# no_std: (optional)
+#   If set to true, builds the generated bindings crate without depending on the
+#   Rust standard library (`#![no_std]`), using `core` instead of `std`.
+#
 # For a small, self-contained example please see:
 # * C header: //build/rust/tests/bindgen_test
 # * C++ header: //build/rust/tests/bindgen_cpp_test
@@ -54,6 +58,7 @@ template("rust_bindgen") {
   if (defined(invoker.wrap_static_fns) && invoker.wrap_static_fns) {
     _wrap_static_fns = true
   }
+  _no_std = defined(invoker.no_std) && invoker.no_std
   if (defined(invoker.crate_name)) {
     _crate_name = invoker.crate_name
   }
@@ -62,9 +67,26 @@ template("rust_bindgen") {
     forward_variables_from(invoker,
                            "*",
                            [
+                                 "bindgen_flags",
                                  "library_name",
+                                 "no_std",
                                  "output_name",
                                ] + TESTONLY_AND_VISIBILITY)
+
+    bindgen_flags = []
+    if (defined(invoker.bindgen_flags)) {
+      bindgen_flags += invoker.bindgen_flags
+    }
+    if (_no_std) {
+      # Since the generated `bindings.rs` is the crate root of the
+      # `rust_static_library` below, it needs both `--use-core` (to reference
+      # types from `core` instead of `std`) and a crate-level `#![no_std]`
+      # attribute at the top of the file.
+      bindgen_flags += [
+        "use-core",
+        "raw-line=#![no_std]",
+      ]
+    }
 
     if (defined(invoker.testonly)) {
       testonly = invoker.testonly
@@ -88,7 +110,11 @@ template("rust_bindgen") {
   _generated_bindings_rs = _bindgen_rs_outputs[0]
 
   rust_static_library(target_name) {
-    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "crate_name" ])
+    forward_variables_from(invoker,
+                           TESTONLY_AND_VISIBILITY + [
+                                 "crate_name",
+                                 "no_std",
+                               ])
 
     if (defined(_crate_name)) {
       crate_name = _crate_name
@@ -100,6 +126,9 @@ template("rust_bindgen") {
     deps = [ ":$_rust_bindgen_generator_target_name" ]
     if (defined(invoker.deps)) {
       deps += invoker.deps
+    }
+    if (_no_std) {
+      deps += [ "//build/rust/std:core" ]
     }
     if (_wrap_static_fns) {
       # Add a dependency on the static_fns library for simplicity if

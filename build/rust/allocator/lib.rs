@@ -28,13 +28,17 @@
 // TODO(crbug.com/497856781): Document the safety requirements of the C++
 // allocator functions, and then ensure all the blocks in this file are sound.
 #![allow(clippy::undocumented_unsafe_blocks)]
+// When using `allocator_impls.h`, avoid depending on `std` so that this crate
+// can be compiled against `core` in parallel with `std`. When not using
+// `allocator_impls.h`, `std::alloc::System` is used below, which requires `std`.
+#![cfg_attr(RUST_ALLOCATOR_USES_ALLOCATOR_IMPLS_H, no_std)]
 
 /// Module that provides `#[global_allocator]` / `GlobalAlloc` interface for
 /// using an allocator from C++.
 #[cfg(RUST_ALLOCATOR_USES_ALLOCATOR_IMPLS_H)]
 mod cpp_allocator {
     use allocator_impls_ffi::root::rust_allocator_internal as ffi;
-    use std::alloc::{GlobalAlloc, Layout};
+    use core::alloc::{GlobalAlloc, Layout};
 
     struct Allocator;
 
@@ -116,8 +120,9 @@ mod both_allocators {
     #[allow(non_upper_case_globals)]
     #[linkage = "weak"]
     fn __rust_alloc_error_handler(_size: usize, _align: usize) {
-        // TODO(lukasza): Investigate if we can just call `std::process::abort()` here.
-        // (Not really _needed_, but it could simplify code a little bit.)
+        // TODO(lukasza): Investigate if we can just call
+        // `std::process::abort()` here. (Not really _needed_, but it
+        // could simplify code a little bit.)
         unsafe { ffi::alloc_error_handler_impl() }
     }
 }

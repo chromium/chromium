@@ -35,12 +35,10 @@ if (toolchain_has_rust) {
     "cfg_if",
     "compiler_builtins",
     "core",
-    "getopts",
     "hashbrown",
     "panic_abort",
     "rustc_demangle",
     "std_detect",
-    "test",
     "unwind",
   ]
 
@@ -77,8 +75,20 @@ if (toolchain_has_rust) {
     "profiler_builtins",
     "rustc_std_workspace_alloc",
     "rustc_std_workspace_core",
-    "rustc_std_workspace_std",
   ]
+
+  # Test harness crates only needed when compiling unit tests (`rustc --test`).
+  # They are separated from `stdlib_files` / `skip_stdlib_files` because they
+  # depend on `std` and form a 3-step serial compilation chain
+  # (`rustc_std_workspace_std` -> `getopts` -> `test`) after `std` finishes;
+  # excluding them from `:std` avoids blocking all non-test Rust crates and C++
+  # link targets on that chain.
+  stdlib_test_files = [
+    "getopts",
+    "rustc_std_workspace_std",
+    "test",
+  ]
+  stdlib_test_files -= removed_rust_stdlib_libs
 
   config("stdlib_dependent_libs") {
     # TODO(crbug.com/40264561): These should really be `libs`, however that
@@ -202,13 +212,25 @@ if (toolchain_has_rust) {
       foreach(libname, profiler_builtins_crates) {
         deps += [ "rules:$libname" ]
       }
-      visibility = [ "rules:*" ]
+      visibility = [
+        ":*",
+        "rules:*",
+      ]
     }
 
     config("local_stdlib_sysroot") {
       sysroot = rebase_path(local_rustc_sysroot, root_build_dir)
       rustflags = [ "--sysroot=$sysroot" ]
       visibility = [ ":*" ]
+    }
+
+    # Builds the minimal sysroot (`core`, `compiler_builtins`, and
+    # `profiler_builtins` for coverage builds) needed by `#![no_std]` crates
+    # such as `//build/rust/allocator`, allowing them to compile in parallel
+    # with `alloc` and `std` instead of waiting for the full stdlib.
+    group("core") {
+      all_dependent_configs = [ ":local_stdlib_sysroot" ]
+      deps = [ ":profiler_builtins_group" ]
     }
 
     # Builds and links against the Rust stdlib. Both Rust and C++ targets should
@@ -230,6 +252,16 @@ if (toolchain_has_rust) {
         deps += [ "rules:$libname" ]
       }
     }
+
+    # Builds the Rust test harness crates (`test`, `getopts`, etc.) required by
+    # `rust_unit_test` targets (`rustc --test`).
+    group("test_support") {
+      deps = [ ":std" ]
+      foreach(libname, stdlib_test_files) {
+        deps += [ "rules:$libname" ]
+      }
+    }
+
     if (enable_cpp_api_from_rust) {
       group("std_bindings") {
         deps = [ ":std" ]
@@ -285,7 +317,7 @@ if (toolchain_has_rust) {
 
       # For the rustc sysroot we must include even the rlibs we don't pass to
       # the C++ linker.
-      all_stdlibs_to_copy = stdlib_files + skip_stdlib_files
+      all_stdlibs_to_copy = stdlib_files + skip_stdlib_files + stdlib_test_files
       args = [
         "--rust-bin-dir",
         rebase_path("${rust_sysroot}/bin", root_build_dir),
@@ -373,12 +405,25 @@ if (toolchain_has_rust) {
       visibility = [ ":*" ]
     }
 
+    # With prebuilt stdlib, all sysroot rlibs (`core`, `std`, `test`, etc.) are
+    # copied together by `:prebuilt_rustc_copy_to_sysroot`, so there is no
+    # separate `core`-only target to depend on.
+    group("core") {
+      deps = [ ":std" ]
+    }
+
     group("std") {
       all_dependent_configs = [
         ":prebuilt_stdlib_libs",
         ":stdlib_public_dependent_libs",
       ]
       deps = [ ":prebuilt_rustc_copy_to_sysroot" ]
+    }
+
+    # `stdlib_test_files` are already included in `all_stdlibs_to_copy` and
+    # copied into the sysroot by `:prebuilt_rustc_copy_to_sysroot` via `:std`.
+    group("test_support") {
+      deps = [ ":std" ]
     }
   }
 }
