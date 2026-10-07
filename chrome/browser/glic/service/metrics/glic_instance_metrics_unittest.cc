@@ -49,8 +49,9 @@ class GlicInstanceMetricsTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder ukm_tester_;
+  TestingProfile profile_;
   metrics::ProfileMetricsService profile_metrics_service_;
-  GlicInstanceMetrics metrics_{&profile_metrics_service_};
+  GlicInstanceMetrics metrics_{&profile_metrics_service_, &profile_};
   tabs::MockTabInterface mock_tab_;
   ui::UnownedUserDataHost unowned_user_data_host_;
   base::UserActionTester user_action_tester_;
@@ -785,7 +786,7 @@ TEST_F(GlicInstanceMetricsTest, ActuationResponseStopTime) {
 
 TEST_F(GlicInstanceMetricsTest, InputModesUsed_IgnoresUnknown) {
   {
-    GlicInstanceMetrics metrics(&profile_metrics_service_);
+    GlicInstanceMetrics metrics(&profile_metrics_service_, &profile_);
     metrics.OnVisibilityChanged(true);
     metrics.OnUserInputSubmitted(mojom::WebClientMode::kUnknown,
                                  mojom::PromptType::kUnspecified);
@@ -798,7 +799,7 @@ TEST_F(GlicInstanceMetricsTest, InputModesUsed_IgnoresUnknown) {
                                       InputModesUsed::kOnlyAudio, 1);
 
   {
-    GlicInstanceMetrics metrics(&profile_metrics_service_);
+    GlicInstanceMetrics metrics(&profile_metrics_service_, &profile_);
     metrics.OnVisibilityChanged(true);
     metrics.OnUserInputSubmitted(mojom::WebClientMode::kUnknown,
                                  mojom::PromptType::kUnspecified);
@@ -983,7 +984,8 @@ TEST_F(GlicInstanceMetricsTest, OnInstanceDestroyed_LogsPerProfileTurnCount) {
   metrics::ProfileMetricsContext context = 1;  // Profile 1 -> .Profile1
   metrics::ProfileMetricsService profile_metrics_service{context};
   {
-    GlicInstanceMetrics metrics_with_profile(&profile_metrics_service);
+    GlicInstanceMetrics metrics_with_profile(&profile_metrics_service,
+                                             &profile_);
     metrics_with_profile.OnTurnCompleted(mojom::WebClientModel::kDefault,
                                          base::Milliseconds(100));
     metrics_with_profile.OnTurnCompleted(mojom::WebClientModel::kDefault,
@@ -997,7 +999,7 @@ TEST_F(GlicInstanceMetricsTest, OnInstanceDestroyed_LogsPerProfileTurnCount) {
 
 TEST_F(GlicInstanceMetricsTest, ZoomChangeCount) {
   {
-    GlicInstanceMetrics metrics(&profile_metrics_service_);
+    GlicInstanceMetrics metrics(&profile_metrics_service_, &profile_);
     metrics.OnZoomLevelChange();
     metrics.OnZoomLevelChange();
     metrics.OnZoomLevelChange();

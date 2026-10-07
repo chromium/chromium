@@ -193,6 +193,7 @@ GlicInstanceMetrics::GlicInstanceMetrics(
       saas_usage_reporting_controller_(nullptr),
       profile_(profile),
       pref_service_(profile ? profile->GetPrefs() : nullptr) {
+  CHECK(profile);
   // Used in the unit tests.
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Created"));
   activity_tracker_ = std::make_unique<GlicStateTracker>(
@@ -223,6 +224,7 @@ GlicInstanceMetrics::GlicInstanceMetrics(
       saas_usage_reporting_controller_(saas_usage_reporting_controller),
       profile_(profile),
       pref_service_(profile ? profile->GetPrefs() : nullptr) {
+  CHECK(profile);
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Created"));
   activity_tracker_ = std::make_unique<GlicStateTracker>(
       false, "Glic.Instance.UninterruptedActiveDuration");

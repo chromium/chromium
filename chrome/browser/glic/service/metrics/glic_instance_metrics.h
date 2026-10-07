@@ -56,13 +56,13 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
  public:
   explicit GlicInstanceMetrics(
       const metrics::ProfileMetricsService* profile_metrics_service,
-      Profile* profile = nullptr);
+      Profile* profile);
   GlicInstanceMetrics(
       const metrics::ProfileMetricsService* profile_metrics_service,
       GlicSharingManagerInternal* sharing_manager,
       enterprise_reporting::SaasUsageReportingController*
           saas_usage_reporting_controller,
-      Profile* profile = nullptr);
+      Profile* profile);
   ~GlicInstanceMetrics() override;
 
   GlicInstanceMetrics(const GlicInstanceMetrics&) = delete;
