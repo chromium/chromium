@@ -36,7 +36,8 @@ enum class FrameIntervalMatcherType {
   kOnlyScrollBarFadeOut = 5,
   kUserInputBoost = 6,
   kSlowScrollThrottle = 7,
-  kMaxValue = kSlowScrollThrottle,
+  kMixedFixedInterval = 8,
+  kMaxValue = kMixedFixedInterval,
 };
 // LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:FrameIntervalMatcherType)
 
@@ -187,6 +188,7 @@ DECLARE_SIMPLE_FRAME_INTERVAL_MATCHER(VideoConferenceMatcher);
 DECLARE_SIMPLE_FRAME_INTERVAL_MATCHER(OnlyAnimatingImageMatcher);
 DECLARE_SIMPLE_FRAME_INTERVAL_MATCHER(OnlyScrollBarFadeOutAnimationMatcher);
 DECLARE_SIMPLE_FRAME_INTERVAL_MATCHER(UserInputBoostMatcher);
+DECLARE_SIMPLE_FRAME_INTERVAL_MATCHER(MixedFixedIntervalMatcher);
 
 #undef DECLARE_SIMPLE_FRAME_INTERVAL_MATCHER
 

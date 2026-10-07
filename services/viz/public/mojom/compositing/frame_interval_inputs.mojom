@@ -17,6 +17,7 @@ enum ContentFrameIntervalType {
   kAnimatingImage,
   kScrollBarFadeOutAnimation,
   kCompositorScroll,
+  kSteppedCompositorAnimation,
 };
 
 // Typemapped to `viz::ContentFrameIntervalInfo` in

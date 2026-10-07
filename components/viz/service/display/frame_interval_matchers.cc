@@ -5,10 +5,12 @@
 #include "components/viz/service/display/frame_interval_matchers.h"
 
 #include <algorithm>
+#include <cmath>
 #include <utility>
 #include <variant>
 
 #include "base/containers/adapters.h"
+#include "base/containers/span.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/viz/common/quads/frame_interval_inputs.h"
@@ -18,6 +20,70 @@
 namespace viz {
 
 namespace {
+
+// Finds the largest common presentation interval (in the time domain) among
+// `fixed_intervals` that maintains a simple integer cadence.
+//
+// Time-domain cadence evaluation (via VideoCadenceEstimator::HasSimpleCadence)
+// is used instead of integer frequency GCD/LCM math to prevent rounding errors
+// on fractional or sub-1Hz framerates (e.g., 23.976 FPS NTSC or CSS
+// animations).
+//
+// Returns std::nullopt if the streams cannot be reconciled harmoniously above
+// `min_supported_interval`.
+std::optional<base::TimeDelta> ComputeCommonCadenceInterval(
+    base::span<const base::TimeDelta> fixed_intervals,
+    base::TimeDelta min_supported_interval,
+    base::TimeDelta max_time_until_next_glitch) {
+  if (fixed_intervals.empty()) {
+    return std::nullopt;
+  }
+  if (fixed_intervals.size() == 1u) {
+    return fixed_intervals.front() >= min_supported_interval
+               ? std::make_optional(fixed_intervals.front())
+               : std::nullopt;
+  }
+
+  base::TimeDelta cand_interval =
+      *std::min_element(fixed_intervals.begin(), fixed_intervals.end());
+
+  // Cap harmonic subdivisions to guarantee O(1) termination.
+  constexpr int kMaxHarmonicMultiple = 32;
+  int total_harmonics = 1;
+
+  for (base::TimeDelta interval : fixed_intervals) {
+    if (media::VideoCadenceEstimator::HasSimpleCadence(
+            cand_interval, interval, max_time_until_next_glitch)) {
+      continue;
+    }
+
+    // Subdivide `cand_interval` until it harmonizes with `interval`. Because
+    // any integer subdivision of `cand_interval` remains a valid harmonic
+    // divisor of all previously matched streams, a single pass is sufficient.
+    bool matched = false;
+    for (int n = 2; n * total_harmonics <= kMaxHarmonicMultiple; ++n) {
+      base::TimeDelta sub_candidate = cand_interval / n;
+      if (sub_candidate < min_supported_interval ||
+          !sub_candidate.is_positive()) {
+        break;
+      }
+      if (media::VideoCadenceEstimator::HasSimpleCadence(
+              sub_candidate, interval, max_time_until_next_glitch)) {
+        cand_interval = sub_candidate;
+        total_harmonics *= n;
+        matched = true;
+        break;
+      }
+    }
+    if (!matched) {
+      return std::nullopt;
+    }
+  }
+
+  return cand_interval >= min_supported_interval
+             ? std::make_optional(cand_interval)
+             : std::nullopt;
+}
 
 // Matches case where only has content of type `type` is updating and they all
 // have the same content frame interval. Then return that interval.
@@ -234,6 +300,8 @@ std::string FrameIntervalMatcher::MatcherTypeToString(
       return "UserInputBoost";
     case FrameIntervalMatcherType::kOnlyScrollBarFadeOut:
       return "OnlyScrollBarFadeOut";
+    case FrameIntervalMatcherType::kMixedFixedInterval:
+      return "MixedFixedInterval";
   }
 }
 
@@ -410,6 +478,161 @@ std::optional<FrameIntervalMatcher::Result> UserInputBoostMatcher::Match(
     }
   }
   return std::nullopt;
+}
+
+DefineSimpleMatcherConstructorDestructor(MixedFixedIntervalMatcher,
+                                         kMixedFixedInterval);
+std::optional<FrameIntervalMatcher::Result> MixedFixedIntervalMatcher::Match(
+    const Inputs& matcher_inputs) {
+  std::vector<base::TimeDelta> fixed_intervals;
+
+  for (const auto& [frame_sink_id, inputs] : matcher_inputs.inputs_map) {
+    // Skip frame sinks that have not updated recently.
+    if ((matcher_inputs.aggregated_frame_time - inputs.frame_time) >
+        matcher_inputs.settings->ignore_frame_sink_timeout) {
+      continue;
+    }
+
+    // Every active client must have fully-declared fixed content updates.
+    if (!inputs.has_only_content_frame_interval_updates) {
+      return std::nullopt;
+    }
+
+    for (const ContentFrameIntervalInfo& content_frame_interval_info :
+         inputs.content_interval_info) {
+      switch (content_frame_interval_info.type) {
+        // Collect unique intervals from fixed-rate periodic content sources.
+        case ContentFrameIntervalType::kVideo:
+        case ContentFrameIntervalType::kAnimatingImage:
+        case ContentFrameIntervalType::kScrollBarFadeOutAnimation:
+        case ContentFrameIntervalType::kSteppedCompositorAnimation: {
+          if (!content_frame_interval_info.frame_interval.is_positive()) {
+            return std::nullopt;
+          }
+          // Deduplicate equivalent intervals (e.g., multiple 30 FPS videos or
+          // animations) within epsilon tolerance to minimize redundant cadence
+          // calculations.
+          bool duplicate = false;
+          for (const auto& existing : fixed_intervals) {
+            if (AreAlmostEqual(existing,
+                               content_frame_interval_info.frame_interval,
+                               matcher_inputs.settings->epsilon)) {
+              duplicate = true;
+              break;
+            }
+          }
+          if (!duplicate) {
+            fixed_intervals.push_back(
+                content_frame_interval_info.frame_interval);
+          }
+          break;
+        }
+        // Continuous compositor scrolling has variable, velocity-dependent
+        // frame rates and should not be throttled by a fixed cadence matcher.
+        // Bail immediately so SlowScrollThrottleMatcher or default boost
+        // matchers take precedence.
+        case ContentFrameIntervalType::kCompositorScroll:
+          return std::nullopt;
+      }
+    }
+  }
+
+  if (fixed_intervals.empty()) {
+    return std::nullopt;
+  }
+
+  return std::visit(
+      absl::Overload(
+          [&](const std::monostate& monostate)
+              -> std::optional<FrameIntervalMatcher::Result> {
+            // In unconstrained display mode (monostate), drive the display at
+            // the ideal harmonic cadence interval without enforcing any minimum
+            // hardware interval floor (passing base::TimeDelta() / 0).
+            std::optional<base::TimeDelta> ideal_interval =
+                ComputeCommonCadenceInterval(
+                    fixed_intervals,
+                    /*min_supported_interval=*/base::TimeDelta(),
+                    matcher_inputs.settings->max_time_until_next_glitch);
+            if (!ideal_interval) {
+              return std::nullopt;
+            }
+            return ResultInterval{*ideal_interval, ResultIntervalType::kExact};
+          },
+          [&](const FixedIntervalSettings& fixed_interval_settings)
+              -> std::optional<FrameIntervalMatcher::Result> {
+            // For discrete refresh rate panels (e.g. 60Hz, 90Hz, 120Hz), pick
+            // the supported interval that has simple cadence for ALL active
+            // fixed streams.
+            std::optional<base::TimeDelta> best_interval;
+            for (base::TimeDelta supported_interval :
+                 fixed_interval_settings.supported_intervals) {
+              bool all_match = true;
+              for (base::TimeDelta content_interval : fixed_intervals) {
+                if (!media::VideoCadenceEstimator::HasSimpleCadence(
+                        supported_interval, content_interval,
+                        matcher_inputs.settings->max_time_until_next_glitch)) {
+                  all_match = false;
+                  break;
+                }
+              }
+              // Prefer the largest interval (lowest refresh rate) that
+              // satisfies all streams to minimize display panel power
+              // consumption.
+              if (all_match &&
+                  (!best_interval || supported_interval > *best_interval)) {
+                best_interval = supported_interval;
+              }
+            }
+            // If no supported mode can smoothly present all active streams, do
+            // not force an arbitrary fallback; return std::nullopt so other
+            // matchers or system defaults handle the frame rate.
+            if (!best_interval) {
+              return std::nullopt;
+            }
+            return ResultInterval{*best_interval, ResultIntervalType::kExact};
+          },
+          [&](const ContinuousRangeSettings& continuous_range_settings)
+              -> std::optional<FrameIntervalMatcher::Result> {
+            // Select a refresh interval within [min_interval, max_interval].
+            std::optional<base::TimeDelta> ideal_interval =
+                ComputeCommonCadenceInterval(
+                    fixed_intervals,
+                    /*min_supported_interval=*/
+                    continuous_range_settings.min_interval,
+                    matcher_inputs.settings->max_time_until_next_glitch);
+            if (!ideal_interval) {
+              return std::nullopt;
+            }
+
+            base::TimeDelta range_min = continuous_range_settings.min_interval;
+            base::TimeDelta range_max = continuous_range_settings.max_interval;
+
+            // Direct pass-through if the common cadence interval falls within
+            // the supported range.
+            if (*ideal_interval >= range_min && *ideal_interval <= range_max) {
+              return ResultInterval{*ideal_interval,
+                                    ResultIntervalType::kExact};
+            }
+
+            // If the ideal interval is longer than the display's maximum
+            // interval (refresh rate too low), divide the interval by an
+            // integer cadence factor N (e.g., doubling or tripling the refresh
+            // rate) to bring it within the supported range.
+            if (*ideal_interval > range_max) {
+              int cadence = std::ceil(*ideal_interval / range_max);
+              base::TimeDelta cadence_interval = *ideal_interval / cadence;
+              if (cadence_interval >= range_min &&
+                  cadence_interval <= range_max) {
+                return ResultInterval{cadence_interval,
+                                      ResultIntervalType::kExact};
+              }
+            }
+
+            // Return std::nullopt if the harmonic interval cannot be mapped
+            // smoothly into the supported range with integer cadence.
+            return std::nullopt;
+          }),
+      matcher_inputs.settings->interval_settings);
 }
 
 SlowScrollThrottleMatcher::SlowScrollThrottleMatcher(

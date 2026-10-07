@@ -430,6 +430,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="kOnlyScrollBarFadeOut"/>
   <int value="6" label="kUserInputBoost"/>
   <int value="7" label="kSlowScrollThrottle"/>
+  <int value="8" label="kMixedFixedInterval"/>
 </enum>
 
 <enum name="GLImplementation">

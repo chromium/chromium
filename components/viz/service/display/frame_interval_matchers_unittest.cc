@@ -674,5 +674,408 @@ TEST(FrameIntervalMatchersTest, SlowScrollThrottleIgnoreOneOffUpdate) {
                ResultIntervalType::kAtLeast);
 }
 
+TEST(FrameIntervalMatchersTest, MixedFixedInterval_SingleStream_Monostate) {
+  Settings settings;
+  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/1u);
+  MixedFixedIntervalMatcher matcher;
+
+  // Single video stream passes through directly.
+  FrameIntervalInputs& interval_input = inputs.inputs_map[FrameSinkId(0, 1)];
+  interval_input.content_interval_info.push_back(
+      {ContentFrameIntervalType::kVideo, base::Hertz(24)});
+  interval_input.has_only_content_frame_interval_updates = true;
+
+  ExpectResult(matcher.Match(inputs), base::Hertz(24),
+               ResultIntervalType::kExact);
+
+  // Single stepped animation stream also passes through directly.
+  interval_input.content_interval_info.clear();
+  interval_input.content_interval_info.push_back(
+      {ContentFrameIntervalType::kSteppedCompositorAnimation, base::Hertz(15)});
+  ExpectResult(matcher.Match(inputs), base::Hertz(15),
+               ResultIntervalType::kExact);
+}
+
+TEST(FrameIntervalMatchersTest,
+     MixedFixedInterval_MultiAnimation_Cadence_Monostate) {
+  Settings settings;
+  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/2u);
+  MixedFixedIntervalMatcher matcher;
+
+  // Sink 1: 10fps GIF
+  FrameIntervalInputs& sink1 = inputs.inputs_map[FrameSinkId(0, 1)];
+  sink1.content_interval_info.push_back(
+      {ContentFrameIntervalType::kAnimatingImage, base::Hertz(10)});
+  sink1.has_only_content_frame_interval_updates = true;
+
+  // Sink 2: 15fps stepped glow
+  FrameIntervalInputs& sink2 = inputs.inputs_map[FrameSinkId(0, 2)];
+  sink2.content_interval_info.push_back(
+      {ContentFrameIntervalType::kSteppedCompositorAnimation, base::Hertz(15)});
+  sink2.has_only_content_frame_interval_updates = true;
+
+  // Common cadence(10, 15) = 30Hz
+  ExpectResult(matcher.Match(inputs), base::Hertz(30),
+               ResultIntervalType::kExact);
+}
+
+TEST(FrameIntervalMatchersTest,
+     MixedFixedInterval_VideoPlusSteppedAnimation_Cadence_Monostate) {
+  Settings settings;
+  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/2u);
+  MixedFixedIntervalMatcher matcher;
+
+  // Sink 1: 24fps video
+  FrameIntervalInputs& sink1 = inputs.inputs_map[FrameSinkId(0, 1)];
+  sink1.content_interval_info.push_back(
+      {ContentFrameIntervalType::kVideo, base::Hertz(24)});
+  sink1.has_only_content_frame_interval_updates = true;
+
+  // Sink 2: 15fps stepped glow
+  FrameIntervalInputs& sink2 = inputs.inputs_map[FrameSinkId(0, 2)];
+  sink2.content_interval_info.push_back(
+      {ContentFrameIntervalType::kSteppedCompositorAnimation, base::Hertz(15)});
+  sink2.has_only_content_frame_interval_updates = true;
+
+  // Common cadence(24, 15) = 120Hz
+  ExpectResult(matcher.Match(inputs), base::Hertz(120),
+               ResultIntervalType::kExact);
+}
+
+TEST(FrameIntervalMatchersTest,
+     MixedFixedInterval_DiscreteFixedSettings_24fpsPlus15fps) {
+  Settings settings;
+  FixedIntervalSettings fixed_settings;
+  fixed_settings.supported_intervals.insert(base::Hertz(60));
+  fixed_settings.supported_intervals.insert(base::Hertz(120));
+  fixed_settings.default_interval = base::Hertz(120);
+  settings.interval_settings = fixed_settings;
+
+  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/2u);
+  MixedFixedIntervalMatcher matcher;
+
+  // Sink 1: 24fps video
+  FrameIntervalInputs& sink1 = inputs.inputs_map[FrameSinkId(0, 1)];
+  sink1.content_interval_info.push_back(
+      {ContentFrameIntervalType::kVideo, base::Hertz(24)});
+  sink1.has_only_content_frame_interval_updates = true;
+
+  // Sink 2: 15fps stepped glow
+  FrameIntervalInputs& sink2 = inputs.inputs_map[FrameSinkId(0, 2)];
+  sink2.content_interval_info.push_back(
+      {ContentFrameIntervalType::kSteppedCompositorAnimation, base::Hertz(15)});
+  sink2.has_only_content_frame_interval_updates = true;
+
+  // 60Hz fails 24fps cadence (3:2 pulldown); 120Hz satisfies both 24fps (5:5)
+  // and 15fps (8:8).
+  ExpectResult(matcher.Match(inputs), base::Hertz(120),
+               ResultIntervalType::kExact);
+}
+
+TEST(FrameIntervalMatchersTest,
+     MixedFixedInterval_DiscreteFixedSettings_30fpsPlus15fps) {
+  Settings settings;
+  FixedIntervalSettings fixed_settings;
+  fixed_settings.supported_intervals.insert(base::Hertz(30));
+  fixed_settings.supported_intervals.insert(base::Hertz(60));
+  fixed_settings.supported_intervals.insert(base::Hertz(120));
+  fixed_settings.default_interval = base::Hertz(60);
+  settings.interval_settings = fixed_settings;
+
+  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/2u);
+  MixedFixedIntervalMatcher matcher;
+
+  // Sink 1: 30fps video
+  FrameIntervalInputs& sink1 = inputs.inputs_map[FrameSinkId(0, 1)];
+  sink1.content_interval_info.push_back(
+      {ContentFrameIntervalType::kVideo, base::Hertz(30)});
+  sink1.has_only_content_frame_interval_updates = true;
+
+  // Sink 2: 15fps stepped glow
+  FrameIntervalInputs& sink2 = inputs.inputs_map[FrameSinkId(0, 2)];
+  sink2.content_interval_info.push_back(
+      {ContentFrameIntervalType::kSteppedCompositorAnimation, base::Hertz(15)});
+  sink2.has_only_content_frame_interval_updates = true;
+
+  // 30Hz satisfies both 30fps (1:1) and 15fps (2:2) and is the slowest refresh
+  // rate (most power savings).
+  ExpectResult(matcher.Match(inputs), base::Hertz(30),
+               ResultIntervalType::kExact);
+}
+
+TEST(FrameIntervalMatchersTest, MixedFixedInterval_ContinuousRangeSettings) {
+  Settings settings;
+  settings.interval_settings = BuildContinuousRangeSettings(
+      /*min_interval=*/base::Hertz(144), /*max_interval=*/base::Hertz(40));
+
+  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/1u);
+  MixedFixedIntervalMatcher matcher;
+
+  // 24fps video (41.67ms) is too slow for 40Hz (25ms); cadence multiplier 2
+  // gives 48Hz (20.83ms).
+  FrameIntervalInputs& sink1 = inputs.inputs_map[FrameSinkId(0, 1)];
+  sink1.content_interval_info.push_back(
+      {ContentFrameIntervalType::kVideo, base::Hertz(24)});
+  sink1.has_only_content_frame_interval_updates = true;
+
+  ExpectResult(matcher.Match(inputs), base::Hertz(48),
+               ResultIntervalType::kExact);
+}
+
+TEST(FrameIntervalMatchersTest, MixedFixedInterval_IgnoreStaleFrameSink) {
+  Settings settings;
+  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/2u);
+  MixedFixedIntervalMatcher matcher;
+
+  // Sink 1: active 24fps video
+  FrameIntervalInputs& sink1 = inputs.inputs_map[FrameSinkId(0, 1)];
+  sink1.content_interval_info.push_back(
+      {ContentFrameIntervalType::kVideo, base::Hertz(24)});
+  sink1.has_only_content_frame_interval_updates = true;
+
+  // Sink 2: stale 15fps stepped glow (older than ignore_frame_sink_timeout)
+  FrameIntervalInputs& sink2 = inputs.inputs_map[FrameSinkId(0, 2)];
+  sink2.frame_time = kNow - base::Seconds(1);
+  sink2.content_interval_info.push_back(
+      {ContentFrameIntervalType::kSteppedCompositorAnimation, base::Hertz(15)});
+  sink2.has_only_content_frame_interval_updates = true;
+
+  // Only Sink 1 is active -> 24Hz
+  ExpectResult(matcher.Match(inputs), base::Hertz(24),
+               ResultIntervalType::kExact);
+}
+
+TEST(FrameIntervalMatchersTest,
+     MixedFixedInterval_NonContentDamage_ReturnsNullopt) {
+  Settings settings;
+  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/1u);
+  MixedFixedIntervalMatcher matcher;
+
+  FrameIntervalInputs& sink1 = inputs.inputs_map[FrameSinkId(0, 1)];
+  sink1.content_interval_info.push_back(
+      {ContentFrameIntervalType::kVideo, base::Hertz(24)});
+  sink1.has_only_content_frame_interval_updates = false;
+
+  ExpectNullResult(matcher.Match(inputs));
+}
+
+TEST(FrameIntervalMatchersTest,
+     MixedFixedInterval_CompositorScroll_ReturnsNullopt) {
+  Settings settings;
+  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/1u);
+  MixedFixedIntervalMatcher matcher;
+
+  FrameIntervalInputs& sink1 = inputs.inputs_map[FrameSinkId(0, 1)];
+  sink1.content_interval_info.push_back(
+      {ContentFrameIntervalType::kCompositorScroll, base::TimeDelta()});
+  sink1.has_only_content_frame_interval_updates = true;
+
+  ExpectNullResult(matcher.Match(inputs));
+}
+
+TEST(FrameIntervalMatchersTest,
+     MixedFixedInterval_InvalidInterval_ReturnsNullopt) {
+  Settings settings;
+  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/1u);
+  MixedFixedIntervalMatcher matcher;
+
+  FrameIntervalInputs& sink1 = inputs.inputs_map[FrameSinkId(0, 1)];
+  sink1.content_interval_info.push_back(
+      {ContentFrameIntervalType::kVideo, base::Microseconds(-100)});
+  sink1.has_only_content_frame_interval_updates = true;
+
+  ExpectNullResult(matcher.Match(inputs));
+}
+
+TEST(FrameIntervalMatchersTest,
+     MixedFixedInterval_HarmonicCadenceExceedsContinuousRange_ReturnsNullopt) {
+  Settings settings;
+  settings.interval_settings = BuildContinuousRangeSettings(
+      /*min_interval=*/base::Hertz(144), /*max_interval=*/base::Hertz(40));
+  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/2u);
+  MixedFixedIntervalMatcher matcher;
+
+  // Sink 1: 24fps video
+  FrameIntervalInputs& sink1 = inputs.inputs_map[FrameSinkId(0, 1)];
+  sink1.content_interval_info.push_back(
+      {ContentFrameIntervalType::kVideo, base::Hertz(24)});
+  sink1.has_only_content_frame_interval_updates = true;
+
+  // Sink 2: 53fps stepped animation (1272 Hz harmonic cadence exceeds 144Hz VRR
+  // maximum)
+  FrameIntervalInputs& sink2 = inputs.inputs_map[FrameSinkId(0, 2)];
+  sink2.content_interval_info.push_back(
+      {ContentFrameIntervalType::kSteppedCompositorAnimation, base::Hertz(53)});
+  sink2.has_only_content_frame_interval_updates = true;
+
+  ExpectNullResult(matcher.Match(inputs));
+}
+
+TEST(FrameIntervalMatchersTest, MixedFixedInterval_HighHarmonicRate_Monostate) {
+  Settings settings;
+  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/2u);
+  MixedFixedIntervalMatcher matcher;
+
+  // Sink 1: 24fps video
+  FrameIntervalInputs& sink1 = inputs.inputs_map[FrameSinkId(0, 1)];
+  sink1.content_interval_info.push_back(
+      {ContentFrameIntervalType::kVideo, base::Hertz(24)});
+  sink1.has_only_content_frame_interval_updates = true;
+
+  // Sink 2: 53fps stepped animation (1272 Hz harmonic cadence)
+  FrameIntervalInputs& sink2 = inputs.inputs_map[FrameSinkId(0, 2)];
+  sink2.content_interval_info.push_back(
+      {ContentFrameIntervalType::kSteppedCompositorAnimation, base::Hertz(53)});
+  sink2.has_only_content_frame_interval_updates = true;
+
+  // Unconstrained mode computes the full harmonic rate.
+  ExpectResult(matcher.Match(inputs), base::Hertz(1272),
+               ResultIntervalType::kExact);
+}
+
+TEST(FrameIntervalMatchersTest, MixedFixedInterval_FractionalNTSCVideo) {
+  Settings settings;
+  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/2u);
+  MixedFixedIntervalMatcher matcher;
+
+  // Sink 1: 23.976fps NTSC video (~41708us)
+  FrameIntervalInputs& sink1 = inputs.inputs_map[FrameSinkId(0, 1)];
+  sink1.content_interval_info.push_back(
+      {ContentFrameIntervalType::kVideo, base::Microseconds(41708)});
+  sink1.has_only_content_frame_interval_updates = true;
+
+  // Sink 2: 60fps stepped animation
+  FrameIntervalInputs& sink2 = inputs.inputs_map[FrameSinkId(0, 2)];
+  sink2.content_interval_info.push_back(
+      {ContentFrameIntervalType::kSteppedCompositorAnimation, base::Hertz(60)});
+  sink2.has_only_content_frame_interval_updates = true;
+
+  // 23.976 matches 24fps within epsilon. Common cadence(24, 60) = 120Hz.
+  ExpectResult(matcher.Match(inputs), base::Hertz(120),
+               ResultIntervalType::kExact);
+}
+
+TEST(FrameIntervalMatchersTest, MixedFixedInterval_ScrollBarFadeOutAnimation) {
+  Settings settings;
+  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/2u);
+  MixedFixedIntervalMatcher matcher;
+
+  // Sink 1: 24fps video
+  FrameIntervalInputs& sink1 = inputs.inputs_map[FrameSinkId(0, 1)];
+  sink1.content_interval_info.push_back(
+      {ContentFrameIntervalType::kVideo, base::Hertz(24)});
+  sink1.has_only_content_frame_interval_updates = true;
+
+  // Sink 2: 30fps scrollbar fade-out animation
+  FrameIntervalInputs& sink2 = inputs.inputs_map[FrameSinkId(0, 2)];
+  sink2.content_interval_info.push_back(
+      {ContentFrameIntervalType::kScrollBarFadeOutAnimation, base::Hertz(30)});
+  sink2.has_only_content_frame_interval_updates = true;
+
+  // Common cadence(24, 30) = 120Hz
+  ExpectResult(matcher.Match(inputs), base::Hertz(120),
+               ResultIntervalType::kExact);
+}
+
+TEST(FrameIntervalMatchersTest,
+     MixedFixedInterval_DeduplicateIdenticalIntervals) {
+  Settings settings;
+  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/2u);
+  MixedFixedIntervalMatcher matcher;
+
+  // Sink 1: 24fps video
+  FrameIntervalInputs& sink1 = inputs.inputs_map[FrameSinkId(0, 1)];
+  sink1.content_interval_info.push_back(
+      {ContentFrameIntervalType::kVideo, base::Hertz(24)});
+  sink1.has_only_content_frame_interval_updates = true;
+
+  // Sink 2: another 24fps stream (e.g. video or 24fps GIF)
+  FrameIntervalInputs& sink2 = inputs.inputs_map[FrameSinkId(0, 2)];
+  sink2.content_interval_info.push_back(
+      {ContentFrameIntervalType::kAnimatingImage, base::Hertz(24)});
+  sink2.has_only_content_frame_interval_updates = true;
+
+  // Identical intervals deduplicate within epsilon -> single 24Hz stream.
+  ExpectResult(matcher.Match(inputs), base::Hertz(24),
+               ResultIntervalType::kExact);
+}
+
+TEST(FrameIntervalMatchersTest, MixedFixedInterval_SubHzAnimation_Monostate) {
+  Settings settings;
+  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/2u);
+  MixedFixedIntervalMatcher matcher;
+
+  // Sink 1: 0.5fps (2000ms) stepped CSS animation
+  FrameIntervalInputs& sink1 = inputs.inputs_map[FrameSinkId(0, 1)];
+  sink1.content_interval_info.push_back(
+      {ContentFrameIntervalType::kSteppedCompositorAnimation,
+       base::Milliseconds(2000)});
+  sink1.has_only_content_frame_interval_updates = true;
+
+  // Sink 2: 30fps video
+  FrameIntervalInputs& sink2 = inputs.inputs_map[FrameSinkId(0, 2)];
+  sink2.content_interval_info.push_back(
+      {ContentFrameIntervalType::kVideo, base::Hertz(30)});
+  sink2.has_only_content_frame_interval_updates = true;
+
+  // 0.5fps step is an exact integer multiple (60x) of 30fps -> 30Hz
+  ExpectResult(matcher.Match(inputs), base::Hertz(30),
+               ResultIntervalType::kExact);
+}
+
+TEST(FrameIntervalMatchersTest, MixedFixedInterval_SubHzAnimation_Discrete) {
+  Settings settings;
+  FixedIntervalSettings fixed_settings;
+  fixed_settings.supported_intervals.insert(base::Hertz(30));
+  fixed_settings.supported_intervals.insert(base::Hertz(60));
+  fixed_settings.supported_intervals.insert(base::Hertz(120));
+  fixed_settings.default_interval = base::Hertz(60);
+  settings.interval_settings = fixed_settings;
+
+  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/2u);
+  MixedFixedIntervalMatcher matcher;
+
+  // Sink 1: 0.5fps (2000ms) stepped CSS animation
+  FrameIntervalInputs& sink1 = inputs.inputs_map[FrameSinkId(0, 1)];
+  sink1.content_interval_info.push_back(
+      {ContentFrameIntervalType::kSteppedCompositorAnimation,
+       base::Milliseconds(2000)});
+  sink1.has_only_content_frame_interval_updates = true;
+
+  // Sink 2: 30fps video
+  FrameIntervalInputs& sink2 = inputs.inputs_map[FrameSinkId(0, 2)];
+  sink2.content_interval_info.push_back(
+      {ContentFrameIntervalType::kVideo, base::Hertz(30)});
+  sink2.has_only_content_frame_interval_updates = true;
+
+  // 30Hz satisfies both 0.5fps (60:1) and 30fps (1:1) and saves power
+  ExpectResult(matcher.Match(inputs), base::Hertz(30),
+               ResultIntervalType::kExact);
+}
+
+TEST(FrameIntervalMatchersTest,
+     MixedFixedInterval_PathologicalIncommensurate_TerminatesPromptly) {
+  Settings settings;
+  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/2u);
+  MixedFixedIntervalMatcher matcher;
+
+  // Pathological pair of slow/incommensurate prime frequencies with no simple
+  // cadence within kMaxHarmonicMultiple=32 harmonics (e.g. 47 Hz and 53 Hz). In
+  // monostate (min_supported_interval is 0), without kMaxHarmonicMultiple this
+  // would iterate excessively (until n=47). With the cap, it terminates
+  // promptly and returns nullopt.
+  FrameIntervalInputs& sink1 = inputs.inputs_map[FrameSinkId(0, 1)];
+  sink1.content_interval_info.push_back(
+      {ContentFrameIntervalType::kVideo, base::Hertz(47)});
+  sink1.has_only_content_frame_interval_updates = true;
+
+  FrameIntervalInputs& sink2 = inputs.inputs_map[FrameSinkId(0, 2)];
+  sink2.content_interval_info.push_back(
+      {ContentFrameIntervalType::kSteppedCompositorAnimation, base::Hertz(53)});
+  sink2.has_only_content_frame_interval_updates = true;
+
+  EXPECT_FALSE(matcher.Match(inputs).has_value());
+}
+
 }  // namespace
 }  // namespace viz

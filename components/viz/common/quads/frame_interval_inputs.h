@@ -34,6 +34,7 @@ enum class ContentFrameIntervalType {
   kAnimatingImage,  // Gifs.
   kScrollBarFadeOutAnimation,
   kCompositorScroll,
+  kSteppedCompositorAnimation,
 };
 
 VIZ_COMMON_EXPORT std::string ContentFrameIntervalTypeToString(

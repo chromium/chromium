@@ -18,6 +18,8 @@ std::string ContentFrameIntervalTypeToString(ContentFrameIntervalType type) {
       return "scrollbar_fade_out";
     case ContentFrameIntervalType::kCompositorScroll:
       return "compositor_scroll";
+    case ContentFrameIntervalType::kSteppedCompositorAnimation:
+      return "stepped_compositor_animation";
   }
 }
 

@@ -22,6 +22,8 @@ EnumTraits<viz::mojom::ContentFrameIntervalType,
       return viz::mojom::ContentFrameIntervalType::kScrollBarFadeOutAnimation;
     case viz::ContentFrameIntervalType::kCompositorScroll:
       return viz::mojom::ContentFrameIntervalType::kCompositorScroll;
+    case viz::ContentFrameIntervalType::kSteppedCompositorAnimation:
+      return viz::mojom::ContentFrameIntervalType::kSteppedCompositorAnimation;
   }
   NOTREACHED();
 }
@@ -38,6 +40,8 @@ viz::ContentFrameIntervalType EnumTraits<viz::mojom::ContentFrameIntervalType,
       return viz::ContentFrameIntervalType::kScrollBarFadeOutAnimation;
     case viz::mojom::ContentFrameIntervalType::kCompositorScroll:
       return viz::ContentFrameIntervalType::kCompositorScroll;
+    case viz::mojom::ContentFrameIntervalType::kSteppedCompositorAnimation:
+      return viz::ContentFrameIntervalType::kSteppedCompositorAnimation;
   }
   NOTREACHED();
 }

@@ -3050,6 +3050,7 @@ message FrameIntervalDecider {
     MATCHER_TYPE_ONLY_SCROLL_BAR_FADE_OUT = 6;
     MATCHER_TYPE_USER_INPUT_BOOST = 7;
     MATCHER_TYPE_SLOW_SCROLL_THROTTLE = 8;
+    MATCHER_TYPE_MIXED_FIXED_INTERVAL = 9;
   }
   // LINT.ThenChange(//components/viz/service/display/frame_interval_matchers.h:FrameIntervalMatcherType)
 
