@@ -9126,9 +9126,5 @@ crbug.com/568343392 [ Linux ] external/wpt/webdriver/tests/classic/execute_scrip
 crbug.com/568343392 [ Linux ] external/wpt/webdriver/tests/classic/new_session/page_load_strategy.py [ Failure Pass ]
 crbug.com/568343392 [ Linux ] external/wpt/webdriver/tests/classic/set_timeouts/user_prompts.py [ Failure Pass ]
 
-# Gardener 2026-10-05
-# Only failing on win10 WebKit
-crbug.com/569679632 [ Win ] bindings/pass-as-span.html [ Pass Failure ]
-
 # Temporarily disable test to land crrev.com/c/8495913
 crbug.com/551802307 http/tests/devtools/sources/debugger-ui/sourcemap-src-not-loaded.js [ Failure Pass ]
