@@ -25,6 +25,7 @@
 
 class ActionAppMenuManager;
 class AppMenuSearchBarView;
+class AppMenuSearchController;
 class BrowserWindowInterface;
 
 namespace actions {
@@ -86,6 +87,9 @@ class ActionAppMenu : public views::MenuDelegate,
 
   views::MenuItemView* root_menu_item_for_testing() { return root_; }
   AppMenuSearchBarView* search_bar_for_testing() { return search_bar_; }
+  AppMenuSearchController* search_controller_for_testing() {
+    return search_controller_.get();
+  }
   void SetTimerForTesting(base::ElapsedTimer timer);
   void ClearItemsBelowSearchBarForTesting();
 
@@ -122,6 +126,8 @@ class ActionAppMenu : public views::MenuDelegate,
                          bool round_bottom_corners,
                          bool add_top_padding,
                          bool add_bottom_padding);
+
+  bool MaybePopulateSearchResults(const std::u16string& query);
 
   void PopulateSearchBar(views::MenuItemView* view_parent,
                          actions::ActionItem* search_action_item);
@@ -171,6 +177,9 @@ class ActionAppMenu : public views::MenuDelegate,
 
   // Manages the ActionItem hierarchy and dynamic submenus.
   std::unique_ptr<ActionAppMenuManager> menu_manager_;
+
+  // Search controller used when testing search or when search query is active.
+  std::unique_ptr<AppMenuSearchController> search_controller_;
 
   // Records UMA histograms and user actions for menu interactions.
   ActionAppMenuMetrics metrics_;

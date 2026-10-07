@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "base/values.h"
@@ -3332,6 +3333,99 @@ TEST_F(ActionAppMenuTest, BookmarksDynamicMenuDragAndDrop) {
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, AppMenuSearchQueryPopulatesResults) {
+  base::test::ScopedFeatureList feature_list(features::kChroMenuSearch);
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      "app-menu-search-query", "New Tab");
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
+  ASSERT_TRUE(search_bar);
+  EXPECT_EQ(search_bar->GetText(), u"New Tab");
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  // Search results should be populated with New Tab.
+  views::MenuItemView* new_tab_item = root->GetMenuItemByID(kActionNewTab);
+  ASSERT_TRUE(new_tab_item);
+  EXPECT_EQ(new_tab_item->title(), u"New Tab");
+
+  // Clicking/executing the search result item should invoke the action.
+  EXPECT_CALL(mock_action_invoked_, Call(kActionNewTab, testing::_, testing::_))
+      .Times(1);
+  menu.ExecuteCommand(new_tab_item->GetCommand(), ui::EF_NONE);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+  EXPECT_FALSE(menu.IsShowing());
+  EXPECT_EQ(menu.search_controller_for_testing(), nullptr);
+}
+
+TEST_F(ActionAppMenuTest, AppMenuSearchQueryNoResults) {
+  base::test::ScopedFeatureList feature_list(features::kChroMenuSearch);
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      "app-menu-search-query", "NonExistentQuery");
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
+  ASSERT_TRUE(search_bar);
+  EXPECT_EQ(search_bar->GetText(), u"NonExistentQuery");
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  // Should have "No results found" disabled item.
+  EXPECT_EQ(root->GetSubmenu()->GetMenuItems().size(), 2u);
+  views::MenuItemView* no_results_item = root->GetSubmenu()->GetMenuItemAt(1);
+  EXPECT_EQ(no_results_item->title(),
+            l10n_util::GetStringUTF16(IDS_SEARCH_NO_RESULTS));
+  EXPECT_FALSE(no_results_item->GetEnabled());
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+  EXPECT_FALSE(menu.IsShowing());
+}
+
+TEST_F(ActionAppMenuTest, AppMenuSearchQueryShortQueryShowsNormalMenu) {
+  base::test::ScopedFeatureList feature_list(features::kChroMenuSearch);
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      "app-menu-search-query", "N");
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
+  ASSERT_TRUE(search_bar);
+  EXPECT_EQ(search_bar->GetText(), u"N");
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  // The regular menu hierarchy should be present.
+  EXPECT_TRUE(root->GetMenuItemByID(kActionPasswordsAndAutofillSubmenu));
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+  EXPECT_FALSE(menu.IsShowing());
 }
 
 }  // namespace
