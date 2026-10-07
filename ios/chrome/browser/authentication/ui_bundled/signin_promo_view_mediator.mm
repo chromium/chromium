@@ -937,7 +937,7 @@ id<SystemIdentity> GetDisplayedIdentity(
   // Increments the "shown" counter used for histograms. Called when the signin
   // promo view is visible. If the sign-in promo is already visible, this method
   // does nothing.
-  CHECK([self isUsable], base::NotFatalUntil::M156)
+  CHECK([self shouldProceedInteraction], base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
   if (_signinPromoViewVisibleOnScreen) {
     return;
@@ -1009,7 +1009,7 @@ id<SystemIdentity> GetDisplayedIdentity(
   if (!_signinPromoViewVisibleOnScreen) {
     return;
   }
-  CHECK([self isUsable], base::NotFatalUntil::M156)
+  CHECK([self shouldProceedInteraction], base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
   _signinPromoViewVisibleOnScreen = NO;
 }
@@ -1026,6 +1026,7 @@ id<SystemIdentity> GetDisplayedIdentity(
   _syncService = nullptr;
   _identityManagerObserver.reset();
   _syncObserverBridge.reset();
+  _delegate = nil;
 }
 
 // Finishes the sign-in process.
@@ -1059,15 +1060,20 @@ id<SystemIdentity> GetDisplayedIdentity(
 #pragma mark - Private properties
 
 // Returns YES if the sign-in promo view is in a state where its buttons may be
-// used.
-- (BOOL)isUsable {
+// used. Returns NO if the taps should be ignored. NOTREACHED() if the mediator
+// is disconnected.
+- (BOOL)shouldProceedInteraction {
   switch (self.signinPromoViewState) {
     case SigninPromoViewState::kNotOrPartiallyDisplayed:
     case SigninPromoViewState::kDisplayedWithNoInteraction:
     case SigninPromoViewState::kUserInteracted:
       return YES;
     case SigninPromoViewState::kClosed:
+      return NO;
     case SigninPromoViewState::kDisconnected:
+      // As the mediator is disconnected, it should not have been possible for
+      // this method to be called.
+      NOTREACHED(base::NotFatalUntil::M160);
       return NO;
   }
 }
@@ -1140,7 +1146,7 @@ id<SystemIdentity> GetDisplayedIdentity(
 // Note that this number may be zero if the user tap on a promo’s button before
 // the promo is entirely displayed.
 - (void)sendImpressionsTillSigninButtonsHistogram {
-  CHECK([self isUsable], base::NotFatalUntil::M156)
+  CHECK([self shouldProceedInteraction], base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
   const char* displayedCountPreferenceKey =
       DisplayedCountPreferenceKey(self.accessPoint);
@@ -1229,9 +1235,10 @@ id<SystemIdentity> GetDisplayedIdentity(
 
 - (void)signinPromoViewDidTapSigninWithNewAccount:
     (SigninPromoView*)signinPromoView {
+  if (![self shouldProceedInteraction]) {
+    return;
+  }
   CHECK(!self.displayedIdentity, base::NotFatalUntil::M156)
-      << base::SysNSStringToUTF8([self description]);
-  CHECK([self isUsable], base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
   [self sendImpressionsTillSigninButtonsHistogram];
   // On iOS, the promo does not have a button to add and account when there is
@@ -1261,8 +1268,9 @@ id<SystemIdentity> GetDisplayedIdentity(
     (SigninPromoView*)signinPromoView {
   CHECK(self.displayedIdentity, base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
-  CHECK([self isUsable], base::NotFatalUntil::M156)
-      << base::SysNSStringToUTF8([self description]);
+  if (![self shouldProceedInteraction]) {
+    return;
+  }
   switch (self.signinPromoAction) {
     case SigninPromoAction::kInstantSignin:
       [self sendImpressionsTillSigninButtonsHistogram];
@@ -1297,8 +1305,9 @@ id<SystemIdentity> GetDisplayedIdentity(
     (SigninPromoView*)signinPromoView {
   CHECK(self.displayedIdentity, base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
-  CHECK([self isUsable], base::NotFatalUntil::M156)
-      << base::SysNSStringToUTF8([self description]);
+  if (![self shouldProceedInteraction]) {
+    return;
+  }
   [self sendImpressionsTillSigninButtonsHistogram];
   signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
 
@@ -1324,8 +1333,9 @@ id<SystemIdentity> GetDisplayedIdentity(
 }
 
 - (void)signinPromoViewCloseButtonWasTapped:(SigninPromoView*)view {
-  CHECK([self isUsable], base::NotFatalUntil::M156)
-      << base::SysNSStringToUTF8([self description]);
+  if (![self shouldProceedInteraction]) {
+    return;
+  }
   _signinPromoViewVisibleOnScreen = NO;
   base::RecordAction(base::UserMetricsAction("Signin_Promo_Close"));
   self.signinPromoViewState = SigninPromoViewState::kClosed;

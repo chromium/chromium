@@ -537,6 +537,20 @@ TEST_F(SigninPromoViewMediatorTest,
             mediator_.signinPromoViewState);
 }
 
+// Test that tapping buttons after closing the promo is ignored.
+TEST_F(SigninPromoViewMediatorTest, SigninPromoViewTappedAfterClosed) {
+  CreateMediator(signin_metrics::AccessPoint::kBookmarkManager);
+  [mediator_ signinPromoDidBecomeVisible];
+  OCMExpect([consumer_ signinPromoViewMediatorCloseButtonWasTapped:mediator_]);
+  [mediator_ signinPromoViewCloseButtonWasTapped:signin_promo_view_];
+  EXPECT_EQ(SigninPromoViewState::kClosed, mediator_.signinPromoViewState);
+
+  // Subsequent button taps should be ignored.
+  [mediator_ signinPromoViewDidTapSigninWithNewAccount:signin_promo_view_];
+  [mediator_ signinPromoViewCloseButtonWasTapped:signin_promo_view_];
+  EXPECT_EQ(SigninPromoViewState::kClosed, mediator_.signinPromoViewState);
+}
+
 // Tests the view state while signing in.
 TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateSignedin) {
   CreateMediator(signin_metrics::AccessPoint::kRecentTabs);
