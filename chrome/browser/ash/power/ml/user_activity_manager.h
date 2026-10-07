@@ -129,6 +129,7 @@ class UserActivityManager : public ui::UserActivityObserver,
   void OnSessionStateChanged() override;
 
  private:
+  friend class UserActivityManagerBrowserTest;
   friend class UserActivityManagerTest;
 
   // Data structure associated with the 1st ScreenDimImminent event. See

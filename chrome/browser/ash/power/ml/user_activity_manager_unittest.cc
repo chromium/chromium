@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/cancelable_callback.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -24,14 +25,8 @@
 #include "chrome/browser/ash/power/ml/user_activity_event.pb.h"
 #include "chrome/browser/ash/power/ml/user_activity_ukm_logger.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
-#include "chrome/browser/ui/tabs/tab_activity_simulator.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/test_browser_window_aura.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
@@ -41,22 +36,15 @@
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
-#include "components/site_engagement/content/site_engagement_service.h"
-#include "components/ukm/test_ukm_recorder.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
-#include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/metrics/public/cpp/ukm_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
 namespace ash {
 namespace power {
 namespace ml {
-
-using content::WebContentsTester;
 
 void EqualEvent(const UserActivityEvent::Event& expected_event,
                 const UserActivityEvent::Event& result_event) {
@@ -214,78 +202,9 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
     chromeos::FakePowerManagerClient::Get()->SetInactivityDelays(proto);
   }
 
-  TabProperty UpdateOpenTabURL() {
-    return activity_logger_->UpdateOpenTabURL();
-  }
-
-  // Creates a test browser window and sets its visibility, activity and
-  // incognito status.
-  std::unique_ptr<BrowserWindowInterface> CreateTestBrowser(
-      bool is_visible,
-      bool is_focused,
-      bool is_incognito = false) {
-    Profile* const original_profile = profile();
-    Profile* const used_profile =
-        is_incognito
-            ? original_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
-            : original_profile;
-    BrowserWindowCreateParams params(used_profile, true);
-
-    auto dummy_window = std::make_unique<aura::Window>(nullptr);
-    dummy_window->Init(ui::LAYER_SOLID_COLOR);
-    root_window()->AddChild(dummy_window.get());
-    dummy_window->SetBounds(gfx::Rect(root_window()->bounds().size()));
-    if (is_visible) {
-      dummy_window->Show();
-    } else {
-      dummy_window->Hide();
-    }
-
-    std::unique_ptr<BrowserWindowInterface> browser =
-        chrome::CreateBrowserWithAuraTestWindowForParams(
-            std::move(dummy_window), std::move(params));
-    if (is_focused) {
-      browser->GetWindow()->Activate();
-    } else {
-      browser->GetWindow()->Deactivate();
-    }
-    return browser;
-  }
-
-  // Adds a tab with specified url to the tab strip model. Also optionally sets
-  // the tab to be the active one in the tab strip model.
-  // If |mime_type| is an empty string, the content has a default text type.
-  // TODO(jiameng): there doesn't seem to be a way to set form entry (via
-  // page importance signal). Check if there's some other way to set it.
-  ukm::SourceId CreateTestWebContents(TabStripModel* const tab_strip_model,
-                                      const GURL& url,
-                                      bool is_active,
-                                      const std::string& mime_type = "") {
-    DCHECK(tab_strip_model);
-    DCHECK(!url.is_empty());
-    content::WebContents* contents =
-        tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model, url);
-    if (is_active) {
-      tab_strip_model->ActivateTabAt(tab_strip_model->count() - 1);
-    }
-    if (!mime_type.empty())
-      WebContentsTester::For(contents)->SetMainFrameMimeType(mime_type);
-
-    WebContentsTester::For(contents)->TestSetIsLoading(false);
-    return contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
-  }
-
   TestingUserActivityUkmLogger delegate_;
-  // Only used to get SourceIds for URLs.
-  ukm::TestAutoSetUkmRecorder ukm_recorder_;
-  TabActivitySimulator tab_activity_simulator_;
   chromeos::machine_learning::FakeServiceConnectionImpl
       fake_service_connection_;
-
-  const GURL url1_ = GURL("https://example1.com/");
-  const GURL url2_ = GURL("https://example2.com/");
-  const GURL url3_ = GURL("https://example3.com/");
-  const GURL url4_ = GURL("https://example4.com/");
 
  private:
   std::unique_ptr<IdleEventNotifier> idle_event_notifier_;
@@ -1266,136 +1185,6 @@ TEST_F(UserActivityManagerTest, TwoScreenDimImminentWithoutEventInBetween) {
   expected_prediction2.set_response(UserActivityEvent::ModelPrediction::NO_DIM);
 
   EqualModelPrediction(expected_prediction2, events[0].model_prediction());
-}
-
-// Test is flaky. See https://crbug.com/41444814.
-TEST_F(UserActivityManagerTest, DISABLED_BasicTabs) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kUserActivityPrediction);
-
-  std::unique_ptr<BrowserWindowInterface> browser =
-      CreateTestBrowser(true /* is_visible */, true /* is_focused */);
-  ui_test_utils::DeprecatedFakeActivateBrowser(browser.get());
-  TabStripModel* tab_strip_model = browser->GetTabStripModel();
-  const ukm::SourceId source_id1 = CreateTestWebContents(
-      tab_strip_model, url1_, true /* is_active */, "application/pdf");
-  site_engagement::SiteEngagementService::Get(profile())->ResetBaseScoreForURL(
-      url1_, 95);
-
-  CreateTestWebContents(tab_strip_model, url2_, false /* is_active */);
-
-  IdleEventNotifier::ActivityData data;
-  ReportIdleEvent(data);
-  ReportUserActivity(nullptr);
-
-  const std::vector<UserActivityEvent>& events = delegate_.events();
-  ASSERT_EQ(1U, events.size());
-
-  const UserActivityEvent::Features& features = events[0].features();
-  EXPECT_EQ(features.source_id(), source_id1);
-  EXPECT_EQ(features.tab_domain(), url1_.GetHost());
-  EXPECT_FALSE(features.tab_domain().empty());
-  EXPECT_EQ(features.engagement_score(), 90);
-  EXPECT_FALSE(features.has_form_entry());
-
-  tab_strip_model->CloseAllTabs();
-}
-
-// Test is flaky. See https://crbug.com/41444870.
-TEST_F(UserActivityManagerTest, DISABLED_MultiBrowsersAndTabs) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kUserActivityPrediction);
-
-  // Simulates three browsers:
-  //  - browser1 is the last active but minimized and so not visible.
-  //  - browser2 and browser3 are both visible but browser2 is the topmost.
-  std::unique_ptr<BrowserWindowInterface> browser1 =
-      CreateTestBrowser(false /* is_visible */, false /* is_focused */);
-  std::unique_ptr<BrowserWindowInterface> browser2 =
-      CreateTestBrowser(true /* is_visible */, true /* is_focused */);
-  std::unique_ptr<BrowserWindowInterface> browser3 =
-      CreateTestBrowser(true /* is_visible */, false /* is_focused */);
-
-  ui_test_utils::DeprecatedFakeActivateBrowser(browser3.get());
-  ui_test_utils::DeprecatedFakeActivateBrowser(browser2.get());
-  ui_test_utils::DeprecatedFakeActivateBrowser(browser1.get());
-
-  TabStripModel* tab_strip_model1 = browser1->GetTabStripModel();
-  CreateTestWebContents(tab_strip_model1, url1_, false /* is_active */);
-  CreateTestWebContents(tab_strip_model1, url2_, true /* is_active */);
-
-  TabStripModel* tab_strip_model2 = browser2->GetTabStripModel();
-  const ukm::SourceId source_id3 =
-      CreateTestWebContents(tab_strip_model2, url3_, true /* is_active */);
-
-  TabStripModel* tab_strip_model3 = browser3->GetTabStripModel();
-  CreateTestWebContents(tab_strip_model3, url4_, true /* is_active */);
-
-  IdleEventNotifier::ActivityData data;
-  ReportIdleEvent(data);
-  ReportUserActivity(nullptr);
-
-  const std::vector<UserActivityEvent>& events = delegate_.events();
-  ASSERT_EQ(1U, events.size());
-
-  const UserActivityEvent::Features& features = events[0].features();
-  EXPECT_EQ(features.source_id(), source_id3);
-  EXPECT_EQ(features.tab_domain(), url3_.GetHost());
-  EXPECT_EQ(features.engagement_score(), 0);
-  EXPECT_FALSE(features.has_form_entry());
-
-  tab_strip_model1->CloseAllTabs();
-  tab_strip_model2->CloseAllTabs();
-  tab_strip_model3->CloseAllTabs();
-}
-
-TEST_F(UserActivityManagerTest, Incognito) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kUserActivityPrediction);
-
-  std::unique_ptr<BrowserWindowInterface> browser = CreateTestBrowser(
-      true /* is_visible */, true /* is_focused */, true /* is_incognito */);
-  ui_test_utils::DeprecatedFakeActivateBrowser(browser.get());
-
-  TabStripModel* tab_strip_model = browser->GetTabStripModel();
-  CreateTestWebContents(tab_strip_model, url1_, true /* is_active */);
-  CreateTestWebContents(tab_strip_model, url2_, false /* is_active */);
-
-  IdleEventNotifier::ActivityData data;
-  ReportIdleEvent(data);
-  ReportUserActivity(nullptr);
-
-  const std::vector<UserActivityEvent>& events = delegate_.events();
-  ASSERT_EQ(1U, events.size());
-
-  const UserActivityEvent::Features& features = events[0].features();
-  EXPECT_FALSE(features.has_source_id());
-  EXPECT_FALSE(features.has_tab_domain());
-  EXPECT_FALSE(features.has_engagement_score());
-  EXPECT_FALSE(features.has_has_form_entry());
-
-  tab_strip_model->CloseAllTabs();
-}
-
-TEST_F(UserActivityManagerTest, NoOpenTabs) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kUserActivityPrediction);
-
-  std::unique_ptr<BrowserWindowInterface> browser =
-      CreateTestBrowser(true /* is_visible */, true /* is_focused */);
-
-  IdleEventNotifier::ActivityData data;
-  ReportIdleEvent(data);
-  ReportUserActivity(nullptr);
-
-  const std::vector<UserActivityEvent>& events = delegate_.events();
-  ASSERT_EQ(1U, events.size());
-
-  const UserActivityEvent::Features& features = events[0].features();
-  EXPECT_FALSE(features.has_source_id());
-  EXPECT_FALSE(features.has_tab_domain());
-  EXPECT_FALSE(features.has_engagement_score());
-  EXPECT_FALSE(features.has_has_form_entry());
 }
 
 }  // namespace ml

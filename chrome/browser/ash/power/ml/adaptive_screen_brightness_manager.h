@@ -86,6 +86,7 @@ class AdaptiveScreenBrightnessManager
   void OnVideoActivityEnded() override;
 
  private:
+  friend class AdaptiveScreenBrightnessManagerBrowserTest;
   friend class AdaptiveScreenBrightnessManagerTest;
 
   // Called when the periodic timer triggers.
