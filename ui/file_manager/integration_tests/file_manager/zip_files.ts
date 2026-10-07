@@ -77,7 +77,7 @@ export async function zipNotifyFileTasks() {
       'openFile failed');
 
   // Wait for the zip archive to mount.
-  await remoteCall.waitForElement(appId, `[scan-completed="archive.zip"]`);
+  await remoteCall.waitForElement(appId, '[scan-completed="archive.zip"]');
 }
 
 /**
@@ -449,7 +449,7 @@ export async function zipExtractShowMultiPanel() {
   await repeatUntil(async () => {
     const element = await remoteCall.waitForElement(
         appId, ['#progress-panel', 'xf-panel-item']);
-    const expectedMsg = `Extracting 2 items…`;
+    const expectedMsg = 'Extracting 2 items…';
     const actualMsg = element.attributes['primary-text'];
 
     if (actualMsg === expectedMsg) {

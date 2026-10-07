@@ -282,7 +282,7 @@ export async function testNudgeDismissKeyDown(done: () => void) {
   document.body.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}));
   assertFalse(
       await nudgeContainer!.checkSeen(NudgeType.TEST_NUDGE),
-      `nudge shouldn't be dismissed by keydown on <body>`);
+      'nudge shouldn\'t be dismissed by keydown on <body>');
 
   // Send keydown to the nudge.
   nudgeElement!.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}));

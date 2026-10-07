@@ -323,7 +323,7 @@ export async function renameRemovableWithKeyboardOnFileList() {
   const errorTextElement =
       await remoteCall.waitForElement(appId, '.cr-dialog-text');
   chrome.test.assertEq(
-      `Use a name that's 11 characters or less`, errorTextElement.text);
+      'Use a name that\'s 11 characters or less', errorTextElement.text);
 
   // Dismiss the error dialog.
   await remoteCall.waitAndClickElement(appId, '.cr-dialog-ok');

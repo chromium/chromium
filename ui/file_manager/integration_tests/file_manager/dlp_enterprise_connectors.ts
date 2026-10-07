@@ -125,7 +125,7 @@ export async function twoWarningsProceeded() {
   await remoteCall.waitAndClickElement(appId, [
     '#progress-panel',
     'xf-panel-item',
-    `xf-button#primary-action`,
+    'xf-button#primary-action',
   ]);
 
   // Scanning Label.
@@ -155,7 +155,7 @@ export async function twoWarningsProceeded() {
   await remoteCall.waitAndClickElement(appId, [
     '#progress-panel',
     'xf-panel-item',
-    `xf-button#primary-action`,
+    'xf-button#primary-action',
   ]);
 
   // Verify that the two files were copied.

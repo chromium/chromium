@@ -122,7 +122,7 @@ class StorageAreaImpl {
     } catch (error) {
       console.warn(
           `Failed to JSON parse localStorage value from key: "${key}" ` +
-              `returning the raw value.`,
+              'returning the raw value.',
           error);
       return value;
     }

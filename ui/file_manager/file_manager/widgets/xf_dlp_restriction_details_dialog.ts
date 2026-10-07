@@ -36,7 +36,7 @@ export class XfDlpRestrictionDetailsDialog extends HTMLElement {
   showDlpRestrictionDetailsDialog(
       details: chrome.fileManagerPrivate.DlpRestrictionDetails[]) {
     if (details.length === 0) {
-      console.error(`No DLP restriction details to display.`);
+      console.error('No DLP restriction details to display.');
       return;
     }
     this.details = details;

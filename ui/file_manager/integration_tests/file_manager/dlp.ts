@@ -1069,7 +1069,7 @@ export async function mixedSummaryDisplayPanel() {
 
   // Check that only 1 error panel is opened.
   await remoteCall.waitForElementsCount(
-      appId, ['#progress-panel', `xf-panel-item`], 1);
+      appId, ['#progress-panel', 'xf-panel-item'], 1);
   await remoteCall.waitForElementsCount(
       appId,
       ['#progress-panel', `xf-panel-item[panel-type="${PanelType.ERROR}"]`], 1);
@@ -1105,7 +1105,7 @@ export async function mixedSummaryDisplayPanel() {
 
   // Check that only 1 warning panel remains.
   await remoteCall.waitForElementsCount(
-      appId, ['#progress-panel', `xf-panel-item`], 1);
+      appId, ['#progress-panel', 'xf-panel-item'], 1);
   await remoteCall.waitForElementsCount(
       appId,
       ['#progress-panel', `xf-panel-item[panel-type="${PanelType.INFO}"]`], 1);

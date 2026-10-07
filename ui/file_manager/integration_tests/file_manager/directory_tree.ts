@@ -350,7 +350,7 @@ export async function directoryTreeExpandFolder() {
   const numberOfSubFolders = 20;
   const numberOfSubSubFolders = 15;
   entries = entries.concat(
-      addSubFolders(numberOfSubFolders, `large-folder-0/sub-folder`));
+      addSubFolders(numberOfSubFolders, 'large-folder-0/sub-folder'));
   for (let i = 0; i < numberOfSubFolders; i++) {
     entries = entries.concat(addSubFolders(
         numberOfSubSubFolders,

@@ -772,7 +772,7 @@ export class FileTransferController {
     const container =
         this.document_.body.querySelector<HTMLElement>('#drag-container')!;
     const html = `
-      ${items > 1 ? `<div class='drag-box drag-multiple'></div>` : ''}
+      ${items > 1 ? '<div class=\'drag-box drag-multiple\'></div>' : ''}
       <div class='drag-box drag-contents'>
         <div class='detail-icon'></div>
         <div class='label'>${htmlEscape(entry.name)}</div>

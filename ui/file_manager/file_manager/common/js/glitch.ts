@@ -27,5 +27,5 @@ export enum GlitchType {
  * @param glitchType What type of glitch was it.
  */
 export function reportGlitch(glitchType: GlitchType) {
-  recordEnum(`Glitch`, glitchType, Object.values(GlitchType));
+  recordEnum('Glitch', glitchType, Object.values(GlitchType));
 }

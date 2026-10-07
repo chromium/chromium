@@ -1151,7 +1151,7 @@ export async function openQuickViewScrollHtml() {
     const scrollY = await executeJsInPreviewTagAndCatchErrors<string>(
         appId, preview, getScrollY);
     if (String(scrollY) !== '0') {
-      return pending(caller, `Waiting for preview text to load.`);
+      return pending(caller, 'Waiting for preview text to load.');
     }
     return;
   });
@@ -2629,10 +2629,10 @@ export async function openQuickViewFromDirectoryTree() {
 export async function openQuickViewTabIndexImage() {
   // Prepare a list of tab-index focus queries.
   const tabQueries = [
-    {'query': ['#quick-view', `[aria-label="Back"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="Open"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="Delete"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="File info"]:focus`]},
+    {'query': ['#quick-view', '[aria-label="Back"]:focus']},
+    {'query': ['#quick-view', '[aria-label="Open"]:focus']},
+    {'query': ['#quick-view', '[aria-label="Delete"]:focus']},
+    {'query': ['#quick-view', '[aria-label="File info"]:focus']},
   ];
 
   // Open Files app on Downloads containing ENTRIES.smallJpeg.
@@ -2665,12 +2665,12 @@ export async function openQuickViewTabIndexImage() {
 export async function openQuickViewTabIndexText() {
   // Prepare a list of tab-index focus queries.
   const tabQueries = [
-    {'query': ['#quick-view', `[aria-label="Back"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="Open"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="Delete"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="File info"]:focus`]},
+    {'query': ['#quick-view', '[aria-label="Back"]:focus']},
+    {'query': ['#quick-view', '[aria-label="Open"]:focus']},
+    {'query': ['#quick-view', '[aria-label="Delete"]:focus']},
+    {'query': ['#quick-view', '[aria-label="File info"]:focus']},
     {'query': ['#quick-view']},  // Tab past the content panel.
-    {'query': ['#quick-view', `[aria-label="Back"]:focus`]},
+    {'query': ['#quick-view', '[aria-label="Back"]:focus']},
   ];
 
   // Open Files app on Downloads containing ENTRIES.tallText.
@@ -2703,10 +2703,10 @@ export async function openQuickViewTabIndexText() {
 export async function openQuickViewTabIndexHtml() {
   // Prepare a list of tab-index focus queries.
   const tabQueries = [
-    {'query': ['#quick-view', `[aria-label="Back"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="Open"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="Delete"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="File info"]:focus`]},
+    {'query': ['#quick-view', '[aria-label="Back"]:focus']},
+    {'query': ['#quick-view', '[aria-label="Open"]:focus']},
+    {'query': ['#quick-view', '[aria-label="Delete"]:focus']},
+    {'query': ['#quick-view', '[aria-label="File info"]:focus']},
   ];
 
   // Open Files app on Downloads containing ENTRIES.tallHtml.
@@ -2746,10 +2746,10 @@ export async function openQuickViewTabIndexAudio() {
 
   // Prepare a list of tab-index focus queries.
   const tabQueries = [
-    {'query': ['#quick-view', `[aria-label="Back"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="Open"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="Delete"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="File info"]:focus`]},
+    {'query': ['#quick-view', '[aria-label="Back"]:focus']},
+    {'query': ['#quick-view', '[aria-label="Open"]:focus']},
+    {'query': ['#quick-view', '[aria-label="Delete"]:focus']},
+    {'query': ['#quick-view', '[aria-label="File info"]:focus']},
   ];
 
   for (const query of tabQueries) {
@@ -2803,10 +2803,10 @@ export async function openQuickViewTabIndexVideo() {
 
   // Prepare a list of tab-index focus queries.
   const tabQueries = [
-    {'query': ['#quick-view', `[aria-label="Back"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="Open"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="Delete"]:focus`]},
-    {'query': ['#quick-view', `[aria-label="File info"]:focus`]},
+    {'query': ['#quick-view', '[aria-label="Back"]:focus']},
+    {'query': ['#quick-view', '[aria-label="Open"]:focus']},
+    {'query': ['#quick-view', '[aria-label="Delete"]:focus']},
+    {'query': ['#quick-view', '[aria-label="File info"]:focus']},
   ];
 
   for (const query of tabQueries) {

@@ -288,7 +288,7 @@ export async function toolbarMultiMenuFollowsButton() {
 
     return pending(
         caller,
-        `Waiting for the menu and button to be aligned: ` +
+        'Waiting for the menu and button to be aligned: ' +
             `${openButton.renderedLeft} !== ${menu.renderedLeft}`);
   });
 }

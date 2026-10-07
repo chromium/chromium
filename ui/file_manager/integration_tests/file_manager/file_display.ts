@@ -605,7 +605,7 @@ export async function fileDisplayWithoutDrive() {
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Google Drive');
 
   // Check that the scanner have finished.
-  await remoteCall.waitForElement(appId, `[scan-completed="Google Drive"]`);
+  await remoteCall.waitForElement(appId, '[scan-completed="Google Drive"]');
 
   // Check: the fake Google Drive should be empty.
   await remoteCall.waitForFiles(appId, []);

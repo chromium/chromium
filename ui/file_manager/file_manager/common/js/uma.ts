@@ -78,7 +78,7 @@ export function recordViewingVolumeTypeUma(
   }
 
   recordEnum(
-      appendAppMode(`ViewingVolumeType`, state), volumeType, UMA_VOLUME_TYPES);
+      appendAppMode('ViewingVolumeType', state), volumeType, UMA_VOLUME_TYPES);
 }
 
 function appendAppMode(name: string, state: State) {
@@ -115,6 +115,6 @@ export function recordViewingNavigationSurfaceUma(state: State): void {
   }
 
   recordEnum(
-      appendAppMode(`ViewingNavigationSurface`, state), surface,
+      appendAppMode('ViewingNavigationSurface', state), surface,
       UMA_NAVIGATION_SURFACES);
 }

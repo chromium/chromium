@@ -132,7 +132,7 @@ function changeDirectoryReducer(currentState: State, payload: {
   if (fileData) {
     const {volumeManager} = window.fileManager;
     if (!volumeManager) {
-      debug(`VolumeManager not available yet.`);
+      debug('VolumeManager not available yet.');
       currentDirectory = currentState.currentDirectory || currentDirectory;
     } else {
       const components = PathComponent.computeComponentsFromEntry(

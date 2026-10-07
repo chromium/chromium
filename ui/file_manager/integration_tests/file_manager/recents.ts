@@ -542,7 +542,7 @@ export async function recentsNested() {
   // Tests that selecting "Go to file location" for a file navigates to
   // Downloads/A/B/C since the file in Recents is from Downloads/A/B/C.
   await goToFileLocation(appId, ENTRIES.deeplyBuriedSmallJpeg.nameText);
-  await remoteCall.waitForElement(appId, `[scan-completed="C"]`);
+  await remoteCall.waitForElement(appId, '[scan-completed="C"]');
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows([ENTRIES.deeplyBuriedSmallJpeg]));
   await verifyBreadcrumbsPath(appId, '/My files/Downloads/A/B/C');
@@ -915,7 +915,7 @@ export async function recentsAllowMultipleFilesDeletion() {
   // Select all files from the gear menu.
   await remoteCall.waitAndClickElement(appId, '#gear-button');
   const selectAllMenu = '#gear-menu:not([hidden]) ' +
-      `[command="#select-all"]:not([hidden]):not([disabled])`;
+      '[command="#select-all"]:not([hidden]):not([disabled])';
   await remoteCall.waitAndClickElement(appId, selectAllMenu);
   await remoteCall.waitForElement(appId, '.table-row[selected]');
   // Wait for the files selection label.
@@ -1154,17 +1154,17 @@ export async function recentsEmptyFolderMessage() {
   // All filter is on by default.
   await waitForEmptyFolderMessage(appId, 'No recent files');
   // Activates to audio filter.
-  await remoteCall.waitAndClickElement(appId, [`[file-type-filter="audio"]`]);
+  await remoteCall.waitAndClickElement(appId, ['[file-type-filter="audio"]']);
   await waitForEmptyFolderMessage(appId, 'No recent audio files');
   // Activates to documents filter.
   await remoteCall.waitAndClickElement(
-      appId, [`[file-type-filter="document"]`]);
+      appId, ['[file-type-filter="document"]']);
   await waitForEmptyFolderMessage(appId, 'No recent documents');
   // Activates to images filter.
-  await remoteCall.waitAndClickElement(appId, [`[file-type-filter="image"]`]);
+  await remoteCall.waitAndClickElement(appId, ['[file-type-filter="image"]']);
   await waitForEmptyFolderMessage(appId, 'No recent images');
   // Activates to videos filter.
-  await remoteCall.waitAndClickElement(appId, [`[file-type-filter="video"]`]);
+  await remoteCall.waitAndClickElement(appId, ['[file-type-filter="video"]']);
   await waitForEmptyFolderMessage(appId, 'No recent videos');
 }
 

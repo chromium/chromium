@@ -1245,8 +1245,8 @@ export class DefaultTaskCommand extends FilesCommand {
 export class OpenWithCommand extends FilesCommand {
   execute(_event: CommandEvent, _fileManager: CommandHandlerDeps) {
     console.error(
-        `open-with command doesn't execute, ` +
-        `instead it only opens the sub-menu`);
+        'open-with command doesn\'t execute, ' +
+        'instead it only opens the sub-menu');
   }
 
   override canExecute(event: CanExecuteEvent, fileManager: CommandHandlerDeps) {
@@ -1484,7 +1484,7 @@ export class DlpRestrictionDetailsCommand extends FilesCommand {
       fileManager.ui.dlpRestrictionDetailsDialog
           ?.showDlpRestrictionDetailsDialog(details);
     } catch (e) {
-      console.warn(`Error showing DLP restriction details `, e);
+      console.warn('Error showing DLP restriction details ', e);
     }
   }
 

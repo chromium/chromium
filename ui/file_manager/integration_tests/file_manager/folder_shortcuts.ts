@@ -11,11 +11,11 @@ import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 /**
  * Directory tree path constants.
  */
-const TREEITEM_A = `/My Drive/A`;
+const TREEITEM_A = '/My Drive/A';
 const TREEITEM_B = `${TREEITEM_A}/B`;
 const TREEITEM_C = `${TREEITEM_B}/C`;
 
-const TREEITEM_D = `/My Drive/D`;
+const TREEITEM_D = '/My Drive/D';
 const TREEITEM_E = `${TREEITEM_D}/E`;
 
 /**

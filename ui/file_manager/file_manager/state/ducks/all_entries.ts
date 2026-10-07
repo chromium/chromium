@@ -604,7 +604,7 @@ export async function*
   let fileData = getFileData(state, fileKey);
   if (!fileData) {
     debug(`failed to find FileData for ${fileKey}`);
-    console.warn(`readSubDirectoriesInternal: failed to find FileData`);
+    console.warn('readSubDirectoriesInternal: failed to find FileData');
     return;
   }
   if (!canHaveSubDirectories(fileData)) {

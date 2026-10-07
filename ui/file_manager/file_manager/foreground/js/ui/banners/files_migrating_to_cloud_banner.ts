@@ -74,7 +74,7 @@ export class FilesMigratingToCloudBanner extends WarningBanner {
             strf('SKYVAULT_DELETION_BANNER', context.migrationStartTime);
         return;
       case chrome.fileManagerPrivate.MigrationDestination.NOT_SPECIFIED:
-        console.warn(`Cloud provider must be specified.`);
+        console.warn('Cloud provider must be specified.');
         return;
       default:
         assertNotReachedCase(context.migrationDestination);

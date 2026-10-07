@@ -29,7 +29,7 @@ export function testStoreInitEmptyState() {
   const {store, subscriber} = setupTestStore();
   store.subscribe(subscriber);
   // It starts un-initialized.
-  assertEquals(false, store.isInitialized(), `shouldn't be initialized yet`);
+  assertEquals(false, store.isInitialized(), 'shouldn\'t be initialized yet');
   store.init({numVisitors: 2});
 
   assertEquals(true, store.isInitialized(), 'initialized');
@@ -46,7 +46,7 @@ export function testStoreInitBatched() {
   store.subscribe(subscriber);
 
   // It starts un-initialized.
-  assertEquals(false, store.isInitialized(), `shouldn't be initialized yet`);
+  assertEquals(false, store.isInitialized(), 'shouldn\'t be initialized yet');
 
   // Nothing happened yet, so counter is still null.
   assertEquals(undefined, getNumVisitors(store), 'should start undefined');

@@ -401,13 +401,13 @@ const OLD_COPY_FAIL_MESSAGE =
     'Copy operation failed. The file could not be accessed ' +
     'for security reasons.';
 const OLD_MOVE_FAIL_DIRECTORY_MESSAGE =
-    `Can't move file. The file could not be modified.`;
+    'Can\'t move file. The file could not be modified.';
 const OLD_MOVE_FAIL_FILE_MESSAGE =
-    `Can't move file. The file could not be accessed ` +
+    'Can\'t move file. The file could not be accessed ' +
     'for security reasons.';
 
 const NEW_COPY_FAIL_MESSAGE = 'File blocked from copying';
-const NEW_MOVE_FAIL_MESSAGE = `File blocked from moving`;
+const NEW_MOVE_FAIL_MESSAGE = 'File blocked from moving';
 const TWO_FILES_COPY_FAIL_MESSAGE = '2 files blocked from copying';
 const TWO_FILES_MOVE_FAIL_MESSAGE = '2 files blocked from moving';
 const SINGLE_FILE_WARN_MESSAGE = 'c_warned.jpg may contain sensitive content';
@@ -866,7 +866,7 @@ async function verifyAfterPasteBlocking(
   } else {
     // Check that only one line of text is shown.
     await remoteCall.waitForFeedbackPanelItem(
-        appId, new RegExp(`^${expectedFinalMsg}$`), new RegExp(`^$`));
+        appId, new RegExp(`^${expectedFinalMsg}$`), new RegExp('^$'));
   }
 }
 
@@ -947,7 +947,7 @@ async function verifyAfterPasteReportOnlyNoSpace(
 
   // Check that only one line of text is shown.
   await remoteCall.waitForFeedbackPanelItem(
-      appId, new RegExp(`^${expectedFinalMsg}$`), new RegExp(`^$`));
+      appId, new RegExp(`^${expectedFinalMsg}$`), new RegExp('^$'));
 
   // After the transfer completed, we issue scanning responses.
   // This ensures that scanning does not impact the transfer.

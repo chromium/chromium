@@ -210,7 +210,7 @@ test.util.sync.execCommand =
         // TODO(b/191831968): Fix execCommand for SWA.
         console.warn(
             `execCommand(${command}) returned false for SWA, forcing ` +
-            `return value to true. b/191831968`);
+            'return value to true. b/191831968');
         return true;
       }
       return ret;

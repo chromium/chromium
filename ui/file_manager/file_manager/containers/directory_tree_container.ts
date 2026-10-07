@@ -578,7 +578,7 @@ export class DirectoryTreeContainer {
 
       // Append external-link iron-icon.
       const ironIcon = document.createElement('iron-icon');
-      ironIcon.setAttribute('icon', `files20:external-link`);
+      ironIcon.setAttribute('icon', 'files20:external-link');
       externalLink.appendChild(ironIcon);
 
       element.appendChild(externalLink);

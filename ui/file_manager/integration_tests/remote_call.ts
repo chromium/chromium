@@ -1041,7 +1041,7 @@ export class RemoteCallFilesApp extends RemoteCall {
         return true;
       }
 
-      return pending(caller, `Waiting for xf-cloud-panel to appear.`);
+      return pending(caller, 'Waiting for xf-cloud-panel to appear.');
     });
   }
 

@@ -365,7 +365,7 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
 
       // At this point the volumes are still initializing.
       console.warn(
-          `Queued the initialization of all ` +
+          'Queued the initialization of all ' +
           `${volumeMetadataList.length} volumes`);
 
       if (volumeMetadataList.length === 0) {

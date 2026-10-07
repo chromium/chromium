@@ -1027,7 +1027,7 @@ export async function openFileDialogGuestOs() {
   // Wait for the directory scanning to finish to guarantee the FileWatcher call
   // is finished.
   await remoteCall.waitForElement(
-      appId, `#list-container[scan-completed="Bluejohn"]`);
+      appId, '#list-container[scan-completed="Bluejohn"]');
 
   // Wait for the actual volume to appear.
   await directoryTree.waitForItemByType('bruschetta');
@@ -1063,7 +1063,7 @@ export async function saveFileDialogGuestOs() {
   // Wait for the directory scanning to finish to guarantee the FileWatcher call
   // is finished.
   await remoteCall.waitForElement(
-      appId, `#list-container[scan-completed="Bluejohn"]`);
+      appId, '#list-container[scan-completed="Bluejohn"]');
 
   // Wait for the actual volume to appear.
   await directoryTree.waitForItemByType('bruschetta');

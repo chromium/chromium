@@ -259,7 +259,7 @@ class DriveManageAction implements Action {
     getEntryProperties([this.entry_], props).then((results) => {
       if (results.length !== 1) {
         console.warn(
-            `getEntryProperties for alternateUrl should return 1 entry ` +
+            'getEntryProperties for alternateUrl should return 1 entry ' +
             `(returned ${results.length})`);
         return;
       }
