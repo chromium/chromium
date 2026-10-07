@@ -88,7 +88,6 @@ public class DataSharingTabManagerUnitTest {
     private static final Token GROUP_ID = Token.createRandom();
     private static final LocalTabGroupId LOCAL_ID = new LocalTabGroupId(GROUP_ID);
     private static final Integer TAB_ID = 456;
-    private static final int TAB_GROUP_ROOT_ID = 148;
     private static final GURL TEST_URL = JUnitTestGURLs.URL_1;
 
     private final OneshotSupplierImpl<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier =
@@ -303,7 +302,6 @@ public class DataSharingTabManagerUnitTest {
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(mSavedTabGroup);
-        when(mTabModel.getGroupLastShownTabId(GROUP_ID)).thenReturn(TAB_GROUP_ROOT_ID);
         when(mTabModel.tabGroupExists(GROUP_ID)).thenReturn(true);
 
         mDataSharingTabManager.displayTabGroupAnywhere(

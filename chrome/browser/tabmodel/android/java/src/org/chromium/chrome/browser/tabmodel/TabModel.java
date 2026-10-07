@@ -468,7 +468,16 @@ public interface TabModel extends TabList {
     /** Returns the position of the given {@link Tab} in its group. */
     int getIndexOfTabInGroup(Tab tab);
 
-    /** Returns the last shown tab id in the tab group with {@code tabGroupId}. */
+    /**
+     * Returns the last shown tab id in the tab group with {@code tabGroupId}.
+     *
+     * @deprecated Do not rely on mutable last-shown representative tab state for tab groups.
+     *     Operate on {@link Token} {@code tabGroupId} and {@link #getTabsInGroup(Token)} directly,
+     *     or use {@link TabGroupUtils#getSelectedOrFirstTabInGroup(TabModel, Token)} or {@link
+     *     TabGroupUtils#getFirstTabIdInGroup(TabModel, Token)}.
+     */
+    // TODO(crbug.com/517544602): Delete once sAndroidTabUiRefactor launches.
+    @Deprecated
     @TabId
     int getGroupLastShownTabId(@Nullable Token tabGroupId);
 
@@ -615,7 +624,7 @@ public interface TabModel extends TabList {
     int getTabGroupColor(Token tabGroupId);
 
     /**
-     * This method fetches tab group colors for the related tab group root ID. If the color does not
+     * This method fetches tab group colors for the specified tab group. If the color does not
      * exist, then GREY will be returned. This method is intended to be used by UI surfaces that
      * want to show a color, and they need the color returned to be valid.
      *

@@ -475,7 +475,6 @@ public class TabUiTestHelper {
                     }
                     createTabGroup(cta, isIncognito, tabGroup);
                     assertEquals(1, tabModel.getTabGroupCount());
-                    assertEquals(1, tabModel.getIndividualTabAndGroupCount());
                 });
     }
 

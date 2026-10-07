@@ -233,7 +233,6 @@ public class TabGroupMenuActionHandlerUnitTest {
         when(mTabModel.getTabById(123)).thenReturn(destTab);
         when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(destTab));
         when(mTabModel.tabGroupExists(groupId)).thenReturn(true);
-        when(mTabModel.getGroupLastShownTabId(groupId)).thenReturn(123);
 
         assertTrue(mHandler.handleAddToExistingGroupAction(mTab, groupId, /* syncGroupId= */ null));
 

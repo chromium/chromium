@@ -514,7 +514,8 @@ public class TabGroupUiUtils {
             List<Tab> tabs,
             Token destinationGroupId,
             @Nullable TabMovedCallback tabMovedCallback) {
-        @TabId int destTabId = sourceTabModel.getGroupLastShownTabId(destinationGroupId);
+        @TabId
+        int destTabId = TabGroupUtils.getFirstTabIdInGroup(sourceTabModel, destinationGroupId);
         TabGroupUtils.mergeTabsToDest(tabs, destTabId, sourceTabModel, tabMovedCallback);
     }
 
@@ -534,7 +535,7 @@ public class TabGroupUiUtils {
             return;
         }
         TabModel destTabModel = selector.getModel(sourceTabModel.isIncognito());
-        @TabId int destTabId = destTabModel.getGroupLastShownTabId(destinationGroupId);
+        @TabId int destTabId = TabGroupUtils.getFirstTabIdInGroup(destTabModel, destinationGroupId);
         if (destTabId == Tab.INVALID_TAB_ID) {
             return;
         }

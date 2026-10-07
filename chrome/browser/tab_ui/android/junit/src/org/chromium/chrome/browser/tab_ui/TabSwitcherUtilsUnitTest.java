@@ -216,7 +216,7 @@ public class TabSwitcherUtilsUnitTest {
         syncGroup.localId = new LocalTabGroupId(TAB_GROUP_ID_1);
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(syncGroup);
         when(mTabModel.tabGroupExists(TAB_GROUP_ID_1)).thenReturn(true);
-        when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID_1)).thenReturn(TAB_ID_1);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID_1)).thenReturn(List.of(mTab));
         when(mTabModel.indexOf(mTab)).thenReturn(0);
 
         TabSwitcherUtils.focusTabGroup(

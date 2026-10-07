@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.tab_ui.TabListMode;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.SuggestionUiEvent;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -1047,7 +1048,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
         TabModel tabModel = mTabModelSupplier.get();
         assumeNonNull(tabModel);
-        int tabId = tabModel.getGroupLastShownTabId(tabGroupId);
+        int tabId = TabGroupUtils.getFirstTabIdInGroup(tabModel, tabGroupId);
         if (tabId == Tab.INVALID_TAB_ID) return null;
 
         TabListCoordinator coordinator = mTabListCoordinator;

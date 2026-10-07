@@ -1297,6 +1297,7 @@ public class TabContextMenuCoordinatorUnitTest {
         when(tabModelWindow2.getTabGroupColorWithFallback(tabGroupId2))
                 .thenReturn(TAB_GROUP_INDICATOR_COLOR_ID);
         when(tabModelWindow2.tabGroupExists(tabGroupId2)).thenReturn(true);
+        when(tabModelWindow2.getTabsInGroup(tabGroupId2)).thenReturn(List.of(mTab2));
 
         mTabModel.addTab(
                 mTab1,

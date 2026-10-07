@@ -89,7 +89,6 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabWindowManagerImplUnitTest {
     private static final Token GROUP_ID = new Token(12, 34);
-    private static final int TAB_ID = 2;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -1187,7 +1186,6 @@ public class TabWindowManagerImplUnitTest {
                 .thenReturn(new Pair<>(mTabModelSelector, mDestroyable));
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
-        when(mTabModel.getGroupLastShownTabId(GROUP_ID)).thenReturn(TAB_ID);
         when(mTabModel.tabGroupExists(GROUP_ID)).thenReturn(true);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
         TabWindowManager tabWindowManager = createTabWindowManager(mTabModelSelectorFactory);

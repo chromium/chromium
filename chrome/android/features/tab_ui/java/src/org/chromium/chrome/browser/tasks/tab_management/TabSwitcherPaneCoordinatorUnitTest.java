@@ -310,8 +310,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                 tab, index, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
         Token tabGroupId = new Token(1L, 2L);
         tab.setTabGroupId(tabGroupId);
-        when(mTabModel.representativeIndexOf(tab)).thenReturn(index);
-        when(mTabModel.getRepresentativeTabAt(index)).thenReturn(tab);
         when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(List.of(tab));
         controller.resetWithListOfTabs(Collections.singletonList(tab));
 

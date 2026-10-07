@@ -197,11 +197,7 @@ public class LocalTabGroupMutationHelper {
             if (localTab == null) {
                 localTab =
                         createTabAndAddToGroup(
-                                assertNonNull(savedTab.url),
-                                title,
-                                desiredTabModelIndex,
-                                parent,
-                                tabGroupId);
+                                assertNonNull(savedTab.url), title, desiredTabModelIndex, parent);
                 mTabGroupSyncService.updateLocalTabId(
                         tabGroup.localId, assertNonNull(savedTab.syncId), localTab.getId());
             } else if (TabGroupSyncPendingReconciliation.isSuppressed(localTab)) {
@@ -228,7 +224,7 @@ public class LocalTabGroupMutationHelper {
 
     /** Helper method to create a tab with a given URL and add it to the tab group. */
     private Tab createTabAndAddToGroup(
-            GURL url, String title, int desiredTabModelIndex, Tab parentTab, Token tabGroupId) {
+            GURL url, String title, int desiredTabModelIndex, Tab parentTab) {
         if (!TabGroupSyncUtils.isSavableUrl(url)) {
             title = TabGroupSyncUtils.UNSAVEABLE_TAB_TITLE;
             url = TabGroupSyncUtils.UNSAVEABLE_URL_OVERRIDE;
@@ -241,12 +237,8 @@ public class LocalTabGroupMutationHelper {
 
         List<Tab> tabsToMerge = new ArrayList<>();
         tabsToMerge.add(newTab);
-        int lastTabId = mTabModel.getGroupLastShownTabId(tabGroupId);
-        assert lastTabId != Tab.INVALID_TAB_ID;
         mTabModel.mergeListOfTabsToGroup(
-                tabsToMerge,
-                mTabModel.getTabByIdChecked(lastTabId),
-                /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
+                tabsToMerge, parentTab, /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
         return newTab;
     }
 

@@ -164,20 +164,14 @@ public class TabSwitcherMultiWindowTest {
         mCta2 = waitForSecondChromeTabbedActivity();
         CriteriaHelper.pollUiThread(mCta2.getTabModelSelector()::isTabStateInitialized);
 
-        int tabAndGroupCount1 =
+        int incognitoTabCount1 =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                mCta1.getTabModelSelector()
-                                        .getModel(true)
-                                        .getIndividualTabAndGroupCount());
-        assertThat(tabAndGroupCount1, is(0));
-        int tabAndGroupCount2 =
+                        () -> mCta1.getTabModelSelector().getModel(true).getCount());
+        assertThat(incognitoTabCount1, is(0));
+        int incognitoTabCount2 =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                mCta2.getTabModelSelector()
-                                        .getModel(true)
-                                        .getIndividualTabAndGroupCount());
-        assertThat(tabAndGroupCount2, is(1));
+                        () -> mCta2.getTabModelSelector().getModel(true).getCount());
+        assertThat(incognitoTabCount2, is(1));
     }
 
     private void moveTabsToOtherWindow(ChromeTabbedActivity cta, int number) {

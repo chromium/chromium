@@ -552,8 +552,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         syncGroup.localId = new LocalTabGroupId(groupId);
 
         when(mTabGroupSyncService.getGroup("group_id_1")).thenReturn(syncGroup);
-        when(mTabModel.getGroupLastShownTabId(groupId)).thenReturn(42);
-        when(mTabModel.getTabById(42)).thenReturn(mTab);
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab));
         when(mTabModel.indexOf(mTab)).thenReturn(2);
 
         Callback<String> callback = mBringTabGroupToFrontCallbackCaptor.getValue();
@@ -588,8 +587,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         when(mTabGroupSyncService.getGroup("group_id_1"))
                 .thenReturn(syncGroupBefore)
                 .thenReturn(syncGroupAfter);
-        when(mTabModel.getGroupLastShownTabId(groupId)).thenReturn(42);
-        when(mTabModel.getTabById(42)).thenReturn(mTab);
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab));
         when(mTabModel.indexOf(mTab)).thenReturn(2);
 
         Callback<String> callback = mBringTabGroupToFrontCallbackCaptor.getValue();

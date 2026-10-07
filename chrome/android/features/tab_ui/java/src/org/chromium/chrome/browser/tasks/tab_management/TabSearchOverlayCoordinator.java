@@ -79,9 +79,9 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
@@ -714,14 +714,14 @@ public class TabSearchOverlayCoordinator
         TabModelSelector selector = mTabModelSelectorSupplier.get();
         if (selector == null) return;
 
-        // Find the last active tab ID inside this local group (or the first tab if last active
-        // cannot be determined).
+        // Find the currently selected tab inside this local group (or the first tab if none is
+        // selected).
         TabModel model = selector.getModel(mSearchBoxDataProvider.isIncognito());
-        int tabId = model.getGroupLastShownTabId(syncGroup.localId.tabGroupId);
-        if (tabId == Tab.INVALID_TAB_ID) return;
+        Tab tab = TabGroupUtils.getSelectedOrFirstTabInGroup(model, syncGroup.localId.tabGroupId);
+        if (tab == null) return;
 
         // Select the active tab inside the local TabModel to focus on the group.
-        int index = TabModelUtils.getTabIndexById(model, tabId);
+        int index = model.indexOf(tab);
         if (index != TabModel.INVALID_TAB_INDEX) {
             model.setIndex(index, TabSelectionType.FROM_USER);
         }

@@ -158,7 +158,6 @@ public abstract class ReorderStrategyTestBase {
             tab.setTabGroupId(groupId);
         }
         when(mModel.getTabCountForGroup(groupId)).thenReturn(tabList.size());
-        when(mModel.getGroupLastShownTabId(groupId)).thenReturn(tabList.get(0).getId());
     }
 
     private static class TestAnimationHost implements AnimationHost {

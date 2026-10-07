@@ -318,7 +318,7 @@ public class TabGroupUiTest {
                     TabModel tabModel = cta.getTabModelSelector().getModel(false);
                     tabModel.mergeListOfTabsToGroup(
                             List.of(tab),
-                            tabModel.getRepresentativeTabAt(0),
+                            tabModel.getTabAt(0),
                             /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
                 });
         ViewUtils.waitForVisibleView(
@@ -366,7 +366,7 @@ public class TabGroupUiTest {
                     TabModel tabModel = cta.getTabModelSelector().getModel(false);
                     tabModel.mergeListOfTabsToGroup(
                             List.of(tab),
-                            tabModel.getRepresentativeTabAt(0),
+                            tabModel.getTabAt(0),
                             /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
                 });
         ViewUtils.waitForVisibleView(

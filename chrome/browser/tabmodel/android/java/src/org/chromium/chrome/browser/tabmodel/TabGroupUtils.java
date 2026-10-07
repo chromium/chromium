@@ -165,8 +165,8 @@ public class TabGroupUtils {
         tabGroupId = tabs.get(0).getTabGroupId();
         assumeNonNull(tabGroupId);
 
-        // 3. Apply the tab group attributes (color, collapsed state, and title) using the new
-        // rootId.
+        // 3. Apply the tab group attributes (color, collapsed state, and title) using the
+        // tabGroupId.
         tabModel.setTabGroupColor(tabGroupId, tabGroupColor);
         tabModel.setTabGroupTitle(tabGroupId, tabGroupTitle);
         if (shouldApplyCollapse) {
@@ -395,7 +395,7 @@ public class TabGroupUtils {
      * @param tabGroupId The {@link Token} of the tab group.
      * @return The selected {@link Tab} or first {@link Tab} in the group, or {@code null}.
      */
-    static @Nullable Tab getSelectedOrFirstTabInGroup(
+    public static @Nullable Tab getSelectedOrFirstTabInGroup(
             TabModel tabModel, @Nullable Token tabGroupId) {
         if (tabGroupId == null) return null;
         NullableObservableSupplier<Tab> currentTabSupplier = tabModel.getCurrentTabSupplier();

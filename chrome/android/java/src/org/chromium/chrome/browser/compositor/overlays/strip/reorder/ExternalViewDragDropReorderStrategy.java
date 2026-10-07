@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDele
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.StripUpdateDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -213,7 +214,7 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
         } else {
             groupTitle = (StripLayoutGroupTitle) mInteractingViewDuringStop;
             Token destinationTabGroupId = groupTitle.getTabGroupId();
-            destinationTabId = mModel.getGroupLastShownTabId(destinationTabGroupId);
+            destinationTabId = TabGroupUtils.getFirstTabIdInGroup(mModel, destinationTabGroupId);
         }
 
         // 1. If hovered on view is not part of group or is collapsed, no-op.

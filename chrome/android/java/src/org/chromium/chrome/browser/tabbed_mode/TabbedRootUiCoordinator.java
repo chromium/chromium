@@ -216,6 +216,7 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -2286,8 +2287,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 }
 
                 if (TabSwitcherUtils.isGridTabSwitcherDisabled()) {
-                    int tabId = tabModel.getGroupLastShownTabId(tabGroupId);
-                    Tab tab = tabModel.getTabById(tabId);
+                    Tab tab = TabGroupUtils.getSelectedOrFirstTabInGroup(tabModel, tabGroupId);
                     if (tab != null) {
                         tabModel.setIndex(tabModel.indexOf(tab), TabSelectionType.FROM_USER);
                     }

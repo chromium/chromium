@@ -1708,16 +1708,7 @@ public class SelectableTabListEditorTest {
      */
     private List<Tab> getRepresentativeTabsInCurrentTabModel() {
         return ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    List<Tab> tabs = new ArrayList<>();
-
-                    TabModel tabModel = mTabModelSelector.getCurrentModel();
-                    for (int i = 0; i < tabModel.getIndividualTabAndGroupCount(); i++) {
-                        tabs.add(tabModel.getRepresentativeTabAt(i));
-                    }
-
-                    return tabs;
-                });
+                () -> mTabModelSelector.getCurrentModel().getRepresentativeTabList());
     }
 
     private void showSelectionEditor(List<Tab> tabs, @Nullable List<TabListEditorAction> actions) {

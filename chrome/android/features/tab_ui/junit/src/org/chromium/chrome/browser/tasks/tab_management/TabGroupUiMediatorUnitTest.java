@@ -123,10 +123,9 @@ public class TabGroupUiMediatorUnitTest {
     private static final int POSITION1 = 0;
     private static final int POSITION2 = 1;
     private static final int POSITION3 = 2;
-    private static final int TAB2_ROOT_ID = TAB2_ID;
-    private static final int TAB3_ROOT_ID = TAB2_ID;
     private static final String GROUP_TITLE = "My Group";
     private static final Token TAB2_GROUP_ID = new Token(1L, 2L);
+    private static final Token TAB3_GROUP_ID = new Token(2L, 3L);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -227,7 +226,6 @@ public class TabGroupUiMediatorUnitTest {
         if (currentTab == null) {
             doReturn(TabModel.INVALID_TAB_INDEX).when(mTabModel).index();
             doReturn(0).when(mTabModel).getCount();
-            doReturn(0).when(mTabModel).getIndividualTabAndGroupCount();
             doReturn(null).when(mTabModelSelector).getCurrentTab();
             when(mTabModel.iterator()).thenAnswer(inv -> Collections.emptyList().iterator());
         } else {
@@ -335,7 +333,6 @@ public class TabGroupUiMediatorUnitTest {
         doNothing().when(mTab3).addObserver(mTabObserverCaptor.capture());
 
         // Setup TabModel.
-        doReturn(2).when(mTabModel).getIndividualTabAndGroupCount();
         doReturn(mTabGroup1).when(mTabModel).getRelatedTabList(TAB1_ID);
         doReturn(mTabGroup2).when(mTabModel).getRelatedTabList(TAB2_ID);
         doReturn(mTabGroup2).when(mTabModel).getRelatedTabList(TAB3_ID);
@@ -961,7 +958,7 @@ public class TabGroupUiMediatorUnitTest {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab3));
         doReturn(tabs).when(mTabModel).getRelatedTabList(TAB3_ID);
         doReturn(true).when(mTabModel).isTabInTabGroup(mTab3);
-        doReturn(new Token(1L, TAB3_ROOT_ID)).when(mTab3).getTabGroupId();
+        doReturn(TAB3_GROUP_ID).when(mTab3).getTabGroupId();
         mTabGroupObserverArgumentCaptor.getValue().didMoveTabOutOfGroup(mTab3, TAB2_GROUP_ID);
 
         verifyResetStrip(true, tabs);
@@ -974,7 +971,7 @@ public class TabGroupUiMediatorUnitTest {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         doReturn(tabs).when(mTabModel).getRelatedTabList(TAB1_ID);
         doReturn(true).when(mTabModel).isTabInTabGroup(mTab1);
-        doReturn(new Token(1L, TAB2_ROOT_ID)).when(mTab1).getTabGroupId();
+        doReturn(TAB2_GROUP_ID).when(mTab1).getTabGroupId();
         mTabGroupObserverArgumentCaptor
                 .getValue()
                 .didMergeTabToGroup(mTab1, /* isDestinationTab= */ true);
