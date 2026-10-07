@@ -33,23 +33,23 @@ using csp_validator::SanitizeContentSecurityPolicy;
 
 namespace {
 
-const char kDefaultContentSecurityPolicy[] =
+constexpr char kDefaultContentSecurityPolicy[] =
     "script-src 'self' blob: filesystem:; "
     "object-src 'self' blob: filesystem:;";
 
-const char kDefaultSandboxedPageContentSecurityPolicy[] =
+constexpr char kDefaultSandboxedPageContentSecurityPolicy[] =
     "sandbox allow-scripts allow-forms allow-popups allow-modals; "
     "script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';";
 
 // The default CSP to be used if no CSP provided.
-static const char kDefaultMV3CSP[] = "script-src 'self';";
+constexpr char kDefaultMV3CSP[] = "script-src 'self';";
 
 // The minimum CSP to be used in order to prevent remote scripts.
-static const char kMinimumMV3CSP[] =
+constexpr char kMinimumMV3CSP[] =
     "script-src 'self' 'wasm-unsafe-eval' 'inline-speculation-rules'; "
     "object-src 'self';";
 // The minimum CSP for extensions that can access chrome://resources.
-static const char kMinimumMV3CSPWithChromeResources[] =
+constexpr char kMinimumMV3CSPWithChromeResources[] =
     "script-src 'self' chrome://resources 'wasm-unsafe-eval' "
     "'inline-speculation-rules'; "
     "object-src 'self';";
@@ -60,7 +60,7 @@ constexpr char kMinimumMV3IsolatedWorldCSPTemplate[] =
     "object-src 'self';";
 // For unpacked extensions, we additionally allow the use of localhost files to
 // aid in rapid local development.
-static const char kMinimumUnpackedMV3CSP[] =
+constexpr char kMinimumUnpackedMV3CSP[] =
     "script-src 'self' 'wasm-unsafe-eval' 'inline-speculation-rules' "
     "http://localhost:* http://127.0.0.1:*; object-src 'self';";
 // The minimum CSP to be used in isolated worlds for unpacked extensions. The
@@ -72,7 +72,7 @@ constexpr char kMinimumUnpackedMV3IsolatedWorldCSPTemplate[] =
 #define PLATFORM_APP_LOCAL_CSP_SOURCES "'self' blob: filesystem: data:"
 
 // clang-format off
-const char kDefaultPlatformAppContentSecurityPolicy[] =
+constexpr char kDefaultPlatformAppContentSecurityPolicy[] =
     // Platform apps can only use local resources by default.
     "default-src 'self' blob: filesystem:;"
     // For remote resources, they can fetch them via XMLHttpRequest.
