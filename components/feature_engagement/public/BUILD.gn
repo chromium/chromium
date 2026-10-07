@@ -136,7 +136,10 @@ if (is_android) {
   java_cpp_enum("public_java_enums_srcjar") {
     visibility = [ ":*" ]
 
-    sources = [ "tracker.h" ]
+    sources = [
+      "../internal/stats.h",
+      "tracker.h",
+    ]
   }
 
   generate_jni("jni_headers") {

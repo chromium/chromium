@@ -27799,6 +27799,7 @@ Called by update_net_error_codes.py.-->
   <int value="12" label="SUCCESS_TRACKING_ONLY"/>
   <int value="13" label="FAILURE_DISPLAY_LOCK"/>
   <int value="14" label="FAILURE_GROUPS_PRECONDITION_UNMET"/>
+  <int value="15" label="FAILURE_BLOCKED_BY_ENTERPRISE_POLICY"/>
 </enum>
 
 <!--LINT.ThenChange(//components/feature_engagement/internal/stats.h:TriggerHelpUIResult) -->

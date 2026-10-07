@@ -22,6 +22,7 @@ namespace stats {
 // The failure reasons are not mutually exclusive.
 // Out-dated entries shouldn't be deleted but marked as obselete.
 // LINT.IfChange(TriggerHelpUIResult)
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.feature_engagement
 enum class TriggerHelpUIResult {
   // The help UI is triggered.
   SUCCESS = 0,
@@ -68,8 +69,11 @@ enum class TriggerHelpUIResult {
   // Groups conditions are not satisfied.
   FAILURE_GROUPS_PRECONDITION_UNMET = 14,
 
+  // Blocked by enterprise policy.
+  FAILURE_BLOCKED_BY_ENTERPRISE_POLICY = 15,
+
   // Last entry for the enum.
-  COUNT = 15,
+  COUNT = 16,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:TriggerHelpUIResult)
 
