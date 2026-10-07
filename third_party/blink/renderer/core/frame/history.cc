@@ -170,7 +170,10 @@ ScriptValue History::StateHelper(ScriptState* script_state,
     v8_state = v8::Null(isolate);
   } else {
     ScriptState::EscapableScope target_context_scope(script_state);
-    v8_state = target_context_scope.Escape(current_state->Deserialize(isolate));
+    SerializedScriptValue::DeserializeOptions options;
+    options.histogram_variant = "HistoryState";
+    v8_state = target_context_scope.Escape(
+        current_state->Deserialize(isolate, options));
   }
 
   last_state_object_requested_ = current_state;

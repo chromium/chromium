@@ -228,6 +228,8 @@ class CORE_EXPORT SerializedScriptValue
     // Slow mode is intended to mitigate possible timing attacks on v8 string
     // table.
     bool slow_mode = false;
+    // When non-null, used to record UMA.
+    String histogram_variant;
   };
   v8::Local<v8::Value> Deserialize(v8::Isolate* isolate) {
     return Deserialize(isolate, DeserializeOptions());

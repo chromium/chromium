@@ -8834,6 +8834,20 @@ Called by update_use_counter_css.py.-->
   <int value="7" label="ForceDefer (Deprecated 2023)"/>
 </enum>
 
+<!-- LINT.IfChange(ScriptValueDeserializationEvent) -->
+
+<enum name="ScriptValueDeserializationEvent">
+  <int value="0" label="Deserialization attempted"/>
+  <int value="1" label="Deserialization succeeded"/>
+  <int value="2" label="Deserialization failed"/>
+  <int value="3" label="A missing Blob handle caused deserialization failure"/>
+  <int value="4" label="A missing File handle caused deserialization failure"/>
+  <int value="5" label="At least one Blob deserialization succeeded"/>
+  <int value="6" label="At least one File deserialization succeeded"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/bindings/core/v8/serialization/v8_script_value_deserializer.cc:ScriptValueDeserializationEvent) -->
+
 <!-- LINT.IfChange(SharedDictionaryHintType)-->
 
 <enum name="SharedDictionaryHintType">

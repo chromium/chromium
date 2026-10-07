@@ -6,6 +6,7 @@
 
 #include <array>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -238,6 +239,107 @@ TEST(V8ScriptValueSerializerTest, DeserializationErrorSetsHasError) {
                                          serialized_script_value, options);
   deserializer.Deserialize();
   EXPECT_TRUE(deserializer.HasError());
+}
+
+TEST(V8ScriptValueSerializerTest, DeserializationHistogram) {
+  test::TaskEnvironment task_environment;
+  base::HistogramTester histogram_tester;
+  V8TestingScope scope;
+
+  {
+    scoped_refptr<SerializedScriptValue> input =
+        SerializedScriptValue::NullValue();
+    SerializedScriptValue::DeserializeOptions options;
+    options.histogram_variant = "Foo";
+
+    V8ScriptValueDeserializer deserializer(scope.GetScriptState(), input,
+                                           options);
+    EXPECT_TRUE(deserializer.Deserialize()->IsNull());
+  }
+
+  histogram_tester.ExpectBucketCount("Blink.ScriptValueDeserialization.Foo",
+                                     /* kAttempted */ 0, 1);
+  histogram_tester.ExpectBucketCount("Blink.ScriptValueDeserialization.Foo",
+                                     /* kSucceeded */ 1, 1);
+  histogram_tester.ExpectTotalCount("Blink.ScriptValueDeserialization.Foo", 2);
+
+  {
+    scoped_refptr<SerializedScriptValue> input =
+        SerializedScriptValue::Create("invalid data");
+    SerializedScriptValue::DeserializeOptions options;
+    options.histogram_variant = "Foo";
+
+    V8ScriptValueDeserializer deserializer(scope.GetScriptState(), input,
+                                           options);
+    EXPECT_TRUE(deserializer.Deserialize()->IsNull());
+  }
+
+  histogram_tester.ExpectBucketCount("Blink.ScriptValueDeserialization.Foo",
+                                     /* kAttempted */ 0, 2);
+  histogram_tester.ExpectBucketCount("Blink.ScriptValueDeserialization.Foo",
+                                     /* kFailed */ 2, 1);
+  histogram_tester.ExpectTotalCount("Blink.ScriptValueDeserialization.Foo", 4);
+}
+
+TEST(V8ScriptValueSerializerTest,
+     BlobAndFileDeserializationSuccessRecordedOnce) {
+  test::TaskEnvironment task_environment;
+  ScopedFakeBlobRegistry blob_registry;
+  base::HistogramTester histogram_tester;
+  V8TestingScope scope;
+  v8::Isolate* isolate = scope.GetIsolate();
+  v8::Local<v8::Context> context = scope.GetContext();
+  v8::Local<v8::Array> input = v8::Array::New(isolate, 4);
+  Blob* blob1 = Blob::Create(base::span<const uint8_t>(), "text/plain");
+  Blob* blob2 = Blob::Create(base::span<const uint8_t>(), "text/plain");
+  File* file1 = MakeGarbageCollected<File>("file1.txt", base::Time::UnixEpoch(),
+                                           BlobDataHandle::Create());
+  File* file2 = MakeGarbageCollected<File>("file2.txt", base::Time::UnixEpoch(),
+                                           BlobDataHandle::Create());
+  ASSERT_TRUE(input
+                  ->Set(context, 0,
+                        ToV8Traits<Blob>::ToV8(scope.GetScriptState(), blob1))
+                  .FromMaybe(false));
+  ASSERT_TRUE(input
+                  ->Set(context, 1,
+                        ToV8Traits<Blob>::ToV8(scope.GetScriptState(), blob2))
+                  .FromMaybe(false));
+  ASSERT_TRUE(input
+                  ->Set(context, 2,
+                        ToV8Traits<File>::ToV8(scope.GetScriptState(), file1))
+                  .FromMaybe(false));
+  ASSERT_TRUE(input
+                  ->Set(context, 3,
+                        ToV8Traits<File>::ToV8(scope.GetScriptState(), file2))
+                  .FromMaybe(false));
+  scoped_refptr<SerializedScriptValue> serialized_value =
+      V8ScriptValueSerializer(scope.GetScriptState())
+          .Serialize(input, scope.GetExceptionState());
+  ASSERT_TRUE(serialized_value);
+
+  SerializedScriptValue::DeserializeOptions options;
+  options.histogram_variant = "HistoryState";
+  v8::Local<v8::Value> result =
+      V8ScriptValueDeserializer(scope.GetScriptState(), serialized_value,
+                                options)
+          .Deserialize();
+
+  ASSERT_TRUE(result->IsArray());
+  EXPECT_EQ(4u, result.As<v8::Array>()->Length());
+  histogram_tester.ExpectBucketCount(
+      "Blink.ScriptValueDeserialization.HistoryState",
+      /* kAttempted */ 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.ScriptValueDeserialization.HistoryState",
+      /* kSucceeded */ 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.ScriptValueDeserialization.HistoryState",
+      /* kBlobDeserializationSucceeded */ 5, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.ScriptValueDeserialization.HistoryState",
+      /* kFileDeserializationSucceeded */ 6, 1);
+  histogram_tester.ExpectTotalCount(
+      "Blink.ScriptValueDeserialization.HistoryState", 4);
 }
 
 TEST(V8ScriptValueSerializerTest, DetachHappensAfterSerialization) {
@@ -1654,6 +1756,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripBlob) {
 // Blob deserialization requires blob data handles.
 TEST(V8ScriptValueSerializerTest, DecodeBlobWithoutHandles) {
   test::TaskEnvironment task_environment;
+  base::HistogramTester histogram_tester;
   V8TestingScope scope;
   scoped_refptr<SerializedScriptValue> input = SerializedValue(
       {0xff, 0x09, 0x3f, 0x00, 0x62, 0x24, 0x64, 0x38, 0x37, 0x35, 0x64,
@@ -1661,9 +1764,23 @@ TEST(V8ScriptValueSerializerTest, DecodeBlobWithoutHandles) {
        0x31, 0x62, 0x2d, 0x39, 0x38, 0x66, 0x65, 0x2d, 0x30, 0x63, 0x66,
        0x36, 0x63, 0x63, 0x35, 0x65, 0x61, 0x66, 0x34, 0x34, 0x0a, 0x74,
        0x65, 0x78, 0x74, 0x2f, 0x70, 0x6c, 0x61, 0x69, 0x6e, 0x0c});
+  SerializedScriptValue::DeserializeOptions options;
+  options.histogram_variant = "HistoryState";
   v8::Local<v8::Value> result =
-      V8ScriptValueDeserializer(scope.GetScriptState(), input).Deserialize();
+      V8ScriptValueDeserializer(scope.GetScriptState(), input, options)
+          .Deserialize();
   EXPECT_TRUE(result->IsNull());
+  histogram_tester.ExpectBucketCount(
+      "Blink.ScriptValueDeserialization.HistoryState",
+      /* kAttempted */ 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.ScriptValueDeserialization.HistoryState",
+      /* kFailed */ 2, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.ScriptValueDeserialization.HistoryState",
+      /* kBlobLookupFailed */ 3, 1);
+  histogram_tester.ExpectTotalCount(
+      "Blink.ScriptValueDeserialization.HistoryState", 3);
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripBlobIndex) {
@@ -1839,9 +1956,10 @@ class TimeIntervalChecker {
   const int64_t start_time_;
 };
 
-// Blob deserialization requires blob data handles.
+// File deserialization requires blob data handles.
 TEST(V8ScriptValueSerializerTest, DecodeFileWithoutHandles) {
   test::TaskEnvironment task_environment;
+  base::HistogramTester histogram_tester;
   V8TestingScope scope;
   scoped_refptr<SerializedScriptValue> input = SerializedValue(
       {0xff, 0x08, 0x3f, 0x00, 0x66, 0x04, 'p',  'a',  't',  'h',  0x04, 'n',
@@ -1851,9 +1969,23 @@ TEST(V8ScriptValueSerializerTest, DecodeFileWithoutHandles) {
        'c',  '0',  '2',  'f',  '0',  'f',  'a',  '3',  0x0a, 't',  'e',  'x',
        't',  '/',  'p',  'l',  'a',  'i',  'n',  0x01, 0x80, 0x04, 0x00, 0x00,
        0x00, 0x00, 0x00, 0x00, 0xd0, 0xbf, 0x01, 0x00});
+  SerializedScriptValue::DeserializeOptions options;
+  options.histogram_variant = "HistoryState";
   v8::Local<v8::Value> result =
-      V8ScriptValueDeserializer(scope.GetScriptState(), input).Deserialize();
+      V8ScriptValueDeserializer(scope.GetScriptState(), input, options)
+          .Deserialize();
   EXPECT_TRUE(result->IsNull());
+  histogram_tester.ExpectBucketCount(
+      "Blink.ScriptValueDeserialization.HistoryState",
+      /* kAttempted */ 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.ScriptValueDeserialization.HistoryState",
+      /* kFailed */ 2, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.ScriptValueDeserialization.HistoryState",
+      /* kFileLookupFailed */ 4, 1);
+  histogram_tester.ExpectTotalCount(
+      "Blink.ScriptValueDeserialization.HistoryState", 3);
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripFileIndex) {

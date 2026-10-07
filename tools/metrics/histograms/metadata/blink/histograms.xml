@@ -5502,6 +5502,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.ScriptValueDeserialization.HistoryState"
+    enum="ScriptValueDeserializationEvent" expires_after="2027-10-02">
+  <owner>jbroman@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <summary>
+    Records events related to History API state deserialization. Events are
+    emitted when deserialization is attempted and on failure/success; when a
+    Blob was missing (which would be the source of failure); and when
+    deserialization is successful and at least one Blob was deserialized.
+  </summary>
+</histogram>
+
 <histogram
     name="Blink.ServiceDocumentUpdate.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2027-03-14">

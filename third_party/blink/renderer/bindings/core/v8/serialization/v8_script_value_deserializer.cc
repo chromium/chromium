@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
@@ -78,11 +79,38 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(ScriptValueDeserializationEvent)
+enum class ScriptValueDeserializationEvent {
+  kAttempted = 0,
+  kSucceeded = 1,
+  kFailed = 2,
+  kBlobLookupFailed = 3,
+  kFileLookupFailed = 4,
+  kBlobDeserializationSucceeded = 5,
+  kFileDeserializationSucceeded = 6,
+  kMaxValue = kFileDeserializationSucceeded,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:ScriptValueDeserializationEvent)
+
+void RecordDeserializationEvent(const String& histogram_variant,
+                                ScriptValueDeserializationEvent event) {
+  if (histogram_variant.IsNull()) {
+    return;
+  }
+  CHECK(!histogram_variant.empty());
+  base::UmaHistogramEnumeration(
+      StrCat({"Blink.ScriptValueDeserialization.", histogram_variant}).Utf8(),
+      event);
+}
 
 // The "Blink-side" serialization version, which defines how Blink will behave
 // during the serialization process. The serialization format has two
@@ -193,7 +221,8 @@ V8ScriptValueDeserializer::V8ScriptValueDeserializer(
                     serialized_script_value_->DataLengthInBytes(),
                     this),
       transferred_message_ports_(options.message_ports),
-      blob_info_array_(options.blob_info) {
+      blob_info_array_(options.blob_info),
+      histogram_variant_(options.histogram_variant) {
   deserializer_.SetSupportsLegacyWireFormat(true);
   if (!serialized_script_value_->SharedImmutableArrayBuffersContents()
            .empty()) {
@@ -215,6 +244,9 @@ v8::Local<v8::Value> V8ScriptValueDeserializer::Deserialize() {
   v8::TryCatch try_catch(isolate);
   v8::Local<v8::Context> context = script_state_->GetContext();
 
+  RecordDeserializationEvent(histogram_variant_,
+                             ScriptValueDeserializationEvent::kAttempted);
+
   size_t version_envelope_size =
       ReadVersionEnvelope(serialized_script_value_.get(), &version_);
   if (version_envelope_size) {
@@ -229,6 +261,8 @@ v8::Local<v8::Value> V8ScriptValueDeserializer::Deserialize() {
   bool read_header;
   if (!deserializer_.ReadHeader(context).To(&read_header)) {
     has_error_ = true;
+    RecordDeserializationEvent(histogram_variant_,
+                               ScriptValueDeserializationEvent::kFailed);
     return v8::Null(isolate);
   }
   DCHECK(read_header);
@@ -244,6 +278,8 @@ v8::Local<v8::Value> V8ScriptValueDeserializer::Deserialize() {
   v8::Local<v8::Value> value;
   if (!deserializer_.ReadValue(context).ToLocal(&value)) {
     has_error_ = true;
+    RecordDeserializationEvent(histogram_variant_,
+                               ScriptValueDeserializationEvent::kFailed);
     return v8::Null(isolate);
   }
 
@@ -251,6 +287,8 @@ v8::Local<v8::Value> V8ScriptValueDeserializer::Deserialize() {
     // TODO(caseq): consider additionally gating this on payload size.
     MaskDeserializationTimings(value.As<v8::Object>());
   }
+  RecordDeserializationEvent(histogram_variant_,
+                             ScriptValueDeserializationEvent::kSucceeded);
   return scope.Escape(value);
 }
 
@@ -445,8 +483,18 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
         return nullptr;
       }
       auto blob_handle = GetBlobDataHandle(blob_index_string);
-      if (!blob_handle)
+      if (!blob_handle) {
+        RecordDeserializationEvent(
+            histogram_variant_,
+            ScriptValueDeserializationEvent::kBlobLookupFailed);
         return nullptr;
+      }
+      if (!recorded_blob_deserialization_success_) {
+        recorded_blob_deserialization_success_ = true;
+        RecordDeserializationEvent(
+            histogram_variant_,
+            ScriptValueDeserializationEvent::kBlobDeserializationSucceeded);
+      }
       return MakeGarbageCollected<Blob>(std::move(blob_handle));
     }
     case kBlobIndexTag: {
@@ -935,8 +983,17 @@ File* V8ScriptValueDeserializer::ReadFile() {
   const File::UserVisibility user_visibility =
       is_user_visible ? File::kIsUserVisible : File::kIsNotUserVisible;
   auto blob_handle = GetBlobDataHandle(blob_index_string);
-  if (!blob_handle)
+  if (!blob_handle) {
+    RecordDeserializationEvent(
+        histogram_variant_, ScriptValueDeserializationEvent::kFileLookupFailed);
     return nullptr;
+  }
+  if (!recorded_file_deserialization_success_) {
+    recorded_file_deserialization_success_ = true;
+    RecordDeserializationEvent(
+        histogram_variant_,
+        ScriptValueDeserializationEvent::kFileDeserializationSucceeded);
+  }
   return File::CreateFromSerialization(path, name, relative_path,
                                        user_visibility, has_snapshot, size,
                                        last_modified, std::move(blob_handle));

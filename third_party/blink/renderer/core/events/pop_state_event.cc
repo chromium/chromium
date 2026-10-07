@@ -91,8 +91,10 @@ ScriptValue PopStateEvent::state(ScriptState* script_state,
   v8::Local<v8::Value> v8_state;
   if (serialized_state_) {
     ScriptState::EscapableScope target_context_scope(script_state);
-    v8_state =
-        target_context_scope.Escape(serialized_state_->Deserialize(isolate));
+    SerializedScriptValue::DeserializeOptions options;
+    options.histogram_variant = "HistoryState";
+    v8_state = target_context_scope.Escape(
+        serialized_state_->Deserialize(isolate, options));
   } else {
     v8_state = v8::Null(isolate);
   }
