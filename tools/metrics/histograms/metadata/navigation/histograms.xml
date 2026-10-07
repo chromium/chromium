@@ -1240,7 +1240,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.Experimental.FastFetch.EligibilityCheckDuration"
-    units="microseconds" expires_after="2026-10-01">
+    units="microseconds" expires_after="2027-03-28">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1252,7 +1252,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.Experimental.FastFetch.EligibilityReason"
-    enum="FastFetchEligibilityReason" expires_after="2026-10-01">
+    enum="FastFetchEligibilityReason" expires_after="2027-03-28">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1263,7 +1263,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.Experimental.FastFetch.FailedNetError"
-    enum="NetErrorCodes" expires_after="2026-10-01">
+    enum="NetErrorCodes" expires_after="2027-03-28">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1273,7 +1273,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.Experimental.FastFetch.NavigationOutcome"
-    enum="FastFetchNavigationOutcome" expires_after="2026-10-01">
+    enum="FastFetchNavigationOutcome" expires_after="2027-03-28">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1304,7 +1304,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.Experimental.FastFetch.SkipThrottles"
-    enum="Boolean" expires_after="2026-10-01">
+    enum="Boolean" expires_after="2027-03-28">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
