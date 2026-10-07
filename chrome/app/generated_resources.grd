@@ -7797,6 +7797,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOM_LINKS_REORDER" desc="The text label of the shortcut reorder button on the action menu. (On the New Tab Page)">
         Reorder
       </message>
+      <message name="IDS_NTP_SHORTCUT_REORDER_A11Y" is_accessibility_with_no_ui="true" desc="The accessible label of a most visited tile when reordering shortcuts. (On the New Tab Page)">
+        <ph name="SHORTCUT_TITLE">$1<ex>YouTube</ex></ph>, use the Left and Right arrow keys to move the shortcut. Press Enter or Escape to finish.
+      </message>
       <message name="IDS_NTP_MOST_VISITED_SITES_REMOVE" desc="The accessible label of the most visited tile remove button. (On the New Tab Page)">
         Remove <ph name="SHORTCUT_TITLE">$1<ex>YouTube</ex></ph>
       </message>

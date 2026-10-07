@@ -2313,6 +2313,55 @@ suite('EnterpriseShortcuts', () => {
   });
 });
 
+suite('ShortcutsReorder', () => {
+  [false, true].forEach(shortcutsReorderEnabled => {
+    test(
+        `reorder menu option rendered when shortcutsReorderEnabled=${
+            shortcutsReorderEnabled}`,
+        async () => {
+          document.body.innerHTML = window.trustedTypes!.emptyHTML;
+          await setUpTest({shortcutsReorderEnabled});
+          await addTiles(1);
+          const tile = queryTiles()[0]!;
+          const actionMenuButton =
+              tile.querySelector<HTMLElement>('#actionMenuButton')!;
+          assertFalse(mostVisited.$.actionMenu.open);
+          actionMenuButton.click();
+          assertTrue(mostVisited.$.actionMenu.open);
+          const reorderButton =
+              $$<HTMLElement>(mostVisited, '#actionMenuReorder');
+          if (shortcutsReorderEnabled) {
+            assertTrue(!!reorderButton);
+          } else {
+            assertFalse(!!reorderButton);
+          }
+        });
+  });
+
+  test('tile properties change when reorder mode is enabled', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    await setUpTest({shortcutsReorderEnabled: true});
+    await addTiles(1);
+    const tile = queryTiles()[0]!;
+    const tileLink = tile.querySelector<HTMLAnchorElement>('a')!;
+    // In default mode, the aria-label is just the title.
+    const title = tileLink.getAttribute('aria-label')!;
+
+    // Open the action menu and enter reorder mode.
+    tile.querySelector<HTMLElement>('#actionMenuButton')!.click();
+    await microtasksFinished();
+    $$<HTMLElement>(mostVisited, '#actionMenuReorder').click();
+    await microtasksFinished();
+
+    // The aria-label should change when in reorder mode.
+    const reorderA11yLabel = tileLink.getAttribute('aria-label')!;
+    assertNotEquals(title, reorderA11yLabel);
+    assertTrue(reorderA11yLabel.includes('arrow keys'));
+    assertEquals('', tileLink.getAttribute('href'));
+    assertEquals(tileLink, mostVisited.shadowRoot?.activeElement);
+  });
+});
+
 suite('ShortcutsAutoRemovalToast', () => {
   setup(async () => {
     await setUpTest();
@@ -2465,26 +2514,4 @@ suite('NonEditable', () => {
         });
   });
 
-  [false, true].forEach(shortcutsReorderEnabled => {
-    test(`reorder menu option rendered when shortcutsReorderEnabled=${
-             shortcutsReorderEnabled}`,
-         async () => {
-           document.body.innerHTML = window.trustedTypes!.emptyHTML;
-           await setUpTest({shortcutsReorderEnabled});
-           await addTiles(1);
-           const tile = queryTiles()[0]!;
-           const actionMenuButton =
-               tile.querySelector<HTMLElement>('#actionMenuButton')!;
-           assertFalse(mostVisited.$.actionMenu.open);
-           actionMenuButton.click();
-           assertTrue(mostVisited.$.actionMenu.open);
-           const reorderButton =
-               $$<HTMLElement>(mostVisited, '#actionMenuReorder');
-           if (shortcutsReorderEnabled) {
-             assertTrue(!!reorderButton);
-           } else {
-             assertFalse(!!reorderButton);
-           }
-         });
-  });
 });

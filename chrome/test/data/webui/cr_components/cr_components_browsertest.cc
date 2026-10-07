@@ -248,6 +248,11 @@ IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, ShortcutsAutoRemovalToast) {
           "runMochaSuite('ShortcutsAutoRemovalToast');");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, ShortcutsReorder) {
+  RunTest("cr_components/most_visited_test.js",
+          "runMochaSuite('ShortcutsReorder');");
+}
+
 IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, NonEditable) {
   RunTest("cr_components/most_visited_test.js",
           "runMochaSuite('NonEditable');");

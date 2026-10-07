@@ -21,7 +21,9 @@ export function getHtml(this: MostVisitedElement) {
         @mouseleave="${this.onTileMouseleave_}"
         @mousedown="${this.onTileMousedown_}" @keydown="${this.onTileKeydown_}"
         draggable="${!this.nonEditable}" data-index="${index}">
-      <a href="${item.url}" aria-label="${item.title}" draggable="false"></a>
+      <a href="${this.inReorderMode_ ? '' : item.url}"
+        aria-label="${this.getTileAriaLabel_(item.title)}"
+      draggable="false"></a>
       <cr-icon-button id="actionMenuButton" class="icon-more-vert"
           title="${this.getMoreActionText_(item.title)}"
           @click="${this.onTileActionButtonClick_}" tabindex="0"
@@ -135,7 +137,8 @@ export function getHtml(this: MostVisitedElement) {
       ${this.actionMenuViewOrEditTitle_}
     </button>
     ${this.shortcutsReorderEnabled ? html`
-      <button id="actionMenuReorder" class="dropdown-item">
+      <button id="actionMenuReorder" class="dropdown-item"
+          @click="${this.onReorderClick_}">
         ${this.i18n('shortcutReorder')}
       </button>
     ` : ''}
