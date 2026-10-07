@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management.data_provider;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
 
@@ -16,7 +17,39 @@ public interface TabListDataObserver {
      *
      * @param items The new full list of {@link TabListItem} entries.
      */
-    default void onDataReset(List<? extends TabListItem> items) {}
+    default void onDataReset(List<? extends TabListItem> items) {
+        // TODO(crbug.com/562590772): Triggered by TabListMediator#resetWithListOfTabs (via
+        // TabListDataProvider#requestDataReset) and TabModelObserver#restoreCompleted.
+        // TabListMediator will update existing PropertyModels in place via updateTab() when the
+        // item sequence is unchanged, or rebuild tab entries in TabListModel via
+        // TabListMediator#addTabInfoToModel() while preserving non-tab items.
+    }
 
-    // TODO(crbug.com/562590772): Add incremental structural and property update callbacks.
+    /**
+     * Called when items are inserted into the data set.
+     *
+     * @param items The inserted {@link TabListItem} entries.
+     * @param after The item immediately preceding the insertion, or null if inserted at the start
+     *     of the list.
+     */
+    default void onItemsInserted(List<? extends TabListItem> items, @Nullable TabListItem after) {
+        // TODO(crbug.com/562590772): TabListMediator will listen to this callback on
+        // TabListDataObserver instead of observing TabModelObserver#didAddTab directly, resolving
+        // `after` via TabListModel#indexFromTabId (or the start of the tab region when `after` is
+        // null) and inserting each TabItem via TabListMediator#addTabInfoToModel().
+    }
+
+    /**
+     * Called when items are removed from the data set.
+     *
+     * @param items The removed {@link TabListItem} entries.
+     */
+    default void onItemsRemoved(List<? extends TabListItem> items) {
+        // TODO(crbug.com/562590772): TabListMediator will listen to this callback on
+        // TabListDataObserver instead of observing TabModelObserver#didRemoveTabForClosure /
+        // TabModelObserver#tabRemoved directly, resolving each item via TabListModel#indexFromTabId
+        // and removing it from TabListModel.
+    }
+
+    // TODO(crbug.com/562590772): Add remaining structural and property update callbacks.
 }

@@ -33,7 +33,9 @@ import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -223,7 +225,7 @@ public class FlatTabListDataProviderUnitTest {
     @Test
     public void testObserversAndDestroy_ManagesNotificationsAndDetaches() {
         setUpProviderWithTabs(/* filter= */ null, mTab1, mTab2);
-        // Exercise default no-op TabListDataObserver#onDataReset alongside a second mock observer.
+        // Exercise default no-op TabListDataObserver methods alongside a second mock observer.
         TabListDataObserver defaultObserver = new TabListDataObserver() {};
         mProvider.addObserver(defaultObserver);
         mProvider.addObserver(mSecondObserver);
@@ -252,6 +254,112 @@ public class FlatTabListDataProviderUnitTest {
         verifyNoInteractions(mSecondObserver);
     }
 
+    @Test
+    public void testDidAddTab_InsertsAtHeadMiddleAndEnd_EmitsPredecessorAnchor() {
+        setUpProviderWithTabs(/* filter= */ null, mTab2);
+
+        // Insert at head (index 0) -> after is null.
+        addTab(mTab1, /* modelIndex= */ 0);
+        verify(mObserver).onItemsInserted(List.of(item(TAB1_ID)), /* after= */ null);
+        assertItems(item(TAB1_ID), item(TAB2_ID));
+
+        // Append at end (index 2) -> after is mTab2.
+        addTab(mTab4, /* modelIndex= */ 2);
+        verify(mObserver).onItemsInserted(List.of(item(TAB4_ID)), item(TAB2_ID));
+        assertItems(item(TAB1_ID), item(TAB2_ID), item(TAB4_ID));
+
+        // Insert in middle (index 2, between mTab2 and mTab4) -> after is mTab2.
+        addTab(mTab3, /* modelIndex= */ 2);
+        verify(mObserver).onItemsInserted(List.of(item(TAB3_ID)), item(TAB2_ID));
+        assertItems(item(TAB1_ID), item(TAB2_ID), item(TAB3_ID), item(TAB4_ID));
+    }
+
+    @Test
+    public void testDidAddTab_WithFilter_SkipsFilteredOutTabsAndComputesVisibleAnchor() {
+        groupTabs(TAB_GROUP_ID, mTab2, mTab4);
+        // mTab1 is ungrouped (filtered out), so only mTab2 is initially projected.
+        setUpProviderWithTabs(mInCurrentGroupFilter, mTab1, mTab2);
+        assertItems(item(TAB2_ID));
+
+        // Adding ungrouped mTab3 is ignored because it does not match the filter.
+        addTab(mTab3, /* modelIndex= */ 2);
+        verifyNoInteractions(mObserver);
+        assertItems(item(TAB2_ID));
+
+        // Adding grouped mTab4 after filtered-out mTab3 skips mTab1 and mTab3 and anchors after
+        // mTab2.
+        mSelectedTab = mTab4;
+        addTab(mTab4, /* modelIndex= */ 3);
+        verify(mObserver).onItemsInserted(List.of(selected(TAB4_ID)), item(TAB2_ID));
+        assertItems(item(TAB2_ID), selected(TAB4_ID));
+    }
+
+    @Test
+    public void testDidAddTab_IgnoresUnrestoredDuplicateOrAbsentTab() {
+        when(mTabModel.isTabModelRestored()).thenReturn(false);
+        setUpProviderWithTabs(/* filter= */ null);
+
+        // Ignored while TabModel is not yet restored.
+        addTab(mTab1, /* modelIndex= */ 0);
+        verifyNoInteractions(mObserver);
+        assertItems();
+
+        when(mTabModel.isTabModelRestored()).thenReturn(true);
+        mTabModelObserver.restoreCompleted();
+        assertResetWithItems(item(TAB1_ID));
+        clearInvocations(mObserver);
+
+        // Ignored if the tab is already present in mItems.
+        mTabModelObserver.didAddTab(
+                mTab1,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND,
+                /* markedForSelection= */ false);
+        verifyNoInteractions(mObserver);
+        assertItems(item(TAB1_ID));
+
+        // Ignored if the tab is not present in TabModel.
+        mTabModelObserver.didAddTab(
+                mTab2,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND,
+                /* markedForSelection= */ false);
+        verifyNoInteractions(mObserver);
+        assertItems(item(TAB1_ID));
+    }
+
+    @Test
+    public void testDidRemoveTabForClosure_RemovesItem() {
+        setUpProviderWithTabs(/* filter= */ null, mTab1, mTab2, mTab3);
+
+        closeTab(mTab2);
+
+        verify(mObserver).onItemsRemoved(List.of(item(TAB2_ID)));
+        assertItems(item(TAB1_ID), item(TAB3_ID));
+    }
+
+    @Test
+    public void testTabRemoved_RemovesItem() {
+        setUpProviderWithTabs(/* filter= */ null, mTab1, mTab2, mTab3);
+
+        mModelTabs.remove(mTab3);
+        mTabModelObserver.tabRemoved(mTab3);
+
+        verify(mObserver).onItemsRemoved(List.of(item(TAB3_ID)));
+        assertItems(item(TAB1_ID), item(TAB2_ID));
+    }
+
+    @Test
+    public void testDidRemoveTabForClosure_UnprojectedTab_NoEvents() {
+        groupTabs(TAB_GROUP_ID, mTab1);
+        setUpProviderWithTabs(mInCurrentGroupFilter, mTab1, mTab2);
+
+        closeTab(mTab2);
+
+        verifyNoInteractions(mObserver);
+        assertItems(item(TAB1_ID));
+    }
+
     private void stubBackedTabModel(TabModel model, List<Tab> tabs) {
         when(model.isTabModelRestored()).thenReturn(true);
         when(model.iterator()).thenAnswer(invocation -> tabs.iterator());
@@ -278,6 +386,20 @@ public class FlatTabListDataProviderUnitTest {
     private void setModelTabs(Tab... tabs) {
         mModelTabs.clear();
         mModelTabs.addAll(Arrays.asList(tabs));
+    }
+
+    private void addTab(Tab tab, int modelIndex) {
+        mModelTabs.add(modelIndex, tab);
+        mTabModelObserver.didAddTab(
+                tab,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND,
+                /* markedForSelection= */ false);
+    }
+
+    private void closeTab(Tab tab) {
+        mModelTabs.remove(tab);
+        mTabModelObserver.didRemoveTabForClosure(tab);
     }
 
     private static void groupTabs(@Nullable Token groupId, Tab... tabs) {

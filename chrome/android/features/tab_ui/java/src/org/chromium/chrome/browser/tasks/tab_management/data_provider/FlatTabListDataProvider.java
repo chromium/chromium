@@ -8,6 +8,8 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -42,12 +44,31 @@ public class FlatTabListDataProvider extends TabListDataProvider {
         TabModelObserver tabModelObserver =
                 new TabModelObserver() {
                     @Override
+                    public void didAddTab(
+                            Tab tab,
+                            @TabLaunchType int type,
+                            @TabCreationState int creationState,
+                            boolean markedForSelection) {
+                        addTabItem(tab);
+                    }
+
+                    @Override
+                    public void didRemoveTabForClosure(Tab tab) {
+                        removeTabItem(tab.getId());
+                    }
+
+                    @Override
+                    public void tabRemoved(Tab tab) {
+                        removeTabItem(tab.getId());
+                    }
+
+                    @Override
                     public void restoreCompleted() {
                         requestDataReset();
                     }
 
                     // TODO(crbug.com/562590772): Add incremental TabModelObserver and
-                    // TabGroupObserver callbacks for tab additions, removals, moves, and selection.
+                    // TabGroupObserver callbacks for tab moves and selection.
                 };
 
         initObservers(tabModelObserver);
@@ -67,7 +88,8 @@ public class FlatTabListDataProvider extends TabListDataProvider {
         }
     }
 
-    private boolean shouldShowTab(Tab tab) {
+    @Override
+    protected boolean shouldShowTab(Tab tab) {
         return mFilter == null || mFilter.test(tab);
     }
 }
