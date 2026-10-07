@@ -5621,6 +5621,7 @@ public class LocationBarMediatorUnitTest {
         mAiModeButtonUiConfigSupplier.set(null);
 
         verify(mLocationBarLayout).setActivationChipVisibility(false);
+        verify(mActivationChip).setText("");
         verify(mActivationChip).setContentDescription(null);
         verify(mActivationChip).setTooltipText(null);
     }
@@ -5634,6 +5635,7 @@ public class LocationBarMediatorUnitTest {
         mAiModeButtonUiConfigSupplier.set(createTestAiModeButtonUiConfig());
 
         verify(mLocationBarLayout).setActivationChipVisibility(true);
+        verify(mActivationChip).setText("AI Mode");
         verify(mActivationChip).setContentDescription("AI Mode button");
         verify(mActivationChip).setTooltipText("Ask AI Mode");
     }

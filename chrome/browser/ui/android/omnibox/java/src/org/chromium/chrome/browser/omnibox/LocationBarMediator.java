@@ -115,6 +115,7 @@ import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
@@ -2046,7 +2047,6 @@ public class LocationBarMediator
         mPrefChangeRegistrar = PrefServiceUtil.createFor(profile);
         mPrefChangeRegistrar.addObserver(
                 Pref.SHOW_AI_MODE_OMNIBOX_BUTTON, this::updateActivationChip);
-        mIsFuseboxEligible = ComposeboxQueryControllerBridge.isFuseboxEligibleForProfile(profile);
         mSearchEngineService
                 .getAiModeButtonUiConfigSupplier()
                 .addSyncObserverAndCall(mAiModeButtonUiConfigObserver);
@@ -3717,8 +3717,13 @@ public class LocationBarMediator
      * and hides the activation chip as the default search engine or eligibility changes.
      */
     private void onAiModeButtonUiConfigChanged(@Nullable AiModeButtonUiConfig config) {
+        mIsFuseboxEligible =
+                assumeNonNull(mSearchEngineService).isDefaultSearchEngineGoogle()
+                        && ComposeboxQueryControllerBridge.isFuseboxEligibleForProfile(
+                                assumeNonNull(mProfileSupplier.get()));
         mAiModeButtonUiConfig = config;
-        View activationChip = mLocationBarLayout.getActivationChip();
+        ChipView activationChip = mLocationBarLayout.getActivationChip();
+        activationChip.setText(config != null ? config.text : "");
         activationChip.setContentDescription(config != null ? config.a11yLabel : null);
         activationChip.setTooltipText(config != null ? config.tooltip : null);
         updateActivationChip();
