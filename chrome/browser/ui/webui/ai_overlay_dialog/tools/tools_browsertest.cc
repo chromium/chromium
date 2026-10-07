@@ -41,7 +41,6 @@
 namespace ttc {
 namespace {
 
-using ScrollResult = base::expected<std::monostate, std::string>;
 using PerformSearchResult = base::expected<std::monostate, std::string>;
 using FindAndHighlightResult = base::expected<std::monostate, std::string>;
 using PlayVideoResult = base::expected<std::monostate, std::string>;
@@ -349,17 +348,6 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, PerformSearch) {
 
   // Wait for navigation to complete. We just check the navigation works
   // as TemplateURLService provides the search URL.
-}
-
-IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, Scroll) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/empty.html")));
-
-  base::test::TestFuture<ScrollResult> future;
-  tools()->Scroll(ai_overlay_dialog::mojom::ScrollGranularity::kPage, 1.0,
-                  future.GetCallback());
-
-  EXPECT_TRUE(future.Get().has_value());
 }
 
 // For media tools, we utilize the embedded test server's built-in

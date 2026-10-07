@@ -7,7 +7,16 @@
 #include <string>
 #include <variant>
 
+#include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/input/native_web_keyboard_event.h"
+#include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 
 namespace ttc {
 
@@ -48,6 +57,56 @@ void AiOverlayToolsAndroid::Scroll(
     double magnitude,
     ScrollCallback callback) {
   RecordToolCallInvoked("Scroll");
+  content::WebContents* contents = GetActiveWebContents();
+  if (!contents || !contents->GetRenderWidgetHostView()) {
+    std::move(callback).Run(base::unexpected("No active tab or view"));
+    return;
+  }
+
+  content::RenderWidgetHost* widget_host =
+      contents->GetRenderWidgetHostView()->GetRenderWidgetHost();
+  if (!widget_host) {
+    std::move(callback).Run(base::unexpected("No render widget host"));
+    return;
+  }
+
+  struct ScrollKey {
+    ui::KeyboardCode key_code;
+    ui::DomCode dom_code;
+    ui::DomKey dom_key;
+  };
+  auto get_scroll_key =
+      [](ai_overlay_dialog::mojom::ScrollGranularity granularity,
+         double magnitude) -> ScrollKey {
+    switch (granularity) {
+      case ai_overlay_dialog::mojom::ScrollGranularity::kPage:
+        return magnitude > 0 ? ScrollKey{ui::VKEY_NEXT, ui::DomCode::PAGE_DOWN,
+                                         ui::DomKey::PAGE_DOWN}
+                             : ScrollKey{ui::VKEY_PRIOR, ui::DomCode::PAGE_UP,
+                                         ui::DomKey::PAGE_UP};
+      case ai_overlay_dialog::mojom::ScrollGranularity::kDocument:
+        return magnitude > 0
+                   ? ScrollKey{ui::VKEY_END, ui::DomCode::END, ui::DomKey::END}
+                   : ScrollKey{ui::VKEY_HOME, ui::DomCode::HOME,
+                               ui::DomKey::HOME};
+    }
+  };
+  const ScrollKey key = get_scroll_key(granularity, magnitude);
+
+  // The events intentionally carry no Android KeyEvent (`os_event`). Events
+  // that do are first offered to the app's key handlers, which could consume
+  // them before they reach the page.
+  for (blink::WebInputEvent::Type type :
+       {blink::WebInputEvent::Type::kRawKeyDown,
+        blink::WebInputEvent::Type::kKeyUp}) {
+    input::NativeWebKeyboardEvent event(
+        type, blink::WebInputEvent::kNoModifiers, base::TimeTicks::Now());
+    event.windows_key_code = key.key_code;
+    event.dom_code = static_cast<int>(key.dom_code);
+    event.dom_key = key.dom_key;
+    widget_host->ForwardKeyboardEvent(event);
+  }
+
   std::move(callback).Run(std::monostate());
 }
 
