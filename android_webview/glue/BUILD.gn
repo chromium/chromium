@@ -76,7 +76,6 @@ android_library("glue_java") {
     "java/src/com/android/webview/chromium/StartupDelegateImpl.java",
     "java/src/com/android/webview/chromium/TracingControllerAdapter.java",
     "java/src/com/android/webview/chromium/WebBackForwardListChromium.java",
-    "java/src/com/android/webview/chromium/WebContent.java",
     "java/src/com/android/webview/chromium/WebContentContextWrapper.java",
     "java/src/com/android/webview/chromium/WebHistoryItemChromium.java",
     "java/src/com/android/webview/chromium/WebIconDatabaseAdapter.java",

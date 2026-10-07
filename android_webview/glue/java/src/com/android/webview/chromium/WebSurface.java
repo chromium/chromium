@@ -7,6 +7,7 @@ package com.android.webview.chromium;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
 
+import org.chromium.android_webview.AwWebContent;
 import org.chromium.android_webview.AwWebSurface;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -19,9 +20,9 @@ public class WebSurface {
         void onInvalidate();
     }
 
-    @Nullable private WebContent mWebContent;
+    @Nullable private AwWebContent mWebContent;
     private final AwWebSurface mAwWebSurface;
-    private final WebContent.SurfaceBindingListener mSurfaceBindingListener;
+    private final AwWebContent.SurfaceBindingListener mSurfaceBindingListener;
 
     public WebSurface(EventListener eventListener) {
         assert eventListener != null : "EventListener cannot be null.";
@@ -35,7 +36,7 @@ public class WebSurface {
                 };
     }
 
-    public void setWebContent(@Nullable WebContent webContent) {
+    public void setWebContent(@Nullable AwWebContent webContent) {
         if (mWebContent == webContent) {
             return;
         }

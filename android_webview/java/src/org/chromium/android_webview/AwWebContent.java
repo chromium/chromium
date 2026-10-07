@@ -2,32 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package com.android.webview.chromium;
+package org.chromium.android_webview;
 
 import android.content.Context;
 import android.view.ViewGroup;
 
-import org.chromium.android_webview.AwBrowserContext;
-import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContents.DependencyFactory;
 import org.chromium.android_webview.AwContents.InternalAccessDelegate;
-import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.gfx.AwDrawFnImpl.DrawFnAccess;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /** Represents underlying Chromium web contents state that can survive moving across WebViews. */
 @NullMarked
-public class WebContent {
+public class AwWebContent {
     /**
-     * Listener notified when the {@link AwContents} associated with this {@link WebContent}
+     * Listener notified when the {@link AwContents} associated with this {@link AwWebContent}
      * changes, or {@code null} when detached or not yet initialized.
      */
     public interface SurfaceBindingListener {
         void onAwContentsChanged(@Nullable AwContents awContents);
     }
 
-    /** The current owner of this {@link WebContent}. There is at most one host at a time. */
+    /** The current owner of this {@link AwWebContent}. There is at most one host at a time. */
     public interface ViewHost {
         /**
          * Called when `AwSettings` is available during adoption.
@@ -42,7 +39,7 @@ public class WebContent {
         void initSettings(AwSettings settings);
 
         /**
-         * Called when this {@link WebContent} is adopted by a new host, before the new host's
+         * Called when this {@link AwWebContent} is adopted by a new host, before the new host's
          * adoption begins.
          */
         void onDetached();
@@ -81,10 +78,10 @@ public class WebContent {
             DependencyFactory dependencyFactory) {
         if (mIsDestroyed) {
             throw new IllegalStateException(
-                    "Cannot adopt a WebContent instance after destroy() has been called.");
+                    "Cannot adopt an AwWebContent instance after destroy() has been called.");
         }
 
-        assert mCurrentHost != host : "Cannot adopt a WebContent into the same host twice.";
+        assert mCurrentHost != host : "Cannot adopt an AwWebContent into the same host twice.";
 
         if (mCurrentHost != null) {
             mCurrentHost.onDetached();

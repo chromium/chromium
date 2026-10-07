@@ -7,9 +7,9 @@ package org.chromium.support_lib_glue;
 import android.content.Context;
 import android.webkit.WebView;
 
-import com.android.webview.chromium.WebContent;
 import com.android.webview.chromium.WebContentContextWrapper;
 
+import org.chromium.android_webview.AwWebContent;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.support_lib_boundary.web.WebContentBoundaryInterface;
 
@@ -18,13 +18,13 @@ import java.util.function.Function;
 /** Adapter for WebContentBoundaryInterface. */
 @NullMarked
 class SupportLibWebContentAdapter implements WebContentBoundaryInterface {
-    private final WebContent mWebContent;
+    private final AwWebContent mWebContent;
 
-    public SupportLibWebContentAdapter(WebContent webContent) {
+    public SupportLibWebContentAdapter(AwWebContent webContent) {
         mWebContent = webContent;
     }
 
-    public WebContent getWebContent() {
+    public AwWebContent getWebContent() {
         return mWebContent;
     }
 

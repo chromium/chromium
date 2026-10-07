@@ -15,7 +15,6 @@ import android.view.MotionEvent;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.webview.chromium.WebContent;
 import com.android.webview.chromium.WebSurface;
 
 import org.junit.Before;
@@ -26,6 +25,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwWebContent;
 import org.chromium.android_webview.AwWebSurface;
 import org.chromium.android_webview.test.util.AwTestTouchUtils;
 import org.chromium.base.ThreadUtils;
@@ -219,12 +219,14 @@ public class AwWebSurfaceTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testWebContent_surfaceBindingMutualExclusion() {
-        WebContent webContent = new WebContent();
+        AwWebContent webContent = new AwWebContent();
 
         CallbackHelper listener1Helper = new CallbackHelper();
         CallbackHelper listener2Helper = new CallbackHelper();
-        WebContent.SurfaceBindingListener listener1 = awContents -> listener1Helper.notifyCalled();
-        WebContent.SurfaceBindingListener listener2 = awContents -> listener2Helper.notifyCalled();
+        AwWebContent.SurfaceBindingListener listener1 =
+                awContents -> listener1Helper.notifyCalled();
+        AwWebContent.SurfaceBindingListener listener2 =
+                awContents -> listener2Helper.notifyCalled();
 
         webContent.bindSurface(listener1);
         assertEquals(1, listener1Helper.getCallCount());
@@ -251,7 +253,7 @@ public class AwWebSurfaceTest extends AwParameterizedTest {
         CallbackHelper invalidateHelper2 = new CallbackHelper();
         WebSurface surface1 = new WebSurface(invalidateHelper1::notifyCalled);
         WebSurface surface2 = new WebSurface(invalidateHelper2::notifyCalled);
-        WebContent webContent = new WebContent();
+        AwWebContent webContent = new AwWebContent();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

@@ -9,26 +9,27 @@ import android.content.ContextWrapper;
 
 import androidx.annotation.UiThread;
 
+import org.chromium.android_webview.AwWebContent;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /**
- * A ContextWrapper that holds a reference to a WebContent. Used to pass WebContent configuration to
- * WebView during construction.
+ * A ContextWrapper that holds a reference to an AwWebContent. Used to pass AwWebContent
+ * configuration to WebView during construction.
  */
 @NullMarked
 public class WebContentContextWrapper extends ContextWrapper {
     private boolean mWasUsed;
-    private final WebContent mWebContent;
+    private final AwWebContent mWebContent;
 
     @UiThread
-    public WebContentContextWrapper(Context base, WebContent webContent) {
+    public WebContentContextWrapper(Context base, AwWebContent webContent) {
         super(base);
         mWebContent = webContent;
     }
 
     @UiThread
-    public WebContent getWebContent() {
+    public AwWebContent getWebContent() {
         return mWebContent;
     }
 
@@ -65,9 +66,9 @@ public class WebContentContextWrapper extends ContextWrapper {
         }
     }
 
-    /** Gets the WebContent from the Context chain if it exists, otherwise returns null. */
+    /** Gets the AwWebContent from the Context chain if it exists, otherwise returns null. */
     @UiThread
-    public static @Nullable WebContent getWebContent(Context context) {
+    public static @Nullable AwWebContent getWebContent(Context context) {
         WebContentContextWrapper wrapper = get(context);
         return wrapper != null ? wrapper.getWebContent() : null;
     }

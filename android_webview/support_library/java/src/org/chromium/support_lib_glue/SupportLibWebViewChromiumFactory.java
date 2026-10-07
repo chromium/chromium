@@ -19,13 +19,13 @@ import com.android.webview.chromium.CallbackConverter;
 import com.android.webview.chromium.ProfileStore;
 import com.android.webview.chromium.SharedStatics;
 import com.android.webview.chromium.SharedTracingControllerAdapter;
-import com.android.webview.chromium.WebContent;
 import com.android.webview.chromium.WebSurface;
 import com.android.webview.chromium.WebViewChromiumAwInit;
 import com.android.webview.chromium.WebkitToSharedGlueConverter;
 
 import org.chromium.android_webview.AwServiceWorkerController;
 import org.chromium.android_webview.AwTracingController;
+import org.chromium.android_webview.AwWebContent;
 import org.chromium.android_webview.StartupCallSite;
 import org.chromium.android_webview.StartupDiagnostics;
 import org.chromium.android_webview.StartupTasksRunner;
@@ -680,7 +680,7 @@ public class SupportLibWebViewChromiumFactory
             recordApiCall(ApiCall.BUILD_WEB_CONTENT);
             WebContentBuilder builder = new WebContentBuilder();
             buildConfig.accept(builder);
-            WebContent webContent = builder.build();
+            AwWebContent webContent = builder.build();
             SupportLibWebContentAdapter adapter = new SupportLibWebContentAdapter(webContent);
             return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(adapter);
         }

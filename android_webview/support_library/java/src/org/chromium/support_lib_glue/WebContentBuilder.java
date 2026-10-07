@@ -4,15 +4,14 @@
 
 package org.chromium.support_lib_glue;
 
-import com.android.webview.chromium.WebContent;
-
+import org.chromium.android_webview.AwWebContent;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.support_lib_boundary.web.WebContentConfig;
 
 import java.util.function.BiConsumer;
 
-/** Builder for WebContent. */
+/** Builder for AwWebContent. */
 @NullMarked
 /* package */ class WebContentBuilder
         implements BiConsumer<@WebContentConfig Integer, @Nullable Object> {
@@ -26,7 +25,7 @@ import java.util.function.BiConsumer;
         // current WebView version doesn't support and it's safe to ignore.
     }
 
-    public WebContent build() {
-        return new WebContent();
+    public AwWebContent build() {
+        return new AwWebContent();
     }
 }
