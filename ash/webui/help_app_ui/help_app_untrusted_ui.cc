@@ -8,6 +8,7 @@
 #include "ash/webui/grit/ash_help_app_resources.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/web_applications/webui_test_prod_util.h"
+#include "base/i18n/language_tag.h"
 #include "chromeos/grit/chromeos_help_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_help_app_bundle_resources_map.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -22,6 +23,7 @@ namespace ash {
 namespace {
 
 void CreateAndAddHelpAppUntrustedDataSource(
+    const base::i18n::LanguageTag& app_locale,
     content::BrowserContext* browser_context,
     base::RepeatingCallback<void(content::WebUIDataSource*)>
         populate_load_time_data_callback) {
@@ -46,6 +48,8 @@ void CreateAndAddHelpAppUntrustedDataSource(
         "'self';");
   }
 
+  source->AddString("appLocale", app_locale.tag_string());
+
   // Add device and feature flags.
   populate_load_time_data_callback.Run(source);
   source->AddLocalizedString("appName", IDS_HELP_APP_EXPLORE);
@@ -64,12 +68,13 @@ void CreateAndAddHelpAppUntrustedDataSource(
 }  // namespace
 
 HelpAppUntrustedUI::HelpAppUntrustedUI(
+    const base::i18n::LanguageTag& app_locale,
     content::WebUI* web_ui,
     base::RepeatingCallback<void(content::WebUIDataSource* source)>
         populate_load_time_data_callback)
     : ui::UntrustedWebUIController(web_ui) {
   CreateAndAddHelpAppUntrustedDataSource(
-      web_ui->GetWebContents()->GetBrowserContext(),
+      app_locale, web_ui->GetWebContents()->GetBrowserContext(),
       populate_load_time_data_callback);
 }
 

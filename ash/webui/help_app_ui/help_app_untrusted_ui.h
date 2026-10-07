@@ -8,6 +8,10 @@
 #include "base/functional/callback.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace content {
 class WebUIDataSource;
 }  // namespace content
@@ -17,7 +21,9 @@ namespace ash {
 // The Web UI for chrome-untrusted://help-app.
 class HelpAppUntrustedUI : public ui::UntrustedWebUIController {
  public:
+  // `app_locale` is used only during construction and is not retained.
   explicit HelpAppUntrustedUI(
+      const base::i18n::LanguageTag& app_locale,
       content::WebUI* web_ui,
       base::RepeatingCallback<void(content::WebUIDataSource*)>
           populate_load_time_data_callback);
