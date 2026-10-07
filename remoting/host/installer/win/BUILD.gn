@@ -5,6 +5,7 @@
 import("//remoting/build/config/remoting_build.gni")
 import("//remoting/host/installer/credits.gni")
 import("//remoting/host/installer/win/generate_clsids.gni")
+import("//remoting/host/installer/win/host_payload_files.gni")
 import("//remoting/host/installer/win/wix_path.gni")
 import("//third_party/icu/config.gni")
 
@@ -65,35 +66,20 @@ action("remoting_me2me_host_archive") {
   # following files will trigger this target to be rebuilt.
   # TODO(zijiehe): Remove inputs parameter once bug 633650 has been
   # addressed.
-  inputs = [
-    "$root_out_dir/remote_assistance_host.exe",
-    "$root_out_dir/remote_assistance_host_uiaccess.exe",
-    "$root_out_dir/remote_open_url.exe",
-    "$root_out_dir/remote_security_key.exe",
-    "$root_out_dir/remote_webauthn.exe",
-    "$root_out_dir/remoting_core.dll",
-    "$root_out_dir/remoting_crashpad_handler.exe",
-    "$root_out_dir/remoting_curtain.exe",
-    "$root_out_dir/remoting_desktop.exe",
-    "$root_out_dir/remoting_host.exe",
-    "$root_out_dir/remoting_native_messaging_host.exe",
-    "$root_out_dir/remoting_network.exe",
-    "$root_out_dir/remoting_peer_connection.exe",
-    "$root_out_dir/remoting_start_host.exe",
-    "$root_gen_dir/remoting/CREDITS.txt",
-    "$root_out_dir/remoting/com.google.chrome.remote_assistance.json",
-    "$root_out_dir/remoting/com.google.chrome.remote_assistance-firefox.json",
-    "$root_out_dir/remoting/com.google.chrome.remote_desktop.json",
-    "$root_out_dir/remoting/com.google.chrome.remote_desktop-firefox.json",
-    "$root_out_dir/remoting/com.google.chrome.remote_webauthn.json",
-  ]
-  if (icu_use_data_file) {
-    inputs += [ "$root_out_dir/icudtl.dat" ]
+  inputs = []
+  foreach(_file, remoting_win_host_payload_files) {
+    if (_file == "CREDITS.txt") {
+      inputs += [ "$root_gen_dir/remoting/CREDITS.txt" ]
+    } else if (_file == "chromoting.ico") {
+      inputs += [ "//remoting/resources/chromoting.ico" ]
+    } else if (get_path_info(_file, "extension") == "json") {
+      inputs += [ "$root_out_dir/remoting/$_file" ]
+    } else {
+      inputs += [ "$root_out_dir/$_file" ]
+    }
   }
 
   _generated_files = rebase_path(inputs, root_build_dir)
-  _generated_files +=
-      [ rebase_path("//remoting/resources/chromoting.ico", root_build_dir) ]
 
   # Inputs that should not be part of _generated_files.
   inputs += [
@@ -101,34 +87,10 @@ action("remoting_me2me_host_archive") {
     "parameters.json",
   ]
 
-  # _generated_dst_files must contain the same files in the same order as
-  # _generated_files, otherwise the Windows MSI will not be built correctly.
-  _generated_dst_files = [
-    "files/remote_assistance_host.exe",
-    "files/remote_assistance_host_uiaccess.exe",
-    "files/remote_open_url.exe",
-    "files/remote_security_key.exe",
-    "files/remote_webauthn.exe",
-    "files/remoting_core.dll",
-    "files/remoting_crashpad_handler.exe",
-    "files/remoting_curtain.exe",
-    "files/remoting_desktop.exe",
-    "files/remoting_host.exe",
-    "files/remoting_native_messaging_host.exe",
-    "files/remoting_network.exe",
-    "files/remoting_peer_connection.exe",
-    "files/remoting_start_host.exe",
-    "files/CREDITS.txt",
-    "files/com.google.chrome.remote_assistance.json",
-    "files/com.google.chrome.remote_assistance-firefox.json",
-    "files/com.google.chrome.remote_desktop.json",
-    "files/com.google.chrome.remote_desktop-firefox.json",
-    "files/com.google.chrome.remote_webauthn.json",
-  ]
-  if (icu_use_data_file) {
-    _generated_dst_files += [ "files/icudtl.dat" ]
+  _generated_dst_files = []
+  foreach(_file, remoting_win_host_payload_files) {
+    _generated_dst_files += [ "files/$_file" ]
   }
-  _generated_dst_files += [ "files/chromoting.ico" ]
 
   args = [
            rebase_path("$root_gen_dir/remoting_installation", root_build_dir),

@@ -1,0 +1,47 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/icu/config.gni")
+
+# Canonical list of payload file names installed into the Chrome Remote Desktop
+# installation directory on Windows.
+#
+# Shared by:
+# 1. //remoting/host/installer/win/BUILD.gn (remoting_me2me_host_archive):
+#    Dynamically generates both `inputs` and `_generated_dst_files` from this
+#    list, preserving order so the Windows MSI archive layout aligns properly.
+#    JSON files are mapped to "$root_out_dir/remoting/", CREDITS.txt to
+#    "$root_gen_dir/remoting/", chromoting.ico to
+#    "//remoting/resources/chromoting.ico", and executables/binaries to
+#    "$root_out_dir/".
+# 2. //remoting/host/installer/win/setup/BUILD.gn (payload_files_header):
+#    Generates <payload_files.h> containing `kPayloadFiles` std::array for the
+#    native installer.
+remoting_win_host_payload_files = [
+  "remote_assistance_host.exe",
+  "remote_assistance_host_uiaccess.exe",
+  "remote_open_url.exe",
+  "remote_security_key.exe",
+  "remote_webauthn.exe",
+  "remoting_core.dll",
+  "remoting_crashpad_handler.exe",
+  "remoting_curtain.exe",
+  "remoting_desktop.exe",
+  "remoting_host.exe",
+  "remoting_native_messaging_host.exe",
+  "remoting_network.exe",
+  "remoting_peer_connection.exe",
+  "remoting_start_host.exe",
+  "CREDITS.txt",
+  "chromoting.ico",
+  "com.google.chrome.remote_assistance.json",
+  "com.google.chrome.remote_assistance-firefox.json",
+  "com.google.chrome.remote_desktop.json",
+  "com.google.chrome.remote_desktop-firefox.json",
+  "com.google.chrome.remote_webauthn.json",
+]
+
+if (icu_use_data_file) {
+  remoting_win_host_payload_files += [ "icudtl.dat" ]
+}
