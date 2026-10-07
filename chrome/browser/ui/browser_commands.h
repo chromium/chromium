@@ -45,6 +45,10 @@ namespace lens {
 enum class LensOverlayInvocationSource;
 }  // namespace lens
 
+namespace omnibox {
+enum ChromeAimEntryPoint : int;
+}  // namespace omnibox
+
 namespace split_tabs {
 enum class SplitTabCreatedSource;
 }
@@ -392,6 +396,10 @@ void ExecAskGoogleAboutThisPage(BrowserWindowInterface* browser);
 void ExecAskGoogleAboutThisPage(
     BrowserWindowInterface* browser,
     lens::LensOverlayInvocationSource invocation_source);
+void ExecAskGoogleAboutThisPage(
+    BrowserWindowInterface* browser,
+    lens::LensOverlayInvocationSource invocation_source,
+    omnibox::ChromeAimEntryPoint entry_point);
 
 }  // namespace chrome
 

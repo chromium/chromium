@@ -21,11 +21,14 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -42,6 +45,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -1129,12 +1133,26 @@ class ContextualTasksContextMenuAskGoogleInteractiveUiTest
         /*enabled_features=*/
         {{contextual_tasks::kContextualTasks, {}},
          {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
+         {contextual_tasks::kEnableContextualTasksPinButtonInToolbar, {}},
+         {lens::features::kLensOverlay, {}},
+         {lens::features::kLensOverlayEduActionChip,
+          {{"max-shown-count", "5"}}},
          {lens::features::kLensSidePanelUnification, {}},
          {contextual_tasks::kContextualTasksUpdatedEntryPoints,
           {{"ContextualTasksContextMenuShowAskGoogle", "true"},
            {"ContextualTasksContextMenuSubmenu", "false"},
            {"ContextualTasksContextMenuRouteAskGoogleToOmnibox", "false"}}}},
         /*disabled_features=*/{features::kNonBlockingOsClipboardReads});
+  }
+
+  void SetupOptimizationFilter() {
+    auto* optimization_guide_decider =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(
+            browser()->GetProfile());
+    optimization_guide_decider->AddHintWithMultipleOptimizationsForTesting(
+        GURL(embedded_test_server()->GetURL(kDocumentWithNamedElement)),
+        {optimization_guide::proto::LENS_OVERLAY_EDU_ACTION_CHIP_ALLOWLIST,
+         optimization_guide::proto::LENS_OVERLAY_EDU_ACTION_CHIP_BLOCKLIST});
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -1344,6 +1362,167 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuAskGoogleInteractiveUiTest,
           },
           std::make_optional(lens::LensOverlayInvocationSource::kAppMenu),
           "Side panel session has kAppMenu invocation source"));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuAskGoogleInteractiveUiTest,
+                       PinnedToolbarButtonClickOpensAndClosesSidePanel) {
+  WaitForTemplateURLServiceToLoad();
+  SidePanelUI::From(browser())->DisableAnimationsForTesting();
+
+  contextual_tasks::SetForcedEmbeddedPageHostOverride(
+      contextual_tasks::HostOverride{"www.google.com"});
+  base::ScopedClosureRunner clear_host_override(base::BindOnce([]() {
+    contextual_tasks::SetForcedEmbeddedPageHostOverride(std::nullopt);
+  }));
+
+  content::URLLoaderInterceptor url_loader_interceptor(base::BindRepeating(
+      [](content::URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url.host() == "www.google.com" ||
+            params->url_request.url.host() == "www.g.ai") {
+          content::URLLoaderInterceptor::WriteResponse(
+              "HTTP/1.1 200 OK\nContent-Type: text/html\n\n",
+              "<html><body>Mock Page</body></html>", params->client.get());
+          return true;
+        }
+        return false;
+      }));
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
+
+  const GURL page_url =
+      embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  const DeepQuery kPathToBody{"body"};
+
+  RunTestSequence(
+      InstrumentTab(kTabId, 0), NavigateWebContents(kTabId, page_url),
+      EnsurePresent(kTabId, kPathToBody), WaitForWebContentsPainted(kTabId),
+      WaitForWebContentsReady(kTabId, page_url),
+
+      Do([this]() {
+        PinnedToolbarActionsModel::Get(browser()->GetProfile())
+            ->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
+      }),
+      WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "SidePanelContentWebViewName",
+                       [](contextual_tasks::ContextualTasksWebView* web_view) {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kSidePanelWebContentsId,
+                              "SidePanelContentWebViewName"),
+      WaitForWebContentsReady(kSidePanelWebContentsId),
+      WaitForJsResultAt(kSidePanelWebContentsId,
+                        DeepQuery{"contextual-tasks-app"},
+                        "el => el.isZeroState_", true),
+      CheckResult(
+          [this]() -> bool {
+            return SidePanelUI::From(browser())->IsSidePanelShowing();
+          },
+          true),
+      CheckResult(
+          [this]() -> std::optional<lens::LensOverlayInvocationSource> {
+            auto* panel_controller =
+                contextual_tasks::ContextualTasksPanelController::From(
+                    browser());
+            if (!panel_controller) {
+              return std::nullopt;
+            }
+            auto* session_handle =
+                panel_controller->GetContextualSearchSessionHandleForPanel();
+            if (!session_handle) {
+              return std::nullopt;
+            }
+            return session_handle->invocation_source();
+          },
+          std::make_optional(
+              lens::LensOverlayInvocationSource::kCobrowsePinnedToolbarButton),
+          "Side panel session has kCobrowsePinnedToolbarButton invocation "
+          "source"),
+
+      PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      WaitForHide(kContextualTasksSidePanelWebViewElementId),
+      CheckResult(
+          [this]() -> bool {
+            return SidePanelUI::From(browser())->IsSidePanelShowing();
+          },
+          false));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuAskGoogleInteractiveUiTest,
+                       HomeworkActionChipClickOpensSidePanel) {
+  SetupOptimizationFilter();
+  WaitForTemplateURLServiceToLoad();
+  SidePanelUI::From(browser())->DisableAnimationsForTesting();
+
+  contextual_tasks::SetForcedEmbeddedPageHostOverride(
+      contextual_tasks::HostOverride{"www.google.com"});
+  base::ScopedClosureRunner clear_host_override(base::BindOnce([]() {
+    contextual_tasks::SetForcedEmbeddedPageHostOverride(std::nullopt);
+  }));
+
+  content::URLLoaderInterceptor url_loader_interceptor(base::BindRepeating(
+      [](content::URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url.host() == "www.google.com" ||
+            params->url_request.url.host() == "www.g.ai") {
+          content::URLLoaderInterceptor::WriteResponse(
+              "HTTP/1.1 200 OK\nContent-Type: text/html\n\n",
+              "<html><body>Mock Page</body></html>", params->client.get());
+          return true;
+        }
+        return false;
+      }));
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
+
+  const GURL page_url =
+      embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(TriggerLenOverlayHomeworkPageAction());
+
+  RunTestSequence(
+      WaitForShow(kLensOverlayHomeworkPageActionIconElementId),
+      PressButton(kLensOverlayHomeworkPageActionIconElementId),
+      WaitForHide(kLensOverlayHomeworkPageActionIconElementId),
+
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "SidePanelContentWebViewName",
+                       [](contextual_tasks::ContextualTasksWebView* web_view) {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kSidePanelWebContentsId,
+                              "SidePanelContentWebViewName"),
+      WaitForWebContentsReady(kSidePanelWebContentsId),
+      WaitForJsResultAt(kSidePanelWebContentsId,
+                        DeepQuery{"contextual-tasks-app"},
+                        "el => el.isZeroState_", true),
+      CheckResult(
+          [this]() -> bool {
+            return SidePanelUI::From(browser())->IsSidePanelShowing();
+          },
+          true),
+      CheckResult(
+          [this]() -> std::optional<lens::LensOverlayInvocationSource> {
+            auto* panel_controller =
+                contextual_tasks::ContextualTasksPanelController::From(
+                    browser());
+            if (!panel_controller) {
+              return std::nullopt;
+            }
+            auto* session_handle =
+                panel_controller->GetContextualSearchSessionHandleForPanel();
+            if (!session_handle) {
+              return std::nullopt;
+            }
+            return session_handle->invocation_source();
+          },
+          std::make_optional(
+              lens::LensOverlayInvocationSource::kHomeworkActionChip),
+          "Side panel session has kHomeworkActionChip invocation source"));
 }
 
 class ContextualTasksContextMenuSubmenuInteractiveUiTest
@@ -1586,6 +1765,10 @@ class ContextualTasksContextMenuRouteOmniboxInteractiveUiTest
         /*enabled_features=*/
         {{contextual_tasks::kContextualTasks, {}},
          {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
+         {contextual_tasks::kEnableContextualTasksPinButtonInToolbar, {}},
+         {lens::features::kLensOverlay, {}},
+         {lens::features::kLensOverlayEduActionChip,
+          {{"max-shown-count", "5"}}},
          {lens::features::kLensSidePanelUnification, {}},
          {contextual_tasks::kContextualTasksUpdatedEntryPoints,
           {{"ContextualTasksContextMenuShowAskGoogle", "true"},
@@ -1593,6 +1776,16 @@ class ContextualTasksContextMenuRouteOmniboxInteractiveUiTest
            {"ContextualTasksContextMenuRouteAskGoogleToOmnibox", "true"}}},
          {omnibox::internal::kWebUIOmniboxAimPopup, {}}},
         /*disabled_features=*/{features::kNonBlockingOsClipboardReads});
+  }
+
+  void SetupOptimizationFilter() {
+    auto* optimization_guide_decider =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(
+            browser()->GetProfile());
+    optimization_guide_decider->AddHintWithMultipleOptimizationsForTesting(
+        GURL(embedded_test_server()->GetURL(kDocumentWithNamedElement)),
+        {optimization_guide::proto::LENS_OVERLAY_EDU_ACTION_CHIP_ALLOWLIST,
+         optimization_guide::proto::LENS_OVERLAY_EDU_ACTION_CHIP_BLOCKLIST});
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -1680,6 +1873,73 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuRouteOmniboxInteractiveUiTest,
       PressButton(kToolbarAppMenuButtonElementId),
       WaitForShow(AppMenuModel::kAskGoogleAboutThisPageItem),
       SelectMenuItem(AppMenuModel::kAskGoogleAboutThisPageItem),
+
+      PollUntil(
+          [this]() -> bool {
+            LocationBar* location_bar =
+                BrowserWindow::FromBrowser(browser())->GetLocationBar();
+            if (!location_bar) {
+              return false;
+            }
+            OmniboxController* controller =
+                location_bar->GetOmniboxController();
+            return controller &&
+                   controller->popup_state_manager()->popup_state() ==
+                       OmniboxPopupState::kAim;
+          },
+          "Omnibox popup state is kAim"));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuRouteOmniboxInteractiveUiTest,
+                       PinnedToolbarButtonClickOpensOmnibox) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+
+  const GURL page_url =
+      embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  const DeepQuery kPathToBody{"body"};
+
+  RunTestSequence(
+      InstrumentTab(kTabId, 0), NavigateWebContents(kTabId, page_url),
+      EnsurePresent(kTabId, kPathToBody), WaitForWebContentsPainted(kTabId),
+      WaitForWebContentsReady(kTabId, page_url),
+
+      Do([this]() {
+        PinnedToolbarActionsModel::Get(browser()->GetProfile())
+            ->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
+      }),
+      WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+
+      PollUntil(
+          [this]() -> bool {
+            LocationBar* location_bar =
+                BrowserWindow::FromBrowser(browser())->GetLocationBar();
+            if (!location_bar) {
+              return false;
+            }
+            OmniboxController* controller =
+                location_bar->GetOmniboxController();
+            return controller &&
+                   controller->popup_state_manager()->popup_state() ==
+                       OmniboxPopupState::kAim;
+          },
+          "Omnibox popup state is kAim"));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuRouteOmniboxInteractiveUiTest,
+                       HomeworkActionChipClickOpensOmnibox) {
+  SetupOptimizationFilter();
+  WaitForTemplateURLServiceToLoad();
+
+  const GURL page_url =
+      embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(TriggerLenOverlayHomeworkPageAction());
+
+  RunTestSequence(
+      WaitForShow(kLensOverlayHomeworkPageActionIconElementId),
+      PressButton(kLensOverlayHomeworkPageActionIconElementId),
+      WaitForHide(kLensOverlayHomeworkPageActionIconElementId),
 
       PollUntil(
           [this]() -> bool {

@@ -2597,6 +2597,13 @@ void ToggleContextualTasksSidePanelZeroState(BrowserWindowInterface* browser) {
   CHECK(controller);
   if (controller->IsPanelOpenForContextualTask()) {
     controller->Close();
+  } else if (base::FeatureList::IsEnabled(
+                 contextual_tasks::kContextualTasksUpdatedEntryPoints)) {
+    ExecAskGoogleAboutThisPage(
+        browser,
+        lens::LensOverlayInvocationSource::kCobrowsePinnedToolbarButton,
+        omnibox::ChromeAimEntryPoint::
+            DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON);
   } else {
     controller->OpenInZeroState();
   }
@@ -3153,6 +3160,15 @@ void ExecAskGoogleAboutThisPage(BrowserWindowInterface* browser) {
 void ExecAskGoogleAboutThisPage(
     BrowserWindowInterface* browser,
     lens::LensOverlayInvocationSource invocation_source) {
+  ExecAskGoogleAboutThisPage(
+      browser, invocation_source,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION);
+}
+
+void ExecAskGoogleAboutThisPage(
+    BrowserWindowInterface* browser,
+    lens::LensOverlayInvocationSource invocation_source,
+    omnibox::ChromeAimEntryPoint entry_point) {
 #if !BUILDFLAG(IS_ANDROID)
   if (!browser) {
     return;
@@ -3176,10 +3192,8 @@ void ExecAskGoogleAboutThisPage(
   LensSearchController* const controller =
       LensSearchController::From(active_tab);
   if (controller) {
-    controller->StartZeroStateSessionInSidePanel(
-        omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION,
-        invocation_source,
-        /*open_lens_overlay=*/false);
+    controller->StartZeroStateSessionInSidePanel(entry_point, invocation_source,
+                                                 /*open_lens_overlay=*/false);
   }
 #endif
 }

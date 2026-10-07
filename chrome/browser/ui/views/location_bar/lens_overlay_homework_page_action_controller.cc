@@ -9,6 +9,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/common/buildflags.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_features.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -91,12 +93,19 @@ void LensOverlayHomeworkPageActionController::HandlePageActionEvent(
     return;
   }
 
-  LensSearchController* const controller =
-      LensSearchController::FromTabWebContents(tab_->GetContents());
-  CHECK(controller);
+  if (base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksUpdatedEntryPoints)) {
+    chrome::ExecAskGoogleAboutThisPage(
+        tab_->GetBrowserWindowInterface(),
+        lens::LensOverlayInvocationSource::kHomeworkActionChip);
+  } else {
+    LensSearchController* const controller =
+        LensSearchController::FromTabWebContents(tab_->GetContents());
+    CHECK(controller);
 
-  controller->OpenLensOverlay(
-      lens::LensOverlayInvocationSource::kHomeworkActionChip);
+    controller->OpenLensOverlay(
+        lens::LensOverlayInvocationSource::kHomeworkActionChip);
+  }
   UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
       tab_->GetContents()->GetBrowserContext(), lens::features::kLensOverlay);
 
