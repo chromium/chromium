@@ -113,8 +113,6 @@ class LensOverlayInteractiveTestBase : public InteractiveFeaturePromoTest {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-
- private:
   ui::UserDataFactory::ScopedOverride lens_search_controller_override_;
 };
 

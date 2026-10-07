@@ -82,6 +82,7 @@
 #include "components/contextual_tasks/public/host_override.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
@@ -907,14 +908,55 @@ class ContextualTasksInteractiveUiTestBase
       gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION};
 };
 
+// TestLensSearchController that can use the real LensQueryFlowRouter (and real
+// ContextualSearchSessionHandle / ComposeboxQueryController) instead of
+// FakeLensQueryFlowRouter.
+class ConfigurableQueryRouterTestLensSearchController
+    : public lens::TestLensSearchController {
+ public:
+  ConfigurableQueryRouterTestLensSearchController(
+      tabs::TabInterface* tab,
+      const bool* use_real_query_flow_router)
+      : lens::TestLensSearchController(tab),
+        use_real_query_flow_router_(use_real_query_flow_router) {}
+
+  std::unique_ptr<lens::LensQueryFlowRouter> CreateLensQueryFlowRouter()
+      override {
+    if (*use_real_query_flow_router_) {
+      return LensSearchController::CreateLensQueryFlowRouter();
+    }
+    return lens::TestLensSearchController::CreateLensQueryFlowRouter();
+  }
+
+ private:
+  raw_ptr<const bool> use_real_query_flow_router_;
+};
+
 class ContextualTasksInteractiveUiTest
     : public ContextualTasksInteractiveUiTestBase,
       public testing::WithParamInterface<UserVariation> {
  public:
-  ContextualTasksInteractiveUiTest() = default;
+  ContextualTasksInteractiveUiTest() {
+    lens_search_controller_override_ = ui::UserDataFactory::ScopedOverride();
+    lens_search_controller_override_ =
+        tabs::TabFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
+            base::BindRepeating(
+                [](const bool* use_real_query_flow_router,
+                   tabs::TabInterface& tab) {
+                  return std::make_unique<
+                      ConfigurableQueryRouterTestLensSearchController>(
+                      &tab, use_real_query_flow_router);
+                },
+                &use_real_lens_query_flow_router_));
+  }
   ~ContextualTasksInteractiveUiTest() override = default;
 
+  void UseRealLensQueryFlowRouter() { use_real_lens_query_flow_router_ = true; }
+
   UserVariation GetUserVariation() const override { return GetParam(); }
+
+ private:
+  bool use_real_lens_query_flow_router_ = false;
 };
 
 class ContextualTasksPinnedToolbarInteractiveUiTest
@@ -3561,6 +3603,115 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksCopyUrlTest, FocusAndBlur) {
             "Verify text is reverted after revert"),
       UninstrumentWebContents(kInnerWebContentsId,
                               /*fail_if_not_instrumented=*/false));
+}
+
+// This tests the following CUJ:
+//  (1) User navigates to a webpage.
+//  (2) User opens the Chrome app menu and selects "Search with Google Lens".
+//  (3) Lens overlay opens over the page.
+//  (4) User drags to select a region of the page in the Lens overlay.
+//  (5) Contextual Tasks side panel opens with a task for the tab and loads
+//      the Lens region search results.
+//  (6) Lens overlay stays open and keeps showing the selected region.
+IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTest,
+                       LensOverlayRegionSearchHandoff) {
+  UseRealLensQueryFlowRouter();
+  WaitForTemplateURLServiceToLoad();
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelId);
+
+  const DeepQuery kThreadFrame = {"contextual-tasks-app", "#threadFrame"};
+  const DeepQuery kSelectionOverlay = {"lens-overlay-app",
+                                       "lens-selection-overlay"};
+
+  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto off_center_point = base::BindLambdaForTesting([browser_view]() {
+    gfx::Point off_center =
+        browser_view->GetContentsView()->GetBoundsInScreen().CenterPoint();
+    off_center.Offset(100, 100);
+    return off_center;
+  });
+
+  auto get_lens_controller = [this]() {
+    return LensSearchController::FromTabWebContents(
+        browser()->tab_strip_model()->GetActiveWebContents());
+  };
+
+  RunTestSequence(
+      // (1)-(2) Navigate to a page and select Lens from the app menu.
+      OpenLensOverlay(),
+
+      // (3) The Lens overlay opens from the app menu entry point.
+      InAnyContext(WaitForShow(LensOverlayController::kOverlayId)),
+      CheckResult(
+          [get_lens_controller]() {
+            return get_lens_controller()->invocation_source();
+          },
+          std::make_optional(lens::LensOverlayInvocationSource::kAppMenu)),
+
+      // (4) Drag to select a region in the overlay.
+      SelectRegionInLensOverlay(kOverlayId, std::move(off_center_point)),
+
+      // (5) The region query opens the Contextual Tasks side panel for a task
+      // associated with the tab, and the panel loads the region results URL.
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      Check(
+          [this]() {
+            return ContextualTasksPanelController::From(browser())
+                ->IsPanelOpenForContextualTask();
+          },
+          "Side panel is open for a contextual task"),
+      Check(
+          [this]() {
+            return CHECK_DEREF(ContextualTasksServiceFactory::GetForProfile(
+                                   browser()->GetProfile()))
+                .GetContextualTaskForTab(sessions::SessionTabHelper::IdForTab(
+                    browser()->tab_strip_model()->GetActiveWebContents()))
+                .has_value();
+          },
+          "Active tab is associated with a contextual task"),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "LensRegionHandoffSidePanelContents",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kSidePanelId,
+                              "LensRegionHandoffSidePanelContents"),
+      WaitForElementExists(kSidePanelId, kThreadFrame),
+      WaitForJsResultAt(kSidePanelId, kThreadFrame,
+                        "el => {"
+                        "  if (!el.src || !URL.canParse(el.src)) return false;"
+                        "  const url = new URL(el.src);"
+                        "  return url.origin === 'https://www.google.com' &&"
+                        "         url.pathname === '/search' &&"
+                        "         url.searchParams.get('udm') === '26' &&"
+                        "         url.searchParams.get('lns_mode') === 'un' &&"
+                        "         url.searchParams.get('lns_fp') === '1' &&"
+                        "         Boolean(url.searchParams.get('vsrid')) &&"
+                        "         Boolean(url.searchParams.get('vsint')) &&"
+                        "         Boolean(url.searchParams.get('gsessionid'));"
+                        "}"),
+
+      // (6) The overlay stays open with the region still selected.
+      CheckResult(
+          [get_lens_controller]() {
+            return get_lens_controller()
+                ->lens_overlay_controller()
+                ->IsOverlayShowing();
+          },
+          true),
+      InAnyContext(WaitForJsResultAt(
+          kOverlayId, kSelectionOverlay,
+          "el => !!el.shadowRoot?.querySelector('#postSelectionRenderer')"
+          "?.hasSelection?.()")),
+      CheckResult(
+          [get_lens_controller]() {
+            return get_lens_controller()
+                ->lens_overlay_controller()
+                ->HasRegionSelection();
+          },
+          true));
 }
 
 // Enables the ephemeral branded toolbar entry point, which surfaces the
