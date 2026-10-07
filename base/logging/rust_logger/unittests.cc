@@ -91,6 +91,43 @@ TEST_F(RustLogIntegrationTest, MAYBE_CheckVerboseSeverity) {
   log_error_from_rust();
 }
 
+#if defined(COMPONENT_BUILD)
+#define MAYBE_DynamicMinLogLevel DISABLED_DynamicMinLogLevel
+#else
+#define MAYBE_DynamicMinLogLevel DynamicMinLogLevel
+#endif
+TEST_F(RustLogIntegrationTest, MAYBE_DynamicMinLogLevel) {
+  logging::ScopedLoggingSettings scoped_logging_settings;
+
+  // Set minimum log level to WARNING. Info logs should be disabled in Rust.
+  logging::SetMinLogLevel(logging::LOGGING_WARNING);
+  EXPECT_FALSE(is_debug_enabled_from_rust());
+  EXPECT_FALSE(is_info_enabled_from_rust());
+
+  EXPECT_CALL(log_, Log(logging::LOGGING_WARNING, _, _, _,
+                        testing::HasSubstr("test warning log")))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(log_, Log(logging::LOGGING_ERROR, _, _, _,
+                        testing::HasSubstr("test error log")))
+      .WillOnce(testing::Return(true));
+
+  log_info_from_rust();
+  log_warning_from_rust();
+  log_error_from_rust();
+
+  // Reset minimum log level to INFO.
+  logging::SetMinLogLevel(logging::LOGGING_INFO);
+  EXPECT_FALSE(is_debug_enabled_from_rust());
+  EXPECT_TRUE(is_info_enabled_from_rust());
+
+  // Set minimum log level to verbose (-1 / VLOG(1)).
+  logging::SetMinLogLevel(logging::LOGGING_VERBOSE);
+  EXPECT_TRUE(is_info_enabled_from_rust());
+#if DCHECK_IS_ON()
+  EXPECT_TRUE(is_debug_enabled_from_rust());
+#endif
+}
+
 // TODO(crbug.com/374023535): Logging does not work in component builds.
 #if defined(COMPONENT_BUILD)
 #define MAYBE_Placeholders DISABLED_Placeholders

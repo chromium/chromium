@@ -15,6 +15,8 @@ mod ffi {
         fn log_trace_from_rust();
         fn log_error_with_placeholder_from_rust(i: i32);
         fn panic_with_placeholder_from_rust(i: i32);
+        fn is_info_enabled_from_rust() -> bool;
+        fn is_debug_enabled_from_rust() -> bool;
     }
 }
 
@@ -36,6 +38,14 @@ pub fn log_debug_from_rust() {
 
 pub fn log_trace_from_rust() {
     log::trace!("test trace log");
+}
+
+pub fn is_info_enabled_from_rust() -> bool {
+    log::log_enabled!(log::Level::Info)
+}
+
+pub fn is_debug_enabled_from_rust() -> bool {
+    log::log_enabled!(log::Level::Debug)
 }
 
 fn log_error_with_placeholder_from_rust(i: i32) {

@@ -10,6 +10,7 @@ mod print_rust_log;
 mod ffi {
     extern "Rust" {
         fn init_rust_logging();
+        fn update_rust_log_level(min_log_level: i32);
     }
 }
 
@@ -41,4 +42,8 @@ fn init_rust_logging() {
         custom_panic_hook::init();
         log_crate_integration::init();
     });
+}
+
+fn update_rust_log_level(min_log_level: i32) {
+    log_crate_integration::update_min_log_level(min_log_level);
 }

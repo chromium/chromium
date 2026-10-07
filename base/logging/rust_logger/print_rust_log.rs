@@ -50,7 +50,7 @@ pub(crate) fn print_rust_log(
 /// Strongly-typed Rust equivalent of `base::LogSeverity`.
 ///
 /// (`bindgen`-generated `LogSeverity` is just a type alias for `u32`.)
-#[allow(dead_code)]  // Needed because `Verbose` values are ignored in release builds.
+#[allow(dead_code)] // Needed because `Verbose` values are ignored in release builds.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LogSeverity {
     Fatal,
