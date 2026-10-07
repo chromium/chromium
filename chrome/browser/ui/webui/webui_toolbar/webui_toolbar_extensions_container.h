@@ -111,10 +111,6 @@ class WebUIToolbarExtensionsContainer
   // empty.
   static ui::ElementIdentifier GetElementId(std::string_view extension_id);
 
-  // Returns the secondary identifier of TrackedElements registered by the
-  // extension button with `extension_id`.
-  static std::string GetSecondaryElementId(std::string_view extension_id);
-
   // Returns the TrackedElement representing the anchor for the extension button
   // with `extension_id`, or the extensions menu button (puzzle piece) if
   // `extension_id` is empty. Returns nullptr if the element has not registered
@@ -162,9 +158,7 @@ class WebUIToolbarExtensionsContainer
   views::Widget* GetWidget() const;
   ui::TrackedElement* GetExtensionsMenuButtonAnchor() const;
 
-  // `is_iph` should be true if the notification is for in-product help (IPH),
-  // as opposed to a PopOutAction() call.
-  void NotifyActionPoppedOut(base::OnceClosure closure, bool is_iph);
+  void NotifyActionPoppedOut(base::OnceClosure closure);
 
   void CreateActions();
   void CreateActionForId(const ToolbarActionsModel::ActionId& action_id);

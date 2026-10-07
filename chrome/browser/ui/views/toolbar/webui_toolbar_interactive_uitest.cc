@@ -2383,7 +2383,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveUiTest,
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   scoped_refptr<const extensions::Extension> extension =
-      LoadAndPinExtension(temp_dir, /*has_background_script=*/true);
+      LoadAndPinExtension(webui_toolbar_view, temp_dir,
+                          /*has_background_script=*/true);
   ASSERT_TRUE(extension);
 
   std::string extension_id = extension->id();

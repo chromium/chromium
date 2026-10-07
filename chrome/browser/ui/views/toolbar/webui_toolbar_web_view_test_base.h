@@ -141,6 +141,7 @@ class WebUIToolbarWebViewTestBase : public InProcessBrowserTest {
       const std::vector<base::test::FeatureRef>& disabled);
 
   scoped_refptr<const extensions::Extension> LoadAndPinExtension(
+      WebUIToolbarWebView* webui_toolbar_view,
       base::ScopedTempDir& temp_dir,
       bool has_background_script = false,
       bool has_popup = false);
