@@ -442,6 +442,35 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
+                       ShowWithSelectionHiddenOnTabSwitchWithoutGlic) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+
+  gfx::Rect view_bounds = web_contents->GetViewBounds();
+  gfx::Rect selection_bounds(view_bounds.x() + 10, view_bounds.y() + 10, 100,
+                             50);
+  controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
+                                selection_bounds,
+                                selection::InteractionOptions::New());
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+
+  CreateAndActivateTab(GetSimpleTestUrl());
+  EXPECT_EQ(controller->state(),
+            SelectionOverlayController::State::kBackground);
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 1u);
+
+  ActivateTab(tab);
+  EXPECT_EQ(controller->state(), SelectionOverlayController::State::kOverlay);
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
                        SubmitPromptWithSelectedRegion) {
   tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
   ASSERT_TRUE(OpenGlicForActiveTab().has_value());

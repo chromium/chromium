@@ -42,6 +42,8 @@ namespace views {
 class WebView;
 }
 
+class BrowserWindowInterface;
+
 namespace glic {
 
 class FocusedTabData;
@@ -120,6 +122,11 @@ class SelectionOverlayController
                   tabs::TabInterface::DetachReason reason);
   void TabDeactivated(tabs::TabInterface* tab);
   void OnFocusedTabChanged(const FocusedTabData& tab_data);
+  // This is the same event that drives `OnFocusedTabChanged()`, but it also
+  // fires when no Glic instance is active.
+  void OnActiveTabChanged(BrowserWindowInterface* window);
+  void UpdateForTabVisibility();
+  void ObserveActiveTabChanges();
   // Called when the overlay's WebView takes focus, e.g. when the user clicks
   // on it. In a split view the overlay can be rendered over the inactive tab,
   // in which case `tab_` needs to be activated.
@@ -272,6 +279,8 @@ class SelectionOverlayController
 
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
+  // Subscription to the active tab changes of the window that hosts `tab_`.
+  base::CallbackListSubscription active_tab_subscription_;
 
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 

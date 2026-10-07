@@ -283,6 +283,22 @@ void SelectionOverlayController::WillDetach(
   CloseUI();
 }
 
+void SelectionOverlayController::ObserveActiveTabChanges() {
+  BrowserWindowInterface* window = tab_->GetBrowserWindowInterface();
+  if (!window) {
+    active_tab_subscription_ = base::CallbackListSubscription();
+    return;
+  }
+  active_tab_subscription_ = window->RegisterActiveTabDidChange(
+      base::BindRepeating(&SelectionOverlayController::OnActiveTabChanged,
+                          weak_factory_.GetWeakPtr()));
+}
+
+void SelectionOverlayController::OnActiveTabChanged(
+    BrowserWindowInterface* window) {
+  UpdateForTabVisibility();
+}
+
 void SelectionOverlayController::TabDeactivated(tabs::TabInterface* tab) {
   if (state() == State::kBackground) {
     return;
@@ -442,6 +458,7 @@ void SelectionOverlayController::CaptureRegion(
 
 void SelectionOverlayController::Show(mojom::TabContextOptionsPtr options) {
   options_ = std::move(options);
+  ObserveActiveTabChanges();
   ShowModalUI();
 }
 
@@ -492,6 +509,16 @@ void SelectionOverlayController::Close() {
 
 void SelectionOverlayController::OnFocusedTabChanged(
     const FocusedTabData& tab_data) {
+  UpdateForTabVisibility();
+}
+
+void SelectionOverlayController::UpdateForTabVisibility() {
+  // When a Glic instance is active, both `OnFocusedTabChanged()` and
+  // `OnActiveTabChanged()` run for the same tab switch.
+  const bool is_backgrounded = state() == State::kBackground;
+  if (tab_->IsVisible() != is_backgrounded) {
+    return;
+  }
   if (tab_->IsVisible()) {
     TabForegrounded(tab_);
   } else if (!tab_->IsActivated()) {
@@ -1090,6 +1117,7 @@ void SelectionOverlayController::Reset() {
   capture_region_observer_.reset();
   options_.reset();
   overlay_web_view_focus_subscription_ = {};
+  active_tab_subscription_ = {};
 }
 
 void SelectionOverlayController::RenderPendingRegions() {
