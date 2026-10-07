@@ -15,7 +15,8 @@ export function getHtml(this: GlicInternalsAppElement) {
     <div class="header-bar">
       <cr-tabs id="tabs" .tabNames="${this.tabNames_}"
           .selected="${this.selectedTabIndex_}"
-          @selected-changed="${this.onSelectedTabIndexSelectedChanged_}">
+          @selected-changed="${this.onSelectedTabIndexSelectedChanged_}"
+          @click="${this.onTabsClick_}">
       </cr-tabs>
       <div class="action-bar">
         <cr-button id="copyDiagnosticsButton" class="action-button" @click="${this.onCopyDiagnosticsClick_}">
@@ -30,13 +31,14 @@ export function getHtml(this: GlicInternalsAppElement) {
         ?hidden="${this.selectedTabIndex_ !== 0}">
 
       ${this.data_?.enablement ? html`
-        <div class="status-banner ${this.computeOverallStatus_().enabled ? 'status-ok' : 'status-blocked'}">
+        <div id="general.status" class="status-banner ${this.computeOverallStatus_().enabled ? 'status-ok' : 'status-blocked'}">
           <div class="status-banner-header">
             <div class="status-banner-title">
               <span class="badge ${this.computeOverallStatus_().enabled ? 'badge-success' : 'badge-error'}">
                 ${this.computeOverallStatus_().enabled ? 'Eligible & Enabled' : 'Blocked / Ineligible'}
               </span>
-              <span>Glic Status</span>
+              <a class="section-link" href="#general.status"
+                  @click="${this.onSectionLinkClick_}">Glic Status</a>
             </div>
             <div class="status-banner-chips">
               ${this.data_?.debugInfo ? html`
@@ -59,8 +61,11 @@ export function getHtml(this: GlicInternalsAppElement) {
         </div>
       ` : ''}
 
-      <div class="card">
-        <div class="card-header">Enablement State</div>
+      <div id="general.enablement" class="card">
+        <div class="card-header">
+          <a class="section-link" href="#general.enablement"
+              @click="${this.onSectionLinkClick_}">Enablement State</a>
+        </div>
         ${this.data_?.enablement ? html`
           <table>
             <thead>
@@ -85,8 +90,11 @@ export function getHtml(this: GlicInternalsAppElement) {
           html`<div style="padding: 16px;">Loading...</div>`}
       </div>
 
-      <div class="card">
-        <div class="card-header">Sub-features & Actuation</div>
+      <div id="general.subfeatures" class="card">
+        <div class="card-header">
+          <a class="section-link" href="#general.subfeatures"
+              @click="${this.onSectionLinkClick_}">Sub-features & Actuation</a>
+        </div>
         ${this.data_?.enablement ? html`
           <table>
             <thead>
@@ -141,8 +149,11 @@ export function getHtml(this: GlicInternalsAppElement) {
           html`<div style="padding: 16px;">Loading...</div>`}
       </div>
 
-      <div class="card">
-        <div class="card-header">Rollout / User Tier & Benefits</div>
+      <div id="general.rollout" class="card">
+        <div class="card-header">
+          <a class="section-link" href="#general.rollout"
+              @click="${this.onSectionLinkClick_}">Rollout / User Tier & Benefits</a>
+        </div>
         ${this.data_?.tieredRolloutInfo ? html`
           <table>
             <thead>
@@ -243,8 +254,11 @@ export function getHtml(this: GlicInternalsAppElement) {
           html`<div style="padding: 16px;">Loading...</div>`}
       </div>
 
-      <div class="card">
-        <div class="card-header">Configuration</div>
+      <div id="general.config" class="card">
+        <div class="card-header">
+          <a class="section-link" href="#general.config"
+              @click="${this.onSectionLinkClick_}">Configuration</a>
+        </div>
         ${this.data_?.config ? html`
           <table>
             <thead>
@@ -263,8 +277,11 @@ export function getHtml(this: GlicInternalsAppElement) {
           html`<div style="padding: 16px;">Loading...</div>`}
       </div>
 
-      <div class="card">
-        <div class="card-header">Glic UI / Client Debug Information</div>
+      <div id="general.glicui" class="card">
+        <div class="card-header">
+          <a class="section-link" href="#general.glicui"
+              @click="${this.onSectionLinkClick_}">Glic UI / Client Debug Information</a>
+        </div>
         <div class="warning-banner">
           <span>⚠️</span>
           <span>These settings are not dynamically observed. Click Refresh to get the latest settings.</span>
@@ -297,9 +314,12 @@ export function getHtml(this: GlicInternalsAppElement) {
       <!-- ================= DEBUG CONTROLS TAB ================= -->
       <div id="debug-controls-contents" class="tab-contents"
           ?hidden="${this.selectedTabIndex_ !== 1}">
-        <h2>Debug Controls</h2>
+        <h2 id="debug">Debug Controls</h2>
         <div class="presets-container">
-          <h3>Panel</h3>
+          <h3 id="debug.panel">
+            <a class="section-link" href="#debug.panel"
+                @click="${this.onSectionLinkClick_}">Panel</a>
+          </h3>
           <div style="display: flex; gap: 16px; align-items: center;">
             <label>
               <input type="checkbox"
@@ -308,7 +328,10 @@ export function getHtml(this: GlicInternalsAppElement) {
               Allow Showing Errors
             </label>
           </div>
-          <h3>Invoke</h3>
+          <h3 id="debug.invoke">
+            <a class="section-link" href="#debug.invoke"
+                @click="${this.onSectionLinkClick_}">Invoke</a>
+          </h3>
           <label for="invokePromptInput0">
             ${this.invokePrompts_.length > 1 ? 'Prompts' : 'Prompt'}
           </label>
@@ -592,7 +615,10 @@ export function getHtml(this: GlicInternalsAppElement) {
             ${this.invokeLogs_.map(
               log => html`<pre style="margin: 0;">${log}</pre>`)}
           </div>
-          <h3>Consents</h3>
+          <h3 id="debug.consents">
+            <a class="section-link" href="#debug.consents"
+                @click="${this.onSectionLinkClick_}">Consents</a>
+          </h3>
           <div class="consents-container">
             <cr-checkbox ?checked="${!!this.data_?.enablement?.freIsConsented}"
                          ?disabled="${!this.data_?.enablement?.freIsConsented}"
@@ -611,8 +637,8 @@ export function getHtml(this: GlicInternalsAppElement) {
             </cr-checkbox>
             ${this.data_?.experimentalTriggeringEnabled ? html`
               <cr-checkbox ?checked="${this.isExperimentalOptInConsentMet_()}"
-                           ?disabled="${!this.isExperimentalOptInConsentMet_()}"
-                           @change="${this.onExperimentalConsentChange_}">
+                            ?disabled="${!this.isExperimentalOptInConsentMet_()}"
+                            @change="${this.onExperimentalConsentChange_}">
                 Experimental Triggering Consent
               </cr-checkbox>
               <cr-button ?disabled="${this.isAllConsentMet_()}" @click="${this.onExperimentalOptInClick_}">
@@ -621,7 +647,10 @@ export function getHtml(this: GlicInternalsAppElement) {
             ` : html``}
           </div>
         </div>
-        <h2>Guest URL Presets</h2>
+        <h2 id="debug.guesturl">
+          <a class="section-link" href="#debug.guesturl"
+              @click="${this.onSectionLinkClick_}">Guest URL Presets</a>
+        </h2>
         ${this.data_?.config ? html`
           <div class="presets-container">
             <label for="autopushInput">Autopush</label>
@@ -649,7 +678,10 @@ export function getHtml(this: GlicInternalsAppElement) {
             <cr-button @click="${this.onSavePresetsClick_}">Save</cr-button>
           </div>` :
           html`<h3 id="loadingMsg">Loading...</h3>`}
-        <h2>Web Continuity URL Preset</h2>
+        <h2 id="debug.webcontinuity">
+          <a class="section-link" href="#debug.webcontinuity"
+              @click="${this.onSectionLinkClick_}">Web Continuity URL Preset</a>
+        </h2>
         ${this.data_?.config ? html`
           <div class="web-continuity-container">
             <label for="webContinuityInput">Web Continuity</label>

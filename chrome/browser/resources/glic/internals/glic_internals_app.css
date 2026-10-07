@@ -290,3 +290,69 @@ cr-button:not(.action-button):not(.tonal-button) {
 .hiddenElement {
   visibility: hidden;
 }
+
+.card,
+.status-banner,
+h2,
+h3 {
+  scroll-margin-top: 20px;
+}
+
+.section-link {
+  align-items: center;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.section-link:hover {
+  text-decoration: underline;
+}
+
+.section-link::after {
+  color: var(--cr-secondary-text-color, #5f6368);
+  content: '#';
+  display: inline-block;
+  font-weight: normal;
+  margin-left: 6px;
+  opacity: 0;
+  text-decoration: none;
+  transition: opacity 0.15s ease-in-out;
+}
+
+.section-link:hover::after,
+.section-link:focus-visible::after,
+.card:hover .section-link::after,
+.status-banner:hover .section-link::after,
+h2:hover .section-link::after,
+h3:hover .section-link::after {
+  opacity: 1;
+}
+
+.section-link:focus-visible {
+  border-radius: 4px;
+  outline: 2px solid var(--cr-focus-outline-color);
+  outline-offset: 2px;
+}
+
+@keyframes highlight-target-pulse {
+  0% {
+    outline: 2px solid var(--google-blue-500, #4285f4);
+    box-shadow: 0 0 10px rgba(66, 133, 244, 0.4);
+  }
+  100% {
+    outline: 2px solid transparent;
+    box-shadow: none;
+  }
+}
+
+.highlight-target {
+  animation: highlight-target-pulse 1.5s ease-out;
+}
+
+h2.highlight-target,
+h3.highlight-target {
+  border-radius: 4px;
+}

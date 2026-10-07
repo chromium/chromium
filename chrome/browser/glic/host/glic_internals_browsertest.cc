@@ -323,4 +323,264 @@ IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest,
+                       NavigatingToDebugHashOpensDebugTab) {
+  content::WebContents* contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(contents);
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(
+      contents, GURL("chrome://glic/internals#debug")));
+  ASSERT_TRUE(contents->GetWebUI());
+
+  EXPECT_EQ(true, content::EvalJs(contents, kWaitForInternalsLoaded));
+
+  constexpr char kVerifyDebugTab[] = R"js(
+    (async () => {
+      const app = document.querySelector('glic-internals-app');
+      if (!app) {
+        return 'app-missing';
+      }
+      for (let i = 0; i < 50; ++i) {
+        await app.updateComplete;
+        if (app.shadowRoot.querySelector('#debug-controls-contents')) {
+          break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+
+      if (app.selectedTabIndex_ !== 1) {
+        return `expected-tab-index-1-got-${app.selectedTabIndex_}`;
+      }
+
+      const generalContents =
+          app.shadowRoot.querySelector('#general-contents');
+      if (!generalContents || !generalContents.hidden) {
+        return 'general-contents-should-be-hidden';
+      }
+
+      const debugContents =
+          app.shadowRoot.querySelector('#debug-controls-contents');
+      if (!debugContents || debugContents.hidden) {
+        return 'debug-contents-should-not-be-hidden';
+      }
+
+      if (window.location.hash !== '#debug') {
+        return `expected-hash-#debug-got-${window.location.hash}`;
+      }
+
+      return 'ok';
+    })()
+  )js";
+
+  EXPECT_EQ("ok", content::EvalJs(contents, kVerifyDebugTab));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest,
+                       NavigatingToGeneralHashOpensGeneralTab) {
+  content::WebContents* contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(contents);
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(
+      contents, GURL("chrome://glic/internals#general")));
+  ASSERT_TRUE(contents->GetWebUI());
+
+  EXPECT_EQ(true, content::EvalJs(contents, kWaitForInternalsLoaded));
+
+  constexpr char kVerifyGeneralTab[] = R"js(
+    (async () => {
+      const app = document.querySelector('glic-internals-app');
+      if (!app) {
+        return 'app-missing';
+      }
+      for (let i = 0; i < 50; ++i) {
+        await app.updateComplete;
+        if (app.shadowRoot.querySelector('#general-contents')) {
+          break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+
+      if (app.selectedTabIndex_ !== 0) {
+        return `expected-tab-index-0-got-${app.selectedTabIndex_}`;
+      }
+
+      const generalContents =
+          app.shadowRoot.querySelector('#general-contents');
+      if (!generalContents || generalContents.hidden) {
+        return 'general-contents-should-not-be-hidden';
+      }
+
+      const debugContents =
+          app.shadowRoot.querySelector('#debug-controls-contents');
+      if (!debugContents || !debugContents.hidden) {
+        return 'debug-contents-should-be-hidden';
+      }
+
+      if (window.location.hash !== '#general') {
+        return `expected-hash-#general-got-${window.location.hash}`;
+      }
+
+      return 'ok';
+    })()
+  )js";
+
+  EXPECT_EQ("ok", content::EvalJs(contents, kVerifyGeneralTab));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest,
+                       TabSwitchingUpdatesUrlHashAndHashchangeUpdatesTab) {
+  content::WebContents* contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(contents);
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(
+      contents, GURL("chrome://glic/internals")));
+  ASSERT_TRUE(contents->GetWebUI());
+
+  EXPECT_EQ(true, content::EvalJs(contents, kWaitForInternalsLoaded));
+
+  constexpr char kTestTabSwitching[] = R"js(
+    (async () => {
+      const app = document.querySelector('glic-internals-app');
+      if (!app) {
+        return 'app-missing';
+      }
+      let tabs = null;
+      let tabElements = [];
+      for (let i = 0; i < 50; ++i) {
+        await app.updateComplete;
+        tabs = app.shadowRoot ? app.shadowRoot.querySelector('#tabs') : null;
+        if (tabs && tabs.shadowRoot) {
+          await tabs.updateComplete;
+          tabElements = tabs.shadowRoot.querySelectorAll('.tab');
+          if (tabElements.length >= 2) {
+            break;
+          }
+        }
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+
+      if (!tabs || !tabs.shadowRoot) {
+        return 'missing-cr-tabs';
+      }
+      if (tabElements.length < 2) {
+        return `expected-at-least-2-tabs-got-${tabElements.length}`;
+      }
+
+      // Verify initially on general tab.
+      if (app.selectedTabIndex_ !== 0) {
+        return `expected-initial-tab-0-got-${app.selectedTabIndex_}`;
+      }
+
+      // 1. Click Debug Controls tab button.
+      tabElements[1].click();
+      for (let i = 0; i < 50; ++i) {
+        await app.updateComplete;
+        const gen = app.shadowRoot ? app.shadowRoot.querySelector('#general-contents') : null;
+        const dbg = app.shadowRoot ? app.shadowRoot.querySelector('#debug-controls-contents') : null;
+        if (app.selectedTabIndex_ === 1 && window.location.hash === '#debug' &&
+            gen && gen.hidden === true && dbg && dbg.hidden === false) {
+          break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+
+      if (app.selectedTabIndex_ !== 1) {
+        return `expected-tab-1-after-click-got-${app.selectedTabIndex_}`;
+      }
+      if (window.location.hash !== '#debug') {
+        return `expected-hash-#debug-after-click-got-${window.location.hash}`;
+      }
+      if (app.shadowRoot.querySelector('#general-contents').hidden !== true) {
+        return 'general-contents-should-be-hidden-after-switch-to-debug';
+      }
+      if (app.shadowRoot.querySelector('#debug-controls-contents').hidden !== false) {
+        return 'debug-contents-should-be-visible-after-switch-to-debug';
+      }
+
+      // 2. Click General tab button.
+      const freshTabs = tabs.shadowRoot.querySelectorAll('.tab');
+      freshTabs[0].click();
+      for (let i = 0; i < 50; ++i) {
+        await app.updateComplete;
+        const gen = app.shadowRoot ? app.shadowRoot.querySelector('#general-contents') : null;
+        const dbg = app.shadowRoot ? app.shadowRoot.querySelector('#debug-controls-contents') : null;
+        if (app.selectedTabIndex_ === 0 && window.location.hash === '#general' &&
+            gen && gen.hidden === false && dbg && dbg.hidden === true) {
+          break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+
+      if (app.selectedTabIndex_ !== 0) {
+        return `expected-tab-0-after-click-got-${app.selectedTabIndex_}`;
+      }
+      if (window.location.hash !== '#general') {
+        return `expected-hash-#general-after-click-got-${window.location.hash}`;
+      }
+      if (app.shadowRoot.querySelector('#general-contents').hidden !== false) {
+        return 'general-contents-should-be-visible-after-switch-to-general';
+      }
+      if (app.shadowRoot.querySelector('#debug-controls-contents').hidden !== true) {
+        return 'debug-contents-should-be-hidden-after-switch-to-general';
+      }
+
+      // 3. Navigate via location.hash change to #debug.
+      window.location.hash = '#debug';
+      for (let i = 0; i < 50; ++i) {
+        await app.updateComplete;
+        const gen = app.shadowRoot ? app.shadowRoot.querySelector('#general-contents') : null;
+        const dbg = app.shadowRoot ? app.shadowRoot.querySelector('#debug-controls-contents') : null;
+        if (app.selectedTabIndex_ === 1 && window.location.hash === '#debug' &&
+            gen && gen.hidden === true && dbg && dbg.hidden === false) {
+          break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+
+      if (app.selectedTabIndex_ !== 1) {
+        return `expected-tab-1-after-hashchange-got-${app.selectedTabIndex_}`;
+      }
+      if (window.location.hash !== '#debug') {
+        return `expected-hash-#debug-after-hashchange-got-${window.location.hash}`;
+      }
+      if (app.shadowRoot.querySelector('#general-contents').hidden !== true) {
+        return 'general-contents-should-be-hidden-after-hashchange-to-debug';
+      }
+      if (app.shadowRoot.querySelector('#debug-controls-contents').hidden !== false) {
+        return 'debug-contents-should-be-visible-after-hashchange-to-debug';
+      }
+
+      // 4. Navigate via location.hash change to #general.
+      window.location.hash = '#general';
+      for (let i = 0; i < 50; ++i) {
+        await app.updateComplete;
+        const gen = app.shadowRoot ? app.shadowRoot.querySelector('#general-contents') : null;
+        const dbg = app.shadowRoot ? app.shadowRoot.querySelector('#debug-controls-contents') : null;
+        if (app.selectedTabIndex_ === 0 && window.location.hash === '#general' &&
+            gen && gen.hidden === false && dbg && dbg.hidden === true) {
+          break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+
+      if (app.selectedTabIndex_ !== 0) {
+        return `expected-tab-0-after-hashchange-got-${app.selectedTabIndex_}`;
+      }
+      if (window.location.hash !== '#general') {
+        return `expected-hash-#general-after-hashchange-got-${window.location.hash}`;
+      }
+      if (app.shadowRoot.querySelector('#general-contents').hidden !== false) {
+        return 'general-contents-should-be-visible-after-hashchange-to-general';
+      }
+      if (app.shadowRoot.querySelector('#debug-controls-contents').hidden !== true) {
+        return 'debug-contents-should-be-hidden-after-hashchange-to-general';
+      }
+
+      return 'ok';
+    })()
+  )js";
+
+  EXPECT_EQ("ok", content::EvalJs(contents, kTestTabSwitching));
+}
+
 }  // namespace glic
