@@ -12,6 +12,7 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/null_storage.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/source.h"
@@ -25,33 +26,35 @@ using ::i18n::addressinput::NullStorage;
 using ::i18n::addressinput::Source;
 using ::i18n::addressinput::Storage;
 using ::i18n::addressinput::TestdataSource;
+using ::testing::IsEmpty;
+using ::testing::SizeIs;
 
 const char kLocale[] = "CA";
 const char kLanguage[] = "en";
-const int kInvalidSize = -1;
 // For subkeys = "AB~BC~MB~NB~NL~NT~NS~NU~ON~PE~QC~SK~YT"
-const int kExpectedSubkeySize = 13;
-const int kEmptySize = 0;
+const size_t kExpectedSubkeySize = 13;
 
 class SubKeyReceiver : public base::RefCountedThreadSafe<SubKeyReceiver> {
  public:
-  SubKeyReceiver() : subkeys_size_(kInvalidSize) {}
+  SubKeyReceiver() = default;
 
   SubKeyReceiver(const SubKeyReceiver&) = delete;
   SubKeyReceiver& operator=(const SubKeyReceiver&) = delete;
 
   void OnSubKeysReceived(const std::vector<std::string>& subkeys_codes,
                          const std::vector<std::string>& subkeys_names) {
-    subkeys_size_ = subkeys_codes.size();
+    subkeys_codes_ = subkeys_codes;
   }
 
-  int subkeys_size() const { return subkeys_size_; }
+  const std::vector<std::string>& subkeys_codes() const {
+    return subkeys_codes_;
+  }
 
  private:
   friend class base::RefCountedThreadSafe<SubKeyReceiver>;
   ~SubKeyReceiver() = default;
 
-  int subkeys_size_;
+  std::vector<std::string> subkeys_codes_;
 };
 
 // A test subclass of the SubKeyRequesterImpl. Used to simulate rules not
@@ -138,7 +141,7 @@ TEST_F(SubKeyRequesterTest, StartRequest_RulesLoaded) {
 
   // Since the rules are already loaded, the subkeys should be received
   // synchronously.
-  EXPECT_EQ(subkey_receiver_->subkeys_size(), kExpectedSubkeySize);
+  EXPECT_THAT(subkey_receiver_->subkeys_codes(), SizeIs(kExpectedSubkeySize));
 }
 
 // Tests that if the rules are not loaded before the request and cannot be
@@ -162,7 +165,7 @@ TEST_F(SubKeyRequesterTest, StartRequest_RulesNotLoaded_WillNotLoad) {
 
   // Since the rules are never loaded and the timeout is 0, the delegate should
   // get notified that the subkeys could not be received.
-  EXPECT_EQ(subkey_receiver_->subkeys_size(), kEmptySize);
+  EXPECT_THAT(subkey_receiver_->subkeys_codes(), IsEmpty());
 }
 
 // Tests that if the rules are not loaded before the call to
@@ -184,7 +187,7 @@ TEST_F(SubKeyRequesterTest, StartRequest_RulesNotLoaded_WillLoad) {
   // test source is synchronous, the request will happen synchronously
   // too.
   EXPECT_TRUE(requester_->AreRulesLoadedForRegion(kLocale));
-  EXPECT_EQ(subkey_receiver_->subkeys_size(), kExpectedSubkeySize);
+  EXPECT_THAT(subkey_receiver_->subkeys_codes(), SizeIs(kExpectedSubkeySize));
 }
 
 }  // namespace
