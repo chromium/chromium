@@ -7,9 +7,12 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/test/with_feature_override.h"
 #include "base/time/time.h"
+#include "components/content_settings/core/common/features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/network_change_notifier.h"
 #include "services/device/geolocation/geolocation_context.h"
@@ -178,7 +181,25 @@ TEST_F(GeolocationImplTest, QueryNextPositionWithoutUpdate) {
   EXPECT_FALSE(future.IsReady());
 }
 
-TEST_F(GeolocationImplTest, SetAndClearOverride) {
+class GeolocationImplTestWithApproxLocation
+    : public base::test::WithFeatureOverride,
+      public GeolocationImplTest {
+ public:
+  GeolocationImplTestWithApproxLocation()
+      : base::test::WithFeatureOverride(
+            content_settings::features::kApproximateGeolocationPermission) {}
+};
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(GeolocationImplTestWithApproxLocation);
+
+TEST_P(GeolocationImplTestWithApproxLocation, SetAndClearOverride) {
+  if (IsParamFeatureEnabled()) {
+    // When `kApproximateGeolocationPermission` is enabled, the overridden
+    // position's `is_precise` flag is updated based on
+    // `high_accuracy_hint_ && has_precise_permission_` to meet the spec
+    // requirement.
+    geolocation()->SetHighAccuracyHint(true);
+  }
   // Simulate a location update.
   auto initial_position = MakeGeoposition(37, -122);
   SimulateLocationUpdate(*initial_position);
@@ -200,7 +221,15 @@ TEST_F(GeolocationImplTest, SetAndClearOverride) {
   EXPECT_FALSE(clear_future.IsReady());
 }
 
-TEST_F(GeolocationImplTest, SetAndClearOverrideWithoutUpdate) {
+TEST_P(GeolocationImplTestWithApproxLocation,
+       SetAndClearOverrideWithoutUpdate) {
+  if (IsParamFeatureEnabled()) {
+    // When `kApproximateGeolocationPermission` is enabled, the overridden
+    // position's `is_precise` flag is updated based on
+    // `high_accuracy_hint_ && has_precise_permission_` to meet the spec
+    // requirement.
+    geolocation()->SetHighAccuracyHint(true);
+  }
   // Query the position before the first location update. The callback is not
   // called.
   TestFuture<mojom::GeopositionResultPtr> error_future;
@@ -515,7 +544,17 @@ TEST_F(GeolocationImplTest,
   EXPECT_EQ(future.Get(), approx_position);
 }
 
-TEST_F(GeolocationImplTest, PermissionDowngradeToApproximatePreservesOverride) {
+TEST_P(GeolocationImplTestWithApproxLocation,
+       PermissionDowngradeToApproximatePreservesOverride) {
+  if (IsParamFeatureEnabled()) {
+    // When `kApproximateGeolocationPermission` is enabled, the overridden
+    // position's `is_precise` flag is updated based on
+    // `high_accuracy_hint_ && has_precise_permission_` to meet the spec
+    // requirement.
+    geolocation()->SetHighAccuracyHint(true);
+    FlushForTesting();
+  }
+
   // Set an override with a precise position.
   auto override_position = MakeGeoposition(41, 74);
   override_position->get_position()->is_precise = true;
@@ -590,6 +629,75 @@ TEST_F(GeolocationImplTest,
   // Check that the QueryNextPosition callback receives only the approximate
   // position.
   EXPECT_EQ(future.Get(), approx_position);
+}
+
+TEST_F(GeolocationImplTest, NullFieldsOnApproximatePosition) {
+  auto position = MakeGeoposition(37, -122);
+  position->get_position()->altitude = 100.0;
+  position->get_position()->altitude_accuracy = 50.0;
+  position->get_position()->heading = 90.0;
+  position->get_position()->speed = 10.0;
+  position->get_position()->is_precise = false;
+
+  TestFuture<mojom::GeopositionResultPtr> future;
+  geolocation()->QueryNextPosition(future.GetCallback());
+  FlushForTesting();
+  SimulateLocationUpdate(*position);
+
+  auto expected_position = position.Clone();
+  expected_position->get_position()->altitude = mojom::kBadAltitude;
+  expected_position->get_position()->altitude_accuracy = mojom::kBadAccuracy;
+  expected_position->get_position()->heading = mojom::kBadHeading;
+  expected_position->get_position()->speed = mojom::kBadSpeed;
+  EXPECT_EQ(future.Take(), expected_position);
+
+  position->get_position()->is_precise = true;
+  geolocation()->QueryNextPosition(future.GetCallback());
+  FlushForTesting();
+  SimulateLocationUpdate(*position);
+
+  EXPECT_EQ(future.Take(), position);
+}
+
+TEST_F(GeolocationImplTest, SetOverrideWithLowAccuracyHint) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      content_settings::features::kApproximateGeolocationPermission);
+
+  // Simulate an initial location update so SetOverride reports a position.
+  auto initial_position = MakeGeoposition(37, -122);
+  SimulateLocationUpdate(*initial_position);
+  FlushForTesting();
+
+  auto override_position = MakeGeoposition(41, 74);
+  override_position->get_position()->altitude = 100.0;
+  override_position->get_position()->altitude_accuracy = 50.0;
+  override_position->get_position()->heading = 90.0;
+  override_position->get_position()->speed = 10.0;
+  override_position->get_position()->is_precise = true;
+
+  // With `high_accuracy_hint_` defaulting to `false`, `SetOverride` should
+  // downgrade `is_precise` to `false` and sanitize `altitude`,
+  // `altitude_accuracy`, `heading`, and `speed` to `mojom::kBad*`.
+  TestFuture<mojom::GeopositionResultPtr> future;
+  geolocation()->QueryNextPosition(future.GetCallback());
+  SetOverride(*override_position);
+
+  auto expected_position = override_position.Clone();
+  expected_position->get_position()->is_precise = false;
+  expected_position->get_position()->altitude = mojom::kBadAltitude;
+  expected_position->get_position()->altitude_accuracy = mojom::kBadAccuracy;
+  expected_position->get_position()->heading = mojom::kBadHeading;
+  expected_position->get_position()->speed = mojom::kBadSpeed;
+  EXPECT_EQ(future.Take(), expected_position);
+
+  // Even when `high_accuracy_hint_` is `true`, an override explicitly set with
+  // `is_precise = false` should remain approximate (`is_precise = false`).
+  geolocation()->SetHighAccuracyHint(true);
+  FlushForTesting();
+  override_position->get_position()->is_precise = false;
+  geolocation()->QueryNextPosition(future.GetCallback());
+  SetOverride(*override_position);
+  EXPECT_EQ(future.Take(), expected_position);
 }
 
 }  // namespace device

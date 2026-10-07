@@ -2552,7 +2552,10 @@ crbug.com/567285529 external/wpt/svg/styling/css-linked-parameters/link-paramete
 crbug.com/567247689 external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/image_size.py [ Failure ]
 crbug.com/567247689 external/wpt/webdriver/tests/bidi/browsing_context/start_screencast/destination_folder.py [ Failure ]
 crbug.com/567247689 external/wpt/webdriver/tests/bidi/external/permissions/set_permission/set_permission.py [ Failure ]
+# Base test fails with a variable wall-clock timestamp when ApproximateGeolocationPermission
+# is disabled (cannot use -expected.txt); override inherited [ Failure ] for the virtual suite.
 crbug.com/563060354 external/wpt/geolocation/getCurrentPosition-accuracyMode-cache.https.html [ Failure ]
+crbug.com/563060354 virtual/approximate-geolocation/external/wpt/geolocation/getCurrentPosition-accuracyMode-cache.https.html [ Pass ]
 crbug.com/563046526 external/wpt/svg/render/order/z-index.tentative.svg [ Failure ]
 crbug.com/562303032 external/wpt/css/css-text/hyphens/hyphenate-limit-lines-001.html [ Failure ]
 crbug.com/562303032 external/wpt/css/css-text/word-spacing/word-spacing-combining-mark-002.html [ Failure ]

@@ -5176,5 +5176,19 @@
     "args": ["--enable-features=RestrictLinkHeaderOnSubresource:disable_resource_load/false"],
     "owners": ["tnak@chromium.org"],
     "expires": "Jan 1, 2027"
+  },
+  {
+    "prefix": "approximate-geolocation",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/geolocation/getCurrentPosition-accuracyMode.https.html",
+      "external/wpt/geolocation/getCurrentPosition-accuracyMode-cache.https.html"
+    ],
+    "args": ["--enable-features=ApproximateGeolocationPermission"],
+    "owners": [
+      "antoniosartori@chromium.org",
+      "alvinji@chromium.org"
+    ],
+    "expires": "Feb 1, 2027"
   }
 ]
