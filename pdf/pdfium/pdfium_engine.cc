@@ -983,8 +983,11 @@ void CheckBitmapProperties(const SkBitmap& sk_bitmap, FPDF_BITMAP fpdf_bitmap) {
 }  // namespace
 
 void InitializeSDK(bool enable_v8,
+                   bool enable_xfa,
                    bool use_skia,
                    FontMappingMode font_mapping_mode) {
+  CHECK(enable_v8 || !enable_xfa);
+
   FPDF_LIBRARY_CONFIG config;
   config.version = 7;
   config.m_pUserFontPaths = nullptr;
@@ -996,8 +999,7 @@ void InitializeSDK(bool enable_v8,
   config.m_FontLibraryType = FPDF_FONTBACKENDTYPE_FREETYPE;
   config.m_BrotliEnabled =
       base::FeatureList::IsEnabled(features::kPdfBrotliDecode);
-  config.m_IsolatePerDocument =
-      base::FeatureList::IsEnabled(features::kPdfXfaSupport);
+  config.m_IsolatePerDocument = enable_xfa;
 
 #if defined(PDF_ENABLE_V8)
   if (enable_v8) {

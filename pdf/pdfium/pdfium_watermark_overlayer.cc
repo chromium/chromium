@@ -45,7 +45,7 @@ std::unique_ptr<PdfiumWatermarkOverlayer> PdfiumWatermarkOverlayer::Create(
 }
 
 PdfiumWatermarkOverlayer::ScopedSdkInitializer::ScopedSdkInitializer() {
-  InitializeSDK(/*enable_v8=*/false, /*use_skia=*/false,
+  InitializeSDK(/*enable_v8=*/false, /*enable_xfa=*/false, /*use_skia=*/false,
                 FontMappingMode::kNoMapping);
 }
 

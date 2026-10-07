@@ -31,8 +31,8 @@ class PDFiumFontWinTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    InitializeSDK(/*enable_v8=*/false, /*use_skia=*/false,
-                  FontMappingMode::kBlink);
+    InitializeSDK(/*enable_v8=*/false, /*enable_xfa=*/false,
+                  /*use_skia=*/false, FontMappingMode::kBlink);
     mapper_ = GetSkiaFontMapperForTesting();
     // Need these fields to do the tests.
     ASSERT_TRUE(mapper_);

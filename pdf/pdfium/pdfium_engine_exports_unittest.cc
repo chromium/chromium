@@ -46,8 +46,8 @@ namespace {
 class ScopedLibraryInitializer {
  public:
   ScopedLibraryInitializer() {
-    InitializeSDK(/*enable_v8=*/true, /*use_skia=*/false,
-                  FontMappingMode::kNoMapping);
+    InitializeSDK(/*enable_v8=*/true, /*enable_xfa=*/false,
+                  /*use_skia=*/false, FontMappingMode::kNoMapping);
   }
   ~ScopedLibraryInitializer() { ShutdownSDK(); }
 };

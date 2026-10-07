@@ -43,6 +43,7 @@ class ScopedSdkInitializer {
     CHECK(!IsSDKInitializedViaPlugin());
     InitializeSDK(
         enable_v8,
+        /*enable_xfa=*/false,
         g_use_skia_renderer_enabled_by_policy.value_or(
             base::FeatureList::IsEnabled(features::kPdfUseSkiaRenderer)),
         FontMappingMode::kNoMapping);

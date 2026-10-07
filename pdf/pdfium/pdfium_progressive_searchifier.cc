@@ -16,7 +16,8 @@ namespace chrome_pdf {
 
 PdfiumProgressiveSearchifier::ScopedSdkInitializer::ScopedSdkInitializer() {
   // TODO(thestig): Check the default value of `use_skia`.
-  InitializeSDK(false, false, FontMappingMode::kNoMapping);
+  InitializeSDK(/*enable_v8=*/false, /*enable_xfa=*/false, /*use_skia=*/false,
+                FontMappingMode::kNoMapping);
 }
 
 PdfiumProgressiveSearchifier::ScopedSdkInitializer::~ScopedSdkInitializer() {

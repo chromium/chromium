@@ -198,7 +198,7 @@ class PerProcessInitializer final {
     return *instance;
   }
 
-  void Acquire(bool use_skia) {
+  void Acquire(bool enable_xfa, bool use_skia) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
     DCHECK_GE(init_count_, 0);
@@ -207,7 +207,8 @@ class PerProcessInitializer final {
     }
 
     DCHECK(!IsSDKInitializedViaPlugin());
-    InitializeSDK(/*enable_v8=*/true, use_skia, FontMappingMode::kBlink);
+    InitializeSDK(/*enable_v8=*/true, enable_xfa, use_skia,
+                  FontMappingMode::kBlink);
     SetIsSDKInitializedViaPlugin(true);
   }
 
@@ -590,7 +591,10 @@ bool PdfViewWebPlugin::InitializeCommon() {
   base::debug::SetCrashKeyString(subresource_url, params->original_url);
 
   use_skia_renderer_ = params->use_skia;
-  PerProcessInitializer::GetInstance().Acquire(params->use_skia);
+  PerProcessInitializer::GetInstance().Acquire(
+      /*enable_xfa=*/params->script_option ==
+          PDFiumFormFiller::ScriptOption::kJavaScriptAndXFA,
+      params->use_skia);
   initialized_ = true;
 
   // Check if the PDF is being loaded in the PDF chrome extension. We only allow

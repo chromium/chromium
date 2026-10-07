@@ -132,9 +132,12 @@ enum class DocumentPermission {
 // Do one time initialization of the SDK.
 // If `enable_v8` is false, then PDFiumEngine will not be able to run
 // JavaScript.
+// If `enable_xfa` is true, then PDFium will create a dedicated V8 isolate for
+// each document.
 // When `use_skia` is true, the PDFiumEngine will use Skia renderer. Otherwise,
 // it will use AGG renderer.
 void InitializeSDK(bool enable_v8,
+                   bool enable_xfa,
                    bool use_skia,
                    FontMappingMode font_mapping_mode);
 // Tells the SDK that we're shutting down.

@@ -193,8 +193,8 @@ class FormFillerJavaScriptTest : public FormFillerTest {
     //
     // Note that this does not call FormFillerTest::SetUp() to avoid double SDK
     // initialization.
-    InitializeSDK(/*enable_v8=*/true, /*use_skia_renderer=*/GetParam(),
-                  FontMappingMode::kNoMapping);
+    InitializeSDK(/*enable_v8=*/true, /*enable_xfa=*/false,
+                  /*use_skia=*/GetParam(), FontMappingMode::kNoMapping);
   }
 
   void TearDown() override {
