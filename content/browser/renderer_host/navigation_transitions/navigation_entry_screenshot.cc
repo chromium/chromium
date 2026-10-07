@@ -152,6 +152,55 @@ NavigationEntryScreenshot::SharedImageProvider::SharedImageProvider() = default;
 NavigationEntryScreenshot::SharedImageProvider::~SharedImageProvider() =
     default;
 
+void NavigationEntryScreenshot::SharedImageProvider::SetReadSyncToken(
+    const gpu::SyncToken& sync_token) {
+  read_sync_token_ = sync_token;
+}
+
+void NavigationEntryScreenshot::SharedImageProvider::ClearReadSyncToken() {
+  read_sync_token_.Clear();
+}
+
+gpu::SyncToken
+NavigationEntryScreenshot::SharedImageProvider::CombineWithReadSyncToken(
+    const gpu::SyncToken& release_sync_token,
+    viz::RasterContextProvider* context_provider,
+    bool verify) {
+  if (!read_sync_token_.HasData() || !context_provider) {
+    // Reached when no readback is in flight (never started, already completed
+    // in OnReadBack(), or using automatic sync token management) or when the
+    // context was lost.
+    // TODO(b/40286368): Remove this function when
+    // UseAutomaticSyncTokenManagement is launched.
+    return release_sync_token;
+  }
+  auto* raster_interface = context_provider->RasterInterface();
+  gpu::SyncToken sync_token = read_sync_token_;
+  if (release_sync_token.HasData()) {
+    // The readback and the display compositor run on different GPU sequences.
+    // Since `read_sync_token_` was already generated on `raster_interface`,
+    // waiting on `release_sync_token` before generating a new token on
+    // `raster_interface` ensures the new token is ordered after both.
+    // WaitSyncTokenCHROMIUM and GenUnverifiedSyncTokenCHROMIUM only enqueue
+    // commands in client memory without performing an IPC.
+    raster_interface->WaitSyncTokenCHROMIUM(release_sync_token.GetConstData());
+    sync_token.Clear();
+    raster_interface->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+    if (!sync_token.HasData()) {
+      // Reached if the context was lost before OnContextLost() was notified,
+      // causing GenUnverifiedSyncTokenCHROMIUM() to leave `sync_token` empty.
+      return release_sync_token;
+    }
+  }
+  if (verify) {
+    // VerifySyncTokensCHROMIUM flushes the GPU channel and may perform a
+    // synchronous IPC if the ordering barrier has not been processed yet.
+    int8_t* sync_token_data = sync_token.GetData();
+    raster_interface->VerifySyncTokensCHROMIUM(&sync_token_data, 1);
+  }
+  return sync_token;
+}
+
 // static
 scoped_refptr<NavigationEntryScreenshot::SharedImageProvider>
 NavigationEntryScreenshot::SharedImageHolder::Create(
@@ -185,11 +234,16 @@ void NavigationEntryScreenshot::SharedImageHolder::OnContextLost() {
   context_provider_->RemoveObserver(this);
   context_provider_.reset();
   shared_image_.reset();
+  read_sync_token_.Clear();
 }
 
 NavigationEntryScreenshot::SharedImageHolder::~SharedImageHolder() {
   if (release_callback_) {
-    std::move(release_callback_).Run(destruction_sync_token_, is_lost_);
+    std::move(release_callback_)
+        .Run(CombineWithReadSyncToken(destruction_sync_token_,
+                                      context_provider_.get(),
+                                      /*verify=*/true),
+             is_lost_);
   }
   if (context_provider_) {
     context_provider_->RemoveObserver(this);
@@ -272,6 +326,7 @@ void NavigationEntryScreenshot::HardwareBufferHolder::DoRelease(
     const gpu::SyncToken& sync_token,
     bool is_lost) {
   pending_transferable_resource_ = true;
+  release_sync_token_ = sync_token;
   if (cached_shared_image_) {
     cached_shared_image_->UpdateDestructionSyncToken(sync_token);
   }
@@ -281,10 +336,18 @@ void NavigationEntryScreenshot::HardwareBufferHolder::OnContextLost() {
   cached_context_provider_->RemoveObserver(this);
   cached_context_provider_.reset();
   cached_shared_image_.reset();
+  read_sync_token_.Clear();
   pending_transferable_resource_ = true;
 }
 
 NavigationEntryScreenshot::HardwareBufferHolder::~HardwareBufferHolder() {
+  if (cached_shared_image_) {
+    // DestroySharedImage() uses the same GPU channel as the readback, so the
+    // token doesn't need to be verified.
+    cached_shared_image_->UpdateDestructionSyncToken(CombineWithReadSyncToken(
+        release_sync_token_, cached_context_provider_.get(),
+        /*verify=*/false));
+  }
   if (cached_context_provider_) {
     cached_context_provider_->RemoveObserver(this);
   }
@@ -533,10 +596,18 @@ void NavigationEntryScreenshot::DoReadBack(SkBitmap bitmap) {
       info.minRowBytes(), span,
       base::BindOnce(&NavigationEntryScreenshot::OnReadBack,
                      weak_factory_.GetWeakPtr(), std::move(bitmap)));
+  shared_image_provider_->SetReadSyncToken(
+      gpu::RasterScopedAccess::EndAccess(std::move(scoped_access)));
 }
 
 void NavigationEntryScreenshot::OnReadBack(SkBitmap bitmap, bool success) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M152);
+  if (shared_image_provider_) {
+    // The GPU has already finished reading from the shared image by the time
+    // the readback callback runs. Clear the read sync token so releasing the
+    // provider does not need to combine and verify tokens.
+    shared_image_provider_->ClearReadSyncToken();
+  }
   // This has to run after the readback is completed, otherwise, this operation
   // might destroy the context provider, attempting a re-entry to this same
   // callback (crbug.com/456887685).
