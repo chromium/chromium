@@ -24,6 +24,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/policy/core/common/features.h"
 #include "components/policy/resources/webui/mojom/policy.mojom.h"
 #include "components/version_info/version_info.h"
@@ -419,6 +420,7 @@ void PolicyLogger::CompressAndAppendLogs(std::vector<Log> logs) {
         all_logs.begin(),
         all_logs.begin() + (all_logs.size() - kMaxCompressedLogCount));
   }
+  base::ElapsedTimer timer;
   std::string uncompressed_buffer;
   for (const auto& log : all_logs) {
     SerializeLog(log, uncompressed_buffer);
@@ -428,6 +430,8 @@ void PolicyLogger::CompressAndAppendLogs(std::vector<Log> logs) {
                                  &new_compressed_buffer)) {
     return;
   }
+  base::UmaHistogramMicrosecondsTimes("Enterprise.PolicyLogger.CompressionTime",
+                                      timer.Elapsed());
   compressed_buffer_size_.store(new_compressed_buffer.size(),
                                 std::memory_order_relaxed);
   compressed_log_count_.store(all_logs.size(), std::memory_order_relaxed);
@@ -440,6 +444,7 @@ std::vector<PolicyLogger::Log> PolicyLogger::DecompressAndReadLogs() {
   if (compressed_buffer_.empty()) {
     return logs;
   }
+  base::ElapsedTimer timer;
   std::string uncompressed_buffer;
   if (!compression::GzipUncompress(base::as_byte_span(compressed_buffer_),
                                    &uncompressed_buffer)) {
@@ -450,6 +455,8 @@ std::vector<PolicyLogger::Log> PolicyLogger::DecompressAndReadLogs() {
   while (std::optional<Log> log = DeserializeLog(reader)) {
     logs.push_back(std::move(*log));
   }
+  base::UmaHistogramMicrosecondsTimes(
+      "Enterprise.PolicyLogger.DecompressionTime", timer.Elapsed());
   return logs;
 }
 
