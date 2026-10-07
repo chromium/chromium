@@ -1335,6 +1335,21 @@ inline LayoutStateScenePassKey PassKey() {
                         completion:nil];
 }
 
+- (void)showGeminiContextualCueSettings {
+  if (_settingsNavigationController) {
+    [_settingsNavigationController showGeminiContextualCueSettings];
+    return;
+  }
+
+  _settingsNavigationController = [SettingsNavigationController
+      BWGContextualCueControllerForBrowser:_regularBrowser.get()
+                                  delegate:self];
+
+  [self.activeViewController presentViewController:_settingsNavigationController
+                                          animated:YES
+                                        completion:nil];
+}
+
 - (void)showSuggestionsFromGemini {
   if (self.sceneState.isUIBlocked) {
     // This could occur due to race condition with multiple windows and

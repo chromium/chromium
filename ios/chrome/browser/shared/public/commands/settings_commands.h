@@ -39,6 +39,9 @@ enum class PushNotificationClientId;
 // Shows the Gemini settings UI.
 - (void)showGeminiSettings;
 
+// Shows the Gemini contextual cue settings UI.
+- (void)showGeminiContextualCueSettings;
+
 // Shows the Suggestions from Gemini settings UI.
 - (void)showSuggestionsFromGemini;
 
