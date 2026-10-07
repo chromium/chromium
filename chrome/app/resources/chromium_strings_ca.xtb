@@ -21,6 +21,7 @@
 <translation id="1185134272377778587">Sobre Chromium</translation>
 <translation id="1186645291482254714">Rep alertes de seguiment de preus amb Chromium al telèfon</translation>
 <translation id="1203500561924088507">T'agraïm la instal·lació. Has de reiniciar el navegador abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1222365723190436821">Hi ha una <ph name="IMPORTANT_UPDATE" /> pendent. Per mantenir la seguretat de la navegació, Chromium s'actualitzarà la propera vegada que hi hagi <ph name="IDLE_DURATION" /> d'inactivitat.</translation>
 <translation id="1232234696885483911">Quan obris la cerca d'imatges, el títol, l'URL i el contingut de la pàgina (inclosos els PDF) s'enviaran automàticament al servidor. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Amb la sessió iniciada, pots utilitzar les teves contrasenyes i altres elements del teu Compte de Google a Chromium. Per canviar-ho, ves a El teu compte a Chromium.</translation>
 <translation id="1244381985120794049">Mostra Gemini a Chromium a la barra de menú de Mac</translation>
@@ -228,6 +229,7 @@
 <translation id="3286538390144397061">Reinicia ara</translation>
 <translation id="328888136576916638">Falten les claus de l'API de Google. Es desactivaran algunes de les funcions de Chromium.</translation>
 <translation id="3296368748942286671">Continua executant les aplicacions en segon pla quan es tanqui Chromium</translation>
+<translation id="3300632735252839402">Chromium s'actualitzarà quan no hi siguis</translation>
 <translation id="3313189106987092621">Chromium t'avisarà abans de carregar qualsevol lloc web amb una connexió no segura</translation>
 <translation id="3316771292331273802">Quan tanquis totes les finestres de Chromium, se't tancarà la sessió de la majoria de llocs web, tret del teu Compte de Google si tens la sessió iniciada a Chromium. Perquè els llocs web et recordin, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">extrem superior dret de l'àrea de cerca: <ph name="RIGHT" /> % per la dreta i <ph name="TOP" /> % per dalt</translation>
@@ -236,6 +238,7 @@
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Vols canviar al perfil de Chromium existent?</translation>
 <translation id="3412460710772753638">Al gestor de contrasenyes en aquest dispositiu</translation>
+<translation id="3425452599984451640">Chromium vol actualitzar-se</translation>
 <translation id="3427159664004296878">Per obtenir les teves adreces d'interès i altres dades de <ph name="DEVICE" />, inicia la sessió a Chromium</translation>
 <translation id="3438772217992559640">Cerca en aquesta pestanya amb la cerca d'imatges</translation>
 <translation id="3455907671758333080">Amplia la funció Navegació segura millorada amb Chromium al telèfon</translation>

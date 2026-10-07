@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">Chrome 阻止了此项下载操作，因为这不是常下载的文件类型，可能具有危险性</translation>
 <translation id="1197860368385086056">下次在 <ph name="DEVICE_TYPE" /> 上打开 Chrome 时，系统会提示您启用价格跟踪提醒。</translation>
 <translation id="1203500561924088507">感谢您完成安装。您必须重启浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
+<translation id="122321322139970942">有一项<ph name="IMPORTANT_UPDATE" />待安装。为了确保您的浏览安全，Chrome 将在您下次连续 <ph name="IDLE_DURATION" />无操作后更新。</translation>
 <translation id="1226003169284463347">如需在您的所有设备上获取书签等内容，请登录 Chrome</translation>
 <translation id="1278833599417554002">重新启动以更新 Chrome(&amp;C)</translation>
 <translation id="1289911795790071537">使用 Chrome 打开搜索功能</translation>
@@ -326,7 +327,6 @@
 <translation id="4050175100176540509">最新版本不仅在安全性方面做出了重要改进，还提供了多项新功能。</translation>
 <translation id="4053720452172726777">自定义及控制 Google Chrome</translation>
 <translation id="408393047846373801">如需将密码等信息同步到您的所有设备上，请登录 Chrome。登录后，这个密码将保存到您的 Google 账号。</translation>
-<translation id="409936259433005390">即将升级到 Windows 11？将 Chrome 安装程序下载到 OneDrive，预先准备即可随时开始。</translation>
 <translation id="4102173024714616627">扩展程序是可让您自定义 Chrome 的插件。从保持井然有序到简化日常任务，扩展程序可帮助您打造专属的 Chrome。</translation>
 <translation id="4110895483821904099">设置您的新 Chrome 个人资料</translation>
 <translation id="4111566860456076004">Chrome 无法验证此扩展程序的来源，它可能不安全。请将其从 Chrome 中移除，这样它便无法再查看和更改您在所访问的网站上的数据，包括个人信息。</translation>
@@ -499,6 +499,7 @@
 <translation id="5941830788786076944">将 Google Chrome 浏览器设为默认浏览器</translation>
 <translation id="5947104538377036631">Chrome 快捷方式</translation>
 <translation id="5960071705175224773">未知应用更改了您的设置</translation>
+<translation id="5960404530854194706">Chrome 将在您离开时更新</translation>
 <translation id="5980111191913430208">来源不明的扩展程序、应用和主题可能会危害您的设备。Chrome 建议只从 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />安装这些内容</translation>
 <translation id="6003112304606738118">正在下载…还需 <ph name="HOURS" /> 小时</translation>
 <translation id="6008161919456049856">您在 Google 账号中保存的密码、支付方式和地址将从此设备中移除。如需在 Chrome 中重新使用这些数据，请重新登录。</translation>
@@ -582,6 +583,7 @@
 <translation id="6556755379298048869">使用键盘快捷键搜索。</translation>
 <translation id="6585124893636629274">关闭 Chrome 中的 Gemini</translation>
 <translation id="659498884637196217">在此设备上的 Google 密码管理工具中</translation>
+<translation id="660312897435669152">Chrome 需要更新</translation>
 <translation id="6612152958212564387">您未向 Google 发送使用情况统计信息和崩溃报告。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">将 Chrome 设为默认浏览器，让您的密码、书签和历史记录在所有设备上实时同步。</translation>
 <translation id="6621391692573306628">若要将此标签页发送到另一设备，请在这两部设备上都登录 Chrome</translation>

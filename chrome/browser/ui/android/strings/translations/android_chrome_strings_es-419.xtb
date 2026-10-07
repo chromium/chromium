@@ -764,6 +764,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4092709865241032354">Para ayudar al Administrador de contraseñas de Google a guardar tu información de acceso, agrega tu nombre de usuario para este sitio</translation>
 <translation id="4095146165863963773">¿Borrar datos de app?</translation>
 <translation id="4095483462103784441">Crear un nuevo grupo de pestañas</translation>
+<translation id="4098552968111329864">Para proteger tu trabajo en Chrome, tu organización podrá ver o administrar cierta información cuando accedas a Chrome</translation>
 <translation id="4105527135143631701">Se abrió la actualización del Administrador de contraseñas de Google</translation>
 <translation id="4107207375883769436">Es posible que tu organización necesite ver y administrar los datos de navegación en tu perfil de trabajo, como el historial de navegación y las contraseñas</translation>
 <translation id="4113030288477039509">Administrado por tu administrador</translation>
@@ -1770,6 +1771,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7929587383660661825">Chrome quita automáticamente los permisos de los sitios que abusan de las notificaciones o que no visitaste recientemente</translation>
 <translation id="7934668619883965330">No se puede descargar el archivo. No se admite el formato de archivo.</translation>
 <translation id="7951102827450076904">Abrir siempre los PDF descargados</translation>
+<translation id="7952148074468405586">Obtén más información sobre los <ph name="BEGIN_LINK" />datos que tu organización puede ver o administrar<ph name="END_LINK" /></translation>
 <translation id="7952479614398473176">Para abrir una ventana nueva, reduce la cantidad total de ventanas activas a <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> o menos.</translation>
 <translation id="7956713633345437162">Favoritos del dispositivo</translation>
 <translation id="7957413488482743710">La tarjeta virtual oculta tu tarjeta real para protegerte contra posibles fraudes. <ph name="BEGIN_LINK1" />Más información sobre las tarjetas virtuales<ph name="END_LINK1" /></translation>

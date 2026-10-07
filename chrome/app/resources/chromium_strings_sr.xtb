@@ -23,6 +23,7 @@
 <translation id="1185134272377778587">О Chromium-у</translation>
 <translation id="1186645291482254714">Добијајте обавештења о праћењу цена уз Chromium на телефону</translation>
 <translation id="1203500561924088507">Хвала вам на инсталацији. Потребно је да рестартујете прегледач пре него што почнете да користите <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1222365723190436821"><ph name="IMPORTANT_UPDATE" /> је на чекању. Да би прегледање било безбедно, Chromium ће се ажурирати следећи пут кад будете неактивни <ph name="IDLE_DURATION" />.</translation>
 <translation id="1232234696885483911">Када отворите претрагу слика, наслов, URL и садржај странице, укључујући PDF-ове, аутоматски се шаљу на сервер. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Док сте пријављени, можете да користите лозинке и друго са Google налога у Chromium-у. Да бисте то променили, идите на Налог у Chromium-у.</translation>
 <translation id="1244381985120794049">Прикажи Gemini у Chromium-у на траци менија Mac-а</translation>
@@ -230,6 +231,7 @@
 <translation id="3286538390144397061">Рестартуј одмах</translation>
 <translation id="328888136576916638">Недостају шифре за Google API. Неке функције Chromium-а ће бити онемогућене.</translation>
 <translation id="3296368748942286671">Настави са покретањем апликација у позадини када се Chromium затвори</translation>
+<translation id="3300632735252839402">Chromium ће се ажурирати док нисте активни</translation>
 <translation id="3313189106987092621">Chromium ће вас упозорити пре учитавања било ког сајта помоћу небезбедне везе</translation>
 <translation id="3316771292331273802">Бићете одјављени са већине сајтова када затворите све Chromium прозоре, осим са Google налога ако сте пријављени у Chromium. Да бисте дозволили сајтовима да вас памте, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">горњи десни угао области претраге: удесно <ph name="RIGHT" />%, нагоре <ph name="TOP" />%</translation>
@@ -238,6 +240,7 @@
 <translation id="3387527074123400161">Chromium ОС</translation>
 <translation id="3406848076815591792">Желите да пређете на постојећи Chromium профил?</translation>
 <translation id="3412460710772753638">У Менаџеру лозинки на овом уређају</translation>
+<translation id="3425452599984451640">Chromium жели да се ажурира</translation>
 <translation id="3427159664004296878">Пријавите се у Chromium да бисте преузели обележиваче и друго са уређаја <ph name="DEVICE" /></translation>
 <translation id="3438772217992559640">Претражи ову картицу помоћу претраге слика</translation>
 <translation id="3455907671758333080">Продужите побољшано безбедно прегледање уз Chromium на телефону</translation>

@@ -23,6 +23,7 @@
 <translation id="1185134272377778587">Пра Chromium</translation>
 <translation id="1186645291482254714">Атрымлівайце ў Chromium на тэлефоне абвесткі пра змяненне цаны</translation>
 <translation id="1203500561924088507">Дзякуй, што ўсталявалі <ph name="BUNDLE_NAME" />. Каб завяршыць усталяванне, перазапусціце браўзер.</translation>
+<translation id="1222365723190436821">Чакаецца <ph name="IMPORTANT_UPDATE" />. Каб забяспечыць бяспеку прагляду, Chromium абновіцца, калі вы не будзеце карыстацца браўзерам на працягу <ph name="IDLE_DURATION" />.</translation>
 <translation id="1232234696885483911">Пры адкрыцці пошуку відарысаў загаловак, URL-адрас і змесціва старонкі, у тым ліку файлы PDF, аўтаматычна адпраўляюцца на сервер. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Пакуль выкананы ўваход, вы можаце выкарыстоўваць у Chromium свае паролі і іншыя даныя Уліковага запісу Google. Каб змяніць гэту наладу, перайдзіце ў раздзел "Ваш уліковы запіс у Chromium".</translation>
 <translation id="1244381985120794049">Паказваць Gemini ў Chromium на панэлі меню прылады Mac</translation>
@@ -229,6 +230,7 @@
 <translation id="3286538390144397061">Перазапусціць</translation>
 <translation id="328888136576916638">Адсутнічаюць ключы Google API. Некаторыя функцыі Chromium будуць выключаны.</translation>
 <translation id="3296368748942286671">Працягваць выконваць фонавыя праграмы, калі Chromium закрыты</translation>
+<translation id="3300632735252839402">Браўзер Chromium будзе абноўлены, калі вы не будзеце ім карыстацца</translation>
 <translation id="3313189106987092621">Chromium будзе папярэджваць вас, перш чым загружаць сайт праз неабароненае падключэнне</translation>
 <translation id="3316771292331273802">Калі вы закрыеце ўсе вокны Chromium, то выйдзеце з большасці сайтаў, але застаняцеся ва Уліковым запісе Google, калі раней выканалі ўваход у Chromium. Каб дазволіць сайтам запамінаць вас, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">верхні правы вугал поля пошуку: <ph name="RIGHT" />% справа, <ph name="TOP" />% зверху</translation>
@@ -237,6 +239,7 @@
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Пераключыцца на існуючы профіль Chromium?</translation>
 <translation id="3412460710772753638">У Менеджары пароляў на гэтай прыладзе</translation>
+<translation id="3425452599984451640">Браўзер Chromium хоча абнавіцца</translation>
 <translation id="3427159664004296878">Каб атрымаць доступ да сваіх закладак і іншых даных з прылады "<ph name="DEVICE" />", увайдзіце ў Chromium</translation>
 <translation id="3438772217992559640">Шукаць на гэтай укладцы з дапамогай функцыі "Пошук відарысаў"</translation>
 <translation id="3455907671758333080">Падоўжыце дзеянне Палепшанага Бяспечнага прагляду ў Chromium на тэлефоне</translation>

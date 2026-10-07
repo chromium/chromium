@@ -928,7 +928,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="3697991387880191195">Pressione o atalho de captura de tela</translation>
 <translation id="3702809606464356667">Mostrando janelas do espaço de trabalho atual. Pressione a tecla de seta para cima para mostrar as de todos os espaços de trabalho</translation>
 <translation id="3705722231355495246">-</translation>
-<translation id="3706423975342040244">Entretenimento</translation>
 <translation id="370665806235115550">Carregando...</translation>
 <translation id="3707093869106077605">Os recursos "<ph name="UNAVAILABLE_DLC_ONE" />" e "<ph name="UNAVAILABLE_DLC_TWO" />" não estão disponíveis.</translation>
 <translation id="3708186454126126312">Conectados anteriormente</translation>
@@ -975,7 +974,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="3824784079442479685">Essa ação libera o acesso à câmera para <ph name="APP_NAME" /> e todos os apps e sites com essa permissão. Talvez seja necessário atualizar a página da Web ou reiniciar o app.</translation>
 <translation id="3826099427150913765">Usar senha</translation>
 <translation id="383058930331066723">Modo de economia de bateria ativado</translation>
-<translation id="3831226344927851293">Sair da visualização do tutorial</translation>
 <translation id="383629559565718788">Mostrar configurações do teclado</translation>
 <translation id="384082539148746321">Excluir modelo?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> e depois <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> ou <ph name="KEY_FOUR" /></translation>
@@ -1579,10 +1577,8 @@ Nenhum dispositivo conectado.</translation>
 <translation id="5551974246223970793">Acessar o próximo resultado ao pesquisar em uma página</translation>
 <translation id="5556459405103347317">Recarregar</translation>
 <translation id="5558091555391176027">Alternar a alta visibilidade do Compartilhar por proximidade</translation>
-<translation id="5558314826121965174">Criatividade</translation>
 <translation id="556042886152191864">Botão</translation>
 <translation id="5570122939431135380">Abrir nova guia em uma nova janela anônima</translation>
-<translation id="5572632238877308040">Essenciais</translation>
 <translation id="5575528586625653441">Ocorreu um problema com a solicitação de registro de demonstração.</translation>
 <translation id="557563299383177668">Próximo parágrafo</translation>
 <translation id="5577082622442191756">Alternar Bluetooth. <ph name="STATE_TEXT" />.</translation>
@@ -1617,7 +1613,6 @@ Nenhum dispositivo conectado.</translation>
 <translation id="5667546120811588575">Configurando o Google Play…</translation>
 <translation id="5669267381087807207">Ativando</translation>
 <translation id="5671658447180261823">Remove a sugestão <ph name="SUGGESTION_NAME" /></translation>
-<translation id="5672890847723042801">Utilitários</translation>
 <translation id="5673434351075758678">De "<ph name="FROM_LOCALE" />" para "<ph name="TO_LOCALE" />" após a sincronização das suas configurações.</translation>
 <translation id="5675363643668471212">Item da estante</translation>
 <translation id="5677022547882470786">Arraste a tela ou pressione a barra de espaço para selecionar uma área para pesquisar</translation>
@@ -1873,7 +1868,6 @@ Nenhum dispositivo conectado.</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY_ONE" /> e depois <ph name="MODIFIER_THREE" /> + <ph name="KEY_TWO" /> ou <ph name="KEY_THREE" /></translation>
 <translation id="6352082849089527770">Redes desconhecidas</translation>
 <translation id="6359587239691116345">Instale os recursos e melhorias de segurança mais recentes. Caso você recuse essa atualização, o dispositivo pode deixar de funcionar corretamente e você pode enfrentar problemas de segurança e performance.</translation>
-<translation id="6362833380917912748">Conheça seus apps integrados</translation>
 <translation id="6364386432014869981">O touchpad integrado está ativado</translation>
 <translation id="6376931439017688372">Bluetooth ativado</translation>
 <translation id="6378515133128829137">Fixar janela à direita</translation>
@@ -2098,7 +2092,6 @@ Nova instalação</translation>
 <translation id="7014684956566476813">Conectado a um dispositivo chamado <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Volte às <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Espaço de trabalho 6</translation>
-<translation id="702252130983202758">Seus apps</translation>
 <translation id="7025533177575372252">Conecte seu <ph name="DEVICE_NAME" /> ao smartphone</translation>
 <translation id="7026338066939101231">Reduzir</translation>
 <translation id="7029307918966275733">O Crostini não está instalado. Instale o Crostini para ver os créditos.</translation>
@@ -2537,7 +2530,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8277261673056602147">Destacar texto na tela</translation>
 <translation id="8281886186245836920">Pular</translation>
 <translation id="8282784978194352587">Você conseguiu!</translation>
-<translation id="8287009018010202411">Produtividade</translation>
 <translation id="828708037801473432">Desativada</translation>
 <translation id="8289128870594824098">Tamanho do disco</translation>
 <translation id="8297006494302853456">Fraco</translation>
@@ -2632,7 +2624,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8598235756057743477">Ordenar seus apps por nome e cor</translation>
 <translation id="8599864823732014237">Pular registro empresarial?</translation>
 <translation id="8609384513243082612">Abrir nova guia</translation>
-<translation id="861045123704058818">Os apps estão temporariamente organizados por categoria</translation>
 <translation id="8612338981637220013">Você está indo bem!</translation>
 <translation id="8613164732773110792">Apenas caracteres minúsculos, dígitos, sublinhados ou traços</translation>
 <translation id="8614517853887502247">As notificações dos apps <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" /> estão ocultas porque a proteção de visualização está ativada</translation>
@@ -2824,7 +2815,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="9129245940793250979">Botão traseiro</translation>
 <translation id="9133335900048457298">Não é possível gravar conteúdo protegido</translation>
 <translation id="9139720510312328767">Excluir a próxima letra</translation>
-<translation id="9148058034647219655">Sair</translation>
 <translation id="9151906066336345901">end</translation>
 <translation id="9159421884295554245">Pesquisar no recurso Copiar e colar</translation>
 <translation id="9168436347345867845">Mais tarde</translation>

@@ -143,6 +143,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1090541560108055381">Før sammenkobling må du forsikre deg om at denne koden er lik på begge enhetene</translation>
 <translation id="1093457606523402488">Synlige nettverk:</translation>
 <translation id="1093645050124056515">ctrl + alt + nedoverpil</translation>
+<translation id="1094158807129647987">Spør om «<ph name="SELECTION" />»</translation>
 <translation id="1095398697303758108">Trykk på Ctrl to ganger for forbedret autofyll</translation>
 <translation id="1095879482467973146">Google Passordlagring på nettet</translation>
 <translation id="1097016918605049747">Denne siden kunne ikke oversettes</translation>
@@ -1529,6 +1530,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2165177462441582039">Velg hvor lenge hvert element skal fremheves</translation>
 <translation id="2166369534954157698">Høvdingens kjære squaw får litt pizza i Mexico by</translation>
 <translation id="2168036794078614559">Rapporten er sendt</translation>
+<translation id="2168735174585029637">Gi fanene et nytt, gjennomsiktig utseende</translation>
 <translation id="2169062631698640254">Logg på likevel</translation>
 <translation id="217120844667431680">Gjør mer med AI-modus</translation>
 <translation id="2173302385160625112">Sjekk internettilkoblingen</translation>
@@ -1677,6 +1679,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2278562042389100163">Åpne nettleservindu</translation>
 <translation id="2280486287150724112">Høyremarg</translation>
 <translation id="228059581448666199">Venstreklikk med musen</translation>
+<translation id="2281511031159517364">For å sende linker mellom enheter, logger du på med den samme kontoen.</translation>
 <translation id="2282146716419988068">GPU-prosess</translation>
 <translation id="228293613124499805">De fleste nettsteder du besøker, lagrer sannsynligvis data på enheten din. Ofte gjøres dette for å gi deg en bedre opplevelse, ved at preferansene dine eller informasjonen du deler med nettstedet, blir lagret. Vi anbefaler at du lar denne innstillingen være på.</translation>
 <translation id="2283599456633275070">Reise</translation>
@@ -2406,6 +2409,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="282230978681804245">Profilen din administreres av organisasjonen din, som kan se visse typer informasjon, inkludert</translation>
 <translation id="2822551631199737692">Kameraet er i bruk</translation>
 <translation id="2822634587701817431">Skjul/vis</translation>
+<translation id="2824892374426974106">Spør om dette</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> bruker proxy-tjenerinnstillinger fra administratoren din</translation>
 <translation id="2825200993288778739">Lag din egen, eller legg til fra ferdighetsbiblioteket</translation>
 <translation id="282525059261716597">Kommandolinje:</translation>
@@ -2643,6 +2647,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3001144475369593262">Barnekontoer</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Ingen taster er tilpasset}=1{1 tilpasset tast}other{{COUNT} tilpassede taster}}</translation>
 <translation id="3002864108328203174">Feltet nederst for Gemini vises i halv høyde.</translation>
+<translation id="300311730636583518">Spør om dette</translation>
 <translation id="3003144360685731741">Foretrukne nettverk</translation>
 <translation id="3003152206838282768">Jobber med Gemini-appoppgaven din i Chrome. Sjekk Chrome for flere oppdateringer</translation>
 <translation id="3003253259757197230">Nettadresser du besøker, sendes til Google for å forutsi hvilke nettsteder du kanskje kommer til å besøke etterpå, og for å vise deg mer informasjon om siden du besøker</translation>
@@ -2775,6 +2780,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3094521107841754472">Prisen er endret fra <ph name="PREVIOUS_PRICE" /> til <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Bokmerker, passord og andre nettlesingsdata synkroniseres med primærkontoen.</translation>
 <translation id="3097674000822532270">Appene og innstillingene dine blir synkronisert på alle ChromeOS Flex-enheter hvor du er logget på med Google-kontoen din. For å administrere hvilke nettleserdata som lagres i Google-kontoen din, gå til <ph name="LINK_BEGIN" />Chrome-innstillingene<ph name="LINK_END" />.</translation>
+<translation id="3099754485438181407">Prøv den nye stilen i innstillingene. Du kan når som helst bytte tilbake til det klassiske utseendet.</translation>
 <translation id="3101126716313987672">Svakt lys</translation>
 <translation id="3101709781009526431">Dato og klokkeslett</translation>
 <translation id="3102309003841389927">Gjennomgå logooppdateringen</translation>
@@ -3547,6 +3553,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3685598397738512288">USB-innstillinger for Linux</translation>
 <translation id="3686108296937784939">Organisasjonens snarveier</translation>
 <translation id="3687359570564207338">{NUM_SITES,plural, =1{Fant 1 passord som er utsatt for sikkerhetsbrudd}other{Fant {NUM_SITES} passord som er utsatt for sikkerhetsbrudd}}</translation>
+<translation id="3687463694814266645">Omorganiser</translation>
 <translation id="3687598459967813435">Tillat alltid varsler fra <ph name="WEBSITE" /></translation>
 <translation id="3688507211863392146">skrive til filer og mapper du åpner i appen</translation>
 <translation id="3688526734140524629">Bytt kanal</translation>
@@ -5333,6 +5340,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5039804452771397117">Tillat</translation>
 <translation id="5040262127954254034">Personvern</translation>
 <translation id="5040823038948176460">Flere innholdsinnstillinger</translation>
+<translation id="5041178465403838363">Spør om «<ph name="SELECTION" />»</translation>
 <translation id="5041509233170835229">Chrome-app</translation>
 <translation id="504194357571315770">Handling påkrevd</translation>
 <translation id="5043807571255634689"><ph name="SUBSCRIPTION_NAME" /> blir kun fjernet fra denne enheten. For å gjøre endringer i abonnementet, kontakt abonnementsleverandøren. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
@@ -7680,7 +7688,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="686609795364435700">Stille</translation>
 <translation id="686664946474413495">Fargetemperatur</translation>
 <translation id="6867086642466184030">Andre apper er stilt inn på å åpne de samme linkene som <ph name="APP_NAME" />. Dette medfører at <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> og <ph name="NUMBER_OF_OTHER_APPS" /> andre apper ikke kan åpne støttede linker.</translation>
-<translation id="6868206169573555318">Start på nytt for å oppdatere</translation>
 <translation id="686831807558000905">Ikke logg på</translation>
 <translation id="686839242150793617">Nettsteder som har lov til å bruke bilde-i-bilde automatisk</translation>
 <translation id="6868734951249611611">Høyreklikk her, og velg «Vis faner vertikalt»</translation>
@@ -7954,6 +7961,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7077751457066325012">Se og tilpass hurtigtaster</translation>
 <translation id="7078120482318506217">Alle nettverk</translation>
 <translation id="708060913198414444">K&amp;opiér lydadressen</translation>
+<translation id="7082399760770275009">Åpne Windows-innstillingene</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> administreres av administratoren din</translation>
 <translation id="7082850163410901674">Varsler er slått av i Mac-systeminnstillingene</translation>
 <translation id="7083729794572207131">Nettsteder ber vanligvis om å få installere nettapper for å gi deg en bedre opplevelse på nettstedet</translation>
@@ -9028,6 +9036,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7913805372428124107">Logg på og synkroniser loggen for å få fanene fra <ph name="DEVICE" />. Du får også passordene med mer på alle enheter. Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen.</translation>
 <translation id="7914399737746719723">Appen er installert</translation>
 <translation id="7915457674565721553">Koble til internett for å sette opp foreldrekontroll</translation>
+<translation id="7915478442339169507">Tillat tilgang til nettsted</translation>
 <translation id="7916364730877325865">Organisasjonen din tillater ikke at du slår på synkronisering med denne kontoen</translation>
 <translation id="791698251820376781">Organisasjonen din tillater ikke at du logger på</translation>
 <translation id="7918928051723770926">Oppgaven er fullført</translation>
@@ -10836,6 +10845,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="978146274692397928">Opprinnelig tegnsettingsbredde er satt til Full</translation>
 <translation id="978978324795544535">Dobbelttrykk på et element, fortsett å holde inne på det andre trykket, og dra elementet for å flytte det</translation>
 <translation id="981121421437150478">Uten nett</translation>
+<translation id="981383875218593510">Sett denne innstillingen til Moderne for å prøve det nye, gjennomsiktige utseendet på fanene dine.</translation>
 <translation id="982083952953998237">Legg til begrensninger</translation>
 <translation id="98235653036850093">Hei, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Lukk alle faner</translation>

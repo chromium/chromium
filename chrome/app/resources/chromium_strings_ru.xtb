@@ -21,6 +21,7 @@
 <translation id="1185134272377778587">О Chromium</translation>
 <translation id="1186645291482254714">Получайте на телефон уведомления от Chromium об изменении цен</translation>
 <translation id="1203500561924088507">Спасибо, что установили <ph name="BUNDLE_NAME" />. Чтобы изменения вступили в силу, перезапустите браузер.</translation>
+<translation id="1222365723190436821">Запланировано <ph name="IMPORTANT_UPDATE" />. Чтобы обеспечить безопасность работы в браузере, Chromium обновится, когда вы не будете им пользоваться в течение <ph name="IDLE_DURATION" />.</translation>
 <translation id="1232234696885483911">Когда вы открываете поиск картинок, заголовок, URL и контент страницы, включая PDF-файлы, автоматически отправляются на сервер. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Когда выполнен вход, вы можете использовать в Chromium свои пароли и другие данные, сохраненные в аккаунте Google. Чтобы изменить это, откройте раздел "Ваш аккаунт в Chromium".</translation>
 <translation id="1244381985120794049">Показывать Gemini в Chromium в строке меню macOS</translation>
@@ -225,6 +226,7 @@
 <translation id="3286538390144397061">Перезапустить сейчас</translation>
 <translation id="328888136576916638">Отсутствуют ключи API Google. Некоторые функции Chromium могут не работать.</translation>
 <translation id="3296368748942286671">Продолжить выполнение фоновых приложений после закрытия Chromium</translation>
+<translation id="3300632735252839402">Chromium обновится во время бездействия.</translation>
 <translation id="3313189106987092621">Chromium будет предупреждать вас о переходе на любой сайт с незащищенным соединением</translation>
 <translation id="3316771292331273802">Если вы закроете все окна Chromium, то выйдете из системы на большинстве сайтов. Вы останетесь в аккаунте Google, если ранее вошли в Chromium. Разрешить сайтам сохранять ваши данные можно <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">правый верхний угол области поиска: <ph name="RIGHT" /> % справа, <ph name="TOP" /> % сверху</translation>
@@ -233,6 +235,7 @@
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Переключиться на существующий профиль Chromium?</translation>
 <translation id="3412460710772753638">В Менеджере паролей на этом устройстве</translation>
+<translation id="3425452599984451640">Chromium необходимо обновить</translation>
 <translation id="3427159664004296878">Чтобы получить доступ к закладкам и другим данным с <ph name="DEVICE" />, войдите в Chromium.</translation>
 <translation id="3438772217992559640">Найти на этой вкладке с помощью поиска картинок</translation>
 <translation id="3455907671758333080">Расширьте возможности улучшенного Безопасного просмотра с помощью Chromium на телефоне</translation>

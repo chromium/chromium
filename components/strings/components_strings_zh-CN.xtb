@@ -302,7 +302,6 @@
 <translation id="1486096554574027028">搜索密码</translation>
 <translation id="1492194039220927094">政策推送：</translation>
 <translation id="1495677929897281669">返回到标签页</translation>
-<translation id="1496318738909526466">管理增强型自动填充功能</translation>
 <translation id="1500286806237135498">摄像头（<ph name="CAMERAS_COUNT" /> 个）</translation>
 <translation id="1504042622576912555">瓦楞纸板</translation>
 <translation id="1507202001669085618">&lt;p&gt;如果您使用的 Wi-Fi 门户网站必须登录才能连接网络，您就会看到这条出错提示。&lt;/p&gt;
@@ -954,6 +953,7 @@
 <translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">撤消修改(&amp;U)</translation>
 <translation id="2559566667529177711">多层</translation>
+<translation id="2561224416042784023">查看设置</translation>
 <translation id="2570734079541893434">管理设置</translation>
 <translation id="257136025287118539">管理员正在将您的文件移至 <ph name="CLOUD_PROVIDER" />。上传完成后，您可以修改这些文件。</translation>
 <translation id="2571488850200220306">为了确保安全，它还能查看设备的操作系统、浏览器版本和已安装软件</translation>

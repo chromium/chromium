@@ -928,7 +928,6 @@
 <translation id="3697991387880191195">スクリーンショットのショートカットを押す</translation>
 <translation id="3702809606464356667">現在のデスクのウィンドウを表示しています、すべてのデスクのウィンドウを表示するには上矢印キーを押してください</translation>
 <translation id="3705722231355495246">-</translation>
-<translation id="3706423975342040244">エンターテイメント</translation>
 <translation id="370665806235115550">読み込んでいます...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> と <ph name="UNAVAILABLE_DLC_TWO" /> は使用できません。</translation>
 <translation id="3708186454126126312">以前に接続したデバイス</translation>
@@ -975,7 +974,6 @@
 <translation id="3824784079442479685">カメラへのアクセス権を持つ <ph name="APP_NAME" /> およびすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します。ウェブページの更新またはアプリの再起動が必要となる場合があります。</translation>
 <translation id="3826099427150913765">パスワードに切り替える</translation>
 <translation id="383058930331066723">バッテリー セーバー モードがオンです</translation>
-<translation id="3831226344927851293">チュートリアル ビューを閉じる</translation>
 <translation id="383629559565718788">キーボード設定を表示</translation>
 <translation id="384082539148746321">テンプレートを削除しますか？</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" /> キーを押してから、<ph name="KEY_ONE" />、<ph name="KEY_TWO" />、<ph name="KEY_THREE" />、<ph name="KEY_FOUR" /> のいずれかのキーを押す</translation>
@@ -1578,10 +1576,8 @@
 <translation id="5551974246223970793">ページ検索時に次の一致箇所に移動する</translation>
 <translation id="5556459405103347317">再読み込み</translation>
 <translation id="5558091555391176027">ニアバイシェアで付近のデバイスに表示されるモードのオンとオフを切り替えます</translation>
-<translation id="5558314826121965174">創造性</translation>
 <translation id="556042886152191864">ボタン</translation>
 <translation id="5570122939431135380">新しいシークレット ウィンドウで新しいタブを開く</translation>
-<translation id="5572632238877308040">必須アプリ</translation>
 <translation id="5575528586625653441">デモ登録リクエストで問題が発生しました。</translation>
 <translation id="557563299383177668">次の段落</translation>
 <translation id="5577082622442191756">Bluetooth を切り替えます。<ph name="STATE_TEXT" />。</translation>
@@ -1616,7 +1612,6 @@
 <translation id="5667546120811588575">Google Play を設定しています...</translation>
 <translation id="5669267381087807207">有効化中</translation>
 <translation id="5671658447180261823">候補<ph name="SUGGESTION_NAME" />を削除します</translation>
-<translation id="5672890847723042801">ユーティリティ</translation>
 <translation id="5673434351075758678">設定の同期後に「<ph name="FROM_LOCALE" />」から「<ph name="TO_LOCALE" />」に変更されました。</translation>
 <translation id="5675363643668471212">シェルフ アイテム</translation>
 <translation id="5677022547882470786">検索する範囲をドラッグするか、Space キーを押して選択します</translation>
@@ -1871,7 +1866,6 @@
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" />+<ph name="KEY_ONE" /> キーを押してから、<ph name="MODIFIER_THREE" />+<ph name="KEY_TWO" /> または <ph name="KEY_THREE" /> キーを押す</translation>
 <translation id="6352082849089527770">不明なネットワーク</translation>
 <translation id="6359587239691116345">最新の機能を入手しセキュリティを強化しましょう。このアップデートを承認しない場合、デバイスが正しく動作せず、セキュリティやパフォーマンス上の問題が発生する可能性があります。</translation>
-<translation id="6362833380917912748">組み込みのアプリについて</translation>
 <translation id="6364386432014869981">内蔵タッチパッドがオンになりました</translation>
 <translation id="6376931439017688372">Bluetooth はオンです</translation>
 <translation id="6378515133128829137">ウィンドウを右に固定する</translation>
@@ -2096,7 +2090,6 @@
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> という名前のデバイスに接続しています</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> になったら利用を再開できます。</translation>
 <translation id="70168403932084660">デスク 6</translation>
-<translation id="702252130983202758">マイアプリ</translation>
 <translation id="7025533177575372252">スマートフォンを使って <ph name="DEVICE_NAME" /> を接続する</translation>
 <translation id="7026338066939101231">減らす</translation>
 <translation id="7029307918966275733">Crostini はインストールされていません。クレジットを表示するには Crostini をインストールしてください。</translation>
@@ -2536,7 +2529,6 @@
 <translation id="8277261673056602147">画面上のテキストを選択</translation>
 <translation id="8281886186245836920">スキップ</translation>
 <translation id="8282784978194352587">お疲れさまでした！</translation>
-<translation id="8287009018010202411">仕事効率化</translation>
 <translation id="828708037801473432">オフ</translation>
 <translation id="8289128870594824098">ディスクサイズ</translation>
 <translation id="8297006494302853456">弱い</translation>
@@ -2631,7 +2623,6 @@
 <translation id="8598235756057743477">名前または色でアプリを並べ替えられます</translation>
 <translation id="8599864823732014237">企業の登録をスキップしますか？</translation>
 <translation id="8609384513243082612">新しいタブを開く</translation>
-<translation id="861045123704058818">アプリは現在カテゴリ別に整理されています</translation>
 <translation id="8612338981637220013">絶好調ですね！</translation>
 <translation id="8613164732773110792">英小文字、数字、アンダースコア、ダッシュのみ</translation>
 <translation id="8614517853887502247">表示保護機能が有効になっているため、<ph name="APP_1_TITLE" /> と <ph name="APP_2_TITLE" /> の通知は表示されません</translation>
@@ -2822,7 +2813,6 @@
 <translation id="9129245940793250979">背面ボタン</translation>
 <translation id="9133335900048457298">保護されたコンテンツは録画できません</translation>
 <translation id="9139720510312328767">次の文字を削除する</translation>
-<translation id="9148058034647219655">終了</translation>
 <translation id="9151906066336345901">End</translation>
 <translation id="9159421884295554245">クリップボードを検索</translation>
 <translation id="9168436347345867845">後で行う</translation>

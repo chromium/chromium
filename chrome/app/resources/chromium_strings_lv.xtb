@@ -21,6 +21,7 @@
 <translation id="1185134272377778587">Par Chromium</translation>
 <translation id="1186645291482254714">Brīdinājumu saņemšana par cenu izsekošanu, izmantojot pārlūku Chromium savā tālrunī</translation>
 <translation id="1203500561924088507">Pateicamies, ka veicāt instalēšanu. Pirms <ph name="BUNDLE_NAME" /> izmantošanas ir jārestartē pārlūkprogramma.</translation>
+<translation id="1222365723190436821">Tiek gaidīts <ph name="IMPORTANT_UPDATE" />. Lai gādātu par drošu pārlūkošanu, pārlūks Chromium tiks atjaunināts, kad nākamreiz būsiet neaktīvs vismaz <ph name="IDLE_DURATION" />.</translation>
 <translation id="1232234696885483911">Kad atvērsiet attēlu meklēšanu, serverim tiks automātiski nosūtīts lapas nosaukums, vietrādis URL un saturs, tostarp PDF faili. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Kamēr esat pierakstījies, pārlūkā Chromium varat izmantot savas paroles un citu saturu no Google konta. Lai to mainītu, pārejiet uz sadaļu “Jūsu konts pārlūkā Chromium”.</translation>
 <translation id="1244381985120794049">Rādīt Gemini pārlūkā Chromium Mac izvēļņu joslā</translation>
@@ -227,6 +228,7 @@
 <translation id="3286538390144397061">Restartēt tūlīt</translation>
 <translation id="328888136576916638">Trūkst Google API atslēgu. Tiks atspējotas dažas Chromium funkcijas.</translation>
 <translation id="3296368748942286671">Turpināt lietotņu izpildi fonā, kad Chromium ir aizvērts</translation>
+<translation id="3300632735252839402">Pārlūks Chromium tiks atjaunināts jūsu prombūtnes laikā</translation>
 <translation id="3313189106987092621">Pārlūkā Chromium tiks parādīts brīdinājums pirms jebkuras vietnes ielādes, izmantojot nedrošu savienojumu.</translation>
 <translation id="3316771292331273802">Aizverot visus Chromium logus, automātiski izrakstīsieties no lielākās daļas vietņu, bet ne no Google konta, ja esat pierakstījies pārlūkā Chromium. Lai atļautu vietnēm jūs atcerēties, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">meklēšanas apgabala augšējais labais stūris: <ph name="RIGHT" />% pa labi, <ph name="TOP" />% augšdaļā</translation>
@@ -235,6 +237,7 @@
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Vai pāriet uz esošo Chromium profilu?</translation>
 <translation id="3412460710772753638">Tā tiks atjaunināta Paroļu pārvaldniekā šajā ierīcē</translation>
+<translation id="3425452599984451640">Chromium vēlas veikt atjaunināšanu</translation>
 <translation id="3427159664004296878">Lai piekļūtu grāmatzīmēm un citiem datiem no ierīces <ph name="DEVICE" />, pierakstieties pārlūkā Chromium.</translation>
 <translation id="3438772217992559640">Meklēt šajā cilnē, izmantojot attēlu meklēšanas funkciju</translation>
 <translation id="3455907671758333080">Izmantojiet funkciju “Droša pārlūkošana ar papildu aizsardzību” pārlūkā Chromium savā tālrunī</translation>

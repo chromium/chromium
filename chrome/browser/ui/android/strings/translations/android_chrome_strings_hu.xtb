@@ -764,6 +764,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4092709865241032354">Adja meg felhasználónevét ehhez a webhelyhez, hogy a Google Jelszókezelő menteni tudja a bejelentkezési adatait.</translation>
 <translation id="4095146165863963773">Törli az alkalmazásadatokat?</translation>
 <translation id="4095483462103784441">Új lapcsoport létrehozása</translation>
+<translation id="4098552968111329864">A Chrome-ban végzett munka biztonsága érdekében a szervezete képes lehet bizonyos információk megtekintésére vagy kezelésére, amikor Ön be van jelentkezve a Chrome-ba.</translation>
 <translation id="4105527135143631701">A Google Jelszókezelő frissítése megnyílt</translation>
 <translation id="4107207375883769436">Előfordulhat, hogy a szervezetnek szüksége van arra, hogy lássa és kezelje az Ön munkaprofiljában lévő böngészési adatokat (például a böngészési előzményeket és a jelszavakat).</translation>
 <translation id="4113030288477039509">A rendszergazdája kezeli</translation>
@@ -1770,6 +1771,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7929587383660661825">A Chrome automatikusan visszavonja azoknak a webhelyeknek az engedélyeit, amelyek visszaélnek az értesítésekkel, vagy amelyeket Ön nem keresett fel a közelmúltban</translation>
 <translation id="7934668619883965330">A fájl nem tölthető le. A fájlformátum nem támogatott.</translation>
 <translation id="7951102827450076904">Mindig nyissa meg a letöltött PDF-fájlokat</translation>
+<translation id="7952148074468405586">További információ arról, hogy <ph name="BEGIN_LINK" />milyen információkat tekinthet meg vagy kezelhet a szervezete<ph name="END_LINK" />.</translation>
 <translation id="7952479614398473176">Új ablak megnyitásához csökkentse az aktív ablakok teljes számát legfeljebb ennyire: <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7956713633345437162">Mobilos könyvjelzők</translation>
 <translation id="7957413488482743710">A virtuális kártya elrejti tényleges kártyáját, így segíthet az esetleges csalások elleni védekezésben. <ph name="BEGIN_LINK1" />További információ a virtuális kártyákról<ph name="END_LINK1" />.</translation>

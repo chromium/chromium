@@ -12,7 +12,6 @@
 <translation id="1126523729897810826">Selesaikan tindakan yang disarankan berikut untuk mengoptimalkan Chrome</translation>
 <translation id="113098737392899175">Buka halaman dengan kursor teks saat keyboard terhubung</translation>
 <translation id="1148624853678088576">Anda sudah siap!</translation>
-<translation id="1149644372535087155">Simpan sandi di Chrome</translation>
 <translation id="1178015372320901893">Panel bawah pintasan saya</translation>
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1181037720776840403">Hapus</translation>
@@ -227,7 +226,6 @@
 <translation id="3167868116600277716">Feed Discover</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> data tersimpan</translation>
 <translation id="3199078925536734975">Diizinkan kali ini • Perkiraan</translation>
-<translation id="3208584281581115441">Periksa sekarang</translation>
 <translation id="321187648315454507">Untuk mengizinkan <ph name="APP_NAME" /> mengirimkan notifikasi, aktifkan juga notifikasi di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Lokasi tidak diizinkan</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -286,7 +284,6 @@
 <translation id="381841723434055211">Nomor telepon</translation>
 <translation id="3823453485268218808">Font Mono</translation>
 <translation id="3826050100957962900">Login pihak ketiga</translation>
-<translation id="3831065134033923230">Periksa sandi tersimpan Anda</translation>
 <translation id="3835233591525155343">Penggunaan perangkat Anda</translation>
 <translation id="3843916486309149084">Chrome akan memblokir cookie lagi hari ini</translation>
 <translation id="385051799172605136">Kembali</translation>
@@ -294,7 +291,6 @@
 <translation id="3870711497942672548">Personalisasi Chrome Anda dengan warna dan gambar kustom untuk halaman beranda</translation>
 <translation id="389521680295183045">Situs dapat meminta untuk mengetahui saat Anda aktif menggunakan perangkat</translation>
 <translation id="3895926599014793903">Aktifkan zoom secara paksa</translation>
-<translation id="3903738175795615004">Tarik dari atas atau tekan tombol Esc untuk keluar dari layar penuh.</translation>
 <translation id="3905475044299942653">Menghentikan banyak notifikasi</translation>
 <translation id="3922092564198021702">Di ponsel Anda, buka Setelan</translation>
 <translation id="3924858949939391676">Tampilkan link setelah Mode Baca aktif</translation>
@@ -355,7 +351,6 @@
 <translation id="4479647676395637221">Minta izin terlebih dahulu sebelum memungkinkan situs menggunakan kamera Anda (disarankan)</translation>
 <translation id="4505788138578415521">URL ditampilkan penuh</translation>
 <translation id="4522570452068850558">Detail</translation>
-<translation id="4523472416386354622">Login untuk memulai</translation>
 <translation id="4529207923544043455">Panel bawah menampilkan tugas daftar konfigurasi yang telah selesai dan belum selesai</translation>
 <translation id="4534723447064627427">Untuk mengizinkan <ph name="APP_NAME" /> mengakses mikrofon, aktifkan juga mikrofon di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="4545694195887112015">Panel konfigurasi ditutup</translation>
@@ -368,7 +363,6 @@
 <translation id="4645575059429386691">Dikelola oleh orang tua Anda</translation>
 <translation id="4651224148644053314">Warna &amp; opsi lainnya</translation>
 <translation id="4652266463001779298">Tidak diizinkan</translation>
-<translation id="4655846733459137112">Ketuk Ya untuk menggunakan sandi ini dengan mudah saat Anda login lagi</translation>
 <translation id="4663373278480897665">Kamera diizinkan</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4672315773691449562">Ketuk Aplikasi browser, lalu ketuk Chrome</translation>
@@ -415,7 +409,6 @@
 <translation id="512938610812707830">Panel bawah kumpulan tema tampilan halaman tab baru terbuka sepenuhnya</translation>
 <translation id="5137460097045297858">Panel bawah feed Discover terbuka setengah</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Penurunan harga di tab yang terbuka}other{Penurunan harga di tab yang terbuka}}</translation>
-<translation id="5150048675001754041">Login dengan cepat dan mudah ke situs dan aplikasi</translation>
 <translation id="5186036860380548585">Opsi tersedia di dekat bagian atas layar</translation>
 <translation id="5197729504361054390">Kontak yang Anda pilih akan dibagikan dengan <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Sheet bawah sesuaikan halaman tab baru ditutup</translation>
@@ -425,7 +418,6 @@
 <translation id="5239623327352565343">Lokasi diizinkan</translation>
 <translation id="5246825184569358663">Tindakan ini akan menghapus semua data lokal, termasuk cookie, dan mereset semua izin untuk <ph name="DOMAIN" /> serta semua situs di bawahnya</translation>
 <translation id="5264323282659631142">Hapus '<ph name="CHIP_LABEL" />'</translation>
-<translation id="528192093759286357">Tarik dari atas dan ketuk tombol kembali untuk keluar dari mode layar penuh.</translation>
 <translation id="5286194356314741248">Memindai</translation>
 <translation id="5300589172476337783">Tampilkan</translation>
 <translation id="5301954838959518834">Oke, mengerti</translation>
@@ -473,7 +465,6 @@
 <translation id="5804241973901381774">Izin</translation>
 <translation id="5817042798620209981">Informasi situs, dialog</translation>
 <translation id="5822675474983796325">Sheet bawah sesuaikan halaman tab baru terbuka sepenuhnya</translation>
-<translation id="5826403277762134844">Panel bawah petunjuk penyimpanan sandi di Chrome</translation>
 <translation id="5833899990800318936">Jangan izinkan situs menggunakan JavaScript</translation>
 <translation id="583673505367439042">Situs dapat meminta untuk mengedit file dan folder di perangkat Anda</translation>
 <translation id="5844448279347999754">Jika diaktifkan, situs dapat meminta untuk melihat teks dan gambar yang disimpan ke papan klip Anda. Jika dinonaktifkan, situs tidak dapat melihat teks atau gambar yang disimpan ke papan klip Anda.</translation>
@@ -511,7 +502,6 @@
 <translation id="6104860901391833523">Jika diaktifkan, situs dapat masuk ke mode picture-in-picture secara otomatis. Jika dinonaktifkan, situs tidak dapat masuk ke mode picture-in-picture secara otomatis.</translation>
 <translation id="6120483543004435978">Jika diaktifkan, situs dapat meminta untuk mengetahui saat Anda aktif menggunakan perangkat. Jika dinonaktifkan, situs tidak dapat mengetahui saat Anda aktif menggunakan perangkat.</translation>
 <translation id="612871598708395517">Sembunyikan Dapatkan saran Chrome di aplikasi lain</translation>
-<translation id="6132075343662013154">Chrome akan menawarkan penyimpanan sandi Anda</translation>
 <translation id="615886654739818377">Jangan izinkan situs mengelola jendela di semua layar Anda</translation>
 <translation id="6165508094623778733">Pelajari lebih lanjut</translation>
 <translation id="6171020522141473435">Jika diaktifkan, situs dapat meminta untuk menggunakan perangkat Bluetooth. Jika dinonaktifkan, situs tidak dapat menggunakan perangkat Bluetooth.</translation>
@@ -587,7 +577,6 @@
 <translation id="6980861169612950611">Hapus data situs? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Aksesibilitas</translation>
 <translation id="6991142177939282156">Diizinkan • Menggunakan perkiraan</translation>
-<translation id="6992014788289743568">Tingkatkan keamanan dan perkuat perlindungan data Anda dengan memeriksa sandi</translation>
 <translation id="6992289844737586249">Tanya terlebih dahulu sebelum mengizinkan situs menggunakan mikrofon Anda (disarankan)</translation>
 <translation id="7000754031042624318">Dinonaktifkan di setelan Android</translation>
 <translation id="7036823721811529709">Dengarkan di latar belakang</translation>
@@ -654,7 +643,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:</translation>
 <translation id="775043444390799886">Cabut izin</translation>
 <translation id="7758789811447313947">Tema violet</translation>
 <translation id="7759147511335618829">Program ulang &amp; kontrol perangkat MIDI</translation>
-<translation id="7771089277295008211">Panel bawah petunjuk penyimpanan sandi telah ditutup</translation>
 <translation id="7781829728241885113">Kemarin</translation>
 <translation id="7791543448312431591">Tambahkan</translation>
 <translation id="780301667611848630">Lain kali</translation>
@@ -671,7 +659,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:</translation>
 <translation id="7940722705963108451">Ingatkan saya</translation>
 <translation id="7948081750384205628">Pelajari lebih lanjut <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Situs dapat meminta untuk melihat teks dan gambar di papan klip Anda</translation>
-<translation id="7958779728312669715">Panel bawah petunjuk penyimpanan sandi telah dibuka sepenuhnya</translation>
 <translation id="798299424881500862">Tema oranye</translation>
 <translation id="7986741934819883144">Pilih kontak</translation>
 <translation id="7990211076305263060">Jika diaktifkan, situs dapat meminta untuk menggunakan mikrofon Anda. Jika dinonaktifkan, situs tidak dapat menggunakan mikrofon Anda.</translation>
@@ -766,7 +753,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:</translation>
 <translation id="8889294078294184559">Saat Anda terus menjelajah, situs dapat mengonfirmasi ke Chrome dan memverifikasi dengan situs sebelumnya yang telah Anda buka bahwa Anda kemungkinan adalah orang sungguhan</translation>
 <translation id="8899807382908246773">Iklan mengganggu</translation>
 <translation id="8903921497873541725">Perbesar</translation>
-<translation id="8919911527569629802">Login ke situs mana pun</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Jangan tanya lagi</translation>
 <translation id="8926666909099850184">NFC dinonaktifkan di perangkat ini. Aktifkan di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>

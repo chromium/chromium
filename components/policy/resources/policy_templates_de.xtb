@@ -699,6 +699,12 @@ Wenn du diese Richtlinie deaktivierst, wird das Scrollen zu bestimmten Textfragm
 <translation id="1488008594883876680">Vorabladen von <ph name="ARC_VM" />-Bildern aktivieren</translation>
 <translation id="1488724823347505879">Freigabe zwischen Android-Apps und Webanwendungen aktivieren</translation>
 <translation id="1490962807364514840">Häufigkeit der Erhebung von Telemetriedaten der CPU-Laufzeitzähler in Millisekunden.</translation>
+<translation id="1491289760513245366">Mit dieser Richtlinie wird festgelegt, für welche Ursprünge alle HTTP-Authentifizierungsschemas zulässig sind, die von <ph name="PRODUCT_NAME" /> unterstützt werden, unabhängig von der Richtlinie „<ph name="AUTH_SCHEMES_POLICY_NAME" />“.
+
+Ab <ph name="PRODUCT_NAME" />-Version 161 gilt diese Richtlinie nur für Zielserverursprünge und nicht für Authentifizierungsherausforderungen von Proxyservern. Wenn du alle HTTP-Authentifizierungsschemas für Proxyserver zulassen möchtest, verwende stattdessen die Richtlinie „<ph name="ALL_HTTP_AUTH_SCHEMES_ALLOWED_FOR_PROXIES_POLICY_NAME" />“. Vor Version 161 dürfen Proxyserver, die dieser Richtlinie entsprechen, auch alle HTTP-Authentifizierungsschemas verwenden, es sei denn, „<ph name="ALL_HTTP_AUTH_SCHEMES_ALLOWED_FOR_PROXIES_POLICY_NAME" />“ ist festgelegt.
+
+      Für das Ursprungsmuster muss folgendes Format verwendet werden: <ph name="URL_SCHEME_FORMAT_LINK" />. In „<ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />“ können bis zu 1.000 Ausnahmen definiert werden.
+      Für die Hostkomponente sind Platzhalter zulässig (z. B. „*:8000“ passt für alle Hosts auf Port 8000). Wenn alle Schemas oder alle Ports passen sollen, kannst du die Komponente vollständig weglassen (z. B. passt „beispiel.de“ für jedes Schema und jeden Port). Ein Hostname (z. B. „beispiel.de“) stimmt auch mit seinen Subdomains überein. Wenn ein Host genau passen soll und seine Subdomains ausgeschlossen werden sollen, stell ihm einen Punkt voran (z. B. „.beispiel.de“). Verwende ein einzelnes Sternchen („*“), damit alle Ursprünge passen.</translation>
 <translation id="1492223733885011596">Mit dieser Richtlinie wird die GIF-Unterstützung für die Emoji-Auswahl unter <ph name="PRODUCT_OS_NAME" /> aktiviert.
 Wenn die Richtlinie aktiviert ist, unterstützt die Emoji-Auswahl GIF-Emojis.
 Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, unterstützt die Emoji-Auswahl keine GIF-Emojis.
@@ -950,6 +956,21 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 <translation id="1635748761015837179">Schreiben auf externen Speichergeräten zulassen</translation>
 <translation id="1639468541408865385">Globales HTTP-Authentication-Cache aktivieren</translation>
 <translation id="1639673466479276550">Bildschirmschoner auf dem Anmeldebildschirm aktivieren.</translation>
+<translation id="1640646094704433064">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern für Websites erstellen, durch die angegeben wird, welche Websites JavaScript mit aktiviertem JIT-Compiler (Just In Time) nicht ausführen dürfen.
+
+          Wenn JavaScript JIT deaktiviert ist, rendert <ph name="PRODUCT_NAME" /> Webinhalte möglicherweise langsamer und Teile von JavaScript, einschließlich WebAssembly, werden eventuell deaktiviert. Außerdem kann <ph name="PRODUCT_NAME" /> Webinhalte möglicherweise in einer sichereren Konfiguration rendern, sollte JavaScript JIT deaktiviert sein.
+
+          Ausführliche Informationen zu gültigen URL‑Mustern findest du unter https://chromeenterprise.google/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.
+
+          Richtlinienausnahmen können sowohl für bestimmte Subdomains als auch für ganze Websites festgelegt werden. Eine nur für subdomain.beispiel.de konfigurierte Richtlinie gilt beispielsweise für subdomain.beispiel.de, ohne dass sich dies auf beispiel.de auswirkt. In einigen Fällen, in denen eine Subdomain nicht von ihrer übergeordneten Website isoliert werden kann, übernimmt sie möglicherweise die für beispiel.de konfigurierte Richtlinie. Ausnahmen werden eventuell erst dann für Frames wirksam, die in einem vorhandenen Tab geladen werden, wenn die Website in einem neuen Tab geöffnet wird. Auf <ph name="ANDROID_NAME" />-Geräten mit wenig Arbeitsspeicher werden websitespezifische Ausnahmen möglicherweise nicht erzwungen. Stattdessen wird die Richtlinie aus <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, falls konfiguriert, oder die JavaScript JIT-Einstellung des Profils verwendet.
+
+          Um Ausnahmen zu erzwingen, kann <ph name="PRODUCT_NAME" /> Websites oder Subdomains, deren Einstellung von der Standardeinstellung abweicht, in dedizierten Prozessen platzieren. Dies kann die Arbeitsspeichernutzung erhöhen, insbesondere unter <ph name="ANDROID_NAME" /> oder wenn ein Platzhaltermuster mit vielen Subdomains übereinstimmt, da jeder übereinstimmende Ursprung separat isoliert werden kann. Isolierte Subdomains können auch nicht „document.domain“ verwenden, um auf ihre übergeordnete Website zuzugreifen.
+
+          Hinweis: In Version 155 und früheren Versionen wurden Richtlinienausnahmen nur für die jeweilige Website (eTLD+1) erzwungen. Eine nur für subdomain.beispiel.de konfigurierte Richtlinie wurde nicht wirksam, auch nicht für subdomain.beispiel.de. Sie musste für beispiel.de konfiguriert werden, damit sie sowohl für beispiel.de als auch für subdomain.beispiel.de gilt.
+
+          Diese Richtlinie wird Frame für Frame angewendet und nicht nur auf Grundlage der Ursprungs-URL auf oberster Ebene. Wenn also beispielsweise beispiel-eins.de in der Richtlinie „<ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" />“ aufgeführt ist, aber beispiel-eins.de einen Frame mit beispiel-zwei.de lädt, ist JavaScript JIT für beispiel-eins.de deaktiviert. Für beispiel-zwei.de wird jedoch die Richtlinie aus <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> verwendet, falls konfiguriert, oder standardmäßig JavaScript JIT aktiviert. Einträge auf der Sperrliste haben eine höhere Priorität als Einträge auf der Zulassungsliste, die wiederum eine höhere Priorität als der konfigurierte Standardwert haben.
+
+          Wenn diese Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> für die Website, falls konfiguriert. Andernfalls ist JavaScript JIT für die Website aktiviert.</translation>
 <translation id="1640824698339859203">Floating-SSO aktivieren und die Webdienstauthentifizierungen des Nutzers auf ein neues Gerät verschieben</translation>
 <translation id="1643642938972654829">Zugriff auf die Richtlinientestseite erlauben</translation>
 <translation id="1645793986494086629">Schema:</translation>
@@ -4009,6 +4030,7 @@ Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlini
 Diese Richtlinie ersetzt die nicht mehr unterstützte Richtlinie „<ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLICY_NAME" />“.</translation>
 <translation id="3568762199045490351">JavaScript-Funktion setTimeout() mit einem Zeitlimit von 0 ms wird auf 1 ms aufgerundet.</translation>
 <translation id="3574450691573438824">Upload des Gerätesystemprotokolls deaktivieren</translation>
+<translation id="357461884473178606">Liste der Proxyserver, für die alle HTTP-Authentifizierungsschemas zulässig sind</translation>
 <translation id="3575011234198230041">HTTP-Authentifizierung</translation>
 <translation id="3575159471980949522">Nutzer dürfen Telefonnummern aus Chrome nicht an ihr Android-Gerät senden</translation>
 <translation id="3577251398714997599">Einstellungen für Werbung für Websites mit aufdringlichen Werbeanzeigen</translation>
@@ -8002,6 +8024,23 @@ Wenn die Richtlinie nicht konfiguriert ist, ist das Deaktivieren von Hintergrund
 <translation id="608788685013546076">Schwellenwert des Akkus für das Umschalten bei Leistungsspitzen in Prozent festlegen</translation>
 <translation id="6089679180657323464">Legt die Einstellungen für Wilco Diagnostics and Telemetry Controller fest.</translation>
 <translation id="6091233616732024397">Erzwingen, dass Nutzer sich im Browser anmelden müssen</translation>
+<translation id="6091279561320899147">Mit dieser Richtlinie kannst du eine Liste mit URL‑Mustern festlegen, durch die angegeben wird, für welche Websites erweiterte JavaScript-Optimierungen deaktiviert werden.
+
+Wenn JavaScript-Optimierungen deaktiviert sind, rendert <ph name="PRODUCT_NAME" /> Webinhalte möglicherweise langsamer.
+
+Ausführliche Informationen zu gültigen URL‑Mustern findest du unter https://chromeenterprise.google/policies/url-patterns.
+Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.
+
+Richtlinienausnahmen können sowohl für bestimmte Subdomains als auch für ganze Websites festgelegt werden.
+Eine nur für subdomain.beispiel.de konfigurierte Richtlinie gilt beispielsweise für subdomain.beispiel.de, ohne dass sich dies auf beispiel.de auswirkt. In einigen Fällen, in denen eine Subdomain nicht von ihrer übergeordneten Website isoliert werden kann, übernimmt sie möglicherweise die für beispiel.de konfigurierte Richtlinie. Ausnahmen werden eventuell erst dann für Frames wirksam, die in einem vorhandenen Tab geladen werden, wenn die Website in einem neuen Tab geöffnet wird. Auf <ph name="ANDROID_NAME" />-Geräten mit wenig Arbeitsspeicher werden websitespezifische Ausnahmen möglicherweise nicht erzwungen. Stattdessen wird die Richtlinie aus <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, falls konfiguriert, oder die JavaScript-Optimierungseinstellung des Profils verwendet.
+
+Um Ausnahmen zu erzwingen, kann <ph name="PRODUCT_NAME" /> Websites oder Subdomains, deren Einstellung von der Standardeinstellung abweicht, in dedizierten Prozessen platzieren. Dies kann die Arbeitsspeichernutzung erhöhen, insbesondere unter <ph name="ANDROID_NAME" /> oder wenn ein Platzhaltermuster mit vielen Subdomains übereinstimmt, da jeder übereinstimmende Ursprung separat isoliert werden kann. Isolierte Subdomains können auch nicht „document.domain“ verwenden, um auf ihre übergeordnete Website zuzugreifen.
+
+Hinweis: In Version 138 und früheren Versionen wurden Richtlinienausnahmen nur für die jeweilige Website (eTLD+1) erzwungen. Eine nur für subdomain.beispiel.de konfigurierte Richtlinie wurde nicht wirksam, auch nicht für subdomain.beispiel.de. Sie musste für beispiel.de konfiguriert werden, damit sie sowohl für beispiel.de als auch für subdomain.beispiel.de gilt.
+
+          Diese Richtlinie wird Frame für Frame angewendet und nicht nur auf Grundlage der Ursprungs-URL auf oberster Ebene. Wenn also beispielsweise beispiel-eins.de in der Richtlinie „<ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />“ aufgeführt ist, aber beispiel-eins.de einen Frame mit beispiel-zwei.de lädt, sind JavaScript-Optimierungen für beispiel-eins.de deaktiviert. Für beispiel-zwei.de wird jedoch die Richtlinie aus <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> verwendet, falls konfiguriert. Andernfalls sind JavaScript-Optimierungen standardmäßig aktiviert. Einträge in der Sperrliste haben eine höhere Priorität als Einträge in der Zulassungsliste, die wiederum eine höhere Priorität als der konfigurierte Standardwert haben.
+
+Wenn diese Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> für die Website, falls konfiguriert. Andernfalls ist die JavaScript-Optimierung für die Website aktiviert.</translation>
 <translation id="6092073071805297119">Verwendung des Barrierefreiheitsfilters zur Leistungsverbesserung zulassen.</translation>
 <translation id="6093156968240188330">Zulassen, dass Remote-Nutzer in Remote-Sitzungen mit geöffneten Fenstern arbeiten können</translation>
 <translation id="6093551397728373988">In Nutzersitzungen die Aktivierung aller zulässigen Eingabemethoden erzwingen</translation>
@@ -11153,6 +11192,12 @@ Es gibt mehrere Richtlinien, die Ursprünge auflisten, die sich auf Anfragen an 
 <translation id="8066428282805800713">Zusätzliche Hardwaredaten unter ChromeOS Flex senden</translation>
 <translation id="8071371098891664137">Wenn <ph name="PRINTERS_BLOCKLIST" /> für <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> ausgewählt ist, wird durch Festlegen von <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> angegeben, welche Drucker die Nutzer nicht verwenden können. Mit Ausnahme der in dieser Richtlinie aufgeführten IDs können die Nutzer auf alle Drucker zugreifen. Die IDs müssen dem Feld <ph name="ID_FIELD" /> oder dem Feld <ph name="GUID_FIELD" /> in der Datei entsprechen, die in <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> angegeben ist.</translation>
 <translation id="8076539570602616846">Das Speichern von PDF-Dateien in Google Drive über den PDF-Viewer von <ph name="PRODUCT_NAME" /> auf zulässige Google-Konten beschränken</translation>
+<translation id="8078224178125125527">Mit dieser Richtlinie wird festgelegt, für welche Proxyserver alle HTTP-Authentifizierungsschemas zulässig sind, die von <ph name="PRODUCT_NAME" /> unterstützt werden, unabhängig von der Richtlinie „<ph name="AUTH_SCHEMES_POLICY_NAME" />“.
+
+Formatiere das Proxyserver-Muster gemäß dem Filterformat der URL-Sperrliste (<ph name="URL_SCHEME_FORMAT_LINK" />). Es können bis zu 1.000 Ausnahmen definiert werden.
+Für die Hostkomponente sind Platzhalter zulässig (z. B. „*:8080“ passt für alle Proxys auf Port 8080). Ein Hostname (z. B. „proxy.beispiel.de“) stimmt auch mit seinen Subdomains überein. Wenn ein Host genau passen soll und seine Subdomains ausgeschlossen werden sollen, stell ihm einen Punkt voran (z. B. „.proxy.beispiel.de“).
+
+Wenn diese Richtlinie nicht konfiguriert ist, werden für die Proxy-Authentifizierung nur die in „<ph name="AUTH_SCHEMES_POLICY_NAME" />“ angegebenen HTTP-Authentifizierungsschemas unterstützt (oder die Standardschemas, falls nicht konfiguriert).</translation>
 <translation id="8078297389450285582">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird das intelligente Dimm-Modell verwendet und der Zeitraum bis zum Dimmen des Bildschirms kann verlängert werden. Wenn das Dimmen des Bildschirms durch das Modell verzögert wird, werden die Verzögerungen für das Ausschalten des Bildschirms, die Bildschirmsperre und die Inaktivität entsprechend angepasst, um die ursprünglich konfigurierten Abstände beizubehalten.
 
       Wenn die Richtlinie deaktiviert ist, wird das Dimmen des Bildschirms nicht durch das intelligente Dimm-Modell beeinflusst.</translation>
@@ -11803,6 +11848,13 @@ Weitere Informationen zur Richtlinie „<ph name="DOWNLOAD_RESTRICTIONS_POLICY_N
 <translation id="8489169564515126823">Deaktiviert: Scroller sind standardmäßig nicht fokussierbar.</translation>
 <translation id="8489964335640955763">PluginVm</translation>
 <translation id="8493645415242333585">Speichern des Browserverlaufs deaktivieren</translation>
+<translation id="8494605948258449467">Mit dieser Richtlinie wird festgelegt, ob aktive WebSocket-Verbindungen getrennt werden, wenn eine Seite im Back-Forward-Cache gespeichert wird. Aktive WebSocket-Verbindungen haben bisher verhindert, dass eine Seite im Back-Forward-Cache gespeichert wird. <ph name="PRODUCT_NAME" /> hat dieses Verhalten jedoch geändert und trennt stattdessen die WebSockets, sodass die Seite im Cache gespeichert und in einem getrennten Zustand wiederhergestellt werden kann.
+
+Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, werden WebSockets getrennt, wenn eine Seite im Back-Forward-Cache gespeichert wird.
+
+Wenn diese Richtlinie deaktiviert ist, werden WebSockets nicht getrennt, wenn eine Seite im Back-Forward-Cache gespeichert wird. Da der Back-Forward-Cache keine aktiven WebSockets unterstützt, werden Seiten mit aktiven WebSockets nicht im Cache gespeichert.
+
+Diese Richtlinie wird in <ph name="PRODUCT_NAME" /> Version 157 nicht mehr unterstützt und wird in Version 167 entfernt.</translation>
 <translation id="8499172469244085141">Standardeinstellungen (können vom Nutzer überschrieben werden)</translation>
 <translation id="8499359456965625209">Diese Richtlinie ist veraltet.
 
@@ -12604,6 +12656,11 @@ Hinweis: Derzeit wird nur der erste Eintrag berücksichtigt. Erweiterungen werde
 <translation id="9015759770696099204">Einstellungen von F11/F12 sind deaktiviert</translation>
 <translation id="9015952763003753868"><ph name="ACAM_HEADER_NAME" />-Abgleich in <ph name="CORS" />-Preflight richtlinienkonform machen</translation>
 <translation id="9020630127193895800">Tastaturbeleuchtungsfarbe „Indigo“</translation>
+<translation id="9025073735776703766">Mit dieser Richtlinie wird die Verfügbarkeit der XSLT-Funktion (XSLTProcessor JavaScript API und XSL-Verarbeitungsanweisung) gesteuert.
+Wenn diese Richtlinie aktiviert ist, ist XSLT unabhängig vom Standardstatus der Funktion im Browser verfügbar.
+Wenn diese Richtlinie deaktiviert ist, ist XSLT unabhängig vom Standardstatus der Funktion im Browser nicht verfügbar.
+Wenn diese Richtlinie nicht konfiguriert ist, wird die Verfügbarkeit von XSLT durch die Standardeinstellungen des Browsers und Field Trials bestimmt.
+Diese Richtlinie ist eine vorübergehende Maßnahme und wird in M176 entfernt.</translation>
 <translation id="9025912013525357598">Beibehaltung von Leerzeichen in Daten-URLs unabhängig vom Medientyp</translation>
 <translation id="9029815312472546960">Device Attributes API auf diesen Websites blockieren</translation>
 <translation id="9031831501689819108">Unterstützung älterer Browser aktivieren</translation>
@@ -12852,6 +12909,25 @@ Standardwert ist RollbackDisabled.</translation>
 <translation id="9204863016826119209">Schlüssel für die geschäftliche Nutzung können von installierten und in dieser Richtlinie aufgeführten Android-Apps verwendet werden.</translation>
 <translation id="9206364386317031168">Websites erlauben, Netzwerkanfragen an das lokale Gerät zu senden.</translation>
 <translation id="9206472508136116830">NetBIOS-Freigabenerkennung nicht zulassen</translation>
+<translation id="9207289612253941907">Diese Richtlinie konfiguriert <ph name="PRODUCT_NAME" /> so, dass die bevorzugten Algorithmen für Schlüsselvereinbarungen (unterstützte Gruppen) in TLS 1.3 nach einer bestimmten Compliance-Regelung genehmigte Algorithmen bevorzugen.
+
+Durch das Festlegen dieser Richtlinie wird nicht garantiert, dass bestimmte Algorithmen ausgehandelt werden.
+
+Diese Richtlinie ermöglicht es Serverbetreibern, die Clients mit und ohne Compliance-Anforderungen unterstützen möchten, zwischen diesen Clients zu unterscheiden. Bestimmte nicht-standardmäßige Algorithmen mit erhöhter kryptographischer Stärke werden nur für diejenigen Clients verwendet, die ausdrücklich so konfiguriert wurden, dass sie diese bevorzugen.
+
+Wird die Richtlinie auf „<ph name="CNSA2_NAME" />“ festgelegt, wird <ph name="PRODUCT_NAME" /> so konfiguriert, dass die für die Compliance mit der Commercial National Security Algorithm Suite 2.0 (CNSA 2.0) erforderlichen Methoden zum Schlüsselaustausch bevorzugt werden.
+
+Wenn die Richtlinie nicht konfiguriert oder auf „<ph name="DEFAULT_NAME" />“ gesetzt ist, verwendet <ph name="PRODUCT_NAME" /> die standardmäßigen Methoden für den Schlüsselaustausch.
+
+Das Festlegen dieser Richtlinie ist für die Sicherheit nicht erforderlich. Die Standardkryptografie, die von <ph name="PRODUCT_NAME" /> verwendet wird, ist stark genug, um einem Brute-Force-Angriff mit der gesamten Energie der Sonne standzuhalten.
+
+Wenn du diese Richtlinie festlegst, wird <ph name="PRODUCT_NAME" /> beim Zugriff auf Websites langsamer.
+
+Diese Richtlinie wirkt sich nur auf TLS 1.3 und QUIC aus, nicht auf frühere Versionen von TLS.
+
+Diese Richtlinie kann für den Computer und für den Nutzer festgelegt werden. Wenn diese Richtlinie für den Nutzer festgelegt ist, wirkt sie sich nur auf Netzwerkanfragen aus, die vom Nutzerprofil initiiert werden. Sie wirkt sich möglicherweise nicht auf Netzwerkanfragen aus, die von <ph name="PRODUCT_NAME" /> gestellt werden, um browserweite Hintergrundaufgaben auszuführen. Diese werden durch den Wert auf Geräteebene gesteuert. Wenn diese Richtlinie sowohl auf Computer- als auch auf Nutzerebene festgelegt ist, gilt der Wert auf Computerebene, es sei denn, die Rangfolge der Richtlinien wurde durch die Richtlinie „<ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" />“ geändert.
+
+In Version 156 und niedriger gilt diese Richtlinie nur geräteweit.</translation>
 <translation id="9207596996305971030">Anmelde-/Abmeldeereignisse nicht melden</translation>
 <translation id="9208328979373108724">Ursprüngen der isolierten Web-App erlauben, Sub Apps hinzuzufügen, jedoch eine Nutzeraufforderung erfordern</translation>
 <translation id="9210647066889383361">Nutzer dürfen sich auf ihrem Gerät mit Smart Lock anmelden</translation>

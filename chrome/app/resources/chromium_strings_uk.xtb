@@ -21,6 +21,7 @@
 <translation id="1185134272377778587">Про Chromium</translation>
 <translation id="1186645291482254714">Отримуйте сповіщення про відстеження цін у Chromium на телефоні</translation>
 <translation id="1203500561924088507">Дякуємо за встановлення. Щоб почати використовувати пакет <ph name="BUNDLE_NAME" />, потрібно перезапустити веб-переглядач.</translation>
+<translation id="1222365723190436821">Потрібно встановити <ph name="IMPORTANT_UPDATE" />. Щоб ви могли безпечно переглядати вебсторінки, Chromium оновиться, коли ви не використовуватимете вебпереглядач протягом <ph name="IDLE_DURATION" />.</translation>
 <translation id="1232234696885483911">Коли ви відкриваєте пошук за зображенням, на сервер автоматично надсилається назва сторінки, її URL-адреса й контент, зокрема файли PDF. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Увійшовши в Chromium, ви можете використовувати паролі й інші дані з облікового запису Google. Щоб змінити це налаштування, перейдіть у розділ "Ваш обліковий запис у Chromium".</translation>
 <translation id="1244381985120794049">Показувати значок Gemini у Chromium на панелі меню пристрою Mac</translation>
@@ -228,6 +229,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="3286538390144397061">Перезапустити зараз</translation>
 <translation id="328888136576916638">Ключі API Google відсутні. Деякі функції Chromium буде вимкнено.</translation>
 <translation id="3296368748942286671">Продовжувати роботу фонових програм, коли Chromium закрито</translation>
+<translation id="3300632735252839402">Chromium оновиться, коли ви його не використовуватимете</translation>
 <translation id="3313189106987092621">Chromium показуватиме попередження, перш ніж завантажити сайт через незахищене з’єднання</translation>
 <translation id="3316771292331273802">Якщо ви закриєте всі вікна Chromium, то вийдете з облікових записів на більшості сайтів, але не з облікового запису Google (за умови, що ви ввійшли в Chromium). Щоб дозволити сайтам запам’ятовувати вас, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">правий верхній кут області пошуку: <ph name="RIGHT" />% праворуч, <ph name="TOP" />% згори</translation>
@@ -236,6 +238,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Перейти в наявний профіль Chromium?</translation>
 <translation id="3412460710772753638">У Менеджері паролів на цьому пристрої</translation>
+<translation id="3425452599984451640">Потрібно оновити Chromium</translation>
 <translation id="3427159664004296878">Щоб отримати доступ до закладок і інших даних із пристрою "<ph name="DEVICE" />", увійдіть у Chromium</translation>
 <translation id="3438772217992559640">Шукати на цій вкладці за допомогою функції "Пошук за зображенням"</translation>
 <translation id="3455907671758333080">Використовуйте Безпечний перегляд із розширеним захистом у Chromium на телефоні</translation>

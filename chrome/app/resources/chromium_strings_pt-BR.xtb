@@ -21,6 +21,7 @@
 <translation id="1185134272377778587">Sobre o Chromium</translation>
 <translation id="1186645291482254714">Receba alertas de Monitoramento de Preços no seu celular com o Chromium</translation>
 <translation id="1203500561924088507">Agradecemos por fazer a instalação. É necessário reiniciar o navegador antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1222365723190436821">Uma <ph name="IMPORTANT_UPDATE" /> está pendente. Para manter sua navegação segura, o Chromium será atualizado na próxima vez que o sistema ficar inativo por <ph name="IDLE_DURATION" />.</translation>
 <translation id="1232234696885483911">Quando você abre a Pesquisa por Imagens, o título, o URL e o conteúdo da página, incluindo PDFs, são enviados automaticamente ao servidor. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Enquanto sua Conta do Google estiver conectada, você poderá usar as senhas e outros dados dela no Chromium. Para mudar isso, acesse "Sua conta no Chromium".</translation>
 <translation id="1244381985120794049">Mostrar o Gemini no Chromium na barra de menus do Mac</translation>
@@ -226,6 +227,7 @@
 <translation id="3286538390144397061">Reiniciar agora</translation>
 <translation id="328888136576916638">As chaves da API do Google não foram encontradas. Algumas funcionalidades do Chromium serão desativadas.</translation>
 <translation id="3296368748942286671">Continuar executando os aplicativos em segundo plano quando o Chromium for fechado</translation>
+<translation id="3300632735252839402">O Chromium será atualizado quando você estiver ausente</translation>
 <translation id="3313189106987092621">O Chromium vai enviar um aviso antes de carregar qualquer site usando uma conexão sem segurança</translation>
 <translation id="3316771292331273802">Sua conta será desconectada da maioria dos sites quando você fechar todas as janelas do Chromium, exceto sua Conta do Google, se tiver feito login no navegador. Para permitir que os sites se lembrem de você, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">canto superior direito da área de pesquisa: <ph name="RIGHT" />% à direita, <ph name="TOP" />% acima</translation>
@@ -234,6 +236,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Mudar para perfil existente do Chromium?</translation>
 <translation id="3412460710772753638">No Gerenciador de senhas neste dispositivo</translation>
+<translation id="3425452599984451640">O Chromium quer fazer uma atualização</translation>
 <translation id="3427159664004296878">Para acessar seus favoritos e muito mais do <ph name="DEVICE" />, faça login no Chromium</translation>
 <translation id="3438772217992559640">Procurar Esta Guia com a Pesquisa por Imagens</translation>
 <translation id="3455907671758333080">Amplie a Navegação Segura com Maior Proteção com o Chromium no seu celular</translation>
@@ -386,6 +389,7 @@
 <translation id="5249261924633168472">Abrir link na janela anô&amp;nima do Chromium</translation>
 <translation id="5276305953263010518">Baixe o app Chromium para salvar senhas em qualquer lugar</translation>
 <translation id="5277894862589591112">Para que as alterações sejam aplicadas, reinicie o Chromium</translation>
+<translation id="5278909220224474621">Para enviar esta guia a outro dispositivo, faça login no Chromium nos dois aparelhos</translation>
 <translation id="5286907366254680517">Detectado</translation>
 <translation id="5289287148052354622">Baixar o Chromium</translation>
 <translation id="5294316920224716406">Quando você está no modo de navegação anônima, o Chromium avisa antes de carregar um site usando uma conexão sem segurança</translation>
@@ -751,6 +755,7 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="8648201657708811153">O Google Chrome for Testing não pode ser definido como seu navegador padrão.</translation>
 <translation id="8676101123715131330">Pesquisar com o Chromium de qualquer lugar</translation>
 <translation id="8697124171261953979">Controla também qual página deve ser exibida quando você inicia o Chromium ou faz uma pesquisa na Omnibox.</translation>
+<translation id="8702213505203810093">Para enviar esta guia a outro dispositivo, faça login no Chromium no outro aparelho</translation>
 <translation id="8704119203788522458">Este é seu Chromium</translation>
 <translation id="8712637175834984815">Entendi</translation>
 <translation id="8719993436687031146">Fazer login no Chromium?</translation>

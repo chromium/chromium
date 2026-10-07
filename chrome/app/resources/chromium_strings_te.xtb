@@ -21,6 +21,7 @@
 <translation id="1185134272377778587">Chromium గురించి</translation>
 <translation id="1186645291482254714">మీ ఫోన్‌లో Chromiumతో ధర ట్రాకింగ్ అలర్ట్‌లను పొందండి</translation>
 <translation id="1203500561924088507">ఇన్‌స్టాల్ చేసినందుకు ధన్యవాదాలు. <ph name="BUNDLE_NAME" />‌ను ఉపయోగించడానికి ముందు మీరు బ్రౌజర్‌ను తప్పకుండా రీస్టార్ట్ చేయాలి.</translation>
+<translation id="1222365723190436821"><ph name="IMPORTANT_UPDATE" /> పెండింగ్‌లో ఉంది. మీ బ్రౌజింగ్‌ను సురక్షితంగా ఉంచడానికి, మీరు తర్వాతిసారి <ph name="IDLE_DURATION" /> పాటు ఇన్‌యాక్టివ్‌గా ఉన్నప్పుడు Chromium అప్‌డేట్ అవుతుంది.</translation>
 <translation id="1232234696885483911">మీరు ఇమేజ్ సెర్చ్‌ను తెరిచినప్పుడు, PDFలతో సహా పేజీ టైటిల్, URL, కంటెంట్ ఆటోమేటిక్‌గా సర్వర్‌కు పంపబడతాయి. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">మీరు సైన్ ఇన్ చేసినప్పుడు, Chromiumలో మీ Google ఖాతా నుండి సేవ్ చేసిన మీ పాస్‌వర్డ్‌లు, మరిన్నింటిని ఉపయోగించవచ్చు. దీన్ని మార్చడానికి, “Chromiumలో మీ ఖాతా”కు వెళ్లండి.</translation>
 <translation id="1244381985120794049">Mac మెనూ బార్‌లో Chromiumలో Geminiని చూపండి</translation>
@@ -226,6 +227,7 @@
 <translation id="3286538390144397061">ఇప్పుడు పునఃప్రారంభించండి</translation>
 <translation id="328888136576916638">Google API కీలు లేవు. Chromium కార్యాచరణలో కొంత భాగం నిలిపివేయబడుతుంది.</translation>
 <translation id="3296368748942286671">Chromium మూసివేయబడినప్పుడు నేపథ్య యాప్‌లను అమలు చేయడాన్ని కొనసాగించండి</translation>
+<translation id="3300632735252839402">మీరు అందుబాటులో లేనప్పుడు Chromium అప్‌డేట్ అవుతుంది</translation>
 <translation id="3313189106987092621">సురక్షితం కాని కనెక్షన్‌ను ఉపయోగించి ఏదైనా సైట్‌ను లోడ్ చేసే ముందు Chromium మిమ్మల్ని హెచ్చరిస్తుంది</translation>
 <translation id="3316771292331273802">మీరు Chromiumకు సైన్ ఇన్ చేసినట్లయితే, Chromium విండోలన్నింటినీ మూసివేసినప్పుడు, మీ Google ఖాతా మినహా, దాదాపుగా సైట్‌లన్నింటి నుండి సైన్ అవుట్ అవుతారు. మిమ్మల్ని సైట్‌లు గుర్తుంచుకోవడానికి, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">సెర్చ్ ఏరియాకు ఎగువ కుడి మూలన: కుడి వైపు <ph name="RIGHT" />%, ఎగువ <ph name="TOP" />%</translation>
@@ -234,6 +236,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">ప్రస్తుతం ఉన్న Chromium ప్రొఫైల్‌కు స్విచ్ చేయాలా?</translation>
 <translation id="3412460710772753638">ఈ పరికరంలోని పాస్‌వర్డ్ మేనేజర్‌లో</translation>
+<translation id="3425452599984451640">Chromium అప్‌డేట్ చేయాలనుకుంటోంది</translation>
 <translation id="3427159664004296878"><ph name="DEVICE" /> నుండి మీ బుక్‌మార్క్‌లను, మరిన్నింటిని పొందడానికి, Chromiumకు సైన్ ఇన్ చేయండి</translation>
 <translation id="3438772217992559640">"ఇమేజ్ సెర్చ్‌"తో ఈ ట్యాబ్‌ను సెర్చ్ చేయండి</translation>
 <translation id="3455907671758333080">మీ ఫోన్‌లో Chromiumతో మెరుగైన సురక్షిత బ్రౌజింగ్‌ను విస్తరించండి</translation>

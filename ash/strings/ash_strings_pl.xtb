@@ -928,7 +928,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3697991387880191195">Naciśnij skrót do zrzutu ekranu</translation>
 <translation id="3702809606464356667">Pokazuję okna z aktualnego biurka, naciśnij klawisz strzałki w górę, aby wyświetlić okna ze wszystkich biurek</translation>
 <translation id="3705722231355495246">-</translation>
-<translation id="3706423975342040244">Rozrywka</translation>
 <translation id="370665806235115550">Ładuję...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> i <ph name="UNAVAILABLE_DLC_TWO" /> są niedostępne.</translation>
 <translation id="3708186454126126312">Wcześniej połączone</translation>
@@ -975,7 +974,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3824784079442479685">Zezwala na dostęp do kamery aplikacji <ph name="APP_NAME" /> oraz wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z kamery. Konieczne może być odświeżenie strony lub ponowne uruchomienie aplikacji.</translation>
 <translation id="3826099427150913765">Zmień na hasło</translation>
 <translation id="383058930331066723">Włączone jest oszczędzanie baterii.</translation>
-<translation id="3831226344927851293">Zamknij widok samouczka</translation>
 <translation id="383629559565718788">Pokaż ustawienia klawiatury</translation>
 <translation id="384082539148746321">Usunąć szablon?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" />, a potem <ph name="KEY_ONE" /> lub <ph name="KEY_TWO" /> lub <ph name="KEY_THREE" /> lub <ph name="KEY_FOUR" /></translation>
@@ -1580,10 +1578,8 @@ Brak połączonych urządzeń.</translation>
 <translation id="5551974246223970793">Podczas wyszukiwania na stronie przejdź do następnego elementu pasującego do zapytania</translation>
 <translation id="5556459405103347317">Odśwież</translation>
 <translation id="5558091555391176027">Przełącz dużą widoczność Udostępniania w pobliżu</translation>
-<translation id="5558314826121965174">Kreatywność</translation>
 <translation id="556042886152191864">Przycisk</translation>
 <translation id="5570122939431135380">Otwórz nową kartę w nowym oknie incognito</translation>
-<translation id="5572632238877308040">Najważniejsze aplikacje</translation>
 <translation id="5575528586625653441">Wystąpił problem z żądaniem zarejestrowania w trybie demonstracyjnym.</translation>
 <translation id="557563299383177668">Następny akapit</translation>
 <translation id="5577082622442191756">Przełącz Bluetooth. <ph name="STATE_TEXT" />.</translation>
@@ -1618,7 +1614,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="5667546120811588575">Konfiguruję Google Play…</translation>
 <translation id="5669267381087807207">Aktywowanie</translation>
 <translation id="5671658447180261823">Usuń podpowiedź <ph name="SUGGESTION_NAME" /></translation>
-<translation id="5672890847723042801">Narzędzia</translation>
 <translation id="5673434351075758678">Z języka: „<ph name="FROM_LOCALE" />” na „<ph name="TO_LOCALE" />” po zsynchronizowaniu ustawień.</translation>
 <translation id="5675363643668471212">Element na półce</translation>
 <translation id="5677022547882470786">Aby wybrać obszar do przeszukania, przeciągnij lub naciśnij spację</translation>
@@ -1875,7 +1870,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY_ONE" />, a potem <ph name="MODIFIER_THREE" /> + <ph name="KEY_TWO" /> lub <ph name="KEY_THREE" /></translation>
 <translation id="6352082849089527770">Nieznane sieci</translation>
 <translation id="6359587239691116345">Zainstaluj najnowsze funkcje i poprawki zabezpieczeń. Jeśli odrzucisz tę aktualizację, urządzenie może przestać działać prawidłowo i możesz mieć problemy z bezpieczeństwem i wydajnością.</translation>
-<translation id="6362833380917912748">Poznaj wbudowane aplikacje</translation>
 <translation id="6364386432014869981">Wbudowany touchpad jest włączony</translation>
 <translation id="6376931439017688372">Bluetooth jest włączony</translation>
 <translation id="6378515133128829137">Przypnij okno z prawej strony</translation>
@@ -2099,7 +2093,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="7014684956566476813">Połączono z urządzeniem o nazwie <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Możesz wrócić o <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Biurko 6</translation>
-<translation id="702252130983202758">Twoje aplikacje</translation>
 <translation id="7025533177575372252">Połącz urządzenie <ph name="DEVICE_NAME" /> z telefonem</translation>
 <translation id="7026338066939101231">Zmniejsz</translation>
 <translation id="7029307918966275733">Nie zainstalowano Crostini. Zainstaluj Crostini, by zobaczyć autorów.</translation>
@@ -2538,7 +2531,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8277261673056602147">Zaznacz tekst na ekranie</translation>
 <translation id="8281886186245836920">Pomiń</translation>
 <translation id="8282784978194352587">Udało się!</translation>
-<translation id="8287009018010202411">Produktywność</translation>
 <translation id="828708037801473432">Wyłączono</translation>
 <translation id="8289128870594824098">Rozmiar dysku</translation>
 <translation id="8297006494302853456">Słaby</translation>
@@ -2633,7 +2625,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8598235756057743477">Posortuj aplikacje według nazwy lub koloru</translation>
 <translation id="8599864823732014237">Pominąć rejestrację firmy?</translation>
 <translation id="8609384513243082612">Otwórz nową kartę</translation>
-<translation id="861045123704058818">Aplikacje są tymczasowo uporządkowane według kategorii</translation>
 <translation id="8612338981637220013">Rozkręcasz się!</translation>
 <translation id="8613164732773110792">Możesz użyć tylko małych liter, cyfr, podkreśleń i myślników</translation>
 <translation id="8614517853887502247">Powiadomienia z aplikacji <ph name="APP_1_TITLE" /> i <ph name="APP_2_TITLE" /> zostały ukryte, bo masz włączoną ochronę przeglądania</translation>
@@ -2825,7 +2816,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="9129245940793250979">Przycisk z tyłu</translation>
 <translation id="9133335900048457298">Nie można nagrać treści chronionej</translation>
 <translation id="9139720510312328767">Usuń następną literę</translation>
-<translation id="9148058034647219655">Zakończ</translation>
 <translation id="9151906066336345901">End</translation>
 <translation id="9159421884295554245">Szukaj w schowku</translation>
 <translation id="9168436347345867845">Później</translation>

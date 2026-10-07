@@ -23,6 +23,7 @@
 <translation id="1185134272377778587">Chromium 정보</translation>
 <translation id="1186645291482254714">휴대전화에서 Chromium으로 가격 추적 알림을 받으세요</translation>
 <translation id="1203500561924088507">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 브라우저를 다시 시작해야 합니다.</translation>
+<translation id="1222365723190436821"><ph name="IMPORTANT_UPDATE" />가 대기 중입니다. 안전한 탐색을 위해 다음에 <ph name="IDLE_DURATION" /> 동안 비활성 상태가 되면 Chromium이 업데이트됩니다.</translation>
 <translation id="1232234696885483911">이미지 검색을 열면 페이지 제목, URL, PDF를 포함한 콘텐츠가 서버로 자동 전송됩니다. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">로그인한 상태로 Chromium에서 Google 계정의 비밀번호 등을 사용할 수 있습니다. 이 설정을 변경하려면 'Chromium의 내 계정'으로 이동하세요.</translation>
 <translation id="1244381985120794049">Mac 메뉴 바에 Chromium의 Gemini 표시</translation>
@@ -229,6 +230,7 @@
 <translation id="3286538390144397061">지금 다시 시작</translation>
 <translation id="328888136576916638">Google API 키가 누락되었습니다. Chromium의 일부 기능이 사용 중지됩니다.</translation>
 <translation id="3296368748942286671">Chromium 종료 후에도 백그라운드 앱을 계속 실행</translation>
+<translation id="3300632735252839402">사용자가 자리를 비우면 Chromium이 업데이트됩니다</translation>
 <translation id="3313189106987092621">Chromium에서 안전하지 않은 연결을 사용해 사이트를 로드하기 전에 경고를 표시합니다.</translation>
 <translation id="3316771292331273802">Chromium에 로그인한 경우 Google 계정을 제외한 모든 Chromium 창을 닫으면 대부분의 사이트에서 로그아웃됩니다. 사이트에서 나를 기억하도록 하려면 <ph name="SETTINGS_LINK" />하세요.</translation>
 <translation id="3352986031709923790">검색 영역의 오른쪽 상단: 오른쪽 <ph name="RIGHT" />%, 상단 <ph name="TOP" />%</translation>
@@ -237,6 +239,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">기존 Chromium 프로필로 전환하시겠습니까?</translation>
 <translation id="3412460710772753638">기기의 비밀번호 관리자에 업데이트합니다.</translation>
+<translation id="3425452599984451640">Chromium 업데이트 필요</translation>
 <translation id="3427159664004296878"><ph name="DEVICE" />에서 북마크 등을 사용하려면 Chromium에 로그인하세요</translation>
 <translation id="3438772217992559640">이미지 검색으로 이 탭 검색</translation>
 <translation id="3455907671758333080">휴대전화에서 Chromium으로 향상된 세이프 브라우징을 확장하세요</translation>

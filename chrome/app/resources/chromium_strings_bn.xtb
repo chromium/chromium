@@ -21,6 +21,7 @@
 <translation id="1185134272377778587">Chromium সম্পর্কে</translation>
 <translation id="1186645291482254714">আপনার ফোনে Chromium-এর মাধ্যমে দাম ট্র্যাক করা সংক্রান্ত সতর্কতা পান</translation>
 <translation id="1203500561924088507">ইনস্টল করার জন্য ধন্যবাদ। <ph name="BUNDLE_NAME" /> ব্যবহার করার আগে আপনাকে অবশ্যই ব্রাউজার রিস্টার্ট করতে হবে।</translation>
+<translation id="1222365723190436821">একটি <ph name="IMPORTANT_UPDATE" /> বাকি আছে। আপনার ব্রাউজিং সুরক্ষিত রাখতে, পরের বার আপনি <ph name="IDLE_DURATION" /> ইনঅ্যাক্টিভ থাকলে Chromium আপডেট হবে।</translation>
 <translation id="1232234696885483911">আপনি 'ছবি সার্চ করা' ফিচার খুললে, পৃষ্ঠার টাইটেল, URL এবং পিডিএফ সহ কন্টেন্ট অটোমেটিক সার্ভারে পাঠানো হবে। <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">আপনি সাইন-ইন করার সময়, Chromium-এ আপনার Google অ্যাকাউন্ট থেকে পাসওয়ার্ড এবং আরও অনেক কিছু ব্যবহার করতে পারবেন। এটি পরিবর্তন করতে, “Chromium-এ আপনার অ্যাকাউন্ট” বিকল্পে যান।</translation>
 <translation id="1244381985120794049">Mac মেনু বারে Chromium-এ Gemini দেখুন</translation>
@@ -228,6 +229,7 @@
 <translation id="3286538390144397061">এখন পুর্নসূচনা করবেন</translation>
 <translation id="328888136576916638">Google এপিআই কীগুলি অনুপস্থিত৷ Chromium-এর কিছু বৈশিষ্ট্য নিষ্ক্রিয় হয়ে যাবে৷</translation>
 <translation id="3296368748942286671"> Chromium বন্ধ হলে পটভূমির অ্যাপ্লিকেশন চালু রাখুন</translation>
+<translation id="3300632735252839402">আপনি দূরে থাকাকালীন Chromium আপডেট হবে</translation>
 <translation id="3313189106987092621">Chromium অসুরক্ষিত কানেকশন ব্যবহার করে যেকোনও সাইট লোড করার আগে আপনাকে সতর্ক করবে</translation>
 <translation id="3316771292331273802">আপনি সব Chromium উইন্ডো বন্ধ করে দিলে আপনাকে বেশিরভাগ সাইট থেকে সাইন-আউট করে দেওয়া হবে, তবে আপনি Chromium-এ সাইন-ইন করে থাকলে আপনাকে Google অ্যাকাউন্ট থেকে সাইন-আউট করা হবে না। সাইট যাতে আপনাকে চিনতে পারে তার জন্য <ph name="SETTINGS_LINK" />।</translation>
 <translation id="3352986031709923790">সার্চের উপরের ডানদিকের কোণা: ডানদিক থেকে <ph name="RIGHT" />%, উপরের দিকে <ph name="TOP" />%</translation>
@@ -236,6 +238,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">বর্তমান Chromium প্রোফাইলে পাল্টাতে চান?</translation>
 <translation id="3412460710772753638">এই ডিভাইসের Password Manager-এ</translation>
+<translation id="3425452599984451640">Chromium আপডেট করতে হবে</translation>
 <translation id="3427159664004296878"><ph name="DEVICE" /> থেকে আপনার বুকমার্ক ও আরও অনেক কিছু পেতে, Chromium-এ সাইন-ইন করুন</translation>
 <translation id="3438772217992559640">'ছবি সার্চ করা' ফিচার ব্যবহার করে এই ট্যাবে সার্চ করুন</translation>
 <translation id="3455907671758333080">আপনার ফোনে Chromium-এর সাথে উন্নত Safe Browsing এক্সটেন্ড করুন</translation>

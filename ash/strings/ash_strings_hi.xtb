@@ -928,7 +928,6 @@
 <translation id="3697991387880191195">स्क्रीनशॉट लेने का शॉर्टकट दबाएं</translation>
 <translation id="3702809606464356667">मौजूदा डेस्क की विंडो दिखाई जा रही हैं, सभी डेस्क की विंडो दिखाने के लिए, अप ऐरो बटन दबाएं</translation>
 <translation id="3705722231355495246">-</translation>
-<translation id="3706423975342040244">मनोरंजन</translation>
 <translation id="370665806235115550">लोड हो रही हैं...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> और <ph name="UNAVAILABLE_DLC_TWO" /> की सुविधा उपलब्ध नहीं है.</translation>
 <translation id="3708186454126126312">पहले कनेक्ट किए गए डिवाइस</translation>
@@ -976,7 +975,6 @@
 <translation id="3824784079442479685">इससे <ph name="APP_NAME" /> और ऐसे सभी ऐप्लिकेशन और वेबसाइटों को कैमरे का ऐक्सेस मिलेगा जिनके पास कैमरा इस्तेमाल करने की अनुमति है. आपको वेब पेज को रीफ़्रेश या ऐप्लिकेशन को रीस्टार्ट करना पड़ सकता है.</translation>
 <translation id="3826099427150913765">पासवर्ड पर स्विच करें</translation>
 <translation id="383058930331066723">बैटरी सेवर मोड चालू है</translation>
-<translation id="3831226344927851293">ट्यूटोरियल देखना बंद करें</translation>
 <translation id="383629559565718788">कीबोर्ड सेटिंग दिखाएं</translation>
 <translation id="384082539148746321">क्या आपको टेंप्लेट मिटाना है?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> फिर <ph name="KEY_ONE" /> या <ph name="KEY_TWO" /> या <ph name="KEY_THREE" /> या <ph name="KEY_FOUR" /></translation>
@@ -1580,10 +1578,8 @@
 <translation id="5551974246223970793">किसी पेज को खोजते समय, खोज के लिए अगले मिलान पर जाएं</translation>
 <translation id="5556459405103347317">फिर लोड करें</translation>
 <translation id="5558091555391176027">आस-पास शेयर करने की सुविधा के ज़्यादा लोगों को दिखाने वाले मोड पर टॉगल करें</translation>
-<translation id="5558314826121965174">क्रिएटिविटी</translation>
 <translation id="556042886152191864">बटन</translation>
 <translation id="5570122939431135380">नए टैब को नई गुप्त विंडो में खोलें</translation>
-<translation id="5572632238877308040">इन्हें ज़रूर आज़माएं</translation>
 <translation id="5575528586625653441">डेमो रजिस्ट्रेशन अनुरोध में कोई परेशानी हुई.</translation>
 <translation id="557563299383177668">अगले पैराग्राफ़ पर जाएं</translation>
 <translation id="5577082622442191756">ब्लूटूथ को टॉगल करें. <ph name="STATE_TEXT" />.</translation>
@@ -1618,7 +1614,6 @@
 <translation id="5667546120811588575">Google Play सेट अप किया जा रहा है...</translation>
 <translation id="5669267381087807207">चालू हो रहा है</translation>
 <translation id="5671658447180261823"><ph name="SUGGESTION_NAME" /> का सुझाव हटाएं</translation>
-<translation id="5672890847723042801">काम की सेवाएं</translation>
 <translation id="5673434351075758678">अपनी सेटिंग सिंक करने के बाद "<ph name="FROM_LOCALE" />" से "<ph name="TO_LOCALE" />".</translation>
 <translation id="5675363643668471212">शेल्फ़ आइटम</translation>
 <translation id="5677022547882470786">किसी हिस्से को चुनकर उसके बारे में जानकारी खोजने के लिए, खींचें और छोड़ें या Space दबाएं</translation>
@@ -1874,7 +1869,6 @@
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> फिर <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> या <ph name="KEY_THREE" /></translation>
 <translation id="6352082849089527770">नेटवर्क की कोई जानकारी नहीं है</translation>
 <translation id="6359587239691116345">नई सुविधाएं और बेहतर सुरक्षा पाएं. अगर आपने इस अपडेट को अस्वीकार किया है, तो हो सकता है कि आपका डिवाइस ठीक से काम न करे. इसके अलावा, सुरक्षा और परफ़ॉर्मेंस से जुड़ी समस्याएं आ सकती हैं.</translation>
-<translation id="6362833380917912748">अपने डिवाइस में पहले से मौजूद ऐप्लिकेशन के बारे में जानें</translation>
 <translation id="6364386432014869981">डिवाइस में पहले से मौजूद टचपैड चालू है</translation>
 <translation id="6376931439017688372">ब्लूटूथ चालू है</translation>
 <translation id="6378515133128829137">विंडो को दाईं ओर पिन करें</translation>
@@ -2099,7 +2093,6 @@
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> नाम वाले ब्लूटूथ डिवाइस से कनेक्ट किया गया है</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> बजे फिर से देखें.</translation>
 <translation id="70168403932084660">डेस्क 6</translation>
-<translation id="702252130983202758">आपके ऐप्लिकेशन</translation>
 <translation id="7025533177575372252">अपने <ph name="DEVICE_NAME" /> को अपने फ़ोन से कनेक्ट करें</translation>
 <translation id="7026338066939101231">कम</translation>
 <translation id="7029307918966275733">Crostini इंस्टॉल नहीं है. क्रेडिट देखने के लिए कृपया Crostini इंस्टॉल करें.</translation>
@@ -2538,7 +2531,6 @@
 <translation id="8277261673056602147">अपनी स्क्रीन पर मौजूद टेक्स्ट को हाइलाइट करें</translation>
 <translation id="8281886186245836920">अभी नहीं</translation>
 <translation id="8282784978194352587">आपने कर दिखाया!</translation>
-<translation id="8287009018010202411">प्रोडक्टिविटी</translation>
 <translation id="828708037801473432">बंद है</translation>
 <translation id="8289128870594824098">डिस्क का साइज़</translation>
 <translation id="8297006494302853456">कमज़ोर</translation>
@@ -2633,7 +2625,6 @@
 <translation id="8598235756057743477">अपने ऐप्लिकेशन को नाम या रंग के हिसाब से क्रम में लगाएं</translation>
 <translation id="8599864823732014237">क्या आपको एंटरप्राइज़ के लिए अभी रजिस्टर नहीं करना है?</translation>
 <translation id="8609384513243082612">नया टैब खोलें</translation>
-<translation id="861045123704058818">ऐप्लिकेशन कुछ समय के लिए, कैटगरी के हिसाब से व्यवस्थित किए जाते हैं</translation>
 <translation id="8612338981637220013">आपने धमाल मचा रखा है!</translation>
 <translation id="8613164732773110792">सिर्फ़ छोटे अक्षर, अंक, अंडरस्कोर या डैश</translation>
 <translation id="8614517853887502247">व्यूइंग प्रोटेक्शन चालू होने की वजह से, <ph name="APP_1_TITLE" /> और <ph name="APP_2_TITLE" /> से मिलने वाली सूचनाओं को छिपाया गया है</translation>
@@ -2825,7 +2816,6 @@
 <translation id="9129245940793250979">रीयर बटन</translation>
 <translation id="9133335900048457298">सुरक्षित कॉन्टेंट को रिकॉर्ड नहीं किया जा सकता</translation>
 <translation id="9139720510312328767">अगला अक्षर मिटाएं</translation>
-<translation id="9148058034647219655">बाहर निकलें</translation>
 <translation id="9151906066336345901">end</translation>
 <translation id="9159421884295554245">क्लिपबोर्ड में खोजें</translation>
 <translation id="9168436347345867845">बाद में करें</translation>

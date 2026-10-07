@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">這不是其他人經常下載的檔案類型，可能有危險，因此 Chrome 已禁止下載</translation>
 <translation id="1197860368385086056">下次在 <ph name="DEVICE_TYPE" /> 上開啟 Chrome 時，系統會提示你啟用價格追蹤通知。</translation>
 <translation id="1203500561924088507">感謝你安裝本服務。你必須重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
+<translation id="122321322139970942"><ph name="IMPORTANT_UPDATE" />待處理。為確保瀏覽安全，Chrome 會在下次閒置達 <ph name="IDLE_DURATION" />後更新。</translation>
 <translation id="1226003169284463347">如要在所有裝置上存取書籤和其他資料，請登入 Chrome</translation>
 <translation id="1278833599417554002">重新啟動以更新 &amp;Chrome</translation>
 <translation id="1289911795790071537">開啟「使用 Chrome 搜尋」</translation>
@@ -323,7 +324,6 @@
 <translation id="4050175100176540509">最新版本包含重要的安全性改善與新功能。</translation>
 <translation id="4053720452172726777">自訂及管理 Google Chrome</translation>
 <translation id="408393047846373801">如要在任何裝置上使用你的密碼和其他資料，請登入 Chrome。登入後，這個密碼就會儲存到 Google 帳戶。</translation>
-<translation id="409936259433005390">即將升級至 Windows 11？請將 Chrome 安裝程式下載到 OneDrive，預先準備即可隨時上路。</translation>
 <translation id="4102173024714616627">擴充功能是外掛程式，可用來自訂 Chrome。無論是整理資料或簡化日常工作，都能用擴充功能打造個人化的 Chrome。</translation>
 <translation id="4110895483821904099">設定新的 Chrome 設定檔</translation>
 <translation id="4111566860456076004">Chrome 無法驗證擴充功能的來源，因此可能不安全。請從 Chrome 中移除這項擴充功能，使其無法再查看及變更你瀏覽網站時留下的資料，包括個人資訊。</translation>
@@ -498,6 +498,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="5941830788786076944">使用 Google Chrome 做為我的預設瀏覽器</translation>
 <translation id="5947104538377036631">Chrome 捷徑</translation>
 <translation id="5960071705175224773">你的設定遭到不明應用程式變更</translation>
+<translation id="5960404530854194706">Chrome 會在你離開時更新</translation>
 <translation id="5980111191913430208">來源不明的擴充功能、應用程式和主題可能會損害裝置。Chromium 建議你只透過 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />安裝這些項目</translation>
 <translation id="6003112304606738118">下載中… 還剩 <ph name="HOURS" /> 小時</translation>
 <translation id="6008161919456049856">你儲存在 Google 帳戶中的密碼、付款方式和地址將從這部裝置中移除。如要在 Chrome 中再次使用這些資料，請重新登入。</translation>
@@ -581,6 +582,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6556755379298048869">使用鍵盤快速鍵搜尋。</translation>
 <translation id="6585124893636629274">關閉 Chrome 內建 Gemini</translation>
 <translation id="659498884637196217">前往這部裝置的 Google 密碼管理員進行更新</translation>
+<translation id="660312897435669152">Chrome 需要更新</translation>
 <translation id="6612152958212564387">使用統計資料和當機報告不會傳送給 Google。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">將 Chrome 設為預設瀏覽器，即可在各裝置完美同步密碼、書籤和歷史記錄。</translation>
 <translation id="6621391692573306628">如要將這個分頁傳送到其他裝置，請在這兩部裝置上登入 Chrome</translation>

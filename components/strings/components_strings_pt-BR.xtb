@@ -302,7 +302,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1486096554574027028">Pesquise senhas</translation>
 <translation id="1492194039220927094">Push de políticas:</translation>
 <translation id="1495677929897281669">Voltar à guia</translation>
-<translation id="1496318738909526466">Gerenciar o Preenchimento Automático Aprimorado</translation>
 <translation id="1500286806237135498">Câmeras (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">Onda</translation>
 <translation id="1507202001669085618">&lt;p&gt;Você verá esse erro se estiver usando um portal Wi-Fi em que precise fazer login para poder se conectar.&lt;/p&gt;
@@ -954,6 +953,7 @@ Se quiser, você pode remover essa sugestão do Chrome. A fonte original dos dad
 <translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp;Desfazer editar</translation>
 <translation id="2559566667529177711">Multicamadas</translation>
+<translation id="2561224416042784023">Ver configurações</translation>
 <translation id="2570734079541893434">Gerenciar configurações</translation>
 <translation id="257136025287118539">O administrador está movendo seus arquivos para <ph name="CLOUD_PROVIDER" />. Você poderá modificar esses arquivos quando o upload for concluído.</translation>
 <translation id="2571488850200220306">Para garantir a segurança, o administrador também pode ver o SO do dispositivo, a versão do navegador e os softwares instalados</translation>

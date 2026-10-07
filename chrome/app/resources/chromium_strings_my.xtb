@@ -23,6 +23,7 @@
 <translation id="1185134272377778587">Chromium အကြောင်း</translation>
 <translation id="1186645291482254714">သင့်ဖုန်းတွင် Chromium ဖြင့် ဈေးနှုန်းခြေရာခံခြင်းဆိုင်ရာ သတိပေးချက်များ ရယူပါ</translation>
 <translation id="1203500561924088507">ထည့်သွင်းသည့်အတွက် ကျေးဇူးတင်ပါသည်။ <ph name="BUNDLE_NAME" /> အသုံးမပြုမီ သင့်ဘရောင်ဇာကို ပြန်စရမည်။</translation>
+<translation id="1222365723190436821"><ph name="IMPORTANT_UPDATE" /> ကို ဆိုင်းငံ့ထားသည်။ ဘရောက်စ်လုပ်ခြင်း ဘေးကင်းလုံခြုံစေရန် သင် <ph name="IDLE_DURATION" /> ကြာ အသုံးမပြုသည့်နောက်တွင် Chromium က အပ်ဒိတ်လုပ်ပါမည်။</translation>
 <translation id="1232234696885483911">‘ပုံဖြင့်ရှာဖွေမှု’ ကို ဖွင့်သောအခါ PDF များအပါအဝင် စာမျက်နှာခေါင်းစဉ်၊ URL နှင့် ဒစ်ဂျစ်တယ်မီဒီယာတို့ကို ဆာဗာသို့ အလိုအလျောက်ပို့ပါမည်။ <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">လက်မှတ်ထိုးဝင်ထားစဉ် Chromium ရှိ သင်၏ Google Account မှ စကားဝှက်နှင့် အခြားအရာများကို သုံးနိုင်သည်။ ၎င်းကိုပြောင်းရန် “Chromium ရှိ သင့်အကောင့်” သို့ သွားပါ။</translation>
 <translation id="1244381985120794049">Chromium ရှိ Gemini ကို Mac မီနူးဘားတွင် ပြပါ</translation>
@@ -231,6 +232,7 @@
 <translation id="3286538390144397061">ယခု ပြန်လည်အစပြုမည</translation>
 <translation id="328888136576916638">Google API သော့များ ရှာမရပါ။ Chromium ၏ အချို့ လုပ်ကိုင်နိုင်စွမ်းများ ပိတ်ခံကြရမည်။</translation>
 <translation id="3296368748942286671">Chromium ကို ပိတ်လိုက်သည့်အခါ နောက်ခံအက်ပ်များကို ဆက်လက် ဖွင့်ထားပါ။</translation>
+<translation id="3300632735252839402">သင်အဝေးရောက်နေချိန်တွင် Chromium ကို အပ်ဒိတ်လုပ်ပါမည်</translation>
 <translation id="3313189106987092621">လုံခြုံမှုမရှိသော ချိတ်ဆက်မှုသုံးသည့် မည်သည့်ဝဘ်ဆိုက်ကိုမဆို မဖွင့်မီ Chromium က သတိပေးပါမည်</translation>
 <translation id="3316771292331273802">Chromium ဝင်းဒိုးအားလုံးကို ပိတ်သောအခါ ဝဘ်ဆိုက်အများစုမှ သင်ထွက်သွားမည်။ Chromium သို့ လက်မှတ်ထိုးဝင်ထားပါက သင့် Google Account မှ ထွက်မည်မဟုတ်ပါ။ ဝဘ်ဆိုက်များက သင့်အား မှတ်မိစေရန် <ph name="SETTINGS_LINK" />။</translation>
 <translation id="3352986031709923790">ရှာဖွေမှုနေရာ၏ ညာဘက်ထိပ်ထောင့်- ညာ <ph name="RIGHT" />%၊ ထိပ် <ph name="TOP" />%</translation>
@@ -239,6 +241,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">လက်ရှိ Chromium ပရိုဖိုင်သို့ ပြောင်းမလား။</translation>
 <translation id="3412460710772753638">ဤစက်ရှိ ‘စကားဝှက်မန်နေဂျာ’ တွင်</translation>
+<translation id="3425452599984451640">Chromium က အပ်ဒိတ်လုပ်လိုသည်</translation>
 <translation id="3427159664004296878"><ph name="DEVICE" /> မှ ဝဘ်လိပ်စာနှင့် အခြားအရာများ ရယူရန် Chromium သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="3438772217992559640">‘ပုံဖြင့်ရှာဖွေမှု’ သုံး၍ ဤတဘ်ကို ရှာပါ</translation>
 <translation id="3455907671758333080">သင့်ဖုန်းတွင် Chromium ဖြင့် ‘အရည်အသွေးမြှင့် ဘေးကင်းလုံခြုံသည့် အသုံးပြုမှု’ ကို တိုးချဲ့ရယူပါ</translation>

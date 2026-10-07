@@ -696,6 +696,12 @@ Chrome 政策的优先级高于此政策，例如：如果某个扩展程序已�
 <translation id="1488008594883876680">启用 <ph name="ARC_VM" /> 映像预加载</translation>
 <translation id="1488724823347505879">允许将 Android 应用中的内容分享给 Web 应用</translation>
 <translation id="1490962807364514840">CPU 运行时计数器遥测数据收集时间间隔（以毫秒为单位）。</translation>
+<translation id="1491289760513245366">此政策允许您指定哪些源可以使用 <ph name="PRODUCT_NAME" /> 支持的所有 HTTP 身份验证方案，而无需考虑 <ph name="AUTH_SCHEMES_POLICY_NAME" /> 政策。
+
+从 <ph name="PRODUCT_NAME" /> 161 版开始，此政策仅适用于目标服务器源，不适用于代理服务器的身份验证质询。如需允许代理服务器使用所有 HTTP 身份验证方案，请改用 <ph name="ALL_HTTP_AUTH_SCHEMES_ALLOWED_FOR_PROXIES_POLICY_NAME" /> 政策。在 161 版之前，与此政策匹配的代理服务器也可以使用所有 HTTP 身份验证方案，除非设置了 <ph name="ALL_HTTP_AUTH_SCHEMES_ALLOWED_FOR_PROXIES_POLICY_NAME" /> 政策。
+
+      请按 <ph name="URL_SCHEME_FORMAT_LINK" /> 中的说明处理源的格式。最多可在 <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> 中定义 1,000 个例外情况。
+      主机组件可以使用通配符（例如，“*:8000”匹配端口 8000 上的所有主机）。如需匹配所有方案或所有端口，请完全忽略相应组件（例如，“example.com”匹配任何方案和任何端口）。主机名（例如“example.com”）也与其子网域匹配。如需完全匹配某个主机并排除其子网域，请在其前面加上一个点（例如“.example.com”）。如需匹配所有源，请使用单个星号（“*”）。</translation>
 <translation id="1492223733885011596">此政策可为 <ph name="PRODUCT_OS_NAME" /> 上的表情符号选择器启用 GIF 支持。
 如果已启用此政策，表情符号选择器将支持 GIF 表情符号。
 如果已停用或未设置此政策，表情符号选择器将不支持 GIF 表情符号。
@@ -4061,6 +4067,7 @@ Microsoft Outlook 卡片需要由管理员进行额外配置。如需详细了�
 此政策取代了已弃用的 <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLICY_NAME" /> 政策。</translation>
 <translation id="3568762199045490351">超时设置为 0 毫秒的 JavaScript setTimeout() 将会延迟到 1 毫秒。</translation>
 <translation id="3574450691573438824">停用设备系统日志上传</translation>
+<translation id="357461884473178606">可使用所有 HTTP 身份验证方案的代理服务器列表</translation>
 <translation id="3575011234198230041">HTTP 身份验证</translation>
 <translation id="3575159471980949522">不允许用户将电话号码从 Chrome 发送到 Android 设备</translation>
 <translation id="3577251398714997599">针对含侵扰性广告的网站的广告设置</translation>
@@ -11216,6 +11223,12 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="8066428282805800713">在 ChromeOS Flex 上发送其他硬件数据</translation>
 <translation id="8071371098891664137">如果为 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_BLOCKLIST" />，您便可通过设置 <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> 来指定用户不能使用哪些打印机。除了与此政策中所列 ID 对应的打印机之外，其他所有打印机都可供用户使用。ID 必须与 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。</translation>
 <translation id="8076539570602616846">仅允许符合条件的 Google 账号通过 <ph name="PRODUCT_NAME" /> PDF 查看器将 PDF 文件保存到 Google 云端硬盘</translation>
+<translation id="8078224178125125527">此政策允许您指定哪些代理服务器可以使用 <ph name="PRODUCT_NAME" /> 支持的所有 HTTP 身份验证方案，而无需考虑 <ph name="AUTH_SCHEMES_POLICY_NAME" /> 政策。
+
+请按 <ph name="URL_SCHEME_FORMAT_LINK" /> 中说明的网址屏蔽清单过滤器格式处理代理服务器的格式。最多可定义 1,000 个例外情况。
+主机组件可以使用通配符（例如，“*:8080”匹配端口 8080 上的所有代理）。主机名（例如“proxy.example.com”）也与其子网域匹配。如需完全匹配某个主机并排除其子网域，请在其前面加上一个点（例如“.proxy.example.com”）。
+
+如果未设置此政策，则代理身份验证仅支持 <ph name="AUTH_SCHEMES_POLICY_NAME" /> 政策中指定的 HTTP 身份验证方案（如果该政策也未设置，则仅支持默认方案）。</translation>
 <translation id="8078297389450285582">如果此政策已启用或未设置，系统会开启智能调暗模式，并可推迟屏幕变暗的时间。倘若屏幕变暗时间推迟了，系统会随之调整屏幕关闭延迟时间、屏幕锁定延迟时间和闲置延迟时间，以使它们保持在原有设置下与屏幕变暗延迟时间的间隔。
 
           如果此政策已停用，智能调暗模式将不会影响屏幕变暗时间。</translation>
@@ -12658,6 +12671,11 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="9015759770696099204">F11/F12 设置已停用</translation>
 <translation id="9015952763003753868">使 <ph name="CORS" /> 预检请求中的 <ph name="ACAM_HEADER_NAME" /> 匹配合乎规范</translation>
 <translation id="9020630127193895800">键盘背光颜色：靛蓝色</translation>
+<translation id="9025073735776703766">此政策用于控制 XSLT 功能（XSLTProcessor JavaScript API 和 XSL 处理指令）的可用性。
+如果此政策已启用，无论浏览器中此功能的默认状态如何，XSLT 都将可用。
+如果此政策已停用，无论浏览器中此功能的默认状态如何，XSLT 都将不可用。
+如果此政策未设置，XSLT 的可用性将由浏览器的默认设置和现场试验决定。
+此政策是一项暂时性措施，将在 M176 中移除。</translation>
 <translation id="9025912013525357598">保留所有媒体类型的 DataURL 空白</translation>
 <translation id="9029815312472546960">禁止在这些网站上使用 Device Attributes API</translation>
 <translation id="9031831501689819108">启用旧版浏览器支持</translation>

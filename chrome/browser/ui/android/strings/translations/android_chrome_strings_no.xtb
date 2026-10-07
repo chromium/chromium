@@ -322,6 +322,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2297822946037605517">Del denne siden</translation>
 <translation id="230115972905494466">Fant ingen kompatible enheter</translation>
 <translation id="2305798319182970276">Slett loggen med et trykk på en knapp</translation>
+<translation id="2307420463693979699"><ph name="APP_NAME" /> trenger tilgang til HID-enheter (Human Interface Devices) for dette nettstedet.</translation>
 <translation id="2316129865977710310">Nei takk</translation>
 <translation id="232137538351753795">Sveip fra venstre for å gå tilbake</translation>
 <translation id="2323763861024343754">Nettstedslagring</translation>

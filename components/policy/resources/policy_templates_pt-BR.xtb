@@ -157,6 +157,7 @@ não é aceito para esta política.
 
 Se a política for deixada sem definição, todas as origens vão exigir uma interação inicial do usuário para chamar
 essas APIs.</translation>
+<translation id="109520268628625781">Ativar extensões instaladas por políticas que substituem as configurações de pesquisa padrão ou da página Nova guia em ambientes de baixa confiança</translation>
 <translation id="1095209545735032039">Bloquear a API Serial nesses sites</translation>
 <translation id="1096105751829466145">Provedor de pesquisa padrão</translation>
 <translation id="1099282607296956954">Ativar o isolamento de todos os sites</translation>
@@ -721,6 +722,12 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="1488008594883876680">Ativar o pré-carregamento de imagens da <ph name="ARC_VM" /></translation>
 <translation id="1488724823347505879">Permitir o compartilhamento de apps Android para apps da Web</translation>
 <translation id="1490962807364514840">O tempo de execução da CPU contabiliza a taxa de coleta da telemetria em milissegundos.</translation>
+<translation id="1491289760513245366">A definição desta política especifica quais origens têm permissão para todos os esquemas de autenticação HTTP compatíveis com <ph name="PRODUCT_NAME" />, independentemente da política <ph name="AUTH_SCHEMES_POLICY_NAME" />.
+
+A partir da versão 161 do <ph name="PRODUCT_NAME" />, esta política se aplica apenas às origens do servidor de destino e não aos desafios de autenticação do servidor proxy. Para permitir todos os esquemas de autenticação HTTP para servidores proxy, use a política <ph name="ALL_HTTP_AUTH_SCHEMES_ALLOWED_FOR_PROXIES_POLICY_NAME" />. Antes da versão 161, os servidores proxy que correspondem a esta política também podem usar todos os esquemas de autenticação HTTP, a menos que <ph name="ALL_HTTP_AUTH_SCHEMES_ALLOWED_FOR_PROXIES_POLICY_NAME" /> esteja definido.
+
+      Formate o padrão da origem conforme o formato apresentado em <ph name="URL_SCHEME_FORMAT_LINK" />. Até 1.000 exceções podem ser definidas na política <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />.
+      É possível usar caracteres curingas para o componente de host (por exemplo, "*:8000" corresponde a todos os hosts na porta 8000). Para corresponder a todos os esquemas ou todas as portas, omita o componente por completo (ou seja, "exemplo.com" corresponde a qualquer esquema e qualquer porta). Um nome do host (no caso, "exemplo.com") também corresponde aos subdomínios dele. Para corresponder exatamente a um host e excluir os subdomínios dele, adicione um ponto antes (ou seja, ".exemplo.com"). Para corresponder a todas as origens, use um único asterisco ("*").</translation>
 <translation id="1492223733885011596">Esta política permite o uso de GIFs no seletor de emojis no <ph name="PRODUCT_OS_NAME" />.
 Se a política for ativada, o seletor de emojis vai oferecer suporte para emojis de GIF.
 Se a política for desativada ou deixada sem definição, o seletor de emojis não vai oferecer suporte para emojis de GIF.
@@ -1117,6 +1124,7 @@ Observação: esta política não se aplica ao modo de navegação anônima. Lei
 Observação: esta política só se aplica a plataformas que são compatíveis com extensões.</translation>
 <translation id="1708496595873025510">Definir a restrição para busca do termo-semente "Variações"</translation>
 <translation id="1709154322133526432">Ativar a verificação de navegador padrão na inicialização</translation>
+<translation id="1710938341108039345">Desativar o histórico da área de transferência</translation>
 <translation id="1713829924716792485">Se a política for definida como "Ativada" ou deixada sem definição, os usuários poderão se conectar a um host de acesso remoto para transferir arquivos entre o cliente e o host. Isso não se aplica a conexões de assistência remota, que não são compatíveis com a transferência de arquivos.
 
       Se a política for definida como "Desativada", a transferência de arquivos não será permitida.</translation>
@@ -3908,6 +3916,23 @@ Se for definida como 1, a política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" 
       Se a política não for definida, o serviço de proxy do sistema não estará disponível.</translation>
 <translation id="3341649870321644698">Ativar o "Modo sem distrações" com "Somente sons de foco".</translation>
 <translation id="334231891933432876">Desconectar o usuário assim que a conta perder a autenticação</translation>
+<translation id="3344546660724331957">Controla se as extensões instaladas por políticas (instaladas à força ou recomendadas) que substituem as configurações do mecanismo de pesquisa padrão ou da página Nova guia são permitidas em ambientes de baixa confiança.
+
+Esta política só se aplica a ambientes de baixa confiança, como dispositivos em que as políticas são configuradas localmente sem gerenciamento de domínio ou nuvem. Os ambientes de alta confiança não são afetados:
+
+No <ph name="MS_WIN_NAME" />, esta política não está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+No <ph name="MAC_OS_NAME" />, esta política não está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+As extensões instaladas por políticas que substituem as configurações do mecanismo de pesquisa padrão ou da página Nova guia vão continuar ativadas nessas instâncias de alta confiança.
+
+Quando definido como Ativado, o <ph name="PRODUCT_NAME" /> vai permitir que extensões instaladas por políticas que substituem as configurações do mecanismo de pesquisa padrão ou da página Nova guia sejam instaladas e permaneçam ativadas em ambientes de baixa confiança.
+
+Quando definido como Desativado ou não configurado, o <ph name="PRODUCT_NAME" /> vai impedir que extensões instaladas por políticas que substituem as configurações do mecanismo de pesquisa padrão ou da página Nova guia sejam instaladas em ambientes de baixa confiança e vai removê-las se já estiverem instaladas.
+
+Se uma extensão afetada for atualizada para não substituir mais essas configurações, o <ph name="PRODUCT_NAME" /> vai instalá-la automaticamente em até sete dias.
+
+Esta política é temporária e será removida em uma versão futura.</translation>
 <translation id="3345323903592385588">A ordem em que a configuração da VM será mostrada no instalador. Quando várias configurações de VM são especificadas, aquela com o menor valor de display_order é mostrada no início da lista. O padrão é zero.</translation>
 <translation id="3349823333182687926">Se a política for definida, será possível configurar uma lista de padrões de URL que podem usar a captura de janela e de guia.
 
@@ -4238,6 +4263,7 @@ Se esta política for deixada sem definição para um site, a política de <ph n
 Isso substitui a política <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLICY_NAME" /> descontinuada.</translation>
 <translation id="3568762199045490351">A função setTimeout() do JavaScript com um tempo limite de 0 ms vai ser limitada a 1 ms.</translation>
 <translation id="3574450691573438824">Desativar o upload de registro do sistema do dispositivo</translation>
+<translation id="357461884473178606">Lista de servidores proxy que permitem todos os esquemas de autenticação HTTP</translation>
 <translation id="3575011234198230041">Autenticação HTTP</translation>
 <translation id="3575159471980949522">Não permitir que os usuários enviem números de telefone do Chrome para o dispositivo Android</translation>
 <translation id="3577251398714997599">Configurações de anúncios para sites com anúncios invasivos</translation>
@@ -5271,6 +5297,11 @@ Os domínios precisam estar no formato de um nome de domínio totalmente qualifi
 
 Domínios com formato incorreto serão ignorados.</translation>
 <translation id="4238777612788632629">Reinicializar rapidamente em caso de desatualização</translation>
+<translation id="4239692047060622956">Esta política controla se o recurso de histórico da área de transferência do <ph name="PRODUCT_OS_NAME" /> está ativado.
+
+Se a política for ativada ou deixada sem definição, o histórico da área de transferência será ativado, e os usuários poderão acessar itens copiados anteriormente usando o atalho de teclado do histórico da área de transferência.
+
+Se a política for desativada, o histórico da área de transferência será desativado, o menu do histórico não poderá ser aberto e todos os itens armazenados serão apagados.</translation>
 <translation id="4239720644496144453">O cache não é usado para apps Android. Se vários usuários instalarem o mesmo app Android, o download dele será feito novamente para cada usuário.</translation>
 <translation id="4239949495354048254">Permita uploads de arquivos para o Gemini no Chrome.</translation>
 <translation id="4242583077375244471">Quando a política é ativada, o <ph name="PRODUCT_NAME" />
@@ -5404,6 +5435,7 @@ Essa é uma camada extra de controle, localizada abaixo das permissões para app
 Os usuários não poderão substituir a seleção do administrador. Se a política não for definida, os usuários terão a experiência do consumidor, ou seja, poderão modificar livremente a configuração de localização do sistema e o local onde o padrão é <ph name="GLS_ALLOWED" />.
 
 Observação: esta política substituiu a política <ph name="ARC_GLS_POLICY_NAME" /> descontinuada. Além disso, quando esta política for definida, a <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> não vai mais afetar a preferência de local do <ph name="ANDROID_NAME" /> no <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="4341191248574927458">Ativar o histórico da área de transferência do ChromeOS</translation>
 <translation id="4341199399451274159">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> especificará as codificações de caracteres compatíveis com o provedor de pesquisa. As codificações são nomes de páginas de código como UTF-8, GB2312 e ISO-8859-1. Elas são testadas na ordem fornecida.
 
       Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> não for definida, UTF-8 será usada.</translation>
@@ -11782,6 +11814,12 @@ Várias políticas listam origens que afetam as solicitações enviadas para o d
 <translation id="8066428282805800713">Enviar mais dados de hardware no ChromeOS Flex</translation>
 <translation id="8071371098891664137">Se <ph name="PRINTERS_BLOCKLIST" /> for escolhida para <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, a definição de <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> especificará quais impressoras os usuários não podem usar. Todas as impressoras estão disponíveis para o usuário, com exceção dos IDs listados nesta política. Os IDs precisam corresponder aos campos <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> no arquivo especificado na <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="8076539570602616846">Restringir contas do Google qualificadas para salvar arquivos PDF no Google Drive pelo visualizador de PDF do <ph name="PRODUCT_NAME" /></translation>
+<translation id="8078224178125125527">A definição desta política especifica quais servidores proxy têm permissão para todos os esquemas de autenticação HTTP compatíveis com <ph name="PRODUCT_NAME" />, independentemente da política <ph name="AUTH_SCHEMES_POLICY_NAME" />.
+
+Formate o padrão do servidor proxy de acordo com o formato do filtro da lista de bloqueio de URLs (<ph name="URL_SCHEME_FORMAT_LINK" />). É possível definir até 1.000 exceções.
+É possível usar caracteres curingas para o componente de host (por exemplo, "*:8080" corresponde a todos os proxies na porta 8080). Um nome do host (no caso, "proxy.exemplo.com") também corresponde aos subdomínios dele. Para corresponder exatamente a um host e excluir os subdomínios dele, adicione um ponto antes (ou seja, "proxy.exemplo.com").
+
+Se esta política não for definida, apenas os esquemas de autenticação HTTP especificados em <ph name="AUTH_SCHEMES_POLICY_NAME" /> (ou os esquemas padrão, se não forem definidos) serão compatíveis com a autenticação de proxy.</translation>
 <translation id="8078297389450285582">Se a política for definida como "Ativada" ou não for definida, o modelo de escurecimento inteligente será ativado e poderá aumentar o tempo de tela ativa. Se ocorrer esse aumento, os intervalos de desligamento, bloqueio e descanso da tela serão ajustados para manter as mesmas distâncias do intervalo de escurecimento da tela de acordo com a configuração original.
 
       Se a política for definida como "Desativada", o modelo de escurecimento inteligente não influenciará a luminosidade da tela.</translation>
@@ -12190,6 +12228,7 @@ Quando esta política não é definida, o controle facial fica desativado, mas p
 <translation id="8329984337216493753">Esta política é ativa somente no modo de varejo. Quando o DeviceIdleLogoutTimeout for especificado, esta política definirá a duração da caixa de aviso com contagem regressiva que será mostrada ao usuário antes da desconexão. O valor da política deve ser especificado em milésimos de segundos.</translation>
 <translation id="8330437518362176921">Usar apenas o URL de atualização fornecido pela política para fazer o download e a atualização de apps do Chrome para quiosque</translation>
 <translation id="8331479227794770304">Ativar tecla aderente</translation>
+<translation id="8331940246704699384">Ativar extensões instaladas por políticas que substituem as configurações de pesquisa padrão ou da página Nova guia</translation>
 <translation id="8332822245414537447">Desativar a verificação de uso da Chave RSA</translation>
 <translation id="8334685561819743286">Desativar a correção automática do teclado físico durante a digitação</translation>
 <translation id="8336986243404088829">Esta política mitiga ataques de memória em processo cruzado de canal lateral, isolando o processo do renderizador no núcleo da CPU e impedindo que outros processos compartilhem o mesmo núcleo. A mitigação é compatível com o <ph name="MS_WIN_NAME" /> 11 24H2 e versões mais recentes. Se o SO não tiver o suporte de programação necessário, esta política não terá efeito. Esta política pode diminuir o desempenho em alguns cenários exigentes, de forma semelhante à desativação do hyperthreading. Para mais informações, acesse https://learn.microsoft.com/pt-br/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy
@@ -12341,6 +12380,7 @@ configurados.</translation>
 <translation id="8437147918598002525">Ativar o modo somente HTTPS no modo estrito</translation>
 <translation id="8441105784056442638">Ativar o recurso de restauração completa</translation>
 <translation id="844322176712318428">Permitir o uso da API Translator</translation>
+<translation id="8443398105049037546">Ativar o histórico da área de transferência</translation>
 <translation id="8444157920689124099">Ativar a criptografia vinculada ao aplicativo</translation>
 <translation id="8445576299806775661">Depois de cada atualização importante de versão, o Chrome criará um snapshot de certas partes dos dados de navegação do usuário para uso em caso de reversão de emergência da versão. Se uma reversão de emergência for feita para uma versão da qual o usuário tem um snapshot correspondente, os dados serão restaurados. Isso permite que o usuário retenha essas configurações na forma de favoritos e dados de preenchimento automático.
 
@@ -13288,6 +13328,11 @@ Observação: no momento, apenas a primeira entrada será considerada. Extensõe
 <translation id="9015759770696099204">As configurações F11/F12 estão desativadas</translation>
 <translation id="9015952763003753868">Fazer com que <ph name="ACAM_HEADER_NAME" /> corresponda à especificação de simulação do <ph name="CORS" /> em conformidade</translation>
 <translation id="9020630127193895800">Luz de fundo índigo do teclado</translation>
+<translation id="9025073735776703766">Política que controla a disponibilidade do recurso XSLT (a API JavaScript XSLTProcessor e a instrução de processamento XSL).
+Quando ela é ativada, o XSLT fica disponível, mesmo que esteja desativado por padrão no navegador.
+Quando ela é desativada, o XSLT fica indisponível, mesmo que esteja ativado por padrão no navegador.
+Se a política não for configurada, a disponibilidade do XSLT será definida pelas configurações padrão do navegador e pelos testes de campo.
+Esta política é uma medida temporária e será removida na versão M176.</translation>
 <translation id="9025912013525357598">Preservação de espaços em branco do DataURL para todos os tipos de mídia</translation>
 <translation id="9029815312472546960">Bloquear a API Device Attributes nestes sites</translation>
 <translation id="9031831501689819108">Ativar o Suporte a navegadores legados</translation>
@@ -13452,6 +13497,7 @@ Esta política não controla a integração geral do <ph name="GOOGLE_GEMINI_PRO
 <translation id="9133526448421932754">Luz de fundo amarela do teclado</translation>
 <translation id="9135033364005346124">Ativar proxy do <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="9135095804754272364">Mostrar uma notificação quando um dispositivo USB for detectado</translation>
+<translation id="9135676404321186528">Remover extensões instaladas por políticas que substituem as configurações de pesquisa padrão ou da página Nova guia em ambientes de baixa confiança</translation>
 <translation id="9136212796239682721">Desativar a interface de download em balão</translation>
 <translation id="9136399279941091445">Intervalos de horas de inatividade quando as políticas do dispositivo específicas são lançadas</translation>
 <translation id="9139775903828905867">Controlar o atalho usado para acionar F11</translation>

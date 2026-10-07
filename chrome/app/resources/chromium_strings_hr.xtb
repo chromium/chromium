@@ -21,6 +21,7 @@
 <translation id="1185134272377778587">O pregledniku Chromium</translation>
 <translation id="1186645291482254714">Primajte upozorenja o praćenju cijena uz Chromium na telefonu</translation>
 <translation id="1203500561924088507">Zahvaljujemo što ste izvršili instaliranje. Da biste mogli koristiti <ph name="BUNDLE_NAME" />, morate ponovno pokrenuti preglednik.</translation>
+<translation id="1222365723190436821"><ph name="IMPORTANT_UPDATE" /> je na čekanju. Da bi vaše pregledavanje ostalo sigurno, Chromium će se ažurirati sljedeći put kad ne budete aktivni <ph name="IDLE_DURATION" />.</translation>
 <translation id="1232234696885483911">Kad otvorite pretraživanje slika, naslov, URL i sadržaj stranice, uključujući PDF-ove, automatski će se poslati poslužitelju. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Dok ste prijavljeni, možete koristiti svoje zaporke i još mnogo toga sa svojeg Google računa u Chromiumu. Da biste to promijenili, idite na Vaš račun u Chromiumu.</translation>
 <translation id="1244381985120794049">Prikaži Gemini u Chromiumu na traci izbornika Maca</translation>
@@ -228,6 +229,7 @@
 <translation id="3286538390144397061">Ponovo pokreni sad</translation>
 <translation id="328888136576916638">Nedostaju ključevi Google API-ja. Neke funkcije Chromiuma bit će onemogućene.</translation>
 <translation id="3296368748942286671">Nastavi izvršavati ​​pozadinske aplikacije po zatvaranju preglednika Chromium</translation>
+<translation id="3300632735252839402">Chromium će se ažurirati kad niste aktivni</translation>
 <translation id="3313189106987092621">Chromium će vas upozoriti prije učitavanja bilo koje web-lokacije putem nesigurne veze</translation>
 <translation id="3316771292331273802">Kad zatvorite sve prozore Chromiuma, odjavit ćete se s većine web-lokacija osim Google računa ako ste prijavljeni na Chromium. Da bi vas web-lokacije zapamtile, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">gornji desni kut područja za pretraživanje: desno <ph name="RIGHT" />%, vrh <ph name="TOP" />%</translation>
@@ -236,6 +238,7 @@
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Želite li prijeći na postojeći profil u Chromiumu?</translation>
 <translation id="3412460710772753638">U Upravitelju zaporki na ovom uređaju</translation>
+<translation id="3425452599984451640">Dostupno je ažuriranje za Chromium</translation>
 <translation id="3427159664004296878">Da biste mogli pristupati svojim oznakama i drugim podacima s uređaja <ph name="DEVICE" />, prijavite se u Chromium</translation>
 <translation id="3438772217992559640">Pretražite ovu karticu pomoću pretraživanja slika</translation>
 <translation id="3455907671758333080">Proširite poboljšano sigurno pregledavanje uz Chromium na telefonu</translation>

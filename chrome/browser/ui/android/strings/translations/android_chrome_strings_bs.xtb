@@ -764,6 +764,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="4092709865241032354">Da pomognete Google upravitelju lozinki da sačuva podatke za prijavu, dodajte korisničko ime za ovu web lokaciju</translation>
 <translation id="4095146165863963773">Izbrisati podatke aplikacije?</translation>
 <translation id="4095483462103784441">Kreirajte novu grupu kartica</translation>
+<translation id="4098552968111329864">Da zaštiti vaš rad u Chromeu, vaša organizacija će moći pregledati određene informacije ili upravljati njima kada ste prijavljeni u Chrome</translation>
 <translation id="4105527135143631701">Ažuriranje Google upravitelja lozinki je otvoreno</translation>
 <translation id="4107207375883769436">Vaša organizacija možda mora vidjeti podatke pregledanja na vašem radnom profilu, kao što su historija pregledanja i lozinke, te upravljati njima</translation>
 <translation id="4113030288477039509">Upravlja vaš administrator</translation>
@@ -1770,6 +1771,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="7929587383660661825">Chrome automatski uklanja odobrenja za web lokacije koje zloupotrebljavaju obavještenja ili web lokacije koje niste nedavno posjetili</translation>
 <translation id="7934668619883965330">Nije moguće preuzeti fajl. Format fajla nije podržan.</translation>
 <translation id="7951102827450076904">Uvijek otvori preuzete PDF-ove</translation>
+<translation id="7952148074468405586">Saznajte više o <ph name="BEGIN_LINK" />informacijama koje vaša organizacija može pregledati ili kojima može upravljati<ph name="END_LINK" /></translation>
 <translation id="7952479614398473176">Da otvorite novi prozor, smanjite ukupni broj aktivnih prozora na <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ili manje.</translation>
 <translation id="7956713633345437162">Mobilne oznake</translation>
 <translation id="7957413488482743710">Virtuelna kartica sakriva stvarnu karticu radi zaštite od potencijalne prevare. <ph name="BEGIN_LINK1" />Saznajte više o virtuelnim karticama<ph name="END_LINK1" /></translation>

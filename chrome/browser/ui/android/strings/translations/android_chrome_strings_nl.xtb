@@ -764,6 +764,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4092709865241032354">Voeg je gebruikersnaam voor deze site toe, zodat Google Wachtwoordmanager je inloggegevens kan opslaan</translation>
 <translation id="4095146165863963773">App-gegevens verwijderen?</translation>
 <translation id="4095483462103784441">Nieuwe tabbladgroep maken</translation>
+<translation id="4098552968111329864">Je organisatie kan bepaalde informatie bekijken of beheren als je bent ingelogd bij Chrome om je werk in Chrome te beveiligen</translation>
 <translation id="4105527135143631701">Update voor Google Wachtwoordmanager geopend</translation>
 <translation id="4107207375883769436">Je organisatie moet misschien browsegegevens in je werkprofiel kunnen bekijken en beheren, zoals je browsegeschiedenis en wachtwoorden</translation>
 <translation id="4113030288477039509">Beheerd door je beheerder</translation>
@@ -1770,6 +1771,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7929587383660661825">Chrome verwijdert automatisch rechten voor sites die misbruik maken van meldingen of die je niet recent hebt bezocht</translation>
 <translation id="7934668619883965330">Kan bestand niet downloaden. Bestandsindeling wordt niet ondersteund.</translation>
 <translation id="7951102827450076904">Gedownloade pdf's altijd openen</translation>
+<translation id="7952148074468405586">Meer informatie over <ph name="BEGIN_LINK" />informatie die je organisatie kan bekijken of beheren<ph name="END_LINK" /></translation>
 <translation id="7952479614398473176">Als je een nieuw venster wilt openen, verlaag je het totale aantal actieve vensters tot <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> of minder.</translation>
 <translation id="7956713633345437162">Mobiele bookmarks</translation>
 <translation id="7957413488482743710">Een virtuele kaart verbergt je werkelijke kaart om je te beschermen tegen potentiële fraude. <ph name="BEGIN_LINK1" />Meer informatie over virtuele kaarten<ph name="END_LINK1" /></translation>

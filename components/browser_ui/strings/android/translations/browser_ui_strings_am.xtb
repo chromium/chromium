@@ -12,7 +12,6 @@
 <translation id="1126523729897810826">ከChrome ምርጡን ለማግኘት ከታች ያሉትን እነዚህን የተጠቆሙ ድርጊቶች ያጠናቅቁ።</translation>
 <translation id="113098737392899175">የቁልፍ ሰሌዳ ተያይዞ ሳለ በጽሑፍ ጠቋሚ ገጾችን ያስሱ</translation>
 <translation id="1148624853678088576">ተዘጋጅተዋል!</translation>
-<translation id="1149644372535087155">የይለፍ ቃላትን በChrome ውስጥ ያስቀምጡ</translation>
 <translation id="1178015372320901893">የእኔ አቋራጮች የግርጌ ሉህ</translation>
 <translation id="1178581264944972037">ለአፍታ አቁም</translation>
 <translation id="1181037720776840403">አስወግድ</translation>
@@ -227,7 +226,6 @@
 <translation id="3167868116600277716">ምግብ ያግኙ</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> የተከማቸ ውሂብ</translation>
 <translation id="3199078925536734975">በዚህ ጊዜ የተፈቀደ • ግምታዊ</translation>
-<translation id="3208584281581115441">አሁን ፈትሽ</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> ማሳወቂያዎችን እንዲልክልዎት ለማድረግ፣ በተጨማሪ በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ማሳወቂያዎችን ያብሩ።</translation>
 <translation id="3223425961342298674">አካባቢ አይፈቀድም</translation>
 <translation id="3227137524299004712">ማይክሮፎን</translation>
@@ -286,7 +284,6 @@
 <translation id="381841723434055211">ስልክ ቁጥሮች</translation>
 <translation id="3823453485268218808">ቅርጸ-ቁምፊ ሞኖ</translation>
 <translation id="3826050100957962900">የሶስተኛ ወገን መግቢያ</translation>
-<translation id="3831065134033923230">የተቀመጡ ይለፍ ቃላትዎን ይፈትሹ</translation>
 <translation id="3835233591525155343">የእርስዎ መሣሪያ አጠቃቀም</translation>
 <translation id="3843916486309149084">Chrome ዛሬ እንደገና ኩኪዎችን ያግዳል</translation>
 <translation id="385051799172605136">ተመለስ</translation>
@@ -294,7 +291,6 @@
 <translation id="3870711497942672548">ለመነሻ ገጽዎ በብጁ ቀለሞች እና ምስሎች Chromeን የራስዎ ያድርጉት</translation>
 <translation id="389521680295183045">የእርስዎን መሣሪያ በንቃት በሚጠቀሙበት ጊዜ ጣቢያዎች ለማወቅ ጥያቄ ማቅረብ ይችላሉ</translation>
 <translation id="3895926599014793903">ማጉላት አንቃን ያስገድዱ</translation>
-<translation id="3903738175795615004">ከላይ ይጎትቱ ወይም ከሙሉ ገፅ ዕይታ ለመውጣት Esc ቁልፍን ይጫኑ።</translation>
 <translation id="3905475044299942653">በርካታ ማሳወቂያዎችን ያቁሙ</translation>
 <translation id="3922092564198021702">በስልክዎ ላይ ቅንብሮችን ይክፈቱ</translation>
 <translation id="3924858949939391676">አንዴ የንባብ ሁነታ ከበራ በኋላ አገናኞችን አሳይ</translation>
@@ -355,7 +351,6 @@
 <translation id="4479647676395637221">ጣቢያዎች ካሜራዎን እንዲጠቀሙ ከመፍቀድዎ በፊት ይጠይቅ (የሚመከር)</translation>
 <translation id="4505788138578415521">ዩአርኤል ተዘርግቷል</translation>
 <translation id="4522570452068850558">ዝርዝሮች</translation>
-<translation id="4523472416386354622">ለመጀመር ግባ</translation>
 <translation id="4529207923544043455">የተጠናቀቁ እና ያልተጠናቀቁ የማዋቀር ዝርዝር ተግባራትን የሚያሳይ የግርጌ ሉህ</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> የእርስዎን ማይክራፎን እንዲደርስ ለማድረግ፣ በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ማይክራፎንን በተጨማሪ ያብሩ።</translation>
 <translation id="4545694195887112015">የማዋቀር ሉህ ተዘግቷል</translation>
@@ -368,7 +363,6 @@
 <translation id="4645575059429386691">በእርስዎ ወላጅ የሚቀናበር</translation>
 <translation id="4651224148644053314">ተጨማሪ ቀለሞች እና አማራጮች</translation>
 <translation id="4652266463001779298">አይፈቀድም</translation>
-<translation id="4655846733459137112">በሚቀጥለው ጊዜ በመለያ ሲገቡ ይህን የይለፍ ቃል በቀላሉ ለመጠቀም አዎ ላይ መታ ያድርጉ</translation>
 <translation id="4663373278480897665">ካሜራ ተፈቅዷል</translation>
 <translation id="4670064810192446073">ምናባዊ እውነታ</translation>
 <translation id="4672315773691449562">የአሳሽ መተግበሪያን መታ ያድርጉ ከዚያም Chrome ላይ መታ ያድርጉ</translation>
@@ -415,7 +409,6 @@
 <translation id="512938610812707830">የአዲስ ትር ገፅ መልክ ገጽታ ስብስቦች የግርጌ ሉህ በሙሉ ቁመት ተከፍቷል</translation>
 <translation id="5137460097045297858">የምግብ ያግኙ የግርጌ ሉህ በግማሽ ቁመት ተከፍቷል</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{ክፍት በሆኑ ትሮችዎ ላይ የዋጋ ቅናሽ}one{ክፍት በሆኑ ትሮችዎ ላይ የዋጋ ቅናሽ}other{ክፍት በሆኑ ትሮችዎ ላይ የዋጋዎች ቅናሽ}}</translation>
-<translation id="5150048675001754041">በፍጥነት እና በቀላሉ ወደ ጣቢያዎች እና መተግበሪያዎች ይግቡ</translation>
 <translation id="5186036860380548585">አማራጮች ከማያ ገጹ አናት አጠገብ ይገኛሉ</translation>
 <translation id="5197729504361054390">የመረጧቸው እውቂያዎች ለ<ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ይጋራሉ።</translation>
 <translation id="5198930230016462977">የእርስዎን አዲስ የትር ገፅ የግርጌ ሉህ እንደተዘጋ ያብጁ</translation>
@@ -425,7 +418,6 @@
 <translation id="5239623327352565343">አካባቢ ይፈቀዳል</translation>
 <translation id="5246825184569358663">ይህ እርምጃ ኩኪዎችን ጨምሮ ሁሉንም የአካባቢ ውሂብ ይሰርዛል እና ሁሉንም ፈቃዶች ለ<ph name="DOMAIN" /> እና በእሱ ስር ላሉት ሁሉም ጣቢያዎች ዳግም ያስጀምራል</translation>
 <translation id="5264323282659631142">«<ph name="CHIP_LABEL" />»ን ያስወግዱ</translation>
-<translation id="528192093759286357">ከሙሉ ማያ ገፅ ለመውጣት ከላይ ይጎትቱ እና የተመለስ አዝራሩን ይንኩ።</translation>
 <translation id="5286194356314741248">በመቃኘት ላይ</translation>
 <translation id="5300589172476337783">አሳይ</translation>
 <translation id="5301954838959518834">እሺ፣ ገባኝ</translation>
@@ -473,7 +465,6 @@
 <translation id="5804241973901381774">ፍቃዶች</translation>
 <translation id="5817042798620209981">የጣቢያ መረጃ፣ መገናኛ</translation>
 <translation id="5822675474983796325">የእርስዎ አዲስ የትር ገፅ የግርጌ ሉህ በሙሉ ቁመት እንደተከፈተ ያብጁ</translation>
-<translation id="5826403277762134844">የይለፍ ቃላትን በChrome ውስጥ ለማስቀመጥ መመሪያ የግርጌ ሉህ</translation>
 <translation id="5833899990800318936">ጣቢያዎች ጃቫስክሪፕትን እንዲጠቀሙ አይፍቀዱ</translation>
 <translation id="583673505367439042">ጣቢያዎች በመሣሪያዎ ላይ ያሉ ፋይሎችን እና አቃፊዎችን ለማርትዕ መጠየቅ ይችላሉ</translation>
 <translation id="5844448279347999754">ሲበራ፣ ጣቢያዎች ወደ ቅንጥብ ሰሌዳዎ የተቀመጡ ጽሑፎችን እና ምስሎችን ለማየት መጠየቅ ይችላሉ። ሲጠፋ፣ ጣቢያዎች ወደ ቅንጥብ ሰሌዳዎ የተቀመጡ ጽሑፎችን ወይም ምስሎችን ማየት አይችሉም።</translation>
@@ -511,7 +502,6 @@
 <translation id="6104860901391833523">ሲበራ ጣቢያዎች ሥዕል-ላይ-ሥዕልን በራስ-ሰር ማስገባት ይችላሉ። ሲጠፋ ጣቢያዎች ሥዕል-ላይ-ሥዕልን በራስ-ሰር ማስገባት አይችሉም።</translation>
 <translation id="6120483543004435978">ሲበራ፣ ጣቢያዎች መሳሪያዎን በንቃት ሲጠቀሙ ለማወቅ መጠየቅ ይችላሉ። ሲጠፋ፣ ጣቢያዎች መሳሪያዎን በንቃት ሲጠቀሙ ማወቅ አይችሉም።</translation>
 <translation id="612871598708395517">በሌሎች መተግበሪያዎች ውስጥ የChrome ጥቆማዎችን ያግኙ የሚለውን ይደብቁ</translation>
-<translation id="6132075343662013154">Chrome የይለፍ ቃልዎን ለማስቀመጥ ጥያቄ ያቀርባል</translation>
 <translation id="615886654739818377">ጣቢያዎች በሁሉም የእርስዎ ማሳያዎች ላይ መስኮቶችን እንዲያስተዳድሩ አይፍቀዱ</translation>
 <translation id="6165508094623778733">የበለጠ ለመረዳት</translation>
 <translation id="6171020522141473435">ሲበራ፣ ጣቢያዎች የብሉቱዝ መሳሪያዎችን ለመጠቀም መጠየቅ ይችላሉ። ሲጠፋ፣ ጣቢያዎች የብሉቱዝ መሳሪያዎችን መጠቀም አይችሉም።</translation>
@@ -587,7 +577,6 @@
 <translation id="6980861169612950611">የጣቢያ ውሂብ ይሰረዝ? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">ተደራሽነት</translation>
 <translation id="6991142177939282156">የተፈቀደ • ግምታዊ በመጠቀም ላይ</translation>
-<translation id="6992014788289743568">የይለፍ ቃላትዎን በመፈተሽ ደኅንነትዎን ያጠናክሩ እና የውሂብዎን ደኅንነት ይጠብቁ</translation>
 <translation id="6992289844737586249">ጣቢያዎች ማይክሮፎንዎን እንዲጠቀሙ ከመፍቀድዎ በፊት ይጠይቅ (የሚመከር)</translation>
 <translation id="7000754031042624318">በAndroid ቅንብሮች ውስጥ ጠፍቷል</translation>
 <translation id="7036823721811529709">ከዳራ ያዳምጡ</translation>
@@ -654,7 +643,6 @@
 <translation id="775043444390799886">ፈቃድን ሻር</translation>
 <translation id="7758789811447313947">ሐምራዊ ገጽታ</translation>
 <translation id="7759147511335618829">የMIDI መሣሪያ ቁጥጥር እና ዳግም ፕሮግራም</translation>
-<translation id="7771089277295008211">የይለፍ ቃላትን አስቀምጥ መመሪያ የግርጌ ሉህ ተዘግቷል</translation>
 <translation id="7781829728241885113">ትናንት</translation>
 <translation id="7791543448312431591">ያክሉ</translation>
 <translation id="780301667611848630">አይ፣ አመሰግናለሁ</translation>
@@ -671,7 +659,6 @@
 <translation id="7940722705963108451">አስታውሰኝ</translation>
 <translation id="7948081750384205628">ስለ <ph name="SETTING_TITLE" /> የበለጠ ይወቁ</translation>
 <translation id="7952708427581814389">ጣቢያዎች በቅንጥብ ሰሌዳዎ ላይ ጽሑፍን እና ምስሎችን ለማየት መጠየቅ ይችላሉ</translation>
-<translation id="7958779728312669715">የይለፍ ቃላትን አስቀምጥ መመሪያ የግርጌ ሉህ ሙሉ በሙሉ ተከፍቷል</translation>
 <translation id="798299424881500862">ብርቱካናማ ገጽታ</translation>
 <translation id="7986741934819883144">አንድ እውቂያ ይምረጡ</translation>
 <translation id="7990211076305263060">ሲበራ፣ ጣቢያዎች ማይክሮፎንዎን ለመጠቀም ሊጠይቁ ይችላሉ። ሲጠፋ፣ ጣቢያዎች ማይክሮፎንዎን መጠቀም አይችሉም።</translation>
@@ -766,7 +753,6 @@
 <translation id="8889294078294184559">ማሰስዎን ሲቀጥሉ እውነተኛ ሰው ሊሆኑ እንደሚችሉ ጣቢያዎች በChrome መፈተሽ እና እርስዎ ከዚህ ቀደም በጎበኙት ጣቢያ ላይ ማረጋገጥ ይችላሉ</translation>
 <translation id="8899807382908246773">ጣልቃ ገቢ ማስታወቂያዎች</translation>
 <translation id="8903921497873541725">አጉላ</translation>
-<translation id="8919911527569629802">ወደ ማንኛውም ድር ጣቢያ ይግቡ</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926389886865778422">ደግመው አይጠይቁ</translation>
 <translation id="8926666909099850184">NFC ለዚህ መሣሪያ ጠፍቷል። በ<ph name="BEGIN_LINK" />Android ቅንበሮች<ph name="END_LINK" /> ውስጥ ያብሩት።</translation>

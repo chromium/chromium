@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
+<translation id="1004615467759797184">Addaswch Eich Tudalen Tab Newydd</translation>
 <translation id="1004825134262590729">{count,plural, =1{{count} cod pas}zero{{count} codau pas}two{{count} god pas}few{{count} chod pas}many{{count} chod pas}other{{count} cod pas}}</translation>
 <translation id="1005023885865154304">Agorwch y gosodiadau Awtolenwi Cyfrineiriau</translation>
 <translation id="1005230401424685968">BBBB</translation>
@@ -1693,6 +1694,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6307792728709337290">Cadwch eich cerdyn yn eich Cyfrif Google i'w awtolenwi ar gyfer y pryniant hwn a phryniannau yn y dyfodol a wneir ar Chrome.</translation>
 <translation id="6316141353357700666">Dewiswch y cyfrinair rydych am ei ddefnyddio o'r rhestr sy'n ymddangos.</translation>
 <translation id="6321526113093607004">Ychwanegu at Nodau Tudalen</translation>
+<translation id="6324054713176642683">Dewiswch o themâu, lliwiau neu uwchlwythwch eich llun eich hun.</translation>
 <translation id="6327249202318869726">Mae Gemini wedi'i ddiffodd ar gyfer eich cyfrif. Cysylltwch â’ch gweinyddwr am ragor o wybodaeth.</translation>
 <translation id="6331836477476466332">Porwr mwy diogel, mwy pwerus i chi</translation>
 <translation id="6337234675334993532">Amgryptio</translation>
@@ -2067,7 +2069,6 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="7454057999980797137">Talaith / Sir</translation>
 <translation id="7458706065921255639">Personoleiddio a chysylltu</translation>
 <translation id="745899714366929493">Drwy'r dydd</translation>
-<translation id="7460314822154045102">Defnyddio Camera</translation>
 <translation id="7460698861522306757">Gofyn am Wefan Symudol</translation>
 <translation id="7464143666517313304">Mae hyn yn dileu cyfeiriadau sydd wedi'u cadw ar y ddyfais hon.</translation>
 <translation id="7468373585447318060">Cael y diweddaraf am ostyngiadau prisiau ar yr holl gynhyrchion rydych yn eu holrhain.</translation>

@@ -302,7 +302,6 @@
 <translation id="1486096554574027028">ପାସୱାର୍ଡଗୁଡ଼ିକ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="1492194039220927094">ନୀତିଗୁଡ଼ିକ ପୁସ୍‌ କରନ୍ତୁ:</translation>
 <translation id="1495677929897281669">ଟାବ୍‌କୁ ଫେରନ୍ତୁ</translation>
-<translation id="1496318738909526466">ଉନ୍ନତ ଅଟୋଫିଲକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="1500286806237135498">କେମେରା (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">ବଂଶୀ</translation>
 <translation id="1507202001669085618">&lt;p&gt;ଆପଣ ଯଦି କୌଣସି ୱାଇ-ଫାଇ ପୋର୍ଟାଲ୍ ବ୍ୟବହାର କରୁଛନ୍ତି, ଯେଉଁଠି ଆପଣଙ୍କୁ ଅନ୍‌ଲାଇନ୍ ହେବା ପାଇଁ ସାଇନ୍ ଇନ୍ କରିବାକୁ ହୁଏ, ତାହେଲେ ଆପଣ ଏହି ତ୍ରୁଟିକୁ ଦେଖିବେ।&lt;/p&gt;
@@ -954,6 +953,7 @@
 <translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp;ଏଡିଟ୍‍କୁ ପୂର୍ବବତ୍ କରନ୍ତୁ</translation>
 <translation id="2559566667529177711">ଏକାଧିକ-ଲେୟର</translation>
+<translation id="2561224416042784023">ସେଟିଂସ ଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="2570734079541893434">ସେଟିଂସ୍ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="257136025287118539">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟେଟର ଆପଣଙ୍କର ଫାଇଲଗୁଡ଼ିକୁ <ph name="CLOUD_PROVIDER" />କୁ ମୁଭ କରୁଛନ୍ତି। ଅପଲୋଡ ସମ୍ପୂର୍ଣ୍ଣ ହେବା ପରେ ଆପଣ ଏହି ଫାଇଲଗୁଡ଼ିକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
 <translation id="2571488850200220306">ସୁରକ୍ଷାକୁ ସକ୍ଷମ କରିବାରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ ଏହା ଡିଭାଇସର OS, ବ୍ରାଉଜର ଭର୍ସନ ଏବଂ କେଉଁ ସଫ୍ଟୱେର ଇନଷ୍ଟଲ କରାଯାଇଛି ତାହା ମଧ୍ୟ ଦେଖିପାରିବ</translation>

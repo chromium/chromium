@@ -30,6 +30,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1194807384646768652">Chrome je blokiral ta prenos, ker se vrsta datoteke ne prenaša pogosto in je morda nevarna</translation>
 <translation id="1197860368385086056">Ko boste naslednjič odprli Chrome v napravi <ph name="DEVICE_TYPE" />, bo prikazan poziv za omogočanje opozoril o spremljanju cen.</translation>
 <translation id="1203500561924088507">Hvala, ker ste se odločili za namestitev. Preden uporabite <ph name="BUNDLE_NAME" />, morate znova zagnati brskalnik.</translation>
+<translation id="122321322139970942"><ph name="IMPORTANT_UPDATE" /> je na čakanju. Za zagotavljanje varnega brskanja se bo Chrome posodobil, ko boste naslednjič nedejavni za obdobje <ph name="IDLE_DURATION" />.</translation>
 <translation id="1226003169284463347">Če želite dostopati do zaznamkov in drugega v vseh napravah, se prijavite v Chrome</translation>
 <translation id="1278833599417554002">Znova zaženite, če želite posodobiti &amp;Chrome</translation>
 <translation id="1289911795790071537">Odpiranje iskanja s Chromom</translation>
@@ -330,7 +331,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4050175100176540509">V najnovejši različici so na voljo pomembne varnostne izboljšave in nove funkcije.</translation>
 <translation id="4053720452172726777">Prilagajanje in nadziranje Google Chroma</translation>
 <translation id="408393047846373801">Če želite dostopati do gesel in drugega v vseh napravah, se prijavite v Chrome. To geslo bo po prijavi shranjeno v računu Google.</translation>
-<translation id="409936259433005390">Ali boste kmalu nadgradili na Windows 11? Prenesite namestitveni program za Chrome v OneDrive, da boste pripravljeni že od začetka.</translation>
 <translation id="4102173024714616627">Razširitve so dodatki, s katerimi lahko prilagodite Chrome. Razširitve vam pomagajo, da Chrome prilagodite svojim potrebam, od organiziranja do poenostavljanja vsakodnevnih opravil.</translation>
 <translation id="4110895483821904099">Nastavitev novega profila v Chromu</translation>
 <translation id="4111566860456076004">Chrome ne more preveriti, od kod je ta razširitev, in morda ni varna. Odstranite jo iz Chroma, da si ne bo mogla več ogledati vaših podatkov na obiskanih spletnih mestih, vključno z osebnimi podatki, in jih spreminjati.</translation>
@@ -507,6 +507,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="5941830788786076944">Nastavi Google Chrome kot privzeti brskalnik</translation>
 <translation id="5947104538377036631">Bližnjica za Chrome</translation>
 <translation id="5960071705175224773">Neznana aplikacija je spremenila vaše nastavitve</translation>
+<translation id="5960404530854194706">Chrome se bo posodobil, ko boste odsotni</translation>
 <translation id="5980111191913430208">Razširitve, aplikacije in teme iz neznanih virov lahko škodijo napravi. Chrome priporoča, da jih namestite samo tukaj: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="6003112304606738118">Prenašanje … Še <ph name="HOURS" /> h.</translation>
 <translation id="6008161919456049856">Gesla, plačilna sredstva in naslovi, ki ste jih shranili v računu Google, bodo odstranjeni iz te naprave. Če jih želite znova uporabljati v Chromu, se vnovič prijavite.</translation>
@@ -590,6 +591,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6556755379298048869">Iščite z bližnjičnimi tipkami.</translation>
 <translation id="6585124893636629274">Zapri Geminija v Chromu</translation>
 <translation id="659498884637196217">V Googlovem upravitelju gesel v tej napravi</translation>
+<translation id="660312897435669152">Chrome je pripravljen na posodobitev</translation>
 <translation id="6612152958212564387">Googlu ne pošiljate statističnih podatkov o uporabi in poročil o zrušitvah. <ph name="BEGIN_LINK" />Upravljanje<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Poskrbite, da so gesla, zaznamki in zgodovina popolnoma sinhronizirani v vseh napravah tako, da Chrome nastavite kot privzeti brskalnik.</translation>
 <translation id="6621391692573306628">Če želite ta zavihek poslati v drugo napravo, se v obeh napravah prijavite v Chrome.</translation>

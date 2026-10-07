@@ -302,7 +302,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1486096554574027028">Maghanap ng mga password</translation>
 <translation id="1492194039220927094">Pag-push ng mga patakaran:</translation>
 <translation id="1495677929897281669">Bumalik sa tab</translation>
-<translation id="1496318738909526466">Pamahalaan ang Pinahusay na Autofill</translation>
 <translation id="1500286806237135498">Mga Camera (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">Flute</translation>
 <translation id="1507202001669085618">&lt;p&gt;Makikita mo ang error na ito kung gumagamit ka ng Wi-Fi portal kung saan kailangan mong mag-sign in bago ka makapag-online.&lt;/p&gt;
@@ -954,6 +953,7 @@ Puwede mong alisin ang suhestyong ito sa Chrome. Hindi made-delete ang iyong ori
 <translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp;I-undo ang Pag-e-edit</translation>
 <translation id="2559566667529177711">Multi-Layer</translation>
+<translation id="2561224416042784023">Tingnan ang mga setting</translation>
 <translation id="2570734079541893434">Pamahalaan ang mga setting</translation>
 <translation id="257136025287118539">Inililipat ng iyong administrator ang mga file mo sa <ph name="CLOUD_PROVIDER" />. Puwede mong baguhin ang mga file na ito kapag natapos na ang pag-upload.</translation>
 <translation id="2571488850200220306">Para matiyak ang seguridad, nakikita rin nito ang OS ng device, bersyon ng browser, at kung anong software ang naka-install</translation>

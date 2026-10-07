@@ -617,7 +617,7 @@
 <translation id="1467432559032391204">向左</translation>
 <translation id="1468571364034902819">无法使用这份个人资料</translation>
 <translation id="1469702495092129863">请检查麦克风</translation>
-<translation id="1470084204649225129">{NUM_TABS,plural, =1{向新分组添加标签页}other{向新分组添加标签页}}</translation>
+<translation id="1470084204649225129">{NUM_TABS,plural, =1{添加到新标签页组}other{添加到新标签页组}}</translation>
 <translation id="1470946456740188591">如需开启或关闭光标浏览模式，请使用快捷键 Ctrl + 搜索键 + 7</translation>
 <translation id="1471034383866732283">朗读模式在此页面中找不到主要内容</translation>
 <translation id="1472675084647422956">展开</translation>
@@ -656,7 +656,7 @@
 <translation id="1499948601784722399">网站请求</translation>
 <translation id="1500297251995790841">未知设备 [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">详细了解不受支持的 Chrome 应用</translation>
-<translation id="1501480321619201731">删除群组</translation>
+<translation id="1501480321619201731">删除标签页组</translation>
 <translation id="150411034776756821">移除 <ph name="SITE" /></translation>
 <translation id="1504253885059472207">固定拆分视图</translation>
 <translation id="1505494256539862015">导出密码</translation>
@@ -753,6 +753,7 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" />（访客）</translation>
 <translation id="1572266655485775982">Wi-Fi 开关</translation>
 <translation id="1573127087832371028">请描述问题</translation>
+<translation id="1573415331092567032">在 Chrome 之外使用此快捷键</translation>
 <translation id="1574335334663388774">此设备已安装<ph name="APP_NAME" />版本 <ph name="APP_VERSION" /></translation>
 <translation id="1575741822946219011">语言和输入法</translation>
 <translation id="1576594961618857597">默认的白色头像</translation>
@@ -2485,7 +2486,7 @@
 <translation id="2893168226686371498">默认浏览器</translation>
 <translation id="2893318819023133318">反转视图</translation>
 <translation id="2894596417096093634">崩溃报告标识符</translation>
-<translation id="2894757982205307093">在分组内添加新标签页</translation>
+<translation id="2894757982205307093">在组内添加新标签页</translation>
 <translation id="289695669188700754">密钥 ID：<ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">当您关闭所有无痕式窗口后，系统将会撤消这项自定义设置</translation>
 <translation id="2897878306272793870">是否确实要打开 <ph name="TAB_COUNT" /> 个标签页？</translation>
@@ -3534,6 +3535,7 @@
 <translation id="3685598397738512288">Linux USB 偏好设置</translation>
 <translation id="3686108296937784939">我所属组织的快捷方式</translation>
 <translation id="3687359570564207338">{NUM_SITES,plural, =1{发现了 1 个已泄露的密码}other{发现了 {NUM_SITES} 个已泄露的密码}}</translation>
+<translation id="3687463694814266645">调整顺序</translation>
 <translation id="3687598459967813435">始终允许接收来自 <ph name="WEBSITE" /> 的通知</translation>
 <translation id="3688507211863392146">写入您在此应用中打开的文件和文件夹</translation>
 <translation id="3688526734140524629">变更渠道</translation>
@@ -4602,7 +4604,7 @@
 <translation id="4500647907053779331">将所选内容翻译为<ph name="LANGUAGE" /></translation>
 <translation id="4501530680793980440">确认删除</translation>
 <translation id="4502423230170890588">从此设备中移除</translation>
-<translation id="4502477450742595012">右键点击某个标签页，然后选择“向新组添加标签页”</translation>
+<translation id="4502477450742595012">右键点击某个标签页，然后选择“添加到新标签页组”</translation>
 <translation id="4503362512377701151">您会看到最近使用过的标签页分组，从而轻松继续未完成的操作。
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -5100,7 +5102,7 @@
 <translation id="4871322859485617074">PIN 码包含无效字符</translation>
 <translation id="4871370605780490696">添加书签</translation>
 <translation id="4871630917300912613">JavaScript 保护机制</translation>
-<translation id="4871719318659334896">关闭分组</translation>
+<translation id="4871719318659334896">关闭标签页组</translation>
 <translation id="4872192066608821120">若要导入密码，请选择一个 CSV 文件</translation>
 <translation id="4872212987539553601">设置设备端加密</translation>
 <translation id="4875690134140862902">标签页</translation>
@@ -5758,6 +5760,7 @@
 <translation id="5392864580775235956">添加和编辑图片</translation>
 <translation id="5393330235977997602">PIN 码选项</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{链接}other{# 个链接}}</translation>
+<translation id="5394400188854257119">5 分钟</translation>
 <translation id="5394529681046491727">Wi-Fi 直连</translation>
 <translation id="5395353843367783642">正在保存到您的账号中…</translation>
 <translation id="5397656531674854099">在手机上使用标签页分组</translation>
@@ -6369,6 +6372,7 @@
 <translation id="5868822853313956582">遵循设备配色方案</translation>
 <translation id="5869029295770560994">知道了</translation>
 <translation id="5869522115854928033">已保存的密码</translation>
+<translation id="5869611709939872766"><ph name="FIRST_NAME" />，您好！想聊点什么？</translation>
 <translation id="5870155679953074650">硬故障数</translation>
 <translation id="587234395549708302">要清理书签吗？</translation>
 <translation id="587502357434914765">从屏幕上选择</translation>
@@ -7078,7 +7082,7 @@
 <translation id="6438475350605608554">您已在另一个标签页中启动密码导入流程</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - 正在播放音频</translation>
 <translation id="6440081841023333832">不得控制您的 MIDI 设备以及为其重新编程</translation>
-<translation id="6441377161852435370">向阅读清单中添加标签页</translation>
+<translation id="6441377161852435370">将标签页添加到阅读清单</translation>
 <translation id="6442187272350399447">棒极了</translation>
 <translation id="6442445294758185945">无法下载此项更新。请稍后再试。</translation>
 <translation id="6444070574980481588">设置日期和时间</translation>
@@ -7664,7 +7668,6 @@
 <translation id="686609795364435700">小</translation>
 <translation id="686664946474413495">色温</translation>
 <translation id="6867086642466184030">其他应用已设为与<ph name="APP_NAME" />打开同样的链接。此操作会阻止<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" />、<ph name="APP_NAME_4" />和另外 <ph name="NUMBER_OF_OTHER_APPS" /> 款应用打开受支持的链接。</translation>
-<translation id="6868206169573555318">重新启动即可更新</translation>
 <translation id="686831807558000905">不登录</translation>
 <translation id="686839242150793617">已获准自动进入画中画模式</translation>
 <translation id="6868734951249611611">右键点击此处，然后选择“垂直显示标签页”</translation>
@@ -7799,6 +7802,7 @@
 <translation id="6972754398087986839">开始使用</translation>
 <translation id="697312151395002334">允许发送弹出式窗口并使用重定向</translation>
 <translation id="69739764870135975">如果 Google 也是您的默认搜索引擎，您将会看到更实用、与上下文更相关的建议</translation>
+<translation id="6975703659587052829">重要安全更新</translation>
 <translation id="6978121630131642226">搜索引擎</translation>
 <translation id="6979041727349121225">节能模式</translation>
 <translation id="6979044105893951891">启动和退出受管理访客会话</translation>
@@ -8040,7 +8044,7 @@
 <translation id="7168109975831002660">最小字号</translation>
 <translation id="7169122689956315694">附近有其他设备时开启通知</translation>
 <translation id="7171000599584840888">添加个人资料…</translation>
-<translation id="7172470549472604877">{NUM_TABS,plural, =1{向新分组添加标签页}other{向新分组添加标签页}}</translation>
+<translation id="7172470549472604877">{NUM_TABS,plural, =1{添加到新标签页组}other{添加到新标签页组}}</translation>
 <translation id="7173114856073700355">打开“设置”</translation>
 <translation id="7174199383876220879">新功能！控制您的音乐、视频等媒体内容。</translation>
 <translation id="7175037578838465313">配置“<ph name="NAME" />”</translation>
@@ -8175,6 +8179,7 @@
 <translation id="7273110280511444812">上次连接日期：<ph name="DATE" /></translation>
 <translation id="7273894023751806510">始终禁止 <ph name="HOST" /> 控制您的 MIDI 设备以及为其重新编程</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - 还需 <ph name="TIME" />充满</translation>
+<translation id="7274453646377524248">您打开的所有标签页和窗口都会自动重新打开。</translation>
 <translation id="7275950084263610253">允许访问本地网络中的其他设备</translation>
 <translation id="727595954130325265">立即抢购</translation>
 <translation id="727952162645687754">下载错误</translation>
@@ -8680,7 +8685,7 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7659154729610375585">仍要退出无痕模式？</translation>
 <translation id="7659336857671800422">查看隐私保护指南</translation>
-<translation id="7660146600670077843">右键点击某个标签页，然后选择“向新组添加标签页”</translation>
+<translation id="7660146600670077843">右键点击某个标签页，然后选择“添加到新标签页组”</translation>
 <translation id="7662535435481776002">低对比度浅色</translation>
 <translation id="7663719505383602579">接收器：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">可以使用键盘快捷键</translation>
@@ -8959,6 +8964,7 @@
 <translation id="7871691770940645922">虚拟盲文显示器</translation>
 <translation id="787268756490971083">已关闭</translation>
 <translation id="7872758299142009420">嵌套的群组过多：<ph name="ERROR_LINE" /></translation>
+<translation id="7875512939198436953">在我离开时更新</translation>
 <translation id="7876027585589532670">无法修改快捷方式</translation>
 <translation id="7876243839304621966">全部删除</translation>
 <translation id="7877126887274043657">修正同步问题(&amp;S)</translation>
@@ -9285,6 +9291,7 @@
 <translation id="810185532889603849">自定义颜色</translation>
 <translation id="8101987792947961127">必须在下次重启时执行 Powerwash</translation>
 <translation id="8102139037507939978">从 system_logs.txt 中删除个人身份信息。</translation>
+<translation id="8103484184517840583">退出 AI 模式</translation>
 <translation id="810362914482827094">搜索密钥</translation>
 <translation id="8104088837833760645">下载 eSIM 卡配置文件</translation>
 <translation id="8104388155778519213">与 Google 智能镜头分享屏幕上的内容</translation>
@@ -9370,7 +9377,7 @@
 <translation id="8165997195302308593">Crostini 端口转发</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{1 个电话号码}other{# 个电话号码}}</translation>
 <translation id="8168435359814927499">内容</translation>
-<translation id="8169165065843881617">{NUM_TABS,plural, =1{向阅读清单添加标签页}other{向阅读清单添加标签页}}</translation>
+<translation id="8169165065843881617">{NUM_TABS,plural, =1{添加到阅读清单}other{添加到阅读清单}}</translation>
 <translation id="8172303073969862496">右侧</translation>
 <translation id="8174047975335711832">设备信息</translation>
 <translation id="8176332201990304395">粉色和白色</translation>
@@ -9447,7 +9454,7 @@
 <translation id="8230134520748321204">要保存 <ph name="ORIGIN" /> 的密码吗？</translation>
 <translation id="8230326817897075865">删除<ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">不允许网站显示图片</translation>
-<translation id="8231438895476693774">向新拆分视图添加标签页</translation>
+<translation id="8231438895476693774">在拆分视图中显示标签页</translation>
 <translation id="823226567613548870">删除<ph name="BRAND" />数据</translation>
 <translation id="8233028084277069927">立即打开</translation>
 <translation id="8234795456569844941">请告诉我们在您收到个人资料出错提示之前发生的情况，以帮助我们的工程师解决此问题：</translation>
@@ -9458,7 +9465,7 @@
 <translation id="8239932336306009582">不允许发送通知</translation>
 <translation id="8241040075392580210">晴间多云</translation>
 <translation id="8241338426526905580">没有证书</translation>
-<translation id="8241650983304689286">向新拆分视图添加标签页</translation>
+<translation id="8241650983304689286">在拆分视图中显示标签页</translation>
 <translation id="8241868517363889229">读取和更改您的书签</translation>
 <translation id="8242273718576931540">您的设备无法连接到此网络。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8242370300221559051">启用 Play 商店</translation>
@@ -9887,7 +9894,7 @@
 <translation id="8573111744706778015">输入“uo7”即可显示“ươ”</translation>
 <translation id="8574990355410201600">始终允许 <ph name="HOST" /> 播放声音</translation>
 <translation id="8575286410928791436">按住 <ph name="KEY_EQUIVALENT" /> 键即可退出</translation>
-<translation id="8576885347118332789">{NUM_TABS,plural, =1{向阅读清单中添加 1 个标签页}other{向阅读清单中添加多个标签页}}</translation>
+<translation id="8576885347118332789">{NUM_TABS,plural, =1{添加到阅读清单}other{添加到阅读清单}}</translation>
 <translation id="8577052309681449949">自动点击、光标大小、光标颜色等设置</translation>
 <translation id="8578639784464423491">不能超过 99 个字母</translation>
 <translation id="858006550102277544">备注</translation>
@@ -9992,6 +9999,7 @@
 <translation id="865857184419171576">将字幕翻译为</translation>
 <translation id="865936634714975126">在网址中添加查询参数，以便选择网页加载类型。示例：chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659609431223166673">窗口已向下移动</translation>
+<translation id="8659989922244828718">已安排更新</translation>
 <translation id="8660288500924118793">通过卡片中的日历可轻松找到 Outlook 日历中的下一个活动。
        <ph name="BREAK" />
        <ph name="BREAK" />
@@ -10168,7 +10176,7 @@
 <translation id="8779720597365936419">是，将我的数据与工作数据分开（推荐）</translation>
 <translation id="8780123805589053431">从 Google 获取图片说明</translation>
 <translation id="8780443667474968681">已关闭语音搜索功能。</translation>
-<translation id="8781834595282316166">在分组内添加新标签页</translation>
+<translation id="8781834595282316166">在组内添加新标签页</translation>
 <translation id="8781980678064919987">在盖被合上之后关闭</translation>
 <translation id="8783171585655659524">包含屏幕截图</translation>
 <translation id="8785622406424941542">触控笔</translation>
@@ -10703,6 +10711,7 @@
 <translation id="9180847522826713506">如需查看密码或添加与密码相关的备注，请点击钥匙图标</translation>
 <translation id="9183302530794969518">Google 文档</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{应用}other{# 个应用}}</translation>
+<translation id="9185698642371842814">在 AI 模式下提问</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{管理员可以使用“<ph name="APP0_NAME" />”录制您的屏幕。录制开始时，您不会收到通知。}=2{管理员可以使用“<ph name="APP0_NAME" />”和“<ph name="APP1_NAME" />”录制您的屏幕。录制开始时，您不会收到通知。}=3{管理员可以使用“<ph name="APP0_NAME" />”“<ph name="APP1_NAME" />”和另外 1 个应用录制您的屏幕。录制开始时，您不会收到通知。}other{管理员可以使用“<ph name="APP0_NAME" />”“<ph name="APP1_NAME" />”和另外 # 个应用录制您的屏幕。录制开始时，您不会收到通知。}}</translation>
 <translation id="9187967020623675250">按的键不匹配。按任意键即可<ph name="RESPONSE" />。</translation>
 <translation id="9188142767272053574">启用进程隔离</translation>

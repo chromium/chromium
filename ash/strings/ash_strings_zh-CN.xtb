@@ -928,7 +928,6 @@
 <translation id="3697991387880191195">按屏幕截图快捷方式</translation>
 <translation id="3702809606464356667">正在显示当前桌面中的窗口，按向上键即可显示所有桌面中的窗口</translation>
 <translation id="3705722231355495246">-</translation>
-<translation id="3706423975342040244">娱乐</translation>
 <translation id="370665806235115550">正在加载...</translation>
 <translation id="3707093869106077605">“<ph name="UNAVAILABLE_DLC_ONE" />”和“<ph name="UNAVAILABLE_DLC_TWO" />”不可用。</translation>
 <translation id="3708186454126126312">曾经连接过</translation>
@@ -975,7 +974,6 @@
 <translation id="3824784079442479685">这将允许“<ph name="APP_NAME" />”以及所有具有摄像头使用权限的应用和网站使用摄像头。您可能需要刷新网页或重启应用。</translation>
 <translation id="3826099427150913765">切换到密码</translation>
 <translation id="383058930331066723">省电模式已开启</translation>
-<translation id="3831226344927851293">退出教程视图</translation>
 <translation id="383629559565718788">显示键盘设置</translation>
 <translation id="384082539148746321">删除此模板？</translation>
 <translation id="3844627820291068572">按 <ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />，然后按 <ph name="KEY_ONE" /> 或 <ph name="KEY_TWO" /> 或 <ph name="KEY_THREE" /> 或 <ph name="KEY_FOUR" /></translation>
@@ -1576,10 +1574,8 @@
 <translation id="5551974246223970793">搜索网页时，转到下一个相符的搜索结果</translation>
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="5558091555391176027">开启/关闭“附近分享”的高可见度模式</translation>
-<translation id="5558314826121965174">创意</translation>
 <translation id="556042886152191864">按钮</translation>
 <translation id="5570122939431135380">在新的无痕式窗口中打开新标签页</translation>
-<translation id="5572632238877308040">基本应用</translation>
 <translation id="5575528586625653441">请求注册演示模式时出问题了。</translation>
 <translation id="557563299383177668">下一个段落</translation>
 <translation id="5577082622442191756">开启/关闭蓝牙。<ph name="STATE_TEXT" />。</translation>
@@ -1614,7 +1610,6 @@
 <translation id="5667546120811588575">正在设置 Google Play…</translation>
 <translation id="5669267381087807207">正在激活</translation>
 <translation id="5671658447180261823">移除该项推荐内容：<ph name="SUGGESTION_NAME" /></translation>
-<translation id="5672890847723042801">实用程序</translation>
 <translation id="5673434351075758678">当系统同步完您的设置后，“<ph name="FROM_LOCALE" />”即会改为“<ph name="TO_LOCALE" />”。</translation>
 <translation id="5675363643668471212">任务栏中的项目</translation>
 <translation id="5677022547882470786">拖动或按空格键可选择要搜索的区域</translation>
@@ -1869,7 +1864,6 @@
 <translation id="6348449481487610270">按 <ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />，然后按 <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> 或 <ph name="KEY_THREE" /></translation>
 <translation id="6352082849089527770">未知网络</translation>
 <translation id="6359587239691116345">获取最新的功能和安全性方面的改进。如果您拒绝此更新，您的设备可能会无法继续正常运行，您则可能会遇到安全问题和性能问题。</translation>
-<translation id="6362833380917912748">了解您的内置应用</translation>
 <translation id="6364386432014869981">内置触控板已开启</translation>
 <translation id="6376931439017688372">蓝牙已开启</translation>
 <translation id="6378515133128829137">将窗口固定到右侧</translation>
@@ -2094,7 +2088,6 @@
 <translation id="7014684956566476813">已连接到一部名为“<ph name="DEVICE_NAME" />”的设备</translation>
 <translation id="7015766095477679451">您需要等到<ph name="COME_BACK_TIME" /> 才能再次使用此设备。</translation>
 <translation id="70168403932084660">桌面 6</translation>
-<translation id="702252130983202758">您的应用</translation>
 <translation id="7025533177575372252">将您的<ph name="DEVICE_NAME" />连接到手机</translation>
 <translation id="7026338066939101231">减少</translation>
 <translation id="7029307918966275733">未安装 Crostini。请安装 Crostini 以查看开发人员名单。</translation>
@@ -2520,7 +2513,7 @@
 <translation id="8237964652943995219">下一个桌面：<ph name="DESK_NAME" />。第 <ph name="DESK_INDEX" /> 个桌面（共 <ph name="DESK_COUNT" /> 个）。</translation>
 <translation id="8238817965863339552">不妨观看快速导览，了解如何玩转 <ph name="PRODUCT_NAME" />。只需 5 步，即可启动并运行。</translation>
 <translation id="8239034820133090126">启用右侧桌面</translation>
-<translation id="8241650983304689286">向新拆分视图添加标签页</translation>
+<translation id="8241650983304689286">在拆分视图中显示标签页</translation>
 <translation id="8244201515061746038">“自动更正”功能的“了解详情”按钮。前往“自动更正”功能的设置页面。若要启用此按钮，请按 Enter 键；若要关闭，请按 Esc 键。</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />，剩余电量为 <ph name="BATTERY_STATUS" /></translation>
 <translation id="8249048954461686687">OEM文件夹</translation>
@@ -2533,7 +2526,6 @@
 <translation id="8277261673056602147">突出显示屏幕上的文字</translation>
 <translation id="8281886186245836920">跳过</translation>
 <translation id="8282784978194352587">您做到了！</translation>
-<translation id="8287009018010202411">效率</translation>
 <translation id="828708037801473432">已关闭</translation>
 <translation id="8289128870594824098">磁盘大小</translation>
 <translation id="8297006494302853456">弱</translation>
@@ -2628,7 +2620,6 @@
 <translation id="8598235756057743477">按名称或颜色将您的应用排序</translation>
 <translation id="8599864823732014237">跳过企业注册？</translation>
 <translation id="8609384513243082612">打开新标签页</translation>
-<translation id="861045123704058818">系统会暂时按类别整理应用</translation>
 <translation id="8612338981637220013">势如破竹！</translation>
 <translation id="8613164732773110792">只能包含小写字符、数字、下划线或连字符</translation>
 <translation id="8614517853887502247">由于防窥探功能已开启，因此系统隐藏了<ph name="APP_1_TITLE" />和<ph name="APP_2_TITLE" />通知</translation>
@@ -2820,7 +2811,6 @@
 <translation id="9129245940793250979">后侧按钮</translation>
 <translation id="9133335900048457298">无法录制受保护的内容</translation>
 <translation id="9139720510312328767">删除下一个字母</translation>
-<translation id="9148058034647219655">退出</translation>
 <translation id="9151906066336345901">光标移至行尾</translation>
 <translation id="9159421884295554245">在剪贴板中搜索</translation>
 <translation id="9168436347345867845">以后再说</translation>

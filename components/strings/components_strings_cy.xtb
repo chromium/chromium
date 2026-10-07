@@ -302,7 +302,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1486096554574027028">Chwilio'r Cyfrineiriau</translation>
 <translation id="1492194039220927094">Polisïau i'w gwthio:</translation>
 <translation id="1495677929897281669">Yn ôl i'r tab</translation>
-<translation id="1496318738909526466">Rheoli Awtolenwi Gwell</translation>
 <translation id="1500286806237135498">Camerâu (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">Ffliwt</translation>
 <translation id="1507202001669085618">&lt;p&gt;Byddwch yn gweld y gwall hwn os ydych yn defnyddio porth Wi-Fi lle bydd rhaid i chi fewngofnodi cyn y gallwch fynd ar-lein.&lt;/p&gt;
@@ -954,6 +953,7 @@ Gallwch dynnu'r awgrym hwn o Chrome. Ni fydd eich ffynhonnell wreiddiol yn cael 
 <translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp;Dadwneud Golygu</translation>
 <translation id="2559566667529177711">Amlhaen</translation>
+<translation id="2561224416042784023">Gweld gosodiadau</translation>
 <translation id="2570734079541893434">Rheoli gosodiadau</translation>
 <translation id="257136025287118539">Mae eich gweinyddwr yn symud eich ffeiliau i <ph name="CLOUD_PROVIDER" />. Gallwch addasu'r ffeiliau hyn unwaith y bydd yr uwchlwytho wedi'i gwblhau.</translation>
 <translation id="2571488850200220306">Er mwyn helpu i sicrhau diogelwch, gall hefyd weld OS y ddyfais, fersiwn porwr, a pha feddalwedd sydd wedi'i gosod</translation>

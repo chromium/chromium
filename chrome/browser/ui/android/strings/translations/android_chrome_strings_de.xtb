@@ -764,6 +764,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4092709865241032354">Füge deinen Nutzernamen für diese Website hinzu, damit der Google Passwortmanager deine Anmeldedaten speichern kann</translation>
 <translation id="4095146165863963773">App-Daten löschen?</translation>
 <translation id="4095483462103784441">Neue Tabgruppe erstellen</translation>
+<translation id="4098552968111329864">Zum Schutz deiner Arbeit in Chrome kann deine Organisation bestimmte Informationen ansehen oder verwalten, wenn du in Chrome angemeldet bist</translation>
 <translation id="4105527135143631701">Update des Google Passwortmanagers geöffnet</translation>
 <translation id="4107207375883769436">Deine Organisation muss möglicherweise Browserdaten in deinem Arbeitsprofil sehen und verwalten – beispielsweise deinen Browserverlauf und deine Passwörter</translation>
 <translation id="4113030288477039509">Von deinem Administrator verwaltet</translation>
@@ -1767,6 +1768,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7929587383660661825">Chrome entfernt automatisch Berechtigungen von Websites, die Benachrichtigungen missbrauchen oder die du in letzter Zeit nicht besucht hast</translation>
 <translation id="7934668619883965330">Datei kann nicht heruntergeladen werden. Das Dateiformat wird nicht unterstützt.</translation>
 <translation id="7951102827450076904">Heruntergeladene PDFs immer öffnen</translation>
+<translation id="7952148074468405586"><ph name="BEGIN_LINK" />Weitere Informationen zu Daten, die deine Organisation ansehen oder verwalten kann<ph name="END_LINK" /></translation>
 <translation id="7952479614398473176">Wenn du ein neues Fenster öffnen möchtest, reduziere die Gesamtzahl der aktiven Fenster auf maximal <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7956713633345437162">Mobile Lesezeichen</translation>
 <translation id="7957413488482743710">Wenn du eine virtuelle Karte verwendest, werden deine tatsächlichen Kartendetails nicht preisgegeben – dadurch bist du besser vor Betrugsversuchen geschützt. <ph name="BEGIN_LINK1" />Weitere Informationen zu virtuellen Karten<ph name="END_LINK1" /></translation>

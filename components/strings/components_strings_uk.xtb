@@ -302,7 +302,6 @@
 <translation id="1486096554574027028">Пошук паролів</translation>
 <translation id="1492194039220927094">Сповіщення про правила:</translation>
 <translation id="1495677929897281669">Назад на вкладку</translation>
-<translation id="1496318738909526466">Керувати покращеним автозаповненням</translation>
 <translation id="1500286806237135498">Камери (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">Гофрований картон</translation>
 <translation id="1507202001669085618">&lt;p&gt;Це повідомлення про помилку з’являється, якщо ви користуєтеся порталом Wi-Fi, на який потрібно ввійти, перш ніж підключитися до мережі.&lt;/p&gt;
@@ -954,6 +953,7 @@
 <translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp;Відмінити редагування</translation>
 <translation id="2559566667529177711">Багатошаровий друк</translation>
+<translation id="2561224416042784023">Переглянути налаштування</translation>
 <translation id="2570734079541893434">Керувати налаштуваннями</translation>
 <translation id="257136025287118539">Адміністратор переміщує ваші файли в сервіс <ph name="CLOUD_PROVIDER" />. Коли завантаження завершиться, ви зможете змінювати їх.</translation>
 <translation id="2571488850200220306">З міркувань безпеки він також може перевіряти ОС пристрою, версію вебпереглядача й установлене програмне забезпечення.</translation>

@@ -685,6 +685,12 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
 <translation id="1488008594883876680">啟用 <ph name="ARC_VM" /> 映像檔預先載入功能</translation>
 <translation id="1488724823347505879">允許從 Android 應用程式分享內容到網頁應用程式</translation>
 <translation id="1490962807364514840">CPU 執行階段計數器的遙測收集率 (以毫秒為單位)。</translation>
+<translation id="1491289760513245366">你可以透過這項政策，指定哪些來源允許 <ph name="PRODUCT_NAME" /> 支援的所有 HTTP 驗證配置 (無論 <ph name="AUTH_SCHEMES_POLICY_NAME" /> 政策設定的值為何)。
+
+自 <ph name="PRODUCT_NAME" /> 161 版起，這項政策僅適用於目的地伺服器來源，不適用於 Proxy 伺服器的驗證要求。如要允許 Proxy 伺服器使用所有 HTTP 驗證配置，請改用 <ph name="ALL_HTTP_AUTH_SCHEMES_ALLOWED_FOR_PROXIES_POLICY_NAME" /> 政策。在 161 版之前，符合這項政策的 Proxy 伺服器也可以使用所有 HTTP 驗證配置，除非已設定 <ph name="ALL_HTTP_AUTH_SCHEMES_ALLOWED_FOR_PROXIES_POLICY_NAME" />。
+
+      依據 <ph name="URL_SCHEME_FORMAT_LINK" /> 的說明，為來源模式套用適當的格式。<ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> 中最多可定義 1,000 個例外網址。
+      主機元件名稱可以使用萬用字元 (例如「*:8000」可比對通訊埠 8000 上的所有主機)。如果完全省略某個元件，就能比對所有配置或所有通訊埠 (例如「example.com」可比對所有配置和通訊埠)。主機名稱 (例如「example.com」) 也會比對其子網域。如要確切比對主機並排除其子網域，請在主機名稱前面加上半形句號 (例如「.example.com」)。如要比對所有來源，請使用單一星號「*」。</translation>
 <translation id="1492223733885011596">這項政策可讓 <ph name="PRODUCT_OS_NAME" /> 的表情符號挑選器支援 GIF。
 如果將這項政策設為啟用，表情符號挑選器將支援 GIF 表情符號。
 如果將這項政策設為停用或未設定，表情符號挑選器將不支援 GIF 表情符號。
@@ -3977,6 +3983,7 @@ Microsoft Outlook 資訊卡需要額外的管理員設定。想進一步瞭解�
 這會取代已淘汰的 <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLICY_NAME" /> 政策。</translation>
 <translation id="3568762199045490351">逾時 0 毫秒的 JavaScript setTimeout() 將會延遲到 1 毫秒。</translation>
 <translation id="3574450691573438824">停用裝置系統記錄上傳功能</translation>
+<translation id="357461884473178606">允許所有 HTTP 驗證配置的 Proxy 伺服器清單</translation>
 <translation id="3575011234198230041">HTTP 驗證</translation>
 <translation id="3575159471980949522">不允許使用者將電話號碼從 Chrome 傳送到自己的 Android 裝置</translation>
 <translation id="3577251398714997599">含侵入式廣告的網站的廣告設定</translation>
@@ -11034,6 +11041,12 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 <translation id="8066428282805800713">傳送 ChromeOS Flex 上的其他硬體資料</translation>
 <translation id="8071371098891664137">如果在 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_BLOCKLIST" />，系統會根據 <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> 的設定指定使用者不能操作的印表機。除了這項政策所列 ID 的印表機外，其他印表機皆可供使用。印表機 ID 必須與 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。</translation>
 <translation id="8076539570602616846">限制符合資格的 Google 帳戶，禁止透過 <ph name="PRODUCT_NAME" /> PDF 檢視器將 PDF 檔案儲存至 Google 雲端硬碟</translation>
+<translation id="8078224178125125527">你可以透過這項政策，指定哪些 Proxy 伺服器允許 <ph name="PRODUCT_NAME" /> 支援的所有 HTTP 驗證配置 (無論 <ph name="AUTH_SCHEMES_POLICY_NAME" /> 政策設定的值為何)。
+
+請依據網址封鎖清單篩選器格式 (<ph name="URL_SCHEME_FORMAT_LINK" />) 設定 Proxy 伺服器模式，最多可定義 1,000 個例外網址。
+主機元件名稱可以使用萬用字元 (例如「*:8080」可比對通訊埠 8080 上的所有 Proxy)。主機名稱 (例如「proxy.example.com」) 也會比對其子網域。如要確切比對主機並排除其子網域，請在主機名稱前面加上半形句號 (例如「.proxy.example.com」)。
+
+如果未設定這項政策，系統僅支援 <ph name="AUTH_SCHEMES_POLICY_NAME" /> 中指定的 HTTP 驗證配置 (如未設定，則使用預設配置) 進行 Proxy 驗證。</translation>
 <translation id="8078297389450285582">如果將這項政策設為啟用或不設定，系統會開啟智慧調光模式，並可延後螢幕調暗時間。一旦延後螢幕調暗時間，螢幕關閉、螢幕鎖定和閒置狀態的延遲時間也會隨之調整，以維持與原先設定相同的間隔時間。
 
       如果將這項政策設為停用，智慧調光模式並不會影響螢幕調暗設定。</translation>
@@ -12466,6 +12479,7 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 <translation id="9015759770696099204">F11/F12 設定已停用</translation>
 <translation id="9015952763003753868">讓符合 <ph name="CORS" /> 預檢規格的 <ph name="ACAM_HEADER_NAME" /> 相容</translation>
 <translation id="9020630127193895800">靛藍色鍵盤背光顏色</translation>
+<translation id="9025073735776703766">這項政策會控管 XSLT 功能 (XSLTProcessor JavaScript API 和 XSL 處理指令) 是否開放使用。如果將這項政策設為啟用，無論瀏覽器中的預設狀態為何，系統都會提供 XSLT。如果將這項政策設為停用，無論瀏覽器中的預設狀態為何，XSLT 都無法使用。如果未設定這項政策，XSLT 是否可用會取決於瀏覽器的預設設定和實測。這項政策只是暫時性措施，將在 M176 中移除。</translation>
 <translation id="9025912013525357598">保留所有媒體類型的 DataURL 空白字元</translation>
 <translation id="9029815312472546960">禁止這些網站使用 Device Attributes API</translation>
 <translation id="9031831501689819108">啟用舊版瀏覽器支援</translation>

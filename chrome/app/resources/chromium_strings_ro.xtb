@@ -21,6 +21,7 @@
 <translation id="1185134272377778587">Despre Chromium</translation>
 <translation id="1186645291482254714">Primește alerte de urmărire a prețurilor cu Chromium pe telefon</translation>
 <translation id="1203500561924088507">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești browserul.</translation>
+<translation id="1222365723190436821">O actualizare <ph name="IMPORTANT_UPDATE" /> este în așteptare. Pentru a-ți proteja navigarea, Chromium se va actualiza data viitoare când vei fi în activitate timp de <ph name="IDLE_DURATION" />.</translation>
 <translation id="1232234696885483911">Când deschizi Căutarea de imagini, titlul paginii, adresa URL și conținutul, inclusiv PDF-urile, vor fi trimise automat la server. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">După ce te conectezi, poți folosi parolele și alte date din Contul Google în Chromium. Pentru a modifica această setare, accesează Contul tău în Chromium.</translation>
 <translation id="1244381985120794049">Afișează Gemini în Chromium în bara de meniu Mac</translation>
@@ -228,6 +229,7 @@
 <translation id="3286538390144397061">Repornește acum</translation>
 <translation id="328888136576916638">Lipsesc chei pentru API-ul Google. Unele funcționalități Chromium vor fi dezactivate.</translation>
 <translation id="3296368748942286671">Rulați în continuare aplicații de fundal când Chromium este închis</translation>
+<translation id="3300632735252839402">Chromium se va actualiza când nu ești la computer</translation>
 <translation id="3313189106987092621">Chromium te va avertiza înainte de a încărca un site folosind o conexiune nesecurizată</translation>
 <translation id="3316771292331273802">Dacă te-ai conectat la Chromium, când închizi toate ferestrele Chromium fără să te deconectezi de la Contul Google, te vei deconecta de pe majoritatea site-urilor. Pentru ca site-urile să te rețină, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">colțul din dreapta sus al zonei de căutare: dreapta <ph name="RIGHT" /> %, sus <ph name="TOP" /> %</translation>
@@ -236,6 +238,7 @@
 <translation id="3387527074123400161">Sistemul de operare Chromium</translation>
 <translation id="3406848076815591792">Schimbi la profilul Chromium existent?</translation>
 <translation id="3412460710772753638">În Managerul de parole, pe acest dispozitiv</translation>
+<translation id="3425452599984451640">Chromium dorește să se actualizeze</translation>
 <translation id="3427159664004296878">Pentru a accesa marcajele și alte date de pe <ph name="DEVICE" />, conectează-te la Chromium</translation>
 <translation id="3438772217992559640">Caută în această filă cu Căutarea de imagini</translation>
 <translation id="3455907671758333080">Extinde Navigarea sigură îmbunătățită cu Chromium pe telefon</translation>

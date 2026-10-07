@@ -322,6 +322,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2297822946037605517">Partilhar esta página</translation>
 <translation id="230115972905494466">Não foram encontrados dispositivos compatíveis.</translation>
 <translation id="2305798319182970276">Elimine o histórico com um toque num botão</translation>
+<translation id="2307420463693979699">A app <ph name="APP_NAME" /> precisa de autorização de acesso a dispositivos de interface humana (HIDs) para este site.</translation>
 <translation id="2316129865977710310">Não</translation>
 <translation id="232137538351753795">Deslize a partir da extremidade esquerda para retroceder</translation>
 <translation id="2323763861024343754">Armazenamento do site</translation>
@@ -764,6 +765,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4092709865241032354">Para ajudar o Gestor de Palavras-passe da Google a guardar as suas informações de início de sessão, adicione o seu nome de utilizador para este site</translation>
 <translation id="4095146165863963773">Eliminar os dados da aplicação?</translation>
 <translation id="4095483462103784441">Criar novo grupo de separadores</translation>
+<translation id="4098552968111329864">Para proteger o seu trabalho no Chrome, a sua organização vai poder ver ou gerir determinadas informações quando tiver sessão iniciada no Chrome</translation>
 <translation id="4105527135143631701">Atualização do Gestor de Palavras-passe da Google aberta</translation>
 <translation id="4107207375883769436">A sua organização pode precisar de ver e gerir os dados de navegação no seu perfil de trabalho, como o histórico de navegação e as palavras-passe</translation>
 <translation id="4113030288477039509">Gerido pelo gestor</translation>
@@ -1770,6 +1772,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="7929587383660661825">O Chrome remove automaticamente as autorizações de sites que abusam das notificações ou que não visitou recentemente</translation>
 <translation id="7934668619883965330">Não é possível transferir o ficheiro. O formato de ficheiro não é suportado.</translation>
 <translation id="7951102827450076904">Abrir sempre os PDFs transferidos</translation>
+<translation id="7952148074468405586">Saiba mais sobre as <ph name="BEGIN_LINK" />informações que a sua organização pode ver ou gerir<ph name="END_LINK" /></translation>
 <translation id="7952479614398473176">Para abrir uma nova janela, reduza o número total de janelas ativas para <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ou menos.</translation>
 <translation id="7956713633345437162">Marcadores telemóvel</translation>
 <translation id="7957413488482743710">Um cartão virtual oculta o seu cartão real como medida de proteção contra potenciais fraudes. <ph name="BEGIN_LINK1" />Saiba mais sobre cartões virtuais<ph name="END_LINK1" /></translation>

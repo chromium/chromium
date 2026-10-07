@@ -764,6 +764,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="4092709865241032354">Google Şifre Yöneticisi'nin oturum açma bilgilerinizi kaydetmesini sağlamak için bu sitedeki kullanıcı adınızı ekleyin</translation>
 <translation id="4095146165863963773">Uygulama verileri silinsin mi?</translation>
 <translation id="4095483462103784441">Yeni sekme grubu oluştur</translation>
+<translation id="4098552968111329864">Kuruluşunuz, Chrome'da oturum açtığınızda Chrome'daki çalışmanızın güvenliğini sağlamak için belirli bilgileri görüntüleyebilir veya yönetebilir.</translation>
 <translation id="4105527135143631701">Google Şifre Yöneticisi güncellemesi açıldı</translation>
 <translation id="4107207375883769436">Kuruluşunuzun, iş profilinizdeki tarama geçmişiniz ve şifreleriniz gibi tarama verilerini görmesi ve yönetmesi gerekebilir</translation>
 <translation id="4113030288477039509">Yöneticiniz tarafından yönetiliyor</translation>
@@ -1770,6 +1771,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7929587383660661825">Chrome, bildirimleri kötüye kullanan veya son zamanlarda ziyaret etmediğiniz sitelerin izinlerini otomatik olarak kaldırır</translation>
 <translation id="7934668619883965330">Dosya indirilemiyor. Dosya biçimi desteklenmiyor.</translation>
 <translation id="7951102827450076904">İndirilen PDF'leri her zaman aç</translation>
+<translation id="7952148074468405586"><ph name="BEGIN_LINK" />Kuruluşunuzun görüntüleyebileceği veya yönetebileceği bilgiler<ph name="END_LINK" /> hakkında daha fazla bilgi edinin</translation>
 <translation id="7952479614398473176">Yeni bir pencere açmak için toplam etkin pencere sayısını en fazla <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> olacak şekilde azaltın.</translation>
 <translation id="7956713633345437162">Mobil yer işaretleri</translation>
 <translation id="7957413488482743710">Sanal kart, gerçek kartınızı saklayarak olası sahtekarlıklardan korunmanıza yardımcı olur. <ph name="BEGIN_LINK1" />Sanal kartlar hakkında daha fazla bilgi<ph name="END_LINK1" /></translation>

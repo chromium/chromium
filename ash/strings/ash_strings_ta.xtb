@@ -928,7 +928,6 @@
 <translation id="3697991387880191195">ஸ்கிரீன்ஷாட் ஷார்ட்கட்டை அழுத்துதல்</translation>
 <translation id="3702809606464356667">தற்போதைய டெஸ்க்கில் உள்ள சாளரங்களைக் காட்டுகிறது, அனைத்து டெஸ்க்குகளிலும் உள்ள சாளரங்களைக் காட்ட, மேல்நோக்கிய அம்புக்குறி விசையை அழுத்தவும்</translation>
 <translation id="3705722231355495246">-</translation>
-<translation id="3706423975342040244">பொழுதுபோக்கு</translation>
 <translation id="370665806235115550">ஏற்றுகிறது…</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> மற்றும் <ph name="UNAVAILABLE_DLC_TWO" />ஐப் பதிவிறக்க முடியவில்லை.</translation>
 <translation id="3708186454126126312">ஏற்கெனவே இணைத்தவை</translation>
@@ -975,7 +974,6 @@
 <translation id="3824784079442479685">இது <ph name="APP_NAME" /> ஆப்ஸுக்கும், கேமராவைப் பயன்படுத்த அனுமதி உள்ள பிற ஆப்ஸ், இணையதளங்கள் ஆகியவற்றுக்கும் கேமராவிற்கான அணுகலை வழங்கும். இணையப் பக்கத்தை ரெஃப்ரெஷ் செய்ய வேண்டியிருக்கலாம் அல்லது ஆப்ஸை மீண்டும் தொடங்க வேண்டியிருக்கலாம்.</translation>
 <translation id="3826099427150913765">கடவுச்சொல்லிற்கு மாற்று</translation>
 <translation id="383058930331066723">பேட்டரி சேமிப்பான் பயன்முறை இயக்கத்தில் உள்ளது</translation>
-<translation id="3831226344927851293">பயிற்சிக் காட்சியில் இருந்து வெளியேறும்</translation>
 <translation id="383629559565718788">கீபோர்டு அமைப்புகளைக் காண்பிக்கும்</translation>
 <translation id="384082539148746321">டெம்ப்ளேட்டை நீக்கவா?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> அதன்பிறகு <ph name="KEY_ONE" /> அல்லது <ph name="KEY_TWO" /> அல்லது <ph name="KEY_THREE" /> அல்லது <ph name="KEY_FOUR" /> அழுத்தவும்</translation>
@@ -1578,10 +1576,8 @@
 <translation id="5551974246223970793">ஒரு பக்கத்தைத் தேடும்போது தேடலுக்கான அடுத்த பொருத்தத்திற்குச் செல்</translation>
 <translation id="5556459405103347317">மீண்டும் ஏற்று</translation>
 <translation id="5558091555391176027">அருகிலுள்ளவற்றுடன் பகிர்தல் அம்சத்தின் அதிகத் தெரிவுநிலைப் பயன்முறையை இயக்கும்/முடக்கும்.</translation>
-<translation id="5558314826121965174">படைப்பாற்றல்</translation>
 <translation id="556042886152191864">பட்டன்</translation>
 <translation id="5570122939431135380">புதிய மறைநிலைச் சாளரத்தில் புதிய பக்கத்தைத் திற</translation>
-<translation id="5572632238877308040">அத்தியாவசியமானவை</translation>
 <translation id="5575528586625653441">டெமோவுக்குப் பதிவு செய்யும் கோரிக்கையில் ஒரு சிக்கல் ஏற்பட்டது.</translation>
 <translation id="557563299383177668">அடுத்த பத்தி</translation>
 <translation id="5577082622442191756">புளூடூத்தை இயக்கும்/முடக்கும். <ph name="STATE_TEXT" />.</translation>
@@ -1616,7 +1612,6 @@
 <translation id="5667546120811588575">Google Playஐ அமைக்கிறது...</translation>
 <translation id="5669267381087807207">செயலாக்குகிறது</translation>
 <translation id="5671658447180261823"><ph name="SUGGESTION_NAME" /> பரிந்துரையை அகற்றும்</translation>
-<translation id="5672890847723042801">யூட்டிலிட்டி சேவைகள்</translation>
 <translation id="5673434351075758678">அமைப்புகளை ஒத்திசைத்த பின்னர், "<ph name="FROM_LOCALE" />" இலிருந்து "<ph name="TO_LOCALE" />"க்கு மாற்றப்பட்டது.</translation>
 <translation id="5675363643668471212">ஷெல்ஃபில் உள்ளவை</translation>
 <translation id="5677022547882470786">தேடுவதற்கான பகுதியைத் தேர்ந்தெடுக்க இழுக்கவும் அல்லது Space அழுத்தவும்</translation>
@@ -1871,7 +1866,6 @@
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> அதன்பிறகு <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> அல்லது <ph name="KEY_THREE" /> அழுத்தவும்</translation>
 <translation id="6352082849089527770">தெரியாத நெட்வொர்க்குகள்</translation>
 <translation id="6359587239691116345">சமீபத்திய அம்சங்களையும் பாதுகாப்பு மேம்பாடுகளையும் பெறலாம். இந்தப் புதுப்பிப்பை நிராகரித்தால் உங்கள் சாதனம் சரியாகச் செயல்படாமல் போகக்கூடும். அத்துடன் பாதுகாப்பு மற்றும் செயல்திறன் சிக்கல்களும் ஏற்படக்கூடும்.</translation>
-<translation id="6362833380917912748">உள்ளமைக்கப்பட்ட ஆப்ஸ் பற்றித் தெரிந்துகொள்ளுங்கள்</translation>
 <translation id="6364386432014869981">உள்ளமைந்த டச்பேட் இயக்கப்பட்டது</translation>
 <translation id="6376931439017688372">புளூடூத் இயக்கப்பட்டுள்ளது</translation>
 <translation id="6378515133128829137">சாளரத்தை வலதுபுறத்தில் பின் செய்</translation>
@@ -2096,7 +2090,6 @@
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> என்ற சாதனத்துடன் இணைக்கப்பட்டுள்ளது</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" />க்கு மீண்டும் சாதனத்தைப் பயன்படுத்தலாம்.</translation>
 <translation id="70168403932084660">டெஸ்க் 6</translation>
-<translation id="702252130983202758">உங்கள் ஆப்ஸ்</translation>
 <translation id="7025533177575372252">உங்கள் <ph name="DEVICE_NAME" />ஐ ஃபோனுடன் இணைக்கவும்</translation>
 <translation id="7026338066939101231">குறைக்கும்</translation>
 <translation id="7029307918966275733">Crostini நிறுவப்படவில்லை. கிரெடிட்டுகளைப் பார்க்க Crostiniயை நிறுவுங்கள்.</translation>
@@ -2535,7 +2528,6 @@
 <translation id="8277261673056602147">திரையில் உள்ள வார்த்தைகளை ஹைலைட் செய்யும்</translation>
 <translation id="8281886186245836920">தவிர்</translation>
 <translation id="8282784978194352587">வெற்றி!</translation>
-<translation id="8287009018010202411">பணிச் செயல்திறன்</translation>
 <translation id="828708037801473432">முடக்கப்பட்டுள்ளது</translation>
 <translation id="8289128870594824098">டிஸ்க்கின் அளவு</translation>
 <translation id="8297006494302853456">வலுவாக இல்லை</translation>
@@ -2630,7 +2622,6 @@
 <translation id="8598235756057743477">பெயர் அல்லது வண்ணத்தின்படி ஆப்ஸை வரிசைப்படுத்துங்கள்</translation>
 <translation id="8599864823732014237">நிறுவனப் பதிவைத் தவிர்க்கவா?</translation>
 <translation id="8609384513243082612">புதிய தாவலைத் திறக்கும்</translation>
-<translation id="861045123704058818">வகைப்படுத்தல் மூலம் தற்காலிகமாக ஆப்ஸ் ஒருங்கிணைக்கப்படுகின்றன</translation>
 <translation id="8612338981637220013">அற்புதம்!</translation>
 <translation id="8613164732773110792">சிற்றெழுத்துக்கள், எண்கள், அடிக்கோடுகள், அல்லது சிறுகோடுகள் மட்டும்</translation>
 <translation id="8614517853887502247">பார்ப்பதற்கான கட்டுப்பாடு இயக்கத்தில் உள்ளதால் <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ஆகியவற்றின் அறிவிப்புகள் மறைக்கப்பட்டுள்ளன</translation>
@@ -2822,7 +2813,6 @@
 <translation id="9129245940793250979">பின்பக்க பட்டன்</translation>
 <translation id="9133335900048457298">பாதுகாக்கப்பட்ட உள்ளடக்கம் இருப்பதால் ரெக்கார்டு செய்ய முடியாது</translation>
 <translation id="9139720510312328767">அடுத்த எழுத்தை நீக்கும்</translation>
-<translation id="9148058034647219655">வெளியேறு</translation>
 <translation id="9151906066336345901">end</translation>
 <translation id="9159421884295554245">Clipboardடில் தேடுங்கள்</translation>
 <translation id="9168436347345867845">பின்னர் செய்யலாம்</translation>

@@ -764,6 +764,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="4092709865241032354">Para makatulong na ma-save ng Google Password Manager ang iyong impormasyon sa pag-sign in, idagdag ang username mo para sa site na ito</translation>
 <translation id="4095146165863963773">I-delete ang data ng app?</translation>
 <translation id="4095483462103784441">Gumawa ng bagong grupo ng tab</translation>
+<translation id="4098552968111329864">Para ma-secure ang iyong trabaho sa Chrome, makikita o mapapamahalaan ng organisasyon mo ang ilang partikular na impormasyon kapag naka-sign in ka sa Chrome</translation>
 <translation id="4105527135143631701">Binuksan ang update sa Google Password Manager</translation>
 <translation id="4107207375883769436">Posibleng kailanganing tingnan at pamahalaan ng organisasyon mo ang data ng pagba-browse sa iyong profile sa trabaho, tulad ng history ng pag-browse at mga password mo</translation>
 <translation id="4113030288477039509">Pinamamahalaan ng iyong administrator</translation>
@@ -1770,6 +1771,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7929587383660661825">Awtomatikong inaalis ng Chrome ang mga pahintulot sa mga site na inaabuso ang mga notification o hindi mo binisita kamakailan</translation>
 <translation id="7934668619883965330">Hindi ma-download ang file. Hindi sinusuportahan ang format ng file.</translation>
 <translation id="7951102827450076904">Palaging buksan ang mga na-download na PDF</translation>
+<translation id="7952148074468405586">Matuto pa tungkol sa <ph name="BEGIN_LINK" />impormasyong puwedeng tingnan o pamahalaan ng iyong organisasyon<ph name="END_LINK" /></translation>
 <translation id="7952479614398473176">Para magbukas ng bagong window, bawasan ang kabuuang bilang ng mga aktibong window sa <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> o mas kaunti.</translation>
 <translation id="7956713633345437162">Mga bookmark sa mobile</translation>
 <translation id="7957413488482743710">Itinatago ng virtual card ang iyong aktwal na card para makatulong na protektahan ka laban sa potensyal na panloloko. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa mga virtual na card<ph name="END_LINK1" /></translation>

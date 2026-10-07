@@ -302,7 +302,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1486096554574027028">Pesquisar palavras-passe</translation>
 <translation id="1492194039220927094">Push das políticas:</translation>
 <translation id="1495677929897281669">Voltar ao separador</translation>
-<translation id="1496318738909526466">Faça a gestão do preenchimento automático melhorado</translation>
 <translation id="1500286806237135498">Câmaras (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">Flauta</translation>
 <translation id="1507202001669085618">&lt;p&gt;Este erro é apresentado se estiver a utilizar um portal Wi-Fi que requer que inicie sessão para poder aceder à Internet.&lt;/p&gt;
@@ -954,6 +953,7 @@ Pode remover esta sugestão do Chrome. A sua fonte original não vai ser elimina
 <translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp;Anular edição</translation>
 <translation id="2559566667529177711">Multicamada</translation>
+<translation id="2561224416042784023">Ver definições</translation>
 <translation id="2570734079541893434">Gerir definições</translation>
 <translation id="257136025287118539">O administrador está a mover os seus ficheiros para o <ph name="CLOUD_PROVIDER" />. Pode modificar estes ficheiros quando o carregamento estiver concluído.</translation>
 <translation id="2571488850200220306">Para ajudar a garantir a segurança, também pode ver o SO do dispositivo, a versão do navegador e o software instalado</translation>

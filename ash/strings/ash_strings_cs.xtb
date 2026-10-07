@@ -928,7 +928,6 @@ Připojte zařízení k napájení.</translation>
 <translation id="3697991387880191195">Stiskněte zkratku k pořízení snímku obrazovky</translation>
 <translation id="3702809606464356667">Zobrazují se okna z aktuální plochy, stisknutím šipky nahoru zobrazíte okna ze všech ploch</translation>
 <translation id="3705722231355495246">-</translation>
-<translation id="3706423975342040244">Zábava</translation>
 <translation id="370665806235115550">Načítání...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> a <ph name="UNAVAILABLE_DLC_TWO" /> nejsou k dispozici</translation>
 <translation id="3708186454126126312">Dříve připojeno</translation>
@@ -975,7 +974,6 @@ Připojte zařízení k napájení.</translation>
 <translation id="3824784079442479685">Toto umožňuje přístup ke kameře aplikaci <ph name="APP_NAME" /> a všem aplikacím a webům s příslušným oprávněním. Možná budete muset obnovit webovou stránku nebo restartovat aplikaci.</translation>
 <translation id="3826099427150913765">Přepnout na heslo</translation>
 <translation id="383058930331066723">Spořič baterie je zapnutý</translation>
-<translation id="3831226344927851293">Ukončit výukové zobrazení</translation>
 <translation id="383629559565718788">Zobrazit nastavení klávesnice</translation>
 <translation id="384082539148746321">Smazat šablonu?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> a poté <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> nebo <ph name="KEY_FOUR" /></translation>
@@ -1580,10 +1578,8 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="5551974246223970793">Při vyhledávání na stránce přejít na další nalezenou shodu</translation>
 <translation id="5556459405103347317">Načíst znovu</translation>
 <translation id="5558091555391176027">Přepnout vysokou viditelnost pro sdílení nablízko</translation>
-<translation id="5558314826121965174">Kreativita</translation>
 <translation id="556042886152191864">Tlačítko</translation>
 <translation id="5570122939431135380">Otevřít novou kartu v novém anonymním okně</translation>
-<translation id="5572632238877308040">Nezbytnosti</translation>
 <translation id="5575528586625653441">Došlo k problému s ukázkovou žádostí o registraci.</translation>
 <translation id="557563299383177668">Další odstavec</translation>
 <translation id="5577082622442191756">Přepnout Bluetooth. <ph name="STATE_TEXT" />.</translation>
@@ -1618,7 +1614,6 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="5667546120811588575">Nastavování Google Play...</translation>
 <translation id="5669267381087807207">Aktivování</translation>
 <translation id="5671658447180261823">Odstranit návrh <ph name="SUGGESTION_NAME" /></translation>
-<translation id="5672890847723042801">Nástroje</translation>
 <translation id="5673434351075758678">Po synchronizaci nastavení se oznámení změní z jazyka <ph name="FROM_LOCALE" /> na jazyk <ph name="TO_LOCALE" />.</translation>
 <translation id="5675363643668471212">Položka na poličce</translation>
 <translation id="5677022547882470786">Přetažením nebo stisknutím mezerníku vyberte oblast, kterou chcete prohledat</translation>
@@ -1875,7 +1870,6 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> a poté <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> nebo <ph name="KEY_THREE" /></translation>
 <translation id="6352082849089527770">Neznámé sítě</translation>
 <translation id="6359587239691116345">Získejte nejnovější funkce a vylepšení zabezpečení. Pokud tuto aktualizaci odmítnete, vaše zařízení už nemusí pracovat správně a mohou se vyskytnout problémy se zabezpečením a výkonem.</translation>
-<translation id="6362833380917912748">Seznamte se s vestavěnými aplikacemi</translation>
 <translation id="6364386432014869981">Vestavěný touchpad je zapnutý</translation>
 <translation id="6376931439017688372">Rozhraní Bluetooth je zapnuté</translation>
 <translation id="6378515133128829137">Připnout okno doprava</translation>
@@ -2100,7 +2094,6 @@ Nová instalace</translation>
 <translation id="7014684956566476813">Připojeno k zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Vraťte se v <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Plocha 6</translation>
-<translation id="702252130983202758">Vaše aplikace</translation>
 <translation id="7025533177575372252">Propojte zařízení <ph name="DEVICE_NAME" /> s telefonem</translation>
 <translation id="7026338066939101231">Snížit</translation>
 <translation id="7029307918966275733">Plugin Crostini není nainstalován. Chcete-li zobrazit seznam přispěvatelů, nainstalujte Crostini.</translation>
@@ -2538,7 +2531,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8277261673056602147">Zvýraznit text na obrazovce</translation>
 <translation id="8281886186245836920">Přeskočit</translation>
 <translation id="8282784978194352587">Podařilo se!</translation>
-<translation id="8287009018010202411">Produktivita</translation>
 <translation id="828708037801473432">Vypnuto</translation>
 <translation id="8289128870594824098">Velikost disku</translation>
 <translation id="8297006494302853456">Slabý</translation>
@@ -2633,7 +2625,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8598235756057743477">Seřaďte si aplikace podle názvu nebo barvy</translation>
 <translation id="8599864823732014237">Přeskočit podnikovou registraci?</translation>
 <translation id="8609384513243082612">Otevřít novou kartu</translation>
-<translation id="861045123704058818">Aplikace jsou dočasně uspořádány podle kategorií</translation>
 <translation id="8612338981637220013">Skvělá práce!</translation>
 <translation id="8613164732773110792">Jen malá písmena, číslice, podtržítka nebo spojovníky</translation>
 <translation id="8614517853887502247">Oznámení aplikací <ph name="APP_1_TITLE" /> a <ph name="APP_2_TITLE" /> jsou skryta, protože je zapnutá ochrana před špehováním</translation>
@@ -2824,7 +2815,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="9129245940793250979">Zadní tlačítko</translation>
 <translation id="9133335900048457298">Chráněný obsah zaznamenat nelze</translation>
 <translation id="9139720510312328767">Smazat další písmeno</translation>
-<translation id="9148058034647219655">Ukončit</translation>
 <translation id="9151906066336345901">end</translation>
 <translation id="9159421884295554245">Hledat ve schránce</translation>
 <translation id="9168436347345867845">Později</translation>

@@ -302,7 +302,6 @@
 <translation id="1486096554574027028">လျှို့ဝှက်စကားလုံးများ ရှာဖွေရန်</translation>
 <translation id="1492194039220927094">မူဝါဒများ ထည့်သွင်းရန်-</translation>
 <translation id="1495677929897281669">တဘ်သို့ ပြန်သွားရန်</translation>
-<translation id="1496318738909526466">အဆင့်မြင့် အော်တိုဖြည့်ခြင်းကို စီမံရန်</translation>
 <translation id="1500286806237135498">ကင်မရာ (<ph name="CAMERAS_COUNT" />) ခု</translation>
 <translation id="1504042622576912555">ပလွေ</translation>
 <translation id="1507202001669085618">&lt;p&gt;အွန်လိုင်း မရရှိမီ လက်မှတ်ထိုးဝင်ရသည့် Wi-Fi ပေါ်တယ်ကို အသုံးပြုသည့်အခါ ဤအမှားကို တွေ့ရပါမည်။&lt;/p&gt;
@@ -955,6 +954,7 @@
 <translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp;တည်းဖြတ်မှုကို ပြန်လုပ်ရန်</translation>
 <translation id="2559566667529177711">အလွှာအထပ်ထပ်</translation>
+<translation id="2561224416042784023">ဆက်တင်များ ကြည့်ရန်</translation>
 <translation id="2570734079541893434">ဆက်တင်များ စီမံခန့်ခွဲရန်</translation>
 <translation id="257136025287118539">သင်၏စီမံခန့်ခွဲသူက သင့်ဖိုင်များကို <ph name="CLOUD_PROVIDER" /> သို့ ရွှေ့နေသည်။ အပ်လုဒ်လုပ်ပြီးပါက ဤဖိုင်များကို ပြင်နိုင်သည်။</translation>
 <translation id="2571488850200220306">လုံခြုံမှုရှိကြောင်း သေချာစေရန်အတွက် ၎င်းသည် ဤစက်၏ OS၊ ဘရောင်ဇာဗားရှင်းနှင့် ထည့်သွင်းထားသောဆော့ဖ်ဝဲတို့ကိုလည်း မြင်နိုင်ပါသည်</translation>

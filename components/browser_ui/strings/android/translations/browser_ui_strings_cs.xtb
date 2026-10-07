@@ -12,7 +12,6 @@
 <translation id="1126523729897810826">Pokud Chrome chcete využít na maximum, proveďte níže uvedené navrhované akce</translation>
 <translation id="113098737392899175">Když je připojená klávesnice, procházet stránky pomocí textového kurzoru</translation>
 <translation id="1148624853678088576">Vše je nastaveno!</translation>
-<translation id="1149644372535087155">Ukládejte si v Chromu hesla</translation>
 <translation id="1178015372320901893">Spodní panel Moje zkratky</translation>
 <translation id="1178581264944972037">Pozastavit</translation>
 <translation id="1181037720776840403">Odebrat</translation>
@@ -227,7 +226,6 @@
 <translation id="3167868116600277716">Feed Objevit</translation>
 <translation id="3198916472715691905">Uložená data: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="3199078925536734975">Pro tentokrát povoleno • Přibližná</translation>
-<translation id="3208584281581115441">Zkontrolovat</translation>
 <translation id="321187648315454507">Pokud aplikaci <ph name="APP_NAME" /> chcete povolit, aby vám zasílala oznámení, zapněte oznámení také v <ph name="BEGIN_LINK" />Natavení Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Poloha není povolena</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -286,7 +284,6 @@
 <translation id="381841723434055211">Telefonní čísla</translation>
 <translation id="3823453485268218808">Neproporcionální písmo</translation>
 <translation id="3826050100957962900">Externí přihlašování</translation>
-<translation id="3831065134033923230">Kontrola uložených hesel</translation>
 <translation id="3835233591525155343">Využití vašeho zařízení</translation>
 <translation id="3843916486309149084">Chrome dnes soubory cookie znovu zablokuje</translation>
 <translation id="385051799172605136">Zpět</translation>
@@ -294,7 +291,6 @@
 <translation id="3870711497942672548">Přizpůsobte si Chrome pomocí vlastních barev a obrázků pro domovskou stránku</translation>
 <translation id="389521680295183045">Weby mohou požádat o to, aby mohly zjišťovat, zda aktivně používáte své zařízení</translation>
 <translation id="3895926599014793903">Vynutit aktivaci přiblížení</translation>
-<translation id="3903738175795615004">Režim celé obrazovky ukončíte přetažením shora nebo stisknutím klávesy Esc.</translation>
 <translation id="3905475044299942653">Zastavit spousty oznámení</translation>
 <translation id="3922092564198021702">V telefonu přejděte do Nastavení</translation>
 <translation id="3924858949939391676">Po zapnutí režimu čtení zobrazit odkazy</translation>
@@ -355,7 +351,6 @@
 <translation id="4479647676395637221">Pokud web bude chtít použít vaši kameru, zobrazit dotaz (doporučeno)</translation>
 <translation id="4505788138578415521">Rozbalená adresa URL</translation>
 <translation id="4522570452068850558">Podrobnosti</translation>
-<translation id="4523472416386354622">Nejdřív se přihlaste</translation>
 <translation id="4529207923544043455">Spodní panel zobrazující dokončené a nedokončené úkoly ze seznamu nastavení</translation>
 <translation id="4534723447064627427">Pokud aplikaci <ph name="APP_NAME" /> chcete umožnit přístup k mikrofonu, zapněte mikrofon také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="4545694195887112015">Panel nastavení byl zavřen</translation>
@@ -368,7 +363,6 @@
 <translation id="4645575059429386691">Spravováno vaším rodičem</translation>
 <translation id="4651224148644053314">Další barvy a možnosti</translation>
 <translation id="4652266463001779298">Není povoleno</translation>
-<translation id="4655846733459137112">Když kliknete na Ano, budete mít heslo při příštím přihlášení snadno k dispozici</translation>
 <translation id="4663373278480897665">Kamera je povolena</translation>
 <translation id="4670064810192446073">Virtuální realita</translation>
 <translation id="4672315773691449562">Klepněte na aplikaci Prohlížeč a potom na Chrome</translation>
@@ -415,7 +409,6 @@
 <translation id="512938610812707830">Spodní panel se sbírkami motivů pro vzhled stránky Nová karta, otevřeno na plnou výšku</translation>
 <translation id="5137460097045297858">Spodní panel feedu Objevit otevřený na polovinu výšky</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Pokles ceny na vašich otevřených kartách}few{Poklesy cen na vašich otevřených kartách}many{Poklesy cen na vašich otevřených kartách}other{Poklesy cen na vašich otevřených kartách}}</translation>
-<translation id="5150048675001754041">Rychle a snadno se přihlašujte na weby a do aplikací</translation>
 <translation id="5186036860380548585">Možnost je k dispozici u horního okraje obrazovky</translation>
 <translation id="5197729504361054390">Vybrané kontakty budou sdíleny s webem <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Zavřený spodní panel Přizpůsobení stránky Nová karta</translation>
@@ -425,7 +418,6 @@
 <translation id="5239623327352565343">Poloha je povolena</translation>
 <translation id="5246825184569358663">Touto akcí vymažete všechna místní data, včetně souborů cookie, a resetujete všechna oprávnění pro doménu <ph name="DOMAIN" /> a všechny weby pod ní</translation>
 <translation id="5264323282659631142">Odstranit položku <ph name="CHIP_LABEL" /></translation>
-<translation id="528192093759286357">Režim celé obrazovky ukončíte přetažením z horního okraje obrazovky a klepnutím na tlačítko Zpět.</translation>
 <translation id="5286194356314741248">Skenování</translation>
 <translation id="5300589172476337783">Zobrazit</translation>
 <translation id="5301954838959518834">Dobře, rozumím</translation>
@@ -473,7 +465,6 @@
 <translation id="5804241973901381774">Oprávnění</translation>
 <translation id="5817042798620209981">Informace o webu, dialogové okno</translation>
 <translation id="5822675474983796325">Spodní panel Přizpůsobení stránky Nová karta otevřený na celou výšku</translation>
-<translation id="5826403277762134844">Spodní panel s pokyny k ukládání hesel v Chromu</translation>
 <translation id="5833899990800318936">Nepovolovat webům používat JavaScript</translation>
 <translation id="583673505367439042">Weby mohou žádat o úpravu souborů a složek v zařízení</translation>
 <translation id="5844448279347999754">Když je tato možnost zapnutá, weby mohou žádat o zobrazení textu a obrázků uložených do schránky. Když je vypnutá, weby k textům ani obrázkům uloženým do schránky nemají přístup.</translation>
@@ -511,7 +502,6 @@
 <translation id="6104860901391833523">Když je tato možnost zapnutá, mohou weby automaticky přepínat do režimu obrazu v obraze. Pokud je vypnutá, weby do režimu obrazu v obraze automaticky přepínat nemohou.</translation>
 <translation id="6120483543004435978">Když je tato možnost zapnutá, weby mohou žádat o informace o tom, zda své zařízení aktivně používáte. Když je vypnutá, weby se nemohou dozvědět, zda zařízení aktivně používáte.</translation>
 <translation id="612871598708395517">Skrýt možnost Zobrazovat návrhy Chromu v jiných aplikacích</translation>
-<translation id="6132075343662013154">Chrome vám nabídne uložení hesla</translation>
 <translation id="615886654739818377">Nepovolovat webům spravovat okna na všech obrazovkách</translation>
 <translation id="6165508094623778733">Další informace</translation>
 <translation id="6171020522141473435">Když je tato možnost zapnutá, weby mohou žádat o použití zařízení Bluetooth. Když je vypnutá, weby nemohou používat zařízení Bluetooth.</translation>
@@ -587,7 +577,6 @@
 <translation id="6980861169612950611">Vymazat data webu? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Usnadnění</translation>
 <translation id="6991142177939282156">Povoleno • Používá se přibližná</translation>
-<translation id="6992014788289743568">Posilte zabezpečení nejen svých dat tím, že si necháte zkontrolovat hesla</translation>
 <translation id="6992289844737586249">Pokud web bude chtít použít váš mikrofon, zobrazit dotaz (doporučeno)</translation>
 <translation id="7000754031042624318">Vypnuto v nastavení systému Android</translation>
 <translation id="7036823721811529709">Poslech na pozadí</translation>
@@ -654,7 +643,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:</translation>
 <translation id="775043444390799886">Zrušit oprávnění</translation>
 <translation id="7758789811447313947">Fialový motiv</translation>
 <translation id="7759147511335618829">Ovládání a přeprogramování zařízení MIDI</translation>
-<translation id="7771089277295008211">Spodní panel s pokyny k ukládání hesel byl zavřen</translation>
 <translation id="7781829728241885113">Včera</translation>
 <translation id="7791543448312431591">Přidat</translation>
 <translation id="780301667611848630">Ne, děkuji</translation>
@@ -671,7 +659,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:</translation>
 <translation id="7940722705963108451">Připomenout</translation>
 <translation id="7948081750384205628">Další informace o nastavení <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Weby mohou žádat o zobrazení textu a obrázků ve schránce</translation>
-<translation id="7958779728312669715">Spodní panel s pokyny ohledně ukládání hesel se úplně otevřel</translation>
 <translation id="798299424881500862">Oranžový motiv</translation>
 <translation id="7986741934819883144">Výběr kontaktu</translation>
 <translation id="7990211076305263060">Když je tato možnost zapnutá, weby mohou žádat o použití mikrofonu. Když je vypnutá, weby mikrofon používat nemohou.</translation>
@@ -766,7 +753,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:</translation>
 <translation id="8889294078294184559">Při dalším procházení může Chrome na požádání jinému webu sdělit, že vás předchozí web ověřil jako pravděpodobně skutečného uživatele</translation>
 <translation id="8899807382908246773">Rušivé reklamy</translation>
 <translation id="8903921497873541725">Přiblížit</translation>
-<translation id="8919911527569629802">Přihlaste se na libovolný web</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Dotaz již nezobrazovat</translation>
 <translation id="8926666909099850184">Funkce NFC je v tomto zařízení vypnutá. Zapnete ji v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>

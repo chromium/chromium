@@ -12,7 +12,6 @@
 <translation id="1126523729897810826">Completa aquestes accions suggerides per treure el màxim profit de Chrome</translation>
 <translation id="113098737392899175">Navega per les pàgines amb un cursor de text quan hi hagi un teclat connectat</translation>
 <translation id="1148624853678088576">Ja esteu a punt</translation>
-<translation id="1149644372535087155">Desa les contrasenyes a Chrome</translation>
 <translation id="1178015372320901893">Full inferior Les meves dreceres</translation>
 <translation id="1178581264944972037">Posa en pausa</translation>
 <translation id="1181037720776840403">Suprimeix</translation>
@@ -227,7 +226,6 @@
 <translation id="3167868116600277716">Feed de Discover</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> de dades desades</translation>
 <translation id="3199078925536734975">Permès aquesta vegada • Aproximada</translation>
-<translation id="3208584281581115441">Comprova ara</translation>
 <translation id="321187648315454507">Perquè <ph name="APP_NAME" /> et pugui enviar notificacions, també has d'activar-les a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">No està permès utilitzar la ubicació</translation>
 <translation id="3227137524299004712">Micròfon</translation>
@@ -286,7 +284,6 @@
 <translation id="381841723434055211">Números de telèfon</translation>
 <translation id="3823453485268218808">Font Mono</translation>
 <translation id="3826050100957962900">Inici de sessió de tercers</translation>
-<translation id="3831065134033923230">Comprova les contrasenyes desades</translation>
 <translation id="3835233591525155343">Ús del teu dispositiu</translation>
 <translation id="3843916486309149084">Chrome tornarà a bloquejar les galetes avui</translation>
 <translation id="385051799172605136">Enrere</translation>
@@ -294,7 +291,6 @@
 <translation id="3870711497942672548">Personalitza Chrome amb colors i imatges per a la pàgina d'inici</translation>
 <translation id="389521680295183045">Els llocs web poden demanar permís per saber quan estàs utilitzant el dispositiu de manera activa</translation>
 <translation id="3895926599014793903">Força l'activació del zoom</translation>
-<translation id="3903738175795615004">Arrossega des de la part superior o prem la tecla Esc per sortir de la pantalla completa.</translation>
 <translation id="3905475044299942653">Atura l'enviament de moltes notificacions</translation>
 <translation id="3922092564198021702">Al telèfon, obre Configuració</translation>
 <translation id="3924858949939391676">Mostra els enllaços quan el mode de lectura estigui activat</translation>
@@ -355,7 +351,6 @@
 <translation id="4479647676395637221">Pregunta abans de permetre que els llocs web utilitzin la càmera (opció recomanada)</translation>
 <translation id="4505788138578415521">L'URL s'ha ampliat</translation>
 <translation id="4522570452068850558">Detalls</translation>
-<translation id="4523472416386354622">Inicia la sessió per començar</translation>
 <translation id="4529207923544043455">Full inferior que mostra les tasques de la llista de configuració completades i no completades</translation>
 <translation id="4534723447064627427">Perquè <ph name="APP_NAME" /> pugui accedir al micròfon, també has d'activar-lo a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="4545694195887112015">S'ha tancat el full de configuració</translation>
@@ -368,7 +363,6 @@
 <translation id="4645575059429386691">Gestionat pels pares</translation>
 <translation id="4651224148644053314">Més colors i opcions</translation>
 <translation id="4652266463001779298">No permès</translation>
-<translation id="4655846733459137112">Toca Sí per utilitzar fàcilment aquesta contrasenya la propera vegada que iniciïs la sessió</translation>
 <translation id="4663373278480897665">La càmera es pot utilitzar</translation>
 <translation id="4670064810192446073">Realitat virtual</translation>
 <translation id="4672315773691449562">Toca Aplicació de navegador i, a continuació, toca Chrome</translation>
@@ -415,7 +409,6 @@
 <translation id="512938610812707830">Full inferior de les col·leccions de temes per a l'aparença de la pàgina Pestanya nova obert a alçada completa</translation>
 <translation id="5137460097045297858">Full inferior del feed de Discover obert a mitja alçada</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Baixada de preu en les pestanyes obertes}other{Baixades de preu en les pestanyes obertes}}</translation>
-<translation id="5150048675001754041">Inicia la sessió ràpidament i fàcilment en llocs web i aplicacions</translation>
 <translation id="5186036860380548585">L'opció està disponible a prop de la part superior de la pantalla.</translation>
 <translation id="5197729504361054390">Els contactes que seleccionis es compartiran amb <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Full inferior de personalització de la pàgina Pestanya nova tancat</translation>
@@ -425,7 +418,6 @@
 <translation id="5239623327352565343">Està permès utilitzar la ubicació</translation>
 <translation id="5246825184569358663">Aquesta acció suprimirà totes les dades locals, incloses les galetes, i restablirà tots els permisos de <ph name="DOMAIN" /> i de tots els llocs web que conté</translation>
 <translation id="5264323282659631142">Suprimeix <ph name="CHIP_LABEL" /></translation>
-<translation id="528192093759286357">Arrossegueu la pantalla des de la part superior i toqueu el botó Enrere per sortir de la pantalla completa.</translation>
 <translation id="5286194356314741248">S'està cercant</translation>
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5301954838959518834">D'acord, entesos</translation>
@@ -473,7 +465,6 @@
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5817042798620209981">Informació del lloc web, quadre de diàleg</translation>
 <translation id="5822675474983796325">Full inferior de personalització de la pàgina Pestanya nova obert a alçada completa</translation>
-<translation id="5826403277762134844">Full inferior d'instruccions per desar contrasenyes a Chrome</translation>
 <translation id="5833899990800318936">No permetis que els llocs web utilitzin JavaScript</translation>
 <translation id="583673505367439042">Els llocs web poden demanar permís per editar fitxers i carpetes del dispositiu</translation>
 <translation id="5844448279347999754">Quan aquesta opció està activada, els llocs web poden demanar permís per veure el text i les imatges desats al porta-retalls. Quan aquesta opció està desactivada, els llocs web no poden veure el text ni les imatges desats al porta-retalls.</translation>
@@ -511,7 +502,6 @@
 <translation id="6104860901391833523">Quan aquesta opció està activada, els llocs web poden entrar automàticament al mode d'imatge sobre imatge. Quan aquesta opció està desactivada, els llocs web no poden entrar automàticament al mode d'imatge sobre imatge.</translation>
 <translation id="6120483543004435978">Quan aquesta opció està activada, els llocs web poden demanar permís per saber si estàs utilitzant el teu dispositiu de manera activa. Quan aquesta opció està desactivada, els llocs web no poden saber si estàs utilitzant el teu dispositiu de manera activa.</translation>
 <translation id="612871598708395517">Amaga l'opció Obtén suggeriments de Chrome en altres aplicacions</translation>
-<translation id="6132075343662013154">Chrome t'oferirà desar la contrasenya</translation>
 <translation id="615886654739818377">No permetis que els llocs web gestionin finestres en totes les pantalles</translation>
 <translation id="6165508094623778733">Més informació</translation>
 <translation id="6171020522141473435">Quan aquesta opció està activada, els llocs web poden demanar permís per utilitzar dispositius Bluetooth. Quan aquesta opció està desactivada, els llocs web no poden utilitzar dispositius Bluetooth.</translation>
@@ -587,7 +577,6 @@
 <translation id="6980861169612950611">Vols suprimir les dades del lloc web? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Accessibilitat</translation>
 <translation id="6991142177939282156">Permès • S'utilitza una aproximació</translation>
-<translation id="6992014788289743568">Reforça la seguretat i protegeix encara més les teves dades comprovant les contrasenyes</translation>
 <translation id="6992289844737586249">Pregunta abans de permetre que els llocs web utilitzin el micròfon (opció recomanada)</translation>
 <translation id="7000754031042624318">Desactivat a la configuració d'Android</translation>
 <translation id="7036823721811529709">Escolta en segon pla</translation>
@@ -654,7 +643,6 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:</t
 <translation id="775043444390799886">Revoca el permís</translation>
 <translation id="7758789811447313947">Tema violeta</translation>
 <translation id="7759147511335618829">Control i reprogramació disp. MIDI</translation>
-<translation id="7771089277295008211">S'ha tancat el full inferior d'instruccions per desar contrasenyes</translation>
 <translation id="7781829728241885113">Ahir</translation>
 <translation id="7791543448312431591">Afegeix</translation>
 <translation id="780301667611848630">No, gràcies</translation>
@@ -671,7 +659,6 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:</t
 <translation id="7940722705963108451">Recorda-m'ho</translation>
 <translation id="7948081750384205628">Més informació sobre <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Els llocs web poden demanar permís per veure el text i les imatges del teu porta-retalls</translation>
-<translation id="7958779728312669715">S'ha obert completament el full inferior d'instruccions per desar contrasenyes</translation>
 <translation id="798299424881500862">Tema taronja</translation>
 <translation id="7986741934819883144">Selecciona un contacte</translation>
 <translation id="7990211076305263060">Quan aquesta opció està activada, els llocs web poden demanar permís per utilitzar el micròfon. Quan aquesta opció està desactivada, els llocs web no poden utilitzar el micròfon.</translation>
@@ -766,7 +753,6 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:</t
 <translation id="8889294078294184559">Mentre continuïs navegant, els llocs web podran recórrer a Chrome per verificar que ets una persona real mitjançant llocs web que hagis visitat anteriorment</translation>
 <translation id="8899807382908246773">Anuncis intrusius</translation>
 <translation id="8903921497873541725">Amplia el zoom</translation>
-<translation id="8919911527569629802">Inicia la sessió en qualsevol lloc web</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">No m'ho tornis a preguntar</translation>
 <translation id="8926666909099850184">L'NFC està desactivada en aquest dispositiu. Activa-la a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>

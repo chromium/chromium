@@ -764,6 +764,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4092709865241032354">Per aiutare Gestore delle password di Google a salvare i tuoi dati di accesso, aggiungi il tuo nome utente per questo sito</translation>
 <translation id="4095146165863963773">Eliminare i dati delle app?</translation>
 <translation id="4095483462103784441">Crea un nuovo gruppo di schede</translation>
+<translation id="4098552968111329864">Per proteggere il tuo lavoro su Chrome, la tua organizzazione potrà visualizzare o gestire determinate informazioni quando accedi a Chrome</translation>
 <translation id="4105527135143631701">Aggiornamento di Gestore delle password di Google aperto</translation>
 <translation id="4107207375883769436">La tua organizzazione potrebbe aver bisogno di vedere e gestire i dati di navigazione nel tuo profilo di lavoro, come la cronologia di navigazione e le password</translation>
 <translation id="4113030288477039509">Gestito dall'amministratore</translation>
@@ -1770,6 +1771,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7929587383660661825">Chrome rimuove automaticamente le autorizzazioni dai siti con notifiche intrusive o che non hai visitato di recente</translation>
 <translation id="7934668619883965330">Impossibile scaricare il file. Formato file non supportato.</translation>
 <translation id="7951102827450076904">Apri sempre i PDF scaricati</translation>
+<translation id="7952148074468405586">Scopri di più sulle <ph name="BEGIN_LINK" />informazioni che la tua organizzazione può visualizzare o gestire<ph name="END_LINK" /></translation>
 <translation id="7952479614398473176">Per aprire una nuova finestra, riduci il numero totale di finestre attive a <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> o meno.</translation>
 <translation id="7956713633345437162">Preferiti mobile</translation>
 <translation id="7957413488482743710">Una carta virtuale nasconde la tua carta effettiva per proteggerti meglio da potenziali attività fraudolente. <ph name="BEGIN_LINK1" />Scopri di più sulle carte virtuali<ph name="END_LINK1" /></translation>

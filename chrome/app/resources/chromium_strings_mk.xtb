@@ -23,6 +23,7 @@
 <translation id="1185134272377778587">За Chromium</translation>
 <translation id="1186645291482254714">Добивајте известувања за „Следење цена“ со Chromium на телефонот</translation>
 <translation id="1203500561924088507">Фала за инсталирањето. Мора да го рестартирате прелистувачот пред да користите <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1222365723190436821"><ph name="IMPORTANT_UPDATE" /> е на чекање. За да го заштити вашето прелистување, Chromium ќе се ажурира следниот пат кога ќе бидете неактивни во период од <ph name="IDLE_DURATION" />.</translation>
 <translation id="1232234696885483911">Кога ќе ја отворите „Пребарување слики“, насловот, URL-адресата и содржините на страницата, вклучително и PDF-датотеките, автоматски ќе се испратат до серверот. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Додека сте најавени, може да ги користите вашите лозинки и друго од вашата сметка на Google во Chromium. За да го промените ова, одете на „Вашата сметка во Chromium“.</translation>
 <translation id="1244381985120794049">Прикажувај го Gemini во Chromium во лентата со менија на Mac</translation>
@@ -230,6 +231,7 @@
 <translation id="3286538390144397061">Рестартирај веднаш</translation>
 <translation id="328888136576916638">Клучевите Google API недостасуваат. Некои функции на Chromium ќе бидат оневозможени.</translation>
 <translation id="3296368748942286671">Продолжи со извршување на заднинските апликации кога Chromium е затворен</translation>
+<translation id="3300632735252839402">Chromium ќе се ажурира при неактивност</translation>
 <translation id="3313189106987092621">Chromium ќе ве предупреди пред вчитувањето сајт преку небезбедна врска</translation>
 <translation id="3316771292331273802">Ќе се одјавите од повеќето сајтови кога ќе ги затворите сите прозорци во Chromium, со исклучок на вашата сметка на Google ако сте најавени на Chromium. За да овозможите да ве помнат сајтовите, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">горен десен агол на областа за пребарување: десно <ph name="RIGHT" /> %, горе <ph name="TOP" /> %</translation>
@@ -238,6 +240,7 @@
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Сакате да се префрлите на постојниот профил на Chromium?</translation>
 <translation id="3412460710772753638">Во Password Manager на уредов</translation>
+<translation id="3425452599984451640">Chromium сака да се ажурира</translation>
 <translation id="3427159664004296878">За да ги добиете обележувачите и друго од <ph name="DEVICE" />, најавете се на Chromium</translation>
 <translation id="3438772217992559640">Пребарај ја картичкава со „Пребарување слики“</translation>
 <translation id="3455907671758333080">Проширете ја „Подобрено безбедно прелистување“ со Chromium на вашиот телефон</translation>

@@ -302,7 +302,6 @@
 <translation id="1486096554574027028">Пошук пароляў</translation>
 <translation id="1492194039220927094">Паказ палітык:</translation>
 <translation id="1495677929897281669">Вярнуцца на ўкладку</translation>
-<translation id="1496318738909526466">Кіраваць палепшаным аўтазапаўненнем</translation>
 <translation id="1500286806237135498">Камеры (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">Гофр</translation>
 <translation id="1507202001669085618">&lt;p&gt;Гэта памылка ўзнікае, калі вы карыстаецеся парталам Wi-Fi, на якім перад выхадам у інтэрнэт трэба выканаць уваход.&lt;/p&gt;
@@ -955,6 +954,7 @@
 <translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp;Адрабіць змену</translation>
 <translation id="2559566667529177711">Мнагаслойны матэрыял</translation>
+<translation id="2561224416042784023">Паглядзець налады</translation>
 <translation id="2570734079541893434">Кіраваць наладамі</translation>
 <translation id="257136025287118539">Адміністратар перамяшчае вашы файлы ў сэрвіс "<ph name="CLOUD_PROVIDER" />". Вы зможаце ўносіць змяненні ў гэтыя файлы пасля таго, як запампоўванне завершыцца.</translation>
 <translation id="2571488850200220306">Каб гарантаваць бяспеку, яна таксама можа бачыць інфармацыю пра аперацыйную сістэму прылады, версію браўзера і ўсталяванае праграмнае забеспячэнне</translation>

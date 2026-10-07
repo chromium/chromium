@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">Chrome a blocat descărcarea, deoarece tipul de fișier nu este descărcat frecvent și ar putea fi periculos</translation>
 <translation id="1197860368385086056">Când vei deschide din nou Chrome pe <ph name="DEVICE_TYPE" />, vei vedea o solicitare de a activa alertele de urmărire a prețurilor.</translation>
 <translation id="1203500561924088507">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești browserul.</translation>
+<translation id="122321322139970942">O actualizare <ph name="IMPORTANT_UPDATE" /> este în așteptare. Pentru a-ți proteja navigarea, Chrome se va actualiza data viitoare când vei fi în activitate timp de <ph name="IDLE_DURATION" />.</translation>
 <translation id="1226003169284463347">Pentru a accesa marcajele și alte date pe toate dispozitivele, conectează-te la Chrome</translation>
 <translation id="1278833599417554002">Relansează pentru a actualiza &amp;Chrome</translation>
 <translation id="1289911795790071537">Deschide căutarea cu Chrome</translation>
@@ -326,7 +327,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="4050175100176540509">În cea mai recentă versiune sunt disponibile îmbunătățiri de securitate și funcții noi importante.</translation>
 <translation id="4053720452172726777">Personalizați și controlați Google Chrome</translation>
 <translation id="408393047846373801">Pentru a accesa parolele și multe altele pe toate dispozitivele, conectează-te la Chrome. Parola se va salva în Contul Google după ce te conectezi.</translation>
-<translation id="409936259433005390">Faci upgrade la Windows 11 în curând? Descarcă programul de instalare Chrome în OneDrive ca să fii gata încă din prima zi.</translation>
 <translation id="4102173024714616627">Extensiile sunt suplimente cu care poți personaliza Chrome. De la organizare la simplificarea activităților de zi cu zi, extensiile te ajută să adaptezi browserul Chrome.</translation>
 <translation id="4110895483821904099">Configurează noul profil Chrome</translation>
 <translation id="4111566860456076004">Chrome nu poate verifica de unde provine această extensie. Ar putea fi nesigură. Elimin-o din Chrome ca să nu mai poată vedea și modifica datele tale de pe site-urile pe care le accesezi, inclusiv informațiile cu caracter personal.</translation>
@@ -499,6 +499,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="5941830788786076944">Setează Google Chrome ca browser prestabilit</translation>
 <translation id="5947104538377036631">Comandă rapidă pentru Chrome</translation>
 <translation id="5960071705175224773">Setările au fost modificate de o aplicație necunoscută</translation>
+<translation id="5960404530854194706">Chrome se va actualiza când nu ești activ(ă)</translation>
 <translation id="5980111191913430208">Extensiile, aplicațiile și temele din surse necunoscute pot să dăuneze dispozitivului. Chrome recomandă să le instalezi numai din <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Se descarcă… Au rămas <ph name="HOURS" /> ore</translation>
 <translation id="6008161919456049856">Parolele, metodele de plată și adresele pe care le-ai salvat în Contul Google vor fi eliminate de pe acest dispozitiv. Pentru a le folosi din nou în Chrome, conectează-te din nou.</translation>
@@ -582,6 +583,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6556755379298048869">Caută folosind o comandă rapidă de la tastatură.</translation>
 <translation id="6585124893636629274">Închide Gemini în Chrome</translation>
 <translation id="659498884637196217">În Manager de parole Google pe acest dispozitiv</translation>
+<translation id="660312897435669152">Chrome dorește să se actualizeze</translation>
 <translation id="6612152958212564387">Nu trimiți statistici de utilizare și rapoarte de blocare la Google. <ph name="BEGIN_LINK" />Gestionează<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Păstrează parolele, marcajele și istoricul perfect sincronizate pe toate dispozitivele setând Chrome ca browser prestabilit.</translation>
 <translation id="6621391692573306628">Pentru a trimite această filă pe alt dispozitiv, conectează-te la Chrome pe ambele dispozitive</translation>

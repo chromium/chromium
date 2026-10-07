@@ -302,7 +302,6 @@
 <translation id="1486096554574027028">ค้นหารหัสผ่าน</translation>
 <translation id="1492194039220927094">การพุชนโยบาย:</translation>
 <translation id="1495677929897281669">กลับไปที่แท็บ</translation>
-<translation id="1496318738909526466">จัดการการป้อนข้อความอัตโนมัติที่ดียิ่งขึ้น</translation>
 <translation id="1500286806237135498">กล้อง (<ph name="CAMERAS_COUNT" /> ตัว)</translation>
 <translation id="1504042622576912555">ร่อง</translation>
 <translation id="1507202001669085618">&lt;p&gt;คุณจะเห็นข้อผิดพลาดนี้ หากใช้พอร์ทัล Wi-Fi ที่คุณต้องลงชื่อเข้าใช้ก่อนจึงจะสามารถออนไลน์ได้&lt;/p&gt;
@@ -954,6 +953,7 @@
 <translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp;เลิกทำการแก้ไข</translation>
 <translation id="2559566667529177711">หลายชั้น</translation>
+<translation id="2561224416042784023">ดูการตั้งค่า</translation>
 <translation id="2570734079541893434">จัดการการตั้งค่า</translation>
 <translation id="257136025287118539">ผู้ดูแลระบบกำลังย้ายไฟล์ของคุณไปยัง <ph name="CLOUD_PROVIDER" /> คุณจะแก้ไขไฟล์เหล่านี้ได้เมื่อการอัปโหลดเสร็จสมบูรณ์</translation>
 <translation id="2571488850200220306">เพื่อช่วยตรวจสอบการรักษาความปลอดภัย ยังสามารถดูระบบปฏิบัติการ เวอร์ชันเบราว์เซอร์ และซอฟต์แวร์ที่ติดตั้งของอุปกรณ์ได้อีกด้วย</translation>

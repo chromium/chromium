@@ -764,6 +764,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="4092709865241032354">Untuk membantu Pengelola Sandi Google menyimpan info login Anda, tambahkan nama pengguna Anda untuk situs ini</translation>
 <translation id="4095146165863963773">Hapus data aplikasi?</translation>
 <translation id="4095483462103784441">Buat grup tab baru</translation>
+<translation id="4098552968111329864">Untuk mengamankan pekerjaan di Chrome, organisasi Anda akan dapat melihat atau mengelola informasi tertentu saat Anda login ke Chrome</translation>
 <translation id="4105527135143631701">Update Pengelola Sandi Google dibuka</translation>
 <translation id="4107207375883769436">Organisasi Anda mungkin perlu melihat dan mengelola data penjelajahan di profil kerja Anda, seperti histori penjelajahan dan sandi</translation>
 <translation id="4113030288477039509">Dikelola oleh administrator</translation>
@@ -1770,6 +1771,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7929587383660661825">Chrome otomatis menghapus izin dari situs yang menyalahgunakan notifikasi atau yang tidak Anda buka baru-baru ini</translation>
 <translation id="7934668619883965330">Tidak dapat mendownload file. Format file tidak didukung.</translation>
 <translation id="7951102827450076904">Selalu buka PDF yang didownload</translation>
+<translation id="7952148074468405586">Pelajari lebih lanjut <ph name="BEGIN_LINK" />informasi yang dapat dilihat atau dikelola organisasi Anda<ph name="END_LINK" /></translation>
 <translation id="7952479614398473176">Untuk membuka jendela baru, kurangi jumlah total jendela aktif menjadi <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> atau kurang.</translation>
 <translation id="7956713633345437162">Bookmark seluler</translation>
 <translation id="7957413488482743710">Kartu virtual menyembunyikan kartu Anda yang sebenarnya untuk membantu melindungi Anda dari kemungkinan penipuan. <ph name="BEGIN_LINK1" />Pelajari kartu virtual lebih lanjut<ph name="END_LINK1" /></translation>

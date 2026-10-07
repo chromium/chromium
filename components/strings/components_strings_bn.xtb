@@ -302,7 +302,6 @@
 <translation id="1486096554574027028">পাসওয়ার্ড খুঁজুন</translation>
 <translation id="1492194039220927094">নীতি সংক্রান্ত পুশ:</translation>
 <translation id="1495677929897281669">ট্যাবে ফিরে যান</translation>
-<translation id="1496318738909526466">উন্নত অটোফিল ম্যানেজ করুন</translation>
 <translation id="1500286806237135498">ক্যামেরা (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">ফ্লুট</translation>
 <translation id="1507202001669085618">&lt;p&gt;আপনি যদি এমন কোনও ওয়াই-ফাই পোর্টাল ব্যবহার করেন যেখানে অনলাইন হওয়ার জন্য সাইন-ইন করতে হয়, তাহলে এই সমস্যাটি হতে পারে।&lt;/p&gt;
@@ -955,6 +954,7 @@
 <translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp;সম্পাদনাকে পূর্বাবস্থায় ফেরান</translation>
 <translation id="2559566667529177711">মাল্টি-লেয়ার</translation>
+<translation id="2561224416042784023">সেটিংস দেখুন</translation>
 <translation id="2570734079541893434">সেটিংস ম্যানেজ করুন</translation>
 <translation id="257136025287118539">আপনার অ্যাডমিনিস্ট্রেটর আপনার ফাইল <ph name="CLOUD_PROVIDER" />-এ সরাচ্ছেন। আপলোড করার প্রসেস একবার সম্পূর্ণ হলে আপনি এইসব ফাইল পরিবর্তন করতে পারবেন।</translation>
 <translation id="2571488850200220306">এছাড়াও, নিরাপত্তা নিশ্চিত করার ব্যাপারে সহায়তা করতে, এটি ডিভাইসের OS, ব্রাউজার ভার্সন এবং কী সফ্টওয়্যার ইনস্টল করা রয়েছে তা দেখতে পারবে</translation>

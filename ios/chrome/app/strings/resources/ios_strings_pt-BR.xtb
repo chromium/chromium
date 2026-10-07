@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
+<translation id="1004615467759797184">Personalize a página de nova aba</translation>
 <translation id="1004825134262590729">{count,plural, =1{{count} chave de acesso}one{{count} chave de acesso}other{{count} chaves de acesso}}</translation>
 <translation id="1005023885865154304">Abrir as configurações do preenchimento automático de senhas</translation>
 <translation id="1005230401424685968">AAAA</translation>
@@ -1693,6 +1694,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6307792728709337290">Salve o cartão na sua Conta do Google para que ele seja preenchido automaticamente nesta compra e em compras futuras feitas no Chrome.</translation>
 <translation id="6316141353357700666">Escolha a senha que você quer usar na lista que aparecer.</translation>
 <translation id="6321526113093607004">Adicionar aos favoritos</translation>
+<translation id="6324054713176642683">Escolha entre temas e cores ou faça upload da sua própria foto.</translation>
 <translation id="6327249202318869726">O Gemini está desativado na sua conta. Entre em contato com seu admin para mais informações.</translation>
 <translation id="6331836477476466332">Um navegador mais seguro e avançado para você</translation>
 <translation id="6337234675334993532">Criptografia</translation>
@@ -2067,7 +2069,6 @@ Você pode reiniciar a qualquer momento.</translation>
 <translation id="7454057999980797137">Estado/Província</translation>
 <translation id="7458706065921255639">Personalização e vinculação</translation>
 <translation id="745899714366929493">O dia todo</translation>
-<translation id="7460314822154045102">Usar a câmera</translation>
 <translation id="7460698861522306757">Solicitar o site móvel</translation>
 <translation id="7464143666517313304">Essa ação exclui os endereços salvos neste dispositivo.</translation>
 <translation id="7468373585447318060">Acompanhe reduções nos preços de todos os produtos que você monitora.</translation>

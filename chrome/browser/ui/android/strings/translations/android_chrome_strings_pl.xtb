@@ -322,6 +322,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="2297822946037605517">Udostępnij tę stronę</translation>
 <translation id="230115972905494466">Nie znaleziono zgodnych urządzeń</translation>
 <translation id="2305798319182970276">Usuwanie historii jednym kliknięciem</translation>
+<translation id="2307420463693979699"><ph name="APP_NAME" /> potrzebuje uprawnień dostępu do urządzeń interfejsu użytkownika (HID) na tej stronie.</translation>
 <translation id="2316129865977710310">Nie, dziękuję</translation>
 <translation id="232137538351753795">Aby wrócić, przesuń palcem od lewej krawędzi</translation>
 <translation id="2323763861024343754">Dane witryn:</translation>

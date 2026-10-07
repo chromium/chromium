@@ -23,6 +23,7 @@
 <translation id="1185134272377778587">ກ່ຽວ​ກັບ Chromium</translation>
 <translation id="1186645291482254714">ຮັບການແຈ້ງເຕືອນການຕິດຕາມລາຄາດ້ວຍ Chromium ຢູ່ໂທລະສັບຂອງທ່ານ</translation>
 <translation id="1203500561924088507">ຂໍຂອບໃຈສຳລັບການຕິດຕັ້ງ. ທ່ານຈະຕ້ອງຣີສະຕາດໂປຣແກຣມທ່ອງເວັບຂອງທ່ານກ່ອນການໃຊ້ <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1222365723190436821">ມີ <ph name="IMPORTANT_UPDATE" /> ລໍຖ້າດຳເນີນການຢູ່. ເພື່ອໃຫ້ການທ່ອງເວັບຂອງທ່ານປອດໄພ, Chromium ຈະອັບເດດໃນເທື່ອຕໍ່ໄປທີ່ທ່ານບໍ່ໄດ້ນຳໃຊ້ເປັນເວລາ <ph name="IDLE_DURATION" />.</translation>
 <translation id="1232234696885483911">ເມື່ອທ່ານເປີດການຊອກຫາຮູບ, ລະບົບຈະສົ່ງຊື່ໜ້າ, URL ແລະ ເນື້ອຫາ, ຮວມທັງ PDF ໄປຫາເຊີບເວີໂດຍອັດຕະໂນມັດ. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">ໃນລະຫວ່າງທີ່ທ່ານເຂົ້າສູ່ລະບົບ, ທ່ານສາມາດໃຊ້ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານຈາກບັນຊີ Google ຂອງທ່ານໃນ Chromium ໄດ້. ເພື່ອປ່ຽນສິ່ງນີ້, ໃຫ້ເຂົ້າໄປ “ບັນຊີຂອງທ່ານໃນ Chromium”.</translation>
 <translation id="1244381985120794049">ສະແດງ Gemini ໃນ Chromium ໃນແຖບເມນູຂອງ Mac</translation>
@@ -230,6 +231,7 @@
 <translation id="3286538390144397061">ປິດເປີດໃໝ່ດຽວນີ້</translation>
 <translation id="328888136576916638">ລະຫັດ Google API ຫາຍໄປ. ການເຮັດໜ້າທີ່ບາງອັນຂອງ Chromium ຈະປິດໃຊ້ງານ.</translation>
 <translation id="3296368748942286671">ສືບຕໍ່ແລ່ນແອັບພື້ນຫຼັງ ເມື່ອ Chromium ປິດ</translation>
+<translation id="3300632735252839402">Chromium ຈະອັບເດດເມື່ອບໍ່ມີການນຳໃຊ້</translation>
 <translation id="3313189106987092621">Chromium ຈະເຕືອນທ່ານກ່ອນການໂຫຼດເວັບໄຊໃດກໍຕາມທີ່ກຳລັງໃຊ້ການເຊື່ອມຕໍ່ທີ່ບໍ່ປອດໄພ</translation>
 <translation id="3316771292331273802">ທ່ານຈະອອກຈາກລະບົບຂອງເວັບໄຊສ່ວນໃຫຍ່ເມື່ອທ່ານປິດໜ້າຈໍ Chromium ທັງໝົດຍົກເວັ້ນບັນຊີ Google ຂອງທ່ານຫາກທ່ານເຂົ້າສູ່ລະບົບ Chromium. ເພື່ອໃຫ້ເວັບໄຊຈື່ທ່ານໄດ້, ກະລຸນາ <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">ມຸມຂວາເທິງຂອງພື້ນທີ່ຊອກຫາ: ຂວາ <ph name="RIGHT" />%, ເທິງ <ph name="TOP" />%</translation>
@@ -238,6 +240,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">ສະຫຼັບເປັນໂປຣໄຟລ໌ Chromium ທີ່ມີຢູ່ກ່ອນແລ້ວບໍ?</translation>
 <translation id="3412460710772753638">ໃນຕົວຈັດການລະຫັດຜ່ານຢູ່ອຸປະກອນນີ້</translation>
+<translation id="3425452599984451640">Chromium ຕ້ອງການອັບເດດ</translation>
 <translation id="3427159664004296878">ເພື່ອເຂົ້າເຖິງບຸກມາກ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານຈາກ <ph name="DEVICE" />, ໃຫ້ເຂົ້າສູ່ລະບົບ Chromium</translation>
 <translation id="3438772217992559640">ຊອກຫາແຖບນີ້ດ້ວຍຄຸນສົມບັດຊອກຫາຮູບ</translation>
 <translation id="3455907671758333080">ຂະຫຍາຍ Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນດ້ວຍ Chromium ຢູ່ໂທລະສັບຂອງທ່ານ</translation>
@@ -390,6 +393,7 @@
 <translation id="5249261924633168472">ເປີດລິ້ງໃນໜ້າຈໍທີ່ບໍ່ເຜີຍຕົວຕົນຂອງ Chromium</translation>
 <translation id="5276305953263010518">ດາວໂຫຼດແອັບ Chromium ເພື່ອບັນທຶກລະຫັດຜ່ານໄດ້ທຸກບ່ອນທຸກເວລາ</translation>
 <translation id="5277894862589591112">ເພື່ອນຳໃຊ້ການປ່ຽນແປງຂອງທ່ານ, ກະລຸນາເປີດ Chromium ຄືນໃໝ່</translation>
+<translation id="5278909220224474621">ເພື່ອສົ່ງແຖບນີ້ໄປຫາອຸປະກອນອື່ນ, ໃຫ້ເຂົ້າສູ່ລະບົບຫາ Chromium ຢູ່ທັງສອງອຸປະກອນ</translation>
 <translation id="5286907366254680517">ກວດພົບ</translation>
 <translation id="5289287148052354622">ດາວໂຫຼດແອັບ Chromium</translation>
 <translation id="5294316920224716406">ເມື່ອທ່ອງເວັບໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ, Chromium ຈະເຕືອນທ່ານກ່ອນການໂຫຼດເວັບໄຊທີ່ກຳລັງໃຊ້ການເຊື່ອມຕໍ່ທີ່ບໍ່ປອດໄພ</translation>
@@ -759,6 +763,7 @@ Chromium ບໍ່ສາມາດກູ້ການຕັ້ງຄ່າຂອ�
 <translation id="8648201657708811153">ບໍ່ສາມາດຕັ້ງ Google Chrome ສຳລັບການທົດສອບເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານໄດ້.</translation>
 <translation id="8676101123715131330">ຊອກຫາດ້ວຍ Chromium ໄດ້ຈາກທຸກບ່ອນ</translation>
 <translation id="8697124171261953979">ມັນຍັງຄວບຄຸມວ່າຈະໃຫ້ສະແດງໜ້າໃດຂຶ້ນ ເມື່ອທ່ານເລີ່ມຕົ້ນເປີດ Chromium ຫຼືຄົ້ນຫາຈາກ Omnibox.</translation>
+<translation id="8702213505203810093">ເພື່ອສົ່ງແຖບນີ້ໄປຫາອຸປະກອນອື່ນ, ໃຫ້ເຂົ້າສູ່ລະບົບຫາ Chromium ຢູ່ບ່ອນນັ້ນ</translation>
 <translation id="8704119203788522458">ນີ້​ແມ່ນ Chromium ຂອງ​ທ່ານ</translation>
 <translation id="8712637175834984815">ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="8719993436687031146">ເຂົ້າສູ່ລະບົບ Chromium ບໍ?</translation>

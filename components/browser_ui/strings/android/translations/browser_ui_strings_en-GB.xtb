@@ -12,7 +12,6 @@
 <translation id="1126523729897810826">Complete these suggested actions below to get the most out of Chrome</translation>
 <translation id="113098737392899175">Navigate pages with a text cursor when a keyboard is attached</translation>
 <translation id="1148624853678088576">You’re all set!</translation>
-<translation id="1149644372535087155">Save passwords in Chrome</translation>
 <translation id="1178015372320901893">My shortcuts bottom sheet</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Remove</translation>
@@ -227,7 +226,6 @@
 <translation id="3167868116600277716">Discover feed</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> stored data</translation>
 <translation id="3199078925536734975">Allowed this time • Approximate</translation>
-<translation id="3208584281581115441">Check now</translation>
 <translation id="321187648315454507">To let <ph name="APP_NAME" /> send you notifications, also turn on notifications in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Location not allowed</translation>
 <translation id="3227137524299004712">Microphone</translation>
@@ -286,7 +284,6 @@
 <translation id="381841723434055211">Phone numbers</translation>
 <translation id="3823453485268218808">Font Mono</translation>
 <translation id="3826050100957962900">Third-party sign-in</translation>
-<translation id="3831065134033923230">Check your saved passwords</translation>
 <translation id="3835233591525155343">Your device use</translation>
 <translation id="3843916486309149084">Chrome will block cookies again today</translation>
 <translation id="385051799172605136">Back</translation>
@@ -294,7 +291,6 @@
 <translation id="3870711497942672548">Make Chrome your own with custom colours and images for your homepage</translation>
 <translation id="389521680295183045">Sites can ask to know when you're actively using your device</translation>
 <translation id="3895926599014793903">Force enable zoom</translation>
-<translation id="3903738175795615004">Drag from top or press Esc key to exit full screen.</translation>
 <translation id="3905475044299942653">Stop lots of notifications</translation>
 <translation id="3922092564198021702">On your phone, open Settings</translation>
 <translation id="3924858949939391676">Show links once Reading mode is on</translation>
@@ -355,7 +351,6 @@
 <translation id="4479647676395637221">Ask first before allowing sites to use your camera (recommended)</translation>
 <translation id="4505788138578415521">URL expanded</translation>
 <translation id="4522570452068850558">Details</translation>
-<translation id="4523472416386354622">Sign in to start</translation>
 <translation id="4529207923544043455">Bottom sheet displaying completed and uncompleted setup list tasks</translation>
 <translation id="4534723447064627427">To let <ph name="APP_NAME" /> access your microphone, also turn on microphone in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="4545694195887112015">Setup sheet closed</translation>
@@ -368,7 +363,6 @@
 <translation id="4645575059429386691">Managed by your parent</translation>
 <translation id="4651224148644053314">More colours and options</translation>
 <translation id="4652266463001779298">Not allowed</translation>
-<translation id="4655846733459137112">Tap Yes to easily use this password the next time that you sign in</translation>
 <translation id="4663373278480897665">Camera allowed</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4672315773691449562">Tap Browser app, then tap Chrome</translation>
@@ -415,7 +409,6 @@
 <translation id="512938610812707830">New tab page appearance theme collections bottom sheet opened at full height</translation>
 <translation id="5137460097045297858">Discover feed bottom sheet opened at half height</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Price drop on your open tabs}other{Price drops on your open tabs}}</translation>
-<translation id="5150048675001754041">Sign in quickly and easily into sites and apps</translation>
 <translation id="5186036860380548585">Option available near top of the screen</translation>
 <translation id="5197729504361054390">The contacts that you select will be shared with <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Customise your new tab page bottom sheet closed</translation>
@@ -425,7 +418,6 @@
 <translation id="5239623327352565343">Location allowed</translation>
 <translation id="5246825184569358663">This action will delete all local data, including cookies, and reset all permissions for <ph name="DOMAIN" /> and all sites under it</translation>
 <translation id="5264323282659631142">Remove '<ph name="CHIP_LABEL" />'</translation>
-<translation id="528192093759286357">Drag from top and touch the back button to exit full screen.</translation>
 <translation id="5286194356314741248">Scanning</translation>
 <translation id="5300589172476337783">Show</translation>
 <translation id="5301954838959518834">OK, got it</translation>
@@ -473,7 +465,6 @@
 <translation id="5804241973901381774">Permissions</translation>
 <translation id="5817042798620209981">Site information, dialogue</translation>
 <translation id="5822675474983796325">Customise your new tab page bottom sheet opened at full height</translation>
-<translation id="5826403277762134844">Instructional bottom sheet for saving passwords in Chrome</translation>
 <translation id="5833899990800318936">Don't allow sites to use JavaScript</translation>
 <translation id="583673505367439042">Sites can ask to edit files and folders on your device</translation>
 <translation id="5844448279347999754">When on, sites can ask to see text and images saved to your clipboard. When off, sites can't see text or images saved to your clipboard.</translation>
@@ -511,7 +502,6 @@
 <translation id="6104860901391833523">When on, sites can enter picture-in-picture automatically. When off, sites can't enter picture-in-picture automatically.</translation>
 <translation id="6120483543004435978">When on, sites can ask to know when you're actively using your device. When off, sites can't know when you're actively using your device.</translation>
 <translation id="612871598708395517">Hide Get Chrome suggestions in other apps</translation>
-<translation id="6132075343662013154">Chrome will offer to save your password</translation>
 <translation id="615886654739818377">Don't allow sites to manage windows on all your displays</translation>
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6171020522141473435">When on, sites can ask to use Bluetooth devices. When off, sites can't use Bluetooth devices.</translation>
@@ -587,7 +577,6 @@
 <translation id="6980861169612950611">Delete site data? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Accessibility</translation>
 <translation id="6991142177939282156">Allowed • Using approximate</translation>
-<translation id="6992014788289743568">Strengthen your security and keep your data safer by checking your passwords</translation>
 <translation id="6992289844737586249">Ask first before allowing sites to use your microphone (recommended)</translation>
 <translation id="7000754031042624318">Turned off in Android settings</translation>
 <translation id="7036823721811529709">Listen in the background</translation>
@@ -654,7 +643,6 @@ Advanced Protection controls these Chrome settings:</translation>
 <translation id="775043444390799886">Revoke permission</translation>
 <translation id="7758789811447313947">Violet theme</translation>
 <translation id="7759147511335618829">MIDI device control and reprogramming</translation>
-<translation id="7771089277295008211">Save passwords instructional bottom sheet has closed</translation>
 <translation id="7781829728241885113">Yesterday</translation>
 <translation id="7791543448312431591">Add</translation>
 <translation id="780301667611848630">No, thanks</translation>
@@ -671,7 +659,6 @@ Advanced Protection controls these Chrome settings:</translation>
 <translation id="7940722705963108451">Remind me</translation>
 <translation id="7948081750384205628">Learn more about <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Sites can ask to see text and images on your clipboard</translation>
-<translation id="7958779728312669715">Save passwords instructional bottom sheet has fully opened</translation>
 <translation id="798299424881500862">Orange theme</translation>
 <translation id="7986741934819883144">Select a contact</translation>
 <translation id="7990211076305263060">When on, sites can ask to use your microphone. When off, sites can't use your microphone.</translation>
@@ -766,7 +753,6 @@ Advanced Protection controls these Chrome settings:</translation>
 <translation id="8889294078294184559">As you keep browsing, sites can check with Chrome and verify with a previous site that you've visited that you're likely a real person</translation>
 <translation id="8899807382908246773">Intrusive ads</translation>
 <translation id="8903921497873541725">Zoom in</translation>
-<translation id="8919911527569629802">Sign in to any website</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Don't ask again</translation>
 <translation id="8926666909099850184">NFC is off for this device. Turn it on in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>

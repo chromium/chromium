@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
+<translation id="1004615467759797184">Sesuaikan Halaman Tab Baharu Anda</translation>
 <translation id="1004825134262590729">{count,plural, =1{{count} kunci laluan}other{{count} kunci laluan}}</translation>
 <translation id="1005023885865154304">Buka tetapan Kata Laluan Autolengkap</translation>
 <translation id="1005230401424685968">YYYY</translation>
@@ -1693,6 +1694,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6307792728709337290">Simpan kad anda dalam Google Account anda untuk membuat autolengkap kad tersebut bagi pembelian ini dan pembelian masa hadapan yang dibuat pada Chrome.</translation>
 <translation id="6316141353357700666">Pilih kata laluan yang mahu digunakan daripada senarai yang dipaparkan.</translation>
 <translation id="6321526113093607004">Tambahkan pada Penanda Halaman</translation>
+<translation id="6324054713176642683">Pilih daripada tema, warna atau muat naik foto anda sendiri.</translation>
 <translation id="6327249202318869726">Gemini dimatikan untuk akaun anda. Hubungi pentadbir anda untuk mendapatkan maklumat lanjut.</translation>
 <translation id="6331836477476466332">Penyemak imbas yang lebih selamat dan berkuasa untuk anda</translation>
 <translation id="6337234675334993532">Penyulitan</translation>
@@ -2067,7 +2069,6 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="7454057999980797137">Negeri / Daerah</translation>
 <translation id="7458706065921255639">Pemeribadian &amp; pemautan</translation>
 <translation id="745899714366929493">Sepanjang hari</translation>
-<translation id="7460314822154045102">Gunakan Kamera</translation>
 <translation id="7460698861522306757">Minta Laman Mudah Alih</translation>
 <translation id="7464143666517313304">Langkah ini memadamkan alamat yang disimpan pada peranti ini.</translation>
 <translation id="7468373585447318060">Dapatkan maklumat terkini tentang semua produk yang anda jejaki.</translation>

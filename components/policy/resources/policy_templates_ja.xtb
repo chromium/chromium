@@ -667,6 +667,7 @@ PromptInTab に設定した場合は、ユーザーの認証が期限切れに�
 <translation id="1488008594883876680"><ph name="ARC_VM" /> イメージのプリロードを有効にする</translation>
 <translation id="1488724823347505879">Android アプリからウェブアプリへの共有を有効にする</translation>
 <translation id="1490962807364514840">CPU ランタイム カウンタのテレメトリー収集の間隔（ミリ秒単位）。</translation>
+<translation id="1491289760513245366">このポリシーでは、<ph name="AUTH_SCHEMES_POLICY_NAME" /> ポリシーの設定にかかわらず、<ph name="PRODUCT_NAME" /> がサポートする HTTP 認証スキームをすべて許可するオリジンを指定します。<ph name="PRODUCT_NAME" /> バージョン 161 以降では、このポリシーは宛先サーバーのオリジンにのみ適用され、プロキシ サーバーの認証チャレンジには適用されません。プロキシ サーバーですべての HTTP 認証スキームを許可する場合は、<ph name="ALL_HTTP_AUTH_SCHEMES_ALLOWED_FOR_PROXIES_POLICY_NAME" /> ポリシーを使用します。161 より前のバージョンでは、<ph name="ALL_HTTP_AUTH_SCHEMES_ALLOWED_FOR_PROXIES_POLICY_NAME" /> が設定されていない限り、このポリシーに一致するプロキシ サーバーでもすべての HTTP 認証スキームを使用できます。こちらの形式（<ph name="URL_SCHEME_FORMAT_LINK" />）に沿って、オリジンのパターンを指定します。<ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> で最大 1,000 件の例外を指定できます。ホスト コンポーネントではワイルドカードを使用できます（例: 「*:8000」は、ポート 8000 のすべてのプロキシに一致します）。すべてのスキームまたはすべてのポートを指定するには、コンポーネント全体を省略します（例: 「example.com」は、任意のスキームとポートに一致します）。ホスト名（例: 「example.com」）は、そのサブドメインにも一致します。ホストのみを指定し、そのサブドメインを除外するには、ホスト名の前にドットを付けます（例: 「.example.com」）。すべてのオリジンを指定するには、単一のアスタリスク（*）を使用します。</translation>
 <translation id="1492223733885011596">このポリシーでは、<ph name="PRODUCT_OS_NAME" /> で絵文字選択ツールの GIF サポートを有効にできます。
 このポリシーを有効に設定した場合、絵文字選択ツールで GIF 絵文字がサポートされます。
 このポリシーを無効に設定するか未設定のままにした場合、絵文字選択ツールで GIF 絵文字はサポートされません。
@@ -916,6 +917,21 @@ URL は「http://example.com」、「https://example.com」のような標準的
 <translation id="1635748761015837179">外部ストレージ デバイスへの書き込みを許可する</translation>
 <translation id="1639468541408865385">グローバル スコープを持つ HTTP 認証キャッシュを有効にする</translation>
 <translation id="1639673466479276550">ログイン画面でスクリーンセーバーを有効にする。</translation>
+<translation id="1640646094704433064">JIT（Just In Time）コンパイラを有効にした JavaScript の実行を許可しないサイトの URL パターンのリストを設定できます。
+
+          JavaScript JIT を無効にした場合、<ph name="PRODUCT_NAME" /> でウェブ コンテンツの表示に時間がかかったり、WebAssembly を使用する JavaScript の一部が無効になったりする可能性があります。JavaScript JIT を無効にすると、<ph name="PRODUCT_NAME" /> でのウェブ コンテンツの表示をより安全な設定で行えるようになります。
+
+          有効な URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns をご覧ください。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。
+
+          ポリシーの例外は、サイト全体だけでなく、特定のサブドメインにも設定できます。たとえば、ポリシーを subdomain.site.com でのみ設定した場合は、site.com には影響せず、subdomain.site.com にのみ適用されます。サブドメインを親サイトから分離できない場合は、site.com で設定されたポリシーが継承されることがあります。また、既存のタブで読み込まれたフレームについては、サイトが新しいタブで開かれるまで、例外が有効にならない場合があります。メモリ容量の少ない <ph name="ANDROID_NAME" /> デバイスでは、サイト固有の例外が適用されない場合があります。その場合、サイトでは <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> のポリシーが適用されるか（設定されている場合）、プロファイルの JavaScript JIT 設定がデフォルトで使用されます。
+
+          例外を適用するため、<ph name="PRODUCT_NAME" /> は、設定がデフォルトと異なるサイトまたはサブドメインを専用のプロセスに配置する場合があります。これにより、特に <ph name="ANDROID_NAME" /> で、またはワイルドカード パターンが多くのサブドメインに一致する場合に、メモリ使用量が増加する可能性があります。これは、一致するオリジンがそれぞれ個別に分離される可能性があるためです。また、分離されたサブドメインは、document.domain を使用して親サイトにアクセスすることもできません。
+
+          注: バージョン 155 以前では、ポリシーの例外はサイトの詳細レベル（eTLD+1）でのみ適用されていました。subdomain.site.com でのみ設定されたポリシーは、subdomain.site.com でも有効になりませんでした。site.com と subdomain.site.com の両方に適用するには、site.com で設定する必要がありました。
+
+          このポリシーは、最上位のオリジン URL のみに基づいて適用されるわけでなく、フレーム単位で適用されます。たとえば、site-one.com が <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" /> ポリシーにリストされているものの、site-one.com が site-two.com を含むフレームを読み込む場合、site-one.com では JavaScript JIT が無効になりますが、site-two.com では <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> のポリシーが適用されるか（設定されている場合）、デフォルトで JavaScript JIT が有効になります。ブロックリストのエントリの優先度は許可リストのエントリより高く、許可リストのエントリの優先度は設定されたデフォルト値より高くなります。
+
+          サイトでこのポリシーが設定されていない場合、<ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> のポリシーがサイトに適用されます（ポリシーを設定しているか、JavaScript JIT をサイトで有効にしている場合）。</translation>
 <translation id="1640824698339859203">フローティング SSO を有効にして、ユーザーのウェブサービス認証を新しいデバイスに移動する</translation>
 <translation id="1643642938972654829">ポリシーテストのページへのアクセスを許可する</translation>
 <translation id="1645793986494086629">スキーマ:</translation>
@@ -3908,6 +3924,7 @@ Microsoft Outlook カードには、追加の管理者設定が必要です。Ch
 これは、サポート終了となった <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLICY_NAME" /> ポリシーに代わるものです。</translation>
 <translation id="3568762199045490351">タイムアウトを 0 ミリ秒に設定した JavaScript setTimeout() に 1 ミリ秒のタイムアウトを含める。</translation>
 <translation id="3574450691573438824">デバイスのシステムログのアップロードを無効にする</translation>
+<translation id="357461884473178606">すべての HTTP 認証スキームを許可するプロキシ サーバーのリスト</translation>
 <translation id="3575011234198230041">HTTP 認証</translation>
 <translation id="3575159471980949522">Chrome から Android デバイスへの電話番号の送信をユーザーに許可しない</translation>
 <translation id="3577251398714997599">煩わしい広告を含むサイトでの広告表示に関する設定</translation>
@@ -7802,6 +7819,21 @@ false に設定した場合、教師はこの機能にアクセスできませ�
 <translation id="608788685013546076">電力ピークシフトのバッテリーのしきい値をパーセントで設定する</translation>
 <translation id="6089679180657323464">Wilco の診断およびテレメトリー用コントローラの設定を制御します。</translation>
 <translation id="6091233616732024397">ブラウザを使用するにはログインを必須とする</translation>
+<translation id="6091279561320899147">JavaScript の高度な最適化を無効にするサイトの URL パターンのリストを指定できます。
+
+JavaScript の最適化を無効にした場合、<ph name="PRODUCT_NAME" /> でウェブ コンテンツの表示に時間がかかる可能性があります。
+
+有効な URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns をご覧ください。
+ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。
+
+ポリシーの例外は、サイト全体だけでなく、特定のサブドメインにも設定できます。
+たとえば、ポリシーを subdomain.site.com でのみ設定した場合は、site.com には影響せず、subdomain.site.com にのみ適用されます。サブドメインを親サイトから分離できない場合は、site.com で設定されたポリシーが継承されることがあります。また、既存のタブで読み込まれたフレームについては、サイトが新しいタブで開かれるまで、例外が有効にならない場合があります。メモリ容量の少ない <ph name="ANDROID_NAME" /> デバイスでは、サイト固有の例外が適用されない場合があります。その場合、サイトでは <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> のポリシーが適用されるか（設定されている場合）、プロファイルの JavaScript 最適化設定がデフォルトで使用されます。例外を適用するため、<ph name="PRODUCT_NAME" /> は、設定がデフォルトと異なるサイトまたはサブドメインを専用のプロセスに配置する場合があります。これにより、特に <ph name="ANDROID_NAME" /> で、またはワイルドカード パターンが多くのサブドメインに一致する場合に、メモリ使用量が増加する可能性があります。これは、一致するオリジンがそれぞれ個別に分離される可能性があるためです。また、分離されたサブドメインは、document.domain を使用して親サイトにアクセスすることもできません。
+
+注: バージョン 138 以前では、ポリシーの例外はサイトの詳細レベル（eTLD+1）でのみ適用されていました。subdomain.site.com のみに対して設定されたポリシーは、subdomain.site.com でも有効になりませんでした。site.com と subdomain.site.com の両方に適用するには、site.com に対して設定する必要がありました。
+
+このポリシーは、最上位のオリジン URL のみに基づいて適応されるわけでなく、フレーム単位で適用されます。たとえば、<ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" /> ポリシーに site-one.com が登録されていても、site-one.com が site-two.com を含むフレームを読み込む場合、site-one.com では JavaScript の最適化が無効になりますが、site-two.com では <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> のポリシーが適用されるか（設定されている場合）、デフォルトで JavaScript の最適化が有効になります。ブロックリストのエントリの優先度は許可リストのエントリより高く、許可リストのエントリの優先度は設定されたデフォルト値より高くなります。
+
+サイトでこのポリシーが設定されていない場合は、<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> のポリシーがサイトに適用されます（このポリシーが設定されているか、サイトで JavaScript の最適化が有効になっている場合）。</translation>
 <translation id="6092073071805297119">ユーザー補助パフォーマンス フィルタの使用を許可する。</translation>
 <translation id="6093156968240188330">リモート ユーザーがリモート アシスタンス セッションで権限昇格ウィンドウとやり取りできるようにする</translation>
 <translation id="6093551397728373988">許可されているすべての入力方法をユーザー セッションで強制的に有効にする</translation>
@@ -10842,6 +10874,7 @@ Topics API のサポート終了により、このポリシーは <ph name="PROD
 <translation id="8066428282805800713">ChromeOS Flex で追加のハードウェア データを送信する</translation>
 <translation id="8071371098891664137"><ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> の値に <ph name="PRINTERS_BLOCKLIST" /> が選択されている場合、<ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> でユーザーが使用できないプリンタを指定できます。ユーザーは、このポリシーで指定されている ID 以外のすべてのプリンタを使用できます。この ID は、<ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> で指定されたファイル内の「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドに対応している必要があります。</translation>
 <translation id="8076539570602616846"><ph name="PRODUCT_NAME" /> PDF ビューアから Google ドライブに PDF ファイルを保存できる Google アカウントを制限する</translation>
+<translation id="8078224178125125527">このポリシーでは、<ph name="AUTH_SCHEMES_POLICY_NAME" /> ポリシーの設定にかかわらず、<ph name="PRODUCT_NAME" /> がサポートする HTTP 認証スキームをすべて許可するプロキシ サーバーを指定します。プロキシ サーバーのパターンは、URL 拒否リストのフィルタ形式（<ph name="URL_SCHEME_FORMAT_LINK" />）に沿って指定します。最大 1,000 件の例外を定義できます。ホスト コンポーネントではワイルドカードを使用できます（例: 「*:8080」は、ポート 8080 のすべてのプロキシに一致します）。ホスト名（例: 「proxy.example.com」）は、そのサブドメインにも一致します。ホストのみを指定し、そのサブドメインを除外するには、ホスト名の前にドットを付けます（例: 「.proxy.example.com」）。このポリシーを設定しなかった場合、<ph name="AUTH_SCHEMES_POLICY_NAME" /> で指定された HTTP 認証スキーム（未設定の場合のデフォルトのスキーム）のみがプロキシ認証でサポートされます。</translation>
 <translation id="8078297389450285582">このポリシーを有効に設定するか未設定のままにした場合、スマート消灯モデルが有効になり、画面を暗くするまでの時間を延長できます。時間が延長された場合は、画面オフまでの時間、画面ロックまでの時間、およびアイドル時間が調整され、画面を暗くするまでの時間との差が元の設定と同じに維持されます。
 
       このポリシーを無効に設定した場合、画面を暗くするまでの時間がスマート消灯モデルによって変更されることはありません。</translation>
@@ -11480,6 +11513,13 @@ false に設定した場合、管理対象のネットワークに接続され�
 <translation id="8489169564515126823">無効: デフォルトでスクローラーをフォーカス可能にしない。</translation>
 <translation id="8489964335640955763">PluginVm</translation>
 <translation id="8493645415242333585">ブラウザの履歴の保存を無効にする</translation>
+<translation id="8494605948258449467">このポリシーでは、ページがバックフォワード キャッシュに保存されたときにアクティブな WebSocket 接続を切断するかどうかを制御します。以前は、アクティブな WebSocket 接続があるとページをバックフォワード キャッシュに保存できませんでしたが、<ph name="PRODUCT_NAME" /> では代わりに WebSocket を切断するように動作が変更されました。これにより、ページをキャッシュに保存して、切断された状態で復元することが可能になります。
+
+このポリシーを有効に設定するか未設定のままにした場合、ページがバックフォワード キャッシュに保存されると WebSocket が切断されます。
+
+このポリシーを無効に設定した場合、ページがバックフォワード キャッシュに保存されても WebSocket は切断されません。バックフォワード キャッシュはアクティブな WebSocket をサポートしていないため、アクティブな WebSocket を使用するページはキャッシュに保存されません。
+
+このポリシーは <ph name="PRODUCT_NAME" /> バージョン 157 でサポートが終了し、バージョン 167 で削除される予定です。</translation>
 <translation id="8499172469244085141">デフォルト設定（ユーザーによるオーバーライド可能）</translation>
 <translation id="8499359456965625209">このポリシーはサポートを終了しました。
 
@@ -12265,6 +12305,7 @@ M119 よりデフォルトで無効になります）。
 <translation id="9015759770696099204">F11 / F12 の設定は無効</translation>
 <translation id="9015952763003753868"><ph name="CORS" /> プリフライトで<ph name="ACAM_HEADER_NAME" /> の照合を仕様に沿って行う</translation>
 <translation id="9020630127193895800">インディゴ色のキーボード バックライト</translation>
+<translation id="9025073735776703766">このポリシーは、XSLT 機能（XSLTProcessor JavaScript API と XSL 処理命令）を使用できるかどうかを制御します。このポリシーを有効に設定すると、ブラウザでの XSLT 機能のデフォルトの状態にかかわらず、この機能を使用できます。このポリシーを無効に設定すると、ブラウザでの XSLT 機能のデフォルトの状態にかかわらず、この機能は使用できません。このポリシーを設定しなかった場合、XSLT を使用できるかどうかはブラウザのデフォルト設定とフィールド トライアルによって決まります。このポリシーは一時的なもので、M176 で削除される予定です。</translation>
 <translation id="9025912013525357598">すべてのメディアタイプで DataURL 空白文字を保持する</translation>
 <translation id="9029815312472546960">Device Attributes API をブロックするサイトを指定する</translation>
 <translation id="9031831501689819108">従来のブラウザのサポートを有効にする</translation>
@@ -12510,6 +12551,25 @@ M119 よりデフォルトで無効になります）。
 <translation id="9204863016826119209">このポリシーで指定されているインストール済みの Android アプリは企業キーを使用できます。</translation>
 <translation id="9206364386317031168">ローカル デバイスへのネットワーク リクエストを許可するサイトを指定する</translation>
 <translation id="9206472508136116830">NetBIOS 共有の検出を許可しない</translation>
+<translation id="9207289612253941907">このポリシーでは、<ph name="PRODUCT_NAME" /> で優先する TLS 1.3 の鍵交換アルゴリズム（サポートされているグループ）の順序を指定し、特定のコンプライアンス体制で承認されたアルゴリズムの優先順序を反映するように設定します。
+
+このポリシーを設定しても、特定のアルゴリズムがネゴシエートされるとは限りません。
+
+このポリシーは、コンプライアンス要件の有無にかかわらずクライアントをサポートしたいサーバー オペレーターが、それらのクライアントを区別し、暗号化強度の高い特定のデフォルトではないアルゴリズムを優先するように明示的に設定されたクライアントに対してのみ使用できるようにするためのものです。
+
+このポリシーを「<ph name="CNSA2_NAME" />」に設定した場合は、<ph name="PRODUCT_NAME" /> で Commercial National Security Algorithm Suite 2.0（CNSA 2.0）に準拠するために必要な鍵交換方式を優先するように設定します。
+
+このポリシーを設定しない場合、または「<ph name="DEFAULT_NAME" />」に設定した場合、<ph name="PRODUCT_NAME" /> でデフォルトの鍵交換方式を使用するように設定します。
+
+このポリシーの設定はセキュリティ上必須ではありません。<ph name="PRODUCT_NAME" /> で使用するデフォルトの暗号化は、いかなる総当たり攻撃にも十分耐えうるほど強力です。
+
+このポリシーを設定すると、ウェブサイトにアクセスする際に <ph name="PRODUCT_NAME" /> の動作が遅くなる場合があります。
+
+このポリシーは TLS 1.3 と QUIC にのみ影響し、以前のバージョンの TLS には影響しません。
+
+このポリシーは、マシンとユーザーに対して設定できます。このポリシーをユーザーに設定した場合、ユーザー プロファイルによって開始されたネットワーク リクエストにのみ影響し、ブラウザ全体のバックグラウンド タスクを実行するために <ph name="PRODUCT_NAME" /> によって行われたネットワーク リクエストには影響しない可能性があります。それらのリクエストはマシンレベルの値によって制御されます。このポリシーをマシンレベルとユーザーレベルの両方で設定した場合、<ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" /> ポリシーによって優先順位が変更されていない限り、マシンレベルの値が適用されます。
+
+バージョン 156 以前では、このポリシーはマシン全体にのみ適用されます。</translation>
 <translation id="9207596996305971030">ログイン / ログアウト イベントを報告しない</translation>
 <translation id="9208328979373108724">ユーザーがプロンプトを確認した場合に、独立したウェブアプリのオリジンによるサブアプリの追加を許可する</translation>
 <translation id="9210647066889383361">Smart Lock を使用したデバイスへのログインをユーザーに許可する</translation>

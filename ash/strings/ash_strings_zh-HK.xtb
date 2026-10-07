@@ -928,7 +928,6 @@
 <translation id="3697991387880191195">按一下螢幕截圖快速鍵</translation>
 <translation id="3702809606464356667">顯示緊來自目前桌面嘅視窗，㩒向上箭咀掣就可以顯示來自所有桌面嘅視窗</translation>
 <translation id="3705722231355495246">-</translation>
-<translation id="3706423975342040244">娛樂</translation>
 <translation id="370665806235115550">載入中…</translation>
 <translation id="3707093869106077605">「<ph name="UNAVAILABLE_DLC_ONE" />」和「<ph name="UNAVAILABLE_DLC_TWO" />」無法使用。</translation>
 <translation id="3708186454126126312">之前已連接的裝置</translation>
@@ -975,7 +974,6 @@
 <translation id="3824784079442479685">此操作會允許「<ph name="APP_NAME" />」和所有具備相機權限的應用程式和網站存取相機。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
 <translation id="3826099427150913765">改用密碼</translation>
 <translation id="383058930331066723">「慳電模式」已開啟</translation>
-<translation id="3831226344927851293">退出教學課程檢視模式</translation>
 <translation id="383629559565718788">顯示鍵盤設定</translation>
 <translation id="384082539148746321">要刪除範本嗎？</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />，然後按<ph name="KEY_ONE" />、<ph name="KEY_TWO" />、<ph name="KEY_THREE" />或者<ph name="KEY_FOUR" /></translation>
@@ -1577,10 +1575,8 @@
 <translation id="5551974246223970793">搜尋頁面時，前往下一個符合搜尋的項目</translation>
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5558091555391176027">將「咫尺共享」功能切換為向附近的所有裝置顯示</translation>
-<translation id="5558314826121965174">創意</translation>
 <translation id="556042886152191864">按鈕</translation>
 <translation id="5570122939431135380">在新無痕式視窗中開啟新分頁</translation>
-<translation id="5572632238877308040">必備應用程式</translation>
 <translation id="5575528586625653441">示範註冊要求發生問題。</translation>
 <translation id="557563299383177668">下一段</translation>
 <translation id="5577082622442191756">切換藍牙。<ph name="STATE_TEXT" />。</translation>
@@ -1615,7 +1611,6 @@
 <translation id="5667546120811588575">正在設定 Google Play…</translation>
 <translation id="5669267381087807207">啟用</translation>
 <translation id="5671658447180261823">移除此建議：<ph name="SUGGESTION_NAME" /></translation>
-<translation id="5672890847723042801">實用程式</translation>
 <translation id="5673434351075758678">同步處理您的設定後，系統會將語言從「<ph name="FROM_LOCALE" />」改為「<ph name="TO_LOCALE" />」。</translation>
 <translation id="5675363643668471212">捷徑列項目</translation>
 <translation id="5677022547882470786">拖曳或按下空格鍵，選取要搜尋的區域</translation>
@@ -1870,7 +1865,6 @@
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> 然後 <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> 或 <ph name="KEY_THREE" /></translation>
 <translation id="6352082849089527770">不明網絡</translation>
 <translation id="6359587239691116345">取得最新功能和改善安全性的資訊。如果拒絕此更新，裝置可能無法再正常運作，您亦可能會遇到安全性和效能問題。</translation>
-<translation id="6362833380917912748">認識內置應用程式</translation>
 <translation id="6364386432014869981">內置觸控板已啟用</translation>
 <translation id="6376931439017688372">藍牙已開啟</translation>
 <translation id="6378515133128829137">將視窗固定至右邊</translation>
@@ -2094,7 +2088,6 @@
 <translation id="7014684956566476813">已連接名為「<ph name="DEVICE_NAME" />」的裝置</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> 後才可使用。</translation>
 <translation id="70168403932084660">桌面 6</translation>
-<translation id="702252130983202758">您的應用程式</translation>
 <translation id="7025533177575372252">將 <ph name="DEVICE_NAME" /> 連結至您的手機</translation>
 <translation id="7026338066939101231">減少</translation>
 <translation id="7029307918966275733">尚未安裝 Crostini。請安裝 Crostini 來查看製作人員名單。</translation>
@@ -2533,7 +2526,6 @@
 <translation id="8277261673056602147">突顯畫面上的文字</translation>
 <translation id="8281886186245836920">略過</translation>
 <translation id="8282784978194352587">大功告成！</translation>
-<translation id="8287009018010202411">生產力</translation>
 <translation id="828708037801473432">已關閉</translation>
 <translation id="8289128870594824098">磁碟大小</translation>
 <translation id="8297006494302853456">弱</translation>
@@ -2628,7 +2620,6 @@
 <translation id="8598235756057743477">按名稱或顏色將應用程式排序</translation>
 <translation id="8599864823732014237">要跳過企業註冊嗎？</translation>
 <translation id="8609384513243082612">開啟新分頁</translation>
-<translation id="861045123704058818">應用程式會暫時按類別整理</translation>
 <translation id="8612338981637220013">再接再厲！</translation>
 <translation id="8613164732773110792">僅限小寫字元、數字、底線或破折號</translation>
 <translation id="8614517853887502247">檢視保護功能已開啟，因此系統已隱藏 <ph name="APP_1_TITLE" /> 和 <ph name="APP_2_TITLE" /> 的通知</translation>
@@ -2820,7 +2811,6 @@
 <translation id="9129245940793250979">後按鈕</translation>
 <translation id="9133335900048457298">無法錄影受保護的內容</translation>
 <translation id="9139720510312328767">刪除下一個字母</translation>
-<translation id="9148058034647219655">結束</translation>
 <translation id="9151906066336345901">End 鍵</translation>
 <translation id="9159421884295554245">搜尋「剪貼簿」</translation>
 <translation id="9168436347345867845">稍後再說</translation>

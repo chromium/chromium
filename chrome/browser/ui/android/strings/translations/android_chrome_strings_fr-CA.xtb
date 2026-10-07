@@ -764,6 +764,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4092709865241032354">Pour aider le gestionnaire de mots de passe Google à enregistrer vos renseignements de connexion, ajoutez votre nom d'utilisateur pour ce site</translation>
 <translation id="4095146165863963773">Supprimer les données de l'application?</translation>
 <translation id="4095483462103784441">Créer un nouveau groupe d'onglets</translation>
+<translation id="4098552968111329864">Afin de sécuriser vos activités sur Chrome, votre organisation pourra consulter ou gérer certaines informations lorsque vous êtes connectée à Chrome</translation>
 <translation id="4105527135143631701">Page de mise à jour du gestionnaire de mots de passe Google ouverte</translation>
 <translation id="4107207375883769436">Votre organisation devra peut-être consulter et gérer les données de navigation dans votre profil professionnel, comme votre historique de navigation et vos mots de passe</translation>
 <translation id="4113030288477039509">Géré par votre administrateur</translation>
@@ -1770,6 +1771,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7929587383660661825">Chrome supprime automatiquement les autorisations des sites qui abusent des notifications ou que vous n'avez pas visités récemment</translation>
 <translation id="7934668619883965330">Impossible de télécharger le fichier. Format de fichier non compatible.</translation>
 <translation id="7951102827450076904">Toujours ouvrir les fichiers PDF téléchargés</translation>
+<translation id="7952148074468405586">En savoir plus sur les <ph name="BEGIN_LINK" />informations que votre organisation peut consulter ou gérer<ph name="END_LINK" /></translation>
 <translation id="7952479614398473176">Pour ouvrir une nouvelle fenêtre, réduisez le nombre total de fenêtres actives à <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ou moins.</translation>
 <translation id="7956713633345437162">Favoris d'appareil mobile</translation>
 <translation id="7957413488482743710">Une carte virtuelle masque votre carte réelle pour vous protéger de fraudes potentielles. <ph name="BEGIN_LINK1" />En savoir plus sur les cartes virtuelles<ph name="END_LINK1" /></translation>

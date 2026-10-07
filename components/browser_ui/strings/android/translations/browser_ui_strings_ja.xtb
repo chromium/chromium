@@ -12,7 +12,6 @@
 <translation id="1126523729897810826">Chrome を最大限に活用するには、下記のおすすめの設定を行ってください</translation>
 <translation id="113098737392899175">キーボードが接続されているときにテキスト カーソルを使ってページ内を移動する</translation>
 <translation id="1148624853678088576">設定完了。</translation>
-<translation id="1149644372535087155">Chrome でパスワードを保存</translation>
 <translation id="1178015372320901893">カスタム ショートカットのボトムシート</translation>
 <translation id="1178581264944972037">一時停止</translation>
 <translation id="1181037720776840403">削除</translation>
@@ -227,7 +226,6 @@
 <translation id="3167868116600277716">Discover フィード</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> の保存データ</translation>
 <translation id="3199078925536734975">一時的に許可 • おおよその位置</translation>
-<translation id="3208584281581115441">今すぐ確認</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> に通知の送信を許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でも通知をオンにしてください。</translation>
 <translation id="3223425961342298674">位置情報は許可されていません</translation>
 <translation id="3227137524299004712">マイク</translation>
@@ -286,7 +284,6 @@
 <translation id="381841723434055211">電話番号</translation>
 <translation id="3823453485268218808">フォント Mono</translation>
 <translation id="3826050100957962900">サードパーティのログイン</translation>
-<translation id="3831065134033923230">保存したパスワードを確認する</translation>
 <translation id="3835233591525155343">デバイスのアクティブ状態</translation>
 <translation id="3843916486309149084">今日、Chrome で Cookie を再びブロックします</translation>
 <translation id="385051799172605136">戻る</translation>
@@ -294,7 +291,6 @@
 <translation id="3870711497942672548">ホームページの色や画像をカスタマイズして Chrome を自分仕様にすることができます</translation>
 <translation id="389521680295183045">サイトがデバイスのアクティブ状態の検出を要求できるようにする</translation>
 <translation id="3895926599014793903">強制的にズームを有効にする</translation>
-<translation id="3903738175795615004">全画面表示を終了するには、上からドラッグするか、Esc キーを押します。</translation>
 <translation id="3905475044299942653">頻繁な通知をブロック</translation>
 <translation id="3922092564198021702">スマートフォンの [設定] を開きます</translation>
 <translation id="3924858949939391676">リーディング モードがオンになったらリンクを表示します</translation>
@@ -355,7 +351,6 @@
 <translation id="4479647676395637221">サイトにカメラの使用を許可する前に確認する（推奨）</translation>
 <translation id="4505788138578415521">URL のフルバージョンです</translation>
 <translation id="4522570452068850558">詳細</translation>
-<translation id="4523472416386354622">ログインして開始</translation>
 <translation id="4529207923544043455">設定リストの完了したタスクと未完了のタスクが表示されているボトムシート</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> にマイクへのアクセスを許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でもマイクをオンにしてください。</translation>
 <translation id="4545694195887112015">設定シートを閉じました</translation>
@@ -368,7 +363,6 @@
 <translation id="4645575059429386691">保護者により管理されています</translation>
 <translation id="4651224148644053314">その他の色とオプション</translation>
 <translation id="4652266463001779298">許可されていません</translation>
-<translation id="4655846733459137112">[はい] をタップすると、次回ログイン時にこのパスワードを簡単に使用できます</translation>
 <translation id="4663373278480897665">カメラを使用できます</translation>
 <translation id="4670064810192446073">バーチャル リアリティ（VR）</translation>
 <translation id="4672315773691449562">[ブラウザアプリ]、[Chrome] をタップします</translation>
@@ -415,7 +409,6 @@
 <translation id="512938610812707830">新しいタブページの外観テーマ コレクションのボトムシートが画面全体に表示されています</translation>
 <translation id="5137460097045297858">Discover フィードのボトムシートが画面の下半分に表示されています</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{開いているタブの値下げ情報}other{開いているタブの値下げ情報}}</translation>
-<translation id="5150048675001754041">サイトやアプリにすばやく簡単にログインできます</translation>
 <translation id="5186036860380548585">設定は画面上部にあります</translation>
 <translation id="5197729504361054390">選択した連絡先が <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> と共有されます。</translation>
 <translation id="5198930230016462977">[新しいタブページをカスタマイズ] のボトムシートを閉じました</translation>
@@ -425,7 +418,6 @@
 <translation id="5239623327352565343">位置情報が許可されています</translation>
 <translation id="5246825184569358663">この操作を行うと、Cookie を含むすべてのローカルデータが削除され、<ph name="DOMAIN" /> とその下にある全サイトの全権限がリセットされます</translation>
 <translation id="5264323282659631142"><ph name="CHIP_LABEL" /> を削除</translation>
-<translation id="528192093759286357">全画面表示を終了するには、上からドラッグして、戻るボタンをタップします。</translation>
 <translation id="5286194356314741248">スキャン中</translation>
 <translation id="5300589172476337783">表示</translation>
 <translation id="5301954838959518834">OK</translation>
@@ -473,7 +465,6 @@
 <translation id="5804241973901381774">権限</translation>
 <translation id="5817042798620209981">サイト情報、ダイアログ</translation>
 <translation id="5822675474983796325">[新しいタブページをカスタマイズ] のボトムシートが画面全体に表示されています</translation>
-<translation id="5826403277762134844">Chrome でのパスワードの保存方法を説明するボトムシート</translation>
 <translation id="5833899990800318936">サイトに JavaScript の使用を許可しない</translation>
 <translation id="583673505367439042">サイトがデバイスのファイルやフォルダの編集を要求できるようにする</translation>
 <translation id="5844448279347999754">オンにすると、サイトはクリップボードに保存されたテキストや画像の参照を要求できます。オフにすると、サイトはクリップボードに保存されたテキストや画像を参照できません。</translation>
@@ -511,7 +502,6 @@
 <translation id="6104860901391833523">オンにすると、サイトはピクチャー イン ピクチャーを自動的に開始できます。オフにすると、サイトはピクチャー イン ピクチャーを自動的に開始できません。</translation>
 <translation id="6120483543004435978">オンにすると、サイトはデバイスのアクティブ状態の検出を要求できます。オフにすると、サイトはデバイスのアクティブ状態を検出できません。</translation>
 <translation id="612871598708395517">他のアプリで Chrome の提案を非表示にする</translation>
-<translation id="6132075343662013154">Chrome でパスワードの保存を確認するメッセージが表示されます</translation>
 <translation id="615886654739818377">全ディスプレイのウィンドウ管理をサイトに許可しない</translation>
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6171020522141473435">オンにすると、サイトは Bluetooth デバイスの使用を要求できます。オフにすると、サイトは Bluetooth デバイスを使用できません。</translation>
@@ -587,7 +577,6 @@
 <translation id="6980861169612950611">次のサイトデータを削除しますか？<ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">ユーザー補助機能</translation>
 <translation id="6991142177939282156">許可 • おおよその位置情報を使用</translation>
-<translation id="6992014788289743568">パスワードを確認してセキュリティを強化し、データを安全に保護しましょう</translation>
 <translation id="6992289844737586249">サイトにマイクの使用を許可する前に確認する（推奨）</translation>
 <translation id="7000754031042624318">Android の設定で無効</translation>
 <translation id="7036823721811529709">バックグラウンドで音楽を再生</translation>
@@ -654,7 +643,6 @@
 <translation id="775043444390799886">権限を取り消す</translation>
 <translation id="7758789811447313947">バイオレットのテーマ</translation>
 <translation id="7759147511335618829">MIDI デバイスの操作と再プログラム</translation>
-<translation id="7771089277295008211">パスワードの保存方法を説明するボトムシートが閉じられました</translation>
 <translation id="7781829728241885113">昨日</translation>
 <translation id="7791543448312431591">追加</translation>
 <translation id="780301667611848630">利用しない</translation>
@@ -671,7 +659,6 @@
 <translation id="7940722705963108451">リマインダーの設定</translation>
 <translation id="7948081750384205628"><ph name="SETTING_TITLE" /> の詳細</translation>
 <translation id="7952708427581814389">サイトがクリップボード内のテキストや画像へのアクセスを要求できるようにする</translation>
-<translation id="7958779728312669715">パスワードの保存方法を説明するボトムシートが完全に開かれています</translation>
 <translation id="798299424881500862">オレンジのテーマ</translation>
 <translation id="7986741934819883144">連絡先の選択</translation>
 <translation id="7990211076305263060">オンにすると、サイトはマイクの使用を要求できます。オフにすると、サイトはマイクを使用できません。</translation>
@@ -766,7 +753,6 @@
 <translation id="8889294078294184559">それ以降にアクセスしたサイトは、あなたが実在のユーザーであることを、前にアクセスしたサイトから Chrome を介して確認できます。</translation>
 <translation id="8899807382908246773">煩わしい広告</translation>
 <translation id="8903921497873541725">拡大する</translation>
-<translation id="8919911527569629802">任意のウェブサイトにログインします</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926389886865778422">再表示させない</translation>
 <translation id="8926666909099850184">このデバイスでは NFC がオフになっています。<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でオンにしてください。</translation>

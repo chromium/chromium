@@ -928,7 +928,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="3697991387880191195">Apasă pe comanda rapidă pentru capturi de ecran</translation>
 <translation id="3702809606464356667">Se afișează ferestrele de pe desktopul actual. Apasă tasta săgeată în sus pentru a afișa ferestrele de pe toate desktopurile.</translation>
 <translation id="3705722231355495246">-</translation>
-<translation id="3706423975342040244">Divertisment</translation>
 <translation id="370665806235115550">Se încarcă…</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> și <ph name="UNAVAILABLE_DLC_TWO" /> nu sunt disponibile.</translation>
 <translation id="3708186454126126312">Conectat anterior</translation>
@@ -975,7 +974,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="3824784079442479685">Astfel, se permite accesul la cameră pentru <ph name="APP_NAME" /> și pentru toate aplicațiile și site-urile care au permisiunea adecvată Poate fi necesar să actualizezi pagina web sau să repornești aplicația.</translation>
 <translation id="3826099427150913765">Comută la parolă</translation>
 <translation id="383058930331066723">Modul Economisirea bateriei este activat</translation>
-<translation id="3831226344927851293">Ieși din vizualizarea tutorialului</translation>
 <translation id="383629559565718788">Afișează setările pentru tastatură</translation>
 <translation id="384082539148746321">Ștergi șablonul?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, apoi <ph name="KEY_ONE" /> sau <ph name="KEY_TWO" /> sau <ph name="KEY_THREE" /> sau <ph name="KEY_FOUR" /></translation>
@@ -1579,10 +1577,8 @@ Niciun dispozitiv conectat.</translation>
 <translation id="5551974246223970793">Când cauți o pagină, accesează următoarea potrivire pentru căutare</translation>
 <translation id="5556459405103347317">Reîncarcă</translation>
 <translation id="5558091555391176027">Activează / dezactivează vizibilitatea crescută pentru Trimiterea în apropiere</translation>
-<translation id="5558314826121965174">Creativitate</translation>
 <translation id="556042886152191864">Buton</translation>
 <translation id="5570122939431135380">Deschide o filă nouă într-o fereastră incognito nouă</translation>
-<translation id="5572632238877308040">Esențiale</translation>
 <translation id="5575528586625653441">A apărut o problemă cu solicitarea de înregistrare demo.</translation>
 <translation id="557563299383177668">Paragraful următor</translation>
 <translation id="5577082622442191756">Comută Bluetooth. <ph name="STATE_TEXT" />.</translation>
@@ -1617,7 +1613,6 @@ Niciun dispozitiv conectat.</translation>
 <translation id="5667546120811588575">Se configurează Google Play...</translation>
 <translation id="5669267381087807207">Se activează</translation>
 <translation id="5671658447180261823">Elimină sugestia <ph name="SUGGESTION_NAME" /></translation>
-<translation id="5672890847723042801">Utilitare</translation>
 <translation id="5673434351075758678">Din „<ph name="FROM_LOCALE" />” în „<ph name="TO_LOCALE" />” după sincronizarea setărilor.</translation>
 <translation id="5675363643668471212">Elementul din raft</translation>
 <translation id="5677022547882470786">Trage sau apasă pe tasta de spațiu pentru a selecta o zonă pentru căutare</translation>
@@ -1873,7 +1868,6 @@ Niciun dispozitiv conectat.</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, apoi <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> sau <ph name="KEY_THREE" /></translation>
 <translation id="6352082849089527770">Rețele necunoscute</translation>
 <translation id="6359587239691116345">Obține cele mai noi funcții și îmbunătățiri ale securității. Dacă refuzi această actualizare, este posibil ca dispozitivul să nu mai funcționeze corespunzător și să întâmpini probleme de securitate și de performanță.</translation>
-<translation id="6362833380917912748">Familiarizează-te cu aplicațiile încorporate</translation>
 <translation id="6364386432014869981">Touchpadul încorporat este activat</translation>
 <translation id="6376931439017688372">Bluetooth este activat</translation>
 <translation id="6378515133128829137">Fixează fereastra la dreapta</translation>
@@ -2098,7 +2092,6 @@ Instalare nouă</translation>
 <translation id="7014684956566476813">S-a conectat la dispozitivul <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Revino la <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Desktop 6</translation>
-<translation id="702252130983202758">Aplicațiile tale</translation>
 <translation id="7025533177575372252">Conectează-ți dispozitivul <ph name="DEVICE_NAME" /> cu telefonul</translation>
 <translation id="7026338066939101231">Micșorează</translation>
 <translation id="7029307918966275733">Crostini nu este instalat. Instalează Crostini pentru a afișa datele de conectare.</translation>
@@ -2537,7 +2530,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8277261673056602147">Evidențiază textul pe ecran</translation>
 <translation id="8281886186245836920">Omite</translation>
 <translation id="8282784978194352587">Ai reușit!</translation>
-<translation id="8287009018010202411">Productivitate</translation>
 <translation id="828708037801473432">Dezactivat</translation>
 <translation id="8289128870594824098">Dimensiunea discului</translation>
 <translation id="8297006494302853456">Slab</translation>
@@ -2632,7 +2624,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8598235756057743477">Sortează aplicațiile după nume sau culoare</translation>
 <translation id="8599864823732014237">Omiți înregistrarea companiei?</translation>
 <translation id="8609384513243082612">Deschide o filă nouă</translation>
-<translation id="861045123704058818">Aplicațiile sunt organizate temporar după categorie</translation>
 <translation id="8612338981637220013">Ești pe val!</translation>
 <translation id="8613164732773110792">Numai litere mici, cifre, caractere de subliniere sau cratime</translation>
 <translation id="8614517853887502247">Notificările pentru <ph name="APP_1_TITLE" /> și <ph name="APP_2_TITLE" /> sunt ascunse deoarece este activată protecția la afișare</translation>
@@ -2824,7 +2815,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="9129245940793250979">Butonul din spate</translation>
 <translation id="9133335900048457298">Nu se poate înregistra conținut protejat</translation>
 <translation id="9139720510312328767">Șterge litera următoare</translation>
-<translation id="9148058034647219655">Ieși</translation>
 <translation id="9151906066336345901">end</translation>
 <translation id="9159421884295554245">Caută în clipboard</translation>
 <translation id="9168436347345867845">Mai târziu</translation>

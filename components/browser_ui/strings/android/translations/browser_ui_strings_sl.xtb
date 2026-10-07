@@ -12,7 +12,6 @@
 <translation id="1126523729897810826">Če želite kar najbolje izkoristiti Chrome, upoštevajte ta predlagana dejanja</translation>
 <translation id="113098737392899175">Premikanje po straneh s kazalcem besedila, ko je priključena tipkovnica</translation>
 <translation id="1148624853678088576">Pripravljeni ste!</translation>
-<translation id="1149644372535087155">Shranjevanje gesel v Chromu</translation>
 <translation id="1178015372320901893">Razdelek na dnu zaslona »Moje bližnjice«</translation>
 <translation id="1178581264944972037">Prekini</translation>
 <translation id="1181037720776840403">Odstrani</translation>
@@ -227,7 +226,6 @@
 <translation id="3167868116600277716">Vir Odkrivanje</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> shranjenih podatkov</translation>
 <translation id="3199078925536734975">Tokrat dovoljeno • Približna</translation>
-<translation id="3208584281581115441">Preveri</translation>
 <translation id="321187648315454507">Če želite, da vam aplikacija <ph name="APP_NAME" /> pošilja obvestila, obvestila vklopite tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Lokacija ni dovoljena</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -286,7 +284,6 @@
 <translation id="381841723434055211">Telefonske številke</translation>
 <translation id="3823453485268218808">Pisava Mono</translation>
 <translation id="3826050100957962900">Prijava prek zunanjih ponudnikov</translation>
-<translation id="3831065134033923230">Preverjanje shranjenih gesel</translation>
 <translation id="3835233591525155343">Uporaba naprave</translation>
 <translation id="3843916486309149084">Chrome bo znova blokiral piškotke danes</translation>
 <translation id="385051799172605136">Nazaj</translation>
@@ -294,7 +291,6 @@
 <translation id="3870711497942672548">Prilagodite si Chrome z barvami in slikami po meri za domačo stran</translation>
 <translation id="389521680295183045">Spletna mesta lahko zahtevajo, da izvejo, kdaj aktivno uporabljate napravo</translation>
 <translation id="3895926599014793903">Vsili povečavo</translation>
-<translation id="3903738175795615004">Povlecite z vrha ali pritisnite tipko Esc, če želite zapreti celozaslonski način.</translation>
 <translation id="3905475044299942653">Ustavitev veliko obvestil</translation>
 <translation id="3922092564198021702">V telefonu odprite nastavitve</translation>
 <translation id="3924858949939391676">Prikaz povezav, ko je način za branje vklopljen</translation>
@@ -355,7 +351,6 @@
 <translation id="4479647676395637221">Prikaži poziv, preden se spletnim mestom dovoli uporaba kamere (priporočeno)</translation>
 <translation id="4505788138578415521">URL je razširjen</translation>
 <translation id="4522570452068850558">Podrobnosti</translation>
-<translation id="4523472416386354622">Prijavite se, če želite začeti</translation>
 <translation id="4529207923544043455">Razdelek na dnu zaslona, ki prikazuje dokončana in nedokončana opravila na seznamu nastavitev</translation>
 <translation id="4534723447064627427">Če želite aplikaciji <ph name="APP_NAME" /> omogočiti dostop do mikrofona, mikrofon vklopite tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="4545694195887112015">Razdelek za nastavitve je zaprt</translation>
@@ -368,7 +363,6 @@
 <translation id="4645575059429386691">Upravlja starš</translation>
 <translation id="4651224148644053314">Več barv in možnosti</translation>
 <translation id="4652266463001779298">Ni dovoljeno</translation>
-<translation id="4655846733459137112">Dotaknite se Da, če želite brez težav uporabiti to geslo, ko se naslednjič prijavite</translation>
 <translation id="4663373278480897665">Kamera je dovoljena</translation>
 <translation id="4670064810192446073">Navidezna resničnost</translation>
 <translation id="4672315773691449562">Dotaknite se aplikacije brskalnika in nato Chrome</translation>
@@ -415,7 +409,6 @@
 <translation id="512938610812707830">Razdelek na dnu zaslona z zbirkami tem za videz strani »Nov zavihek« odprt pri polni višini</translation>
 <translation id="5137460097045297858">Razdelek na dnu zaslona za vir Odkrivanje je odprt pri polovični višini</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Znižanje cene na odprtih zavihkih}one{Znižanja cen na odprtih zavihkih}two{Znižanja cen na odprtih zavihkih}few{Znižanja cen na odprtih zavihkih}other{Znižanja cen na odprtih zavihkih}}</translation>
-<translation id="5150048675001754041">Hitro in preprosto se prijavite na spletnih mestih in v aplikacijah</translation>
 <translation id="5186036860380548585">Možnosti so na voljo blizu vrha zaslona</translation>
 <translation id="5197729504361054390">Izbrani stiki bodo v skupni rabi s spletnim mestom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Razdelek na dnu zaslona za prilagajanje strani »Nov zavihek« je zaprt</translation>
@@ -425,7 +418,6 @@
 <translation id="5239623327352565343">Lokacija je dovoljena</translation>
 <translation id="5246825184569358663">To dejanje bo izbrisalo vse lokalne podatke, vključno s piškotki, in ponastavilo vsa dovoljenja za spletno mesto <ph name="DOMAIN" /> ter vsa njegova podrejena spletna mesta</translation>
 <translation id="5264323282659631142">Odstranitev vnosa »<ph name="CHIP_LABEL" />«</translation>
-<translation id="528192093759286357">Povlecite z vrha in se dotaknite gumba za nazaj, če želite zapreti celozaslonski način.</translation>
 <translation id="5286194356314741248">Pregledovanje</translation>
 <translation id="5300589172476337783">Pokaži</translation>
 <translation id="5301954838959518834">V redu, razumem</translation>
@@ -473,7 +465,6 @@
 <translation id="5804241973901381774">Dovoljenja</translation>
 <translation id="5817042798620209981">Podatki o spletnem mestu, pogovorno okno</translation>
 <translation id="5822675474983796325">Razdelek na dnu zaslona za prilagajanje strani »Nov zavihek« je odprt pri polni višini</translation>
-<translation id="5826403277762134844">Razdelek na dnu zaslona z navodili za shranjevanje gesel v Chromu</translation>
 <translation id="5833899990800318936">Spletnim mestom ni dovoljena uporaba JavaScripta</translation>
 <translation id="583673505367439042">Spletna mesta lahko zahtevajo urejanje datotek in map v napravi.</translation>
 <translation id="5844448279347999754">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo ogled besedila in slik, shranjenih v odložišču. Če je ta možnost izklopljena, si spletna mesta ne smejo ogledati besedila ali slik, shranjenih v odložišču.</translation>
@@ -511,7 +502,6 @@
 <translation id="6104860901391833523">Če je ta možnost vklopljena, lahko spletna mesta samodejno preklopijo v način slike v sliki. Če je ta možnost izklopljena, spletna mesta ne morejo samodejno preklopiti v način slike v sliki.</translation>
 <translation id="6120483543004435978">Če je ta možnost vklopljena, spletna mesta lahko vprašajo, ali aktivno uporabljate napravo. Če je ta možnost izklopljena, spletna mesta ne smejo vprašati, ali aktivno uporabljate napravo.</translation>
 <translation id="612871598708395517">Skrij prejemanje Chromovih predlogov v drugih aplikacijah</translation>
-<translation id="6132075343662013154">Chrome bo ponudil shranjevanje gesla</translation>
 <translation id="615886654739818377">Spletnim mestom ni dovoljeno upravljati oken na vseh prikazih</translation>
 <translation id="6165508094623778733">Več o tem</translation>
 <translation id="6171020522141473435">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo uporabo naprav Bluetooth. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati naprav Bluetooth.</translation>
@@ -587,7 +577,6 @@
 <translation id="6980861169612950611">Želite izbrisati podatke spletnega mesta? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Dostopnost</translation>
 <translation id="6991142177939282156">Dovoljeno • Uporaba približne lokacije</translation>
-<translation id="6992014788289743568">Preverite gesla, da okrepite varnost in poskrbite za večjo varnost podatkov</translation>
 <translation id="6992289844737586249">Prikaži poziv, preden se spletnim mestom dovoli uporaba mikrofona (priporočeno)</translation>
 <translation id="7000754031042624318">Izklopljeno v nastavitvah za Android</translation>
 <translation id="7036823721811529709">Poslušanje v ozadju</translation>
@@ -654,7 +643,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:</translation>
 <translation id="775043444390799886">Umik dovoljenja</translation>
 <translation id="7758789811447313947">Vijolična tema</translation>
 <translation id="7759147511335618829">Upravljanje in reprogramiranje naprav MIDI</translation>
-<translation id="7771089277295008211">Razdelek na dnu zaslona z navodili za shranjevanje gesel je zaprt</translation>
 <translation id="7781829728241885113">Včeraj</translation>
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
@@ -671,7 +659,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:</translation>
 <translation id="7940722705963108451">Opomni me</translation>
 <translation id="7948081750384205628">Preberite več o nastavitvi <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Spletna mesta lahko zahtevajo ogled besedila in slik v odložišču</translation>
-<translation id="7958779728312669715">Razdelek na dnu zaslona z navodili za shranjevanje gesel je v celoti odprt</translation>
 <translation id="798299424881500862">Oranžna tema</translation>
 <translation id="7986741934819883144">Izberite stik</translation>
 <translation id="7990211076305263060">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo uporabo mikrofona. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati mikrofona.</translation>
@@ -766,7 +753,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:</translation>
 <translation id="8889294078294184559">Med brskanjem se lahko spletna mesta obrnejo na Chrome in pri prejšnjem spletnem mestu, ki ste ga obiskali, potrdijo, da ste verjetno resnična oseba.</translation>
 <translation id="8899807382908246773">Vsiljivi oglasi</translation>
 <translation id="8903921497873541725">Povečaj</translation>
-<translation id="8919911527569629802">Prijavite se v poljubno spletno mesto</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Ne sprašuj več</translation>
 <translation id="8926666909099850184">Tehnologija NFC je izklopljena za to napravo. Vklopite jo v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>

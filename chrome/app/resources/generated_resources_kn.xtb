@@ -754,6 +754,7 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (ಅತಿಥಿ)</translation>
 <translation id="1572266655485775982">ವೈ-ಫೈ ಸಕ್ರಿಯ</translation>
 <translation id="1573127087832371028">ಸಮಸ್ಯೆಯ ಕುರಿತು ವಿವರಿಸಿ</translation>
+<translation id="1573415331092567032">Chrome ನ ಹೊರಗೆ ಈ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="1574335334663388774"><ph name="APP_NAME" /> ಆ್ಯಪ್‌ನ <ph name="APP_VERSION" /> ಆವೃತ್ತಿಯನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಈಗಾಗಲೇ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1575741822946219011">ಭಾಷೆಗಳು ಮತ್ತು ಇನ್‌ಪುಟ್‌ಗಳು</translation>
 <translation id="1576594961618857597">ಡಿಫಾಲ್ಟ್ ಬಿಳಿ ಅವತಾರ್</translation>
@@ -3539,6 +3540,7 @@
 <translation id="3685598397738512288">Linux USB ಆದ್ಯತೆಗಳು</translation>
 <translation id="3686108296937784939">ನನ್ನ ಸಂಸ್ಥೆಯ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
 <translation id="3687359570564207338">{NUM_SITES,plural, =1{1 ಅಪಾಯಕ್ಕೀಡಾದ ಪಾಸ್‌ವರ್ಡ್ ಕಂಡುಬಂದಿದೆ}one{{NUM_SITES} ಅಪಾಯಕ್ಕೀಡಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಕಂಡುಬಂದಿವೆ}other{{NUM_SITES} ಅಪಾಯಕ್ಕೀಡಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಕಂಡುಬಂದಿವೆ}}</translation>
+<translation id="3687463694814266645">ಮರುಕ್ರಮಗೊಳಿಸಿ</translation>
 <translation id="3687598459967813435"><ph name="WEBSITE" /> ನಿಂದ ಬರುವ ಅಧಿಸೂಚನೆಗಳನ್ನು ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
 <translation id="3688507211863392146">ಅಪ್ಲಿಕೇಶನ್‌ನಲ್ಲಿ ನೀವು ತೆರೆಯುವಂತಹ ಫೈಲ್‌ಗಳು ಮತ್ತು ಫೋಲ್ಡರ್‌ಗಳಲ್ಲಿ ಬರೆಯಿರಿ</translation>
 <translation id="3688526734140524629">ಚಾನಲ್ ಬದಲಿಸಿ</translation>
@@ -5765,6 +5767,7 @@
 <translation id="5392864580775235956">ಚಿತ್ರವನ್ನು ಸೇರಿಸಿ ಮತ್ತು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="5393330235977997602">ಪಿನ್‌‌ ಆಯ್ಕೆಗಳು</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{ಲಿಂಕ್}one{# ಲಿಂಕ್‌ಗಳು}other{# ಲಿಂಕ್‌ಗಳು}}</translation>
+<translation id="5394400188854257119">5 ನಿಮಿಷಗಳು</translation>
 <translation id="5394529681046491727">Wi-Fi ಡೈರೆಕ್ಟ್</translation>
 <translation id="5395353843367783642">ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿ ಸೇವ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="5397656531674854099">ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಬಳಸಿ</translation>
@@ -6379,6 +6382,7 @@
 <translation id="5868822853313956582">ಸಾಧನದ ಬಣ್ಣಗಳು ಫಾಲೋ ಮಾಡಿ</translation>
 <translation id="5869029295770560994">ಸರಿ, ಅರ್ಥವಾಯಿತು</translation>
 <translation id="5869522115854928033">ಉಳಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
+<translation id="5869611709939872766">ಹಾಯ್ <ph name="FIRST_NAME" />,\nನಿಮ್ಮ ಮನಸ್ಸಿನಲ್ಲೇನಿದೆ?</translation>
 <translation id="5870155679953074650">ಹಾರ್ಡ್ ಫಾಲ್ಟ್ಸ್</translation>
 <translation id="587234395549708302">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಕ್ಲೀನ್ ಅಪ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="587502357434914765">ಸ್ಕ್ರೀನ್‌ನಿಂದ ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -7677,7 +7681,6 @@
 <translation id="686609795364435700">ನಿಶ್ಶಬ್ದ</translation>
 <translation id="686664946474413495">ಬಣ್ಣ ತಾಪಮಾನ</translation>
 <translation id="6867086642466184030">ಇತರ ಆ್ಯಪ್‌ಗಳನ್ನು <ph name="APP_NAME" /> ನಂತೆಯೇ ಲಿಂಕ್ ತೆರೆಯಲು ಸೆಟ್ ಮಾಡಲಾಗಿದೆ. ಇದು <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> ಮತ್ತು <ph name="NUMBER_OF_OTHER_APPS" /> ಇತರ ಆ್ಯಪ್‌ಗಳ ಬೆಂಬಲಿತ ಲಿಂಕ್‌ಗಳು ತೆರೆಯುವುದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸುತ್ತದೆ.</translation>
-<translation id="6868206169573555318">ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು, ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="686831807558000905">ಸೈನ್ ಇನ್ ಮಾಡಬೇಡಿ</translation>
 <translation id="686839242150793617">ಚಿತ್ರದಲ್ಲಿ ಚಿತ್ರ ಮೋಡ್ ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಬಳಸಲು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="6868734951249611611">ಇಲ್ಲಿ ಬಲ-ಕ್ಲಿಕ್ ಮಾಡಿ ಮತ್ತು "ಟ್ಯಾಬ್‌ಗಳನ್ನು ವರ್ಟಿಕಲ್ ಆಗಿ ತೋರಿಸಿ" ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -7812,6 +7815,7 @@
 <translation id="6972754398087986839">ಪ್ರಾರಂಭಗೊಂಡಿದೆ</translation>
 <translation id="697312151395002334">ಪಾಪ್-ಅಪ್‌ಗಳನ್ನು ಕಳುಹಿಸಲು ಮತ್ತು ಮರುನಿರ್ದೇಶನಗಳನ್ನು ಬಳಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="69739764870135975">Google ಸಹ ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್ ಆಗಿದ್ದರೆ, ನಿಮಗೆ ಉತ್ತಮವಾದ, ಸಾಂದರ್ಭಿಕವಾಗಿ ಸೂಕ್ತವಾದ ಸಲಹೆಗಳು ಕಾಣಿಸುತ್ತವೆ</translation>
+<translation id="6975703659587052829">ಪ್ರಮುಖ ಭದ್ರತಾ ಅಪ್‌ಡೇಟ್</translation>
 <translation id="6978121630131642226">ಹುಡುಕಾಟ ಇಂಜಿನ್‌ಗಳು</translation>
 <translation id="6979041727349121225">ಎನರ್ಜಿ ಸೇವರ್</translation>
 <translation id="6979044105893951891">ನಿರ್ವಹಿಸಿದ ಅತಿಥಿ ಸೆಷನ್‌ಗಳನ್ನು ಪ್ರಾರಂಭಿಸಿ ಮತ್ತು ಅವುಗಳಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
@@ -8189,6 +8193,7 @@
 <translation id="7273110280511444812"><ph name="DATE" /> ರಂದು ಅಂತಿಮವಾಗಿ ಲಗತ್ತಿಸಲಾಯಿತು</translation>
 <translation id="7273894023751806510">ನಿಮ್ಮ MIDI ಸಾಧನಗಳನ್ನು ನಿಯಂತ್ರಿಸದಂತೆ ಮತ್ತು ಮರು ಪ್ರೋಗ್ರಾಂ ಮಾಡದಂತೆ <ph name="HOST" /> ಅನ್ನು ಯಾವಾಗಲೂ ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> ಪೂರ್ಣಗೊಳ್ಳುವವರೆಗೆ</translation>
+<translation id="7274453646377524248">ನಿಮ್ಮ ಎಲ್ಲಾ ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ವಿಂಡೋಗಳು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪುನಃ ತೆರೆಯುತ್ತವೆ.</translation>
 <translation id="7275950084263610253">ನಿಮ್ಮ ಸ್ಥಳೀಯ ನೆಟ್‌ವರ್ಕ್‌ನಲ್ಲಿರುವ ಇತರ ಸಾಧನಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="727595954130325265">ಈಗಲೇ ಶಾಪ್ ಮಾಡಿ</translation>
 <translation id="727952162645687754">ಡೌನ್‌ಲೋಡ್ ದೋಷ</translation>
@@ -8972,6 +8977,7 @@
 <translation id="7871691770940645922">ವರ್ಚುವಲ್ ಬ್ರೈಲ್ ಡಿಸ್‌ಪ್ಲೇ</translation>
 <translation id="787268756490971083">ಆಫ್</translation>
 <translation id="7872758299142009420">ಅತಿ ಹೆಚ್ಚು ನೆಸ್ಟ್ ಮಾಡಿದ ಗುಂಪುಗಳು: <ph name="ERROR_LINE" /></translation>
+<translation id="7875512939198436953">ನಾನು ಹೊರಗಿರುವಾಗ ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="7876027585589532670">ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು‌ ಎಡಿಟ್‌ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="7876243839304621966">ಎಲ್ಲವನ್ನೂ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="7877126887274043657">ಸಿಂಕ್ ಸಮಸ್ಯೆಯನ್ನು ಸರಿಪಡಿಸಿ</translation>
@@ -9295,6 +9301,7 @@
 <translation id="810185532889603849">ಕಸ್ಟಮ್ ಬಣ್ಣ</translation>
 <translation id="8101987792947961127">ಮುಂದಿನ ರೀಬೂಟ್‌ನಲ್ಲಿ ಪವರ್‌ವಾಷ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="8102139037507939978">system_logs.txt ನಿಂದ ವೈಯಕ್ತಿಕವಾಗಿ ಗುರುತಿಸಬಲ್ಲ ಮಾಹಿತಿಯನ್ನು ತೆಗೆದುಹಾಕಿ.</translation>
+<translation id="8103484184517840583">AI ಮೋಡ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="810362914482827094">ಪಾಸ್‌ಕೀಗಳನ್ನು ಹುಡುಕಿ</translation>
 <translation id="8104088837833760645">eSIM ಪ್ರೊಫೈಲ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="8104388155778519213">Google Lens ಮೂಲಕ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿ ಏನಿದೆ ಎಂಬುದನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
@@ -10002,6 +10009,7 @@
 <translation id="865857184419171576">ಈ ಭಾಷೆಗೆ ಕ್ಯಾಪ್ಶನ್‌ಗಳನ್ನು ಅನುವಾದಿಸಿ</translation>
 <translation id="865936634714975126">ಪುಟವು ಲೋಡ್ ಆದ ನಂತರ ಪ್ರಕಾರಗಳನ್ನು ಆಯ್ಕೆಮಾಡುವುದಕ್ಕಾಗಿ URL ನಲ್ಲಿ ಪ್ರಶ್ನೆಯ ಪ್ಯಾರಾಮೀಟರ್‌ಗಳನ್ನು ಸೇರಿಸಿ. ಉದಾಹರಣೆ: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659609431223166673">ವಿಂಡೋವನ್ನು ಕೆಳಕ್ಕೆ ಸರಿಸಲಾಗಿದೆ</translation>
+<translation id="8659989922244828718">ಅಪ್‌ಡೇಟ್ ಅನ್ನು ನಿಗದಿಪಡಿಸಲಾಗಿದೆ</translation>
 <translation id="8660288500924118793">Outlook Calendar ನಲ್ಲಿ ನಿಮ್ಮ ಮುಂದಿನ ಈವೆಂಟ್‌ಗೆ ನೀವು ಸುಲಭವಾಗಿ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ನಿಮ್ಮ ಕ್ಯಾಲೆಂಡರ್ ಅನ್ನು ನೋಡುತ್ತಿದ್ದೀರಿ.
        <ph name="BREAK" />
        <ph name="BREAK" />
@@ -10713,6 +10721,7 @@
 <translation id="9180847522826713506">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ವೀಕ್ಷಿಸಲು ಅಥವಾ ಅದರ ಬಗ್ಗೆ ಟಿಪ್ಪಣಿಯನ್ನು ಸೇರಿಸಲು, ಕೀ ಐಕಾನ್ ಅನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{ಆ್ಯಪ್}one{# ಆ್ಯಪ್‌ಗಳು}other{# ಆ್ಯಪ್‌ಗಳು}}</translation>
+<translation id="9185698642371842814">AI ಮೋಡ್‌ನಲ್ಲಿ ಕೇಳಿರಿ</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="APP0_NAME" /> ಮೂಲಕ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಬಹುದು. ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭವಾದಾಗ ನಿಮಗೆ ಸೂಚನೆ ನೀಡಲಾಗುವುದಿಲ್ಲ.}=2{ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="APP0_NAME" /> ಮತ್ತು <ph name="APP1_NAME" /> ಮೂಲಕ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಬಹುದು. ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭವಾದಾಗ ನಿಮಗೆ ಸೂಚನೆ ನೀಡಲಾಗುವುದಿಲ್ಲ.}=3{ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ಮತ್ತು ಇತರ 1 ಆ್ಯಪ್ ಮೂಲಕ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಬಹುದು. ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭವಾದಾಗ ನಿಮಗೆ ಸೂಚನೆ ನೀಡಲಾಗುವುದಿಲ್ಲ.}one{ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ಮತ್ತು # ಇತರ ಆ್ಯಪ್‌ಗಳ ಮೂಲಕ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಬಹುದು. ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭವಾದಾಗ ನಿಮಗೆ ಸೂಚನೆ ನೀಡಲಾಗುವುದಿಲ್ಲ.}other{ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ಮತ್ತು # ಇತರ ಆ್ಯಪ್‌ಗಳ ಮೂಲಕ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಬಹುದು. ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭವಾದಾಗ ನಿಮಗೆ ಸೂಚನೆ ನೀಡಲಾಗುವುದಿಲ್ಲ.}}</translation>
 <translation id="9187967020623675250">ಕೀಗಳು ಹೊಂದಾಣಿಕೆಯಾಗುತ್ತಿಲ್ಲ. <ph name="RESPONSE" /> ಗೆ ಯಾವುದೇ ಕೀ ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="9188142767272053574">ಪ್ರಾಸೆಸ್ ಐಸೊಲೇಷನ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>

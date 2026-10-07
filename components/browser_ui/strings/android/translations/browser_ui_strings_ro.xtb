@@ -12,7 +12,6 @@
 <translation id="1126523729897810826">Finalizează mai jos aceste acțiuni sugerate, pentru a profita din plin de Chrome</translation>
 <translation id="113098737392899175">Navighează în pagini folosind cursorul pentru text când este conectată o tastatură</translation>
 <translation id="1148624853678088576">Ești gata!</translation>
-<translation id="1149644372535087155">Salvează parolele în Chrome</translation>
 <translation id="1178015372320901893">Foaia din partea de jos cu comenzile mele rapide</translation>
 <translation id="1178581264944972037">Întrerupe</translation>
 <translation id="1181037720776840403">Elimină</translation>
@@ -227,7 +226,6 @@
 <translation id="3167868116600277716">Feedul Discover</translation>
 <translation id="3198916472715691905">Date stocate: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="3199078925536734975">Permisă de data aceasta • Aproximativă</translation>
-<translation id="3208584281581115441">Verifică acum</translation>
 <translation id="321187648315454507">Pentru a permite aplicației <ph name="APP_NAME" /> să îți trimită notificări, activează notificările și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Folosirea locației nu este permisă</translation>
 <translation id="3227137524299004712">Microfon</translation>
@@ -286,7 +284,6 @@
 <translation id="381841723434055211">Numere de telefon</translation>
 <translation id="3823453485268218808">Font Mono</translation>
 <translation id="3826050100957962900">Conectarea prin terță parte</translation>
-<translation id="3831065134033923230">Verifică parolele salvate</translation>
 <translation id="3835233591525155343">Folosirea dispozitivului</translation>
 <translation id="3843916486309149084">Chrome va bloca din nou cookie-urile astăzi</translation>
 <translation id="385051799172605136">Înapoi</translation>
@@ -294,7 +291,6 @@
 <translation id="3870711497942672548">Personalizează Chrome cu culori și imagini personalizate pentru pagina de pornire</translation>
 <translation id="389521680295183045">Site-urile pot solicita permisiunea de a afla când folosești activ dispozitivul</translation>
 <translation id="3895926599014793903">Forțează activarea zoomului</translation>
-<translation id="3903738175795615004">Trage din partea de sus sau apasă pe tasta Esc pentru a ieși din ecranul complet.</translation>
 <translation id="3905475044299942653">Oprește numărul mare de notificări</translation>
 <translation id="3922092564198021702">Pe telefon, deschide Setări</translation>
 <translation id="3924858949939391676">Afișează linkurile după activarea modului de lectură</translation>
@@ -355,7 +351,6 @@
 <translation id="4479647676395637221">Întreabă înainte de a permite site-urilor să folosească camera foto (recomandat)</translation>
 <translation id="4505788138578415521">Adresă URL extinsă</translation>
 <translation id="4522570452068850558">Detalii</translation>
-<translation id="4523472416386354622">Conectează-te pentru a începe</translation>
 <translation id="4529207923544043455">Foaie din partea de jos care afișează activitățile finalizate și nefinalizate din lista de configurare</translation>
 <translation id="4534723447064627427">Pentru a permite aplicației <ph name="APP_NAME" /> să acceseze microfonul, activează microfonul și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
 <translation id="4545694195887112015">Foaia de configurare a fost închisă</translation>
@@ -368,7 +363,6 @@
 <translation id="4645575059429386691">Gestionat de părintele tău</translation>
 <translation id="4651224148644053314">Mai multe culori și opțiuni</translation>
 <translation id="4652266463001779298">Nepermisă</translation>
-<translation id="4655846733459137112">Atinge Da pentru a folosi cu ușurință această parolă data viitoare când te conectezi</translation>
 <translation id="4663373278480897665">Camera foto este permisă</translation>
 <translation id="4670064810192446073">Realitate virtuală</translation>
 <translation id="4672315773691449562">Atinge aplicația Browser, apoi atinge Chrome</translation>
@@ -415,7 +409,6 @@
 <translation id="512938610812707830">Foaia din partea de jos cu colecțiile de teme pentru aspectul paginii Filă nouă este deschisă la înălțime completă</translation>
 <translation id="5137460097045297858">Foaia din partea de jos a feedului Discover deschisă la jumătate din înălțime</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Scădere de preț în filele deschise}few{Scăderi de prețuri în filele deschise}other{Scăderi de prețuri în filele deschise}}</translation>
-<translation id="5150048675001754041">Conectează-te rapid și ușor la site-uri și aplicații</translation>
 <translation id="5186036860380548585">Opțiunea este disponibilă în partea de sus a ecranului</translation>
 <translation id="5197729504361054390">Persoanele de contact pe care le selectezi vor fi trimise site-ului <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Foaia de jos a paginii Personalizează Fila nouă este închisă</translation>
@@ -425,7 +418,6 @@
 <translation id="5239623327352565343">Folosirea locației este permisă</translation>
 <translation id="5246825184569358663">Astfel, se vor șterge toate datele locale, inclusiv cookie-urile, și se vor reseta toate permisiunile pentru <ph name="DOMAIN" /> și pentru toate site-urile asociate</translation>
 <translation id="5264323282659631142">Elimină „<ph name="CHIP_LABEL" />”</translation>
-<translation id="528192093759286357">Trage din partea de sus și atinge butonul Înapoi pentru a ieși din ecranul complet.</translation>
 <translation id="5286194356314741248">Scanare</translation>
 <translation id="5300589172476337783">Afișează</translation>
 <translation id="5301954838959518834">OK, am înțeles</translation>
@@ -473,7 +465,6 @@
 <translation id="5804241973901381774">Permisiuni</translation>
 <translation id="5817042798620209981">Informații despre site, casetă de dialog</translation>
 <translation id="5822675474983796325">Foaia de jos a paginii Personalizează Fila nouă este deschisă la înălțime completă</translation>
-<translation id="5826403277762134844">Foaia din partea de jos cu instrucțiuni privind salvarea parolelor în Chrome</translation>
 <translation id="5833899990800318936">Nu permite site-urilor să folosească JavaScript</translation>
 <translation id="583673505367439042">Site-urile pot solicita permisiunea de a modifica fișiere și dosare de pe dispozitiv</translation>
 <translation id="5844448279347999754">Când opțiunea este activată, site-urile pot solicita să vadă textul și imaginile salvate în clipboard. Când opțiunea este dezactivată, site-urile nu pot vedea textul sau imaginile salvate în clipboard.</translation>
@@ -511,7 +502,6 @@
 <translation id="6104860901391833523">Când opțiunea este activată, site-urile pot intra automat în modul picture-in-picture. Când opțiunea este dezactivată, site-urile nu pot intra automat în modul picture-in-picture.</translation>
 <translation id="6120483543004435978">Când opțiunea este activată, site-urile pot solicita permisiunea de a afla când folosești activ dispozitivul. Când opțiunea este dezactivată, site-urile nu pot afla când folosești activ dispozitivul.</translation>
 <translation id="612871598708395517">Ascunde sugestiile de descărcare a browserului Chrome în alte aplicații</translation>
-<translation id="6132075343662013154">Chrome îți va oferi salvarea parolei</translation>
 <translation id="615886654739818377">Nu permite site-urilor să gestioneze ferestre de pe toate ecranele</translation>
 <translation id="6165508094623778733">Află mai multe</translation>
 <translation id="6171020522141473435">Când opțiunea este activată, site-urile pot solicita permisiunea de a folosi dispozitive Bluetooth. Când opțiunea este dezactivată, site-urile nu pot folosi dispozitive Bluetooth.</translation>
@@ -587,7 +577,6 @@
 <translation id="6980861169612950611">Ștergi datele privind site-ul? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Accesibilitate</translation>
 <translation id="6991142177939282156">Permisă • Se folosește locația aproximativă</translation>
-<translation id="6992014788289743568">Optimizează-ți securitatea și protejează-ți datele verificând parolele</translation>
 <translation id="6992289844737586249">Întreabă înainte de a permite site-urilor să folosească microfonul (recomandat)</translation>
 <translation id="7000754031042624318">Dezactivată din setările Android</translation>
 <translation id="7036823721811529709">Ascultă în fundal</translation>
@@ -654,7 +643,6 @@ Protecția avansată gestionează următoarele setări Chrome:</translation>
 <translation id="775043444390799886">Revocă permisiunea</translation>
 <translation id="7758789811447313947">Temă violet</translation>
 <translation id="7759147511335618829">Control și reprogramare dispozitive MIDI</translation>
-<translation id="7771089277295008211">Foaia din partea de jos cu instrucțiuni privind salvarea parolelor s-a închis</translation>
 <translation id="7781829728241885113">Ieri</translation>
 <translation id="7791543448312431591">Adaugă</translation>
 <translation id="780301667611848630">Nu, mulțumesc</translation>
@@ -671,7 +659,6 @@ Protecția avansată gestionează următoarele setări Chrome:</translation>
 <translation id="7940722705963108451">Reamintește-mi</translation>
 <translation id="7948081750384205628">Află mai multe despre <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Site-urile pot solicita permisiunea să vadă text și imagini din clipboard</translation>
-<translation id="7958779728312669715">Foaia din partea de jos cu instrucțiuni privind salvarea parolelor s-a deschis complet</translation>
 <translation id="798299424881500862">Temă portocalie</translation>
 <translation id="7986741934819883144">Selectează o persoană de contact</translation>
 <translation id="7990211076305263060">Când opțiunea este activată, site-urile pot solicita permisiunea de a folosi microfonul. Când opțiunea este dezactivată, site-urile nu pot folosi microfonul.</translation>
@@ -766,7 +753,6 @@ Protecția avansată gestionează următoarele setări Chrome:</translation>
 <translation id="8889294078294184559">În timp ce navighezi, site-urile pot să solicite informații de la Chrome și să confirme cu ajutorul unui site pe care l-ai accesat anterior că ești o persoană reală</translation>
 <translation id="8899807382908246773">Anunțuri deranjante</translation>
 <translation id="8903921497873541725">Mărește</translation>
-<translation id="8919911527569629802">Conectează-te la orice site</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Nu mai întreba</translation>
 <translation id="8926666909099850184">NFC este dezactivat pentru acest dispozitiv. Activează-l în <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>

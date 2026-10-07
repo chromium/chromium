@@ -765,6 +765,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4092709865241032354">Hjälp Google Lösenordshantering att spara dina inloggningsuppgifter genom att lägga till ditt användarnamn för den här webbplatsen</translation>
 <translation id="4095146165863963773">Vill du ta bort appdata?</translation>
 <translation id="4095483462103784441">Skapa en ny flikgrupp</translation>
+<translation id="4098552968111329864">För att skydda ditt arbete i Chrome kan organisationen visa eller hantera viss information när du är inloggad i Chrome</translation>
 <translation id="4105527135143631701">Uppdatering av Google Lösenordshantering har öppnats</translation>
 <translation id="4107207375883769436">Organisationen kan behöva se och hantera webbinformation i jobbprofilen, till exempel webbhistorik och lösenord</translation>
 <translation id="4113030288477039509">Hanteras av administratören</translation>
@@ -1771,6 +1772,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7929587383660661825">Chrome tar automatiskt bort behörigheter för webbplatser som missbrukar aviseringar eller som du inte har besökt nyligen</translation>
 <translation id="7934668619883965330">Det gick inte att ladda ned filen. Filformatet stöds inte.</translation>
 <translation id="7951102827450076904">Öppna alltid nedladdade PDF-filer</translation>
+<translation id="7952148074468405586">Läs mer om <ph name="BEGIN_LINK" />information som organisationen kan se eller hantera<ph name="END_LINK" /></translation>
 <translation id="7952479614398473176">Om du vill öppna ett nytt fönster minskar du det totala antalet aktiva fönster till högst <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7956713633345437162">Bokmärken i mobilen</translation>
 <translation id="7957413488482743710">Ett virtuellt kort döljer det riktiga kortet och skyddar dig från eventuella bedrägerier. <ph name="BEGIN_LINK1" />Läs mer om virtuella kort<ph name="END_LINK1" /></translation>

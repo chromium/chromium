@@ -23,6 +23,7 @@
 <translation id="1185134272377778587">Chromiumৰ বিষয়ে</translation>
 <translation id="1186645291482254714">আপোনাৰ ফ’নত Chromiumৰ জৰিয়তে মূল্য ট্ৰেকিঙৰ সতৰ্কবাৰ্তা পাওক</translation>
 <translation id="1203500561924088507">ইনষ্টল কৰাৰ বাবে ধন্যবাদ। আপুনি <ph name="BUNDLE_NAME" /> ব্যৱহাৰ কৰাৰ পূৰ্বে আপোনাৰ ব্ৰাউজাৰটো ৰিষ্টাৰ্ট কৰিবই লাগিব।</translation>
+<translation id="1222365723190436821">এটা <ph name="IMPORTANT_UPDATE" /> বাকী আছে। আপোনাৰ ব্ৰাউজিং সুৰক্ষিত কৰি ৰাখিবলৈ, আপুনি <ph name="IDLE_DURATION" />ৰ বাবে নিষ্ক্ৰিয় হৈ থাকিলে Chromium আপডে’ট হ’ব।</translation>
 <translation id="1232234696885483911">আপুনি প্ৰতিচ্ছবিৰ সন্ধান খুলিলে, PDFসমূহকে ধৰি পৃষ্ঠাখনৰ শিৰোনাম, URL আৰু সমল স্বয়ংক্ৰিয়ভাৱে ছাৰ্ভাৰলৈ পঠিওৱা হ’ব। <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">আপুনি ছাইন ইন হৈ থকাৰ সময়ত, আপুনি Chromiumত আপোনাৰ Google একাউণ্টৰ পৰা আপোনাৰ পাছৱৰ্ড আৰু অধিক ব্যৱহাৰ কৰিব পাৰে। এইটো সলনি কৰিবলৈ, “Chromiumত আপোনাৰ একাউণ্ট”লৈ যাওক।</translation>
 <translation id="1244381985120794049">Macৰ মেনু বাৰত Chromiumত Gemini দেখুৱাওক</translation>
@@ -230,6 +231,7 @@
 <translation id="3286538390144397061">এতিয়াই ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="328888136576916638">Google API চাবিসমূহ নাই। Chromiumৰ কিছুমান কাৰ্যক্ষতা অক্ষম কৰা হ’ব।</translation>
 <translation id="3296368748942286671">Chromium বন্ধ কৰাৰ পিছতো নেপথ্যত এপ্‌সমূহ চলি থাকিবলৈ দিয়ক</translation>
+<translation id="3300632735252839402">আপুনি আঁতৰি থকাৰ সময়ত Chromium আপডে’ট হ’ব</translation>
 <translation id="3313189106987092621">Chromiumএ কোনো অসুৰক্ষিত সংযোগ ব্যৱহাৰ কৰি যিকোনো ছাইট ল’ড কৰাৰ পূৰ্বে আপোনাক সতৰ্ক কৰিব</translation>
 <translation id="3316771292331273802">আপুনি আটাইবোৰ Chromium ৱিণ্ড’ বন্ধ কৰিলে আপোনাক বেছিভাগ ছাইটৰ পৰা ছাইন আউট কৰোৱা হ’ব, কিন্তু আপুনি যদি Chromiumত ছাইন ইন হৈ থাকে তেন্তে আপোনাক Google একাউণ্টৰ পৰা ছাইন আউট নহয়। ছাইটসমূহক আপোনাক মনত ৰাখিবলৈ দিয়াৰ বাবে, <ph name="SETTINGS_LINK" />।</translation>
 <translation id="3352986031709923790">সন্ধান এলেকাৰ ওপৰৰ সোঁফালৰ কোণ: <ph name="RIGHT" />% সোঁফালে, <ph name="TOP" />% ওপৰলৈ</translation>
@@ -238,6 +240,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">পূৰ্বে থকা Chromium প্ৰ'ফাইলটোলৈ যাব নেকি?</translation>
 <translation id="3412460710772753638">এই ডিভাইচটোত Password Managerত</translation>
+<translation id="3425452599984451640">Chromiumএ আপডে’ট কৰিব বিচাৰে</translation>
 <translation id="3427159664004296878"><ph name="DEVICE" />ৰ পৰা আপোনাৰ বুকমাৰ্ক আৰু অধিক পাবলৈ, Chromiumত ছাইন ইন কৰক</translation>
 <translation id="3438772217992559640">প্ৰতিচ্ছবিৰ সন্ধানৰ জৰিয়তে এই টেবটো সন্ধান কৰক</translation>
 <translation id="3455907671758333080">আপোনাৰ ফ’নত Chromiumৰ জৰিয়তে বৰ্ধিত সুৰক্ষিত ব্ৰাউজিঙৰ সুবিধাটো সম্প্ৰসাৰিত কৰক</translation>

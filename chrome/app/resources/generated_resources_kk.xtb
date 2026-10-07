@@ -753,6 +753,7 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (қонақ)</translation>
 <translation id="1572266655485775982">Wi-Fi желісін қосу</translation>
 <translation id="1573127087832371028">Мәселені сипаттау</translation>
+<translation id="1573415331092567032">Бұл пернелер тіркесімін Chrome-нан тыс пайдалану</translation>
 <translation id="1574335334663388774"><ph name="APP_NAME" /> қолданбасының <ph name="APP_VERSION" /> нұсқасы бұл құрылғыға орнатылып қойған.</translation>
 <translation id="1575741822946219011">Тілдер және енгізу әдістері</translation>
 <translation id="1576594961618857597">Әдепкі ақ түсті аватар</translation>
@@ -5759,6 +5760,7 @@
 <translation id="5392864580775235956">Сурет қосу және өзгерту</translation>
 <translation id="5393330235977997602">PIN опциялары</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Сілтеме}other{# сілтеме}}</translation>
+<translation id="5394400188854257119">5 минут</translation>
 <translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395353843367783642">Аккаунтыңызға сақталып жатыр...</translation>
 <translation id="5397656531674854099">Қойындылар топтарын телефонда пайдаланыңыз</translation>
@@ -6370,6 +6372,7 @@
 <translation id="5868822853313956582">Құрылғы түстерін пайдалану</translation>
 <translation id="5869029295770560994">Жарайды, түсінікті</translation>
 <translation id="5869522115854928033">Сақталған құпия сөздер</translation>
+<translation id="5869611709939872766">Сәлеметсіз бе, <ph name="FIRST_NAME" />! Қандай сұрағыңыз бар?</translation>
 <translation id="5870155679953074650">Елеулі қателер</translation>
 <translation id="587234395549708302">Бетбелгілерді тазарту қажет пе?</translation>
 <translation id="587502357434914765">Экраннан таңдау</translation>
@@ -7665,7 +7668,6 @@
 <translation id="686609795364435700">Тыныш</translation>
 <translation id="686664946474413495">Түс температурасы</translation>
 <translation id="6867086642466184030"><ph name="APP_NAME" /> ашқан сілтемелерді басқа қолданбалар да аша алатын болып реттелді. <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> және <ph name="NUMBER_OF_OTHER_APPS" /> қолдау көрсету сілтемелерін аша алмай қалады.</translation>
-<translation id="6868206169573555318">Жаңарту үшін қайта іске қосу</translation>
 <translation id="686831807558000905">Кірмеу</translation>
 <translation id="686839242150793617">"Суреттегі сурет" режимін автоматты түрде ашуға рұқсаты бар</translation>
 <translation id="6868734951249611611">Осы жерді тінтуірдің оң жақ түймесімен басып, "Қойындыларды тігінен көрсету" опциясын таңдаңыз.</translation>
@@ -7800,6 +7802,7 @@
 <translation id="6972754398087986839">Іске кірісу</translation>
 <translation id="697312151395002334">Қалқымалы терезелерді жіберу мен бағытты ауыстыру функцияларын пайдалануға рұқсаты барлар</translation>
 <translation id="69739764870135975">Егер Google әдепкі іздеу жүйесі болса, сізге тиімді, контекске сай ұсыныстар беріледі.</translation>
+<translation id="6975703659587052829">маңызды қауіпсіздік жаңартуы</translation>
 <translation id="6978121630131642226">Іздеу жүйелері</translation>
 <translation id="6979041727349121225">Қуат үнемдеу</translation>
 <translation id="6979044105893951891">Басқарылатын қонақ сеанстарын іске қосу және олардан шығу</translation>
@@ -8175,6 +8178,7 @@
 <translation id="7273110280511444812">соңғы рет <ph name="DATE" /> күні жалғанған</translation>
 <translation id="7273894023751806510"><ph name="HOST" /> сайтына MIDI құрылғыларыңызды басқаруға және қайта бағдарламалауға үнемі тыйым салу</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – толуына <ph name="TIME" /> қалды</translation>
+<translation id="7274453646377524248">Барлық ашық қойынды мен терезе автоматты түрде қайта ашылады.</translation>
 <translation id="7275950084263610253">Жергілікті желідегі басқа құрылғыларды пайдалануға рұқсат етілген.</translation>
 <translation id="727595954130325265">Қазір сатып алу</translation>
 <translation id="727952162645687754">Жүктеу қатесі</translation>
@@ -8958,6 +8962,7 @@
 <translation id="7871691770940645922">Виртуалдық Браиль дисплейі</translation>
 <translation id="787268756490971083">Өшірулі</translation>
 <translation id="7872758299142009420">Орналастырылған топтар саны тым көп: <ph name="ERROR_LINE" /></translation>
+<translation id="7875512939198436953">Мен кеткенде жаңарту</translation>
 <translation id="7876027585589532670">Таңбашаны өзгерту мүмкін емес.</translation>
 <translation id="7876243839304621966">Барлығын алып тастау</translation>
 <translation id="7877126887274043657">&amp;Синхрондау мәселесін шешу</translation>
@@ -9284,6 +9289,7 @@
 <translation id="810185532889603849">Арнаулы түс</translation>
 <translation id="8101987792947961127">Келесі қайта жүктеу кезінде Powerwash қажет</translation>
 <translation id="8102139037507939978">Жеке тұлғаны анықтау ақпаратын system_logs.txt файлынан өшіру.</translation>
+<translation id="8103484184517840583">ЖИ режимінен шығу</translation>
 <translation id="810362914482827094">Кіру кілттерінен іздеу</translation>
 <translation id="8104088837833760645">eSIM профилін жүктеп алу</translation>
 <translation id="8104388155778519213">Экраныңыздағы нәрсені Google Lens арқылы бөлісіңіз</translation>
@@ -9991,6 +9997,7 @@
 <translation id="865857184419171576">Субтитрлерді мына тілге аудару:</translation>
 <translation id="865936634714975126">Жүктелетін бетте бет түрлерін таңдау үшін URL мекенжайына сұрау параметрін қосыңыз. Мысалы: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659609431223166673">Терезе төмен жылжытылды</translation>
+<translation id="8659989922244828718">Жаңарту жоспарланды</translation>
 <translation id="8660288500924118793">Outlook Calendar-дағы келесі іс-шараға оңай өту үшін сізге күнтізбе көрсетіледі.
        <ph name="BREAK" />
        <ph name="BREAK" />
@@ -10702,6 +10709,7 @@
 <translation id="9180847522826713506">Құпия сөзді көру немесе ол туралы ескертпе қосу үшін перне белгішесін басыңыз</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Қолданба}other{# қолданба}}</translation>
+<translation id="9185698642371842814">ЖИ режимінде сұрау</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Әкімші <ph name="APP0_NAME" /> көмегімен экраныңызды жаза алады. Жазу басталған кезде, сізге хабар берілмейді.}=2{Әкімші <ph name="APP0_NAME" /> және <ph name="APP1_NAME" /> көмегімен экраныңызды жаза алады. Жазу басталған кезде, сізге хабар берілмейді.}=3{Әкімші <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> және тағы 1 қолданба көмегімен экраныңызды жаза алады. Жазу басталған кезде, сізге хабар берілмейді.}other{Әкімші <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> және тағы # қолданба көмегімен экраныңызды жаза алады. Жазу басталған кезде, сізге хабар берілмейді.}}</translation>
 <translation id="9187967020623675250">Пернелер сәйкес келмейді. <ph name="RESPONSE" /> үшін кез келген пернені басыңыз.</translation>
 <translation id="9188142767272053574">Процесті оқшаулау функциясын қосу</translation>

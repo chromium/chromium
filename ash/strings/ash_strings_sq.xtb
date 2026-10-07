@@ -928,7 +928,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="3697991387880191195">Shtyp shkurtoren e pamjes së ekranit</translation>
 <translation id="3702809606464356667">Po shfaqen dritaret nga tavolina aktuale e punës. Shtyp tastin "Shigjeta lart" për të shfaqur dritaret nga të gjitha tavolinat e punës</translation>
 <translation id="3705722231355495246">-</translation>
-<translation id="3706423975342040244">Argëtimi</translation>
 <translation id="370665806235115550">Po ngarkon...</translation>
 <translation id="3707093869106077605">"<ph name="UNAVAILABLE_DLC_ONE" />" dhe "<ph name="UNAVAILABLE_DLC_TWO" />" nuk ofrohen.</translation>
 <translation id="3708186454126126312">Të lidhura më parë</translation>
@@ -975,7 +974,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="3824784079442479685">Kjo lejon qasjen te kamera për <ph name="APP_NAME" /> dhe të gjitha aplikacionet dhe uebsajtet me lejen e kamerës. Mund të duhet të rifreskosh faqen e uebit ose të rinisësh aplikacionin.</translation>
 <translation id="3826099427150913765">Kalo te fjalëkalimi</translation>
 <translation id="383058930331066723">Modaliteti i kursimit të baterisë është aktiv</translation>
-<translation id="3831226344927851293">Dil nga pamja e udhëzuesit</translation>
 <translation id="383629559565718788">Shfaq cilësimet e tastierës</translation>
 <translation id="384082539148746321">Të fshihet shablloni?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> më pas <ph name="KEY_ONE" /> ose <ph name="KEY_TWO" /> ose <ph name="KEY_THREE" /> ose <ph name="KEY_FOUR" /></translation>
@@ -1578,10 +1576,8 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="5551974246223970793">Kur kërkon në një faqe, shko te përputhja tjetër për kërkimin</translation>
 <translation id="5556459405103347317">Ringarko</translation>
 <translation id="5558091555391176027">Aktivizo/çaktivizo dukshmërinë e lartë për "Ndarjen në afërsi"</translation>
-<translation id="5558314826121965174">Krijimtari</translation>
 <translation id="556042886152191864">Buton</translation>
 <translation id="5570122939431135380">Hape skedën e re në një dritare të re "të fshehtë"</translation>
-<translation id="5572632238877308040">Thelbësoret</translation>
 <translation id="5575528586625653441">Kishte një problem me kërkesën për regjistrimin e demonstrimit.</translation>
 <translation id="557563299383177668">Paragrafi tjetër</translation>
 <translation id="5577082622442191756">Aktivizo/çaktivizo Bluetooth-in. <ph name="STATE_TEXT" />.</translation>
@@ -1616,7 +1612,6 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="5667546120811588575">Po konfiguron Google Play...</translation>
 <translation id="5669267381087807207">Po aktivizohet</translation>
 <translation id="5671658447180261823">Hiq sugjerimin <ph name="SUGGESTION_NAME" /></translation>
-<translation id="5672890847723042801">Aplikacione utilitare</translation>
 <translation id="5673434351075758678">Nga "<ph name="FROM_LOCALE" />" në "<ph name="TO_LOCALE" />" pas sinkronizimit të cilësimeve të tua.</translation>
 <translation id="5675363643668471212">Artikulli në raft</translation>
 <translation id="5677022547882470786">Zvarrit ose shtyp tastin e hapësirës për të zgjedhur një zonë për të kërkuar</translation>
@@ -1871,7 +1866,6 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, më pas <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> ose <ph name="KEY_THREE" /></translation>
 <translation id="6352082849089527770">Rrjete të panjohura</translation>
 <translation id="6359587239691116345">Merr veçoritë dhe përmirësimet më të fundit të sigurisë. Nëse e refuzon këtë përditësim, pajisja jote mund të mos funksionojë më siç duhet dhe mund të kesh probleme me sigurinë dhe cilësinë e funksionimit.</translation>
-<translation id="6362833380917912748">Njihu me aplikacionet e integruara</translation>
 <translation id="6364386432014869981">Blloku i integruar me prekje është aktivizuar</translation>
 <translation id="6376931439017688372">Bluetooth-i është aktiv</translation>
 <translation id="6378515133128829137">Gozhdoje dritaren në të djathtë</translation>
@@ -2096,7 +2090,6 @@ Instalim i ri</translation>
 <translation id="7014684956566476813">Lidhur me një pajisje me emrin "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7015766095477679451">Kthehu në <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Tavolina e punës 6</translation>
-<translation id="702252130983202758">Aplikacionet e tua</translation>
 <translation id="7025533177575372252">Lidhe <ph name="DEVICE_NAME" /> me telefonin tënd</translation>
 <translation id="7026338066939101231">Zbrit</translation>
 <translation id="7029307918966275733">Crostini nuk është instaluar. Instalo Crostini për të parë kreditet.</translation>
@@ -2535,7 +2528,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8277261673056602147">Thekso tekstin në ekranin tënd</translation>
 <translation id="8281886186245836920">Anashkalo</translation>
 <translation id="8282784978194352587">Ia dole!</translation>
-<translation id="8287009018010202411">Produktivitet</translation>
 <translation id="828708037801473432">Joaktiv</translation>
 <translation id="8289128870594824098">Madhësia e diskut</translation>
 <translation id="8297006494302853456">I dobët</translation>
@@ -2630,7 +2622,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8598235756057743477">Renditi aplikacionet sipas emrit dhe ngjyrës</translation>
 <translation id="8599864823732014237">Të kapërcehet regjistrimi i ndërmarrjes?</translation>
 <translation id="8609384513243082612">Hap skedë të re</translation>
-<translation id="861045123704058818">Aplikacionet janë organizuar përkohësisht sipas kategorisë</translation>
 <translation id="8612338981637220013">Vazhdo kështu!</translation>
 <translation id="8613164732773110792">Vetëm shkronja të vogla, shifra, viza poshtë ose viza ndarëse</translation>
 <translation id="8614517853887502247">Njoftimet e <ph name="APP_1_TITLE" /> dhe <ph name="APP_2_TITLE" /> janë fshehur sepse është aktivizuar mbrojtja e shikimit</translation>
@@ -2822,7 +2813,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="9129245940793250979">Butoni prapa</translation>
 <translation id="9133335900048457298">Përmbajtja e mbrojtur nuk mund të regjistrohet</translation>
 <translation id="9139720510312328767">Fshi shkronjën tjetër</translation>
-<translation id="9148058034647219655">Dil</translation>
 <translation id="9151906066336345901">tasti End</translation>
 <translation id="9159421884295554245">Kërko te "Kujtesa e fragmenteve"</translation>
 <translation id="9168436347345867845">Bëje më vonë</translation>

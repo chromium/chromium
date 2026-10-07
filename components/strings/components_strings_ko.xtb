@@ -302,7 +302,6 @@
 <translation id="1486096554574027028">비밀번호 검색</translation>
 <translation id="1492194039220927094">정책 푸시:</translation>
 <translation id="1495677929897281669">탭으로 돌아가기</translation>
-<translation id="1496318738909526466">향상된 자동 완성 관리</translation>
 <translation id="1500286806237135498">카메라(<ph name="CAMERAS_COUNT" />개)</translation>
 <translation id="1504042622576912555">골판지</translation>
 <translation id="1507202001669085618">&lt;p&gt;온라인에 접속하기 위해 로그인해야 하는 Wi-Fi 포털을 사용하면 이 오류가 표시됩니다.&lt;/p&gt;
@@ -954,6 +953,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">수정 실행 취소(&amp;U)</translation>
 <translation id="2559566667529177711">멀티레이어</translation>
+<translation id="2561224416042784023">설정 보기</translation>
 <translation id="2570734079541893434">설정 관리</translation>
 <translation id="257136025287118539">관리자가 파일을 <ph name="CLOUD_PROVIDER" /> 폴더로 이동하는 중입니다. 업로드가 완료되면 파일을 수정할 수 있습니다.</translation>
 <translation id="2571488850200220306">보안을 위해 기기의 OS, 브라우저 버전, 설치된 소프트웨어도 확인할 수 있습니다.</translation>

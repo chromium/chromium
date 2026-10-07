@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
+<translation id="1004615467759797184">مظهر جديد مخصّص لعلامات التبويب الجديدة</translation>
 <translation id="1004825134262590729">{count,plural, =1{مفتاح مرور واحد ({count})}zero{‫{count} مفتاح مرور}two{مفتاحا مرور ({count})}few{‫{count} مفاتيح مرور}many{‫{count} مفتاح مرور}other{‫{count} مفتاح مرور}}</translation>
 <translation id="1005023885865154304">فتح إعدادات "الملء التلقائي لكلمات المرور"</translation>
 <translation id="1005230401424685968">السنة</translation>
@@ -1315,6 +1316,7 @@
 <translation id="5126335625961252141">جهازك اللوحي</translation>
 <translation id="5128788795241319992">الاطّلاع على القائمة الجديدة</translation>
 <translation id="5132942445612118989">يمكنك مزامنة كلمات المرور والسجلّ وغير ذلك على جميع الأجهزة.</translation>
+<translation id="5137568953923142260">السماح مرّة واحدة</translation>
 <translation id="5141363746588976328">إخفاء بطاقة "عرض الانخفاض في الأسعار ضِمن علامات التبويب"</translation>
 <translation id="514154868070499296">الخط: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">الخروج من "أداة التبديل بين علامات التبويب"</translation>
@@ -1690,6 +1692,7 @@
 <translation id="6307792728709337290">‏يمكنك حفظ بطاقتك في حسابك على Google لملء بياناتها تلقائيًا عند إجراء عملية الشراء هذه وعمليات شراء مستقبلية في Chrome.</translation>
 <translation id="6316141353357700666">اختَر كلمة المرور التي تريد استخدامها من القائمة التي تظهر.</translation>
 <translation id="6321526113093607004">الإضافة إلى الإشارات المرجعية</translation>
+<translation id="6324054713176642683">يمكنك الاختيار من بين المظاهر والألوان المتوفّرة أو تحميل صورة خاصة بك.</translation>
 <translation id="6327249202318869726">‏تم إيقاف Gemini في حسابك. يُرجى التواصل مع المشرف للحصول على مزيد من المعلومات.</translation>
 <translation id="6331836477476466332">متصفّح أكثر أمانًا وفعالية</translation>
 <translation id="6337234675334993532">التشفير</translation>
@@ -1997,6 +2000,7 @@
 <translation id="722339453342442311">التحقق الآن</translation>
 <translation id="7227235818314667565">إدارة المشاركة</translation>
 <translation id="7233006041370588369">اختَر كلمة مرور لاستخدامها.</translation>
+<translation id="7238074332967840767">الأمان</translation>
 <translation id="723874023660911012">التبديل بين الملفات الشخصية</translation>
 <translation id="7241135764990439166">وضع التصفُّح المتخفي غير متاح</translation>
 <translation id="7245288034498365666">تنظيم علامات التبويب وتوفير الوقت</translation>
@@ -2063,7 +2067,6 @@
 <translation id="7454057999980797137">الولاية/المقاطعة</translation>
 <translation id="7458706065921255639">الخيارات المخصَّصة والربط</translation>
 <translation id="745899714366929493">اليوم كله</translation>
-<translation id="7460314822154045102">استخدام الكاميرا</translation>
 <translation id="7460698861522306757">طلب موقع جهاز جوّال</translation>
 <translation id="7464143666517313304">يؤدي هذا الإجراء إلى حذف العناوين المحفوظة على هذا الجهاز.</translation>
 <translation id="7468373585447318060">يمكنك متابعة أخبار الانخفاضات في أسعار جميع المنتجات التي تتبّعها.</translation>

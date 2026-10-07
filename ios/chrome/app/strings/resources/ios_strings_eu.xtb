@@ -96,7 +96,7 @@
 <translation id="1279024913354609713">Ez eman baimena</translation>
 <translation id="1285320974508926690">Ez itzuli inoiz webgune hau</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> webgunearen baimenak desaktibatu egingo dira webgunetik irteten zarenean.</translation>
-<translation id="1293491796138057740"><ph name="USER_EMAIL" /> kontuaren Google Diru-zorroa zerbitzuan gordeko da informazioa. Google-ren zerbitzu guztietan erabil dezakezu inprimakiak bizkorrago betetzeko.</translation>
+<translation id="1293491796138057740"><ph name="USER_EMAIL" /> kontuaren Google Wallet-en gordeko da informazioa. Google-ren zerbitzu guztietan erabil dezakezu inprimakiak bizkorrago betetzeko.</translation>
 <translation id="1293556467332435079">Fitxategiak</translation>
 <translation id="129553762522093515">Itxitako azkenak</translation>
 <translation id="1296581780163690620">Fitxategia deskargatu nahi duzu? (<ph name="FILE_SIZE" />)</translation>
@@ -287,7 +287,7 @@
 <translation id="1827529786398596735">Eduki sakatuta orri nagusia</translation>
 <translation id="1832848789136765277">Sinkronizatutako datuak edonoiz atzitu ahal izango dituzula ziurtatzeko, egiaztatu zeu zarela</translation>
 <translation id="1836891464494477513">{count,plural, =1{Gorde da laster-marka Google-ko kontuan ({email})}other{Gorde dira laster-markak Google-ko kontuan ({email})}}</translation>
-<translation id="1838089197478136166">Diru-zorroa zerbitzuan ireki nahi duzu?</translation>
+<translation id="1838089197478136166">Wallet-en ireki nahi duzu?</translation>
 <translation id="183878838231635348">Segurtasun-egiaztapenak pribatutasun- edo segurtasun-arazoren bat aurkitzen badu automatikoki, txartel honetan agertuko da.</translation>
 <translation id="1845230888742614096">Mantendu taldea</translation>
 <translation id="1853558655412913122">Orain, helbide-barraren kokapena alda dezakezu "Ezarpenak" eta "Helbide-barra" ataletara joanda</translation>
@@ -417,7 +417,7 @@
 <translation id="2236949375853147973">Nire jarduerak</translation>
 <translation id="2237869114829007407">Lortu edozein orriri edo gairi buruzko informazio orokorra eta estatistika nagusiak</translation>
 <translation id="2240256190924001613">Konfigurazio-profila erabilgarri dago</translation>
-<translation id="2244080985779413662">Webguneak, fitxategi bat deskargatu, eta Diru-zorroa zerbitzuan ireki nahi du.</translation>
+<translation id="2244080985779413662">Webguneak, fitxategi bat deskargatu, eta Wallet-en ireki nahi du.</translation>
 <translation id="2245007488813216650">Itzultzen…</translation>
 <translation id="2246445006133863463">Horrela, Gemini-rekin hitz egin dezakezu ahotsa erabilita</translation>
 <translation id="2249119578464404734">Pantailaren goialdean, sakatu bilatzeko ikonoa</translation>
@@ -503,7 +503,7 @@
 <translation id="2496180316473517155">Arakatze-historia</translation>
 <translation id="2496626742194544812">Joan lehen fitxara</translation>
 <translation id="2499505845365628575">Arakatze-historia osoa ikusteko, ireki <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
-<translation id="251033673027346551">Joan Google Diru-zorroa zerbitzura <ph name="BEGIN_LINK" />datuen eta pribatutasunaren hobespenak<ph name="END_LINK" /> kudeatzeko.</translation>
+<translation id="251033673027346551">Joan Google Wallet-era <ph name="BEGIN_LINK" />datuen eta pribatutasunaren hobespenak<ph name="END_LINK" /> kudeatzeko.</translation>
 <translation id="2511117522375201202">Arriskuan dauden <ph name="NUMBER_OF_PASSWORDS" /> pasahitz dauzkazu, eta baliteke horrek segurtasunari eragitea.</translation>
 <translation id="2512709994717613803"><ph name="LEVEL_NUMBER" />. maila</translation>
 <translation id="2513103768503127042">Hemen aurkituko dituzu fitxa taldeak</translation>
@@ -515,7 +515,7 @@
 <translation id="2529021024822217800">Ireki guztiak</translation>
 <translation id="2536991091671391962">Gordetako pasahitzak edozein gailutan erabil ditzakezu. <ph name="EMAIL" /> kontuan saioa hasita zeneukala gorde dituzunak Google-ren Pasahitz-kudeatzailea zerbitzuan gordetzen dira.</translation>
 <translation id="2538103551183528357">Ezkutatuta, pasahitza</translation>
-<translation id="2538705697765638552">Gorde informazioa gauzak bizkorrago egiteko, hala nola Google-ren produktuetan inprimakiak betetzeko. <ph name="USER_EMAIL" /> kontuko informazioa Google Diru-zorroa zerbitzuan kudea dezakezu.</translation>
+<translation id="2538705697765638552">Gorde informazioa gauzak bizkorrago egiteko, hala nola Google-ren produktuetan inprimakiak betetzeko. <ph name="USER_EMAIL" /> kontuko informazioa Google Wallet-en kudea dezakezu.</translation>
 <translation id="2539748786028143624">Aktibatu Babes hobetua…</translation>
 <translation id="2540111494300686866">Eragotzi leihoak irekitzea</translation>
 <translation id="2542268842667970959">Ezkutatu "Segurtasun-egiaztapena"</translation>
@@ -865,7 +865,7 @@
 <translation id="3738428049780661523">Sortze-data: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Kamerako argazkiak</translation>
 <translation id="3743545564993953213">Webgunea "Lasterbideak" aplikazioa irekitzen saiatzen ari da.</translation>
-<translation id="3746269120925354434">Gorde da informazioa Google Diru-zorroa zerbitzuan</translation>
+<translation id="3746269120925354434">Gorde da informazioa Google Wallet-en</translation>
 <translation id="3750225824417196283">Ezkutuko moduko fitxa berri baten orria</translation>
 <translation id="3751873026576444885">Utzi pantailako edukia bilatzeari Google Lens bidez</translation>
 <translation id="3753408171347588045">Prezioen jarraipena egiten ari zara</translation>
@@ -900,7 +900,7 @@
 <translation id="3854214753902617617">Arakatu Arakatze seguru hobetua</translation>
 <translation id="3857113360369572832">Ireki <ph name="BEGIN_BOLD" />Safari Settings<ph name="END_BOLD" /> (Safari-ren ezarpenak)</translation>
 <translation id="3858860766373142691">Izena</translation>
-<translation id="386224966259596343">Inprimaki egoki bat betetzen duzun hurrengoan, informazioa Diru-zorroa zerbitzuan gordetzeko aukera izango duzu.</translation>
+<translation id="386224966259596343">Inprimaki egoki bat betetzen duzun hurrengoan, informazioa Wallet-en gordetzeko aukera izango duzu.</translation>
 <translation id="3868495844258915202">Erakutsi URL osoa</translation>
 <translation id="3875783148670536197">Erakutsi nola</translation>
 <translation id="3878657761594430423">Orri-hartzailea</translation>
@@ -946,7 +946,7 @@
 <translation id="398604237578616937"><ph name="USER_EMAIL" /> gisa hasi duzu saioa. Ireki kontuaren menua.</translation>
 <translation id="3986739045730058129">Joan fitxara</translation>
 <translation id="3992684624889376114">Orri honi buruz</translation>
-<translation id="3993594519743675442">Ezkutatu "Ezarri abisua"</translation>
+<translation id="3993594519743675442">Ezkutatu "Ezarri gogorarazpena"</translation>
 <translation id="3994422733891749358">Aukeratu zein jakinarazpen jaso nahi duzun</translation>
 <translation id="3994522032746736727">Hasi saioa <ph name="EMAIL" /> gisa</translation>
 <translation id="3994911892367422121">ADOS</translation>
@@ -974,7 +974,7 @@
 <translation id="4072473499345702662">Joan Level Up-era</translation>
 <translation id="4092655288299341041">Erakutsi laguntza</translation>
 <translation id="4095483462103784441">Sortu fitxa talde bat</translation>
-<translation id="4099756562043439968">Ezarri abisua</translation>
+<translation id="4099756562043439968">Ezarri gogorarazpena</translation>
 <translation id="4108998448622696017">Gertaera arriskutsuak hautematen ditu eta haien berri ematen dizu gertatu ahala.</translation>
 <translation id="4111985840824673503">Markatu guztiak irakurritako gisa</translation>
 <translation id="411254640334432676">Ezin izan da deskargatu.</translation>
@@ -1333,7 +1333,7 @@
 <translation id="5186185447130319458">Pribatua</translation>
 <translation id="5189431381114029336">Gorde zure lehenengo sarbide-gakoa.</translation>
 <translation id="518997337573684769">Hutsegite-txostena bidaltzen…</translation>
-<translation id="519528950056409240">Eman datuak partekatzeko baimena Diru-zorroa zerbitzuari</translation>
+<translation id="519528950056409240">Eman datuak partekatzeko baimena Wallet-i</translation>
 <translation id="519530786644929958">Ezin izan da deskargatu eta ezin da berriro saiatu.</translation>
 <translation id="519620255540220054">Pertsonalizatu orri nagusia</translation>
 <translation id="5197255632782567636">Internet</translation>
@@ -1534,7 +1534,7 @@
 <translation id="5819208479324046259"><ph name="MANAGER" /> da arakatzailearen kudeatzailea. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Sinkronizatzen…</translation>
-<translation id="5831217499016131155">Google Diru-zorroa</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583281660410589416">Ezezaguna</translation>
 <translation id="5838430324585198889">Desblokeatu iPad-erako eginbide gehiago Google-ren aplikazioekin</translation>
 <translation id="583923961930319521">Erabili pasahitzak gailu guztietan</translation>
@@ -1557,7 +1557,7 @@
 <translation id="5902752768726620872">{count,plural, =1{{count} fitxa berri}other{{count} fitxa berri}}</translation>
 <translation id="5906163261248594192">Danelen urtebetetzea</translation>
 <translation id="5911030830365207728">Google Translate</translation>
-<translation id="5912796581727968237">Ireki Google Diru-zorroa</translation>
+<translation id="5912796581727968237">Ireki Google Wallet</translation>
 <translation id="5922999516621365983">Fitxa ainguratzeko, arrasta ezazu hona.</translation>
 <translation id="5930982343430790032">{COUNT,plural, =1{Gehitu fitxategi, fitxa edo irudi bat gehienez}other{Gehitu {COUNT} fitxategi, fitxa edo irudi gehienez}}</translation>
 <translation id="5936006948844852401">Kudeatu biltegia</translation>
@@ -1774,7 +1774,7 @@
 <translation id="6532106788206463496">Gorde aldaketak</translation>
 <translation id="6536759809440150308">Ireki <ph name="GROUP_TITLE" />, <ph name="NUMBER_OF_TABS" /> fitxako taldea, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
-<translation id="6538776393003671043">Hura erabiltzen duzun hurrengoan, Chrome-k Google Diru-zorroa zerbitzuan gorde nahi duzun galdetuko dizu</translation>
+<translation id="6538776393003671043">Hura erabiltzen duzun hurrengoan, Chrome-k Google Wallet-en gorde nahi duzun galdetuko dizu</translation>
 <translation id="6543899060872618437">Ordaindu bizkorrago betetze automatikoarekin gailu guztietan</translation>
 <translation id="6550675742724504774">Aukerak</translation>
 <translation id="6550891580932862748">Ez zaitu babesten webgune, deskarga eta luzapen kaltegarrien aurka. Honek ez du eraginik izango Google-ren beste produktuetako Arakatze segurua eginbidearen ezarpenetan.</translation>
@@ -1828,7 +1828,7 @@
 <translation id="6676349090816247042">Saioa hasteko moduak.</translation>
 <translation id="667999046851023355">Dokumentua</translation>
 <translation id="6681791404926413601">{count,plural, =1{Ordainketa-metodo {count} dago erabilgarri teklatuaren gainean.}other{{count} ordainketa-metodo daude erabilgarri teklatuaren gainean.}}</translation>
-<translation id="6682680306647339111">Kendu da abisua</translation>
+<translation id="6682680306647339111">Kendu da gogorarazpena</translation>
 <translation id="6683022854667115063">Entzungailuak</translation>
 <translation id="6684262542644248484">Hasi saioa webgune batean.</translation>
 <translation id="6685259053455152195">Helbide-barratik bertatik ezarpenak bizkor aldatzeko eta eginbideak erabiltzeko lasterbideak.</translation>
@@ -1840,7 +1840,7 @@
 <translation id="6710079714193676716">Erakundeak kudeatzen du. Baliteke eginbide batzuk erabilgarri ez egotea. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="6713676799463473249">Azken aldaketa: <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Jasotako fitxak</translation>
-<translation id="6722638373100589752">Informazioa automatikoki betetzeko, aktibatu "Erabili txartelak Google-n" Diru-zorroa zerbitzuaren ezarpenetan</translation>
+<translation id="6722638373100589752">Informazioa automatikoki betetzeko, aktibatu "Erabili txartelak Google-n" Wallet-en ezarpenetan</translation>
 <translation id="6723740634201835758">Google kontukoak</translation>
 <translation id="6724024423419410528">Koloreak</translation>
 <translation id="672735642903863329">Atzitu laster-markak, pasahitzak eta bestelako datuak gailu guztietan.</translation>
@@ -2067,7 +2067,6 @@ Nahi duzunean has zaitezke berriro.</translation>
 <translation id="7454057999980797137">Probintzia</translation>
 <translation id="7458706065921255639">Pertsonalizazioa eta lotzea</translation>
 <translation id="745899714366929493">Egun osoa</translation>
-<translation id="7460314822154045102">Erabili kamera</translation>
 <translation id="7460698861522306757">Eskatu mugikorretarako webgunea</translation>
 <translation id="7464143666517313304">Gailuan gordetako helbideak ezabatuko dira.</translation>
 <translation id="7468373585447318060">Jakin ezazu noiz jaisten diren jarraitzen diezun produktu guztien prezioak.</translation>
@@ -2685,7 +2684,7 @@ Nahi duzunean has zaitezke berriro.</translation>
 <translation id="984275831282074731">Ordainketa-metodoak</translation>
 <translation id="985379595344853742">Itxi ezkutuko moduko fitxa guztiak</translation>
 <translation id="988141524645182168">Bestelakoak</translation>
-<translation id="994184244350700431">Google Diru-zorroa zerbitzuan (kontua: <ph name="USER_EMAIL" />)</translation>
+<translation id="994184244350700431">Google Wallet-en (kontua: <ph name="USER_EMAIL" />)</translation>
 <translation id="995174784802614337">{count,plural, =1{{count} sarbide-gako inportatu da}other{{count} sarbide-gako inportatu dira}}</translation>
 <translation id="999768147936949692">Oraingoz, familiako kideekin soilik parteka ditzakezu pasahitzak. <ph name="BEGIN_LINK" />Gonbidatu familiako kideak<ph name="END_LINK" /> taldera eta atera etekin handiagoa Google-ren produktu eta harpidetzei.</translation>
 </translationbundle>

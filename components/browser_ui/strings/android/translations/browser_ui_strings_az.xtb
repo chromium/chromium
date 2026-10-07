@@ -12,7 +12,6 @@
 <translation id="1126523729897810826">Chrome-dan maksimum yararlanmaq üçün aşağıda təklif edilən əməliyyatları tamamlayın</translation>
 <translation id="113098737392899175">Klaviatura qoşulduqda mətn kursoru ilə səhifələrə keçin</translation>
 <translation id="1148624853678088576">Tam hazırsınız!</translation>
-<translation id="1149644372535087155">Parolları Chrome-da yadda saxlayın</translation>
 <translation id="1178015372320901893">Qısayollarım üzrə aşağıdakı vərəq</translation>
 <translation id="1178581264944972037">Durdurun</translation>
 <translation id="1181037720776840403">Silin</translation>
@@ -227,7 +226,6 @@
 <translation id="3167868116600277716">Təkliflər lenti</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> saxlanılan data</translation>
 <translation id="3199078925536734975">Bu dəfə icazə verilir • Təxmini</translation>
-<translation id="3208584281581115441">İndi yoxlayın</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> tətbiqinə sizə bildiriş göndərmək icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> bildirişləri də aktiv edin.</translation>
 <translation id="3223425961342298674">Məkana icazə verilmir</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -286,7 +284,6 @@
 <translation id="381841723434055211">Telefon nömrələri</translation>
 <translation id="3823453485268218808">Şrift Mono</translation>
 <translation id="3826050100957962900">Üçüncü tərəfin girişi</translation>
-<translation id="3831065134033923230">Yadda saxlanılan parolları yoxlayın</translation>
 <translation id="3835233591525155343">Cihazdan istifadəniz</translation>
 <translation id="3843916486309149084">Chrome bu gün kukiləri yenidən bloklayacaq</translation>
 <translation id="385051799172605136">Geri</translation>
@@ -294,7 +291,6 @@
 <translation id="3870711497942672548">Əsas səhifəniz üçün fərdi rənglər və şəkillərlə Chrome-u fərdiləşdirin</translation>
 <translation id="389521680295183045">Saytlar cihazınızdan nə zaman aktiv şəkildə istifadə etdiyinizi bilmək üçün icazə istəyə bilər</translation>
 <translation id="3895926599014793903">Zoom'a icazə verməyə məcbur edin</translation>
-<translation id="3903738175795615004">Tam ekran rejimindən çıxmaq üçün yuxarıdan sürüşdürün və ya Esc düyməsinə basın.</translation>
 <translation id="3905475044299942653">Çoxlu bildirişləri dayandırın</translation>
 <translation id="3922092564198021702">Telefonda Ayarları açın</translation>
 <translation id="3924858949939391676">Oxu rejimi aktiv olduqdan sonra keçidləri göstərin</translation>
@@ -355,7 +351,6 @@
 <translation id="4479647676395637221">Saytlara kameranızı istifadə etmək icazəsi verməmişdən əvvəl soruşun (tövsiyə olunur)</translation>
 <translation id="4505788138578415521">URL genişləndirilib</translation>
 <translation id="4522570452068850558">Detallar</translation>
-<translation id="4523472416386354622">Başlamaq üçün hesaba daxil olun</translation>
 <translation id="4529207923544043455">Tamamlanmış və tamamlanmamış ayarlama siyahısı tapşırıqlarını göstərən aşağıdakı vərəq</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> tətbiqinə mikrofonunuza giriş icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> mikrofonu da aktiv edin.</translation>
 <translation id="4545694195887112015">Ayarlama vərəqi bağlandı</translation>
@@ -368,7 +363,6 @@
 <translation id="4645575059429386691">Valideyniniz tərəfindən idarə olunur</translation>
 <translation id="4651224148644053314">Daha çox rəng və seçim</translation>
 <translation id="4652266463001779298">İcazə verilmir</translation>
-<translation id="4655846733459137112">Növbəti dəfə daxil olanda bu paroldan asanlıqla istifadə etmək üçün Bəli seçiminə toxunun</translation>
 <translation id="4663373278480897665">Kameraya icazə verildi</translation>
 <translation id="4670064810192446073">Virtual reallıq</translation>
 <translation id="4672315773691449562">Brauzer tətbiqinə, sonra Chrome-a toxunun</translation>
@@ -415,7 +409,6 @@
 <translation id="512938610812707830">Yeni tab səhifəsinin görünüş teması kolleksiyalarına aid aşağıdakı vərəq tam hündürlükdə açıldı</translation>
 <translation id="5137460097045297858">Lentin yarım hündürlükdə açılmış aşağıdakı vərəqini kəşf edin</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Açıq tablarda qiymət düşməsi}other{Açıq tablarda qiymət düşməsi}}</translation>
-<translation id="5150048675001754041">Sayt və tətbiqlərə sürətli və asan şəkildə daxil olun</translation>
 <translation id="5186036860380548585">Seçim ekranın yuxarısına yaxın yerdə əlçatandır</translation>
 <translation id="5197729504361054390">Seçdiyiniz kontaktlar <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ilə paylaşılacaq.</translation>
 <translation id="5198930230016462977">Yeni tab səhifəsinin aşağıdakı vərəqinin fərdiləşdirilməsi bağlandı</translation>
@@ -425,7 +418,6 @@
 <translation id="5239623327352565343">Məkana icazə verilib</translation>
 <translation id="5246825184569358663">Bu əməliyyat ilə kukilər daxil olmaqla lokal data silinəcək, <ph name="DOMAIN" /> və ona aid saytlar üzrə icazələr sıfırlanacaq</translation>
 <translation id="5264323282659631142">"<ph name="CHIP_LABEL" />" daxiletməsini silin</translation>
-<translation id="528192093759286357">Yuxarıdan sürüşdürün və tam ekrandan çıxmaq üçün geri düyməsinə basın.</translation>
 <translation id="5286194356314741248">Skan edilir</translation>
 <translation id="5300589172476337783">Göstərin</translation>
 <translation id="5301954838959518834">Ok, anladım</translation>
@@ -473,7 +465,6 @@
 <translation id="5804241973901381774">İcazələr</translation>
 <translation id="5817042798620209981">Sayt haqqında məlumat, dialoq</translation>
 <translation id="5822675474983796325">Yeni tab səhifəsinin tam hündürlükdə açılmış aşağıdakı vərəqini fərdiləşdirin</translation>
-<translation id="5826403277762134844">Chrome-da parolları yadda saxlamaq üçün aşağıdakı təlimat vərəqi</translation>
 <translation id="5833899990800318936">Saytlara JavaScript icazəsi verməyin</translation>
 <translation id="583673505367439042">Saytlar cihazınızdakı faylları və qovluqları redaktə etmək üçün icazə istəyə bilər</translation>
 <translation id="5844448279347999754">Aktiv ediləndə saytlar mübadilə buferində saxlanmış mətn və şəkilləri görmək üçün icazə istəyə bilər. Deaktiv ediləndə saytlar mübadilə buferində saxlanmış mətn və şəkilləri görə bilməz.</translation>
@@ -511,7 +502,6 @@
 <translation id="6104860901391833523">Yanılı olduqda saytlar şəkildə şəkil rejiminə avtomatik daxil ola bilər. Sönülü olduqda saytlar şəkildə şəkil rejiminə avtomatik daxil ola bilməz.</translation>
 <translation id="6120483543004435978">Aktiv ediləndə saytlar cihazdan nə vaxt aktiv istifadə etdiyinizi öyrənmək üçün icazə istəyə bilər. Deaktiv ediləndə saytlar cihazdan nə vaxt aktiv istifadə etdiyinizi öyrənə bilməz.</translation>
 <translation id="612871598708395517">Digər tətbiqlərdə "Chrome təklifləri əldə edin" bölməsi gizlədilsin</translation>
-<translation id="6132075343662013154">Chrome parolu yadda saxlamağı təklif edəcək</translation>
 <translation id="615886654739818377">Saytlara bütün displeylərdəki pəncərələri idarə etməyə icazə verməyin</translation>
 <translation id="6165508094623778733">Ətraflı öyrənin</translation>
 <translation id="6171020522141473435">Aktiv ediləndə saytlar Bluetooth cihazlarından istifadə etmək üçün icazə istəyə bilər. Deaktiv ediləndə saytlar Bluetooth cihazlarından istifadə edə bilməz.</translation>
@@ -587,7 +577,6 @@
 <translation id="6980861169612950611">Sayt datası silinsin? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Giriş İmkanı</translation>
 <translation id="6991142177939282156">İcazə verilir • Təxmini məkan istifadə edilir</translation>
-<translation id="6992014788289743568">Parolları yoxlamaqla təhlükəsizliyi gücləndirin və datanı daha təhlükəsiz saxlayın</translation>
 <translation id="6992289844737586249">Saytlara mikrofonunuzu istifadə etmək icazəsi verməmişdən əvvəl soruşun (tövsiyə olunur)</translation>
 <translation id="7000754031042624318">Android ayarlarında söndürülüb</translation>
 <translation id="7036823721811529709">Fonda dinləyin</translation>
@@ -654,7 +643,6 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:</translation>
 <translation id="775043444390799886">İcazəni ləğv edin</translation>
 <translation id="7758789811447313947">Bənövşəyi tema</translation>
 <translation id="7759147511335618829">MIDI cihaz idarəetməsi/təkrar proqramlaşdırma</translation>
-<translation id="7771089277295008211">Parolların yadda saxlanılması üzrə aşağıdakı təlimat vərəqi bağlandı</translation>
 <translation id="7781829728241885113">Dünən</translation>
 <translation id="7791543448312431591">Əlavə etmək</translation>
 <translation id="780301667611848630">Yox, çox sağ olun</translation>
@@ -671,7 +659,6 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:</translation>
 <translation id="7940722705963108451">Mənə xatırladın</translation>
 <translation id="7948081750384205628"><ph name="SETTING_TITLE" /> haqqında ətraflı məlumat əldə edin</translation>
 <translation id="7952708427581814389">Saytlar mübadilə buferinizdəki mətn və şəkilləri görmək üçün icazə istəyə bilər</translation>
-<translation id="7958779728312669715">Parolları yadda saxlamağa dair aşağıdakı təlimat vərəqi tam açılıb</translation>
 <translation id="798299424881500862">Narıncı tema</translation>
 <translation id="7986741934819883144">Kontakt seçin</translation>
 <translation id="7990211076305263060">Aktiv ediləndə saytlar mikrofondan istifadə icazəsi istəyə bilər. Deaktiv ediləndə saytlar mikrofondan istifadə edə bilməz.</translation>
@@ -766,7 +753,6 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:</translation>
 <translation id="8889294078294184559">Baxmağa davam etdikcə saytlar Chrome ilə yoxlanış apara və daxil olduğunuz əvvəlki sayt ilə real insan olduğunuzu təsdiqləyə bilər</translation>
 <translation id="8899807382908246773">İntruziv reklamlar</translation>
 <translation id="8903921497873541725">Zoom</translation>
-<translation id="8919911527569629802">İstənilən veb-sayta daxil olun</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Daha soruşmayın</translation>
 <translation id="8926666909099850184">NFC bu cihazda deaktivdir. <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> onu aktiv edin.</translation>

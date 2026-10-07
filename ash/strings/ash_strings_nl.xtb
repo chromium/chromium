@@ -928,7 +928,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3697991387880191195">Druk op de snelkoppeling voor screenshots</translation>
 <translation id="3702809606464356667">Er worden vensters van het huidige bureau getoond, druk op de pijl-omhoog om vensters van alle bureaus te bekijken</translation>
 <translation id="3705722231355495246">-</translation>
-<translation id="3706423975342040244">Entertainment</translation>
 <translation id="370665806235115550">Bezig met laden...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> en <ph name="UNAVAILABLE_DLC_TWO" /> zijn niet beschikbaar.</translation>
 <translation id="3708186454126126312">Eerder verbonden</translation>
@@ -975,7 +974,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3824784079442479685">Hiermee geef je <ph name="APP_NAME" /> en alle apps en websites met camerarechten toegang tot de camera. Je moet misschien de webpagina vernieuwen of de app opnieuw starten.</translation>
 <translation id="3826099427150913765">Overschakelen naar wachtwoord</translation>
 <translation id="383058930331066723">Batterijbesparing staat aan</translation>
-<translation id="3831226344927851293">Tutorialweergave sluiten</translation>
 <translation id="383629559565718788">Toetsenbordinstellingen bekijken</translation>
 <translation id="384082539148746321">Template verwijderen?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> en dan <ph name="KEY_ONE" /> of <ph name="KEY_TWO" /> of <ph name="KEY_THREE" /> of <ph name="KEY_FOUR" /></translation>
@@ -1578,10 +1576,8 @@ Geen apparaten verbonden.</translation>
 <translation id="5551974246223970793">Naar de volgende overeenkomst voor de zoekopdracht gaan als je zoekt op een pagina</translation>
 <translation id="5556459405103347317">Opnieuw laden</translation>
 <translation id="5558091555391176027">Hoge zichtbaarheid voor Dichtbij delen aan- of uitzetten</translation>
-<translation id="5558314826121965174">Creativiteit</translation>
 <translation id="556042886152191864">Knop</translation>
 <translation id="5570122939431135380">Nieuw tabblad openen in een nieuw incognitovenster</translation>
-<translation id="5572632238877308040">Essentials</translation>
 <translation id="5575528586625653441">Er is een probleem opgetreden met een demoregistratieverzoek.</translation>
 <translation id="557563299383177668">Volgende alinea</translation>
 <translation id="5577082622442191756">Bluetooth aan- of uitzetten. <ph name="STATE_TEXT" />.</translation>
@@ -1616,7 +1612,6 @@ Geen apparaten verbonden.</translation>
 <translation id="5667546120811588575">Google Play instellen...</translation>
 <translation id="5669267381087807207">Activeren</translation>
 <translation id="5671658447180261823">De suggestie <ph name="SUGGESTION_NAME" /> verwijderen</translation>
-<translation id="5672890847723042801">Hulpprogramma's</translation>
 <translation id="5673434351075758678">Van '<ph name="FROM_LOCALE" />' naar '<ph name="TO_LOCALE" />' na synchronisatie van je instellingen.</translation>
 <translation id="5675363643668471212">Plankitem</translation>
 <translation id="5677022547882470786">Sleep of druk op de spatiebalk om een gebied te selecteren om te doorzoeken</translation>
@@ -1871,7 +1866,6 @@ Geen apparaten verbonden.</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY_ONE" /> en dan <ph name="MODIFIER_THREE" /> + <ph name="KEY_TWO" /> of <ph name="KEY_THREE" /></translation>
 <translation id="6352082849089527770">Onbekende netwerken</translation>
 <translation id="6359587239691116345">Krijg de nieuwste functies en beveiligingsverbeteringen. Als je deze update weigert, werkt je apparaat misschien niet meer goed en kun je beveiligings- en prestatieproblemen ondervinden.</translation>
-<translation id="6362833380917912748">Maak kennis met de ingebouwde apps</translation>
 <translation id="6364386432014869981">Ingebouwde touchpad staat aan</translation>
 <translation id="6376931439017688372">Bluetooth staat aan</translation>
 <translation id="6378515133128829137">Venster rechts vastzetten</translation>
@@ -2096,7 +2090,6 @@ Nieuwe installatie</translation>
 <translation id="7014684956566476813">Verbonden met een apparaat met de naam <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Kom terug om <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Bureau 6</translation>
-<translation id="702252130983202758">Je apps</translation>
 <translation id="7025533177575372252">Koppel je <ph name="DEVICE_NAME" /> aan je telefoon</translation>
 <translation id="7026338066939101231">Verlaging</translation>
 <translation id="7029307918966275733">Crostini is niet geïnstalleerd. Installeer Crostini om credits te bekijken.</translation>
@@ -2535,7 +2528,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8277261673056602147">Tekst op je scherm markeren</translation>
 <translation id="8281886186245836920">Overslaan</translation>
 <translation id="8282784978194352587">Gelukt!</translation>
-<translation id="8287009018010202411">Productiviteit</translation>
 <translation id="828708037801473432">Uit</translation>
 <translation id="8289128870594824098">Schijfgrootte</translation>
 <translation id="8297006494302853456">Zwak</translation>
@@ -2630,7 +2622,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8598235756057743477">Je apps sorteren op naam of kleur</translation>
 <translation id="8599864823732014237">Zakelijke inschrijving overslaan?</translation>
 <translation id="8609384513243082612">Nieuw tabblad openen</translation>
-<translation id="861045123704058818">Apps worden tijdelijk ingedeeld op categorie</translation>
 <translation id="8612338981637220013">Goed bezig!</translation>
 <translation id="8613164732773110792">Alleen kleine letters, cijfers, underscores of koppeltekens</translation>
 <translation id="8614517853887502247">Meldingen van <ph name="APP_1_TITLE" /> en <ph name="APP_2_TITLE" /> zijn verborgen omdat weergavebeveiliging aanstaat</translation>
@@ -2822,7 +2813,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="9129245940793250979">Knop Achter</translation>
 <translation id="9133335900048457298">Kan geen beschermde content opnemen</translation>
 <translation id="9139720510312328767">Volgende letter verwijderen</translation>
-<translation id="9148058034647219655">Sluiten</translation>
 <translation id="9151906066336345901">end</translation>
 <translation id="9159421884295554245">Zoeken in Klembord</translation>
 <translation id="9168436347345867845">Later doen</translation>

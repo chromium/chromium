@@ -764,6 +764,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="4092709865241032354">Pentru a ajuta Managerul de parole Google să-ți salveze informațiile de conectare, adaugă numele de utilizator pentru acest site</translation>
 <translation id="4095146165863963773">Ștergi datele aplicației?</translation>
 <translation id="4095483462103784441">Creează un nou grup de file</translation>
+<translation id="4098552968111329864">Pentru a-ți proteja activitatea în Chrome, organizația ta va putea să vadă sau să gestioneze anumite informații când te conectezi la Chrome</translation>
 <translation id="4105527135143631701">S-a deschis actualizarea Managerului de parole Google</translation>
 <translation id="4107207375883769436">Organizația ta poate avea nevoie să vadă și să gestioneze datele de navigare din profilul tău de serviciu, cum ar fi istoricul de navigare și parolele</translation>
 <translation id="4113030288477039509">Gestionat de administratorul tău</translation>
@@ -1770,6 +1771,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7929587383660661825">Chrome elimină automat permisiunile pentru site-urile care abuzează de notificări sau pe care nu le-ai accesat recent</translation>
 <translation id="7934668619883965330">Nu se poate descărca fișierul. Formatul fișierului nu este acceptat.</translation>
 <translation id="7951102827450076904">Deschide întotdeauna fișierele PDF descărcate</translation>
+<translation id="7952148074468405586">Află mai multe despre <ph name="BEGIN_LINK" />informațiile pe care organizația ta le poate vedea sau gestiona<ph name="END_LINK" /></translation>
 <translation id="7952479614398473176">Pentru a deschide o fereastră nouă, redu numărul total de ferestre active la cel mult <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7956713633345437162">Marcaje mobile</translation>
 <translation id="7957413488482743710">Cardul virtual îți ascunde cardul fizic pentru a te proteja împotriva fraudelor. <ph name="BEGIN_LINK1" />Află mai multe despre cardurile virtuale<ph name="END_LINK1" /></translation>

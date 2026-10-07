@@ -322,6 +322,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2297822946037605517">Rhannu'r dudalen hon</translation>
 <translation id="230115972905494466">Heb ganfod unrhyw ddyfeisiau cydnaws</translation>
 <translation id="2305798319182970276">Dileu eich hanes gyda thap botwm</translation>
+<translation id="2307420463693979699">Mae angen caniatâd ar <ph name="APP_NAME" /> i gael mynediad at ddyfeisiau rhyngwyneb dynol (HIDs) ar gyfer y wefan hon.</translation>
 <translation id="2316129865977710310">Dim diolch</translation>
 <translation id="232137538351753795">Sweipiwch o'r ymyl chwith i fynd yn ôl</translation>
 <translation id="2323763861024343754">Storfa gwefan</translation>
@@ -765,6 +766,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="4092709865241032354">I helpu Rheolwr Cyfrineiriau Google gadw eich gwybodaeth fewngofnodi, ychwanegwch eich enw defnyddiwr ar gyfer y wefan hon</translation>
 <translation id="4095146165863963773">Dileu data yr ap?</translation>
 <translation id="4095483462103784441">Creu grŵp tabiau newydd</translation>
+<translation id="4098552968111329864">Er mwyn diogelu eich gwaith ar Chrome, bydd eich sefydliad yn gallu gweld neu reoli gwybodaeth benodol pan fyddwch wedi mewngofnodi i Chrome</translation>
 <translation id="4105527135143631701">Agorwyd diweddariad Rheolwr Cyfrineiriau Google</translation>
 <translation id="4107207375883769436">Mae'n bosib y bydd angen i'ch sefydliad weld a rheoli data pori yn eich proffil gwaith, megis eich hanes pori a'ch cyfrineiriau</translation>
 <translation id="4113030288477039509">Rheolir gan eich gweinyddwr</translation>
@@ -1771,6 +1773,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7929587383660661825">Mae Chrome yn tynnu caniatadau yn awtomatig o wefannau sy'n camddefnyddio hysbysiadau neu wefannau nad ydych chi wedi ymweld â nhw'n ddiweddar</translation>
 <translation id="7934668619883965330">Methu â lawrlwytho ffeil. Ni chefnogir fformat y ffeil.</translation>
 <translation id="7951102827450076904">Agor ffeiliau PDF sydd wedi'u lawrlwytho bob amser</translation>
+<translation id="7952148074468405586">Dysgu rhagor am <ph name="BEGIN_LINK" />wybodaeth y gall eich sefydliad ei gweld neu ei rheoli<ph name="END_LINK" /></translation>
 <translation id="7952479614398473176">I agor ffenestr newydd, lleihewch gyfanswm y ffenestri gweithredol i <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> neu lai.</translation>
 <translation id="7956713633345437162">Nodau tudalen symudol</translation>
 <translation id="7957413488482743710">Mae cerdyn rhithwir yn cuddio eich cerdyn go iawn i helpu i'ch amddiffyn rhag twyll posib. <ph name="BEGIN_LINK1" />Dysgu rhagor am gardiau rhithwir<ph name="END_LINK1" /></translation>

@@ -302,7 +302,6 @@
 <translation id="1486096554574027028">खोज पासवर्डहरू</translation>
 <translation id="1492194039220927094">नीतिहरू लागू गर्ने कार्य:</translation>
 <translation id="1495677929897281669">ट्याबमा फर्कनुहोस्</translation>
-<translation id="1496318738909526466">अटोफिल गर्ने परिष्कृत सुविधा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1500286806237135498">क्यामेराहरू (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">फ्ल्युट</translation>
 <translation id="1507202001669085618">&lt;p&gt;तपाईं अनलाइन हुनु पूर्व साइन इन गर्न पर्नेमा Wi-Fi पोर्टल प्रयोग गर्नुभएको खण्डमा तपाईंले यो त्रुटि देखुहुने छ।&lt;/p&gt;
@@ -954,6 +953,7 @@
 <translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">सम्पादन &amp;पूर्ववत गर्नुहोस्</translation>
 <translation id="2559566667529177711">मल्टी-लेयर</translation>
+<translation id="2561224416042784023">सेटिङ हेर्नुहोस्</translation>
 <translation id="2570734079541893434">सेटिङ व्यवस्थापन गर्नुहोस्</translation>
 <translation id="257136025287118539">तपाईंका एड्मिन तपाईंका फाइलहरू सारेर <ph name="CLOUD_PROVIDER" /> मा लैजाँदै हुनुहुन्छ। अपलोड गर्ने प्रक्रिया पूरा भएपछि तपाईं यी फाइल परिमार्जन गर्न सक्नुहुन्छ।</translation>
 <translation id="2571488850200220306">सुरक्षाको सुनिश्चितताका लागि उक्त सङ्गठनले डिभाइसको OS, ब्राउजरको संस्करण र त्यसमा कुन कुन सफ्टवेयर इन्स्टल गरिएका छन् भन्ने कुरा पनि हेर्न सक्छ</translation>

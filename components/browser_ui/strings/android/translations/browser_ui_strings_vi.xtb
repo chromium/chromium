@@ -12,7 +12,6 @@
 <translation id="1126523729897810826">Làm theo các đề xuất dưới đây để sử dụng Chrome hiệu quả nhất</translation>
 <translation id="113098737392899175">Di chuyển giữa các trang bằng con trỏ văn bản khi kết nối bàn phím</translation>
 <translation id="1148624853678088576">Bạn đã hoàn tất!</translation>
-<translation id="1149644372535087155">Lưu mật khẩu trong Chrome</translation>
 <translation id="1178015372320901893">Bảng các lối tắt của tôi ở dưới cùng</translation>
 <translation id="1178581264944972037">Tạm dừng</translation>
 <translation id="1181037720776840403">Xoá</translation>
@@ -227,7 +226,6 @@
 <translation id="3167868116600277716">Nguồn cấp dữ liệu khám phá</translation>
 <translation id="3198916472715691905">Dữ liệu đã lưu trữ: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="3199078925536734975">Được cho phép lần này • Vị trí ước chừng</translation>
-<translation id="3208584281581115441">Kiểm tra ngay</translation>
 <translation id="321187648315454507">Để cho phép <ph name="APP_NAME" /> gửi thông báo cho bạn, hãy bật cả thông báo trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Không cho phép truy cập thông tin vị trí</translation>
 <translation id="3227137524299004712">Micrô</translation>
@@ -286,7 +284,6 @@
 <translation id="381841723434055211">Số điện thoại</translation>
 <translation id="3823453485268218808">Phông chữ đơn cách</translation>
 <translation id="3826050100957962900">Đăng nhập qua bên thứ ba</translation>
-<translation id="3831065134033923230">Kiểm tra mật khẩu bạn đã lưu</translation>
 <translation id="3835233591525155343">Hoạt động dùng thiết bị</translation>
 <translation id="3843916486309149084">Hôm nay, Chrome sẽ chặn cookie trở lại</translation>
 <translation id="385051799172605136">Quay lại</translation>
@@ -294,7 +291,6 @@
 <translation id="3870711497942672548">Cá nhân hoá Chrome bằng màu sắc và hình ảnh tuỳ chỉnh cho trang chủ của bạn</translation>
 <translation id="389521680295183045">Các trang web có thể yêu cầu được phát hiện khi bạn đang dùng thiết bị</translation>
 <translation id="3895926599014793903">Buộc bật thu phóng</translation>
-<translation id="3903738175795615004">Kéo từ trên xuống hoặc nhấn phím Esc để thoát khỏi chế độ toàn màn hình.</translation>
 <translation id="3905475044299942653">Ngừng nhận nhiều thông báo</translation>
 <translation id="3922092564198021702">Trên điện thoại, hãy mở phần Cài đặt</translation>
 <translation id="3924858949939391676">Hiển thị các đường liên kết khi Chế độ đọc đang bật</translation>
@@ -355,7 +351,6 @@
 <translation id="4479647676395637221">Hỏi trước trước khi cho phép các trang web sử dụng máy ảnh của bạn (được đề xuất)</translation>
 <translation id="4505788138578415521">URL đã được mở rộng</translation>
 <translation id="4522570452068850558">Chi tiết</translation>
-<translation id="4523472416386354622">Đăng nhập để bắt đầu</translation>
 <translation id="4529207923544043455">Bảng dưới cùng hiển thị các việc cần làm đã hoàn thành và chưa hoàn thành trong danh sách thiết lập</translation>
 <translation id="4534723447064627427">Để cho phép <ph name="APP_NAME" /> truy cập vào micrô của bạn, hãy bật cả micrô trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="4545694195887112015">Đã đóng trang thiết lập</translation>
@@ -368,7 +363,6 @@
 <translation id="4645575059429386691">Do cha mẹ của bạn quản lý</translation>
 <translation id="4651224148644053314">Màu sắc và tuỳ chọn khác</translation>
 <translation id="4652266463001779298">Không được phép</translation>
-<translation id="4655846733459137112">Nhấn vào Có để dễ dàng sử dụng mật khẩu này vào lần đăng nhập tới</translation>
 <translation id="4663373278480897665">Cho phép máy ảnh</translation>
 <translation id="4670064810192446073">Thực tế ảo</translation>
 <translation id="4672315773691449562">Nhấn vào Ứng dụng trình duyệt rồi nhấn vào Chrome</translation>
@@ -415,7 +409,6 @@
 <translation id="512938610812707830">Bảng bộ sưu tập giao diện trang thẻ mới ở dưới cùng đã mở toàn bộ</translation>
 <translation id="5137460097045297858">Bảng nguồn cấp dữ liệu Khám phá ở dưới cùng đã mở trên một nửa màn hình</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Ưu đãi giảm giá trên các thẻ đang mở}other{Ưu đãi giảm giá trên các thẻ đang mở}}</translation>
-<translation id="5150048675001754041">Đăng nhập nhanh chóng và dễ dàng vào các trang web và ứng dụng</translation>
 <translation id="5186036860380548585">Tùy chọn này ở gần đầu màn hình</translation>
 <translation id="5197729504361054390">Những thông tin liên hệ bạn chọn sẽ được chia sẻ với <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Bảng tuỳ chỉnh trang thẻ mới của bạn ở dưới cùng đã đóng</translation>
@@ -425,7 +418,6 @@
 <translation id="5239623327352565343">Cho phép truy cập thông tin vị trí</translation>
 <translation id="5246825184569358663">Thao tác này sẽ xoá toàn bộ dữ liệu cục bộ, kể cả cookie, và đặt lại mọi quyền cho <ph name="DOMAIN" /> cũng như mọi trang web thuộc miền này</translation>
 <translation id="5264323282659631142">Xóa "<ph name="CHIP_LABEL" />"</translation>
-<translation id="528192093759286357">Kéo từ trên xuống và chạm vào nút quay lại để thoát khỏi chế độ toàn màn hình.</translation>
 <translation id="5286194356314741248">Đang quét</translation>
 <translation id="5300589172476337783">Hiển thị</translation>
 <translation id="5301954838959518834">Ok</translation>
@@ -473,7 +465,6 @@
 <translation id="5804241973901381774">Quyền</translation>
 <translation id="5817042798620209981">Thông tin về trang web, hộp thoại</translation>
 <translation id="5822675474983796325">Bảng tuỳ chỉnh trang thẻ mới của bạn ở dưới cùng đã mở trên toàn màn hình</translation>
-<translation id="5826403277762134844">Bảng hướng dẫn ở dưới cùng về cách lưu mật khẩu trong Chrome</translation>
 <translation id="5833899990800318936">Không cho phép các trang web sử dụng JavaScript</translation>
 <translation id="583673505367439042">Các trang web có thể yêu cầu chỉnh sửa tệp và thư mục trên thiết bị</translation>
 <translation id="5844448279347999754">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu xem văn bản và hình ảnh đã lưu vào bảng nhớ tạm. Khi bạn tắt tuỳ chọn này, các trang web không thể xem văn bản hoặc hình ảnh đã lưu vào bảng nhớ tạm.</translation>
@@ -511,7 +502,6 @@
 <translation id="6104860901391833523">Khi bạn bật lựa chọn này, các trang web có thể tự động chuyển sang chế độ hình trong hình. Khi bạn tắt lựa chọn này, các trang web không thể tự động chuyển sang chế độ hình trong hình.</translation>
 <translation id="6120483543004435978">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu được biết khi nào bạn đang sử dụng thiết bị. Khi bạn tắt tuỳ chọn này, các trang web sẽ không được biết khi nào bạn đang sử dụng thiết bị.</translation>
 <translation id="612871598708395517">Ẩn thẻ Nhận đề xuất trong Chrome trên các ứng dụng khác</translation>
-<translation id="6132075343662013154">Chrome sẽ đề xuất lưu mật khẩu của bạn</translation>
 <translation id="615886654739818377">Không cho phép các trang web quản lý các cửa sổ trên tất cả màn hình của bạn</translation>
 <translation id="6165508094623778733">Tìm hiểu thêm</translation>
 <translation id="6171020522141473435">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng thiết bị Bluetooth. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng thiết bị Bluetooth.</translation>
@@ -587,7 +577,6 @@
 <translation id="6980861169612950611">Xoá dữ liệu trang web? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Hỗ trợ tiếp cận</translation>
 <translation id="6991142177939282156">Được cho phép • Sử dụng vị trí ước chừng</translation>
-<translation id="6992014788289743568">Tăng cường bảo mật và bảo vệ dữ liệu an toàn hơn bằng cách kiểm tra mật khẩu</translation>
 <translation id="6992289844737586249">Hỏi trước trước khi cho phép các trang web sử dụng micrô của bạn (được đề xuất)</translation>
 <translation id="7000754031042624318">Đã tắt trong phần Cài đặt Android</translation>
 <translation id="7036823721811529709">Nghe nhạc dưới nền</translation>
@@ -654,7 +643,6 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="775043444390799886">Thu hồi quyền</translation>
 <translation id="7758789811447313947">Giao diện màu tím</translation>
 <translation id="7759147511335618829">Lập trình lại và điều khiển thiết bị MIDI</translation>
-<translation id="7771089277295008211">Bảng hướng dẫn lưu mật khẩu ở dưới cùng đã đóng</translation>
 <translation id="7781829728241885113">Hôm qua</translation>
 <translation id="7791543448312431591">Thêm</translation>
 <translation id="780301667611848630">Không, cảm ơn</translation>
@@ -671,7 +659,6 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="7940722705963108451">Nhắc tôi</translation>
 <translation id="7948081750384205628">Tìm hiểu thêm về <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Các trang web có thể yêu cầu xem văn bản và hình ảnh trên bảng nhớ tạm</translation>
-<translation id="7958779728312669715">Bảng hướng dẫn lưu mật khẩu ở dưới cùng đã mở hoàn toàn</translation>
 <translation id="798299424881500862">Giao diện màu cam</translation>
 <translation id="7986741934819883144">Chọn một người liên hệ</translation>
 <translation id="7990211076305263060">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng micrô của bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng micrô của bạn.</translation>
@@ -766,7 +753,6 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="8889294078294184559">Khi bạn tiếp tục duyệt web, các trang web có thể kiểm tra qua Chrome và xác minh qua trang web mà bạn truy cập trước đó rằng bạn có thể là người thực</translation>
 <translation id="8899807382908246773">Quảng cáo xâm nhập</translation>
 <translation id="8903921497873541725">Phóng to</translation>
-<translation id="8919911527569629802">Đăng nhập vào bất kỳ trang web nào</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Đừng hỏi lại</translation>
 <translation id="8926666909099850184">NFC đã tắt đối với thiết bị này. Hãy bật trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>

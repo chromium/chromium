@@ -764,6 +764,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4092709865241032354">Pomozte Správci hesel Google s uložením vašich přihlašovacích údajů tím, že zadáte své uživatelské jméno pro tento web</translation>
 <translation id="4095146165863963773">Smazat data aplikace?</translation>
 <translation id="4095483462103784441">Vytvořit novou skupinu karet</translation>
+<translation id="4098552968111329864">Když budete do Chromu přihlášen, bude moct vaše organizace za účelem zajištění bezpečnosti vaší práce v Chromu zobrazit nebo spravovat určité informace</translation>
 <translation id="4105527135143631701">Otevřel se panel k aktualizaci Správce hesel Google</translation>
 <translation id="4107207375883769436">Vaše organizace může potřebovat vidět a spravovat údaje o prohlížení ve vašem pracovním profilu, jako jsou historie prohlížení a hesla</translation>
 <translation id="4113030288477039509">Spravováno vaším administrátorem</translation>
@@ -1770,6 +1771,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7929587383660661825">Chrome automaticky odebírá oprávnění webům, které zneužívají oznámení nebo které jste v poslední době nenavštívili</translation>
 <translation id="7934668619883965330">Soubor nelze stáhnout. Formát souboru není podporován.</translation>
 <translation id="7951102827450076904">Stažené soubory PDF vždy otevřít</translation>
+<translation id="7952148074468405586"><ph name="BEGIN_LINK" />Další informace o tom, jaké údaje může vaše organizace zobrazit nebo spravovat<ph name="END_LINK" /></translation>
 <translation id="7952479614398473176">Pokud chcete otevřít nové okno, snižte celkový počet aktivních oken na maximálně <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
 <translation id="7956713633345437162">Mobilní záložky</translation>
 <translation id="7957413488482743710">Virtuální karta skryje vaši skutečnou kartu a chrání vás před případným podvodem. <ph name="BEGIN_LINK1" />Další informace o virtuálních kartách<ph name="END_LINK1" /></translation>

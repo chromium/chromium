@@ -23,6 +23,7 @@
 <translation id="1185134272377778587">Chromium жөнүндө</translation>
 <translation id="1186645291482254714">Телефонуңуздагы Chromium менен бааларга көз салуу тууралуу билдирмелерди алыңыз</translation>
 <translation id="1203500561924088507">Орнотуп алганыңыз үчүн рахмат. <ph name="BUNDLE_NAME" /> топтомун колдонуп баштоодон мурда серепчини өчүрүп күйгүзүңүз.</translation>
+<translation id="1222365723190436821"><ph name="IMPORTANT_UPDATE" /> күтүлүүдө. Коопсуз серептөө үчүн Chromium кийинки жолу <ph name="IDLE_DURATION" /> жигерсиз болгонуңузда жаңыртылат.</translation>
 <translation id="1232234696885483911">Сүрөт издөө функциясын ачканыңызда беттин аталышы, URL жана андагы нерселер, ошондой эле PDF файлдары автоматтык түрдө серверге жөнөтүлөт. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Кирип турганыңызда Chromium'да Google аккаунтуңуздагы сырсөздөрдү жана башкаларды колдоно аласыз. Муну өзгөртүү үчүн "Chromium'дагы аккаунтуңуз" бөлүмүнө өтүңүз.</translation>
 <translation id="1244381985120794049">Mac'тын меню тилкесинде Chromium'дагы Gemini'ды көрсөтүү</translation>
@@ -230,6 +231,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="3286538390144397061">Азыр өчүрүп күйгүзүү</translation>
 <translation id="328888136576916638">Google API ачкычтары жок болуп жатат. Chromium'дун айрым функциялары өчүрүлөт.</translation>
 <translation id="3296368748942286671">Chromium жабылганда фондук колдонмолор иштей берсин</translation>
+<translation id="3300632735252839402">Chromium сиз жигерсиз болгондо жаңыртылат</translation>
 <translation id="3313189106987092621">Chromium сиз кооптуу туташуу аркылуу сайтты жүктөөдөн мурун эскертет</translation>
 <translation id="3316771292331273802">Эгер Chromium'га кирип турган болсоңуз, Google аккаунтуңуздан башка бардык Chromium терезелерин жапканыңызда көпчүлүк сайттардан чыгарыласыз. Сайттар сизди эстеп калышы үчүн, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">издөө аймагынын жогорку оң бурчу: оң жагы <ph name="RIGHT" />%, жогору жагы <ph name="TOP" />%</translation>
@@ -238,6 +240,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Учурдагы Chromium профилине өтөсүзбү?</translation>
 <translation id="3412460710772753638">Ушул түзмөктөгү Сырсөздөр бөлүмүндө</translation>
+<translation id="3425452599984451640">Chromium жаңыртылышы керек</translation>
 <translation id="3427159664004296878"><ph name="DEVICE" /> кыстармаларды жана башкаларды колдонуу үчүн Chromium'га кириңиз</translation>
 <translation id="3438772217992559640">Бул өтмөктө Сүрөт издөө функциясы аркылуу издөө</translation>
 <translation id="3455907671758333080">Телефонуңуздагы Chromium менен Өркүндөтүлгөн коопсуз серептөөнү колдонуңуз</translation>

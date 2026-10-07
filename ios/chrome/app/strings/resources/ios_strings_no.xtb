@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
+<translation id="1004615467759797184">Tilpass Ny fane-siden</translation>
 <translation id="1004825134262590729">{count,plural, =1{{count} passnøkkel}other{{count} passnøkler}}</translation>
 <translation id="1005023885865154304">Åpne innstillingene for autofylling av passord</translation>
 <translation id="1005230401424685968">ÅÅÅÅ</translation>
@@ -1693,6 +1694,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6307792728709337290">Lagre kortet i Google-kontoen din for å autofylle det for dette kjøpet og fremtidige kjøp i Chrome.</translation>
 <translation id="6316141353357700666">Velg passordet du vil bruke, på listen som vises.</translation>
 <translation id="6321526113093607004">Legg til i bokmerker</translation>
+<translation id="6324054713176642683">Velg mellom temaer og farger, eller last opp ditt eget bilde.</translation>
 <translation id="6327249202318869726">Gemini er deaktivert for kontoen. Kontakt administratoren for å få mer informasjon.</translation>
 <translation id="6331836477476466332">En tryggere og kraftigere nettleser for deg</translation>
 <translation id="6337234675334993532">Kryptering</translation>
@@ -2067,7 +2069,6 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="7454057999980797137">Fylke/kommune</translation>
 <translation id="7458706065921255639">Personlig tilpasning og tilknytning</translation>
 <translation id="745899714366929493">Hele dagen</translation>
-<translation id="7460314822154045102">Bruk kameraet</translation>
 <translation id="7460698861522306757">Be om mobilversjonen av nettstedet</translation>
 <translation id="7464143666517313304">Dette sletter adresser som er lagret på denne enheten.</translation>
 <translation id="7468373585447318060">Følg med på avslag på alle produktene du sporer.</translation>

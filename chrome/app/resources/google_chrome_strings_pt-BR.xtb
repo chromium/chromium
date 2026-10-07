@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">O Chrome bloqueou o download porque o tipo de arquivo não é transferido com frequência e pode ser perigoso</translation>
 <translation id="1197860368385086056">Na próxima vez que você abrir o Chrome no seu <ph name="DEVICE_TYPE" />, vai aparecer uma mensagem para ativar os alertas de monitoramento de preços.</translation>
 <translation id="1203500561924088507">Agradecemos por fazer a instalação. É necessário reiniciar o navegador antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
+<translation id="122321322139970942">Uma <ph name="IMPORTANT_UPDATE" /> está pendente. Para manter sua navegação segura, o Chrome será atualizado na próxima vez que o sistema ficar inativo por <ph name="IDLE_DURATION" />.</translation>
 <translation id="1226003169284463347">Para acessar seus favoritos e muito mais em todos os seus dispositivos, faça login no Chrome</translation>
 <translation id="1278833599417554002">Reinicializar para atualizar o &amp;Chrome</translation>
 <translation id="1289911795790071537">Abrir a pesquisa com o Chrome</translation>
@@ -326,7 +327,6 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="4050175100176540509">Melhorias de segurança importantes e novos recursos estão disponíveis na versão mais recente.</translation>
 <translation id="4053720452172726777">Personalizar e controlar o Google Chrome</translation>
 <translation id="408393047846373801">Para acessar suas senhas e muito mais em todos os seus dispositivos, faça login no Chrome. A senha será salva na sua Conta do Google depois que você fizer login.</translation>
-<translation id="409936259433005390">Vai fazer upgrade para o Windows 11 em breve? Baixe o instalador do Chrome no One Drive para já começar usando o nevagador.</translation>
 <translation id="4102173024714616627">As extensões são complementos que permitem personalizar o Chrome. Com elas, você pode personalizar o Chrome do seu jeito, seja para manter a organização ou simplificar tarefas do dia a dia.</translation>
 <translation id="4110895483821904099">Configure seu novo perfil do Chrome</translation>
 <translation id="4111566860456076004">O Chrome não pode conferir a origem dessa extensão, e talvez ela não seja segura. Remova do Chrome para que ela não apareça mais e mude seus dados nos sites que você visitar, incluindo suas informações pessoais.</translation>
@@ -499,6 +499,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="5941830788786076944">Fazer do Google Chrome o navegador padrão</translation>
 <translation id="5947104538377036631">Atalho do Chrome</translation>
 <translation id="5960071705175224773">Suas configurações foram alteradas por um app desconhecido</translation>
+<translation id="5960404530854194706">O Chrome será atualizado quando você estiver ausente</translation>
 <translation id="5980111191913430208">Extensões, apps e temas de fontes desconhecidas podem danificar o dispositivo. O Chrome recomenda a instalação apenas pela <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Fazendo o download… <ph name="HOURS" /> hora(s) restante(s)</translation>
 <translation id="6008161919456049856">As senhas, as formas de pagamento e os endereços salvos na sua Conta do Google serão removidos deste dispositivo. Para usá-los de novo no Chrome, faça login novamente.</translation>
@@ -582,6 +583,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="6556755379298048869">Pesquise usando um atalho do teclado.</translation>
 <translation id="6585124893636629274">Fechar o Gemini no Chrome</translation>
 <translation id="659498884637196217">No Gerenciador de senhas do Google deste dispositivo</translation>
+<translation id="660312897435669152">O Chrome quer fazer uma atualização</translation>
 <translation id="6612152958212564387">Você não está enviando estatísticas de uso e relatórios de erros ao Google. <ph name="BEGIN_LINK" />Gerenciar<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Mantenha senhas, favoritos e histórico sincronizados em todos os dispositivos definindo o Chrome como navegador padrão.</translation>
 <translation id="6621391692573306628">Para enviar esta guia a outro dispositivo, faça login no Chrome nos dois aparelhos</translation>

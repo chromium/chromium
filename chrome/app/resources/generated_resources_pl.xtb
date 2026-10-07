@@ -143,6 +143,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1090541560108055381">Przed sparowaniem urządzeń sprawdź, czy wyświetla się na nich ten sam kod</translation>
 <translation id="1093457606523402488">Widoczne sieci:</translation>
 <translation id="1093645050124056515">Ctrl + Alt + strzałka w dół</translation>
+<translation id="1094158807129647987">Zapytaj o „<ph name="SELECTION" />”</translation>
 <translation id="1095398697303758108">Naciśnij dwukrotnie Ctrl, aby użyć ulepszonego autouzupełniania</translation>
 <translation id="1095879482467973146">Menedżer haseł Google w internecie</translation>
 <translation id="1097016918605049747">Nie udało się przetłumaczyć strony</translation>
@@ -1520,6 +1521,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2165177462441582039">Wybierz czas wyróżnienia poszczególnych elementów</translation>
 <translation id="2166369534954157698">Pchnąć w tę łódź jeża lub ośm skrzyń fig</translation>
 <translation id="2168036794078614559">Zgłoszenie zostało wysłane</translation>
+<translation id="2168735174585029637">Zmień wygląd kart na przezroczysty</translation>
 <translation id="2169062631698640254">Zaloguj mimo to</translation>
 <translation id="217120844667431680">Zrób więcej w Trybie AI</translation>
 <translation id="2173302385160625112">Sprawdź połączenie z internetem</translation>
@@ -1665,6 +1667,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2278562042389100163">Otwórz okno przeglądarki</translation>
 <translation id="2280486287150724112">Prawy margines</translation>
 <translation id="228059581448666199">Kliknij lewym przyciskiem myszy</translation>
+<translation id="2281511031159517364">Aby przesyłać linki między urządzeniami, zaloguj się na to samo konto.</translation>
 <translation id="2282146716419988068">Proces GPU</translation>
 <translation id="228293613124499805">Aby strony, na które wchodzisz, mogły lepiej działać, przeważnie zapisują one na Twoim urządzeniu dane. Najczęściej są to informacje, które im udostępniasz, lub Twoje ustawienia. Zalecamy pozostawienie tego ustawienia włączonego.</translation>
 <translation id="2283599456633275070">Podróże</translation>
@@ -2390,6 +2393,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="282230978681804245">Twoim profilem zarządza Twoja organizacja, która może wyświetlać niektóre informacje, takie jak</translation>
 <translation id="2822551631199737692">Aparat w użyciu</translation>
 <translation id="2822634587701817431">Zmniejsz/powiększ</translation>
+<translation id="2824892374426974106">Zapytaj o to</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> używa ustawień serwera proxy określonych przez administratora</translation>
 <translation id="2825200993288778739">Utwórz własną umiejętność lub dodaj ją z biblioteki umiejętności</translation>
 <translation id="282525059261716597">Wiersz poleceń:</translation>
@@ -2627,6 +2631,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3001144475369593262">Konta dla dzieci</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Brak dostosowanych klawiszy}=1{1 dostosowany klawisz}few{{COUNT} dostosowane klawisze}many{{COUNT} dostosowanych klawiszy}other{{COUNT} dostosowanego klawisza}}</translation>
 <translation id="3002864108328203174">Plansza dolna Gemini otwarta do połowy wysokości.</translation>
+<translation id="300311730636583518">Zapytaj o to</translation>
 <translation id="3003144360685731741">Preferowane sieci</translation>
 <translation id="3003152206838282768">Pracuję nad Twoim zadaniem w aplikacji Gemini w Chrome. Sprawdź, czy są dostępne kolejne aktualizacje Chrome</translation>
 <translation id="3003253259757197230">Odwiedzane adresy URL są wysyłane do Google w celu prognozowania, jakie kolejne witryny możesz odwiedzić, i wyświetlania dodatkowych informacji o odwiedzonej stronie</translation>
@@ -2759,6 +2764,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3094521107841754472">Cena zmieniła się z <ph name="PREVIOUS_PRICE" /> na <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Zakładki, hasła i inne dane przeglądarki są zsynchronizowane z kontem głównym.</translation>
 <translation id="3097674000822532270">Twoje aplikacje i ustawienia będą synchronizować się na wszystkich urządzeniach z ChromeOS Flex, na których zalogujesz się na swoje konto Google. Aby określić, jakie dane przeglądarki mają być zapisywane na Twoim koncie Google, otwórz <ph name="LINK_BEGIN" />ustawienia Chrome<ph name="LINK_END" />.</translation>
+<translation id="3099754485438181407">Przejdź do ustawień i wypróbuj nowy styl. W każdej chwili możesz wrócić do klasycznego wyglądu.</translation>
 <translation id="3101126716313987672">Przyciemnianie ekranu</translation>
 <translation id="3101709781009526431">Data i godzina</translation>
 <translation id="3102309003841389927">Sprawdź aktualizację logo</translation>
@@ -3527,6 +3533,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3685598397738512288">Ustawienia Linuksa dotyczące USB</translation>
 <translation id="3686108296937784939">Skróty mojej organizacji</translation>
 <translation id="3687359570564207338">{NUM_SITES,plural, =1{Znaleziono 1 przejęte hasło}few{Znaleziono {NUM_SITES} przejęte hasła}many{Znaleziono {NUM_SITES} przejętych haseł}other{Znaleziono {NUM_SITES} przejętego hasła}}</translation>
+<translation id="3687463694814266645">Zmień kolejność</translation>
 <translation id="3687598459967813435">Zawsze zezwalaj na powiadomienia z <ph name="WEBSITE" /></translation>
 <translation id="3688507211863392146">Zapisywanie danych w plikach i folderach otwieranych w aplikacji</translation>
 <translation id="3688526734140524629">Zmień kanał</translation>
@@ -5313,6 +5320,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5039804452771397117">Zezwalaj</translation>
 <translation id="5040262127954254034">Prywatność</translation>
 <translation id="5040823038948176460">Dodatkowe ustawienia treści</translation>
+<translation id="5041178465403838363">Zapytaj o „<ph name="SELECTION" />”</translation>
 <translation id="5041509233170835229">Aplikacja Chrome</translation>
 <translation id="504194357571315770">Wymagane działanie</translation>
 <translation id="5043807571255634689">Karta <ph name="SUBSCRIPTION_NAME" /> zostanie usunięta tylko z tego urządzenia. Aby wprowadzić zmiany w subskrypcji, skontaktuj się z jej dostawcą. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
@@ -7662,7 +7670,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="686609795364435700">Cicho</translation>
 <translation id="686664946474413495">Temperatura kolorów</translation>
 <translation id="6867086642466184030">Inne aplikacje zostały ustawione na otwieranie tych samych linków co <ph name="APP_NAME" />. Ta czynność spowoduje, że aplikacje <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> i jeszcze <ph name="NUMBER_OF_OTHER_APPS" /> przestaną otwierać obsługiwane linki.</translation>
-<translation id="6868206169573555318">Uruchom ponownie, by zaktualizować</translation>
 <translation id="686831807558000905">Nie loguj się</translation>
 <translation id="686839242150793617">Z zezwoleniem na automatyczne włączanie obrazu w obrazie</translation>
 <translation id="6868734951249611611">Kliknij tutaj prawym przyciskiem myszy i wybierz „Pokaż karty w pionie”</translation>
@@ -7936,6 +7943,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7077751457066325012">Wyświetl i dostosuj skróty klawiszowe</translation>
 <translation id="7078120482318506217">Wszystkie sieci</translation>
 <translation id="708060913198414444">K&amp;opiuj adres audio</translation>
+<translation id="7082399760770275009">Otwórz ustawienia systemu Windows</translation>
 <translation id="7082568314107259011">Siecią <ph name="NETWORK_NAME" /> zarządza administrator</translation>
 <translation id="7082850163410901674">Powiadomienia zostały wyłączone w ustawieniach systemowych Maca</translation>
 <translation id="7083729794572207131">Witryny zwykle proszą o instalację aplikacji internetowych, aby poprawić wygodę swoich użytkowników</translation>
@@ -9009,6 +9017,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7913805372428124107">Aby zobaczyć karty z urządzenia <ph name="DEVICE" />, zaloguj się i zsynchronizuj historię. Będziesz też mieć dostęp do haseł oraz innych danych na wszystkich swoich urządzeniach. Synchronizację możesz wyłączyć w każdej chwili w ustawieniach. Google może korzystać z Twojej historii, aby dostosowywać działanie wyszukiwarki i innych usług.</translation>
 <translation id="7914399737746719723">Aplikacja została zainstalowana</translation>
 <translation id="7915457674565721553">Połącz się z internetem, by skonfigurować kontrolę rodzicielską</translation>
+<translation id="7915478442339169507">Zezwól na dostęp do witryny</translation>
 <translation id="7916364730877325865">Twoja organizacja nie zezwala na włączanie synchronizacji z tym kontem</translation>
 <translation id="791698251820376781">Twoja organizacja nie zezwala na logowanie się</translation>
 <translation id="7918928051723770926">Zadanie ukończone</translation>
@@ -10810,6 +10819,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="978146274692397928">Początkowa szerokość przestankowania: pełna</translation>
 <translation id="978978324795544535">Kliknij dwukrotnie element, przytrzymaj go przy drugim kliknięciu, a następnie przeciągnij, aby go przenieść</translation>
 <translation id="981121421437150478">Offline</translation>
+<translation id="981383875218593510">Wybierz ustawienie Nowoczesny, aby wypróbować nowy, przezroczysty wygląd kart.</translation>
 <translation id="982083952953998237">Dodaj ograniczenia</translation>
 <translation id="98235653036850093">Cześć <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Zamknij wszystkie karty</translation>

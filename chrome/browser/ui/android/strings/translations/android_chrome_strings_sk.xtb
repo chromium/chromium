@@ -764,6 +764,7 @@
 <translation id="4092709865241032354">Ak chcete pomôcť Správcovi hesiel Google ukladať vaše prihlasovacie údaje, pridajte si používateľské meno pre tento web</translation>
 <translation id="4095146165863963773">Odstrániť dáta aplikácie?</translation>
 <translation id="4095483462103784441">Vytvoriť novú skupinu kariet</translation>
+<translation id="4098552968111329864">Keď budete Chrome používať s prihláseným účtom, vaša organizácia bude môcť vidieť alebo spravovať určité informácie, aby zabezpečila vašu prácu v tomto prehliadači</translation>
 <translation id="4105527135143631701">Bolo otvorené oznámenie o aktualizácii Správcu hesiel Google</translation>
 <translation id="4107207375883769436">Vaša organizácia môže potrebovať zobraziť a spravovať dáta prehliadania vo vašom pracovnom profile, napríklad históriu prehliadania a heslá</translation>
 <translation id="4113030288477039509">Spravované vaším správcom</translation>
@@ -1770,6 +1771,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7929587383660661825">Chrome automaticky odstraňuje povolenia z webov, ktoré zneužívajú upozornenia, alebo z takých, ktoré ste v poslednom čase nenavštívili.</translation>
 <translation id="7934668619883965330">Súbor sa nedá stiahnuť. Formát súboru nie je podporovaný.</translation>
 <translation id="7951102827450076904">Vždy otvárať stiahnuté súbory PDF</translation>
+<translation id="7952148074468405586">Zistite viac o tom, <ph name="BEGIN_LINK" />aké informácie môže vaša organizácia vidieť alebo spravovať<ph name="END_LINK" />.</translation>
 <translation id="7952479614398473176">Ak chcete otvoriť nové okno, znížte celkový počet aktívnych okien na <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> alebo menej.</translation>
 <translation id="7956713633345437162">Mobilné záložky</translation>
 <translation id="7957413488482743710">Virtuálnou kartou sa skryje vaša skutočná karta, čo vás ochráni pred potenciálnymi podvodmi. <ph name="BEGIN_LINK1" />Ďalšie informácie o virtuálnych kartách<ph name="END_LINK1" /></translation>

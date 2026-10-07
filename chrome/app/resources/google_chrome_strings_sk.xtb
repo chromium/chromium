@@ -30,6 +30,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1194807384646768652">Chrome toto sťahovanie zablokoval, pretože používatelia tento typ súboru bežne nesťahujú a môže byť nebezpečný</translation>
 <translation id="1197860368385086056">Pri ďalšom otvorení Chromu v zariadení <ph name="DEVICE_TYPE" /> sa vám zobrazí výzva na zapnutie upozornení na sledovanie cien.</translation>
 <translation id="1203500561924088507">Ďakujeme za inštaláciu. Než začnete aplikáciu <ph name="BUNDLE_NAME" /> používať, musíte reštartovať prehliadač.</translation>
+<translation id="122321322139970942">Čaká sa na <ph name="IMPORTANT_UPDATE" />. V záujme zachovania bezpečného prehliadania sa Chrome aktualizuje, keď budete najbližšie nečinný/‑á <ph name="IDLE_DURATION" />.</translation>
 <translation id="1226003169284463347">Ak chcete mať záložky a ďalší obsah k dispozícii vo všetkých svojich zariadeniach, prihláste sa do Chromu</translation>
 <translation id="1278833599417554002">Znova spustiť a aktualizovať Chrome</translation>
 <translation id="1289911795790071537">Otvoriť vyhľadávanie v Chrome</translation>
@@ -327,7 +328,6 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="4050175100176540509">V najnovšej verzii sú k dispozícii dôležité vylepšenia zabezpečenia a nové funkcie.</translation>
 <translation id="4053720452172726777">Prispôsobiť a ovládať Google Chrome</translation>
 <translation id="408393047846373801">Ak chcete mať heslá a ďalší obsah k dispozícii vo všetkých svojich zariadeniach, prihláste sa do Chromu. Toto heslo bude uložené do vášho účtu Google, keď sa prihlásite.</translation>
-<translation id="409936259433005390">Chystáte sa čoskoro inovovať na Windows 11? Stiahnite si inštalátor Chromu do služby OneDrive, aby ste mali všetko pripravené od prvého dňa.</translation>
 <translation id="4102173024714616627">Rozšírenia sú doplnky, ktorými si môžete prispôsobiť Chrome. Rozšírenia vám pomôžu prispôsobiť si Chrome, či už chcete mať lepší prehľad alebo si zjednodušiť každodenné úlohy.</translation>
 <translation id="4110895483821904099">Nastavte si nový profil Chromu</translation>
 <translation id="4111566860456076004">Chrome nedokáže overiť, odkiaľ toto rozšírenie pochádza, takže môže byť nebezpečné. Odstráňte ho z Chromu, aby sa mu nezobrazovali vaše údaje na weboch, ktoré navštevujete (vrátane vašich osobných údajov), a nemohlo ich meniť.</translation>
@@ -504,6 +504,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="5941830788786076944">Nastaviť prehľadávač Google Chrome ako predvolený</translation>
 <translation id="5947104538377036631">Odkaz na Chrome</translation>
 <translation id="5960071705175224773">Vaše nastavenia zmenila neznáma aplikácia</translation>
+<translation id="5960404530854194706">Chrome sa aktualizuje, keď budete preč</translation>
 <translation id="5980111191913430208">Rozšírenia, aplikácie a motívy z neznámych zdrojov môžu poškodiť vaše zariadenie. Chrome odporúča ich inštaláciu iba zo zdroja <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="6003112304606738118">Sťahuje sa… Zostávajúci čas: <ph name="HOURS" /> h</translation>
 <translation id="6008161919456049856">Heslá, spôsoby platby a adresy uložené vo vašom účte Google budú z tohto zariadenia odstránené. Ak ich chcete opäť používať v Chrome, znova sa prihláste.</translation>
@@ -587,6 +588,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6556755379298048869">Vyhľadávanie pomocou klávesovej skratky.</translation>
 <translation id="6585124893636629274">Zavrieť Gemini v Chrome</translation>
 <translation id="659498884637196217">V správcovi hesiel Google v tomto zariadení</translation>
+<translation id="660312897435669152">Chrome sa chce aktualizovať</translation>
 <translation id="6612152958212564387">Googlu neposielate štatistiky používania ani reporty pádov. <ph name="BEGIN_LINK" />Spravovať<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Nastavte si Chrome ako predvolený prehliadač a heslá, záložky a históriu môžete mať dokonale synchronizované v rôznych zariadeniach.</translation>
 <translation id="6621391692573306628">Ak chcete túto kartu odoslať do iného zariadenia, prihláste v oboch zariadeniach do Chromu</translation>

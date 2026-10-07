@@ -764,6 +764,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="4092709865241032354">Če želite Googlovemu upravitelju gesel pomagati shraniti podatke za prijavo, dodajte uporabniško ime za to spletno mesto</translation>
 <translation id="4095146165863963773">Izbris podatkov aplikacije?</translation>
 <translation id="4095483462103784441">Ustvarjanje nove skupine zavihkov</translation>
+<translation id="4098552968111329864">Zaradi zaščite vašega dela v Chromu si bo organizacija lahko ogledala nekatere podatke ali jih upravljala, ko boste prijavljeni v Chrome</translation>
 <translation id="4105527135143631701">Odprto okno za posodobitev Googlovega upravitelja gesel</translation>
 <translation id="4107207375883769436">Vaša organizacija si bo morda morala ogledati in upravljati podatke brskanja v vašem delovnem profilu, kot sta zgodovina brskanja in gesla</translation>
 <translation id="4113030288477039509">Upravlja skrbnik</translation>
@@ -1770,6 +1771,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7929587383660661825">Chrome samodejno odstrani dovoljenja za spletna mesta, ki zlorabljajo obvestila, ali spletna mesta, ki jih nedavno niste obiskali</translation>
 <translation id="7934668619883965330">Datoteke ni mogoče prenesti. Oblika datoteke ni podprta.</translation>
 <translation id="7951102827450076904">Vedno odpri prenesene datoteke PDF</translation>
+<translation id="7952148074468405586">Preberite več o <ph name="BEGIN_LINK" />podatkih, ki si jih lahko vaša organizacija ogleda ali jih upravlja<ph name="END_LINK" /></translation>
 <translation id="7952479614398473176">Če želite odpreti novo okno, zmanjšajte skupno število dejavnih oken na <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ali manj.</translation>
 <translation id="7956713633345437162">Mobilni zaznamki</translation>
 <translation id="7957413488482743710">Navidezna kartica skrije dejansko kartico in ste tako zaščiteni pred morebitno prevaro. <ph name="BEGIN_LINK1" />Preberite več o navideznih karticah<ph name="END_LINK1" /></translation>

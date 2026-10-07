@@ -135,7 +135,7 @@
 <translation id="1485343711570311792">在<ph name="NATIVE_APP_NAME" />中打开 • 来自“<ph name="DEVICE_NAME" />”</translation>
 <translation id="1495677929897281669">返回到标签页</translation>
 <translation id="1496514951988037011">用户名</translation>
-<translation id="1501480321619201731">删除群组</translation>
+<translation id="1501480321619201731">删除标签页组</translation>
 <translation id="1506061864768559482">搜索引擎</translation>
 <translation id="1513352483775369820">书签和网络历史记录</translation>
 <translation id="1515901671075971249">标签页导航快捷键</translation>
@@ -599,7 +599,7 @@
 <translation id="3430670036890315772">关闭个人资料锁定功能将移除您已保存的信息</translation>
 <translation id="3435575784518354875">如需继续使用您的密码，请立即将其导出，更新 Google Play 服务，然后将其重新导入 Google 密码管理工具。<ph name="BEGIN_LINK" />查看完整说明<ph name="END_LINK" />。</translation>
 <translation id="3435738964857648380">安全</translation>
-<translation id="3435914367318771664">将标签页添加到新分组</translation>
+<translation id="3435914367318771664">添加到新标签页组</translation>
 <translation id="3439276997620616816">此处会显示您近期关闭的标签页</translation>
 <translation id="3443221991560634068">重新加载当前网页</translation>
 <translation id="3444179773590444986">针对为网站开启深色主题分享反馈？</translation>
@@ -764,6 +764,7 @@
 <translation id="4092709865241032354">请添加您在此网站上使用的用户名，以便 Google 密码管理工具保存您的登录信息</translation>
 <translation id="4095146165863963773">要删除应用数据吗？</translation>
 <translation id="4095483462103784441">创建新标签页分组</translation>
+<translation id="4098552968111329864">为了保障您在 Chrome 上的工作安全，当您登录 Chrome 后，您的组织将能够查看或管理某些信息</translation>
 <translation id="4105527135143631701">Google 密码管理工具更新动作条已打开</translation>
 <translation id="4107207375883769436">您的组织可能需要查看和管理您工作资料中的浏览数据，例如您的浏览记录和密码</translation>
 <translation id="4113030288477039509">由您的管理员管理</translation>
@@ -1364,7 +1365,7 @@
 <translation id="6437162790453527153">登录账号即可将您的书签等信息同步到您的所有设备上</translation>
 <translation id="6437478888915024427">网页信息</translation>
 <translation id="6440291723980579689">仅当您打开网页后，它们才会加载</translation>
-<translation id="6441377161852435370">向阅读清单中添加标签页</translation>
+<translation id="6441377161852435370">将标签页添加到阅读清单</translation>
 <translation id="6441734959916820584">名称太长</translation>
 <translation id="6444291413624515012">已关闭“<ph name="TAB_GROUP_TITLE" />”标签页分组</translation>
 <translation id="6452534462676960500">新活动</translation>
@@ -1768,6 +1769,7 @@
 <translation id="7929587383660661825">对于滥用通知的网站或您近期未访问的网站，Chrome 会自动移除其权限</translation>
 <translation id="7934668619883965330">无法下载此文件。文件格式不受支持。</translation>
 <translation id="7951102827450076904">一律打开下载的 PDF</translation>
+<translation id="7952148074468405586">详细了解<ph name="BEGIN_LINK" />您的组织可以查看或管理的信息<ph name="END_LINK" /></translation>
 <translation id="7952479614398473176">如需打开一个新窗口，请先将使用中的窗口总数减少到 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> 个或更少。</translation>
 <translation id="7956713633345437162">移动设备书签</translation>
 <translation id="7957413488482743710">使用虚拟卡可隐藏您的实体卡信息，保护您免遭潜在欺诈活动的威胁。<ph name="BEGIN_LINK1" />详细了解虚拟卡<ph name="END_LINK1" /></translation>

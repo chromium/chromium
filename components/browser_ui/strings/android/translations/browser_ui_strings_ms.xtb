@@ -12,7 +12,6 @@
 <translation id="1126523729897810826">Lengkapkan tindakan yang dicadangkan di bawah untuk memanfaatkan Chrome sepenuhnya</translation>
 <translation id="113098737392899175">Navigasi halaman dengan kursor teks apabila papan kekunci disambungkan</translation>
 <translation id="1148624853678088576">Anda telah bersedia!</translation>
-<translation id="1149644372535087155">Simpan kata laluan dalam Chrome</translation>
 <translation id="1178015372320901893">Helaian bawah pintasan saya</translation>
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1181037720776840403">Alih keluar</translation>
@@ -227,7 +226,6 @@
 <translation id="3167868116600277716">Temukan suapan</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> data disimpan</translation>
 <translation id="3199078925536734975">Dibenarkan pada masa ini • Anggaran</translation>
-<translation id="3208584281581115441">Semak sekarang</translation>
 <translation id="321187648315454507">Untuk membolehkan <ph name="APP_NAME" /> menghantar pemberitahuan kepada anda, hidupkan juga pemberitahuan dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Lokasi tidak dibenarkan</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -286,7 +284,6 @@
 <translation id="381841723434055211">Nombor telefon</translation>
 <translation id="3823453485268218808">Fon Mono</translation>
 <translation id="3826050100957962900">Log masuk pihak ketiga</translation>
-<translation id="3831065134033923230">Semak kata laluan anda yang disimpan</translation>
 <translation id="3835233591525155343">Penggunaan peranti anda</translation>
 <translation id="3843916486309149084">Chrome akan menyekat kuki lagi hari ini</translation>
 <translation id="385051799172605136">Kembali</translation>
@@ -294,7 +291,6 @@
 <translation id="3870711497942672548">Peribadikan Chrome mengikut cita rasa anda dengan warna dan imej tersuai untuk halaman utama anda</translation>
 <translation id="389521680295183045">Laman boleh meminta untuk mengetahui waktu anda aktif menggunakan peranti</translation>
 <translation id="3895926599014793903">Zum didaya paksa</translation>
-<translation id="3903738175795615004">Seret daripada bahagian atas atau tekan kekunci Esc untuk keluar daripada skrin penuh.</translation>
 <translation id="3905475044299942653">Hentikan banyak pemberitahuan</translation>
 <translation id="3922092564198021702">Pada telefon anda, buka Tetapan</translation>
 <translation id="3924858949939391676">Tunjukkan pautan setelah Mod Membaca dihidupkan</translation>
@@ -355,7 +351,6 @@
 <translation id="4479647676395637221">Tanya dahulu sebelum membenarkan tapak menggunakan kamera anda (disyorkan)</translation>
 <translation id="4505788138578415521">URL dikembangkan</translation>
 <translation id="4522570452068850558">Butiran</translation>
-<translation id="4523472416386354622">Log masuk untuk bermula</translation>
 <translation id="4529207923544043455">Helaian bawah memaparkan tugasan senarai persediaan yang telah selesai dan belum selesai</translation>
 <translation id="4534723447064627427">Untuk membolehkan <ph name="APP_NAME" /> mengakses mikrofon anda, hidupkan juga mikrofon dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="4545694195887112015">Helaian persediaan ditutup</translation>
@@ -368,7 +363,6 @@
 <translation id="4645575059429386691">Diurus oleh ibu bapa anda</translation>
 <translation id="4651224148644053314">Lebih banyak warna &amp; pilihan</translation>
 <translation id="4652266463001779298">Tidak dibenarkan</translation>
-<translation id="4655846733459137112">Ketik Ya untuk menggunakan kata laluan ini dengan mudah apabila anda log masuk selepas ini</translation>
 <translation id="4663373278480897665">Kamera dibenarkan</translation>
 <translation id="4670064810192446073">Realiti maya</translation>
 <translation id="4672315773691449562">Ketik apl Penyemak imbas kemudian ketik Chrome</translation>
@@ -415,7 +409,6 @@
 <translation id="512938610812707830">Helaian bawah koleksi tema penampilan halaman tab baharu dibuka pada ketinggian penuh</translation>
 <translation id="5137460097045297858">Temukan helaian bawah suapan yang dibuka pada ketinggian separuh</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Penurunan harga pada tab terbuka anda}other{Penurunan harga pada tab terbuka anda}}</translation>
-<translation id="5150048675001754041">Log masuk ke laman dan apl dengan pantas dan mudah</translation>
 <translation id="5186036860380548585">Pilihan tersedia berhampiran bahagian atas skrin</translation>
 <translation id="5197729504361054390">Kenalan yang anda pilih akan dikongsi dengan <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Sesuaikan helaian bawah halaman tab baharu anda ditutup</translation>
@@ -425,7 +418,6 @@
 <translation id="5239623327352565343">Lokasi dibenarkan</translation>
 <translation id="5246825184569358663">Tindakan ini akan memadamkan semua data setempat, termasuk kuki, dan menetapkan semula semua kebenaran untuk <ph name="DOMAIN" /> serta semua laman dalam bahagian domain ini</translation>
 <translation id="5264323282659631142">Alih keluar '<ph name="CHIP_LABEL" />'</translation>
-<translation id="528192093759286357">Seret dari atas dan sentuh butang kembali untuk keluar daripada skrin penuh.</translation>
 <translation id="5286194356314741248">Mengimbas</translation>
 <translation id="5300589172476337783">Paparkan</translation>
 <translation id="5301954838959518834">OK, faham</translation>
@@ -473,7 +465,6 @@
 <translation id="5804241973901381774">Kebenaran</translation>
 <translation id="5817042798620209981">Maklumat laman, dialog</translation>
 <translation id="5822675474983796325">Sesuaikan helaian bawah halaman tab baharu anda dibuka pada ketinggian penuh</translation>
-<translation id="5826403277762134844">Helaian bawah arahan untuk menyimpan kata laluan dalam Chrome</translation>
 <translation id="5833899990800318936">Jangan benarkan laman menggunakan JavaScript</translation>
 <translation id="583673505367439042">Laman boleh meminta untuk mengedit fail dan folder pada peranti anda</translation>
 <translation id="5844448279347999754">Apabila dihidupkan, laman dapat meminta untuk melihat teks dan imej yang disimpan pada papan keratan anda. Apabila dimatikan, laman tidak dapat melihat teks atau imej pada papan keratan anda.</translation>
@@ -511,7 +502,6 @@
 <translation id="6104860901391833523">Apabila dihidupkan, laman boleh memasukkan gambar dalam gambar secara automatik. Apabila dimatikan, laman tidak dapat memasukkan gambar dalam gambar secara automatik.</translation>
 <translation id="6120483543004435978">Apabila dihidupkan, laman dapat meminta untuk mengetahui waktu anda menggunakan peranti secara aktif. Apabila dimatikan, laman tidak dapat mengetahui waktu anda menggunakan peranti secara aktif.</translation>
 <translation id="612871598708395517">Sembunyikan Dapatkan cadangan Chrome dalam apl lain</translation>
-<translation id="6132075343662013154">Chrome akan menawarkan untuk menyimpan kata laluan anda</translation>
 <translation id="615886654739818377">Jangan benarkan laman mengurus tetingkap pada semua paparan anda</translation>
 <translation id="6165508094623778733">Ketahui lebih lanjut</translation>
 <translation id="6171020522141473435">Apabila dihidupkan, laman dapat meminta untuk menggunakan peranti Bluetooth. Apabila dimatikan, laman tidak dapat menggunakan peranti Bluetooth.</translation>
@@ -587,7 +577,6 @@
 <translation id="6980861169612950611">Padamkan data laman? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Kebolehcapaian</translation>
 <translation id="6991142177939282156">Dibenarkan • Menggunakan anggaran</translation>
-<translation id="6992014788289743568">Kukuhkan keselamatan anda dan pastikan data anda lebih selamat dengan menyemak kata laluan anda</translation>
 <translation id="6992289844737586249">Tanya dahulu sebelum membenarkan tapak menggunakan mikrofon anda (disyorkan)</translation>
 <translation id="7000754031042624318">Dimatikan dalam tetapan Android</translation>
 <translation id="7036823721811529709">Dengar pada latar</translation>
@@ -654,7 +643,6 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:</translation>
 <translation id="775043444390799886">Batalkan kebenaran</translation>
 <translation id="7758789811447313947">Tema ungu lembayung</translation>
 <translation id="7759147511335618829">Kawalan &amp; pengaturcaraan semula peranti MIDI</translation>
-<translation id="7771089277295008211">Helaian bawah arahan simpan kata laluan telah ditutup</translation>
 <translation id="7781829728241885113">Semalam</translation>
 <translation id="7791543448312431591">Tambah</translation>
 <translation id="780301667611848630">Tidak, terima kasih</translation>
@@ -671,7 +659,6 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:</translation>
 <translation id="7940722705963108451">Ingatkan saya</translation>
 <translation id="7948081750384205628">Ketahui <ph name="SETTING_TITLE" /> dengan lebih lanjut</translation>
 <translation id="7952708427581814389">Tapak boleh meminta untuk melihat teks dan imej pada papan keratan anda</translation>
-<translation id="7958779728312669715">Helaian bawah arahan simpan kata laluan telah dibuka sepenuhnya</translation>
 <translation id="798299424881500862">Tema jingga</translation>
 <translation id="7986741934819883144">Pilih kenalan</translation>
 <translation id="7990211076305263060">Apabila dihidupkan, laman dapat meminta untuk menggunakan mikrofon anda. Apabila dimatikan, laman tidak dapat menggunakan mikrofon anda.</translation>
@@ -766,7 +753,6 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:</translation>
 <translation id="8889294078294184559">Sementara anda terus menyemak imbas, laman boleh menyemak dengan Chrome dan membuat pengesahan dengan laman yang telah anda lawati sebelum ini bahawa anda berkemungkinan merupakan orang yang sebenar</translation>
 <translation id="8899807382908246773">Iklan mengganggu</translation>
 <translation id="8903921497873541725">Zum masuk</translation>
-<translation id="8919911527569629802">Log masuk ke mana-mana laman web</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Jangan tanya lagi</translation>
 <translation id="8926666909099850184">NFC dimatikan untuk peranti ini. Hidupkan dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>

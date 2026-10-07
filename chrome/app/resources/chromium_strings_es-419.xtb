@@ -21,6 +21,7 @@
 <translation id="1185134272377778587">Acerca de Chromium</translation>
 <translation id="1186645291482254714">Recibe alertas de seguimiento de precios con Chromium en tu teléfono</translation>
 <translation id="1203500561924088507">Gracias por instalar <ph name="BUNDLE_NAME" />. Debes reiniciar tu navegador antes de usarlo.</translation>
+<translation id="1222365723190436821">Hay una <ph name="IMPORTANT_UPDATE" /> pendiente. Para que tu navegación sea segura, Chromium se actualizará la próxima vez que no lo uses durante <ph name="IDLE_DURATION" />.</translation>
 <translation id="1232234696885483911">Cuando abras la Búsqueda con imágenes, el título de la página, la URL y el contenido, incluidos los archivos PDF, se enviarán automáticamente al servidor. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Mientras tengas acceso, podrás usar las contraseñas y otros elementos de tu Cuenta de Google en Chromium. Para cambiar esta opción, ve a "Tu cuenta en Chromium".</translation>
 <translation id="1244381985120794049">Mostrar Gemini en Chromium en la barra de menú de Mac</translation>
@@ -226,6 +227,7 @@
 <translation id="3286538390144397061">Reiniciar ahora</translation>
 <translation id="328888136576916638">Faltan las claves de la API de Google. Se inhabilitarán algunas funciones de Chromium.</translation>
 <translation id="3296368748942286671">Continuar ejecutando aplicaciones en segundo plano cuando Chromium esté cerrado.</translation>
+<translation id="3300632735252839402">Chromium se actualizará cuando no estés usando el dispositivo</translation>
 <translation id="3313189106987092621">Chromium te advertirá antes de que cargues un sitio con una conexión no segura</translation>
 <translation id="3316771292331273802">Saldrás de la mayoría de los sitios cuando cierres todas las ventanas de Chromium, excepto tu Cuenta de Google si accediste a Chromium. Para permitir que los sitios te recuerden, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">esquina superior derecha del área de búsqueda: derecha <ph name="RIGHT" />%, superior <ph name="TOP" />%</translation>
@@ -234,6 +236,7 @@
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">¿Deseas cambiar a un perfil existente de Chromium?</translation>
 <translation id="3412460710772753638">En el Administrador de contraseñas en este dispositivo</translation>
+<translation id="3425452599984451640">Chromium quiere actualizarse</translation>
 <translation id="3427159664004296878">Para obtener tus favoritos y más de <ph name="DEVICE" />, accede a Chromium</translation>
 <translation id="3438772217992559640">Buscar esta pestaña con la Búsqueda con imágenes</translation>
 <translation id="3455907671758333080">Extiende la Navegación segura mejorada con Chromium en tu teléfono</translation>

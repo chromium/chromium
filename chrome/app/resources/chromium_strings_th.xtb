@@ -21,6 +21,7 @@
 <translation id="1185134272377778587">เกี่ยวกับ Chromium</translation>
 <translation id="1186645291482254714">รับการแจ้งเตือนการติดตามราคาด้วย Chromium ในโทรศัพท์</translation>
 <translation id="1203500561924088507">ขอขอบคุณที่ติดตั้ง คุณต้องรีสตาร์ทเบราว์เซอร์ก่อนใช้ <ph name="BUNDLE_NAME" /></translation>
+<translation id="1222365723190436821">มี<ph name="IMPORTANT_UPDATE" />รอดำเนินการอยู่ Chromium จะอัปเดตในครั้งถัดไปที่คุณไม่ได้ใช้งานเป็นเวลา <ph name="IDLE_DURATION" /> เพื่อให้การท่องเว็บของคุณปลอดภัย</translation>
 <translation id="1232234696885483911">เมื่อคุณเปิดการค้นหารูปภาพ ระบบจะส่งชื่อหน้า, URL และเนื้อหา รวมถึง PDF ไปยังเซิร์ฟเวอร์โดยอัตโนมัติ <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">เมื่อลงชื่อเข้าใช้อยู่ คุณจะใช้รหัสผ่านและข้อมูลอื่นๆ จากบัญชี Google ใน Chromium ได้ หากต้องการเปลี่ยน ให้ไปที่ "บัญชีของคุณใน Chromium"</translation>
 <translation id="1244381985120794049">แสดง Gemini ใน Chromium ในแถบเมนูของ Mac</translation>
@@ -227,6 +228,7 @@
 <translation id="3286538390144397061">รีสตาร์ทเดี๋ยวนี้</translation>
 <translation id="328888136576916638">คีย์ API ของ Google หายไป การทำงานบางอย่างของ Chromium จะถูกปิดใช้งาน</translation>
 <translation id="3296368748942286671">เรียกใช้แอปพลิเคชันพื้นหลังต่อไปเมื่อปิด Chromium</translation>
+<translation id="3300632735252839402">Chromium จะอัปเดตเมื่อไม่มีการใช้งาน</translation>
 <translation id="3313189106987092621">Chromium จะแจ้งเตือนคุณก่อนโหลดเว็บไซต์โดยใช้การเชื่อมต่อที่ไม่ปลอดภัย</translation>
 <translation id="3316771292331273802">คุณจะออกจากระบบของเว็บไซต์ส่วนใหญ่เมื่อปิดหน้าต่าง Chromium ทั้งหมด ยกเว้นบัญชี Google ที่ลงชื่อเข้าใช้ Chromium หากต้องการให้เว็บไซต์จดจำคุณ ให้<ph name="SETTINGS_LINK" /></translation>
 <translation id="3352986031709923790">มุมขวาบนของพื้นที่การค้นหา: ขวา <ph name="RIGHT" />% บน <ph name="TOP" />%</translation>
@@ -235,6 +237,7 @@
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">เปลี่ยนไปใช้โปรไฟล์ Chromium ที่มีอยู่ไหม</translation>
 <translation id="3412460710772753638">ในเครื่องมือจัดการรหัสผ่านบนอุปกรณ์นี้</translation>
+<translation id="3425452599984451640">Chromium ต้องการอัปเดต</translation>
 <translation id="3427159664004296878">ลงชื่อเข้าใช้ Chromium เพื่อเข้าถึงบุ๊กมาร์กและข้อมูลอื่นๆ จาก <ph name="DEVICE" /></translation>
 <translation id="3438772217992559640">ค้นหาแท็บนี้ด้วยฟีเจอร์ค้นหารูปภาพ</translation>
 <translation id="3455907671758333080">ขยายการใช้งาน Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้นด้วย Chromium ในโทรศัพท์</translation>

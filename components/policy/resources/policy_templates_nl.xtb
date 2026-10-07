@@ -149,6 +149,7 @@ Als dit beleid is ingesteld, kunnen beheerders oorsprongen specificeren waarvoor
 Ga naar https://chromeenterprise.google/policies/url-patterns/ voor gedetailleerde informatie over geldige URL-patronen. * is geen geaccepteerde waarde voor dit beleid.
 
 Als je dit beleid niet instelt, is voor alle oorsprongen een eerder gebruikersgebaar vereist om deze API's aan te roepen.</translation>
+<translation id="109520268628625781">Via beleid geïnstalleerde extensies aanzetten die de standaardinstellingen voor zoeken of de pagina Nieuw tabblad overschrijven in omgevingen met een laag vertrouwen</translation>
 <translation id="1095209545735032039">De Serial API op deze sites blokkeren</translation>
 <translation id="1096105751829466145">Standaardzoekprovider</translation>
 <translation id="1099282607296956954">Elke site isoleren</translation>
@@ -697,6 +698,12 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 <translation id="1488008594883876680">Vooraf laden van <ph name="ARC_VM" />-image aanzetten</translation>
 <translation id="1488724823347505879">Delen van Android-apps naar web-apps aanzetten</translation>
 <translation id="1490962807364514840">Verzamelingssnelheid voor telemetrie voor CPU-runtime-tellers in milliseconden.</translation>
+<translation id="1491289760513245366">Als je het beleid instelt, wordt gespecificeerd voor welke oorsprongen alle HTTP-verificatieschema's worden toegestaan die <ph name="PRODUCT_NAME" /> ondersteunt, ongeacht het beleid <ph name="AUTH_SCHEMES_POLICY_NAME" />.
+
+Vanaf <ph name="PRODUCT_NAME" /> versie 161 is dit beleid alleen van toepassing op oorsprongen van bestemmingsservers en niet op verificatie-uitdagingen van proxyservers. Als je alle HTTP-verificatieschema's voor proxyservers wilt toestaan, gebruik je het beleid <ph name="ALL_HTTP_AUTH_SCHEMES_ALLOWED_FOR_PROXIES_POLICY_NAME" />. Vóór versie 161 mogen proxyservers die overeenkomen met dit beleid ook alle HTTP-verificatieschema's gebruiken, tenzij <ph name="ALL_HTTP_AUTH_SCHEMES_ALLOWED_FOR_PROXIES_POLICY_NAME" /> is ingesteld.
+
+      Maak het oorsprongpatroon op volgens deze indeling (<ph name="URL_SCHEME_FORMAT_LINK" />). Je kunt maximaal 1000 uitzonderingen definiëren in <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />.
+      Jokertekens zijn toegestaan voor de hostcomponent (bijvoorbeeld *:8000 komt overeen met alle hosts op poort 8000). Als je alle schema's of alle poorten wilt matchen, laat je de component helemaal weg (bijvoorbeeld example.com komt overeen met elk schema en elke poort). Een hostnaam (bijvoorbeeld example.com) komt ook overeen met de subdomeinen. Als je een host exact wilt matchen en de subdomeinen wilt uitsluiten, voeg je een punt toe (bijvoorbeeld .example.com). Als je alle oorsprongen wilt matchen, gebruik je één asterisk (*).</translation>
 <translation id="1492223733885011596">Met dit beleid wordt gif-ondersteuning voor de emoji-kiezer aangezet op <ph name="PRODUCT_OS_NAME" />.
 Als je dit beleid toepast, ondersteunt de emoji-kiezer gif-emoji's.
 Als je dit beleid niet toepast of niet instelt, ondersteunt de emoji-kiezer geen gif-emoji's.
@@ -1087,6 +1094,7 @@ Opmerking: Dit beleid is niet van toepassing op de incognitomodus. Lees meer inf
 Opmerking: Dit beleid is alleen van toepassing op platforms die extensies ondersteunen.</translation>
 <translation id="1708496595873025510">De beperking voor het ophalen van de seed voor varianten instellen</translation>
 <translation id="1709154322133526432">De check voor de standaardbrowser bij het opstarten aanzetten</translation>
+<translation id="1710938341108039345">Klembordgeschiedenis uitzetten</translation>
 <translation id="1713829924716792485">Als je dit beleid toepast of niet instelt, kunnen gebruikers die met een host voor externe toegang zijn verbonden, bestanden overzetten tussen de client en de host. Dit is niet van toepassing op verbindingen voor hulp op afstand, die geen bestandsoverdracht ondersteunen.
 
       Als je het beleid niet toepast, is er geen bestandsoverdracht toegestaan.</translation>
@@ -3744,6 +3752,23 @@ Als je dit beleid instelt op 1, wordt het beleid <ph name="PROXY_OVERRIDE_RULES_
       Als het beleid niet is ingesteld, is de systeemproxyservice niet beschikbaar.</translation>
 <translation id="3341649870321644698">Focusmodus met alleen focusgeluiden aanzetten.</translation>
 <translation id="334231891933432876">De gebruiker uitloggen zodra de verificatie van het account is ingetrokken</translation>
+<translation id="3344546660724331957">Hiermee bepaal je of via beleid geïnstalleerde extensies (afgedwongen geïnstalleerd of aanbevolen) die de standaard zoekmachine of de instellingen voor de pagina Nieuw tabblad overschrijven, zijn toegestaan in omgevingen met een laag vertrouwen.
+
+Dit beleid is alleen van toepassing op omgevingen met weinig vertrouwen (zoals apparaten waarop beleid lokaal is ingesteld zonder domein- of cloudbeheer). Dit heeft geen invloed op omgevingen met een hoog vertrouwensniveau:
+
+In <ph name="MS_WIN_NAME" /> is dit beleid niet beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of die zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+In <ph name="MAC_OS_NAME" /> is dit beleid niet beschikbaar voor instanties die via MDM worden beheerd, via MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Extensies die via beleid zijn geïnstalleerd en die de standaard zoekmachine of de instellingen voor de pagina Nieuw tabblad overschrijven, blijven aanstaan in deze instanties met een hoog vertrouwensniveau.
+
+Als je dit beleid toepast, staat <ph name="PRODUCT_NAME" /> toe dat via beleid geïnstalleerde extensies die de instellingen voor de standaard zoekmachine of de pagina Nieuw tabblad overschrijven, worden geïnstalleerd en aan blijven staan in omgevingen met weinig vertrouwen.
+
+Als je dit beleid niet toepast of niet instelt, voorkomt <ph name="PRODUCT_NAME" /> dat via beleid geïnstalleerde extensies die de instellingen voor de standaard zoekmachine of de pagina Nieuw tabblad overschrijven, worden geïnstalleerd in omgevingen met een laag vertrouwensniveau. Ook worden ze verwijderd als ze al zijn geïnstalleerd.
+
+Als een getroffen extensie wordt aangepast zodat deze instellingen niet meer worden overschreven, installeert <ph name="PRODUCT_NAME" /> deze automatisch binnen 7 dagen.
+
+Dit is een tijdelijk beleid dat in een toekomstige release wordt verwijderd.</translation>
 <translation id="3345323903592385588">De volgorde waarin de VM-configuratie wordt getoond in het installatieprogramma. Als je meerdere VM-configuraties opgeeft, wordt de configuratie met de kleinste display_order-waarde bovenaan de lijst weergegeven. De standaardwaarde is nul.</translation>
 <translation id="3349823333182687926">Als je het beleid instelt, kun je een lijst met URL-patronen instellen van sites die venster- en tabbladopname mogen gebruiken.
 
@@ -4076,6 +4101,7 @@ Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFA
 Dit vervangt het beëindigde beleid <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="3568762199045490351">JavaScript-functie setTimeout() met een time-out van 0 ms wordt vastgezet op 1 ms.</translation>
 <translation id="3574450691573438824">Uploaden van systeemlogboeken uitzetten voor apparaat</translation>
+<translation id="357461884473178606">Lijst met proxyservers waarvoor alle HTTP-verificatieschema's zijn toegestaan</translation>
 <translation id="3575011234198230041">HTTP-verificatie</translation>
 <translation id="3575159471980949522">Niet toestaan dat gebruikers telefoonnummers van Chrome naar hun Android-apparaat sturen</translation>
 <translation id="3577251398714997599">Advertentie-instellingen voor sites met opdringerige advertenties</translation>
@@ -5078,6 +5104,11 @@ De domeinen moeten de indeling hebben van een volledige domeinnaam (FQDN, fully 
 
 Domeinen met een onjuiste indeling worden genegeerd.</translation>
 <translation id="4238777612788632629">Snel herstarten indien verouderd</translation>
+<translation id="4239692047060622956">Dit beleid bepaalt of de functie Klembordgeschiedenis van <ph name="PRODUCT_OS_NAME" /> aanstaat.
+
+Als je het beleid toepast of niet instelt, wordt de klembordgeschiedenis aangezet en kunnen gebruikers eerder gekopieerde items openen via de sneltoets voor de klembordgeschiedenis.
+
+Als je het beleid niet toepast, wordt de klembordgeschiedenis uitgezet, kan het menu Klembordgeschiedenis niet worden geopend en worden alle opgeslagen klembordgeschiedenisitems gewist.</translation>
 <translation id="4239720644496144453">Het cachegeheugen wordt niet gebruikt voor Android-apps. Als meerdere gebruikers dezelfde Android-app installeren, wordt deze voor elke gebruiker opnieuw gedownload.</translation>
 <translation id="4239949495354048254">Bestandsuploads naar Gemini in Chrome toestaan.</translation>
 <translation id="4242583077375244471">Als je dit beleid toepast, verifieert <ph name="PRODUCT_NAME" /> servercertificaten met de ingebouwde certificaatverificatie in de Chrome Root Store als bron van openbaar vertrouwen.
@@ -5201,6 +5232,7 @@ Dit is een extra beheerlaag die zich onder de rechtenlaag voor apps en websites 
 Gebruikers kunnen de beheerdersselectie niet overschrijven. Als je het beleid niet instelt, hebben gebruikers de consumentenfunctionaliteit. Dat wil zeggen dat ze de locatie-instelling van het systeem zelf kunnen aanpassen. De standaard is dan <ph name="GLS_ALLOWED" />.
 
 Opmerking: Met dit beleid wordt het beleid <ph name="ARC_GLS_POLICY_NAME" /> beëindigd. Als je dit beleid instelt, heeft <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> ook geen invloed meer op de <ph name="ANDROID_NAME" />-locatievoorkeur in <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="4341191248574927458">Klembordgeschiedenis van ChromeOS aanzetten</translation>
 <translation id="4341199399451274159">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> instelt, worden de tekencoderingen gespecificeerd die worden ondersteund door de zoekprovider. Deze coderingen zijn codepaginanamen zoals UTF-8, GB2312 en ISO-8859-1. Ze worden getest in de volgorde waarin ze worden opgegeven.
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> niet instelt, wordt UTF-8 gebruikt.</translation>
@@ -11266,6 +11298,12 @@ Er zijn meerdere beleidsregels met oorsprongen die van invloed zijn op verzoeken
 <translation id="8066428282805800713">Extra hardwaregegevens sturen op ChromeOS Flex</translation>
 <translation id="8071371098891664137">Als <ph name="PRINTERS_BLOCKLIST" /> wordt gekozen voor <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, kun je door <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> in te stellen aangeven welke printers gebruikers niet kunnen gebruiken. Alle printers zijn beschikbaar voor de gebruiker, behalve de ID's in dit beleid. De ID's moeten overeenkomen met het veld <ph name="ID_FIELD" /> of <ph name="GUID_FIELD" /> in het bestand dat is opgegeven in <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="8076539570602616846">Beperk in aanmerking komende Google-accounts voor het opslaan van pdf-bestanden in Google Drive vanuit <ph name="PRODUCT_NAME" /> PDF Viewer</translation>
+<translation id="8078224178125125527">Als je het beleid instelt, wordt gespecificeerd voor welke proxyservers alle HTTP-verificatieschema's worden toegestaan die <ph name="PRODUCT_NAME" /> ondersteunt, ongeacht het beleid <ph name="AUTH_SCHEMES_POLICY_NAME" />.
+
+Maak het proxyserverpatroon op volgens de indeling van het URL-blokkeerlijstfilter (<ph name="URL_SCHEME_FORMAT_LINK" />). Je kunt maximaal 1000 uitzonderingen definiëren.
+Jokertekens zijn toegestaan voor de hostcomponent (bijvoorbeeld *:8080 komt overeen met alle proxy's op poort 8080). Een hostnaam (bijvoorbeeld proxy.example.com) komt ook overeen met de subdomeinen. Als je een host exact wilt matchen en de subdomeinen wilt uitsluiten, voeg je een punt toe (bijvoorbeeld .proxy.example.com).
+
+Als je dit beleid niet instelt, worden alleen de HTTP-verificatieschema's die zijn gespecificeerd in <ph name="AUTH_SCHEMES_POLICY_NAME" /> (of de standaardschema's als dit niet is ingesteld) ondersteund voor proxyverificatie.</translation>
 <translation id="8078297389450285582">Als je dit beleid toepast of niet instelt, wordt het slimme dimmodel gebruikt en kan het langer duren voordat het scherm wordt gedimd. Als dit het geval is, blijven de perioden tot het scherm uitgaat, het scherm wordt vergrendeld en inactiviteit wordt geactiveerd, gelijk aan de periode voor het dimmen van het scherm die je oorspronkelijk had ingesteld.
 
       Als je dit beleid niet toepast, heeft het slimme dimmodel geen invloed op het dimmen van het scherm.</translation>
@@ -11671,6 +11709,7 @@ Als je dit beleid niet instelt, staat gezichtsbediening in eerste instantie uit,
       De beleidswaarde moet worden opgegeven in milliseconden.</translation>
 <translation id="8330437518362176921">Alleen de door het beleid geleverde update-URL gebruiken als Chrome-kiosk-apps worden gedownload en geüpdatet</translation>
 <translation id="8331479227794770304">Plaktoetsen aanzetten</translation>
+<translation id="8331940246704699384">Via beleid geïnstalleerde extensies aanzetten die de standaardinstellingen voor zoeken of de pagina Nieuw tabblad overschrijven</translation>
 <translation id="8332822245414537447">Controle van RSA-sleutelgebruik uitzetten</translation>
 <translation id="8334685561819743286">Automatische correctie op fysiek toetsenbord als gebruikers typen uitzetten</translation>
 <translation id="8336986243404088829">Dit beleid beperkt geheugenaanvallen tussen processen via zijkanalen door het renderproces te isoleren op de CPU-kern en te voorkomen dat andere processen dezelfde kern delen. De mitigatie wordt ondersteund in <ph name="MS_WIN_NAME" /> 11 24H2 en hoger. Als het OS niet de vereiste planningsondersteuning heeft, heeft dit beleid geen effect. Dit beleid kan de prestaties vertragen in sommige veeleisende scenario's, vergelijkbaar met het uitzetten van hyperthreading. Ga voor meer informatie naar https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy
@@ -11815,6 +11854,7 @@ Als je dit beleid niet instelt, wordt de algemene standaardwaarde gebruikt voor 
 <translation id="8437147918598002525">De modus Alleen HTTPS aanzetten in de strikte modus</translation>
 <translation id="8441105784056442638">Functie voor volledig herstel aanzetten</translation>
 <translation id="844322176712318428">Translator API toestaan</translation>
+<translation id="8443398105049037546">Klembordgeschiedenis aanzetten</translation>
 <translation id="8444157920689124099">App-gebonden versleuteling aanzetten</translation>
 <translation id="8445576299806775661">Na elke grote versie-update maakt Chrome een momentopname van bepaalde gedeelten van de browsegegevens van de gebruiker. Deze momentopname kan worden gebruikt voor een latere noodrollback van de versie. Als er een noodrollback wordt uitgevoerd naar een versie waarvoor een gebruiker een bijbehorende momentopname heeft, worden de gegevens in de momentopname hersteld. Zo kunnen gebruikers instellingen als bookmarks en gegevens voor automatisch invullen behouden.
 
@@ -12717,6 +12757,11 @@ Opmerking: Op dit moment wordt alleen rekening gehouden met de eerste vermelding
 <translation id="9015759770696099204">F11-/F12-instellingen staan uit</translation>
 <translation id="9015952763003753868">Overeenkomende <ph name="ACAM_HEADER_NAME" /> in pre-flightverzoek voor <ph name="CORS" /> laten overeenkomen met de specificaties</translation>
 <translation id="9020630127193895800">Indigo achtergrondverlichting van toetsenbord</translation>
+<translation id="9025073735776703766">Dit beleid bepaalt de beschikbaarheid van de XSLT-functie (de XSLTProcessor Javascript API en de XSL-verwerkingsinstructie).
+Als je dit beleid toepast, is XSLT beschikbaar, ongeacht de standaardstatus van de functie in de browser.
+Als je dit beleid niet toepast, is XSLT niet beschikbaar, ongeacht de standaardstatus van de functie in de browser.
+Als je dit beleid niet instelt, wordt de beschikbaarheid van XSLT bepaald door de standaardinstellingen van de browser en praktijktests.
+Dit beleid is een tijdelijke maatregel en wordt verwijderd in M176.</translation>
 <translation id="9025912013525357598">Witruimte in DataURL behouden voor alle mediatypen</translation>
 <translation id="9029815312472546960">De Device Attributes API blokkeren op deze sites</translation>
 <translation id="9031831501689819108">Ondersteuning voor oudere browsers aanzetten</translation>
@@ -12880,6 +12925,7 @@ Dit beleid beheert niet de algemene integratie van <ph name="GOOGLE_GEMINI_PRODU
 <translation id="9133526448421932754">Gele achtergrondverlichting van toetsenbord</translation>
 <translation id="9135033364005346124">Proxy voor <ph name="CLOUD_PRINT_NAME" /> gebruiken</translation>
 <translation id="9135095804754272364">Een melding tonen als een USB-apparaat wordt gevonden</translation>
+<translation id="9135676404321186528">Via beleid geïnstalleerde extensies verwijderen die de standaardinstellingen voor zoeken of de pagina Nieuw tabblad overschrijven in omgevingen met een laag vertrouwen</translation>
 <translation id="9136212796239682721">Ballon-UI voor downloaden uitzetten</translation>
 <translation id="9136399279941091445">Intervallen buiten gebruikstijd wanneer het gespecificeerde apparaatbeleid wordt vrijgegeven</translation>
 <translation id="9139775903828905867">De sneltoets beheren die wordt gebruikt om F11 te activeren</translation>

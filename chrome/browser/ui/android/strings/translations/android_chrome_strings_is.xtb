@@ -764,6 +764,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="4092709865241032354">Bættu við notandanafni þínu fyrir þetta vefsvæði til að hjálpa Google-aðgangsorðastjórnun að vista innskráningarupplýsingarnar þínar</translation>
 <translation id="4095146165863963773">Eyða forritsgögnum?</translation>
 <translation id="4095483462103784441">Búa til nýjan flipahóp</translation>
+<translation id="4098552968111329864">Til að tryggja öryggi vinnu þinnar í Chrome mun fyrirtækið þitt geta skoðað eða stjórnað tilteknum upplýsingum þegar þú ert skráð(ur) inn á Chrome</translation>
 <translation id="4105527135143631701">Tilkynning frá Google-aðgangsorðastjórnun opnuð</translation>
 <translation id="4107207375883769436">Fyrirtækið þitt þarf hugsanlega að skoða og stjórna vefskoðunargögnum á vinnusniðinu þínu, t.d. vafraferli og aðgangsorðum</translation>
 <translation id="4113030288477039509">Stjórnað af kerfisstjóra</translation>
@@ -1770,6 +1771,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="7929587383660661825">Chrome fjarlægir sjálfkrafa heimildir vefsvæða sem misnota tilkynningar eða sem þú hefur ekki skoðað nýlega</translation>
 <translation id="7934668619883965330">Ekki er hægt að sækja skrá. Skráarsnið ekki stutt.</translation>
 <translation id="7951102827450076904">Alltaf opna sótt PDF-skjöl</translation>
+<translation id="7952148074468405586">Nánar um <ph name="BEGIN_LINK" />upplýsingar sem fyrirtækið þitt getur skoðað eða stjórnað<ph name="END_LINK" /></translation>
 <translation id="7952479614398473176">Til að opna nýjan glugga skaltu fækka virkum gluggum í <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> eða færri.</translation>
 <translation id="7956713633345437162">Bókamerki fartækis</translation>
 <translation id="7957413488482743710">Sýndarkort felur raunverulega kortið þitt og hjálpar þannig til við að koma í veg fyrir svik. <ph name="BEGIN_LINK1" />Nánar um sýndarkort<ph name="END_LINK1" /></translation>

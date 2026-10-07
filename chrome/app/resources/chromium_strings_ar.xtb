@@ -21,6 +21,7 @@
 <translation id="1185134272377778587">‏لمحة عن Chromium</translation>
 <translation id="1186645291482254714">‏تلقّي تنبيهات ميزة "تتبُّع الأسعار" باستخدام Chromium على هاتفك</translation>
 <translation id="1203500561924088507">شكرًا على التثبيت. عليك إعادة تشغيل المتصفِّح قبل استخدام <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1222365723190436821">‏هناك <ph name="IMPORTANT_UPDATE" /> قيد الانتظار. للحفاظ على أمان تصفّحك، سيتم تحديث Chromium في المرة القادمة عند توقّف نشاطك عليه لمدة <ph name="IDLE_DURATION" />.</translation>
 <translation id="1232234696885483911">‏عند فتح ميزة "البحث بالصور"، سيتم تلقائيًا إرسال عنوان الصفحة وعنوان URL والمحتوى (بما في ذلك ملفات PDF) إلى الخادم. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">‏بعد تسجيل الدخول إلى حسابك، يمكنك استخدام كلمات المرور وغيرها من بيانات حسابك على Google في Chromium. لتغيير ذلك، يُرجى الانتقال إلى "حسابك في Chromium".</translation>
 <translation id="1244381985120794049">‏عرض "Gemini في Chromium" في شريط قوائم Mac</translation>
@@ -228,6 +229,7 @@
 <translation id="3286538390144397061">إعادة التشغيل الآن</translation>
 <translation id="328888136576916638">‏مفاتيح واجهة برمجة تطبيقات Google مفقودة. وسيترتب على ذلك توقف بعض وظائف Chromium عن العمل.</translation>
 <translation id="3296368748942286671">‏استمرار تشغيل تطبيقات الخلفية عند إغلاق Chromium</translation>
+<translation id="3300632735252839402">‏سيتم تحديث Chromium عند توقّف نشاطك عليه</translation>
 <translation id="3313189106987092621">‏سيحذرك Chromium قبل تحميل أي موقع إلكتروني يستخدم اتصالاً غير آمن.</translation>
 <translation id="3316771292331273802">‏سيتم تسجيل خروجك من معظم المواقع الإلكترونية عند إغلاق جميع نوافذ Chromium، باستثناء حسابك على Google إذا كنت مسجلاً الدخول إلى Chromium. للسماح للمواقع الإلكترونية بتذكُّر بياناتك، <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">أعلى يسار مساحة البحث: %<ph name="RIGHT" /> من الجهة اليسرى و%<ph name="TOP" /> من الأعلى</translation>
@@ -236,6 +238,7 @@
 <translation id="3387527074123400161">‏نظام التشغيل Chromium</translation>
 <translation id="3406848076815591792">‏هل تريد الانتقال إلى الملف الشخصي الحالي على Chromium؟</translation>
 <translation id="3412460710772753638">في "مدير كلمات المرور" على هذا الجهاز</translation>
+<translation id="3425452599984451640">‏يجب تحديث Chromium</translation>
 <translation id="3427159664004296878">‏يمكنك تسجيل الدخول إلى Chromium للوصول إلى الإشارات المرجعية وغيرها على "<ph name="DEVICE" />"</translation>
 <translation id="3438772217992559640">البحث في علامة التبويب هذه باستخدام ميزة "البحث بالصور"</translation>
 <translation id="3455907671758333080">‏بتنزيل Chromium، ستكون "الحماية المحّسنة للتصفح الآمن" متاحة على هاتفك أيضًا</translation>
@@ -388,6 +391,7 @@
 <translation id="5249261924633168472">‏فتح الرابط في نافذة "التصفح المت&amp;خفي" في Chromium</translation>
 <translation id="5276305953263010518">‏تنزيل تطبيق Chromium لحفظ كلمات المرور أثناء التنقل</translation>
 <translation id="5277894862589591112">‏لتطبيق التغييرات، يُرجى إعادة تشغيل Chromium</translation>
+<translation id="5278909220224474621">‏لإرسال علامة التبويب هذه إلى جهاز آخر، يجب تسجيل الدخول إلى Chromium على كلا الجهازين</translation>
 <translation id="5286907366254680517">تمّ رصد اللغة</translation>
 <translation id="5289287148052354622">‏تنزيل تطبيق Chromium</translation>
 <translation id="5294316920224716406">‏سيحذرك Chromium قبل تحميل موقع إلكتروني يستخدم اتصالاً غير آمن عند التصفّح في "وضع التصفّح المتخفي".</translation>
@@ -757,6 +761,7 @@
 <translation id="8648201657708811153">‏لا يمكن اختيار الإصدار Google Chrome for Test ليكون متصفِّحك التلقائي.</translation>
 <translation id="8676101123715131330">‏البحث باستخدام Chromium من أي مكان</translation>
 <translation id="8697124171261953979">‏كما أنها تتحكم في الصفحة التي تظهر عند تشغيل Chromium أو إجراء بحث من المربع متعدد الاستخدامات.</translation>
+<translation id="8702213505203810093">‏لإرسال علامة التبويب هذه إلى جهاز آخر، يجب تسجيل الدخول إلى Chromium على ذلك الجهاز</translation>
 <translation id="8704119203788522458">‏هذا هو Chromium الخاص بك</translation>
 <translation id="8712637175834984815">حسنًا</translation>
 <translation id="8719993436687031146">‏هل المطلوب تسجيل الدخول إلى Chromium؟</translation>

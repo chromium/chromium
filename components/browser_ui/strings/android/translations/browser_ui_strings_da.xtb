@@ -12,7 +12,6 @@
 <translation id="1126523729897810826">Udfør de foreslåede handlinger nedenfor for at få mest muligt ud af Chrome</translation>
 <translation id="113098737392899175">Naviger på sider med en tekstmarkør, når der er tilsluttet et tastatur</translation>
 <translation id="1148624853678088576">Så er du klar</translation>
-<translation id="1149644372535087155">Gem adgangskoder i Chrome</translation>
 <translation id="1178015372320901893">Feltet i bunden, der viser Mine genveje</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Fjern</translation>
@@ -227,7 +226,6 @@
 <translation id="3167868116600277716">Discover-feed</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> gemte data</translation>
 <translation id="3199078925536734975">Tilladt denne gang • Omtrentlig</translation>
-<translation id="3208584281581115441">Tjek nu</translation>
 <translation id="321187648315454507">Aktivér også notifikationer i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> tilladelse til at sende dig notifikationer.</translation>
 <translation id="3223425961342298674">Adgang til lokation er ikke tilladt</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -286,7 +284,6 @@
 <translation id="381841723434055211">Telefonnumre</translation>
 <translation id="3823453485268218808">Mono-skrifttype</translation>
 <translation id="3826050100957962900">Tredjepartslogin</translation>
-<translation id="3831065134033923230">Tjek dine gemte adgangskoder</translation>
 <translation id="3835233591525155343">Din enhedsbrug</translation>
 <translation id="3843916486309149084">I dag blokerer Chrome cookies igen</translation>
 <translation id="385051799172605136">Tilbage</translation>
@@ -294,7 +291,6 @@
 <translation id="3870711497942672548">Gør Chrome personlig med tilpassede farver og billeder på din startside</translation>
 <translation id="389521680295183045">Websites kan anmode om at få at vide, hvornår du aktivt bruger din enhed</translation>
 <translation id="3895926599014793903">Tving aktivering af zoom</translation>
-<translation id="3903738175795615004">Træk fra toppen af skærmen, eller tryk på Esc-tasten for at afslutte fuld skærm.</translation>
 <translation id="3905475044299942653">Sæt en stopper for mange notifikationer</translation>
 <translation id="3922092564198021702">Åbn Indstillinger på din telefon</translation>
 <translation id="3924858949939391676">Vis links, når Læsetilstand er aktiveret</translation>
@@ -355,7 +351,6 @@
 <translation id="4479647676395637221">Spørg, før websites bruger dit kamera (anbefales)</translation>
 <translation id="4505788138578415521">Webadressen er udvidet</translation>
 <translation id="4522570452068850558">Detaljer</translation>
-<translation id="4523472416386354622">Log ind for at starte</translation>
 <translation id="4529207923544043455">Feltet i bunden viser udførte og ikke-udførte opgaver på konfigurationslisten</translation>
 <translation id="4534723447064627427">Aktivér også din mikrofon i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> adgang til mikrofonen.</translation>
 <translation id="4545694195887112015">Konfigurationsarket er lukket</translation>
@@ -368,7 +363,6 @@
 <translation id="4645575059429386691">Administreret af en af dine forældre</translation>
 <translation id="4651224148644053314">Flere farver og valgmuligheder</translation>
 <translation id="4652266463001779298">Ikke tilladt</translation>
-<translation id="4655846733459137112">Tryk på Ja for nemt at bruge denne adgangskode, næste gang du logger ind</translation>
 <translation id="4663373278480897665">Der er givet adgang til kameraet</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4672315773691449562">Tryk på Browserapp og derefter på Chrome</translation>
@@ -415,7 +409,6 @@
 <translation id="512938610812707830">Feltet i bunden med temasamlinger til siden Ny fane er åbnet i fuld højde</translation>
 <translation id="5137460097045297858">Feltet i bunden med Discover-feedet er åbnet i halv højde</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Prisfald på dine åbne faner}one{Prisfald på dine åbne faner}other{Prisfald på dine åbne faner}}</translation>
-<translation id="5150048675001754041">Log hurtigt og nemt ind på websites og i apps</translation>
 <translation id="5186036860380548585">Se valgmuligheden øverst på skærmen</translation>
 <translation id="5197729504361054390">De kontakter, du vælger, deles med <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Feltet i bunden med tilpasning af siden Ny fane er lukket</translation>
@@ -425,7 +418,6 @@
 <translation id="5239623327352565343">Adgang til lokation er tilladt</translation>
 <translation id="5246825184569358663">Denne handling sletter alle lokale data, herunder cookies, og nulstiller alle tilladelser for <ph name="DOMAIN" /> samt alle websites under domænet</translation>
 <translation id="5264323282659631142">Fjern "<ph name="CHIP_LABEL" />"</translation>
-<translation id="528192093759286357">Træk fra toppen, og tryk på tilbageknappen igen for at afslutte fuld skærm.</translation>
 <translation id="5286194356314741248">Søger</translation>
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5301954838959518834">OK, det er forstået</translation>
@@ -473,7 +465,6 @@
 <translation id="5804241973901381774">Tilladelser</translation>
 <translation id="5817042798620209981">Websiteoplysninger, dialogboks</translation>
 <translation id="5822675474983796325">Feltet i bunden med tilpasning af siden Ny fane er åbnet i fuld højde</translation>
-<translation id="5826403277762134844">Feltet i bunden med vejledning i at gemme adgangskoder i Chrome</translation>
 <translation id="5833899990800318936">Tillad ikke, at websites anvender JavaScript</translation>
 <translation id="583673505367439042">Websites kan anmode om tilladelse til at redigere filer og mapper på din enhed</translation>
 <translation id="5844448279347999754">Når dette er slået til, kan websites anmode om tilladelse at se tekst og billeder, der er gemt i din udklipsholder. Når dette er slået fra, kan websites ikke se tekst eller billeder, der er gemt i din udklipsholder.</translation>
@@ -511,7 +502,6 @@
 <translation id="6104860901391833523">Når indstillingen er aktiveret, kan websites automatisk åbne integreret billede. Når indstillingen er deaktiveret, kan websites ikke automatisk åbne integreret billede.</translation>
 <translation id="6120483543004435978">Når dette er slået til, kan websites anmode om tilladelse til at blive underrettet, når du aktivt bruger din enhed. Når dette er slået fra, kan websites ikke se, hvornår du aktivt bruger din enhed.</translation>
 <translation id="612871598708395517">Skjul Få Chrome-forslag i andre apps</translation>
-<translation id="6132075343662013154">Chrome tilbyder at gemme din adgangskode</translation>
 <translation id="615886654739818377">Tillad ikke, at websites administrerer vinduer på alle dine skærme</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6171020522141473435">Når dette er slået til, kan websites anmode om tilladelse til at bruge Bluetooth-enheder. Når dette er slået fra, kan websites ikke bruge Bluetooth-enheder.</translation>
@@ -587,7 +577,6 @@
 <translation id="6980861169612950611">Vil du slette websitedata? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Hjælpefunktioner</translation>
 <translation id="6991142177939282156">Tilladt • Bruger omtrentlig</translation>
-<translation id="6992014788289743568">Gør din sikkerhed stærkere, og beskyt dine data bedre ved at tjekke dine adgangskoder</translation>
 <translation id="6992289844737586249">Spørg, før websites bruger din mikrofon (anbefales)</translation>
 <translation id="7000754031042624318">Deaktiveret i indstillingerne for Android</translation>
 <translation id="7036823721811529709">Hør musik i baggrunden</translation>
@@ -654,7 +643,6 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:</translation>
 <translation id="775043444390799886">Tilbagekald tilladelse</translation>
 <translation id="7758789811447313947">Violet tema</translation>
 <translation id="7759147511335618829">Styring/omprogrammering af MIDI</translation>
-<translation id="7771089277295008211">Feltet i bunden med vejledning i at gemme adgangskoder er lukket</translation>
 <translation id="7781829728241885113">I går</translation>
 <translation id="7791543448312431591">Tilføj</translation>
 <translation id="780301667611848630">Nej tak</translation>
@@ -671,7 +659,6 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:</translation>
 <translation id="7940722705963108451">Påmind mig</translation>
 <translation id="7948081750384205628">Få flere oplysninger om <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Websites kan anmode om tilladelse til at se tekst og billeder i din udklipsholder</translation>
-<translation id="7958779728312669715">Feltet i bunden med vejledning i at gemme adgangskoder er åbnet helt</translation>
 <translation id="798299424881500862">Orange tema</translation>
 <translation id="7986741934819883144">Vælg en kontakt</translation>
 <translation id="7990211076305263060">Når dette er slået til, kan websites anmode om at anvende din mikrofon. Når dette er slået fra, kan websites ikke anvende din mikrofon.</translation>
@@ -766,7 +753,6 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:</translation>
 <translation id="8889294078294184559">Når du derefter bruger nettet, kan websites ved hjælp af Chrome tjekke og verificere via et website, du tidligere har besøgt, at du sandsynligvis er en rigtig person</translation>
 <translation id="8899807382908246773">Påtrængende annoncer</translation>
 <translation id="8903921497873541725">Zoom ind</translation>
-<translation id="8919911527569629802">Log ind på et hvilket som helst website</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Spørg ikke igen</translation>
 <translation id="8926666909099850184">NFC er deaktiveret for denne enhed. Aktivér funktionen i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" />.</translation>

@@ -724,6 +724,12 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="1488008594883876680">Aktifkan pramuat gambar <ph name="ARC_VM" /></translation>
 <translation id="1488724823347505879">Mengaktifkan berbagi dari aplikasi Android ke aplikasi Web</translation>
 <translation id="1490962807364514840">Interval pengumpulan telemetri penghitung runtime CPU dalam milidetik.</translation>
+<translation id="1491289760513245366">Jika kebijakan ini disetel, hal ini akan menentukan origin yang akan mengizinkan semua skema autentikasi HTTP yang didukung <ph name="PRODUCT_NAME" />, terlepas dari nilai kebijakan <ph name="AUTH_SCHEMES_POLICY_NAME" />.
+
+Mulai <ph name="PRODUCT_NAME" /> versi 161, kebijakan ini hanya berlaku untuk origin server tujuan dan tidak berlaku untuk permintaan autentikasi server proxy. Untuk mengizinkan semua skema autentikasi HTTP bagi server proxy, gunakan kebijakan <ph name="ALL_HTTP_AUTH_SCHEMES_ALLOWED_FOR_PROXIES_POLICY_NAME" />. Sebelum versi 161, server proxy yang cocok dengan kebijakan ini juga diizinkan untuk menggunakan semua skema autentikasi HTTP, kecuali jika <ph name="ALL_HTTP_AUTH_SCHEMES_ALLOWED_FOR_PROXIES_POLICY_NAME" /> disetel.
+
+      Format pola origin sesuai dengan format ini (<ph name="URL_SCHEME_FORMAT_LINK" />). Hingga 1.000 pengecualian dapat ditentukan di <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />.
+      Karakter pengganti diizinkan untuk komponen host (misalnya, '*:8000' cocok dengan semua host di port 8000). Untuk mencocokkan semua skema atau semua port, hapus komponen sepenuhnya (misalnya, 'example.com' cocok dengan skema dan port apa pun). Nama host (misalnya, 'example.com') juga cocok dengan subdomainnya. Untuk mencocokkan host secara persis dan mengecualikan subdomainnya, tambahkan titik di depannya (misalnya, '.example.com'). Untuk mencocokkan semua origin, gunakan satu tanda bintang ('*').</translation>
 <translation id="1492223733885011596">Kebijakan ini mengaktifkan dukungan GIF untuk Pemilih Emoji di <ph name="PRODUCT_OS_NAME" />.
 Jika kebijakan ini disetel ke Aktif, Pemilih emoji akan mendukung emoji GIF.
 Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, Pemilih emoji tidak akan mendukung emoji GIF.
@@ -4251,6 +4257,7 @@ Jika kebijakan ini tidak disetel untuk suatu situs, kebijakan dari <ph name="DEF
 Perilaku ini akan menggantikan kebijakan <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLICY_NAME" /> yang sudah tidak digunakan lagi.</translation>
 <translation id="3568762199045490351">Fungsi setTimeout() JavaScript dengan waktu tunggu 0 md akan dibulatkan ke 1 md.</translation>
 <translation id="3574450691573438824">Nonaktifkan upload log sistem perangkat</translation>
+<translation id="357461884473178606">Daftar server proxy yang mengizinkan semua skema autentikasi HTTP</translation>
 <translation id="3575011234198230041">Autentikasi HTTP</translation>
 <translation id="3575159471980949522">Jangan izinkan pengguna mengirim nomor telepon dari Chrome ke perangkat Android mereka</translation>
 <translation id="3577251398714997599">Setelan iklan untuk situs yang menayangkan iklan mengganggu</translation>
@@ -11810,6 +11817,12 @@ Ada beberapa kebijakan yang mencantumkan origin yang memengaruhi permintaan ke p
 <translation id="8066428282805800713">Kirim data hardware tambahan di ChromeOS Flex</translation>
 <translation id="8071371098891664137">Jika <ph name="PRINTERS_BLOCKLIST" /> dipilih untuk <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, menyetel <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> akan menentukan printer yang tidak dapat digunakan oleh pengguna. Semua printer diberikan kepada pengguna kecuali ID yang tercantum dalam kebijakan ini. ID harus sesuai dengan kolom <ph name="ID_FIELD" /> atau <ph name="GUID_FIELD" /> dalam file yang ditentukan di <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="8076539570602616846">Batasi Akun Google yang memenuhi syarat untuk menyimpan file PDF ke Google Drive dari Penampil PDF <ph name="PRODUCT_NAME" /></translation>
+<translation id="8078224178125125527">Jika kebijakan ini disetel, hal ini akan menentukan server proxy yang akan mengizinkan semua skema autentikasi HTTP yang didukung <ph name="PRODUCT_NAME" />, terlepas dari nilai kebijakan <ph name="AUTH_SCHEMES_POLICY_NAME" />.
+
+Pastikan format pola server proxy sesuai dengan format filter daftar URL yang tidak diizinkan (<ph name="URL_SCHEME_FORMAT_LINK" />). Hingga 1.000 pengecualian dapat ditentukan.
+Karakter pengganti diizinkan untuk komponen host (misalnya, '*:8080' cocok dengan semua proxy di port 8080). Nama host (misalnya, 'proxy.example.com') juga cocok dengan subdomainnya. Untuk mencocokkan host secara persis dan mengecualikan subdomainnya, tambahkan titik di depannya (misalnya, '.proxy.example.com').
+
+Jika kebijakan ini tidak disetel, hanya skema autentikasi HTTP yang ditentukan di <ph name="AUTH_SCHEMES_POLICY_NAME" /> (atau skema default jika tidak disetel) yang didukung untuk autentikasi proxy.</translation>
 <translation id="8078297389450285582">Jika kebijakan disetel ke Aktif atau tidak disetel, model redup smart akan diaktifkan dan dapat memperpanjang waktu hingga layar diredupkan. Jika model tersebut menunda waktu peredupan, penundaan penonaktifan layar, penguncian layar, dan tidak ada aktivitas akan disesuaikan untuk mempertahankan jarak waktu yang sama dari penundaan peredupan layar seperti yang disetel sebelumnya.
 
       Jika kebijakan disetel ke Nonaktif, model redup smart tidak akan memengaruhi peredupan layar.</translation>
@@ -13325,6 +13338,11 @@ Catatan: Saat ini hanya entri pertama yang akan dipertimbangkan. Nantinya, ekste
 <translation id="9015759770696099204">Setelan F11/F12 dinonaktifkan</translation>
 <translation id="9015952763003753868">Menyesuaikan pencocokan <ph name="ACAM_HEADER_NAME" /> di spesifikasi preflight <ph name="CORS" /></translation>
 <translation id="9020630127193895800">Warna lampu latar keyboard indigo</translation>
+<translation id="9025073735776703766">Kebijakan ini mengontrol ketersediaan fitur XSLT (XSLTProcessor JavaScript API dan petunjuk pemrosesan XSL).
+Jika kebijakan ini disetel ke Aktif, XSLT akan tersedia terlepas dari status default fitur tersebut di browser.
+Jika kebijakan ini disetel ke Nonaktif, XSLT tidak akan tersedia terlepas dari status default fitur tersebut di browser.
+Jika kebijakan ini tidak disetel, ketersediaan XSLT akan ditentukan oleh setelan default browser dan uji coba di lingkungan sebenarnya.
+Kebijakan ini bersifat sementara, dan akan dihapus di M176.</translation>
 <translation id="9025912013525357598">Pertahankan Spasi Kosong DataURL untuk semua jenis media</translation>
 <translation id="9029815312472546960">Memblokir Device Attributes API di situs ini</translation>
 <translation id="9031831501689819108">Aktifkan Dukungan Browser Lama</translation>

@@ -302,7 +302,6 @@
 <translation id="1486096554574027028">パスワードを検索</translation>
 <translation id="1492194039220927094">ポリシーのプッシュ:</translation>
 <translation id="1495677929897281669">タブに戻る</translation>
-<translation id="1496318738909526466">高精度の自動入力を管理</translation>
 <translation id="1500286806237135498">カメラ（<ph name="CAMERAS_COUNT" />）</translation>
 <translation id="1504042622576912555">フルート</translation>
 <translation id="1507202001669085618">&lt;p&gt;インターネットに接続するために Wi-Fi ポータルへのログインが必要な場合は、このエラーが表示されます。&lt;/p&gt;
@@ -954,6 +953,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">編集の取り消し（&amp;U）</translation>
 <translation id="2559566667529177711">マルチレイヤ</translation>
+<translation id="2561224416042784023">設定を表示</translation>
 <translation id="2570734079541893434">設定を管理</translation>
 <translation id="257136025287118539">管理者がファイルを <ph name="CLOUD_PROVIDER" />に移動しています。ファイルの変更はアップロードの完了後に行うことができます。</translation>
 <translation id="2571488850200220306">セキュリティ確保の目的で、デバイスの OS、ブラウザのバージョン、インストールされているソフトウェアも確認される可能性があります</translation>

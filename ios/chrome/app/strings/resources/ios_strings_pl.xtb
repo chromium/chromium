@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="1004615467759797184">Dostosuj stronę nowej karty</translation>
 <translation id="1004825134262590729">{count,plural, =1{{count} klucz dostępu}few{{count} klucze dostępu}many{{count} kluczy dostępu}other{{count} klucza dostępu}}</translation>
 <translation id="1005023885865154304">Otwórz ustawienia autouzupełniania haseł</translation>
 <translation id="1005230401424685968">RRRR</translation>
@@ -1693,6 +1694,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6307792728709337290">Zapisz kartę na koncie Google, żeby uzupełniać ją automatycznie podczas tego i przyszłych zakupów w Chrome.</translation>
 <translation id="6316141353357700666">Wybierz z wyświetlonej listy hasło, którego chcesz użyć.</translation>
 <translation id="6321526113093607004">Dodaj do Zakładek</translation>
+<translation id="6324054713176642683">Wybierz motyw lub kolor albo prześlij własne zdjęcie.</translation>
 <translation id="6327249202318869726">Gemini jest wyłączony na Twoim koncie. Aby uzyskać więcej informacji, skontaktuj się z administratorem.</translation>
 <translation id="6331836477476466332">Bezpieczniejsza i bardziej wydajna przeglądarka</translation>
 <translation id="6337234675334993532">Szyfrowanie</translation>
@@ -2067,7 +2069,6 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="7454057999980797137">Stan/region</translation>
 <translation id="7458706065921255639">Personalizacja i łączenie usług</translation>
 <translation id="745899714366929493">Cały dzień</translation>
-<translation id="7460314822154045102">Użyj aparatu</translation>
 <translation id="7460698861522306757">Wersja na telefon</translation>
 <translation id="7464143666517313304">Spowoduje to usunięcie adresów zapisanych na tym urządzeniu.</translation>
 <translation id="7468373585447318060">Bądź na bieżąco z obniżkami cen wszystkich produktów, które śledzisz.</translation>

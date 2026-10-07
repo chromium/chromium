@@ -12,7 +12,6 @@
 <translation id="1126523729897810826">Obavite ove predložene radnje u nastavku da biste iskoristili Chrome na najbolji način</translation>
 <translation id="113098737392899175">Krećite se stranicama pomoću kursora za tekst kada je priključena tastatura</translation>
 <translation id="1148624853678088576">Spremni ste!</translation>
-<translation id="1149644372535087155">Čuvajte lozinke u Chrome-u</translation>
 <translation id="1178015372320901893">Donja tabela Moje prečice</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1181037720776840403">Ukloni</translation>
@@ -227,7 +226,6 @@
 <translation id="3167868116600277716">Discover fid</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> sačuvanih podataka</translation>
 <translation id="3199078925536734975">Dozvoljeno ovaj put • Približno</translation>
-<translation id="3208584281581115441">Proveri</translation>
 <translation id="321187648315454507">Da biste dozvolili da vam <ph name="APP_NAME" /> šalje obaveštenja, uključite obaveštenja i u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Lokacija nije dozvoljena</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -286,7 +284,6 @@
 <translation id="381841723434055211">Brojevi telefona</translation>
 <translation id="3823453485268218808">Font Mono</translation>
 <translation id="3826050100957962900">Prijavljivanje treće strane</translation>
-<translation id="3831065134033923230">Proverite sačuvane lozinke</translation>
 <translation id="3835233591525155343">Korišćenje uređaja</translation>
 <translation id="3843916486309149084">Chrome će danas ponovo blokirati kolačiće</translation>
 <translation id="385051799172605136">Nazad</translation>
@@ -294,7 +291,6 @@
 <translation id="3870711497942672548">Personalizujte Chrome pomoću prilagođenih boja i slika za početnu stranicu</translation>
 <translation id="389521680295183045">Sajtovi mogu da zatraže da znaju kada aktivno koristite uređaj</translation>
 <translation id="3895926599014793903">Prinudno omogući zumiranje</translation>
-<translation id="3903738175795615004">Prevucite od vrha ili pritisnite taster Esc da biste izašli iz režima celog ekrana.</translation>
 <translation id="3905475044299942653">Zaustavite mnogo obaveštenja</translation>
 <translation id="3922092564198021702">Na telefonu otvorite Podešavanja</translation>
 <translation id="3924858949939391676">Prikazujte linkove kada je Režim čitanja uključen</translation>
@@ -355,7 +351,6 @@
 <translation id="4479647676395637221">Pitaj pre nego što dozvoliš sajtovima da koriste kameru (preporučeno)</translation>
 <translation id="4505788138578415521">URL je proširen</translation>
 <translation id="4522570452068850558">Detalji</translation>
-<translation id="4523472416386354622">Prijavite se da biste započeli</translation>
 <translation id="4529207923544043455">Donja tabela koja prikazuje završene i nezavršene zadatke sa liste za podešavanje</translation>
 <translation id="4534723447064627427">Da biste dozvolili da <ph name="APP_NAME" /> pristupa mikrofonu, uključite mikrofon i u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="4545694195887112015">Tabela za podešavanje je zatvorena</translation>
@@ -368,7 +363,6 @@
 <translation id="4645575059429386691">Ovim upravlja tvoj roditelj</translation>
 <translation id="4651224148644053314">Još boja i opcija</translation>
 <translation id="4652266463001779298">Nije dozvoljeno</translation>
-<translation id="4655846733459137112">Dodirnite Da da biste lako koristili ovu lozinku pri sledećem prijavljivanju</translation>
 <translation id="4663373278480897665">Kamera je dozvoljena</translation>
 <translation id="4670064810192446073">Virtuelna realnost</translation>
 <translation id="4672315773691449562">Dodirnite aplikaciju Pregledač, pa Chrome</translation>
@@ -415,7 +409,6 @@
 <translation id="512938610812707830">Donja tabela sa kolekcijama tema za izgled stranice nove kartice je otvorena na celom ekranu</translation>
 <translation id="5137460097045297858">Donja tabela Discover fida je otvorena do polovine ekrana</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Sniženje na otvorenim karticama}one{Sniženja na otvorenim karticama}few{Sniženja na otvorenim karticama}other{Sniženja na otvorenim karticama}}</translation>
-<translation id="5150048675001754041">Brzo i lako se prijavljujte na sajtove i u aplikacije</translation>
 <translation id="5186036860380548585">Opcija je dostupna u vrhu ekrana</translation>
 <translation id="5197729504361054390">Kontakti koje izaberete će se deliti sa <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Prilagodite zatvorenu donju tabelu stranice nove kartice</translation>
@@ -425,7 +418,6 @@
 <translation id="5239623327352565343">Lokacija je dozvoljena</translation>
 <translation id="5246825184569358663">Ovom radnjom ćete izbrisati sve lokalne podatke, uključujući kolačiće, i resetovati sve dozvole za <ph name="DOMAIN" /> i sve sajtove u okviru njega</translation>
 <translation id="5264323282659631142">Uklonite „<ph name="CHIP_LABEL" />“</translation>
-<translation id="528192093759286357">Prevucite od vrha ekrana i dodirnite dugme Nazad da biste izašli iz režima celog ekrana.</translation>
 <translation id="5286194356314741248">Skeniranje</translation>
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5301954838959518834">Važi</translation>
@@ -473,7 +465,6 @@
 <translation id="5804241973901381774">Dozvole</translation>
 <translation id="5817042798620209981">Informacije o sajtu, dijalog</translation>
 <translation id="5822675474983796325">Prilagodite donju tabelu stranice nove kartice otvorenu na celom ekranu</translation>
-<translation id="5826403277762134844">Donja tabela sa uputstvima za čuvanje lozinki u Chrome-u</translation>
 <translation id="5833899990800318936">Ne dozvoljavaj sajtovima da koriste JavaScript</translation>
 <translation id="583673505367439042">Sajtovi mogu da traže da menjaju fajlove i foldere na uređaju</translation>
 <translation id="5844448279347999754">Kada je uključeno, sajtovi mogu da traže da vide tekst i slike sačuvane u privremenoj memoriji. Kada je isključeno, sajtovi ne mogu da vide tekst ili slike sačuvane u privremenoj memoriji.</translation>
@@ -511,7 +502,6 @@
 <translation id="6104860901391833523">Kada je uključeno, sajtovi mogu automatski da uđu u sliku u slici. Kada je isključeno, sajtovi ne mogu automatski da ulaze u sliku u slici.</translation>
 <translation id="6120483543004435978">Kada je uključeno, sajtovi mogu da zatraže da znaju kada aktivno koristite uređaj. Kada je isključeno, sajtovi ne mogu da znaju kada aktivno koristite uređaj.</translation>
 <translation id="612871598708395517">Sakrij opciju Dobijajte Chrome predloge u drugim aplikacijama</translation>
-<translation id="6132075343662013154">Chrome će vam ponuditi da sačuva lozinku</translation>
 <translation id="615886654739818377">Ne dozvoljavaj sajtovima da upravljaju prozorima na svim ekranima</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6171020522141473435">Kada je uključeno, sajtovi mogu da traže da koriste Bluetooth uređaje. Kada je isključeno, sajtovi ne mogu da koriste Bluetooth uređaje.</translation>
@@ -587,7 +577,6 @@
 <translation id="6980861169612950611">Želite da izbrišete podatke sajta? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Pristupačnost</translation>
 <translation id="6991142177939282156">Dozvoljeno • Koristi se približna lokacija</translation>
-<translation id="6992014788289743568">Proverite lozinke da biste poboljšali bezbednost i zaštitili podatke</translation>
 <translation id="6992289844737586249">Pitaj pre nego što dozvoliš sajtovima da koriste mikrofon (preporučeno)</translation>
 <translation id="7000754031042624318">Isključeno je u Android podešavanjima</translation>
 <translation id="7036823721811529709">Slušajte u pozadini</translation>
@@ -654,7 +643,6 @@ Napredna zaštita upravlja ovim Chrome podešavanjima:</translation>
 <translation id="775043444390799886">Opozovi dozvolu</translation>
 <translation id="7758789811447313947">Ljubičasta tema</translation>
 <translation id="7759147511335618829">MIDI – Kontrola i reprogramiranje</translation>
-<translation id="7771089277295008211">Donja tabela sa uputstvima za čuvanje lozinki je zatvorena</translation>
 <translation id="7781829728241885113">Juče</translation>
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
@@ -671,7 +659,6 @@ Napredna zaštita upravlja ovim Chrome podešavanjima:</translation>
 <translation id="7940722705963108451">Podseti me</translation>
 <translation id="7948081750384205628">Saznajte više o podešavanju <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Sajtovi mogu da traže da vide tekst i slike u privremenoj memoriji</translation>
-<translation id="7958779728312669715">Donja tabela sa uputstvima za čuvanje lozinki u potpunosti je otvorena</translation>
 <translation id="798299424881500862">Narandžasta tema</translation>
 <translation id="7986741934819883144">Izaberite kontakt</translation>
 <translation id="7990211076305263060">Kada je uključeno, sajtovi mogu da traže da koriste mikrofon. Kad je isključeno, sajtovi ne mogu da koriste mikrofon.</translation>
@@ -766,7 +753,6 @@ Napredna zaštita upravlja ovim Chrome podešavanjima:</translation>
 <translation id="8889294078294184559">Dok nastavljate sa pregledanjem, sajtovi mogu da proveravaju u Chrome-u i da od prethodnog sajta koji ste posetili dobiju potvrdu da ste verovatno stvarna osoba</translation>
 <translation id="8899807382908246773">Oglasi koji ometaju</translation>
 <translation id="8903921497873541725">Uvećavanje</translation>
-<translation id="8919911527569629802">Prijavite se na bilo koji veb-sajt</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Ne pitaj me ponovo</translation>
 <translation id="8926666909099850184">NFC je isključen za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>

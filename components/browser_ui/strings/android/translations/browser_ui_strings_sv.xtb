@@ -12,7 +12,6 @@
 <translation id="1126523729897810826">Slutför de rekommenderade åtgärderna nedan så att du får ut mesta möjliga av Chrome</translation>
 <translation id="113098737392899175">Navigera på sidor med en textmarkör när ett tangentbord är anslutet</translation>
 <translation id="1148624853678088576">Nu är det klart!</translation>
-<translation id="1149644372535087155">Spara lösenord i Chrome</translation>
 <translation id="1178015372320901893">Ark på nedre delen av skärmen för Mina genvägar</translation>
 <translation id="1178581264944972037">Paus</translation>
 <translation id="1181037720776840403">Ta bort</translation>
@@ -227,7 +226,6 @@
 <translation id="3167868116600277716">Förslagsflödet</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> sparad data</translation>
 <translation id="3199078925536734975">Tillåts den här gången • Ungefärlig</translation>
-<translation id="3208584281581115441">Kontrollera nu</translation>
 <translation id="321187648315454507">Om du vill få aviseringar från <ph name="APP_NAME" /> måste du även aktivera aviseringar i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Plats tillåts inte</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -286,7 +284,6 @@
 <translation id="381841723434055211">Telefonnummer</translation>
 <translation id="3823453485268218808">Font med fast bredd</translation>
 <translation id="3826050100957962900">Tredjepartsinloggning</translation>
-<translation id="3831065134033923230">Kontrollera sparade lösenord</translation>
 <translation id="3835233591525155343">Enhetsanvändning</translation>
 <translation id="3843916486309149084">Cookies blockeras i Chrome igen i dag</translation>
 <translation id="385051799172605136">Föregående</translation>
@@ -294,7 +291,6 @@
 <translation id="3870711497942672548">Anpassa Chrome med egna färger och bilder på startsidan</translation>
 <translation id="389521680295183045">Webbplatser kan begära tillstånd att få veta om du använder enheten aktivt</translation>
 <translation id="3895926599014793903">Tvinga aktivering av zoom</translation>
-<translation id="3903738175795615004">Dra uppifrån eller tryck på tangenten Esc om du vill avsluta helskärmsläget.</translation>
 <translation id="3905475044299942653">Stoppa många aviseringar</translation>
 <translation id="3922092564198021702">Öppna Inställningar på telefonen</translation>
 <translation id="3924858949939391676">Visa länkar när läsläget är aktiverat</translation>
@@ -355,7 +351,6 @@
 <translation id="4479647676395637221">Fråga innan webbplatser tillåts att använda kameran (rekommenderas)</translation>
 <translation id="4505788138578415521">Webbadressen har utökats</translation>
 <translation id="4522570452068850558">Detaljer</translation>
-<translation id="4523472416386354622">Logga in när du vill komma igång</translation>
 <translation id="4529207923544043455">Ark på nedre delen av skärmen som visar slutförda och ej slutförda uppgifter i inställningslistan</translation>
 <translation id="4534723447064627427">Om du vill ge <ph name="APP_NAME" /> åtkomst till mikrofonen måste du även aktivera mikrofonen i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="4545694195887112015">Inställningsarket har stängts</translation>
@@ -368,7 +363,6 @@
 <translation id="4645575059429386691">Hanteras av din förälder</translation>
 <translation id="4651224148644053314">Fler färger och alternativ</translation>
 <translation id="4652266463001779298">Tillåts inte</translation>
-<translation id="4655846733459137112">Tryck på Ja om du vill använda det här lösenordet nästa gång du loggar in</translation>
 <translation id="4663373278480897665">Kamera är tillåten</translation>
 <translation id="4670064810192446073">Virtuell verklighet</translation>
 <translation id="4672315773691449562">Tryck på webbläsarappen och sedan på Chrome</translation>
@@ -415,7 +409,6 @@
 <translation id="512938610812707830">Arket på nedre delen av skärmen för temasamlingar för utseende på sidan Ny flik har öppnats över hela skärmen</translation>
 <translation id="5137460097045297858">Arket på nedre delen av skärmen för flödet Upptäck har öppnats över halva skärmen</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Sänkt pris på öppna flikar}other{Sänkta priser på öppna flikar}}</translation>
-<translation id="5150048675001754041">Logga in snabbt och enkelt på webbplatser och i appar</translation>
 <translation id="5186036860380548585">Alternativet visas högt upp på skärmen</translation>
 <translation id="5197729504361054390">Kontakterna du väljer delas med <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Arket på nedre delen av skärmen för att anpassa sidan ny flik har stängts</translation>
@@ -425,7 +418,6 @@
 <translation id="5239623327352565343">Plats tillåts</translation>
 <translation id="5246825184569358663">Om du gör detta raderas all lokal data, inklusive cookies, och alla behörigheter för <ph name="DOMAIN" /> och alla underordnade webbplatser återställs</translation>
 <translation id="5264323282659631142">Ta bort <ph name="CHIP_LABEL" /></translation>
-<translation id="528192093759286357">Dra uppifrån och tryck på bakåtknappen för att lämna helskärmsläget.</translation>
 <translation id="5286194356314741248">Skannar</translation>
 <translation id="5300589172476337783">Visa</translation>
 <translation id="5301954838959518834">Ok, jag förstår</translation>
@@ -473,7 +465,6 @@
 <translation id="5804241973901381774">Behörigheter</translation>
 <translation id="5817042798620209981">Webbplatsinformation, dialogruta</translation>
 <translation id="5822675474983796325">Arket på nedre delen av skärmen för att anpassa sidan ny flik har öppnats över hela skärmen</translation>
-<translation id="5826403277762134844">Ark på nedre delen av skärmen med anvisningar om att spara lösenord i Chrome</translation>
 <translation id="5833899990800318936">Tillåt inte att webbplatser använder JavaScript</translation>
 <translation id="583673505367439042">Webbplatser får begära tillstånd att redigera filer eller mappar på enheten</translation>
 <translation id="5844448279347999754">När detta är aktiverat kan webbplatser be om att få se text och bilder som har sparats i urklipp. När detta är inaktiverat får webbplatser inte läsa text och bilder som du har sparat i urklipp.</translation>
@@ -511,7 +502,6 @@
 <translation id="6104860901391833523">När detta är aktiverat kan webbplatser öppna bild-i-bild automatiskt. När detta är inaktiverat kan webbplatser inte öppna bild-i-bild automatiskt.</translation>
 <translation id="6120483543004435978">När detta är aktiverat kan webbplatser be om att få veta om du använder enheten aktivt. När detta är inaktiverat får webbplatser inte veta om du använder enheten aktivt.</translation>
 <translation id="612871598708395517">Dölj Få Chrome-förslag i andra appar</translation>
-<translation id="6132075343662013154">Chrome frågar om du vill spara lösenordet</translation>
 <translation id="615886654739818377">Tillåt inte att webbplatser hanterar fönster på alla skärmar</translation>
 <translation id="6165508094623778733">Läs mer</translation>
 <translation id="6171020522141473435">När detta är aktiverat kan webbplatser be om att få använda Bluetooth-enheter. När detta är inaktiverat får webbplatser inte använda Bluetooth-enheter.</translation>
@@ -587,7 +577,6 @@
 <translation id="6980861169612950611">Vill du radera webbplatsdata? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Tillgänglighet</translation>
 <translation id="6991142177939282156">Tillåts • Använder ungefärlig</translation>
-<translation id="6992014788289743568">Öka säkerheten och skydda din data genom att kontrollera dina lösenord</translation>
 <translation id="6992289844737586249">Fråga innan webbplatser tillåts att använda mikrofonen (rekommenderas)</translation>
 <translation id="7000754031042624318">Inaktiverad i Android-inställningarna</translation>
 <translation id="7036823721811529709">Spela upp i bakgrunden</translation>
@@ -654,7 +643,6 @@ Avancerat skydd styr följande Chrome-inställningar:</translation>
 <translation id="775043444390799886">Återkalla behörighet</translation>
 <translation id="7758789811447313947">Lila tema</translation>
 <translation id="7759147511335618829">Styra/omprogrammera MIDI-enheter</translation>
-<translation id="7771089277295008211">Arket på nedre delen av skärmen med anvisningar om att spara lösenord har stängts</translation>
 <translation id="7781829728241885113">Igår</translation>
 <translation id="7791543448312431591">Lägg till</translation>
 <translation id="780301667611848630">Nej tack</translation>
@@ -671,7 +659,6 @@ Avancerat skydd styr följande Chrome-inställningar:</translation>
 <translation id="7940722705963108451">Påminn mig</translation>
 <translation id="7948081750384205628">Läs mer om <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Webbplatser får begära tillstånd att läsa text och bilder i Urklipp</translation>
-<translation id="7958779728312669715">Arket på nedre delen av skärmen med anvisningar om att spara lösenord har öppnats helt</translation>
 <translation id="798299424881500862">Orange tema</translation>
 <translation id="7986741934819883144">Välj en kontakt</translation>
 <translation id="7990211076305263060">När detta är aktiverat kan webbplatser be om att få använda mikrofonen. När detta är inaktiverat får webbplatser inte använda mikrofonen.</translation>
@@ -766,7 +753,6 @@ Avancerat skydd styr följande Chrome-inställningar:</translation>
 <translation id="8889294078294184559">När du fortsätter surfa kan webbplatser kontrollera informationen med Chrome och verifiera med den föregående webbplatsen du besökte att du troligen är en riktig person.</translation>
 <translation id="8899807382908246773">Påträngande annonser</translation>
 <translation id="8903921497873541725">Zooma in</translation>
-<translation id="8919911527569629802">Logga in på vilken webbplats som helst</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Fråga inte igen.</translation>
 <translation id="8926666909099850184">NFC är inte aktiverat på enheten. Aktivera det i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>

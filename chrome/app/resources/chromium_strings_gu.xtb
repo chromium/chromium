@@ -23,6 +23,7 @@
 <translation id="1185134272377778587">Chromium વિશે</translation>
 <translation id="1186645291482254714">તમારા ફોન પર Chromium વડે કિંમત ટ્રૅક કરવા સંબંધિત અલર્ટ મેળવો</translation>
 <translation id="1203500561924088507">ઇન્સ્ટૉલ કરવા બદલ આભાર. <ph name="BUNDLE_NAME" />નો ઉપયોગ કરતા પહેલાં તમારે તમારું બ્રાઉઝર ફરી શરૂ કરવું આવશ્યક છે.</translation>
+<translation id="1222365723190436821"><ph name="IMPORTANT_UPDATE" /> બાકી છે. તમારા બ્રાઉઝિંગને સુરક્ષિત રાખવા માટે, તમે આગલી વખતે <ph name="IDLE_DURATION" /> માટે નિષ્ક્રિય હો ત્યારે Chromium અપડેટ થશે.</translation>
 <translation id="1232234696885483911">જ્યારે તમે 'છબી વડે શોધ' સુવિધા ખોલો, ત્યારે PDFs સહિત પેજનું શીર્ષક, URL અને કન્ટેન્ટ સર્વરને ઑટોમૅટિક રીતે મોકલવામાં આવશે. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">જ્યારે તમે સાઇન ઇન કર્યું હોય, ત્યારે તમે Chromiumમાં તમારા Google એકાઉન્ટમાંથી તમારા પાસવર્ડ અને બીજી ઘણી બાબતોનો ઉપયોગ કરી શકો છો. આને બદલવા માટે, “Chromiumમાં તમારા એકાઉન્ટ” પર જાઓ.</translation>
 <translation id="1244381985120794049">Macના મેનૂ બારમાં Chromiumમાં Gemini બતાવો</translation>
@@ -230,6 +231,7 @@
 <translation id="3286538390144397061">હવે ફરીથી પ્રારંભ કરો</translation>
 <translation id="328888136576916638">Google API કીઝ ખૂટે છે. Chromium ની કેટલીક કાર્યક્ષમતા અક્ષમ થશે.</translation>
 <translation id="3296368748942286671">જ્યારે Chromium બંધ થાય ત્યારે બૅકગ્રાઉન્ડ ઍપ ચલાવવાનું ચાલુ રાખો</translation>
+<translation id="3300632735252839402">જ્યારે તમે દૂર હો, ત્યારે Chromium અપડેટ થશે</translation>
 <translation id="3313189106987092621">અસુરક્ષિત કનેક્શનનો ઉપયોગ કરીને કોઈપણ સાઇટ લોડ કરતા પહેલાં Chromium તમને ચેતવણી આપશે</translation>
 <translation id="3316771292331273802">જ્યારે તમે બધી Chromium વિન્ડો બંધ કરશો, ત્યારે તમને મોટાભાગની સાઇટમાંથી સાઇન આઉટ કરવામાં આવશે, સિવાય કે જો તમે Chromiumમાં સાઇન ઇન કરેલું હોય, તો તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ કરવામાં આવશે નહીં. સાઇટને તમને યાદ રાખવાની મંજૂરી આપવા માટે, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">શોધ વિસ્તારના સૌથી ઉપર જમણા ખૂણે: જમણી બાજુ <ph name="RIGHT" />%, સૌથી ઉપર <ph name="TOP" />%</translation>
@@ -238,6 +240,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">વર્તમાન Chromium પ્રોફાઇલ પર સ્વિચ કરીએ?</translation>
 <translation id="3412460710772753638">આ ડિવાઇસ પર Password Managerમાં</translation>
+<translation id="3425452599984451640">Chromium અપડેટ કરવા માગે છે</translation>
 <translation id="3427159664004296878"><ph name="DEVICE" />માંથી તમારા બુકમાર્ક અને બીજું ઘણું મેળવવા માટે, Chromiumમાં સાઇન ઇન કરો</translation>
 <translation id="3438772217992559640">'છબી વડે શોધ'ની સુવિધાનો ઉપયોગ કરીને આ ટૅબ શોધો</translation>
 <translation id="3455907671758333080">તમારા ફોન પર Chromium વડે Safe Browsingમાં વધારેલી સુરક્ષા વિસ્તૃત કરો</translation>

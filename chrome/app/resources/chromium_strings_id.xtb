@@ -21,6 +21,7 @@
 <translation id="1185134272377778587">Tentang Chromium</translation>
 <translation id="1186645291482254714">Dapatkan notifikasi pemantauan harga dengan Chromium di ponsel Anda</translation>
 <translation id="1203500561924088507">Terima kasih telah menginstal. Anda harus memulai ulang browser sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1222365723190436821"><ph name="IMPORTANT_UPDATE" /> tertunda. Agar penjelajahan Anda tetap aman, Chromium akan diupdate saat Anda tidak aktif selama <ph name="IDLE_DURATION" />.</translation>
 <translation id="1232234696885483911">Saat Anda membuka Penelusuran Gambar, judul halaman, URL, dan konten, termasuk PDF, akan otomatis dikirim ke server. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Saat Anda login, Anda dapat menggunakan sandi Anda dan info lainnya dari Akun Google Anda di Chromium. Untuk mengubahnya, buka “Akun Anda di Chromium”.</translation>
 <translation id="1244381985120794049">Tampilkan Gemini di Chromium di panel menu Mac</translation>
@@ -228,6 +229,7 @@
 <translation id="3286538390144397061">Mulai Ulang Sekarang</translation>
 <translation id="328888136576916638">Kunci API Google tidak ada. Beberapa fungsi Chromium tidak akan berfungsi.</translation>
 <translation id="3296368748942286671">Lanjutkan aplikasi yang berjalan di latar belakang jika Chromium ditutup</translation>
+<translation id="3300632735252839402">Chromium akan diupdate saat Anda tidak menggunakan perangkat</translation>
 <translation id="3313189106987092621">Chromium akan memperingatkan Anda sebelum memuat situs apa pun menggunakan koneksi yang tidak aman</translation>
 <translation id="3316771292331273802">Anda akan logout dari sebagian besar situs saat menutup semua jendela Chromium, kecuali Akun Google Anda jika Anda login ke Chromium. Agar situs mengingat Anda, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">pojok kanan atas area penelusuran: kanan <ph name="RIGHT" />%, atas <ph name="TOP" />%</translation>
@@ -236,6 +238,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Beralih ke profil Chromium yang sudah ada?</translation>
 <translation id="3412460710772753638">Di Pengelola Sandi di perangkat ini</translation>
+<translation id="3425452599984451640">Chromium ingin mengupdate</translation>
 <translation id="3427159664004296878">Untuk mendapatkan bookmark dan data lainnya dari <ph name="DEVICE" />, login ke Chromium</translation>
 <translation id="3438772217992559640">Telusuri Tab Ini dengan Penelusuran Gambar</translation>
 <translation id="3455907671758333080">Manfaatkan Safe Browsing yang Disempurnakan dengan Chromium di ponsel</translation>

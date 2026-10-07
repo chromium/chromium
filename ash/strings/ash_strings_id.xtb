@@ -928,7 +928,6 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="3697991387880191195">Tekan pintasan screenshot</translation>
 <translation id="3702809606464356667">Menampilkan jendela dari desktop saat ini, tekan tombol Panah atas untuk menampilkan jendela dari semua desktop</translation>
 <translation id="3705722231355495246">-</translation>
-<translation id="3706423975342040244">Hiburan</translation>
 <translation id="370665806235115550">Memuat...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> dan <ph name="UNAVAILABLE_DLC_TWO" /> tidak tersedia.</translation>
 <translation id="3708186454126126312">Terhubung sebelumnya</translation>
@@ -975,7 +974,6 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="3824784079442479685">Tindakan ini akan mengizinkan akses kamera untuk <ph name="APP_NAME" /> dan semua aplikasi serta situs yang memiliki izin kamera. Anda mungkin perlu memuat ulang halaman web atau memulai ulang aplikasi.</translation>
 <translation id="3826099427150913765">Ganti ke sandi</translation>
 <translation id="383058930331066723">Mode penghemat baterai aktif</translation>
-<translation id="3831226344927851293">Keluar dari tampilan tutorial</translation>
 <translation id="383629559565718788">Tampilkan setelan keyboard</translation>
 <translation id="384082539148746321">Hapus template?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, lalu <ph name="KEY_ONE" /> atau <ph name="KEY_TWO" /> atau <ph name="KEY_THREE" /> atau <ph name="KEY_FOUR" /></translation>
@@ -1578,10 +1576,8 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="5551974246223970793">Saat menelusuri halaman, buka hasil berikutnya yang cocok untuk penelusuran</translation>
 <translation id="5556459405103347317">Muat ulang</translation>
 <translation id="5558091555391176027">Tombol visibilitas tinggi Berbagi Langsung</translation>
-<translation id="5558314826121965174">Kreativitas</translation>
 <translation id="556042886152191864">Tombol</translation>
 <translation id="5570122939431135380">Buka tab baru di jendela Samaran baru</translation>
-<translation id="5572632238877308040">Penting</translation>
 <translation id="5575528586625653441">Terjadi masalah dengan permintaan pendaftaran demo.</translation>
 <translation id="557563299383177668">Paragraf berikutnya</translation>
 <translation id="5577082622442191756">Tombol Bluetooth. <ph name="STATE_TEXT" />.</translation>
@@ -1616,7 +1612,6 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="5667546120811588575">Menyiapkan Google Play...</translation>
 <translation id="5669267381087807207">Mengaktifkan</translation>
 <translation id="5671658447180261823">Hapus saran <ph name="SUGGESTION_NAME" /></translation>
-<translation id="5672890847723042801">Utilitas</translation>
 <translation id="5673434351075758678">Dari "<ph name="FROM_LOCALE" />" ke "<ph name="TO_LOCALE" />" setelah menyinkronkan setelan Anda.</translation>
 <translation id="5675363643668471212">Item rak</translation>
 <translation id="5677022547882470786">Tarik atau tekan Spasi untuk memilih area yang akan ditelusuri</translation>
@@ -1871,7 +1866,6 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, lalu <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> atau <ph name="KEY_THREE" /></translation>
 <translation id="6352082849089527770">Jaringan tidak dikenal</translation>
 <translation id="6359587239691116345">Dapatkan fitur dan peningkatan keamanan terbaru. Jika Anda menolak update ini, perangkat mungkin tidak lagi berfungsi dengan baik dan Anda mungkin mengalami masalah keamanan dan performa.</translation>
-<translation id="6362833380917912748">Pelajari aplikasi bawaan Anda</translation>
 <translation id="6364386432014869981">Touchpad bawaan diaktifkan</translation>
 <translation id="6376931439017688372">Bluetooth aktif</translation>
 <translation id="6378515133128829137">Sematkan jendela ke kanan</translation>
@@ -2096,7 +2090,6 @@ Baru diinstal</translation>
 <translation id="7014684956566476813">Terhubung ke perangkat bernama <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Coba lagi pukul <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Desktop 6</translation>
-<translation id="702252130983202758">Aplikasi Anda</translation>
 <translation id="7025533177575372252">Hubungkan <ph name="DEVICE_NAME" /> dengan ponsel Anda</translation>
 <translation id="7026338066939101231">Pengurangan</translation>
 <translation id="7029307918966275733">Crostini tidak diinstal. Instal Crostini untuk melihat kredit.</translation>
@@ -2535,7 +2528,6 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="8277261673056602147">Tandai teks di layar</translation>
 <translation id="8281886186245836920">Lewati</translation>
 <translation id="8282784978194352587">Anda berhasil!</translation>
-<translation id="8287009018010202411">Produktivitas</translation>
 <translation id="828708037801473432">Nonaktif</translation>
 <translation id="8289128870594824098">Ukuran disk</translation>
 <translation id="8297006494302853456">Lemah</translation>
@@ -2630,7 +2622,6 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="8598235756057743477">Urutkan aplikasi menurut nama atau warna</translation>
 <translation id="8599864823732014237">Lewati pendaftaran perusahaan?</translation>
 <translation id="8609384513243082612">Membuka tab baru</translation>
-<translation id="861045123704058818">Aplikasi disusun menurut kategori untuk sementara</translation>
 <translation id="8612338981637220013">Tetap semangat!</translation>
 <translation id="8613164732773110792">Karakter huruf kecil, angka, garis bawah, atau tanda hubung saja</translation>
 <translation id="8614517853887502247">Notifikasi <ph name="APP_1_TITLE" /> dan <ph name="APP_2_TITLE" /> disembunyikan karena perlindungan tampilan aktif</translation>
@@ -2822,7 +2813,6 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="9129245940793250979">Tombol Belakang</translation>
 <translation id="9133335900048457298">Tidak dapat merekam konten yang dilindungi</translation>
 <translation id="9139720510312328767">Hapus huruf berikutnya</translation>
-<translation id="9148058034647219655">Keluar</translation>
 <translation id="9151906066336345901">end</translation>
 <translation id="9159421884295554245">Telusuri Papan Klip</translation>
 <translation id="9168436347345867845">Nanti saja</translation>

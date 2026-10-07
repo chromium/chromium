@@ -21,6 +21,7 @@
 <translation id="1185134272377778587">Acerca do Chromium</translation>
 <translation id="1186645291482254714">Receba alertas de acompanhamento de preço com o Chromium no telemóvel</translation>
 <translation id="1203500561924088507">Agradecemos a instalação. Tem de reiniciar o navegador antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1222365723190436821">Existe uma <ph name="IMPORTANT_UPDATE" /> pendente. Para manter a sua navegação segura, o Chromium vai ser atualizado da próxima vez que estiver num período de inatividade durante <ph name="IDLE_DURATION" />.</translation>
 <translation id="1232234696885483911">Quando abre a pesquisa de imagens, o título, o URL e o conteúdo da página, incluindo PDFs, são enviados automaticamente para o servidor. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Enquanto tiver sessão iniciada, pode usar as palavras-passe e muito mais da sua Conta Google no Chromium. Para alterar esta opção, aceda a "A sua conta no Chromium".</translation>
 <translation id="1244381985120794049">Mostrar o Gemini no Chromium na barra de menu do Mac</translation>
@@ -228,6 +229,7 @@
 <translation id="3286538390144397061">Reiniciar agora</translation>
 <translation id="328888136576916638">As chaves da API do Google estão em falta. Algumas funcionalidades do Chromium serão desativadas.</translation>
 <translation id="3296368748942286671">Continuar a executar aplicações em segundo plano quando o Chromium está fechado</translation>
+<translation id="3300632735252839402">O Chromium vai ser atualizado quando estiver ausente</translation>
 <translation id="3313189106987092621">O Chromium envia-lhe um aviso antes de carregar qualquer site através de uma ligação insegura</translation>
 <translation id="3316771292331273802">A sua sessão é terminada na maioria dos sites quando fecha todas as janelas do Chromium, exceto na sua Conta Google se tiver sessão iniciada no Chromium. Para permitir que os sites se lembrem de si, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">canto superior direito da área de pesquisa: direita <ph name="RIGHT" />%, parte superior <ph name="TOP" />%</translation>
@@ -236,6 +238,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Mudar para o perfil do Chromium existente?</translation>
 <translation id="3412460710772753638">No Gestor de Palavras-passe neste dispositivo</translation>
+<translation id="3425452599984451640">O Chromium quer fazer uma atualização</translation>
 <translation id="3427159664004296878">Para aceder aos seus marcadores e muito mais do <ph name="DEVICE" />, inicie sessão no Chromium</translation>
 <translation id="3438772217992559640">Pesquisar este separador com a pesquisa de imagens</translation>
 <translation id="3455907671758333080">Expanda a Navegação segura melhorada com o Chromium no seu telemóvel</translation>
@@ -388,6 +391,7 @@
 <translation id="5249261924633168472">Abrir link numa janela de nave&amp;gação anónima do Chromium</translation>
 <translation id="5276305953263010518">Transfira a app Chromium para guardar palavras-passe em qualquer lugar</translation>
 <translation id="5277894862589591112">Para aplicar as alterações, reinicie o Chromium.</translation>
+<translation id="5278909220224474621">Para enviar este separador para outro dispositivo, inicie sessão no Chromium em ambos os dispositivos</translation>
 <translation id="5286907366254680517">Detetado</translation>
 <translation id="5289287148052354622">Transfira a app Chromium</translation>
 <translation id="5294316920224716406">Ao navegar no Modo de navegação anónima, o Chromium envia-lhe um aviso antes de carregar um site através de uma ligação insegura</translation>
@@ -757,6 +761,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8648201657708811153">Não é possível tornar o Google Chrome for Testing o seu navegador predefinido.</translation>
 <translation id="8676101123715131330">Pesquise com o Chromium em qualquer lugar</translation>
 <translation id="8697124171261953979">Também controla a página apresentada quando inicia o Chromium ou pesquisa a partir da Caixa geral.</translation>
+<translation id="8702213505203810093">Para enviar este separador para outro dispositivo, inicie sessão no Chromium nesse dispositivo</translation>
 <translation id="8704119203788522458">Este é o seu Chromium</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8719993436687031146">Iniciar sessão no Chromium?</translation>

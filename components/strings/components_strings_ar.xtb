@@ -302,7 +302,6 @@
 <translation id="1486096554574027028">بحث عن كلمات المرور</translation>
 <translation id="1492194039220927094">إرسال السياسات:</translation>
 <translation id="1495677929897281669">الرجوع إلى علامة التبويب</translation>
-<translation id="1496318738909526466">إدارة ميزة "الملء التلقائي المحسّن"</translation>
 <translation id="1500286806237135498">الكاميرات (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">فلوت</translation>
 <translation id="1507202001669085618">‏&lt;p&gt;سيظهر هذا الخطأ عند استخدام بوابة شبكة Wi-Fi تتطلّب تسجيل الدخول قبل الاتصال بالإنترنت.&lt;/p&gt;
@@ -954,6 +953,7 @@
 <translation id="2556173336856001120">‫"<ph name="USER_GIVEN_NAME" />" • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">تراجع عن ا&amp;لتحرير</translation>
 <translation id="2559566667529177711">متعدد الطبقات</translation>
+<translation id="2561224416042784023">عرض الإعدادات</translation>
 <translation id="2570734079541893434">إدارة الإعدادات</translation>
 <translation id="257136025287118539">ينقل المشرف حاليًا ملفاتك إلى <ph name="CLOUD_PROVIDER" />. يمكنك تعديل هذه الملفات بعد اكتمال عملية التحميل.</translation>
 <translation id="2571488850200220306">للمساعدة في ضمان الحفاظ على الأمان، يمكن أيضًا الاطّلاع على معلومات نظام التشغيل وإصدار المتصفِّح والبرامج المثبَّتة على الجهاز</translation>

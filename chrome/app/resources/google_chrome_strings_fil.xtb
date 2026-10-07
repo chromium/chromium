@@ -30,6 +30,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1194807384646768652">Na-block ng Chrome ang pag-download na ito dahil hindi karaniwang dina-download ang uri ng file at posibleng mapanganib ito</translation>
 <translation id="1197860368385086056">Sa susunod na buksan mo ang Chrome sa iyong <ph name="DEVICE_TYPE" />, makakakita ka ng prompt para i-enable ang mga alerto sa pagsubaybay sa presyo.</translation>
 <translation id="1203500561924088507">Salamat sa pag-install. Dapat mong i-restart ang iyong browser bago gamitin ang <ph name="BUNDLE_NAME" />.</translation>
+<translation id="122321322139970942">May nakabinbing <ph name="IMPORTANT_UPDATE" />. Para mapanatiling ligtas ang iyong pag-browse, mag-a-update ang Chrome sa susunod na hindi ka aktibo sa loob ng <ph name="IDLE_DURATION" />.</translation>
 <translation id="1226003169284463347">Para makuha ang iyong mga bookmark at higit pa sa lahat ng device mo, mag-sign in sa Chrome</translation>
 <translation id="1278833599417554002">Ilunsad ulit para ma-update ang Chrome</translation>
 <translation id="1289911795790071537">Buksan ang paghahanap gamit ang Chrome</translation>
@@ -330,7 +331,6 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="4050175100176540509">May available na mahahalagang pagpapahusay sa seguridad at mga bagong feature sa pinakabagong bersyon.</translation>
 <translation id="4053720452172726777">I-customize at kontrolin ang Google Chrome</translation>
 <translation id="408393047846373801">Para makuha ang iyong mga password at higit pa sa lahat ng device mo, mag-sign in sa Chrome. Mase-save ang password na ito sa iyong Google Account pagkatapos mong mag-sign in.</translation>
-<translation id="409936259433005390">Malapit nang mag-upgrade sa Windows 11? I-download ang Installer ng Chrome sa OneDrive para handa ka na sa umpisa pa lang.</translation>
 <translation id="4102173024714616627">Ang mga extension ay mga add-on na nagbibigay-daan sa iyong i-customize ang Chrome. Mula sa pananatiling organisado, hanggang sa pagpapasimple ng mga pang-araw-araw na gawain, tutulungan ka ng mga extension na gawing sarili mo ang Chrome.</translation>
 <translation id="4110895483821904099">I-set up ang iyong bagong profile sa Chrome</translation>
 <translation id="4111566860456076004">Hindi ma-verify ng Chrome kung saan galing ang extension na ito, at posibleng hindi ito ligtas. Alisin ito sa Chrome para hindi na nito makita at mabago ang iyong data sa mga site na binibisita mo, kabilang ang personal na impormasyon.</translation>
@@ -507,6 +507,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="5941830788786076944">Gawin ang Google Chrome na default browser</translation>
 <translation id="5947104538377036631">Shortcut ng Chrome</translation>
 <translation id="5960071705175224773">Binago ng hindi kilalang app ang iyong mga setting</translation>
+<translation id="5960404530854194706">Mag-a-update ang Chrome kapag wala ka</translation>
 <translation id="5980111191913430208">Puwedeng mapinsala ng mga extension, app, at tema mula sa mga hindi kilalang source ang iyong device. Inirerekomenda ng Chrome na i-install lang ang mga ito mula sa <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Nagda-download... <ph name="HOURS" /> (na) oras na lang ang natitira</translation>
 <translation id="6008161919456049856">Aalisin sa device na ito ang mga password, paraan ng pagbabayad, at address na na-save mo sa iyong Google Account. Para magamit ulit ang mga ito sa Chrome, mag-sign in ulit.</translation>
@@ -590,6 +591,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6556755379298048869">Maghanap gamit ang keyboard shortcut.</translation>
 <translation id="6585124893636629274">Isara ang Gemini sa Chrome</translation>
 <translation id="659498884637196217">Sa Google Password Manager sa device na ito</translation>
+<translation id="660312897435669152">Gustong mag-update ng Chrome</translation>
 <translation id="6612152958212564387">Hindi ka nagpapadala ng mga istatistika sa paggamit at ulat ng pag-crash sa Google. <ph name="BEGIN_LINK" />Pamahalaan<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Panatilihing ganap na naka-sync ang iyong mga password, bookmark, at history sa lahat ng device sa pamamagitan ng pagtatakda ng Chrome bilang default browser mo.</translation>
 <translation id="6621391692573306628">Para ipadala ang tab na ito sa ibang device, mag-sign in sa Chrome sa dalawang device</translation>

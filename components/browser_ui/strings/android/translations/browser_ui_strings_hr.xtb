@@ -12,7 +12,6 @@
 <translation id="1126523729897810826">Dovršite predložene radnje u nastavku da biste iskoristili sve prednosti Chromea</translation>
 <translation id="113098737392899175">Krećite se stranicama pomoću pokazivača za tekst kad je tipkovnica povezana</translation>
 <translation id="1148624853678088576">Spremni ste!</translation>
-<translation id="1149644372535087155">Spremite zaporke u Chromeu</translation>
 <translation id="1178015372320901893">Donja tablica Moji prečaci</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1181037720776840403">Ukloni</translation>
@@ -227,7 +226,6 @@
 <translation id="3167868116600277716">Feed Discovera</translation>
 <translation id="3198916472715691905">Pohranjeni podaci: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="3199078925536734975">Dopušteno ovaj put • Približno</translation>
-<translation id="3208584281581115441">Provjeri sad</translation>
 <translation id="321187648315454507">Da bi vam aplikacija <ph name="APP_NAME" /> slati obavijesti, uključite obavijesti i u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Lokacija nije dopuštena</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -286,7 +284,6 @@
 <translation id="381841723434055211">Telefonski brojevi</translation>
 <translation id="3823453485268218808">Font Mono</translation>
 <translation id="3826050100957962900">Prijava putem treće strane</translation>
-<translation id="3831065134033923230">Provjerite svoje spremljene zaporke</translation>
 <translation id="3835233591525155343">Vaša upotreba uređaja</translation>
 <translation id="3843916486309149084">Chrome će danas ponovno blokirati kolačiće</translation>
 <translation id="385051799172605136">Natrag</translation>
@@ -294,7 +291,6 @@
 <translation id="3870711497942672548">Prilagodite Chrome pomoću personaliziranih boja i slika za početnu stranicu</translation>
 <translation id="389521680295183045">Web-lokacije mogu pitati kad aktivno koristite uređaj</translation>
 <translation id="3895926599014793903">Prisilno omogućavanje zumiranja</translation>
-<translation id="3903738175795615004">Povucite od vrha ili pritisnite tipku Esc za izlaz iz prikaza na cijelom zaslonu.</translation>
 <translation id="3905475044299942653">Zaustavljanje mnogo obavijesti</translation>
 <translation id="3922092564198021702">Otvorite Postavke na telefonu</translation>
 <translation id="3924858949939391676">Prikaži veze nakon uključivanja prozora za čitanje</translation>
@@ -355,7 +351,6 @@
 <translation id="4479647676395637221">Web-lokacije moraju tražiti dopuštenje za pristup kameri (preporučeno)</translation>
 <translation id="4505788138578415521">URL je proširen</translation>
 <translation id="4522570452068850558">Pojedinosti</translation>
-<translation id="4523472416386354622">Prijavite se za početak</translation>
 <translation id="4529207923544043455">Donja tablica koja prikazuje dovršene i nedovršene zadatke s popisa za postavljanje</translation>
 <translation id="4534723447064627427">Da bi aplikacija <ph name="APP_NAME" /> mogla pristupiti vašem mikrofonu, uključite mikrofon i u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>
 <translation id="4545694195887112015">Tablica s preporukama za postavljanje je zatvorena</translation>
@@ -368,7 +363,6 @@
 <translation id="4645575059429386691">Upravlja tvoj roditelj</translation>
 <translation id="4651224148644053314">Više boja i opcija</translation>
 <translation id="4652266463001779298">Nije dopušteno</translation>
-<translation id="4655846733459137112">Dodirnite Da da biste jednostavno upotrijebili tu zaporku sljedeći put kad se prijavite</translation>
 <translation id="4663373278480897665">Kamera je dopuštena</translation>
 <translation id="4670064810192446073">Virtualna stvarnost</translation>
 <translation id="4672315773691449562">Dodirnite stavku Aplikacija preglednika, a zatim Chrome</translation>
@@ -415,7 +409,6 @@
 <translation id="512938610812707830">Donja tablica zbirki tema izgleda stranice Nova kartica otvorena je u punoj visini</translation>
 <translation id="5137460097045297858">Donja tablica feeda Discovera otvorena je na pola visine</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Sniženje cijene na otvorenoj kartici}one{Sniženja cijena na otvorenim karticama}few{Sniženja cijena na otvorenim karticama}other{Sniženja cijena na otvorenim karticama}}</translation>
-<translation id="5150048675001754041">Brzo se i jednostavno prijavite na web-lokacije i u aplikacije</translation>
 <translation id="5186036860380548585">Opcija je dostupna pri vrhu zaslona</translation>
 <translation id="5197729504361054390">Kontakti koje odaberete podijelit će se s web-lokacijom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Zatvorena je prilagodba donje tablice stranice nove kartice</translation>
@@ -425,7 +418,6 @@
 <translation id="5239623327352565343">Lokacija je dopuštena</translation>
 <translation id="5246825184569358663">Tom će se radnjom izbrisati svi lokalni podaci, uključujući kolačiće, i poništiti sva dopuštenja za domenu <ph name="DOMAIN" /> i sve njoj podređene web-lokacije</translation>
 <translation id="5264323282659631142">Ukloni '<ph name="CHIP_LABEL" />'</translation>
-<translation id="528192093759286357">Povucite od vrha zaslona i dodirnite gumb Natrag da biste zatvorili prikaz na cijelom zaslonu.</translation>
 <translation id="5286194356314741248">Skeniranje</translation>
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5301954838959518834">U redu, shvaćam</translation>
@@ -473,7 +465,6 @@
 <translation id="5804241973901381774">Dopuštenja</translation>
 <translation id="5817042798620209981">Informacije o web-lokaciji, dijaloški okvir</translation>
 <translation id="5822675474983796325">Prilagodba donje tablice stranice nove kartice otvorena je u punoj visini</translation>
-<translation id="5826403277762134844">Donja tablica s uputama za spremanje zaporki u Chromeu</translation>
 <translation id="5833899990800318936">Ne dopuštaj web-lokacijama korištenje JavaScripta</translation>
 <translation id="583673505367439042">Web-lokacije mogu tražiti dopuštenje za uređivanje datoteka i mapa na vašem uređaju</translation>
 <translation id="5844448279347999754">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje da vide tekst i slike spremljene u vaš međuspremnik. Kad je ta postavka isključena, web-lokacije ne mogu vidjeti tekst ili slike spremljene u međuspremnik.</translation>
@@ -511,7 +502,6 @@
 <translation id="6104860901391833523">Kad je ta postavka uključena, web-lokacije mogu automatski pristupiti slici u slici. Kad je ta postavka isključena, web-lokacije ne mogu automatski pristupiti slici u slici.</translation>
 <translation id="6120483543004435978">Kad je ta postavka uključena, web-lokacije mogu tražiti informacije kada aktivno koristite uređaj. Kad je ta postavka isključena, web-lokacije ne mogu znati kad aktivno koristite uređaj.</translation>
 <translation id="612871598708395517">Sakrijte Chromeove prijedloge u drugim aplikacijama</translation>
-<translation id="6132075343662013154">Chrome će ponuditi spremanje zaporke</translation>
 <translation id="615886654739818377">Nemoj dopustiti web-lokacijama da upravljaju prozorima na svim zaslonima</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6171020522141473435">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu Bluetooth uređaja. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati Bluetooth uređaje.</translation>
@@ -587,7 +577,6 @@
 <translation id="6980861169612950611">Želite li izbrisati podatke web-lokacije? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Pristupačnost</translation>
 <translation id="6991142177939282156">Dopušteno • Upotreba približne lokacije</translation>
-<translation id="6992014788289743568">Provjerite svoje zaporke da biste poboljšali sigurnost i zaštitili svoje podatke</translation>
 <translation id="6992289844737586249">Web-lokacije moraju tražiti dopuštenje za upotrebu mikrofona (preporučeno)</translation>
 <translation id="7000754031042624318">Isključeno u postavkama Androida</translation>
 <translation id="7036823721811529709">Slušajte u pozadini</translation>
@@ -654,7 +643,6 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:</translation>
 <translation id="775043444390799886">Opozovi dopuštenje</translation>
 <translation id="7758789811447313947">Ljubičasta tema</translation>
 <translation id="7759147511335618829">Kontrola i reprogr. MIDI uređaja</translation>
-<translation id="7771089277295008211">Zatvorena je donja tablica s uputama za spremanje zaporki</translation>
 <translation id="7781829728241885113">Danas</translation>
 <translation id="7791543448312431591">Dodajte</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
@@ -671,7 +659,6 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:</translation>
 <translation id="7940722705963108451">Podsjeti me</translation>
 <translation id="7948081750384205628">Saznajte više o postavci <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Web-lokacije mogu tražiti dopuštenje da vide tekst i slike u vašem međuspremniku</translation>
-<translation id="7958779728312669715">Donja tablica s uputama za spremanje zaporki potpuno je otvorena</translation>
 <translation id="798299424881500862">Narančasta tema</translation>
 <translation id="7986741934819883144">Odaberite kontakt</translation>
 <translation id="7990211076305263060">Kada je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu mikrofona. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati vaš mikrofon.</translation>
@@ -766,7 +753,6 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:</translation>
 <translation id="8889294078294184559">Tijekom vašeg daljnjeg pregledavanja web-lokacije mogu provjeriti u Chromeu i od prethodne web-lokacije koju ste posjetili dobiti potvrdu da ste vjerojatno stvarna osoba</translation>
 <translation id="8899807382908246773">Ometajući oglasi</translation>
 <translation id="8903921497873541725">Povećaj</translation>
-<translation id="8919911527569629802">Prijavite se na bilo koju web-lokaciju</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Više me ne pitaj</translation>
 <translation id="8926666909099850184">NFC je isključen za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />postavkama Androida<ph name="END_LINK" />.</translation>

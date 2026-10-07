@@ -698,6 +698,12 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="1488008594883876680">Activer le préchargement de l'image <ph name="ARC_VM" /></translation>
 <translation id="1488724823347505879">Activer le partage des applis Android vers les applis Web</translation>
 <translation id="1490962807364514840">Fréquence de collecte des données télémétriques des compteurs d'exécution du processeur en millisecondes.</translation>
+<translation id="1491289760513245366">Cette règle permet de lister les origines devant autoriser tous les schémas d'authentification HTTP pris en charge par <ph name="PRODUCT_NAME" />, indépendamment de la règle <ph name="AUTH_SCHEMES_POLICY_NAME" />.
+
+À partir de la version 161 de <ph name="PRODUCT_NAME" />, cette règle ne s'applique qu'aux origines du serveur de destination et ne s'applique plus aux demandes d'authentification du serveur proxy. Pour autoriser tous les schémas d'authentification HTTP pour les serveurs proxy, utilisez plutôt la règle <ph name="ALL_HTTP_AUTH_SCHEMES_ALLOWED_FOR_PROXIES_POLICY_NAME" />. Avant la version 161, les serveurs proxy correspondant à cette règle sont également autorisés à utiliser tous les schémas d'authentification HTTP, sauf si <ph name="ALL_HTTP_AUTH_SCHEMES_ALLOWED_FOR_PROXIES_POLICY_NAME" /> est définie.
+
+      Indiquez l'origine en respectant le format suivant : <ph name="URL_SCHEME_FORMAT_LINK" />. Vous pouvez définir jusqu'à 1 000 exceptions dans <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />.
+      Les caractères génériques sont autorisés pour le composant hôte (par exemple, "*:8000" correspond à tous les hôtes sur le port 8000). Pour faire correspondre tous les schémas ou tous les ports, omettez entièrement le composant (par exemple, "example.com" correspond à n'importe quel schéma et n'importe quel port). Un nom d'hôte (par exemple, "example.com") correspond également à ses sous-domaines. Pour faire correspondre un hôte exactement et exclure ses sous-domaines, ajoutez un point devant (par exemple, ".example.com"). Pour faire correspondre toutes les origines, utilisez un astérisque unique ("*").</translation>
 <translation id="1492223733885011596">Cette règle active la prise en charge des GIF dans le sélecteur d'emoji sur <ph name="PRODUCT_OS_NAME" />.
 Si cette règle est activée, le sélecteur d'emoji prend en charge les emoji GIF.
 Si cette règle est désactivée ou n'est pas configurée, le sélecteur d'emoji ne sera pas compatible avec les emoji GIF.
@@ -4076,6 +4082,7 @@ Si cette règle n'est pas définie pour un site, alors la règle <ph name="DEFAU
 Cette règle remplace la règle <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLICY_NAME" />, qui est obsolète.</translation>
 <translation id="3568762199045490351">Les fonctions JavaScript setTimeout() dont le délai d'expiration est défini sur 0 ms seront ramenées à 1 ms.</translation>
 <translation id="3574450691573438824">Désactiver l'importation des journaux système de l'appareil</translation>
+<translation id="357461884473178606">Liste des serveurs proxy autorisant tous les schémas d'authentification HTTP</translation>
 <translation id="3575011234198230041">Authentification HTTP</translation>
 <translation id="3575159471980949522">Ne pas autoriser les utilisateurs à envoyer des numéros de téléphone depuis Chrome vers leur appareil Android</translation>
 <translation id="3577251398714997599">Paramètre des annonces pour les sites présentant des annonces intrusives</translation>
@@ -11307,6 +11314,12 @@ Plusieurs règles listent des origines qui ont un impact sur les requêtes adres
 <translation id="8066428282805800713">Envoyer des données matérielles supplémentaires sur ChromeOS Flex</translation>
 <translation id="8071371098891664137">Si <ph name="PRINTERS_BLOCKLIST" /> est choisi pour <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, le fait de définir <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> indique les imprimantes indisponibles pour les utilisateurs. Toutes les imprimantes sont proposées aux utilisateurs, sauf celles dont les ID sont répertoriés dans cette règle. Ces ID doivent correspondre à ceux indiqués dans les champs <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> du fichier spécifié dans la règle <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="8076539570602616846">Limiter les comptes Google éligibles à l'enregistrement de fichiers PDF dans Google Drive à partir du lecteur PDF <ph name="PRODUCT_NAME" /></translation>
+<translation id="8078224178125125527">Cette règle permet de lister les serveurs proxy devant autoriser tous les schémas d'authentification HTTP pris en charge par <ph name="PRODUCT_NAME" />, indépendamment de la règle <ph name="AUTH_SCHEMES_POLICY_NAME" />.
+
+Le format du serveur proxy doit être le même que celui des filtres de la liste de blocage d'URL (<ph name="URL_SCHEME_FORMAT_LINK" />). Vous pouvez définir jusqu'à 1 000 exceptions.
+Les caractères génériques sont autorisés pour le composant hôte (par exemple, "*:8080" correspond à tous les proxys sur le port 8080). Un nom d'hôte (par exemple, "proxy.example.com") correspond également à ses sous-domaines. Pour faire correspondre un hôte exactement et exclure ses sous-domaines, ajoutez un point devant (par exemple, ".proxy.example.com").
+
+Si cette règle n'est pas configurée, seuls les schémas d'authentification HTTP spécifiés dans <ph name="AUTH_SCHEMES_POLICY_NAME" /> (ou les schémas par défaut, s'ils ne sont pas définis) sont acceptés pour l'authentification par proxy.</translation>
 <translation id="8078297389450285582">Si cette règle est activée ou qu'elle n'est pas configurée, le modèle de réduction intelligente de la luminosité est activé, et le délai d'assombrissement de l'écran peut être augmenté. L'ajustement de ce délai décale d'autant le moment où l'écran doit s'éteindre, se verrouiller et se mettre en veille, ceci afin de maintenir l'intervalle initialement configuré.
 
       Si cette règle est désactivée, le modèle de réduction intelligente de la luminosité n'influe pas sur l'assombrissement de l'écran.</translation>
@@ -12759,6 +12772,11 @@ Remarque : Pour le moment, seule la première entrée est prise en compte. Les 
 <translation id="9015759770696099204">Les paramètres F11/F12 sont désactivés</translation>
 <translation id="9015952763003753868">Rendre la mise en correspondance <ph name="ACAM_HEADER_NAME" /> conforme dans les spécifications de la requête préliminaire <ph name="CORS" /></translation>
 <translation id="9020630127193895800">Rétroéclairage du clavier indigo</translation>
+<translation id="9025073735776703766">Cette règle contrôle la disponibilité de la fonctionnalité XSLT (l'API JavaScript XSLTProcessor et l'instruction de traitement XSL).
+Si cette règle est activée, XSLT sera disponible, quel que soit l'état par défaut de la fonctionnalité dans le navigateur.
+Si cette règle est désactivée, XSLT ne sera pas disponible, quel que soit l'état par défaut de la fonctionnalité dans le navigateur.
+Si cette règle n'est pas configurée, la disponibilité de XSLT sera déterminée par les paramètres par défaut du navigateur et les tests en conditions réelles.
+Cette règle est une solution temporaire et sera supprimée dans M176.</translation>
 <translation id="9025912013525357598">Conservation des espaces blancs dans les URL de données pour tous les types de contenus</translation>
 <translation id="9029815312472546960">Bloquer l'API Device Attributes sur ces sites</translation>
 <translation id="9031831501689819108">Activer Legacy Browser Support</translation>

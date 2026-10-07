@@ -928,7 +928,6 @@
 <translation id="3697991387880191195">اسکرین شاٹ لینے کا شارٹ کٹ دبائیں</translation>
 <translation id="3702809606464356667">موجودہ ڈیسک سے ونڈوز دکھائی جا رہی ہیں تمام ڈیسکس سے ونڈوز کو دکھانے کے لیے اوپر تیر کے نشان والی کلید دبائیں</translation>
 <translation id="3705722231355495246">-</translation>
-<translation id="3706423975342040244">تفریح</translation>
 <translation id="370665806235115550">لوڈ ہو رہے ہیں…</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> اور <ph name="UNAVAILABLE_DLC_TWO" /> دستیاب نہیں ہیں۔</translation>
 <translation id="3708186454126126312">پہلے سے منسلک کردہ</translation>
@@ -975,7 +974,6 @@
 <translation id="3824784079442479685">اس سے کیمرے کی اجازت کے ساتھ <ph name="APP_NAME" />، اور تمام ایپس اور ویب سائٹس کو کیمرے تک رسائی کی اجازت ملتی ہے۔ آپ کو ویب صفحہ کو ریفریش کرنے یا ایپ کو دوبارہ شروع کرنے کی ضرورت پڑ سکتی ہے۔</translation>
 <translation id="3826099427150913765">پاس ورڈ پر سوئچ کریں</translation>
 <translation id="383058930331066723">بیٹری سیور موڈ آن ہے</translation>
-<translation id="3831226344927851293">ٹیوٹوریل منظر سے باہر نکلیں</translation>
 <translation id="383629559565718788">کی بورڈ کی ترتیبات دکھائیں</translation>
 <translation id="384082539148746321">تمثیل حذف کریں؟</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> پھر <ph name="KEY_ONE" /> یا <ph name="KEY_TWO" /> یا <ph name="KEY_THREE" /> یا <ph name="KEY_FOUR" /></translation>
@@ -1578,10 +1576,8 @@
 <translation id="5551974246223970793">صفحہ تلاش کرتے وقت، تلاش کے لیے اگلی مماثلت پر جائیں</translation>
 <translation id="5556459405103347317">دوبارہ لوڈ کریں</translation>
 <translation id="5558091555391176027">قریبی آلات کے ساتھ اشتراک کی اعلی مرئیت کو ٹوگل کریں</translation>
-<translation id="5558314826121965174">تخلیقی صلاحیت</translation>
 <translation id="556042886152191864">بٹن</translation>
 <translation id="5570122939431135380">نئی پوشیدگی ونڈو میں نیا ٹیب کھولیں</translation>
-<translation id="5572632238877308040">لوازمات</translation>
 <translation id="5575528586625653441">ڈیمو کی رجسٹریشن کی درخواست کے ساتھ ایک مسئلہ پیش آگیا۔</translation>
 <translation id="557563299383177668">اگلا پیراگراف</translation>
 <translation id="5577082622442191756">بلوٹوتھ ٹوگل کریں۔ <ph name="STATE_TEXT" />۔</translation>
@@ -1616,7 +1612,6 @@
 <translation id="5667546120811588575">‏Google Play کو سیٹ کیا جا رہا ہے...</translation>
 <translation id="5669267381087807207">فعال ہو رہا ہے</translation>
 <translation id="5671658447180261823">تجویز <ph name="SUGGESTION_NAME" /> ہٹائیں</translation>
-<translation id="5672890847723042801">یوٹیلیٹیز</translation>
 <translation id="5673434351075758678">‏آپ کی ترتیبات کی مطابقت پذیری کے بعد '<ph name="FROM_LOCALE" />' سے '‎'‎<ph name="TO_LOCALE" />‎ میں۔</translation>
 <translation id="5675363643668471212">شیلف آئٹم</translation>
 <translation id="5677022547882470786">‏تلاش کرنے کے لیے کوئی ایریا منتخب کرنے کے لیے Space کو گھسیٹیں یا دبائیں</translation>
@@ -1871,7 +1866,6 @@
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> پر <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> یا <ph name="KEY_THREE" /></translation>
 <translation id="6352082849089527770">نامعلوم نیٹ ورکس</translation>
 <translation id="6359587239691116345">تازہ ترین خصوصیات اور سیکیورٹی میں بہتریاں حاصل کریں۔ اگر آپ اس اپ ڈیٹ کو مسترد کرتے ہیں تو ہو سکتا ہے کہ آپ کا آلہ اب مزید ٹھیک سے کام نہ کرے اور آپ کو سیکیورٹی اور کارکردگی کے مسائل کا سامنا کرنا پڑے۔</translation>
-<translation id="6362833380917912748">اپنی پہلے سے شامل ایپس کو جانیں</translation>
 <translation id="6364386432014869981">پہلے سے شامل ٹچ پیڈ آن ہے</translation>
 <translation id="6376931439017688372">بلوٹوتھ آن ہے</translation>
 <translation id="6378515133128829137">ونڈو کو دائیں جانب پن کریں</translation>
@@ -2095,7 +2089,6 @@
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> نام والے آلے سے منسلک ہے</translation>
 <translation id="7015766095477679451">بوقت <ph name="COME_BACK_TIME" /> پھر استعمال کریں۔</translation>
 <translation id="70168403932084660">ڈیسک 6</translation>
-<translation id="702252130983202758">آپ کی ایپس</translation>
 <translation id="7025533177575372252">اپنے <ph name="DEVICE_NAME" /> کو اپنے فون سے منسلک کریں</translation>
 <translation id="7026338066939101231">تخفیف</translation>
 <translation id="7029307918966275733">‏Crostini انسٹال نہیں ہے۔ کریڈٹس دیکھنے کیلئے براہ کرم Crostini انسٹال کریں۔</translation>
@@ -2534,7 +2527,6 @@
 <translation id="8277261673056602147">اپنی اسکرین پر ٹیکسٹ کو نمایاں کریں</translation>
 <translation id="8281886186245836920">نظر انداز کریں</translation>
 <translation id="8282784978194352587">آپ نے کر دکھایا!</translation>
-<translation id="8287009018010202411">پروڈکٹیوٹی</translation>
 <translation id="828708037801473432">آف</translation>
 <translation id="8289128870594824098">ڈسک کا سائز</translation>
 <translation id="8297006494302853456">کمزور</translation>
@@ -2629,7 +2621,6 @@
 <translation id="8598235756057743477">اپنی ایپس کو نام یا رنگ کے لحاظ سے ترتیب دیں</translation>
 <translation id="8599864823732014237">انٹرپرائز اندراج کو نظر انداز کریں؟</translation>
 <translation id="8609384513243082612">نیا ٹیب کھولیں</translation>
-<translation id="861045123704058818">ایپس کو زمرہ کے لحاظ سے عارضی طور پر منظم کیا جاتا ہے</translation>
 <translation id="8612338981637220013">آپ مسلسل کامیاب ہو رہے ہیں!</translation>
 <translation id="8613164732773110792">صرف چھوٹے حروف، ہندسے، انڈر سکورز یا ڈیشز</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" /> اور <ph name="APP_2_TITLE" /> اطلاعات پوشیدہ ہیں کیونکہ دیکھنے کا تحفظ آن ہے</translation>
@@ -2821,7 +2812,6 @@
 <translation id="9129245940793250979">پیچھے والا بٹن</translation>
 <translation id="9133335900048457298">تحفظ یافتہ مواد کو ریکارڈ نہیں کیا جا سکتا</translation>
 <translation id="9139720510312328767">اگلا حرف حذف کریں</translation>
-<translation id="9148058034647219655">خارج ہوں</translation>
 <translation id="9151906066336345901">end</translation>
 <translation id="9159421884295554245">کلپ بورڈ میں تلاش کریں</translation>
 <translation id="9168436347345867845">اسے بعد میں کریں</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
+<translation id="1004615467759797184">अपने 'नया टैब' पेज को पसंद के मुताबिक बनाएं</translation>
 <translation id="1004825134262590729">{count,plural, =1{{count} पासकी}one{{count} पासकी}other{{count} पासकी}}</translation>
 <translation id="1005023885865154304">पासवर्ड अपने-आप भरने की सुविधा की सेटिंग खोलें</translation>
 <translation id="1005230401424685968">YYYY</translation>
@@ -1693,6 +1694,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="6307792728709337290">अपने Google खाते में कार्ड की जानकारी सेव करें. इससे, Chrome पर मौजूदा और आगे की जाने वाली खरीदारी के लिए, कार्ड की जानकारी ऑटोमैटिक तरीके से भर जाती है.</translation>
 <translation id="6316141353357700666">सूची में से वह पासवर्ड चुनें जिसे आपको इस्तेमाल करना है.</translation>
 <translation id="6321526113093607004">Bookmarks में जोड़ें</translation>
+<translation id="6324054713176642683">थीम और रंग चुनें या अपनी कोई फ़ोटो अपलोड करें.</translation>
 <translation id="6327249202318869726">आपके खाते के लिए, Gemini की सुविधा बंद की गई है. ज़्यादा जानकारी के लिए, अपने एडमिन से संपर्क करें.</translation>
 <translation id="6331836477476466332">आपके लिए ज़्यादा सुरक्षित और शानदार ब्राउज़र</translation>
 <translation id="6337234675334993532">सुरक्षित करने का तरीका</translation>
@@ -2067,7 +2069,6 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="7454057999980797137">राज्य / देश</translation>
 <translation id="7458706065921255639">मनमुताबिक बनाना और लिंक करना</translation>
 <translation id="745899714366929493">पूरे दिन</translation>
-<translation id="7460314822154045102">कैमरा इस्तेमाल करें</translation>
 <translation id="7460698861522306757">मोबाइल साइट का अनुरोध करें</translation>
 <translation id="7464143666517313304">ऐसा करने पर, इस डिवाइस में सेव किए गए पते मिट जाएंगे.</translation>
 <translation id="7468373585447318060">ट्रैक किए जा रहे सभी प्रॉडक्ट की कीमत में आई गिरावट से जुड़ी सूचनाएं पाएं.</translation>

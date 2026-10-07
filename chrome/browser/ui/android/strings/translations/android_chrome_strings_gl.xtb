@@ -322,6 +322,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2297822946037605517">Compartir esta páxina</translation>
 <translation id="230115972905494466">Non se atoparon dispositivos compatibles</translation>
 <translation id="2305798319182970276">Elimina o historial cun só toque</translation>
+<translation id="2307420463693979699"><ph name="APP_NAME" /> necesita permiso para acceder aos dispositivos de interface humana deste sitio.</translation>
 <translation id="2316129865977710310">Non, grazas</translation>
 <translation id="232137538351753795">Pasa o dedo desde o bordo esquerdo para volver</translation>
 <translation id="2323763861024343754">Almacenamento do sitio</translation>
@@ -764,6 +765,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4092709865241032354">Para axudar ao xestor de contrasinais de Google a gardar a túa información de inicio de sesión, engade o teu nome de usuario para este sitio</translation>
 <translation id="4095146165863963773">Queres eliminar os datos da aplicación?</translation>
 <translation id="4095483462103784441">Crear grupo de pestanas</translation>
+<translation id="4098552968111329864">Para protexer o teu traballo en Chrome, a túa organización poderá ver ou xestionar certa información cando teñas a sesión iniciada no navegador</translation>
 <translation id="4105527135143631701">Actualización do xestor de contrasinais de Google aberta</translation>
 <translation id="4107207375883769436">Pode que a túa organización necesite consultar e administrar os datos de navegación do teu perfil de traballo, como o teu historial de navegación e os contrasinais</translation>
 <translation id="4113030288477039509">Xestionado polo teu administrador</translation>
@@ -1770,6 +1772,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7929587383660661825">Chrome quita automaticamente os permisos de sitios que abusan das notificacións ou que non visitaches recentemente</translation>
 <translation id="7934668619883965330">Produciuse un erro na descarga. O formato de ficheiro non é compatible.</translation>
 <translation id="7951102827450076904">Abrir sempre os PDF descargados</translation>
+<translation id="7952148074468405586">Máis información sobre os <ph name="BEGIN_LINK" />datos que pode ver ou xestionar a túa organización<ph name="END_LINK" /></translation>
 <translation id="7952479614398473176">Para abrir unha nova ventá, reduce o número total das que estean activas a <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ou menos.</translation>
 <translation id="7956713633345437162">Marcadores do móbil</translation>
 <translation id="7957413488482743710">As tarxetas virtuais ocultan as tarxetas reais para protexerte de posibles fraudes. <ph name="BEGIN_LINK1" />Máis información sobre as tarxetas virtuais<ph name="END_LINK1" /></translation>

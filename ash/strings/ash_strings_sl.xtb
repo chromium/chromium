@@ -928,7 +928,6 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="3697991387880191195">Pritisnite bližnjico za ustvarjanje posnetka zaslona</translation>
 <translation id="3702809606464356667">Prikaz oken s trenutnega namizja, pritisnite tipko s puščico gor, če želite prikazati okna z vseh namizij</translation>
 <translation id="3705722231355495246">–</translation>
-<translation id="3706423975342040244">Razvedrilo</translation>
 <translation id="370665806235115550">Nalaganje ...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> in <ph name="UNAVAILABLE_DLC_TWO" /> nista na voljo.</translation>
 <translation id="3708186454126126312">Predhodno povezane naprave</translation>
@@ -975,7 +974,6 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="3824784079442479685">To omogoča dostop do kamere za aplikacijo <ph name="APP_NAME" /> in vse aplikacije ter spletna mesta z dovoljenjem za kamero. Morda boste morali osvežiti spletno stran ali znova zagnati aplikacijo.</translation>
 <translation id="3826099427150913765">Preklopi na geslo</translation>
 <translation id="383058930331066723">Način varčevanja z energijo baterije je vklopljen</translation>
-<translation id="3831226344927851293">Izhod iz pogleda vadnice</translation>
 <translation id="383629559565718788">Prikaz nastavitev tipkovnice</translation>
 <translation id="384082539148746321">Želite izbrisati predlogo?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, nato <ph name="KEY_ONE" /> ali <ph name="KEY_TWO" /> ali <ph name="KEY_THREE" /> ali <ph name="KEY_FOUR" /></translation>
@@ -1581,10 +1579,8 @@ Nobena naprava ni povezana.</translation>
 <translation id="5551974246223970793">Preklop na naslednje ujemanje za iskanje pri iskanju na strani</translation>
 <translation id="5556459405103347317">Znova naloži</translation>
 <translation id="5558091555391176027">Preklop visoke vidnosti deljenja v bližini</translation>
-<translation id="5558314826121965174">Ustvarjalnost</translation>
 <translation id="556042886152191864">Gumb</translation>
 <translation id="5570122939431135380">Odpiranje novega zavihka v novem anonimnem oknu</translation>
-<translation id="5572632238877308040">Nepogrešljivo</translation>
 <translation id="5575528586625653441">Prišlo je do težave z zahtevo za registracijo predstavitve.</translation>
 <translation id="557563299383177668">Naslednji odstavek</translation>
 <translation id="5577082622442191756">Preklop Bluetootha. <ph name="STATE_TEXT" />.</translation>
@@ -1619,7 +1615,6 @@ Nobena naprava ni povezana.</translation>
 <translation id="5667546120811588575">Nastavljanje Googla Play ...</translation>
 <translation id="5669267381087807207">Aktiviranje</translation>
 <translation id="5671658447180261823">Odstrani predlog <ph name="SUGGESTION_NAME" /></translation>
-<translation id="5672890847723042801">Orodja</translation>
 <translation id="5673434351075758678">Iz jezika »<ph name="FROM_LOCALE" />« v jezik »<ph name="TO_LOCALE" />« po sinhronizaciji nastavitev.</translation>
 <translation id="5675363643668471212">Element na polici</translation>
 <translation id="5677022547882470786">Povlecite ali pritisnite preslednico, če želite izbrati območje iskanja</translation>
@@ -1877,7 +1872,6 @@ Nobena naprava ni povezana.</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, nato <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> ali <ph name="KEY_THREE" /></translation>
 <translation id="6352082849089527770">Neznana omrežja</translation>
 <translation id="6359587239691116345">Zagotovite si najnovejše funkcije in varnostne izboljšave. Če zavrnete to posodobitev, naprava morda ne bo več delovala pravilno in boste morda naleteli na varnostne težave in težave z zmogljivostjo.</translation>
-<translation id="6362833380917912748">Spoznajte vgrajene aplikacije</translation>
 <translation id="6364386432014869981">Vgrajena sledilna ploščica je vklopljena</translation>
 <translation id="6376931439017688372">Bluetooth je vklopljen</translation>
 <translation id="6378515133128829137">Pripenjanje okna na desno</translation>
@@ -2102,7 +2096,6 @@ Nova namestitev</translation>
 <translation id="7014684956566476813">Vzpostavljena je povezava z napravo <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Vrnite se ob <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Namizje 6</translation>
-<translation id="702252130983202758">Vaše aplikacije</translation>
 <translation id="7025533177575372252">Povežite napravo <ph name="DEVICE_NAME" /> s telefonom</translation>
 <translation id="7026338066939101231">Pomanjšava</translation>
 <translation id="7029307918966275733">Crostini ni nameščen. Namestite ga, če si želite ogledati datoteko z ustvarjalci.</translation>
@@ -2541,7 +2534,6 @@ Nova namestitev</translation>
 <translation id="8277261673056602147">Označevanje besedila na zaslonu</translation>
 <translation id="8281886186245836920">Preskoči</translation>
 <translation id="8282784978194352587">Uspelo vam je!</translation>
-<translation id="8287009018010202411">Storilnost</translation>
 <translation id="828708037801473432">Izklopljeno</translation>
 <translation id="8289128870594824098">Velikost diska</translation>
 <translation id="8297006494302853456">Šibek</translation>
@@ -2636,7 +2628,6 @@ Nova namestitev</translation>
 <translation id="8598235756057743477">Razvrstitev aplikacij po imenu ali barvi</translation>
 <translation id="8599864823732014237">Želite preskočiti včlanitev v podjetje?</translation>
 <translation id="8609384513243082612">Odpiranje novega zavihka</translation>
-<translation id="861045123704058818">Aplikacije so začasno razvrščene glede na kategorijo</translation>
 <translation id="8612338981637220013">Odlično vam gre!</translation>
 <translation id="8613164732773110792">Samo majhni znaki, števke, podčrtaji ali pomišljaji</translation>
 <translation id="8614517853887502247">Obvestili aplikacij <ph name="APP_1_TITLE" /> in <ph name="APP_2_TITLE" /> sta skriti zaradi vklopljene zaščite pred ogledovanjem.</translation>
@@ -2828,7 +2819,6 @@ Nova namestitev</translation>
 <translation id="9129245940793250979">Guma na zadnji strani</translation>
 <translation id="9133335900048457298">Zaščitene vsebine ni mogoče posneti</translation>
 <translation id="9139720510312328767">Izbris naslednje črke</translation>
-<translation id="9148058034647219655">Zapri</translation>
 <translation id="9151906066336345901">tipka end</translation>
 <translation id="9159421884295554245">Iskanje v odložišču</translation>
 <translation id="9168436347345867845">Pozneje</translation>

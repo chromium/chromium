@@ -21,6 +21,7 @@
 <translation id="1185134272377778587">Chromium hakkında</translation>
 <translation id="1186645291482254714">Telefonunuzda Chromium ile fiyat takibi uyarıları alın</translation>
 <translation id="1203500561924088507">Yüklediğiniz için teşekkürler. <ph name="BUNDLE_NAME" /> uygulamasını kullanmadan önce tarayıcınızı yeniden başlatmanız gerekir.</translation>
+<translation id="1222365723190436821"><ph name="IMPORTANT_UPDATE" /> beklemede. Güvenli bir şekilde göz atmaya devam edebilmeniz için Chromium, <ph name="IDLE_DURATION" /> boyunca işlem yapmadığınızda güncellenecek.</translation>
 <translation id="1232234696885483911">Görsel aramayı açtığınızda sayfa başlığı, URL'si ve içeriği (PDF'ler dahil) otomatik olarak sunucuya gönderilir. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Oturumunuz açıkken Chromium'da Google Hesabınızdaki şifrelerinizi ve diğer öğeleri kullanabilirsiniz. Bunu değiştirmek için "Chromium'daki hesabınız" bölümüne gidin.</translation>
 <translation id="1244381985120794049">Chromium'da Gemini'ı Mac menü çubuğunda göster</translation>
@@ -225,6 +226,7 @@
 <translation id="3286538390144397061">Şimdi yeniden başlat</translation>
 <translation id="328888136576916638">Google API anahtarları eksik. Chromium'un bazı işlevleri devre dışı bırakılacak.</translation>
 <translation id="3296368748942286671">Chromium kapandığında arka plan uygulamaları çalıştırmaya devam et</translation>
+<translation id="3300632735252839402">Chromium, siz bilgisayar başında olmadığınızda güncellenecek</translation>
 <translation id="3313189106987092621">Chromium, güvenli olmayan bağlantı kullanan siteleri yüklemeden önce sizi uyarır</translation>
 <translation id="3316771292331273802">Tüm Chromium pencerelerini kapattığınızda çoğu sitedeki oturumunuz kapatılır. Chromium'da oturum açtıysanız Google Hesabınız buna dahil değildir. Sitelerin sizi hatırlamasını sağlamak için <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">arama alanının sağ üst köşesi: sağ %<ph name="RIGHT" />, üst %<ph name="TOP" /></translation>
@@ -233,6 +235,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Mevcut Chromium profiline geçilsin mi?</translation>
 <translation id="3412460710772753638">Bu cihazdaki Şifre Yöneticisi'nde</translation>
+<translation id="3425452599984451640">Chromium güncelleme yapmak istiyor</translation>
 <translation id="3427159664004296878"><ph name="DEVICE" /> cihazınızdaki yer işaretlerinize ve diğer öğelerinize erişmek için Chromium'da oturum açın</translation>
 <translation id="3438772217992559640">Bu Sekmeyi Görsel Arama ile Ara</translation>
 <translation id="3455907671758333080">Telefonunuzda Chromium ile Gelişmiş Güvenli Tarama'yı genişletin</translation>

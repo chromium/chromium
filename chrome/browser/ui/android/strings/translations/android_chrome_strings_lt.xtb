@@ -764,6 +764,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="4092709865241032354">Kad padėtumėte „Google“ slaptažodžių tvarkyklei išsaugoti prisijungimo informaciją, pridėkite šios svetainės naudotojo vardą</translation>
 <translation id="4095146165863963773">Ištrinti programos duomenis?</translation>
 <translation id="4095483462103784441">Kurti naują skirtukų grupę</translation>
+<translation id="4098552968111329864">Kad apsaugotų jūsų darbą sistemoje „Chrome“, jūsų organizacija galės peržiūrėti arba tvarkyti tam tikrą informaciją, kai būsite prisijungę prie „Chrome“</translation>
 <translation id="4105527135143631701">Atidarytas „Google“ slaptažodžių tvarkyklės naujinys</translation>
 <translation id="4107207375883769436">Organizacijai gali reikėti peržiūrėti ir tvarkyti naršymo duomenis jūsų darbo profilyje, pvz., naršymo istoriją ir slaptažodžius</translation>
 <translation id="4113030288477039509">Tvarko jūsų administratorius</translation>
@@ -1770,6 +1771,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="7929587383660661825">„Chrome“ automatiškai pašalina svetainių, kuriose piktnaudžiaujama pranešimais arba kuriose pastaruoju metu nesilankėte, leidimus</translation>
 <translation id="7934668619883965330">Negalima atsisiųsti failo. Failo formatas nepalaikomas.</translation>
 <translation id="7951102827450076904">Visada atidaryti atsisiųstus PDF failus</translation>
+<translation id="7952148074468405586">Sužinokite daugiau apie <ph name="BEGIN_LINK" />informaciją, kurią gali peržiūrėti arba tvarkyti jūsų organizacija<ph name="END_LINK" /></translation>
 <translation id="7952479614398473176">Jei norite atidaryti naują langą, sumažinkite bendrą aktyvių langų skaičių iki <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ar mažiau.</translation>
 <translation id="7956713633345437162">Žymės mobiliesiems</translation>
 <translation id="7957413488482743710">Virtualioji kortelė slepia tikrąją kortelę, kad padėtų apsaugoti jus nuo galimų apgaulių. <ph name="BEGIN_LINK1" />Sužinokite daugiau apie virtualiąsias korteles<ph name="END_LINK1" /></translation>

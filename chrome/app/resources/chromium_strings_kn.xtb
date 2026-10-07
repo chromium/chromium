@@ -21,6 +21,7 @@
 <translation id="1185134272377778587">Chromium ಕುರಿತು</translation>
 <translation id="1186645291482254714">ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ Chromium ಮೂಲಕ ದರ ಟ್ರ್ಯಾಕಿಂಗ್ ಅಲರ್ಟ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="1203500561924088507">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದಕ್ಕಾಗಿ ಧನ್ಯವಾದಗಳು. <ph name="BUNDLE_NAME" /> ಅನ್ನು ಬಳಸುವ ಮೊದಲು ನೀವು ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಬೇಕು.</translation>
+<translation id="1222365723190436821"><ph name="IMPORTANT_UPDATE" /> ಬಾಕಿ ಉಳಿದಿದೆ. ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು, ಮುಂದಿನ ಬಾರಿ ನೀವು <ph name="IDLE_DURATION" /> ರವರೆಗೆ ನಿಷ್ಕ್ರಿಯರಾಗಿದ್ದಾಗ Chrome ಅಪ್‌ಡೇಟ್ ಆಗುತ್ತದೆ.</translation>
 <translation id="1232234696885483911">ನೀವು ಇಮೇಜ್‌ ಹುಡುಕಾಟವನ್ನು ತೆರೆದಾಗ, PDF ಗಳನ್ನು ಒಳಗೊಂಡಂತೆ ಪುಟದ ಶೀರ್ಷಿಕೆ, URL ಮತ್ತು ಕಂಟೆಂಟ್‌ ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸರ್ವರ್‌ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">ನೀವು ಸೈನ್ ಇನ್ ಆಗಿರುವಾಗ, Chromium ನಲ್ಲಿ ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿನ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹಾಗೂ ಇನ್ನಷ್ಟನ್ನು ನೀವು ಬಳಸಬಹುದು. ಇದನ್ನು ಬದಲಾಯಿಸಲು, "Chromium ನಲ್ಲಿ ನಿಮ್ಮ ಖಾತೆ" ಎಂಬಲ್ಲಿಗೆ ಹೋಗಿ.</translation>
 <translation id="1244381985120794049">Chromium ನಲ್ಲಿ Gemini ಅನ್ನು Mac ಮೆನು ಬಾರ್‌ನಲ್ಲಿ ತೋರಿಸಿ</translation>
@@ -226,6 +227,7 @@
 <translation id="3286538390144397061">ಈಗ ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="328888136576916638">Google API ಕೀಗಳು ಕಾಣೆಯಾಗಿವೆ. Chromium ನ ಕೆಲವು ಕಾರ್ಯವಿಧಾನಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="3296368748942286671">Chromium ಮುಚ್ಚಿದಾಗ ರನ್‌ ಆಗುತ್ತಿರುವ ಹಿನ್ನೆಲೆ ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಮುಂದುವರಿಸು</translation>
+<translation id="3300632735252839402">ನೀವು ಹೊರಗಿರುವಾಗ Chromium ಅಪ್‌ಡೇಟ್ ಆಗುತ್ತದೆ</translation>
 <translation id="3313189106987092621">ಅಸುರಕ್ಷಿತ ಕನೆಕ್ಷನ್ ಅನ್ನು ಬಳಸಿಕೊಂಡು ಯಾವುದೇ ಸೈಟ್ ಅನ್ನು ಲೋಡ್ ಮಾಡುವ ಮೊದಲು Chromium ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ</translation>
 <translation id="3316771292331273802">ನೀವು Chromium ಗೆ ಸೈನ್ ಇನ್ ಆಗಿದ್ದರೆ, ನಿಮ್ಮ Google ಖಾತೆಯನ್ನು ಹೊರತುಪಡಿಸಿ ಎಲ್ಲಾ Chromium ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚುವುದರಿಂದ ಹೆಚ್ಚಿನ ಸೈಟ್‌ಗಳಿಂದ ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ. ಸೈಟ್‌ಗಳು ನಿಮ್ಮನ್ನು ನೆನಪಿಟ್ಟುಕೊಳ್ಳಲು ಅವಕಾಶ ಮಾಡಿಕೊಡಲು, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">ಹುಡುಕಾಟ ಪ್ರದೇಶದ ಮೇಲಿನ ಬಲ ಮೂಲೆ: ಬಲಕ್ಕೆ <ph name="RIGHT" />%, ಮೇಲಕ್ಕೆ <ph name="TOP" />%</translation>
@@ -234,6 +236,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">ಈಗಿರುವ Chromium ಪ್ರೊಫೈಲ್‌ಗೆ ಬದಲಿಸಬೇಕೆ?</translation>
 <translation id="3412460710772753638">ಈ ಸಾಧನದಲ್ಲಿನ Password Manager ನಲ್ಲಿ</translation>
+<translation id="3425452599984451640">Chromium ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="3427159664004296878"><ph name="DEVICE" /> ನಿಂದ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಪಡೆಯಲು, Chromium ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="3438772217992559640">ಚಿತ್ರದ ಮೂಲಕ ಹುಡುಕಾಟ ಫೀಚರ್ ಅನ್ನು ಬಳಸಿ ಈ ಟ್ಯಾಬ್ ಅನ್ನು ಹುಡುಕಿ</translation>
 <translation id="3455907671758333080">ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿನ Chromium ಮೂಲಕ ವರ್ಧಿತ ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ವಿಸ್ತರಿಸಿ</translation>

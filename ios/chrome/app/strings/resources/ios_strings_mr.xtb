@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
+<translation id="1004615467759797184">तुमचे नवीन टॅब पेज कस्टमाइझ करा</translation>
 <translation id="1004825134262590729">{count,plural, =1{{count} पासकी}other{{count} पासकी}}</translation>
 <translation id="1005023885865154304">ऑटोफिल पासवर्ड सेटिंग्ज उघडा</translation>
 <translation id="1005230401424685968">YYYY</translation>
@@ -1694,6 +1695,7 @@
 <translation id="6307792728709337290">या खरेदीसाठी आणि Chrome वर केलेल्या भविष्यातील खरेदीसाठी तुमचे कार्ड ऑटोफिल करण्याकरिता ते तुमच्या Google खाते मध्ये सेव्ह करा.</translation>
 <translation id="6316141353357700666">दिसणाऱ्या सूचीमधून तुम्हाला वापरायचा असलेला पासवर्ड निवडा.</translation>
 <translation id="6321526113093607004">बुकमार्क मध्ये जोडा</translation>
+<translation id="6324054713176642683">थीम, रंग यांमधून निवडा किंवा तुमचा स्वतःचा फोटो अपलोड करा.</translation>
 <translation id="6327249202318869726">तुमच्या खात्यासाठी Gemini बंद केले आहे. अधिक माहितीसाठी तुमच्या ॲडमिनशी संपर्क साधा.</translation>
 <translation id="6331836477476466332">तुमच्यासाठी सुरक्षित, आणखी प्रभावी ब्राउझर</translation>
 <translation id="6337234675334993532">एंक्रिप्शन</translation>
@@ -2068,7 +2070,6 @@
 <translation id="7454057999980797137">राज्य / विभाग</translation>
 <translation id="7458706065921255639">पर्सनलायझेशन आणि लिंक करणे</translation>
 <translation id="745899714366929493">संपूर्ण दिवस</translation>
-<translation id="7460314822154045102">कॅमेरा वापरा</translation>
 <translation id="7460698861522306757">मोबाइल साइट ची विनंती करा</translation>
 <translation id="7464143666517313304">यामुळे या डिव्हाइसवर सेव्ह केलेले पत्ते हटवले जातात.</translation>
 <translation id="7468373585447318060">तुम्ही माग ठेवत असलेल्या सर्व उत्पादनांच्या किमतीमधील घसरणींबाबत माहिती मिळवत रहा.</translation>

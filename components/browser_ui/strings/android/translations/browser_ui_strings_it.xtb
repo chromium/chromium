@@ -12,7 +12,6 @@
 <translation id="1126523729897810826">Completa le azioni suggerite di seguito per usare al meglio Chrome</translation>
 <translation id="113098737392899175">Naviga nelle pagine con un cursore di testo quando è collegata una tastiera</translation>
 <translation id="1148624853678088576">Fatto.</translation>
-<translation id="1149644372535087155">Salva le password in Chrome</translation>
 <translation id="1178015372320901893">Riquadro inferiore Le mie scorciatoie</translation>
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
@@ -227,7 +226,6 @@
 <translation id="3167868116600277716">Feed personalizzato</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> di dati memorizzati</translation>
 <translation id="3199078925536734975">Consentita questa volta • Approssimativa</translation>
-<translation id="3208584281581115441">Controlla ora</translation>
 <translation id="321187648315454507">Per consentire all'app <ph name="APP_NAME" /> di inviarti notifiche, devi attivare le notifiche anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Posizione non consentita</translation>
 <translation id="3227137524299004712">Microfono</translation>
@@ -286,7 +284,6 @@
 <translation id="381841723434055211">Numeri di telefono</translation>
 <translation id="3823453485268218808">Carattere Mono</translation>
 <translation id="3826050100957962900">Accesso di terze parti</translation>
-<translation id="3831065134033923230">Controlla le password salvate</translation>
 <translation id="3835233591525155343">Utilizzo del dispositivo</translation>
 <translation id="3843916486309149084">Chrome bloccherà nuovamente i cookie oggi</translation>
 <translation id="385051799172605136">Indietro</translation>
@@ -294,7 +291,6 @@
 <translation id="3870711497942672548">Personalizza Chrome con colori e immagini personalizzati per la tua home page</translation>
 <translation id="389521680295183045">I siti possono chiedere di sapere quando stai utilizzando attivamente il tuo dispositivo</translation>
 <translation id="3895926599014793903">Attivazione forzata dello zoom</translation>
-<translation id="3903738175795615004">Trascina dall'alto o premi il tasto Esc per uscire dalla modalità a schermo intero.</translation>
 <translation id="3905475044299942653">Interrompi notifiche eccessive</translation>
 <translation id="3922092564198021702">Apri le Impostazioni sullo smartphone</translation>
 <translation id="3924858949939391676">Mostra i link una volta attivata la modalità Lettura</translation>
@@ -355,7 +351,6 @@
 <translation id="4479647676395637221">Chiedi conferma prima di consentire ai siti di utilizzare la fotocamera (opzione consigliata)</translation>
 <translation id="4505788138578415521">URL espanso</translation>
 <translation id="4522570452068850558">Dettagli</translation>
-<translation id="4523472416386354622">Accedi per iniziare</translation>
 <translation id="4529207923544043455">Riquadro inferiore che mostra le attività completate e non completate dell'elenco di configurazione</translation>
 <translation id="4534723447064627427">Per consentire all'app <ph name="APP_NAME" /> di accedere al tuo microfono, devi attivare il microfono anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="4545694195887112015">Riquadro di configurazione chiuso</translation>
@@ -368,7 +363,6 @@
 <translation id="4645575059429386691">Gestito da un genitore</translation>
 <translation id="4651224148644053314">Altri colori e opzioni</translation>
 <translation id="4652266463001779298">Autorizzazione non concessa</translation>
-<translation id="4655846733459137112">Tocca Sì per utilizzare facilmente questa password al prossimo accesso</translation>
 <translation id="4663373278480897665">Videocamera consentita</translation>
 <translation id="4670064810192446073">Realtà virtuale</translation>
 <translation id="4672315773691449562">Tocca App browser, poi Chrome</translation>
@@ -415,7 +409,6 @@
 <translation id="512938610812707830">Riquadro inferiore di Raccolte di temi per l'aspetto della pagina Nuova scheda aperto a schermo intero</translation>
 <translation id="5137460097045297858">Riquadro inferiore del Feed personalizzato aperto nella parte inferiore dello schermo</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Calo di prezzo nelle schede aperte}other{Cali di prezzo nelle schede aperte}}</translation>
-<translation id="5150048675001754041">Accedi rapidamente e facilmente a siti e app</translation>
 <translation id="5186036860380548585">Opzione disponibile nella parte superiore dello schermo</translation>
 <translation id="5197729504361054390">I contatti che selezioni verranno condivisi con <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Riquadro inferiore di Personalizza la pagina Nuova scheda chiuso</translation>
@@ -425,7 +418,6 @@
 <translation id="5239623327352565343">Posizione consentita</translation>
 <translation id="5246825184569358663">Questa azione eliminerà tutti i dati locali, compresi i cookie, e reimposterà tutte le autorizzazioni per <ph name="DOMAIN" /> e per tutti i siti secondari</translation>
 <translation id="5264323282659631142">Rimuovi "<ph name="CHIP_LABEL" />"</translation>
-<translation id="528192093759286357">Trascina dall'alto e tocca il pulsante Indietro per uscire dalla modalità a schermo intero.</translation>
 <translation id="5286194356314741248">Ricerca</translation>
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5301954838959518834">OK</translation>
@@ -473,7 +465,6 @@
 <translation id="5804241973901381774">Autorizzazioni</translation>
 <translation id="5817042798620209981">Informazioni sul sito, finestra di dialogo</translation>
 <translation id="5822675474983796325">Riquadro inferiore di Personalizza la pagina Nuova scheda aperto a schermo intero</translation>
-<translation id="5826403277762134844">Riquadro inferiore con le istruzioni per salvare le password in Chrome</translation>
 <translation id="5833899990800318936">Non consentire ai siti di usare JavaScript</translation>
 <translation id="583673505367439042">I siti possono chiedere di modificare file e cartelle sul dispositivo</translation>
 <translation id="5844448279347999754">Quando l'opzione è attiva, i siti possono chiedere di vedere testo e immagini salvati negli appunti. Quando l'opzione è disattivata, i siti non possono vedere il testo o le immagini salvati negli appunti.</translation>
@@ -511,7 +502,6 @@
 <translation id="6104860901391833523">Quando l'opzione è attiva, i siti possono attivare automaticamente Picture in picture. Quando è disattivata, i siti non possono attivare automaticamente Picture in picture.</translation>
 <translation id="6120483543004435978">Quando l'opzione è attiva, i siti possono chiederti di sapere quando stai utilizzando attivamente il tuo dispositivo. Quando l'opzione è disattivata, i siti non possono sapere quando stai utilizzando attivamente il tuo dispositivo.</translation>
 <translation id="612871598708395517">Nascondi i suggerimenti di Chrome in altre app</translation>
-<translation id="6132075343662013154">Chrome ti proporrà di salvare la password</translation>
 <translation id="615886654739818377">Non consentire ai siti di gestire le finestre su tutti i tuoi schermi</translation>
 <translation id="6165508094623778733">Scopri di più</translation>
 <translation id="6171020522141473435">Quando l'opzione è attiva, i siti potrebbero chiedere di usare i dispositivi Bluetooth. Quando l'opzione è disattivata, i siti non possono utilizzare i dispositivi Bluetooth.</translation>
@@ -587,7 +577,6 @@
 <translation id="6980861169612950611">Vuoi eliminare i dati del sito? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Accessibilità</translation>
 <translation id="6991142177939282156">Consentita • Approssimativa</translation>
-<translation id="6992014788289743568">Rafforza la tua sicurezza e proteggi meglio i tuoi dati controllando le password</translation>
 <translation id="6992289844737586249">Chiedi conferma prima di consentire ai siti di utilizzare il microfono (opzione consigliata)</translation>
 <translation id="7000754031042624318">Disattivata nelle impostazioni Android</translation>
 <translation id="7036823721811529709">Ascolta in background</translation>
@@ -654,7 +643,6 @@ La protezione avanzata controlla queste impostazioni di Chrome:</translation>
 <translation id="775043444390799886">Revoca autorizzazione</translation>
 <translation id="7758789811447313947">Tema viola</translation>
 <translation id="7759147511335618829">Controllo e riprogr. disp. MIDI</translation>
-<translation id="7771089277295008211">Il riquadro inferiore con le istruzioni per salvare le password è stato chiuso</translation>
 <translation id="7781829728241885113">Ieri</translation>
 <translation id="7791543448312431591">Aggiungi</translation>
 <translation id="780301667611848630">No, grazie</translation>
@@ -671,7 +659,6 @@ La protezione avanzata controlla queste impostazioni di Chrome:</translation>
 <translation id="7940722705963108451">Ricordami</translation>
 <translation id="7948081750384205628">Scopri di più su <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">I siti possono chiedere di vedere testo e immagini negli appunti</translation>
-<translation id="7958779728312669715">Il riquadro inferiore con le istruzioni per salvare le password è completamente aperto</translation>
 <translation id="798299424881500862">Tema arancione</translation>
 <translation id="7986741934819883144">Seleziona un contatto</translation>
 <translation id="7990211076305263060">Quando l'opzione è attiva, i siti potrebbero chiedere l'utilizzo del microfono. Quando l'opzione è disattivata, i siti non possono utilizzare il microfono.</translation>
@@ -766,7 +753,6 @@ La protezione avanzata controlla queste impostazioni di Chrome:</translation>
 <translation id="8889294078294184559">Mentre continui a navigare, i siti possono controllare su Chrome e verificare con un sito che hai visitato in precedenza che potresti essere una persona reale</translation>
 <translation id="8899807382908246773">Annunci invasivi</translation>
 <translation id="8903921497873541725">Aumenta lo zoom</translation>
-<translation id="8919911527569629802">Accedi a qualsiasi sito web</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926389886865778422">Non visualizzare più questo avviso</translation>
 <translation id="8926666909099850184">Funzionalità NFC non attiva per questo dispositivo. Attivala nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>

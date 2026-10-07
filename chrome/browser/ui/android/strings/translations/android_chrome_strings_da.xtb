@@ -764,6 +764,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4092709865241032354">Tilføj dit brugernavn for dette website for at hjælpe Google Adgangs­kode­admin­istrator med at gemme dine loginoplysninger</translation>
 <translation id="4095146165863963773">Vil du slette appdata?</translation>
 <translation id="4095483462103784441">Opret ny fanegruppe</translation>
+<translation id="4098552968111329864">For at beskytte dit arbejde i Chrome kan din organisation se eller administrere visse oplysninger, når du er logget ind i Chrome</translation>
 <translation id="4105527135143631701">Opdateringen af Google Adgangskodeadministrator blev åbnet</translation>
 <translation id="4107207375883769436">Din organisation skal muligvis se og administrere browserdata på din arbejdsprofil, f.eks. din browserhistorik og dine adgangskoder</translation>
 <translation id="4113030288477039509">Administreres af din administrator</translation>
@@ -1770,6 +1771,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7929587383660661825">Chrome fjerner automatisk tilladelser fra websites, der misbruger notifikationer, eller som du ikke har besøgt for nylig</translation>
 <translation id="7934668619883965330">Filen kan ikke downloades. Filformatet understøttes ikke.</translation>
 <translation id="7951102827450076904">Åbn altid downloadede PDF-filer</translation>
+<translation id="7952148074468405586">Få flere oplysninger om, <ph name="BEGIN_LINK" />hvilke oplysninger din organisation kan se eller administrere<ph name="END_LINK" /></translation>
 <translation id="7952479614398473176">Hvis du vil åbne et nyt vindue, skal du først sørge for, at der højst er <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> aktive vinduer.</translation>
 <translation id="7956713633345437162">Bogmærker på mobil</translation>
 <translation id="7957413488482743710">Et virtuelt kort skjuler dit faktiske kort og beskytter dig på den måde mod potentiel svindel. <ph name="BEGIN_LINK1" />Få flere oplysninger om virtuelle kort<ph name="END_LINK1" /></translation>

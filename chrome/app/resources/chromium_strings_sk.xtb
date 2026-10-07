@@ -23,6 +23,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1185134272377778587">Informácie o prehliadači Chromium</translation>
 <translation id="1186645291482254714">Dostávajte upozornenia sledovania cien v prehliadači Chromium v telefóne</translation>
 <translation id="1203500561924088507">Ďakujeme za inštaláciu. Než začnete aplikáciu <ph name="BUNDLE_NAME" /> používať, musíte reštartovať prehliadač.</translation>
+<translation id="1222365723190436821">Čaká sa na <ph name="IMPORTANT_UPDATE" />. V záujme zachovania bezpečného prehliadania sa Chromium aktualizuje, keď budete najbližšie nečinný/‑á <ph name="IDLE_DURATION" />.</translation>
 <translation id="1232234696885483911">Keď otvoríte vyhľadávanie podľa obrázkov, názov stránky, webová adresa a obsah vrátane súborov PDF sa automaticky odošlú na server. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Kým máte aktívne prihlásenie, môžete v prehliadači Chromium používať svoje heslá a ďalší obsah zo svojho účtu Google. Ak to chcete zmeniť, prejdite do sekcie Váš účet v prehliadači Chromium.</translation>
 <translation id="1244381985120794049">Zobrazovať Gemini v prehliadači Chromium na paneli s ponukami Macu</translation>
@@ -229,6 +230,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3286538390144397061">Reštartovať</translation>
 <translation id="328888136576916638">Chýbajú kľúče rozhrania Google API. Niektoré funkcie prehliadača Google Chromium budú zakázané.</translation>
 <translation id="3296368748942286671">Po zatvorení prehliadača Chromium ponechať spustené aplikácie na pozadí</translation>
+<translation id="3300632735252839402">Chromium sa aktualizuje, keď budete preč</translation>
 <translation id="3313189106987092621">Chromium vás bude pred načítaním webu používajúceho nezabezpečené pripojenie upozorňovať</translation>
 <translation id="3316771292331273802">Po zavretí všetkých okien prehliadača Chromium vás odhlásime z väčšiny webov. Neplatí to však pre váš účet Google v prípade, že ste sa prihlásili do prehliadača Chromium. Ak chcete, aby si vás weby pamätali, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">pravý horný roh oblasti vyhľadávania: vpravo <ph name="RIGHT" /> %, hore <ph name="TOP" /> %</translation>
@@ -237,6 +239,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Chcete prepnúť na existujúci profil prehliadača Chromium?</translation>
 <translation id="3412460710772753638">V Správcovi hesiel v tomto zariadení</translation>
+<translation id="3425452599984451640">Chromium sa chce aktualizovať</translation>
 <translation id="3427159664004296878">Ak chcete mať k dispozícii záložky a ďalší obsah zo zariadenia <ph name="DEVICE" />, prihláste sa do prehliadača Chromium</translation>
 <translation id="3438772217992559640">Prehľadať túto kartu pomocou vyhľadávania podľa obrázkov</translation>
 <translation id="3455907671758333080">Rozšírte používanie Zlepšeného bezpečného prehliadania v prehliadači Chromium v telefóne</translation>

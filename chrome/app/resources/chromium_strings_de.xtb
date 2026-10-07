@@ -21,6 +21,7 @@
 <translation id="1185134272377778587">Über Chromium</translation>
 <translation id="1186645291482254714">Mit Chromium Preis-Tracking-Benachrichtigungen auf dem Smartphone erhalten</translation>
 <translation id="1203500561924088507">Vielen Dank für die Installation. Du musst deinen Browser neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>
+<translation id="1222365723190436821">Ein <ph name="IMPORTANT_UPDATE" /> steht noch aus. Damit du sicher im Internet surfen kannst, wird Chromium das nächste Mal aktualisiert, wenn du <ph name="IDLE_DURATION" /> lang inaktiv bist.</translation>
 <translation id="1232234696885483911">Wenn du die Bildersuche öffnest, werden der Seitentitel, die URL und der Inhalt, einschließlich PDFs, automatisch an den Server gesendet. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Solange du angemeldet bist, kannst du deine Passwörter und weitere Daten aus deinem Google‑Konto in Chromium verwenden. Wenn du das ändern möchtest, rufe „Mein Konto in Chromium“ auf.</translation>
 <translation id="1244381985120794049">Gemini in Chromium unter macOS in der Menüleiste anzeigen</translation>
@@ -227,6 +228,7 @@
 <translation id="3286538390144397061">Jetzt neu starten</translation>
 <translation id="328888136576916638">Google API-Schlüssel fehlen. Einige Funktionen von Chromium sind deaktiviert.</translation>
 <translation id="3296368748942286671">Apps weiter im Hintergrund ausführen, wenn Chromium geschlossen wird</translation>
+<translation id="3300632735252839402">Chromium wird aktualisiert, wenn du nicht am Gerät bist</translation>
 <translation id="3313189106987092621">Chromium warnt dich, bevor eine Website über eine unsichere Verbindung geladen wird</translation>
 <translation id="3316771292331273802">Wenn du alle Chromium-Fenster schließt, wirst du auf den meisten Websites abgemeldet – mit Ausnahme deines Google-Kontos, falls du in Chromium angemeldet bist. Wenn du möchtest, dass Websites dich wiedererkennen, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">Rechte obere Ecke des Suchbereichs: rechts <ph name="RIGHT" /> %, oben <ph name="TOP" /> %</translation>
@@ -235,6 +237,7 @@
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Zu bestehendem Chromium-Profil wechseln?</translation>
 <translation id="3412460710772753638">Im Passwortmanager auf diesem Gerät</translation>
+<translation id="3425452599984451640">Chromium möchte ein Update durchführen</translation>
 <translation id="3427159664004296878">Wenn du auf deine Lesezeichen und andere Daten von <ph name="DEVICE" /> zugreifen möchtest, melde dich in Chromium an</translation>
 <translation id="3438772217992559640">Diesen Tab mit der Bildersuche durchsuchen</translation>
 <translation id="3455907671758333080">Erweitertes Safe Browsing mit Chromium auf deinem Smartphone nutzen</translation>

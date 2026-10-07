@@ -302,7 +302,6 @@
 <translation id="1486096554574027028">Пребарај лозинки</translation>
 <translation id="1492194039220927094">Туркање на правилата:</translation>
 <translation id="1495677929897281669">Назад на картичката</translation>
-<translation id="1496318738909526466">Управувајте со „Подобрено автоматско пополнување“</translation>
 <translation id="1500286806237135498">Камери (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">Жлеб</translation>
 <translation id="1507202001669085618">&lt;p&gt;Грешкава ќе ја видите ако користите Wi-Fi портал каде што мора да се најавите пред да може да отидете онлајн.&lt;/p&gt;
@@ -954,6 +953,7 @@
 <translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp;Врати уредување</translation>
 <translation id="2559566667529177711">Повеќеслојно</translation>
+<translation id="2561224416042784023">Прегледајте ги поставките</translation>
 <translation id="2570734079541893434">Управувајте со поставките</translation>
 <translation id="257136025287118539">Администраторот ги преместува вашите датотеки во <ph name="CLOUD_PROVIDER" />. Датотекиве може да ги менувате штом ќе заврши прикачувањето.</translation>
 <translation id="2571488850200220306">За да помогне да се гарантира безбедност, може да ги види OS, верзијата на прелистувачот и софтверот што е инсталиран на уредот</translation>

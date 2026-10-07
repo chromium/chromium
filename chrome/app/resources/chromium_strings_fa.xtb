@@ -21,6 +21,7 @@
 <translation id="1185134272377778587">‏درباره Chromium</translation>
 <translation id="1186645291482254714">‏با Chromium در تلفنتان، هشدارهای پیگیری قیمت را دریافت کنید</translation>
 <translation id="1203500561924088507">بابت نصب از شما سپاس‌گزاریم. قبل‌از استفاده از <ph name="BUNDLE_NAME" />، باید مرورگر را بازراه‌اندازی کنید.</translation>
+<translation id="1222365723190436821">‏‫<ph name="IMPORTANT_UPDATE" /> معلق است. برای ایمن ماندن مرور، Chromium در نوبت بعدی که به‌مدت <ph name="IDLE_DURATION" /> غیرفعال باشید، به‌روز خواهد شد.</translation>
 <translation id="1232234696885483911">‏وقتی‌که «جستجوی تصویر» را باز می‌کنید، عنوان، نشانی وب، و محتوای صفحه (ازجمله فایل‌های PDF) به‌طور خودکار به سرور ارسال می‌شوند. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">‏اکنون که به سیستم وارد شده‌اید، می‌توانید از گذرواژه‌ها و سایر داده‌های «حساب Google» خود در Chromium استفاده کنید. برای تغییر دادن این تنظیم، به «حساب شما در Chromium» بروید.</translation>
 <translation id="1244381985120794049">‏نمایش «Gemini در Chromium» در نوار منو Mac</translation>
@@ -227,6 +228,7 @@
 <translation id="3286538390144397061">راه‌اندازی مجدد اکنون</translation>
 <translation id="328888136576916638">‏کلیدهای Google API وجود ندارند. برخی از عملکردهای Chromium از کار خواهند افتاد.</translation>
 <translation id="3296368748942286671">‏ادامه اجرای برنامه‌ها در پس‌زمینه هنگامیکه Chromium بسته می‌شود</translation>
+<translation id="3300632735252839402">‏‫Chrome وقتی که از دستگاه استفاده نمی‌کنید به‌روز خواهد شد</translation>
 <translation id="3313189106987092621">‏Chromium قبل‌از اینکه هر سایتی را ازطریق اتصال ناامن بار کند به شما هشدار می‌دهد</translation>
 <translation id="3316771292331273802">‏وقتی همه پنجره‌های Chromium را ببندید از سیستم اکثر سایت‌ها خارج خواهید شد، اما اگر به سیستم Chromium وارد شده باشید از «حساب Google» خارج نخواهید شد. برای اینکه سایت‌ها شما را به‌خاطر بسپارند، <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">‏گوشه بالا سمت چپ ناحیه جستجو: ‎٪<ph name="RIGHT" /> سمت چپ، ‎٪<ph name="TOP" /> بالا</translation>
@@ -235,6 +237,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">‏به نمایه Chromium موجود می‌روید؟</translation>
 <translation id="3412460710772753638">در «مدیر گذرواژه» در این دستگاه</translation>
+<translation id="3425452599984451640">‏‫Chromium می‌خواهد به‌روز شود</translation>
 <translation id="3427159664004296878">‏برای دریافت نشانک‌ها و سایر موارد از <ph name="DEVICE" />، به سیستم Chromium وارد شوید</translation>
 <translation id="3438772217992559640">جستجوی این زبانه با «جستجوی تصویر»</translation>
 <translation id="3455907671758333080">‏«مرور ایمن پیشرفته» را با Chromium در تلفنتان گسترش دهید</translation>

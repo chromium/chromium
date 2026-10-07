@@ -720,6 +720,12 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 <translation id="1488008594883876680">Önceden <ph name="ARC_VM" /> resim yüklemesini etkinleştir</translation>
 <translation id="1488724823347505879">Android uygulamalarından Web uygulamalarına paylaşımı etkinleştirin</translation>
 <translation id="1490962807364514840">CPU çalışma zamanı sayaçları telemetri toplama hızı (milisaniye cinsinden).</translation>
+<translation id="1491289760513245366">Politika ayarlandığında <ph name="AUTH_SCHEMES_POLICY_NAME" /> politikasından bağımsız olarak hangi kaynaklar için <ph name="PRODUCT_NAME" /> tarafından desteklenen tüm HTTP kimlik doğrulama şemalarına izin verileceğini belirtir.
+
+<ph name="PRODUCT_NAME" /> 161 sürümünden itibaren bu politika yalnızca hedef sunucu kaynakları için geçerli olacak ve proxy sunucu kimlik doğrulama sorgulamaları için geçerli olmayacak. Proxy sunucular için tüm HTTP kimlik doğrulama şemalarına izin vermek istiyorsanız bunun yerine <ph name="ALL_HTTP_AUTH_SCHEMES_ALLOWED_FOR_PROXIES_POLICY_NAME" /> politikasını kullanın. 161'den önceki sürümlerde, <ph name="ALL_HTTP_AUTH_SCHEMES_ALLOWED_FOR_PROXIES_POLICY_NAME" /> ayarlanmadığı sürece bu politikayla eşleşen proxy sunucuların tüm HTTP kimlik doğrulama şemalarını kullanmasına da izin verilir.
+
+      Kaynak kalıbını, <ph name="URL_SCHEME_FORMAT_LINK" /> adresine göz atarak biçimlendirin. <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> içinde en fazla 1.000 istisna tanımlanabilir.
+      Ana makine bileşeni için joker karakterlere izin verilir (ör. "*:8000", 8000 bağlantı noktasındaki tüm ana makinelerle eşleşir). Tüm şemaları veya tüm bağlantı noktalarını eşleştirmek için bileşeni tamamen çıkarın (ör. "example.com" herhangi bir şema ve herhangi bir bağlantı noktasıyla eşleşir). Ana makine adı (ör. "example.com"), alt alan adlarıyla da eşleşir. Bir ana makinenin tam olarak eşleşmesi ve alt alan adlarının hariç tutulması için başına nokta ekleyin (ör. ".example.com"). Tüm kaynakları eşleştirmek için tek bir yıldız işareti ("*") kullanın.</translation>
 <translation id="1492223733885011596">Bu politika, <ph name="PRODUCT_OS_NAME" /> sisteminde Emoji Seçici için GIF desteğini etkinleştirir.
 Bu politika, Etkin değerine ayarlanırsa Emoji Seçici, GIF emojileri destekler.
 Bu politika, Devre Dışı değerine ayarlanırsa veya ayarlanmadan bırakılırsa Emoji Seçici, GIF emojileri desteklemez.
@@ -4183,6 +4189,7 @@ Bu politikanın ayarlanmadığı siteler için, ayarlanmışsa <ph name="DEFAULT
 Bu politika, kullanımdan kaldırılan <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLICY_NAME" /> politikasının yerini almıştır.</translation>
 <translation id="3568762199045490351">0 ms'lik bir zaman aşımına sahip JavaScript setTimeout(), 1 ms'ye sabitlenir.</translation>
 <translation id="3574450691573438824">Cihaz sistem günlüğünü yüklemeyi devre dışı bırak</translation>
+<translation id="357461884473178606">Tüm HTTP kimlik doğrulama şemalarına izin veren proxy sunucuların listesi</translation>
 <translation id="3575011234198230041">HTTP kimlik doğrulaması</translation>
 <translation id="3575159471980949522">Kullanıcıların Chrome'dan Android cihazlarına telefon numarası göndermesine izin verme</translation>
 <translation id="3577251398714997599">Araya giren reklamların yer aldığı siteler için reklam ayarı</translation>
@@ -11543,6 +11550,12 @@ Yerel cihaza yönelik istekleri etkileyen ve içinde kaynakların listelendiği 
 <translation id="8066428282805800713">ChromeOS Flex'te ek donanım verisi gönder</translation>
 <translation id="8071371098891664137"><ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> için <ph name="PRINTERS_BLOCKLIST" /> seçiliyken <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> politikası ayarlanırsa kullanıcıların hangi yazıcıları kullanamayacağı belirlenir. Bu politikada listelenen kimlikler dışında kalan tüm yazıcılar kullanıcıya sağlanır. Kimliklerin, <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> politikasında belirtilen dosyadaki <ph name="ID_FIELD" /> veya <ph name="GUID_FIELD" /> alanlarına karşılık gelmesi gerekir.</translation>
 <translation id="8076539570602616846"><ph name="PRODUCT_NAME" /> PDF görüntüleyicideki PDF dosyalarını Google Drive'a kaydetmeye uygun Google Hesaplarını kısıtla</translation>
+<translation id="8078224178125125527">Politika ayarlandığında <ph name="AUTH_SCHEMES_POLICY_NAME" /> politikasından bağımsız olarak hangi proxy sunucuları için <ph name="PRODUCT_NAME" /> tarafından desteklenen tüm HTTP kimlik doğrulama şemalarına izin verileceğini belirtir.
+
+Proxy sunucu kalıbını, URL engellenenler listesi filtre biçimine (<ph name="URL_SCHEME_FORMAT_LINK" />) göre biçimlendirin. En fazla 1.000 istisna tanımlanabilir.
+Ana makine bileşeni için joker karakterlere izin verilir (ör. "*:8080", 8080 bağlantı noktasındaki tüm proxy'lerle eşleşir). Ana makine adı (ör. "proxy.example.com"), alt alan adlarıyla da eşleşir. Bir ana makinenin tam olarak eşleşmesi ve alt alan adlarının hariç tutulması için başına nokta ekleyin (ör. ".proxy.example.com").
+
+Bu politika ayarlanmazsa proxy kimlik doğrulaması için yalnızca <ph name="AUTH_SCHEMES_POLICY_NAME" /> politikasında belirtilen HTTP kimlik doğrulama şemaları (veya ayarlanmamışsa varsayılan şemalar) desteklenir.</translation>
 <translation id="8078297389450285582">Politikayı Etkin değerine ayarlamak veya ayarlamadan bırakmak, akıllı karartma modelini etkinleştirir ve ekran kararana kadar geçen süreyi uzatabilir. Süreyi geciktirirse ekran kapanması, ekran kilidi ve boşta kalma gecikmeleriyle ilgili süreler, orijinal olarak ayarlanan ekran kararma gecikmesine göre aynı oran korunacak biçimde düzenlenir.
 
       Politika, Devre Dışı değerine ayarlanırsa akıllı karartma modeli, ekran karartmayı etkilemez.</translation>
@@ -13024,6 +13037,11 @@ Not: Şu anda yalnızca ilk giriş dikkate alınır. Gelecekteki uzantılar bird
 <translation id="9015759770696099204">F11/F12 ayarları devre dışı</translation>
 <translation id="9015952763003753868"><ph name="CORS" /> ön kontrolünde eşleşen <ph name="ACAM_HEADER_NAME" /> yanıt başlığını spesifikasyonla uyumlu hale getir</translation>
 <translation id="9020630127193895800">Klavye arka ışığı çivit mavisi</translation>
+<translation id="9025073735776703766">Bu politika, XSLT özelliğinin (XSLTProcessor JavaScript API ve XSL işleme talimatı) kullanılabilirliğini kontrol eder.
+Bu politika, Etkin değerine ayarlanırsa özelliğin tarayıcıdaki varsayılan durumundan bağımsız olarak XSLT kullanılabilir.
+Bu politika, Devre Dışı değerine ayarlanırsa özelliğin tarayıcıdaki varsayılan durumundan bağımsız olarak XSLT kullanılamaz.
+Bu politika ayarlanmadan bırakılırsa XSLT'nin kullanılabilirliği, tarayıcının varsayılan ayarlarına ve saha denemelerine göre belirlenir.
+Bu politika geçici bir çözüm olup M176 sürümünde kaldırılacaktır.</translation>
 <translation id="9025912013525357598">Tüm medya türleri için veri URL'si boşluk koruması</translation>
 <translation id="9029815312472546960">Bu sitelerde Device Attributes API'yi engelle</translation>
 <translation id="9031831501689819108">Eski Tarayıcı Desteği'ni etkinleştir</translation>

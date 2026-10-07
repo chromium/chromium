@@ -706,6 +706,12 @@ https://support.google.com/chrome/a/?p=extended_updates_support 페이지를 참
 <translation id="1488008594883876680"><ph name="ARC_VM" /> 이미지 미리 로드 사용 설정</translation>
 <translation id="1488724823347505879">Android 앱에서 웹 앱으로의 공유를 사용 설정합니다.</translation>
 <translation id="1490962807364514840">CPU 런타임은 텔레메트리 수집 속도를 밀리초 단위로 계산합니다.</translation>
+<translation id="1491289760513245366">정책을 설정하면 <ph name="AUTH_SCHEMES_POLICY_NAME" /> 정책과 관계없이 <ph name="PRODUCT_NAME" />에서 지원하는 모든 HTTP 인증 스킴을 허용할 출처가 지정됩니다.
+
+<ph name="PRODUCT_NAME" /> 버전 161부터 이 정책은 대상 서버 출처에만 적용되며 프록시 서버 인증 시도에는 적용되지 않습니다. 프록시 서버에 모든 HTTP 인증 스킴을 허용하려면 대신 <ph name="ALL_HTTP_AUTH_SCHEMES_ALLOWED_FOR_PROXIES_POLICY_NAME" /> 정책을 사용하세요. 161 이전 버전에서는 <ph name="ALL_HTTP_AUTH_SCHEMES_ALLOWED_FOR_PROXIES_POLICY_NAME" /> 정책이 설정되지 않은 한 이 정책과 일치하는 프록시 서버도 모든 HTTP 인증 스킴을 사용할 수 있습니다.
+
+      출처 패턴 형식은 이 형식(<ph name="URL_SCHEME_FORMAT_LINK" />)을 따라야 합니다. <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />에 최대 1,000개의 예외를 정의할 수 있습니다.
+      호스트 구성요소에 와일드 카드를 사용할 수 있습니다(예: '*:8000'은 포트 8000의 모든 호스트와 일치함). 모든 스킴 또는 모든 포트와 일치시키려면 구성요소를 완전히 생략하세요(예: 'example.com'은 모든 스킴 및 모든 포트와 일치함). 호스트 이름(예: 'example.com')은 하위 도메인과도 일치합니다. 호스트를 정확히 일치시키고 하위 도메인을 제외하려면 호스트 앞에 점을 추가하세요(예: '.example.com'). 모든 출처와 일치시키려면 별표('*') 하나를 사용하세요.</translation>
 <translation id="1492223733885011596">이 정책은 <ph name="PRODUCT_OS_NAME" />에서 그림 이모티콘 선택 도구에 대한 GIF 지원을 사용 설정합니다.
 정책을 사용으로 설정하면 그림 이모티콘 선택 도구에서 GIF 그림 이모티콘을 지원합니다.
 정책을 사용 안함으로 설정하거나 설정하지 않으면 그림 이모티콘 선택 도구에서 GIF 그림 이모티콘을 지원하지 않습니다.
@@ -4139,6 +4145,7 @@ false로 설정된 경우 기존 및 신규 Crostini 컨테이너에 대한 루�
 이는 지원 중단된 <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLICY_NAME" /> 정책을 대체합니다.</translation>
 <translation id="3568762199045490351">시간 초과가 0ms인 자바스크립트 setTimeout()이 1ms로 클램프됩니다.</translation>
 <translation id="3574450691573438824">기기 시스템 로그 업로드 사용 안함</translation>
+<translation id="357461884473178606">모든 HTTP 인증 스킴을 허용하는 프록시 서버 목록</translation>
 <translation id="3575011234198230041">HTTP 인증</translation>
 <translation id="3575159471980949522">사용자가 Chrome에서 Android 기기로 전화번호를 전송하도록 허용 안함</translation>
 <translation id="3577251398714997599">방해가 되는 광고가 포함된 사이트의 광고 설정</translation>
@@ -11526,6 +11533,12 @@ https://chromeenterprise.google/policies/url-patterns를 참고하세요.
 <translation id="8066428282805800713">ChromeOS Flex에서 추가 하드웨어 데이터 전송</translation>
 <translation id="8071371098891664137"><ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />에 <ph name="PRINTERS_BLOCKLIST" />을 선택할 경우 <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" />를 설정하면 사용자가 사용할 수 없는 프린터가 지정됩니다. ID가 이 정책에 명시된 프린터를 제외한 모든 프린터가 사용자에게 제공됩니다. ID는 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />에 지정된 파일의 <ph name="ID_FIELD" /> 또는 <ph name="GUID_FIELD" /> 필드와 일치해야 합니다.</translation>
 <translation id="8076539570602616846"><ph name="PRODUCT_NAME" /> PDF 뷰어에서 Google Drive에 PDF 파일을 저장할 수 있는 Google 계정 제한</translation>
+<translation id="8078224178125125527">정책을 설정하면 <ph name="AUTH_SCHEMES_POLICY_NAME" /> 정책과 관계없이 <ph name="PRODUCT_NAME" />에서 지원하는 모든 HTTP 인증 스킴을 허용할 프록시 서버가 지정됩니다.
+
+프록시 서버 패턴 형식을 URL 차단 목록 필터 형식(<ph name="URL_SCHEME_FORMAT_LINK" />)에 따라 지정합니다. 예외를 최대 1,000개까지 정의할 수 있습니다.
+호스트 구성요소에 와일드 카드를 사용할 수 있습니다(예: '*:8080'은 포트 8080의 모든 프록시와 일치함). 호스트 이름(예: 'proxy.example.com')은 하위 도메인과도 일치합니다. 호스트를 정확히 일치시키고 하위 도메인을 제외하려면 호스트 앞에 점을 추가하세요(예: '.proxy.example.com').
+
+이 정책을 설정하지 않으면 <ph name="AUTH_SCHEMES_POLICY_NAME" />에 지정된 HTTP 인증 스킴(또는 설정되지 않은 경우 기본 스킴)만 프록시 인증에 지원됩니다.</translation>
 <translation id="8078297389450285582">정책을 사용 설정하거나 설정하지 않으면 스마트 밝기 낮추기 모델을 사용 설정하고 화면이 어두워질 때까지의 시간을 연장할 수 있습니다. 시간이 지연되면 화면 꺼짐, 화면 잠금 및 유휴 지연 시간이 원래 설정된 화면 어둡게 하기 지연 시간과 같은 간격을 유지하도록 조정됩니다.
 
       정책을 사용 중지하면 스마트 밝기 낮추기 모델이 화면 어둡게 하기에 영향을 미치지 않습니다.</translation>
@@ -13010,6 +13023,11 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
 <translation id="9015759770696099204">F11/F12 설정은 사용 중지되었습니다.</translation>
 <translation id="9015952763003753868"><ph name="CORS" /> 프리플라이트에서 <ph name="ACAM_HEADER_NAME" /> 응답 헤더와 일치 시 강제로 사양을 준수하도록 함</translation>
 <translation id="9020630127193895800">키보드 백라이트 색상: 인디고</translation>
+<translation id="9025073735776703766">이 정책은 XSLT 기능(XSLTProcessor JavaScript API 및 XSL 처리 안내)의 사용 가능 여부를 제어합니다.
+이 정책을 사용 설정으로 설정하면 브라우저의 기능 기본 상태와 관계없이 XSLT를 사용할 수 있습니다.
+이 정책을 사용 안함으로 설정하면 브라우저의 기능 기본 상태와 관계없이 XSLT를 사용할 수 없습니다.
+정책을 설정하지 않으면 브라우저의 기본 설정 및 필드 체험판에 따라 XSLT 사용 가능 여부가 결정됩니다.
+이 정책은 일시적인 조치이며 M176에서 삭제될 예정입니다.</translation>
 <translation id="9025912013525357598">모든 미디어 유형의 DataURL 공백 유지</translation>
 <translation id="9029815312472546960">이 사이트에서 Device Attributes API 차단</translation>
 <translation id="9031831501689819108">이전 브라우저 지원 사용</translation>

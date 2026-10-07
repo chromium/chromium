@@ -23,6 +23,7 @@
 <translation id="1185134272377778587">‏Chromium کے بارے میں</translation>
 <translation id="1186645291482254714">‏اپنے فون پر Chromium کے ساتھ قیمت کی ٹریکنگ کے الرٹس حاصل کریں</translation>
 <translation id="1203500561924088507">انسٹال کرنے کا شکریہ۔ آپ کو <ph name="BUNDLE_NAME" /> استعمال کرنے سے پہلے اپنا براؤزر لازمی طور سے ری اسٹارٹ کرنا چاہیے۔</translation>
+<translation id="1222365723190436821">‏ایک <ph name="IMPORTANT_UPDATE" /> زیر التواء ہے۔ اپنی براؤزنگ کو محفوظ رکھنے کے لیے، Chromium اگلی بار اپ ڈیٹ کرے گا جب آپ <ph name="IDLE_DURATION" /> کے لیے غیر فعال ہوں گے۔</translation>
 <translation id="1232234696885483911">‏جب آپ تصاویر کا استعمال کر کے تلاش کھولتے ہیں تو صفحہ کا عنوان، URL اور مواد بشمول PDFs خودکار طور پر سرور کو بھیجے جائیں گے۔ <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">‏جب آپ سائن ان ہوتے ہیں، آپ Chromium میں اپنے Google اکاؤنٹ سے اپنے پاس ورڈز وغیرہ استعمال کر سکتے ہیں۔ اسے تبدیل کرنے کے لیے، "Chromium میں آپ کا اکاؤنٹ" پر جائیں۔</translation>
 <translation id="1244381985120794049">‏‫Mac مینیو بار میں Chromium میں Gemini دکھائیں</translation>
@@ -229,6 +230,7 @@
 <translation id="3286538390144397061">ابھی ری اسٹارٹ کریں</translation>
 <translation id="328888136576916638">‏Google API کلیدیں دستیاب نہیں ہیں۔ Chromium کی کچھ فعالیت غیر فعال ہو جائے گی۔</translation>
 <translation id="3296368748942286671">‏Chromium بند ہو جانے پر پس منظر کی ایپس چلانا جاری رکھیں</translation>
+<translation id="3300632735252839402">‏آپ کے دور ہونے پر Chromium اپ ڈیٹ ہو جائے گا</translation>
 <translation id="3313189106987092621">‏غیر محفوظ کنکشن کا استعمال کر کے کسی بھی سائٹ کو لوڈ کرنے سے پہلے Chromium آپ کو متنبہ کرے گا</translation>
 <translation id="3316771292331273802">‏اگر آپ Chromium میں سائن ان ہیں تو اپنے Google اکاؤنٹ کے علاوہ، سبھی Chromium ونڈوز بند کرنے پر آپ بیشتر سائٹس سے سائن آؤٹ ہو جائیں گے۔ سائٹس کو آپ کی معلومات یاد رکھنے کی اجازت دینے کے لیے، <ph name="SETTINGS_LINK" /> پر جائیں۔</translation>
 <translation id="3352986031709923790">تلاش کے حلقے کا اوپری بایاں کونا: <ph name="RIGHT" /> فیصد بائیں، <ph name="TOP" /> فیصد اوپر</translation>
@@ -237,6 +239,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">‏موجودہ Chromium پروفائل پر سوئچ کریں؟</translation>
 <translation id="3412460710772753638">اس آلہ پر پاس ورڈ مینیجر میں</translation>
+<translation id="3425452599984451640">‏‫Chromium اپ ڈیٹ کرنا چاہتا ہے</translation>
 <translation id="3427159664004296878">‏‫<ph name="DEVICE" /> سے اپنے بُک مارکس اور مزید حاصل کرنے کے لیے، Chromium میں سائن ان کریں</translation>
 <translation id="3438772217992559640">تصاویر کا استعمال کر کے تلاش کے ساتھ اس ٹیب کو تلاش کریں</translation>
 <translation id="3455907671758333080">‏اپنے فون پر Chromium کے ساتھ بہتر کردہ محفوظ براؤزنگ کو بڑھائیں</translation>

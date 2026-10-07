@@ -302,7 +302,6 @@
 <translation id="1486096554574027028">රහස්වචන සොයන්න</translation>
 <translation id="1492194039220927094">ප්‍රතිපත්ති පුෂ්:</translation>
 <translation id="1495677929897281669">ආපසු පටිත්ත වෙත</translation>
-<translation id="1496318738909526466">වැඩිදියුණු කළ ස්වයංක්‍රීය පිරවීම කළමනාකරණය කරන්න</translation>
 <translation id="1500286806237135498">කැමරා (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1504042622576912555">බටනලාව</translation>
 <translation id="1507202001669085618">&lt;p&gt;ඔබ සබැඳි වීමට හැකි වීමට පෙර පුරනය වීමට අවශ්‍ය වන Wi-Fi ද්වාරයක් භාවිතා කරන්නේ නම් ඔබ මෙම දෝෂය දකිනු ඇත.&lt;/p&gt;
@@ -954,6 +953,7 @@
 <translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">සංස්කරණය &amp;පසුගමනය කරන්න</translation>
 <translation id="2559566667529177711">බහු ස්ථර</translation>
+<translation id="2561224416042784023">සැකසීම් බලන්න</translation>
 <translation id="2570734079541893434">සැකසීම් කළමනාකරණය කරන්න</translation>
 <translation id="257136025287118539">ඔබේ පරිපාලක ඔබේ ගොනු <ph name="CLOUD_PROVIDER" /> වෙත ගෙන යමින් සිටී. උඩුගත කිරීම සම්පූර්ණ වූ පසු ඔබට මෙම ගොනු වෙනස් කළ හැක.</translation>
 <translation id="2571488850200220306">ආරක්ෂාව සහතික කිරීමට උදවු කිරීම සඳහා, එයට උපාංගයේ OS, බ්‍රව්සර අනුවාදය, සහ ස්ථාපනය කර ඇති මෘදුකාංගය ද බැලිය හැක</translation>

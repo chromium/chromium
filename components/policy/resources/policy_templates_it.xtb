@@ -721,6 +721,12 @@ Se disattivi questa policy, lo scorrimento della pagina web ai frammenti di test
 <translation id="1488008594883876680">Attiva il precaricamento dell'immagine <ph name="ARC_VM" /></translation>
 <translation id="1488724823347505879">Attiva la condivisione dalle app Android alle app web</translation>
 <translation id="1490962807364514840">Il tempo di esecuzione della CPU conta la velocità di raccolta dei dati di telemetria in millisecondi.</translation>
+<translation id="1491289760513245366">La configurazione della policy consente di specificare per quali origini consentire tutti gli schemi di autenticazione HTTP supportati da <ph name="PRODUCT_NAME" />, indipendentemente dalla policy <ph name="AUTH_SCHEMES_POLICY_NAME" />.
+
+A partire dalla versione 161 di <ph name="PRODUCT_NAME" />, questa policy si applica solo alle origini del server di destinazione e non alle richieste di autenticazione del server proxy. Per consentire tutti gli schemi di autenticazione HTTP per i server proxy, utilizza invece la policy <ph name="ALL_HTTP_AUTH_SCHEMES_ALLOWED_FOR_PROXIES_POLICY_NAME" />. Prima della versione 161, i server proxy che corrispondono a questa policy possono anche utilizzare tutti gli schemi di autenticazione HTTP, a meno che non sia impostata la policy <ph name="ALL_HTTP_AUTH_SCHEMES_ALLOWED_FOR_PROXIES_POLICY_NAME" />.
+
+      Il pattern dell'origine deve avere il seguente formato (<ph name="URL_SCHEME_FORMAT_LINK" />). In <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> possono essere definite fino a 1000 eccezioni.
+      I caratteri jolly sono consentiti per il componente host (ad es. "*:8000" corrisponde a tutti gli host sulla porta 8000). Per trovare una corrispondenza con tutti gli schemi o tutte le porte, ometti completamente il componente (ad es. "example.com" corrisponde a qualsiasi schema e qualsiasi porta). Un nome host (ad es. "example.com") corrisponde anche ai relativi sottodomini. Per una corrispondenza esatta con un host e per escluderne i sottodomini, anteponi un punto (ad es. ".example.com"). Per trovare una corrispondenza con tutte le origini, utilizza un singolo asterisco ("*").</translation>
 <translation id="1492223733885011596">Questa policy consente di attivare il supporto delle GIF per il selettore di emoji su <ph name="PRODUCT_OS_NAME" />.
 Se questa policy viene attivata, il selettore di emoji supporterà le emoji in formato GIF.
 Se viene disattivata o se non viene configurata, il selettore di emoji non supporterà le emoji in formato GIF.
@@ -4162,6 +4168,7 @@ Se la policy non viene configurata per un sito, la policy di <ph name="DEFAULT_W
 Ciò sostituisce la policy <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLICY_NAME" /> obsoleta.</translation>
 <translation id="3568762199045490351">La funzione JavaScript setTimeout() con timeout di 0 ms verrà impostata su 1 ms.</translation>
 <translation id="3574450691573438824">Disattiva il caricamento dei log di sistema del dispositivo</translation>
+<translation id="357461884473178606">Elenco dei server proxy che consentono tutti gli schemi di autenticazione HTTP</translation>
 <translation id="3575011234198230041">Autenticazione HTTP</translation>
 <translation id="3575159471980949522">Non consentire agli utenti di inviare numeri di telefono da Chrome al loro dispositivo Android</translation>
 <translation id="3577251398714997599">Impostazione annunci per i siti con annunci invasivi</translation>
@@ -11493,6 +11500,12 @@ Esistono più policy che elencano le origini che influiscono sulle richieste al 
 <translation id="8066428282805800713">Invia dati hardware aggiuntivi su ChromeOS Flex</translation>
 <translation id="8071371098891664137">Se per la policy <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> viene scelta l'opzione <ph name="PRINTERS_BLOCKLIST" />, la configurazione della policy <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> consente di specificare le stampanti che gli utenti non possono usare. L'utente avrà a disposizione tutte le stampanti, tranne quelle i cui ID sono elencati in questa policy. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nella policy <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="8076539570602616846">Limita gli Account Google idonei per il salvataggio di file PDF su Google Drive dal visualizzatore PDF <ph name="PRODUCT_NAME" /></translation>
+<translation id="8078224178125125527">La configurazione della policy consente di specificare per quali server proxy consentire tutti gli schemi di autenticazione HTTP supportati da <ph name="PRODUCT_NAME" />, indipendentemente dalla policy <ph name="AUTH_SCHEMES_POLICY_NAME" />.
+
+Il pattern del server proxy deve avere il formato del filtro lista bloccata di URL (<ph name="URL_SCHEME_FORMAT_LINK" />). È possibile definire fino a 1000 eccezioni.
+I caratteri jolly sono consentiti per il componente host (ad es. "*:8080" corrisponde a tutti i proxy sulla porta 8080). Un nome host (ad es. "proxy.example.com") corrisponde anche ai relativi sottodomini. Per una corrispondenza esatta con un host e per escluderne i sottodomini, anteponi un punto (ad es. ".proxy.example.com").
+
+Se questa policy non viene configurata, per l'autenticazione proxy sono supportati solo gli schemi di autenticazione HTTP specificati in <ph name="AUTH_SCHEMES_POLICY_NAME" /> (o gli schemi predefiniti, se non configurati).</translation>
 <translation id="8078297389450285582">Se la policy viene impostata su Attivata o se non viene configurata, viene attivato il modello di oscuramento smart e potrebbe essere ritardato l'oscuramento dello schermo. Quando viene ritardato il tempo, i ritardi di spegnimento, blocco e inattività dello schermo vengono regolati per mantenere gli stessi distacchi dal ritardo di oscuramento dello schermo impostato in origine.
 
       Se la policy viene impostata su Disattivata, il modello di oscuramento smart non inciderà sull'oscuramento dello schermo.</translation>
@@ -12977,6 +12990,11 @@ Nota: al momento verrà presa in considerazione solo la prima voce. Le estension
 <translation id="9015759770696099204">Le impostazioni F11/F12 sono disabilitate</translation>
 <translation id="9015952763003753868">Fai in modo che <ph name="ACAM_HEADER_NAME" /> abbia una corrispondenza in <ph name="CORS" /> per la conformità alle specifiche preflight</translation>
 <translation id="9020630127193895800">Colore della retroilluminazione della tastiera blu indaco</translation>
+<translation id="9025073735776703766">Questa policy consente di controllare la disponibilità della funzionalità XSLT (l'API JavaScript XSLTProcessor e l'istruzione di elaborazione XSL).
+Se questa policy viene impostata su Attivata, XSLT sarà disponibile, indipendentemente dallo stato predefinito della funzionalità nel browser.
+Se questa policy viene impostata su Disattivata, XSLT non sarà disponibile, indipendentemente dallo stato predefinito della funzionalità nel browser.
+Se questa policy non viene configurata, la disponibilità di XSLT verrà determinata dalle impostazioni predefinite del browser e dalle prove sul campo.
+Questa policy è una misura temporanea e verrà rimossa nella versione M176.</translation>
 <translation id="9025912013525357598">Conservazione degli spazi vuoti DataURL per tutti i tipi di media</translation>
 <translation id="9029815312472546960">Blocca l'API Device Attributes su questi siti</translation>
 <translation id="9031831501689819108">Attiva Supporto dei browser precedenti</translation>

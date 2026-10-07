@@ -764,6 +764,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4092709865241032354">Google パスワード マネージャーでログイン情報を保存するには、このサイトのユーザー名を追加してください</translation>
 <translation id="4095146165863963773">アプリデータを削除しますか？</translation>
 <translation id="4095483462103784441">新しいタブグループを作成</translation>
+<translation id="4098552968111329864">Chrome での作業を保護するため、ユーザーが Chrome にログインしているとき、組織は特定の情報を表示または管理できます</translation>
 <translation id="4105527135143631701">Google パスワード マネージャーの更新メッセージが表示されました</translation>
 <translation id="4107207375883769436">組織で必要に応じて仕事用プロファイルの閲覧データ（閲覧履歴やパスワードなど）を確認、管理する場合があります</translation>
 <translation id="4113030288477039509">管理者により管理されています</translation>
@@ -1770,6 +1771,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="7929587383660661825">通知を不正に使用しているサイトや最近アクセスしていないサイトから権限を自動的に削除します</translation>
 <translation id="7934668619883965330">ファイルをダウンロードできません。このファイル形式はサポートされていません。</translation>
 <translation id="7951102827450076904">ダウンロードした PDF を常に開く</translation>
+<translation id="7952148074468405586">詳しくは、<ph name="BEGIN_LINK" />組織が表示または管理できる情報<ph name="END_LINK" />をご覧ください</translation>
 <translation id="7952479614398473176">新しいウィンドウを開くには、アクティブなウィンドウの合計数を <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> 個以下に減らしてください。</translation>
 <translation id="7956713633345437162">モバイルのブックマーク</translation>
 <translation id="7957413488482743710">仮想カードを使用すると、実際のカードを非表示にして、不正行為から保護できます。<ph name="BEGIN_LINK1" />仮想カードの詳細<ph name="END_LINK1" /></translation>
