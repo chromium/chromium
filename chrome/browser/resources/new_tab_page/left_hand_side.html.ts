@@ -9,6 +9,7 @@ import type {LeftHandSideElement} from './left_hand_side.js';
 export function getHtml(this: LeftHandSideElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
+  <cr-threads-rail id="folded"></cr-threads-rail>
   <ntp-iframe id="expanded"
       src="chrome-untrusted://new-tab-page/expanded-lhs">
   </ntp-iframe>

@@ -12,6 +12,7 @@
   height: 100%;
 }
 
-#expanded {
+#expanded,
+#folded {
   height: 100%;
 }

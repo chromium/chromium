@@ -6,7 +6,7 @@
 // loaded part of the NTP.
 import 'chrome://new-tab-page/lazy_load.js';
 
-import type {IframeElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {IframeElement, ThreadsRailElement} from 'chrome://new-tab-page/lazy_load.js';
 import type {LeftHandSideElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -28,6 +28,13 @@ suite('NewTabPageLeftHandSideTest', () => {
     leftHandSide = document.createElement('cr-left-hand-side');
     document.body.appendChild(leftHandSide);
     await microtasksFinished();
+  });
+
+  test('renders folded threads rail', () => {
+    const folded =
+        leftHandSide.shadowRoot.querySelector<ThreadsRailElement>('#folded');
+    assertTrue(!!folded);
+    assertEquals('CR-THREADS-RAIL', folded.tagName);
   });
 
   test('renders expanded LHS iframe', () => {
