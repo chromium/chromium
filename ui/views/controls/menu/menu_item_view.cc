@@ -984,6 +984,12 @@ ProposedLayout MenuItemView::CalculateProposedLayout(
   return layout;
 }
 
+bool MenuItemView::ShouldShowMnemonics() const {
+  const MenuItemView* root = GetRootMenuItem();
+  return root->has_mnemonics_ &&
+         (MenuConfig::instance().show_mnemonics || root->show_mnemonics_);
+}
+
 void MenuItemView::SetForcedVisualSelection(bool selected) {
   if (selected == forced_visual_selection_) {
     return;
@@ -1103,10 +1109,8 @@ int MenuItemView::GetDrawStringFlags() const {
                                   : gfx::Canvas::TEXT_ALIGN_LEFT;
 
   if (GetRootMenuItem()->has_mnemonics_ && may_have_mnemonics()) {
-    flags |= (MenuConfig::instance().show_mnemonics ||
-              GetRootMenuItem()->show_mnemonics_)
-                 ? gfx::Canvas::SHOW_PREFIX
-                 : gfx::Canvas::HIDE_PREFIX;
+    flags |= ShouldShowMnemonics() ? gfx::Canvas::SHOW_PREFIX
+                                   : gfx::Canvas::HIDE_PREFIX;
   }
   return flags;
 }

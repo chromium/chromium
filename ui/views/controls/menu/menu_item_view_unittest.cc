@@ -26,6 +26,7 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_separator.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -184,6 +185,71 @@ TEST_F(MenuItemViewUnitTest, UseMnemonicOnPlatform) {
     EXPECT_EQ(0, item1->GetMnemonic());
     EXPECT_EQ(0, item2->GetMnemonic());
   }
+}
+
+namespace {
+
+// Returns the SHOW_PREFIX / HIDE_PREFIX of the flags used to draw
+// the item's title. 0 means that '&' is drawn as is.
+int GetMnemonicPrefixFlags(const MenuItemView* item) {
+  return TestMenuItemView::GetDrawStringFlagsFor(item) &
+         (gfx::Canvas::SHOW_PREFIX | gfx::Canvas::HIDE_PREFIX);
+}
+
+}  // namespace
+
+// A menu asked to show its mnemonics (when opened with the keyboard) underlines
+// them.
+TEST_F(MenuItemViewUnitTest, ShowsMnemonicsWhenRequested) {
+  views::TestMenuItemView root_menu;
+  views::MenuItemView* submenu_item = root_menu.AppendSubMenu(1, u"&Submenu");
+  views::MenuItemView* nested_item =
+      submenu_item->AppendMenuItem(2, u"&Nested");
+  views::MenuItemView* literal_item = root_menu.AppendMenuItem(3, u"A&B");
+  literal_item->set_may_have_mnemonics(false);
+
+  root_menu.PrepareForRun(/*has_mnemonics=*/true, /*show_mnemonics=*/true);
+
+  // Every item reports the root menu item's state.
+  EXPECT_TRUE(root_menu.ShouldShowMnemonics());
+  EXPECT_TRUE(submenu_item->ShouldShowMnemonics());
+  EXPECT_TRUE(nested_item->ShouldShowMnemonics());
+
+  // Titles underline their mnemonic, unless the item can't have one.
+  EXPECT_EQ(gfx::Canvas::SHOW_PREFIX, GetMnemonicPrefixFlags(nested_item));
+  EXPECT_EQ(0, GetMnemonicPrefixFlags(literal_item));
+}
+
+// A menu not asked to show its mnemonics (when opened with the mouse)
+// hides them.
+TEST_F(MenuItemViewUnitTest, HidesMnemonicsWhenNotRequested) {
+  // Windows can be set to always underline mnemonics ("Underline access
+  // keys"), which this test can't override.
+  if (MenuConfig::instance().show_mnemonics) {
+    GTEST_SKIP() << "The OS is set to always show mnemonics";
+  }
+
+  views::TestMenuItemView root_menu;
+  views::MenuItemView* item = root_menu.AppendMenuItem(1, u"&Item");
+
+  root_menu.PrepareForRun(/*has_mnemonics=*/true, /*show_mnemonics=*/false);
+
+  EXPECT_FALSE(root_menu.ShouldShowMnemonics());
+  EXPECT_FALSE(item->ShouldShowMnemonics());
+  EXPECT_EQ(gfx::Canvas::HIDE_PREFIX, GetMnemonicPrefixFlags(item));
+}
+
+// A menu without mnemonics never shows them, even if asked to. Its titles
+// draw '&' as is.
+TEST_F(MenuItemViewUnitTest, IgnoresMnemonicsWhenMenuHasNone) {
+  views::TestMenuItemView root_menu;
+  views::MenuItemView* item = root_menu.AppendMenuItem(1, u"A&B");
+
+  root_menu.PrepareForRun(/*has_mnemonics=*/false, /*show_mnemonics=*/true);
+
+  EXPECT_FALSE(root_menu.ShouldShowMnemonics());
+  EXPECT_FALSE(item->ShouldShowMnemonics());
+  EXPECT_EQ(0, GetMnemonicPrefixFlags(item));
 }
 
 TEST_F(MenuItemViewUnitTest, NotifiesSelectedChanged) {

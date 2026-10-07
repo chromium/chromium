@@ -456,6 +456,12 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   // item.
   bool has_mnemonics() const { return has_mnemonics_; }
 
+  // Returns true if this menu's mnemonics should be shown (underlined).
+  // Reads the root menu item's state, so it can be called on any of its
+  // children, submenus, and the root itself. Views hosted inside a menu item
+  // can use this to show their own mnemonics consistently.
+  bool ShouldShowMnemonics() const;
+
   void set_vertical_margin(int vertical_margin) {
     vertical_margin_ = vertical_margin;
     invalidate_dimensions();
