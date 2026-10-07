@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 
 namespace gemini {
 
@@ -43,6 +44,12 @@ void UpdateGeminiLiveIconVisibility(ProfileIOS* profile, bool in_live_mode) {
       [omniboxHandler setCustomLeadingViewType:type];
     }
   }
+}
+
+bool IsGeminiLivePromptSubmitted(ios::provider::GeminiClientMode old_status,
+                                 ios::provider::GeminiClientMode new_status) {
+  return new_status == ios::provider::GeminiClientMode::kThinking &&
+         old_status != ios::provider::GeminiClientMode::kThinking;
 }
 
 }  // namespace gemini

@@ -295,7 +295,8 @@ enum class IOSGeminiFirstPromptSubmissionMethod {
   kOnboardingNoIAmDone = 25,
   kOnboardingKeepLearning = 26,
   kAppSwitcherSummarize = 27,
-  kMaxValue = kAppSwitcherSummarize,
+  kLivePrompt = 28,
+  kMaxValue = kLivePrompt,
 };
 // LINT.ThenChange(
 //   /tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiFirstPromptSubmissionMethod,

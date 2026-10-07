@@ -214,7 +214,9 @@ enum class InputType {
   kEditMenuPrompt = 26,
   // Summarization query originating from the App Switcher.
   kAppSwitcherSummarize = 27,
-  kMaxValue = kAppSwitcherSummarize,
+  // Live voice prompt input type.
+  kLivePrompt = 28,
+  kMaxValue = kLivePrompt,
 };
 // LINT.ThenChange(
 //   /ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiFirstPromptSubmissionMethod,

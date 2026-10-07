@@ -53,6 +53,7 @@ source_set("live_utils") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/public/provider/chrome/browser/bwg:gemini_api",
   ]
 }
 

@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_live_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -96,6 +97,8 @@ IOSGeminiFirstPromptSubmissionMethod ConvertInputTypeToHistogramEnum(
       return IOSGeminiFirstPromptSubmissionMethod::kEditMenuPrompt;
     case gemini::InputType::kAppSwitcherSummarize:
       return IOSGeminiFirstPromptSubmissionMethod::kAppSwitcherSummarize;
+    case gemini::InputType::kLivePrompt:
+      return IOSGeminiFirstPromptSubmissionMethod::kLivePrompt;
   }
 }
 
@@ -140,6 +143,8 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   BOOL _waitingForResponse;
   // Track prompts per session.
   int _totalPromptsInSession;
+  // Tracks the last processing status received to detect transitions.
+  ios::provider::GeminiClientMode _lastProcessingStatus;
   // The refill date of the last logged Nano Banana quota exhaustion to avoid
   // duplicate logging.
   NSDate* _lastLoggedNanoBananaQuotaRefillDate;
@@ -153,6 +158,7 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
     _webStateList = webStateList;
     _tracker = tracker;
     _prefService = prefService;
+    _lastProcessingStatus = ios::provider::GeminiClientMode::kUnknown;
   }
   return self;
 }
@@ -175,6 +181,7 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
 - (void)didUpdateProcessingStatus:(ios::provider::GeminiClientMode)processStatus
                         sessionID:(NSString*)sessionID
                    conversationID:(NSString*)conversationID {
+  [self handleProcessingStatusUpdate:processStatus];
   [self.geminiViewStateDelegate didUpdateProcessingStatus:processStatus
                                                 sessionID:sessionID
                                            conversationID:conversationID];
@@ -185,6 +192,7 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
                         (ios::provider::GeminiDormantReason)dormantReason
                         sessionID:(NSString*)sessionID
                    conversationID:(NSString*)conversationID {
+  [self handleProcessingStatusUpdate:processStatus];
   if (IsGeminiLiveDormantReasonsEnabled()) {
     [self.geminiViewStateDelegate didUpdateProcessingStatus:processStatus
                                               dormantReason:dormantReason
@@ -203,6 +211,7 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
             (ios::provider::GeminiClientMode)processStatus
                          sessionID:(NSString*)sessionID
                     conversationID:(NSString*)conversationID {
+  [self handleProcessingStatusUpdate:processStatus];
   [self.geminiViewStateDelegate didUpdateProcessingStatus:processStatus
                                                 sessionID:sessionID
                                            conversationID:conversationID];
@@ -223,6 +232,8 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   _hasSubmittedFirstPrompt = NO;
   // Reset prompt counters for new session.
   _totalPromptsInSession = 0;
+  // Reset last processing status for new session.
+  _lastProcessingStatus = ios::provider::GeminiClientMode::kUnknown;
 
   [self.geminiViewStateDelegate geminiUIDidAppear];
 }
@@ -341,6 +352,7 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   _waitingForResponse = NO;
   _lastPromptSentTime = base::TimeTicks();
   _lastPromptHadPageContext = NO;
+  _lastProcessingStatus = ios::provider::GeminiClientMode::kUnknown;
 
   [self.geminiViewStateDelegate didTapNewChatButton];
 }
@@ -466,6 +478,24 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
 }
 
 #pragma mark - Private
+
+// Handles updates to the Gemini processing status, updating session metrics
+// when transitioning to thinking state in Live mode.
+- (void)handleProcessingStatusUpdate:
+    (ios::provider::GeminiClientMode)processStatus {
+  if (gemini::IsGeminiLivePromptSubmitted(_lastProcessingStatus,
+                                          processStatus)) {
+    _totalPromptsInSession++;
+    if (!_hasSubmittedFirstPrompt) {
+      _hasSubmittedFirstPrompt = YES;
+      RecordFirstPromptSubmission(
+          IOSGeminiFirstPromptSubmissionMethod::kLivePrompt);
+    }
+    RecordPromptSubmissionMethod(
+        IOSGeminiFirstPromptSubmissionMethod::kLivePrompt);
+  }
+  _lastProcessingStatus = processStatus;
+}
 
 // Finds the web state with the given client ID as unique identifier.
 - (web::WebState*)webStateWithClientID:(NSString*)clientID {
