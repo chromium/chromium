@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_coordinator.h"
 
 #import "base/metrics/user_metrics.h"
+#import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_mediator.h"
@@ -13,6 +14,7 @@
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_view_controller.h"
 #import "ios/chrome/browser/authentication/add_account_signin/coordinator/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -133,22 +135,22 @@
                   prefilledEmail:nil
             continuationProvider:DoNothingContinuationProvider()];
   __weak __typeof(self) weakSelf = self;
-  _addAccountSigninCoordinator.signinCompletion =
-      ^(SigninCoordinator* coordinator,
-        SigninCoordinatorResultOrIdentity result) {
-        [weakSelf addAccountDoneWithSigninCoordinator:coordinator
-                                             identity:result.value_or(nil)];
-      };
+  _addAccountSigninCoordinator.signinCompletion = ^(
+      SigninCoordinator* coordinator,
+      SigninCoordinatorResultOrIdentity result) {
+    [weakSelf addAccountDoneWithSigninCoordinator:coordinator result:result];
+  };
   [_addAccountSigninCoordinator start];
 }
 
 - (void)addAccountDoneWithSigninCoordinator:(SigninCoordinator*)coordinator
-                                   identity:(id<SystemIdentity>)identity {
+                                     result:(SigninCoordinatorResultOrIdentity)
+                                                result {
   CHECK_EQ(coordinator, _addAccountSigninCoordinator,
            base::NotFatalUntil::M155);
   [self stopAddAccountSigninCoordinator];
-  if (identity) {
-    _mediator.selectedIdentity = identity;
+  if (result.has_value()) {
+    _mediator.selectedIdentity = result.value();
     [self.delegate
         accountPickerSelectionScreenCoordinatorIdentitySelected:self];
   }
