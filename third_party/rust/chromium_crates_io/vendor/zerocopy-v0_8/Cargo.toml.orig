@@ -15,7 +15,7 @@
 [package]
 edition = "2021"
 name = "zerocopy"
-version = "0.8.57"
+version = "0.8.59"
 description = "Zerocopy makes zero-cost memory manipulation effortless. We write \"unsafe\" so you don't have to."
 categories = [
     "embedded",
@@ -59,6 +59,9 @@ no-zerocopy-simd-x86-avx12-1-89-0 = "1.89.0"
 
 # From 1.81.0, Rust supports the `core::error::Error` trait.
 no-zerocopy-core-error-1-81-0 = "1.81.0"
+
+# From 1.79.0, Rust supports extracting the length from a raw slice pointer.
+no-zerocopy-slice-ptr-len-1-79-0 = "1.79.0"
 
 # From 1.78.0, Rust supports the `#[diagnostic::on_unimplemented]` attribute.
 no-zerocopy-diagnostic-on-unimplemented-1-78-0 = "1.78.0"
@@ -120,13 +123,13 @@ __internal_use_only_features_that_work_on_stable = [
 ]
 
 [dependencies]
-zerocopy-derive = { version = "=0.8.57", path = "zerocopy-derive", optional = true }
+zerocopy-derive = { version = "=0.8.59", path = "zerocopy-derive", optional = true }
 
 # The "associated proc macro pattern" ensures that the versions of zerocopy and
 # zerocopy-derive remain equal, even if the 'derive' feature isn't used.
 # See: https://github.com/matklad/macro-dep-test
 [target.'cfg(any())'.dependencies]
-zerocopy-derive = { version = "=0.8.57", path = "zerocopy-derive" }
+zerocopy-derive = { version = "=0.8.59", path = "zerocopy-derive" }
 
 # The UI suite needs the `derive` feature, so let Cargo skip this integration
 # test when that feature is disabled.
@@ -152,4 +155,4 @@ rustversion = "1.0"
 static_assertions = "1.1"
 testutil = { path = "testutil" }
 # In tests, unlike in production, zerocopy-derive is not optional
-zerocopy-derive = { version = "=0.8.57", path = "zerocopy-derive" }
+zerocopy-derive = { version = "=0.8.59", path = "zerocopy-derive" }

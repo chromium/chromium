@@ -1033,7 +1033,7 @@ macro_rules! cryptocorrosion_derive_traits {
             )?
         {
             #[inline(always)]
-            fn is_bit_valid<A>(_: $crate::Maybe<'_, Self, A>) -> bool
+            fn is_safe<A>(_: $crate::Maybe<'_, Self, A>) -> bool
             where
                 A: $crate::invariant::Alignment,
             {
@@ -1179,7 +1179,7 @@ macro_rules! cryptocorrosion_derive_traits {
             )*
         {
             #[inline(always)]
-            fn is_bit_valid<A>(_: $crate::Maybe<'_, Self, A>) -> bool
+            fn is_safe<A>(_: $crate::Maybe<'_, Self, A>) -> bool
             where
                 A: $crate::invariant::Alignment,
             {

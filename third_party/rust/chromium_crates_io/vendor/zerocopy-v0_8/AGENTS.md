@@ -8,72 +8,50 @@ those terms. -->
 
 # Instructions for AI Agents
 
-## Agent Persona & Role
+These instructions apply to work in the `zerocopy/` subtree.
 
-You are an expert Rust systems programmer contributing to **zerocopy**, a
-library for zero-cost memory manipulation which presents a safe API over what
-would otherwise be dangerous operations. Your goal is to write high-quality,
-sound, and performant Rust code that adheres to strict safety and soundness
-guidelines and works across multiple Rust toolchains and compilation targets.
+## Standing Rules
 
-### Reviewing
+- **Cargo:** For zerocopy crate build, test, and lint commands, never run
+  `cargo` directly. Use `./cargo.sh`. Repository tools outside this crate may
+  have their own invocation commands. See the
+  [toolchain reference](../skills/zerocopy-development/references/toolchains.md)
+  for toolchain selection and version gating.
+- **README generation:** Do not edit `README.md` directly. It is generated from
+  the top-level documentation in `src/lib.rs`. Regenerate it with:
 
-You may be authoring changes, or you may be reviewing changes authored by other
-agents or humans. When reviewing changes, in addition to reading this document,
-you **MUST** also read [agent_docs/reviewing.md](./agent_docs/reviewing.md).
-
-## Critical Rules
-
-- **README Generation:** **DON'T** edit `README.md` directly. It is generated
-  from `src/lib.rs`. Edit the top-level doc comment in `src/lib.rs` instead.
-  - **To regenerate:**
-    `(cd .. && cargo -q run --manifest-path tools/Cargo.toml -p generate-readme) > README.md`
+  ```bash
+  (cd .. && cargo -q run --manifest-path tools/Cargo.toml \
+    -p generate-readme) > README.md
+  ```
 
 <!-- TODO-check-disable -->
-- **TODOs:** **DON'T** use `TODO` comments unless you explicitly intend to block
-  the PR (CI fails on `TODO`). Use `FIXME` for non-blocking issues.
+- **TODOs:** Do not use `TODO` unless you intend to block the PR; CI rejects
+  `TODO`. Use `FIXME` for non-blocking follow-up work.
 <!-- TODO-check-enable -->
 
-- **Documentation:** **DO** ensure that changes do not cause documentation to
-  become out of date (e.g., renaming files referenced here).
+- **Documentation:** Keep documentation and instruction references synchronized
+  when moving, renaming, or changing the behavior of referenced code or files.
+- **File headers:** New files must use the repository copyright header with the
+  file's creation year. Preserve an existing file's original creation year.
+- **Formatting:** Follow `ci/check_fmt.sh`.
+- **Comments and Markdown:** Wrap prose at 80 columns from the left margin when
+  practical, including the comment prefix. Do not wrap tables, diagrams, long
+  URLs, code blocks, or other content when wrapping would impair readability.
+  In Markdown, indent wrapped bullet continuation lines by two spaces and put a
+  blank line after each section heading.
 
-## Project Context
+## Task-Specific Skills
 
-### Overview
+Use the applicable skills in addition to these standing rules. Skills compose;
+when more than one applies, use all of them.
 
-Zerocopy is a library designed to make zero-copy memory manipulation safe and
-easy. It relies heavily on Rust's type system and specific traits to ensure
-memory safety.
-
-### Project Structure
-
-- `src/`: Core library source code.
-- `zerocopy-derive/`: Source code and tests for the procedural macros.
-- `tests/`: UI and integration tests for the main crate.
-- `../tools/`: Internal tools and scripts shared by this repository.
-- `ci/`: Zerocopy-specific CI scripts.
-- `../ci/`: Repository-wide CI scripts.
-- `../githooks/`: Git hooks for pre-commit/pre-push checks.
-- `testdata/`: Data used for testing.
-- `testutil/`: Utility code for tests.
-
-## Development Workflow
-
-When developing code changes, you **MUST** read
-[agent_docs/development.md](./agent_docs/development.md).
-
-### Before submitting
-
-Once you have made a change, you **MUST** read the relevant documents to ensure
-that your change is valid and follows the style guidelines.
-
-- [agent_docs/validation.md](./agent_docs/validation.md) for validating code
-  changes
-- [agent_docs/style.md](./agent_docs/style.md) for style and formatting
-  guidelines for files and commit messages
-
-#### Pre-submission Checks
-
-Run `../githooks/pre-push` before submitting. This runs a comprehensive suite of
-checks, including formatting, toolchain verification, and script validation. It
-catches many issues that would otherwise fail in CI.
+- For authoring, modifying, building, testing, or validating zerocopy code, use
+  the [`zerocopy-development`](../skills/zerocopy-development/SKILL.md) skill.
+- For reviewing zerocopy changes, use the
+  [`zerocopy-review`](../skills/zerocopy-review/SKILL.md) skill.
+- For unsafe Rust, unsafe APIs or traits, raw pointers, FFI, layout or validity
+  reasoning, safety comments or `# Safety` documentation, soundness analysis,
+  or invariant-bearing abstractions, use the
+  [`unsafe-rust`](../skills/unsafe-rust/SKILL.md) skill. That skill is the
+  source of truth for unsafe-code authoring and review methodology.

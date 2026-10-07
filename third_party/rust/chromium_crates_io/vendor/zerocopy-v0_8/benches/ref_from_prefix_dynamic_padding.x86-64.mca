@@ -1,6 +1,6 @@
 Iterations:        100
 Instructions:      1900
-Total Cycles:      608
+Total Cycles:      607
 Total uOps:        2000
 
 Dispatch Width:    4
@@ -18,17 +18,17 @@ Instruction Info:
 [6]: HasSideEffects (U)
 
 [1]    [2]    [3]    [4]    [5]    [6]    Instructions:
- 1      0     0.25                        xor	edx, edx
- 1      1     0.33                        mov	eax, 0
  1      1     0.33                        test	dil, 3
- 1      1     1.00                        je	.LBB5_1
- 1      1     1.00                  U     ret
+ 1      1     1.00                        jne	.LBB5_2
  1      1     0.33                        movabs	rax, 9223372036854775804
  1      1     0.33                        and	rsi, rax
- 1      1     0.33                        cmp	rsi, 9
- 1      1     1.00                        jae	.LBB5_3
- 1      1     0.33                        mov	edx, 1
- 1      0     0.25                        xor	eax, eax
+ 1      1     0.33                        cmp	rsi, 8
+ 1      1     1.00                        ja	.LBB5_3
+ 1      0     0.25                        xor	edx, edx
+ 1      1     0.33                        test	dil, 3
+ 1      1     0.50                        sete	dl
+ 1      0     0.25                        xor	edi, edi
+ 1      1     0.33                        mov	rax, rdi
  1      1     1.00                  U     ret
  1      1     0.33                        add	rsi, -9
  1      1     0.33                        movabs	rcx, -6148914691236517205
@@ -52,26 +52,26 @@ Resources:
 
 Resource pressure per iteration:
 [0]    [1]    [2]    [3]    [4]    [5]    [6.0]  [6.1]  
- -      -     6.00   6.00    -     6.00    -      -     
+ -      -     6.00   5.99    -     6.01    -      -     
 
 Resource pressure by instruction:
 [0]    [1]    [2]    [3]    [4]    [5]    [6.0]  [6.1]  Instructions:
+ -      -     0.01   0.98    -     0.01    -      -     test	dil, 3
+ -      -      -      -      -     1.00    -      -     jne	.LBB5_2
+ -      -     0.98   0.01    -     0.01    -      -     movabs	rax, 9223372036854775804
+ -      -     0.01   0.99    -      -      -      -     and	rsi, rax
+ -      -     0.01   0.99    -      -      -      -     cmp	rsi, 8
+ -      -      -      -      -     1.00    -      -     ja	.LBB5_3
  -      -      -      -      -      -      -      -     xor	edx, edx
- -      -     0.01   0.98    -     0.01    -      -     mov	eax, 0
- -      -     0.98   0.01    -     0.01    -      -     test	dil, 3
- -      -      -      -      -     1.00    -      -     je	.LBB5_1
+ -      -     0.99   0.01    -      -      -      -     test	dil, 3
+ -      -     0.99    -      -     0.01    -      -     sete	dl
+ -      -      -      -      -      -      -      -     xor	edi, edi
+ -      -      -     0.01    -     0.99    -      -     mov	rax, rdi
  -      -      -      -      -     1.00    -      -     ret
- -      -     0.01   0.99    -      -      -      -     movabs	rax, 9223372036854775804
- -      -      -     1.00    -      -      -      -     and	rsi, rax
- -      -      -     1.00    -      -      -      -     cmp	rsi, 9
- -      -      -      -      -     1.00    -      -     jae	.LBB5_3
- -      -     1.00    -      -      -      -      -     mov	edx, 1
- -      -      -      -      -      -      -      -     xor	eax, eax
- -      -      -      -      -     1.00    -      -     ret
- -      -     0.02   0.02    -     0.96    -      -     add	rsi, -9
- -      -     0.99   0.01    -      -      -      -     movabs	rcx, -6148914691236517205
- -      -     0.01   0.99    -      -      -      -     mov	rax, rsi
+ -      -     0.01   0.99    -      -      -      -     add	rsi, -9
+ -      -      -     1.00    -      -      -      -     movabs	rcx, -6148914691236517205
+ -      -     1.00    -      -      -      -      -     mov	rax, rsi
  -      -     1.00   1.00    -      -      -      -     mul	rcx
  -      -     1.00    -      -      -      -      -     shr	rdx
- -      -     0.98    -      -     0.02    -      -     mov	rax, rdi
+ -      -      -     0.01    -     0.99    -      -     mov	rax, rdi
  -      -      -      -      -     1.00    -      -     ret

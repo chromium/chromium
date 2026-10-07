@@ -10,7 +10,7 @@
 // those terms.
 
 use super::*;
-use crate::pointer::invariant::{Aligned, Exclusive, Invariants, Shared, Valid};
+use crate::pointer::invariant::{Aligned, Exclusive, Invariants, Safe, Shared};
 
 /// Types that can be split in two.
 ///
@@ -304,7 +304,7 @@ where
     T: ?Sized + SplitAt,
 {
     #[inline(always)]
-    fn into_ptr(self) -> Split<Ptr<'a, T, (Shared, Aligned, Valid)>> {
+    fn into_ptr(self) -> Split<Ptr<'a, T, (Shared, Aligned, Safe)>> {
         let source = Ptr::from_ref(self.source);
         // SAFETY: `Ptr::from_ref(self.source)` points to exactly `self.source`
         // and thus maintains the invariants of `self` with respect to `l_len`.
@@ -602,7 +602,7 @@ where
     T: ?Sized + SplitAt,
 {
     #[inline(always)]
-    fn into_ptr(self) -> Split<Ptr<'a, T, (Exclusive, Aligned, Valid)>> {
+    fn into_ptr(self) -> Split<Ptr<'a, T, (Exclusive, Aligned, Safe)>> {
         let source = Ptr::from_mut(self.source);
         // SAFETY: `Ptr::from_mut(self.source)` points to exactly `self.source`,
         // and thus maintains the invariants of `self` with respect to `l_len`.
@@ -805,7 +805,7 @@ where
 impl<'a, T, I> Split<Ptr<'a, T, I>>
 where
     T: ?Sized + SplitAt,
-    I: Invariants<Alignment = Aligned, Validity = Valid>,
+    I: Invariants<Alignment = Aligned, Validity = Safe>,
 {
     fn into_ref(self) -> Split<&'a T>
     where

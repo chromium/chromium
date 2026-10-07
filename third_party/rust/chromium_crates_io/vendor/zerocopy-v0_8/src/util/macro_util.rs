@@ -29,7 +29,7 @@ use core::{marker::PhantomData, mem, num::Wrapping};
 use crate::{
     pointer::{
         cast::CastSizedExact,
-        invariant::{Aligned, Initialized, Valid},
+        invariant::{Aligned, Initialized, Safe},
         BecauseImmutable,
     },
     FromBytes, Immutable, IntoBytes, KnownLayout, Ptr, ReadOnly, TryFromBytes, ValidityError,
@@ -518,9 +518,9 @@ pub const fn hash_name(name: &str) -> i128 {
 ///
 /// `try_transmute` may either produce a post-monomorphization error or a panic
 /// if `Dst` is bigger than `Src`. Otherwise, `try_transmute` panics under the
-/// same circumstances as [`is_bit_valid`].
+/// same circumstances as [`is_safe`].
 ///
-/// [`is_bit_valid`]: TryFromBytes::is_bit_valid
+/// [`is_safe`]: TryFromBytes::is_safe
 #[inline(always)]
 pub fn try_transmute<Src, Dst>(src: Src) -> Result<Dst, ValidityError<Src, Dst>>
 where
@@ -532,7 +532,7 @@ where
     let src = mem::ManuallyDrop::new(ReadOnly::new(src));
     let mut ptr =
         Ptr::from_ref(&*src).transmute_with::<ReadOnly<Dst>, Initialized, CastSizedExact, _>();
-    if Dst::is_bit_valid(ptr.reborrow_shared()) {
+    if Dst::is_safe(ptr.reborrow_shared()) {
         // SAFETY: `read_unaligned` requires that `ptr` be valid for reads and
         // point to a properly initialized `ReadOnly<Dst>` [1]. `ptr` was
         // derived from a live reference to `src`; `CastSizedExact` preserves
@@ -543,12 +543,12 @@ where
         //
         // `Src: IntoBytes` and the `ReadOnly<Src>` bridge let `transmute_with`
         // establish that every byte in that exact range is initialized.
-        // `Dst::is_bit_valid` then established that the same bytes are
-        // bit-valid for `Dst`, and thus for `ReadOnly<Dst>`. The candidate was
-        // a shared `ReadOnly` pointer, so it could not mutate the bytes; no
-        // operation occurs between validation and this read which could do so.
-        // Alignment is not an additional precondition because [1] expressly
-        // permits unaligned pointers.
+        // `Dst::is_safe` then established that the same bytes are bit-valid for
+        // `Dst`, and thus for `ReadOnly<Dst>`. The candidate was a shared
+        // `ReadOnly` pointer, so it could not mutate the bytes; no operation
+        // occurs between validation and this read which could do so. Alignment
+        // is not an additional precondition because [1] expressly permits
+        // unaligned pointers.
         //
         // `read_unaligned` leaves the source memory unchanged and makes a
         // bitwise copy [1]. The source is wrapped in `ManuallyDrop`, which
@@ -633,7 +633,7 @@ where
         let res = ptr.try_with(#[inline(always)] |ptr| {
             let ptr = ptr.recall_validity::<Initialized, _>();
             let ptr = ptr.cast::<_, crate::layout::CastFrom<Dst>, _>();
-            ptr.try_into_valid()
+            ptr.try_into_safe()
         });
         match res {
             Ok(ptr) => {
@@ -696,7 +696,7 @@ where
             ptr.try_with_unchecked(#[inline(always)] |ptr| {
                 let ptr = ptr.recall_validity::<Initialized, (_, (_, _))>();
                 let ptr = ptr.cast::<_, crate::layout::CastFrom<Dst>, _>();
-                ptr.try_into_valid()
+                ptr.try_into_safe()
             })
         };
         match res {
@@ -912,7 +912,7 @@ where
         let ptr = Ptr::from_ref(self.0)
             .recall_validity::<Initialized, _>()
             .transmute_with::<Dst, Initialized, crate::layout::CastFrom<Dst>, (crate::pointer::BecauseMutationCompatible, _)>()
-            .recall_validity::<Valid, _>();
+            .recall_validity::<Safe, _>();
 
         static_assert!(Src: ?Sized + KnownLayout, Dst: ?Sized + KnownLayout => {
             Src::LAYOUT.align.get() >= Dst::LAYOUT.align.get()
@@ -945,7 +945,7 @@ where
         let ptr = Ptr::from_mut(self.0)
             .recall_validity::<Initialized, (_, (_, _))>()
             .transmute_with::<Dst, Initialized, crate::layout::CastFrom<Dst>, _>()
-            .recall_validity::<Valid, (_, (_, _))>();
+            .recall_validity::<Safe, (_, (_, _))>();
 
         static_assert!(Src: ?Sized + KnownLayout, Dst: ?Sized + KnownLayout => {
             Src::LAYOUT.align.get() >= Dst::LAYOUT.align.get()

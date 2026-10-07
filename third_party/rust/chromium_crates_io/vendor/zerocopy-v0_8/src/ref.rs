@@ -10,7 +10,7 @@
 // those terms.
 use super::*;
 use crate::pointer::{
-    BecauseInvariantsEq, BecauseMutationCompatible, MutationCompatible, TransmuteFromPtr,
+    BecauseMutationCompatible, BecauseSharedCompatible, MutationCompatible, TransmuteFromPtr,
 };
 
 mod def {
@@ -198,7 +198,7 @@ mod def {
 pub use def::Ref;
 
 use crate::pointer::{
-    invariant::{Aligned, BecauseExclusive, Initialized, Unaligned, Valid},
+    invariant::{Aligned, BecauseExclusive, Initialized, Safe, Unaligned},
     BecauseRead, PtrInner,
 };
 
@@ -686,7 +686,7 @@ where
                     T,
                     _,
                     (BecauseRead, BecauseExclusive),
-                    (BecauseMutationCompatible, BecauseInvariantsEq),
+                    (BecauseMutationCompatible, BecauseSharedCompatible),
                 >(ptr)
             };
 
@@ -703,7 +703,7 @@ where
         // address and length to that produced by `b.deref_mut()`.
         let ptr = Ptr::from_mut(b.into_byte_slice_mut())
             .try_cast_into_no_leftover::<T, BecauseExclusive>(None)
-            .expect("zerocopy internal error: into_ref should be infallible");
+            .expect("zerocopy internal error: into_mut should be infallible");
         let ptr = ptr.recall_validity::<_, (_, (_, _))>();
         ptr.as_mut()
     }
@@ -786,8 +786,8 @@ where
         // `ByteSliceMut`.
         let b = unsafe { r.as_byte_slice_mut() };
 
-        // SAFETY: By postcondition on `as_byte_slice_mut`, we know that `b` is
-        // a valid size and alignment for `T`. By safety invariant on
+        // SAFETY: By postcondition on `as_byte_slice_mut`, we know that `b` is a
+        // valid size and alignment for `T`. By safety invariant on
         // `ByteSlice`, we know that this is preserved via `.deref()`. Writing
         // `t` to the buffer will allow all of the bytes of `t` to be accessed
         // as a `[u8]`, but because `T: IntoBytes`, we know that this is sound.
@@ -862,7 +862,7 @@ where
                     T,
                     _,
                     (BecauseRead, BecauseExclusive),
-                    (BecauseMutationCompatible, BecauseInvariantsEq),
+                    (BecauseMutationCompatible, BecauseSharedCompatible),
                 >(ptr)
             };
 
@@ -958,13 +958,13 @@ where
 /// `T: Sized` and `ptr`'s referent must have size `size_of::<T>()`.
 #[inline(always)]
 unsafe fn cast_for_sized<'a, T, A, R, S>(
-    ptr: Ptr<'a, [u8], (A, Aligned, Valid)>,
-) -> Ptr<'a, T, (A, Unaligned, Valid)>
+    ptr: Ptr<'a, [u8], (A, Aligned, Safe)>,
+) -> Ptr<'a, T, (A, Unaligned, Safe)>
 where
     T: FromBytes + KnownLayout + ?Sized,
     A: crate::invariant::Aliasing,
     [u8]: MutationCompatible<T, A, Initialized, Initialized, R>,
-    T: TransmuteFromPtr<T, A, Initialized, Valid, crate::pointer::cast::IdCast, S>,
+    T: TransmuteFromPtr<T, A, Initialized, Safe, crate::pointer::cast::IdCast, S>,
 {
     use crate::pointer::cast::{Cast, Project};
 
@@ -990,7 +990,7 @@ where
 
     ptr.recall_validity::<Initialized, (_, (_, _))>()
         .cast::<_, CastForSized, _>()
-        .recall_validity::<Valid, _>()
+        .recall_validity::<Safe, _>()
 }
 
 #[cfg(test)]

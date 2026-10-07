@@ -9,9 +9,9 @@ error[E0277]: the trait bound `*const usize: IntoBytes` is not satisfied
    |
    = note: Consider adding `#[derive(IntoBytes)]` to `*const usize`
 help: the trait `IntoBytes` is implemented for `usize`
-  --> src/util/macros.rs:31:9
+  --> src/util/macros.rs:30:9
    |
-31 |         unsafe impl $trait for $ty {
+30 |         unsafe impl $trait for $ty {
    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^
    |
   ::: src/impls.rs:79:5

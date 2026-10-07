@@ -56,11 +56,11 @@ mod util {
     }
 
     #[macro_export]
-    macro_rules! test_trivial_is_bit_valid {
+    macro_rules! test_trivial_is_safe {
         ($x:ty => $name:ident) => {
             #[test]
             fn $name() {
-                util::test_trivial_is_bit_valid::<$x>();
+                util::test_trivial_is_safe::<$x>();
             }
         };
     }

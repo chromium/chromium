@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.56.0"
 name = "zerocopy"
-version = "0.8.57"
+version = "0.8.59"
 build = "build.rs"
 exclude = [".*"]
 autolib = false
@@ -43,6 +43,7 @@ repository = "https://github.com/google/zerocopy"
 [package.metadata.build-rs]
 no-zerocopy-simd-x86-avx12-1-89-0 = "1.89.0"
 no-zerocopy-core-error-1-81-0 = "1.81.0"
+no-zerocopy-slice-ptr-len-1-79-0 = "1.79.0"
 no-zerocopy-diagnostic-on-unimplemented-1-78-0 = "1.78.0"
 no-zerocopy-generic-bounds-in-const-fn-1-61-0 = "1.61.0"
 no-zerocopy-target-has-atomics-1-60-0 = "1.60.0"
@@ -387,7 +388,7 @@ name = "zero_static_size"
 path = "benches/zero_static_size.rs"
 
 [dependencies.zerocopy-derive]
-version = "=0.8.57"
+version = "=0.8.59"
 optional = true
 
 [dev-dependencies.elain]
@@ -411,7 +412,7 @@ version = "1.0"
 version = "1.1"
 
 [dev-dependencies.zerocopy-derive]
-version = "=0.8.57"
+version = "=0.8.59"
 
 [target."cfg(any())".dependencies.zerocopy-derive]
-version = "=0.8.57"
+version = "=0.8.59"
