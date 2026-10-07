@@ -31,6 +31,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -100,9 +101,9 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
     public static final String PREF_KEY_GLIC_PERMISSIONS_ACTIVITY = "glic_permissions_activity";
     public static final String PREF_KEY_GLIC_EXTENSIONS = "glic_extensions";
 
-    private static final String PREF_LAUNCHER_ENABLED = "glic_launcher_enabled";
+    @VisibleForTesting static final String PREF_LAUNCHER_ENABLED = "glic_launcher_enabled";
     // TODO(b/531824318): Make the shortcut customizable.
-    private static final String PREF_LAUNCHER_HOTKEY = "glic_launcher_hotkey";
+    @VisibleForTesting static final String PREF_LAUNCHER_HOTKEY = "glic_launcher_hotkey";
     @VisibleForTesting static final String PREF_NAVIGATION_SHORTCUT = "glic_navigation_shortcut";
 
     // Request codes for runtime permissions requested from this fragment.
@@ -258,7 +259,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         mNavigationShortcutPref = findPreference(PREF_NAVIGATION_SHORTCUT);
         mLocalPrefs = LocalStatePrefs.get();
 
-        if (mLocalPrefs != null) {
+        if (mLocalPrefs != null && KeyboardUtils.isHardKeyboardConnected(context)) {
             final PrefService localPrefs = mLocalPrefs;
             boolean enabled = localPrefs.getBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED);
             if (mLauncherEnabledPref != null) {
@@ -914,6 +915,11 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                                         R.string.settings_glic_button_toggle_sublabel);
                             }
                         }
+                    }
+                    if (!KeyboardUtils.isHardKeyboardConnected(context)) {
+                        indexData.removeEntryForKey(prefFrag, PREF_LAUNCHER_ENABLED);
+                        indexData.removeEntryForKey(prefFrag, PREF_LAUNCHER_HOTKEY);
+                        indexData.removeEntryForKey(prefFrag, PREF_NAVIGATION_SHORTCUT);
                     }
                     if (!BottomBarActionEligibility.shouldShowBottomBarGlicSetting(profile)) {
                         indexData.removeEntryForKey(prefFrag, PREFERENCE_BOTTOM_BAR_BUTTON_TOGGLE);

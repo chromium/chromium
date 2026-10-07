@@ -23,6 +23,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.GLIC_
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Bundle;
 
 import androidx.fragment.app.FragmentManager;
@@ -42,6 +43,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -117,6 +119,7 @@ public class GlicSettingsUnitTest {
         BottomBarActionEligibility.setCachedCandidateExtraActionForTesting(ActionId.GLIC);
 
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
+        setHardKeyboardConnected(true);
     }
 
     @After
@@ -124,6 +127,12 @@ public class GlicSettingsUnitTest {
         if (mUserActionTester != null) {
             mUserActionTester.tearDown();
         }
+    }
+
+    private void setHardKeyboardConnected(boolean connected) {
+        int keyboard = connected ? Configuration.KEYBOARD_QWERTY : Configuration.KEYBOARD_NOKEYS;
+        mActivity.getResources().getConfiguration().keyboard = keyboard;
+        ContextUtils.getApplicationContext().getResources().getConfiguration().keyboard = keyboard;
     }
 
     private GlicSettings launchFragment() {
@@ -798,12 +807,75 @@ public class GlicSettingsUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
+    public void testLauncherPreferences_HardKeyboardDisconnected() {
+        setHardKeyboardConnected(false);
+        DeviceInfo.setIsDesktopForTesting(true);
+        when(mLocalPrefServiceMock.getBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED))
+                .thenReturn(true);
+        GlicSettings fragment = launchFragment();
+
+        Preference togglePref = fragment.findPreference(GlicSettings.PREF_LAUNCHER_ENABLED);
+        assertFalse(
+                "Launcher toggle should be hidden without hard keyboard", togglePref.isVisible());
+        Preference hotkeyPref = fragment.findPreference(GlicSettings.PREF_LAUNCHER_HOTKEY);
+        assertFalse(
+                "Hotkey preference should be hidden without hard keyboard", hotkeyPref.isVisible());
+        Preference navShortcutPref = fragment.findPreference(GlicSettings.PREF_NAVIGATION_SHORTCUT);
+        assertFalse(
+                "Navigation shortcut should be hidden without hard keyboard",
+                navShortcutPref.isVisible());
+    }
+
+    @Test
+    public void testLauncherPreferences_PhoneWithHardKeyboardConnected() {
+        GlicUtils.setIsSidePanelFormFactorForTesting(false);
+        when(mLocalPrefServiceMock.getBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED))
+                .thenReturn(true);
+        GlicSettings fragment = launchFragment();
+
+        Preference togglePref = fragment.findPreference(GlicSettings.PREF_LAUNCHER_ENABLED);
+        assertTrue(
+                "Launcher toggle should be visible on phone with hard keyboard",
+                togglePref.isVisible());
+        Preference hotkeyPref = fragment.findPreference(GlicSettings.PREF_LAUNCHER_HOTKEY);
+        assertTrue(
+                "Hotkey preference should be visible on phone with hard keyboard",
+                hotkeyPref.isVisible());
+        Preference navShortcutPref = fragment.findPreference(GlicSettings.PREF_NAVIGATION_SHORTCUT);
+        assertFalse(
+                "Navigation shortcut should be hidden on phone even with hard keyboard",
+                navShortcutPref.isVisible());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
+    public void testSearchIndex_HardKeyboardDisconnected() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        setHardKeyboardConnected(false);
+        GlicSettings.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                ContextUtils.getApplicationContext(), mSearchIndexDataMock, mProfileMock);
+        String prefFrag = GlicSettings.class.getName();
+        verify(mSearchIndexDataMock)
+                .removeEntryForKey(prefFrag, GlicSettings.PREF_LAUNCHER_ENABLED);
+        verify(mSearchIndexDataMock).removeEntryForKey(prefFrag, GlicSettings.PREF_LAUNCHER_HOTKEY);
+        verify(mSearchIndexDataMock)
+                .removeEntryForKey(prefFrag, GlicSettings.PREF_NAVIGATION_SHORTCUT);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testSearchIndex_SidePanelEnabled() {
         DeviceInfo.setIsDesktopForTesting(true);
         GlicSettings.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
-                RuntimeEnvironment.getApplication(), mSearchIndexDataMock, mProfileMock);
-        verify(mSearchIndexDataMock)
-                .removeEntryForKey(GlicSettings.class.getName(), GlicSettings.PREFERENCE_BUTTON);
+                ContextUtils.getApplicationContext(), mSearchIndexDataMock, mProfileMock);
+        String prefFrag = GlicSettings.class.getName();
+        verify(mSearchIndexDataMock).removeEntryForKey(prefFrag, GlicSettings.PREFERENCE_BUTTON);
+        verify(mSearchIndexDataMock, never())
+                .removeEntryForKey(prefFrag, GlicSettings.PREF_LAUNCHER_ENABLED);
+        verify(mSearchIndexDataMock, never())
+                .removeEntryForKey(prefFrag, GlicSettings.PREF_LAUNCHER_HOTKEY);
+        verify(mSearchIndexDataMock, never())
+                .removeEntryForKey(prefFrag, GlicSettings.PREF_NAVIGATION_SHORTCUT);
     }
 
     @Test
