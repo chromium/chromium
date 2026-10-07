@@ -58,6 +58,10 @@ using GetUploadDataCallback =
 // The Client interface required by any feature that wants to start a download
 // through the DownloadService.  Should be registered immediately at startup
 // when the DownloadService is created (see the factory).
+//
+// Clients must track their own download state and ignore callbacks that are
+// no longer relevant, including callbacks received after cancellation.
+// See BackgroundDownloadService::CancelDownload().
 class COMPONENT_EXPORT(COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE) Client {
  public:
   // Used by OnDownloadFailed to determine the reason of the abort.

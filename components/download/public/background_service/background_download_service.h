@@ -91,8 +91,12 @@ class COMPONENT_EXPORT(COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE)
   virtual void PauseDownload(const std::string& guid) = 0;
   virtual void ResumeDownload(const std::string& guid) = 0;
 
-  // Cancels a download in this service.  The canceled download will be
+  // Cancels a download in this service. The canceled download will be
   // interrupted if it is running. Not supported on iOS.
+  // Cancellation does not guarantee that no further Client callbacks will be
+  // delivered. For example, OnDownloadSucceeded() or OnDownloadFailed() may
+  // already be pending. Clients must ignore callbacks that are no longer
+  // relevant to their own download state.
   virtual void CancelDownload(const std::string& guid) = 0;
 
   // Changes the current scheduling criteria for a download.  This is useful if
