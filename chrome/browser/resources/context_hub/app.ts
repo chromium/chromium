@@ -8,9 +8,10 @@ import '//resources/cr_elements/icons.html.js';
 import './icons.html.js';
 import './memory_bank_chat/memory_bank_chat.js';
 import './memory_banks/memory_banks.js';
+import './record_replay/record_replay.js';
+import './smart_search/smart_search.js';
 import './tab_groups/tab_groups.js';
 import './taskbox/ai_taskbox.js';
-import './smart_search/smart_search.js';
 import './topics/topics_view.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -19,7 +20,7 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 
 export type ViewType = 'launchpad'|'memory-banks'|'tab-groups'|
-    'memory-bank-chat'|'topics'|'jumpstart';
+    'memory-bank-chat'|'topics'|'jumpstart'|'record-replay';
 
 const VALID_VIEWS: Set<ViewType> = new Set([
   'launchpad',
@@ -28,6 +29,7 @@ const VALID_VIEWS: Set<ViewType> = new Set([
   'memory-bank-chat',
   'topics',
   'jumpstart',
+  'record-replay',
 ]);
 const STORAGE_KEY = 'context_hub_current_view';
 

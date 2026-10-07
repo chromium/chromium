@@ -66,6 +66,9 @@ ContextHubUI::ContextHubUI(content::WebUI* web_ui)
   source->AddBoolean("kTopics", base::FeatureList::IsEnabled(
                                     browser::context_hub::mojom::kTopics));
   source->AddBoolean(
+      "kRecordReplay",
+      base::FeatureList::IsEnabled(browser::context_hub::mojom::kRecordReplay));
+  source->AddBoolean(
       "kTopicsFishfoodFeedback",
       base::FeatureList::IsEnabled(browser::context_hub::mojom::kTopics) &&
           context_hub::features::kTopicsFishfoodFeedback.Get());

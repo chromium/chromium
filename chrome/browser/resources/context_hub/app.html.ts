@@ -67,6 +67,13 @@ export function getHtml(this: ContextHubAppElement) {
             <cr-icon icon="cr:search"></cr-icon>
             JumpStart
           </a>
+          <a role="menuitem"
+              href="#record-replay"
+              data-route="record-replay"
+              class="cr-nav-menu-item">
+            <cr-icon icon="cr:videocam"></cr-icon>
+            Record and Replay
+          </a>
         </cr-menu-selector>
       </div>
     </aside>
@@ -87,6 +94,8 @@ export function getHtml(this: ContextHubAppElement) {
         return html`<topics-view></topics-view>`;
       case 'jumpstart':
         return html`<smart-search></smart-search>`;
+      case 'record-replay':
+        return html`<record-replay></record-replay>`;
       default:
         return '';
     }

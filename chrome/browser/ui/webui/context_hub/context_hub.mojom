@@ -18,6 +18,11 @@ feature kAutoTodos {
   const bool default_state = false;
 };
 
+feature kRecordReplay {
+  const string name = "RecordReplay";
+  const bool default_state = false;
+};
+
 feature kSmartSearch {
   const string name = "SmartSearch";
   const bool default_state = false;
