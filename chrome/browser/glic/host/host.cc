@@ -576,6 +576,10 @@ const GlicWebClientManager* Host::web_client_manager() const {
   return nullptr;
 }
 
+GlicWebClientManager* Host::GetWebClientManagerForTesting() {
+  return web_client_manager();
+}
+
 mojom::WebClientState Host::web_client_state() const {
   auto* manager = web_client_manager();
   return manager && manager->web_client_access()

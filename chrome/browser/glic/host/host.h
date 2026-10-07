@@ -295,6 +295,7 @@ class Host : public GlicSharingManagerProvider {
   // Returns the list of page handlers for glic WebUI pages.
   std::vector<GlicPageHandler*> GetPageHandlersForTesting();
   GlicPageHandler* GetPrimaryPageHandlerForTesting();
+  GlicWebClientManager* GetWebClientManagerForTesting();
 
   // TODO(b/409332639): Hide direct access to the web client.
   // TODO(harringtond): Rename to GetWebClient() if we can't remove this.

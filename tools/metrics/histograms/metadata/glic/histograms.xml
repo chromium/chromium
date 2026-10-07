@@ -600,6 +600,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Contents.TimeToWarmed" units="ms"
+    expires_after="2027-03-07">
+  <owner>harringtond@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Measures the time it takes from Glic contents creation until the web client
+    connects and enters the kWarmed state. Recorded for clean regular guest
+    navigations without auth or load errors.
+  </summary>
+</histogram>
+
 <histogram name="Glic.CookieSynchronization.FailureByTrigger"
     enum="GlicCookieSyncTrigger" expires_after="2027-04-23">
   <owner>harringtond@chromium.org</owner>

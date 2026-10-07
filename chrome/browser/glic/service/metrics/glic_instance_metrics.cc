@@ -791,11 +791,12 @@ void GlicInstanceMetrics::ResetShownState(EmbedderKey key) {
 void GlicInstanceMetrics::OnOpen(glic::mojom::InvocationSource source,
                                  const ShowOptions& options) {
   if (!is_client_ready_) {
-    invocation_load_state_ = {
-        .start_time = base::TimeTicks::Now(),
-        .embedder_type = GetEmbedderTypeFromShowOptions(options),
-        .has_logged_dismiss_while_loading = false,
-    };
+    if (invocation_load_state_.start_time.is_null()) {
+      invocation_load_state_.start_time = base::TimeTicks::Now();
+      invocation_load_state_.has_logged_dismiss_while_loading = false;
+    }
+    invocation_load_state_.embedder_type =
+        GetEmbedderTypeFromShowOptions(options);
   }
   last_invocation_source_ = source;
 
