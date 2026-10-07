@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/no_destructor.h"
+#include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/mojo/mojom/remoting.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -62,6 +63,8 @@ class ReceiverController : mojom::RemotingSink {
 
   mojo::Remote<media::mojom::Remotee> media_remotee_;
   mojo::Receiver<media::mojom::RemotingSink> receiver_{this};
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace remoting

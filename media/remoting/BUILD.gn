@@ -87,6 +87,7 @@ source_set("media_remoting_tests") {
     "mock_receiver_controller.cc",
     "mock_receiver_controller.h",
     "receiver_unittest.cc",
+    "remoting_renderer_factory_unittest.cc",
     "renderer_controller_unittest.cc",
     "stream_provider_unittest.cc",
     "test_utils.cc",

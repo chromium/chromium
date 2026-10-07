@@ -26,8 +26,9 @@ ReceiverController::~ReceiverController() = default;
 
 void ReceiverController::Initialize(
     mojo::PendingRemote<mojom::Remotee> remotee) {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-  DCHECK(!media_remotee_.is_bound());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  receiver_.reset();
+  media_remotee_.reset();
   media_remotee_.Bind(std::move(remotee));
 
   // Calling NotifyRemotingSinkReady() to notify the host that RemotingSink is
@@ -37,7 +38,7 @@ void ReceiverController::Initialize(
 
 void ReceiverController::OnRendererFlush(uint32_t audio_count,
                                          uint32_t video_count) {
-  if (!main_task_runner_->BelongsToCurrentThread()) {
+  if (!main_task_runner_->RunsTasksInCurrentSequence()) {
     // |this| is a singleton per process, it would be safe to use
     // base::Unretained() here.
     main_task_runner_->PostTask(
@@ -52,7 +53,7 @@ void ReceiverController::OnRendererFlush(uint32_t audio_count,
 }
 
 void ReceiverController::OnVideoNaturalSizeChange(const gfx::Size& size) {
-  if (!main_task_runner_->BelongsToCurrentThread()) {
+  if (!main_task_runner_->RunsTasksInCurrentSequence()) {
     // |this| is a singleton per process, it would be safe to use
     // base::Unretained() here.
     main_task_runner_->PostTask(
@@ -70,7 +71,7 @@ void ReceiverController::StartDataStreams(
         audio_stream,
     mojo::PendingRemote<::media::mojom::RemotingDataStreamReceiver>
         video_stream) {
-  if (!main_task_runner_->BelongsToCurrentThread()) {
+  if (!main_task_runner_->RunsTasksInCurrentSequence()) {
     // |this| is a singleton per process, it would be safe to use
     // base::Unretained() here.
     main_task_runner_->PostTask(
@@ -88,7 +89,7 @@ void ReceiverController::StartDataStreams(
 
 void ReceiverController::OnMessageFromSource(
     const std::vector<uint8_t>& message) {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto rpc_message = std::make_unique<openscreen::cast::RpcMessage>(
       openscreen::cast::RpcMessage());
   if (!rpc_message->ParseFromArray(message.data(), message.size()))
@@ -98,7 +99,7 @@ void ReceiverController::OnMessageFromSource(
 }
 
 void ReceiverController::OnSendRpc(std::vector<uint8_t> message) {
-  if (!main_task_runner_->BelongsToCurrentThread()) {
+  if (!main_task_runner_->RunsTasksInCurrentSequence()) {
     // |this| is a singleton per process, it would be safe to use
     // base::Unretained() here.
     main_task_runner_->PostTask(
