@@ -110,8 +110,6 @@ void LaserPointerController::SetEnabled(bool enabled) {
   FastInkPointerController::SetEnabled(enabled);
   if (!enabled) {
     DestroyPointerView();
-    // Unlock mouse cursor when disabling.
-    scoped_locked_hidden_cursor_.reset();
   }
   NotifyStateChanged(enabled);
 }
@@ -136,13 +134,6 @@ void LaserPointerController::CreatePointerView(
 void LaserPointerController::UpdatePointerView(ui::TouchEvent* event) {
   LaserPointerView* laser_pointer_view = GetLaserPointerView();
 
-  if (IsPointerInExcludedWindows(event)) {
-    // Destroy the |LaserPointerView| since the pointer is in the bound of
-    // excluded windows.
-    DestroyPointerView();
-    return;
-  }
-
   if (event->type() != ui::EventType::kTouchCancelled) {
     // Unlock mouse cursor when switch to touch event.
     scoped_locked_hidden_cursor_.reset();
@@ -165,19 +156,9 @@ void LaserPointerController::UpdatePointerView(ui::TouchEvent* event) {
 
 void LaserPointerController::UpdatePointerView(ui::MouseEvent* event) {
   LaserPointerView* laser_pointer_view = GetLaserPointerView();
-  if (event->type() == ui::EventType::kMouseMoved) {
-    if (IsPointerInExcludedWindows(event)) {
-      // Destroy the |LaserPointerView| and unlock the cursor since the cursor
-      // is in the bound of excluded windows.
-      DestroyPointerView();
-      scoped_locked_hidden_cursor_.reset();
-      return;
-    }
-
-    if (!scoped_locked_hidden_cursor_) {
-      scoped_locked_hidden_cursor_ =
-          std::make_unique<ScopedLockedHiddenCursor>();
-    }
+  if (event->type() == ui::EventType::kMouseMoved &&
+      !scoped_locked_hidden_cursor_) {
+    scoped_locked_hidden_cursor_ = std::make_unique<ScopedLockedHiddenCursor>();
   }
 
   laser_pointer_view->AddNewPoint(event->root_location_f(),
@@ -200,6 +181,8 @@ void LaserPointerController::DestroyPointerView() {
   keep_alive_timer_.Stop();
   root_window_observation_.Reset();
   laser_pointer_view_widget_.reset();
+  // The cursor is only hidden while a laser pointer view is drawn in its place.
+  scoped_locked_hidden_cursor_.reset();
 }
 
 void LaserPointerController::ResetPointerView() {
@@ -207,17 +190,6 @@ void LaserPointerController::ResetPointerView() {
   if (LaserPointerView* view = GetLaserPointerView()) {
     view->Reset();
   }
-}
-
-bool LaserPointerController::CanStartNewGesture(ui::LocatedEvent* event) {
-  // Ignore events over the palette.
-  // TODO(llin): Register palette as a excluded window instead.
-  aura::Window* target = static_cast<aura::Window*>(event->target());
-  gfx::Point screen_point = event->location();
-  wm::ConvertPointToScreen(target, &screen_point);
-  if (palette_utils::PaletteContainsPointInScreen(screen_point))
-    return false;
-  return FastInkPointerController::CanStartNewGesture(event);
 }
 
 bool LaserPointerController::ShouldProcessEvent(ui::LocatedEvent* event) {
@@ -228,6 +200,16 @@ bool LaserPointerController::ShouldProcessEvent(ui::LocatedEvent* event) {
   }
 
   return FastInkPointerController::ShouldProcessEvent(event);
+}
+
+bool LaserPointerController::IsPointerInExcludedRegion(
+    ui::LocatedEvent* event) const {
+  // The palette is the UI used to turn the laser pointer off, so it must stay
+  // interactable while the laser pointer is enabled.
+  aura::Window* target = static_cast<aura::Window*>(event->target());
+  gfx::Point screen_point = event->location();
+  wm::ConvertPointToScreen(target, &screen_point);
+  return palette_utils::PaletteContainsPointInScreen(screen_point);
 }
 
 void LaserPointerController::NotifyStateChanged(bool enabled) {

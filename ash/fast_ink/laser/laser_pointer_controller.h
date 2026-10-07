@@ -65,8 +65,8 @@ class ASH_EXPORT LaserPointerController : public FastInkPointerController,
   void UpdatePointerView(ui::MouseEvent* event) override;
   void DestroyPointerView() override;
   void ResetPointerView() override;
-  bool CanStartNewGesture(ui::LocatedEvent* event) override;
   bool ShouldProcessEvent(ui::LocatedEvent* event) override;
+  bool IsPointerInExcludedRegion(ui::LocatedEvent* event) const override;
 
   void NotifyStateChanged(bool enabled);
 

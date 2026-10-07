@@ -14,7 +14,6 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/widget/widget.h"
-#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 namespace {
@@ -52,15 +51,7 @@ void FastInkPointerController::SetEnabled(bool enabled) {
   // while it is being animated away.
 }
 
-void FastInkPointerController::AddExcludedWindow(aura::Window* window) {
-  DCHECK(window);
-  excluded_windows_.Add(window);
-}
-
 bool FastInkPointerController::CanStartNewGesture(ui::LocatedEvent* event) {
-  if (IsPointerInExcludedWindows(event))
-    return false;
-
   // If the input device changes (e.g., from mouse to touch), we treat it as a
   // new gesture. This ensures that if the previous gesture's view is being kept
   // alive (e.g. fading out), it gets reset and reused for the new gesture.
@@ -103,23 +94,13 @@ bool FastInkPointerController::ShouldProcessEvent(ui::LocatedEvent* event) {
          event->type() == ui::EventType::kMouseMoved;
 }
 
-bool FastInkPointerController::IsEnabledForMouseEvent() const {
-  return !has_seen_stylus_ && !pointer_view_created_by_touch_.value_or(false);
+bool FastInkPointerController::IsPointerInExcludedRegion(
+    ui::LocatedEvent* event) const {
+  return false;
 }
 
-bool FastInkPointerController::IsPointerInExcludedWindows(
-    ui::LocatedEvent* event) {
-  gfx::Point screen_location = event->location();
-  aura::Window* event_target = static_cast<aura::Window*>(event->target());
-  wm::ConvertPointToScreen(event_target, &screen_location);
-
-  for (const aura::Window* excluded_window : excluded_windows_.windows()) {
-    if (excluded_window->GetBoundsInScreen().Contains(screen_location)) {
-      return true;
-    }
-  }
-
-  return false;
+bool FastInkPointerController::IsEnabledForMouseEvent() const {
+  return !has_seen_stylus_ && !pointer_view_created_by_touch_.value_or(false);
 }
 
 bool FastInkPointerController::MaybeCreatePointerView(
@@ -187,6 +168,13 @@ void FastInkPointerController::OnTouchEvent(ui::TouchEvent* event) {
   if (!ShouldProcessEvent(event))
     return;
 
+  // End any ongoing gesture and let the event through so that the UI in the
+  // excluded region can handle it.
+  if (IsPointerInExcludedRegion(event)) {
+    DestroyPointerView();
+    return;
+  }
+
   // Update pointer view and stop event propagation if pointer view is
   // available.
   if (MaybeCreatePointerView(event, CanStartNewGesture(event))) {
@@ -198,6 +186,13 @@ void FastInkPointerController::OnTouchEvent(ui::TouchEvent* event) {
 void FastInkPointerController::OnMouseEvent(ui::MouseEvent* event) {
   if (!enabled_ || !IsEnabledForMouseEvent() || !ShouldProcessEvent(event))
     return;
+
+  // End any ongoing gesture and let the event through so that the UI in the
+  // excluded region can handle it.
+  if (IsPointerInExcludedRegion(event)) {
+    DestroyPointerView();
+    return;
+  }
 
   // Update pointer view and stop event propagation if pointer view is
   // available.
