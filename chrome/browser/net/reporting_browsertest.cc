@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -200,17 +199,7 @@ class CrashReportingBrowserTest : public ReportingBrowserTest {
   CrashReportingBrowserTest()
       : prerender_helper_(
             base::BindRepeating(&CrashReportingBrowserTest::web_contents,
-                                base::Unretained(this))) {
-    // Disable WebUI toolbar features to avoid intermittent timeouts in
-    // InProcessBrowserTest::PreRunTestOnMainThread() when waiting for the
-    // initial WebUI toolbar paint callback.
-    // TODO(http://crbug.com/556719977): Fix WebUI toolbar flakiness.
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-            features::kInitialWebUI, features::kWebUIToolbar,
-            features::kWebUIToolbarProcessOverheadExperiment});
-  }
+                                base::Unretained(this))) {}
 
   CrashReportingBrowserTest(const CrashReportingBrowserTest&) = delete;
   CrashReportingBrowserTest& operator=(const CrashReportingBrowserTest&) =
@@ -250,7 +239,6 @@ class CrashReportingBrowserTest : public ReportingBrowserTest {
 
  private:
   content::test::PrerenderTestHelper prerender_helper_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class NonIsolatedReportingBrowserTest : public BaseReportingBrowserTest {
