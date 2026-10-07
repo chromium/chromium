@@ -13,6 +13,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -46,7 +47,7 @@ class CacheStorageManagerTest;
 // TODO(jkarlin): Remove CacheStorage from memory once they're no
 // longer in active use.
 class CONTENT_EXPORT CacheStorageManager
-    : public base::RefCounted<CacheStorageManager> {
+    : public base::RefCountedDeleteOnSequence<CacheStorageManager> {
  public:
   static scoped_refptr<CacheStorageManager> Create(
       const base::FilePath& path,
@@ -118,7 +119,11 @@ class CONTENT_EXPORT CacheStorageManager
                                 storage::mojom::CacheStorageOwner owner);
 
  protected:
-  friend class base::RefCounted<CacheStorageManager>;
+  friend class base::RefCountedDeleteOnSequence<CacheStorageManager>;
+  friend class base::DeleteHelper<CacheStorageManager>;
+
+  template <typename T, typename... Args>
+  friend scoped_refptr<T> base::MakeRefCounted(Args&&... args);
 
   CacheStorageManager(
       const base::FilePath& path,

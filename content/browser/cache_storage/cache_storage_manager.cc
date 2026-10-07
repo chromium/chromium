@@ -383,22 +383,21 @@ scoped_refptr<CacheStorageManager> CacheStorageManager::Create(
   CHECK(quota_manager_proxy, base::NotFatalUntil::M158);
   CHECK(blob_storage_context, base::NotFatalUntil::M158);
 
-  return base::WrapRefCounted(new CacheStorageManager(
+  return base::MakeRefCounted<CacheStorageManager>(
       profile_path, std::move(cache_task_runner),
       std::move(scheduler_task_runner), std::move(quota_manager_proxy),
       std::move(blob_storage_context),
-      std::move(cache_storage_dispatcher_host)));
+      std::move(cache_storage_dispatcher_host));
 }
 
 // static
 scoped_refptr<CacheStorageManager> CacheStorageManager::CreateForTesting(
     CacheStorageManager* old_manager) {
-  scoped_refptr<CacheStorageManager> manager(new CacheStorageManager(
+  return base::MakeRefCounted<CacheStorageManager>(
       old_manager->profile_path(), old_manager->cache_task_runner(),
       old_manager->scheduler_task_runner(), old_manager->quota_manager_proxy_,
       old_manager->blob_storage_context_,
-      old_manager->cache_storage_dispatcher_host_));
-  return manager;
+      old_manager->cache_storage_dispatcher_host_);
 }
 
 CacheStorageManager::~CacheStorageManager() {
@@ -808,7 +807,9 @@ CacheStorageManager::CacheStorageManager(
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
     base::WeakPtr<CacheStorageDispatcherHost> cache_storage_dispatcher_host)
-    : profile_path_(profile_path),
+    : base::RefCountedDeleteOnSequence<CacheStorageManager>(
+          scheduler_task_runner),
+      profile_path_(profile_path),
       cache_task_runner_(std::move(cache_task_runner)),
       scheduler_task_runner_(std::move(scheduler_task_runner)),
       quota_manager_proxy_(std::move(quota_manager_proxy)),

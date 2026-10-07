@@ -29,6 +29,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1018,6 +1019,31 @@ class CacheStorageManagerStorageKeyAndBucketTestP
 
 TEST_F(CacheStorageManagerTest, TestsRunOnIOThread) {
   EXPECT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::IO));
+}
+
+// A final release on another sequence used to destroy the manager's bound Mojo
+// remote off-sequence, triggering a sequence-affinity check during shutdown.
+TEST_F(CacheStorageManagerTest, ManagerDestroyedOnSchedulerSequence) {
+  auto other_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+
+  // Send a message to bind the remote's lazy endpoint client to this sequence.
+  mojo::Remote<storage::mojom::BlobStorageContext> clone;
+  blob_storage_context_->context()->Clone(clone.BindNewPipeAndPassReceiver());
+  blob_storage_context_->context().FlushForTesting();
+
+  auto observer = CreateObserver();
+  base::RunLoop loop;
+  observer->receiver_.set_disconnect_handler(loop.QuitClosure());
+
+  // Keep the wrapper alive only through the manager.
+  blob_storage_context_.reset();
+  ASSERT_TRUE(other_task_runner->PostTask(
+      FROM_HERE, base::BindOnce([](scoped_refptr<CacheStorageManager>) {},
+                                std::move(cache_manager_))));
+
+  // The observer disconnects only when the manager destroys its remote set.
+  loop.Run();
 }
 
 TEST_P(CacheStorageManagerTestP, OpenCache) {
