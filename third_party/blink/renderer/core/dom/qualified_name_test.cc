@@ -19,4 +19,16 @@ TEST_F(QualifiedNameTest, Constructor1) {
   EXPECT_EQ(name, QualifiedName(g_null_atom, AtomicString("foo"), g_null_atom));
 }
 
+TEST_F(QualifiedNameTest, HashFitsInBitfield) {
+  // HashComponents() hashes StringImpl* pointer addresses, which vary across
+  // runs. A single unmasked 32-bit hash has a 1/256 chance of having its top 8
+  // bits be zero by coincidence, so test multiple names to avoid false passes.
+  for (wtf_size_t i = 0; i < 100; ++i) {
+    QualifiedName name(AtomicString::Number(i));
+    uint32_t computed_hash = name.Impl()->ComputeHash();
+    EXPECT_LE(computed_hash, 0xFFFFFFu);
+    EXPECT_EQ(blink::GetHash(name), computed_hash);
+  }
+}
+
 }  // namespace blink
