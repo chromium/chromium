@@ -2092,6 +2092,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.ArchivedTabs.Search.TimeToAppendResultsMs" units="ms"
+    expires_after="2027-08-01">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
+  <owner>bjfong@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    (Android only) Records the incremental latency (in milliseconds)
+    specifically for deferred/asynchronous population of archived tab search
+    results when the orchestrator is initializing from disk during an active
+    search query. Measures the elapsed time from initial regular tab suggestions
+    rendering until the subsequent autocomplete refresh appends archived tab
+    results into the suggestions list (or resolves to 0 matches).
+  </summary>
+</histogram>
+
+<histogram name="Tabs.ArchivedTabs.Search.TimeToPopulateResultsMs{Mode}"
+    units="ms" expires_after="2027-08-01">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
+  <owner>bjfong@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    (Android only) Records the total latency (in milliseconds) from search query
+    initiation until archived tab matches are populated into the search
+    suggestion list (or resolved to 0 matches). Emitted for all search queries
+    where archived tabs are searched. {Mode}
+  </summary>
+  <token key="Mode">
+    <variant name=".Deferred"
+        summary="Recorded on the cold/deferred path when waiting for
+                 ArchivedTabModelOrchestrator to finish disk loading before
+                 refreshing suggestions (typical latency: 1000-4000ms)."/>
+    <variant name=".Warm"
+        summary="Recorded on the fast/warm path when
+                 ArchivedTabModelOrchestrator is already resident and
+                 initialized at query start (typical latency: 5-30ms)."/>
+  </token>
+</histogram>
+
 <histogram name="Tabs.ArchivePass.DurationMs" units="ms"
     expires_after="2027-06-11">
   <owner>wylieb@google.com</owner>

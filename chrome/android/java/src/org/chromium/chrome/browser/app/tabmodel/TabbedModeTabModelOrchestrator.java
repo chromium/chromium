@@ -139,8 +139,8 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                 archivedOrchestrator.removeHistoricalTabModelObserver(
                         mArchivedHistoricalObserverSupplier);
             }
-            archivedOrchestrator.unregisterTabModelOrchestrator(this);
         }
+        ArchivedTabModelOrchestrator.unregisterTabModelOrchestrator(this);
         return super.destroy();
     }
 
@@ -347,6 +347,11 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                 (selector) -> createArchivedTabModelInDeferredTask(tabContentManager));
     }
 
+    /** Returns the {@link TabContentManager} if available. */
+    public @Nullable TabContentManager getTabContentManager() {
+        return mTabContentManager;
+    }
+
     // There is some delay while the local tab group sync databases synchronizes with the
     // sync service on startup. Archiving is done on startup, although it's loaded as a
     // deferred task which is only started after the regular tab model is already
@@ -446,14 +451,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
             }
             ArchivedTabModelOrchestrator archivedOrchestrator =
                     ArchivedTabModelOrchestrator.getForProfile(profile);
-            if (!archivedOrchestrator.areTabModelsInitialized()) {
-                archivedOrchestrator.maybeCreateAndInitTabModels(
-                        mTabContentManager, mCipherFactory);
-                if (mArchivedHistoricalObserverSupplier != null) {
-                    archivedOrchestrator.initializeHistoricalTabModelObserver(
-                            mArchivedHistoricalObserverSupplier);
-                }
-            }
+            archivedOrchestrator.maybeCreateAndInitTabModels(mTabContentManager, mCipherFactory);
             archivedOrchestrator.rescueArchivedTabs(this);
         }
     }
@@ -492,13 +490,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
 
         ArchivedTabModelOrchestrator archivedOrchestrator =
                 ArchivedTabModelOrchestrator.getForProfile(profile);
-        if (!archivedOrchestrator.areTabModelsInitialized()) {
-            archivedOrchestrator.maybeCreateAndInitTabModels(mTabContentManager, mCipherFactory);
-            if (mArchivedHistoricalObserverSupplier != null) {
-                archivedOrchestrator.initializeHistoricalTabModelObserver(
-                        mArchivedHistoricalObserverSupplier);
-            }
-        }
+        archivedOrchestrator.maybeCreateAndInitTabModels(mTabContentManager, mCipherFactory);
         archivedOrchestrator.doDeclutterPass(this);
     }
 
@@ -534,8 +526,12 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         return (TabPersistentStoreImpl) mTabPersistentStore;
     }
 
+    @Nullable Supplier<@Nullable TabModel> getArchivedHistoricalObserverSupplier() {
+        return mArchivedHistoricalObserverSupplier;
+    }
+
     /* Should only be called after native is initialized. */
-    private @Nullable Profile getOriginalProfile() {
+    @Nullable Profile getOriginalProfile() {
         if (mProfileProviderSupplier == null) return null;
 
         ProfileProvider profileProvider = mProfileProviderSupplier.get();

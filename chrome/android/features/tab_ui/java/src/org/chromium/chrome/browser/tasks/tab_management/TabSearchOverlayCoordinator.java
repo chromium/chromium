@@ -16,7 +16,9 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.SystemClock;
 import android.provider.Browser;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -39,6 +41,7 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -50,6 +53,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
+import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.LeaseReason;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
@@ -97,6 +102,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.text.EmptyTextWatcher;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -174,6 +180,11 @@ public class TabSearchOverlayCoordinator
     private final SearchBoxDataProvider mSearchBoxDataProvider;
     private final Callback<Profile> mProfileObserver;
     private final Callback<Boolean> mSuggestionsObserver = this::onSuggestionsChanged;
+    // On desktop / tablet devices with a hardware keyboard connected, loading the NTP causes the
+    // Omnibox to enter a STANDBY input session. When Tab Search is opened, this interface
+    // terminates any active Omnibox/Fusebox session so background suggestions are not triggered
+    // while Tab Search is active.
+    private final @Nullable FuseboxControls mFuseboxControls;
 
     // Recursion guard to prevent event dispatch loops when forwarding scrim scroll/drag events
     // to the underlying compositor view hierarchy.
@@ -184,16 +195,17 @@ public class TabSearchOverlayCoordinator
             mChangeProcessor;
     private @Nullable LinearLayout mPanelContainer;
     private @Nullable PopupWindow mPopupWindow;
-    // On desktop / tablet devices with a hardware keyboard connected, loading the NTP causes the
-    // Omnibox to enter a STANDBY input session. When Tab Search is opened, this interface
-    // terminates
-    // any active Omnibox/Fusebox session so background suggestions are not triggered while Tab
-    // Search is active.
-    private final @Nullable FuseboxControls mFuseboxControls;
     private @Nullable SearchUiCoordinator mSearchUiCoordinator;
+    private @Nullable UrlBar mUrlBar;
+    private @Nullable TextWatcher mUrlBarTextWatcher;
     private ViewTreeObserver.@Nullable OnWindowFocusChangeListener mWindowFocusListener;
     private TabObscuringHandler.@Nullable Token mTabObscuringToken;
     private boolean mEncounteredEmptyStateThisSession;
+    private @Nullable Destroyable mSearchSessionLease;
+    private @Nullable Callback<Boolean> mTabStateInitializedObserver;
+    private @Nullable NonNullObservableSupplier<Boolean> mObservedTabStateInitializedSupplier;
+    private long mSearchQueryStartTimeMs;
+    private long mInitialSuggestionsRenderTimeMs;
 
     /**
      * Constructs a new TabSearchOverlayCoordinator.
@@ -269,6 +281,11 @@ public class TabSearchOverlayCoordinator
 
     /** Destroys the coordinator, cleaning up resources and child coordinators. */
     public void destroy() {
+        cancelPendingSearchMetrics();
+        if (mSearchSessionLease != null) {
+            mSearchSessionLease.destroy();
+            mSearchSessionLease = null;
+        }
         if (mTabObscuringToken != null) {
             mTabObscuringHandler.unobscure(mTabObscuringToken);
             mTabObscuringToken = null;
@@ -283,11 +300,15 @@ public class TabSearchOverlayCoordinator
             mChangeProcessor.destroy();
             mChangeProcessor = null;
         }
+        if (mUrlBar != null) {
+            mUrlBar.removeTextChangedListener(mUrlBarTextWatcher);
+            mUrlBarTextWatcher = null;
+            mUrlBar = null;
+        }
         if (mSearchUiCoordinator != null) {
             mSearchUiCoordinator
                     .getLocationBarCoordinator()
-                    .getSuggestionsListNonEmptySupplier()
-                    .removeObserver(mSuggestionsObserver);
+                    .removeSuggestionsChangeObserver(mSuggestionsObserver);
             mSearchUiCoordinator.destroy();
             mSearchUiCoordinator = null;
         }
@@ -406,8 +427,7 @@ public class TabSearchOverlayCoordinator
 
         mSearchUiCoordinator
                 .getLocationBarCoordinator()
-                .getSuggestionsListNonEmptySupplier()
-                .addSyncObserver(mSuggestionsObserver);
+                .addSuggestionsChangeObserver(mSuggestionsObserver);
 
         View emptyStateView = panelView.findViewById(R.id.empty_state_container);
         setupEmptyStateView(emptyStateView);
@@ -507,7 +527,9 @@ public class TabSearchOverlayCoordinator
         // Shrink the size of the UrlBar text from the default (16sp) to medium (14sp) so the hint
         // text fits within the given viewport given the tab search overlay has a fixed small width.
         var locationBarCoordinator = searchUiCoordinator.getLocationBarCoordinator();
-        var urlBar = (UrlBar) locationBarCoordinator.getContainerView().findViewById(R.id.url_bar);
+        UrlBar urlBar =
+                (UrlBar) locationBarCoordinator.getContainerView().findViewById(R.id.url_bar);
+        mUrlBar = urlBar;
         if (urlBar != null) {
             urlBar.setTextAppearance(R.style.TextAppearance_TextMedium);
             urlBar.setAccessibilityTraversalAfter(R.id.tab_search_close_button);
@@ -569,6 +591,17 @@ public class TabSearchOverlayCoordinator
                         }
                         return false;
                     });
+            mUrlBarTextWatcher =
+                    new EmptyTextWatcher() {
+                        @Override
+                        public void onTextChanged(
+                                CharSequence s, int start, int before, int count) {
+                            if (isVisible()) {
+                                onSearchQueryStarted(s != null ? s.toString() : "");
+                            }
+                        }
+                    };
+            urlBar.addTextChangedListener(mUrlBarTextWatcher);
         }
 
         // If the profile supplier is null (rare), default to the non-incognito state as it is the
@@ -607,6 +640,7 @@ public class TabSearchOverlayCoordinator
         }
 
         mModel.set(TabSearchOverlayProperties.EMPTY_STATE_VISIBLE, showEmptyState);
+        onSuggestionsRendered(hasSuggestions);
     }
 
     private boolean loadUrl(OmniboxLoadUrlParams params, boolean isIncognito) {
@@ -712,6 +746,11 @@ public class TabSearchOverlayCoordinator
             mFuseboxControls.endFuseboxInput();
         }
 
+        Profile profile = mProfileSupplier.get();
+        if (profile != null && !profile.isOffTheRecord() && mSearchSessionLease == null) {
+            mSearchSessionLease =
+                    ArchivedTabModelOrchestrator.acquireLease(profile, LeaseReason.SEARCH_OVERLAY);
+        }
         // Obscure underlying tabs and toolbar to suppress accessibility focus and screen reader
         // interactions.
         if (mTabObscuringToken == null) {
@@ -732,6 +771,7 @@ public class TabSearchOverlayCoordinator
         mModel.set(TabSearchOverlayProperties.EMPTY_STATE_VISIBLE, false);
         mModel.set(TabSearchOverlayProperties.VISIBLE, true);
         mBackPressStateSupplier.set(true);
+        onSearchQueryStarted("");
         assumeNonNull(mSearchUiCoordinator)
                 .beginQuery(IntentOrigin.HUB, SearchType.TEXT, /* query= */ null, mWindowAndroid);
         updateExclusionRects();
@@ -750,6 +790,12 @@ public class TabSearchOverlayCoordinator
         RecordHistogram.recordBooleanHistogram(
                 "Android.TabSearch.SessionHadEmptyState", mEncounteredEmptyStateThisSession);
 
+        cancelPendingSearchMetrics();
+        if (mSearchSessionLease != null) {
+            mSearchSessionLease.destroy();
+            mSearchSessionLease = null;
+        }
+
         if (mTabObscuringToken != null) {
             mTabObscuringHandler.unobscure(mTabObscuringToken);
             mTabObscuringToken = null;
@@ -758,6 +804,105 @@ public class TabSearchOverlayCoordinator
         mModel.set(TabSearchOverlayProperties.VISIBLE, false);
         mBackPressStateSupplier.set(false);
         updateExclusionRects();
+    }
+
+    private void cancelPendingSearchMetrics() {
+        if (mTabStateInitializedObserver != null) {
+            if (mObservedTabStateInitializedSupplier != null) {
+                mObservedTabStateInitializedSupplier.removeObserver(mTabStateInitializedObserver);
+            }
+            mTabStateInitializedObserver = null;
+        }
+        mObservedTabStateInitializedSupplier = null;
+        mSearchQueryStartTimeMs = 0;
+        mInitialSuggestionsRenderTimeMs = 0;
+    }
+
+    @VisibleForTesting
+    void onSearchQueryStarted(String query) {
+        cancelPendingSearchMetrics();
+
+        if (query.isEmpty()) {
+            return;
+        }
+
+        Profile profile = mProfileSupplier.get();
+        if (profile == null || profile.isOffTheRecord()) {
+            return;
+        }
+
+        mSearchQueryStartTimeMs = SystemClock.elapsedRealtime();
+        mInitialSuggestionsRenderTimeMs = 0;
+
+        ArchivedTabModelOrchestrator orchestrator =
+                ArchivedTabModelOrchestrator.getIfInstantiatedForProfile(profile);
+        if (orchestrator != null
+                && !Boolean.TRUE.equals(orchestrator.getTabStateInitializedSupplier().get())) {
+            mObservedTabStateInitializedSupplier = orchestrator.getTabStateInitializedSupplier();
+            mTabStateInitializedObserver =
+                    (initialized) -> {
+                        if (Boolean.TRUE.equals(initialized)) {
+                            if (mTabStateInitializedObserver != null
+                                    && mObservedTabStateInitializedSupplier != null) {
+                                mObservedTabStateInitializedSupplier.removeObserver(
+                                        mTabStateInitializedObserver);
+                                mTabStateInitializedObserver = null;
+                            }
+                            refreshAutocompleteForArchivedTabs();
+                        }
+                    };
+            mObservedTabStateInitializedSupplier.addSyncObserver(mTabStateInitializedObserver);
+        }
+    }
+
+    private void refreshAutocompleteForArchivedTabs() {
+        if (!isVisible() || mSearchUiCoordinator == null) return;
+        var locationBar = mSearchUiCoordinator.getLocationBarCoordinator();
+        String query = locationBar.getUrlBarCoordinator().getTextWithoutAutocomplete();
+        locationBar.startAutocompleteForQuery(query);
+    }
+
+    @VisibleForTesting
+    void onSuggestionsRendered(boolean hasSuggestions) {
+        long now = SystemClock.elapsedRealtime();
+        if (mSearchQueryStartTimeMs > 0) {
+            if (mObservedTabStateInitializedSupplier == null) {
+                // Warm path: orchestrator was already initialized at query start.
+                onArchivedTabSearchCompleted();
+            } else if (mTabStateInitializedObserver != null) {
+                // Cold path: intermediate suggestions rendered while waiting for
+                // orchestrator initialization.
+                if (mInitialSuggestionsRenderTimeMs == 0) {
+                    mInitialSuggestionsRenderTimeMs = now;
+                }
+            } else {
+                // Cold path: deferred suggestions rendered after orchestrator initialized (or
+                // finished before initial render).
+                onArchivedTabSearchCompleted();
+            }
+        }
+    }
+
+    private void onArchivedTabSearchCompleted() {
+        long now = SystemClock.elapsedRealtime();
+        if (mSearchQueryStartTimeMs > 0) {
+            long totalLatency = now - mSearchQueryStartTimeMs;
+            if (mObservedTabStateInitializedSupplier != null) {
+                RecordHistogram.recordTimesHistogram(
+                        "Tabs.ArchivedTabs.Search.TimeToPopulateResultsMs.Deferred", totalLatency);
+                if (mInitialSuggestionsRenderTimeMs > 0) {
+                    long appendLatency = now - mInitialSuggestionsRenderTimeMs;
+                    RecordHistogram.recordTimesHistogram(
+                            "Tabs.ArchivedTabs.Search.TimeToAppendResultsMs", appendLatency);
+                }
+            } else {
+                RecordHistogram.recordTimesHistogram(
+                        "Tabs.ArchivedTabs.Search.TimeToPopulateResultsMs.Warm", totalLatency);
+            }
+            mSearchQueryStartTimeMs = 0;
+            mInitialSuggestionsRenderTimeMs = 0;
+            mObservedTabStateInitializedSupplier = null;
+        }
     }
 
     /**
@@ -899,6 +1044,13 @@ public class TabSearchOverlayCoordinator
         mSearchBoxDataProvider.initialize(mActivity, isIncognito);
         if (mSearchUiCoordinator != null) {
             mSearchUiCoordinator.setColorScheme(isIncognito);
+        }
+        if (isIncognito) {
+            cancelPendingSearchMetrics();
+            if (mSearchSessionLease != null) {
+                mSearchSessionLease.destroy();
+                mSearchSessionLease = null;
+            }
         }
     }
 
@@ -1132,5 +1284,34 @@ public class TabSearchOverlayCoordinator
 
     @Nullable PopupWindow getPopupWindowForTesting() {
         return mPopupWindow;
+    }
+
+    @Nullable Destroyable getSearchSessionLeaseForTesting() {
+        return mSearchSessionLease;
+    }
+
+    @Nullable Callback<Boolean> getTabStateInitializedObserverForTesting() {
+        return mTabStateInitializedObserver;
+    }
+
+    @Nullable NonNullObservableSupplier<Boolean>
+            getObservedTabStateInitializedSupplierForTesting() {
+        return mObservedTabStateInitializedSupplier;
+    }
+
+    boolean isWaitingForArchivedTabResultsForTesting() {
+        return mObservedTabStateInitializedSupplier != null;
+    }
+
+    long getSearchQueryStartTimeMsForTesting() {
+        return mSearchQueryStartTimeMs;
+    }
+
+    long getInitialSuggestionsRenderTimeMsForTesting() {
+        return mInitialSuggestionsRenderTimeMs;
+    }
+
+    @Nullable TextWatcher getUrlBarTextWatcherForTesting() {
+        return mUrlBarTextWatcher;
     }
 }

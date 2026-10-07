@@ -63,17 +63,19 @@ import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
-import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
@@ -85,6 +87,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.TestProfile;
 import org.chromium.chrome.browser.searchwidget.SearchUiCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -140,8 +143,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
     @Mock(extraInterfaces = {View.OnKeyListener.class})
     private OmniboxStub mOmniboxStub;
 
-    @Mock private Profile mProfile;
-    @Mock private Profile mIncognitoProfile;
+    private final TestProfile mProfile = TestProfile.createRegular();
+    private final TestProfile mIncognitoProfile = TestProfile.createIncognito(mProfile);
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private ModalDialogManager mModalDialogManager;
@@ -161,14 +164,12 @@ public class TabSearchOverlayCoordinatorUnitTest {
     private final OneshotSupplierImpl<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier =
             new OneshotSupplierImpl<>();
 
-    private final SettableNonNullObservableSupplier<Boolean> mSuggestionsListNonEmptySupplier =
-            ObservableSuppliers.createNonNull(false);
-
     private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
             ObservableSuppliers.createMonotonic();
     private final SettableMonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
             ObservableSuppliers.createMonotonic();
     private final TabObscuringHandler mTabObscuringHandler = new TabObscuringHandler();
+    private Callback<Boolean> mSuggestionsChangeObserver;
 
     @Captor private ArgumentCaptor<OverrideUrlLoadingDelegate> mOverrideUrlLoadingDelegateCaptor;
     @Captor private ArgumentCaptor<Callback<String>> mBringTabGroupToFrontCallbackCaptor;
@@ -197,8 +198,22 @@ public class TabSearchOverlayCoordinatorUnitTest {
         when(mLocationBarCoordinator.getContainerView()).thenReturn(mLocationBarContainerView);
         when(mLocationBarContainerView.findViewById(R.id.url_bar)).thenReturn(mUrlBar);
         when(mOmniboxStub.isUrlBarFocused()).thenReturn(true);
-        when(mLocationBarCoordinator.getSuggestionsListNonEmptySupplier())
-                .thenReturn(mSuggestionsListNonEmptySupplier);
+        doAnswer(
+                        invocation -> {
+                            mSuggestionsChangeObserver = invocation.getArgument(0);
+                            return null;
+                        })
+                .when(mLocationBarCoordinator)
+                .addSuggestionsChangeObserver(any());
+        doAnswer(
+                        invocation -> {
+                            if (mSuggestionsChangeObserver == invocation.getArgument(0)) {
+                                mSuggestionsChangeObserver = null;
+                            }
+                            return null;
+                        })
+                .when(mLocationBarCoordinator)
+                .removeSuggestionsChangeObserver(any());
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(mAppHeaderState);
 
         mCoordinator =
@@ -226,7 +241,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         assertNotNull(mPanelContainer);
         mScrim = mPanelContainer.findViewById(R.id.tab_search_overlay_scrim);
 
-        assertTrue(mSuggestionsListNonEmptySupplier.hasObservers());
+        assertNotNull(mSuggestionsChangeObserver);
 
         verify(mBackPressManager)
                 .addHandler(mCoordinator, BackPressHandler.Type.TAB_SEARCH_OVERLAY);
@@ -241,13 +256,16 @@ public class TabSearchOverlayCoordinatorUnitTest {
     @After
     public void tearDown() {
         TabWindowManagerSingleton.setTabWindowManagerForTesting(null);
-        mCoordinator.destroy();
-        assertNull(mCoordinator.getPanelContainerForTesting());
-        assertNull(mCoordinator.getPopupWindowForTesting());
-        verify(mSearchUiCoordinator).destroy();
-        verify(mBackPressManager).removeHandler(mCoordinator);
-        verify(mActivityLifecycleDispatcher).unregister(mCoordinator);
-        assertFalse(mSuggestionsListNonEmptySupplier.hasObservers());
+        if (mCoordinator.getPanelContainerForTesting() != null) {
+            mCoordinator.destroy();
+            assertNull(mCoordinator.getPanelContainerForTesting());
+            assertNull(mCoordinator.getPopupWindowForTesting());
+            verify(mSearchUiCoordinator).destroy();
+            verify(mBackPressManager).removeHandler(mCoordinator);
+            verify(mActivityLifecycleDispatcher).unregister(mCoordinator);
+            assertNull(mSuggestionsChangeObserver);
+        }
+        ArchivedTabModelOrchestrator.destroyProfileKeyedMap();
     }
 
     @Test
@@ -671,7 +689,6 @@ public class TabSearchOverlayCoordinatorUnitTest {
         assertNotNull(closeButton);
 
         // Switch to an incognito profile.
-        when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
         mProfileSupplier.set(mIncognitoProfile);
 
         // Verify that setColorScheme was called with true.
@@ -687,7 +704,6 @@ public class TabSearchOverlayCoordinatorUnitTest {
                 closeButton.getBackgroundTintList());
 
         // Switch back to non-incognito profile.
-        when(mProfile.isOffTheRecord()).thenReturn(false);
         mProfileSupplier.set(mProfile);
 
         // Verify that setColorScheme was called with false.
@@ -729,6 +745,12 @@ public class TabSearchOverlayCoordinatorUnitTest {
         assertOverlayHidden();
     }
 
+    private void notifySuggestionsChanged(boolean hasSuggestions) {
+        if (mSuggestionsChangeObserver != null) {
+            mSuggestionsChangeObserver.onResult(hasSuggestions);
+        }
+    }
+
     @Test
     public void testSuggestionsChanged_togglesEmptyState() {
         showOverlay();
@@ -736,7 +758,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         // Case 1: Search query is empty, suggestions is false.
         // Empty state should NOT be visible.
         when(mUrlBarCoordinator.getTextWithoutAutocomplete()).thenReturn("");
-        mSuggestionsListNonEmptySupplier.set(false);
+        notifySuggestionsChanged(false);
         assertFalse(
                 mCoordinator
                         .getModelForTesting()
@@ -745,7 +767,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         // Case 2: Search query is not empty, suggestions is true.
         // Empty state should NOT be visible.
         when(mUrlBarCoordinator.getTextWithoutAutocomplete()).thenReturn("abc");
-        mSuggestionsListNonEmptySupplier.set(true);
+        notifySuggestionsChanged(true);
         assertFalse(
                 mCoordinator
                         .getModelForTesting()
@@ -754,7 +776,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         // Case 3: Search query is not empty, suggestions is false.
         // Empty state SHOULD be visible.
         when(mUrlBarCoordinator.getTextWithoutAutocomplete()).thenReturn("abc");
-        mSuggestionsListNonEmptySupplier.set(false);
+        notifySuggestionsChanged(false);
         assertTrue(
                 mCoordinator
                         .getModelForTesting()
@@ -766,7 +788,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         // Case 1: Session without empty state records false on hide.
         showOverlay();
         when(mUrlBarCoordinator.getTextWithoutAutocomplete()).thenReturn("abc");
-        mSuggestionsListNonEmptySupplier.set(true);
+        notifySuggestionsChanged(true);
         var watcherNoEmpty =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.TabSearch.SessionHadEmptyState", false);
@@ -776,7 +798,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         // Case 2: Session with empty state records true on hide.
         showOverlay();
         when(mUrlBarCoordinator.getTextWithoutAutocomplete()).thenReturn("xyz");
-        mSuggestionsListNonEmptySupplier.set(false);
+        notifySuggestionsChanged(false);
         assertTrue(
                 mCoordinator
                         .getModelForTesting()
@@ -790,7 +812,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         // Case 3: Subsequent session resets flag and records false if no empty state occurs.
         showOverlay();
         when(mUrlBarCoordinator.getTextWithoutAutocomplete()).thenReturn("abc");
-        mSuggestionsListNonEmptySupplier.set(true);
+        notifySuggestionsChanged(true);
         var watcherReset =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.TabSearch.SessionHadEmptyState", false);
@@ -804,7 +826,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         // Setup state: search query is not empty, suggestions list is not empty (empty state not
         // visible).
         when(mUrlBarCoordinator.getTextWithoutAutocomplete()).thenReturn("abc");
-        mSuggestionsListNonEmptySupplier.set(true);
+        notifySuggestionsChanged(true);
         assertFalse(
                 mCoordinator
                         .getModelForTesting()
@@ -816,8 +838,6 @@ public class TabSearchOverlayCoordinatorUnitTest {
         // 2. During the hide animation (before idling looper):
         // - Overlay visibility property is set to false.
         assertFalse(mCoordinator.isVisible());
-        // - Suggestions list is STILL non-empty.
-        assertTrue(mSuggestionsListNonEmptySupplier.get());
         // - Empty state is NOT visible.
         assertFalse(
                 mCoordinator
@@ -833,7 +853,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         // - Simulate the location bar updating its focus status.
         when(mOmniboxStub.isUrlBarFocused()).thenReturn(false);
         // - Simulate suggestions list becoming empty due to focus loss.
-        mSuggestionsListNonEmptySupplier.set(false);
+        notifySuggestionsChanged(false);
 
         // - Empty state remains NOT visible.
         assertFalse(
@@ -1484,5 +1504,224 @@ public class TabSearchOverlayCoordinatorUnitTest {
         View panelView = mPanelContainer.findViewById(R.id.tab_search_overlay_panel);
         var params = (LinearLayout.LayoutParams) panelView.getLayoutParams();
         assertEquals(expected, params.topMargin);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ARCHIVED_TABS_TEARDOWN)
+    public void testSearchSessionLease_lifecycle() {
+        ArchivedTabModelOrchestrator orchestrator =
+                ArchivedTabModelOrchestrator.createForTesting(mProfile);
+        ArchivedTabModelOrchestrator.setInstanceForTesting(orchestrator);
+
+        assertEquals(0, orchestrator.getLeaseCountForTesting());
+        assertNull(mCoordinator.getSearchSessionLeaseForTesting());
+
+        showOverlay();
+        assertNotNull(mCoordinator.getSearchSessionLeaseForTesting());
+        assertEquals(1, orchestrator.getLeaseCountForTesting());
+
+        mCoordinator.hide(TabSearchDismissalReason.CLOSE_BUTTON);
+        assertNull(mCoordinator.getSearchSessionLeaseForTesting());
+        assertEquals(0, orchestrator.getLeaseCountForTesting());
+
+        showOverlay();
+        assertEquals(1, orchestrator.getLeaseCountForTesting());
+        mCoordinator.destroy();
+        assertNull(mCoordinator.getSearchSessionLeaseForTesting());
+        assertEquals(0, orchestrator.getLeaseCountForTesting());
+    }
+
+    @Test
+    public void testSearchMetrics_warmPath_recordsWarmLatency() {
+        ArchivedTabModelOrchestrator orchestrator =
+                ArchivedTabModelOrchestrator.createForTesting(mProfile);
+        ArchivedTabModelOrchestrator.setInstanceForTesting(orchestrator);
+        orchestrator.setTabStateInitializedForTesting(/* initialized= */ true);
+
+        showOverlay();
+
+        var warmWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.ArchivedTabs.Search.TimeToPopulateResultsMs.Warm");
+        var deferredWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                "Tabs.ArchivedTabs.Search.TimeToPopulateResultsMs.Deferred")
+                        .expectNoRecords("Tabs.ArchivedTabs.Search.TimeToAppendResultsMs")
+                        .build();
+
+        mCoordinator.onSearchQueryStarted("search term");
+        assertFalse(mCoordinator.isWaitingForArchivedTabResultsForTesting());
+        assertNull(mCoordinator.getTabStateInitializedObserverForTesting());
+
+        mCoordinator.onSuggestionsRendered(/* hasSuggestions= */ true);
+
+        warmWatcher.assertExpected();
+        deferredWatcher.assertExpected();
+        assertEquals(0, mCoordinator.getSearchQueryStartTimeMsForTesting());
+    }
+
+    @Test
+    public void testSearchMetrics_deferredPath_recordsDeferredAndAppendLatency() {
+        ArchivedTabModelOrchestrator orchestrator =
+                ArchivedTabModelOrchestrator.createForTesting(mProfile);
+        ArchivedTabModelOrchestrator.setInstanceForTesting(orchestrator);
+        orchestrator.setTabStateInitializedForTesting(/* initialized= */ false);
+
+        showOverlay();
+
+        var warmWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Tabs.ArchivedTabs.Search.TimeToPopulateResultsMs.Warm")
+                        .build();
+        var deferredWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.ArchivedTabs.Search.TimeToPopulateResultsMs.Deferred");
+        var appendWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.ArchivedTabs.Search.TimeToAppendResultsMs");
+
+        when(mUrlBarCoordinator.getTextWithoutAutocomplete()).thenReturn("search query");
+        mCoordinator.onSearchQueryStarted("search query");
+        assertTrue(mCoordinator.isWaitingForArchivedTabResultsForTesting());
+        assertNotNull(mCoordinator.getTabStateInitializedObserverForTesting());
+
+        // First pass: initial regular tab suggestions rendered while orchestrator is loading.
+        mCoordinator.onSuggestionsRendered(/* hasSuggestions= */ true);
+        assertTrue(mCoordinator.getInitialSuggestionsRenderTimeMsForTesting() > 0);
+
+        // Orchestrator completes disk load and flips supplier to true.
+        orchestrator.setTabStateInitializedForTesting(/* initialized= */ true);
+
+        // Autocomplete is refreshed with the query without modifying focus or selection.
+        verify(mLocationBarCoordinator).startAutocompleteForQuery(eq("search query"));
+
+        // Refreshed suggestions pass with archived tabs rendered.
+        mCoordinator.onSuggestionsRendered(/* hasSuggestions= */ true);
+
+        deferredWatcher.assertExpected();
+        appendWatcher.assertExpected();
+        warmWatcher.assertExpected();
+        assertEquals(0, mCoordinator.getSearchQueryStartTimeMsForTesting());
+        assertFalse(mCoordinator.isWaitingForArchivedTabResultsForTesting());
+    }
+
+    @Test
+    public void testSearchMetrics_emptyQuery_noMetricsRecorded() {
+        showOverlay();
+
+        var warmWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Tabs.ArchivedTabs.Search.TimeToPopulateResultsMs.Warm")
+                        .build();
+
+        mCoordinator.onSearchQueryStarted("");
+        assertEquals(0, mCoordinator.getSearchQueryStartTimeMsForTesting());
+        assertFalse(mCoordinator.isWaitingForArchivedTabResultsForTesting());
+
+        mCoordinator.onSuggestionsRendered(/* hasSuggestions= */ false);
+        warmWatcher.assertExpected();
+    }
+
+    @Test
+    public void testSearchMetrics_cancelOnHide_detachesObserverWithoutMetrics() {
+        ArchivedTabModelOrchestrator orchestrator =
+                ArchivedTabModelOrchestrator.createForTesting(mProfile);
+        ArchivedTabModelOrchestrator.setInstanceForTesting(orchestrator);
+        orchestrator.setTabStateInitializedForTesting(/* initialized= */ false);
+
+        showOverlay();
+
+        var noMetricsWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Tabs.ArchivedTabs.Search.TimeToPopulateResultsMs.Warm")
+                        .expectNoRecords(
+                                "Tabs.ArchivedTabs.Search.TimeToPopulateResultsMs.Deferred")
+                        .expectNoRecords("Tabs.ArchivedTabs.Search.TimeToAppendResultsMs")
+                        .build();
+
+        mCoordinator.onSearchQueryStarted("search term");
+        assertTrue(mCoordinator.isWaitingForArchivedTabResultsForTesting());
+        assertNotNull(mCoordinator.getTabStateInitializedObserverForTesting());
+
+        // Hide overlay before orchestrator completes.
+        mCoordinator.hide(TabSearchDismissalReason.CLOSE_BUTTON);
+
+        assertNull(mCoordinator.getTabStateInitializedObserverForTesting());
+        assertEquals(0, mCoordinator.getSearchQueryStartTimeMsForTesting());
+        assertFalse(mCoordinator.isWaitingForArchivedTabResultsForTesting());
+
+        // Supplier resolves after hide.
+        orchestrator.setTabStateInitializedForTesting(/* initialized= */ true);
+
+        noMetricsWatcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ARCHIVED_TABS_TEARDOWN)
+    public void testIncognito_doesNotAcquireLeaseOrWaitForArchivedTabs() {
+        ArchivedTabModelOrchestrator orchestrator =
+                ArchivedTabModelOrchestrator.createForTesting(mProfile);
+        ArchivedTabModelOrchestrator.setInstanceForTesting(orchestrator);
+        orchestrator.setTabStateInitializedForTesting(/* initialized= */ false);
+
+        mProfileSupplier.set(mIncognitoProfile);
+
+        var noMetricsWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Tabs.ArchivedTabs.Search.TimeToPopulateResultsMs.Warm")
+                        .expectNoRecords(
+                                "Tabs.ArchivedTabs.Search.TimeToPopulateResultsMs.Deferred")
+                        .expectNoRecords("Tabs.ArchivedTabs.Search.TimeToAppendResultsMs")
+                        .build();
+
+        showOverlay();
+
+        // No lease should be acquired for incognito.
+        assertNull(mCoordinator.getSearchSessionLeaseForTesting());
+        assertEquals(0, orchestrator.getLeaseCountForTesting());
+
+        mCoordinator.onSearchQueryStarted("search term");
+        assertFalse(mCoordinator.isWaitingForArchivedTabResultsForTesting());
+        assertNull(mCoordinator.getTabStateInitializedObserverForTesting());
+        assertEquals(0, mCoordinator.getSearchQueryStartTimeMsForTesting());
+
+        mCoordinator.onSuggestionsRendered(/* hasSuggestions= */ true);
+        noMetricsWatcher.assertExpected();
+    }
+
+    @Test
+    public void testIncognitoTransition_removesTabStateInitializedObserver() {
+        ArchivedTabModelOrchestrator orchestrator =
+                ArchivedTabModelOrchestrator.createForTesting(mProfile);
+        ArchivedTabModelOrchestrator.setInstanceForTesting(orchestrator);
+        orchestrator.setTabStateInitializedForTesting(/* initialized= */ false);
+
+        showOverlay();
+        clearInvocations(mSearchUiCoordinator);
+
+        mCoordinator.onSearchQueryStarted("test query");
+        assertTrue(mCoordinator.isWaitingForArchivedTabResultsForTesting());
+        assertNotNull(mCoordinator.getTabStateInitializedObserverForTesting());
+        assertNotNull(mCoordinator.getObservedTabStateInitializedSupplierForTesting());
+
+        // Switch to incognito profile.
+        mProfileSupplier.set(mIncognitoProfile);
+
+        assertNull(mCoordinator.getTabStateInitializedObserverForTesting());
+        assertNull(mCoordinator.getObservedTabStateInitializedSupplierForTesting());
+        assertFalse(mCoordinator.isWaitingForArchivedTabResultsForTesting());
+
+        // Initializing the orchestrator afterwards must not trigger autocomplete query refresh.
+        orchestrator.setTabStateInitializedForTesting(/* initialized= */ true);
+        verify(mLocationBarCoordinator, never()).startAutocompleteForQuery(any());
+    }
+
+    @Test
+    public void testDestroy_removesUrlBarTextWatcher() {
+        assertNotNull(mCoordinator.getUrlBarTextWatcherForTesting());
+        mCoordinator.destroy();
+        verify(mUrlBar).removeTextChangedListener(any());
+        assertNull(mCoordinator.getUrlBarTextWatcherForTesting());
     }
 }

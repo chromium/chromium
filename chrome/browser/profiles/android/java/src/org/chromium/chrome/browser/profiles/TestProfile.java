@@ -28,6 +28,11 @@ public class TestProfile extends Profile {
         mOriginalProfile = originalProfile;
     }
 
+    @Override
+    public boolean isNativeInitialized() {
+        return true;
+    }
+
     /** Asserts that the full C++ browser process has not been instantiated. */
     public static void assertBrowserProcessNotStarted() {
         boolean isFullBrowserStarted =

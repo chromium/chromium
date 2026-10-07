@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.Lea
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
@@ -56,6 +57,7 @@ public class ArchivedTabModelOrchestratorUnitTest {
         when(mMockProfile.getOriginalProfile()).thenReturn(mMockProfile);
         when(mMockProfile.isNativeInitialized()).thenReturn(true);
         when(mMockProfile.shutdownStarted()).thenReturn(false);
+        when(mMockProfile.isOffTheRecord()).thenReturn(false);
         mOrchestrator = new ArchivedTabModelOrchestrator(mMockProfile);
         mOrchestrator.initForTesting(
                 mMockTabModelSelector,
@@ -179,6 +181,39 @@ public class ArchivedTabModelOrchestratorUnitTest {
     }
 
     @Test
+    public void testGetTabContentManager_fallbackToSavedActivityOrchestrators() {
+        Profile otherProfile = mock(Profile.class);
+        TabbedModeTabModelOrchestrator otherActivityOrchestrator =
+                mock(TabbedModeTabModelOrchestrator.class);
+        TabContentManager otherManager = mock(TabContentManager.class);
+        when(otherManager.isDestroyed()).thenReturn(false);
+        when(otherActivityOrchestrator.getOriginalProfile()).thenReturn(otherProfile);
+        when(otherActivityOrchestrator.getTabContentManager()).thenReturn(otherManager);
+
+        TabbedModeTabModelOrchestrator matchingActivityOrchestrator =
+                mock(TabbedModeTabModelOrchestrator.class);
+        TabContentManager matchingManager = mock(TabContentManager.class);
+        when(matchingManager.isDestroyed()).thenReturn(false);
+        when(matchingActivityOrchestrator.getOriginalProfile()).thenReturn(mMockProfile);
+        when(matchingActivityOrchestrator.getTabContentManager()).thenReturn(matchingManager);
+
+        ArchivedTabModelOrchestrator.registerSavedActivityOrchestratorForTesting(
+                otherActivityOrchestrator);
+        assertEquals(otherManager, mOrchestrator.getTabContentManager());
+
+        ArchivedTabModelOrchestrator.registerSavedActivityOrchestratorForTesting(
+                matchingActivityOrchestrator);
+        assertEquals(matchingManager, mOrchestrator.getTabContentManager());
+
+        // When matching manager is destroyed, falls back to non-destroyed manager, and returns null
+        // when all managers are destroyed.
+        when(matchingManager.isDestroyed()).thenReturn(true);
+        assertEquals(otherManager, mOrchestrator.getTabContentManager());
+        when(otherManager.isDestroyed()).thenReturn(true);
+        assertNull(mOrchestrator.getTabContentManager());
+    }
+
+    @Test
     public void testTabStateInitializedSupplier() {
         assertFalse(mOrchestrator.isTabStateInitialized());
         assertFalse(mOrchestrator.getTabStateInitializedSupplier().get());
@@ -229,14 +264,19 @@ public class ArchivedTabModelOrchestratorUnitTest {
     @EnableFeatures(ChromeFeatureList.ARCHIVED_TABS_TEARDOWN)
     public void testIsInstantiatedForProfile() {
         assertFalse(ArchivedTabModelOrchestrator.isInstantiatedForProfile(mMockProfile));
+        assertNull(ArchivedTabModelOrchestrator.getIfInstantiatedForProfile(mMockProfile));
 
         ArchivedTabModelOrchestrator orchestrator =
                 ArchivedTabModelOrchestrator.getForProfile(mMockProfile);
         assertNotNull(orchestrator);
         assertTrue(ArchivedTabModelOrchestrator.isInstantiatedForProfile(mMockProfile));
+        assertEquals(
+                orchestrator,
+                ArchivedTabModelOrchestrator.getIfInstantiatedForProfile(mMockProfile));
 
         orchestrator.performTeardownForTesting();
         assertFalse(ArchivedTabModelOrchestrator.isInstantiatedForProfile(mMockProfile));
+        assertNull(ArchivedTabModelOrchestrator.getIfInstantiatedForProfile(mMockProfile));
     }
 
     @Test
@@ -261,6 +301,12 @@ public class ArchivedTabModelOrchestratorUnitTest {
         when(shutdownProfile.isNativeInitialized()).thenReturn(true);
         when(shutdownProfile.shutdownStarted()).thenReturn(true);
 
+        Profile otrProfile = mock(Profile.class);
+        when(otrProfile.isNativeInitialized()).thenReturn(true);
+        when(otrProfile.shutdownStarted()).thenReturn(false);
+        when(otrProfile.isOffTheRecord()).thenReturn(true);
+        when(otrProfile.getOriginalProfile()).thenReturn(mMockProfile);
+
         assertNull(ArchivedTabModelOrchestrator.acquireLease(null, LeaseReason.FOR_TESTING));
         assertNull(
                 ArchivedTabModelOrchestrator.acquireLease(
@@ -268,14 +314,17 @@ public class ArchivedTabModelOrchestratorUnitTest {
         assertNull(
                 ArchivedTabModelOrchestrator.acquireLease(
                         shutdownProfile, LeaseReason.FOR_TESTING));
+        assertNull(ArchivedTabModelOrchestrator.acquireLease(otrProfile, LeaseReason.FOR_TESTING));
 
         assertFalse(ArchivedTabModelOrchestrator.isInstantiatedForProfile(null));
         assertFalse(ArchivedTabModelOrchestrator.isInstantiatedForProfile(uninitializedProfile));
         assertFalse(ArchivedTabModelOrchestrator.isInstantiatedForProfile(shutdownProfile));
+        assertFalse(ArchivedTabModelOrchestrator.isInstantiatedForProfile(otrProfile));
 
         assertNull(ArchivedTabModelOrchestrator.getIfInstantiatedForProfile(null));
         assertNull(ArchivedTabModelOrchestrator.getIfInstantiatedForProfile(uninitializedProfile));
         assertNull(ArchivedTabModelOrchestrator.getIfInstantiatedForProfile(shutdownProfile));
+        assertNull(ArchivedTabModelOrchestrator.getIfInstantiatedForProfile(otrProfile));
 
         assertThrows(Throwable.class, () -> ArchivedTabModelOrchestrator.getForProfile(null));
         assertThrows(
@@ -283,21 +332,7 @@ public class ArchivedTabModelOrchestratorUnitTest {
                 () -> ArchivedTabModelOrchestrator.getForProfile(uninitializedProfile));
         assertThrows(
                 Throwable.class, () -> ArchivedTabModelOrchestrator.getForProfile(shutdownProfile));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ARCHIVED_TABS_TEARDOWN)
-    public void testGetIfInstantiatedForProfile() {
-        assertNull(ArchivedTabModelOrchestrator.getIfInstantiatedForProfile(mMockProfile));
-
-        ArchivedTabModelOrchestrator orchestrator =
-                ArchivedTabModelOrchestrator.getForProfile(mMockProfile);
-        assertEquals(
-                orchestrator,
-                ArchivedTabModelOrchestrator.getIfInstantiatedForProfile(mMockProfile));
-
-        orchestrator.performTeardownForTesting();
-        assertNull(ArchivedTabModelOrchestrator.getIfInstantiatedForProfile(mMockProfile));
+        assertThrows(Throwable.class, () -> ArchivedTabModelOrchestrator.getForProfile(otrProfile));
     }
 
     @Test

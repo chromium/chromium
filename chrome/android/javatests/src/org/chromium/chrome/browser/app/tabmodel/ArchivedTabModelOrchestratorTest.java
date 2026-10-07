@@ -438,7 +438,8 @@ public class ArchivedTabModelOrchestratorTest {
         // to).
         runOnUiThreadBlocking(
                 () -> {
-                    mOrchestrator.unregisterTabModelOrchestrator(mTabbedModeOrchestrator);
+                    ArchivedTabModelOrchestrator.unregisterTabModelOrchestrator(
+                            mTabbedModeOrchestrator);
                     mOrchestrator.resetRescueArchivedTabsForTesting();
                     mOrchestrator.resetRescueArchivedTabGroupsForTesting();
                     mTabArchiveSettings.setArchiveEnabled(false);

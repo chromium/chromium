@@ -34,6 +34,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -41,7 +42,6 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
-import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -159,6 +159,8 @@ public class LocationBarCoordinator
     private final Callback<@PopupState Integer> mOnPopupStateChange = this::onPopupStateChange;
     private final SettableMonotonicObservableSupplier<Tracker> mTrackerSupplier =
             ObservableSuppliers.createMonotonic();
+    private final ObserverList<Callback<Boolean>> mSuggestionsChangeObservers =
+            new ObserverList<>();
     private final @Nullable UserEducationHelper mUserEducationHelper;
     private @Nullable WindowFocusSupplier mWindowFocusSupplier;
     private LocationBarMediator mLocationBarMediator;
@@ -178,8 +180,6 @@ public class LocationBarCoordinator
     private @Nullable ButtonData mOptionalButtonData;
     private LocationBarDataProvider.@Nullable Observer mOptionalButtonLocationBarDataObserver;
     private @Nullable UrlFocusChangeListener mOptionalButtonUrlFocusChangeListener;
-    private final SettableNonNullObservableSupplier<Boolean> mSuggestionsListNonEmptySupplier =
-            ObservableSuppliers.createNonNull(false);
 
     private boolean mNativeInitialized;
     private boolean mDefaultBoundsEllipsis;
@@ -649,6 +649,7 @@ public class LocationBarCoordinator
 
         mAutocompleteCoordinator.destroy();
         mAutocompleteCoordinator = null;
+        mSuggestionsChangeObservers.clear();
 
         mStatusCoordinator.destroy();
         mStatusCoordinator = null;
@@ -838,12 +839,34 @@ public class LocationBarCoordinator
             @Nullable AutocompleteMatch defaultMatch, boolean hasSuggestions) {
         assert defaultMatch == null || defaultMatch.allowedToBeDefaultMatch();
         mLocationBarMediator.onSuggestionsChanged(defaultMatch, hasSuggestions);
-        mSuggestionsListNonEmptySupplier.set(hasSuggestions);
+        for (Callback<Boolean> observer : mSuggestionsChangeObservers) {
+            observer.onResult(hasSuggestions);
+        }
     }
 
-    /** Returns the supplier of whether the suggestions list has results. */
-    public NonNullObservableSupplier<Boolean> getSuggestionsListNonEmptySupplier() {
-        return mSuggestionsListNonEmptySupplier;
+    /**
+     * Adds an observer to be notified whenever suggestions change.
+     *
+     * @param observer The observer to add.
+     */
+    public void addSuggestionsChangeObserver(Callback<Boolean> observer) {
+        mSuggestionsChangeObservers.addObserver(observer);
+    }
+
+    /**
+     * Removes a suggestions change observer.
+     *
+     * @param observer The observer to remove.
+     */
+    public void removeSuggestionsChangeObserver(Callback<Boolean> observer) {
+        mSuggestionsChangeObservers.removeObserver(observer);
+    }
+
+    /** Triggers autocomplete for the given query without modifying focus or selection. */
+    public void startAutocompleteForQuery(String query) {
+        if (mAutocompleteCoordinator != null) {
+            mAutocompleteCoordinator.startAutocompleteForQuery(query);
+        }
     }
 
     @Override
