@@ -10282,21 +10282,6 @@
             ]
         }
     ],
-    "IdentityAwareness": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IdentityAwareness"
-                    ]
-                }
-            ]
-        }
-    ],
     "IgnoreDuplicateNavs": [
         {
             "platforms": [
