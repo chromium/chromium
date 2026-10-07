@@ -361,7 +361,9 @@ int GpuMain(MainFunctionParams parameters) {
 
   base::PlatformThread::SetDefaultThreadType(base::ThreadType::kPresentation);
 
-  auto gpu_init = std::make_unique<gpu::GpuInit>();
+  // Picks GpuInit1 or GpuInit2 based on features::kGpuInitOptimization.
+  auto gpu_init = gpu::GpuInit::Create();
+
   ContentSandboxHelper sandbox_helper;
 #if BUILDFLAG(IS_WIN)
   sandbox_helper.set_sandbox_info(parameters.sandbox_info);

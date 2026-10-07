@@ -98,7 +98,7 @@ void InProcessGpuThread::Init() {
     gpu_process_ = std::make_unique<ChildProcess>(io_thread_type);
   }
 
-  auto gpu_init = std::make_unique<gpu::GpuInit>();
+  auto gpu_init = gpu::GpuInit::Create();
   gpu_init->InitializeInProcess(base::CommandLine::ForCurrentProcess(),
                                 gpu_preferences_);
 

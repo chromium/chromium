@@ -244,6 +244,10 @@ BASE_FEATURE(kAdjustGpuProcessPriority, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kClearGrShaderDiskCacheOnInvalidPrefix,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the GPU process initializes through GpuInit2. GpuInit2 is where
+// GPU startup optimizations are being developed.
+BASE_FEATURE(kGpuInitOptimization, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Chrome will use the shader disk cache. This feature provides a
 // kill-switch for working around issues with the disk cache and assessing the
 // performance value of the disk cache. The --disable-gpu-shader-disk-cache flag

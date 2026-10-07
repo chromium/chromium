@@ -43,7 +43,7 @@ DemoService::DemoService(
   params->frame_sink_manager_client = std::move(client);
   runner_ = std::make_unique<viz::VizCompositorThreadRunnerImpl>();
 
-  gpu_init_ = std::make_unique<gpu::GpuInit>();
+  gpu_init_ = gpu::GpuInit::Create();
 
   io_thread_ = CreateAndStartIOThread();
 

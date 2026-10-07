@@ -120,7 +120,7 @@ TEST(VizMainImplTest, OopVizDependencyInjection) {
       std::make_unique<MockPowerMonitorSource>(&mock_source_is_alive);
   ASSERT_TRUE(mock_source_is_alive);
 
-  auto gpu_init = std::make_unique<gpu::GpuInit>();
+  auto gpu_init = gpu::GpuInit::Create();
   // Need to force GpuInit to request an OOP viz; if |GpuInit| stops owning the
   // |GPUInfo|, this const_cast may break.
   const_cast<gpu::GPUInfo&>(gpu_init->gpu_info()).in_process_gpu = false;
