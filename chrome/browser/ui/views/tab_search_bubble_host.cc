@@ -16,14 +16,12 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host_observer.h"
-#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
@@ -251,15 +249,6 @@ BrowserWindowInterface* TabSearchBubbleHost::GetBrowser() {
 }
 
 void TabSearchBubbleHost::ButtonPressed(const ui::Event& event) {
-  if (organizer_panel::IsOrganizerPanelFeatureEnabled()) {
-    auto* controller =
-        OrganizerPanelController::From(browser_window_interface_);
-    if (controller) {
-      controller->SetOrganizerVisible(!controller->IsOrganizerPanelVisible());
-      return;
-    }
-  }
-
   if (ShowTabSearchBubble()) {
     // Only log the open action if it resulted in creating a new instance of the
     // Tab Search bubble.

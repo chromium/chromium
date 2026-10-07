@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
-#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "chrome/common/pref_names.h"
@@ -391,9 +390,7 @@ void TabStripComboButton::SetTabSearchBubbleHost(TabSearchBubbleHost* host) {
   tab_search_bubble_host_observation_.Reset();
   if (host) {
     tab_search_bubble_host_observation_.Observe(host);
-    const bool use_vertical_strip_icon =
-        context_ == Context::kVerticalTabStrip ||
-        organizer_panel::IsOrganizerPanelFeatureEnabled();
+    const bool use_vertical_strip_icon = context_ == Context::kVerticalTabStrip;
     GetEndButtonActionItem()->SetImage(ui::ImageModel::FromVectorIcon(
         use_vertical_strip_icon
             ? (features::IsRoundedIconsEnabled() ? kManageSearchIcon
