@@ -54,9 +54,10 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
     ~Factory() override;
 
 #if !BUILDFLAG(IS_ANDROID)
-    // Sets the system library to use, thereby assuming ownership of
-    // |auth_library|.
-    void set_library(std::unique_ptr<AuthLibrary> auth_provider) {
+    // Sets the system library to use. Ownership is shared: on Windows the
+    // SSPI calls run on a separate sequence and an in-flight call keeps
+    // |auth_library| alive even if this Factory is destroyed.
+    void set_library(scoped_refptr<AuthLibrary> auth_provider) {
       auth_library_ = std::move(auth_provider);
     }
 
@@ -82,7 +83,7 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
     HttpAuthMechanismFactory negotiate_auth_system_factory_;
     bool is_unsupported_ = false;
 #if !BUILDFLAG(IS_ANDROID)
-    std::unique_ptr<AuthLibrary> auth_library_;
+    scoped_refptr<AuthLibrary> auth_library_;
 #endif  // !BUILDFLAG(IS_ANDROID)
   };
 

@@ -7,13 +7,21 @@
 
 #include "net/http/http_auth_sspi_win.h"
 
+#include <utility>
+
 #include "base/base64.h"
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_auth.h"
@@ -258,9 +266,35 @@ Error MapFreeContextBufferStatusToError(SECURITY_STATUS status) {
   }
 }
 
+// Each HttpAuthSSPI gets its own sequence so a handshake stalled inside
+// InitializeSecurityContext() does not delay unrelated handshakes.
+//
+// CONTINUE_ON_SHUTDOWN because shutdown must not wait on an unreachable KDC.
+// If shutdown lands mid-handshake, the SspiContext teardown posted by
+// base::SequenceBound may never run and the SSPI handles are leaked; that is
+// acceptable at process exit.
+scoped_refptr<base::SequencedTaskRunner> CreateSspiTaskRunner() {
+  return base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
+}
+
 }  // anonymous namespace
 
+SSPILibrary::SSPILibrary(const wchar_t* package) : package_name_(package) {}
+
+SSPILibrary::~SSPILibrary() = default;
+
+SSPILibraryDefault::SSPILibraryDefault(const wchar_t* package)
+    : SSPILibrary(package) {}
+
+SSPILibraryDefault::~SSPILibraryDefault() = default;
+
 Error SSPILibrary::DetermineMaxTokenLength(ULONG* max_token_length) {
+  // Held across QuerySecurityPackageInfo() so a concurrent caller cannot
+  // observe `is_supported_` while it is transiently false below.
+  base::AutoLock auto_lock(lock_);
+
   if (!is_supported_)
     return ERR_UNSUPPORTED_AUTH_SCHEME;
 
@@ -354,18 +388,64 @@ SECURITY_STATUS SSPILibraryDefault::FreeContextBuffer(PVOID pvContextBuffer) {
   return ::FreeContextBuffer(pvContextBuffer);
 }
 
-HttpAuthSSPI::HttpAuthSSPI(SSPILibrary* library, HttpAuth::Scheme scheme)
-    : library_(library),
-      scheme_(scheme),
-      delegation_type_(DelegationType::kNone) {
-  DCHECK(library_);
-  DCHECK(scheme_ == HttpAuth::AUTH_SCHEME_NEGOTIATE ||
-         scheme_ == HttpAuth::AUTH_SCHEME_NTLM);
-  SecInvalidateHandle(&cred_);
-  SecInvalidateHandle(&ctxt_);
-}
+// Runs on a per-handler sequence from CreateSspiTaskRunner():
+// InitializeSecurityContext() can block for many seconds waiting on a domain
+// controller before Negotiate falls back to NTLM, which would otherwise stall
+// every socket in the network service.
+//
+// An in-flight SSPI call cannot be cancelled, so the handles are owned here
+// and torn down through base::SequenceBound, which posts destruction to the
+// same sequence and so runs it after any outstanding call.
+class HttpAuthSSPI::SspiContext {
+ public:
+  SspiContext(scoped_refptr<SSPILibrary> library, HttpAuth::Scheme scheme)
+      : library_(std::move(library)), scheme_(scheme) {
+    SecInvalidateHandle(&cred_);
+    SecInvalidateHandle(&ctxt_);
+  }
 
-HttpAuthSSPI::~HttpAuthSSPI() {
+  SspiContext(const SspiContext&) = delete;
+  SspiContext& operator=(const SspiContext&) = delete;
+
+  ~SspiContext();
+
+  TokenResult GenerateToken(std::optional<AuthCredentials> credentials,
+                            std::string spn,
+                            std::string channel_bindings,
+                            std::string decoded_server_auth_token,
+                            DelegationType delegation_type,
+                            NetLogWithSource net_log);
+
+ private:
+  int GenerateTokenImpl(const AuthCredentials* credentials,
+                        const std::string& spn,
+                        const std::string& channel_bindings,
+                        const std::string& decoded_server_auth_token,
+                        DelegationType delegation_type,
+                        const NetLogWithSource& net_log,
+                        std::string* auth_token);
+
+  int OnFirstRound(const AuthCredentials* credentials,
+                   const NetLogWithSource& net_log);
+
+  int GetNextSecurityToken(const std::string& spn,
+                           const std::string& channel_bindings,
+                           const void* in_token,
+                           int in_token_len,
+                           DelegationType delegation_type,
+                           const NetLogWithSource& net_log,
+                           void** out_token,
+                           int* out_token_len);
+
+  void ResetSecurityContext();
+
+  scoped_refptr<SSPILibrary> library_;
+  HttpAuth::Scheme scheme_;
+  CredHandle cred_;
+  CtxtHandle ctxt_;
+};
+
+HttpAuthSSPI::SspiContext::~SspiContext() {
   ResetSecurityContext();
   if (SecIsValidHandle(&cred_)) {
     library_->FreeCredentialsHandle(&cred_);
@@ -373,64 +453,55 @@ HttpAuthSSPI::~HttpAuthSSPI() {
   }
 }
 
-bool HttpAuthSSPI::Init(const NetLogWithSource&) {
-  return true;
-}
-
-bool HttpAuthSSPI::NeedsIdentity() const {
-  return decoded_server_auth_token_.empty();
-}
-
-bool HttpAuthSSPI::AllowsExplicitCredentials() const {
-  return true;
-}
-
-void HttpAuthSSPI::SetDelegation(DelegationType delegation_type) {
-  delegation_type_ = delegation_type;
-}
-
-void HttpAuthSSPI::ResetSecurityContext() {
-  if (SecIsValidHandle(&ctxt_)) {
-    library_->DeleteSecurityContext(&ctxt_);
-    SecInvalidateHandle(&ctxt_);
+HttpAuthSSPI::TokenResult HttpAuthSSPI::SspiContext::GenerateToken(
+    std::optional<AuthCredentials> credentials,
+    std::string spn,
+    std::string channel_bindings,
+    std::string decoded_server_auth_token,
+    DelegationType delegation_type,
+    NetLogWithSource net_log) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  TokenResult result;
+  result.net_error = GenerateTokenImpl(
+      credentials ? &credentials.value() : nullptr, spn, channel_bindings,
+      decoded_server_auth_token, delegation_type, net_log, &result.auth_token);
+  if (result.net_error != OK) {
+    ResetSecurityContext();
   }
+  result.has_security_context = SecIsValidHandle(&ctxt_);
+  return result;
 }
 
-HttpAuth::AuthorizationResult HttpAuthSSPI::ParseChallenge(
-    HttpAuthChallengeTokenizer* tok) {
-  if (!SecIsValidHandle(&ctxt_)) {
-    return ParseFirstRoundChallenge(scheme_, tok);
-  }
-  std::string encoded_auth_token;
-  return ParseLaterRoundChallenge(scheme_, tok, &encoded_auth_token,
-                                  &decoded_server_auth_token_);
-}
-
-int HttpAuthSSPI::GenerateAuthToken(const AuthCredentials* credentials,
-                                    const std::string& spn,
-                                    const std::string& channel_bindings,
-                                    std::string* auth_token,
-                                    const NetLogWithSource& net_log,
-                                    CompletionOnceCallback /*callback*/) {
+int HttpAuthSSPI::SspiContext::GenerateTokenImpl(
+    const AuthCredentials* credentials,
+    const std::string& spn,
+    const std::string& channel_bindings,
+    const std::string& decoded_server_auth_token,
+    DelegationType delegation_type,
+    const NetLogWithSource& net_log,
+    std::string* auth_token) {
   // Initial challenge.
   if (!SecIsValidHandle(&cred_)) {
     // ParseChallenge fails early if a non-empty token is received on the first
     // challenge.
-    DCHECK(decoded_server_auth_token_.empty());
+    DCHECK(decoded_server_auth_token.empty());
     int rv = OnFirstRound(credentials, net_log);
-    if (rv != OK)
+    if (rv != OK) {
       return rv;
+    }
   }
 
   DCHECK(SecIsValidHandle(&cred_));
   void* out_buf;
   int out_buf_len;
   int rv = GetNextSecurityToken(
-      spn, channel_bindings,
-      static_cast<void*>(const_cast<char*>(decoded_server_auth_token_.c_str())),
-      decoded_server_auth_token_.length(), net_log, &out_buf, &out_buf_len);
-  if (rv != OK)
+      spn, channel_bindings, decoded_server_auth_token.data(),
+      decoded_server_auth_token.length(), delegation_type, net_log, &out_buf,
+      &out_buf_len);
+  if (rv != OK) {
     return rv;
+  }
 
   // Base64 encode data in output buffer and prepend the scheme.
   std::string encode_input(static_cast<char*>(out_buf), out_buf_len);
@@ -445,20 +516,111 @@ int HttpAuthSSPI::GenerateAuthToken(const AuthCredentials* credentials,
   return OK;
 }
 
-int HttpAuthSSPI::OnFirstRound(const AuthCredentials* credentials,
-                               const NetLogWithSource& net_log) {
+HttpAuthSSPI::HttpAuthSSPI(scoped_refptr<SSPILibrary> library,
+                           HttpAuth::Scheme scheme)
+    : library_(std::move(library)),
+      scheme_(scheme),
+      delegation_type_(DelegationType::kNone) {
+  DCHECK(library_);
+  DCHECK(scheme_ == HttpAuth::AUTH_SCHEME_NEGOTIATE ||
+         scheme_ == HttpAuth::AUTH_SCHEME_NTLM);
+}
+
+HttpAuthSSPI::~HttpAuthSSPI() = default;
+
+bool HttpAuthSSPI::Init(const NetLogWithSource&) {
+  return true;
+}
+
+bool HttpAuthSSPI::NeedsIdentity() const {
+  return decoded_server_auth_token_.empty();
+}
+
+bool HttpAuthSSPI::AllowsExplicitCredentials() const {
+  return true;
+}
+
+void HttpAuthSSPI::SetDelegation(DelegationType delegation_type) {
+  // Snapshotted when a token is generated, so changing it while a call is
+  // outstanding would silently apply only to the next round.
+  CHECK(callback_.is_null());
+  delegation_type_ = delegation_type;
+}
+
+void HttpAuthSSPI::SspiContext::ResetSecurityContext() {
+  if (SecIsValidHandle(&ctxt_)) {
+    library_->DeleteSecurityContext(&ctxt_);
+    SecInvalidateHandle(&ctxt_);
+  }
+}
+
+HttpAuth::AuthorizationResult HttpAuthSSPI::ParseChallenge(
+    HttpAuthChallengeTokenizer* tok) {
+  if (!has_security_context_) {
+    return ParseFirstRoundChallenge(scheme_, tok);
+  }
+  std::string encoded_auth_token;
+  return ParseLaterRoundChallenge(scheme_, tok, &encoded_auth_token,
+                                  &decoded_server_auth_token_);
+}
+
+int HttpAuthSSPI::GenerateAuthToken(const AuthCredentials* credentials,
+                                    const std::string& spn,
+                                    const std::string& channel_bindings,
+                                    std::string* auth_token,
+                                    const NetLogWithSource& net_log,
+                                    CompletionOnceCallback callback) {
+  DCHECK(auth_token);
+  DCHECK(!callback.is_null());
+  CHECK(callback_.is_null());
+
+  auth_token_ = auth_token;
+  callback_ = std::move(callback);
+
+  std::optional<AuthCredentials> credentials_copy;
+  if (credentials) {
+    credentials_copy = *credentials;
+  }
+
+  if (context_.is_null()) {
+    context_ = base::SequenceBound<SspiContext>(CreateSspiTaskRunner(),
+                                                library_, scheme_);
+  }
+
+  context_.AsyncCall(&SspiContext::GenerateToken)
+      .WithArgs(std::move(credentials_copy), spn, channel_bindings,
+                decoded_server_auth_token_, delegation_type_, net_log)
+      .Then(base::BindOnce(&HttpAuthSSPI::OnTokenGenerated,
+                           weak_factory_.GetWeakPtr()));
+  return ERR_IO_PENDING;
+}
+
+void HttpAuthSSPI::OnTokenGenerated(TokenResult result) {
+  DCHECK(!callback_.is_null());
+
+  has_security_context_ = result.has_security_context;
+  if (result.net_error == OK) {
+    *auth_token_ = std::move(result.auth_token);
+  }
+  auth_token_ = nullptr;
+
+  std::move(callback_).Run(result.net_error);
+}
+
+int HttpAuthSSPI::SspiContext::OnFirstRound(const AuthCredentials* credentials,
+                                            const NetLogWithSource& net_log) {
   DCHECK(!SecIsValidHandle(&cred_));
   int rv = OK;
   if (credentials) {
     std::u16string domain;
     std::u16string user;
     SplitDomainAndUser(credentials->username(), &domain, &user);
-    rv = AcquireExplicitCredentials(library_, domain, user,
+    rv = AcquireExplicitCredentials(library_.get(), domain, user,
                                     credentials->password(), net_log, &cred_);
     if (rv != OK)
       return rv;
   } else {
-    rv = AcquireDefaultCredentials(library_, net_log, &cred_);
+    rv = AcquireDefaultCredentials(library_.get(), net_log, &cred_);
     if (rv != OK)
       return rv;
   }
@@ -466,13 +628,15 @@ int HttpAuthSSPI::OnFirstRound(const AuthCredentials* credentials,
   return rv;
 }
 
-int HttpAuthSSPI::GetNextSecurityToken(const std::string& spn,
-                                       const std::string& channel_bindings,
-                                       const void* in_token,
-                                       int in_token_len,
-                                       const NetLogWithSource& net_log,
-                                       void** out_token,
-                                       int* out_token_len) {
+int HttpAuthSSPI::SspiContext::GetNextSecurityToken(
+    const std::string& spn,
+    const std::string& channel_bindings,
+    const void* in_token,
+    int in_token_len,
+    DelegationType delegation_type,
+    const NetLogWithSource& net_log,
+    void** out_token,
+    int* out_token_len) {
   ULONG max_token_length = 0;
   // Microsoft SDKs have a loose relationship with const.
   Error rv = library_->DetermineMaxTokenLength(&max_token_length);
@@ -546,7 +710,7 @@ int HttpAuthSSPI::GetNextSecurityToken(const std::string& spn,
   // ISC_REQ_MUTUAL_AUTH must also be set. On Windows delegation by KDC policy
   // is always respected.
   if (scheme_ == HttpAuth::AUTH_SCHEME_NEGOTIATE &&
-      delegation_type_ != DelegationType::kNone) {
+      delegation_type != DelegationType::kNone) {
     context_flags |= (ISC_REQ_DELEGATE | ISC_REQ_MUTUAL_AUTH);
   }
 
@@ -575,7 +739,7 @@ int HttpAuthSSPI::GetNextSecurityToken(const std::string& spn,
       nullptr);                        // ptsExpiry
   rv = MapInitializeSecurityContextStatusToError(status);
   net_log.EndEvent(NetLogEventType::AUTH_LIBRARY_INIT_SEC_CTX, [&] {
-    return InitializeSecurityContextParams(library_, &ctxt_, rv, status,
+    return InitializeSecurityContextParams(library_.get(), &ctxt_, rv, status,
                                            context_attributes);
   });
 

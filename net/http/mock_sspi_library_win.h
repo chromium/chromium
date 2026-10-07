@@ -17,7 +17,6 @@ namespace net {
 class MockSSPILibrary : public SSPILibrary {
  public:
   explicit MockSSPILibrary(const wchar_t* package);
-  ~MockSSPILibrary() override;
 
   // Default max token length regardless of package name returned by
   // QuerySecurityPackageInfo() if no expectations are set.
@@ -98,6 +97,9 @@ class MockSSPILibrary : public SSPILibrary {
   // |QuerySecurityPackageInfo()| is called.
   void ExpectQuerySecurityPackageInfo(SECURITY_STATUS response_code,
                                       PSecPkgInfoW package_info);
+
+ protected:
+  ~MockSSPILibrary() override;
 
  private:
   struct PackageQuery {

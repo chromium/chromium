@@ -62,10 +62,14 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
         features::kPartitionConnectionsByNetworkIsolationKey);
     network_anoymization_key_ = NetworkAnonymizationKey::CreateTransient();
 #if BUILDFLAG(IS_WIN)
-    auto auth_library =
-        std::make_unique<MockAuthLibrary>(const_cast<wchar_t*>(NEGOSSP_NAME));
-#else
+    auto auth_library = base::MakeRefCounted<MockAuthLibrary>(
+        const_cast<wchar_t*>(NEGOSSP_NAME));
+#elif BUILDFLAG(IS_ANDROID)
+    // MockAuthLibrary is DummySpnegoAuthenticator here, which is not an
+    // AuthLibrary and is not refcounted.
     auto auth_library = std::make_unique<MockAuthLibrary>();
+#else
+    auto auth_library = base::MakeRefCounted<MockAuthLibrary>();
 #endif
     auth_library_ = auth_library.get();
     resolver_ = std::make_unique<MockCachingHostResolver>(
@@ -278,6 +282,27 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
   raw_ptr<MockAuthLibrary> auth_library_;
 };
 
+#if BUILDFLAG(IS_WIN)
+// On Windows the SSPI calls run on a blocking sequence, so the handler must
+// report ERR_IO_PENDING to its caller rather than completing inline.
+TEST_F(HttpAuthHandlerNegotiateTest, GenerateAuthTokenIsAsync) {
+  SetupMocks(AuthLibrary());
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  ASSERT_EQ(
+      OK, CreateHandler(true, false, true, "http://alias:500", &auth_handler));
+  ASSERT_TRUE(auth_handler.get() != nullptr);
+
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  int rv = auth_handler->GenerateAuthToken(nullptr, &request_info,
+                                           callback.callback(), &token);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_THAT(callback.GetResult(rv), IsOk());
+  EXPECT_FALSE(token.empty());
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 TEST_F(HttpAuthHandlerNegotiateTest, DisableCname) {
   SetupMocks(AuthLibrary());
   std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
@@ -461,8 +486,8 @@ TEST_F(HttpAuthHandlerNegotiateTest, MissingGSSAPI) {
   auto negotiate_factory = std::make_unique<HttpAuthHandlerNegotiate::Factory>(
       HttpAuthMechanismFactory());
   negotiate_factory->set_http_auth_preferences(&http_auth_preferences);
-  negotiate_factory->set_library(
-      std::make_unique<GSSAPISharedLibrary>("/this/library/does/not/exist"));
+  negotiate_factory->set_library(base::MakeRefCounted<GSSAPISharedLibrary>(
+      "/this/library/does/not/exist"));
 
   url::SchemeHostPort scheme_host_port(GURL("http://www.example.com"));
   std::unique_ptr<HttpAuthHandler> generic_handler;
@@ -532,9 +557,9 @@ TEST_F(HttpAuthHandlerNegotiateTest, OverrideAuthSystem) {
   negotiate_factory->set_http_auth_preferences(http_auth_preferences());
 #if BUILDFLAG(IS_WIN)
   negotiate_factory->set_library(
-      std::make_unique<MockAuthLibrary>(NEGOSSP_NAME));
+      base::MakeRefCounted<MockAuthLibrary>(NEGOSSP_NAME));
 #elif !BUILDFLAG(IS_ANDROID)
-  negotiate_factory->set_library(std::make_unique<MockAuthLibrary>());
+  negotiate_factory->set_library(base::MakeRefCounted<MockAuthLibrary>());
 #endif
 
   url::SchemeHostPort scheme_host_port{GURL("http://www.example.com")};

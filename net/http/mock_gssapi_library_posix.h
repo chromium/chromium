@@ -64,7 +64,6 @@ class MockGSSAPILibrary : public GSSAPILibrary {
   };
 
   MockGSSAPILibrary();
-  ~MockGSSAPILibrary() override;
 
   // Establishes an expectation for a |init_sec_context()| call.
   //
@@ -188,6 +187,9 @@ class MockGSSAPILibrary : public GSSAPILibrary {
                             int* locally_initiated,
                             int* open) override;
   const std::string& GetLibraryNameForTesting() override;
+
+ protected:
+  ~MockGSSAPILibrary() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(HttpAuthGSSAPIPOSIXTest, GSSAPICycle);

@@ -47,8 +47,8 @@ class NET_EXPORT_PRIVATE HttpAuthMechanism {
   // callback.  Otherwise the result code is returned immediately from this
   // call.
   //
-  // If the AndroidAuthNegotiate object is deleted before completion then the
-  // callback will not be called.
+  // If the mechanism object is deleted before completion then the callback
+  // will not be called.
   //
   // If no immediate result is returned then |auth_token| must remain valid
   // until the callback has been called.

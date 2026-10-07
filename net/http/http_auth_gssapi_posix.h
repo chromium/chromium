@@ -10,6 +10,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/native_library.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -37,10 +38,9 @@ NET_EXPORT_PRIVATE extern gss_OID CHROME_GSS_SPNEGO_MECH_OID_DESC;
 // library. The default implementation attempts to load one of the standard
 // GSSAPI library implementations, then simply passes the arguments on to
 // that implementation.
-class NET_EXPORT_PRIVATE GSSAPILibrary {
+class NET_EXPORT_PRIVATE GSSAPILibrary
+    : public base::RefCountedThreadSafe<GSSAPILibrary> {
  public:
-  virtual ~GSSAPILibrary() = default;
-
   // Initializes the library, including any necessary dynamic libraries.
   // This is done separately from construction (which happens at startup time)
   // in order to delay work until the class is actually needed.
@@ -106,6 +106,10 @@ class NET_EXPORT_PRIVATE GSSAPILibrary {
       int* locally_initiated,
       int* open) = 0;
   virtual const std::string& GetLibraryNameForTesting() = 0;
+
+ protected:
+  friend class base::RefCountedThreadSafe<GSSAPILibrary>;
+  virtual ~GSSAPILibrary() = default;
 };
 
 // GSSAPISharedLibrary class is defined here so that unit tests can access it.
@@ -114,7 +118,6 @@ class NET_EXPORT_PRIVATE GSSAPISharedLibrary : public GSSAPILibrary {
   // If |gssapi_library_name| is empty, hard-coded default library names are
   // used.
   explicit GSSAPISharedLibrary(const std::string& gssapi_library_name);
-  ~GSSAPISharedLibrary() override;
 
   // GSSAPILibrary methods:
   bool Init(const NetLogWithSource& net_log) override;
@@ -169,6 +172,9 @@ class NET_EXPORT_PRIVATE GSSAPISharedLibrary : public GSSAPILibrary {
                             int* open) override;
   const std::string& GetLibraryNameForTesting() override;
 
+ protected:
+  ~GSSAPISharedLibrary() override;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(HttpAuthGSSAPIPOSIXTest, GSSAPIStartup);
 
@@ -222,8 +228,7 @@ class ScopedSecurityContext {
 // TODO(ahendrickson): Share code with HttpAuthSSPI.
 class NET_EXPORT_PRIVATE HttpAuthGSSAPI : public HttpAuthMechanism {
  public:
-  HttpAuthGSSAPI(GSSAPILibrary* library,
-                 const gss_OID gss_oid);
+  HttpAuthGSSAPI(scoped_refptr<GSSAPILibrary> library, const gss_OID gss_oid);
   ~HttpAuthGSSAPI() override;
 
   // HttpAuthMechanism implementation:
@@ -248,7 +253,7 @@ class NET_EXPORT_PRIVATE HttpAuthGSSAPI : public HttpAuthMechanism {
                            const NetLogWithSource& net_log);
 
   gss_OID gss_oid_;
-  raw_ptr<GSSAPILibrary> library_;
+  scoped_refptr<GSSAPILibrary> library_;
   std::string decoded_server_auth_token_;
   ScopedSecurityContext scoped_sec_context_;
   HttpAuth::DelegationType delegation_type_ = HttpAuth::DelegationType::kNone;

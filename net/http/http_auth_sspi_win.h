@@ -11,14 +11,20 @@
 #include <windows.h>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 
 // security.h needs to be included for CredHandle. Unfortunately CredHandle
 // is a typedef and can't be forward declared.
 #define SECURITY_WIN32 1
 #include <security.h>
 
+#include <optional>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
+#include "base/threading/sequence_bound.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
@@ -36,10 +42,10 @@ class HttpAuthChallengeTokenizer;
 // A single SSPILibrary can only be used with a single security package. Hence
 // the package is bound at construction time. Overridable SSPI methods exclude
 // the security package parameter since it is implicit.
-class NET_EXPORT_PRIVATE SSPILibrary {
+class NET_EXPORT_PRIVATE SSPILibrary
+    : public base::RefCountedThreadSafe<SSPILibrary> {
  public:
-  explicit SSPILibrary(const wchar_t* package) : package_name_(package) {}
-  virtual ~SSPILibrary() {}
+  explicit SSPILibrary(const wchar_t* package);
 
   // Determines the maximum token length in bytes for a particular SSPI package.
   //
@@ -94,19 +100,24 @@ class NET_EXPORT_PRIVATE SSPILibrary {
   virtual SECURITY_STATUS FreeContextBuffer(PVOID pvContextBuffer) = 0;
 
  protected:
+  friend class base::RefCountedThreadSafe<SSPILibrary>;
+  virtual ~SSPILibrary();
+
   // Security package used with DetermineMaxTokenLength(),
   // QuerySecurityPackageInfo(), AcquireCredentialsHandle(). All of these must
   // be consistent.
   const std::wstring package_name_;
-  ULONG max_token_length_ = 0;
 
-  bool is_supported_ = true;
+  // Written once by DetermineMaxTokenLength(), which may run concurrently on
+  // the per-handler SSPI sequences.
+  base::Lock lock_;
+  ULONG max_token_length_ GUARDED_BY(lock_) = 0;
+  bool is_supported_ GUARDED_BY(lock_) = true;
 };
 
 class SSPILibraryDefault : public SSPILibrary {
  public:
-  explicit SSPILibraryDefault(const wchar_t* package) : SSPILibrary(package) {}
-  ~SSPILibraryDefault() override {}
+  explicit SSPILibraryDefault(const wchar_t* package);
 
   SECURITY_STATUS AcquireCredentialsHandle(LPWSTR pszPrincipal,
                                            unsigned long fCredentialUse,
@@ -142,11 +153,15 @@ class SSPILibraryDefault : public SSPILibrary {
   SECURITY_STATUS DeleteSecurityContext(PCtxtHandle phContext) override;
 
   SECURITY_STATUS FreeContextBuffer(PVOID pvContextBuffer) override;
+
+ protected:
+  ~SSPILibraryDefault() override;
 };
 
 class NET_EXPORT_PRIVATE HttpAuthSSPI : public HttpAuthMechanism {
  public:
-  HttpAuthSSPI(SSPILibrary* sspi_library, HttpAuth::Scheme scheme);
+  HttpAuthSSPI(scoped_refptr<SSPILibrary> sspi_library,
+               HttpAuth::Scheme scheme);
   ~HttpAuthSSPI() override;
 
   // HttpAuthMechanism implementation:
@@ -164,25 +179,32 @@ class NET_EXPORT_PRIVATE HttpAuthSSPI : public HttpAuthMechanism {
   void SetDelegation(HttpAuth::DelegationType delegation_type) override;
 
  private:
-  int OnFirstRound(const AuthCredentials* credentials,
-                   const NetLogWithSource& net_log);
+  class SspiContext;
 
-  int GetNextSecurityToken(const std::string& spn,
-                           const std::string& channing_bindings,
-                           const void* in_token,
-                           int in_token_len,
-                           const NetLogWithSource& net_log,
-                           void** out_token,
-                           int* out_token_len);
+  struct TokenResult {
+    int net_error = OK;
+    std::string auth_token;
+    bool has_security_context = false;
+  };
 
-  void ResetSecurityContext();
+  void OnTokenGenerated(TokenResult result);
 
-  raw_ptr<SSPILibrary> library_;
+  // Created on first use; most handlers never generate a token.
+  base::SequenceBound<SspiContext> context_;
+  scoped_refptr<SSPILibrary> library_;
   HttpAuth::Scheme scheme_;
   std::string decoded_server_auth_token_;
-  CredHandle cred_;
-  CtxtHandle ctxt_;
   HttpAuth::DelegationType delegation_type_;
+
+  // Mirrors the validity of the CtxtHandle owned by `context_`, which cannot
+  // be inspected off the blocking sequence.
+  bool has_security_context_ = false;
+
+  // Valid only while a GenerateAuthToken() call is in flight.
+  raw_ptr<std::string> auth_token_ = nullptr;
+  CompletionOnceCallback callback_;
+
+  base::WeakPtrFactory<HttpAuthSSPI> weak_factory_{this};
 };
 
 // Splits |combined| into domain and username.

@@ -34,7 +34,7 @@ int HttpAuthHandlerNTLM::Factory::CreateAuthHandler(
   // TODO(cbentzel): Move towards model of parsing in the factory
   //                 method and only constructing when valid.
   auto tmp_handler = std::make_unique<HttpAuthHandlerNTLM>(
-      sspi_library_.get(), http_auth_preferences());
+      sspi_library_, http_auth_preferences());
   if (!tmp_handler->InitFromChallenge(challenge, target, ssl_info,
                                       network_anonymization_key, scheme_host_port,
                                       net_log))
@@ -44,9 +44,9 @@ int HttpAuthHandlerNTLM::Factory::CreateAuthHandler(
 }
 
 HttpAuthHandlerNTLM::HttpAuthHandlerNTLM(
-    SSPILibrary* sspi_library,
+    scoped_refptr<SSPILibrary> sspi_library,
     const HttpAuthPreferences* http_auth_preferences)
-    : mechanism_(sspi_library, HttpAuth::AUTH_SCHEME_NTLM),
+    : mechanism_(std::move(sspi_library), HttpAuth::AUTH_SCHEME_NTLM),
       http_auth_preferences_(http_auth_preferences) {}
 
 int HttpAuthHandlerNTLM::GenerateAuthTokenImpl(

@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/native_library.h"
 #include "base/path_service.h"
 #include "net/base/net_errors.h"
@@ -94,7 +95,7 @@ TEST(HttpAuthGSSAPIPOSIXTest, GSSAPIStartup) {
   // TODO(ahendrickson): Manipulate the libraries and paths to test each of the
   // libraries we expect, and also whether or not they have the interface
   // functions we want.
-  auto gssapi = std::make_unique<GSSAPISharedLibrary>(std::string());
+  auto gssapi = base::MakeRefCounted<GSSAPISharedLibrary>(std::string());
   DCHECK(gssapi.get());
   EXPECT_TRUE(
       gssapi.get()->Init(NetLogWithSource::Make(NetLogSourceType::NONE)));
@@ -120,7 +121,7 @@ TEST(HttpAuthGSSAPIPOSIXTest, CustomLibraryMissing) {
   RecordingNetLogObserver net_log_observer;
 
   auto gssapi =
-      std::make_unique<GSSAPISharedLibrary>("/this/library/does/not/exist");
+      base::MakeRefCounted<GSSAPISharedLibrary>("/this/library/does/not/exist");
   EXPECT_FALSE(
       gssapi.get()->Init(NetLogWithSource::Make(NetLogSourceType::NONE)));
 
@@ -139,7 +140,7 @@ TEST(HttpAuthGSSAPIPOSIXTest, CustomLibraryExists) {
   ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &module));
   auto basename = base::GetNativeLibraryName("test_gssapi");
   module = module.AppendASCII(basename);
-  auto gssapi = std::make_unique<GSSAPISharedLibrary>(module.value());
+  auto gssapi = base::MakeRefCounted<GSSAPISharedLibrary>(module.value());
   EXPECT_TRUE(
       gssapi.get()->Init(NetLogWithSource::Make(NetLogSourceType::NONE)));
 
@@ -160,7 +161,7 @@ TEST(HttpAuthGSSAPIPOSIXTest, CustomLibraryMethodsMissing) {
   ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &module));
   auto basename = base::GetNativeLibraryName("test_badgssapi");
   module = module.AppendASCII(basename);
-  auto gssapi = std::make_unique<GSSAPISharedLibrary>(module.value());
+  auto gssapi = base::MakeRefCounted<GSSAPISharedLibrary>(module.value());
 
   // Are you here because this test mysteriously passed even though the library
   // doesn't actually have all the methods we need? This could be because the
@@ -184,7 +185,7 @@ TEST(HttpAuthGSSAPIPOSIXTest, CustomLibraryMethodsMissing) {
 }
 
 TEST(HttpAuthGSSAPIPOSIXTest, GSSAPICycle) {
-  auto mock_library = std::make_unique<test::MockGSSAPILibrary>();
+  auto mock_library = base::MakeRefCounted<test::MockGSSAPILibrary>();
   DCHECK(mock_library.get());
   mock_library->Init(NetLogWithSource());
   const char kAuthResponse[] = "Mary had a little lamb";
@@ -268,8 +269,8 @@ TEST(HttpAuthGSSAPIPOSIXTest, GSSAPICycle) {
 
 TEST(HttpAuthGSSAPITest, ParseChallenge_FirstRound) {
   // The first round should just consist of an unadorned "Negotiate" header.
-  test::MockGSSAPILibrary mock_library;
-  HttpAuthGSSAPI auth_gssapi(&mock_library, CHROME_GSS_SPNEGO_MECH_OID_DESC);
+  auto mock_library = base::MakeRefCounted<test::MockGSSAPILibrary>();
+  HttpAuthGSSAPI auth_gssapi(mock_library, CHROME_GSS_SPNEGO_MECH_OID_DESC);
   HttpAuthChallengeTokenizer challenge("Negotiate");
   EXPECT_EQ(HttpAuth::AUTHORIZATION_RESULT_ACCEPT,
             auth_gssapi.ParseChallenge(&challenge));
@@ -279,14 +280,14 @@ TEST(HttpAuthGSSAPITest, ParseChallenge_TwoRounds) {
   RecordingNetLogObserver net_log_observer;
   // The first round should just have "Negotiate", and the second round should
   // have a valid base64 token associated with it.
-  test::MockGSSAPILibrary mock_library;
-  HttpAuthGSSAPI auth_gssapi(&mock_library, CHROME_GSS_SPNEGO_MECH_OID_DESC);
+  auto mock_library = base::MakeRefCounted<test::MockGSSAPILibrary>();
+  HttpAuthGSSAPI auth_gssapi(mock_library, CHROME_GSS_SPNEGO_MECH_OID_DESC);
   HttpAuthChallengeTokenizer first_challenge("Negotiate");
   EXPECT_EQ(HttpAuth::AUTHORIZATION_RESULT_ACCEPT,
             auth_gssapi.ParseChallenge(&first_challenge));
 
   // Generate an auth token and create another thing.
-  EstablishInitialContext(&mock_library);
+  EstablishInitialContext(mock_library.get());
   std::string auth_token;
   EXPECT_EQ(OK, auth_gssapi.GenerateAuthToken(
                     nullptr, "HTTP/intranet.google.com", std::string(),
@@ -315,8 +316,8 @@ TEST(HttpAuthGSSAPITest, ParseChallenge_TwoRounds) {
 TEST(HttpAuthGSSAPITest, ParseChallenge_UnexpectedTokenFirstRound) {
   // If the first round challenge has an additional authentication token, it
   // should be treated as an invalid challenge from the server.
-  test::MockGSSAPILibrary mock_library;
-  HttpAuthGSSAPI auth_gssapi(&mock_library, CHROME_GSS_SPNEGO_MECH_OID_DESC);
+  auto mock_library = base::MakeRefCounted<test::MockGSSAPILibrary>();
+  HttpAuthGSSAPI auth_gssapi(mock_library, CHROME_GSS_SPNEGO_MECH_OID_DESC);
   HttpAuthChallengeTokenizer challenge("Negotiate Zm9vYmFy");
   EXPECT_EQ(HttpAuth::AUTHORIZATION_RESULT_INVALID,
             auth_gssapi.ParseChallenge(&challenge));
@@ -325,13 +326,13 @@ TEST(HttpAuthGSSAPITest, ParseChallenge_UnexpectedTokenFirstRound) {
 TEST(HttpAuthGSSAPITest, ParseChallenge_MissingTokenSecondRound) {
   // If a later-round challenge is simply "Negotiate", it should be treated as
   // an authentication challenge rejection from the server or proxy.
-  test::MockGSSAPILibrary mock_library;
-  HttpAuthGSSAPI auth_gssapi(&mock_library, CHROME_GSS_SPNEGO_MECH_OID_DESC);
+  auto mock_library = base::MakeRefCounted<test::MockGSSAPILibrary>();
+  HttpAuthGSSAPI auth_gssapi(mock_library, CHROME_GSS_SPNEGO_MECH_OID_DESC);
   HttpAuthChallengeTokenizer first_challenge("Negotiate");
   EXPECT_EQ(HttpAuth::AUTHORIZATION_RESULT_ACCEPT,
             auth_gssapi.ParseChallenge(&first_challenge));
 
-  EstablishInitialContext(&mock_library);
+  EstablishInitialContext(mock_library.get());
   std::string auth_token;
   EXPECT_EQ(OK,
             auth_gssapi.GenerateAuthToken(
@@ -345,13 +346,13 @@ TEST(HttpAuthGSSAPITest, ParseChallenge_MissingTokenSecondRound) {
 TEST(HttpAuthGSSAPITest, ParseChallenge_NonBase64EncodedToken) {
   // If a later-round challenge has an invalid base64 encoded token, it should
   // be treated as an invalid challenge.
-  test::MockGSSAPILibrary mock_library;
-  HttpAuthGSSAPI auth_gssapi(&mock_library, CHROME_GSS_SPNEGO_MECH_OID_DESC);
+  auto mock_library = base::MakeRefCounted<test::MockGSSAPILibrary>();
+  HttpAuthGSSAPI auth_gssapi(mock_library, CHROME_GSS_SPNEGO_MECH_OID_DESC);
   HttpAuthChallengeTokenizer first_challenge("Negotiate");
   EXPECT_EQ(HttpAuth::AUTHORIZATION_RESULT_ACCEPT,
             auth_gssapi.ParseChallenge(&first_challenge));
 
-  EstablishInitialContext(&mock_library);
+  EstablishInitialContext(mock_library.get());
   std::string auth_token;
   EXPECT_EQ(OK,
             auth_gssapi.GenerateAuthToken(
@@ -419,8 +420,9 @@ TEST(HttpAuthGSSAPITest, GetGssStatusValue_NoLibrary) {
 }
 
 TEST(HttpAuthGSSAPITest, GetGssStatusValue_WithLibrary) {
-  test::MockGSSAPILibrary library;
-  auto actual = GetGssStatusValue(&library, "my_method", GSS_S_BAD_NAME, 1);
+  auto library = base::MakeRefCounted<test::MockGSSAPILibrary>();
+  auto actual =
+      GetGssStatusValue(library.get(), "my_method", GSS_S_BAD_NAME, 1);
   auto expected = base::JSONReader::Read(R"(
       {
         "function": "my_method",
@@ -440,9 +442,9 @@ TEST(HttpAuthGSSAPITest, GetGssStatusValue_WithLibrary) {
 }
 
 TEST(HttpAuthGSSAPITest, GetGssStatusValue_Multiline) {
-  test::MockGSSAPILibrary library;
+  auto library = base::MakeRefCounted<test::MockGSSAPILibrary>();
   auto actual = GetGssStatusValue(
-      &library, "my_method",
+      library.get(), "my_method",
       static_cast<OM_uint32>(
           test::MockGSSAPILibrary::DisplayStatusSpecials::MultiLine),
       0);
@@ -470,9 +472,9 @@ TEST(HttpAuthGSSAPITest, GetGssStatusValue_Multiline) {
 }
 
 TEST(HttpAuthGSSAPITest, GetGssStatusValue_InfiniteLines) {
-  test::MockGSSAPILibrary library;
+  auto library = base::MakeRefCounted<test::MockGSSAPILibrary>();
   auto actual = GetGssStatusValue(
-      &library, "my_method",
+      library.get(), "my_method",
       static_cast<OM_uint32>(
           test::MockGSSAPILibrary::DisplayStatusSpecials::InfiniteLines),
       0);
@@ -503,9 +505,9 @@ TEST(HttpAuthGSSAPITest, GetGssStatusValue_InfiniteLines) {
 }
 
 TEST(HttpAuthGSSAPITest, GetGssStatusValue_Failure) {
-  test::MockGSSAPILibrary library;
+  auto library = base::MakeRefCounted<test::MockGSSAPILibrary>();
   auto actual = GetGssStatusValue(
-      &library, "my_method",
+      library.get(), "my_method",
       static_cast<OM_uint32>(
           test::MockGSSAPILibrary::DisplayStatusSpecials::Fail),
       0);
@@ -526,9 +528,9 @@ TEST(HttpAuthGSSAPITest, GetGssStatusValue_Failure) {
 }
 
 TEST(HttpAuthGSSAPITest, GetGssStatusValue_EmptyMessage) {
-  test::MockGSSAPILibrary library;
+  auto library = base::MakeRefCounted<test::MockGSSAPILibrary>();
   auto actual = GetGssStatusValue(
-      &library, "my_method",
+      library.get(), "my_method",
       static_cast<OM_uint32>(
           test::MockGSSAPILibrary::DisplayStatusSpecials::EmptyMessage),
       0);
@@ -549,9 +551,9 @@ TEST(HttpAuthGSSAPITest, GetGssStatusValue_EmptyMessage) {
 }
 
 TEST(HttpAuthGSSAPITest, GetGssStatusValue_Misbehave) {
-  test::MockGSSAPILibrary library;
+  auto library = base::MakeRefCounted<test::MockGSSAPILibrary>();
   auto actual = GetGssStatusValue(
-      &library, "my_method",
+      library.get(), "my_method",
       static_cast<OM_uint32>(
           test::MockGSSAPILibrary::DisplayStatusSpecials::UninitalizedBuffer),
       0);
@@ -572,9 +574,9 @@ TEST(HttpAuthGSSAPITest, GetGssStatusValue_Misbehave) {
 }
 
 TEST(HttpAuthGSSAPITest, GetGssStatusValue_NotUtf8) {
-  test::MockGSSAPILibrary library;
+  auto library = base::MakeRefCounted<test::MockGSSAPILibrary>();
   auto actual = GetGssStatusValue(
-      &library, "my_method",
+      library.get(), "my_method",
       static_cast<OM_uint32>(
           test::MockGSSAPILibrary::DisplayStatusSpecials::InvalidUtf8),
       0);
@@ -602,9 +604,9 @@ TEST(HttpAuthGSSAPITest, GetContextStateAsValue_ValidContext) {
                                    /* ctx_flags= */ 0,
                                    /* locally_initiated= */ 1,
                                    /* open= */ 0};
-  test::MockGSSAPILibrary library;
+  auto library = base::MakeRefCounted<test::MockGSSAPILibrary>();
   auto actual = GetContextStateAsValue(
-      &library, reinterpret_cast<const gss_ctx_id_t>(&context));
+      library.get(), reinterpret_cast<const gss_ctx_id_t>(&context));
   auto expected = base::JSONReader::Read(R"(
       {
         "source": {
@@ -637,8 +639,8 @@ TEST(HttpAuthGSSAPITest, GetContextStateAsValue_ValidContext) {
 }
 
 TEST(HttpAuthGSSAPITest, GetContextStateAsValue_NoContext) {
-  test::MockGSSAPILibrary library;
-  auto actual = GetContextStateAsValue(&library, GSS_C_NO_CONTEXT);
+  auto library = base::MakeRefCounted<test::MockGSSAPILibrary>();
+  auto actual = GetContextStateAsValue(library.get(), GSS_C_NO_CONTEXT);
   auto expected = base::JSONReader::Read(R"(
       {
          "error": {

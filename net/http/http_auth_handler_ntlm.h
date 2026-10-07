@@ -68,16 +68,17 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNTLM : public HttpAuthHandler {
 #if defined(NTLM_SSPI)
     // Set the SSPILibrary to use. Typically the only callers which need to use
     // this are unit tests which pass in a mocked-out version of the SSPI
-    // library.  After the call |sspi_library| will be owned by this Factory and
-    // will be destroyed when the Factory is destroyed.
-    void set_sspi_library(std::unique_ptr<SSPILibrary> sspi_library) {
+    // library. Ownership is shared: SSPI calls run on a separate sequence and
+    // an in-flight call keeps |sspi_library| alive even if this Factory is
+    // destroyed.
+    void set_sspi_library(scoped_refptr<SSPILibrary> sspi_library) {
       sspi_library_ = std::move(sspi_library);
     }
 #endif  // defined(NTLM_SSPI)
 
    private:
 #if defined(NTLM_SSPI)
-    std::unique_ptr<SSPILibrary> sspi_library_;
+    scoped_refptr<SSPILibrary> sspi_library_;
 #endif  // defined(NTLM_SSPI)
   };
 
@@ -86,7 +87,7 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNTLM : public HttpAuthHandler {
       const HttpAuthPreferences* http_auth_preferences);
 #endif
 #if defined(NTLM_SSPI)
-  HttpAuthHandlerNTLM(SSPILibrary* sspi_library,
+  HttpAuthHandlerNTLM(scoped_refptr<SSPILibrary> sspi_library,
                       const HttpAuthPreferences* http_auth_preferences);
 #endif
 

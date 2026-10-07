@@ -643,8 +643,13 @@ ScopedSecurityContext::~ScopedSecurityContext() {
   }
 }
 
-HttpAuthGSSAPI::HttpAuthGSSAPI(GSSAPILibrary* library, gss_OID gss_oid)
-    : gss_oid_(gss_oid), library_(library), scoped_sec_context_(library) {
+HttpAuthGSSAPI::HttpAuthGSSAPI(scoped_refptr<GSSAPILibrary> library,
+                               gss_OID gss_oid)
+    : gss_oid_(gss_oid),
+      library_(std::move(library)),
+      // Safe: `library_` is declared before `scoped_sec_context_`, so it
+      // outlives the context it is borrowed by.
+      scoped_sec_context_(library_.get()) {
   DCHECK(library_);
 }
 
@@ -697,7 +702,7 @@ int HttpAuthGSSAPI::GenerateAuthToken(const AuthCredentials* credentials,
                           ? const_cast<char*>(decoded_server_auth_token_.data())
                           : nullptr;
   gss_buffer_desc output_token = GSS_C_EMPTY_BUFFER;
-  ScopedBuffer scoped_output_token(&output_token, library_);
+  ScopedBuffer scoped_output_token(&output_token, library_.get());
   int rv = GetNextSecurityToken(spn, channel_bindings, &input_token,
                                 &output_token, net_log);
   if (rv != OK)
@@ -852,12 +857,13 @@ int HttpAuthGSSAPI::GetNextSecurityToken(const std::string& spn,
       library_->import_name(&minor_status, &spn_buffer,
                             &kGSS_C_NT_HOSTBASED_SERVICE, &principal_name);
   net_log.AddEvent(NetLogEventType::AUTH_LIBRARY_IMPORT_NAME, [&] {
-    return ImportNameErrorParams(library_, spn, major_status, minor_status);
+    return ImportNameErrorParams(library_.get(), spn, major_status,
+                                 minor_status);
   });
   int rv = MapImportNameStatusToError(major_status);
   if (rv != OK)
     return rv;
-  ScopedName scoped_name(principal_name, library_);
+  ScopedName scoped_name(principal_name, library_.get());
 
   // Continue creating a security context.
   net_log.BeginEvent(NetLogEventType::AUTH_LIBRARY_INIT_SEC_CTX);
@@ -870,7 +876,7 @@ int HttpAuthGSSAPI::GetNextSecurityToken(const std::string& spn,
       nullptr,  // ret flags
       nullptr);
   net_log.EndEvent(NetLogEventType::AUTH_LIBRARY_INIT_SEC_CTX, [&] {
-    return InitSecContextErrorParams(library_, scoped_sec_context_.get(),
+    return InitSecContextErrorParams(library_.get(), scoped_sec_context_.get(),
                                      major_status, minor_status);
   });
   return MapInitSecContextStatusToError(major_status);
