@@ -8,6 +8,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
+import android.view.ContextThemeWrapper;
+
+import androidx.test.core.app.ApplicationProvider;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,21 +25,26 @@ import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.R;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Unit tests for {@link CompositorViewHolderSupplier}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CompositorViewHolderSupplierUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private CompositorViewHolder mCompositorViewHolder;
 
+    private CompositorViewHolder mCompositorViewHolder;
     private UnownedUserDataHost mUnownedUserDataHost;
 
     @Before
     public void setUp() {
+        Context context =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
+        mCompositorViewHolder = new CompositorViewHolder(context, null);
         mUnownedUserDataHost = new UnownedUserDataHost();
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mUnownedUserDataHost);
     }

@@ -19,8 +19,14 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.provider.Browser;
+import android.view.ContextThemeWrapper;
+import android.view.View;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Before;
@@ -39,6 +45,7 @@ import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -62,7 +69,6 @@ import java.util.Map;
 
 /** Unit test for {@link ReparentingTask}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ReparentingTaskUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -485,7 +491,14 @@ public class ReparentingTaskUnitTest {
         final WindowAndroid targetWindow = mock(WindowAndroid.class);
         final TabDelegateFactory targetTabDelegateFactory = mock(TabDelegateFactory.class);
         final Runnable finalizeCallback = mock(Runnable.class);
-        final CompositorViewHolder compositorViewHolder = mock(CompositorViewHolder.class);
+        final Context context =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
+        final CompositorViewHolder compositorViewHolder = new CompositorViewHolder(context, null);
+        final View compositorView = compositorViewHolder.getCompositorView();
+        // The view may already be white, so start from red to observe finish() changing it.
+        compositorView.setBackgroundColor(Color.RED);
         final ReparentingTask.Delegate delegate =
                 new ReparentingTask.Delegate() {
                     @Override
@@ -505,14 +518,20 @@ public class ReparentingTaskUnitTest {
                 };
 
         task.begin(mContext, intent, null, null);
+        assertEquals(Color.RED, getBackgroundColor(compositorView));
         task.finish(delegate, finalizeCallback);
 
         final InOrder inOrder = inOrder(mTab);
         inOrder.verify(mTab).updateAttachment(null, null);
         inOrder.verify(mTab).updateAttachment(targetWindow, targetTabDelegateFactory);
 
-        verify(compositorViewHolder).prepareForTabReparenting();
+        // finish() prepares the view for the reparented tab, which makes it white.
+        assertEquals(Color.WHITE, getBackgroundColor(compositorView));
         verify(mReparentingTaskNatives).attachTab(mWebContents);
         verify(finalizeCallback).run();
+    }
+
+    private static int getBackgroundColor(View view) {
+        return ((ColorDrawable) view.getBackground()).getColor();
     }
 }

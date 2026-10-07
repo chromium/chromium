@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.activity_recreation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
@@ -65,7 +66,6 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 
 /** Unit tests for {@link ActivityRecreationController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ActivityRecreationControllerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ToolbarManager mToolbarManager;
@@ -73,15 +73,15 @@ public class ActivityRecreationControllerUnitTest {
     @Mock private Handler mHandler;
     @Mock private Tab mActivityTab;
     @Mock private WebContents mWebContents;
-    @Mock private ContentView mContentView;
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock private Bundle mSavedInstanceState;
     @Mock private ExclusiveAccessManager mExclusiveAccessManager;
-    @Mock private View mSidePanelView;
     @Captor private ArgumentCaptor<LayoutStateObserver> mLayoutStateObserverCaptor;
     @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
     @Captor private ArgumentCaptor<AutocompleteInput> mAutocompleteInputCaptor;
 
+    private ContentView mContentView;
+    private View mSidePanelView;
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private ActivityRecreationController mActivityRecreationController;
     private @Nullable View mSidePanelContentView;
@@ -89,6 +89,10 @@ public class ActivityRecreationControllerUnitTest {
     @Before
     public void setUp() {
         Context context = ApplicationProvider.getApplicationContext();
+        mContentView = ContentView.createContentView(context, /* webContents= */ null);
+        mSidePanelView = new View(context);
+        // A detached view is in touch mode on newer SDKs.
+        mSidePanelView.setFocusableInTouchMode(true);
         ViewAndroidDelegate viewAndroidDelegate =
                 ViewAndroidDelegate.createBasicDelegate(mContentView);
         KeyboardVisibilityDelegate.setInstanceForTesting(mKeyboardVisibilityDelegate);
@@ -213,7 +217,7 @@ public class ActivityRecreationControllerUnitTest {
     public void testSaveUiState_sidePanelFocused() {
         Bundle bundle = new Bundle();
         mSidePanelContentView = mSidePanelView;
-        doReturn(true).when(mSidePanelView).hasFocus();
+        assertTrue(mSidePanelView.requestFocus());
         mActivityRecreationController.prepareUiState();
         mActivityRecreationController.saveUiState(bundle);
         ActivityRecreationUiState uiState = bundle.getParcelable(ACTIVITY_RECREATION_UI_STATE);
@@ -225,7 +229,7 @@ public class ActivityRecreationControllerUnitTest {
     public void testSaveUiState_sidePanelNotFocused() {
         Bundle bundle = new Bundle();
         mSidePanelContentView = mSidePanelView;
-        doReturn(false).when(mSidePanelView).hasFocus();
+        assertFalse(mSidePanelView.hasFocus());
         mActivityRecreationController.prepareUiState();
         mActivityRecreationController.saveUiState(bundle);
         ActivityRecreationUiState uiState = bundle.getParcelable(ACTIVITY_RECREATION_UI_STATE);
@@ -258,9 +262,9 @@ public class ActivityRecreationControllerUnitTest {
         doReturn(true).when(mLayoutManager).isLayoutVisible(LayoutType.BROWSING);
         mLayoutStateObserverCaptor.getValue().onFinishedShowing(LayoutType.BROWSING);
         verify(mHandler).post(mRunnableCaptor.capture());
-        verify(mSidePanelView, never()).requestFocus();
+        assertFalse(mSidePanelView.hasFocus());
         mRunnableCaptor.getValue().run();
-        verify(mSidePanelView).requestFocus();
+        assertTrue(mSidePanelView.hasFocus());
     }
 
     @Test

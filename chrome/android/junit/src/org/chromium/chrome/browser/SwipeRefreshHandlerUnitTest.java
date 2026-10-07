@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.Context;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,24 +45,42 @@ import java.util.Map;
 
 /** Unit tests for {@link SwipeRefreshHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SwipeRefreshHandlerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Tab mTab;
-    @Mock private ContentView mContentView;
     @Mock private SideUiStateProvider mSideUiStateProvider;
-    @Mock private SwipeRefreshLayout mSwipeRefreshLayout;
     @Mock private WebContents mWebContents;
 
     @Captor private ArgumentCaptor<SideUiObserver> mSideUiObserverCaptor;
 
+    private ContentView mContentView;
+    private TestSwipeRefreshLayout mSwipeRefreshLayout;
     private Activity mActivity;
+
+    /** Records the horizontal offsets, which SwipeRefreshLayout does not expose. */
+    private static class TestSwipeRefreshLayout extends SwipeRefreshLayout {
+        private int mLeftOffset;
+        private int mRightOffset;
+
+        TestSwipeRefreshLayout(Context context) {
+            super(context);
+        }
+
+        @Override
+        public void setHorizontalOffsets(int leftOffset, int rightOffset) {
+            super.setHorizontalOffsets(leftOffset, rightOffset);
+            mLeftOffset = leftOffset;
+            mRightOffset = rightOffset;
+        }
+    }
 
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mContentView = ContentView.createContentView(mActivity, /* webContents= */ null);
+        mSwipeRefreshLayout = new TestSwipeRefreshLayout(mActivity);
         when(mTab.getContext()).thenReturn(mActivity);
         when(mTab.getUserDataHost()).thenReturn(new UserDataHost());
         when(mTab.getContentView()).thenReturn(mContentView);
@@ -87,7 +107,7 @@ public class SwipeRefreshHandlerUnitTest {
         handler.initWebContents(mWebContents);
         handler.start(OverscrollAction.PULL_TO_REFRESH, BackGestureEventSwipeEdge.LEFT);
 
-        verify(mSwipeRefreshLayout).setHorizontalOffsets(120, 240);
+        assertHorizontalOffsets(120, 240);
     }
 
     @Test
@@ -113,7 +133,7 @@ public class SwipeRefreshHandlerUnitTest {
                         newSpecs,
                         UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
-        verify(mSwipeRefreshLayout).setHorizontalOffsets(150, 250);
+        assertHorizontalOffsets(150, 250);
     }
 
     @Test
@@ -134,12 +154,12 @@ public class SwipeRefreshHandlerUnitTest {
 
         handler.initWebContents(mWebContents);
         handler.start(OverscrollAction.PULL_TO_REFRESH, BackGestureEventSwipeEdge.LEFT);
-        verify(mSwipeRefreshLayout).setHorizontalOffsets(100, 200);
+        assertHorizontalOffsets(100, 200);
 
         handler.setSideUiStateProvider(null);
         assertNull(handler.getSideUiStateProviderForTesting());
         verify(mSideUiStateProvider).removeObserver(mSideUiObserverCaptor.getValue());
-        verify(mSwipeRefreshLayout).setHorizontalOffsets(0, 0);
+        assertHorizontalOffsets(0, 0);
     }
 
     @Test
@@ -160,12 +180,12 @@ public class SwipeRefreshHandlerUnitTest {
 
         handler.initWebContents(mWebContents);
         handler.start(OverscrollAction.PULL_TO_REFRESH, BackGestureEventSwipeEdge.LEFT);
-        verify(mSwipeRefreshLayout).setHorizontalOffsets(100, 200);
+        assertHorizontalOffsets(100, 200);
 
         handler.cleanupWebContents(mWebContents);
         assertNull(handler.getSideUiStateProviderForTesting());
         verify(mSideUiStateProvider).removeObserver(mSideUiObserverCaptor.getValue());
-        verify(mSwipeRefreshLayout).setHorizontalOffsets(0, 0);
+        assertHorizontalOffsets(0, 0);
     }
 
     @Test
@@ -178,5 +198,10 @@ public class SwipeRefreshHandlerUnitTest {
         handler.destroyInternal();
         assertNull(handler.getSideUiStateProviderForTesting());
         verify(mSideUiStateProvider).removeObserver(mSideUiObserverCaptor.getValue());
+    }
+
+    private void assertHorizontalOffsets(int left, int right) {
+        assertEquals(left, mSwipeRefreshLayout.mLeftOffset);
+        assertEquals(right, mSwipeRefreshLayout.mRightOffset);
     }
 }
