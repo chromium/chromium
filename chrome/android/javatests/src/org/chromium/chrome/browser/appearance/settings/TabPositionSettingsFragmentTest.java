@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -46,6 +47,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+import org.chromium.ui.base.DeviceInput;
 
 /** Tests for {@link TabPositionSettingsFragment}. */
 @Batch(Batch.PER_CLASS)
@@ -65,6 +67,7 @@ public class TabPositionSettingsFragmentTest {
 
     @Before
     public void setUp() {
+        DeviceInput.setSupportsPrecisionPointerForTesting(true);
         VerticalTabUtils.setIsVerticalTabsEligibleForTesting(true);
         VerticalTabUtils.setTabLayoutSwitchingInProgress(false);
         ThreadUtils.runOnUiThreadBlocking(
@@ -310,6 +313,7 @@ public class TabPositionSettingsFragmentTest {
     @Test
     @SmallTest
     public void testExpandOnHoverSwitch_VisibleOnlyWhenVertical() {
+        DeviceInfo.setIsDesktopForTesting(true);
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
         launchSettings();
@@ -351,6 +355,7 @@ public class TabPositionSettingsFragmentTest {
     @Test
     @SmallTest
     public void testExpandOnHoverSwitch_UpdatesAndFollowsPreference() {
+        DeviceInfo.setIsDesktopForTesting(true);
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
         ThreadUtils.runOnUiThreadBlocking(() -> VerticalTabUtils.setVerticalTabsEnabled(true));
@@ -382,6 +387,7 @@ public class TabPositionSettingsFragmentTest {
     @Test
     @SmallTest
     public void testSearchIndex_ExpandOnHoverSwitchIndexedWhenVertical() {
+        DeviceInfo.setIsDesktopForTesting(true);
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
         ThreadUtils.runOnUiThreadBlocking(() -> VerticalTabUtils.setVerticalTabsEnabled(true));
@@ -397,6 +403,7 @@ public class TabPositionSettingsFragmentTest {
     @Test
     @SmallTest
     public void testSearchIndex_ExpandOnHoverSwitchRemovedWhenHorizontal() {
+        DeviceInfo.setIsDesktopForTesting(true);
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
         SettingsIndexData indexData = mock(SettingsIndexData.class);

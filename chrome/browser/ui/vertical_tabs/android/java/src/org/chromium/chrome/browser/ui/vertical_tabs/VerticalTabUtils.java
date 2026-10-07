@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.components.browser_ui.styles.NewLabelUtils;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.DeviceInput;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -309,12 +310,18 @@ public class VerticalTabUtils {
      * Returns whether the expand-on-hover feature is available for Vertical Tabs, i.e. whether the
      * user can turn it on or off. Use {@link #isExpandOnHoverEnabled()} to check whether the rail
      * should actually expand on hover.
+     *
+     * <p>Requires a desktop device with a connected precision pointer (e.g. mouse or touchpad).
+     * Tablets are excluded even with a precision pointer, as some report built-in input devices as
+     * mice (e.g. Samsung's sec_touchpad), see https://crbug.com/41445959.
      */
     public static boolean isExpandOnHoverFeatureEnabled() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS,
-                "expand_on_hover",
-                /* defaultValue= */ false);
+        return DeviceInfo.isDesktop()
+                && DeviceInput.supportsPrecisionPointer()
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.ANDROID_VERTICAL_TABS,
+                        "expand_on_hover",
+                        /* defaultValue= */ false);
     }
 
     /**

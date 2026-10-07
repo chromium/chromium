@@ -43,6 +43,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -59,6 +60,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.Side
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.ViewUtils;
 
 import java.util.Map;
@@ -87,6 +89,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Before
     public void setUp() {
+        DeviceInput.setSupportsPrecisionPointerForTesting(true);
         mActivityController = Robolectric.buildActivity(Activity.class).setup();
         mActivity = mActivityController.get();
         mWideWindowWidth = ViewUtils.dpToPx(mActivity, 800);
@@ -803,8 +806,9 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
                 .apply();
     }
 
-    /** Enables expand-on-hover, keeping manual resize enabled. */
+    /** Enables expand-on-hover on a desktop device, keeping manual resize enabled. */
     private void enableExpandOnHover() {
+        DeviceInfo.setIsDesktopForTesting(true);
         FeatureOverrides.newBuilder()
                 .param(ChromeFeatureList.ANDROID_VERTICAL_TABS, "manual_resize", true)
                 .param(ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true)

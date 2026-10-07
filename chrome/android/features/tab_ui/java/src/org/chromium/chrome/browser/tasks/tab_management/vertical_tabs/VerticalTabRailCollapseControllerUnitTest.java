@@ -218,6 +218,32 @@ public class VerticalTabRailCollapseControllerUnitTest {
     }
 
     @Test
+    public void testExpandOnHoverSettingChanged_RequestsUpdateWhenStateUnchanged() {
+        mController.toggleCollapseState();
+        mController.setRailStateChangeDelegate(mMockDelegate);
+
+        // The collapsed rail stays collapsed, but Side UI is still updated, as the setting changes
+        // whether the rail can be manually resized.
+        mController.onExpandOnHoverSettingChanged();
+        assertEquals(RailCollapseState.COLLAPSED, mController.getEffectiveRailCollapseState());
+        verify(mMockDelegate).handleUserRequestedStateChange();
+    }
+
+    @Test
+    public void testExpandOnHoverSettingChanged_ClearsHover() {
+        mController.toggleCollapseState();
+        hoverInsideRail();
+        assertEquals(
+                RailCollapseState.EXPANDED_FOR_HOVERING,
+                mController.getEffectiveRailCollapseState());
+        mController.setRailStateChangeDelegate(mMockDelegate);
+
+        mController.onExpandOnHoverSettingChanged();
+        assertEquals(RailCollapseState.COLLAPSED, mController.getEffectiveRailCollapseState());
+        verify(mMockDelegate).handleUserRequestedStateChange();
+    }
+
+    @Test
     public void testHover_HoverEnterTrackedWhileForcedCollapsed() {
         mController.toggleCollapseState();
         mController.setWindowWidthBoundary(WindowWidthBoundary.FORCED_COLLAPSED);

@@ -270,12 +270,12 @@ class VerticalTabRailHoverController
      * Called when the user turns expand-on-hover on or off. When turned off, pointer events are no
      * longer tracked, so the rail is collapsed right away if it is expanded for hovering. This does
      * not wait for a context menu to be dismissed, as the setting is usually changed from one that
-     * is being dismissed. When turned on, the next hover event over the rail expands it.
+     * is being dismissed. When turned on, the next hover event over the rail expands it. Either
+     * way, Side UI is updated, as the setting changes whether the rail can be manually resized.
      */
     private void onExpandOnHoverSettingChanged() {
-        if (isTrackingPointer()) return;
         recordPointerState(PointerState.OUTSIDE);
-        mCollapseController.setHovering(false);
+        mCollapseController.onExpandOnHoverSettingChanged();
     }
 
     @PointerState

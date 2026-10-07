@@ -59,6 +59,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.util.ReflectionHelpers;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
@@ -156,6 +157,7 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityResultTracker;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
@@ -274,6 +276,7 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Before
     public void setUp() {
+        DeviceInput.setSupportsPrecisionPointerForTesting(true);
         FaviconHelperJni.setInstanceForTesting(mFaviconHelperJniMock);
         when(mFaviconHelperJniMock.init()).thenReturn(1L);
         SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mSendTabToSelfAndroidBridgeNatives);
@@ -718,6 +721,7 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     public void testCollapseButtonRightClick_ExpandOnHoverFeatureEnabled_ShowsMenu() {
+        DeviceInfo.setIsDesktopForTesting(true);
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
         createCoordinator();
@@ -1816,6 +1820,7 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     public void testExpandOrCollapseOnHover_DispatchesHoverEventsToController() {
+        DeviceInfo.setIsDesktopForTesting(true);
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
         createCoordinator();
@@ -1848,6 +1853,7 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     public void testExpandOrCollapseOnHover_IgnoresHoverOverCollapseButton() {
+        DeviceInfo.setIsDesktopForTesting(true);
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
         createCoordinator();
