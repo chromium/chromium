@@ -856,6 +856,21 @@ BUILDERS = {
       'device_os_flavor': 'google',
     },
   },
+  'android-pixel10_webview-perf-cq': {
+    'tests': [
+      {
+        'isolate': 'performance_webview_test_suite',
+      }
+    ],
+    'platform': 'android-webview-standalone-google',
+    'dimension': {
+      'pool': 'chrome.tests.perf-webview-pgo',
+      'os': 'Android',
+      'device_type': 'frankel',
+      'device_os': 'BP4A.260105.004.E1',
+      'device_os_flavor': 'google',
+    },
+  },
   'android-pixel10_webview-perf-pgo-heapdump': {
     'tests': [
       {

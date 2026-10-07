@@ -1198,6 +1198,13 @@ PLATFORM_INFO = {
     'platform_os': 'android',
     'is_fyi': False,
   },
+  'android-pixel10_webview-perf-cq': {
+    'description': 'Android B',
+    'num_shards': 2,
+    'platform_os': 'android',
+    'is_fyi': False,
+    'pinpoint_only': True,
+  },
   'android-pixel10_webview-perf-pgo-heapdump': {
     'description': 'Android B',
     'num_shards': 1,
