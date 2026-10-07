@@ -230,6 +230,10 @@ void WebUILocationBar::PropagateFocusRequest(
                        weak_ptr_factory_.GetWeakPtr(), target));
   } else if (toolbar_delegate_) {
     toolbar_delegate_->OnFocusRequested(target);
+    if (auto* web_view = toolbar_delegate_->GetInternalWebView();
+        web_view && web_view->HasFocus()) {
+      SetFocusWithin(true);
+    }
   }
 }
 
@@ -266,6 +270,9 @@ WebUILocationBar::OnOmniboxAction(
 }
 
 void WebUILocationBar::SetFocusWithin(bool focused) {
+  if (focus_within_ == focused) {
+    return;
+  }
   focus_within_ = focused;
 
   // Focus state affects whether AI mode button is visible or not.

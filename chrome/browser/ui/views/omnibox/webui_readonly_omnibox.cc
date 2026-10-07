@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -46,6 +47,9 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/touch_selection/touch_editing_controller.h"
+#include "ui/views/focus/focus_manager.h"
+#include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 WebUIReadOnlyOmnibox::UpdatePropagator::~UpdatePropagator() = default;
 
@@ -116,13 +120,8 @@ void WebUIReadOnlyOmnibox::OnTabChanged(content::WebContents* web_contents) {
   // views::WebView. In that case, make sure to restore it to the right-ish
   // element --- we sadly don't know what in the location bar was focused
   // exactly.
-  if (toolbar_delegate_) {  // null in some unit tests.
-    if (toolbar_delegate_->GetInternalWebView()->HasFocus()) {
-      SetFocusWithTarget(
-          toolbar_ui_api::mojom::FocusRequestTarget::kLocationBar);
-    } else {
-      OnBlur();
-    }
+  if (IsWebViewFocused()) {
+    SetFocusWithTarget(toolbar_ui_api::mojom::FocusRequestTarget::kLocationBar);
   }
 
   RequestUpdateWebUI();
@@ -579,6 +578,30 @@ void WebUIReadOnlyOmnibox::SetFocusWithTarget(
     toolbar_ui_api::mojom::FocusRequestTarget target) {
   update_propagator_->PropagateFocusRequest(target);
 
+  const bool full_popup_enabled = IsFullWebUIOmnibox();
+
+  // Without the full popup, PropagateFocusRequest() synchronously calls
+  // RequestFocus() on the toolbar's views::WebView, so focus will normally
+  // have landed by now. However, views::View::RequestFocus() is a silent no-op
+  // if the view isn't focusable (e.g. it isn't drawn because the toolbar is
+  // hidden, has no FocusManager, or the WebView has no/crashed WebContents),
+  // and `toolbar_delegate_` is null in some tests. Mirror OmniboxViewViews,
+  // where OnSetFocus() is only reached from OnFocus(), by only marking the edit
+  // model focused if focus actually landed. The WebUI's OnFocusChange() will
+  // still arrive later and is deduplicated via `has_focus_`.
+  if (!full_popup_enabled && !has_focus_ && IsWebViewFocused()) {
+    has_focus_ = true;
+    controller()->edit_model()->OnSetFocus(/*control_down=*/false);
+  }
+
+  // Restore caret visibility if focus is explicitly requested. This is
+  // necessary because if we already have invisible focus, OnSetFocus() is not
+  // reached above, preventing us from restoring visibility when the omnibox
+  // regains focus.
+  if (!full_popup_enabled) {
+    controller()->edit_model()->SetCaretVisibility(true);
+  }
+
   // If the user attempts to focus the omnibox, and the ctrl key is pressed, we
   // want to prevent ctrl-enter behavior until the ctrl key is released and
   // re-pressed. This occurs even if the omnibox is already focused and we
@@ -601,6 +624,25 @@ void WebUIReadOnlyOmnibox::ResetFormatting() {
 void WebUIReadOnlyOmnibox::ResetBrowserVersion() {
   ++browser_version_;
   ui_version_ = 0;
+}
+
+bool WebUIReadOnlyOmnibox::IsWebViewFocused() {
+  // `toolbar_delegate_` is null in some tests.
+  if (!toolbar_delegate_) {
+    return false;
+  }
+  views::View* web_view = toolbar_delegate_->GetInternalWebView();
+  return web_view && web_view->HasFocus();
+}
+
+bool WebUIReadOnlyOmnibox::IsToolbarViewOrDescendant(
+    const views::View* view) const {
+  if (!view || !toolbar_delegate_) {
+    return false;
+  }
+  const views::View* toolbar_view = toolbar_delegate_->GetView();
+  // Contains() returns true if `view` is `toolbar_view` itself.
+  return toolbar_view && toolbar_view->Contains(view);
 }
 
 void WebUIReadOnlyOmnibox::OnBlur() {
@@ -666,10 +708,25 @@ base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
 WebUIReadOnlyOmnibox::OnFocusChange(
     const toolbar_ui_api::mojom::OmniboxActionFocusChange& focus_change) {
   if (focus_change.has_focus) {
-    has_focus_ = true;
+    // Ignore stale focus notifications from the WebUI if the toolbar's view
+    // (or one of its descendants) doesn't actually hold Views focus.
+    if (toolbar_delegate_ && toolbar_delegate_->GetView()) {
+      views::Widget* widget = toolbar_delegate_->GetView()->GetWidget();
+      views::FocusManager* focus_manager =
+          widget ? widget->GetFocusManager() : nullptr;
+      if (focus_manager &&
+          !IsToolbarViewOrDescendant(focus_manager->GetFocusedView())) {
+        return base::ok(std::monostate());
+      }
+    }
 
-    // TODO(crbug.com/500653057): Key state, though Views impl doesn't have it.
-    controller()->edit_model()->OnSetFocus(/*control_down=*/false);
+    if (!has_focus_) {
+      has_focus_ = true;
+
+      // TODO(crbug.com/500653057): Key state, though Views impl doesn't have
+      // it.
+      controller()->edit_model()->OnSetFocus(/*control_down=*/false);
+    }
 
     // We ignore anything beyond focus update if the request is stale.
     if (focus_change.browser_version == browser_version_) {

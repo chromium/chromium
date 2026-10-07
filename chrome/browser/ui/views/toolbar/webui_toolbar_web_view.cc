@@ -1579,6 +1579,9 @@ void WebUIToolbarWebView::OnLhsChipsStateChanged(
 }
 
 void WebUIToolbarWebView::OnLocationBarFocusWithinChanged(bool focused) {
+  if (focused && (!web_view_ || !web_view_->HasFocus())) {
+    return;
+  }
   if (location_bar_) {
     location_bar_->SetFocusWithin(focused);
   }

@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -46,6 +47,15 @@ class TestLocationBarViewDelegate : public LocationBarView::Delegate {
 
  private:
   raw_ptr<LocationBarModel> model_;
+};
+
+class TestLocationBarObserver : public LocationBar::Observer {
+ public:
+  void OnLocationBarFocusChanged() override { focus_change_count_++; }
+  int focus_change_count() const { return focus_change_count_; }
+
+ private:
+  int focus_change_count_ = 0;
 };
 
 }  // namespace
@@ -424,4 +434,53 @@ TEST_F(WebUILocationBarTest,
       /*is_mouse_interaction=*/false,
       permission_dashboard()->indicator_chip()->state_token());
   EXPECT_TRUE(indicator_chip_clicked);
+}
+
+TEST_F(WebUILocationBarTest, SetFocusWithinDeduplication) {
+  TestLocationBarObserver observer;
+  base::ScopedObservation<LocationBar, LocationBar::Observer> observation(
+      &observer);
+  observation.Observe(location_bar_);
+
+  EXPECT_FALSE(location_bar_->IsFocusWithin());
+  EXPECT_EQ(0, observer.focus_change_count());
+
+  // First call to SetFocusWithin(true) notifies observer and sets
+  // focus_within_.
+  location_bar_->SetFocusWithin(true);
+  EXPECT_TRUE(location_bar_->IsFocusWithin());
+  EXPECT_EQ(1, observer.focus_change_count());
+
+  // Duplicate call to SetFocusWithin(true) short-circuits and does not
+  // re-notify.
+  location_bar_->SetFocusWithin(true);
+  EXPECT_TRUE(location_bar_->IsFocusWithin());
+  EXPECT_EQ(1, observer.focus_change_count());
+
+  // Call to SetFocusWithin(false) notifies observer and resets focus_within_.
+  location_bar_->SetFocusWithin(false);
+  EXPECT_FALSE(location_bar_->IsFocusWithin());
+  EXPECT_EQ(2, observer.focus_change_count());
+
+  // Duplicate call to SetFocusWithin(false) short-circuits.
+  location_bar_->SetFocusWithin(false);
+  EXPECT_FALSE(location_bar_->IsFocusWithin());
+  EXPECT_EQ(2, observer.focus_change_count());
+}
+
+TEST_F(WebUILocationBarTest,
+       OnLocationBarFocusWithinChangedIgnoredWhenWebViewNotFocused) {
+  // `toolbar_view_`'s web_view_ does not have focus.
+  EXPECT_FALSE(location_bar_->IsFocusWithin());
+
+  // An async IPC indicating focus within should be ignored if web_view_ is not
+  // focused.
+  toolbar_view_->OnLocationBarFocusWithinChanged(true);
+  EXPECT_FALSE(location_bar_->IsFocusWithin());
+
+  // Blur IPC should still be processed.
+  location_bar_->SetFocusWithin(true);
+  EXPECT_TRUE(location_bar_->IsFocusWithin());
+  toolbar_view_->OnLocationBarFocusWithinChanged(false);
+  EXPECT_FALSE(location_bar_->IsFocusWithin());
 }

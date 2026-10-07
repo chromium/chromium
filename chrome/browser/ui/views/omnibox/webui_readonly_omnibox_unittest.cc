@@ -12,8 +12,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/toolbar/mock_webui_toolbar_control_delegate.h"
@@ -52,6 +54,11 @@ using toolbar_ui_api::mojom::OmniboxTextColor;
 class TestUpdatePropagator : public WebUIReadOnlyOmnibox::UpdatePropagator {
  public:
   ~TestUpdatePropagator() override = default;
+
+  void set_toolbar_delegate(WebUIToolbarControlDelegate* toolbar_delegate) {
+    toolbar_delegate_ = toolbar_delegate;
+  }
+
   void PropagateOmniboxUpdate(
       toolbar_ui_api::mojom::OmniboxViewStatePtr update) override {
     state_ = std::move(update);
@@ -59,8 +66,15 @@ class TestUpdatePropagator : public WebUIReadOnlyOmnibox::UpdatePropagator {
 
   void PropagateApplyFocusRingToAimButton(bool force_focus) override {}
 
+  // Mirrors WebUILocationBar::PropagateFocusRequest() without the full popup:
+  // the request is forwarded to the toolbar delegate, which synchronously
+  // focuses the toolbar's WebView.
   void PropagateFocusRequest(
-      toolbar_ui_api::mojom::FocusRequestTarget target) override {}
+      toolbar_ui_api::mojom::FocusRequestTarget target) override {
+    if (toolbar_delegate_) {
+      toolbar_delegate_->OnFocusRequested(target);
+    }
+  }
 
   void OpenOmniboxIfFullPopup(bool query_zps) override {}
 
@@ -69,6 +83,7 @@ class TestUpdatePropagator : public WebUIReadOnlyOmnibox::UpdatePropagator {
   }
 
  private:
+  raw_ptr<WebUIToolbarControlDelegate> toolbar_delegate_ = nullptr;
   toolbar_ui_api::mojom::OmniboxViewStatePtr state_;
 };
 
@@ -158,6 +173,13 @@ void WebUIReadOnlyOmniboxTest::SetUp() {
       .WillByDefault(testing::Return(widget_->GetContentsView()));
   ON_CALL(mock_toolbar_delegate_, GetInternalWebView())
       .WillByDefault(testing::Return(widget_->GetContentsView()));
+  // Mirrors WebUIToolbarWebView::OnFocusRequested(), which focuses the
+  // toolbar's WebView in addition to forwarding the request to the WebUI.
+  ON_CALL(mock_toolbar_delegate_, OnFocusRequested(testing::_))
+      .WillByDefault([this](toolbar_ui_api::mojom::FocusRequestTarget) {
+        widget_->GetContentsView()->RequestFocus();
+      });
+  update_propagator_.set_toolbar_delegate(&mock_toolbar_delegate_);
 
   omnibox_view_ = std::make_unique<WebUIReadOnlyOmnibox>(
       /*location_bar=*/nullptr, &mock_toolbar_delegate_,
@@ -677,6 +699,92 @@ TEST_F(WebUIReadOnlyOmniboxTest, SaveStateToTabFocusState) {
       wc2_->GetUserData(OmniboxTabHelper::kOmniboxStateKey));
   ASSERT_TRUE(state2);
   EXPECT_EQ(OMNIBOX_FOCUS_VISIBLE, state2->model_state.focus_state);
+}
+
+TEST_F(WebUIReadOnlyOmniboxTest, SetFocusUpdatesEditModelSynchronously) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(omnibox::internal::kWebUIOmniboxFullPopup);
+
+  EXPECT_FALSE(omnibox_controller_->edit_model()->has_focus());
+
+  // If the focus request can't land on the web view (e.g. it isn't focusable
+  // because the toolbar is hidden), SetFocus() must not synchronously mark the
+  // edit model focused.
+  views::View* web_view = widget_->GetContentsView();
+  web_view->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+  omnibox_view_->SetFocus(/*is_user_initiated=*/false);
+  EXPECT_FALSE(web_view->HasFocus());
+  EXPECT_FALSE(omnibox_controller_->edit_model()->has_focus());
+  web_view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+
+  // Normally, SetFocus() synchronously focuses the web view via
+  // PropagateFocusRequest() and should update the edit model's focus state
+  // before the asynchronous Mojo OnFocusChange notification arrives (e.g.
+  // during tab switch focus restoration).
+  omnibox_view_->SetFocus(/*is_user_initiated=*/false);
+  EXPECT_TRUE(web_view->HasFocus());
+  EXPECT_TRUE(omnibox_controller_->edit_model()->has_focus());
+
+  // When the WebUI subsequently reports OnFocusChange(has_focus=true), the edit
+  // model remains focused without redundant focus state transitions.
+  EXPECT_TRUE(omnibox_view_
+                  ->OnOmniboxAction(
+                      toolbar_ui_api::mojom::OmniboxAction::NewFocusChange(
+                          toolbar_ui_api::mojom::OmniboxActionFocusChange::New(
+                              /*has_focus=*/true,
+                              /*request_clear_keyword=*/false,
+                              /*activate_default_search=*/false,
+                              /*start_zero_suggest=*/false,
+                              /*browser_version=*/0,
+                              /*selection=*/gfx::Range(0))))
+                  .has_value());
+  EXPECT_TRUE(omnibox_controller_->edit_model()->has_focus());
+
+  // Blurring resets the focus state.
+  widget_->GetFocusManager()->ClearFocus();
+  EXPECT_TRUE(omnibox_view_
+                  ->OnOmniboxAction(
+                      toolbar_ui_api::mojom::OmniboxAction::NewFocusChange(
+                          toolbar_ui_api::mojom::OmniboxActionFocusChange::New(
+                              /*has_focus=*/false,
+                              /*request_clear_keyword=*/false,
+                              /*activate_default_search=*/false,
+                              /*start_zero_suggest=*/false,
+                              /*browser_version=*/0,
+                              /*selection=*/gfx::Range(0))))
+                  .has_value());
+  EXPECT_FALSE(omnibox_controller_->edit_model()->has_focus());
+}
+
+TEST_F(WebUIReadOnlyOmniboxTest, SetFocusRestoresCaretVisibility) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(omnibox::internal::kWebUIOmniboxFullPopup);
+
+  // Ensure the internal web view is not focused so OnTabChanged() doesn't
+  // itself request focus.
+  widget_->GetFocusManager()->ClearFocus();
+
+  // Save invisible focus state (e.g. fakebox focus on NTP) to wc1_.
+  omnibox_controller_->edit_model()->OnSetFocus(/*control_down=*/false);
+  omnibox_controller_->edit_model()->SetCaretVisibility(false);
+  EXPECT_EQ(OMNIBOX_FOCUS_INVISIBLE,
+            omnibox_controller_->edit_model()->focus_state());
+  omnibox_view_->SaveStateToTab(wc1_);
+
+  // Simulate a tab switch away so the current focus state is cleared.
+  omnibox_controller_->edit_model()->OnKillFocus();
+  EXPECT_EQ(OMNIBOX_FOCUS_NONE,
+            omnibox_controller_->edit_model()->focus_state());
+
+  // Tab switch to a tab with invisible focus.
+  omnibox_view_->OnTabChanged(wc1_);
+  EXPECT_EQ(OMNIBOX_FOCUS_INVISIBLE,
+            omnibox_controller_->edit_model()->focus_state());
+
+  // Explicitly requesting focus restores caret visibility.
+  omnibox_view_->SetFocus(/*is_user_initiated=*/false);
+  EXPECT_EQ(OMNIBOX_FOCUS_VISIBLE,
+            omnibox_controller_->edit_model()->focus_state());
 }
 
 }  // namespace
