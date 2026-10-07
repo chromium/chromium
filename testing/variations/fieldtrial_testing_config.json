@@ -19477,6 +19477,24 @@
             ]
         }
     ],
+    "WebViewPrewarmDictionaryOnPreconnect": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_EventsOnly_20261007",
+                    "params": {
+                        "CleanupMode": "events_only"
+                    },
+                    "enable_features": [
+                        "WebViewPrewarmDictionaryOnPreconnect"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewProfileStoreNotTriggerStartup": [
         {
             "platforms": [
