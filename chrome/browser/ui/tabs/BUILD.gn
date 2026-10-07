@@ -997,7 +997,6 @@ if (!is_android) {
     sources = [
       "inactive_window_mouse_event_controller_unittest.cc",
       "split_view_iph_controller_unittest.cc",
-      "tab_collection_storage_unittest.cc",
       "tab_collection_unittest.cc",
       "tab_group_deletion_dialog_controller_unittest.cc",
       "tab_iterator_unittest.cc",

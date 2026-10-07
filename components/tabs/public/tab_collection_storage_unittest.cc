@@ -4,69 +4,60 @@
 
 #include "components/tabs/public/tab_collection_storage.h"
 
+#include <map>
 #include <memory>
+#include <string>
+#include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
-#include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
-#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/pinned_tab_collection.h"
 #include "components/tabs/public/tab_collection.h"
-#include "components/tabs/public/tab_group_tab_collection.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/tabs/public/unpinned_tab_collection.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace tabs {
 
 class TabCollectionStorageTest : public ::testing::Test {
  public:
   TabCollectionStorageTest() {
-    pinned_collection_ = std::make_unique<tabs::PinnedTabCollection>();
-    testing_profile_ = std::make_unique<TestingProfile>();
-    tab_strip_model_delegate_ = std::make_unique<TestTabStripModelDelegate>();
-    tab_strip_model_ = std::make_unique<TabStripModel>(
-        tab_strip_model_delegate_.get(), testing_profile_.get());
+    pinned_collection_ = std::make_unique<PinnedTabCollection>();
   }
   TabCollectionStorageTest(const TabCollectionStorageTest&) = delete;
   TabCollectionStorageTest& operator=(const TabCollectionStorageTest&) = delete;
   ~TabCollectionStorageTest() override { pinned_collection_.reset(); }
 
-  tabs::TabCollectionStorage* GetTabCollectionStorage() {
+  TabCollectionStorage* GetTabCollectionStorage() {
     return pinned_collection_->GetTabCollectionStorageForTesting();
   }
 
-  TabStripModel* GetTabStripModel() { return tab_strip_model_.get(); }
+  std::unique_ptr<MockTabInterface> CreateMockTab() {
+    return std::make_unique<MockTabInterface>();
+  }
 
   void AddTabs(int num) {
     for (int i = 0; i < num; i++) {
-      std::unique_ptr<tabs::TabModel> tab_model =
-          std::make_unique<tabs::TabModel>(MakeWebContents(),
-                                           GetTabStripModel());
-      tabs::TabModel* tab_model_ptr = tab_model.get();
+      std::unique_ptr<MockTabInterface> tab_model = CreateMockTab();
+      TabInterface* tab_model_ptr = tab_model.get();
 
-      tabs::TabInterface* inserted_tab_model_ptr =
-          GetTabCollectionStorage()->AddTab(
-              std::move(tab_model),
-              GetTabCollectionStorage()->GetChildrenCount());
+      TabInterface* inserted_tab_model_ptr = GetTabCollectionStorage()->AddTab(
+          std::move(tab_model), GetTabCollectionStorage()->GetChildrenCount());
       EXPECT_EQ(tab_model_ptr, inserted_tab_model_ptr);
       EXPECT_EQ(GetTabCollectionStorage()->GetIndexOfTab(tab_model_ptr),
                 GetTabCollectionStorage()->GetChildrenCount() - 1);
     }
   }
 
-  void SetTabID(tabs::TabInterface* tab_model, int id) {
+  void SetTabID(TabInterface* tab_model, int id) {
     std::string identifier =
         "T" + base::NumberToString(reinterpret_cast<uintptr_t>(tab_model));
     storage_children_to_id_map_[identifier] = "T" + base::NumberToString(id);
   }
 
-  void SetCollectionID(tabs::TabCollection* collection, int id) {
+  void SetCollectionID(TabCollection* collection, int id) {
     std::string identifier =
         "C" + base::NumberToString(reinterpret_cast<uintptr_t>(collection));
     storage_children_to_id_map_[identifier] = "C" + base::NumberToString(id);
@@ -77,14 +68,13 @@ class TabCollectionStorageTest : public ::testing::Test {
     int collection_i = 0;
     const auto& children = GetTabCollectionStorage()->GetChildren();
     for (const auto& child : children) {
-      if (std::holds_alternative<tabs::ScopedTab>(child)) {
-        SetTabID(std::get<tabs::ScopedTab>(child).get(), start + tab_i);
+      if (std::holds_alternative<ScopedTab>(child)) {
+        SetTabID(std::get<ScopedTab>(child).get(), start + tab_i);
         tab_i += 1;
-      } else if (std::holds_alternative<std::unique_ptr<tabs::TabCollection>>(
+      } else if (std::holds_alternative<std::unique_ptr<TabCollection>>(
                      child)) {
-        SetCollectionID(
-            std::get<std::unique_ptr<tabs::TabCollection>>(child).get(),
-            start + collection_i);
+        SetCollectionID(std::get<std::unique_ptr<TabCollection>>(child).get(),
+                        start + collection_i);
         collection_i += 1;
       }
     }
@@ -95,14 +85,14 @@ class TabCollectionStorageTest : public ::testing::Test {
     const auto& children = GetTabCollectionStorage()->GetChildren();
     for (const auto& child : children) {
       std::string identifier;
-      if (std::holds_alternative<tabs::ScopedTab>(child)) {
-        tabs::TabInterface* tab = std::get<tabs::ScopedTab>(child).get();
+      if (std::holds_alternative<ScopedTab>(child)) {
+        TabInterface* tab = std::get<ScopedTab>(child).get();
         identifier =
             "T" + base::NumberToString(reinterpret_cast<uintptr_t>(tab));
-      } else if (std::holds_alternative<std::unique_ptr<tabs::TabCollection>>(
+      } else if (std::holds_alternative<std::unique_ptr<TabCollection>>(
                      child)) {
-        tabs::TabCollection* collection =
-            std::get<std::unique_ptr<tabs::TabCollection>>(child).get();
+        TabCollection* collection =
+            std::get<std::unique_ptr<TabCollection>>(child).get();
         identifier =
             "C" + base::NumberToString(reinterpret_cast<uintptr_t>(collection));
       }
@@ -111,32 +101,19 @@ class TabCollectionStorageTest : public ::testing::Test {
     return ids;
   }
 
-  std::unique_ptr<content::WebContents> MakeWebContents() {
-    return content::WebContents::Create(
-        content::WebContents::CreateParams(testing_profile_.get()));
-  }
-
  private:
-  content::BrowserTaskEnvironment task_environment_;
-  content::RenderViewHostTestEnabler test_enabler_;
-  std::unique_ptr<Profile> testing_profile_;
-  std::unique_ptr<tabs::PinnedTabCollection> pinned_collection_;
-  std::unique_ptr<TestTabStripModelDelegate> tab_strip_model_delegate_;
-  std::unique_ptr<TabStripModel> tab_strip_model_;
+  std::unique_ptr<PinnedTabCollection> pinned_collection_;
   std::map<std::string, std::string> storage_children_to_id_map_;
-  const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
 };
 
 TEST_F(TabCollectionStorageTest, AddTabOperation) {
-  auto tab_model_one =
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel());
-  auto tab_model_two =
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel());
+  auto tab_model_one = CreateMockTab();
+  auto tab_model_two = CreateMockTab();
 
-  tabs::TabModel* tab_model_one_ptr = tab_model_one.get();
-  tabs::TabModel* tab_model_two_ptr = tab_model_two.get();
+  TabInterface* tab_model_one_ptr = tab_model_one.get();
+  TabInterface* tab_model_two_ptr = tab_model_two.get();
 
-  tabs::TabCollectionStorage* collection_storage = GetTabCollectionStorage();
+  TabCollectionStorage* collection_storage = GetTabCollectionStorage();
   collection_storage->AddTab(std::move(tab_model_one), 0);
 
   EXPECT_TRUE(collection_storage->ContainsTab(tab_model_one_ptr));
@@ -160,11 +137,10 @@ TEST_F(TabCollectionStorageTest, AddTabOperation) {
 }
 
 TEST_F(TabCollectionStorageTest, RemoveTabOperation) {
-  auto tab_model_one =
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel());
-  tabs::TabModel* tab_model_one_ptr = tab_model_one.get();
+  auto tab_model_one = CreateMockTab();
+  TabInterface* tab_model_one_ptr = tab_model_one.get();
 
-  tabs::TabCollectionStorage* collection_storage = GetTabCollectionStorage();
+  TabCollectionStorage* collection_storage = GetTabCollectionStorage();
 
   // Add four tabs
   AddTabs(4);
@@ -184,11 +160,10 @@ TEST_F(TabCollectionStorageTest, RemoveTabOperation) {
 }
 
 TEST_F(TabCollectionStorageTest, MoveTabOperation) {
-  auto tab_model_one =
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel());
-  tabs::TabModel* tab_model_one_ptr = tab_model_one.get();
+  auto tab_model_one = CreateMockTab();
+  TabInterface* tab_model_one_ptr = tab_model_one.get();
 
-  tabs::TabCollectionStorage* collection_storage = GetTabCollectionStorage();
+  TabCollectionStorage* collection_storage = GetTabCollectionStorage();
 
   // Add four tabs
   AddTabs(4);
@@ -215,27 +190,20 @@ TEST_F(TabCollectionStorageTest, MoveTabOperation) {
 
 // TODO(b/332586827): Re-enable death testing.
 TEST_F(TabCollectionStorageTest, DISABLED_InvalidArgumentsTabOperations) {
-  auto tab_model_one =
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel());
-  tabs::TabCollectionStorage* collection_storage = GetTabCollectionStorage();
-  std::unique_ptr<tabs::TabModel> empty_ptr;
+  auto tab_model_one = CreateMockTab();
+  TabCollectionStorage* collection_storage = GetTabCollectionStorage();
+  std::unique_ptr<MockTabInterface> empty_ptr;
 
-  EXPECT_DEATH_IF_SUPPORTED(
-      collection_storage->AddTab(std::make_unique<tabs::TabModel>(
-                                     MakeWebContents(), GetTabStripModel()),
-                                 10ul),
-      "");
+  EXPECT_DEATH_IF_SUPPORTED(collection_storage->AddTab(CreateMockTab(), 10ul),
+                            "");
   EXPECT_DEATH_IF_SUPPORTED(
       collection_storage->AddTab(std::move(empty_ptr), 1ul), "");
 
   EXPECT_DEATH_IF_SUPPORTED(
-      {
-        tabs::ScopedTab tab =
-            collection_storage->RemoveTab(tab_model_one.get());
-      },
+      { ScopedTab tab = collection_storage->RemoveTab(tab_model_one.get()); },
       "");
   EXPECT_DEATH_IF_SUPPORTED(
-      { tabs::ScopedTab tab = collection_storage->RemoveTab(nullptr); }, "");
+      { ScopedTab tab = collection_storage->RemoveTab(nullptr); }, "");
 
   EXPECT_DEATH_IF_SUPPORTED(
       collection_storage->MoveTab(tab_model_one.get(), 0ul), "");
@@ -246,14 +214,14 @@ TEST_F(TabCollectionStorageTest, DISABLED_InvalidArgumentsTabOperations) {
 }
 
 TEST_F(TabCollectionStorageTest, AddMixedTabAndCollectionOperation) {
-  auto tab_collection_one = std::make_unique<tabs::UnpinnedTabCollection>();
-  auto tab_collection_two = std::make_unique<tabs::UnpinnedTabCollection>();
+  auto tab_collection_one = std::make_unique<UnpinnedTabCollection>();
+  auto tab_collection_two = std::make_unique<UnpinnedTabCollection>();
 
-  tabs::TabCollection* tab_collection_one_ptr = tab_collection_one.get();
-  tabs::TabCollection* tab_collection_two_ptr = tab_collection_two.get();
+  TabCollection* tab_collection_one_ptr = tab_collection_one.get();
+  TabCollection* tab_collection_two_ptr = tab_collection_two.get();
 
   // This is the top level collection storage.
-  tabs::TabCollectionStorage* collection_storage = GetTabCollectionStorage();
+  TabCollectionStorage* collection_storage = GetTabCollectionStorage();
 
   collection_storage->AddCollection(std::move(tab_collection_one), 0);
 
@@ -280,14 +248,14 @@ TEST_F(TabCollectionStorageTest, AddMixedTabAndCollectionOperation) {
 }
 
 TEST_F(TabCollectionStorageTest, RemoveMixedTabAndCollectionOperation) {
-  auto tab_collection_one = std::make_unique<tabs::UnpinnedTabCollection>();
-  auto tab_collection_two = std::make_unique<tabs::UnpinnedTabCollection>();
+  auto tab_collection_one = std::make_unique<UnpinnedTabCollection>();
+  auto tab_collection_two = std::make_unique<UnpinnedTabCollection>();
 
-  tabs::TabCollection* tab_collection_one_ptr = tab_collection_one.get();
-  tabs::TabCollection* tab_collection_two_ptr = tab_collection_two.get();
+  TabCollection* tab_collection_one_ptr = tab_collection_one.get();
+  TabCollection* tab_collection_two_ptr = tab_collection_two.get();
 
   // This is the top level collection storage.
-  tabs::TabCollectionStorage* collection_storage = GetTabCollectionStorage();
+  TabCollectionStorage* collection_storage = GetTabCollectionStorage();
 
   // Add four more tabs.
   AddTabs(4);
@@ -312,17 +280,16 @@ TEST_F(TabCollectionStorageTest, RemoveMixedTabAndCollectionOperation) {
 }
 
 TEST_F(TabCollectionStorageTest, MoveMixedTabAndCollectionOperation) {
-  auto tab_model_one =
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel());
-  tabs::TabModel* tab_model_one_ptr = tab_model_one.get();
+  auto tab_model_one = CreateMockTab();
+  TabInterface* tab_model_one_ptr = tab_model_one.get();
 
-  auto tab_collection_one = std::make_unique<tabs::UnpinnedTabCollection>();
-  tabs::TabCollection* tab_collection_one_ptr = tab_collection_one.get();
+  auto tab_collection_one = std::make_unique<UnpinnedTabCollection>();
+  TabCollection* tab_collection_one_ptr = tab_collection_one.get();
 
-  auto tab_collection_two = std::make_unique<tabs::UnpinnedTabCollection>();
-  tabs::TabCollection* tab_collection_two_ptr = tab_collection_two.get();
+  auto tab_collection_two = std::make_unique<UnpinnedTabCollection>();
+  TabCollection* tab_collection_two_ptr = tab_collection_two.get();
 
-  tabs::TabCollectionStorage* collection_storage = GetTabCollectionStorage();
+  TabCollectionStorage* collection_storage = GetTabCollectionStorage();
 
   collection_storage->AddTab(std::move(tab_model_one), 0);
   AddTabs(4);
@@ -359,19 +326,20 @@ TEST_F(TabCollectionStorageTest, MoveMixedTabAndCollectionOperation) {
 
 namespace {
 
-class NonOwningTestTab : public tabs::MockTabInterface {
+class NonOwningTestTab : public MockTabInterface {
  public:
   NonOwningTestTab() {
     ON_CALL(*this, OnReparented)
-        .WillByDefault([this](tabs::TabCollection* parent,
-                              base::PassKey<tabs::TabCollection>) {
-          parent_collection_ = parent;
-        });
-    ON_CALL(*this, GetParentCollection(
-                       testing::An<base::PassKey<tabs::TabCollection>>()))
+        .WillByDefault(
+            [this](TabCollection* parent, base::PassKey<TabCollection>) {
+              parent_collection_ = parent;
+            });
+    ON_CALL(*this,
+            GetParentCollection(testing::An<base::PassKey<TabCollection>>()))
         .WillByDefault([this] { return parent_collection_; });
-    ON_CALL(*this, GetParentCollection())
-        .WillByDefault([this] { return parent_collection_; });
+    ON_CALL(*this, GetParentCollection()).WillByDefault([this] {
+      return parent_collection_;
+    });
   }
   ~NonOwningTestTab() override = default;
 
@@ -380,7 +348,7 @@ class NonOwningTestTab : public tabs::MockTabInterface {
   }
 
  private:
-  raw_ptr<tabs::TabCollection> parent_collection_ = nullptr;
+  raw_ptr<TabCollection> parent_collection_ = nullptr;
 };
 
 }  // namespace
@@ -390,9 +358,9 @@ TEST_F(TabCollectionStorageTest,
   NonOwningTestTab tab;
   EXPECT_EQ(tab.GetParentCollection(), nullptr);
 
-  auto pinned_collection = std::make_unique<tabs::PinnedTabCollection>();
-  tabs::TabCollection* pinned_collection_ptr = pinned_collection.get();
-  pinned_collection->AddTab(tabs::ScopedTab(&tab), 0);
+  auto pinned_collection = std::make_unique<PinnedTabCollection>();
+  TabCollection* pinned_collection_ptr = pinned_collection.get();
+  pinned_collection->AddTab(ScopedTab(&tab), 0);
   EXPECT_EQ(tab.GetParentCollection(), pinned_collection_ptr);
 
   // Destroy the collection holding the tab.
@@ -402,3 +370,5 @@ TEST_F(TabCollectionStorageTest,
   // surviving tabs (e.g. TabAndroid on Android) do not hold dangling pointers.
   EXPECT_EQ(tab.GetParentCollection(), nullptr);
 }
+
+}  // namespace tabs
