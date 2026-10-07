@@ -97,6 +97,7 @@ public class BottomBarMediator
     private @Nullable @ActionId Integer mResolvedCandidateExtraAction;
 
     // Mutable State (Primitive / Non-null)
+    private boolean mCandidateMetricsRecorded;
     private boolean mGlicWasVisible;
     private boolean mGlicTimeToAppearRecorded;
     private boolean mShouldHideForHub;
@@ -259,12 +260,20 @@ public class BottomBarMediator
         if (mDestroyed) return;
         Profile profile = mProfileSupplier.get();
         if (profile == null) {
+            mResolvedCandidateExtraAction = null;
+            updateObservers(/* originalProfile= */ null);
             setButtonVisibility(ActionId.GLIC, false);
             return;
         }
 
         Profile originalProfile = profile.getOriginalProfile();
         String country = mCountrySupplier.get();
+
+        if (mOriginalProfile != originalProfile) {
+            mResolvedCandidateExtraAction = null;
+            mCandidateMetricsRecorded = false;
+            updateObservers(originalProfile);
+        }
 
         if (mResolvedCandidateExtraAction == null) {
             // Check if prerequisites for resolution are satisfied.
@@ -280,16 +289,19 @@ public class BottomBarMediator
                     BottomBarActionEligibility.getCachedCandidateExtraAction();
             mResolvedCandidateExtraAction = candidateExtraAction;
             long decisionDuration = SystemClock.uptimeMillis() - startTime;
-            BottomBarMetrics.recordCandidateDecisionTime(decisionDuration);
-            BottomBarActionEligibility.recordGlicIneligibilityReasonIfNeeded(
-                    originalProfile, country);
+            if (!mCandidateMetricsRecorded) {
+                BottomBarMetrics.recordCandidateDecisionTime(decisionDuration);
+                BottomBarActionEligibility.recordGlicIneligibilityReasonIfNeeded(
+                        originalProfile, country);
 
-            @CandidateAction
-            int candidateMetric =
-                    candidateExtraAction != null && candidateExtraAction == ActionId.GLIC
-                            ? CandidateAction.GLIC
-                            : CandidateAction.NONE;
-            BottomBarMetrics.recordCandidateExtraAction(candidateMetric);
+                @CandidateAction
+                int candidateMetric =
+                        candidateExtraAction != null && candidateExtraAction == ActionId.GLIC
+                                ? CandidateAction.GLIC
+                                : CandidateAction.NONE;
+                BottomBarMetrics.recordCandidateExtraAction(candidateMetric);
+                mCandidateMetricsRecorded = true;
+            }
         }
 
         updateObservers(originalProfile);
@@ -313,7 +325,8 @@ public class BottomBarMediator
 
         String country = mCountrySupplier.get();
         boolean visible =
-                (GlicEnabling.isPolicyEnforced(originalProfile)
+                GlicEnabling.isEnabledForProfile(originalProfile)
+                        && (GlicEnabling.isPolicyEnforced(originalProfile)
                                 || BottomBarConfigUtils.isGlicButtonEnabled())
                         && BottomBarActionEligibility.isGlicAllowedInCountry(country);
 
@@ -331,45 +344,82 @@ public class BottomBarMediator
     }
 
     private void updateObservers(@Nullable Profile originalProfile) {
-        if (mOriginalProfile == originalProfile) {
-            return;
+        if (mOriginalProfile != originalProfile) {
+            if (mGlicKeyedService != null) {
+                mGlicKeyedService.removeAllowedChangedObserver(mAllowedChangedObserver);
+                mGlicKeyedService = null;
+            }
+            if (mObservingSharedPrefs) {
+                ContextUtils.getAppSharedPreferences()
+                        .unregisterOnSharedPreferenceChangeListener(this);
+                mObservingSharedPrefs = false;
+            }
+            mOriginalProfile = originalProfile;
         }
-        mOriginalProfile = originalProfile;
 
-        if (mGlicKeyedService != null) {
-            mGlicKeyedService.removeAllowedChangedObserver(mAllowedChangedObserver);
-            mGlicKeyedService = null;
-        }
-        if (mObservingSharedPrefs) {
-            ContextUtils.getAppSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
-            mObservingSharedPrefs = false;
+        if (originalProfile == null) {
+            return;
         }
 
         Integer candidateExtraAction = mResolvedCandidateExtraAction;
-        if (originalProfile == null || candidateExtraAction == null) {
-            return;
+        boolean isGlicCandidate =
+                candidateExtraAction != null && candidateExtraAction == ActionId.GLIC;
+        boolean shouldObserveGlicAllowed = isGlicCandidate;
+        if (!shouldObserveGlicAllowed && candidateExtraAction != null) {
+            String country = mCountrySupplier.get();
+            boolean isCountryKnownDisallowed =
+                    country != null
+                            && !country.isBlank()
+                            && !BottomBarActionEligibility.isGlicAllowedInCountry(country);
+            shouldObserveGlicAllowed =
+                    !GlicEnabling.isEnabledForProfile(originalProfile) && !isCountryKnownDisallowed;
+        }
+        if (shouldObserveGlicAllowed) {
+            if (mGlicKeyedService == null) {
+                mGlicKeyedService = GlicKeyedServiceFactory.getForProfile(originalProfile);
+                if (mGlicKeyedService != null) {
+                    mGlicKeyedService.addAllowedChangedObserver(mAllowedChangedObserver);
+                }
+            }
+        } else if (mGlicKeyedService != null) {
+            mGlicKeyedService.removeAllowedChangedObserver(mAllowedChangedObserver);
+            mGlicKeyedService = null;
         }
 
-        if (candidateExtraAction == ActionId.GLIC) {
-            GlicKeyedService glicKeyedService =
-                    GlicKeyedServiceFactory.getForProfile(originalProfile);
-            mGlicKeyedService = glicKeyedService;
-            if (mGlicKeyedService != null) {
-                mGlicKeyedService.addAllowedChangedObserver(mAllowedChangedObserver);
+        if (isGlicCandidate) {
+            if (!mObservingSharedPrefs) {
+                ContextUtils.getAppSharedPreferences()
+                        .registerOnSharedPreferenceChangeListener(this);
+                mObservingSharedPrefs = true;
             }
-            ContextUtils.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-            mObservingSharedPrefs = true;
+        } else if (mObservingSharedPrefs) {
+            ContextUtils.getAppSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+            mObservingSharedPrefs = false;
         }
     }
 
     private void onGlicAllowedChanged() {
+        if (mOriginalProfile == null) {
+            return;
+        }
+        if (mResolvedCandidateExtraAction == null
+                || mResolvedCandidateExtraAction != ActionId.GLIC) {
+            if (GlicEnabling.isEnabledForProfile(mOriginalProfile)) {
+                // Reset the candidate to null to force a re-evaluation to see if GLIC should now
+                // be promoted as the extra action, now that it is enabled for the profile.
+                mResolvedCandidateExtraAction = null;
+                updateExtraActionVisibility();
+            }
+            return;
+        }
         updateGlicVisibility(mOriginalProfile);
     }
 
     @Override
     public void onSharedPreferenceChanged(
             SharedPreferences sharedPreferences, @Nullable String key) {
-        if (ChromePreferenceKeys.BOTTOM_BAR_GLIC_BUTTON_ENABLED.equals(key)) {
+        if (ChromePreferenceKeys.BOTTOM_BAR_GLIC_BUTTON_ENABLED.equals(key)
+                && mOriginalProfile != null) {
             updateGlicVisibility(mOriginalProfile);
         }
     }
@@ -530,6 +580,7 @@ public class BottomBarMediator
             mGlicKeyedService.removeAllowedChangedObserver(mAllowedChangedObserver);
             mGlicKeyedService = null;
         }
+        mOriginalProfile = null;
 
         mOmniboxFocusStateSupplier.removeObserver(mOmniboxFocusObserver);
 

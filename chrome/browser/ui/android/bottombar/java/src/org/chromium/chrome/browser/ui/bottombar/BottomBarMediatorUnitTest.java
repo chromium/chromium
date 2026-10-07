@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -459,13 +460,84 @@ public class BottomBarMediatorUnitTest {
         GlicKeyedService.AllowedChangedObserver observer = mAllowedChangedObserverCaptor.getValue();
         assertNotNull(observer);
 
-        // User preference disabled or policy disallows -> GLIC hidden.
-        BottomBarConfigUtils.setGlicButtonEnabled(false);
+        // Policy or profile eligibility disallows GLIC -> GLIC hidden.
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
+        observer.onAllowedStateChanged();
+        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/true")
+    public void testProfileChanged_ReResolvesCandidateAndUpdatesObservers() {
+        when(mGlicEnablingJniMock.isEnabledForProfile(mProfile)).thenReturn(true);
+
+        createMediator();
+
+        // Verify initial state: GLIC is visible.
+        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, true);
+        verify(mGlicKeyedService).addAllowedChangedObserver(any());
+
+        // Transition through null: observers removed and GLIC hidden.
+        mProfileSupplier.set(null);
+        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, false);
+        verify(mGlicKeyedService).removeAllowedChangedObserver(any());
+
+        Profile newProfile = mock(Profile.class);
+        when(newProfile.getOriginalProfile()).thenReturn(newProfile);
+        when(mGlicEnablingJniMock.isEnabledForProfile(newProfile)).thenReturn(false);
+
+        GlicKeyedService newGlicKeyedService = mock(GlicKeyedService.class);
+        GlicKeyedServiceFactory.setForTesting(newGlicKeyedService);
+
+        mProfileSupplier.set(newProfile);
+
+        verify(mButtonManager, times(2)).setButtonVisibility(ActionId.GLIC, false);
+        verify(newGlicKeyedService).addAllowedChangedObserver(any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/true")
+    public void testGlicAllowedChanged_WhenGlicInitiallyDisabled_ShowsGlicWhenEnabled() {
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
+
+        createMediator();
+
+        // Verify initial state: GLIC is hidden.
         verify(mButtonManager).setButtonVisibility(ActionId.GLIC, false);
 
-        // Notify observer again when state changed.
+        verify(mGlicKeyedService)
+                .addAllowedChangedObserver(mAllowedChangedObserverCaptor.capture());
+        GlicKeyedService.AllowedChangedObserver observer = mAllowedChangedObserverCaptor.getValue();
+        assertNotNull(observer);
+
+        // GLIC becomes enabled for profile -> GLIC shown and cached as candidate extra action.
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
         observer.onAllowedStateChanged();
+        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, true);
+        assertEquals(
+                Integer.valueOf(ActionId.GLIC),
+                BottomBarActionEligibility.getCachedCandidateExtraAction());
+
+        // Disabling via SharedPreferences should hide the button (confirming listener was
+        // registered on candidate promotion).
+        BottomBarConfigUtils.setGlicButtonEnabled(false);
         verify(mButtonManager, times(2)).setButtonVisibility(ActionId.GLIC, false);
+    }
+
+    @Test
+    public void testGlicInitiallyDisabled_CountryResolvesToDisallowed_UnregistersObserver() {
+        mCountrySupplier = new OneshotSupplierImpl<>();
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
+
+        createMediator();
+
+        verify(mGlicKeyedService).addAllowedChangedObserver(any());
+
+        mCountrySupplier.set("fr");
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mGlicKeyedService).removeAllowedChangedObserver(any());
+        verify(mButtonManager, never()).setButtonVisibility(ActionId.GLIC, true);
     }
 
     @Test
@@ -577,6 +649,28 @@ public class BottomBarMediatorUnitTest {
                         BottomBarMetrics.CandidateAction.GLIC);
         createMediator();
         glicWatcher.assertExpected();
+    }
+
+    @Test
+    public void testCandidateExtraActionResolved_ProfileChanged_ReRecordsMetric() {
+        when(mGlicEnablingJniMock.isEnabledForProfile(mProfile)).thenReturn(true);
+        var initialWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.BottomBar.ExtraAction.CandidateResolved",
+                        BottomBarMetrics.CandidateAction.GLIC);
+        createMediator();
+        initialWatcher.assertExpected();
+
+        Profile newProfile = mock(Profile.class);
+        when(newProfile.getOriginalProfile()).thenReturn(newProfile);
+        when(mGlicEnablingJniMock.isEnabledForProfile(newProfile)).thenReturn(false);
+
+        var newProfileWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.BottomBar.ExtraAction.CandidateResolved",
+                        BottomBarMetrics.CandidateAction.NONE);
+        mProfileSupplier.set(newProfile);
+        newProfileWatcher.assertExpected();
     }
 
     @Test
