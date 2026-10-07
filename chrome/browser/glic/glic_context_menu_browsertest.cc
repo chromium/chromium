@@ -1139,6 +1139,35 @@ IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
+                       ItemPresentForTextSelectionAndSanitizesLabel) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+
+  content::ContextMenuParams params;
+  params.selection_text = u"  line1\u2028line2\r\nline3  ";
+  auto menu = CreateContextMenuWithParams(params);
+  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION));
+
+  auto index =
+      menu->GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION);
+  ASSERT_TRUE(index.has_value());
+  EXPECT_EQ(
+      index->first->GetLabelAt(index->second),
+      l10n_util::GetStringFUTF16(IDS_GLIC_CONTEXT_MENU_ASK_ABOUT_SELECTION,
+                                 u"line1 line2  line3"));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
+                       ItemAbsentInEditableField) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+
+  content::ContextMenuParams params;
+  params.selection_text = u"selected text";
+  params.is_editable = true;
+  EXPECT_FALSE(CreateContextMenuWithParams(params)->IsItemPresent(
+      IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
                        ItemPresentForImage) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
 

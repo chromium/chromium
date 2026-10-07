@@ -5800,8 +5800,12 @@ void RenderViewContextMenu::MaybeAppendGlicSmartSuggestionItem() {
   // A text selection takes precedence over an image.
   std::u16string label;
   if (has_selection) {
-    std::u16string printable_selection_text(
-        base::TrimWhitespace(PrintableSelectionText(), base::TRIM_ALL));
+    std::u16string printable_selection_text = PrintableSelectionText();
+    base::ReplaceChars(printable_selection_text,
+                       AutocompleteInput::kInvalidChars, u" ",
+                       &printable_selection_text);
+    base::TrimWhitespace(printable_selection_text, base::TRIM_ALL,
+                         &printable_selection_text);
     EscapeAmpersands(&printable_selection_text);
     label = l10n_util::GetStringFUTF16(
         IDS_GLIC_CONTEXT_MENU_ASK_ABOUT_SELECTION, printable_selection_text);
