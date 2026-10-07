@@ -940,39 +940,6 @@ suite('ComposeboxAutocomplete', () => {
     });
 
     test(
-        'Tab on last dropdown match unselects active match when flag enabled',
-        async () => {
-          element = createTestElement({unselectMatchOnTabExit: true});
-          await microtasksFinished();
-
-          const matchesElement = element.getDropdownElement();
-          const matches = [
-            {fillIntoEdit: 'match1', supportsDeletion: false} as
-                AutocompleteMatch,
-            {fillIntoEdit: 'match2', supportsDeletion: false} as
-                AutocompleteMatch,
-          ];
-          element.result = {input: 'm', matches} as AutocompleteResult;
-          await microtasksFinished();
-
-          matchesElement.selectNext();
-          matchesElement.selectNext();
-          assertEquals(1, matchesElement.selectedMatchIndex);
-
-          await microtasksFinished();
-          element.setActiveElement(matchesElement);
-
-          const tabEvent = new KeyboardEvent(
-              'keydown',
-              {key: 'Tab', bubbles: true, cancelable: true, composed: true});
-          matchesElement.dispatchEvent(tabEvent);
-          await microtasksFinished();
-
-          assertEquals(-1, matchesElement.selectedMatchIndex);
-          assertFalse(tabEvent.defaultPrevented);
-        });
-
-    test(
         'Tab in dropdown is ignored when key modifiers are active',
         async () => {
           element = createTestElement();

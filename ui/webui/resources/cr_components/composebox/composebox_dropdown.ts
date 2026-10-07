@@ -5,7 +5,6 @@
 import './composebox_match.js';
 
 import {assert} from '//resources/js/assert.js';
-import {hasKeyModifiers} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -14,7 +13,6 @@ import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebo
 
 import {getCss} from './composebox_dropdown.css.js';
 import {getHtml} from './composebox_dropdown.html.js';
-import type {ComposeboxMatchElement} from './composebox_match.js';
 
 // The '%' operator in JS returns negative numbers. This workaround avoids that.
 function remainder(lhs: number, rhs: number) {
@@ -169,22 +167,6 @@ export class ComposeboxDropdownElement extends CrLitElement {
     }
 
     this.selectedMatchIndex = remainder(next, maxVisibleIndex + 1);
-  }
-
-  /**
-   * Unselects the active match if a forward Tab event is about to move focus
-   * past the last visible dropdown match.
-   */
-  unselectOnTabExit(e: KeyboardEvent) {
-    if (hasKeyModifiers(e) || this.selectedMatchIndex < 0 ||
-        this.selectedMatchIndex !== this.getMaxVisibleIndex_()) {
-      return;
-    }
-    const matchEl = this.shadowRoot.querySelector<ComposeboxMatchElement>(
-        `#match${this.selectedMatchIndex}`);
-    if (matchEl?.willTabExitMatch()) {
-      this.unselect();
-    }
   }
 
   /**
