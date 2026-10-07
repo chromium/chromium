@@ -624,7 +624,10 @@ public class NativePageFactory {
             return null;
         }
         NativePage page;
-        if (candidatePage != null && url.equals(candidatePage.getUrl())) {
+        // A frozen page has no view, so it must never be reused. See crbug.com/568278676.
+        if (candidatePage != null
+                && !candidatePage.isFrozen()
+                && url.equals(candidatePage.getUrl())) {
             page = candidatePage;
         } else {
             page =
