@@ -23,12 +23,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
+import org.robolectric.ParameterizedRobolectricTestRunner;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -49,9 +51,25 @@ import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** Unit tests for {@link FullscreenSigninMediator}. */
-@RunWith(BaseRobolectricTestRunner.class)
+import java.util.Arrays;
+import java.util.Collection;
+
+/**
+ * Unit tests for {@link FullscreenSigninMediator}.
+ *
+ * <p>TODO(crbug.com/493130564): Revert to regular runner after
+ * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS launch.
+ */
+@RunWith(ParameterizedRobolectricTestRunner.class)
 public class FullscreenSigninMediatorTest {
+    @Rule(order = Rule.DEFAULT_ORDER - 1)
+    public final BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
+
+    @Parameters(name = "{index}_isIdentityMgr={0}")
+    public static Collection parameters() {
+        return Arrays.asList(false, true);
+    }
+
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
@@ -72,14 +90,20 @@ public class FullscreenSigninMediatorTest {
     private OneshotSupplierImpl<Boolean> mPolicyLoadListener = new OneshotSupplierImpl<>();
     private OneshotSupplierImpl<Boolean> mChildAccountStatusSupplier = new OneshotSupplierImpl<>();
     private final Promise<Void> mNativeInitializationPromise = new Promise<>();
+    private final boolean mIsIdentityManagerSourceOfAccounts;
 
     private FullscreenSigninMediator mMediator;
     private PropertyModel mModel;
 
+    public FullscreenSigninMediatorTest(boolean isIdentityManagerSourceOfAccounts) {
+        mIsIdentityManagerSourceOfAccounts = isIdentityManagerSourceOfAccounts;
+    }
+
     @Before
     public void setUp() {
         FeatureOverrides.overrideFlag(
-                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS, false);
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
+                mIsIdentityManagerSourceOfAccounts);
 
         IdentityServicesProvider.setSigninManagerForTesting(mSigninManagerMock);
         IdentityServicesProvider.setAccountPreviewDataServiceForTesting(

@@ -119,7 +119,6 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityManagerImpl;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.SigninMatchers;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -1486,13 +1485,13 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @SigninTestRule.BlockGetAccounts
     public void testFragmentWhenAccountsAreLoadedAfterChildStatusAndNativeAndPolicy() {
-        FakeAccountManagerFacade.UpdateBlocker blocker = mSigninTestRule.blockGetAccountsUpdate();
         launchActivityWithFragment();
         checkFragmentWhenLoading();
 
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
-        blocker.close();
+        mSigninTestRule.unblockGetAccounts();
         checkFragmentWithSelectedAccount(TestAccounts.ACCOUNT1, LoadPoint.ACCOUNT_FETCHING);
     }
 

@@ -27,7 +27,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
 import org.chromium.chrome.browser.signin.services.AccountPreviewPreference;
 import org.chromium.chrome.browser.signin.services.BadgeConfig;
@@ -55,7 +54,6 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
-import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
@@ -77,15 +75,13 @@ import org.chromium.ui.util.TokenHolder;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 @NullMarked
 public class FullscreenSigninMediator
-        implements AccountsChangeObserver,
-                ProfileDataCache.Observer,
-                AccountPickerCoordinator.Listener,
-                UMADialogCoordinator.Listener {
+        implements AccountPickerCoordinator.Listener, UMADialogCoordinator.Listener {
     private static final String TAG = "SigninFRMediator";
 
     private static final int SIGNIN_ANIMATION_DELAY_MS = 600;
@@ -129,6 +125,12 @@ public class FullscreenSigninMediator
     // to the small (40dp) button size would make the child account badge unreadable.
     private @Nullable ProfileDataCache mContinueButtonProfileDataCache;
     private @Nullable ProfileDataCache mSigninAnimationProfileDataCache;
+    // Both caches hold the same accounts, so only the continue button cache is observed for
+    // account list changes. The animation cache is observed for profile data only.
+    private final ProfileDataCache.Observer mContinueButtonObserver =
+            new ContinueButtonProfileDataCacheObserver();
+    private final ProfileDataCache.Observer mSigninAnimationObserver =
+            new SigninAnimationProfileDataCacheObserver();
     private boolean mDestroyed;
 
     /** Whether the initial load phase has been completed. See {@link #onInitialLoadCompleted}. */
@@ -139,7 +141,7 @@ public class FullscreenSigninMediator
     private @Nullable CoreAccountInfo mDefaultAccount;
     private @Nullable CoreAccountInfo mAddedAccount;
     // This field is used to save the added account email while the account info becomes available
-    // in AccountManagerFacade for sign-in.
+    // on device for sign-in.
     private @Nullable String mPendingSelectedAccountEmail;
     private boolean mAllowMetricsAndCrashUploading;
     private boolean mIsSigninSupported;
@@ -163,9 +165,13 @@ public class FullscreenSigninMediator
         mConfig = config;
         mPendingSelectedAccountEmail = mConfig.selectedAccountEmail;
 
+        boolean isNativeLoaded = mDelegate.getNativeInitializationPromise().isFulfilled();
+        if (isNativeLoaded) {
+            initializeProfileDataCache();
+        }
         mInitialLoadCompleted =
-                mDelegate.getNativeInitializationPromise().isFulfilled()
-                        && mAccountManagerFacade.getAccounts().isFulfilled()
+                isNativeLoaded
+                        && areAccountsLoaded()
                         && mDelegate.getChildAccountStatusSupplier().get() != null
                         && mDelegate.getPolicyLoadListener().get() != null;
         mModel =
@@ -196,9 +202,6 @@ public class FullscreenSigninMediator
                     .onAvailable(ignored -> onChildAccountStatusAvailable());
         }
 
-        mAccountManagerFacade.addObserver(this);
-        updateAccounts(
-                AccountUtils.getAccountsIfFulfilledOrEmpty(mAccountManagerFacade.getAccounts()));
         SigninMetricsUtils.logSigninStarted(accessPoint);
     }
 
@@ -229,16 +232,15 @@ public class FullscreenSigninMediator
     void destroy() {
         assert !mDestroyed;
         if (mContinueButtonProfileDataCache != null) {
-            mContinueButtonProfileDataCache.removeObserver(this);
+            mContinueButtonProfileDataCache.removeObserver(mContinueButtonObserver);
         }
         if (mSigninAnimationProfileDataCache != null) {
-            mSigninAnimationProfileDataCache.removeObserver(this);
+            mSigninAnimationProfileDataCache.removeObserver(mSigninAnimationObserver);
         }
         if (mForcedSigninStatusProvider != null) {
             mForcedSigninStatusProvider.hideForcedSigninScreen(mForcedSigninToken);
             mForcedSigninToken = TokenHolder.INVALID_TOKEN;
         }
-        mAccountManagerFacade.removeObserver(this);
         mDestroyed = true;
     }
 
@@ -255,6 +257,9 @@ public class FullscreenSigninMediator
         if (mDestroyed) return;
 
         mDelegate.recordNativeInitializedHistogram();
+        if (mContinueButtonProfileDataCache == null) {
+            initializeProfileDataCache();
+        }
         checkWhetherInitialLoadCompleted(LoadPoint.NATIVE_INITIALIZATION);
     }
 
@@ -273,12 +278,12 @@ public class FullscreenSigninMediator
         if (mDestroyed) return;
 
         // The initialization flow requires native to be ready before the initial loading spinner
-        // can be hidden.
-        if (!mDelegate.getNativeInitializationPromise().isFulfilled()) return;
+        // can be hidden. The caches are created once native is ready, in onNativeLoaded().
+        if (mContinueButtonProfileDataCache == null) return;
 
         // We need the account fetching to be complete before we can hide the initial loading
         // spinner.
-        if (!mAccountManagerFacade.getAccounts().isFulfilled()) return;
+        if (!areAccountsLoaded()) return;
 
         if (mDelegate.getChildAccountStatusSupplier().get() != null
                 && mDelegate.getPolicyLoadListener().get() != null
@@ -307,12 +312,13 @@ public class FullscreenSigninMediator
         if (mDestroyed) return;
 
         Log.i(TAG, "#onInitialLoadCompleted() hasPolicies:" + hasPolicies);
-        Profile profile = assumeNonNull(mDelegate.getProfileSupplier().get()).getOriginalProfile();
+        Profile profile = getProfile();
+        List<AccountInfo> accounts = getAccounts();
+        updateAccounts(accounts);
         mSigninManager = assertNonNull(IdentityServicesProvider.get().getSigninManager(profile));
         mAccountPreviewDataService =
                 IdentityServicesProvider.get().getAccountPreviewDataService(profile);
         mForcedSigninStatusProvider = ForcedSigninStatusProvider.getForProfile(profile);
-        initializeProfileDataCache(profile);
 
         // If no account was preselected or just added, set the preferred account as default
         // before showing the UI. This is necessary to override the previously selected account
@@ -321,8 +327,6 @@ public class FullscreenSigninMediator
         if (mConfig.selectedAccountEmail == null
                 && mPendingSelectedAccountEmail == null
                 && mAddedAccount == null) {
-            List<AccountInfo> accounts =
-                    AccountUtils.getAccountsIfFulfilledOrEmpty(mAccountManagerFacade.getAccounts());
             if (!accounts.isEmpty()) {
                 accountPreference = getValidAccountPreference(accounts);
                 if (accountPreference != null) {
@@ -369,10 +373,10 @@ public class FullscreenSigninMediator
         mModel.set(FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER, false);
 
         // Apply supervised account properties
+        // TODO(crbug.com/485515355): Read the capability from the AccountInfo that IdentityManager
+        // provides, rather than from AccountManagerFacade.
         AccountUtils.checkIsSubjectToParentalControls(
-                mAccountManagerFacade,
-                AccountUtils.getAccountsIfFulfilledOrEmpty(mAccountManagerFacade.getAccounts()),
-                this::onChildAccountStatusReady);
+                mAccountManagerFacade, accounts, this::onChildAccountStatusReady);
 
         // Directly start the flow to add a selected account if it is specified in the config for
         // signin and does not already exist on the device.
@@ -380,15 +384,20 @@ public class FullscreenSigninMediator
         mDelegate.onInitialLoadCompleted();
     }
 
-    private void initializeProfileDataCache(Profile profile) {
+    /**
+     * Creates the caches, which provide account list changes as well as profile images and badges.
+     * Called once, after native is initialized. Before that, the initial load spinner covers the
+     * UI, so accounts are not needed.
+     */
+    private void initializeProfileDataCache() {
+        assert mDelegate.getNativeInitializationPromise().isFulfilled();
         assert mContinueButtonProfileDataCache == null;
         assert mSigninAnimationProfileDataCache == null;
-        IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(profile);
+        IdentityManager identityManager = getIdentityManager();
+
         mContinueButtonProfileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
-                        mContext, assertNonNull(identityManager));
-        mContinueButtonProfileDataCache.addObserver(this);
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext, identityManager);
+        mContinueButtonProfileDataCache.addObserver(mContinueButtonObserver);
         // Create a separate cache for the sign-in animation. We use the logo height (110dp)
         // to ensure the profile picture is high-resolution when it replaces the Chrome logo.
         // A separate cache is used because scaling a 110dp image back down to 40dp for the
@@ -396,7 +405,7 @@ public class FullscreenSigninMediator
         mSigninAnimationProfileDataCache =
                 ProfileDataCache.createWithoutBadge(
                         mContext, identityManager, R.dimen.fullscreen_signin_logo_default_height);
-        mSigninAnimationProfileDataCache.addObserver(this);
+        mSigninAnimationProfileDataCache.addObserver(mSigninAnimationObserver);
         updateSelectedAccountData();
     }
 
@@ -486,8 +495,7 @@ public class FullscreenSigninMediator
     }
 
     void onAccountAdded(String accountEmail) {
-        var accounts =
-                AccountUtils.getAccountsIfFulfilledOrEmpty(mAccountManagerFacade.getAccounts());
+        var accounts = getAccountsIfLoadedOrEmpty();
         mAddedAccount = AccountUtils.findAccountByEmail(accounts, accountEmail);
         if (mAddedAccount == null) {
             mPendingSelectedAccountEmail = accountEmail;
@@ -505,22 +513,33 @@ public class FullscreenSigninMediator
         mDelegate.abortFlow();
     }
 
-    /** Implements {@link ProfileDataCache.Observer}. */
-    @Override
-    public void onProfileDataUpdated(DisplayableProfileData profileData) {
-        if (mSelectedAccount != null
-                && TextUtils.equals(mSelectedAccount.getEmail(), profileData.getAccountEmail())) {
-            updateSelectedAccountData();
+    /** Observes the continue button cache for both account list and profile data changes. */
+    private class ContinueButtonProfileDataCacheObserver implements ProfileDataCache.Observer {
+        @Override
+        public void onAccountsUpdated(List<DisplayableProfileData> accounts) {
+            updateAccountsAndCheck(getAccountsIfLoadedOrEmpty());
+        }
+
+        @Override
+        public void onProfileDataUpdated(DisplayableProfileData profileData) {
+            if (mSelectedAccount != null
+                    && mSelectedAccount.getId().equals(profileData.getAccountId())) {
+                updateSelectedAccountData();
+            }
         }
     }
 
-    /** Implements {@link AccountsChangeObserver}. */
-    @Override
-    public void onAccountsChanged() {
-        if (mAccountManagerFacade.getAccounts().isFulfilled()) {
-            updateAccountsAndCheck(mAccountManagerFacade.getAccounts().getResult());
-        } else {
-            mAccountManagerFacade.getAccounts().then(this::updateAccountsAndCheck);
+    /** Observes the sign-in animation cache for profile data changes only. */
+    private class SigninAnimationProfileDataCacheObserver implements ProfileDataCache.Observer {
+        @Override
+        public void onAccountsUpdated(List<DisplayableProfileData> accounts) {}
+
+        @Override
+        public void onProfileDataUpdated(DisplayableProfileData profileData) {
+            if (mSelectedAccount != null
+                    && mSelectedAccount.getId().equals(profileData.getAccountId())) {
+                updateSelectedAccountData();
+            }
         }
     }
 
@@ -724,8 +743,7 @@ public class FullscreenSigninMediator
                 if (mDestroyed) return;
                 signinTimestampsLogger.recordTimestamp(Event.SIGNIN_COMPLETED);
                 if (mConfig.signinSurveyType != null) {
-                    SigninSurveyController.registerTrigger(
-                            assertNonNull(getProfile()), mConfig.signinSurveyType);
+                    SigninSurveyController.registerTrigger(getProfile(), mConfig.signinSurveyType);
                 }
                 mDelegate.advanceToNextPage();
             }
@@ -776,25 +794,22 @@ public class FullscreenSigninMediator
     }
 
     /**
-     * @return The {@link Profile} of the user, or null if it's not available yet.
+     * @return The original {@link Profile} of the user. Must only be called after native is
+     *     initialized, as the profile is available by then.
      */
-    private @Nullable Profile getProfile() {
-        @Nullable ProfileProvider profileProvider = mDelegate.getProfileSupplier().get();
-        if (profileProvider == null) return null;
-        return profileProvider.getOriginalProfile();
+    private Profile getProfile() {
+        return assertNonNull(mDelegate.getProfileSupplier().get()).getOriginalProfile();
+    }
+
+    private IdentityManager getIdentityManager() {
+        return assertNonNull(IdentityServicesProvider.get().getIdentityManager(getProfile()));
     }
 
     /**
-     * @return The signed-in {@link AccountInfo} of the user, or null if the user isn't signed in or
-     *     the profile is not available yet.
+     * @return The signed-in {@link AccountInfo} of the user, or null if the user isn't signed in.
      */
     private @Nullable AccountInfo getSignedInAccount() {
-        Profile profile = getProfile();
-        if (profile == null) return null;
-        IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(profile);
-        if (identityManager == null) return null;
-        return identityManager.getPrimaryAccountInfo();
+        return getIdentityManager().getPrimaryAccountInfo();
     }
 
     private @AccountConsistencyPromoAction int getSigninPromoAction() {
@@ -823,12 +838,10 @@ public class FullscreenSigninMediator
         mDelegate.recordSigninDismissedHistograms();
         mDelegate.acceptTermsOfService(mAllowMetricsAndCrashUploading);
         SigninPreferencesManager.getInstance().temporarilySuppressNewTabPagePromos();
-        Profile profile = assumeNonNull(mDelegate.getProfileSupplier().get()).getOriginalProfile();
         // If switching account, dismissing the page should not sign the user out of the already
         // signed in account.
         if (mConfig.signinFlow != SigninFlow.SWITCH_ACCOUNT
-                && assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile))
-                        .hasPrimaryAccount()) {
+                && getIdentityManager().hasPrimaryAccount()) {
             mModel.set(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER, true);
             Runnable signOutCallback =
                     () -> {
@@ -862,10 +875,13 @@ public class FullscreenSigninMediator
         updateSelectedAccountData();
     }
 
+    // TODO(crbug.com/485515355): Consider splitting into two methods, one updating
+    // BOTTOM_GROUP_ACCOUNT_DATA and one updating PROFILE_PICTURE, to simplify cache observer logic.
     private void updateSelectedAccountData() {
         if (mSelectedAccount == null) return;
 
-        if (mContinueButtonProfileDataCache != null) {
+        if (mContinueButtonProfileDataCache != null
+                && mContinueButtonProfileDataCache.getAccounts().isFulfilled()) {
             // Both caches are initialized together so they're either both null or none of them are.
             assert mSigninAnimationProfileDataCache != null;
 
@@ -933,6 +949,8 @@ public class FullscreenSigninMediator
             }
         }
 
+        // TODO(crbug.com/485515355): Update the IdentityManager documentation to state that, on
+        // Android, accounts are in the same order as in AccountManagerFacade.
         AccountUtils.checkIsSubjectToParentalControls(
                 mAccountManagerFacade, accounts, this::onChildAccountStatusReady);
     }
@@ -955,7 +973,7 @@ public class FullscreenSigninMediator
                 FullscreenSigninProperties.ENABLE_ACCOUNT_SELECTION,
                 !mIsChild && mSelectedAccount != null);
         updateShouldHideDismissButton();
-        // Selected account data will be updated in {@link #onProfileDataUpdated}
+        // Selected account data will be updated by the ProfileDataCache observers.
 
         BadgeConfig continueButtonBadgeConfig = null;
         BadgeConfig signinAnimationBadgeConfig = null;
@@ -1014,6 +1032,38 @@ public class FullscreenSigninMediator
 
         // Apply spans to footer string.
         return SpanApplier.applySpans(footerString, spans.toArray(new SpanApplier.SpanInfo[0]));
+    }
+
+    private boolean shouldUseIdentityManagerForAccounts() {
+        assert mContinueButtonProfileDataCache != null;
+        return SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS);
+    }
+
+    /**
+     * Returns whether the account list has finished loading from the account source. Must only be
+     * called after {@link #initializeProfileDataCache}, which creates the {@link ProfileDataCache}.
+     */
+    private boolean areAccountsLoaded() {
+        if (shouldUseIdentityManagerForAccounts()) {
+            return assertNonNull(mContinueButtonProfileDataCache).getAccounts().isFulfilled();
+        }
+        return mAccountManagerFacade.getAccounts().isFulfilled();
+    }
+
+    private List<AccountInfo> getAccountsIfLoadedOrEmpty() {
+        if (!areAccountsLoaded()) {
+            return Collections.emptyList();
+        }
+        return getAccounts();
+    }
+
+    /** Returns the account list. Must only be called once {@link #areAccountsLoaded} is true. */
+    private List<AccountInfo> getAccounts() {
+        assert areAccountsLoaded();
+        if (shouldUseIdentityManagerForAccounts()) {
+            return getIdentityManager().getExtendedAccountInfoForAccountsWithRefreshToken();
+        }
+        return mAccountManagerFacade.getAccounts().getResult();
     }
 
     public static void disableAnimationsForTesting() {
