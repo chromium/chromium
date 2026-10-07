@@ -291,6 +291,9 @@ public class StatusBarColorController
                     mCallbackController.makeCancelable(
                             layoutManager -> {
                                 assert layoutManager != null;
+                                if (mLayoutStateProvider != null) {
+                                    mLayoutStateProvider.removeObserver(mLayoutStateObserver);
+                                }
                                 mLayoutStateProvider = layoutManager;
                                 mLayoutStateProvider.addObserver(mLayoutStateObserver);
                             }));

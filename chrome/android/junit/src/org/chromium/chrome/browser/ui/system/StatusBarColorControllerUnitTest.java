@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -31,12 +32,14 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
@@ -73,8 +76,10 @@ public class StatusBarColorControllerUnitTest {
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private Tab mNtpTab;
     @Mock private NewTabPage mNewTabPage;
+    @Mock private LayoutManager mLayoutManager1;
+    @Mock private LayoutManager mLayoutManager2;
 
-    private final MonotonicObservableSupplier<LayoutManager> mLayoutManagerSupplier =
+    private MonotonicObservableSupplier<LayoutManager> mLayoutManagerSupplier =
             ObservableSuppliers.alwaysNull();
 
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
@@ -232,6 +237,23 @@ public class StatusBarColorControllerUnitTest {
 
         mStatusBarColorController.onDestroy();
         assertEquals(size, configManager.getListenersSizeForTesting());
+    }
+
+    @Test
+    public void testLayoutManagerSwapMovesLayoutStateObserver() {
+        SettableMonotonicObservableSupplier<LayoutManager> layoutManagerSupplier =
+                ObservableSuppliers.createMonotonic();
+        mLayoutManagerSupplier = layoutManagerSupplier;
+        initialize(/* isTablet= */ false, /* isInDesktopWindow= */ false);
+
+        layoutManagerSupplier.set(mLayoutManager1);
+        ArgumentCaptor<LayoutStateObserver> observerCaptor =
+                ArgumentCaptor.forClass(LayoutStateObserver.class);
+        verify(mLayoutManager1).addObserver(observerCaptor.capture());
+
+        layoutManagerSupplier.set(mLayoutManager2);
+        verify(mLayoutManager1).removeObserver(observerCaptor.getValue());
+        verify(mLayoutManager2).addObserver(observerCaptor.getValue());
     }
 
     @Test
