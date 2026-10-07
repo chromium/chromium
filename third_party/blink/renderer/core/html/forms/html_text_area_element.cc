@@ -156,7 +156,7 @@ HTMLTextAreaElement::HTMLTextAreaElement(Document& document)
       // default language should be fine for this purpose because most users set
       // the same family for all languages.
       FontCache::PrewarmFamily(settings->GetGenericFontFamilySettings().Fixed(
-          LayoutLocale::GetDefault().GetScript()));
+          LayoutLocale::GetDefault().GetScriptForFont()));
       g_is_default_font_prewarmed = true;
     }
   }

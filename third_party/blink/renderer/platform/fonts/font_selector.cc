@@ -69,7 +69,7 @@ AtomicString FontSelector::FamilyNameFromSettings(
         generic_family_name, generic_family_name, font_description);
   }
 #else   // BUILDFLAG(IS_ANDROID)
-  UScriptCode script = font_description.GetScript();
+  UScriptCode script = font_description.GetScriptForFont();
   if (font_description.GenericFamily() == FontDescription::kStandardFamily ||
       font_description.GenericFamily() == FontDescription::kWebkitBodyFamily)
     return settings.Standard(script);

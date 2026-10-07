@@ -159,7 +159,11 @@ TEST_P(LocaleTestDataFixture, Script) {
   const auto& test = GetParam();
   scoped_refptr<LayoutLocale> locale =
       LayoutLocale::CreateForTesting(AtomicString(test.locale));
-  EXPECT_EQ(test.script, locale->GetScript()) << test.locale;
+  EXPECT_EQ(
+      test.script == USCRIPT_ARABIC_NASTALIQ ? USCRIPT_ARABIC : test.script,
+      locale->GetScript())
+      << test.locale;
+  EXPECT_EQ(test.script, locale->GetScriptForFont()) << test.locale;
   EXPECT_EQ(test.script_for_han.has_value(), locale->HasScriptForHan())
       << test.locale;
   if (test.script_for_han) {
@@ -178,10 +182,12 @@ TEST(LayoutLocaleTest, NastaliqScriptDisabled) {
     scoped_refptr<LayoutLocale> locale =
         LayoutLocale::CreateForTesting(AtomicString(locale_str));
     EXPECT_EQ(USCRIPT_ARABIC, locale->GetScript()) << locale_str;
+    EXPECT_EQ(USCRIPT_ARABIC, locale->GetScriptForFont()) << locale_str;
   }
   scoped_refptr<LayoutLocale> und_aran =
       LayoutLocale::CreateForTesting(AtomicString("und-Aran"));
   EXPECT_EQ(USCRIPT_LATIN, und_aran->GetScript());
+  EXPECT_EQ(USCRIPT_LATIN, und_aran->GetScriptForFont());
 }
 
 TEST(LayoutLocaleTest, BreakKeyword) {

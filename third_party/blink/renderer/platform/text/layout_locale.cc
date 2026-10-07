@@ -149,6 +149,13 @@ inline const char* LbValueFromStrictness(LineBreakStrictness strictness) {
   NOTREACHED();
 }
 
+inline UScriptCode NormalizeStylishVariants(UScriptCode script) {
+  if (script == USCRIPT_ARABIC_NASTALIQ) [[unlikely]] {
+    return USCRIPT_ARABIC;
+  }
+  return script;
+}
+
 }  // namespace
 
 static hb_language_t ToHarfbuzzLanguage(const AtomicString& locale) {
@@ -277,7 +284,8 @@ void LayoutLocale::ComputeCaseMapLocale() const {
 LayoutLocale::LayoutLocale(const AtomicString& locale)
     : string_(locale),
       harfbuzz_language_(ToHarfbuzzLanguage(locale)),
-      script_(LocaleToScriptCodeForFontSelection(locale)) {}
+      script_for_font_(LocaleToScriptCodeForFontSelection(locale)),
+      script_(NormalizeStylishVariants(script_for_font_)) {}
 
 // static
 const LayoutLocale* LayoutLocale::Get(const AtomicString& locale) {

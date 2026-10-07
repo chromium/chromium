@@ -302,6 +302,9 @@ class PLATFORM_EXPORT FontDescription {
     return LayoutLocale::ValueOrDefault(locale_.get());
   }
   UScriptCode GetScript() const { return LocaleOrDefault().GetScript(); }
+  UScriptCode GetScriptForFont() const {
+    return LocaleOrDefault().GetScriptForFont();
+  }
   bool IsSyntheticBold() const { return fields_.synthetic_bold_; }
   bool IsSyntheticItalic() const { return fields_.synthetic_italic_; }
   bool IsSyntheticOblique() const { return fields_.synthetic_oblique_; }
