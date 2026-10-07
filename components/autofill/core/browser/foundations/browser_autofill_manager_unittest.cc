@@ -2004,12 +2004,11 @@ TEST_F(BrowserAutofillManagerTest, GetAddressAndCreditCardSuggestions) {
 
   OnAskForValuesToFill(form, form.fields()[0]);
   // Test that we sent the right values to the external delegate.
-  EXPECT_THAT(
-      external_delegate()->suggestions(),
-      ElementsAre(Field(&Suggestion::type, SuggestionType::kAddressEntry),
-                  Field(&Suggestion::type, SuggestionType::kAddressEntry),
-                  Field(&Suggestion::type, SuggestionType::kSeparator),
-                  Field(&Suggestion::type, SuggestionType::kManageAddress)));
+  EXPECT_THAT(external_delegate()->suggestions(),
+              ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntry),
+                          EqualsSuggestion(SuggestionType::kAddressEntry),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsSuggestion(SuggestionType::kManageAddress)));
 
   FormFieldData& cc_number_field =
       test_api(form).field(first_credit_card_field + 1);
@@ -2017,12 +2016,11 @@ TEST_F(BrowserAutofillManagerTest, GetAddressAndCreditCardSuggestions) {
   OnAskForValuesToFill(form, cc_number_field);
 
   // Test that we sent the credit card suggestions to the external delegate.
-  EXPECT_THAT(
-      external_delegate()->suggestions(),
-      ElementsAre(Field(&Suggestion::type, SuggestionType::kCreditCardEntry),
-                  Field(&Suggestion::type, SuggestionType::kCreditCardEntry),
-                  Field(&Suggestion::type, SuggestionType::kSeparator),
-                  Field(&Suggestion::type, SuggestionType::kManageCreditCard)));
+  EXPECT_THAT(external_delegate()->suggestions(),
+              ElementsAre(EqualsSuggestion(SuggestionType::kCreditCardEntry),
+                          EqualsSuggestion(SuggestionType::kCreditCardEntry),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsSuggestion(SuggestionType::kManageCreditCard)));
 }
 
 // Test that for non-https forms with both address and credit card fields, we
@@ -2238,7 +2236,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Verify that suggestions are returned.
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
-  EXPECT_GT(external_delegate()->suggestions().size(), 0u);
+  EXPECT_THAT(external_delegate()->suggestions(), Not(IsEmpty()));
 }
 
 // Tests that `AmountExtractionManager` should trigger amount extraction if
@@ -5365,9 +5363,10 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_FormNonSecureContext) {
   // Send search results. Since the context is insecure, the SPII entry must be
   // filtered out, leaving no suggestions.
   search_callback.Run(std::move(results));
-  ASSERT_EQ(updated_suggestions.size(), 1u);
-  EXPECT_EQ(updated_suggestions[0].main_text.value,
-            l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_NO_DATA));
+  EXPECT_THAT(updated_suggestions,
+              ElementsAre(EqualsSuggestion(
+                  SuggestionType::kAtMemorySearchResult,
+                  l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_NO_DATA))));
 }
 
 TEST_F(BrowserAutofillManagerTest, PageLanguageGetsCorrectlySet) {
@@ -6032,8 +6031,7 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi, ShowAutofillAiSuggestions) {
       passport_form(), passport_form().fields().front(),
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
   EXPECT_THAT(external_delegate()->suggestions(),
-              ElementsAre(Field(&Suggestion::type,
-                                Eq(SuggestionType::kFillAutofillAi))));
+              ElementsAre(EqualsSuggestion(SuggestionType::kFillAutofillAi)));
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -6158,9 +6156,8 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
   TryToShowTouchToFill(passport_form(), passport_form().fields().front(),
                        /*form_element_was_clicked=*/true);
   EXPECT_THAT(external_delegate()->suggestions(),
-              ElementsAre(Field(
-                  &Suggestion::type,
-                  Eq(SuggestionType::kAutofillAiPrivateInferenceNotice))));
+              ElementsAre(EqualsSuggestion(
+                  SuggestionType::kAutofillAiPrivateInferenceNotice)));
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
 }
 
@@ -6182,9 +6179,8 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
   TryToShowTouchToFill(passport_form(), passport_form().fields().front(),
                        /*form_element_was_clicked=*/true);
   EXPECT_THAT(external_delegate()->suggestions(),
-              ElementsAre(Field(
-                  &Suggestion::type,
-                  Eq(SuggestionType::kAutofillAiPrivateInferenceNotice))));
+              ElementsAre(EqualsSuggestion(
+                  SuggestionType::kAutofillAiPrivateInferenceNotice)));
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
 }
 
@@ -6837,7 +6833,7 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
   const std::vector<Suggestion>& suggestions =
       external_delegate()->suggestions();
-  ASSERT_TRUE(suggestions.size() > 0);
+  ASSERT_THAT(suggestions, Not(IsEmpty()));
   // Assert that the first suggestion is of type
   // `SuggestionType::kAddressEntryOnTyping` and its text is the profile value
   // for `ADDRESS_HOME_LINE1`.
@@ -7088,10 +7084,9 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest,
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
   EXPECT_EQ(external_delegate()->trigger_source(),
             AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable);
-  ASSERT_EQ(external_delegate()->suggestions().size(), 1u);
-  EXPECT_EQ(external_delegate()->suggestions()[0].type,
-            SuggestionType::kOneTimePasswordEntry);
-  EXPECT_EQ(external_delegate()->suggestions()[0].main_text.value, u"123456");
+  EXPECT_THAT(external_delegate()->suggestions(),
+              ElementsAre(EqualsSuggestion(
+                  SuggestionType::kOneTimePasswordEntry, u"123456")));
 }
 
 // Tests that triggering suggestions with `kGmailOneTimePasswordAvailable`
@@ -7116,10 +7111,9 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest,
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
   EXPECT_EQ(external_delegate()->trigger_source(),
             AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable);
-  ASSERT_EQ(external_delegate()->suggestions().size(), 1u);
-  EXPECT_EQ(external_delegate()->suggestions()[0].type,
-            SuggestionType::kOneTimePasswordEntry);
-  EXPECT_EQ(external_delegate()->suggestions()[0].main_text.value, u"123456");
+  EXPECT_THAT(external_delegate()->suggestions(),
+              ElementsAre(EqualsSuggestion(
+                  SuggestionType::kOneTimePasswordEntry, u"123456")));
   histogram_tester.ExpectBucketCount(
       "Autofill.SuggestionGeneration.GeneratedFillingProduct",
       FillingProduct::kOneTimePassword, 1);
@@ -7154,10 +7148,9 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest,
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
   EXPECT_EQ(external_delegate()->trigger_source(),
             AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable);
-  ASSERT_EQ(external_delegate()->suggestions().size(), 1u);
-  EXPECT_EQ(external_delegate()->suggestions()[0].type,
-            SuggestionType::kOneTimePasswordEntry);
-  EXPECT_EQ(external_delegate()->suggestions()[0].main_text.value, u"123456");
+  EXPECT_THAT(external_delegate()->suggestions(),
+              ElementsAre(EqualsSuggestion(
+                  SuggestionType::kOneTimePasswordEntry, u"123456")));
 }
 
 // Tests that when Gmail OTP suggestions are showing, lower-priority nudges
@@ -7177,10 +7170,9 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest,
   EXPECT_TRUE(autofill_client().IsShowingAutofillPopup());
   EXPECT_EQ(external_delegate()->trigger_source(),
             AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable);
-  ASSERT_EQ(external_delegate()->suggestions().size(), 1u);
-  EXPECT_EQ(external_delegate()->suggestions()[0].type,
-            SuggestionType::kOneTimePasswordEntry);
-  EXPECT_EQ(external_delegate()->suggestions()[0].main_text.value, u"123456");
+  EXPECT_THAT(external_delegate()->suggestions(),
+              ElementsAre(EqualsSuggestion(
+                  SuggestionType::kOneTimePasswordEntry, u"123456")));
 
   // Trigger suggestions with `kComposeDelayedProactiveNudge`.
   // This should be ignored because Gmail OTP suggestions are already showing
@@ -7192,10 +7184,9 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest,
   EXPECT_TRUE(autofill_client().IsShowingAutofillPopup());
   EXPECT_EQ(external_delegate()->trigger_source(),
             AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable);
-  ASSERT_EQ(external_delegate()->suggestions().size(), 1u);
-  EXPECT_EQ(external_delegate()->suggestions()[0].type,
-            SuggestionType::kOneTimePasswordEntry);
-  EXPECT_EQ(external_delegate()->suggestions()[0].main_text.value, u"123456");
+  EXPECT_THAT(external_delegate()->suggestions(),
+              ElementsAre(EqualsSuggestion(
+                  SuggestionType::kOneTimePasswordEntry, u"123456")));
 }
 
 // Tests that FillOrPreviewForm correctly passes the blocked_fields to the
