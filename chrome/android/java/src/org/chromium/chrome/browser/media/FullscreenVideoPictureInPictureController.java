@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.notifications.NotificationIntentInterceptor;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -222,8 +223,15 @@ public class FullscreenVideoPictureInPictureController {
             return false;
         }
 
-        if (!PictureInPicture.isEnabled(mActivity)) {
-            Log.d(TAG, "Picture-in-Picture is not enabled.");
+        if (BrowserUiUtils.isAndroidAutoProjected(mActivity)) {
+            Log.d(TAG, "Block PiP in Android Auto Projected mode.");
+            return false;
+        }
+
+        if (!mActivity
+                .getPackageManager()
+                .hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
+            Log.d(TAG, "Activity does not have PiP feature.");
             return false;
         }
 
