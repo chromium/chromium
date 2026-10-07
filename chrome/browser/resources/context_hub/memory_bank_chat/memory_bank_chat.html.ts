@@ -30,6 +30,22 @@ export function getHtml(this: MemoryBankChatElement) {
           <div class="message-bubble ${
               msg.role === ChatRole.kUser ? 'user' : 'assistant'}">
             <div class="message-content">${msg.content}</div>
+            ${msg.references && msg.references.length > 0 ? html`
+              <div class="references-section">
+                <span class="references-label">From:</span>
+                <div class="references-list">
+                  ${msg.references.map(ref => html`
+                    <a class="reference-link"
+                        href="${ref.url}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="${ref.title}">
+                      ${ref.title}
+                    </a>
+                  `)}
+                </div>
+              </div>
+            ` : ''}
           </div>
         `)}
         ${

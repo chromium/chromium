@@ -433,6 +433,20 @@ std::vector<browser::context_hub::mojom::TabInfoPtr> ToMojoTabs(
   return mojo_tabs;
 }
 
+std::vector<browser::context_hub::mojom::ChatReferencePtr> ToMojoChatReferences(
+    base::span<const context_hub::ContextHubService::MemoryBankChatCitation>
+        citations) {
+  std::vector<browser::context_hub::mojom::ChatReferencePtr> references;
+  references.reserve(citations.size());
+  for (const auto& citation : citations) {
+    auto ref = browser::context_hub::mojom::ChatReference::New();
+    ref->title = citation.title;
+    ref->url = citation.url;
+    references.push_back(std::move(ref));
+  }
+  return references;
+}
+
 std::vector<browser::context_hub::mojom::ChatMessagePtr> ToMojoChatHistory(
     const std::vector<optimization_guide::proto::ChatHistoryTurn>& history) {
   std::vector<browser::context_hub::mojom::ChatMessagePtr> mojo_history;
@@ -641,7 +655,7 @@ void ContextHubPageHandler::AskGeminiWithContext(
     auto response = browser::context_hub::mojom::ChatMessage::New();
     response->role = browser::context_hub::mojom::ChatRole::kAssistant;
     response->content = "Service unavailable.";
-    std::move(callback).Run(std::move(response));
+    std::move(callback).Run(std::move(response), {});
     return;
   }
 
@@ -649,12 +663,15 @@ void ContextHubPageHandler::AskGeminiWithContext(
       memory_bank_entry_ids, user_command, save_to_history,
       base::BindOnce(
           [](AskGeminiWithContextCallback callback,
-             std::optional<std::string> response_text) {
+             std::optional<std::string> response_text,
+             std::vector<context_hub::ContextHubService::MemoryBankChatCitation>
+                 citations) {
             auto response = browser::context_hub::mojom::ChatMessage::New();
             response->role = browser::context_hub::mojom::ChatRole::kAssistant;
             response->content =
                 response_text.value_or("Failed to generate response.");
-            std::move(callback).Run(std::move(response));
+            std::move(callback).Run(std::move(response),
+                                    ToMojoChatReferences(citations));
           },
           std::move(callback)));
 }

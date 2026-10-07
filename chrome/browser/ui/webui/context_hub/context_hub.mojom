@@ -147,6 +147,12 @@ enum ChatRole {
   kAssistant,
 };
 
+// Represents a cited source reference in a chat response.
+struct ChatReference {
+  string title;
+  url.mojom.Url url;
+};
+
 struct ChatMessage {
   ChatRole role;
   string content;
@@ -405,7 +411,7 @@ interface PageHandler {
   AskGeminiWithContext(
       string user_command, array<int64> memory_bank_entry_ids,
       bool save_to_history)
-      => (ChatMessage response);
+      => (ChatMessage response, array<ChatReference> references);
 
   // Returns stored memory bank chat history.
   GetMemoryBankChatHistory() => (array<ChatMessage> history);

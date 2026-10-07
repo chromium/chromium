@@ -86,6 +86,44 @@
   white-space: pre-wrap;
 }
 
+.references-section {
+  align-items: flex-start;
+  border-top: 1px solid var(--cr-separator-color);
+  display: flex;
+  font-size: 12px;
+  gap: 6px;
+  margin-top: 8px;
+  min-width: 0;
+  padding-top: 6px;
+}
+
+.references-label {
+  color: var(--cr-secondary-text-color);
+  flex-shrink: 0;
+  font-weight: 500;
+}
+
+.references-list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.reference-link {
+  color: var(--cr-link-color);
+  display: block;
+  overflow: hidden;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reference-link:hover {
+  text-decoration: underline;
+}
+
 .loading-bubble {
   align-items: center;
   color: var(--cr-secondary-text-color);

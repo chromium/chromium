@@ -1355,7 +1355,7 @@ void ContextHubService::ExecuteMemoryBankChat(
   std::string_view trimmed_command =
       base::TrimWhitespaceASCII(user_command, base::TRIM_ALL);
   if (trimmed_command.empty()) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(std::nullopt, {});
     return;
   }
 
@@ -1393,11 +1393,12 @@ void ContextHubService::OnMemoryBankEntriesFetched(
       optimization_guide::ModelExecutionOptions(),
       base::BindOnce(
           &ContextHubService::HandleMemoryBankChatModelExecutionResult,
-          weak_factory_.GetWeakPtr(), user_command, save_to_history,
-          std::move(callback)));
+          weak_factory_.GetWeakPtr(), std::move(entries), user_command,
+          save_to_history, std::move(callback)));
 }
 
 void ContextHubService::HandleMemoryBankChatModelExecutionResult(
+    std::vector<MemoryBankEntry> entries,
     const std::string& user_command,
     bool save_to_history,
     MemoryBankChatCallback callback,
@@ -1415,15 +1416,17 @@ void ContextHubService::HandleMemoryBankChatModelExecutionResult(
                 ModelExecutionError::kRequestThrottled) {
       std::move(callback).Run(
           "Unable to generate response due to high server load. Please try "
-          "again later.");
+          "again later.",
+          {});
       return;
     }
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(std::nullopt, {});
     return;
   }
 
-  std::string text_response =
-      response->memory_bank_chat_response().text_response();
+  const optimization_guide::proto::MemoryBankChatResponse& chat_response =
+      response->memory_bank_chat_response();
+  std::string text_response = chat_response.text_response();
   if (save_to_history && !text_response.empty()) {
     AddMemoryBankChatHistoryTurn(
         optimization_guide::proto::ChatHistoryTurn::ROLE_USER, user_command);
@@ -1432,7 +1435,23 @@ void ContextHubService::HandleMemoryBankChatModelExecutionResult(
         text_response);
   }
 
-  std::move(callback).Run(std::move(text_response));
+  std::vector<MemoryBankChatCitation> citations;
+  base::flat_set<GURL> seen_urls;
+  for (int32_t index : chat_response.cited_entry_indices()) {
+    if (index < 0 || static_cast<size_t>(index) >= entries.size()) {
+      continue;
+    }
+    const MemoryBankEntry& entry = entries[index];
+    if (!entry.url.is_valid() || !seen_urls.insert(entry.url).second) {
+      continue;
+    }
+    citations.push_back(MemoryBankChatCitation{
+        .title = entry.tab_title.empty() ? entry.url.spec() : entry.tab_title,
+        .url = entry.url,
+    });
+  }
+
+  std::move(callback).Run(std::move(text_response), std::move(citations));
 }
 
 void ContextHubService::HandleTabGroupModelExecutionResult(

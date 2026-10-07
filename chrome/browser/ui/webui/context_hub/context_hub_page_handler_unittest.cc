@@ -2000,15 +2000,19 @@ TEST_F(ContextHubPageHandlerTest, AskGeminiWithContext_Success) {
       ContextHubServiceFactory::GetForProfile(&profile_);
   ASSERT_TRUE(service);
 
-  base::test::TestFuture<browser::context_hub::mojom::ChatMessagePtr> future;
+  base::test::TestFuture<
+      browser::context_hub::mojom::ChatMessagePtr,
+      std::vector<browser::context_hub::mojom::ChatReferencePtr>>
+      future;
   handler_->AskGeminiWithContext("Summarize memories", {1, 2},
                                  /*save_to_history=*/true,
                                  future.GetCallback());
 
-  browser::context_hub::mojom::ChatMessagePtr response = future.Take();
+  auto [response, references] = future.Take();
   ASSERT_TRUE(response);
   EXPECT_EQ(response->role, browser::context_hub::mojom::ChatRole::kAssistant);
   EXPECT_EQ(response->content, "Gemini response for prompt.");
+  EXPECT_TRUE(references.empty());
   EXPECT_EQ(service->GetMemoryBankChatHistory().size(), 2u);
 }
 
@@ -2058,8 +2062,9 @@ TEST_F(ContextHubPageHandlerTest, AskGeminiWithContext_WithSelectedEntries) {
                   "https://example.com/test");
 
         optimization_guide::proto::ContextHubResponse response;
-        response.mutable_memory_bank_chat_response()->set_text_response(
-            "Summary of Test Page.");
+        auto* chat_response = response.mutable_memory_bank_chat_response();
+        chat_response->set_text_response("Summary of Test Page.");
+        chat_response->add_cited_entry_indices(0);
 
         optimization_guide::proto::Any any_response;
         any_response.set_type_url(
@@ -2072,16 +2077,21 @@ TEST_F(ContextHubPageHandlerTest, AskGeminiWithContext_WithSelectedEntries) {
             nullptr);
       });
 
-  base::test::TestFuture<browser::context_hub::mojom::ChatMessagePtr>
+  base::test::TestFuture<
+      browser::context_hub::mojom::ChatMessagePtr,
+      std::vector<browser::context_hub::mojom::ChatReferencePtr>>
       ask_future;
   handler_->AskGeminiWithContext("Summarize", {entry_id},
                                  /*save_to_history=*/false,
                                  ask_future.GetCallback());
 
-  browser::context_hub::mojom::ChatMessagePtr response = ask_future.Take();
+  auto [response, references] = ask_future.Take();
   ASSERT_TRUE(response);
   EXPECT_EQ(response->role, browser::context_hub::mojom::ChatRole::kAssistant);
   EXPECT_EQ(response->content, "Summary of Test Page.");
+  ASSERT_EQ(references.size(), 1u);
+  EXPECT_EQ(references[0]->title, "Test Page");
+  EXPECT_EQ(references[0]->url, GURL("https://example.com/test"));
   EXPECT_TRUE(service->GetMemoryBankChatHistory().empty());
 }
 

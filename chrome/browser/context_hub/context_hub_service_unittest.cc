@@ -2046,8 +2046,14 @@ TEST_F(ContextHubServiceTest, ExecuteMemoryBankChat_Success) {
         EXPECT_TRUE(request.entry_items(1).has_memory_bank_entry());
 
         optimization_guide::proto::ContextHubResponse response;
-        response.mutable_memory_bank_chat_response()->set_text_response(
-            "This is the LLM summary.");
+        auto* chat_response = response.mutable_memory_bank_chat_response();
+        chat_response->set_text_response("This is the LLM summary.");
+        // Include valid, duplicate, negative, and out-of-bounds indices.
+        chat_response->add_cited_entry_indices(1);
+        chat_response->add_cited_entry_indices(0);
+        chat_response->add_cited_entry_indices(1);
+        chat_response->add_cited_entry_indices(-1);
+        chat_response->add_cited_entry_indices(5);
 
         optimization_guide::proto::Any any_response;
         any_response.set_type_url(
@@ -2060,13 +2066,20 @@ TEST_F(ContextHubServiceTest, ExecuteMemoryBankChat_Success) {
             nullptr);
       });
 
-  base::test::TestFuture<std::optional<std::string>> future;
+  base::test::TestFuture<std::optional<std::string>,
+                         std::vector<ContextHubService::MemoryBankChatCitation>>
+      future;
   service_.ExecuteMemoryBankChat(ids, "summarize these",
                                  /*save_to_history=*/true,
                                  future.GetCallback());
-  auto result = future.Get();
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value(), "This is the LLM summary.");
+  auto [response_text, citations] = future.Take();
+  ASSERT_TRUE(response_text.has_value());
+  EXPECT_EQ(*response_text, "This is the LLM summary.");
+  ASSERT_EQ(citations.size(), 2u);
+  EXPECT_EQ(citations[0].title, entries[1].tab_title);
+  EXPECT_EQ(citations[0].url, entries[1].url);
+  EXPECT_EQ(citations[1].title, entries[0].tab_title);
+  EXPECT_EQ(citations[1].url, entries[0].url);
   EXPECT_EQ(service_.GetMemoryBankChatHistory().size(), 2u);
 }
 
@@ -2074,7 +2087,7 @@ TEST_F(ContextHubServiceTest, ExecuteMemoryBankChat_NoSaveToHistory) {
   base::test::TestFuture<bool> save_tab_future;
   service_.SaveMemoryBankEntry(
       MemoryBankEntry(MemoryBankType::kTab, GURL("https://example.com/1"),
-                      "Title 1", "Page text 1"),
+                      /*tab_title=*/"", "Page text 1"),
       save_tab_future.GetCallback());
   EXPECT_TRUE(save_tab_future.Get());
 
@@ -2100,8 +2113,10 @@ TEST_F(ContextHubServiceTest, ExecuteMemoryBankChat_NoSaveToHistory) {
         EXPECT_EQ(request.chat_history_size(), 0);
 
         optimization_guide::proto::ContextHubResponse response;
-        response.mutable_memory_bank_chat_response()->set_text_response(
+        auto* chat_response = response.mutable_memory_bank_chat_response();
+        chat_response->set_text_response(
             "This is the LLM summary without history.");
+        chat_response->add_cited_entry_indices(0);
 
         optimization_guide::proto::Any any_response;
         any_response.set_type_url(
@@ -2114,13 +2129,18 @@ TEST_F(ContextHubServiceTest, ExecuteMemoryBankChat_NoSaveToHistory) {
             nullptr);
       });
 
-  base::test::TestFuture<std::optional<std::string>> future;
+  base::test::TestFuture<std::optional<std::string>,
+                         std::vector<ContextHubService::MemoryBankChatCitation>>
+      future;
   service_.ExecuteMemoryBankChat(ids, "summarize these",
                                  /*save_to_history=*/false,
                                  future.GetCallback());
-  auto result = future.Get();
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value(), "This is the LLM summary without history.");
+  auto [response_text, citations] = future.Take();
+  ASSERT_TRUE(response_text.has_value());
+  EXPECT_EQ(*response_text, "This is the LLM summary without history.");
+  ASSERT_EQ(citations.size(), 1u);
+  EXPECT_EQ(citations[0].title, "https://example.com/1");
+  EXPECT_EQ(citations[0].url, GURL("https://example.com/1"));
   EXPECT_TRUE(service_.GetMemoryBankChatHistory().empty());
 }
 
@@ -2140,11 +2160,15 @@ TEST_F(ContextHubServiceTest, ExecuteMemoryBankChat_Error) {
                 nullptr);
           });
 
-  base::test::TestFuture<std::optional<std::string>> future;
+  base::test::TestFuture<std::optional<std::string>,
+                         std::vector<ContextHubService::MemoryBankChatCitation>>
+      future;
   std::vector<int64_t> ids = {100};
   service_.ExecuteMemoryBankChat(ids, "hello", /*save_to_history=*/true,
                                  future.GetCallback());
-  EXPECT_FALSE(future.Get().has_value());
+  auto [response_text, citations] = future.Take();
+  EXPECT_FALSE(response_text.has_value());
+  EXPECT_TRUE(citations.empty());
   EXPECT_TRUE(service_.GetMemoryBankChatHistory().empty());
 
   EXPECT_CALL(
@@ -2167,12 +2191,16 @@ TEST_F(ContextHubServiceTest, ExecuteMemoryBankChat_Error) {
                 nullptr);
           });
 
-  base::test::TestFuture<std::optional<std::string>> throttled_future;
+  base::test::TestFuture<std::optional<std::string>,
+                         std::vector<ContextHubService::MemoryBankChatCitation>>
+      throttled_future;
   service_.ExecuteMemoryBankChat(ids, "hello", /*save_to_history=*/true,
                                  throttled_future.GetCallback());
-  EXPECT_EQ(throttled_future.Get(),
+  auto [throttled_text, throttled_citations] = throttled_future.Take();
+  EXPECT_EQ(throttled_text,
             "Unable to generate response due to high server load. Please try "
             "again later.");
+  EXPECT_TRUE(throttled_citations.empty());
   EXPECT_TRUE(service_.GetMemoryBankChatHistory().empty());
 }
 
