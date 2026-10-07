@@ -2066,6 +2066,7 @@ component("base") {
       "win/wmi.h",
       "win/wrapped_window_proc.cc",
       "win/wrapped_window_proc.h",
+      "win/wrl_module.h",
     ]
 
     deps += [ "//base/win:base_win_buildflags" ]

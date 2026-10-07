@@ -434,6 +434,8 @@ source_set("chromoting_module") {
     "chromoting_module.h",
     "rdp_desktop_session.cc",
     "rdp_desktop_session.h",
+    "rdp_desktop_session_class_factory.cc",
+    "rdp_desktop_session_class_factory.h",
   ]
 
   configs += [

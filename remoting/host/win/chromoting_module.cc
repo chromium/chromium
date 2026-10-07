@@ -4,6 +4,8 @@
 
 #include "remoting/host/win/chromoting_module.h"
 
+#include <wrl/client.h>
+
 #include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -12,17 +14,19 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/wrl_module.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/typed_buffer.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/win/rdp_desktop_session.h"
+#include "remoting/host/win/rdp_desktop_session_class_factory.h"
 
 namespace remoting {
 
 namespace {
 
 // Holds a reference to the task runner used by the module.
-base::LazyInstance<scoped_refptr<AutoThreadTaskRunner>>::DestructorAtExit
+base::LazyInstance<scoped_refptr<AutoThreadTaskRunner>>::Leaky
     g_module_task_runner = LAZY_INSTANCE_INITIALIZER;
 
 // Lowers the process integrity level such that it does not exceed |max_level|.
@@ -75,29 +79,44 @@ bool LowerProcessIntegrityLevel(DWORD max_level) {
   return true;
 }
 
+class WRLModule
+    : public Microsoft::WRL::Module<Microsoft::WRL::OutOfProc, WRLModule> {
+ public:
+  STDMETHODIMP_(unsigned long) DecrementObjectCount() override {
+    unsigned long count = Module::DecrementObjectCount();
+    if (count == 0) {
+      OnModuleReleased();
+    }
+    return count;
+  }
+
+ private:
+  void OnModuleReleased() {
+    // Stop accepting activations.
+    HRESULT hr = CoSuspendClassObjects();
+    CHECK(SUCCEEDED(hr));
+
+    // Release the message loop reference, causing the message loop to exit.
+    g_module_task_runner.Get() = nullptr;
+  }
+};
+
 }  // namespace
 
-ChromotingModule::ChromotingModule()
-    : classes_({
-          {OBJECT_ENTRY(__uuidof(remoting::RdpDesktopSession),
-                        remoting::RdpDesktopSession)},
-      }) {
-  // Don't do anything if COM initialization failed.
+ChromotingModule::ChromotingModule() {
   if (!com_initializer_.Succeeded()) {
     return;
   }
 
-  ATL::_AtlComModule.ExecuteObjectMain(true);
+  WRLModule::Create();
 }
 
 ChromotingModule::~ChromotingModule() {
-  // Don't do anything if COM initialization failed.
   if (!com_initializer_.Succeeded()) {
     return;
   }
 
-  Term();
-  ATL::_AtlComModule.ExecuteObjectMain(false);
+  WRLModule::GetModule().Terminate();
 }
 
 // static
@@ -111,12 +130,10 @@ bool ChromotingModule::Run() {
     return false;
   }
 
-  // Register class objects.
-  HRESULT result = RegisterClassObjects(CLSCTX_LOCAL_SERVER,
-                                        REGCLS_MULTIPLEUSE | REGCLS_SUSPENDED);
-  if (FAILED(result)) {
-    LOG(ERROR) << "Failed to register class objects, result=0x" << std::hex
-               << result << std::dec << ".";
+  Microsoft::WRL::ComPtr<IClassFactory> factory =
+      Microsoft::WRL::Make<RdpDesktopSessionFactory>();
+  if (!factory) {
+    LOG(ERROR) << "Failed to create class factory.";
     return false;
   }
 
@@ -126,11 +143,15 @@ bool ChromotingModule::Run() {
   g_module_task_runner.Get() = new AutoThreadTaskRunner(
       main_task_executor.task_runner(), run_loop.QuitClosure());
 
-  // Start accepting activations.
-  result = CoResumeClassObjects();
-  if (FAILED(result)) {
-    LOG(ERROR) << "CoResumeClassObjects() failed, result=0x" << std::hex
-               << result << std::dec << ".";
+  auto& wrl_module = WRLModule::GetModule();
+  IID class_id = __uuidof(RdpDesktopSession);
+  IClassFactory* factory_ptr = factory.Get();
+  DWORD cookie = 0;
+  HRESULT hr = wrl_module.RegisterCOMObject(nullptr, &class_id, &factory_ptr,
+                                            &cookie, 1);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed to register class objects, result=0x" << std::hex
+               << hr << std::dec << ".";
     return false;
   }
 
@@ -138,51 +159,14 @@ bool ChromotingModule::Run() {
   run_loop.Run();
 
   // Unregister class objects.
-  result = RevokeClassObjects();
-  if (FAILED(result)) {
+  hr = wrl_module.UnregisterCOMObject(nullptr, &cookie, 1);
+  if (FAILED(hr)) {
     LOG(ERROR) << "Failed to unregister class objects, result=0x" << std::hex
-               << result << std::dec << ".";
+               << hr << std::dec << ".";
     return false;
   }
 
   return true;
-}
-
-LONG ChromotingModule::Unlock() {
-  LONG count = ATL::CAtlModuleT<ChromotingModule>::Unlock();
-
-  if (!count) {
-    // Stop accepting activations.
-    HRESULT hr = CoSuspendClassObjects();
-    CHECK(SUCCEEDED(hr));
-
-    // Release the message loop reference, causing the message loop to exit.
-    g_module_task_runner.Get() = nullptr;
-  }
-
-  return count;
-}
-
-HRESULT ChromotingModule::RegisterClassObjects(DWORD class_context,
-                                               DWORD flags) {
-  for (auto& i : classes_) {
-    HRESULT result = i.RegisterClassObject(class_context, flags);
-    if (FAILED(result)) {
-      return result;
-    }
-  }
-  return S_OK;
-}
-
-HRESULT ChromotingModule::RevokeClassObjects() {
-  for (auto& i : classes_) {
-    HRESULT result = i.RevokeClassObject();
-    if (FAILED(result)) {
-      return result;
-    }
-  }
-
-  return S_OK;
 }
 
 // RdpClient entry point.
@@ -193,8 +177,8 @@ int RdpDesktopSessionMain() {
     return kInitializationFailed;
   }
 
-  ChromotingModule module;
-  return module.Run() ? kSuccessExitCode : kInitializationFailed;
+  ChromotingModule chromoting_module;
+  return chromoting_module.Run() ? kSuccessExitCode : kInitializationFailed;
 }
 
 }  // namespace remoting

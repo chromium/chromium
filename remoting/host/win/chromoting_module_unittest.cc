@@ -19,10 +19,11 @@
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread_local.h"
 #include "base/time/time.h"
-#include "base/win/atl.h"
+#include "base/win/wrl_module.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/win/chromoting_lib.h"
 #include "remoting/host/win/rdp_desktop_session.h"
+#include "remoting/host/win/rdp_desktop_session_class_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
@@ -42,7 +43,6 @@ class ChromotingModuleThread : public base::SimpleThread {
     if (HasBeenStarted() && !HasBeenJoined()) {
       Join();
     }
-    ATL::_pAtlModule = nullptr;
   }
 
   void Run() override {
@@ -94,16 +94,16 @@ scoped_refptr<AutoThreadTaskRunner> WaitForModuleTaskRunner() {
   return nullptr;
 }
 
-// Helper to create an RdpDesktopSession instance managed by ATL.
+// Helper to create an RdpDesktopSession instance using the production class
+// factory.
 HRESULT CreateRdpDesktopSession(
     Microsoft::WRL::ComPtr<IRdpDesktopSession>* session) {
-  ATL::CComObject<RdpDesktopSession>* raw_session = nullptr;
-  HRESULT hr = ATL::CComObject<RdpDesktopSession>::CreateInstance(&raw_session);
-  if (FAILED(hr)) {
-    return hr;
+  auto factory = Microsoft::WRL::Make<RdpDesktopSessionFactory>();
+  if (!factory) {
+    return E_OUTOFMEMORY;
   }
-  *session = raw_session;
-  return S_OK;
+  HRESULT hr = factory->CreateInstance(nullptr, IID_PPV_ARGS(&*session));
+  return hr;
 }
 
 }  // namespace
@@ -114,8 +114,6 @@ class ChromotingModuleTest : public testing::Test {
   ~ChromotingModuleTest() override = default;
 
   void SetUp() override {
-    ASSERT_FALSE(ATL::_pAtlModule);
-
     module_thread_.Start();
     task_runner_ = WaitForModuleTaskRunner();
     ASSERT_NE(task_runner_, nullptr);
@@ -239,10 +237,8 @@ TEST_F(ChromotingModuleTest, ClassFactoryCreateAndRejectAggregation) {
       FROM_HERE, base::BindLambdaForTesting([&]() {
         Microsoft::WRL::ComPtr<IClassFactory> factory;
         HRESULT hr =
-            RdpDesktopSession::_ClassFactoryCreatorClass::CreateInstance(
-                reinterpret_cast<void*>(
-                    RdpDesktopSession::_CreatorClass::CreateInstance),
-                IID_PPV_ARGS(&factory));
+            Microsoft::WRL::MakeAndInitialize<RdpDesktopSessionFactory>(
+                &factory);
         EXPECT_HRESULT_SUCCEEDED(hr);
         EXPECT_NE(factory.Get(), nullptr);
         if (!factory) {

@@ -14,11 +14,11 @@
 
 namespace remoting {
 
-RdpDesktopSession::RdpDesktopSession() {}
+RdpDesktopSession::RdpDesktopSession() = default;
 
-RdpDesktopSession::~RdpDesktopSession() {}
+RdpDesktopSession::~RdpDesktopSession() = default;
 
-STDMETHODIMP RdpDesktopSession::Connect(
+IFACEMETHODIMP RdpDesktopSession::Connect(
     long width,
     long height,
     long dpi_x,
@@ -40,16 +40,16 @@ STDMETHODIMP RdpDesktopSession::Connect(
   return S_OK;
 }
 
-STDMETHODIMP RdpDesktopSession::Disconnect() {
+IFACEMETHODIMP RdpDesktopSession::Disconnect() {
   client_.reset();
   event_handler_ = nullptr;
   return S_OK;
 }
 
-STDMETHODIMP RdpDesktopSession::ChangeResolution(long width,
-                                                 long height,
-                                                 long dpi_x,
-                                                 long dpi_y) {
+IFACEMETHODIMP RdpDesktopSession::ChangeResolution(long width,
+                                                   long height,
+                                                   long dpi_x,
+                                                   long dpi_y) {
   if (client_) {
     client_->ChangeResolution(
         ScreenResolution(webrtc::DesktopSize(width, height),
@@ -58,7 +58,7 @@ STDMETHODIMP RdpDesktopSession::ChangeResolution(long width,
   return S_OK;
 }
 
-STDMETHODIMP RdpDesktopSession::InjectSas() {
+IFACEMETHODIMP RdpDesktopSession::InjectSas() {
   if (client_) {
     client_->InjectSas();
   }

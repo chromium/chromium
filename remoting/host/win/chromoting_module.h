@@ -5,63 +5,36 @@
 #ifndef REMOTING_HOST_WIN_CHROMOTING_MODULE_H_
 #define REMOTING_HOST_WIN_CHROMOTING_MODULE_H_
 
-#include <array>
-
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/win/atl.h"
 #include "base/win/scoped_com_initializer.h"
-
-// chromoting_lib.h contains MIDL-generated declarations.
-#include "remoting/host/win/chromoting_lib.h"
-
-namespace base {
-namespace win {
-class ScopedCOMInitializer;
-}  // namespace win
-}  // namespace base
 
 namespace remoting {
 
 class AutoThreadTaskRunner;
 
-// A custom version of |CAtlModuleT<>| that registers only those classes which
-// registration entries are passed to the constructor. |ChromotingModule| runs
-// |MessageLoop| allowing Chromium code to post tasks to it. Unlike
-// |CAtlExeModuleT<>|, |ChromotingModule| shuts itself down immediately once
-// the last COM object is released.
-class ChromotingModule : public ATL::CAtlModuleT<ChromotingModule> {
+// ChromotingModule runs a MessageLoop allowing Chromium code to post tasks to
+// it. Unlike traditional COM servers, ChromotingModule shuts itself down
+// immediately once the last COM object is released.
+class ChromotingModule {
  public:
   ChromotingModule();
 
   ChromotingModule(const ChromotingModule&) = delete;
   ChromotingModule& operator=(const ChromotingModule&) = delete;
 
-  ~ChromotingModule() override;
+  ~ChromotingModule();
 
   // Returns the task runner used by the module. Returns nullptr if the task
   // runner hasn't been registered yet or if the server is shutting down.
   static scoped_refptr<AutoThreadTaskRunner> task_runner();
 
-  // Registers COM classes and runs the main message loop until there are
+  // Registers COM classes and runs the main message loop until there are no
   // components using it.
   bool Run();
 
-  // ATL::CAtlModuleT<> overrides
-  LONG Unlock() override;
-
-  DECLARE_LIBID(LIBID_ChromotingLib)
-
  private:
-  // Registers/unregisters class objects from `classes_`.
-  HRESULT RegisterClassObjects(DWORD class_context, DWORD flags);
-  HRESULT RevokeClassObjects();
-
   // Used to initialize COM library.
   base::win::ScopedCOMInitializer com_initializer_;
-
-  // Classes registered by this module.
-  std::array<ATL::_ATL_OBJMAP_ENTRY, 1> classes_;
 };
 
 }  // namespace remoting
