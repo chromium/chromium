@@ -13,7 +13,8 @@ namespace ui {
 // Observer that receives the notifications of clipboard events.
 class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardObserver {
  public:
-  // Override notified when clipboard data is changed.
+  // Called when `ClipboardBuffer::kCopyPaste` data is changed (not called for
+  // other buffers such as `ClipboardBuffer::kSelection`).
   virtual void OnClipboardDataChanged();
 
 #if BUILDFLAG(IS_CHROMEOS)

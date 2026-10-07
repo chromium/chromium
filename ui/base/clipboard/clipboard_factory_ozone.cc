@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/notreached.h"
 #include "build/build_config.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
@@ -14,20 +13,29 @@
 namespace ui {
 
 Clipboard* Clipboard::Create() {
-  // On Linux Desktop, Ozone's Clipboard impl is always used.
-  // On Linux builds of ash-chrome, use platform-backed implementation iff
-  // use-system-clipboard command line switch is passed.
-  const bool use_ozone_impl =
-#if !BUILDFLAG(IS_CHROMEOS)
-      true;
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS builds (both on-device and linux-chromeos), always use
+  // ClipboardNonBacked so that Ash clipboard features (e.g. ClipboardHistory)
+  // function properly. On linux-chromeos with --use-system-clipboard,
+  // ClipboardNonBacked bridges to Ozone's PlatformClipboard (e.g.
+  // X11ClipboardOzone).
+  auto* clipboard = new ClipboardNonBacked;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseSystemClipboard) &&
+      OzonePlatform::IsInitialized()) {
+    if (auto* platform_clipboard =
+            OzonePlatform::GetInstance()->GetPlatformClipboard()) {
+      clipboard->SetPlatformClipboard(platform_clipboard);
+    }
+  }
+  return clipboard;
 #else
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseSystemClipboard);
-#endif
-
-  if (use_ozone_impl && OzonePlatform::GetInstance()->GetPlatformClipboard())
+  // On Linux Desktop, Ozone's Clipboard impl is always used.
+  if (OzonePlatform::GetInstance()->GetPlatformClipboard()) {
     return new ClipboardOzone;
+  }
   return new ClipboardNonBacked;
+#endif
 }
 
 }  // namespace ui

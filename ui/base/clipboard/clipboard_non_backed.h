@@ -16,6 +16,11 @@
 #include "build/build_config.h"
 #include "ui/base/clipboard/clipboard.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#endif
+
 namespace headless {
 class HeadlessClipboard;
 }
@@ -24,6 +29,9 @@ namespace ui {
 
 class ClipboardData;
 class ClipboardInternal;
+#if BUILDFLAG(IS_CHROMEOS)
+class PlatformClipboard;
+#endif
 
 // In-memory clipboard implementation not backed by an underlying platform.
 // This clipboard can be used where there's no need to sync the clipboard with
@@ -61,6 +69,10 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardNonBacked
 
   int NumImagesEncodedForTesting(
       ClipboardBuffer buffer = ClipboardBuffer::kCopyPaste) const;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  void SetPlatformClipboard(PlatformClipboard* platform_clipboard);
+#endif
 
  private:
   friend class Clipboard;
@@ -150,6 +162,18 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardNonBacked
 
   base::flat_map<ClipboardBuffer, std::unique_ptr<ClipboardInternal>>
       internal_clipboards_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  void OnPlatformClipboardDataChanged(ClipboardBuffer buffer);
+  void OnGetAvailableMimeTypes(ClipboardBuffer buffer,
+                               uint64_t sync_id,
+                               const std::vector<std::string>& mime_types);
+  void SyncToPlatform(ClipboardBuffer buffer, const ClipboardData& data);
+
+  raw_ptr<PlatformClipboard> platform_clipboard_ = nullptr;
+  base::flat_map<ClipboardBuffer, uint64_t> sync_sequence_id_;
+  base::WeakPtrFactory<ClipboardNonBacked> weak_factory_{this};
+#endif
 };
 
 }  // namespace ui

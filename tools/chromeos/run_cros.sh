@@ -107,7 +107,7 @@ function build_args {
 
   ARGS="--user-data-dir=${USER_DATA_DIR} \
     --enable-wayland-server --ash-debug-shortcuts --overview-button-for-tests \
-    --enable-ui-devtools --ash-dev-shortcuts \
+    --use-system-clipboard --enable-ui-devtools --ash-dev-shortcuts \
     --ash-host-window-bounds=${DISPLAY_CONFIG} \
     --enable-features=${ENABLE_FEATURES} \
     ${DISABLE_FEATURES:+--disable-features=${DISABLE_FEATURES#,}} \
