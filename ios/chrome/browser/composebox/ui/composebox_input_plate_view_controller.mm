@@ -348,6 +348,7 @@ UIImage* SendButtonImage(BOOL highlighted,
   _inputPlateStackView =
       [[UIStackView alloc] initWithArrangedSubviews:@[ _omniboxContainer ]];
   _inputPlateStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  _inputPlateStackView.insetsLayoutMarginsFromSafeArea = NO;
   [_inputPlateInternalContainerView addSubview:_inputPlateStackView];
 
   _bottomPaddingConstraint = [_inputPlateStackView.bottomAnchor
