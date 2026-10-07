@@ -35,8 +35,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TrustedVault.AccessTokenFetchSuccess{SecurityDomainId}"
     enum="Boolean" expires_after="2027-02-07">
-  <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
+  <owner>src/components/trusted_vault/OWNERS</owner>
   <summary>
     Records whether access token fetching attempt was successful upon every
     request to Security Domains service.
@@ -48,7 +48,6 @@ chromium-metrics-reviews@google.com.
     name="TrustedVault.DownloadAuthenticationFactorsRegistrationState{SecurityDomainId}"
     enum="DownloadAuthenticationFactorsRegistrationStateResult"
     expires_after="2026-12-06">
-  <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <owner>thomasth@google.com</owner>
   <summary>
@@ -67,7 +66,6 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="TrustedVault.DownloadKeysStatus{LocalRecoveryFactorType}{SecurityDomainId}"
     enum="TrustedVaultDownloadKeysStatus" expires_after="2027-02-07">
-  <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <owner>thomasth@google.com</owner>
   <summary>
@@ -84,8 +82,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TrustedVault.FileReadStatus{SecurityDomainId}"
     enum="TrustedVaultFileReadStatus" expires_after="2027-02-07">
-  <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
+  <owner>src/components/trusted_vault/OWNERS</owner>
   <summary>
     Recorded when reading local trusted vault file for {SecurityDomainId}.
   </summary>
@@ -94,8 +92,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TrustedVault.FileWriteSuccess{SecurityDomainId}"
     enum="Boolean" expires_after="2027-09-06">
-  <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
+  <owner>src/components/trusted_vault/OWNERS</owner>
   <summary>
     Records whether writing local trusted vault file for {SecurityDomainId} was
     successful upon each write.
@@ -145,7 +143,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TrustedVault.RecoverabilityStatusOnRequestCompletion"
     enum="TrustedVaultRecoverabilityStatus" expires_after="2027-09-11">
   <owner>mmrashad@google.com</owner>
-  <owner>mmoskvitin@google.com</owner>
+  <owner>src/components/trusted_vault/OWNERS</owner>
   <summary>
     Records the status of the degraded recoverability upon the request
     completion. Note that this is the status on the server side, which could be
@@ -155,7 +153,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TrustedVault.RecoverKeysOutcome{SecurityDomainId}"
     enum="TrustedVaultRecoverKeysOutcome" expires_after="2027-02-07">
-  <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <owner>thomasth@google.com</owner>
   <summary>
@@ -170,7 +167,6 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="TrustedVault.RecoveryFactorRegistered{LocalRecoveryFactorType}{SecurityDomainId}"
     enum="Boolean" expires_after="2027-05-03">
-  <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <owner>thomasth@google.com</owner>
   <summary>
@@ -195,7 +191,6 @@ chromium-metrics-reviews@google.com.
     name="TrustedVault.RecoveryFactorRegistrationOutcome{LocalRecoveryFactorType}{SecurityDomainId}"
     enum="TrustedVaultRecoveryFactorRegistrationOutcome"
     expires_after="2027-02-07">
-  <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <owner>thomasth@google.com</owner>
   <summary>
@@ -213,7 +208,6 @@ chromium-metrics-reviews@google.com.
     name="TrustedVault.RecoveryFactorRegistrationState{LocalRecoveryFactorType}{SecurityDomainId}"
     enum="TrustedVaultRecoveryFactorRegistrationState"
     expires_after="2027-02-07">
-  <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <owner>thomasth@google.com</owner>
   <summary>
@@ -248,7 +242,6 @@ chromium-metrics-reviews@google.com.
     enum="RecoveryKeyStoreCertificatesFetchStatus" expires_after="2026-06-03">
   <owner>nsatragno@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
-  <owner>mmoskvitin@google.com</owner>
   <summary>
     Recorded as a result of fetching the recovery key store certificates (i.e.
     cert.xml and cert.sig.xml files).
@@ -258,7 +251,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="TrustedVault.RecoveryKeyStoreURLFetchResponse{Reason}"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-07-31">
   <owner>mastiz@chromium.org</owner>
-  <owner>mmoskvitin@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
     Counts of responses (both http code and net error code) for requests to the
@@ -280,7 +272,6 @@ chromium-metrics-reviews@google.com.
     name="TrustedVault.SecurityDomainServiceURLFetchResponse{Reason}{SecurityDomainId}"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2027-02-07">
   <owner>mastiz@chromium.org</owner>
-  <owner>mmoskvitin@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
     Counts of responses (both http code and net error code) for requests to the
@@ -336,7 +327,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TrustedVault.TrustedVaultDegradedRecoverabilityValue"
     enum="TrustedVaultDegradedRecoverabilityValue" expires_after="2027-03-22">
   <owner>mmrashad@google.com</owner>
-  <owner>mmoskvitin@google.com</owner>
+  <owner>src/components/trusted_vault/OWNERS</owner>
   <summary>
     Records the known degraded recoverability value when the degraded
     recoverability handler is started. Note that the value reflects state
@@ -350,7 +341,7 @@ chromium-metrics-reviews@google.com.
     enum="TrustedVaultHintDegradedRecoverabilityChangedReason"
     expires_after="2026-11-17">
   <owner>mmrashad@google.com</owner>
-  <owner>mmoskvitin@google.com</owner>
+  <owner>src/components/trusted_vault/OWNERS</owner>
   <summary>
     Recorded when an immediate degraded recoverability request is going to be
     sent to the server. Records which heuristic triggered immediate request of
