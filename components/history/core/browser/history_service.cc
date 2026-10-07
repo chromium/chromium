@@ -376,7 +376,7 @@ base::CancelableTaskTracker::TaskId HistoryService::AddVisitsToCluster(
 }
 
 base::CancelableTaskTracker::TaskId HistoryService::UpdateClusterTriggerability(
-    const std::vector<history::Cluster>& clusters,
+    const std::vector<Cluster>& clusters,
     base::OnceClosure callback,
     base::CancelableTaskTracker* tracker) {
   DCHECK(backend_runner_) << "History service being called after cleanup";
@@ -401,7 +401,7 @@ base::CancelableTaskTracker::TaskId HistoryService::HideVisits(
 }
 
 base::CancelableTaskTracker::TaskId HistoryService::UpdateClusterVisit(
-    history::ClusterVisit cluster_visit,
+    ClusterVisit cluster_visit,
     base::OnceClosure callback,
     base::CancelableTaskTracker* tracker) {
   DCHECK(backend_runner_) << "History service being called after cleanup";

@@ -782,7 +782,7 @@ void VisitAnnotationsDatabase::AddVisitsToCluster(
 }
 
 void VisitAnnotationsDatabase::UpdateClusterTriggerability(
-    const std::vector<history::Cluster>& clusters) {
+    const std::vector<Cluster>& clusters) {
   sql::Statement clusters_statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
       "UPDATE clusters "
@@ -891,7 +891,7 @@ void VisitAnnotationsDatabase::UpdateClusterTriggerability(
 
 void VisitAnnotationsDatabase::UpdateClusterVisit(
     ClusterId cluster_id,
-    const history::ClusterVisit& cluster_visit) {
+    const ClusterVisit& cluster_visit) {
   sql::Statement statement(
       GetDB().GetCachedStatement(SQL_FROM_HERE,
                                  "UPDATE clusters_and_visits "

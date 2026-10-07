@@ -121,7 +121,7 @@ BrowsingHistoryService::HistoryEntry::HistoryEntry(
     int typed_count,
     bool is_actor_visit,
     std::optional<std::string> app_id,
-    history::VisitID visit_id)
+    VisitID visit_id)
     : entry_type(entry_type),
       url(url),
       title(title),
@@ -136,7 +136,7 @@ BrowsingHistoryService::HistoryEntry::HistoryEntry(
       is_actor_visit(is_actor_visit),
       app_id(app_id) {
   all_timestamps[url].insert(time);
-  if (visit_id != history::kInvalidVisitID) {
+  if (visit_id != kInvalidVisitID) {
     all_visit_ids.push_back(visit_id);
   }
 }
@@ -517,7 +517,7 @@ bool BrowsingHistoryService::ShouldQueryRemote(const QueryHistoryState& state) {
 
 #if !BUILDFLAG(IS_IOS)
   // Actor visits are local-only and user visits should not be queried.
-  if (history::IsBrowsingHistoryActorIntegrationM3Enabled() &&
+  if (IsBrowsingHistoryActorIntegrationM3Enabled() &&
       !state.original_options.include_user_visits) {
     return false;
   }
@@ -1006,7 +1006,7 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
           /*blocked_visit=*/false, visit.favicon_url, 0, 0,
           /*is_actor_visit=*/false,
           /*app_id=*/std::nullopt,
-          /*visit_id=*/history::kInvalidVisitID);
+          /*visit_id=*/kInvalidVisitID);
     }
     state->remote_status = query_history_result->has_more_results
                                ? MORE_RESULTS

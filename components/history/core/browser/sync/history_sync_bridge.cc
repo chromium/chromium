@@ -961,7 +961,7 @@ void HistorySyncBridge::MaybeCommit(const VisitRow& visit_row) {
   }
 
   // If this visit is actor-initiated, ignore it.
-  history::VisitSource visit_source = VisitSource::SOURCE_BROWSED;
+  VisitSource visit_source = VisitSource::SOURCE_BROWSED;
   if (history_backend_->GetVisitSource(visit_row.visit_id, &visit_source) &&
       visit_source == VisitSource::SOURCE_ACTOR) {
     return;
@@ -1163,7 +1163,7 @@ bool HistorySyncBridge::AddEntityInBackend(
     if (specifics.originator_cluster_id() > 0 &&
         specifics.http_response_code() != 404) {
       // Populate the visit to a synced cluster.
-      history::ClusterVisit cluster_visit;
+      ClusterVisit cluster_visit;
       cluster_visit.annotated_visit.visit_row = visit_row;
       cluster_visit.annotated_visit.visit_row.visit_id = added_visit_id;
       history_backend_->AddVisitToSyncedCluster(

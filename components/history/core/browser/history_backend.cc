@@ -1277,7 +1277,7 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
                                    ui::PAGE_TRANSITION_MANUAL_SUBFRAME);
   if (!is_subframe_navigation && !is_keyword_generated &&
       request.response_code_category !=
-          history::VisitResponseCodeCategory::k404 &&
+          VisitResponseCodeCategory::k404 &&
       current_visit_was_successfully_added) {
     tracker_.AddVisit(request.context_id, request.nav_entry_id, request.url,
                       last_visit_id);
@@ -2648,7 +2648,7 @@ void HistoryBackend::AddVisitsToCluster(ClusterId cluster_id,
 }
 
 void HistoryBackend::AddVisitToSyncedCluster(
-    const history::ClusterVisit& cluster_visit,
+    const ClusterVisit& cluster_visit,
     const std::string& originator_cache_guid,
     ClusterId originator_cluster_id) {
   TRACE_EVENT0("browser", "HistoryBackend::AddVisitToSyncedCluster");
@@ -2690,7 +2690,7 @@ void HistoryBackend::HideVisits(const std::vector<VisitID>& visit_ids) {
   db_->HideVisits(visit_ids);
 }
 
-void HistoryBackend::UpdateClusterVisit(history::ClusterVisit cluster_visit) {
+void HistoryBackend::UpdateClusterVisit(ClusterVisit cluster_visit) {
   TRACE_EVENT0("browser", "HistoryBackend::UpdateClusterVisit");
   if (!db_) {
     return;
@@ -3242,7 +3242,7 @@ KeywordSearchTermVisitList HistoryBackend::QueryMostRepeatedQueriesForKeyword(
   }
 
   KeywordSearchTermVisitList search_terms;
-  history::GetMostRepeatedSearchTermsFromEnumerator(*enumerator, result_count,
+  GetMostRepeatedSearchTermsFromEnumerator(*enumerator, result_count,
                                                     &search_terms);
   DCHECK_LE(search_terms.size(), result_count);
   base::UmaHistogramTimes("History.QueryMostRepeatedQueriesTimeV2",
@@ -4005,7 +4005,7 @@ void HistoryBackend::NotifyURLsModified(const URLRows& changed_urls,
 
 void HistoryBackend::NotifyDeletions(DeletionInfo deletion_info) {
   std::set<GURL> origins;
-  for (const history::URLRow& row : deletion_info.deleted_rows()) {
+  for (const URLRow& row : deletion_info.deleted_rows()) {
     origins.insert(row.url().DeprecatedGetOriginAsURL());
   }
 
