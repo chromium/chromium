@@ -4,6 +4,8 @@
 
 #include "chrome/browser/signin/signin_promo.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -24,12 +26,14 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/sync/base/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
@@ -39,6 +43,14 @@
 #endif
 
 namespace signin {
+
+namespace {
+
+// Gaia "Proceed To Challenge" capability: skips the identifier page when the
+// account is known (via `Email`).
+constexpr char kProceedToChallengeQueryKey[] = "ptc";
+
+}  // namespace
 
 const char kSignInPromoQueryKeyAccessPoint[] = "access_point";
 const char kSignInPromoQueryKeyAutoClose[] = "auto_close";
@@ -151,15 +163,40 @@ void IsHybridTransportSupportedForQrCodeSignin(
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-GURL GetChromeReauthURL(ChromeSyncUrlArgs args) {
+GURL GetChromeReauthURL(ChromeReauthUrlArgs args) {
   GURL url = GaiaUrls::GetInstance()->reauth_chrome_dice();
   if (!args.email.empty()) {
     url = net::AppendQueryParameter(url, "Email", args.email);
+    // `ptc` needs a known identifier to proceed to the challenge page, so it
+    // is only meaningful together with `Email`.
+    if (args.proceed_to_challenge) {
+      url = net::AppendQueryParameter(url, kProceedToChallengeQueryKey, "1");
+    }
   }
   if (!args.continue_url.is_empty()) {
     url = net::AppendQueryParameter(url, "continue", args.continue_url.spec());
   }
   return url;
+}
+
+bool CanReauthProceedToChallenge(
+    const std::string& email,
+    const AccountsInCookieJarInfo& accounts_in_cookie_jar) {
+  // Without fresh cookie info, it is unknown whether Gaia still has a valid
+  // session for `email`, so fall back to the existing `/AddSession` flow.
+  if (email.empty() || !accounts_in_cookie_jar.AreAccountsFresh()) {
+    return false;
+  }
+
+  // If Gaia still has a valid session for `email`, `/AccountChooser` completes
+  // immediately without a new sign-in, so Chrome never receives a new refresh
+  // token and stays in the auth error state. `/AddSession` always requires the
+  // challenge, so keep using it in that case.
+  return std::ranges::none_of(accounts_in_cookie_jar.GetValidSignedInAccounts(),
+                              [&email](const gaia::ListedAccount& account) {
+                                return gaia::AreEmailsSame(account.email,
+                                                           email);
+                              });
 }
 
 GURL GetAddAccountURLForDice(const std::string& email,

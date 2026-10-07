@@ -323,8 +323,24 @@ GURL GetSigninUrlForDiceSigninTab(
   // secondary account and already have a primary account.
   // TODO(crbug.com/425645725): Investigates simplifying the params such as the
   // signin_reason and its available values.
+  const bool is_reauth =
+      signin_reason == signin_metrics::Reason::kReauthentication;
+
+  // For reauth, use `/AccountChooser` with the "Proceed To Challenge"
+  // capability so Gaia skips the identifier page and directly shows the
+  // challenge (e.g. password) page, unless the cookie jar shows that Gaia
+  // would complete the flow without a new sign-in.
+  if (is_reauth && !email_hint.empty() &&
+      base::FeatureList::IsEnabled(switches::kReauthSkipIdentifierPage) &&
+      signin::CanReauthProceedToChallenge(
+          email_hint, identity_manager.GetAccountsInCookieJar())) {
+    return signin::GetChromeReauthURL({.email = email_hint,
+                                       .continue_url = continue_url,
+                                       .proceed_to_challenge = true});
+  }
+
   bool use_add_account_url =
-      signin_reason == signin_metrics::Reason::kReauthentication ||
+      is_reauth ||
       (signin_reason == signin_metrics::Reason::kAddSecondaryAccount &&
        identity_manager.HasPrimaryAccount(signin::ConsentLevel::kSignin));
 

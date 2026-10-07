@@ -30,6 +30,8 @@ class PrefRegistrySyncable;
 // Utility functions for sign in promos.
 namespace signin {
 
+class AccountsInCookieJarInfo;
+
 extern const char kSignInPromoQueryKeyAccessPoint[];
 // TODO(crbug.com/40764426): Auto close is unused. Remove it.
 extern const char kSignInPromoQueryKeyAutoClose[];
@@ -115,21 +117,40 @@ void IsHybridTransportSupportedForQrCodeSignin(
     HybridTransportSupportedCallback callback);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-// Returns the URL to be used to reauth.
-// As part of `args` only `email` and `continue_url` are used:
-// `email` is used to be able to preview the URL with the appropriate email:
-// - if the value is empty: the regular sign in page is opened with no prefill.
-// - if the value is set and correspond to an existing account used within the
-// profile previously: the "Verify it's you" page is opened with the preselected
-// account on the next page requesting the authentication. Note: the email can
-// still be modified by the user and does not guarantee that the reauth attempt
-// will be done on this email/account.
-// - if the value is set but the email does not correspond to an account
-// previously used within the profile: the regular sign in gaia page is
-// displayed with the prefilled email.
-// `continue_url` is used to redirect to the given url in case of successful
-// reauth.
-GURL GetChromeReauthURL(ChromeSyncUrlArgs args);
+// Wraps arguments for `GetChromeReauthURL()`. They are all optional.
+struct ChromeReauthUrlArgs {
+  // Used to be able to preview the URL with the appropriate email:
+  // - if the value is empty: the regular sign in page is opened with no
+  // prefill.
+  // - if the value is set and correspond to an existing account used within the
+  // profile previously: the "Verify it's you" page is opened with the
+  // preselected account on the next page requesting the authentication. Note:
+  // the email can still be modified by the user and does not guarantee that the
+  // reauth attempt will be done on this email/account.
+  // - if the value is set but the email does not correspond to an account
+  // previously used within the profile: the regular sign in gaia page is
+  // displayed with the prefilled email.
+  const std::string email;
+  // Used to redirect to the given url in case of successful reauth.
+  const GURL continue_url;
+  // If true, appends the `ptc=1` ("Proceed To Challenge") parameter so that
+  // Gaia skips the identifier page and goes straight to the challenge (e.g.
+  // password) page for `email`.
+  bool proceed_to_challenge = false;
+};
+
+// Returns the URL to be used to reauth. See `ChromeReauthUrlArgs` docs for
+// details on the arguments.
+GURL GetChromeReauthURL(ChromeReauthUrlArgs args);
+
+// Returns whether a reauth for `email` can use `GetChromeReauthURL()` with
+// `proceed_to_challenge`, based on `accounts_in_cookie_jar`.
+// Returns false (i.e. callers should keep using `GetAddAccountURLForDice()`)
+// if `email` is empty, if the cookie jar info is stale, or if `email` still
+// has a valid signed-in Gaia session.
+bool CanReauthProceedToChallenge(
+    const std::string& email,
+    const AccountsInCookieJarInfo& accounts_in_cookie_jar);
 
 // Returns the URL to be used to add (secondary) account when DICE is enabled.
 // If email is not empty, then it will pass email as hint to the page so that it
