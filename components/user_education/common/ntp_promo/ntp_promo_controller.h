@@ -46,11 +46,11 @@ struct NtpPromoControllerParams {
   NtpPromoControllerParams& operator=(NtpPromoControllerParams&&) noexcept;
 
   // The number of sessions a promo may stay in the top spot before being
-  // rotated out.
+  // rotated out. If non-positive, there is no limit.
   int max_sessions_per_term = 0;
 
   // The maximum number of terms a promo can be shown before it is permanently
-  // dismissed.
+  // dismissed. If non-positive, there is no limit.
   int max_terms = 0;
 
   // How long a promo is hidden after being clicked.

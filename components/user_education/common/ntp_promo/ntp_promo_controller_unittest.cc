@@ -533,4 +533,64 @@ TEST_F(NtpPromoControllerTest, ImpressionCapsMultiPromo) {
   EXPECT_FALSE(ShowsAnyPromo());
 }
 
+TEST_F(NtpPromoControllerTest, NoSessionLimitDoesNotBlockPromo) {
+  RegisterPromo(kPromoId, kEligible);
+
+  auto params = GetNtpPromoControllerParams();
+  params.max_sessions_per_term = 0;
+  CreateController(params);
+
+  for (int i = 0; i < 5; ++i) {
+    AdvanceSession();
+    EXPECT_TRUE(ShowsPromo(kPromoId));
+  }
+}
+
+TEST_F(NtpPromoControllerTest, NoTermLimitDoesNotBlockPromo) {
+  RegisterPromo(kPromoId, kEligible);
+
+  auto params = GetNtpPromoControllerParams();
+  params.max_sessions_per_term = 1;
+  params.max_terms = 0;
+  params.cool_off_duration = base::Days(30);
+  CreateController(params);
+
+  // Show promo across multiple terms, verifying it is not blocked by term
+  // limit.
+  for (int term = 0; term < 5; ++term) {
+    AdvanceSession();
+    EXPECT_TRUE(ShowsPromo(kPromoId));
+
+    AdvanceSession();
+    EXPECT_FALSE(ShowsAnyPromo());
+
+    task_environment_.AdvanceClock(params.cool_off_duration);
+  }
+}
+
+TEST_F(NtpPromoControllerTest, FeatureParamsLoadedIntoControllerParams) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      user_education::features::kEnableNtpBrowserPromos,
+      {{"session-rotation", "12"},
+       {"max-terms", "13"},
+       {"clicked-duration", "45d"},
+       {"suppress-list", "promo_1,promo_2"}});
+
+  const NtpPromoControllerParams params = GetNtpPromoControllerParams();
+  EXPECT_EQ(params.max_sessions_per_term, 12);
+  EXPECT_EQ(params.max_terms, 13);
+  EXPECT_EQ(params.cool_off_duration, base::Days(45));
+  EXPECT_THAT(params.suppress_list, testing::ElementsAre("promo_1", "promo_2"));
+}
+
+TEST_F(NtpPromoControllerTest, EmptyPromoIdHandled) {
+  CreateController();
+
+  // Invoking callbacks with an empty promo ID should be a no-op and not crash.
+  controller().OnPromoShown("");
+  controller().OnPromoClicked("", nullptr);
+  controller().OnPromoDismissed("");
+}
+
 }  // namespace user_education
