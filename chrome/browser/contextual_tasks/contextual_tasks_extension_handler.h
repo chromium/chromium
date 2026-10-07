@@ -22,7 +22,6 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_observer.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
-#include "components/sessions/core/session_id.h"
 #include "content/public/browser/document_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -45,7 +44,6 @@ namespace contextual_search {
 class ContextualSearchSessionHandle;
 class InputStateModel;
 struct TabContextState;
-struct TabInfo;
 }  // namespace contextual_search
 
 namespace content {
@@ -56,9 +54,12 @@ namespace lens {
 class AddedContext;
 struct ContextualInputData;
 class ClientToSearchMessage;
-enum class LensOverlayDismissalSource;
 class SearchToClientMessage_UpdateThreadContextLibrary;
 }  // namespace lens
+
+namespace contextual_tasks {
+class ContextualTasksWebContentsUserData;
+}  // namespace contextual_tasks
 
 class BrowserWindowInterface;
 class LensSearchController;
@@ -252,16 +253,10 @@ class ContextualTasksExtensionHandler
   explicit ContextualTasksExtensionHandler(content::RenderFrameHost* rfh);
   DOCUMENT_USER_DATA_KEY_DECL();
 
+  contextual_tasks::ContextualTasksWebContentsUserData*
+  GetOrCreateWebContentsUserData() const;
   BrowserWindowInterface* GetBrowserWindowInterface() const;
   bool IsEmbeddedInSidePanel() const;
-  std::vector<contextual_search::TabInfo> GetSelectedTabs();
-
-  // Associates `tab_session_id` with the handler's task, if any, so the task
-  // knows which tabs have been attached as context.
-  void AssociateTabWithTask(SessionID tab_session_id);
-  // Asks the browser window's ActiveTaskContextProvider to recompute the
-  // active task context (e.g. tab underlines) after context was removed.
-  void RefreshActiveTaskContext();
 
   contextual_search::ContextualSearchSessionHandle*
   GetOrCreateContextualSessionHandle();
@@ -273,7 +268,6 @@ class ContextualTasksExtensionHandler
       const base::UnguessableToken& context_token,
       std::unique_ptr<lens::ContextualInputData> page_content_data);
 #endif
-  void UploadSnapshotTabContextIfPresent();
 
   void InitializeInputStateModel();
   void OnInputStateChanged(const omnibox::InputState& state);
@@ -301,19 +295,8 @@ class ContextualTasksExtensionHandler
   void HandleThreadContextLibraryUpdateFromAim(
       const lens::SearchToClientMessage_UpdateThreadContextLibrary& message);
   std::optional<lens::AddedContext> GetLensAddedContext();
-  void DoSubmitQueryCleanup();
-  void CloseLensAsync(lens::LensOverlayDismissalSource dismissal_source);
-
-  enum class InjectedInputType {
-    kContextLibrary,
-    kLensChip,
-  };
-  void SendInjectChromeInput(InjectedInputType type, bool is_active);
-  void SendMountContextLibrary();
-
-  // Tell AIM to add context library UI (favicons) iframe based
-  // on if there are tabs, and to remove the UI iframe if there are no tabs.
-  void UpdateContextLibraryInputState();
+  void SendSearchMessageToBoundPage(const lens::ClientToSearchMessage& message);
+  void OnLensCropUpdated(const GURL& data_uri);
 
   mojo::Receiver<contextual_tasks::mojom::ExtensionPageHandlerFactory>
       contextual_tasks_factory_receiver_{this};
@@ -339,24 +322,10 @@ class ContextualTasksExtensionHandler
                           PermissionPromptObserver::Observer>
       permission_prompt_observation_{this};
 
-  std::optional<base::Uuid> task_id_;
   omnibox::ToolMode active_tool_ = omnibox::TOOL_MODE_UNSPECIFIED;
   omnibox::ModelMode active_model_ = omnibox::MODEL_MODE_UNSPECIFIED;
-  base::TimeTicks last_handled_submit_interaction_time_{};
+  base::TimeTicks last_handled_submit_interaction_time_;
 
-  bool is_lens_crop_mounted_ = false;
-  std::string last_lens_crop_data_uri_;
-
-#if !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/568013317): Remove. Delayed tabs should be owned by the
-  // session handle and uploaded at submit via QueryContextualizer, like
-  // ContextualTasksComposeboxHandler.
-  std::optional<std::pair<base::UnguessableToken,
-                          std::unique_ptr<lens::ContextualInputData>>>
-      tab_context_snapshot_;
-#endif
-
-  bool context_library_is_active_ = false;
   base::WeakPtrFactory<ContextualTasksExtensionHandler> weak_ptr_factory_{this};
 };
 

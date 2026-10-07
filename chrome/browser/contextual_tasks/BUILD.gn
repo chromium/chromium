@@ -358,15 +358,35 @@ source_set("user_data") {
     "contextual_tasks_web_contents_user_data.h",
   ]
   deps = [
+    ":contextual_tasks",
     ":ui",
     "//base",
     "//chrome/browser/autocomplete:aim_eligibility_service",
+    "//chrome/browser/contextual_search",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
+    "//chrome/browser/tab_list",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/webui:webui_util",
     "//components/contextual_search:public",
+    "//components/contextual_tasks/public",
+    "//components/lens",
     "//components/omnibox/browser",
+    "//components/omnibox/common",
+    "//components/sessions",
+    "//components/signin/public/identity_manager",
+    "//components/tabs:public",
     "//content/public/browser",
+    "//third_party/lens_server_proto:lens_overlay_proto",
+    "//url",
   ]
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/lens:backend_logic_impl",
+      "//skia",
+    ]
+  }
 }
 
 source_set("ui_impl") {
