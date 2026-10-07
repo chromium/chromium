@@ -332,6 +332,96 @@ TEST_P(CSSAnimationsTest, AnimationFlags_Animations) {
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentTransformAnimation());
 }
 
+// A backdrop-filter animation whose value can't change is still a current
+// backdrop-filter animation, but it isn't a dynamic one, so it doesn't get a
+// composited backdrop-filter effect, which would require render surfaces for
+// the element and for its backdrop root.
+TEST_P(CSSAnimationsTest, AnimationFlags_StaticBackdropFilter) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes from-none { from { backdrop-filter: none; } }
+      @keyframes none-to-none {
+        from { backdrop-filter: none; }
+        to { backdrop-filter: none; }
+      }
+      @keyframes blur-to-blur {
+        from { backdrop-filter: blur(5px); }
+        to { backdrop-filter: blur(5px); }
+      }
+      @keyframes from-blur { from { backdrop-filter: blur(10px); } }
+      #test.from-none { animation: from-none 1s; }
+      #test.none-to-none { animation: none-to-none 1s; }
+      #test.blur-to-blur { animation: blur-to-blur 1s; }
+      #test.from-blur { animation: from-blur 1s; }
+      #test.blur { backdrop-filter: blur(5px); }
+    </style>
+    <div id=test></div>
+  )HTML");
+  Element* element = GetDocument().getElementById(AtomicString("test"));
+  enum class Result { kNoAnimation, kStatic, kDynamic };
+  auto backdrop_filter_animation = [&](const char* classes) {
+    element->setAttribute(html_names::kClassAttr, AtomicString(classes));
+    UpdateAllLifecyclePhasesForTest();
+    const ComputedStyle& style = element->ComputedStyleRef();
+    if (!style.HasCurrentBackdropFilterAnimation()) {
+      EXPECT_FALSE(style.HasCurrentDynamicBackdropFilterAnimation());
+      return Result::kNoAnimation;
+    }
+    return style.HasCurrentDynamicBackdropFilterAnimation() ? Result::kDynamic
+                                                            : Result::kStatic;
+  };
+
+  EXPECT_EQ(Result::kNoAnimation, backdrop_filter_animation(""));
+  // New animations from `none` to the underlying value `none`.
+  EXPECT_EQ(Result::kStatic, backdrop_filter_animation("from-none"));
+  EXPECT_EQ(Result::kStatic, backdrop_filter_animation("none-to-none"));
+  // An animation with the same value throughout, other than `none`.
+  EXPECT_EQ(Result::kStatic, backdrop_filter_animation("blur-to-blur"));
+  // An animation whose value changes.
+  EXPECT_EQ(Result::kDynamic, backdrop_filter_animation("from-blur"));
+  // A running animation from `none`, after the underlying value changes.
+  EXPECT_EQ(Result::kStatic, backdrop_filter_animation("from-none"));
+  EXPECT_EQ(Result::kDynamic, backdrop_filter_animation("from-none blur"));
+  // A property found to be dynamic stays dynamic for the same keyframes, see
+  // KeyframeEffectModelBase::PropertySpecificKeyframeGroup::StaticCheckResult.
+  EXPECT_EQ(Result::kDynamic, backdrop_filter_animation("from-none"));
+
+  {
+    ScopedSkipCompositingStaticBackdropFilterAnimationForTest disabled(false);
+    EXPECT_EQ(Result::kDynamic, backdrop_filter_animation("none-to-none"));
+  }
+}
+
+// Per https://drafts.csswg.org/web-animations-1/#side-effects-section, an
+// element with a current backdrop-filter animation acts as if it had
+// `will-change: backdrop-filter`, which makes it a stacking context regardless
+// of the animated values.
+TEST_P(CSSAnimationsTest, NoneBackdropFilterAnimationIsStackingContext) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes none-to-none {
+        from { backdrop-filter: none; }
+        to { backdrop-filter: none; }
+      }
+      @keyframes from-none { from { backdrop-filter: none; } }
+      #test.none-to-none { animation: none-to-none 1s; }
+      #test.from-none { animation: from-none 1s; }
+    </style>
+    <div id=test></div>
+  )HTML");
+  Element* element = GetDocument().getElementById(AtomicString("test"));
+  auto is_stacking_context = [&](const char* classes) {
+    element->setAttribute(html_names::kClassAttr, AtomicString(classes));
+    UpdateAllLifecyclePhasesForTest();
+    return element->ComputedStyleRef().IsStackingContextWithoutContainment();
+  };
+
+  EXPECT_FALSE(is_stacking_context(""));
+  EXPECT_TRUE(is_stacking_context("none-to-none"));
+  EXPECT_FALSE(is_stacking_context(""));
+  EXPECT_TRUE(is_stacking_context("from-none"));
+}
+
 namespace {
 
 bool OpacityFlag(const ComputedStyle& style) {

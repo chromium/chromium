@@ -536,11 +536,23 @@ bool CompositorAnimations::CompositorPropertyAnimationsHaveNoEffect(
 
   const auto& keyframe_effect = To<KeyframeEffectModelBase>(effect);
   const auto& groups = keyframe_effect.GetPropertySpecificKeyframeGroups();
+  // Static properties aren't animated on the compositor (see
+  // GetAnimationOnCompositor()), so they don't need composited property nodes.
+  // E.g. a static backdrop-filter animation isn't composited, see
+  // CompositingReasonFinder::CompositingReasonsForAnimation().
+  const bool skip_static_properties = RuntimeEnabledFeatures::
+      SkipCompositingStaticBackdropFilterAnimationEnabled();
+  const auto dynamic_properties =
+      keyframe_effect.DynamicProperties(&target_element);
   bool has_paint_properties =
       layout_object && layout_object->FirstFragment().PaintProperties();
   for (const PropertyHandle& property : groups.Keys()) {
     if (!CompositedAnimationRequiresProperties(property, layout_object))
       continue;
+
+    if (skip_static_properties && !dynamic_properties.Contains(property)) {
+      continue;
+    }
 
     if (!has_paint_properties) {
       // We have an animated property that requires a property node but no paint

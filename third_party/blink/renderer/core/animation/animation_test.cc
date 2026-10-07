@@ -2792,6 +2792,59 @@ TEST_P(AnimationAnimationTestCompositing, HiddenAnimationsTickWhenVisible) {
                    animation->TimeToEffectChange().value());
 }
 
+// A static backdrop-filter, e.g. `none` throughout, isn't composited. That
+// must not make CompositorPropertyAnimationsHaveNoEffect() treat the effect as
+// having no visible change, because the transform is composited, and such an
+// effect wouldn't run on the compositor or tick on the main thread, so the
+// transform animation would freeze.
+TEST_P(AnimationAnimationTestCompositing,
+       TransformAnimationWithStaticBackdropFilterRunsOnCompositor) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim {
+        from { transform: translateX(0); backdrop-filter: none; }
+        to { transform: translateX(100px); backdrop-filter: none; }
+      }
+      #target {
+        width: 10px;
+        height: 10px;
+        background: rebeccapurple;
+        animation: anim 30s;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  Element* target = GetElementById("target");
+  ElementAnimations* element_animations = target->GetElementAnimations();
+  ASSERT_EQ(1u, element_animations->Animations().size());
+  Animation* animation = element_animations->Animations().begin()->key;
+
+  RunDocumentLifecycle();
+
+  const ComputedStyle& style = target->ComputedStyleRef();
+  EXPECT_TRUE(style.HasCurrentBackdropFilterAnimation());
+  EXPECT_FALSE(style.HasCurrentDynamicBackdropFilterAnimation());
+  const auto* properties =
+      target->GetLayoutObject()->FirstFragment().PaintProperties();
+  ASSERT_TRUE(properties);
+  EXPECT_TRUE(properties->Transform());
+  EXPECT_TRUE(!properties->Effect() ||
+              !properties->Effect()->HasActiveBackdropFilterAnimation());
+
+  const PaintArtifactCompositor* paint_artifact_compositor =
+      GetDocument().View()->GetPaintArtifactCompositor();
+  ASSERT_TRUE(paint_artifact_compositor);
+
+  EXPECT_EQ(animation->CheckCanStartAnimationOnCompositor(
+                paint_artifact_compositor, StartOnCompositorReason::kGeneric),
+            CompositorAnimations::kNoFailure);
+  EXPECT_FALSE(animation->CompositorPropertyAnimationsHaveNoEffectForTesting());
+  EXPECT_FALSE(animation->AnimationHasNoEffect());
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_EQ(2u, animation->TimelineInternal()->AnimationsNeedingUpdateCount());
+}
+
 TEST_P(AnimationAnimationTestNoCompositing,
        GetEffectTimingDelayZeroUseCounter) {
   animation->setEffect(MakeAnimation(/* duration */ 1.0));

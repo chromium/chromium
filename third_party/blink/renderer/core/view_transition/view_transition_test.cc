@@ -17,6 +17,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_callback.h"
+#include "third_party/blink/renderer/core/animation/animation.h"
+#include "third_party/blink/renderer/core/animation/element_animations.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
@@ -1106,6 +1109,93 @@ TEST_P(ViewTransitionTest, InspectorStyleResolver) {
     EXPECT_EQ(pseudo_element_rules->back().rule->cssText(),
               test_case.user_rule);
   }
+
+  FinishTransition();
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+}
+
+// Per spec, the group animation animates backdrop-filter from the old
+// element's value to the new element's value. If both are `none`, the value
+// can't change, so the group shouldn't get a composited backdrop-filter effect,
+// which would require render surfaces for the group and for its backdrop root.
+// The animation is still a current backdrop-filter animation, which makes the
+// group a stacking context.
+TEST_P(ViewTransitionTest, NoneBackdropFilterGroupAnimation) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      div {
+        view-transition-name: foo;
+        width: 100px;
+        height: 100px;
+        contain: paint;
+      }
+    </style>
+    <div id=target></div>
+  )HTML");
+
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  auto start_setup_lambda =
+      [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
+  auto start_setup_callback =
+      v8::Function::New(script_state->GetContext(), start_setup_lambda, {})
+          .ToLocalChecked();
+  auto* transition = ViewTransitionSupplement::startViewTransition(
+      script_state, GetDocument(),
+      V8ViewTransitionCallback::Create(start_setup_callback),
+      ASSERT_NO_EXCEPTION);
+
+  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  test::RunPendingTasks();
+  ASSERT_EQ(GetState(transition), State::kAnimating);
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* transition_pseudo = To<ViewTransitionTransitionElement>(
+      GetDocument().documentElement()->GetPseudoElement(
+          kPseudoIdViewTransition));
+  ASSERT_TRUE(transition_pseudo);
+  auto* group = transition_pseudo->FindViewTransitionGroupPseudoElement(
+      AtomicString("foo"));
+  ASSERT_TRUE(group);
+
+  ElementAnimations* element_animations = group->GetElementAnimations();
+  ASSERT_TRUE(element_animations);
+  bool animates_backdrop_filter = false;
+  for (const auto& entry : element_animations->Animations()) {
+    animates_backdrop_filter |= entry.key->effect()->Affects(
+        PropertyHandle(GetCSSPropertyBackdropFilter()));
+  }
+  EXPECT_TRUE(animates_backdrop_filter);
+
+  auto has_composited_backdrop_filter_animation = [&]() {
+    const auto* properties =
+        group->GetLayoutObject()->FirstFragment().PaintProperties();
+    return properties && properties->Effect() &&
+           properties->Effect()->HasActiveBackdropFilterAnimation();
+  };
+
+  const ComputedStyle* style = &group->ComputedStyleRef();
+  EXPECT_TRUE(style->HasCurrentTransformAnimation());
+  EXPECT_TRUE(style->HasCurrentBackdropFilterAnimation());
+  EXPECT_FALSE(style->HasCurrentDynamicBackdropFilterAnimation());
+  EXPECT_FALSE(has_composited_backdrop_filter_animation());
+
+  // If the new element's backdrop-filter changes, the group animation animates
+  // to the new value, so the group needs a composited backdrop-filter effect.
+  // The new value is captured after pre-paint, and the view transition styles
+  // are updated in the next lifecycle update.
+  GetDocument()
+      .getElementById(AtomicString("target"))
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("backdrop-filter: blur(5px)"));
+  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesForTest();
+  style = &group->ComputedStyleRef();
+  EXPECT_TRUE(style->HasCurrentBackdropFilterAnimation());
+  EXPECT_TRUE(style->HasCurrentDynamicBackdropFilterAnimation());
+  EXPECT_TRUE(has_composited_backdrop_filter_animation());
 
   FinishTransition();
   UpdateAllLifecyclePhasesAndFinishDirectives();

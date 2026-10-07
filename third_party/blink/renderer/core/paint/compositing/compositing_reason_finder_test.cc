@@ -304,6 +304,7 @@ void CompositingReasonFinderTest::CheckCompositingReasonsForAnimation(
   builder.SetHasCurrentOpacityAnimation(false);
   builder.SetHasCurrentFilterAnimation(false);
   builder.SetHasCurrentBackdropFilterAnimation(false);
+  builder.SetHasCurrentDynamicBackdropFilterAnimation(false);
   object->SetStyle(*builder.TakeStyle());
 
   EXPECT_EQ(CompositingReasons{},
@@ -360,6 +361,13 @@ void CompositingReasonFinderTest::CheckCompositingReasonsForAnimation(
   builder = ComputedStyleBuilder(object->StyleRef());
   builder.SetHasCurrentBackdropFilterAnimation(true);
   object->SetStyle(*builder.TakeStyle());
+  // A backdrop-filter animation whose value can't change isn't composited.
+  EXPECT_EQ(expected_reason,
+            CompositingReasonFinder::CompositingReasonsForAnimation(*object));
+
+  builder = ComputedStyleBuilder(object->StyleRef());
+  builder.SetHasCurrentDynamicBackdropFilterAnimation(true);
+  object->SetStyle(*builder.TakeStyle());
   expected_reason.Put(CompositingReason::kActiveBackdropFilterAnimation);
   EXPECT_EQ(expected_reason,
             CompositingReasonFinder::CompositingReasonsForAnimation(*object));
@@ -373,6 +381,63 @@ TEST_P(CompositingReasonFinderTest, CompositingReasonsForAnimationBox) {
 TEST_P(CompositingReasonFinderTest, CompositingReasonsForAnimationInline) {
   SetBodyInnerHTML("<span id='target'>Target</span>");
   CheckCompositingReasonsForAnimation(/*supports_transform_animation*/ false);
+}
+
+// A backdrop-filter animation whose value can't change isn't composited, which
+// would require render surfaces for the element and for its backdrop root. The
+// paint properties are updated when the animation becomes dynamic, even if the
+// animated value doesn't change.
+TEST_P(CompositingReasonFinderTest, StaticBackdropFilterAnimation) {
+  // The animated values are `none` at the start, unlike an interpolation
+  // between `none` and `blur(10px)`, which is `blur(0px)`.
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes static { 0%, 50% { backdrop-filter: none; } }
+      @keyframes dynamic {
+        0%, 50% { backdrop-filter: none; }
+        100% { backdrop-filter: blur(10px); }
+      }
+      #target { width: 100px; height: 100px; }
+      #target.static { animation: static 1s; }
+      #target.dynamic { animation: static 1s, dynamic 1s; }
+      #target.blur { backdrop-filter: blur(5px); }
+    </style>
+    <div id="target"></div>
+  )HTML");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  auto has_backdrop_filter_animation = [&](const char* classes) {
+    SCOPED_TRACE(classes);
+    target->setAttribute(html_names::kClassAttr, AtomicString(classes));
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_FALSE(target->ComputedStyleRef().HasBackdropFilter());
+    const auto* properties =
+        target->GetLayoutObject()->FirstFragment().PaintProperties();
+    return properties && properties->Effect() &&
+           properties->Effect()->HasActiveBackdropFilterAnimation();
+  };
+
+  EXPECT_FALSE(has_backdrop_filter_animation(""));
+  EXPECT_FALSE(has_backdrop_filter_animation("static"));
+  // A dynamic animation is added while the static animation keeps running.
+  EXPECT_TRUE(has_backdrop_filter_animation("dynamic"));
+  EXPECT_FALSE(has_backdrop_filter_animation("static"));
+  // The underlying value of the static animation changes.
+  EXPECT_TRUE(has_backdrop_filter_animation("static blur"));
+}
+
+TEST_P(CompositingReasonFinderTest, StaticBackdropFilterAnimationKillSwitch) {
+  ScopedSkipCompositingStaticBackdropFilterAnimationForTest disabled(false);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes from-none { from { backdrop-filter: none; } }
+      #target { width: 100px; height: 100px; animation: from-none 1s; }
+    </style>
+    <div id="target"></div>
+  )HTML");
+  EXPECT_EQ(
+      CompositingReasons{CompositingReason::kActiveBackdropFilterAnimation},
+      CompositingReasonFinder::CompositingReasonsForAnimation(
+          *GetLayoutObjectByElementId("target")));
 }
 
 TEST_P(CompositingReasonFinderTest, DontPromoteEmptyIframe) {

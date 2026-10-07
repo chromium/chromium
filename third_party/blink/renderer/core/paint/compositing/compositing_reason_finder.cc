@@ -589,7 +589,14 @@ CompositingReasons CompositingReasonFinder::CompositingReasonsForAnimation(
   if (style.HasCurrentFilterAnimation()) {
     reasons.Put(CompositingReason::kActiveFilterAnimation);
   }
-  if (style.HasCurrentBackdropFilterAnimation()) {
+  // Only composite a backdrop-filter animation if the value may change, because
+  // a composited backdrop-filter effect requires render surfaces for the
+  // element and for its backdrop root. An animation whose value can't change
+  // still makes the element a stacking context, see
+  // HasCurrentBackdropFilterAnimation().
+  // TODO(crbug.com/569098933): Consider the same for other properties, e.g.
+  // filter, whose composited effect also requires a render surface.
+  if (style.HasCurrentDynamicBackdropFilterAnimation()) {
     reasons.Put(CompositingReason::kActiveBackdropFilterAnimation);
   }
   return reasons;

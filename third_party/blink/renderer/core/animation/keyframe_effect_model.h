@@ -130,6 +130,12 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
     };
     bool IsStaticMaybeDowngradeProvisional(const PropertyHandle&,
                                            const Element*) const;
+    // Like above, but checks provisional properties against `reference_style`
+    // rather than the base style of an element's computed style, and doesn't
+    // update the cached result.
+    bool HasStaticKeyframeResolution(
+        const PropertyHandle&,
+        const ComputedStyle& reference_style) const;
 
     // Only considered static if all keyframes are set and have precisely the
     // same value and composite mode.
@@ -150,6 +156,11 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
    private:
     void RemoveRedundantKeyframes();
     void CheckIfStatic(const KeyframeEffectModelBase& model);
+    // Returns true if the value of the specified keyframes matches the
+    // underlying value in `reference_style`.
+    bool UnderlyingValueMatchesKeyframes(
+        const PropertyHandle&,
+        const ComputedStyle& reference_style) const;
     bool AddSyntheticKeyframeIfRequired(
         scoped_refptr<TimingFunction> zero_offset_easing);
     const CSSPropertySpecificKeyframe* FirstCssKeyframeWithSetValue() const;
@@ -228,6 +239,17 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
   // are treated as static if previously validated and dynamic otherwise.
   IterableDynamicProperties DynamicProperties(
       const Element* element = nullptr) const;
+
+  // Returns true if `property` is animated by this effect and its value may
+  // change, i.e. if DynamicProperties(element) would contain `property` for an
+  // element whose base computed style is `reference_style`. This can be used
+  // during style resolution, before the element's computed style is updated.
+  // Provisional properties are checked against `reference_style`, but unlike
+  // DynamicProperties(element), this doesn't update the cached results, so
+  // checks against other base styles (e.g. for SVG <use> instances) don't
+  // affect DynamicProperties(element).
+  bool IsDynamicProperty(const PropertyHandle& property,
+                         const ComputedStyle& reference_style) const;
 
   bool HasStaticProperty() const;
 

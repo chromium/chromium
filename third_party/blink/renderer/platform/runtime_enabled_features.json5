@@ -6105,6 +6105,16 @@
       status: "experimental",
     },
     {
+      // Kill switch for https://crbug.com/569098933. Doesn't composite a
+      // backdrop-filter animation whose value can't change (e.g. the view
+      // transition group animation from `none` to the underlying `none`),
+      // which would require render surfaces for the animating element and for
+      // its backdrop root. The animation still makes the element a stacking
+      // context.
+      name: "SkipCompositingStaticBackdropFilterAnimation",
+      status: "stable",
+    },
+    {
       // Improves performance of event dispatching by skipping the capture
       // phase if there are no capture listeners registered on the page.
       name: "SkipEventCapture",

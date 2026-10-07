@@ -171,6 +171,17 @@ KeyframeEffectModelBase::DynamicProperties(const Element* element) const {
   return IterableDynamicProperties(this, element);
 }
 
+bool KeyframeEffectModelBase::IsDynamicProperty(
+    const PropertyHandle& property,
+    const ComputedStyle& reference_style) const {
+  EnsureKeyframeGroups();
+  auto iter = keyframe_groups_->find(property);
+  if (iter == keyframe_groups_->end()) {
+    return false;
+  }
+  return !iter->value->HasStaticKeyframeResolution(property, reference_style);
+}
+
 bool KeyframeEffectModelBase::HasStaticProperty() const {
   EnsureKeyframeGroups();
   for (const auto& entry : *keyframe_groups_) {
@@ -758,17 +769,7 @@ bool KeyframeEffectModelBase::PropertySpecificKeyframeGroup::
         return false;
       }
 
-      const CSSPropertySpecificKeyframe* keyframe =
-          FirstCssKeyframeWithSetValue();
-      CHECK(keyframe);
-      const CSSValue* target_value = keyframe->Value();
-      CHECK(target_value);
-
-      const CSSValue* underlying_value =
-          ComputedStyleUtils::ComputedPropertyValue(property.GetCSSProperty(),
-                                                    *base_style);
-      if (!underlying_value ||
-          !AreEquivalent(*underlying_value, *target_value)) {
+      if (!UnderlyingValueMatchesKeyframes(property, *base_style)) {
         static_check_result_ = StaticCheckResult::kDynamic;
         return false;
       }
@@ -780,6 +781,39 @@ bool KeyframeEffectModelBase::PropertySpecificKeyframeGroup::
     case StaticCheckResult::kUnset:
       NOTREACHED();
   }
+}
+
+bool KeyframeEffectModelBase::PropertySpecificKeyframeGroup::
+    HasStaticKeyframeResolution(const PropertyHandle& property,
+                                const ComputedStyle& reference_style) const {
+  switch (static_check_result_) {
+    case StaticCheckResult::kDynamic:
+      return false;
+
+    case StaticCheckResult::kStatic:
+      return true;
+
+    case StaticCheckResult::kProvisionalChecked:
+    case StaticCheckResult::kProvisionalUnchecked:
+      return UnderlyingValueMatchesKeyframes(property, reference_style);
+
+    case StaticCheckResult::kUnset:
+      NOTREACHED();
+  }
+}
+
+bool KeyframeEffectModelBase::PropertySpecificKeyframeGroup::
+    UnderlyingValueMatchesKeyframes(
+        const PropertyHandle& property,
+        const ComputedStyle& reference_style) const {
+  const CSSPropertySpecificKeyframe* keyframe = FirstCssKeyframeWithSetValue();
+  CHECK(keyframe);
+  const CSSValue* target_value = keyframe->Value();
+  CHECK(target_value);
+
+  const CSSValue* underlying_value = ComputedStyleUtils::ComputedPropertyValue(
+      property.GetCSSProperty(), reference_style);
+  return underlying_value && AreEquivalent(*underlying_value, *target_value);
 }
 
 void KeyframeEffectModelBase::PropertySpecificKeyframeGroup::CheckIfStatic(

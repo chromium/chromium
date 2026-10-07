@@ -724,6 +724,9 @@ TEST_F(ComputedStyleTest, AnimationFlags) {
   TestAnimationFlag(FLAG_PARAMS(HasCurrentBackdropFilterAnimation),
                     ComputedStyle::Difference::kNonInherited,
                     kCompositingReasonsChanged);
+  TestAnimationFlag(FLAG_PARAMS(HasCurrentDynamicBackdropFilterAnimation),
+                    ComputedStyle::Difference::kNonInherited,
+                    kCompositingReasonsChanged);
   TestAnimationFlag(FLAG_PARAMS(HasCurrentClipPathAnimation),
                     ComputedStyle::Difference::kNonInherited,
                     kCompositingReasonsChanged);

@@ -813,6 +813,18 @@
       invalidate: ["compositing"],
     },
     {
+      // A current animation may change the backdrop-filter value, i.e. it
+      // needs a composited backdrop-filter effect. Unlike
+      // HasCurrentBackdropFilterAnimation, this doesn't affect whether the
+      // element is a stacking context.
+      name: "HasCurrentDynamicBackdropFilterAnimation",
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false",
+      invalidate: ["compositing"],
+    },
+    {
       name: "HasCurrentClipPathAnimation",
       field_template: "primitive",
       type_name: "bool",
