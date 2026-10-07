@@ -1174,7 +1174,6 @@ if (_is_default_toolchain) {
       "junit:chrome_junit_tests_org.chromium.chrome.browser.ui",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.webapps",
       "junit:chrome_junit_tests_various",
-      "//chrome/android/features/android_library_factory:junit_tests",
       "//chrome/browser/actor/android:junit",
       "//chrome/browser/android/browserservices/intents:junit",
       "//chrome/browser/android/cookies:junit",

@@ -12,7 +12,6 @@ import android.view.View;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -50,7 +49,6 @@ public class EdgeToEdgeControllerFactory {
      * @return An EdgeToEdgeController to control drawing under System Bars, or {@code null} if this
      *     version of Android does not support the APIs needed.
      */
-    @NullUnmarked // create_stripped_java_factory.py does not support annotations in generics
     public static @Nullable EdgeToEdgeController create(
             Activity activity,
             WindowAndroid windowAndroid,

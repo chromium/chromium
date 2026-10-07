@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.android_library_factory;
 
+import org.chromium.build.annotations.NullMarked;
+
+@NullMarked
 public class B {
     public void foo() {}
 }

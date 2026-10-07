@@ -11,6 +11,7 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -45,7 +46,6 @@ public class HubManagerFactory {
      *     space mode, false otherwise.
      * @param defaultPaneId The default pane's Id.
      */
-    @SuppressWarnings("NullAway") // https://crbug.com/433562519
     public static HubManager createHubManager(
             Activity activity,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
@@ -54,7 +54,7 @@ public class HubManagerFactory {
             MenuOrKeyboardActionController menuOrKeyboardActionController,
             SnackbarManager snackbarManager,
             BottomSheetController bottomSheetController,
-            BottomBarHostManager bottomBarHostManager,
+            @Nullable BottomBarHostManager bottomBarHostManager,
             NullableObservableSupplier<Tab> tabSupplier,
             MenuButtonCoordinator menuButtonCoordinator,
             HubShowPaneHelper hubShowPaneHelper,
