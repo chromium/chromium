@@ -556,7 +556,6 @@ class ContextualTasksLensInteractionBrowserTestBase
         .ExtractBool();
   }
 
-
   // Lens overlay takes a screenshot of the tab. In order to take a screenshot
   // the tab must not be about:blank and must be painted. By default opens in
   // the current tab.
@@ -939,7 +938,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensInteractionBrowserTest,
   controller->lens_overlay_controller()->IssueLensRegionRequestForTesting(
       std::move(region), /*is_click=*/false);
 
-
   // This should trigger the logic to capture the region, but the overlay should
   // remain open. It should also open the side panel.
   ASSERT_TRUE(
@@ -978,7 +976,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensInteractionBrowserTest,
       lens::mojom::CenterRotatedBox_CoordinateType::kNormalized;
   controller->lens_overlay_controller()->IssueLensRegionRequestForTesting(
       std::move(region), /*is_click=*/false);
-
 
   // This should trigger the logic to capture the region, but the overlay should
   // remain open. It should also open the side panel.
@@ -1293,6 +1290,26 @@ IN_PROC_BROWSER_TEST_F(LensSearchControllerStartZeroStateSessionTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensSearchControllerStartZeroStateSessionTest,
+                       ExecAskGoogleAboutThisPageFromAppMenuOpensSidePanel) {
+  ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents());
+  chrome::ExecAskGoogleAboutThisPage(
+      browser()->GetActiveTabInterface()->GetBrowserWindowInterface(),
+      lens::LensOverlayInvocationSource::kAppMenu);
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsContextualTasksSidePanelOpen(); }));
+
+  auto* panel_controller =
+      contextual_tasks::ContextualTasksPanelController::From(browser());
+  ASSERT_TRUE(panel_controller);
+  auto* session_handle =
+      panel_controller->GetContextualSearchSessionHandleForPanel();
+  ASSERT_TRUE(session_handle);
+  EXPECT_EQ(session_handle->invocation_source(),
+            lens::LensOverlayInvocationSource::kAppMenu);
+}
+
+IN_PROC_BROWSER_TEST_F(LensSearchControllerStartZeroStateSessionTest,
                        IssueContextualSearchRequestPermittedSources) {
   ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents());
   auto* controller = GetLensSearchController();
@@ -1310,6 +1327,13 @@ IN_PROC_BROWSER_TEST_F(LensSearchControllerStartZeroStateSessionTest,
   controller->IssueContextualSearchRequest(
       lens::LensOverlayInvocationSource::kOmniboxPageAction,
       GURL("https://www.google.com/search?q=test2"),
+      omnibox::AutocompleteMatchType::kSearchWhatYouTyped,
+      /*is_zero_prefix_suggestion=*/false,
+      /*grant_session_permission=*/false);
+
+  controller->IssueContextualSearchRequest(
+      lens::LensOverlayInvocationSource::kAppMenu,
+      GURL("https://www.google.com/search?q=test3"),
       omnibox::AutocompleteMatchType::kSearchWhatYouTyped,
       /*is_zero_prefix_suggestion=*/false,
       /*grant_session_permission=*/false);

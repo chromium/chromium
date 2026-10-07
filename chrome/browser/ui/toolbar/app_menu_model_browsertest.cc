@@ -48,6 +48,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
@@ -678,6 +679,115 @@ IN_PROC_BROWSER_TEST_F(SkillsAndExtensionsMenuModelSkillsDisabledTest,
       model.GetIndexOfCommandId(AppMenuModel::kExtensionsSubmenuPlaceholder)
           .has_value() ||
       model.GetIndexOfCommandId(IDC_FIND_EXTENSIONS).has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuModelTest,
+                       ContextualTasksAskGoogleDefaultDisabled) {
+  AppMenuModel model(this, browser());
+  model.Init();
+
+  EXPECT_FALSE(
+      model.GetIndexOfCommandId(IDC_ASK_GOOGLE_ABOUT_THIS_PAGE).has_value());
+  EXPECT_FALSE(
+      model.GetIndexOfCommandId(AppMenuModel::kContextualTasksMenuPlaceholder)
+          .has_value());
+}
+
+class ContextualTasksAskGoogleEnabledTest : public AppMenuModelTest {
+ public:
+  ContextualTasksAskGoogleEnabledTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        contextual_tasks::kContextualTasksUpdatedEntryPoints,
+        {{"ContextualTasksContextMenuShowAskGoogle", "true"},
+         {"ContextualTasksContextMenuSubmenu", "false"}});
+  }
+  ~ContextualTasksAskGoogleEnabledTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksAskGoogleEnabledTest,
+                       AskGoogleAboutThisPage) {
+  AppMenuModel model(this, browser());
+  model.Init();
+
+  const std::optional<size_t> ask_google_index =
+      model.GetIndexOfCommandId(IDC_ASK_GOOGLE_ABOUT_THIS_PAGE);
+  const std::optional<size_t> lens_index =
+      model.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_LENS_OVERLAY);
+  ASSERT_TRUE(ask_google_index.has_value());
+  ASSERT_TRUE(lens_index.has_value());
+  EXPECT_LT(*ask_google_index, *lens_index);
+  EXPECT_TRUE(model.IsEnabledAt(*ask_google_index));
+  EXPECT_FALSE(model.GetIconAt(*ask_google_index).IsEmpty());
+  EXPECT_EQ(AppMenuModel::kAskGoogleAboutThisPageItem,
+            model.GetElementIdentifierAt(*ask_google_index));
+  EXPECT_FALSE(
+      model.GetIndexOfCommandId(AppMenuModel::kContextualTasksMenuPlaceholder)
+          .has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksAskGoogleEnabledTest,
+                       AskGoogleAboutThisPageLogsMetrics) {
+  base::HistogramTester histograms;
+  AppMenuModel model(this, browser());
+  model.Init();
+
+  ASSERT_TRUE(
+      model.GetIndexOfCommandId(IDC_ASK_GOOGLE_ABOUT_THIS_PAGE).has_value());
+  model.ExecuteCommand(IDC_ASK_GOOGLE_ABOUT_THIS_PAGE, 0);
+
+  histograms.ExpectUniqueSample("WrenchMenu.MenuAction",
+                                MENU_ACTION_ASK_GOOGLE_ABOUT_THIS_PAGE, 1);
+  histograms.ExpectTotalCount("WrenchMenu.TimeToAction.AskGoogleAboutThisPage",
+                              1);
+}
+
+class ContextualTasksAskGoogleSubmenuTest : public AppMenuModelTest {
+ public:
+  ContextualTasksAskGoogleSubmenuTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        contextual_tasks::kContextualTasksUpdatedEntryPoints,
+        {{"ContextualTasksContextMenuShowAskGoogle", "true"},
+         {"ContextualTasksContextMenuSubmenu", "true"}});
+  }
+  ~ContextualTasksAskGoogleSubmenuTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksAskGoogleSubmenuTest,
+                       SearchWithGoogleSubmenu) {
+  AppMenuModel model(this, browser());
+  model.Init();
+
+  EXPECT_FALSE(
+      model.GetIndexOfCommandId(IDC_ASK_GOOGLE_ABOUT_THIS_PAGE).has_value());
+  EXPECT_FALSE(
+      model.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_LENS_OVERLAY).has_value());
+
+  const std::optional<size_t> submenu_index =
+      model.GetIndexOfCommandId(AppMenuModel::kContextualTasksMenuPlaceholder);
+  ASSERT_TRUE(submenu_index.has_value());
+  EXPECT_TRUE(model.IsEnabledAt(*submenu_index));
+  EXPECT_FALSE(model.GetIconAt(*submenu_index).IsEmpty());
+  EXPECT_EQ(AppMenuModel::kContextualTasksSubmenuItem,
+            model.GetElementIdentifierAt(*submenu_index));
+
+  ui::MenuModel* submenu = model.GetSubmenuModelAt(*submenu_index);
+  ASSERT_NE(submenu, nullptr);
+  ASSERT_EQ(2ul, submenu->GetItemCount());
+  EXPECT_EQ(IDC_ASK_GOOGLE_ABOUT_THIS_PAGE, submenu->GetCommandIdAt(0));
+  EXPECT_EQ(IDC_CONTENT_CONTEXT_LENS_OVERLAY, submenu->GetCommandIdAt(1));
+  EXPECT_TRUE(submenu->IsEnabledAt(0));
+  EXPECT_TRUE(submenu->IsEnabledAt(1));
+  EXPECT_FALSE(submenu->GetIconAt(0).IsEmpty());
+  EXPECT_FALSE(submenu->GetIconAt(1).IsEmpty());
+  EXPECT_EQ(AppMenuModel::kAskGoogleAboutThisPageItem,
+            submenu->GetElementIdentifierAt(0));
+  EXPECT_EQ(AppMenuModel::kShowLensOverlay, submenu->GetElementIdentifierAt(1));
 }
 
 // Profile row does not show on ChromeOS.

@@ -193,6 +193,7 @@
   E(kActionShowFullUrls, IDC_SHOW_FULL_URLS) \
   E(kActionShowGoogleLensShortcut, IDC_SHOW_GOOGLE_LENS_SHORTCUT) \
   E(kActionShowLensOverlayFromAppMenu, IDC_CONTENT_CONTEXT_LENS_OVERLAY) \
+  E(kActionAskGoogleAboutThisPageFromAppMenu, IDC_ASK_GOOGLE_ABOUT_THIS_PAGE) \
   E(kActionShowAiModeOmniboxButton, IDC_SHOW_AI_MODE_OMNIBOX_BUTTON) \
   E(kActionRecordReplay) \
   E(kActionShowSearchTools, IDC_SHOW_SEARCH_TOOLS) \
@@ -580,7 +581,8 @@
   E(kActionRecentTabsSubmenu, IDC_RECENT_TABS_MENU)                       \
   E(kActionDeveloperSubmenu, IDC_DEVELOPER_MENU)                               \
   E(kActionExtensionsSubmenu, IDC_EXTENSIONS_SUBMENU)                          \
-  E(kActionSkillsAndExtensionsSubmenu, IDC_SKILLS_AND_EXTENSIONS_MENU)
+  E(kActionSkillsAndExtensionsSubmenu, IDC_SKILLS_AND_EXTENSIONS_MENU)         \
+  E(kActionContextualTasksSubmenu, IDC_CONTEXTUAL_TASKS_MENU)
 
 #define CHROME_ACTION_IDS \
     CHROME_COMMON_ACTION_IDS \

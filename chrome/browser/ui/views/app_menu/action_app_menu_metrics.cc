@@ -144,6 +144,10 @@ void ActionAppMenuMetrics::LogMenuActionWithId(actions::ActionId action_id) {
     case kActionShowLensOverlayFromAppMenu:
       RecordAction(MENU_ACTION_SHOW_LENS_OVERLAY, "ShowLensOverlay");
       break;
+    case kActionAskGoogleAboutThisPageFromAppMenu:
+      RecordAction(MENU_ACTION_ASK_GOOGLE_ABOUT_THIS_PAGE,
+                   "AskGoogleAboutThisPage");
+      break;
 
     // Extensions menu.
     case kActionExtensionsSubmenuManageExtensions:

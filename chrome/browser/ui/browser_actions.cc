@@ -4293,6 +4293,30 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .SetImage(ui::ImageModel::FromVectorIcon(lens_icon, ui::kColorIcon))
           .Build());
 
+  const gfx::VectorIcon& ask_google_icon = features::IsRoundedIconsEnabled()
+                                               ? omnibox::kSearchSparkIcon
+                                               : omnibox::kSearchSparkOldIcon;
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                if (!bwi) {
+                  return;
+                }
+                chrome::ExecAskGoogleAboutThisPage(
+                    bwi, lens::LensOverlayInvocationSource::kAppMenu);
+              },
+              bwi))
+          .SetActionId(kActionAskGoogleAboutThisPageFromAppMenu)
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT_THIS_PAGE))
+          .SetTooltipText(l10n_util::GetStringUTF16(
+              IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT_THIS_PAGE))
+          .SetImage(
+              ui::ImageModel::FromVectorIcon(ask_google_icon, ui::kColorIcon))
+          .Build());
+
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(
@@ -5400,6 +5424,22 @@ void BrowserActions::InitializeSubmenuActions() {
               : vector_icons::kExtensionChromeRefreshOldIcon,
           /*is_pinnable=*/false)
           .SetVisible(show_skills_and_extensions)
+          .Build());
+
+  const gfx::VectorIcon& contextual_tasks_submenu_icon =
+      features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
+                                        : omnibox::kSearchSparkOldIcon;
+  root_action_item_->AddChild(
+      ChromeMenuAction(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {},
+              bwi),
+          kActionContextualTasksSubmenu,
+          IDS_CONTEXTUAL_SEARCH_SEARCH_WITH_GOOGLE,
+          IDS_CONTEXTUAL_SEARCH_SEARCH_WITH_GOOGLE,
+          contextual_tasks_submenu_icon,
+          /*is_pinnable=*/false)
           .Build());
 }
 

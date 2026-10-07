@@ -162,6 +162,9 @@ void ActionAppMenuTestBase::SetUp() {
   add_action(kActionPrint, u"Print");
   add_action(kActionOpenGlic, u"Open Glic");
   add_action(kActionShowLensOverlayFromAppMenu, u"Lens Overlay");
+  add_action(kActionAskGoogleAboutThisPageFromAppMenu,
+             u"Ask Google about this page");
+  add_action(kActionContextualTasksSubmenu, u"Search with Google");
   add_action(kActionShowTranslate, u"Translate");
   add_action(kActionFindAndEditSubmenu, u"Find and edit");
   add_action(kActionFind, u"Find");

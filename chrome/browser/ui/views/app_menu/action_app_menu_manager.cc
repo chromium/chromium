@@ -84,6 +84,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
@@ -860,9 +861,29 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
         if (auto* controller = lens::LensOverlayEntryPointController::From(
                 browser_window_interface_);
             controller && controller->IsEnabled()) {
-          section.AddAction(kActionShowLensOverlayFromAppMenu,
-                            {.new_badge_feature = &lens::features::kLensOverlay,
-                             .element_id = AppMenuModel::kShowLensOverlay});
+          const bool show_ask_google =
+              contextual_tasks::kContextualTasksContextMenuShowAskGoogle.Get();
+          const bool use_submenu =
+              contextual_tasks::kContextualTasksContextMenuSubmenu.Get() &&
+              show_ask_google;
+          auto add_items = [show_ask_google](AppMenuBuilder& target) {
+            if (show_ask_google) {
+              target.AddAction(
+                  kActionAskGoogleAboutThisPageFromAppMenu,
+                  {.element_id = AppMenuModel::kAskGoogleAboutThisPageItem});
+            }
+            target.AddAction(
+                kActionShowLensOverlayFromAppMenu,
+                {.new_badge_feature = &lens::features::kLensOverlay,
+                 .element_id = AppMenuModel::kShowLensOverlay});
+          };
+          if (use_submenu) {
+            section.AddSubmenu(
+                kActionContextualTasksSubmenu, add_items,
+                {.element_id = AppMenuModel::kContextualTasksSubmenuItem});
+          } else {
+            add_items(section);
+          }
         }
 
         section.AddAction(kActionShowTranslate);

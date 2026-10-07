@@ -1516,6 +1516,11 @@ void BrowserCommandController::HandleCommandWithDisposition(
       ExecLensOverlay(browser_);
       break;
 
+    case IDC_ASK_GOOGLE_ABOUT_THIS_PAGE:
+      ExecAskGoogleAboutThisPage(browser_,
+                                 lens::LensOverlayInvocationSource::kAppMenu);
+      break;
+
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
     case IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH:
       ExecLensRegionSearch(browser_);
@@ -1772,6 +1777,7 @@ void BrowserCommandController::InitCommandState() {
   command_updater_->UpdateCommandEnabled(IDC_SKILLS_AND_EXTENSIONS_MENU, true);
   command_updater_->UpdateCommandEnabled(IDC_MANAGE_SKILLS, true);
   command_updater_->UpdateCommandEnabled(IDC_BROWSE_SKILLS, true);
+  command_updater_->UpdateCommandEnabled(IDC_CONTEXTUAL_TASKS_MENU, true);
 
   // Window management commands
   command_updater_->UpdateCommandEnabled(IDC_CLOSE_WINDOW, true);

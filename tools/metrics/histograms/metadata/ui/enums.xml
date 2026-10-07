@@ -1306,6 +1306,7 @@ chromium-metrics-reviews@google.com.
   <int value="119" label="Tab search"/>
   <int value="120" label="Toggle vertical tabs"/>
   <int value="121" label="Name window"/>
+  <int value="122" label="Ask Google about this page"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toolbar/app_menu_model.h:AppMenuAction) -->

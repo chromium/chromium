@@ -3146,6 +3146,13 @@ void ExecLensRegionSearch(BrowserWindowInterface* browser) {
 }
 
 void ExecAskGoogleAboutThisPage(BrowserWindowInterface* browser) {
+  ExecAskGoogleAboutThisPage(
+      browser, lens::LensOverlayInvocationSource::kContentAreaContextMenuPage);
+}
+
+void ExecAskGoogleAboutThisPage(
+    BrowserWindowInterface* browser,
+    lens::LensOverlayInvocationSource invocation_source) {
 #if !BUILDFLAG(IS_ANDROID)
   if (!browser) {
     return;
@@ -3171,7 +3178,7 @@ void ExecAskGoogleAboutThisPage(BrowserWindowInterface* browser) {
   if (controller) {
     controller->StartZeroStateSessionInSidePanel(
         omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION,
-        lens::LensOverlayInvocationSource::kContentAreaContextMenuPage,
+        invocation_source,
         /*open_lens_overlay=*/false);
   }
 #endif

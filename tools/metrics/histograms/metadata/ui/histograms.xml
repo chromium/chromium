@@ -1515,6 +1515,7 @@ features through Chrome Labs. -->
     <variant name=".About"/>
     <variant name=".AddNewProfile"/>
     <variant name=".AppInfo"/>
+    <variant name=".AskGoogleAboutThisPage"/>
     <variant name=".BetaForum"/>
     <variant name=".BookmarkAllTabs"/>
     <variant name=".BookmarkBarAlwaysHide"/>

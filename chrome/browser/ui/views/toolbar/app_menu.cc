@@ -1306,6 +1306,10 @@ bool AppMenu::IsCommandEnabled(int command_id) const {
     return true;
   }
 
+  if (command_id == AppMenuModel::kContextualTasksMenuPlaceholder) {
+    return true;
+  }
+
   // If `command_id` is not added to App Menu via MenuModel, you should handle
   // it in the code above. `command_id_to_entry_` traces only MenuModel entries.
   auto it = command_id_to_entry_.find(command_id);

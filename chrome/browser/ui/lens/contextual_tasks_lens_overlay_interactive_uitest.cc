@@ -1271,6 +1271,81 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuAskGoogleInteractiveUiTest,
           "source"));
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuAskGoogleInteractiveUiTest,
+                       AskGoogleAppMenuClickOpensSidePanel) {
+  WaitForTemplateURLServiceToLoad();
+  SidePanelUI::From(browser())->DisableAnimationsForTesting();
+
+  contextual_tasks::SetForcedEmbeddedPageHostOverride(
+      contextual_tasks::HostOverride{"www.google.com"});
+  base::ScopedClosureRunner clear_host_override(base::BindOnce([]() {
+    contextual_tasks::SetForcedEmbeddedPageHostOverride(std::nullopt);
+  }));
+
+  content::URLLoaderInterceptor url_loader_interceptor(base::BindRepeating(
+      [](content::URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url.host() == "www.google.com" ||
+            params->url_request.url.host() == "www.g.ai") {
+          content::URLLoaderInterceptor::WriteResponse(
+              "HTTP/1.1 200 OK\nContent-Type: text/html\n\n",
+              "<html><body>Mock Page</body></html>", params->client.get());
+          return true;
+        }
+        return false;
+      }));
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
+
+  const GURL page_url =
+      embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  const DeepQuery kPathToBody{"body"};
+
+  RunTestSequence(
+      InstrumentTab(kTabId, 0), NavigateWebContents(kTabId, page_url),
+      EnsurePresent(kTabId, kPathToBody), WaitForWebContentsPainted(kTabId),
+      WaitForWebContentsReady(kTabId, page_url),
+
+      PressButton(kToolbarAppMenuButtonElementId),
+      WaitForShow(AppMenuModel::kAskGoogleAboutThisPageItem),
+      SelectMenuItem(AppMenuModel::kAskGoogleAboutThisPageItem),
+
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "SidePanelContentWebViewName",
+                       [](contextual_tasks::ContextualTasksWebView* web_view) {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kSidePanelWebContentsId,
+                              "SidePanelContentWebViewName"),
+      WaitForWebContentsReady(kSidePanelWebContentsId),
+      WaitForJsResultAt(kSidePanelWebContentsId,
+                        DeepQuery{"contextual-tasks-app"},
+                        "el => el.isZeroState_", true),
+      CheckResult(
+          [this]() -> bool {
+            return SidePanelUI::From(browser())->IsSidePanelShowing();
+          },
+          true),
+      CheckResult(
+          [this]() -> std::optional<lens::LensOverlayInvocationSource> {
+            auto* panel_controller =
+                contextual_tasks::ContextualTasksPanelController::From(
+                    browser());
+            if (!panel_controller) {
+              return std::nullopt;
+            }
+            auto* session_handle =
+                panel_controller->GetContextualSearchSessionHandleForPanel();
+            if (!session_handle) {
+              return std::nullopt;
+            }
+            return session_handle->invocation_source();
+          },
+          std::make_optional(lens::LensOverlayInvocationSource::kAppMenu),
+          "Side panel session has kAppMenu invocation source"));
+}
+
 class ContextualTasksContextMenuSubmenuInteractiveUiTest
     : public LensOverlayInteractiveTestBase {
  public:
@@ -1424,6 +1499,82 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuSubmenuInteractiveUiTest,
           "source"));
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuSubmenuInteractiveUiTest,
+                       AskGoogleAppMenuSubmenuItemClickOpensSidePanel) {
+  WaitForTemplateURLServiceToLoad();
+  SidePanelUI::From(browser())->DisableAnimationsForTesting();
+
+  contextual_tasks::SetForcedEmbeddedPageHostOverride(
+      contextual_tasks::HostOverride{"www.google.com"});
+  base::ScopedClosureRunner clear_host_override(base::BindOnce([]() {
+    contextual_tasks::SetForcedEmbeddedPageHostOverride(std::nullopt);
+  }));
+
+  content::URLLoaderInterceptor url_loader_interceptor(base::BindRepeating(
+      [](content::URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url.host() == "www.google.com" ||
+            params->url_request.url.host() == "www.g.ai") {
+          content::URLLoaderInterceptor::WriteResponse(
+              "HTTP/1.1 200 OK\nContent-Type: text/html\n\n",
+              "<html><body>Mock Page</body></html>", params->client.get());
+          return true;
+        }
+        return false;
+      }));
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
+
+  const GURL page_url =
+      embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  const DeepQuery kPathToBody{"body"};
+
+  RunTestSequence(
+      InstrumentTab(kTabId, 0), NavigateWebContents(kTabId, page_url),
+      EnsurePresent(kTabId, kPathToBody), WaitForWebContentsPainted(kTabId),
+      WaitForWebContentsReady(kTabId, page_url),
+
+      PressButton(kToolbarAppMenuButtonElementId),
+      WaitForShow(AppMenuModel::kContextualTasksSubmenuItem),
+      SelectMenuItem(AppMenuModel::kContextualTasksSubmenuItem),
+      WaitForShow(AppMenuModel::kAskGoogleAboutThisPageItem),
+      SelectMenuItem(AppMenuModel::kAskGoogleAboutThisPageItem),
+
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "SidePanelContentWebViewName",
+                       [](contextual_tasks::ContextualTasksWebView* web_view) {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kSidePanelWebContentsId,
+                              "SidePanelContentWebViewName"),
+      WaitForWebContentsReady(kSidePanelWebContentsId),
+      WaitForJsResultAt(kSidePanelWebContentsId,
+                        DeepQuery{"contextual-tasks-app"},
+                        "el => el.isZeroState_", true),
+      CheckResult(
+          [this]() -> bool {
+            return SidePanelUI::From(browser())->IsSidePanelShowing();
+          },
+          true),
+      CheckResult(
+          [this]() -> std::optional<lens::LensOverlayInvocationSource> {
+            auto* panel_controller =
+                contextual_tasks::ContextualTasksPanelController::From(
+                    browser());
+            if (!panel_controller) {
+              return std::nullopt;
+            }
+            auto* session_handle =
+                panel_controller->GetContextualSearchSessionHandleForPanel();
+            if (!session_handle) {
+              return std::nullopt;
+            }
+            return session_handle->invocation_source();
+          },
+          std::make_optional(lens::LensOverlayInvocationSource::kAppMenu),
+          "Side panel session has kAppMenu invocation source"));
+}
+
 class ContextualTasksContextMenuRouteOmniboxInteractiveUiTest
     : public LensOverlayInteractiveTestBase {
  public:
@@ -1496,6 +1647,39 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuRouteOmniboxInteractiveUiTest,
       WaitForShow(RenderViewContextMenu::kAskGoogleAboutThisPageItem),
       SelectMenuItem(RenderViewContextMenu::kAskGoogleAboutThisPageItem,
                      InputType::kMouse),
+
+      PollUntil(
+          [this]() -> bool {
+            LocationBar* location_bar =
+                BrowserWindow::FromBrowser(browser())->GetLocationBar();
+            if (!location_bar) {
+              return false;
+            }
+            OmniboxController* controller =
+                location_bar->GetOmniboxController();
+            return controller &&
+                   controller->popup_state_manager()->popup_state() ==
+                       OmniboxPopupState::kAim;
+          },
+          "Omnibox popup state is kAim"));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuRouteOmniboxInteractiveUiTest,
+                       AskGoogleAppMenuClickOpensOmnibox) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+
+  const GURL page_url =
+      embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  const DeepQuery kPathToBody{"body"};
+
+  RunTestSequence(
+      InstrumentTab(kTabId, 0), NavigateWebContents(kTabId, page_url),
+      EnsurePresent(kTabId, kPathToBody), WaitForWebContentsPainted(kTabId),
+      WaitForWebContentsReady(kTabId, page_url),
+
+      PressButton(kToolbarAppMenuButtonElementId),
+      WaitForShow(AppMenuModel::kAskGoogleAboutThisPageItem),
+      SelectMenuItem(AppMenuModel::kAskGoogleAboutThisPageItem),
 
       PollUntil(
           [this]() -> bool {

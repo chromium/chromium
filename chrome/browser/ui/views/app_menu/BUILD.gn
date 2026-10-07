@@ -140,6 +140,7 @@ source_set("impl") {
     "//chrome/common:chrome_features",
     "//components/bookmarks/browser",
     "//components/bookmarks/common",
+    "//components/contextual_tasks/public:feature_list",
     "//components/favicon/core",
     "//components/feature_engagement/public",
     "//components/keyed_service/core",

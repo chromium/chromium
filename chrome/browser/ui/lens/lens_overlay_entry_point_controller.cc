@@ -215,6 +215,8 @@ void LensOverlayEntryPointController::UpdateEntryPointsState(
   // Update the 3 dot menu entry point.
   command_updater_->UpdateCommandEnabled(IDC_CONTENT_CONTEXT_LENS_OVERLAY,
                                          visible);
+  command_updater_->UpdateCommandEnabled(IDC_ASK_GOOGLE_ABOUT_THIS_PAGE,
+                                         visible);
 
   // Update the pinnable toolbar entry point. Toolbar entry point is always
   // present, therefore, ignore the visibility check.

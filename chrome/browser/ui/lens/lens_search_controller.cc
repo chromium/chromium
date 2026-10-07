@@ -363,7 +363,8 @@ void LensSearchController::IssueContextualSearchRequest(
         invocation_source ==
             lens::LensOverlayInvocationSource::kOmniboxPageAction ||
         invocation_source ==
-            lens::LensOverlayInvocationSource::kContentAreaContextMenuPage);
+            lens::LensOverlayInvocationSource::kContentAreaContextMenuPage ||
+        invocation_source == lens::LensOverlayInvocationSource::kAppMenu);
 
   std::string query_text =
       lens::ExtractTextQueryParameterValue(destination_url);

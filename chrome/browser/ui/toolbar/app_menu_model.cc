@@ -118,6 +118,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/dom_distiller/content/browser/distillable_page_utils.h"
 #include "components/dom_distiller/content/browser/uma_helper.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
@@ -215,6 +216,10 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kContactInfoMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kIdentityDocsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kTravelMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kShowLensOverlay);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel,
+                                      kAskGoogleAboutThisPageItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel,
+                                      kContextualTasksSubmenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kSaveAndShareMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kCastTitleItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kInstallAppItem);
@@ -1408,6 +1413,13 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_SHOW_LENS_OVERLAY);
       break;
+    case IDC_ASK_GOOGLE_ABOUT_THIS_PAGE:
+      if (!uma_action_recorded_) {
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.AskGoogleAboutThisPage", delta);
+      }
+      LogMenuAction(MENU_ACTION_ASK_GOOGLE_ABOUT_THIS_PAGE);
+      break;
     // Extensions menu.
     case IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS:
       // Logging the original histograms for experiment comparison purposes.
@@ -2321,16 +2333,51 @@ void AppMenuModel::Build() {
             ? vector_icons::kSearchIcon
             : vector_icons::kSearchChromeRefreshOldIcon;
 #endif
+    const gfx::VectorIcon& search_spark_icon =
+        features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
+                                          : omnibox::kSearchSparkOldIcon;
+    const bool show_ask_google =
+        contextual_tasks::kContextualTasksContextMenuShowAskGoogle.Get();
+    const bool use_submenu =
+        contextual_tasks::kContextualTasksContextMenuSubmenu.Get() &&
+        show_ask_google;
+    ui::SimpleMenuModel* target_model = this;
+    if (use_submenu) {
+      sub_menus_.push_back(std::make_unique<ui::SimpleMenuModel>(this));
+      target_model = sub_menus_.back().get();
+    }
+
+    if (show_ask_google) {
+      AddItemWithStringIdAndVectorIcon(
+          target_model, IDC_ASK_GOOGLE_ABOUT_THIS_PAGE,
+          IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT_THIS_PAGE, search_spark_icon);
+      target_model->SetElementIdentifierAt(
+          target_model->GetIndexOfCommandId(IDC_ASK_GOOGLE_ABOUT_THIS_PAGE)
+              .value(),
+          kAskGoogleAboutThisPageItem);
+    }
+
     AddItemWithStringIdAndVectorIcon(
-        this, IDC_CONTENT_CONTEXT_LENS_OVERLAY,
+        target_model, IDC_CONTENT_CONTEXT_LENS_OVERLAY,
         lens::GetLensOverlayEntrypointLabelAltIds(), icon);
-    const int lens_command_index =
-        GetIndexOfCommandId(IDC_CONTENT_CONTEXT_LENS_OVERLAY).value();
-    SetElementIdentifierAt(lens_command_index, kShowLensOverlay);
-    SetIsNewFeatureAt(
+    const size_t lens_command_index =
+        target_model->GetIndexOfCommandId(IDC_CONTENT_CONTEXT_LENS_OVERLAY)
+            .value();
+    target_model->SetElementIdentifierAt(lens_command_index, kShowLensOverlay);
+    target_model->SetIsNewFeatureAt(
         lens_command_index,
         BrowserUserEducationInterface::From(browser())->MaybeShowNewBadgeFor(
             lens::features::kLensOverlay));
+
+    if (use_submenu) {
+      AddSubMenuWithStringIdAndVectorIcon(
+          this, kContextualTasksMenuPlaceholder,
+          IDS_CONTEXTUAL_SEARCH_SEARCH_WITH_GOOGLE, target_model,
+          search_spark_icon);
+      SetElementIdentifierAt(
+          GetIndexOfCommandId(kContextualTasksMenuPlaceholder).value(),
+          kContextualTasksSubmenuItem);
+    }
   }
 
   AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_TRANSLATE, IDS_SHOW_TRANSLATE,
