@@ -356,7 +356,7 @@ TEST(BaseRenderingContext2DTest, HdrMetadata) {
   context->HostAsHTMLCanvasElement()->SetSize(kSize);
   context->CreateSoftwareSurface();
 
-  ASSERT_TRUE(context->HasResourceProvider());
+  ASSERT_TRUE(context->HasBacking());
   scoped_refptr<StaticBitmapImage> snapshot = context->Snapshot();
   ASSERT_TRUE(snapshot);
   EXPECT_EQ(snapshot->GetHdrMetadata(), hdr_metadata);

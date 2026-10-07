@@ -411,7 +411,7 @@ void CanvasHibernationHandler::Hibernate(
 
   Canvas2DResourceProvider* provider = delegate_->GetSharedImageProvider();
   if (!provider) {
-    if (delegate_->HasResourceProvider()) {
+    if (delegate_->HasBacking()) {
       ReportHibernationEvent(
           HibernationEvent::
               kHibernationAbortedDueToSwitchToUnacceleratedRendering);
@@ -461,7 +461,7 @@ void CanvasHibernationHandler::Hibernate(
   }
   SaveForHibernation(std::move(sw_image), context, delay);
 
-  delegate_->ResetResourceProvider();
+  delegate_->ResetBacking();
   delegate_->ClearCanvas2DLayerTexture();
 
   // shouldBeDirectComposited() may have changed.

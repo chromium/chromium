@@ -39,10 +39,10 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
     virtual ~Delegate() = default;
 
     virtual Canvas2DResourceProvider* GetSharedImageProvider() const = 0;
-    virtual bool HasResourceProvider() const = 0;
+    virtual bool HasBacking() const = 0;
     virtual bool IsPageVisible() const = 0;
     virtual bool IsContextLost() const = 0;
-    virtual void ResetResourceProvider() = 0;
+    virtual void ResetBacking() = 0;
     virtual void SetNeedsCompositingUpdate() = 0;
     virtual void ClearCanvas2DLayerTexture() {}
     virtual std::optional<cc::PaintRecord> FlushCanvas(FlushReason reason) = 0;

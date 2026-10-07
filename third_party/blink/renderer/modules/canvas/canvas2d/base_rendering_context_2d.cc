@@ -198,18 +198,18 @@ Canvas2DResourceProvider* BaseRenderingContext2D::GetSharedImageProvider()
   return shared_image_provider_.get();
 }
 
-bool BaseRenderingContext2D::HasResourceProvider() const {
+bool BaseRenderingContext2D::HasBacking() const {
   return shared_image_provider_ != nullptr || surface_ != nullptr;
 }
 
-bool BaseRenderingContext2D::IsResourceProviderValid() const {
+bool BaseRenderingContext2D::IsBackingValid() const {
   if (shared_image_provider_) {
     return shared_image_provider_->IsValid();
   }
   return surface_ != nullptr;
 }
 
-void BaseRenderingContext2D::ResetResourceProvider() {
+void BaseRenderingContext2D::ResetBacking() {
   shared_image_provider_.reset();
   if (surface_) {
     CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
@@ -226,7 +226,7 @@ void BaseRenderingContext2D::ResetResourceProvider() {
 }
 
 bool BaseRenderingContext2D::IsPaintable() const {
-  return HasResourceProvider();
+  return HasBacking();
 }
 
 bool BaseRenderingContext2D::Is2DCanvasAccelerated() const {
@@ -304,7 +304,7 @@ void BaseRenderingContext2D::CreateSoftwareSurface() {
 }
 
 void BaseRenderingContext2D::RecordResourceProviderHistograms() {
-  CHECK(HasResourceProvider());
+  CHECK(HasBacking());
   if (shared_image_provider_) {
     base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
                               shared_image_provider_->IsAccelerated());
@@ -439,11 +439,11 @@ scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() {
   return UnacceleratedSnapshot();
 }
 
-bool BaseRenderingContext2D::WritePixelsToProvider(const SkImageInfo& orig_info,
-                                                   const void* pixels,
-                                                   size_t row_bytes,
-                                                   int x,
-                                                   int y) {
+bool BaseRenderingContext2D::WritePixelsToBacking(const SkImageInfo& orig_info,
+                                                  const void* pixels,
+                                                  size_t row_bytes,
+                                                  int x,
+                                                  int y) {
   if (shared_image_provider_) {
     return shared_image_provider_->WritePixels(orig_info, pixels, row_bytes, x,
                                                y);
@@ -458,7 +458,7 @@ bool BaseRenderingContext2D::WritePixelsToProvider(const SkImageInfo& orig_info,
 scoped_refptr<StaticBitmapImage>
 BaseRenderingContext2D::PaintRenderingResultsToSnapshot(
     SourceDrawingBuffer source_buffer) {
-  if (!IsResourceProviderValid()) {
+  if (!IsBackingValid()) {
     return nullptr;
   }
   FlushCanvas(FlushReason::kOther);

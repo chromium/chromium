@@ -161,12 +161,12 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   // CanvasHibernationHandler::Delegate implementation
   Canvas2DResourceProvider* GetSharedImageProvider() const override;
-  bool HasResourceProvider() const override;
+  bool HasBacking() const override;
   bool IsContextLost() const override { return isContextLost(); }
   bool IsPageVisible() const override {
     return canvas() && canvas()->IsPageVisible();
   }
-  void ResetResourceProvider() override;
+  void ResetBacking() override;
   void SetNeedsCompositingUpdate() override {
     if (canvas()) {
       canvas()->SetNeedsCompositingUpdate();
@@ -248,7 +248,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void EnableAccelerationIfPossible() override;
   base::ByteSize AllocatedBufferSize() const override;
 
-  bool IsResourceProviderValid() const override;
+  bool IsBackingValid() const override;
 
  protected:
   HTMLCanvasElement* HostAsHTMLCanvasElement() const final;

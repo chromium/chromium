@@ -60,10 +60,8 @@ class TestHibernationHandlerDelegate final
   Canvas2DResourceProvider* GetSharedImageProvider() const override {
     return resource_provider_.get();
   }
-  bool HasResourceProvider() const override {
-    return resource_provider_ != nullptr;
-  }
-  void ResetResourceProvider() override { resource_provider_.reset(); }
+  bool HasBacking() const override { return resource_provider_ != nullptr; }
+  void ResetBacking() override { resource_provider_.reset(); }
 
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason reason) override {
     return std::nullopt;

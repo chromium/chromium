@@ -293,7 +293,7 @@ void CanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
   ResetRecorder();
   HTMLCanvasElement* const element = canvas();
   if (element != nullptr) [[likely]] {
-    ResetResourceProvider();
+    ResetBacking();
     element->DiscardResources();
     element->DiscardResourceDispatcher();
 
@@ -341,7 +341,7 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
                                            size_t row_bytes,
                                            int x,
                                            int y) {
-  if (!IsResourceProviderValid() || isContextLost()) {
+  if (!IsBackingValid() || isContextLost()) {
     return false;
   }
 
@@ -364,12 +364,12 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
     }
   } else {
     FlushCanvas(FlushReason::kOther);
-    if (!IsResourceProviderValid()) {
+    if (!IsBackingValid()) {
       return false;
     }
   }
 
-  bool result = WritePixelsToProvider(orig_info, pixels, row_bytes, x, y);
+  bool result = WritePixelsToBacking(orig_info, pixels, row_bytes, x, y);
   if (result) {
     // WritePixels content is not saved in the recording. Thus, WritePixels()
     // must invalidate the last recording and ensure that any subsequent
@@ -470,7 +470,7 @@ MemoryManagedPaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
     return nullptr;
   }
 
-  if (HasResourceProvider()) {
+  if (HasBacking()) {
     if (layer_count_ == 0) [[likely]] {
       // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
       FlushIfRecordingLimitExceeded();
@@ -488,7 +488,7 @@ MemoryManagedPaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
 void CanvasRenderingContext2D::WillDraw(
     const gfx::Rect& dirty_rect,
     CanvasPerformanceMonitor::DrawType draw_type) {
-  CHECK(HasResourceProvider());
+  CHECK(HasBacking());
   if (ShouldAntialias()) {
     gfx::Rect inflated_dirty_rect = dirty_rect;
     inflated_dirty_rect.Outset(1);
@@ -730,7 +730,7 @@ scoped_refptr<CanvasResource>
 CanvasRenderingContext2D::PaintRenderingResultsToResource(
     SourceDrawingBuffer source_buffer,
     FlushReason reason) {
-  if (!IsResourceProviderValid()) {
+  if (!IsBackingValid()) {
     return nullptr;
   }
 
@@ -1056,7 +1056,7 @@ UniqueFontSelector* CanvasRenderingContext2D::GetFontSelector() const {
 }
 
 void CanvasRenderingContext2D::SizeChanged() {
-  ResetResourceProvider();
+  ResetBacking();
   ResetRecorder();
   did_fail_to_create_resource_provider_ = false;
 }
@@ -1069,13 +1069,13 @@ CanvasHibernationHandler* CanvasRenderingContext2D::GetHibernationHandler()
 void CanvasRenderingContext2D::Dispose() {
   FlushForImageListener::Get()->RemoveObserver(this);
   hibernation_handler_ = nullptr;
-  ResetResourceProvider();
+  ResetBacking();
   ResetRecorder();
   CanvasRenderingContext::Dispose();
 }
 
 void CanvasRenderingContext2D::CreateProvider() {
-  CHECK(!HasResourceProvider());
+  CHECK(!HasBacking());
 
   canvas()->GetOrCreateResourceDispatcher();
 
@@ -1125,7 +1125,7 @@ void CanvasRenderingContext2D::CreateProvider() {
     // process (for software compositing).
     CreateSoftwareSurface();
   }
-  if (HasResourceProvider()) {
+  if (HasBacking()) {
     ConfigureRecorder(
         canvas()->Size(),
         GetSharedImageProvider() && GetSharedImageProvider()->IsGraphite());
@@ -1139,8 +1139,8 @@ base::ByteSize CanvasRenderingContext2D::AllocatedBufferSize() const {
   return BaseRenderingContext2D::AllocatedBufferSize();
 }
 
-bool CanvasRenderingContext2D::IsResourceProviderValid() const {
-  return canvas() && BaseRenderingContext2D::IsResourceProviderValid();
+bool CanvasRenderingContext2D::IsBackingValid() const {
+  return canvas() && BaseRenderingContext2D::IsBackingValid();
 }
 
 Canvas2DResourceProvider* CanvasRenderingContext2D::GetSharedImageProvider()
@@ -1148,8 +1148,8 @@ Canvas2DResourceProvider* CanvasRenderingContext2D::GetSharedImageProvider()
   return BaseRenderingContext2D::GetSharedImageProvider();
 }
 
-bool CanvasRenderingContext2D::HasResourceProvider() const {
-  return BaseRenderingContext2D::HasResourceProvider();
+bool CanvasRenderingContext2D::HasBacking() const {
+  return BaseRenderingContext2D::HasBacking();
 }
 
 bool CanvasRenderingContext2D::InitializeResourceProvider() {
@@ -1159,22 +1159,22 @@ bool CanvasRenderingContext2D::InitializeResourceProvider() {
   }
 
   if (isContextLost() && !IsContextBeingRestored()) {
-    DCHECK(!HasResourceProvider());
+    DCHECK(!HasBacking());
     return false;
   }
 
-  if (HasResourceProvider()) {
-    // The canvas context is not lost but the provider may be invalid if the
+  if (HasBacking()) {
+    // The canvas context is not lost but the backing may be invalid if the
     // GPU process dies in the middle of a render task. The canvas is notified
     // of GPU context losses via the `NotifyGpuContextLost` callback and
     // restoration happens in `TryRestoreContextEvent`. Both callbacks are
     // executed in their own separate task. If the GPU context goes invalid in
     // the middle of a render task, the canvas won't immediately know about it
-    // and canvas APIs will continue using the provider that is now invalid. We
-    // can early return here, trying to re-create the provider right away would
+    // and canvas APIs will continue using the backing that is now invalid. We
+    // can early return here, trying to re-create the backing right away would
     // just fail. We need to let `TryRestoreContextEvent` wait for the GPU
     // process to up again.
-    return IsResourceProviderValid();
+    return IsBackingValid();
   }
 
   if (did_fail_to_create_resource_provider_) {
@@ -1203,16 +1203,16 @@ bool CanvasRenderingContext2D::InitializeResourceProvider() {
 
   canvas()->SetNeedsCompositingUpdate();
 
-  return HasResourceProvider();
+  return HasBacking();
 }
 
-void CanvasRenderingContext2D::ResetResourceProvider() {
-  BaseRenderingContext2D::ResetResourceProvider();
+void CanvasRenderingContext2D::ResetBacking() {
+  BaseRenderingContext2D::ResetBacking();
   last_recording_ = std::nullopt;
 }
 
 void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
-  if (!canvas() || !HasResourceProvider()) {
+  if (!canvas() || !HasBacking()) {
     return;
   }
 
@@ -1224,7 +1224,7 @@ void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
     return;
   }
   canvas()->ResetLayer();
-  ResetResourceProvider();
+  ResetBacking();
 
   // Bail out if the context is lost.
   if (isContextLost() && !IsContextBeingRestored()) {
@@ -1234,7 +1234,7 @@ void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
 
   // Bail out if it's not possible to create a new provider.
   RecreateResourceProvider();
-  if (!HasResourceProvider()) {
+  if (!HasBacking()) {
     return;
   }
 
@@ -1245,7 +1245,7 @@ void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
 
 void CanvasRenderingContext2D::RecreateResourceProvider() {
   CHECK(GetHibernationHandler());
-  CHECK(!HasResourceProvider());
+  CHECK(!HasBacking());
 
   if (did_fail_to_create_resource_provider_) {
     ResetRecorder();
@@ -1256,7 +1256,7 @@ void CanvasRenderingContext2D::RecreateResourceProvider() {
     CreateProvider();
   }
 
-  if (!HasResourceProvider()) {
+  if (!HasBacking()) {
     did_fail_to_create_resource_provider_ = true;
     ResetRecorder();
     return;
@@ -1277,8 +1277,8 @@ void CanvasRenderingContext2D::RestoreBackBuffer(const cc::PaintImage& image) {
   DCHECK(sk_image);
   SkPixmap map;
   sk_image->peekPixels(&map);
-  WritePixelsToProvider(map.info(), map.addr(), map.rowBytes(), /*x=*/0,
-                        /*y=*/0);
+  WritePixelsToBacking(map.info(), map.addr(), map.rowBytes(), /*x=*/0,
+                       /*y=*/0);
 }
 
 void CanvasRenderingContext2D::WakeUpFromHibernation() {
@@ -1322,7 +1322,7 @@ void CanvasRenderingContext2D::SetCanvas2DResourceProviderForTesting(
   canvas()->DiscardResources();
   canvas()->SetSize(size);
   hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
-  ResetResourceProvider();
+  ResetBacking();
   ResetRecorder();
   SetSharedImageProviderForTesting(std::move(provider));
   if (GetSharedImageProvider()) {
@@ -1333,10 +1333,10 @@ void CanvasRenderingContext2D::SetCanvas2DResourceProviderForTesting(
 void CanvasRenderingContext2D::CreateSoftwareSurfaceForTesting() {
   canvas()->DiscardResources();
   hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
-  ResetResourceProvider();
+  ResetBacking();
   ResetRecorder();
   CreateSoftwareSurface();
-  if (HasResourceProvider()) {
+  if (HasBacking()) {
     ConfigureRecorder(canvas()->Size(), /*is_graphite=*/false);
   }
 }
@@ -1347,7 +1347,7 @@ void CanvasRenderingContext2D::SetCanvas2DResourceProviderForTesting(
   canvas()->DiscardResources();
   canvas()->SetSize(size);
   hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
-  ResetResourceProvider();
+  ResetBacking();
   ResetRecorder();
 }
 

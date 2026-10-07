@@ -167,9 +167,9 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   virtual bool CanCreateResourceProvider() = 0;
   virtual bool InitializeResourceProvider() = 0;
-  bool HasResourceProvider() const;
-  virtual bool IsResourceProviderValid() const;
-  virtual void ResetResourceProvider();
+  bool HasBacking() const;
+  virtual bool IsBackingValid() const;
+  virtual void ResetBacking();
 
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason) override = 0;
 
@@ -334,11 +334,11 @@ class MODULES_EXPORT BaseRenderingContext2D
                            int y) {
     NOTREACHED();
   }
-  bool WritePixelsToProvider(const SkImageInfo& orig_info,
-                             const void* pixels,
-                             size_t row_bytes,
-                             int x,
-                             int y);
+  bool WritePixelsToBacking(const SkImageInfo& orig_info,
+                            const void* pixels,
+                            size_t row_bytes,
+                            int x,
+                            int y);
 
   PredefinedColorSpace GetDefaultImageDataColorSpace() const final {
     return color_params_.ColorSpace();
