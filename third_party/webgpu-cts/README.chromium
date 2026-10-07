@@ -8,7 +8,7 @@ SOURCE CODE: git clone https://github.com/gpuweb/cts.git
 Security Critical: no
 Shipped: no
 License: BSD-3-Clause, MIT
-License File: src/LICENSE.txt
+License File: src/LICENSE.txt, src/src/external/petamoriken/float16/LICENSE.txt
 
 Description:
 The WebGPU conformance test suite upstream source, DEPS'd at the same version
