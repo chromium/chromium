@@ -342,7 +342,8 @@ cr-icon-button {
   --cr-composebox-entrypoint-width: 40px;
   border-radius: 100px;
   color: var(
-    --color-sys-on-surface, --cr-fallback-color-on-surface);
+    --composebox-context-menu-entrypoint-button-color,
+    var(--color-sys-on-surface, --cr-fallback-color-on-surface));
   /* This line handles specific margin spacing for the oblong shape in omnibox
      and the composebox. */
   margin-inline-start: var(
@@ -351,7 +352,9 @@ cr-icon-button {
 
 /* Keeps the hover color on the entrypoint button while menu is open on omnibox. */
 :host([apply-context-button-background].menu-open) #entrypoint {
-  background-color: var(--cr-active-neutral-on-subtle-background-color);
+  background-color: var(
+      --cr-icon-button-hover-background-color,
+      var(--cr-active-neutral-on-subtle-background-color));
 }
 
 :host([is-lens-searchbox_]) #entrypoint {

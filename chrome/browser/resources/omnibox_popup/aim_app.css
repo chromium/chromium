@@ -11,7 +11,6 @@
 
 :host {
   --color-file-chip-remove-button-fill: var(--color-omnibox-results-icon);
-  --composebox-context-menu-entrypoint-button-color: var(--color-sys-on-surface);
   --cr-composebox-cancel-button-top: 5px;
   --cr-composebox-custom-font-size: var(--omnibox-font-size);
   --cr-composebox-expanded-border-radius: 16px;
@@ -194,6 +193,5 @@
 #composebox[apply-context-button-background]::part(context-menu-entrypoint-icon) {
   --cr-composebox-entrypoint-background-color: var(
     --color-omnibox-composebox-context-entrypoint-background);
-  --cr-icon-button-hover-background-color: var(
-      --cr-active-neutral-on-subtle-background-color);
+  --cr-icon-button-hover-background-color: var(--color-omnibox-icon-pressed);
 }
