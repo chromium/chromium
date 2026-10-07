@@ -10,6 +10,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
 import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabRestoreEntryId;
 import org.chromium.chrome.browser.tab.tab_restore.HistoricalEntry;
 import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabSaver;
 import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabSaverImpl;
@@ -52,29 +53,31 @@ public class TabRestoreServiceUtils {
     }
 
     /** Creates a single Tab entry for a {@link Tab}. */
-    public static void createTabEntry(TabModel tabModel, Tab tab) {
-        ThreadUtils.runOnUiThreadBlocking(
+    public static @TabRestoreEntryId int createTabEntry(TabModel tabModel, Tab tab) {
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final HistoricalTabSaver saver = new HistoricalTabSaverImpl(tabModel);
-                    saver.createHistoricalTab(tab);
+                    return saver.createHistoricalTab(tab);
                 });
     }
 
     /** Creates a single Tab or Group entry for a {@link HistoricalTabGroup}. */
-    public static void createTabOrGroupEntry(TabModel tabModel, HistoricalEntry entry) {
-        ThreadUtils.runOnUiThreadBlocking(
+    public static @TabRestoreEntryId int createTabOrGroupEntry(
+            TabModel tabModel, HistoricalEntry entry) {
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final HistoricalTabSaver saver = new HistoricalTabSaverImpl(tabModel);
-                    saver.createHistoricalTabOrGroup(entry);
+                    return saver.createHistoricalTabOrGroup(entry);
                 });
     }
 
     /** Creates a single Window entry for a list of {@link HistoricalEntry}. */
-    public static void createWindowEntry(TabModel tabModel, List<HistoricalEntry> entries) {
-        ThreadUtils.runOnUiThreadBlocking(
+    public static @TabRestoreEntryId int createWindowEntry(
+            TabModel tabModel, List<HistoricalEntry> entries) {
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final HistoricalTabSaver saver = new HistoricalTabSaverImpl(tabModel);
-                    saver.createHistoricalBulkClosure(entries);
+                    return saver.createHistoricalBulkClosure(entries);
                 });
     }
 }

@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tab.tab_restore;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -17,7 +20,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -29,6 +31,7 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabRestoreEntryId;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -65,10 +68,19 @@ public class HistoricalTabSaverImplUnitTest {
         HistoricalTabSaverImplJni.setInstanceForTesting(mHistoricalTabSaverJni);
         mHistoricalTabSaver = new HistoricalTabSaverImpl(mTabModel);
 
-        Mockito.when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
+        when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 
         mSecondaryTabModelSupplier.set(mSecondaryTabModel);
+
+        when(mHistoricalTabSaverJni.createHistoricalTab(any(), anyInt(), any(), anyInt()))
+                .thenReturn(11);
+        when(mHistoricalTabSaverJni.createHistoricalGroup(
+                        any(), any(), any(), any(), anyInt(), any(), any(), any()))
+                .thenReturn(22);
+        when(mHistoricalTabSaverJni.createHistoricalBulkClosure(
+                        any(), any(), any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(33);
     }
 
     @After
@@ -82,8 +94,9 @@ public class HistoricalTabSaverImplUnitTest {
         HistoricalEntry group =
                 new HistoricalEntry(
                         new Token(1L, 2L), "Foo", TabGroupColorId.GREY, Arrays.asList(new Tab[0]));
-        mHistoricalTabSaver.createHistoricalTabOrGroup(group);
+        @TabRestoreEntryId int entryId = mHistoricalTabSaver.createHistoricalTabOrGroup(group);
 
+        assertEquals(HistoricalTabSaver.INVALID_TAB_RESTORE_ENTRY_ID, entryId);
         verifyNoMoreInteractions(mHistoricalTabSaverJni);
     }
 
@@ -91,8 +104,9 @@ public class HistoricalTabSaverImplUnitTest {
     @Test
     public void testCreateHistoricalBulk_Empty() {
         ArrayList<HistoricalEntry> entries = new ArrayList<>();
-        mHistoricalTabSaver.createHistoricalBulkClosure(entries);
+        @TabRestoreEntryId int entryId = mHistoricalTabSaver.createHistoricalBulkClosure(entries);
 
+        assertEquals(HistoricalTabSaver.INVALID_TAB_RESTORE_ENTRY_ID, entryId);
         verifyNoMoreInteractions(mHistoricalTabSaverJni);
     }
 
@@ -100,9 +114,21 @@ public class HistoricalTabSaverImplUnitTest {
     @Test
     public void testCreateHistoricalBulk_Incognito() {
         Tab tab = createMockTab(0, mIncognitoProfile);
-        mHistoricalTabSaver.createHistoricalTab(tab);
+        @TabRestoreEntryId int entryId = mHistoricalTabSaver.createHistoricalTab(tab);
 
+        assertEquals(HistoricalTabSaver.INVALID_TAB_RESTORE_ENTRY_ID, entryId);
         verifyNoMoreInteractions(mHistoricalTabSaverJni);
+    }
+
+    /** Tests saving a single tab. */
+    @Test
+    public void testCreateHistoricalTab() {
+        Tab tab = createMockTab(0, mProfile);
+        @TabRestoreEntryId int entryId = mHistoricalTabSaver.createHistoricalTab(tab);
+
+        assertEquals(11, entryId);
+        ByteBuffer buf = ByteBuffer.allocateDirect(0);
+        verify(mHistoricalTabSaverJni).createHistoricalTab(tab, 0, buf, -1);
     }
 
     /** Tests nothing is saved if the secondary model has it. */
@@ -111,8 +137,9 @@ public class HistoricalTabSaverImplUnitTest {
         Tab tab = createMockTab(0, mProfile);
         doReturn(tab).when(mSecondaryTabModel).getTabById(tab.getId());
         mHistoricalTabSaver.addSecondaryTabModelSupplier(mSecondaryTabModelSupplier);
-        mHistoricalTabSaver.createHistoricalTab(tab);
+        @TabRestoreEntryId int entryId = mHistoricalTabSaver.createHistoricalTab(tab);
 
+        assertEquals(HistoricalTabSaver.INVALID_TAB_RESTORE_ENTRY_ID, entryId);
         verifyNoMoreInteractions(mHistoricalTabSaverJni);
     }
 
@@ -121,9 +148,12 @@ public class HistoricalTabSaverImplUnitTest {
     public void testCreateHistoricalTab_FromBulk() {
         Tab tab = createMockTab(0, mProfile);
 
-        mHistoricalTabSaver.createHistoricalBulkClosure(
-                Collections.singletonList(new HistoricalEntry(tab)));
+        @TabRestoreEntryId
+        int entryId =
+                mHistoricalTabSaver.createHistoricalBulkClosure(
+                        Collections.singletonList(new HistoricalEntry(tab)));
 
+        assertEquals(11, entryId);
         ByteBuffer buf = ByteBuffer.allocateDirect(0);
         verify(mHistoricalTabSaverJni).createHistoricalTab(tab, 0, buf, -1);
     }
@@ -141,9 +171,12 @@ public class HistoricalTabSaverImplUnitTest {
         tab.setGurlOverrideForTesting(new GURL("https://www.google.com"));
         TabTestUtils.setWebContentsState(tab, tempState);
 
-        mHistoricalTabSaver.createHistoricalBulkClosure(
-                Collections.singletonList(new HistoricalEntry(tab)));
+        @TabRestoreEntryId
+        int entryId =
+                mHistoricalTabSaver.createHistoricalBulkClosure(
+                        Collections.singletonList(new HistoricalEntry(tab)));
 
+        assertEquals(11, entryId);
         verify(mHistoricalTabSaverJni).createHistoricalTab(tab, 0, buf, 1);
     }
 
@@ -158,7 +191,10 @@ public class HistoricalTabSaverImplUnitTest {
         Token tabGroupId = new Token(728L, 324789L);
         HistoricalEntry group =
                 new HistoricalEntry(tabGroupId, "Foo", TabGroupColorId.GREY, tabList);
-        mHistoricalTabSaver.createHistoricalBulkClosure(Collections.singletonList(group));
+        @TabRestoreEntryId
+        int entryId =
+                mHistoricalTabSaver.createHistoricalBulkClosure(Collections.singletonList(group));
+        assertEquals(22, entryId);
 
         byte[] bytes = new byte[0];
         ByteBuffer buf = ByteBuffer.wrap(bytes);
@@ -187,7 +223,8 @@ public class HistoricalTabSaverImplUnitTest {
         Token tabGroupId = new Token(1L, 2L);
         HistoricalEntry group =
                 new HistoricalEntry(tabGroupId, "Foo", TabGroupColorId.GREY, tabList);
-        mHistoricalTabSaver.createHistoricalTabOrGroup(group);
+        @TabRestoreEntryId int entryId = mHistoricalTabSaver.createHistoricalTabOrGroup(group);
+        assertEquals(22, entryId);
 
         byte[] bytes = new byte[0];
         ByteBuffer buf = ByteBuffer.wrap(bytes);
@@ -213,7 +250,8 @@ public class HistoricalTabSaverImplUnitTest {
         Token tabGroupId = new Token(1L, 2L);
         HistoricalEntry group =
                 new HistoricalEntry(tabGroupId, "Foo", TabGroupColorId.GREY, List.of(tab));
-        mHistoricalTabSaver.createHistoricalTabOrGroup(group);
+        @TabRestoreEntryId int entryId = mHistoricalTabSaver.createHistoricalTabOrGroup(group);
+        assertEquals(22, entryId);
 
         byte[] bytes = new byte[0];
         ByteBuffer buf = ByteBuffer.wrap(bytes);
@@ -243,7 +281,8 @@ public class HistoricalTabSaverImplUnitTest {
         Token tabGroupId = new Token(4L, 5L);
         HistoricalEntry group =
                 new HistoricalEntry(tabGroupId, "Foo", TabGroupColorId.GREY, tabList);
-        mHistoricalTabSaver.createHistoricalTabOrGroup(group);
+        @TabRestoreEntryId int entryId = mHistoricalTabSaver.createHistoricalTabOrGroup(group);
+        assertEquals(22, entryId);
 
         byte[] bytes = new byte[0];
         ByteBuffer buf = ByteBuffer.wrap(bytes);
@@ -271,7 +310,8 @@ public class HistoricalTabSaverImplUnitTest {
         Token tabGroupId = new Token(4L, 5L);
         HistoricalEntry group =
                 new HistoricalEntry(tabGroupId, "Foo", TabGroupColorId.GREY, tabList);
-        mHistoricalTabSaver.createHistoricalTabOrGroup(group);
+        @TabRestoreEntryId int entryId = mHistoricalTabSaver.createHistoricalTabOrGroup(group);
+        assertEquals(22, entryId);
 
         byte[] bytes = new byte[0];
         ByteBuffer buf = ByteBuffer.wrap(bytes);
@@ -302,7 +342,8 @@ public class HistoricalTabSaverImplUnitTest {
         entries.add(new HistoricalEntry(tab1));
         entries.add(new HistoricalEntry(tab2));
         entries.add(new HistoricalEntry(tab2));
-        mHistoricalTabSaver.createHistoricalBulkClosure(entries);
+        @TabRestoreEntryId int entryId = mHistoricalTabSaver.createHistoricalBulkClosure(entries);
+        assertEquals(33, entryId);
 
         byte[] bytes = new byte[0];
         ByteBuffer buf = ByteBuffer.wrap(bytes);
@@ -373,7 +414,8 @@ public class HistoricalTabSaverImplUnitTest {
         entries.add(
                 new HistoricalEntry(
                         tabGroupId3, "Group 3", TabGroupColorId.RED, List.of(tab10, tab11)));
-        mHistoricalTabSaver.createHistoricalBulkClosure(entries);
+        @TabRestoreEntryId int entryId = mHistoricalTabSaver.createHistoricalBulkClosure(entries);
+        assertEquals(33, entryId);
 
         List<Token> tabGroupIds = List.of(tabGroupId1, tabGroupId2, tabGroupId3);
         List<String> groupTitles = List.of("Group 1", "Group 2", "Group 3");
