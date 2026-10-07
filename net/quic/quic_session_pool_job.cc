@@ -4,11 +4,15 @@
 
 #include "net/quic/quic_session_pool_job.h"
 
+#include <string>
+#include <string_view>
+
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
+#include "net/base/address_family.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_handle.h"
@@ -18,6 +22,7 @@
 #include "net/dns/host_resolver.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/address_utils.h"
+#include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_crypto_client_config_handle.h"
 #include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_session_pool.h"
@@ -126,12 +131,24 @@ void QuicSessionPool::Job::OnQuicSessionCreationComplete(int rv) {
 void QuicSessionPool::Job::UpdatePriority(RequestPriority old_priority,
                                           RequestPriority new_priority) {}
 
-void QuicSessionPool::Job::RecordCompleteTime(int rv) const {
-  CHECK_NE(rv, ERR_IO_PENDING);
+void QuicSessionPool::Job::RecordCompleteTime(
+    const QuicChromiumClientSession* session) const {
+  const base::TimeDelta complete_time = base::TimeTicks::Now() - creation_time_;
+  if (!session) {
+    base::UmaHistogramMediumTimes("Net.QuicSessionPool.JobCompleteTime.Failure",
+                                  complete_time);
+    return;
+  }
+
+  constexpr std::string_view kSuccessHistogramName =
+      "Net.QuicSessionPool.JobCompleteTime.Success";
+  base::UmaHistogramMediumTimes(kSuccessHistogramName, complete_time);
+  const AddressFamily address_family =
+      GetAddressFamily(ToIPAddress(session->peer_address().host()));
   base::UmaHistogramMediumTimes(
-      base::StrCat({"Net.QuicSessionPool.JobCompleteTime.",
-                    rv == OK ? "Success" : "Failure"}),
-      base::TimeTicks::Now() - creation_time_);
+      base::StrCat(
+          {kSuccessHistogramName, ".", AddressFamilyToString(address_family)}),
+      complete_time);
 }
 
 }  // namespace net

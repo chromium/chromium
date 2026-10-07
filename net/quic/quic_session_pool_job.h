@@ -74,8 +74,9 @@ class QuicSessionPool::Job : public QuicSessionAttempt::Delegate {
   MultiplexedSessionCreationInitiator session_creation_initiator() const {
     return session_creation_initiator_;
   }
-  // Records the time taken for this Job to complete.
-  void RecordCompleteTime(int rv) const;
+  // Records the time taken for this Job to complete. `session` must be non-null
+  // when the job succeeded, and nullptr when it failed.
+  void RecordCompleteTime(const QuicChromiumClientSession* session) const;
 
   // Associate this job with another source.
   void AssociateWithNetLogSource(

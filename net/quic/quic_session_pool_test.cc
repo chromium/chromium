@@ -903,7 +903,49 @@ TEST_P(QuicSessionPoolTest, JobCompleteTimeSuccess) {
   histogram_tester.ExpectTotalCount(
       "Net.QuicSessionPool.JobCompleteTime.Success", 1);
   histogram_tester.ExpectTotalCount(
+      "Net.QuicSessionPool.JobCompleteTime.Success.IPv4", 1);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSessionPool.JobCompleteTime.Success.IPv6", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSessionPool.JobCompleteTime.Success.Unspecified", 0);
+  histogram_tester.ExpectTotalCount(
       "Net.QuicSessionPool.JobCompleteTime.Failure", 0);
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest, JobCompleteTimeSuccessIPv6) {
+  base::HistogramTester histogram_tester;
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  host_resolver_->rules()->AddIPLiteralRule(kDefaultServerHostName,
+                                            "2001:db8::1", "");
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSessionPool.JobCompleteTime.Success", 1);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSessionPool.JobCompleteTime.Success.IPv4", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSessionPool.JobCompleteTime.Success.IPv6", 1);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSessionPool.JobCompleteTime.Success.Unspecified", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSessionPool.JobCompleteTime.Failure", 0);
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, JobCompleteTimeFailure) {
@@ -920,6 +962,12 @@ TEST_P(QuicSessionPoolTest, JobCompleteTimeFailure) {
 
   histogram_tester.ExpectTotalCount(
       "Net.QuicSessionPool.JobCompleteTime.Success", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSessionPool.JobCompleteTime.Success.IPv4", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSessionPool.JobCompleteTime.Success.IPv6", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSessionPool.JobCompleteTime.Success.Unspecified", 0);
   histogram_tester.ExpectTotalCount(
       "Net.QuicSessionPool.JobCompleteTime.Failure", 1);
 }
@@ -951,7 +999,38 @@ TEST_P(QuicSessionPoolTest, JobCompleteTimeSyncSuccess) {
   histogram_tester.ExpectTotalCount(
       "Net.QuicSessionPool.JobCompleteTime.Success", 1);
   histogram_tester.ExpectTotalCount(
+      "Net.QuicSessionPool.JobCompleteTime.Success.IPv4", 1);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSessionPool.JobCompleteTime.Success.IPv6", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSessionPool.JobCompleteTime.Success.Unspecified", 0);
+  histogram_tester.ExpectTotalCount(
       "Net.QuicSessionPool.JobCompleteTime.Failure", 0);
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest, JobCompleteTimeSyncFailure) {
+  base::HistogramTester histogram_tester;
+  Initialize();
+
+  host_resolver_->set_synchronous_mode(true);
+  host_resolver_->rules()->AddSimulatedFailure(kDefaultServerHostName);
+
+  RequestBuilder builder(this);
+  EXPECT_THAT(builder.CallRequest(), IsError(ERR_NAME_NOT_RESOLVED));
+
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSessionPool.JobCompleteTime.Success", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSessionPool.JobCompleteTime.Success.IPv4", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSessionPool.JobCompleteTime.Success.IPv6", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSessionPool.JobCompleteTime.Success.Unspecified", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSessionPool.JobCompleteTime.Failure", 1);
 }
 
 // This test uses synchronous QUIC session creation

@@ -1029,7 +1029,6 @@ int QuicSessionPool::RequestSession(
     return rv;
   }
 
-  job->RecordCompleteTime(rv);
   if (rv == OK) {
     auto it = active_sessions_.find(session_key);
     CHECK(it != active_sessions_.end());
@@ -1037,7 +1036,10 @@ int QuicSessionPool::RequestSession(
       return ERR_QUIC_PROTOCOL_ERROR;
     }
     QuicChromiumClientSession* session = it->second;
+    job->RecordCompleteTime(session);
     request->SetSession(session->CreateHandle(std::move(destination)));
+  } else {
+    job->RecordCompleteTime(/*session=*/nullptr);
   }
   return rv;
 }
@@ -1836,8 +1838,6 @@ void QuicSessionPool::OnJobComplete(
     Job* job,
     std::optional<base::TimeTicks> proxy_connect_start_time,
     int rv) {
-  job->RecordCompleteTime(rv);
-
   if (proxy_connect_start_time) {
     HttpProxyConnectJob::EmitConnectLatency(
         NextProto::kProtoQUIC, ProxyServer::Scheme::SCHEME_QUIC,
@@ -1857,19 +1857,24 @@ void QuicSessionPool::OnJobComplete(
   job->set_is_deleting();
 
   if (rv == OK) {
+    auto session_it = active_sessions_.find(job->key().session_key());
+    CHECK(session_it != active_sessions_.end());
+    QuicChromiumClientSession* session = session_it->second;
+    job->RecordCompleteTime(session);
+
     if (!has_quic_ever_worked_on_current_network_) {
       set_has_quic_ever_worked_on_current_network(true);
     }
 
-    auto session_it = active_sessions_.find(job->key().session_key());
-    CHECK(session_it != active_sessions_.end());
-    QuicChromiumClientSession* session = session_it->second;
     for (QuicSessionRequest* request : job->requests()) {
       // Do not notify |request| yet.
       request->SetSession(session->CreateHandle(job->key().destination()));
     }
-  } else if (rv < 0) {
-    NotifyOnConnectionFailure(job->key().session_key());
+  } else {
+    job->RecordCompleteTime(/*session=*/nullptr);
+    if (rv < 0) {
+      NotifyOnConnectionFailure(job->key().session_key());
+    }
   }
 
   for (QuicSessionRequest* request : job->requests()) {

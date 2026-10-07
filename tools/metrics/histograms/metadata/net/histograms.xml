@@ -7741,16 +7741,25 @@ chromium-metrics-reviews@google.com.
   <token key="SuccessOrFailure" variants="SuccessOrFailure"/>
 </histogram>
 
-<histogram name="Net.QuicSessionPool.JobCompleteTime.{SuccessOrFailure}"
-    units="ms" expires_after="2027-09-28">
+<histogram name="Net.QuicSessionPool.JobCompleteTime.{Result}" units="ms"
+    expires_after="2027-09-28">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     The time from when a QuicSessionPool::Job is created to when it completes.
     Recorded when a QuicSessionPool::Job completes synchronously or
-    asynchronously.
+    asynchronously. For the address family variants, the address family is based
+    on the peer address of the resulting session (including pooled or proxied
+    sessions).
   </summary>
-  <token key="SuccessOrFailure" variants="SuccessOrFailure"/>
+  <token key="Result">
+    <variant name="Failure" summary="Job failed"/>
+    <variant name="Success" summary="Job succeeded"/>
+    <variant name="Success.IPv4" summary="Job succeeded with IPv4"/>
+    <variant name="Success.IPv6" summary="Job succeeded with IPv6"/>
+    <variant name="Success.Unspecified"
+        summary="Job succeeded with an unspecified address family"/>
+  </token>
 </histogram>
 
 <histogram name="Net.QuicStreamFactory.AttemptMigrationBeforeHandshake"
