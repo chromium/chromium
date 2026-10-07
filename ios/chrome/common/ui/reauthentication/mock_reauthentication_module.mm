@@ -36,7 +36,7 @@
 
 - (void)setExpectedResult:(ReauthenticationResult)expectedResult {
   _canAttemptWithBiometrics = YES;
-  _canAttempt = YES;
+  self.canAttempt = YES;
   _expectedResult = expectedResult;
 }
 
@@ -45,7 +45,7 @@
 }
 
 - (BOOL)canAttemptReauth {
-  return _canAttempt;
+  return self.canAttempt;
 }
 
 - (void)attemptReauthWithLocalizedReason:(NSString*)localizedReason

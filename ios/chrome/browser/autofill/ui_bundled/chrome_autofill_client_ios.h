@@ -44,6 +44,8 @@
 @protocol FormInputAccessoryCommands;
 @class UIViewController;
 
+class IOSDeviceAuthenticator;
+
 namespace affiliations {
 class AffiliationService;
 }
@@ -257,6 +259,10 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   // Searches for Autofill AI save entity infobar and returns its delegate.
   AutofillAiSaveEntityInfoBarDelegateIOS*
   GetAutofillAiSaveEntityInfoBarDelegateIOS();
+
+  // Returns an `IOSDeviceAuthenticator` for the profile.
+  std::unique_ptr<IOSDeviceAuthenticator> GetIOSDeviceAuthenticator(
+      std::string histogram) const;
 
   // Shows the detailed save/update UI for Autofill AI entities.
   void ShowAutofillAiSaveUpdateUI();

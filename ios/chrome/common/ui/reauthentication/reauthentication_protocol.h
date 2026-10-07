@@ -24,7 +24,8 @@ using ReauthenticationResultBlock = void (^)(ReauthenticationResult);
 // Checks whether biometric authentication is enabled for the device.
 - (BOOL)canAttemptReauthWithBiometrics;
 
-// Checks whether Touch ID and/or passcode is enabled for the device.
+// Checks whether Touch ID and/or passcode is enabled for the device. The
+// implementation of this method must be thread-safe.
 - (BOOL)canAttemptReauth;
 
 // Attempts to reauthenticate the user with Touch ID or Face ID, or passcode if

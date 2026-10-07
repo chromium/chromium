@@ -61,6 +61,9 @@ constexpr base::TimeDelta kIntervalForValidAuth = base::Minutes(1);
 }
 
 - (BOOL)canAttemptReauth {
+  // This implementation satisfies the thread-safety requirement because
+  // `canEvaluatePolicy` is running from an isolated, thread-confined LAContext
+  // instance.
   LAContext* context = _createLAContext();
   // The authentication method is Touch ID, Face ID or passcode.
   return [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication

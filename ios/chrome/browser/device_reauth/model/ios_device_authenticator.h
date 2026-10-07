@@ -27,6 +27,11 @@ class IOSDeviceAuthenticator : public DeviceAuthenticatorCommon {
                                AuthenticateCallback callback) override;
   void Cancel() override;
 
+  // Asynchronously checks whether biometrics or screen lock are available.
+  // Calls `callback` on the calling sequence with the result.
+  void CanAuthenticateWithBiometricOrScreenLock(
+      base::OnceCallback<void(bool)> callback);
+
  private:
   // Called when the authentication completes with the result `succeeded`.
   void OnAuthenticationCompleted(bool succeeded);

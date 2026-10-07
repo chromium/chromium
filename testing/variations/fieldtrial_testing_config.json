@@ -1525,6 +1525,21 @@
             ]
         }
     ],
+    "AutofillAiAsyncReauthAvailability": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillAiAsyncReauthAvailability"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillAiEditEntitiesFromSaveUpdatePrompt": [
         {
             "platforms": [

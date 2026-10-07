@@ -19,7 +19,7 @@
 @property(nonatomic, assign) BOOL canAttemptWithBiometrics;
 
 // Indicates whether the device is capable of reauthenticating the user.
-@property(nonatomic, assign) BOOL canAttempt;
+@property(atomic, assign) BOOL canAttempt;
 
 // Indicates whether (mock) authentication should succeed or not. Setting
 // `shouldSucceed` to any value sets `canAttemptWithBiometrics` and `canAttempt`

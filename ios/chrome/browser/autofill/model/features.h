@@ -29,4 +29,9 @@ BASE_DECLARE_FEATURE(kFormInputAccessorySkipInputViewReloadInBackground);
 // Enables the keyboard accessory view to let touches pass through blank areas.
 BASE_DECLARE_FEATURE(kFormInputAccessoryPassThroughTouches);
 
+// Feature flag to asynchronously check device re-authentication availability
+// for `EntityDataManager` to avoid blocking the UI thread during client
+// initialization.
+BASE_DECLARE_FEATURE(kAutofillAiAsyncReauthAvailability);
+
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_MODEL_FEATURES_H_

@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/device_reauth/model/ios_device_authenticator.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/thread_pool.h"
 
 IOSDeviceAuthenticator::IOSDeviceAuthenticator(
     id<ReauthenticationProtocol> reauth_module,
@@ -24,6 +26,22 @@ bool IOSDeviceAuthenticator::CanAuthenticateWithBiometrics() {
 
 bool IOSDeviceAuthenticator::CanAuthenticateWithBiometricOrScreenLock() {
   return [authentication_module_ canAttemptReauth];
+}
+
+void IOSDeviceAuthenticator::CanAuthenticateWithBiometricOrScreenLock(
+    base::OnceCallback<void(bool)> callback) {
+  id<ReauthenticationProtocol> reauth_module = authentication_module_;
+  // Strongly capturing `authentication_module_` in the reply block ensures its
+  // lifetime is prolonged until after the task has run, and it is destroyed on
+  // the original sequence.
+  base::OnceClosure destroy_on_original_sequence =
+      base::DoNothingWithBoundArgs(reauth_module);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(^bool {
+        return [reauth_module canAttemptReauth];
+      }),
+      std::move(callback).Then(std::move(destroy_on_original_sequence)));
 }
 
 void IOSDeviceAuthenticator::AuthenticateWithMessage(

@@ -10,6 +10,7 @@
 #import "base/test/mock_callback.h"
 #import "base/test/task_environment.h"
 #import "base/test/test.pb.h"
+#import "base/test/test_future.h"
 #import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -38,9 +39,7 @@ class IOSDeviceAuthenticatorTest : public PlatformTest {
     mock_reauth_module_.expectedResult = ReauthenticationResult::kSkipped;
   }
 
-  device_reauth::DeviceAuthenticator* authenticator() {
-    return authenticator_.get();
-  }
+  IOSDeviceAuthenticator* authenticator() { return authenticator_.get(); }
   base::MockCallback<base::OnceCallback<void(bool)>>& result_callback() {
     return result_callback_;
   }
@@ -50,7 +49,7 @@ class IOSDeviceAuthenticatorTest : public PlatformTest {
 
  private:
   DeviceAuthenticatorProxy proxy_;
-  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
+  std::unique_ptr<IOSDeviceAuthenticator> authenticator_;
   base::MockCallback<base::OnceCallback<void(bool)>> result_callback_;
 };
 
@@ -138,6 +137,9 @@ class IOSDeviceAuthenticatorAvailabilityTest
 
   bool BiometricAvailable() { return std::get<0>(GetParam()); }
   bool ScreenLockAvailable() { return std::get<1>(GetParam()); }
+
+ private:
+  base::test::TaskEnvironment task_environment_;
 };
 
 // Tests that auth availability is correctly returned.
@@ -146,6 +148,14 @@ TEST_P(IOSDeviceAuthenticatorAvailabilityTest, ReauthAvailability) {
             BiometricAvailable());
   EXPECT_EQ(authenticator()->CanAuthenticateWithBiometricOrScreenLock(),
             BiometricAvailable() || ScreenLockAvailable());
+}
+
+// Tests that async auth availability is correctly returned.
+TEST_P(IOSDeviceAuthenticatorAvailabilityTest, ReauthAvailabilityAsync) {
+  base::test::TestFuture<bool> future;
+  authenticator()->CanAuthenticateWithBiometricOrScreenLock(
+      future.GetCallback());
+  EXPECT_EQ(future.Get(), BiometricAvailable() || ScreenLockAvailable());
 }
 
 INSTANTIATE_TEST_SUITE_P(,

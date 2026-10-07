@@ -22,3 +22,6 @@ BASE_FEATURE(kFormInputAccessorySkipInputViewReloadInBackground,
 
 BASE_FEATURE(kFormInputAccessoryPassThroughTouches,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAutofillAiAsyncReauthAvailability,
+             base::FEATURE_ENABLED_BY_DEFAULT);
