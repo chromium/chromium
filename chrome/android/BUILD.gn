@@ -36,6 +36,7 @@ if (_is_default_toolchain) {
   import("//chrome/common/features.gni")
   import("//chrome/version.gni")
   import("//components/autofill/android/browser/buildflags.gni")
+  import("//components/module_installer/android/module_interface_processor.gni")
   import("//components/password_manager/core/browser/buildflags.gni")
   import("//content/public/common/features.gni")
   import("//device/vr/buildflags/buildflags.gni")
@@ -731,7 +732,6 @@ if (_is_default_toolchain) {
       "//components/metrics:metrics_java",
       "//components/minidump_uploader:minidump_uploader_java",
       "//components/module_installer/android:module_installer_java",
-      "//components/module_installer/android:module_interface_java",
       "//components/navigation_interception/android:navigation_interception_java",
       "//components/ntp_tiles:mojo_bindings_java",
       "//components/offline_items_collection/core:core_java",
@@ -916,9 +916,6 @@ if (_is_default_toolchain) {
     sources += internal_tab_management_java_sources
 
     srcjar_deps += [ ":chrome_jni_headers" ]
-
-    annotation_processor_deps =
-        [ "//components/module_installer/android:module_interface_processor" ]
 
     resources_package = "org.chromium.chrome"
 
@@ -1340,11 +1337,18 @@ if (_is_default_toolchain) {
     }
   }
 
+  module_interface_processor("xr_module_interface") {
+    sources = [
+      "java/src/org/chromium/chrome/browser/xr/scenecore/XrModuleProvider.java",
+    ]
+  }
+
   android_library("xr_java") {
     sources = [
       "java/src/org/chromium/chrome/browser/xr/scenecore/XrModuleBridge.java",
       "java/src/org/chromium/chrome/browser/xr/scenecore/XrModuleProvider.java",
     ]
+    srcjar_deps = [ ":xr_module_interface" ]
 
     deps = [
       "//base:base_java",
@@ -1357,9 +1361,6 @@ if (_is_default_toolchain) {
       "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_java",
     ]
-
-    annotation_processor_deps =
-        [ "//components/module_installer/android:module_interface_processor" ]
   }
 
   # Files used by chrome integration and unit javatests.

@@ -36,8 +36,9 @@ building blocks:
 
 * [`@ModuleInterface`](android/java/src/org/chromium/components/module_installer/builder/ModuleInterface.java)
   to annotate the entry point of your module. Using this with the
-  [`module_interface_processor`](android/BUILD.gn) will create a module class
-  such as `FooModule` that lets you install and load a module. See
+  [`module_interface_processor`](android/module_interface_processor.gni)
+  template will create a module class such as `FooModule` that lets you install
+  and load a module. See
   [`Module`](android/java/src/org/chromium/components/module_installer/builder/Module.java)
   for its interface.
 

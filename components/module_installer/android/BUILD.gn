@@ -62,17 +62,6 @@ java_library("module_interface_java") {
   proguard_configs = [ "module_installer.flags" ]
 }
 
-java_annotation_processor("module_interface_processor") {
-  sources = [ "java/src/org/chromium/components/module_installer/builder/ModuleInterfaceProcessor.java" ]
-  main_class = "org.chromium.components.module_installer.builder.ModuleInterfaceProcessor"
-  deps = [
-    ":module_interface_java",
-    "//build/android:build_java",
-    "//third_party/android_deps:com_squareup_javapoet_java",
-    "//third_party/android_deps:guava_java",
-  ]
-}
-
 source_set("native") {
   sources = [ "module.cc" ]
   deps = [

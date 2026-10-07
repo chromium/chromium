@@ -292,17 +292,23 @@ build target in: `//chrome/browser/foo/BUILD.gn`:
 
 ```gn
 import("//build/config/android/rules.gni")
+import("//components/module_installer/android/module_interface_processor.gni")
+
+module_interface_processor("module_interface") {
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/foo/Foo.java",
+  ]
+}
 
 android_library("java") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/foo/Foo.java",
   ]
+  srcjar_deps = [ ":module_interface" ]
   deps = [
     "//components/module_installer/android:module_installer_java",
     "//components/module_installer/android:module_interface_java",
   ]
-  annotation_processor_deps =
-    [ "//components/module_installer/android:module_interface_processor" ]
 }
 ```
 

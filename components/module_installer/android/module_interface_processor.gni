@@ -1,0 +1,28 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/python.gni")
+
+# Generates a FooModule.java class in a .srcjar for each @ModuleInterface
+# annotated Java file in `sources`.
+#
+# Variables:
+#   sources: List of .java files annotated with @ModuleInterface.
+template("module_interface_processor") {
+  action_with_pydeps(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "sources",
+                             "testonly",
+                             "visibility",
+                           ])
+    script =
+        "//components/module_installer/android/module_interface_processor.py"
+    outputs = [ "$target_gen_dir/$target_name.srcjar" ]
+    args = [
+             "--srcjar",
+             rebase_path(outputs[0], root_build_dir),
+           ] + rebase_path(sources, root_build_dir)
+  }
+}

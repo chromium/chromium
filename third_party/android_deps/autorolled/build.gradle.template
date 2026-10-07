@@ -125,9 +125,6 @@ dependencies {
     // Needed by androidx and by doubledown targets.
     compileLatest 'org.jetbrains.kotlin:kotlin-parcelize-runtime:1.9.22'
 
-    // Used by ModuleInterfaceProcessor.java
-    buildCompileLatest 'com.squareup:javapoet:1.13.0'
-
     // Used by resource shrinking.
     // buildCompileNoDepsLatest targets do not bring in any of their
     // dependencies, this list of targets is carefully curated for the use of
