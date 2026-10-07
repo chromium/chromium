@@ -44,6 +44,8 @@
 #include "chrome/browser/context_hub/context_hub_service_factory.h"
 #include "chrome/browser/context_hub/features.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
+#include "chrome/browser/contextual_tasks/copy_search_journey_tracker.h"
+#include "chrome/browser/contextual_tasks/copy_search_journey_tracker_factory.h"
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_test_helper.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -132,6 +134,7 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
@@ -4938,6 +4941,161 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuSubmenuBrowserTest,
   EXPECT_TRUE(
       menu->GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH)
           .has_value());
+}
+
+class CopyTextJourneysContextMenuBrowserTest : public ContextMenuBrowserTest {
+ public:
+  CopyTextJourneysContextMenuBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{contextual_tasks::kCopyTextJourneys,
+                              data_controls::kDataControlsSearchWith},
+        /*disabled_features=*/{
+            lens::features::kLensOverlayTextSelectionContextMenuEntrypoint});
+  }
+
+ protected:
+  void SetUpOnMainThread() override {
+    ContextMenuBrowserTest::SetUpOnMainThread();
+    search_test_utils::WaitForTemplateURLServiceToLoad(
+        TemplateURLServiceFactory::GetForProfile(browser()->GetProfile()));
+  }
+
+  std::unique_ptr<TestRenderViewContextMenu> CreateSearchWebForMenu(
+      content::WebContents* web_contents,
+      const std::u16string& selection_text) {
+    content::ContextMenuParams params;
+    params.media_type = blink::mojom::ContextMenuDataMediaType::kNone;
+    params.selection_text = selection_text;
+    params.page_url = web_contents->GetVisibleURL();
+    params.source_type = ui::mojom::MenuSourceType::kMouse;
+    params.properties[prefs::kDefaultSearchProviderContextMenuAccessAllowed] =
+        "";
+#if BUILDFLAG(IS_MAC)
+    params.writing_direction_default = 0;
+    params.writing_direction_left_to_right = 0;
+    params.writing_direction_right_to_left = 0;
+#endif
+    auto menu = std::make_unique<TestRenderViewContextMenu>(
+        *web_contents->GetPrimaryMainFrame(), params);
+    menu->SetBrowser(browser());
+    menu->Init();
+    return menu;
+  }
+
+  contextual_tasks::CopySearchJourneyTracker* tracker() {
+    return contextual_tasks::CopySearchJourneyTrackerFactory::GetForProfile(
+        browser()->GetProfile());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verifies that executing "Search Google for…" records the selected text in
+// `CopySearchJourneyTracker` with the source tab's SessionID and committed
+// NavigationEntry ID, and that `NormalizeForJourneyMatch` produces the same
+// hash as the committed SRP's `q` parameter even when the selection contains
+// `AutocompleteInput::kInvalidChars`.
+IN_PROC_BROWSER_TEST_F(CopyTextJourneysContextMenuBrowserTest,
+                       SearchWebForRecordsCopyMatchingCommittedSrpQuery) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL source_url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), source_url));
+
+  content::WebContents* source_web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  const SessionID source_tab_id =
+      sessions::SessionTabHelper::IdForTab(source_web_contents);
+  ASSERT_TRUE(source_tab_id.is_valid());
+  content::NavigationEntry* source_entry =
+      source_web_contents->GetController().GetLastCommittedEntry();
+  ASSERT_TRUE(source_entry);
+  const int source_nav_entry_id = source_entry->GetUniqueID();
+
+  ASSERT_TRUE(tracker());
+  EXPECT_EQ(0u, tracker()->GetRingBufferSizeForTesting());
+
+  // Include leading/trailing whitespace, mixed case, and characters from
+  // `AutocompleteInput::kInvalidChars` (\n, \t, \u2028) that
+  // `AppendSearchProvider()` trims and replaces before constructing the search
+  // URL.
+  const std::u16string kRawSelection =
+      u"  How to Bake\nSourdough\tBread\u2028Recipe  ";
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateSearchWebForMenu(source_web_contents, kRawSelection);
+  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
+
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SEARCHWEBFOR, /*event_flags=*/0);
+  content::WebContents* search_web_contents = add_tab.Wait();
+  ASSERT_TRUE(search_web_contents);
+
+  EXPECT_EQ(1u, tracker()->GetRingBufferSizeForTesting());
+
+  const SessionID search_tab_id =
+      sessions::SessionTabHelper::IdForTab(search_web_contents);
+  ASSERT_TRUE(search_tab_id.is_valid());
+  ASSERT_NE(source_tab_id, search_tab_id);
+
+  // Extract the search terms from the SRP URL opened by the context menu and
+  // verify that its normalized hash agrees with the recorded selection and
+  // correlates the journey.
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_TRUE(template_url_service);
+  const TemplateURL* default_provider =
+      template_url_service->GetDefaultSearchProvider();
+  ASSERT_TRUE(default_provider);
+
+  std::u16string extracted_search_terms;
+  ASSERT_TRUE(default_provider->ExtractSearchTermsFromURL(
+      search_web_contents->GetVisibleURL(),
+      template_url_service->search_terms_data(), &extracted_search_terms));
+  EXPECT_EQ(
+      contextual_tasks::CopySearchJourneyTracker::NormalizeForJourneyMatch(
+          kRawSelection),
+      contextual_tasks::CopySearchJourneyTracker::NormalizeForJourneyMatch(
+          extracted_search_terms));
+
+  tracker()->OnSearchNavigationCommitted(search_tab_id, extracted_search_terms);
+  const auto& journeys = tracker()->GetActiveJourneysForTesting();
+  auto it = journeys.find(source_tab_id);
+  ASSERT_NE(it, journeys.end());
+  EXPECT_EQ(source_tab_id, it->second.copy_record.source_tab_id);
+  EXPECT_EQ(source_nav_entry_id, it->second.copy_record.source_nav_entry_id);
+  EXPECT_EQ(search_tab_id, it->second.search_tab_id);
+}
+
+// Verifies that if Enterprise Data Controls cancels the context-menu search,
+// `CopySearchJourneyTracker` does not record the selection.
+IN_PROC_BROWSER_TEST_F(CopyTextJourneysContextMenuBrowserTest,
+                       SearchWebForBlockedByDataControlsDoesNotRecordCopy) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL source_url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), source_url));
+
+  data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(), {R"({
+      "name": "warn",
+      "rule_id": "987",
+      "sources": {"urls": ["*"]},
+      "restrictions": [{"class": "CLIPBOARD", "level": "WARN"}]
+  })"});
+
+  content::WebContents* source_web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateSearchWebForMenu(source_web_contents, u"confidential search query");
+  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
+
+  data_controls::DesktopDataControlsDialogTestHelper helper(
+      data_controls::DataControlsDialog::Type::kClipboardActionWarn);
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SEARCHWEBFOR, /*event_flags=*/0);
+  helper.WaitForDialogToInitialize();
+  helper.CloseDialogWithoutBypass();
+  helper.WaitForDialogToClose();
+
+  ASSERT_TRUE(tracker());
+  EXPECT_EQ(0u, tracker()->GetRingBufferSizeForTesting());
 }
 
 }  // namespace

@@ -52,6 +52,8 @@
 #include "chrome/browser/context_hub/features.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
+#include "chrome/browser/contextual_tasks/copy_search_journey_tracker.h"
+#include "chrome/browser/contextual_tasks/copy_search_journey_tracker_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/dictation/features.h"
@@ -211,6 +213,7 @@
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/sharing_message/features.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/spellcheck/browser/spellcheck_host_metrics.h"
@@ -4272,9 +4275,25 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
           GetWebContentsForDataControls(), params_.selection_text.size(),
           base::BindOnce(
               [](base::WeakPtr<content::WebContents> web_contents,
-                 content::OpenURLParams params) {
+                 std::u16string selection_text, content::OpenURLParams params) {
                 if (!web_contents) {
                   return;
+                }
+                if (contextual_tasks::IsCopyTextJourneysEnabled()) {
+                  if (auto* tracker =
+                          contextual_tasks::CopySearchJourneyTrackerFactory::
+                              GetForProfile(Profile::FromBrowserContext(
+                                  web_contents->GetBrowserContext()))) {
+                    const SessionID tab_id =
+                        sessions::SessionTabHelper::IdForTab(
+                            web_contents.get());
+                    if (content::NavigationEntry* entry =
+                            web_contents->GetController()
+                                .GetLastCommittedEntry()) {
+                      tracker->OnCopyRecorded(tab_id, entry->GetUniqueID(),
+                                              selection_text);
+                    }
+                  }
                 }
                 web_contents->OpenURL(
                     params,
@@ -4282,7 +4301,8 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
                         AttacherCallback(
                             chrome_navigation_initiator::kContextMenuSearch));
               },
-              source_web_contents_->GetWeakPtr(), std::move(open_url_params)));
+              source_web_contents_->GetWeakPtr(), params_.selection_text,
+              std::move(open_url_params)));
       break;
     }
     case IDC_CONTENT_CONTEXT_GOTOURL: {
