@@ -86,6 +86,7 @@ source_set("impl") {
 
   if (!is_android) {
     deps += [
+      "//chrome/app/vector_icons",
       "//chrome/browser:primitives",
       "//chrome/browser/actor",
       "//chrome/browser/actor/ui",

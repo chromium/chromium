@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
@@ -74,6 +75,11 @@ std::u16string GetCtaLabel() {
     return l10n_util::GetStringUTF16(IDS_GLIC_SELECTION_CTA_EXPLAIN);
   }
   return l10n_util::GetStringUTF16(IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL);
+}
+
+const gfx::VectorIcon& GetSmallChipIcon() {
+  return features::IsRoundedIconsEnabled() ? kTextAnalysisIcon
+                                           : kTextAnalysisOldIcon;
 }
 
 class GlicSelectionContentsView : public views::View {
@@ -190,17 +196,20 @@ class GlicSelectionContentsView : public views::View {
     active_icon_model_ = ui::ImageModel::FromImageSkia(resized_icon);
 
     auto inactive_generator = base::BindRepeating(
-        [](const ui::ColorProvider* color_provider) -> gfx::ImageSkia {
+        [](bool is_small_chip,
+           const ui::ColorProvider* color_provider) -> gfx::ImageSkia {
           if (!color_provider) {
             return gfx::ImageSkia();
           }
           const gfx::VectorIcon& vector_icon =
-              glic::GlicVectorIconManager::GetVectorIcon(
-                  IDR_GLIC_BUTTON_VECTOR_ICON);
+              is_small_chip ? GetSmallChipIcon()
+                            : glic::GlicVectorIconManager::GetVectorIcon(
+                                  IDR_GLIC_BUTTON_VECTOR_ICON);
           return gfx::CreateVectorIcon(
               vector_icon, kIconSize,
               color_provider->GetColor(ui::kColorSysOnSurfaceSubtle));
-        });
+        },
+        is_small_chip);
 
     inactive_icon_model_ = ui::ImageModel::FromImageGenerator(
         std::move(inactive_generator), gfx::Size(20, 20));
