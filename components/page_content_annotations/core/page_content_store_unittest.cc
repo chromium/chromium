@@ -7,17 +7,23 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
+#include "sql/test/test_helpers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
 
 namespace {
+
+using ::base::test::EqualsProto;
+using ::testing::Optional;
 
 constexpr int64_t kTabId = 1;
 constexpr char kUrl[] = "https://example.com/";
@@ -36,20 +42,26 @@ class PageContentStoreTest : public testing::Test {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    store_ = std::make_unique<PageContentStore>(db_path());
     auto os_crypt_async = os_crypt_async::GetTestOSCryptAsyncForTesting();
     base::RunLoop run_loop;
     os_crypt_async->GetInstance(base::BindOnce(
-        [](PageContentStore* store, base::RunLoop* run_loop,
+        [](PageContentStoreTest* test, base::RunLoop* run_loop,
            scoped_refptr<os_crypt_async::Encryptor> encryptor) {
-          store->InitWithEncryptor(std::move(encryptor));
+          test->encryptor_ = std::move(encryptor);
           run_loop->Quit();
         },
-        store_.get(), &run_loop));
+        this, &run_loop));
     run_loop.Run();
+    OpenStore();
   }
 
   void TearDown() override { store_.reset(); }
+
+  void OpenStore() {
+    store_.reset();
+    store_ = std::make_unique<PageContentStore>(db_path());
+    store_->InitWithEncryptor(encryptor_);
+  }
 
   base::FilePath db_path() const {
     return temp_dir_.GetPath().AppendASCII("PageContentStoreTest.db");
@@ -58,6 +70,7 @@ class PageContentStoreTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
+  scoped_refptr<os_crypt_async::Encryptor> encryptor_;
   std::unique_ptr<PageContentStore> store_;
 };
 
@@ -327,6 +340,29 @@ TEST_F(PageContentStoreTest, GetAllTabIds) {
   EXPECT_EQ(tab_ids.size(), 2u);
   EXPECT_EQ(tab_ids[0], 1);
   EXPECT_EQ(tab_ids[1], 2);
+}
+
+TEST_F(PageContentStoreTest, DatabaseErrorRecovery) {
+  EXPECT_TRUE(store_->AddPageContent(GURL(kUrl), TestContent("test title"),
+                                     /*visit_timestamp=*/base::Time::Now(),
+                                     /*extraction_timestamp=*/base::Time::Now(),
+                                     kTabId));
+
+  // Corrupt the database; the next operation will fail, trigger recovery, and
+  // poison the current database handle.
+  ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path()));
+  EXPECT_FALSE(store_->GetPageContent(GURL(kUrl)).has_value());
+  // Deleting an empty list of tabs would unconditionally return `true` if the
+  // database was healthy, but since the recovery closed the database, `false`
+  // should be returned instead.
+  EXPECT_FALSE(store_->DeletePageContentForTabs(/*tab_ids=*/{}));
+
+  // Re-opening the database should succeed and the previously stored content
+  // should be recovered.
+  OpenStore();
+  EXPECT_THAT(store_->GetPageContent(GURL(kUrl)),
+              Optional(EqualsProto(TestContent("test title"))));
+  EXPECT_TRUE(store_->DeletePageContentForTabs(/*tab_ids=*/{}));
 }
 
 class PageContentStoreNoEncryptorTest : public testing::Test {

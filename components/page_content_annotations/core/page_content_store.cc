@@ -44,8 +44,7 @@ void PageContentStore::OnDatabaseError(int extended_error,
 
     // Signal the test-expectation framework that the error was handled.
     std::ignore = sql::Database::IsExpectedSqliteError(extended_error);
-
-    db_initialized_ = InitializeDb();
+    db_initialized_ = false;
     return;
   }
 
