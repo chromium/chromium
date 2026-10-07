@@ -766,4 +766,104 @@ class LayerTreeHostProxyTestRequestImmediateBeginMainFrameDisabled
 MULTI_THREAD_TEST_F(
     LayerTreeHostProxyTestRequestImmediateBeginMainFrameDisabled);
 
+// Verify that when a primary BeginMainFrame is READY_TO_COMMIT but blocked from
+// committing by an unactivated impl-side pending tree, a secondary
+// BeginMainFrame is not sent (which would block the main thread in
+// LayerTreeHost::AnimateLayers() waiting for the primary commit to complete).
+class LayerTreeHostProxyTestMainFrameBeforeCommitBlockedByImplSidePendingTree
+    : public LayerTreeHostProxyTest {
+ protected:
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
+    if (host_impl->active_tree()->source_frame_number() == 0 &&
+        !invalidated_once_) {
+      invalidated_once_ = true;
+      // Block activation of the pending tree created by impl-side invalidation
+      // so that the next main-thread commit cannot finish committing yet.
+      host_impl->BlockNotifyReadyToActivateForTesting(true);
+      host_impl->RequestImplSideInvalidationForRerasterTiling();
+    }
+  }
+
+  void DidInvalidateContentOnImplSide(LayerTreeHostImpl* host_impl) override {
+    // Now has_pending_tree_ is true and current_pending_tree_is_impl_side_ is
+    // true. Start main frame 1.
+    PostSetNeedsCommitToMainThread();
+  }
+
+  void DidBeginMainFrame() override {
+    if (layer_tree_host()->SourceFrameNumber() == 2) {
+      // Request another main frame (frame 2) so needs_begin_main_frame_ is true
+      // when frame 1 becomes READY_TO_COMMIT.
+      proxy()->SetNeedsCommit();
+    }
+  }
+
+  void ReadyToCommitOnThread(LayerTreeHostImpl* host_impl) override {
+    if (host_impl->active_tree()->source_frame_number() == 0 &&
+        !ready_to_commit_frame_1_) {
+      ready_to_commit_frame_1_ = true;
+      // Request another impl frame while frame 1 is READY_TO_COMMIT and
+      // blocked by the impl-side pending tree.
+      host_impl->SetNeedsOneBeginImplFrame();
+    }
+  }
+
+  void WillBeginImplFrameOnThread(LayerTreeHostImpl* host_impl,
+                                  const viz::BeginFrameArgs& args,
+                                  bool has_damage) override {
+    if (ready_to_commit_frame_1_ && !unblock_posted_) {
+      unblock_posted_ = true;
+      // Post a task to the main thread after this impl frame processes
+      // scheduled actions. If a secondary BeginMainFrame were sent while frame
+      // 1 is stuck in READY_TO_COMMIT, the main thread would block inside
+      // LayerTreeHost::AnimateLayers() -> WaitForCommitCompletion() and never
+      // run this task to unblock activation.
+      ImplThreadTaskRunner()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &LayerTreeHostProxyTestMainFrameBeforeCommitBlockedByImplSidePendingTree::
+                  PostMainThreadCheckBeforeUnblock,
+              base::Unretained(this), host_impl));
+    }
+  }
+
+  void PostMainThreadCheckBeforeUnblock(LayerTreeHostImpl* host_impl) {
+    MainThreadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LayerTreeHostProxyTestMainFrameBeforeCommitBlockedByImplSidePendingTree::
+                VerifyMainThreadNotBlockedAndUnblockActivation,
+            base::Unretained(this), host_impl));
+  }
+
+  void VerifyMainThreadNotBlockedAndUnblockActivation(
+      LayerTreeHostImpl* host_impl) {
+    // Frame 1's commit is still in flight on the impl thread (WillCommit() has
+    // already incremented SourceFrameNumber() to 2), and the main thread is
+    // responsive (not blocked inside AnimateLayers() for frame 2).
+    EXPECT_TRUE(layer_tree_host()->in_commit());
+    EXPECT_EQ(2, layer_tree_host()->SourceFrameNumber());
+    ImplThreadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&LayerTreeHostImpl::BlockNotifyReadyToActivateForTesting,
+                       base::Unretained(host_impl), false, true));
+  }
+
+  void DidCommit() override {
+    if (layer_tree_host()->SourceFrameNumber() == 3) {
+      EndTest();
+    }
+  }
+
+ private:
+  bool invalidated_once_ = false;
+  bool ready_to_commit_frame_1_ = false;
+  bool unblock_posted_ = false;
+};
+
+MULTI_THREAD_TEST_F(
+    LayerTreeHostProxyTestMainFrameBeforeCommitBlockedByImplSidePendingTree);
+
 }  // namespace cc

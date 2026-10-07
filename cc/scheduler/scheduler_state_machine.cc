@@ -560,9 +560,16 @@ bool SchedulerStateMachine::ShouldSendBeginMainFrame() const {
 
   // MFBA is disabled and we are waiting for previous activation, or the current
   // pending tree is impl-side.
+  // When Main is READY_TO_COMMIT, but is blocked by a previous pending_tree
+  // we cannot send an additional BeginMainFrame. As the Main thread will
+  // enter LayerTreeHost::WaitForProtectedSequenceCompletion and block.
+  // This causes the Renderer to hang.
   bool can_send_main_frame_with_pending_tree =
-      settings_.main_frame_before_activation_enabled ||
-      current_pending_tree_is_impl_side_;
+      (settings_.main_frame_before_activation_enabled ||
+       current_pending_tree_is_impl_side_) &&
+      (begin_main_frame_state_ == BeginMainFrameState::IDLE ||
+       !base::FeatureList::IsEnabled(
+           features::kDeferMainFrameBeforeCommitWithPendingTree));
   if (has_pending_tree_ && !can_send_main_frame_with_pending_tree)
     return false;
 
@@ -894,6 +901,9 @@ void SchedulerStateMachine::WillSendBeginMainFrame() {
     DCHECK(settings_.main_frame_before_commit_enabled);
     DCHECK_EQ(begin_main_frame_state_, BeginMainFrameState::READY_TO_COMMIT);
     DCHECK_EQ(next_begin_main_frame_state_, BeginMainFrameState::IDLE);
+    DCHECK(!has_pending_tree_ ||
+           !base::FeatureList::IsEnabled(
+               features::kDeferMainFrameBeforeCommitWithPendingTree));
     next_begin_main_frame_state_ = BeginMainFrameState::SENT;
   }
   needs_begin_main_frame_ = false;

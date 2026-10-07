@@ -1983,6 +1983,102 @@ TEST(SchedulerStateMachineTest, TestMainFrameBeforeCommit) {
   EXPECT_ACTION(SchedulerStateMachine::Action::COMMIT);
 }
 
+TEST(SchedulerStateMachineTest, TestMainFrameBeforeCommitWithPendingTree) {
+  SchedulerSettings default_scheduler_settings;
+  default_scheduler_settings.main_frame_before_commit_enabled = true;
+  StateMachine state(default_scheduler_settings);
+  SET_UP_STATE(state);
+
+  // Send primary BeginMainFrame.
+  state.set_should_defer_invalidation_for_fast_main_frame(false);
+  state.SetNeedsBeginMainFrame(false);
+  state.IssueNextBeginImplFrame();
+  EXPECT_ACTION_UPDATE_STATE(
+      SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+  EXPECT_MAIN_FRAME_STATE(SchedulerStateMachine::BeginMainFrameState::SENT);
+
+  // Perform an impl-side invalidation while the primary BeginMainFrame is in
+  // flight, creating an impl-side pending tree.
+  state.SetNeedsImplSideInvalidation(/*needs_first_draw_on_activation=*/false);
+  state.OnBeginImplFrameDeadline();
+  EXPECT_ACTION_UPDATE_STATE(
+      SchedulerStateMachine::Action::PERFORM_IMPL_SIDE_INVALIDATION);
+  EXPECT_TRUE(state.has_pending_tree());
+
+  // Complete the primary BeginMainFrame. It cannot commit yet because the
+  // impl-side pending tree has not activated.
+  state.NotifyReadyToCommit();
+  EXPECT_MAIN_FRAME_STATE(
+      SchedulerStateMachine::BeginMainFrameState::READY_TO_COMMIT);
+  EXPECT_ACTION(SchedulerStateMachine::Action::NONE);
+
+  // Request a new BeginMainFrame on the next impl frame. A secondary
+  // BeginMainFrame must not be sent while the primary BeginMainFrame is stuck
+  // in READY_TO_COMMIT behind a pending tree, as it would block the main thread
+  // in LayerTreeHost::AnimateLayers() waiting for the primary commit.
+  state.SetNeedsBeginMainFrame(false);
+  state.IssueNextBeginImplFrame();
+  EXPECT_ACTION(SchedulerStateMachine::Action::NONE);
+  EXPECT_NEXT_MAIN_FRAME_STATE(
+      SchedulerStateMachine::BeginMainFrameState::IDLE);
+
+  // Even an urgent BeginMainFrame should wait until the pending tree activates
+  // and unblocks the primary commit.
+  state.SetUrgentBeginMainFramePending();
+  EXPECT_ACTION(SchedulerStateMachine::Action::NONE);
+
+  // Once the pending tree activates, the secondary BeginMainFrame can be sent
+  // and the primary BeginMainFrame can immediately commit.
+  state.NotifyReadyToActivate();
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::ACTIVATE_SYNC_TREE);
+  EXPECT_ACTION_UPDATE_STATE(
+      SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+  EXPECT_MAIN_FRAME_STATE(
+      SchedulerStateMachine::BeginMainFrameState::READY_TO_COMMIT);
+  EXPECT_NEXT_MAIN_FRAME_STATE(
+      SchedulerStateMachine::BeginMainFrameState::SENT);
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::COMMIT);
+  EXPECT_MAIN_FRAME_STATE(SchedulerStateMachine::BeginMainFrameState::SENT);
+  EXPECT_NEXT_MAIN_FRAME_STATE(
+      SchedulerStateMachine::BeginMainFrameState::IDLE);
+}
+
+TEST(SchedulerStateMachineTest,
+     TestMainFrameBeforeCommitWithPendingTreeKillswitchDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kDeferMainFrameBeforeCommitWithPendingTree);
+
+  SchedulerSettings default_scheduler_settings;
+  default_scheduler_settings.main_frame_before_commit_enabled = true;
+  StateMachine state(default_scheduler_settings);
+  SET_UP_STATE(state);
+
+  // Send primary BeginMainFrame and perform an impl-side invalidation.
+  state.set_should_defer_invalidation_for_fast_main_frame(false);
+  state.SetNeedsBeginMainFrame(false);
+  state.IssueNextBeginImplFrame();
+  EXPECT_ACTION_UPDATE_STATE(
+      SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+  state.SetNeedsImplSideInvalidation(/*needs_first_draw_on_activation=*/false);
+  state.OnBeginImplFrameDeadline();
+  EXPECT_ACTION_UPDATE_STATE(
+      SchedulerStateMachine::Action::PERFORM_IMPL_SIDE_INVALIDATION);
+  state.NotifyReadyToCommit();
+  EXPECT_ACTION(SchedulerStateMachine::Action::NONE);
+
+  // With the killswitch disabled, the secondary BeginMainFrame is sent even
+  // while the impl-side pending tree has not activated.
+  state.SetNeedsBeginMainFrame(false);
+  state.IssueNextBeginImplFrame();
+  EXPECT_ACTION_UPDATE_STATE(
+      SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+  EXPECT_MAIN_FRAME_STATE(
+      SchedulerStateMachine::BeginMainFrameState::READY_TO_COMMIT);
+  EXPECT_NEXT_MAIN_FRAME_STATE(
+      SchedulerStateMachine::BeginMainFrameState::SENT);
+}
+
 TEST(SchedulerStateMachineTest, TestFirstContextCreation) {
   SchedulerSettings default_scheduler_settings;
   StateMachine state(default_scheduler_settings);

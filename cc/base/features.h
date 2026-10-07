@@ -337,6 +337,11 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kViewTransitionsNewRoundingChange);
 // pages.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kBrowserControlsExtraHideGestures);
 
+// When enabled, prevents sending a pipelined BeginMainFrame when the primary
+// BeginMainFrame is READY_TO_COMMIT but blocked from committing by an
+// unactivated pending tree. Killswitch for crbug.com/467678916.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDeferMainFrameBeforeCommitWithPendingTree);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_
