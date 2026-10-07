@@ -1682,8 +1682,6 @@ if (!is_android) {
 # TODO(https://crbug.com/353332589): Once //chrome/browser is properly
 # modularized, this target should be folded in with //chrome/browser:browser.
 source_set("ui") {
-  sources = []
-
   defines = []
   libs = []
 
@@ -3648,6 +3646,12 @@ source_set("ui") {
   if (enable_session_service) {
     deps += [ "//chrome/browser/ui/webui/tab_strip_internals:impl" ]
   }
+
+  # This target intentionally has no sources of its own; it only aggregates
+  # dependencies. Do NOT add sources here -- new code belongs in a dedicated,
+  # properly-scoped target. Kept last so an accidental `sources += [...]` above
+  # is reset to empty and is easy to catch in review.
+  sources = []
 }
 
 # These are the dependencies for the "ui" target that are outside of
