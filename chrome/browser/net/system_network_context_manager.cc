@@ -25,7 +25,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "build/config/linux/dbus/buildflags.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
@@ -108,9 +107,7 @@
 #include "chrome/browser/net/chrome_mojo_proxy_resolver_win.h"
 #elif BUILDFLAG(IS_MAC)
 #include "chrome/browser/net/chrome_mojo_proxy_resolver_mac.h"
-#elif BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
-#include "chrome/browser/net/chrome_mojo_proxy_resolver_linux.h"
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
 #include "chrome/common/request_header_integrity/request_header_integrity_url_loader_throttle.h"  // nogncheck crbug.com/40147906
@@ -1028,8 +1025,7 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
     }
   }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (command_line.HasSwitch(switches::kUseSystemProxyResolver)) {
 #if BUILDFLAG(IS_WIN)
     network_context_params->system_proxy_resolver =
@@ -1037,12 +1033,9 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
 #elif BUILDFLAG(IS_MAC)
     network_context_params->system_proxy_resolver =
         ChromeMojoProxyResolverMac::CreateWithSelfOwnedReceiver();
-#else  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
-    network_context_params->system_proxy_resolver =
-        ChromeMojoProxyResolverLinux::CreateWithSelfOwnedReceiver();
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   }
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
   network_context_params->pac_quick_check_enabled =
       local_state_->GetBoolean(prefs::kQuickCheckEnabled);
