@@ -2041,6 +2041,9 @@ suite('ContextualTasksComposeboxForkContextMenuTest', () => {
       ComposeboxPageHandlerRemote;
   let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
       SearchboxPageHandlerRemote;
+  // <if expr="not is_android">
+  let searchboxCallbackRouterRemote: SearchboxPageRemote;
+  // </if>
   let parts: CtComposeboxAppParts;
 
   // The inner element initializes `smartTabSharingVisible` based on
@@ -2109,7 +2112,14 @@ suite('ContextualTasksComposeboxForkContextMenuTest', () => {
     mockSearchboxPageHandler.setResultFor(
         'getInputState', Promise.resolve({state: new MockInputState()}));
     const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
+    // The remote is only needed by the desktop-only tests below.
+    // <if expr="is_android">
     searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
+    // </if>
+    // <if expr="not is_android">
+    searchboxCallbackRouterRemote =
+        searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
+    // </if>
     ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
         mockComposeboxPageHandler, mockSearchboxPageHandler,
         searchboxCallbackRouter));
@@ -2317,6 +2327,92 @@ suite('ContextualTasksComposeboxForkContextMenuTest', () => {
     assertEquals(true, activeArg);
     await microtasksFinished();
     assertEquals(0, innerComposebox.attachedContext.size);
+  });
+
+  // The overlapping favicon coins are separated by a 2px border that must be
+  // painted in the color of the surface they sit on, so the gap reads as
+  // background rather than a light outline.
+  test('favicon coin border matches the entrypoint surface', async () => {
+    loadTimeData.overrideValues({
+      tabFaviconChipsToCoinsEnabled: true,
+      energyEffectEnabled: true,
+    });
+    await mountApp(/*smartTabSharingVisible=*/ false);
+    const {app, wrapper, innerComposebox} = parts;
+    const entrypointAndMenu = getEntrypointAndMenu();
+
+    // The wrapper only settles out of tool mode once the browser has sent an
+    // input state, and the entrypoint pill is transparent while in tool mode.
+    searchboxCallbackRouterRemote.onInputStateChanged(new MockInputState());
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+
+    // Attach two tabs through the real chain so the coins render inside the
+    // entrypoint button.
+    for (const id of [1, 2]) {
+      mockSearchboxPageHandler.resetResolver('addTabContext');
+      // Each attachment is keyed by its token, so use a distinct one per tab.
+      mockSearchboxPageHandler.setResultFor(
+          'addTabContext',
+          Promise.resolve({high: BigInt(id), low: BigInt(id)}));
+      entrypointAndMenu.fire('add-tab-context', {
+        id,
+        title: `Shared tab ${id}`,
+        url: `https://example${id}.com/`,
+        delayUpload: false,
+        origin: TabAttachmentSource.kCurrentTabChip,
+      });
+      await mockSearchboxPageHandler.whenCalled('addTabContext');
+    }
+
+    async function settleChain() {
+      await microtasksFinished();
+      await app.updateComplete;
+      await wrapper.updateComplete;
+      await innerComposebox.updateComplete;
+      await entrypointAndMenu.updateComplete;
+    }
+    await settleChain();
+    assertEquals(2, innerComposebox.attachedContext.size);
+    assertFalse(
+        wrapper.hasAttribute('in-tool-mode_'),
+        'the entrypoint pill is only painted outside of tool mode');
+
+    const entrypointButton = entrypointAndMenu.shadowRoot.querySelector(
+        'cr-composebox-contextual-entrypoint-button');
+    assertTrue(!!entrypointButton);
+    await entrypointButton.updateComplete;
+    const entrypoint =
+        entrypointButton.shadowRoot.querySelector<HTMLElement>('#entrypoint');
+    assertTrue(!!entrypoint);
+    const faviconGroup =
+        entrypointButton.shadowRoot.querySelector('composebox-favicon-group');
+    assertTrue(!!faviconGroup, 'favicon coins should render for shared tabs');
+    await faviconGroup.updateComplete;
+    const coins =
+        faviconGroup.shadowRoot.querySelectorAll<HTMLElement>('.favicon-item');
+    assertEquals(2, coins.length);
+
+    function assertCoinBordersMatchSurface(label: string, pill: HTMLElement) {
+      const surface = window.getComputedStyle(pill).backgroundColor;
+      assertNotEquals(
+          'rgba(0, 0, 0, 0)', surface,
+          `${label}: entrypoint pill should have an opaque background`);
+      for (const coin of coins) {
+        const style = window.getComputedStyle(coin);
+        assertEquals('2px', style.borderTopWidth, `${label}: border width`);
+        assertEquals(
+            surface, style.borderTopColor,
+            `${label}: coin border should match the entrypoint surface`);
+      }
+    }
+
+    app.toggleAttribute('dark-mode_', false);
+    await settleChain();
+    assertCoinBordersMatchSurface('light', entrypoint);
+
+    app.toggleAttribute('dark-mode_', true);
+    await settleChain();
+    assertCoinBordersMatchSurface('dark', entrypoint);
   });
   // </if>
 });
