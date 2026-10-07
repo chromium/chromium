@@ -10,6 +10,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {SuggestStyle} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {SecondaryTextPlacement} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
 import {getCss} from './composebox_match.css.js';
@@ -45,17 +46,6 @@ export class ComposeboxMatchElement extends CrLitElement {
       // Public properties
       //========================================================================
 
-      /**
-       * Whether the match should be rendered in a two-row layout, i.e. with the
-       * description (secondary text) rendered below the contents (primary
-       * text). Mirrors `AutocompleteMatch::is_two_row_suggestion`, which the
-       * handler derives from `SuggestTemplateInfo::secondary_text_placement`.
-       */
-      isTwoRowSuggestion: {
-        type: Boolean,
-        reflect: true,
-      },
-
       match: {type: Object},
       overrideClampLineNum: {
         type: Number,
@@ -82,10 +72,18 @@ export class ComposeboxMatchElement extends CrLitElement {
         reflect: true,
         attribute: 'suggest-style',
       },
+
+      /**
+       * Where the description (secondary text) is rendered relative to the
+       * contents (primary text).
+       */
+      secondaryTextPlacement: {
+        type: String,
+        reflect: true,
+      },
     };
   }
 
-  accessor isTwoRowSuggestion: boolean = false;
   accessor match: AutocompleteMatch = createAutocompleteMatch();
   accessor overrideClampLineNum: number = -1;
 
@@ -94,6 +92,7 @@ export class ComposeboxMatchElement extends CrLitElement {
   accessor toolMode: ToolMode = ToolMode.kUnspecified;
   accessor richImageSuggestionsEnabled: boolean = false;
   accessor suggestStyle: string = 'default';
+  accessor secondaryTextPlacement: string = 'in-front-of-primary-text';
   private searchboxHandler_: SearchboxPageHandlerRemote;
   protected accessor removeButtonTitle_: string =
       loadTimeData.getString('removeSuggestion');
@@ -135,12 +134,20 @@ export class ComposeboxMatchElement extends CrLitElement {
     }
   }
 
+  private computeSecondaryTextPlacement_(): string {
+    if (this.match.suggestTemplate.secondaryTextPlacement ===
+        SecondaryTextPlacement.kBelowPrimaryText) {
+      return 'below-primary-text';
+    }
+    return 'in-front-of-primary-text';
+  }
+
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
     if (changedProperties.has('match') ||
         changedProperties.has('richImageSuggestionsEnabled')) {
       this.suggestStyle = this.computeSuggestStyle_();
-      this.isTwoRowSuggestion = this.match.isTwoRowSuggestion;
+      this.secondaryTextPlacement = this.computeSecondaryTextPlacement_();
     }
   }
 

@@ -13,6 +13,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import type {ACMatchClassification, AutocompleteMatch, OmniboxPopupSelection, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {KeywordType, SelectionLineState, SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {SecondaryTextPlacement} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 
 import {createAutocompleteMatch, SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import type {SearchboxIconElement} from './searchbox_icon.js';
@@ -119,16 +120,17 @@ export class SearchboxMatchElement extends CrLitElement {
         reflect: true,
       },
 
-      /**
-       * Whether the match should be rendered in a two-row layout. Currently
-       * limited to matches that feature an image, calculator, and answers.
-       */
-      isTwoRowSuggestion: {
-        type: Boolean,
-        reflect: true,
-      },
-
       match: {type: Object},
+
+      /**
+       * Where the description (secondary text) is rendered relative to the
+       * contents (primary text).
+       */
+      secondaryTextPlacement: {
+        type: String,
+        reflect: true,
+        attribute: 'secondary-text-placement',
+      },
 
       selection: {type: Object},
 
@@ -200,8 +202,8 @@ export class SearchboxMatchElement extends CrLitElement {
   accessor hasImage: boolean = false;
   accessor hasKeywordChip: boolean = false;
   accessor isEntitySuggestion: boolean = false;
-  accessor isTwoRowSuggestion: boolean = false;
   accessor match: AutocompleteMatch = createAutocompleteMatch();
+  accessor secondaryTextPlacement: string = 'in-front-of-primary-text';
   accessor selection: OmniboxPopupSelection = kDefaultSelection;
   accessor matchIndex: number = -1;
   accessor sideType: SideType = SideType.kDefaultPrimary;
@@ -247,7 +249,7 @@ export class SearchboxMatchElement extends CrLitElement {
       this.hasImage = this.computeHasImage_();
       this.isContextualSuggestion_ = this.computeIsContextualSuggestion_();
       this.isEntitySuggestion = this.computeIsEntitySuggestion_();
-      this.isTwoRowSuggestion = this.computeIsTwoRowSuggestion_();
+      this.secondaryTextPlacement = this.computeSecondaryTextPlacement_();
       this.removeButtonAriaLabel_ = this.computeRemoveButtonAriaLabel_();
       this.separatorText_ = this.computeSeparatorText_();
       this.tailSuggestPrefix_ = this.computeTailSuggestPrefix_();
@@ -479,11 +481,18 @@ export class SearchboxMatchElement extends CrLitElement {
     return this.match && this.match.type === ENTITY_MATCH_TYPE;
   }
 
-  private computeIsTwoRowSuggestion_(): boolean {
+  private computeSecondaryTextPlacement_(): string {
     // When the searchbox is embedded in the top-chrome (i.e. Omnibox), all
     // suggestions should be rendered using a one-line layout.
-    return !this.isTopChromeSearchbox_ && this.match &&
-        this.match.isTwoRowSuggestion;
+    // TODO(crbug.com/568747976): Decide this in C++ along with the rest of the
+    // placement (see suggest_template_info_mojo_utils.cc), which requires the
+    // handler to know whether it backs the top-chrome searchbox.
+    if (!this.isTopChromeSearchbox_ && this.match &&
+        this.match.suggestTemplate.secondaryTextPlacement ===
+            SecondaryTextPlacement.kBelowPrimaryText) {
+      return 'below-primary-text';
+    }
+    return 'in-front-of-primary-text';
   }
 
   private computeRemoveButtonAriaLabel_(): string {

@@ -145,24 +145,28 @@
 }
 
 /* ==========================================================================
- * Two-row suggestions, i.e. suggestions whose secondary text is placed below
- * the primary text (SuggestTemplateInfo.BELOW_PRIMARY_TEXT).
+ * Suggestions whose secondary text is placed below the primary text
+ * (SuggestTemplateInfo.BELOW_PRIMARY_TEXT).
  * ========================================================================== */
 
-:host([suggest-style='default'][is-two-row-suggestion]) .container {
+:host([suggest-style='default'][secondary-text-placement='below-primary-text'])
+    .container {
   height: auto;
   padding-block: 10px;
 }
 
-:host([suggest-style='default'][is-two-row-suggestion]) #contents,
-:host([suggest-style='default'][is-two-row-suggestion]) #description {
+:host([suggest-style='default'][secondary-text-placement='below-primary-text'])
+    #contents,
+:host([suggest-style='default'][secondary-text-placement='below-primary-text'])
+    #description {
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-:host([suggest-style='default'][is-two-row-suggestion]) #description {
+:host([suggest-style='default'][secondary-text-placement='below-primary-text'])
+    #description {
   color: var(--color-searchbox-results-foreground-dimmed,
       var(--color-sys-on-surface-subtle));
   font-size: 13px;

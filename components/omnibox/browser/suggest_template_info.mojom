@@ -1,0 +1,33 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module suggest_template_info.mojom;
+
+// Where to display the secondary text relative to the primary text.
+// Maps to SuggestTemplateInfo.SecondaryTextPlacement in
+// //third_party/omnibox_proto/suggest_template_info.proto.
+// LINT.IfChange(SecondaryTextPlacement)
+enum SecondaryTextPlacement {
+  kUnspecified = 0,
+  // Show secondary text in front of primary text (e.g. on the same line).
+  kInFrontOfPrimaryText = 1,
+  // Show secondary text below primary text (e.g. on a new line).
+  kBelowPrimaryText = 2,
+};
+// LINT.ThenChange(//third_party/omnibox_proto/suggest_template_info.proto:SecondaryTextPlacement)
+
+// Presentation template for a suggestion. Its fields correspond to the
+// client-supported, rendering-relevant subset of the SuggestTemplateInfo proto
+// message in //third_party/omnibox_proto/suggest_template_info.proto.
+//
+// This is populated for every match at the Mojo boundary, including matches
+// that did not receive a SuggestTemplateInfo from the server (e.g. local
+// provider matches), for which the browser synthesizes the equivalent values.
+// This lets the WebUI render all matches from a single presentation contract
+// rather than re-deriving layout from match types or ad-hoc flags.
+struct SuggestTemplateInfo {
+  // Where to display the secondary text relative to the primary text.
+  SecondaryTextPlacement secondary_text_placement =
+      SecondaryTextPlacement.kUnspecified;
+};

@@ -51,6 +51,7 @@
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/browser/suggest_template_info.mojom.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -1661,8 +1662,8 @@ TEST_F(WebuiOmniboxHandlerTest,
       BookmarkModelFactory::GetForBrowserContext(profile());
   bookmark_model->LoadEmptyForTest();
 
-  // Suggestion without secondary_text_placement and without image defaults to
-  // single-line.
+  // Suggestion without secondary_text_placement and without image leaves the
+  // placement unspecified, i.e. the default single-line layout.
   {
     AutocompleteMatch match;
     match.destination_url = GURL("https://example.com");
@@ -1670,11 +1671,13 @@ TEST_F(WebuiOmniboxHandlerTest,
         match, bookmark_model, omnibox::GroupConfigMap(),
         omnibox_controller_->client()->GetTemplateURLService());
     ASSERT_TRUE(mojom_match.has_value());
-    EXPECT_FALSE(mojom_match.value()->is_two_row_suggestion);
+    EXPECT_EQ(
+        mojom_match.value()->suggest_template->secondary_text_placement,
+        suggest_template_info::mojom::SecondaryTextPlacement::kUnspecified);
   }
 
-  // Suggestion with secondary_text_placement = BELOW_PRIMARY_TEXT shows on
-  // second line (two-row suggestion).
+  // Suggestion with secondary_text_placement = BELOW_PRIMARY_TEXT is forwarded
+  // as is.
   {
     AutocompleteMatch match;
     match.destination_url = GURL("https://example.com");
@@ -1687,11 +1690,13 @@ TEST_F(WebuiOmniboxHandlerTest,
         match, bookmark_model, omnibox::GroupConfigMap(),
         omnibox_controller_->client()->GetTemplateURLService());
     ASSERT_TRUE(mojom_match.has_value());
-    EXPECT_TRUE(mojom_match.value()->is_two_row_suggestion);
+    EXPECT_EQ(mojom_match.value()->suggest_template->secondary_text_placement,
+              suggest_template_info::mojom::SecondaryTextPlacement::
+                  kBelowPrimaryText);
   }
 
-  // Suggestion with secondary_text_placement = IN_FRONT_OF_PRIMARY_TEXT shows
-  // on same line even if it has an image.
+  // Suggestion with secondary_text_placement = IN_FRONT_OF_PRIMARY_TEXT is
+  // forwarded as is, even if it has an image.
   {
     AutocompleteMatch match;
     match.destination_url = GURL("https://example.com");
@@ -1705,12 +1710,14 @@ TEST_F(WebuiOmniboxHandlerTest,
         match, bookmark_model, omnibox::GroupConfigMap(),
         omnibox_controller_->client()->GetTemplateURLService());
     ASSERT_TRUE(mojom_match.has_value());
-    EXPECT_FALSE(mojom_match.value()->is_two_row_suggestion);
+    EXPECT_EQ(mojom_match.value()->suggest_template->secondary_text_placement,
+              suggest_template_info::mojom::SecondaryTextPlacement::
+                  kInFrontOfPrimaryText);
   }
 
   // Suggestion with secondary_text_placement =
-  // SECONDARY_TEXT_PLACEMENT_UNSPECIFIED falls back to default logic (e.g.
-  // two-row if it has an image).
+  // SECONDARY_TEXT_PLACEMENT_UNSPECIFIED falls back to the synthesized
+  // placement (e.g. BELOW_PRIMARY_TEXT if it has an image).
   {
     AutocompleteMatch match;
     match.destination_url = GURL("https://example.com");
@@ -1724,7 +1731,9 @@ TEST_F(WebuiOmniboxHandlerTest,
         match, bookmark_model, omnibox::GroupConfigMap(),
         omnibox_controller_->client()->GetTemplateURLService());
     ASSERT_TRUE(mojom_match.has_value());
-    EXPECT_TRUE(mojom_match.value()->is_two_row_suggestion);
+    EXPECT_EQ(mojom_match.value()->suggest_template->secondary_text_placement,
+              suggest_template_info::mojom::SecondaryTextPlacement::
+                  kBelowPrimaryText);
   }
 }
 

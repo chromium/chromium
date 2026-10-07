@@ -7,13 +7,13 @@ import './test_composebox_mixin.js';
 
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {VoiceSearchAction} from 'chrome://resources/cr_components/composebox/composebox_mixin.js';
-import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
+import {ComposeboxProxyImpl, createAutocompleteMatch} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import {InputMethod, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SuggestStyle} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {AutocompleteMatch, AutocompleteResult, PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteResult, PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {InputType} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -830,9 +830,9 @@ suite('ComposeboxAutocomplete', () => {
       const matchesElement = element.getDropdownElement();
 
       const matches = [
-        {fillIntoEdit: 'test1'} as AutocompleteMatch,
-        {fillIntoEdit: 'test2'} as AutocompleteMatch,
-        {fillIntoEdit: 'test3'} as AutocompleteMatch,
+        createAutocompleteMatch({fillIntoEdit: 'test1'}),
+        createAutocompleteMatch({fillIntoEdit: 'test2'}),
+        createAutocompleteMatch({fillIntoEdit: 'test3'}),
       ];
       element.result = {input: 'test', matches} as AutocompleteResult;
       await microtasksFinished();
@@ -880,7 +880,7 @@ suite('ComposeboxAutocomplete', () => {
       const input = inputElem.inputElement;
       const matchesElement = element.getDropdownElement();
 
-      const matches = [{fillIntoEdit: 'match1'} as AutocompleteMatch];
+      const matches = [createAutocompleteMatch({fillIntoEdit: 'match1'})];
       element.result = {input: 'tes', matches} as AutocompleteResult;
       await microtasksFinished();
 
@@ -914,8 +914,10 @@ suite('ComposeboxAutocomplete', () => {
 
       const matchesElement = element.getDropdownElement();
       const matches = [
-        {fillIntoEdit: 'match1', supportsDeletion: false} as AutocompleteMatch,
-        {fillIntoEdit: 'match2', supportsDeletion: false} as AutocompleteMatch,
+        createAutocompleteMatch(
+            {fillIntoEdit: 'match1', supportsDeletion: false}),
+        createAutocompleteMatch(
+            {fillIntoEdit: 'match2', supportsDeletion: false}),
       ];
       element.result = {input: 'm', matches} as AutocompleteResult;
       await microtasksFinished();
@@ -945,10 +947,10 @@ suite('ComposeboxAutocomplete', () => {
 
           const matchesElement = element.getDropdownElement();
           const matches = [
-            {fillIntoEdit: 'match1', supportsDeletion: false} as
-                AutocompleteMatch,
-            {fillIntoEdit: 'match2', supportsDeletion: false} as
-                AutocompleteMatch,
+            createAutocompleteMatch(
+                {fillIntoEdit: 'match1', supportsDeletion: false}),
+            createAutocompleteMatch(
+                {fillIntoEdit: 'match2', supportsDeletion: false}),
           ];
           element.result = {input: 'm', matches} as AutocompleteResult;
           await microtasksFinished();
@@ -1545,8 +1547,8 @@ suite('ComposeboxAutocomplete', () => {
           element.lastQueriedInput = '';
 
           const matches = [
-            {fillIntoEdit: 'match1', supportsDeletion: false} as
-                AutocompleteMatch,
+            createAutocompleteMatch(
+                {fillIntoEdit: 'match1', supportsDeletion: false}),
           ];
           element.result = {input: '', matches} as AutocompleteResult;
           element.selectedMatchIndex = 0;
@@ -1570,8 +1572,8 @@ suite('ComposeboxAutocomplete', () => {
           element.lastQueriedInput = '';
 
           const matches = [
-            {fillIntoEdit: 'match1', supportsDeletion: false} as
-                AutocompleteMatch,
+            createAutocompleteMatch(
+                {fillIntoEdit: 'match1', supportsDeletion: false}),
           ];
           element.result = {input: '', matches} as AutocompleteResult;
           element.selectedMatchIndex = 0;

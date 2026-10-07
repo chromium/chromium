@@ -4,6 +4,7 @@
 
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SuggestStyle} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteMatch} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {SecondaryTextPlacement} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 
 import {PageHandlerFactory, PageHandlerRemote} from './composebox.mojom-webui.js';
 
@@ -33,11 +34,13 @@ export function createAutocompleteMatch(
     removeButtonA11yLabel: '',
     type: '',
     isContextualSuggestion: false,
-    isTwoRowSuggestion: false,
     tailSuggestCommonPrefix: null,
     keywordModel: null,
     fuseboxAction: null,
     suggestStyle: SuggestStyle.kUnspecified,
+    suggestTemplate: {
+      secondaryTextPlacement: SecondaryTextPlacement.kUnspecified,
+    },
     ...config,
   };
 }

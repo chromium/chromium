@@ -7,6 +7,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {SecondaryTextPlacement} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 
 import {getCss} from './searchbox_icon.css.js';
 import {getHtml} from './searchbox_icon.html.js';
@@ -425,10 +426,13 @@ export class SearchboxIconElement extends CrLitElement {
       return `url(${this.defaultIcon})`;
     }
     // Enterprise search aggregator people, starter pack/featured enterprise
-    // search suggestions, top-chrome searchbox (WebUI Omnibox), and non-two-row
-    // suggestions should show icon even in searchbox.
+    // search suggestions, top-chrome searchbox (WebUI Omnibox), and suggestions
+    // whose secondary text isn't placed below the primary text should show icon
+    // even in searchbox.
     if (this.match &&
-        (!this.match.isTwoRowSuggestion || this.match.type === STARTER_PACK ||
+        (this.match.suggestTemplate.secondaryTextPlacement !==
+             SecondaryTextPlacement.kBelowPrimaryText ||
+         this.match.type === STARTER_PACK ||
          this.match.type === FEATURED_ENTERPRISE_SEARCH ||
          this.match.isEnterpriseSearchAggregatorPeopleType ||
          this.isTopChromeSearchbox_ || !this.inSearchbox)) {

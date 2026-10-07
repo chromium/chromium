@@ -19,7 +19,7 @@ export function getHtml(this: ComposeboxMatchElement) {
   </div>
   <div id="textContainer" part="match-text-container">
     <span id="contents" part="match-contents">${this.match.contents}</span>
-    ${this.isTwoRowSuggestion ? html`
+    ${this.secondaryTextPlacement === 'below-primary-text' ? html`
       <span id="description" part="match-description">
         ${this.match.description}
       </span>

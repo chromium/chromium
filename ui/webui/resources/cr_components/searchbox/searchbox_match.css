@@ -219,22 +219,22 @@
   padding-inline-end: 4px;
 }
 
-:host([is-two-row-suggestion]) #text-container {
+:host([secondary-text-placement='below-primary-text']) #text-container {
   align-items: flex-start;
   flex-direction: column;
 }
 
-:host([is-two-row-suggestion]) #separator {
+:host([secondary-text-placement='below-primary-text']) #separator {
   display: none;
 }
 
-:host([is-two-row-suggestion]) #contents,
-:host([is-two-row-suggestion]) #description {
+:host([secondary-text-placement='below-primary-text']) #contents,
+:host([secondary-text-placement='below-primary-text']) #description {
   width: 100%;
 }
 
-/* Deemphasizes description for two-row suggestions. */
-:host([is-two-row-suggestion]) #description {
+/* Deemphasizes description placed below the contents. */
+:host([secondary-text-placement='below-primary-text']) #description {
   font-size: .875em;
 }
 

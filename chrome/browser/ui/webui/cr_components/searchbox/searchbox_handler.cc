@@ -69,6 +69,7 @@
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/searchbox_utils.h"
+#include "components/omnibox/browser/suggest_template_info_mojo_utils.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/window_open_disposition.h"
@@ -1036,20 +1037,8 @@ SearchboxHandler::CreateAutocompleteMatch(
   mojom_match->show_contextual_description = false;
   mojom_match->type = omnibox::AutocompleteMatchTypeToString(match.type);
   mojom_match->supports_deletion = match.SupportsDeletion();
-  mojom_match->is_two_row_suggestion =
-      !mojom_match->image_url.empty() ||
-      match.type == omnibox::AutocompleteMatchType::kCalculator ||
-      match.enterprise_search_aggregator_type ==
-          AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE;
-  if (match.suggest_template) {
-    if (match.suggest_template->secondary_text_placement() ==
-        omnibox::SuggestTemplateInfo::BELOW_PRIMARY_TEXT) {
-      mojom_match->is_two_row_suggestion = true;
-    } else if (match.suggest_template->secondary_text_placement() ==
-               omnibox::SuggestTemplateInfo::IN_FRONT_OF_PRIMARY_TEXT) {
-      mojom_match->is_two_row_suggestion = false;
-    }
-  }
+  mojom_match->suggest_template =
+      suggest_template_info::CreateSuggestTemplateInfo(match);
   if (!match.from_keyword) {
     for (const auto& action : match.actions) {
 // TODO(b/544764632): Implement Pedals for Android.

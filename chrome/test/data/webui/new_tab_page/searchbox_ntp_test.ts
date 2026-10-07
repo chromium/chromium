@@ -12,6 +12,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {DriveDisclaimerStatus, RenderType, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {SecondaryTextPlacement} from 'chrome://resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {assertIconMaskImageUrl, assertStyle, createClipboardEvent, createUrlMatch, MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {TestSearchboxBrowserProxy} from 'chrome://webui-test/cr_components/searchbox/test_searchbox_browser_proxy.js';
@@ -609,7 +610,9 @@ suite('SearchboxTest', () => {
             iconPath: 'clock.svg',
             imageUrl: 'https://gstatic.com/',
             imageDominantColor: '#757575',
-            isTwoRowSuggestion: true,
+            suggestTemplate: {
+              secondaryTextPlacement: SecondaryTextPlacement.kBelowPrimaryText,
+            },
           }),
         ];
         testProxy.callbackRouterRemote.autocompleteResultChanged(
@@ -771,7 +774,9 @@ suite('SearchboxTest', () => {
             iconPath: 'clock.svg',
             imageUrl: 'https://gstatic.com/',
             imageDominantColor: '#757575',
-            isTwoRowSuggestion: true,
+            suggestTemplate: {
+              secondaryTextPlacement: SecondaryTextPlacement.kBelowPrimaryText,
+            },
           }),
         ];
         testProxy.callbackRouterRemote.autocompleteResultChanged(

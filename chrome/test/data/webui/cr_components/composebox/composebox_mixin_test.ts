@@ -18,7 +18,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {InputSource, QueryActionOverride, SearchboxOverride, SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import type {FuseboxAction} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import {DriveDisclaimerStatus, DriveUploadError, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {AutocompleteMatch, AutocompleteResult, PageRemote as SearchboxPageRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteResult, PageRemote as SearchboxPageRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ContextUploadErrorType, ContextUploadStatus, InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
@@ -931,8 +931,8 @@ suite('ComposeboxMixinTest', () => {
       element.result = {
         input: 'Draft text',
         matches: [
-          {fillIntoEdit: 'Draft text', supportsDeletion: false} as
-              AutocompleteMatch,
+          createAutocompleteMatch(
+              {fillIntoEdit: 'Draft text', supportsDeletion: false}),
         ],
       } as AutocompleteResult;
       await microtasksFinished();
@@ -956,8 +956,8 @@ suite('ComposeboxMixinTest', () => {
       element.result = {
         input: 'Draft text',
         matches: [
-          {fillIntoEdit: 'Draft text suggestion', supportsDeletion: false} as
-              AutocompleteMatch,
+          createAutocompleteMatch(
+              {fillIntoEdit: 'Draft text suggestion', supportsDeletion: false}),
         ],
       } as AutocompleteResult;
       await microtasksFinished();
@@ -986,8 +986,8 @@ suite('ComposeboxMixinTest', () => {
       element.result = {
         input: '',
         matches: [
-          {fillIntoEdit: 'Preview suggestion', supportsDeletion: false} as
-              AutocompleteMatch,
+          createAutocompleteMatch(
+              {fillIntoEdit: 'Preview suggestion', supportsDeletion: false}),
         ],
       } as AutocompleteResult;
       await microtasksFinished();
@@ -1356,9 +1356,9 @@ suite('ComposeboxMixinTest', () => {
       };
 
       const matches = [
-        {fillIntoEdit: 'test'} as AutocompleteMatch,
-        {fillIntoEdit: 'test2'} as AutocompleteMatch,
-        {fillIntoEdit: 'test3'} as AutocompleteMatch,
+        createAutocompleteMatch({fillIntoEdit: 'test'}),
+        createAutocompleteMatch({fillIntoEdit: 'test2'}),
+        createAutocompleteMatch({fillIntoEdit: 'test3'}),
       ];
       element.result = {input: 'test', matches} as AutocompleteResult;
       await microtasksFinished();

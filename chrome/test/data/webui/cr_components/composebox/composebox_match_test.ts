@@ -9,6 +9,7 @@ import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/com
 import type {ComposeboxMatchElement} from 'chrome://resources/cr_components/composebox/composebox_match.js';
 import {ComposeboxProxyImpl, createAutocompleteMatch} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SuggestStyle} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {SecondaryTextPlacement} from 'chrome://resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -54,16 +55,19 @@ suite('ComposeboxMatch', () => {
     assertEquals('test contents', contents.textContent.trim());
   });
 
-  test('renders the secondary text on a second row', async () => {
+  test('renders the secondary text below the primary text', async () => {
     matchElement.match = createAutocompleteMatch({
       contents: 'test contents',
       description: 'test description',
-      isTwoRowSuggestion: true,
+      suggestTemplate: {
+        secondaryTextPlacement: SecondaryTextPlacement.kBelowPrimaryText,
+      },
     });
     await microtasksFinished();
 
-    assertTrue(matchElement.isTwoRowSuggestion);
-    assertTrue(matchElement.hasAttribute('is-two-row-suggestion'));
+    assertEquals(
+        'below-primary-text',
+        matchElement.getAttribute('secondary-text-placement'));
     assertEquals('test contents', getTextContent(matchElement, '#contents'));
     assertEquals(
         'test description', getTextContent(matchElement, '#description'));
@@ -77,21 +81,26 @@ suite('ComposeboxMatch', () => {
   });
 
   test('does not apply two-row styling to rich image matches', async () => {
-    // SearchboxHandler sets is_two_row_suggestion for every match that has an
-    // image_url, which is also what makes a match eligible for the rich image
-    // style, so rich image matches carry the attribute too. The two-row rules
-    // are qualified with the suggest style so that they do not pick it up.
+    // SearchboxHandler places the secondary text below the primary text for
+    // every match that has an image_url, which is also what makes a match
+    // eligible for the rich image style, so rich image matches carry the
+    // attribute too. The two-row rules are qualified with the suggest style so
+    // that they do not pick it up.
     matchElement.richImageSuggestionsEnabled = true;
     matchElement.match = createAutocompleteMatch({
       contents: 'test contents',
       imageUrl: 'https://example.com/image.png',
-      isTwoRowSuggestion: true,
+      suggestTemplate: {
+        secondaryTextPlacement: SecondaryTextPlacement.kBelowPrimaryText,
+      },
       suggestStyle: SuggestStyle.kRichImage,
     });
     await microtasksFinished();
 
     assertTrue(matchElement.isRichImage);
-    assertTrue(matchElement.hasAttribute('is-two-row-suggestion'));
+    assertEquals(
+        'below-primary-text',
+        matchElement.getAttribute('secondary-text-placement'));
     const container = matchElement.shadowRoot.querySelector('.container');
     assertTrue(!!container);
     assertStyle(container, 'padding-block-start', '0px');
@@ -110,7 +119,9 @@ suite('ComposeboxMatch', () => {
     el.match = createAutocompleteMatch({
       contents: 'Very long text '.repeat(20),
       description: 'test description',
-      isTwoRowSuggestion: true,
+      suggestTemplate: {
+        secondaryTextPlacement: SecondaryTextPlacement.kBelowPrimaryText,
+      },
     });
     await microtasksFinished();
 

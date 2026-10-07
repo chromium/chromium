@@ -6,6 +6,7 @@ module searchbox.mojom;
 
 import "components/omnibox/browser/fusebox_action.mojom";
 import "components/omnibox/browser/omnibox.mojom";
+import "components/omnibox/browser/suggest_template_info.mojom";
 import "components/omnibox/composebox/composebox_query.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/string16.mojom";
@@ -97,9 +98,9 @@ struct AutocompleteMatch {
   string image_url;
   // Used to determine if the match is a contextual suggestion.
   bool is_contextual_suggestion;
-  // Used to determine if the match should be rendered in a two-row layout
-  // (e.g. calculator, entity images, people search).
-  bool is_two_row_suggestion;
+  // Presentation template for this match. Populated for every match, including
+  // matches without a server-provided SuggestTemplateInfo.
+  suggest_template_info.mojom.SuggestTemplateInfo suggest_template;
   // Result of AutocompleteMatch::IsSearchType().
   bool is_search_type;
   // Used to determine if the match is an enterprise search aggregator people

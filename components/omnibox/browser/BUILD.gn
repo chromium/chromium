@@ -1052,11 +1052,13 @@ source_set("unit_tests") {
       "fusebox_action_mojo_utils_unittest.cc",
       "geolocation_header_service_unittest.cc",
       "history_cluster_provider_unittest.cc",
+      "suggest_template_info_mojo_utils_unittest.cc",
     ]
     deps += [
       ":fusebox_action_mojo_bindings",
       ":fusebox_action_mojo_test_utils",
       ":fusebox_action_mojo_utils",
+      ":suggest_template_info_mojo_utils",
       "//components/permissions:test_support",
       "//services/device/public/cpp:test_support",
       "//services/device/public/mojom",
@@ -1143,7 +1145,10 @@ mojom("mojo_bindings") {
 
   if (!is_ios) {
     sources += [ "searchbox.mojom" ]
-    public_deps += [ ":fusebox_action_mojo_bindings" ]
+    public_deps += [
+      ":fusebox_action_mojo_bindings",
+      ":suggest_template_info_mojo_bindings",
+    ]
   }
 }
 
@@ -1164,6 +1169,23 @@ if (!is_ios) {
         traits_sources = [ "fusebox_action_mojom_traits.cc" ]
         traits_deps = [ "//third_party/omnibox_proto" ]
       },
+    ]
+  }
+
+  mojom("suggest_template_info_mojo_bindings") {
+    sources = [ "suggest_template_info.mojom" ]
+    webui_module_path = "chrome://resources/mojo/components/omnibox/browser"
+  }
+
+  source_set("suggest_template_info_mojo_utils") {
+    sources = [
+      "suggest_template_info_mojo_utils.cc",
+      "suggest_template_info_mojo_utils.h",
+    ]
+    public_deps = [ ":suggest_template_info_mojo_bindings" ]
+    deps = [
+      ":browser",
+      "//third_party/omnibox_proto",
     ]
   }
 
