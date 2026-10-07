@@ -29,15 +29,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace {
-const web_package::test::Ed25519KeyPair kPublicKeyPair1 =
-    web_package::test::Ed25519KeyPair::CreateRandom();
-
-const web_package::SignedWebBundleId kWebBundleId1 =
-    web_package::SignedWebBundleId::CreateForPublicKey(
-        kPublicKeyPair1.public_key);
-}  // namespace
-
 namespace web_app {
 
 namespace {
@@ -88,7 +79,7 @@ class ComputeAppSizeCommandForIsolatedWebAppBrowserTest
     IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
     iwa_test_update_server_.AddBundle(
         IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
-            .BuildBundle(kPublicKeyPair1));
+            .BuildBundle(key_pair_));
   }
 
   ComputeAppSizeCommandForIsolatedWebAppBrowserTest(
@@ -102,6 +93,11 @@ class ComputeAppSizeCommandForIsolatedWebAppBrowserTest
                                    std::move(update_manifest_entries));
   }
 
+  const web_package::test::Ed25519KeyPair key_pair_ =
+      web_package::test::Ed25519KeyPair::CreateRandom();
+  const web_package::SignedWebBundleId web_bundle_id_ =
+      web_package::SignedWebBundleId::CreateForPublicKey(key_pair_.public_key);
+
   IsolatedWebAppTestUpdateServer iwa_test_update_server_;
   FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
 };
@@ -109,15 +105,16 @@ class ComputeAppSizeCommandForIsolatedWebAppBrowserTest
 IN_PROC_BROWSER_TEST_F(ComputeAppSizeCommandForIsolatedWebAppBrowserTest,
                        RetrieveWebAppSize) {
   data_provider_->Update(
-      [&](auto& update) { update.AddToManagedAllowlist(kWebBundleId1); });
+      [&](auto& update) { update.AddToManagedAllowlist(web_bundle_id_); });
 
   const webapps::AppId app_id =
-      web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(kWebBundleId1)
+      web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+          web_bundle_id_)
           .app_id();
 
   WebAppTestInstallObserver install_observer(profile());
   SetIwaForceInstallPolicy(base::ListValue().Append(
-      iwa_test_update_server_.CreateForceInstallPolicyEntry(kWebBundleId1)));
+      iwa_test_update_server_.CreateForceInstallPolicyEntry(web_bundle_id_)));
   ASSERT_EQ(install_observer.BeginListeningAndWait({app_id}), app_id);
 
   auto* browser = web_app::LaunchWebAppBrowserAndWait(profile(), app_id);

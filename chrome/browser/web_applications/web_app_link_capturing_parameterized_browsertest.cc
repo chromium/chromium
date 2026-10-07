@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <initializer_list>
 #include <optional>
 #include <ostream>
 #include <string>
@@ -11,7 +12,6 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
-#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
@@ -838,15 +838,15 @@ bool IsElementInPage(content::RenderFrameHost* host,
 // 1. Find the full name of the test. The test name should follow the format:
 // `TestBaseName/TestSuite.TestClass/TestParams`, the name should be available
 // on the trybot failure page itself.
-// 2. Add the `TestParams` under BUILDFLAGs inside the `disabled_flaky_tests`
-// set below, to ensure that a single test is only disabled for the OS or builds
-// it is flaking on.
+// 2. Add the `TestParams` under BUILDFLAGs inside the `kDisabledFlakyTests`
+// list below, to ensure that a single test is only disabled for the OS or
+// builds it is flaking on.
 // 3. Add the appropriate TODO with a public bug so that the flaky tests can be
 // tracked.
 //
 // Once flakiness has been fixed, please remove the entry from here so that test
 // suites can start running the test again.
-static const base::flat_set<std::string> disabled_flaky_tests = {
+constexpr std::initializer_list<std::string_view> kDisabledFlakyTests = {
 #if defined(ADDRESS_SANITIZER)
 #endif
 #if BUILDFLAG(IS_MAC)
@@ -1911,8 +1911,9 @@ class NavCaptureParameterizedBrowserTest
     }
 
     // Skip tests that are disabled because they are flaky.
-    if (disabled_flaky_tests.contains(TupleToParamString(param.param)) ||
-        disabled_flaky_tests.contains("*")) {
+    if (std::ranges::contains(kDisabledFlakyTests,
+                              TupleToParamString(param.param)) ||
+        std::ranges::contains(kDisabledFlakyTests, "*")) {
       return true;
     }
 
@@ -2008,7 +2009,7 @@ class NavCaptureParameterizedBrowserTest
 // intention is to disable only a few tests.
 //
 // Instead, to disable individual test cases, please refer to the documentation
-// above the `disabled_flaky_tests` declaration inside this file.
+// above the `kDisabledFlakyTests` declaration inside this file.
 IN_PROC_BROWSER_TEST_P(NavCaptureParameterizedBrowserTest, VerifyNavCapture) {
   RunTest();
 }

@@ -152,7 +152,7 @@ class IsolatedWebAppBrowsingDataTest : public IsolatedWebAppBrowserTestHarness {
   [[nodiscard]] bool CreateControlledFrame(content::WebContents* web_contents,
                                            const GURL& src,
                                            const std::string& partition) {
-    static std::string kCreateControlledFrame = R"(
+    static constexpr char kCreateControlledFrame[] = R"(
       (async function() {
         const controlledframe = document.createElement('controlledframe');
         controlledframe.setAttribute('src', $1);

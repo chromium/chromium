@@ -54,12 +54,12 @@ namespace web_app {
 
 namespace {
 
-const base::FilePath kBlueIcon{
-    FILE_PATH_LITERAL("chrome/test/data/web_apps/updating/blue-192.png")};
-const base::FilePath kBlueRedIcon{
-    FILE_PATH_LITERAL("chrome/test/data/web_apps/updating/blue-red-192.png")};
-const base::FilePath kBlueWhiteIcon{
-    FILE_PATH_LITERAL("chrome/test/data/web_apps/updating/blue-white-192.png")};
+constexpr base::FilePath::CharType kBlueIcon[] =
+    FILE_PATH_LITERAL("chrome/test/data/web_apps/updating/blue-192.png");
+constexpr base::FilePath::CharType kBlueRedIcon[] =
+    FILE_PATH_LITERAL("chrome/test/data/web_apps/updating/blue-red-192.png");
+constexpr base::FilePath::CharType kBlueWhiteIcon[] =
+    FILE_PATH_LITERAL("chrome/test/data/web_apps/updating/blue-white-192.png");
 
 constexpr int kIconSizeToTest = 192;
 
@@ -231,7 +231,8 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
   EXPECT_TRUE(
       provider().registrar_unsafe().GetInstallState(app_id).has_value());
   EXPECT_TRUE(gfx::test::AreBitmapsClose(
-      web_app::test::LoadTestImageFromDisk(kBlueIcon).AsBitmap(),
+      web_app::test::LoadTestImageFromDisk(base::FilePath(kBlueIcon))
+          .AsBitmap(),
       GetBitmapForInstalledAppOnDisk(app_id, provider().icon_manager()),
       /*max_deviation=*/3));
 
@@ -250,7 +251,8 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
       provider().registrar_unsafe().GetAppById(app_id)->manifest_update_time(),
       clock_->Now());
   EXPECT_TRUE(gfx::test::AreBitmapsClose(
-      web_app::test::LoadTestImageFromDisk(kBlueWhiteIcon).AsBitmap(),
+      web_app::test::LoadTestImageFromDisk(base::FilePath(kBlueWhiteIcon))
+          .AsBitmap(),
       GetBitmapForInstalledAppOnDisk(app_id, provider().icon_manager()),
       /*max_deviation=*/3));
 
@@ -280,7 +282,8 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
   // The app icons on the disk have not been updated, so assert that the old
   // icons still remain.
   EXPECT_TRUE(gfx::test::AreBitmapsClose(
-      web_app::test::LoadTestImageFromDisk(kBlueWhiteIcon).AsBitmap(),
+      web_app::test::LoadTestImageFromDisk(base::FilePath(kBlueWhiteIcon))
+          .AsBitmap(),
       GetBitmapForInstalledAppOnDisk(app_id, provider().icon_manager()),
       /*max_deviation=*/3));
 
@@ -308,7 +311,8 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
   EXPECT_TRUE(
       provider().registrar_unsafe().GetInstallState(app_id).has_value());
   EXPECT_TRUE(gfx::test::AreBitmapsClose(
-      web_app::test::LoadTestImageFromDisk(kBlueIcon).AsBitmap(),
+      web_app::test::LoadTestImageFromDisk(base::FilePath(kBlueIcon))
+          .AsBitmap(),
       GetBitmapForInstalledAppOnDisk(app_id, provider().icon_manager()),
       /*max_deviation=*/3));
 
@@ -327,7 +331,8 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
       provider().registrar_unsafe().GetAppById(app_id)->manifest_update_time(),
       clock_->Now());
   EXPECT_TRUE(gfx::test::AreBitmapsClose(
-      web_app::test::LoadTestImageFromDisk(kBlueWhiteIcon).AsBitmap(),
+      web_app::test::LoadTestImageFromDisk(base::FilePath(kBlueWhiteIcon))
+          .AsBitmap(),
       GetBitmapForInstalledAppOnDisk(app_id, provider().icon_manager()),
       /*max_deviation=*/3));
 
@@ -350,7 +355,8 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
 
   // The app icons on the disk should be updated now.
   EXPECT_TRUE(gfx::test::AreBitmapsClose(
-      web_app::test::LoadTestImageFromDisk(kBlueRedIcon).AsBitmap(),
+      web_app::test::LoadTestImageFromDisk(base::FilePath(kBlueRedIcon))
+          .AsBitmap(),
       GetBitmapForInstalledAppOnDisk(app_id, provider().icon_manager()),
       /*max_deviation=*/3));
 
@@ -581,7 +587,8 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandLineTests,
   EXPECT_TRUE(
       provider().registrar_unsafe().GetInstallState(app_id).has_value());
   EXPECT_TRUE(gfx::test::AreBitmapsClose(
-      web_app::test::LoadTestImageFromDisk(kBlueIcon).AsBitmap(),
+      web_app::test::LoadTestImageFromDisk(base::FilePath(kBlueIcon))
+          .AsBitmap(),
       GetBitmapForInstalledAppOnDisk(app_id, provider().icon_manager()),
       /*max_deviation=*/3));
 
@@ -600,7 +607,8 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandLineTests,
       provider().registrar_unsafe().GetAppById(app_id)->manifest_update_time(),
       clock_->Now());
   EXPECT_TRUE(gfx::test::AreBitmapsClose(
-      web_app::test::LoadTestImageFromDisk(kBlueWhiteIcon).AsBitmap(),
+      web_app::test::LoadTestImageFromDisk(base::FilePath(kBlueWhiteIcon))
+          .AsBitmap(),
       GetBitmapForInstalledAppOnDisk(app_id, provider().icon_manager()),
       /*max_deviation=*/3));
 
@@ -623,7 +631,8 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandLineTests,
 
   // The app icons on the disk should be updated now.
   EXPECT_TRUE(gfx::test::AreBitmapsClose(
-      web_app::test::LoadTestImageFromDisk(kBlueRedIcon).AsBitmap(),
+      web_app::test::LoadTestImageFromDisk(base::FilePath(kBlueRedIcon))
+          .AsBitmap(),
       GetBitmapForInstalledAppOnDisk(app_id, provider().icon_manager()),
       /*max_deviation=*/3));
 

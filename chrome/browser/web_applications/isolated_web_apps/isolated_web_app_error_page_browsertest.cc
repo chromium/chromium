@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
+#include <utility>
 
-#include "base/containers/flat_map.h"
 #include "base/test/gmock_expected_support.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -25,8 +26,9 @@
 
 namespace {
 
-base::flat_map</*error code*/ net::Error, /*error message*/ std::string>
-    kTestCases{
+constexpr std::pair</*error code*/ net::Error,
+                    /*error message*/ std::string_view>
+    kTestCases[]{
         {net::ERR_INVALID_WEB_BUNDLE, "This application is missing or damaged"},
         {net::ERR_CONNECTION_REFUSED,
          "The development server for this application cannot be reached"},
@@ -78,9 +80,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppErrorPageTest,
       IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
   ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info, app->Install(profile()));
 
-  for (auto& test_case : kTestCases) {
+  for (const auto& test_case : kTestCases) {
     net::Error error_code = test_case.first;
-    const std::string& expected_message = test_case.second;
+    std::string_view expected_message = test_case.second;
     SCOPED_TRACE(testing::Message()
                  << "error_code: " << error_code
                  << ", expected_message: " << expected_message);
