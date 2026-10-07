@@ -137,9 +137,12 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
             Token tabGroupId = entry.getTabGroupId();
             assert tabGroupId != null;
             tabGroupIds.add(tabGroupId);
-            // TODO(b/336589861): Set a real saved tab group ID from its corresponding sync entity
-            // here.
-            savedTabGroupIds.add("");
+            // TODO(b/336589861): Callers pass no sync id today. Only deleted groups reach here
+            // (HistoricalTabModelObserver skips hidden and collaboration groups), and their
+            // saved group is already removed, so an id would be stale. Populate this together
+            // with a restore that reconnects to the saved group if that filter is lifted.
+            String syncId = entry.getSavedTabGroupSyncId();
+            savedTabGroupIds.add(syncId == null ? "" : syncId);
             groupTitles.add(entry.getGroupTitle() == null ? "" : entry.getGroupTitle());
             groupColors[groupIndex++] = entry.getGroupColor();
             for (Tab tab : entry.getTabs()) {
@@ -271,7 +274,11 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
             }
             validatedEntries.add(
                     new HistoricalEntry(
-                            tabGroupId, entry.getGroupTitle(), entry.getGroupColor(), validTabs));
+                            tabGroupId,
+                            entry.getGroupTitle(),
+                            entry.getGroupColor(),
+                            validTabs,
+                            entry.getSavedTabGroupSyncId()));
         }
         return validatedEntries;
     }

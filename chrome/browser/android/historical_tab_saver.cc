@@ -77,7 +77,12 @@ std::optional<base::Uuid> StringToUuid(
   if (serialized_saved_tab_group_id.empty()) {
     return std::nullopt;
   }
-  return base::Uuid::ParseLowercase(serialized_saved_tab_group_id);
+  base::Uuid uuid =
+      base::Uuid::ParseCaseInsensitive(serialized_saved_tab_group_id);
+  if (!uuid.is_valid()) {
+    return std::nullopt;
+  }
+  return uuid;
 }
 
 std::vector<std::optional<base::Uuid>> StringsToUuids(

@@ -20,6 +20,7 @@ public class HistoricalEntry {
     private final @Nullable String mGroupTitle;
     private final @TabGroupColorId int mGroupColor;
     private final List<Tab> mTabs;
+    private final @Nullable String mSavedTabGroupSyncId;
 
     /**
      * Constructor for a tab that is closing.
@@ -40,6 +41,7 @@ public class HistoricalEntry {
         // not have a color associated with it anyways.
         mGroupColor = TabGroupColorId.GREY;
         mTabs = Collections.singletonList(tab);
+        mSavedTabGroupSyncId = null;
     }
 
     /**
@@ -55,11 +57,31 @@ public class HistoricalEntry {
             @Nullable String groupTitle,
             @TabGroupColorId int groupColor,
             List<Tab> tabs) {
+        this(tabGroupId, groupTitle, groupColor, tabs, /* savedTabGroupSyncId= */ null);
+    }
+
+    /**
+     * Constructor for a tab group that is closing.
+     *
+     * @param tabGroupId The tab group id of the group.
+     * @param groupTitle The title of the group or null if the default group name should be used.
+     * @param groupColor The {@link TabGroupColorId} of the group.
+     * @param tabs The list of {@link Tab} in this group.
+     * @param savedTabGroupSyncId The sync id (SavedTabGroup sync GUID string) of the saved tab
+     *     group this entry came from, or null if unknown.
+     */
+    public HistoricalEntry(
+            Token tabGroupId,
+            @Nullable String groupTitle,
+            @TabGroupColorId int groupColor,
+            List<Tab> tabs,
+            @Nullable String savedTabGroupSyncId) {
         assert tabGroupId != null;
         mTabGroupId = tabGroupId;
         mGroupTitle = groupTitle;
         mGroupColor = groupColor;
         mTabs = tabs;
+        mSavedTabGroupSyncId = savedTabGroupSyncId;
     }
 
     /** Returns whether this entry is a single tab. */
@@ -87,5 +109,13 @@ public class HistoricalEntry {
     /** Returns the list of tabs in this group. */
     public List<Tab> getTabs() {
         return mTabs;
+    }
+
+    /**
+     * Returns the sync id (SavedTabGroup sync GUID string) of the saved tab group this entry came
+     * from; null if unknown or for single tabs.
+     */
+    public @Nullable String getSavedTabGroupSyncId() {
+        return mSavedTabGroupSyncId;
     }
 }

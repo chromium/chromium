@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab.tab_restore;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -212,6 +213,41 @@ public class HistoricalTabSaverImplUnitTest {
                         eq(versions));
     }
 
+    /** Tests a group's saved tab group sync ID is passed through to native. */
+    @Test
+    public void testCreateHistoricalGroup_WithSyncId() {
+        Tab tab0 = createMockTab(0, mProfile);
+        Tab tab1 = createMockTab(1, mProfile);
+
+        List<Tab> tabList = List.of(tab0, tab1);
+        Token tabGroupId = new Token(728L, 324789L);
+        String syncId = "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d";
+        assertNull(
+                new HistoricalEntry(tabGroupId, "Foo", TabGroupColorId.GREY, tabList)
+                        .getSavedTabGroupSyncId());
+        HistoricalEntry group =
+                new HistoricalEntry(tabGroupId, "Foo", TabGroupColorId.GREY, tabList, syncId);
+        assertEquals(syncId, group.getSavedTabGroupSyncId());
+
+        int entryId = mHistoricalTabSaver.createHistoricalTabOrGroup(group);
+        assertEquals(22, entryId);
+
+        byte[] bytes = new byte[0];
+        ByteBuffer buf = ByteBuffer.wrap(bytes);
+        List<ByteBuffer> buffers = List.of(buf, buf);
+        int[] versions = new int[] {-1, -1};
+        verify(mHistoricalTabSaverJni)
+                .createHistoricalGroup(
+                        eq(mTabModel),
+                        eq(tabGroupId),
+                        eq(syncId),
+                        eq("Foo"),
+                        eq(TabGroupColorId.GREY),
+                        eq(tabList),
+                        eq(buffers),
+                        eq(versions));
+    }
+
     /** Tests incognito tabs are removed and collapse to a single tab. */
     @Test
     public void testCreateHistoricalGroup_FromGroupWithIncognito_SingleTabGroupSupported() {
@@ -293,6 +329,37 @@ public class HistoricalTabSaverImplUnitTest {
                         eq(mTabModel),
                         eq(tabGroupId),
                         eq(""),
+                        eq("Foo"),
+                        eq(TabGroupColorId.GREY),
+                        eq(List.of(tab0, tab2)),
+                        eq(buffers),
+                        eq(versions));
+    }
+
+    /** Tests the sync ID survives validation when an incognito tab is removed from the group. */
+    @Test
+    public void testCreateHistoricalGroup_WithSyncIdAndIncognito() {
+        Tab tab0 = createMockTab(0, mProfile);
+        Tab tab1 = createMockTab(1, mIncognitoProfile);
+        Tab tab2 = createMockTab(2, mProfile);
+
+        List<Tab> tabList = List.of(tab0, tab1, tab2);
+        Token tabGroupId = new Token(4L, 5L);
+        String syncId = "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d";
+        HistoricalEntry group =
+                new HistoricalEntry(tabGroupId, "Foo", TabGroupColorId.GREY, tabList, syncId);
+        int entryId = mHistoricalTabSaver.createHistoricalTabOrGroup(group);
+        assertEquals(22, entryId);
+
+        byte[] bytes = new byte[0];
+        ByteBuffer buf = ByteBuffer.wrap(bytes);
+        List<ByteBuffer> buffers = List.of(buf, buf);
+        int[] versions = new int[] {-1, -1};
+        verify(mHistoricalTabSaverJni)
+                .createHistoricalGroup(
+                        eq(mTabModel),
+                        eq(tabGroupId),
+                        eq(syncId),
                         eq("Foo"),
                         eq(TabGroupColorId.GREY),
                         eq(List.of(tab0, tab2)),
@@ -439,6 +506,64 @@ public class HistoricalTabSaverImplUnitTest {
         ByteBuffer buf = ByteBuffer.wrap(bytes);
         List<ByteBuffer> buffers = List.of(buf, buf, buf, buf, buf, buf, buf);
         int[] versions = new int[] {-1, -1, -1, -1, -1, -1, -1};
+        verify(mHistoricalTabSaverJni)
+                .createHistoricalBulkClosure(
+                        eq(mTabModel),
+                        eq(tabGroupIds),
+                        eq(savedTabGroupIds),
+                        eq(groupTitles),
+                        eq(groupColors),
+                        eq(perTabTabGroupIds),
+                        eq(tabs),
+                        eq(buffers),
+                        eq(versions));
+    }
+
+    /** Tests a bulk closure passes each group's saved tab group sync ID through to native. */
+    @Test
+    public void testCreateHistoricalBulk_WithSyncId() {
+        // Tab.
+        Tab tab0 = createMockTab(0, mProfile);
+        // Group with a sync ID; the incognito tab forces the entry to be rebuilt by validation.
+        Tab tab1 = createMockTab(1, mProfile);
+        Tab tab2 = createMockTab(2, mIncognitoProfile);
+        Tab tab3 = createMockTab(3, mProfile);
+        // Group without a sync ID.
+        Tab tab4 = createMockTab(4, mProfile);
+        Tab tab5 = createMockTab(5, mProfile);
+
+        String syncId = "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d";
+        List<HistoricalEntry> entries = new ArrayList<>();
+        entries.add(new HistoricalEntry(tab0));
+        Token tabGroupId1 = new Token(123L, 456L);
+        entries.add(
+                new HistoricalEntry(
+                        tabGroupId1,
+                        "Group 1",
+                        TabGroupColorId.GREY,
+                        List.of(tab1, tab2, tab3),
+                        syncId));
+        Token tabGroupId2 = new Token(789L, 1011L);
+        entries.add(
+                new HistoricalEntry(
+                        tabGroupId2, "Group 2", TabGroupColorId.BLUE, List.of(tab4, tab5)));
+        int entryId = mHistoricalTabSaver.createHistoricalBulkClosure(entries);
+        assertEquals(33, entryId);
+
+        List<Token> tabGroupIds = List.of(tabGroupId1, tabGroupId2);
+        // One element per group; single tabs do not contribute and a null sync ID maps to "".
+        List<String> savedTabGroupIds = List.of(syncId, "");
+        List<String> groupTitles = List.of("Group 1", "Group 2");
+        int[] groupColors = new int[] {TabGroupColorId.GREY, TabGroupColorId.BLUE};
+        List<Token> perTabTabGroupIds =
+                Arrays.asList(
+                        new Token[] {null, tabGroupId1, tabGroupId1, tabGroupId2, tabGroupId2});
+        List<Tab> tabs = List.of(tab0, tab1, tab3, tab4, tab5);
+
+        byte[] bytes = new byte[0];
+        ByteBuffer buf = ByteBuffer.wrap(bytes);
+        List<ByteBuffer> buffers = List.of(buf, buf, buf, buf, buf);
+        int[] versions = new int[] {-1, -1, -1, -1, -1};
         verify(mHistoricalTabSaverJni)
                 .createHistoricalBulkClosure(
                         eq(mTabModel),
