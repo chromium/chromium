@@ -28,6 +28,7 @@
 #include "base/values.h"
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_metadata.h"
 #include "chrome/common/pref_names.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_switches.h"
@@ -38,7 +39,10 @@ using ScopedPropList = base::apple::ScopedCFTypeRef<CFPropertyListRef>;
 
 namespace {
 
-const CFStringRef kExtensibleSSOPrefName(CFSTR("com.apple.extensiblesso"));
+const CFStringRef kExtensibleSsoPrefName(CFSTR("com.apple.extensiblesso"));
+const CFStringRef kExtensionIdentifierKey(CFSTR("ExtensionIdentifier"));
+const CFStringRef kTeamIdentifierKey(CFSTR("TeamIdentifier"));
+const CFStringRef kHostsKey(CFSTR("Hosts"));
 
 base::RepeatingCallback<std::unique_ptr<CFPreferencesObserver>()>&
 GetCfPrefsOverrideForTesting() {
@@ -48,91 +52,19 @@ GetCfPrefsOverrideForTesting() {
   return *cf_prefs_observer_override_for_testing;
 }
 
-base::ListValue ParseConfiguration(CFPreferencesObserver::Config config) {
-  if (!config.extension_id || !config.team_id || !config.hosts) {
-    return {};
-  }
-
-  // If the extension or team IDs don't match any supported IdPs return an empty
-  // result.
-  const CFStringRef extension_id =
-      base::apple::CFCast<CFStringRef>(config.extension_id.get());
-  if (!extension_id) {
-    return {};
-  }
-
-  const CFStringRef team_id =
-      base::apple::CFCast<CFStringRef>(config.team_id.get());
-  if (!team_id) {
-    return {};
-  }
-
-  // Only Okta is supported for now since request proxying in
-  // `PlatformAuthProxyingURLLoaderFactory` only handles Okta SSO requests.
-  const SsoExtensionMetadata* metadata =
-      FindSsoExtensionMetadata(team_id, extension_id);
-  if (!metadata || metadata->idp_name != kOktaIdentityProvider) {
-    return {};
-  }
-
-  const CFArrayRef array = base::apple::CFCast<CFArrayRef>(config.hosts.get());
-  if (!array) {
-    return {};
-  }
-  const CFIndex size = CFArrayGetCount(array);
-  base::ListValue hostnames;
-  hostnames.reserve(size);
-
-  for (CFIndex i = 0; i < size; ++i) {
-    CFStringRef cf_hostname =
-        base::apple::CFCast<CFStringRef>(CFArrayGetValueAtIndex(array, i));
-    if (!cf_hostname) {
-      continue;
-    }
-    std::string hostname = base::SysCFStringRefToUTF8(cf_hostname);
-    if (!hostname.empty()) {
-      hostnames.Append(std::move(hostname));
-    }
-  }
-
-  return hostnames;
-}
-
-base::ListValue ReadAndParseConfiguration(
-    base::OnceCallback<CFPreferencesObserver::Config()> read_callback) {
-  CFPreferencesObserver::Config config = std::move(read_callback).Run();
-  return ParseConfiguration(std::move(config));
-}
-
-}  // namespace
-
 // Stub implementation for tests that don't explicitly use an override.
 class StubCFPreferencesObserver : public CFPreferencesObserver {
  public:
   StubCFPreferencesObserver() {}
   void Subscribe(base::RepeatingClosure on_update) override {}
   void Unsubscribe() override {}
-  base::OnceCallback<Config()> GetReadConfigCallback() override {
+  base::OnceCallback<RawConfig()> GetReadConfigCallback() override {
     return base::BindOnce([]() {
-      return Config(ScopedPropList(nullptr), ScopedPropList(nullptr),
-                    ScopedPropList(nullptr));
+      return RawConfig(ScopedPropList(nullptr), ScopedPropList(nullptr),
+                       ScopedPropList(nullptr));
     });
   }
 };
-
-CFPreferencesObserver::Config::Config(ScopedPropList extension_id,
-                                      ScopedPropList team_id,
-                                      ScopedPropList hosts)
-    : extension_id(std::move(extension_id)),
-      team_id(std::move(team_id)),
-      hosts(std::move(hosts)) {}
-CFPreferencesObserver::Config::Config(const Config&) = default;
-CFPreferencesObserver::Config::Config(Config&&) = default;
-CFPreferencesObserver::Config& CFPreferencesObserver::Config::operator=(
-    const Config&) = default;
-CFPreferencesObserver::Config& CFPreferencesObserver::Config::operator=(
-    Config&&) = default;
-CFPreferencesObserver::Config::~Config() = default;
 
 class CFPreferencesObserverImpl final : public CFPreferencesObserver {
  public:
@@ -144,7 +76,7 @@ class CFPreferencesObserverImpl final : public CFPreferencesObserver {
                              CFStringRef name,
                              const void* object,
                              CFDictionaryRef userInfo) {
-    if (CFEqual(name, kExtensibleSSOPrefName)) {
+    if (CFEqual(name, kExtensibleSsoPrefName)) {
       CFPreferencesObserverImpl* instance =
           static_cast<CFPreferencesObserverImpl*>(observer);
       instance->callback_.Run();
@@ -156,7 +88,7 @@ class CFPreferencesObserverImpl final : public CFPreferencesObserver {
       callback_ = std::move(on_update);
       CFNotificationCenterAddObserver(
           CFNotificationCenterGetDarwinNotifyCenter(), this,
-          &CFPreferencesObserverImpl::OnNotification, kExtensibleSSOPrefName,
+          &CFPreferencesObserverImpl::OnNotification, kExtensibleSsoPrefName,
           nullptr, CFNotificationSuspensionBehaviorDeliverImmediately);
     }
   }
@@ -165,21 +97,21 @@ class CFPreferencesObserverImpl final : public CFPreferencesObserver {
     if (callback_) {
       CFNotificationCenterRemoveObserver(
           CFNotificationCenterGetDarwinNotifyCenter(), this,
-          kExtensibleSSOPrefName, nullptr);
+          kExtensibleSsoPrefName, nullptr);
       callback_.Reset();
     }
   }
 
-  base::OnceCallback<Config()> GetReadConfigCallback() override {
+  base::OnceCallback<RawConfig()> GetReadConfigCallback() override {
     return base::BindOnce([]() {
       auto extension_id = ScopedPropList(CFPreferencesCopyAppValue(
-          CFSTR("ExtensionIdentifier"), kExtensibleSSOPrefName));
+          kExtensionIdentifierKey, kExtensibleSsoPrefName));
       auto hosts = ScopedPropList(
-          CFPreferencesCopyAppValue(CFSTR("Hosts"), kExtensibleSSOPrefName));
+          CFPreferencesCopyAppValue(kHostsKey, kExtensibleSsoPrefName));
       auto team_id = ScopedPropList(CFPreferencesCopyAppValue(
-          CFSTR("TeamIdentifier"), kExtensibleSSOPrefName));
-      return Config(std::move(extension_id), std::move(team_id),
-                    std::move(hosts));
+          kTeamIdentifierKey, kExtensibleSsoPrefName));
+      return RawConfig(std::move(extension_id), std::move(team_id),
+                       std::move(hosts));
     });
   }
 
@@ -187,12 +119,10 @@ class CFPreferencesObserverImpl final : public CFPreferencesObserver {
   base::RepeatingClosure callback_;
 };
 
-ExtensibleEnterpriseSSOPrefsHandler::ExtensibleEnterpriseSSOPrefsHandler(
-    PrefService* local_state)
-    : local_state_(local_state) {
+std::unique_ptr<CFPreferencesObserver> CreateCfPreferencesObserver() {
   if (GetCfPrefsOverrideForTesting()) {
     CHECK_IS_TEST();
-    cf_preferences_observer_ = GetCfPrefsOverrideForTesting().Run();  // IN-TEST
+    return GetCfPrefsOverrideForTesting().Run();  // IN-TEST
   } else {
     // This class is used to make an OS call on browser process's construction,
     // which would cause the OS call to be made in browser tests that don't
@@ -203,12 +133,115 @@ ExtensibleEnterpriseSSOPrefsHandler::ExtensibleEnterpriseSSOPrefsHandler(
         command_line->GetProgram().BaseName().value().find(FILE_PATH_LITERAL(
             "interactive_ui_tests")) != base::FilePath::StringType::npos) {
       // Real implementation should never be used in tests.
-      cf_preferences_observer_ = std::make_unique<StubCFPreferencesObserver>();
+      return std::make_unique<StubCFPreferencesObserver>();
     } else {
-      cf_preferences_observer_ = std::make_unique<CFPreferencesObserverImpl>();
+      return std::make_unique<CFPreferencesObserverImpl>();
+    }
+  }
+}
+
+std::optional<ExtensibleEnterpriseSSOPrefsHandler::Config> ParseConfiguration(
+    CFPreferencesObserver::RawConfig config) {
+  if (!config.extension_id || !config.team_id || !config.hosts) {
+    VLOG_POLICY(1, EXTENSIBLE_SSO)
+        << "SSO extension MDM payload not found or incomplete.";
+    return std::nullopt;
+  }
+
+  // If the extension or team IDs don't match any supported IdPs return an empty
+  // result.
+  const CFStringRef extension_id =
+      base::apple::CFCast<CFStringRef>(config.extension_id.get());
+  if (!extension_id || CFStringGetLength(extension_id) == 0) {
+    LOG_POLICY(WARNING, EXTENSIBLE_SSO) << "Failed to parse SSO extension MDM "
+                                           "payload: extension_id is invalid.";
+    return std::nullopt;
+  }
+
+  const CFStringRef team_id =
+      base::apple::CFCast<CFStringRef>(config.team_id.get());
+  if (!team_id || CFStringGetLength(team_id) == 0) {
+    LOG_POLICY(WARNING, EXTENSIBLE_SSO) << "Failed to parse SSO extension MDM "
+                                           "payload: team_id is invalid.";
+    return std::nullopt;
+  }
+
+  // Only Okta is supported for now since request proxying in
+  // `PlatformAuthProxyingURLLoaderFactory` only handles Okta SSO requests.
+  const SsoExtensionMetadata* metadata =
+      FindSsoExtensionMetadata(team_id, extension_id);
+  if (!metadata || metadata->idp_name != kOktaIdentityProvider) {
+    LOG_POLICY(WARNING, EXTENSIBLE_SSO)
+        << "Failed to parse SSO extension MDM "
+           "payload: extension does not match any supported IdP.";
+    return std::nullopt;
+  }
+
+  const CFArrayRef array = base::apple::CFCast<CFArrayRef>(config.hosts.get());
+  if (!array) {
+    LOG_POLICY(WARNING, EXTENSIBLE_SSO) << "Failed to parse SSO extension MDM "
+                                           "payload: hosts is not an array.";
+    return std::nullopt;
+  }
+
+  std::string extension_id_string = base::SysCFStringRefToUTF8(extension_id);
+  std::string team_id_string = base::SysCFStringRefToUTF8(team_id);
+  if (extension_id_string.empty() || team_id_string.empty()) {
+    LOG_POLICY(WARNING, EXTENSIBLE_SSO)
+        << "Failed to parse SSO extension MDM "
+           "payload: couldn't convert CFStringRef to UTF-8.";
+    return std::nullopt;
+  }
+
+  const CFIndex size = CFArrayGetCount(array);
+  std::vector<std::string> hostnames;
+  hostnames.reserve(size);
+  for (CFIndex i = 0; i < size; ++i) {
+    CFStringRef cf_hostname =
+        base::apple::CFCast<CFStringRef>(CFArrayGetValueAtIndex(array, i));
+    if (!cf_hostname) {
+      continue;
+    }
+    std::string hostname = base::SysCFStringRefToUTF8(cf_hostname);
+    if (!hostname.empty()) {
+      hostnames.push_back(std::move(hostname));
     }
   }
 
+  return ExtensibleEnterpriseSSOPrefsHandler::Config{
+      .extension_id = std::move(extension_id_string),
+      .team_id = std::move(team_id_string),
+      .hosts = std::move(hostnames),
+  };
+}
+
+std::optional<ExtensibleEnterpriseSSOPrefsHandler::Config>
+ReadAndParseConfiguration(
+    base::OnceCallback<CFPreferencesObserver::RawConfig()> read_callback) {
+  CFPreferencesObserver::RawConfig config = std::move(read_callback).Run();
+  return ParseConfiguration(std::move(config));
+}
+
+}  // namespace
+
+CFPreferencesObserver::RawConfig::RawConfig(ScopedPropList extension_id,
+                                            ScopedPropList team_id,
+                                            ScopedPropList hosts)
+    : extension_id(std::move(extension_id)),
+      team_id(std::move(team_id)),
+      hosts(std::move(hosts)) {}
+CFPreferencesObserver::RawConfig::RawConfig(const RawConfig&) = default;
+CFPreferencesObserver::RawConfig::RawConfig(RawConfig&&) = default;
+CFPreferencesObserver::RawConfig& CFPreferencesObserver::RawConfig::operator=(
+    const RawConfig&) = default;
+CFPreferencesObserver::RawConfig& CFPreferencesObserver::RawConfig::operator=(
+    RawConfig&&) = default;
+CFPreferencesObserver::RawConfig::~RawConfig() = default;
+
+ExtensibleEnterpriseSSOPrefsHandler::ExtensibleEnterpriseSSOPrefsHandler(
+    PrefService* local_state)
+    : cf_preferences_observer_(CreateCfPreferencesObserver()),
+      local_state_(local_state) {
   CHECK(cf_preferences_observer_, base::NotFatalUntil::M161);
   CHECK(local_state_, base::NotFatalUntil::M161);
   auto callback =
@@ -236,10 +269,24 @@ void ExtensibleEnterpriseSSOPrefsHandler::UpdatePrefs() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ExtensibleEnterpriseSSOPrefsHandler::OnConfigRead(base::ListValue res) {
+void ExtensibleEnterpriseSSOPrefsHandler::OnConfigRead(
+    std::optional<Config> config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!config.has_value()) {
+    local_state_->SetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts, {});
+    return;
+  }
+
+  VLOG_POLICY(1, EXTENSIBLE_SSO)
+      << "Successfully parsed SSO extension MDM payload.";
+
+  base::ListValue hosts;
+  hosts.reserve(config->hosts.size());
+  for (const std::string& host : config->hosts) {
+    hosts.Append(host);
+  }
   local_state_->SetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts,
-                        std::move(res));
+                        std::move(hosts));
 }
 
 // static

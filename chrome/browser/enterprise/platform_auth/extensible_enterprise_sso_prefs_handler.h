@@ -33,16 +33,19 @@ namespace enterprise_auth {
 // notification system and reading com.apple.extensiblesso from CFPreferences.
 class CFPreferencesObserver {
  public:
-  class Config {
+  // This class is a raw snapshot of the `com.apple.extensiblesso` MDM payload.
+  // Compared to the ExtensibleEnterpriseSSOPrefsHandler::Config it makes no
+  // assumptions about the type, format and validity of its fields.
+  class RawConfig {
    public:
-    Config(base::apple::ScopedCFTypeRef<CFPropertyListRef> extension_id,
-           base::apple::ScopedCFTypeRef<CFPropertyListRef> team_id,
-           base::apple::ScopedCFTypeRef<CFPropertyListRef> hosts);
-    Config(const Config&);
-    Config(Config&&);
-    Config& operator=(const Config&);
-    Config& operator=(Config&&);
-    ~Config();
+    RawConfig(base::apple::ScopedCFTypeRef<CFPropertyListRef> extension_id,
+              base::apple::ScopedCFTypeRef<CFPropertyListRef> team_id,
+              base::apple::ScopedCFTypeRef<CFPropertyListRef> hosts);
+    RawConfig(const RawConfig&);
+    RawConfig(RawConfig&&);
+    RawConfig& operator=(const RawConfig&);
+    RawConfig& operator=(RawConfig&&);
+    ~RawConfig();
     base::apple::ScopedCFTypeRef<CFPropertyListRef> extension_id;
     base::apple::ScopedCFTypeRef<CFPropertyListRef> team_id;
     base::apple::ScopedCFTypeRef<CFPropertyListRef> hosts;
@@ -51,7 +54,7 @@ class CFPreferencesObserver {
   virtual ~CFPreferencesObserver() = default;
   virtual void Subscribe(base::RepeatingClosure on_update) = 0;
   virtual void Unsubscribe() = 0;
-  virtual base::OnceCallback<Config()> GetReadConfigCallback() = 0;
+  virtual base::OnceCallback<RawConfig()> GetReadConfigCallback() = 0;
 };
 
 // Responsible for syncing 'Hosts' field of Apple's com.apple.extensiblesso
@@ -61,6 +64,19 @@ class CFPreferencesObserver {
 class ExtensibleEnterpriseSSOPrefsHandler {
  public:
   explicit ExtensibleEnterpriseSSOPrefsHandler(PrefService* local_state);
+
+  // Represents the `com.apple.extensiblesso` MDM payload installed on the
+  // device.
+  struct Config {
+    // `ExtensionIdentifier` entry of the payload. Never empty.
+    std::string extension_id;
+
+    // `TeamIdentifier` entry of the payload. Never empty.
+    std::string team_id;
+
+    // `Hosts` entry of the payload. Non-string and empty entries are dropped.
+    std::vector<std::string> hosts;
+  };
 
   ~ExtensibleEnterpriseSSOPrefsHandler();
 
@@ -78,7 +94,7 @@ class ExtensibleEnterpriseSSOPrefsHandler {
   void UpdatePrefs();
 
  private:
-  void OnConfigRead(base::ListValue res);
+  void OnConfigRead(std::optional<Config> config);
 
   friend class ScopedCFPreferenceObserverOverride;
   static void OverrideCFPreferenceObserverForTesting(

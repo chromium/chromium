@@ -54,7 +54,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-using Config = enterprise_auth::CFPreferencesObserver::Config;
+using Config = enterprise_auth::CFPreferencesObserver::RawConfig;
 using ScopedPropList = base::apple::ScopedCFTypeRef<CFPropertyListRef>;
 using url_session_test_util::ResponseConfig;
 

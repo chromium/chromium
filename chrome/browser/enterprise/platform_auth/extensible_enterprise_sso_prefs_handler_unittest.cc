@@ -31,6 +31,7 @@ namespace enterprise_auth {
 namespace {
 
 const CFStringRef kInvalidPropID(CFSTR("INVALID_ID"));
+const CFStringRef kEmptyPropID(CFSTR(""));
 
 }  // namespace
 
@@ -38,7 +39,7 @@ using ScopedPropList = base::apple::ScopedCFTypeRef<CFPropertyListRef>;
 
 class TestCFWrapper : public CFPreferencesObserver {
  public:
-  explicit TestCFWrapper(base::RepeatingClosure* callback, Config* config)
+  explicit TestCFWrapper(base::RepeatingClosure* callback, RawConfig* config)
       : callback_(callback), config_(config) {}
 
   void Subscribe(base::RepeatingClosure on_update) override {
@@ -53,13 +54,13 @@ class TestCFWrapper : public CFPreferencesObserver {
     }
   }
 
-  base::OnceCallback<Config()> GetReadConfigCallback() override {
-    return base::BindOnce([](Config config) { return config; }, *config_);
+  base::OnceCallback<RawConfig()> GetReadConfigCallback() override {
+    return base::BindOnce([](RawConfig config) { return config; }, *config_);
   }
 
  private:
   raw_ptr<base::RepeatingClosure> callback_;
-  raw_ptr<Config> config_;
+  raw_ptr<RawConfig> config_;
 };
 
 class ExtensibleEnterpriseSSOPrefsHandlerTest : public testing::Test {
@@ -107,7 +108,7 @@ class ExtensibleEnterpriseSSOPrefsHandlerTest : public testing::Test {
   void SetConfigOverride(ScopedPropList extension_id,
                          ScopedPropList team_id,
                          ScopedPropList hosts) {
-    config_ = CFPreferencesObserver::Config(
+    config_ = CFPreferencesObserver::RawConfig(
         std::move(extension_id), std::move(team_id), std::move(hosts));
   }
 
@@ -133,9 +134,9 @@ class ExtensibleEnterpriseSSOPrefsHandlerTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  CFPreferencesObserver::Config config_{/*extension_id=*/ScopedPropList(),
-                                        /*team_id=*/ScopedPropList(),
-                                        /*hosts=*/ScopedPropList()};
+  CFPreferencesObserver::RawConfig config_{/*extension_id=*/ScopedPropList(),
+                                           /*team_id=*/ScopedPropList(),
+                                           /*hosts=*/ScopedPropList()};
   std::unique_ptr<ExtensibleEnterpriseSSOPrefsHandler> prefs_handler_;
   base::RepeatingClosure notification_callback_;
   TestingPrefServiceSimple pref_service_;
@@ -338,6 +339,9 @@ INSTANTIATE_TEST_SUITE_P(
         ConfigTestParams({nullptr, kOktaSsoTeamId}),
         ConfigTestParams({kOktaSsoExtensionId, nullptr}),
         ConfigTestParams({nullptr, nullptr}),
+        ConfigTestParams({kEmptyPropID, kOktaSsoTeamId}),
+        ConfigTestParams({kOktaSsoExtensionId, kEmptyPropID}),
+        ConfigTestParams({kEmptyPropID, kEmptyPropID}),
         // Microsoft is a supported IdP, but host syncing is Okta-only.
         ConfigTestParams({kMicrosoftSsoExtensionId, kMicrosoftSsoTeamId}),
         // IDs from different IdPs must not be combined.
