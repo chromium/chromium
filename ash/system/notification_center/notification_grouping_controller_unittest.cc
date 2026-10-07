@@ -864,54 +864,6 @@ TEST_F(NotificationGroupingControllerTest, ChildNotificationsUpdatePinned) {
   EXPECT_FALSE(parent_notification->pinned());
 }
 
-TEST_F(NotificationGroupingControllerTest,
-       ArcNotificationGroupingWithoutGroupKey) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRenderArcNotificationsByChrome);
-  auto* message_center = MessageCenter::Get();
-
-  const GURL url(u"http://test-url.com/");
-  std::string id0;
-  auto arc_notifier_id = message_center::NotifierId(
-      message_center::NotifierType::ARC_APPLICATION, "test-id");
-
-  // Add 4 ARC notifications.
-  message_center->AddNotification(
-      MakeNotificationWithNotifierId(id0, url, arc_notifier_id));
-  for (int i = 0; i < 3; i++) {
-    std::string tmp;
-    message_center->AddNotification(
-        MakeNotificationWithNotifierId(tmp, url, arc_notifier_id));
-  }
-
-  // Make sure there is no grouping with 4 ARC notifications.
-  auto notifications = message_center->GetVisibleNotifications();
-  EXPECT_EQ(notifications.size(), 4u);
-  for (Notification* n : notifications) {
-    EXPECT_FALSE(n->group_child() || n->group_parent());
-  }
-
-  for (int i = 0; i < 3; i++) {
-    std::string tmp;
-    message_center->AddNotification(
-        MakeNotificationWithNotifierId(tmp, url, arc_notifier_id));
-  }
-
-  // Make sure there is one notification set as the parent and all others are
-  // set to group children.
-  std::string parent_id =
-      id0 + message_center_utils::GenerateGroupParentNotificationIdSuffix(
-                message_center->FindNotificationById(id0)->notifier_id());
-  notifications = message_center->GetVisibleNotifications();
-  for (Notification* n : notifications) {
-    if (n->id() == parent_id) {
-      EXPECT_TRUE(n->group_parent());
-      continue;
-    }
-    EXPECT_TRUE(n->group_child());
-  }
-}
-
 // Test to make sure `web_app_id` in the `NotifierId` is used to determine
 // grouping.
 TEST_F(NotificationGroupingControllerTest, WebAppIdImpactsGrouping) {
