@@ -2555,6 +2555,17 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   histograms.ExpectTotalCount(
       "Extensions.ServiceWorkerBackground.StartWorkerTime",
       /*expected_count=*/0);
+  // `kErrorNotFound` is treated as transient, so starting the worker is retried
+  // until retries are exhausted.
+  histograms.ExpectUniqueSample(
+      "Extensions.ServiceWorkerBackground.StartWorkerRetry.Failure."
+      "InitialStatus",
+      /*sample=*/blink::ServiceWorkerStatusCode::kErrorNotFound,
+      /*expected_bucket_count=*/1);
+  histograms.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.StartWorkerRetry.Success."
+      "InitialStatus",
+      /*expected_count=*/0);
 
   // And the task count will be reset to zero afterwards.
   EXPECT_EQ(0u,

@@ -14,6 +14,7 @@
 #include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
@@ -80,6 +81,13 @@ constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
 // Maximum number of retries for registration and start requests.
 constexpr int kMaxRetries = 3;
 
+// Histogram name prefixes for the worker start and registration retry
+// metrics. See `ClearRetryState()`.
+constexpr std::string_view kStartWorkerRetryHistogramPrefix =
+    "Extensions.ServiceWorkerBackground.StartWorkerRetry";
+constexpr std::string_view kRegistrationRetryHistogramPrefix =
+    "Extensions.ServiceWorkerBackground.RegistrationRetry";
+
 ServiceWorkerTaskQueue::TestObserver* g_test_observer = nullptr;
 
 }  // namespace
@@ -95,15 +103,20 @@ ServiceWorkerTaskQueue::~ServiceWorkerTaskQueue() {
 
 // Manages registration/start retry attempts with exponential backoff.
 struct ServiceWorkerTaskQueue::RetryState {
-  explicit RetryState(const net::BackoffEntry::Policy* policy);
+  RetryState(const net::BackoffEntry::Policy* policy,
+             std::optional<blink::ServiceWorkerStatusCode> initial_status);
 
   net::BackoffEntry backoff_entry;
   base::OneShotTimer timer;
+  // Status code of the failure that started this retry sequence, if any.
+  // Recorded in metrics when the sequence ends.
+  const std::optional<blink::ServiceWorkerStatusCode> initial_status;
 };
 
 ServiceWorkerTaskQueue::RetryState::RetryState(
-    const net::BackoffEntry::Policy* policy)
-    : backoff_entry(policy) {}
+    const net::BackoffEntry::Policy* policy,
+    std::optional<blink::ServiceWorkerStatusCode> initial_status)
+    : backoff_entry(policy), initial_status(initial_status) {}
 
 ServiceWorkerTaskQueue::TestObserver::TestObserver() = default;
 
@@ -460,10 +473,9 @@ void ServiceWorkerTaskQueue::OnWorkerStart(const SequencedContextId& context_id,
 
   // Clear any pending start retry attempts now that the worker has started.
   // If there were retries attempted, emit metrics about the success.
-  ClearRetryState(
-      context_id.token, worker_start_retries_,
-      "Extensions.ServiceWorkerBackground.StartWorkerRetryAttemptsResult",
-      /*success=*/true);
+  ClearRetryState(context_id.token, worker_start_retries_,
+                  kStartWorkerRetryHistogramPrefix,
+                  /*success=*/true);
 
   // Track the fact that the service worker for this extension has run once.
   if (!browser_context_->IsOffTheRecord()) {
@@ -507,6 +519,7 @@ void ServiceWorkerTaskQueue::OnWorkerStartFail(
           extensions_features::kExtensionsServiceWorkerStartRetry) &&
       IsStartFailureRetryable(status.status_code)) {
     if (ScheduleRetry(context_id.token, worker_start_retries_,
+                      status.status_code,
                       base::BindOnce(&ServiceWorkerTaskQueue::RetryStartWorker,
                                      weak_factory_.GetWeakPtr(), context_id))) {
       return;
@@ -516,10 +529,9 @@ void ServiceWorkerTaskQueue::OnWorkerStartFail(
   // Retries exhausted or non-transient error. Proceed with failure handling.
   // Clean up the retries entry for this context. If there were retries
   // attempted, emit metrics about the ultimate failure.
-  ClearRetryState(
-      context_id.token, worker_start_retries_,
-      "Extensions.ServiceWorkerBackground.StartWorkerRetryAttemptsResult",
-      /*success=*/false);
+  ClearRetryState(context_id.token, worker_start_retries_,
+                  kStartWorkerRetryHistogramPrefix,
+                  /*success=*/false);
 
   if (IsStartWorkerFailureUnexpected(status.status_code)) {
     base::UmaHistogramBoolean(
@@ -595,6 +607,7 @@ void ServiceWorkerTaskQueue::RegisterServiceWorker(
   if (pending_unregistrations_.contains(context_id.extension_id) &&
       ScheduleRetry(
           context_id.token, worker_unregistration_wait_retries_,
+          /*failure_status=*/std::nullopt,
           base::BindOnce(&ServiceWorkerTaskQueue::RetryRegisterServiceWorker,
                          weak_factory_.GetWeakPtr(), context_id, reason))) {
     if (g_test_observer) {
@@ -896,12 +909,15 @@ bool ServiceWorkerTaskQueue::IsStartFailureRetryable(
   }
 }
 
-bool ServiceWorkerTaskQueue::ScheduleRetry(const base::UnguessableToken& token,
-                                           RetryMap& retry_map,
-                                           base::OnceClosure retry_callback) {
+bool ServiceWorkerTaskQueue::ScheduleRetry(
+    const base::UnguessableToken& token,
+    RetryMap& retry_map,
+    std::optional<blink::ServiceWorkerStatusCode> failure_status,
+    base::OnceClosure retry_callback) {
   auto& retry_state = retry_map[token];
   if (!retry_state) {
-    retry_state = std::make_unique<RetryState>(&kRetryBackoffPolicy);
+    retry_state =
+        std::make_unique<RetryState>(&kRetryBackoffPolicy, failure_status);
   }
   retry_state->backoff_entry.InformOfRequest(false);
 
@@ -917,15 +933,19 @@ bool ServiceWorkerTaskQueue::ScheduleRetry(const base::UnguessableToken& token,
 void ServiceWorkerTaskQueue::ClearRetryState(
     const base::UnguessableToken& token,
     RetryMap& retry_map,
-    const char* histogram_name,
+    std::string_view histogram_prefix,
     bool success) {
   auto it = retry_map.find(token);
   if (it == retry_map.end()) {
     return;
   }
 
-  if (histogram_name && it->second->backoff_entry.failure_count() > 0) {
-    base::UmaHistogramBoolean(histogram_name, success);
+  if (it->second->initial_status &&
+      it->second->backoff_entry.failure_count() > 0) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({histogram_prefix, success ? ".Success" : ".Failure",
+                      ".InitialStatus"}),
+        *it->second->initial_status);
   }
   retry_map.erase(it);
 }
@@ -994,7 +1014,7 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
   // If the registration failed due to a transient error, retry registration.
   if (IsRegistrationFailureRetryable(status_code) &&
       ScheduleRetry(
-          context_id.token, worker_registration_retries_,
+          context_id.token, worker_registration_retries_, status_code,
           base::BindOnce(
               &ServiceWorkerTaskQueue::RetryRegisterServiceWorker,
               weak_factory_.GetWeakPtr(), context_id,
@@ -1006,11 +1026,8 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
   // Clean up the retries entry for this context. If there were retries
   // attempted, emit metrics about the ultimate result.
   ClearRetryState(context_id.token, worker_registration_retries_,
-                  "Extensions.ServiceWorkerBackground."
-                  "WorkerRegistrationRetryAttemptsResult",
-                  success);
-  ClearRetryState(context_id.token, worker_unregistration_wait_retries_,
-                  nullptr, success);
+                  kRegistrationRetryHistogramPrefix, success);
+  worker_unregistration_wait_retries_.erase(context_id.token);
 
   // After retries are exhausted, emit the ultimate end result.
   base::UmaHistogramBoolean(

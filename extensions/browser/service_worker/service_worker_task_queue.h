@@ -8,6 +8,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -515,16 +516,22 @@ class ServiceWorkerTaskQueue
   using RetryMap =
       std::map<base::UnguessableToken, std::unique_ptr<RetryState>>;
 
-  // Schedules a retry attempt using the provided map. Returns true if a retry
-  // was scheduled, false if retries are exhausted.
-  bool ScheduleRetry(const base::UnguessableToken& token,
-                     RetryMap& retry_map,
-                     base::OnceClosure retry_callback);
+  // Schedules a retry attempt in `retry_map`, saving `failure_status` on the
+  // first attempt so it can be logged when the retry sequence ends. Pass
+  // std::nullopt if the retry is not caused by a failure. Returns false if
+  // retries are exhausted.
+  bool ScheduleRetry(
+      const base::UnguessableToken& token,
+      RetryMap& retry_map,
+      std::optional<blink::ServiceWorkerStatusCode> failure_status,
+      base::OnceClosure retry_callback);
 
-  // Clears retry state from the given map and logs metrics.
+  // Clears retry state for `token` from `retry_map` and, if any retries were
+  // attempted after a failure, logs the initial failure status to
+  // "<histogram_prefix>.{Success,Failure}.InitialStatus".
   void ClearRetryState(const base::UnguessableToken& token,
                        RetryMap& retry_map,
-                       const char* histogram_name,
+                       std::string_view histogram_prefix,
                        bool success);
 
   // Whether the task queue (as a keyed service) has been informed that the

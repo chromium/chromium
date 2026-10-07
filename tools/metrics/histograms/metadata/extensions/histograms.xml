@@ -4286,21 +4286,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram
-    name="Extensions.ServiceWorkerBackground.StartWorkerRetryAttemptsResult"
-    enum="Boolean" expires_after="2026-09-06">
-  <owner>andreaorru@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    When starting a service worker fails due to a transient error, we retry
-    multiple times to try to make the start succeed.
-
-    Emits true if the retry results in a successful start. Emits false if either
-    all retry attempts have been exhausted without success or a retry resulted
-    in a non-transient error.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ServiceWorkerBackground.StartWorkerStatus"
     enum="Boolean" expires_after="2027-02-28">
   <owner>jlulejian@chromium.org</owner>
@@ -4364,24 +4349,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram
-    name="Extensions.ServiceWorkerBackground.WorkerRegistrationRetryAttemptsResult"
-    enum="Boolean" expires_after="2027-03-14">
-  <owner>jlulejian@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    When an extension requests that its service worker be registered with the
-    content layer it can fail due to
-    blink::ServiceWorkerStatusCode::kErrorTimeout. When this happens we retry
-    multiple times to try to make the registration succeed.
-
-    Emits true if the retry results in a successful registration. Emits false if
-    either all retry attempts have been exhausted without success or a retry
-    resulted in a status code that is not
-    blink::ServiceWorkerStatusCode::kErrorTimeout.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ServiceWorkerBackground.WorkerRegistrationState"
     enum="Boolean" expires_after="2027-03-14">
   <owner>jlulejian@chromium.org</owner>
@@ -4392,8 +4359,8 @@ This is emitted for two scenarios when a worker may be unregistered:
     (including updates).
 
     If there are attempts to retry registration, those are not emitted. See
-    Extensions.ServiceWorkerBackground.WorkerRegistrationRetryAttemptsResult for
-    a metric on retry attempts.
+    Extensions.ServiceWorkerBackground.RegistrationRetry.{Outcome}.InitialStatus
+    for a metric on retry attempts.
   </summary>
 </histogram>
 
@@ -4478,6 +4445,32 @@ This is emitted for two scenarios when a worker may be unregistered:
     renderer state is already &quot;initialized&quot; or &quot;active&quot;
     (i.e., not RendererState::kNotActive).
   </summary>
+</histogram>
+
+<histogram
+    name="Extensions.ServiceWorkerBackground.{Operation}Retry.{Outcome}.InitialStatus"
+    enum="ServiceWorkerStatusCode" expires_after="2027-04-04">
+  <owner>andreaorru@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Records the status code of the failure that started a retry sequence for an
+    extension background service worker {Operation}. Only failures with a
+    transient status code are retried. Emitted once per retry sequence, when it
+    ends in {Outcome}.
+
+    Comparing a status code's bucket across the Success and Failure variants
+    gives the retry success rate for that initial status code.
+  </summary>
+  <token key="Operation">
+    <variant name="Registration" summary="registration"/>
+    <variant name="StartWorker" summary="start"/>
+  </token>
+  <token key="Outcome">
+    <variant name="Failure"
+        summary="failure (retries were exhausted, or a retry failed with a
+                 non-transient status code)"/>
+    <variant name="Success" summary="success (a retry succeeded)"/>
+  </token>
 </histogram>
 
 <histogram
