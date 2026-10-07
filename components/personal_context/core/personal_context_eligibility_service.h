@@ -50,9 +50,11 @@ class PersonalContextEligibilityService : public KeyedService {
 
   // Sync getter for whether the profile is eligible to generate and share
   // Personal Context encryption keys. Requires general Personal Context
-  // eligibility (`GetEligibilityState() == kEligible`) as well as the Google
-  // Photos context account setting (`kAccountSettingContextPhotos`) to be
-  // enabled.
+  // eligibility (`GetEligibilityState() == kEligible`), the Google Photos
+  // context account setting (`kAccountSettingContextPhotos`) to be enabled, and
+  // (when `kPersonalContextRequireSettingsToggleForEncryption` is enabled) the
+  // Autofill settings toggle (`kPersonalContextInAutofillSettingsToggleStatus`)
+  // to be enabled.
   virtual bool IsEligibleForEncryption() const = 0;
 
   // Sync getter for the specific reason why the profile is currently

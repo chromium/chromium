@@ -22,6 +22,11 @@ BASE_DECLARE_FEATURE(kPersonalContextLogNonEligibilityUma);
 // and handles encrypted payloads.
 BASE_DECLARE_FEATURE(kPersonalContextHandleEncryptedPayloads);
 
+// Controls whether Personal Context encryption eligibility also requires the
+// Autofill settings toggle (`kPersonalContextInAutofillSettingsToggleStatus`)
+// to be enabled.
+BASE_DECLARE_FEATURE(kPersonalContextRequireSettingsToggleForEncryption);
+
 }  // namespace personal_context::features
 
 #endif  // COMPONENTS_PERSONAL_CONTEXT_CORE_PERSONAL_CONTEXT_FEATURES_H_
