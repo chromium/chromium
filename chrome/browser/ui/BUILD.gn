@@ -1675,13 +1675,15 @@ if (!is_android) {
   }
 }
 
-# Use a static library here because many test binaries depend on this but don't
-# require many files from it. This makes linking more efficient.
+# This target no longer has any sources of its own; it only aggregates
+# dependencies. It must be a source_set (not a static_library) because an empty
+# static_library produces an empty archive, which the Windows librarian
+# (lld-link /lib) rejects with "lib failed".
 # TODO(https://crbug.com/353332589): Once //chrome/browser is properly
 # modularized, this target should be folded in with //chrome/browser:browser.
-# The two are already semantically a part of the same target as they allow
-# circular includes from each other.
-static_library("ui") {
+source_set("ui") {
+  sources = []
+
   defines = []
   libs = []
 
@@ -2157,13 +2159,6 @@ static_library("ui") {
     }
   } else {
     # !is_android
-    sources = [
-      # This file physically lives in //chrome/browser but is compiled here so
-      # that //chrome/browser:browser has no remaining sources. It registers
-      # WebUI interface binders for desktop, which need this target's headers.
-      "//chrome/browser/chrome_browser_interface_binders_webui_parts_desktop.cc",
-    ]
-
     if (enable_dice_support) {
       deps += [
         "//chrome/browser/ui/views/search_ai_mode",
@@ -2199,6 +2194,7 @@ static_library("ui") {
       ":unload_controller_impl",
       "//base",
       "//chrome/browser:chrome_browser_interface_binders_webui_parts",
+      "//chrome/browser:chrome_browser_interface_binders_webui_parts_desktop",
       "//chrome/browser/actor/ui:actor_overlay",
       "//chrome/browser/actor/ui:actor_overlay_web_view",
       "//chrome/browser/app_mode",
@@ -3057,10 +3053,6 @@ static_library("ui") {
   }
 
   if (toolkit_views) {
-    sources += [ "views/frame/browser_view.cc" ]
-
-    sources += get_target_outputs(":webui_name_variants")
-
     deps += [
       ":browser_init_state",
       ":idle_bubble",
@@ -3256,6 +3248,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:browser_native_widget_factory",
       "//chrome/browser/ui/views/frame:browser_root_view",
       "//chrome/browser/ui/views/frame:browser_root_view_impl",
+      "//chrome/browser/ui/views/frame:browser_view",
       "//chrome/browser/ui/views/frame:browser_view_app_layout_impl",
       "//chrome/browser/ui/views/frame:browser_view_layout",
       "//chrome/browser/ui/views/frame:browser_view_layout_core_impl",
