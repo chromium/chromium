@@ -190,8 +190,6 @@ std::vector<GpuFeatureData> GetGpuFeatureData(
                             ? gpu::kGpuFeatureStatusEnabled
                             : gpu::kGpuFeatureStatusDisabled);
 #endif
-  features.emplace_back("raw_draw",
-                        GetFakeFeatureStatus(::features::IsUsingRawDraw()));
   features.emplace_back(
       "direct_rendering_display_compositor",
       SafeGetFeatureStatus(
@@ -251,8 +249,7 @@ base::Value GetFeatureStatusImpl(GpuFeatureInfoType type) {
        GetGpuFeatureData(gpu_feature_info, is_gpu_compositing_disabled)) {
     std::string status;
     // Features undergoing a finch controlled roll out.
-    if (gpu_feature_data.name == "raw_draw" ||
-        gpu_feature_data.name == "direct_rendering_display_compositor") {
+    if (gpu_feature_data.name == "direct_rendering_display_compositor") {
       status = gpu_feature_data.status == gpu::kGpuFeatureStatusEnabled
                    ? "enabled_on"
                    : "disabled_off_ok";
@@ -448,20 +445,11 @@ bool IsZeroCopyUploadEnabled() {
 }
 
 bool IsPartialRasterEnabled() {
-  // Partial raster is not supported with RawDraw.
-  if (::features::IsUsingRawDraw()) {
-    return false;
-  }
   const auto& command_line = *base::CommandLine::ForCurrentProcess();
   return !command_line.HasSwitch(blink::switches::kDisablePartialRaster);
 }
 
 bool IsGpuMemoryBufferCompositorResourcesEnabled() {
-  // To use Raw Draw, the Raw Draw shared image backing should be used, so
-  // not use GPU memory buffer shared image backings for compositor resources.
-  if (::features::IsUsingRawDraw()) {
-    return false;
-  }
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   if (command_line.HasSwitch(

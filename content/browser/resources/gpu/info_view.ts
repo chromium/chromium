@@ -660,7 +660,6 @@ export class InfoViewElement extends CustomElement {
       'surface_control': 'Surface Control',
       'vpx_decode': 'VPx Video Decode',
       'canvas_oop_rasterization': 'Canvas out-of-process rasterization',
-      'raw_draw': 'Raw Draw',
       'video_encode': 'Video Encode',
       'direct_rendering_display_compositor':
           'Direct Rendering Display Compositor',

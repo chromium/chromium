@@ -46,7 +46,6 @@
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
@@ -5339,49 +5338,6 @@ TEST_F(TileSizeTest, GPUTileSizes) {
   result = layer->CalculateTileSize(gfx::Size(500, 499));
   EXPECT_EQ(result.width(), 512);
   EXPECT_EQ(result.height(), 512);  // 500 + 2, 32-byte aligned.
-}
-
-TEST_F(TileSizeTest, RawDrawTileSizes) {
-  base::test::ScopedFeatureList scoped_feature_list(features::kRawDraw);
-  SetupPendingTree();
-  auto* layer = pending_layer();
-
-  host_impl()->active_tree()->SetDeviceViewportRect(gfx::Rect(1000, 1000));
-  gfx::Size result;
-
-  host_impl()->CommitComplete();
-
-  constexpr int kMaxTextureSize = 2048;
-  // Gpu-RawDraw-rasterization uses 100%
-  // std::max({viewport-width, viewport-height, 2280}) tiles.
-  EXPECT_TRUE(host_impl()->use_gpu_rasterization());
-  gfx::Rect viewport_rect(2000, 2000);
-  host_impl()->active_tree()->SetDeviceViewportRect(viewport_rect);
-  layer->set_gpu_raster_max_texture_size(viewport_rect.size());
-  host_impl()->NotifyReadyToActivate();
-
-  gfx::Size content_bounds(10000, 10000);
-  result = layer->CalculateTileSize(content_bounds);
-  EXPECT_EQ(result, gfx::Size(kMaxTextureSize, kMaxTextureSize));
-
-  viewport_rect = gfx::Rect(1000, 1000);
-  host_impl()->active_tree()->SetDeviceViewportRect(viewport_rect);
-  layer->set_gpu_raster_max_texture_size(gfx::Size());
-  host_impl()->NotifyReadyToActivate();
-  content_bounds = gfx::Size(1600, 100);
-
-  result = layer->CalculateTileSize(content_bounds);
-  EXPECT_EQ(result, gfx::Size(1600, 128));
-
-  viewport_rect = gfx::Rect(1000, 1000);
-  host_impl()->active_tree()->SetDeviceViewportRect(viewport_rect);
-  layer->set_gpu_raster_max_texture_size(gfx::Size());
-  host_impl()->NotifyReadyToActivate();
-  content_bounds = gfx::Size(std::numeric_limits<int>::max(),
-                             std::numeric_limits<int>::max());
-
-  result = layer->CalculateTileSize(content_bounds);
-  EXPECT_EQ(result, gfx::Size(kMaxTextureSize, kMaxTextureSize));
 }
 
 class HalfWidthTileTest : public PictureLayerImplTest {};

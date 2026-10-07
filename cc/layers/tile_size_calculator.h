@@ -42,8 +42,6 @@ class CC_EXPORT TileSizeCalculator {
 
   // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of speedometer3).
   RAW_PTR_EXCLUSION PictureLayerImpl* layer_impl_ = nullptr;
-  const bool is_using_raw_draw_;
-  const double raw_draw_tile_size_factor_;
 
   AffectingParams affecting_params_;
 

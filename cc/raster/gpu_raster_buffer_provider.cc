@@ -37,7 +37,6 @@
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "url/gurl.h"
 
@@ -53,8 +52,6 @@ GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
     auto backing = std::make_unique<ResourcePool::Backing>(
         in_use_resource.size(), in_use_resource.format(),
         in_use_resource.color_space());
-    backing->is_using_raw_draw =
-        !client_->tile_overlay_candidate_ && client_->is_using_raw_draw_;
     in_use_resource.set_backing(std::move(backing));
   }
   backing_ = in_use_resource.backing();
@@ -109,7 +106,6 @@ GpuRasterBufferProvider::GpuRasterBufferProvider(
       max_tile_size_(max_tile_size),
       pending_raster_queries_(pending_raster_queries),
       raster_metric_probability_(raster_metric_probability),
-      is_using_raw_draw_(features::IsUsingRawDraw()),
       is_using_dmsaa_(
           base::FeatureList::IsEnabled(features::kUseDMSAAForTiles)) {
   DCHECK(pending_raster_queries);
@@ -298,8 +294,6 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
                                      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
     if (client_->tile_overlay_candidate_) {
       flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-    } else if (client_->is_using_raw_draw_) {
-      flags |= gpu::SHARED_IMAGE_USAGE_RAW_DRAW;
     }
     backing_->CreateSharedImage(sii, flags, "GpuRasterTile");
     mailbox_needs_clear = true;
@@ -318,18 +312,13 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
           ? (client_->is_using_dmsaa_ ? gpu::raster::kDMSAA
                                       : gpu::raster::kMSAA)
           : gpu::raster::kNoMSAA;
-  // With Raw Draw, the framebuffer will be the rasterization target. It cannot
-  // support LCD text, so disable LCD text for Raw Draw backings.
-  // TODO(penghuang): remove it when sktext::gpu::Slug can be serialized.
-  bool is_raw_draw_backing =
-      client_->is_using_raw_draw_ && !client_->tile_overlay_candidate_;
-  bool use_lcd_text = playback_settings.use_lcd_text && !is_raw_draw_backing;
 
   ri->BeginRasterCHROMIUM(
       raster_source->background_color(), mailbox_needs_clear,
-      playback_settings.msaa_sample_count, msaa_mode, use_lcd_text,
-      playback_settings.visible, backing_->shared_image()->color_space(),
-      playback_settings.hdr_headroom, backing_->shared_image()->mailbox().name);
+      playback_settings.msaa_sample_count, msaa_mode,
+      playback_settings.use_lcd_text, playback_settings.visible,
+      backing_->shared_image()->color_space(), playback_settings.hdr_headroom,
+      backing_->shared_image()->mailbox().name);
 
   gfx::Vector2dF recording_to_raster_scale = transform.scale();
   recording_to_raster_scale.InvScale(raster_source->recording_scale_factor());

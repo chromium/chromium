@@ -342,8 +342,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.can_use_lcd_text = platform->IsLcdTextEnabled();
   settings.use_zero_copy = cmd.HasSwitch(switches::kEnableZeroCopy);
   settings.use_partial_raster = !cmd.HasSwitch(switches::kDisablePartialRaster);
-  // Partial raster is not supported with RawDraw
-  settings.use_partial_raster &= !::features::IsUsingRawDraw();
 
   // Overscroll effect on the root scroller.
   settings.enable_elastic_overscroll_on_root =
