@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -20,6 +21,7 @@
 #include "cc/paint/image_provider.h"
 #include "cc/paint/render_surface_filters.h"
 #include "components/viz/common/display/renderer_settings.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_util.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
@@ -42,12 +44,14 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageFilter.h"
 #include "third_party/skia/include/core/SkMaskFilter.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkPoint.h"
 #include "third_party/skia/include/core/SkShader.h"
 #include "third_party/skia/include/core/SkSwizzle.h"
@@ -637,6 +641,12 @@ void SoftwareRenderer::CopyDrawnRenderPass(
   sk_sp<SkColorSpace> color_space = CurrentRenderPassSkColorSpace();
   DCHECK(color_space);
 
+  if (base::FeatureList::IsEnabled(
+          features::kSoftwareReadbackIntoBlitDestination) &&
+      ReadPixelsIntoBlitDestination(geometry, *color_space, *request)) {
+    return;
+  }
+
   SkBitmap bitmap;
   if (request->is_scaled()) {
     // Resolve the source for the scaling input: Initialize a SkPixmap that
@@ -766,6 +776,62 @@ void SoftwareRenderer::CopyDrawnRenderPass(
       request->result_format(), geometry.result_selection, std::move(bitmap));
   result->SetTrackedElementRects(geometry.tracked_element_rects);
   request->SendResult(std::move(result));
+}
+
+bool SoftwareRenderer::ReadPixelsIntoBlitDestination(
+    const copy_output::RenderPassGeometry& geometry,
+    const SkColorSpace& color_space,
+    CopyOutputRequest& request) {
+  if (request.is_scaled() ||
+      request.result_destination() !=
+          CopyOutputResult::Destination::kSharedImage ||
+      !request.has_blit_request()) {
+    return false;
+  }
+  const BlitRequest& blit_request = request.blit_request();
+  if (blit_request.letterboxing_behavior() !=
+          LetterboxingBehavior::kDoNotLetterbox ||
+      !blit_request.blend_bitmaps().empty()) {
+    return false;
+  }
+
+  auto representation = resource_provider()->GetSharedImageRepresentation(
+      blit_request.shared_image()->mailbox(), blit_request.sync_token());
+  if (!representation) {
+    return false;
+  }
+  const gfx::Rect dest_rect(blit_request.destination_region_offset(),
+                            geometry.result_selection.size());
+  if (!gfx::Rect(representation->size()).Contains(dest_rect)) {
+    return false;
+  }
+  // See CopyDrawnRenderPass() about using read access.
+  auto read_access = representation->BeginScopedReadAccess();
+  if (!read_access) {
+    return false;
+  }
+
+  // The general path reads into an N32 premul bitmap in `color_space`, and
+  // draws that into the destination with kSrc, unscaled, at an integer offset.
+  // Reading directly into the destination gives the same pixels when the
+  // destination is 8-bit premul in the same color space, where only the channel
+  // order may differ.
+  const SkPixmap& pixmap = read_access->pixmap();
+  SkPixmap dest_pixmap;
+  if ((pixmap.colorType() != kRGBA_8888_SkColorType &&
+       pixmap.colorType() != kBGRA_8888_SkColorType) ||
+      pixmap.alphaType() != kPremul_SkAlphaType ||
+      !SkColorSpace::Equals(pixmap.colorSpace(), &color_space) ||
+      !pixmap.extractSubset(&dest_pixmap, gfx::RectToSkIRect(dest_rect)) ||
+      !current_canvas_->readPixels(dest_pixmap, geometry.readback_offset.x(),
+                                   geometry.readback_offset.y())) {
+    return false;
+  }
+
+  request.SendResult(std::make_unique<CopyOutputSharedImageResult>(
+      CopyOutputResult::Format::RGBA, geometry.result_selection,
+      blit_request.shared_image(), ReleaseCallback()));
+  return true;
 }
 
 void SoftwareRenderer::DidChangeVisibility() {

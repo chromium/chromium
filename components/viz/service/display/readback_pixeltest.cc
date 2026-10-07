@@ -16,11 +16,13 @@
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_switches.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_test.h"
 #include "cc/test/pixel_test_utils.h"
 #include "cc/test/resource_provider_test_utils.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/blit_request.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -621,13 +623,17 @@ INSTANTIATE_TEST_SUITE_P(
 class ReadbackPixelTestRGBAWithBlit
     : public ReadbackPixelTest,
       public testing::WithParamInterface<
-          std::tuple<RendererType, bool, LetterboxingBehavior, bool>> {
+          std::tuple<RendererType, bool, LetterboxingBehavior, bool, bool>> {
  public:
   ReadbackPixelTestRGBAWithBlit()
       : ReadbackPixelTest(std::get<0>(GetParam())),
         should_scale_by_half_(std::get<1>(GetParam())),
         letterboxing_behavior_(std::get<2>(GetParam())),
-        populates_mappable_shared_image_(std::get<3>(GetParam())) {}
+        populates_mappable_shared_image_(std::get<3>(GetParam())) {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kSoftwareReadbackIntoBlitDestination,
+        std::get<4>(GetParam()));
+  }
 
   CopyOutputResult::Destination RequestDestination() const {
     return CopyOutputResult::Destination::kSharedImage;
@@ -653,6 +659,9 @@ class ReadbackPixelTestRGBAWithBlit
   }
 
  private:
+  // Whether SoftwareRenderer may read an unscaled copy directly into the
+  // destination (the last test parameter).
+  base::test::ScopedFeatureList scoped_feature_list_;
   bool should_scale_by_half_ = false;
   LetterboxingBehavior letterboxing_behavior_;
   bool populates_mappable_shared_image_ = false;
@@ -760,7 +769,23 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Bool(),  // Result scaling: Scale by half?
         testing::Values(LetterboxingBehavior::kDoNotLetterbox,
                         LetterboxingBehavior::kLetterbox),
-        testing::Bool()  // Should behave as if COR is populating a GMB?
+        testing::Bool(),       // Should behave as if COR is populating a GMB?
+        testing::Values(true)  // kSoftwareReadbackIntoBlitDestination
+        ));
+
+// SoftwareRenderer reads unscaled, non-letterboxed copies directly into the
+// destination. This covers its general path, which is used for all copies when
+// the feature is disabled.
+INSTANTIATE_TEST_SUITE_P(
+    SoftwareGeneralPath,
+    ReadbackPixelTestRGBAWithBlit,
+    testing::Combine(
+        testing::Values(RendererType::kSoftware),
+        testing::Bool(),  // Result scaling: Scale by half?
+        testing::Values(LetterboxingBehavior::kDoNotLetterbox,
+                        LetterboxingBehavior::kLetterbox),
+        testing::Bool(),        // Should behave as if COR is populating a GMB?
+        testing::Values(false)  // kSoftwareReadbackIntoBlitDestination
         ));
 
 // Tests of NV12.

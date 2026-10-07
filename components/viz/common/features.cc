@@ -429,6 +429,12 @@ BASE_FEATURE(kBypassOutdatedSurfaceActivation,
 BASE_FEATURE(kRenderNonMergedSurfaceAtBackingScale,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill switch for https://crbug.com/569098933. When enabled, SoftwareRenderer
+// reads an unscaled copy into a client provided SharedImage directly, instead
+// of into an intermediate bitmap that is then drawn into the SharedImage.
+BASE_FEATURE(kSoftwareReadbackIntoBlitDestination,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_WIN)
 // Use BufferQueue for the primary plane instead of a DXGI swap chain or DComp
 // surface.

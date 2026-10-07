@@ -116,6 +116,16 @@ class VIZ_SERVICE_EXPORT SoftwareRenderer : public DirectRenderer {
       const AggregatedRenderPassDrawQuad* quad,
       SkTileMode content_tile_mode) const;
 
+  // For an unscaled copy into a client provided SharedImage, reads the pixels
+  // of the current render pass directly into the destination, instead of into
+  // an intermediate bitmap that is then drawn into the destination. Returns
+  // false, without consuming `request`, if that wouldn't produce the same
+  // result.
+  bool ReadPixelsIntoBlitDestination(
+      const copy_output::RenderPassGeometry& geometry,
+      const SkColorSpace& color_space,
+      CopyOutputRequest& request);
+
   DisplayResourceProviderSoftware* resource_provider() {
     return static_cast<DisplayResourceProviderSoftware*>(resource_provider_);
   }
