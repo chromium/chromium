@@ -14,6 +14,14 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
+namespace {
+
+// Link tag delimiters in the inline privacy notice text.
+NSString* const kLinkBeginTag = @"<link>";
+NSString* const kLinkEndTag = @"</link>";
+
+}  // namespace
+
 @implementation AtMemoryTestUtil
 
 + (id<GREYMatcher>)atMemoryButton {
@@ -126,6 +134,16 @@
           l10n_util::GetNSString(IDS_IOS_AT_MEMORY_AI_DISCLOSURE))
           .string;
   return grey_allOf(grey_text(disclosureText), grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)inlineNoticeSettingsLink {
+  StringWithTag parsed =
+      ParseStringWithTag(l10n_util::GetNSString(IDS_AT_MEMORY_NOTICE_TEXT),
+                         kLinkBeginTag, kLinkEndTag);
+  NSString* linkText = [parsed.string substringWithRange:parsed.range];
+  return grey_allOf(grey_accessibilityLabel(linkText),
+                    grey_accessibilityTrait(UIAccessibilityTraitLink),
+                    grey_sufficientlyVisible(), nil);
 }
 
 @end

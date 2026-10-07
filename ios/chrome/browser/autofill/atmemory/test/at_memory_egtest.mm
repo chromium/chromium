@@ -8,10 +8,12 @@
 #import "components/autofill/core/common/autofill_debug_features.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/personal_context/core/personal_context_debug_features.h"
+#import "components/personal_context/core/personal_context_prefs.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/autofill/atmemory/test/at_memory_test_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -137,6 +139,30 @@ void AtMemorySearchWithQuery(NSString* query) {
                                           searchPromptCellWithQuery:query]]
       performAction:grey_tap()];
 }
+
+// Opens the Suggestions from Gemini settings page via the inline notice link.
+void OpenSuggestionsFromGeminiSettingsViaInlineNotice() {
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:[AtMemoryTestUtil inlineNoticeTitle]];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:[AtMemoryTestUtil
+                                              inlineNoticeSettingsLink]];
+  [[EarlGrey
+      selectElementWithMatcher:[AtMemoryTestUtil inlineNoticeSettingsLink]]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          chrome_test_util::TableViewSwitchCell(
+              kSuggestionsFromGeminiSwitchViewId, /*is_toggled_on=*/YES,
+              /*is_enabled=*/YES)];
+}
+
+// Dismisses settings by tapping the "Done" button.
+void DismissSettings() {
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+      performAction:grey_tap()];
+}
 }  // namespace
 
 // Test case for the AtMemory screen.
@@ -167,7 +193,10 @@ void AtMemorySearchWithQuery(NSString* query) {
               .name,
           kMockPersonalContextVehicleMakeResultType}}}});
 
-  if ([self isRunningTest:@selector(testInlineNoticeAcknowledge)]) {
+  if ([self isRunningTest:@selector(testInlineNoticeAcknowledge)] ||
+      [self isRunningTest:@selector(testInlineNoticeSettingsLink)] ||
+      [self isRunningTest:@selector(
+                              testDisableFeatureInSettingsDismissesAtMemory)]) {
     config.features_enabled.push_back(
         personal_context::features::debug::
             kAutofillAmbientAutofillSkipEligibilityChecks);
@@ -192,6 +221,12 @@ void AtMemorySearchWithQuery(NSString* query) {
   [AutofillAppInterface removeEntityWithUUID:kVehicleEntityID];
   [AutofillAppInterface setNetworkConnectionOffline:NO];
   _HTTPSServer.reset();
+  // Restores the toggle turned off by
+  // `testDisableFeatureInSettingsDismissesAtMemory`; only inline notice tests
+  // reset this pref on startup.
+  [ChromeEarlGrey
+      clearUserPrefWithName:personal_context::prefs::
+                                kPersonalContextInAutofillSettingsToggleStatus];
   [super tearDownHelper];
 }
 
@@ -307,6 +342,34 @@ void AtMemorySearchWithQuery(NSString* query) {
                                                  inlineNoticeTitle]];
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:[AtMemoryTestUtil emptyView]];
+}
+
+// Tests that tapping the "Manage settings" link in the inline privacy notice
+// opens the Suggestions from Gemini settings page, and dismissing returns to
+// the AtMemory screen with the notice still visible.
+- (void)testInlineNoticeSettingsLink {
+  OpenSuggestionsFromGeminiSettingsViaInlineNotice();
+  DismissSettings();
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:[AtMemoryTestUtil searchBar]];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:[AtMemoryTestUtil inlineNoticeTitle]];
+}
+
+// Tests that disabling the Suggestions from Gemini toggle in settings causes
+// the AtMemory bottom sheet to automatically dismiss when settings is closed.
+- (void)testDisableFeatureInSettingsDismissesAtMemory {
+  OpenSuggestionsFromGeminiSettingsViaInlineNotice();
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSuggestionsFromGeminiSwitchViewId)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
+
+  DismissSettings();
+
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:[AtMemoryTestUtil searchBar]];
 }
 
 @end
