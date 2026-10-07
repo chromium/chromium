@@ -11439,7 +11439,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "TriggerNetworkMigration"
+                        "TriggerNetworkDataMigration"
                     ]
                 }
             ]
