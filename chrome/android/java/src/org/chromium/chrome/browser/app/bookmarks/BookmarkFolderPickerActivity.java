@@ -284,9 +284,14 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
     }
 
     @Override
+    protected boolean shouldDrawEdgeToEdgeOnCreate() {
+        // Floating modal dialogs should not draw edge-to-edge.
+        return super.shouldDrawEdgeToEdgeOnCreate() && !BookmarkUtils.isBookmarkDialog(this);
+    }
+
+    @Override
     protected boolean wrapContentWithEdgeToEdgeLayout() {
         // Floating modal dialogs should not be wrapped edge-to-edge.
-        return super.wrapContentWithEdgeToEdgeLayout()
-                && !BookmarkUtils.isDesktopBookmarksDialogEnabled();
+        return super.wrapContentWithEdgeToEdgeLayout() && !BookmarkUtils.isBookmarkDialog(this);
     }
 }
