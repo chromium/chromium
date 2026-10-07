@@ -17,8 +17,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread.h"
 #include "components/fcm/crypto/fcm_decryption_result.h"
+#include "components/fcm/engine/chrome_build_info.h"
 #include "components/gcm_driver/crypto/gcm_encryption_provider.h"
 #include "components/gcm_driver/crypto/gcm_encryption_result.h"
 #include "components/gcm_driver/fake_gcm_app_handler.h"
@@ -180,7 +180,7 @@ void GCMDriverBaseTest::PumpIOLoop() {
 }
 
 void GCMDriverBaseTest::CreateDriver() {
-  GCMClient::ChromeBuildInfo chrome_build_info;
+  fcm::ChromeBuildInfo chrome_build_info;
   chrome_build_info.product_category_for_subtypes = "com.chrome.macosx";
   driver_ = std::make_unique<GCMDriverDesktop>(
       std::make_unique<FakeGCMClientFactory>(

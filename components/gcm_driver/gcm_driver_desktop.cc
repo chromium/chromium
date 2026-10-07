@@ -21,6 +21,7 @@
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "components/fcm/crypto/fcm_decryption_result.h"
+#include "components/fcm/engine/chrome_build_info.h"
 #include "components/fcm/engine/system_encryptor.h"
 #include "components/gcm_driver/gcm_app_handler.h"
 #include "components/gcm_driver/gcm_client_factory.h"
@@ -74,7 +75,7 @@ class GCMDriverDesktop::IOWorker : public GCMClient::Delegate {
   // Called on IO thread.
   void Initialize(
       std::unique_ptr<GCMClientFactory> gcm_client_factory,
-      const GCMClient::ChromeBuildInfo& chrome_build_info,
+      const fcm::ChromeBuildInfo& chrome_build_info,
       const base::FilePath& store_path,
       base::RepeatingCallback<void(
           mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>)>
@@ -150,7 +151,7 @@ GCMDriverDesktop::IOWorker::~IOWorker() {
 
 void GCMDriverDesktop::IOWorker::Initialize(
     std::unique_ptr<GCMClientFactory> gcm_client_factory,
-    const GCMClient::ChromeBuildInfo& chrome_build_info,
+    const fcm::ChromeBuildInfo& chrome_build_info,
     const base::FilePath& store_path,
     base::RepeatingCallback<void(
         mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>)>
@@ -519,7 +520,7 @@ void GCMDriverDesktop::IOWorker::RecordDecryptionFailure(
 
 GCMDriverDesktop::GCMDriverDesktop(
     std::unique_ptr<GCMClientFactory> gcm_client_factory,
-    const GCMClient::ChromeBuildInfo& chrome_build_info,
+    const fcm::ChromeBuildInfo& chrome_build_info,
     PrefService* prefs,
     const base::FilePath& store_path,
     base::RepeatingCallback<void(

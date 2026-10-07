@@ -6,11 +6,6 @@
 
 namespace gcm {
 
-GCMClient::ChromeBuildInfo::ChromeBuildInfo()
-    : platform(PLATFORM_UNSPECIFIED), channel(CHANNEL_UNKNOWN) {}
-
-GCMClient::ChromeBuildInfo::~ChromeBuildInfo() = default;
-
 GCMClient::SendErrorDetails::SendErrorDetails() : result(UNKNOWN_ERROR) {}
 
 GCMClient::SendErrorDetails::SendErrorDetails(const SendErrorDetails& other) =

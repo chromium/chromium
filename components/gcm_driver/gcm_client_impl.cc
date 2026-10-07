@@ -100,61 +100,6 @@ GCMClient::Result ToGCMClientResult(MCSClient::MessageSendStatus status) {
   return GCMClientImpl::UNKNOWN_ERROR;
 }
 
-void ToCheckinProtoVersion(
-    const GCMClient::ChromeBuildInfo& chrome_build_info,
-    checkin_proto::ChromeBuildProto* android_build_info) {
-  checkin_proto::ChromeBuildProto_Platform platform =
-      checkin_proto::ChromeBuildProto_Platform_PLATFORM_LINUX;
-  switch (chrome_build_info.platform) {
-    case GCMClient::PLATFORM_WIN:
-      platform = checkin_proto::ChromeBuildProto_Platform_PLATFORM_WIN;
-      break;
-    case GCMClient::PLATFORM_MAC:
-      platform = checkin_proto::ChromeBuildProto_Platform_PLATFORM_MAC;
-      break;
-    case GCMClient::PLATFORM_LINUX:
-      platform = checkin_proto::ChromeBuildProto_Platform_PLATFORM_LINUX;
-      break;
-    case GCMClient::PLATFORM_IOS:
-      platform = checkin_proto::ChromeBuildProto_Platform_PLATFORM_IOS;
-      break;
-    case GCMClient::PLATFORM_ANDROID:
-      platform = checkin_proto::ChromeBuildProto_Platform_PLATFORM_ANDROID;
-      break;
-    case GCMClient::PLATFORM_CROS:
-      platform = checkin_proto::ChromeBuildProto_Platform_PLATFORM_CROS;
-      break;
-    case GCMClient::PLATFORM_UNSPECIFIED:
-      // For unknown platform, return as LINUX.
-      platform = checkin_proto::ChromeBuildProto_Platform_PLATFORM_LINUX;
-      break;
-  }
-  android_build_info->set_platform(platform);
-
-  checkin_proto::ChromeBuildProto_Channel channel =
-      checkin_proto::ChromeBuildProto_Channel_CHANNEL_UNKNOWN;
-  switch (chrome_build_info.channel) {
-    case GCMClient::CHANNEL_STABLE:
-      channel = checkin_proto::ChromeBuildProto_Channel_CHANNEL_STABLE;
-      break;
-    case GCMClient::CHANNEL_BETA:
-      channel = checkin_proto::ChromeBuildProto_Channel_CHANNEL_BETA;
-      break;
-    case GCMClient::CHANNEL_DEV:
-      channel = checkin_proto::ChromeBuildProto_Channel_CHANNEL_DEV;
-      break;
-    case GCMClient::CHANNEL_CANARY:
-      channel = checkin_proto::ChromeBuildProto_Channel_CHANNEL_CANARY;
-      break;
-    case GCMClient::CHANNEL_UNKNOWN:
-      channel = checkin_proto::ChromeBuildProto_Channel_CHANNEL_UNKNOWN;
-      break;
-  }
-  android_build_info->set_channel(channel);
-
-  android_build_info->set_chrome_version(chrome_build_info.version);
-}
-
 MessageType DecodeMessageType(const std::string& value) {
   if (kMessageTypeDeletedMessagesKey == value)
     return DELETED_MESSAGES;
@@ -255,7 +200,7 @@ GCMClientImpl::GCMClientImpl(
 GCMClientImpl::~GCMClientImpl() = default;
 
 void GCMClientImpl::Initialize(
-    const ChromeBuildInfo& chrome_build_info,
+    const fcm::ChromeBuildInfo& chrome_build_info,
     const base::FilePath& path,
     const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
@@ -604,7 +549,7 @@ void GCMClientImpl::StartCheckin() {
     return;
 
   checkin_proto::ChromeBuildProto chrome_build_proto;
-  ToCheckinProtoVersion(chrome_build_info_, &chrome_build_proto);
+  fcm::ToCheckinProtoVersion(chrome_build_info_, &chrome_build_proto);
 
   CheckinRequest::RequestInfo request_info(
       device_checkin_info_.android_id(), device_checkin_info_.secret(),

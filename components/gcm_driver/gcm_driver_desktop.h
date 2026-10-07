@@ -18,6 +18,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/tuple.h"
+#include "components/fcm/engine/chrome_build_info.h"
 #include "components/gcm_driver/gcm_client.h"
 #include "components/gcm_driver/gcm_connection_observer.h"
 #include "components/gcm_driver/gcm_driver.h"
@@ -57,7 +58,7 @@ class GCMDriverDesktop : public GCMDriver,
  public:
   GCMDriverDesktop(
       std::unique_ptr<GCMClientFactory> gcm_client_factory,
-      const GCMClient::ChromeBuildInfo& chrome_build_info,
+      const fcm::ChromeBuildInfo& chrome_build_info,
       PrefService* prefs,
       const base::FilePath& store_path,
       base::RepeatingCallback<void(

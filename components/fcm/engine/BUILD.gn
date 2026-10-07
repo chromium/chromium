@@ -8,17 +8,22 @@ static_library("engine") {
   sources = [
     "checkin_info.cc",
     "checkin_info.h",
+    "chrome_build_info.cc",
+    "chrome_build_info.h",
     "fcm_stats_recorder_impl.cc",
     "fcm_stats_recorder_impl.h",
     "system_encryptor.cc",
     "system_encryptor.h",
   ]
 
+  public_deps = [ "//components/version_info:channel" ]
+
   deps = [
     "//base",
     "//components/fcm",
     "//components/fcm/crypto",
     "//components/os_crypt/async/common",
+    "//components/version_info",
     "//google_apis/gcm",
   ]
 }
@@ -27,6 +32,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "checkin_info_unittest.cc",
+    "chrome_build_info_unittest.cc",
     "fcm_stats_recorder_impl_unittest.cc",
   ]
 

@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/fcm/crypto/fcm_decryption_result.h"
+#include "components/fcm/engine/chrome_build_info.h"
 #include "google_apis/gcm/base/encryptor.h"
 #include "google_apis/gcm/engine/account_mapping.h"
 #include "net/base/ip_endpoint.h"
@@ -70,7 +71,7 @@ FakeGCMClient::~FakeGCMClient() {
 }
 
 void FakeGCMClient::Initialize(
-    const ChromeBuildInfo& chrome_build_info,
+    const fcm::ChromeBuildInfo& chrome_build_info,
     const base::FilePath& store_path,
     const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,

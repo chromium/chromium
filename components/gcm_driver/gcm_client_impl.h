@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/fcm/engine/checkin_info.h"
+#include "components/fcm/engine/chrome_build_info.h"
 #include "components/fcm/engine/fcm_stats_recorder_impl.h"
 #include "components/gcm_driver/gcm_client.h"
 #include "google_apis/gcm/base/mcs_message.h"
@@ -120,7 +121,7 @@ class GCMClientImpl
 
   // GCMClient implementation.
   void Initialize(
-      const ChromeBuildInfo& chrome_build_info,
+      const fcm::ChromeBuildInfo& chrome_build_info,
       const base::FilePath& store_path,
       const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
@@ -343,7 +344,7 @@ class GCMClientImpl
 
   // Information about the chrome build.
   // TODO(fgorski): Check if it can be passed in constructor and made const.
-  ChromeBuildInfo chrome_build_info_;
+  fcm::ChromeBuildInfo chrome_build_info_;
 
   // Persistent data store for keeping device credentials, messages and user to
   // serial number mappings.

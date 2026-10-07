@@ -27,6 +27,7 @@ class SequencedTaskRunner;
 }  // namespace base
 
 namespace fcm {
+struct ChromeBuildInfo;
 enum class FcmDecryptionResult;
 }  // namespace fcm
 
@@ -81,34 +82,6 @@ class GCMClient {
 
     // Used for UMA. Keep kMaxValue up to date and sync with histograms.xml.
     kMaxValue = UNKNOWN_ERROR
-  };
-
-  enum ChromePlatform {
-    PLATFORM_WIN,
-    PLATFORM_MAC,
-    PLATFORM_LINUX,
-    PLATFORM_CROS,
-    PLATFORM_IOS,
-    PLATFORM_ANDROID,
-    PLATFORM_UNSPECIFIED
-  };
-
-  enum ChromeChannel {
-    CHANNEL_STABLE,
-    CHANNEL_BETA,
-    CHANNEL_DEV,
-    CHANNEL_CANARY,
-    CHANNEL_UNKNOWN
-  };
-
-  struct ChromeBuildInfo {
-    ChromeBuildInfo();
-    ~ChromeBuildInfo();
-
-    ChromePlatform platform;
-    ChromeChannel channel;
-    std::string version;
-    std::string product_category_for_subtypes;
   };
 
   // Detailed information of the Send Error event.
@@ -249,7 +222,7 @@ class GCMClient {
   // |delegate|: the delegate whose methods will be called asynchronously in
   //     response to events and messages.
   virtual void Initialize(
-      const ChromeBuildInfo& chrome_build_info,
+      const fcm::ChromeBuildInfo& chrome_build_info,
       const base::FilePath& store_path,
       const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,

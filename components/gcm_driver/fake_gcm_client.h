@@ -53,7 +53,7 @@ class FakeGCMClient : public GCMClient {
   // Overridden from GCMClient:
   // Called on IO thread.
   void Initialize(
-      const ChromeBuildInfo& chrome_build_info,
+      const fcm::ChromeBuildInfo& chrome_build_info,
       const base::FilePath& store_path,
       const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
