@@ -31,7 +31,6 @@ source_set("app_shim") {
     "//chrome:strings",
     "//chrome/app:command_ids",
     "//chrome/browser/renderer_host:history_swiper",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/cocoa",
     "//chrome/common",
     "//chrome/common:mojo_bindings",
@@ -115,7 +114,6 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   deps = [
     "//chrome/app_shim",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/web_applications/test:test_support_ui",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test/base:test_launcher_utils",

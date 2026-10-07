@@ -89,7 +89,6 @@ source_set("unit_tests") {
     "//chrome/browser/favicon",
     "//chrome/browser/history",
     "//chrome/browser/search_engines",
-    "//chrome/browser/ui",
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",

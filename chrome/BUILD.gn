@@ -1826,7 +1826,6 @@ if (is_android) {
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/lifetime",
       "//chrome/browser/payments:impl",
-      "//chrome/browser/ui",
       "//chrome/child",
       "//chrome/common",
       "//chrome/common:version_header",

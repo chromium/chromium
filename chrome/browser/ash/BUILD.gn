@@ -37,7 +37,6 @@ source_set("unit_tests") {
     "//chrome/browser/extensions",
     "//chrome/browser/metrics",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/webui/settings",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",

@@ -73,7 +73,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/app_list/search/common",
     "//chrome/browser/ash/app_list/search/test:test_support",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/webui/ash/settings/pages/storage",
     "//chrome/common:channel_info",
     "//chrome/test:test_support",

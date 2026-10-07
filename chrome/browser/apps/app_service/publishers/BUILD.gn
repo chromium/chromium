@@ -36,7 +36,6 @@ source_set("publishers") {
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/extensions",
     "//chrome/browser/prefs",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/browser_window:create_browser_window",

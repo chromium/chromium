@@ -130,7 +130,6 @@ static_library("test_support") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/speech",
     "//chrome/browser/speech:test_support",
-    "//chrome/browser/ui",
     "//chrome/common",
     "//chrome/common:constants",
     "//chromeos/ash/experiences/extensions/browser/speech:speech_recognition_constants",

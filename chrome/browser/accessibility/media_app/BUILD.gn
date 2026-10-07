@@ -51,7 +51,6 @@ source_set("browser_tests") {
     "//ash/webui/media_app_ui:mojo_bindings_untrusted",
     "//chrome/browser/accessibility/media_app/test:test_support",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_window_header",
     "//chrome/test:test_support",
     "//content/public/browser",

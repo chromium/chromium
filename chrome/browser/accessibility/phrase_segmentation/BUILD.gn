@@ -37,7 +37,6 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//components/metrics:content",
     "//components/optimization_guide/core:prediction",

@@ -52,7 +52,6 @@ source_set("unit_tests") {
     ":common",
     "//base",
     "//chrome/browser/ash/app_list/search",
-    "//chrome/browser/ui",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

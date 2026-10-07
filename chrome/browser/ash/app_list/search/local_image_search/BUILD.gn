@@ -70,7 +70,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/app_list/search",
-    "//chrome/browser/ui",
     "//chromeos/dbus/machine_learning",
     "//content/test:test_support",
     "//sql",

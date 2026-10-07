@@ -91,7 +91,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/app_list/search/test:test_support",
     "//chrome/browser/ash/file_suggest",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/ash/holding_space:test_support",
     "//chrome/browser/ui/ash/thumbnail_loader",
     "//chrome/test:test_support",
@@ -128,6 +127,5 @@ source_set("browser_tests") {
     "//chrome/browser/ash/app_list/search/test:browser_test_support",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/drive:test_support",
-    "//chrome/browser/ui",
   ]
 }
