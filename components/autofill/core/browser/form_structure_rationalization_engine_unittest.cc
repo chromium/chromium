@@ -18,8 +18,10 @@
 namespace autofill::rationalization {
 namespace {
 
+using ::testing::AllOf;
 using ::testing::Contains;
 using ::testing::ElementsAre;
+using ::testing::Field;
 
 BASE_FEATURE(kTestFeatureForFormStructureRationalizationEngine,
              "TestFeature",
@@ -122,17 +124,18 @@ TEST(FormStructureRationalizationEngine, TestBuilder) {
   EXPECT_EQ(rule.trigger_field.regex_reference_match,
             "ADDRESS_HOME_DEPENDENT_LOCALITY");
 
-  ASSERT_EQ(rule.other_field_conditions.size(), 1u);
-  EXPECT_EQ(rule.other_field_conditions[0].location,
-            FieldLocation::kLastClassifiedPredecessor);
-  EXPECT_EQ(rule.other_field_conditions[0].possible_overall_types,
-            FieldTypeSet{ADDRESS_HOME_LINE1});
+  EXPECT_THAT(rule.other_field_conditions,
+              ElementsAre(FieldCondition{
+                  .location = FieldLocation::kLastClassifiedPredecessor,
+                  .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE1}}));
 
-  ASSERT_EQ(rule.actions.size(), 2u);
-  EXPECT_EQ(rule.actions[0].target, FieldLocation::kLastClassifiedPredecessor);
-  EXPECT_EQ(rule.actions[0].set_overall_type, ADDRESS_HOME_STREET_ADDRESS);
-  EXPECT_EQ(rule.actions[1].target, FieldLocation::kTriggerField);
-  EXPECT_EQ(rule.actions[1].set_overall_type, ADDRESS_HOME_DEPENDENT_LOCALITY);
+  EXPECT_THAT(
+      rule.actions,
+      ElementsAre(
+          SetTypeAction{.target = FieldLocation::kLastClassifiedPredecessor,
+                        .set_overall_type = ADDRESS_HOME_STREET_ADDRESS},
+          SetTypeAction{.target = FieldLocation::kTriggerField,
+                        .set_overall_type = ADDRESS_HOME_DEPENDENT_LOCALITY}));
 }
 
 // Verifies that the client country is correctly handled by

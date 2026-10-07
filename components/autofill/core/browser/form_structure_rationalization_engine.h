@@ -34,6 +34,9 @@ struct EnvironmentCondition {
   EnvironmentCondition(EnvironmentCondition&&);
   EnvironmentCondition& operator=(EnvironmentCondition&&);
 
+  friend constexpr bool operator==(const EnvironmentCondition&,
+                                   const EnvironmentCondition&) = default;
+
   // If non-empty, the user needs to be located in a country of the passed
   // list for a rule to apply.
   std::vector<GeoIpCountryCode> country_list;
@@ -102,6 +105,9 @@ struct FieldCondition {
   // of the references regular expression. See
   // autofill/core/browser/form_parsing/resources/legacy_regex_patterns.json.
   std::optional<std::string_view> regex_reference_match;
+
+  friend constexpr bool operator==(const FieldCondition&,
+                                   const FieldCondition&) = default;
 };
 
 // Container that defines what should happen to fields matched for a
@@ -113,6 +119,9 @@ struct SetTypeAction {
 
   // The new field type to assign to the target.
   FieldType set_overall_type;
+
+  friend constexpr bool operator==(const SetTypeAction&,
+                                   const SetTypeAction&) = default;
 };
 
 // A declarative rule with conditions and actions. The actions are executed by
@@ -122,6 +131,8 @@ struct RationalizationRule {
   ~RationalizationRule();
   RationalizationRule(RationalizationRule&&);
   RationalizationRule& operator=(RationalizationRule&&);
+  friend constexpr bool operator==(const RationalizationRule&,
+                                   const RationalizationRule&) = default;
 
   // A name for the rule (for logging purposes).
   std::string_view rule_name;
