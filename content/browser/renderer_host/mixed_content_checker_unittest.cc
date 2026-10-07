@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/fake_local_frame.h"
 #include "content/public/test/test_utils.h"
@@ -63,6 +64,7 @@ class LocalFrameInterceptor : public FakeLocalFrame {
       network::mojom::SourceLocationPtr source_location) final {
     mixed_content_result_ = MixedContentResult{
         main_resource_url, mixed_content_url, was_allowed, had_redirect};
+    url_before_redirects_ = url_before_redirects;
     source_location_ = std::move(source_location);
   }
   void ReportBlinkFeatureUsage(
@@ -73,6 +75,7 @@ class LocalFrameInterceptor : public FakeLocalFrame {
   const std::optional<MixedContentResult>& mixed_content_result() const {
     return mixed_content_result_;
   }
+  const GURL& url_before_redirects() const { return url_before_redirects_; }
   const network::mojom::SourceLocationPtr& source_location() const {
     return source_location_;
   }
@@ -86,6 +89,7 @@ class LocalFrameInterceptor : public FakeLocalFrame {
   raw_ptr<TestRenderFrameHost> rfh_;
   std::vector<blink::mojom::WebFeature> reported_web_features_;
   std::optional<MixedContentResult> mixed_content_result_;
+  GURL url_before_redirects_;
   network::mojom::SourceLocationPtr source_location_;
 };
 
@@ -441,6 +445,155 @@ TEST_P(MixedContentCheckerShouldBlockNavigationTest,
             interceptor->source_location()->url);
   EXPECT_EQ(42u, interceptor->source_location()->line);
   EXPECT_EQ(7u, interceptor->source_location()->column);
+}
+
+// When mixed content is found on a navigation initiated by a cross-origin
+// frame, cross-origin target and pre-redirect URLs are stripped to their
+// origins.
+TEST_P(MixedContentCheckerShouldBlockNavigationTest,
+       ReportsSanitizedTargetAndPreRedirectUrlsToCrossOriginRenderer) {
+  NavigateAndCommit(GURL("https://source.com"));
+  TestRenderFrameHost* main_rfh = main_test_rfh();
+  main_rfh->DidEnforceInsecureRequestPolicy(
+      blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone);
+
+  TestRenderFrameHost* subframe = static_cast<TestRenderFrameHost*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("https://sub.source.com/subframe"),
+          main_rfh->AppendChild("subframe")));
+  auto interceptor = std::make_unique<LocalFrameInterceptor>(subframe);
+
+  const GURL initial_url =
+      for_redirect() ? GURL("https://sso.source.com/start?state=secret#frag")
+                     : GURL("http://target.com/private/path?token=value#frag");
+  auto navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(initial_url, subframe);
+  navigation->SetInitiatorFrame(main_rfh);
+  navigation->SetReferrer(blink::mojom::Referrer::New(
+      main_rfh->GetLastCommittedURL(),
+      network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin));
+  navigation->set_request_context_type(
+      blink::mojom::RequestContextType::INTERNAL);
+  navigation->set_mixed_content_context_type(
+      blink::mojom::MixedContentContextType::kBlockable);
+  navigation->Start();
+  if (for_redirect()) {
+    navigation->Redirect(
+        GURL("http://target.com/private/path?token=value#frag"));
+  } else {
+    auto checker = MixedContentChecker();
+    EXPECT_TRUE(checker.ShouldBlockNavigation(
+        *navigation->GetNavigationHandle(), for_redirect()));
+  }
+
+  interceptor->FlushLocalFrameMessages();
+  ASSERT_TRUE(interceptor->mixed_content_result().has_value());
+  EXPECT_EQ(GURL("http://target.com/"),
+            interceptor->mixed_content_result()->mixed_content_url);
+  EXPECT_EQ(for_redirect() ? GURL("https://sso.source.com/")
+                           : GURL("http://target.com/"),
+            interceptor->url_before_redirects());
+}
+
+// When the navigating frame initiates a navigation itself,
+// `url_before_redirects` (chosen by the initiator) is preserved, while
+// `mixed_content_url` is preserved only if there was no cross-origin redirect.
+TEST_P(MixedContentCheckerShouldBlockNavigationTest,
+       ReportsFullPreRedirectUrlWhenSameOriginInitiator) {
+  NavigateAndCommit(GURL("https://source.com"));
+  TestRenderFrameHost* main_rfh = main_test_rfh();
+  main_rfh->DidEnforceInsecureRequestPolicy(
+      blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone);
+
+  TestRenderFrameHost* subframe = static_cast<TestRenderFrameHost*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("https://source.com/subframe"),
+          main_rfh->AppendChild("subframe")));
+  auto interceptor = std::make_unique<LocalFrameInterceptor>(subframe);
+
+  const GURL target_url("http://target.com/private/path?token=value#frag");
+  const GURL initial_url =
+      for_redirect() ? GURL("https://other.com/redirect?state=secret#frag")
+                     : target_url;
+  auto navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(initial_url, subframe);
+  navigation->SetReferrer(blink::mojom::Referrer::New(
+      subframe->GetLastCommittedURL(),
+      network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin));
+  navigation->set_request_context_type(
+      blink::mojom::RequestContextType::INTERNAL);
+  navigation->set_mixed_content_context_type(
+      blink::mojom::MixedContentContextType::kBlockable);
+  navigation->Start();
+  if (for_redirect()) {
+    navigation->Redirect(target_url);
+  }
+
+  interceptor->FlushLocalFrameMessages();
+  ASSERT_TRUE(interceptor->mixed_content_result().has_value());
+  EXPECT_EQ(for_redirect() ? GURL("http://target.com/") : target_url,
+            interceptor->mixed_content_result()->mixed_content_url);
+  EXPECT_EQ(initial_url, interceptor->url_before_redirects());
+}
+
+// On history and session-restore navigations, cross-origin URLs come from
+// session history rather than the current document in the frame, so they must
+// be stripped to their origins even when the initiator origin matches the
+// navigating frame.
+TEST_P(MixedContentCheckerShouldBlockNavigationTest,
+       ReportsSanitizedUrlsOnHistoryNavigation) {
+  NavigateAndCommit(GURL("https://source.com"));
+  TestRenderFrameHost* main_rfh = main_test_rfh();
+  main_rfh->DidEnforceInsecureRequestPolicy(
+      blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone);
+
+  const GURL target_url("http://target.com/private/path?token=value#frag");
+  const GURL initial_url =
+      for_redirect() ? GURL("https://other.com/redirect?state=secret#frag")
+                     : target_url;
+
+  // Commit the first subframe entry (using kOptionallyBlockable so an http://
+  // initial_url is allowed to commit into session history).
+  TestRenderFrameHost* subframe = main_rfh->AppendChild("subframe");
+  {
+    auto nav1 =
+        NavigationSimulatorImpl::CreateRendererInitiated(initial_url, subframe);
+    nav1->SetInitiatorFrame(main_rfh);
+    nav1->set_request_context_type(blink::mojom::RequestContextType::INTERNAL);
+    nav1->set_mixed_content_context_type(
+        blink::mojom::MixedContentContextType::kOptionallyBlockable);
+    nav1->Commit();
+    subframe =
+        static_cast<TestRenderFrameHost*>(nav1->GetFinalRenderFrameHost());
+  }
+
+  // Navigate the subframe to a same-origin document with main_rfh, creating a
+  // second session history entry.
+  subframe = static_cast<TestRenderFrameHost*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("https://source.com/subframe2"), subframe));
+
+  for (RestoreType restore_type :
+       {RestoreType::kNotRestored, RestoreType::kRestored}) {
+    NavigationEntryImpl::FromNavigationEntry(controller().GetEntryAtOffset(-1))
+        ->set_restore_type(restore_type);
+    auto interceptor = std::make_unique<LocalFrameInterceptor>(subframe);
+
+    controller().GoToOffset(-1);
+    if (for_redirect()) {
+      auto back_nav = NavigationSimulatorImpl::CreateFromPendingInFrame(
+          subframe->frame_tree_node());
+      back_nav->Redirect(target_url);
+    }
+
+    interceptor->FlushLocalFrameMessages();
+    ASSERT_TRUE(interceptor->mixed_content_result().has_value());
+    EXPECT_EQ(GURL("http://target.com/"),
+              interceptor->mixed_content_result()->mixed_content_url);
+    EXPECT_EQ(for_redirect() ? GURL("https://other.com/")
+                             : GURL("http://target.com/"),
+              interceptor->url_before_redirects());
+  }
 }
 
 // Tests to cover MixedContentContextType = kBlockable.

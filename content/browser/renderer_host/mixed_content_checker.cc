@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
@@ -114,32 +115,64 @@ void UpdateRendererOnMixedContentFound(NavigationRequest* navigation_request,
   // Mirrors `blink::MainResourceUrlForFrame()`. When the mixed content frame
   // is in a different process from the navigating frame, only send its origin
   // since the renderer should not have access to its full URL.
-  GURL mixed_content_url =
+  const GURL sanitized_main_resource_url =
       mixed_content_frame->GetSiteInstance()->group() ==
               rfh->GetSiteInstance()->group()
           ? mixed_content_frame->GetLastCommittedURL()
           : mixed_content_frame->GetLastCommittedOrigin().GetURL();
-  CHECK(!navigation_request->GetRedirectChain().empty(),
-        base::NotFatalUntil::M158);
-  GURL url_before_redirects = navigation_request->GetRedirectChain()[0];
+  const url::Origin& receiver_origin = rfh->GetLastCommittedOrigin();
+
+  // Only expose cross-origin navigation URLs when the current document in
+  // `rfh` chose the initial URL itself:
+  // - Browser-initiated navigations (e.g. omnibox, bookmarks) have no
+  //   `initiator_origin`.
+  // - History/restore navigations (e.g. `history.back()`) have an
+  //   `initiator_origin`, but the target URL comes from session history rather
+  //   than the caller.
+  const bool initiator_is_same_origin =
+      !navigation_request->IsHistory() &&
+      navigation_request->GetInitiatorOrigin().has_value() &&
+      receiver_origin.IsSameOriginWith(
+          *navigation_request->GetInitiatorOrigin());
+
+  auto sanitize_url = [&](const GURL& url, bool can_expose_cross_origin) {
+    return can_expose_cross_origin || receiver_origin.IsSameOriginWith(url)
+               ? url
+               : url::Origin::Create(url).GetURL();
+  };
+
+  const std::vector<GURL>& redirect_chain =
+      navigation_request->GetRedirectChain();
+  CHECK(!redirect_chain.empty());
+  const GURL sanitized_url_before_redirects =
+      sanitize_url(redirect_chain.front(), initiator_is_same_origin);
+
+  // A cross-origin redirect can embed sensitive state in the target URL's
+  // path or query, so only expose the full target URL if the initiator and
+  // every hop before the final URL are same-origin with `rfh`.
+  bool can_expose_target_url = initiator_is_same_origin;
+  for (const GURL& url :
+       base::span(redirect_chain).first(redirect_chain.size() - 1)) {
+    can_expose_target_url &= receiver_origin.IsSameOriginWith(url);
+  }
+  const GURL sanitized_target_url =
+      sanitize_url(navigation_request->GetURL(), can_expose_target_url);
+
   // The source location identifies the document or script that initiated the
   // navigation, which can be in a different process from the navigating
   // frame, so it should not be sent if it's cross-origin with the navigating
   // frame's document.
-  network::mojom::SourceLocationPtr source_location =
-      navigation_request->common_params().source_location.Clone();
-  if (rfh->GetLastCommittedOrigin().IsSameOriginWith(
-          GURL(source_location->url))) {
-    rfh->GetAssociatedLocalFrame()->MixedContentFound(
-        mixed_content_url, navigation_request->GetURL(),
-        navigation_request->request_context_type(), was_allowed,
-        url_before_redirects, for_redirect, std::move(source_location));
-  } else {
-    rfh->GetAssociatedLocalFrame()->MixedContentFound(
-        mixed_content_url, navigation_request->GetURL(),
-        navigation_request->request_context_type(), was_allowed,
-        url_before_redirects, for_redirect, nullptr);
-  }
+  const network::mojom::SourceLocationPtr& source_location =
+      navigation_request->common_params().source_location;
+  network::mojom::SourceLocationPtr sanitized_source_location =
+      receiver_origin.IsSameOriginWith(GURL(source_location->url))
+          ? source_location.Clone()
+          : nullptr;
+  rfh->GetAssociatedLocalFrame()->MixedContentFound(
+      sanitized_main_resource_url, sanitized_target_url,
+      navigation_request->request_context_type(), was_allowed,
+      sanitized_url_before_redirects, for_redirect,
+      std::move(sanitized_source_location));
 }
 
 // Updates the renderer about any Blink feature usage.
