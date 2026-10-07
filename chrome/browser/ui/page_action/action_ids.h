@@ -50,7 +50,6 @@ inline constexpr auto kActionIds = std::to_array<actions::ActionId>({
     kActionGlicContextualCueing,
     kActionAnchoredContextualCue,
     kActionMultistepFilter,
-    kActionWebAuthnAmbientSignin,
     kActionFederation,
     kActionAutofillPayment,
     kActionShowPaymentsChurnedUsersBubble,

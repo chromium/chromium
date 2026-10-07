@@ -308,14 +308,6 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
         },
     },
     {
-        kActionWebAuthnAmbientSignin,
-        {
-            .histogram_name = "WebAuthnAmbientSignin",
-            .type = PageActionIconType::kWebAuthnAmbientSignin,
-            .element_identifier = kWebAuthnAmbientSigninIconElementId,
-        },
-    },
-    {
         kActionAutofillPayment,
         {
             .histogram_name = "AutofillPayment",

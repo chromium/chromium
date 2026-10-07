@@ -286,7 +286,7 @@ chromium-metrics-reviews@google.com.
   <int value="41" label="Federation"/>
   <int value="42" label="Glic"/>
   <int value="43" label="Anchored Contextual Cue"/>
-  <int value="44" label="Web Authentication Ambient"/>
+  <int value="44" label="(Deprecated) Web Authentication Ambient"/>
   <int value="45" label="Autofill Payment"/>
   <int value="46" label="Multistep Filter"/>
   <int value="47" label="Payments Churned Users"/>

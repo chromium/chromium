@@ -561,7 +561,6 @@
   E(kActionGlicTogglePin, IDC_GLIC_TOGGLE_PIN) \
   E(kActionOpenGlic, IDC_OPEN_GLIC) \
   E(kActionShowAiOverlayDialog) \
-  E(kActionWebAuthnAmbientSignin) \
   E(kActionAutofillPayment) \
   E(kActionWalletReminderNotice) \
   E(kActionTtcToolbar) \

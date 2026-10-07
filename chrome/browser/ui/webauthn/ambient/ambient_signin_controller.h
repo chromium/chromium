@@ -32,9 +32,6 @@ class AmbientSigninController
   // Shows the Ambient UI with the provided credentials.
   void Show(AuthenticatorRequestDialogModel* model);
 
-  // TODO(https://532206357): Obsolete. To be removed in a subsequent CL.
-  void TriggerPageActionSignIn();
-
   base::WeakPtr<AmbientSigninController> GetWeakPtr();
 
  private:

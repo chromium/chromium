@@ -494,7 +494,6 @@ enum PageActionId {
   kActionFederation,
   kActionGlicContextualCueing,
   kActionAnchoredContextualCue,
-  kActionWebAuthnAmbientSignin,
   kActionAutofillPayment,
   kActionShowPaymentsChurnedUsersBubble,
   kActionFakePageActionForDebug,

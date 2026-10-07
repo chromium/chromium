@@ -94,11 +94,6 @@ void AmbientSigninController::Show(AuthenticatorRequestDialogModel* model) {
                                            std::move(request));
 }
 
-void AmbientSigninController::TriggerPageActionSignIn() {
-  Close();
-  OnMechanismSelected(0);
-}
-
 AmbientSigninController::AmbientSigninController(
     RenderFrameHost* render_frame_host)
     : content::DocumentUserData<AmbientSigninController>(render_frame_host) {}

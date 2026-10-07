@@ -491,8 +491,6 @@ actions::ActionId MojomPageActionIdToActionId(
       return kActionGlicContextualCueing;
     case MojomPageActionId::kActionAnchoredContextualCue:
       return kActionAnchoredContextualCue;
-    case MojomPageActionId::kActionWebAuthnAmbientSignin:
-      return kActionWebAuthnAmbientSignin;
     case MojomPageActionId::kActionAutofillPayment:
       return kActionAutofillPayment;
     case MojomPageActionId::kActionShowPaymentsChurnedUsersBubble:
@@ -569,8 +567,6 @@ MojomPageActionId ActionIdToMojomPageActionId(actions::ActionId action_id) {
       return MojomPageActionId::kActionGlicContextualCueing;
     case kActionAnchoredContextualCue:
       return MojomPageActionId::kActionAnchoredContextualCue;
-    case kActionWebAuthnAmbientSignin:
-      return MojomPageActionId::kActionWebAuthnAmbientSignin;
     case kActionAutofillPayment:
       return MojomPageActionId::kActionAutofillPayment;
     case kActionShowPaymentsChurnedUsersBubble:
