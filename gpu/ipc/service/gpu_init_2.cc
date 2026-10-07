@@ -439,8 +439,68 @@ GpuInit2::~GpuInit2() {
   StopForceDiscreteGPU();
 }
 
-bool GpuInit2::InitializeAndStartSandbox(base::CommandLine* command_line,
-                                        const GpuPreferences& gpu_preferences) {
+void GpuInit2::set_sandbox_helper(GpuSandboxHelper* helper) {
+  sandbox_helper_ = helper;
+}
+
+const GPUInfo& GpuInit2::gpu_info() const {
+  return gpu_info_;
+}
+
+const GpuFeatureInfo& GpuInit2::gpu_feature_info() const {
+  return gpu_feature_info_;
+}
+
+const gfx::GpuExtraInfo& GpuInit2::gpu_extra_info() const {
+  return gpu_extra_info_;
+}
+
+const std::optional<GPUInfo>& GpuInit2::gpu_info_for_hardware_gpu() const {
+  return gpu_info_for_hardware_gpu_;
+}
+
+const std::optional<GpuFeatureInfo>&
+GpuInit2::gpu_feature_info_for_hardware_gpu() const {
+  return gpu_feature_info_for_hardware_gpu_;
+}
+
+const std::optional<DevicePerfInfo>& GpuInit2::device_perf_info() const {
+  return device_perf_info_;
+}
+
+const GpuPreferences& GpuInit2::gpu_preferences() const {
+  return gpu_preferences_;
+}
+
+std::unique_ptr<GpuWatchdogThread> GpuInit2::TakeWatchdogThread() {
+  return std::move(watchdog_thread_);
+}
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+std::unique_ptr<DawnContextProvider> GpuInit2::TakeDawnContextProvider() {
+  return std::move(dawn_context_provider_);
+}
+#endif
+
+scoped_refptr<gl::GLSurface> GpuInit2::TakeDefaultOffscreenSurface() {
+  return std::move(default_offscreen_surface_);
+}
+
+bool GpuInit2::init_successful() const {
+  return init_successful_;
+}
+
+VulkanImplementation* GpuInit2::vulkan_implementation() {
+#if BUILDFLAG(ENABLE_VULKAN)
+  return vulkan_implementation_.get();
+#else
+  return nullptr;
+#endif
+}
+
+bool GpuInit2::InitializeAndStartSandbox(
+    base::CommandLine* command_line,
+    const GpuPreferences& gpu_preferences) {
   TRACE_EVENT("gpu,startup", "gpu::GpuInit2::InitializeAndStartSandbox");
 #if BUILDFLAG(IS_CHROMEOS)
   LOG(WARNING) << "Starting gpu initialization.";
@@ -568,7 +628,7 @@ bool GpuInit2::InitializeAndStartSandbox(base::CommandLine* command_line,
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // The ContentSandboxHelper is currently the only one implementation of
-  // GpuSandboxHelper2 and it has no dependency. Except on Linux where
+  // GpuSandboxHelper and it has no dependency. Except on Linux where
   // VaapiWrapper checks the GL implementation to determine which display
   // to use. So call PreSandboxStartup after GL initialization. But make
   // sure the watchdog is paused as loadLibrary may take a long time and
@@ -1329,10 +1389,6 @@ void GpuInit2::SaveHardwareGpuInfoAndGpuFeatureInfo() {
 void GpuInit2::AdjustInfoToSwiftShader() {
   gpu_feature_info_ = ComputeGpuFeatureInfoForSoftwareGL();
   CollectContextGraphicsInfo(&gpu_info_);
-}
-
-scoped_refptr<gl::GLSurface> GpuInit2::TakeDefaultOffscreenSurface() {
-  return std::move(default_offscreen_surface_);
 }
 
 void GpuInit2::SetSkiaBackendType() {

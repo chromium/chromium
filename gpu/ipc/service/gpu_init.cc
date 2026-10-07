@@ -41,6 +41,7 @@
 #include "gpu/config/gpu_switches.h"
 #include "gpu/config/gpu_switching.h"
 #include "gpu/config/gpu_util.h"
+#include "gpu/ipc/service/gpu_init_2.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/switches.h"
@@ -365,9 +366,7 @@ void SetupGLDisplayManagerEGL(const GPUInfo& gpu_info,
 // static
 std::unique_ptr<GpuInit> GpuInit::Create() {
   if (base::FeatureList::IsEnabled(features::kGpuInitOptimization)) {
-    // TODO: Make it `return std::make_unique<GpuInit2>()` after completing
-    // GpuInit2.
-    return std::make_unique<GpuInit1>();
+    return std::make_unique<GpuInit2>();
   }
   return std::make_unique<GpuInit1>();
 }

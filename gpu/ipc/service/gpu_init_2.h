@@ -15,6 +15,7 @@
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_preferences.h"
+#include "gpu/ipc/service/gpu_init.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "gpu/vulkan/buildflags.h"
@@ -37,70 +38,40 @@ namespace gpu {
 
 class VulkanImplementation;
 
-class GPU_IPC_SERVICE_EXPORT GpuSandboxHelper2 {
- public:
-  virtual ~GpuSandboxHelper2() = default;
-
-  virtual void PreSandboxStartup(const GpuPreferences& gpu_prefs,
-                                 const GpuDriverBugWorkarounds& workarounds,
-                                 const GPUInfo* gpu_info) = 0;
-
-  virtual bool EnsureSandboxInitialized(GpuWatchdogThread* watchdog_thread,
-                                        const GPUInfo* gpu_info,
-                                        const GpuPreferences& gpu_prefs) = 0;
-};
-
-class GPU_IPC_SERVICE_EXPORT GpuInit2 {
+// The GPU initialization path where startup optimizations are being developed.
+// Selected by GpuInit::Create() when features::kGpuInitOptimization is
+// enabled. See GpuInit for details.
+class GPU_IPC_SERVICE_EXPORT GpuInit2 : public GpuInit {
  public:
   GpuInit2();
 
   GpuInit2(const GpuInit2&) = delete;
   GpuInit2& operator=(const GpuInit2&) = delete;
 
-  ~GpuInit2();
+  ~GpuInit2() override;
 
-  void set_sandbox_helper(GpuSandboxHelper2* helper) {
-    sandbox_helper_ = helper;
-  }
-
-  // TODO(zmo): Get rid of |command_line| in the following two functions.
-  // Pass all bits through GpuPreferences.
-  bool InitializeAndStartSandbox(base::CommandLine* command_line,
-                                 const GpuPreferences& gpu_preferences);
+  // GpuInit:
+  void set_sandbox_helper(GpuSandboxHelper* helper) override;
+  bool InitializeAndStartSandbox(
+      base::CommandLine* command_line,
+      const GpuPreferences& gpu_preferences) override;
   void InitializeInProcess(base::CommandLine* command_line,
-                           const GpuPreferences& gpu_preferences);
-
-  const GPUInfo& gpu_info() const { return gpu_info_; }
-  const GpuFeatureInfo& gpu_feature_info() const { return gpu_feature_info_; }
-  const gfx::GpuExtraInfo& gpu_extra_info() const { return gpu_extra_info_; }
-  const std::optional<GPUInfo>& gpu_info_for_hardware_gpu() const {
-    return gpu_info_for_hardware_gpu_;
-  }
+                           const GpuPreferences& gpu_preferences) override;
+  const GPUInfo& gpu_info() const override;
+  const GpuFeatureInfo& gpu_feature_info() const override;
+  const gfx::GpuExtraInfo& gpu_extra_info() const override;
+  const std::optional<GPUInfo>& gpu_info_for_hardware_gpu() const override;
   const std::optional<GpuFeatureInfo>& gpu_feature_info_for_hardware_gpu()
-      const {
-    return gpu_feature_info_for_hardware_gpu_;
-  }
-  const std::optional<DevicePerfInfo>& device_perf_info() const {
-    return device_perf_info_;
-  }
-  const GpuPreferences& gpu_preferences() const { return gpu_preferences_; }
-  std::unique_ptr<GpuWatchdogThread> TakeWatchdogThread() {
-    return std::move(watchdog_thread_);
-  }
+      const override;
+  const std::optional<DevicePerfInfo>& device_perf_info() const override;
+  const GpuPreferences& gpu_preferences() const override;
+  std::unique_ptr<GpuWatchdogThread> TakeWatchdogThread() override;
 #if BUILDFLAG(SKIA_USE_DAWN)
-  std::unique_ptr<DawnContextProvider> TakeDawnContextProvider() {
-    return std::move(dawn_context_provider_);
-  }
+  std::unique_ptr<DawnContextProvider> TakeDawnContextProvider() override;
 #endif
-  scoped_refptr<gl::GLSurface> TakeDefaultOffscreenSurface();
-  bool init_successful() const { return init_successful_; }
-#if BUILDFLAG(ENABLE_VULKAN)
-  VulkanImplementation* vulkan_implementation() {
-    return vulkan_implementation_.get();
-  }
-#else
-  VulkanImplementation* vulkan_implementation() { return nullptr; }
-#endif
+  scoped_refptr<gl::GLSurface> TakeDefaultOffscreenSurface() override;
+  bool init_successful() const override;
+  VulkanImplementation* vulkan_implementation() override;
 
  private:
   // State shared by the steps of InitializeAndStartSandbox(). It only lives
@@ -117,8 +88,10 @@ class GPU_IPC_SERVICE_EXPORT GpuInit2 {
   bool InitializeVulkan();
   void SetSkiaBackendType();
   void RecordUMA();
+  void SaveHardwareGpuInfoAndGpuFeatureInfo();
+  void AdjustInfoToSwiftShader();
 
-  raw_ptr<GpuSandboxHelper2> sandbox_helper_ = nullptr;
+  raw_ptr<GpuSandboxHelper> sandbox_helper_ = nullptr;
   bool gl_use_swiftshader_ = false;
   std::unique_ptr<GpuWatchdogThread> watchdog_thread_;
 
@@ -145,11 +118,8 @@ class GPU_IPC_SERVICE_EXPORT GpuInit2 {
 #if BUILDFLAG(ENABLE_VULKAN)
   std::unique_ptr<VulkanImplementation> vulkan_implementation_;
 #endif
-
-  void SaveHardwareGpuInfoAndGpuFeatureInfo();
-  void AdjustInfoToSwiftShader();
 };
 
 }  // namespace gpu
 
-#endif  // GPU_IPC_SERVICE_GPU_INIT_H_
+#endif  // GPU_IPC_SERVICE_GPU_INIT_2_H_
