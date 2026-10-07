@@ -259,6 +259,9 @@ void ApplyHeaderElementShadow(UIView* targetView) {
   _closeButton.accessibilityIdentifier =
       kAssistantAIMCloseButtonAccessibilityIdentifier;
   _closeButton.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ICON_CLOSE);
+  _closeButton.showsLargeContentViewer = YES;
+  _closeButton.scalesLargeContentImage = YES;
+  _closeButton.largeContentTitle = _closeButton.accessibilityLabel;
 
   // Shadow for button.
   ApplyHeaderElementShadow(_closeButton);
@@ -285,6 +288,9 @@ void ApplyHeaderElementShadow(UIView* targetView) {
       kAssistantAIMBackButtonAccessibilityIdentifier;
   _backButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_ICON_ARROW_BACK);
+  _backButton.showsLargeContentViewer = YES;
+  _backButton.scalesLargeContentImage = YES;
+  _backButton.largeContentTitle = _backButton.accessibilityLabel;
 
   ApplyHeaderElementShadow(_backButton);
   [self addSubview:_backButton];
@@ -320,6 +326,8 @@ void ApplyHeaderElementShadow(UIView* targetView) {
   UIButton* button = [UIButton buttonWithConfiguration:config
                                          primaryAction:nil];
   button.translatesAutoresizingMaskIntoConstraints = NO;
+  button.showsLargeContentViewer = YES;
+  button.scalesLargeContentImage = YES;
   AddSizeConstraints(button, CGSizeMake(kButtonSize, kButtonSize));
   return button;
 }
@@ -338,6 +346,7 @@ void ApplyHeaderElementShadow(UIView* targetView) {
       kAssistantAIMNewThreadButtonAccessibilityIdentifier;
   button.accessibilityLabel = l10n_util::GetNSString(
       IDS_CONTEXTUAL_TASKS_SIDE_PANEL_NEW_THREAD_TOOL_TIP);
+  button.largeContentTitle = button.accessibilityLabel;
   _startNewThreadButton = button;
   return button;
 }
@@ -353,6 +362,7 @@ void ApplyHeaderElementShadow(UIView* targetView) {
       kAssistantAIMHistoryButtonAccessibilityIdentifier;
   button.accessibilityLabel =
       l10n_util::GetNSString(IDS_CONTEXTUAL_TASKS_SIDE_PANEL_HISTORY_TOOL_TIP);
+  button.largeContentTitle = button.accessibilityLabel;
   [button addTarget:self
                 action:@selector(didTapHistoryButton)
       forControlEvents:UIControlEventTouchUpInside];
@@ -371,6 +381,7 @@ void ApplyHeaderElementShadow(UIView* targetView) {
       kAssistantAIMContextMenuButtonAccessibilityIdentifier;
   button.accessibilityLabel = l10n_util::GetNSString(
       IDS_CONTEXTUAL_TASKS_SIDE_PANEL_MORE_OPTIONS_TOOL_TIP);
+  button.largeContentTitle = button.accessibilityLabel;
 
   _contextMenuButton = button;
 

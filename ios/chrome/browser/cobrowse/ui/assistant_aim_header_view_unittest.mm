@@ -264,3 +264,42 @@ TEST_F(AssistantAIMHeaderViewTest,
   EXPECT_EQ(xxxl_point_size, title_label.font.pointSize);
   EXPECT_LE(CGRectGetHeight(title_label.frame), kHeaderHeight);
 }
+
+// Tests that all five header icon buttons enable `UILargeContentViewer` with a
+// scaled symbol image and localized title, and that the header view registers a
+// `UILargeContentViewerInteraction`.
+TEST_F(AssistantAIMHeaderViewTest, ButtonsShowLargeContentViewer) {
+  EXPECT_TRUE(HasLargeContentViewerInteraction(header_view_));
+
+  struct ExpectedButton {
+    NSString* identifier;
+    NSString* title;
+  };
+  const ExpectedButton expected_buttons[] = {
+      {kAssistantAIMBackButtonAccessibilityIdentifier,
+       l10n_util::GetNSString(IDS_IOS_ICON_ARROW_BACK)},
+      {kAssistantAIMCloseButtonAccessibilityIdentifier,
+       l10n_util::GetNSString(IDS_IOS_ICON_CLOSE)},
+      {kAssistantAIMContextMenuButtonAccessibilityIdentifier,
+       l10n_util::GetNSString(
+           IDS_CONTEXTUAL_TASKS_SIDE_PANEL_MORE_OPTIONS_TOOL_TIP)},
+      {kAssistantAIMHistoryButtonAccessibilityIdentifier,
+       l10n_util::GetNSString(
+           IDS_CONTEXTUAL_TASKS_SIDE_PANEL_HISTORY_TOOL_TIP)},
+      {kAssistantAIMNewThreadButtonAccessibilityIdentifier,
+       l10n_util::GetNSString(
+           IDS_CONTEXTUAL_TASKS_SIDE_PANEL_NEW_THREAD_TOOL_TIP)},
+  };
+
+  for (const ExpectedButton& expected : expected_buttons) {
+    SCOPED_TRACE(base::SysNSStringToUTF8(expected.identifier));
+    UIButton* button = base::apple::ObjCCast<UIButton>(
+        FindViewWithAccessibilityIdentifier(header_view_, expected.identifier));
+    ASSERT_TRUE(button);
+    EXPECT_TRUE(button.showsLargeContentViewer);
+    EXPECT_TRUE(button.scalesLargeContentImage);
+    EXPECT_NSEQ(expected.title, button.largeContentTitle);
+    ASSERT_TRUE(button.largeContentImage);
+    EXPECT_TRUE(button.largeContentImage.isSymbolImage);
+  }
+}
