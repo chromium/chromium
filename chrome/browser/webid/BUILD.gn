@@ -222,7 +222,6 @@ if (!is_android) {
       "//chrome/browser/actor/ui:test_support",
       "//chrome/browser/password_manager/factories",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//chrome/test:test_support_ui",
       "//content/test:test_support",
     ]

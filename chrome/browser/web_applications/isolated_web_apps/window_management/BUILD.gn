@@ -68,7 +68,6 @@ if (toolkit_views) {
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/notifications",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/web_applications",

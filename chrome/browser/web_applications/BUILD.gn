@@ -891,7 +891,6 @@ source_set("web_applications_test_support") {
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/component_updater",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/ui/webui/web_app_internals",

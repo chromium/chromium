@@ -100,7 +100,6 @@ source_set("browser_tests") {
       ":test_support",
       "//chrome/app:command_ids",
       "//chrome/browser/banners:test_support",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/user_education",

@@ -37,7 +37,6 @@ if (!is_android) {
     sources = [ "walletable_pass_barcode_detector_browsertest.cc" ]
     deps = [
       "//base/test:test_support",
-      "//chrome/browser/ui",
       "//chrome/test:test_support",
       "//components/wallet/content/browser",
       "//content/public/browser",

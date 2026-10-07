@@ -33,7 +33,6 @@ if (include_js2gtest_tests) {
     deps = [
       "//build:branding_buildflags",
       "//build/config/coverage:buildflags",
-      "//chrome/browser/ui",
       "//crypto:buildflags",
       "//services/network/public/cpp",
       "//skia",

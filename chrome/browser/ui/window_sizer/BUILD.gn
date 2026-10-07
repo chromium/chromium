@@ -121,7 +121,6 @@ if (is_chromeos) {
       "//ash",
       "//ash:test_support",
       "//base",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/window_sizer",

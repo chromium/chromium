@@ -7055,7 +7055,6 @@ if (!is_android) {
       "//chrome/browser/search_engines",
       "//chrome/browser/signin:signin_promo",
       "//chrome/browser/sync",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_element_identifiers",

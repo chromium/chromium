@@ -12,7 +12,6 @@ source_set("permissions") {
   ]
   deps = [
     "//base",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/views/permissions",
     "//components/content_settings/core/common",

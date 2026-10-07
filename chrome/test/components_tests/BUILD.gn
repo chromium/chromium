@@ -11,7 +11,6 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//components/language/core/browser",

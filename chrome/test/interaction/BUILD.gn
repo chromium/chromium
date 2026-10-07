@@ -26,7 +26,6 @@ if (!is_android) {
       "webcontents_interaction_test_util.h",
     ]
     public_deps = [
-      "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/interaction",
       "//chrome/browser/ui/test:dialog",
