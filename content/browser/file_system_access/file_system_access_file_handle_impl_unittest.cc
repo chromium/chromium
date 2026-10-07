@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -50,6 +51,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
 #include "storage/browser/blob/blob_storage_context.h"
+#include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -745,6 +747,63 @@ TEST_F(FileSystemAccessFileHandleImplCreateFileWriterTest,
       future.GetCallback());
   EXPECT_THAT(future.Take(),
               FileWriterCreationIs(FileSystemAccessStatus::kSecurityError));
+}
+
+// Verifies that sensitive entry access checks on an external mount whose
+// cracked `url.path()` differs from `url.virtual_path()` pass
+// `url.virtual_path()` in `PathInfo`.
+TEST_F(FileSystemAccessFileHandleImplCreateFileWriterTest,
+       SensitiveEntryAccessExternalMountUsesVirtualPath) {
+  manager_->SetPermissionContextForTesting(&permission_context_);
+
+  storage::ExternalMountPoints* mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+  constexpr char kMountName[] = "ext_test_mount";
+  mount_points->RevokeFileSystem(kMountName);
+  ASSERT_TRUE(mount_points->RegisterFileSystem(
+      kMountName, storage::kFileSystemTypeTest,
+      storage::FileSystemMountOption(), base::FilePath()));
+  base::ScopedClosureRunner revoke_mount(base::BindOnce(
+      base::IgnoreResult(&storage::ExternalMountPoints::RevokeFileSystem),
+      base::Unretained(mount_points), kMountName));
+
+  base::FilePath virtual_file_path =
+      mount_points->CreateVirtualRootPath(kMountName).AppendASCII("test.txt");
+  storage::FileSystemURL ext_url = manager_->CreateFileSystemURLFromPath(
+      PathInfo(PathType::kExternal, virtual_file_path));
+  ASSERT_NE(ext_url.virtual_path(), ext_url.path());
+  ASSERT_EQ(base::File::FILE_OK, storage::AsyncFileTestHelper::CreateFile(
+                                     file_system_context_.get(), ext_url));
+
+  auto handle = std::make_unique<FileSystemAccessFileHandleImpl>(
+      manager_.get(),
+      FileSystemAccessManagerImpl::BindingContext(
+          test_src_storage_key_, test_src_url_,
+          web_contents_->GetPrimaryMainFrame()->GetGlobalId()),
+      ext_url, "test.txt",
+      FileSystemAccessManagerImpl::SharedHandleState(allow_grant_,
+                                                     allow_grant_));
+
+  EXPECT_CALL(
+      permission_context_,
+      ConfirmSensitiveEntryAccess_(
+          test_src_storage_key_.origin(),
+          PathInfo(PathType::kExternal, virtual_file_path, "test.txt"),
+          FileSystemAccessPermissionContext::HandleType::kFile,
+          FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticWrite,
+          web_contents_->GetPrimaryMainFrame()->GetGlobalId(), testing::_))
+      .WillOnce(base::test::RunOnceCallback<5>(
+          FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
+
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>>
+      future;
+  handle->CreateFileWriter(
+      /*keep_existing_data=*/false, /*auto_close=*/false,
+      blink::mojom::FileSystemAccessWritableFileStreamLockMode::kExclusive,
+      future.GetCallback());
+  EXPECT_THAT(future.Take(), FileWriterCreationIs(FileSystemAccessStatus::kOk));
 }
 
 // Verifies that creating a file writer skips the sensitive entry access check

@@ -172,9 +172,7 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
       std::string display_name,
       storage::FileSystemURL child_url,
       base::OnceCallback<void(blink::mojom::FileSystemAccessEntryPtr)>
-          barrier_callback,
-      FileSystemAccessPermissionContext::SensitiveEntryResult
-          sensitive_entry_result);
+          barrier_callback);
 
   void MergeCurrentBatchEntries(
       base::OnceCallback<void(

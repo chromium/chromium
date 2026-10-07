@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -33,7 +34,9 @@
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
+#include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
@@ -587,6 +590,107 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest,
   }
   EXPECT_THAT(names, testing::UnorderedElementsAreArray(
                          {"allowed_file_path", "subdir"}));
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplTest,
+       GetEntries_ExternalMountUsesVirtualPath) {
+  if (!base::FeatureList::IsEnabled(
+          features::kFileSystemAccessDirectoryIterationBlocklistCheck)) {
+    return;
+  }
+
+  storage::ExternalMountPoints* mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+  constexpr char kMountName[] = "ext_test_mount";
+  mount_points->RevokeFileSystem(kMountName);
+  ASSERT_TRUE(mount_points->RegisterFileSystem(
+      kMountName, storage::kFileSystemTypeTest,
+      storage::FileSystemMountOption(), base::FilePath()));
+  base::ScopedClosureRunner revoke_mount(base::BindOnce(
+      base::IgnoreResult(&storage::ExternalMountPoints::RevokeFileSystem),
+      base::Unretained(mount_points), kMountName));
+
+  base::FilePath virtual_root = mount_points->CreateVirtualRootPath(kMountName);
+  storage::FileSystemURL root_url = manager_->CreateFileSystemURLFromPath(
+      PathInfo(PathType::kExternal, virtual_root));
+  storage::FileSystemURL child_url = manager_->CreateFileSystemURLFromPath(
+      PathInfo(PathType::kExternal, virtual_root.AppendASCII("child.txt")));
+  ASSERT_NE(child_url.virtual_path(), child_url.path());
+  ASSERT_EQ(base::File::FILE_OK, storage::AsyncFileTestHelper::CreateFile(
+                                     file_system_context_.get(), child_url));
+
+  auto handle = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
+      manager_.get(), kBindingContext, root_url,
+      FileSystemAccessManagerImpl::SharedHandleState(allow_grant_,
+                                                     allow_grant_));
+
+  EXPECT_CALL(permission_context_,
+              ConfirmSensitiveEntryAccess_(
+                  _,
+                  PathInfo(PathType::kExternal,
+                           virtual_root.AppendASCII("child.txt"), "child.txt"),
+                  HandleType::kFile, AccessTrigger::kProgrammaticRead,
+                  kBindingContext.frame_id, _))
+      .WillOnce(base::test::RunOnceCallback<5>(SensitiveEntryResult::kAllowed));
+
+  std::vector<blink::mojom::FileSystemAccessEntryPtr> entries;
+  blink::mojom::FileSystemAccessErrorPtr result;
+  base::RunLoop loop;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryEntriesListener>
+      listener;
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<TestFileSystemAccessDirectoryEntriesListener>(
+          &entries, &result, loop.QuitClosure()),
+      listener.InitWithNewPipeAndPassReceiver());
+  handle->GetEntries(std::move(listener));
+  loop.Run();
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->status, blink::mojom::FileSystemAccessStatus::kOk);
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(entries[0]->name, "child.txt");
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplTest,
+       GetEntries_SandboxedSkipsSensitiveEntryAccessCheck) {
+  storage::FileSystemURL root_url =
+      file_system_context_->CreateCrackedFileSystemURL(
+          test_src_storage_key_, storage::kFileSystemTypeTemporary,
+          base::FilePath());
+  root_url.SetBucket(storage::BucketLocator(
+      storage::BucketId(1), test_src_storage_key_, /*is_default=*/true));
+  auto handle = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
+      manager_.get(), kBindingContext, root_url,
+      FileSystemAccessManagerImpl::SharedHandleState(allow_grant_,
+                                                     allow_grant_));
+
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
+      create_future;
+  handle->GetFile("opfs_file.txt", /*create=*/true,
+                  create_future.GetCallback());
+  ASSERT_EQ(create_future.Get<0>()->status,
+            blink::mojom::FileSystemAccessStatus::kOk);
+
+  EXPECT_CALL(permission_context_, ConfirmSensitiveEntryAccess_).Times(0);
+
+  std::vector<blink::mojom::FileSystemAccessEntryPtr> entries;
+  blink::mojom::FileSystemAccessErrorPtr result;
+  base::RunLoop loop;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryEntriesListener>
+      listener;
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<TestFileSystemAccessDirectoryEntriesListener>(
+          &entries, &result, loop.QuitClosure()),
+      listener.InitWithNewPipeAndPassReceiver());
+  handle->GetEntries(std::move(listener));
+  loop.Run();
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->status, blink::mojom::FileSystemAccessStatus::kOk);
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(entries[0]->name, "opfs_file.txt");
 }
 
 TEST_F(FileSystemAccessDirectoryHandleImplTest, GetEntries_NoReadAccess) {

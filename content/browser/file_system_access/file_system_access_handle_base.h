@@ -393,9 +393,11 @@ void FileSystemAccessHandleBase::RunWithSensitiveEntryAccess(
       url.type() == storage::FileSystemType::kFileSystemTypeLocal
           ? PathType::kLocal
           : PathType::kExternal;
+  const base::FilePath& path =
+      path_type == PathType::kLocal ? url.path() : url.virtual_path();
   PathInfo path_info = display_name.empty()
-                           ? PathInfo(path_type, url.path())
-                           : PathInfo(path_type, url.path(), display_name);
+                           ? PathInfo(path_type, path)
+                           : PathInfo(path_type, path, display_name);
   // Wrap the callback so that if `permission_context()` is destroyed during
   // profile shutdown before `manager()` (and drops pending blocklist callbacks
   // while handle Mojo receivers are still connected), `blocked_callback` still

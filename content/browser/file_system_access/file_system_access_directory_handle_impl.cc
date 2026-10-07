@@ -856,19 +856,18 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
 
       // Only run sensitive entry check on a file, which could be a symbolic
       // link.
-      manager()->permission_context()->ConfirmSensitiveEntryAccess(
-          context().storage_key.origin(),
-          PathInfo(
-              child_url.type() == storage::FileSystemType::kFileSystemTypeLocal
-                  ? PathType::kLocal
-                  : PathType::kExternal,
-              child_url.path(), basename),
-          HandleType::kFile, AccessTrigger::kProgrammaticRead,
-          context().frame_id,
+      RunWithSensitiveEntryAccess(
+          child_url, basename, HandleType::kFile,
+          AccessTrigger::kProgrammaticRead,
           base::BindOnce(&FileSystemAccessDirectoryHandleImpl::
                              DidVerifySensitiveAccessForFileEntry,
                          weak_factory_.GetWeakPtr(), entry.name,
-                         entry.display_name, child_url, barrier_callback));
+                         entry.display_name, child_url),
+          base::BindOnce([](base::OnceCallback<void(FileSystemAccessEntryPtr)>
+                                barrier_callback) {
+            std::move(barrier_callback).Run(nullptr);
+          }),
+          base::OnceCallback<void(FileSystemAccessEntryPtr)>(barrier_callback));
     }
     return;
   }
@@ -900,15 +899,8 @@ void FileSystemAccessDirectoryHandleImpl::DidVerifySensitiveAccessForFileEntry(
     base::SafeBaseName basename,
     std::string display_name,
     storage::FileSystemURL child_url,
-    base::OnceCallback<void(FileSystemAccessEntryPtr)> barrier_callback,
-    FileSystemAccessPermissionContext::SensitiveEntryResult
-        sensitive_entry_result) {
+    base::OnceCallback<void(FileSystemAccessEntryPtr)> barrier_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (sensitive_entry_result != SensitiveEntryResult::kAllowed) {
-    std::move(barrier_callback).Run(nullptr);
-    return;
-  }
 
   auto entry =
       CreateEntry(basename, display_name, child_url, HandleType::kFile);
