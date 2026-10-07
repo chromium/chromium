@@ -212,6 +212,11 @@ bool ImageDecoderWrapper::Decode(ImageDecoderFactory* factory,
 bool ImageDecoderWrapper::ShouldDecodeToExternalMemory(
     wtf_size_t frame_count,
     bool resume_decoding) const {
+  // ImageDecoder::SetMemoryAllocator() only applies the allocator to frame 0.
+  if (frame_index_ != 0) {
+    return false;
+  }
+
   // Some multi-frame images need their decode cached in the decoder to allow
   // future frames to reference previous frames.
   //

@@ -260,6 +260,21 @@ TEST_F(ImageFrameGeneratorTest, LowEndDeviceDestroysDecoderOnPartialDecode) {
   EXPECT_EQ(4, memory_allocator_set_count_);
 }
 
+TEST_F(ImageFrameGeneratorTest,
+       LowEndDeviceDoesNotUseExternalMemoryForNonzeroFrame) {
+  ScopedTestingPlatformSupport<ImageFrameGeneratorTestPlatform> platform;
+  frame_count_ = 2;
+  SetFrameStatus(ImageFrame::kFrameComplete);
+
+  char buffer[100 * 100 * 4];
+  SkPixmap pixmap(ImageInfo(), buffer, 100 * 4);
+  EXPECT_TRUE(
+      generator_->DecodeAndScale(segment_reader_.get(), false, 1, pixmap,
+                                 cc::PaintImage::kDefaultGeneratorClientId));
+  EXPECT_EQ(1, decode_request_count_);
+  EXPECT_EQ(0, memory_allocator_set_count_);
+}
+
 TEST_F(ImageFrameGeneratorTest, incompleteDecodeBecomesComplete) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   base::test::ScopedFeatureList feature_list;
