@@ -316,6 +316,8 @@ chromium-metrics-reviews@google.com.
       summary="IPH for gesture user education"/>
   <variant name="IPH_GlassFrameOptIn"
       summary="IPH for opting into the transparent glass frame tab styling"/>
+  <variant name="IPH_GlassFrameOptOut"
+      summary="IPH for opting out of the glass frame"/>
   <variant name="IPH_GlicPromo" summary="Glic promotion"/>
   <variant name="IPH_GlicPromoAndroid" summary="Glic promotion on Android"/>
   <variant name="IPH_GlicTrustFirstOnboardingShortcutSnoozePromo"

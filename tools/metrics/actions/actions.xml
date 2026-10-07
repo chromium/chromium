@@ -500,6 +500,8 @@ should be able to be added at any place in this file.
       summary="For gesture user edcuation IPH feature."/>
   <variant name="_GlassFrameOptIn"
       summary="For GlassFrame opt-in IPH feature."/>
+  <variant name="_GlassFrameOptOut"
+      summary="For GlassFrame opt-out IPH feature."/>
   <variant name="_GlicPromo" summary="For Glic feature."/>
   <variant name="_GlicPromoAndroid" summary="For Glic promotion on Android."/>
   <variant name="_GlicTrustFirstOnboardingShortcutSnoozePromo"

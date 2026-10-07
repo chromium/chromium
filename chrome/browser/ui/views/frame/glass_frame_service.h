@@ -102,7 +102,7 @@ class GlassFrameService : public BrowserCollectionObserver,
 
   void OnEligibleStateChanged();
 
-  void MaybeShowOptInPromo(BrowserWindowInterface* browser);
+  void MaybeShowPromo(BrowserWindowInterface* browser);
 
   std::map<BrowserWindowInterface*, base::RepeatingCallbackList<void(bool)>>
       window_callbacks_;
@@ -126,6 +126,7 @@ class GlassFrameService : public BrowserCollectionObserver,
   std::unique_ptr<GlassFrameMetricsReporter> metrics_reporter_;
   bool is_glass_frame_enabled_ = true;
   bool is_battery_saver_mode_active_ = false;
+  bool has_attempted_startup_promo_ = false;
   ::ui::ScopedUnownedUserData<GlassFrameService> scoped_unowned_user_data_;
 };
 

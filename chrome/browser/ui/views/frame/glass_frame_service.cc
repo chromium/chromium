@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -175,10 +177,8 @@ void GlassFrameService::OnBrowserActivated(BrowserWindowInterface* browser) {
   }
 
   MaybeTrackBrowser(browser);
-  MaybeShowOptInPromo(browser);
-  if (!eligible_browsers_.contains(browser)) {
-    OnEligibleStateChanged();
-  }
+  OnEligibleStateChanged();
+  MaybeShowPromo(browser);
 }
 
 void GlassFrameService::OnBrowserClosed(BrowserWindowInterface* browser) {
@@ -270,16 +270,6 @@ void GlassFrameService::OnGlassFrameEnabledPrefChanged() {
     return;
   }
   is_glass_frame_enabled_ = is_enabled;
-  if (is_glass_frame_enabled_) {
-    for (BrowserWindowInterface* browser : tracked_browsers_) {
-      if (auto* const user_education =
-              BrowserUserEducationInterface::From(browser)) {
-        user_education->NotifyFeaturePromoFeatureUsed(
-            feature_engagement::kIPHGlassFrameOptInFeature,
-            FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
-      }
-    }
-  }
   OnEligibleStateChanged();
 }
 
@@ -295,16 +285,32 @@ void GlassFrameService::OnEligibleStateChanged() {
   }
 }
 
-void GlassFrameService::MaybeShowOptInPromo(BrowserWindowInterface* browser) {
-  if (is_glass_frame_enabled_ || is_battery_saver_mode_active_ ||
+void GlassFrameService::MaybeShowPromo(BrowserWindowInterface* browser) {
+  if (has_attempted_startup_promo_ || is_battery_saver_mode_active_ ||
       !IsBrowserEligibleForGlass(browser)) {
+    return;
+  }
+
+  PrefService* const pref_service = g_browser_process->local_state();
+  CHECK(pref_service);
+  const PrefService::Preference* const pref =
+      pref_service->FindPreference(prefs::kGlassFrameEnabled);
+  CHECK(pref);
+  if (!pref->IsDefaultValue()) {
+    return;
+  }
+
+  const base::Feature& promo_feature =
+      is_glass_frame_enabled_ ? feature_engagement::kIPHGlassFrameOptOutFeature
+                              : feature_engagement::kIPHGlassFrameOptInFeature;
+  if (!base::FeatureList::IsEnabled(promo_feature)) {
     return;
   }
 
   if (auto* const user_education =
           BrowserUserEducationInterface::From(browser)) {
-    user_education->MaybeShowStartupFeaturePromo(
-        feature_engagement::kIPHGlassFrameOptInFeature);
+    has_attempted_startup_promo_ = true;
+    user_education->MaybeShowStartupFeaturePromo(promo_feature);
   }
 }
 

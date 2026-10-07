@@ -11,6 +11,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
@@ -616,3 +617,28 @@ IN_PROC_BROWSER_TEST_F(GlassFrameServiceOptInPromoInteractiveTest,
                   InAnyContext(WaitForShow(kTabStylingSettingElementId)));
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+class GlassFrameServiceOptOutIphInteractiveTest
+    : public InteractiveFeaturePromoTestMixin<
+          GlassFrameServiceInteractiveTest> {
+ public:
+  GlassFrameServiceOptOutIphInteractiveTest()
+      : InteractiveFeaturePromoTestMixin(UseDefaultTrackerAllowingPromos(
+            {feature_engagement::kIPHGlassFrameOptOutFeature})) {}
+};
+
+IN_PROC_BROWSER_TEST_F(GlassFrameServiceOptOutIphInteractiveTest,
+                       OptOutIphShowsOnStartup) {
+  if (!features::IsGlassFrameEnabled()) {
+    GTEST_SKIP();
+  }
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSettingsTabContents);
+  RunTestSequence(WaitForPromo(feature_engagement::kIPHGlassFrameOptOutFeature),
+                  PressNonDefaultPromoButton(),
+                  InstrumentTab(kSettingsTabContents, 1),
+                  WaitForWebContentsReady(
+                      kSettingsTabContents,
+                      chrome::GetSettingsUrl(chrome::kAppearanceSubPage)),
+                  InAnyContext(WaitForShow(kTabStylingSettingElementId)));
+}

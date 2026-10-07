@@ -131,6 +131,9 @@ BASE_FEATURE(kIPHGMCSaveVideoFrameFeature,
 BASE_FEATURE(kIPHGlassFrameOptInFeature,
              "IPH_GlassFrameOptIn",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHGlassFrameOptOutFeature,
+             "IPH_GlassFrameOptOut",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHGlicPromoFeature,
              "IPH_GlicPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);

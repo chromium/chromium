@@ -11375,6 +11375,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_GLASS_FRAME_IPH_SETTINGS_PAGE" desc="The text on chrome://settings/appearance page that is anchored to the tab styling drop down for users to enable glass frame.">
         Set this setting to Modern to try the new transparent look for your tabs.
       </message>
+      <message name="IDS_GLASS_FRAME_OPT_OUT_IPH_TITLE" desc="The title of the in-product help promo educating users about the new transparent look for tabs and how to opt out.">
+        Tabs have a new transparent look
+      </message>
+      <message name="IDS_GLASS_FRAME_OPT_OUT_IPH_BODY" desc="The body text of the in-product help promo educating users about the new transparent look for tabs and how to opt out.">
+        You can always switch back to the classic style in settings
+      </message>
+      <message name="IDS_GLASS_FRAME_OPT_OUT_IPH_SETTINGS_PAGE" desc="The text on chrome://settings/appearance page that is anchored to the tab styling drop down for users to disable glass frame.">
+        Choose your preferred tab styling here
+      </message>
 
       <!-- User Education Tutorial Strings -->
       <message name="IDS_TUTORIAL_GENERIC_SUCCESS_TITLE" desc="The title of the generic success step in the user education tutorials">

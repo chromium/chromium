@@ -2249,6 +2249,32 @@ void MaybeRegisterChromeFeaturePromos(
               156, "stluong@chromium.org",
               "Triggered on startup when glass frame is available and the user "
               "has not enabled it in settings.")));
+
+  // kIPHGlassFrameOptOutFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHGlassFrameOptOutFeature, kTabStripElementId,
+          IDS_GLASS_FRAME_OPT_OUT_IPH_BODY, IDS_GLASS_FRAME_IPH_SETTINGS_BUTTON,
+          base::BindRepeating(
+              [](ContextPtr ctx,
+                 user_education::FeaturePromoHandle promo_handle) {
+                if (BrowserWindowInterface* const browser = GetBrowser(ctx)) {
+                  ShowPromoInPage::Params params;
+                  params.target_url =
+                      chrome::GetSettingsUrl(chrome::kAppearanceSubPage);
+                  params.bubble_anchor_id = kTabStylingSettingElementId;
+                  params.bubble_arrow = HelpBubbleArrow::kBottomRight;
+                  params.bubble_text = l10n_util::GetStringUTF16(
+                      IDS_GLASS_FRAME_OPT_OUT_IPH_SETTINGS_PAGE);
+                  params.close_button_alt_text_id = IDS_CLOSE_PROMO;
+                  ShowPromoInPage::Start(browser, std::move(params));
+                }
+              }))
+          .SetBubbleTitleText(IDS_GLASS_FRAME_OPT_OUT_IPH_TITLE)
+          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+          .SetMetadata(156, "stluong@chromium.org",
+                       "Triggered when the browser window is shown with the "
+                       "glass frame enabled by default.")));
 }
 
 void MaybeRegisterChromeFeaturePromos(
