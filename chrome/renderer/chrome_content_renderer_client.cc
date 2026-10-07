@@ -828,9 +828,14 @@ void ChromeContentRendererClient::RenderFrameCreated(
   }
 #endif
 
-  if (base::FeatureList::IsEnabled(
-          wallet::features::kWalletablePassDetection) &&
-      render_frame->IsMainFrame()) {
+  // Shared by Wallet pass detection and payment QR code detection. The main
+  // frame check precedes the feature flag checks so that subframes never enroll
+  // into either experiment.
+  if (render_frame->IsMainFrame() &&
+      (base::FeatureList::IsEnabled(
+           wallet::features::kWalletablePassDetection) ||
+       base::FeatureList::IsEnabled(
+           payments::facilitated::kEnableDesktopQrCodeDetection))) {
     wallet::ImageExtractor::Create(render_frame, registry);
   }
 
