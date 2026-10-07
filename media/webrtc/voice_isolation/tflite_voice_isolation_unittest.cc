@@ -223,8 +223,14 @@ TEST(TfLiteVoiceIsolation, MAYBE_FailsOnIncompatibleModel) {
       BuildModelWithSameInputOutputTensor(/*tensor_size=*/320);
   ASSERT_NE(fake_model.model, nullptr);
 
+  // TODO(crbug.com/568298417): Remove the UBSan skip once TFLite no longer
+  // calls memcpy() with a null pointer for models without operators.
+#if defined(UNDEFINED_SANITIZER)
+  GTEST_SKIP() << "TFLite has undefined behavior for models without operators.";
+#else
   auto result = TfLiteVoiceIsolation::MaybeCreate(fake_model.model.get());
   EXPECT_THAT(result, base::test::ErrorIs(
                           VoiceIsolationCreationResult::kIncompatibleModel));
+#endif
 }
 }  // namespace media
