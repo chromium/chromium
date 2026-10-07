@@ -1300,6 +1300,9 @@ void LayerTreeHost::UpdateBrowserControlsState(
 }
 
 void LayerTreeHost::AnimateLayers(base::TimeTicks monotonic_time) {
+  mutator_host()->RemoveStaleTimelines();
+  mutator_host()->RemoveStaleTriggers();
+
   std::unique_ptr<MutatorEvents> events = mutator_host()->CreateEvents();
 
   AnimationTickResult tick_result = mutator_host()->TickAnimations(

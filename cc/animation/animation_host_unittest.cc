@@ -826,5 +826,41 @@ TEST_F(AnimationHostTest, MinimumTickInterval_PlaybackRateScaling) {
   EXPECT_EQ(host_impl_->MinimumTickInterval(), base::TimeDelta());
 }
 
+TEST_F(AnimationHostTest, InitClientAnimationStateRemovesStaleTimelines) {
+  delegate_.RegisterElementId(element_id_, ElementListType::ACTIVE);
+  AttachTimelineAnimationLayer();
+
+  animation_->AddKeyframeModel(KeyframeModel::Create(
+      std::make_unique<FakeTransformTransition>(1.0), 1, 1,
+      KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
+
+  TestLayer* layer =
+      delegate_.FindTestLayer(element_id_, ElementListType::ACTIVE);
+  ASSERT_TRUE(layer);
+  EXPECT_TRUE(layer->is_currently_animating(TargetProperty::TRANSFORM));
+
+  // Detach the timeline while in a protected sequence (e.g. Document::Shutdown
+  // during an in-flight compositor commit). Removal is deferred into
+  // detached_timeline_map_.
+  delegate_.set_in_protected_sequence(true);
+  host_->DetachAnimationTimeline(timeline_);
+  EXPECT_TRUE(host_->GetTimelineById(timeline_id_));
+
+  // Simulate property tree rebuild for a new document resetting client
+  // animation state before CommitComplete or WillCommit has run.
+  delegate_.set_in_protected_sequence(false);
+  layer->set_is_currently_animating(TargetProperty::TRANSFORM, false);
+  layer->set_maximum_animation_scale(kInvalidScale);
+
+  // InitClientAnimationState() must flush stale detached timelines before
+  // initializing client animation state so animations from a detached timeline
+  // do not attempt to animate non-existent property tree nodes.
+  host_->InitClientAnimationState();
+
+  EXPECT_FALSE(host_->GetTimelineById(timeline_id_));
+  EXPECT_FALSE(timeline_->animation_host());
+  EXPECT_FALSE(layer->is_currently_animating(TargetProperty::TRANSFORM));
+}
+
 }  // namespace
 }  // namespace cc

@@ -325,6 +325,8 @@ bool AnimationHost::NextFrameHasPendingRAF() const {
 }
 
 void AnimationHost::InitClientAnimationState() {
+  WaitForProtectedSequenceCompletion();
+  RemoveStaleTimelines();
   for (auto map_entry : element_to_animations_map_.Write(*this))
     map_entry.second->InitClientAnimationState();
 }
