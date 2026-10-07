@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
@@ -38,6 +39,7 @@
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_history_entry.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -140,6 +142,24 @@ class ViewTransitionTest : public testing::Test,
 
   State GetState(DOMViewTransition* transition) const {
     return transition->GetViewTransitionForTest()->state_;
+  }
+
+  // Captures the document for a cross-document navigation, as is done for the
+  // outgoing document, and returns whether the capture finished.
+  bool SnapshotDocumentForNavigation() {
+    bool callback_ran = false;
+    auto page_swap_params = mojom::blink::PageSwapEventParams::New();
+    page_swap_params->url = KURL("http://test.com");
+    page_swap_params->navigation_type =
+        mojom::blink::NavigationTypeForNavigationApi::kPush;
+    ViewTransitionSupplement::SnapshotDocumentForNavigation(
+        GetDocument(), blink::ViewTransitionToken(),
+        std::move(page_swap_params),
+        base::BindOnce([](bool* callback_ran,
+                          const ViewTransitionState&) { *callback_ran = true; },
+                       &callback_ran));
+    UpdateAllLifecyclePhasesAndFinishDirectives();
+    return callback_ran;
   }
 
   void FinishTransition() {
@@ -1908,6 +1928,43 @@ TEST_P(ViewTransitionTest,
 
   UpdateAllLifecyclePhasesAndFinishDirectives();
   EXPECT_TRUE(callback_ran);
+}
+
+// Capturing the outgoing document for a navigation snaps the browser controls
+// to fully shown, since they're animated to shown during the navigation.
+TEST_P(ViewTransitionTest, NavigationCaptureSnapsBrowserControls) {
+  BrowserControls& browser_controls =
+      GetDocument().GetPage()->GetBrowserControls();
+  cc::BrowserControlsParams params;
+  params.top_controls_height = 50;
+  params.bottom_controls_height = 20;
+  browser_controls.SetParams(params);
+  ASSERT_NE(browser_controls.PermittedState(),
+            cc::BrowserControlsState::kHidden);
+  ASSERT_EQ(browser_controls.TopShownRatio(), 0);
+  ASSERT_EQ(browser_controls.BottomShownRatio(), 0);
+
+  EXPECT_TRUE(SnapshotDocumentForNavigation());
+  EXPECT_EQ(browser_controls.TopShownRatio(), 1);
+  EXPECT_EQ(browser_controls.BottomShownRatio(), 1);
+}
+
+// Without browser controls (e.g. on desktop), capturing the outgoing document
+// for a navigation shouldn't change the shown ratio. It has no effect on the
+// page, but it changes the browser controls metadata of the capture frame,
+// which forces a new LocalSurfaceId for the capture frame.
+TEST_P(ViewTransitionTest, NavigationCaptureDoesNotSnapZeroHeightControls) {
+  BrowserControls& browser_controls =
+      GetDocument().GetPage()->GetBrowserControls();
+  ASSERT_EQ(browser_controls.TotalHeight(), 0);
+  ASSERT_NE(browser_controls.PermittedState(),
+            cc::BrowserControlsState::kHidden);
+  ASSERT_EQ(browser_controls.TopShownRatio(), 0);
+  ASSERT_EQ(browser_controls.BottomShownRatio(), 0);
+
+  EXPECT_TRUE(SnapshotDocumentForNavigation());
+  EXPECT_EQ(browser_controls.TopShownRatio(), 0);
+  EXPECT_EQ(browser_controls.BottomShownRatio(), 0);
 }
 
 TEST_P(ViewTransitionTest, AutoResizeMismatchedSizes) {

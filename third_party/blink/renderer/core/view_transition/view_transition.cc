@@ -608,10 +608,23 @@ void ViewTransition::ProcessCurrentState() {
         // If we're capturing during a navigation, browser controls will be
         // forced to show via animation. Ensure they're fully showing when
         // performing the capture.
+        //
+        // Skip this if there are no browser controls (e.g. on desktop):
+        // snapping zero-height controls has no effect on layout, but changing
+        // the shown ratio changes the frame's browser controls metadata, which
+        // forces the capture frame into a new LocalSurfaceId. Viz can then
+        // only draw the capture frame (and fulfill its copy requests) after
+        // the browser has embedded the new surface, which puts the browser
+        // main thread on the critical path of the navigation.
+        const BrowserControls& browser_controls =
+            document_->GetPage()->GetBrowserControls();
         bool snap_browser_controls =
             document_->GetFrame()->IsOutermostMainFrame() &&
-            document_->GetPage()->GetBrowserControls().PermittedState() !=
+            browser_controls.PermittedState() !=
                 cc::BrowserControlsState::kHidden &&
+            (browser_controls.TotalHeight() > 0 ||
+             !RuntimeEnabledFeatures::
+                 ViewTransitionSkipZeroHeightControlsSnapEnabled()) &&
             creation_type_ == CreationType::kForSnapshot;
         if (!style_tracker_->Capture(snap_browser_controls)) {
           SkipTransition(PromiseResponse::kRejectInvalidState,

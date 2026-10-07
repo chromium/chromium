@@ -7041,6 +7041,14 @@
       status: "test",
     },
     {
+      // Kill switch for https://crbug.com/569098933. Doesn't snap the browser
+      // controls to fully shown when capturing the outgoing document of a
+      // cross-document view transition if the browser controls have zero
+      // height, since that would force a new LocalSurfaceId for the capture.
+      name: "ViewTransitionSkipZeroHeightControlsSnap",
+      status: "stable",
+    },
+    {
       name: "VisibilityCollapseColumn",
     },
     {
