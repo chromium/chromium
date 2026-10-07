@@ -767,4 +767,26 @@ public class ActorMetricsTest {
         mActorMetrics.onTaskStoppedForTesting(taskId, StoppedReason.TASK_COMPLETE);
         watcher.assertExpected();
     }
+
+    @Test
+    public void testRecordOnTabAddedLatency() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY,
+                                350,
+                                120)
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY_COLD,
+                                350)
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY_WARM,
+                                120)
+                        .build();
+
+        ActorMetrics.recordOnTabAddedLatency(350, /* isColdStart= */ true);
+        ActorMetrics.recordOnTabAddedLatency(120, /* isColdStart= */ false);
+
+        watcher.assertExpected();
+    }
 }

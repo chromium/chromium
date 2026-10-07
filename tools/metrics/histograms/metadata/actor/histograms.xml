@@ -123,6 +123,25 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/actor/ui/ui_event_debugstring.h:GetUiEventName) -->
 
+<histogram name="Actor.BackgroundActuation.OnTabAdded.Latency{StartupType}"
+    units="ms" expires_after="2027-10-07">
+  <owner>bbetini@google.com</owner>
+  <owner>ritikagup@google.com</owner>
+  <owner>clank-actor@google.com</owner>
+  <summary>
+    Records the latency from when Chrome starts waiting for a background
+    actuated tab to be restored to when the tab is added to the TabModel and
+    selected{StartupType}. Note that this metric is only recorded on Android.
+  </summary>
+  <token key="StartupType">
+    <variant name="" summary="across both cold and warm starts"/>
+    <variant name=".ColdStart"
+        summary="when TabModel state is not yet initialized (cold start)"/>
+    <variant name=".WarmStart"
+        summary="when TabModel state is already initialized (warm start)"/>
+  </token>
+</histogram>
+
 <histogram name="Actor.BackgroundActuation.Trigger"
     enum="ActorBackgroundActuationTrigger" expires_after="2027-10-01">
   <owner>bbetini@google.com</owner>

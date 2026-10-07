@@ -34,6 +34,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
@@ -43,6 +45,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
@@ -80,9 +83,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link ActorTabStateHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {ShadowSystemClock.class})
 public class ActorTabStateHelperTest {
     private static final int TAB_ID = 100;
     private static final boolean IS_PINNED = false;
@@ -548,8 +553,15 @@ public class ActorTabStateHelperTest {
         when(mTabModelSelector.getTabById(TAB_ID)).thenReturn(mTab);
         when(mTabModel.indexOf(mTab)).thenReturn(0);
 
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY)
+                        .build();
+
         ActorTabStateHelper.listenAndSelectTabOnAdded(mTabModelSelector, mLayoutManager, TAB_ID);
 
+        watcher.assertExpected();
         verify(mTabModelSelector).selectModel(false);
         verify(mTabModel).setIndex(0, TabSelectionType.FROM_USER);
         verify(mTabModelSelector, never()).addObserver(any());
@@ -568,12 +580,63 @@ public class ActorTabStateHelperTest {
         verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
         TabModelObserver observer = mTabModelObserverCaptor.getValue();
 
+        ShadowSystemClock.advanceBy(250, TimeUnit.MILLISECONDS);
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY, 250)
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY_COLD,
+                                250)
+                        .expectNoRecords(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY_WARM)
+                        .build();
+
         observer.didAddTab(
                 mTab,
                 TabLaunchType.FROM_RESTORE,
                 TabCreationState.LIVE_IN_BACKGROUND,
                 /* markedForSelection= */ false);
 
+        watcher.assertExpected();
+        verify(mTabModelSelector).selectModel(false);
+        verify(mTabModel).setIndex(0, TabSelectionType.FROM_USER);
+        verify(mTabModel).removeObserver(observer);
+    }
+
+    @Test
+    public void testListenAndSelectTabOnAdded_alreadyInitialized_didAddTab_recordsWarmStart() {
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mTab.getId()).thenReturn(TAB_ID);
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTabModelSelector.getTabById(TAB_ID)).thenReturn(null);
+        when(mTabModel.indexOf(mTab)).thenReturn(0);
+
+        ActorTabStateHelper.listenAndSelectTabOnAdded(mTabModelSelector, mLayoutManager, TAB_ID);
+
+        verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
+        TabModelObserver observer = mTabModelObserverCaptor.getValue();
+
+        ShadowSystemClock.advanceBy(140, TimeUnit.MILLISECONDS);
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY, 140)
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY_WARM,
+                                140)
+                        .expectNoRecords(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY_COLD)
+                        .build();
+
+        when(mTabModelSelector.getTabById(TAB_ID)).thenReturn(mTab);
+        observer.didAddTab(
+                mTab,
+                TabLaunchType.FROM_RESTORE,
+                TabCreationState.LIVE_IN_BACKGROUND,
+                /* markedForSelection= */ false);
+
+        watcher.assertExpected();
         verify(mTabModelSelector).selectModel(false);
         verify(mTabModel).setIndex(0, TabSelectionType.FROM_USER);
         verify(mTabModel).removeObserver(observer);
@@ -583,6 +646,16 @@ public class ActorTabStateHelperTest {
     public void testListenAndSelectTabOnAdded_didAddTab_nonMatchingId_doesNotSelect() {
         Tab otherTab = mock(Tab.class);
         when(otherTab.getId()).thenReturn(999);
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY)
+                        .expectNoRecords(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY_COLD)
+                        .expectNoRecords(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY_WARM)
+                        .build();
 
         ActorTabStateHelper.listenAndSelectTabOnAdded(mTabModelSelector, mLayoutManager, TAB_ID);
 
@@ -595,6 +668,7 @@ public class ActorTabStateHelperTest {
                 TabCreationState.LIVE_IN_BACKGROUND,
                 /* markedForSelection= */ false);
 
+        watcher.assertExpected();
         verify(mTabModelSelector, never()).selectModel(anyBoolean());
         verify(mTabModel, never()).setIndex(anyInt(), anyInt());
         verify(mTabModel, never()).removeObserver(any());
@@ -604,6 +678,16 @@ public class ActorTabStateHelperTest {
     public void testListenAndSelectTabOnAdded_tabStateInitialized_destroysObserver() {
         ArgumentCaptor<TabModelSelectorObserver> selectorObserverCaptor =
                 ArgumentCaptor.forClass(TabModelSelectorObserver.class);
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY)
+                        .expectNoRecords(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY_COLD)
+                        .expectNoRecords(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY_WARM)
+                        .build();
 
         ActorTabStateHelper.listenAndSelectTabOnAdded(mTabModelSelector, mLayoutManager, TAB_ID);
 
@@ -616,6 +700,7 @@ public class ActorTabStateHelperTest {
         selectorObserver.onTabStateInitialized();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
 
+        watcher.assertExpected();
         verify(mTabModel).removeObserver(tabModelObserver);
         verify(mTabModelSelector, never()).selectModel(anyBoolean());
     }
@@ -664,6 +749,18 @@ public class ActorTabStateHelperTest {
         verify(mTabModelSelector).addObserver(selectorObserverCaptor.capture());
         TabModelSelectorObserver selectorObserver = selectorObserverCaptor.getValue();
 
+        ShadowSystemClock.advanceBy(180, TimeUnit.MILLISECONDS);
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY, 180)
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY_COLD,
+                                180)
+                        .expectNoRecords(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY_WARM)
+                        .build();
+
         observer.didAddTab(
                 mTab,
                 TabLaunchType.FROM_RESTORE,
@@ -673,6 +770,7 @@ public class ActorTabStateHelperTest {
         selectorObserver.onTabStateInitialized();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
 
+        watcher.assertExpected();
         verify(mOnTabSelected, times(1)).onResult(mTab);
         verify(mTabModelSelector).selectModel(false);
         verify(mTabModel).setIndex(0, TabSelectionType.FROM_USER);
@@ -696,9 +794,22 @@ public class ActorTabStateHelperTest {
         verify(mTabModelSelector).addObserver(selectorObserverCaptor.capture());
         TabModelSelectorObserver selectorObserver = selectorObserverCaptor.getValue();
 
+        ShadowSystemClock.advanceBy(420, TimeUnit.MILLISECONDS);
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY, 420)
+                        .expectIntRecord(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY_COLD,
+                                420)
+                        .expectNoRecords(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY_WARM)
+                        .build();
+
         selectorObserver.onTabStateInitialized();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
 
+        watcher.assertExpected();
         verify(mOnTabSelected, times(1)).onResult(mTab);
         verify(mTabModelSelector).selectModel(false);
         verify(mTabModel).setIndex(0, TabSelectionType.FROM_USER);

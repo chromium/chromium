@@ -32,6 +32,12 @@ import java.util.WeakHashMap;
 /** Helper class for recording Actor-related UMA metrics. */
 @NullMarked
 public class ActorMetrics implements ActorKeyedService.Observer {
+    public static final String ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY =
+            "Actor.BackgroundActuation.OnTabAdded.Latency";
+    public static final String ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY_COLD =
+            "Actor.BackgroundActuation.OnTabAdded.Latency.ColdStart";
+    public static final String ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY_WARM =
+            "Actor.BackgroundActuation.OnTabAdded.Latency.WarmStart";
     public static final String ACTOR_NOTIFICATION_TIME_BETWEEN_WORKLOG_UPDATES =
             "Actor.Notification.TimeBetweenWorklogUpdates";
     public static final String ACTOR_TASK_STOPPED_REASON_BACKGROUND_ACTUATION =
@@ -231,6 +237,24 @@ public class ActorMetrics implements ActorKeyedService.Observer {
     public static void recordTimeBetweenWorklogUpdates(long durationMs) {
         RecordHistogram.recordMediumTimesHistogram(
                 ACTOR_NOTIFICATION_TIME_BETWEEN_WORKLOG_UPDATES, durationMs);
+    }
+
+    /**
+     * Records the latency in milliseconds while waiting for a background tab to be restored and
+     * added to the {@link org.chromium.chrome.browser.tabmodel.TabModel}.
+     *
+     * @param durationMs The elapsed latency in milliseconds.
+     * @param isColdStart Whether the {@link org.chromium.chrome.browser.tabmodel.TabModelSelector}
+     *     tab state was uninitialized when waiting began.
+     */
+    public static void recordOnTabAddedLatency(long durationMs, boolean isColdStart) {
+        RecordHistogram.recordMediumTimesHistogram(
+                ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY, durationMs);
+        RecordHistogram.recordMediumTimesHistogram(
+                isColdStart
+                        ? ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY_COLD
+                        : ACTOR_BACKGROUND_ACTUATION_ON_TAB_ADDED_LATENCY_WARM,
+                durationMs);
     }
 
     /** Records the trigger source that initiated background actuation. */
