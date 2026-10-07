@@ -24,6 +24,9 @@ source_set("power_save_blocker") {
     "//remoting/host/win:*",
     "//services/device/wake_lock:*",
 
+    # Unit tests for the Linux implementation.
+    "//services/device:tests",
+
     # Scan Service in Ash needs to directly use the PowerSaveBlocker.
     "//chrome/browser/ash/scanning",
   ]

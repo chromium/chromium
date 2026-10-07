@@ -320,6 +320,13 @@ class PowerSaveBlocker::Delegate {
   }
 
   void SetScreenSaverSuspended(bool suspend) {
+    // Only display wake locks should suspend the screensaver.
+    // kPreventAppSuspension (eg. for audio-only playback) must still allow the
+    // display to dim and sleep. On Wayland, suspending the screensaver creates
+    // a zwp_idle_inhibitor_v1, which prevents the display from sleeping.
+    if (type_ == mojom::WakeLockType::kPreventAppSuspension) {
+      return;
+    }
     if (suspend) {
       DCHECK(!screen_saver_suspender_);
       // The screen can be nullptr in tests.

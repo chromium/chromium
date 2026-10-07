@@ -239,10 +239,15 @@ source_set("tests") {
       "battery/battery_status_manager_linux_unittest.cc",
       "geolocation/location_provider_linux_portal_unittest.cc",
       "geolocation/wifi_data_provider_linux_unittest.cc",
+      "wake_lock/power_save_blocker/power_save_blocker_linux_unittest.cc",
     ]
     deps += [
       "//components/dbus",
       "//dbus:test_support",
+      "//services/device/wake_lock/power_save_blocker",
+      "//ui/display",
+      "//ui/display:test_support",
+      "//ui/gfx",
     ]
   }
 
