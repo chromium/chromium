@@ -16,10 +16,11 @@ import static org.mockito.Mockito.verify;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.os.Build;
 import android.os.Looper;
 import android.os.OutcomeReceiver;
-import android.view.View.OnLayoutChangeListener;
+import android.view.WindowInsets;
 
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
@@ -29,7 +30,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -68,7 +68,6 @@ import java.util.HashMap;
     ChromeFeatureList.ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID
 })
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class FullscreenHtmlApiHandlerCompatUnitTest {
     @SuppressLint("NewApi")
     private static final Insets NAVIGATION_BAR_INSETS = Insets.of(0, 0, 0, 100);
@@ -91,9 +90,9 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
     @Mock private TabBrowserControlsConstraintsHelper mTabBrowserControlsConstraintsHelper;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
-    @Mock private ContentView mContentView;
     @Mock private TabModelSelector mTabModelSelector;
 
+    private TestContentView mContentView;
     private Activity mActivity;
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private MultiWindowModeStateDispatcherImpl mMultiWindowModeStateDispatcher;
@@ -138,9 +137,28 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         }
     }
 
+    /** Returns the given root insets, which Robolectric cannot set on a view. */
+    private static class TestContentView extends ContentView {
+        private WindowInsets mRootWindowInsets;
+
+        TestContentView(Context context) {
+            super(context, /* webContents= */ null);
+        }
+
+        void setRootWindowInsets(WindowInsets insets) {
+            mRootWindowInsets = insets;
+        }
+
+        @Override
+        public WindowInsets getRootWindowInsets() {
+            return mRootWindowInsets;
+        }
+    }
+
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mContentView = new TestContentView(mActivity);
 
         mHost = new UserDataHost();
         doReturn(mHost).when(mTab).getUserDataHost();
@@ -311,10 +329,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         doReturn(mContentView).when(mTab).getContentView();
         doReturn(true).when(mTab).isUserInteractable();
         doReturn(true).when(mTab).isHidden();
-        doReturn(true).when(mContentView).hasWindowFocus();
-        doReturn(VISIBLE_SYSTEM_BARS_WINDOW_INSETS.toWindowInsets())
-                .when(mContentView)
-                .getRootWindowInsets();
+        mContentView.setRootWindowInsets(VISIBLE_SYSTEM_BARS_WINDOW_INSETS.toWindowInsets());
         mAreControlsHidden.set(true);
 
         mFullscreenHtmlApiHandlerCompat.setTabForTesting(mTab);
@@ -416,10 +431,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         doReturn(mContentView).when(mTab).getContentView();
         doReturn(true).when(mTab).isUserInteractable();
         doReturn(true).when(mTab).isHidden();
-        doReturn(true).when(mContentView).hasWindowFocus();
-        doReturn(VISIBLE_SYSTEM_BARS_WINDOW_INSETS.toWindowInsets())
-                .when(mContentView)
-                .getRootWindowInsets();
+        mContentView.setRootWindowInsets(VISIBLE_SYSTEM_BARS_WINDOW_INSETS.toWindowInsets());
         mAreControlsHidden.set(true);
 
         mFullscreenHtmlApiHandlerCompat.setTabForTesting(mTab);
@@ -447,10 +459,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         doReturn(mContentView).when(mTab).getContentView();
         doReturn(true).when(mTab).isUserInteractable();
         doReturn(true).when(mTab).isHidden();
-        doReturn(true).when(mContentView).hasWindowFocus();
-        doReturn(VISIBLE_SYSTEM_BARS_WINDOW_INSETS.toWindowInsets())
-                .when(mContentView)
-                .getRootWindowInsets();
+        mContentView.setRootWindowInsets(VISIBLE_SYSTEM_BARS_WINDOW_INSETS.toWindowInsets());
         mAreControlsHidden.set(true);
 
         mFullscreenHtmlApiHandlerCompat.setTabForTesting(mTab);
@@ -503,10 +512,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         doReturn(mContentView).when(mTab).getContentView();
         doReturn(true).when(mTab).isUserInteractable();
         doReturn(true).when(mTab).isHidden();
-        doReturn(true).when(mContentView).hasWindowFocus();
-        doReturn(VISIBLE_SYSTEM_BARS_WINDOW_INSETS.toWindowInsets())
-                .when(mContentView)
-                .getRootWindowInsets();
+        mContentView.setRootWindowInsets(VISIBLE_SYSTEM_BARS_WINDOW_INSETS.toWindowInsets());
         mAreControlsHidden.set(true);
 
         mFullscreenHtmlApiHandlerCompat.setTabForTesting(mTab);
@@ -525,7 +531,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(mContentView).when(mTab).getContentView();
         doReturn(true).when(mTab).isUserInteractable();
-        doReturn(null).when(mContentView).getRootWindowInsets();
+        mContentView.setRootWindowInsets(null);
         mAreControlsHidden.set(true);
 
         mFullscreenHtmlApiHandlerCompat.setTabForTesting(mTab);
@@ -534,12 +540,11 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         assertFalse(mFullscreenHtmlApiHandlerCompat.isNavigationBarHidden(mContentView));
 
         FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false, INVALID_DISPLAY);
+        // Start small so that the layout below is a change to a bigger size.
+        mContentView.layout(0, 0, 10, 10);
         mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(mTab, fullscreenOptions);
 
-        ArgumentCaptor<OnLayoutChangeListener> arg =
-                ArgumentCaptor.forClass(OnLayoutChangeListener.class);
-        verify(mContentView).addOnLayoutChangeListener(arg.capture());
-        arg.getValue().onLayoutChange(mContentView, 0, 0, 100, 100, 0, 0, 10, 10);
+        mContentView.layout(0, 0, 100, 100);
 
         // Process MSG_ID_SET_VISIBILITY_FOR_SYSTEM_BARS while getRootWindowInsets() is null.
         Shadows.shadowOf(Looper.getMainLooper()).idle();
@@ -554,9 +559,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(mContentView).when(mTab).getContentView();
         doReturn(true).when(mTab).isUserInteractable();
-        doReturn(VISIBLE_SYSTEM_BARS_WINDOW_INSETS.toWindowInsets())
-                .when(mContentView)
-                .getRootWindowInsets();
+        mContentView.setRootWindowInsets(VISIBLE_SYSTEM_BARS_WINDOW_INSETS.toWindowInsets());
         mAreControlsHidden.set(true);
 
         mFullscreenHtmlApiHandlerCompat.setTabForTesting(mTab);

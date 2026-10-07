@@ -46,6 +46,8 @@ import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.view.WindowMetrics;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,14 +67,13 @@ import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.components.embedder_support.view.ContentView;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link PartialCustomTabBottomSheetStrategy}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PartialCustomTabBottomSheetStrategyTest {
     @Rule public final PartialCustomTabTestRule mPCCTTestRule = new PartialCustomTabTestRule();
 
@@ -1110,7 +1111,8 @@ public class PartialCustomTabBottomSheetStrategyTest {
     public void contentScrollMayResizeTab() {
         var intentData = mPCCTTestRule.mIntentData;
         when(intentData.contentScrollMayResizeTab()).thenReturn(true);
-        ContentView contentView = Mockito.mock(ContentView.class);
+        TestContentView contentView =
+                new TestContentView(ApplicationProvider.getApplicationContext());
         when(mPCCTTestRule.mTab.getContentView()).thenReturn(contentView);
 
         var strategy = createPcctAtHeight(500);
@@ -1135,16 +1137,15 @@ public class PartialCustomTabBottomSheetStrategyTest {
         when(e.getActionMasked()).thenReturn(MotionEvent.ACTION_MOVE);
         strategy.onTouchEvent(e);
         verify(detector).onTouchEvent(e);
-        verify(contentView).onTouchEvent(e);
+        assertEquals(List.of(e), contentView.getTouchEvents());
 
         clearInvocations(detector);
-        clearInvocations(contentView);
 
         // Lift up finger -> release
         when(e.getActionMasked()).thenReturn(MotionEvent.ACTION_UP);
         strategy.onTouchEvent(e);
         verify(detector).onTouchEvent(e);
-        verify(contentView).onTouchEvent(e);
+        assertEquals(List.of(e, e), contentView.getTouchEvents());
         verify(listener).doNonFlingRelease();
     }
 

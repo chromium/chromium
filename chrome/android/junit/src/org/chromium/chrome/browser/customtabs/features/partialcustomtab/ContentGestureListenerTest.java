@@ -5,12 +5,13 @@
 package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.view.MotionEvent;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -25,7 +26,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.ContentGestureListener.GestureState;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabHandleStrategy.DragEventCallback;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content_public.browser.WebContents;
 
@@ -33,7 +33,6 @@ import java.util.function.BooleanSupplier;
 
 /** Tests for {@link ContentGestureListener}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ContentGestureListenerTest {
     private static final float DISTX = 0.f;
 
@@ -42,15 +41,16 @@ public class ContentGestureListenerTest {
     @Mock private BooleanSupplier mIsFullyExpanded;
     @Mock private DragEventCallback mCallback;
     @Mock private RenderCoordinatesImpl mRenderCoordinates;
-    @Mock private ContentView mTabContentView;
     @Mock private WebContents mWebContents;
     @Mock private MotionEvent mEventSrc;
 
+    private TestContentView mTabContentView;
     private ContentGestureListener mListener;
     private MotionEvent mEventTo;
 
     @Before
     public void setUp() {
+        mTabContentView = new TestContentView(ApplicationProvider.getApplicationContext());
         mListener = new ContentGestureListener(() -> mTab, mCallback, mIsFullyExpanded);
         RenderCoordinatesImpl.setInstanceForTesting(mRenderCoordinates);
         when(mTab.getContentView()).thenReturn(mTabContentView);
@@ -76,7 +76,7 @@ public class ContentGestureListenerTest {
         // Keep dragging up, and the mode switches to content scrolling.
         mListener.onScroll(mEventSrc, mEventTo, DISTX, 50.f);
         mListener.onScroll(mEventSrc, mEventTo, DISTX, 40.f);
-        verify(mTabContentView).onTouchEvent(any(MotionEvent.class));
+        assertEquals(1, mTabContentView.getTouchEvents().size());
         assertEquals(GestureState.SCROLL_CONTENT, mListener.getStateForTesting());
     }
 

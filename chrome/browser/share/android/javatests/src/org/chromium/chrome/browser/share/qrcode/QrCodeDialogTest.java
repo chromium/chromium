@@ -14,12 +14,8 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -31,12 +27,8 @@ import java.util.ArrayList;
 
 /** Tests for the {@link QrCodeDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class QrCodeDialogTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock private View mTabView;
-
+    private View mTabView;
     private Activity mActivity;
 
     private static class CustomQrCodeDialog extends QrCodeDialog {
@@ -83,6 +75,7 @@ public class QrCodeDialogTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        mTabView = new View(mActivity);
     }
 
     @Test

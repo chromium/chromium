@@ -48,17 +48,16 @@ import org.chromium.content_public.browser.WebContents;
     ChromeFeatureList.ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID
 })
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class FullscreenHtmlApiHandlerLegacyUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
     @Mock private TabBrowserControlsConstraintsHelper mTabBrowserControlsConstraintsHelper;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
-    @Mock private ContentView mContentView;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
 
+    private ContentView mContentView;
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private FullscreenHtmlApiHandlerLegacy mFullscreenHtmlApiHandlerLegacy;
     private SettableNonNullObservableSupplier<Boolean> mAreControlsHidden;
@@ -67,6 +66,7 @@ public class FullscreenHtmlApiHandlerLegacyUnitTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mContentView = ContentView.createContentView(mActivity, /* webContents= */ null);
         mHost = new UserDataHost();
         doReturn(mHost).when(mTab).getUserDataHost();
         doReturn(ObservableSuppliers.createMonotonic())
@@ -212,7 +212,6 @@ public class FullscreenHtmlApiHandlerLegacyUnitTest {
         doReturn(mContentView).when(mTab).getContentView();
         doReturn(true).when(mTab).isUserInteractable();
         doReturn(true).when(mTab).isHidden();
-        doReturn(true).when(mContentView).hasWindowFocus();
         mAreControlsHidden.set(true);
 
         mFullscreenHtmlApiHandlerLegacy.setTabForTesting(mTab);
@@ -299,7 +298,6 @@ public class FullscreenHtmlApiHandlerLegacyUnitTest {
         doReturn(mContentView).when(mTab).getContentView();
         doReturn(true).when(mTab).isUserInteractable();
         doReturn(true).when(mTab).isHidden();
-        doReturn(true).when(mContentView).hasWindowFocus();
         mAreControlsHidden.set(true);
 
         mFullscreenHtmlApiHandlerLegacy.setTabForTesting(mTab);
@@ -322,7 +320,6 @@ public class FullscreenHtmlApiHandlerLegacyUnitTest {
         doReturn(mContentView).when(mTab).getContentView();
         doReturn(true).when(mTab).isUserInteractable();
         doReturn(true).when(mTab).isHidden();
-        doReturn(true).when(mContentView).hasWindowFocus();
         mAreControlsHidden.set(true);
 
         mFullscreenHtmlApiHandlerLegacy.setTabForTesting(mTab);
