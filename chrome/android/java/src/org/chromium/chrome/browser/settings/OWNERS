@@ -10,8 +10,10 @@ chrome-settings-android-reviews@google.com
 
 # Default Reviewers - prefer these if choosing manually:
 adelm@google.com            #{LAST_RESORT_SUGGESTION}
+jamescook@chromium.org      #{LAST_RESORT_SUGGESTION}
 jinsukkim@chromium.org      #{LAST_RESORT_SUGGESTION}
 josefraska@google.com       #{LAST_RESORT_SUGGESTION}
+mwoj@google.com             #{LAST_RESORT_SUGGESTION}
 
 # Fallback Reviewers:
 agazal@google.com           #{LAST_RESORT_SUGGESTION}
