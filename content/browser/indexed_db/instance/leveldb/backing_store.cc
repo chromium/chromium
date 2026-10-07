@@ -4193,7 +4193,9 @@ Status BackingStore::MigrateToV5(LevelDBWriteBatch* write_batch) {
 
 Status BackingStore::Transaction::HandleBlobPreTransaction() {
   CHECK(backing_store_, base::NotFatalUntil::M159);
-  CHECK(blobs_to_write_.empty(), base::NotFatalUntil::M159);
+  // TODO(crbug.com/569883940): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(blobs_to_write_.empty());
 
   if (backing_store_->in_memory()) {
     return Status::OK();
