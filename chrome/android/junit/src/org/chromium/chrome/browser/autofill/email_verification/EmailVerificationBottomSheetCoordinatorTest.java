@@ -15,7 +15,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -28,7 +27,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -41,8 +39,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
-
-import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link EmailVerificationBottomSheetCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -178,10 +174,6 @@ public final class EmailVerificationBottomSheetCoordinatorTest {
         assertTrue(model.get(EmailVerificationBottomSheetProperties.SHOW_LOADING_STATE));
 
         mCoordinator.hide();
-        Shadows.shadowOf(Looper.getMainLooper())
-                .idleFor(
-                        EmailVerificationBottomSheetMediator.MIN_LOADING_TIME_MS,
-                        TimeUnit.MILLISECONDS);
 
         verify(mBottomSheetController)
                 .hideContent(

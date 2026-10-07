@@ -5,12 +5,8 @@
 package org.chromium.chrome.browser.autofill.email_verification;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.SystemClock;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillSheetUiController;
 import org.chromium.chrome.browser.autofill.AutofillSheetUiControllerFactory;
@@ -29,15 +25,10 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 @NullMarked
 /*package*/ class EmailVerificationBottomSheetMediator implements BottomSheetObserver {
-    /*package*/ static final long MIN_LOADING_TIME_MS = 800L;
-
     private final EmailVerificationBottomSheetContent mContent;
     private final AutofillSheetUiController mUiController;
     private final EmailVerificationBottomSheetCoordinator.Delegate mDelegate;
     private final PropertyModel mModel;
-    private final Handler mHandler = new Handler(Looper.getMainLooper());
-    private @Nullable Runnable mPendingDismissRunnable;
-    private long mLoadingStartTimeMs;
     private boolean mDismissed;
 
     /**
@@ -105,23 +96,19 @@ import org.chromium.ui.modelutil.PropertyModel;
     }
 
     public void onAccepted() {
-        mLoadingStartTimeMs = SystemClock.elapsedRealtime();
         mModel.set(EmailVerificationBottomSheetProperties.SHOW_LOADING_STATE, true);
         mDelegate.onUiAccepted();
     }
 
     public void onDeclined() {
-        hideImmediately(StateChangeReason.INTERACTION_COMPLETE, /* animate= */ true);
-        notifyDismissed(EmailVerificationPermissionUiStatus.DECLINED);
+        hideContent(
+                /* animate= */ true,
+                StateChangeReason.INTERACTION_COMPLETE,
+                EmailVerificationPermissionUiStatus.DECLINED);
     }
 
     @Override
     public void onSheetClosed(@StateChangeReason int reason) {
-        if (mPendingDismissRunnable != null) {
-            mHandler.removeCallbacks(mPendingDismissRunnable);
-            mPendingDismissRunnable = null;
-        }
-        mHandler.removeCallbacksAndMessages(null);
         mUiController.removeObserver(this);
         mModel.set(EmailVerificationBottomSheetProperties.SHOW_LOADING_STATE, false);
         @EmailVerificationPermissionUiStatus int status;
@@ -151,62 +138,35 @@ import org.chromium.ui.modelutil.PropertyModel;
         mDelegate.onUiDismissed(reason);
     }
 
-    /**
-     * Hides the bottom sheet (if showing). If the bottom sheet is currently in the loading state,
-     * ensures it remains visible for at least {@link #MIN_LOADING_TIME_MS} (800ms) since loading
-     * started when completing the interaction.
-     */
-    void hide() {
-        if (mModel.get(EmailVerificationBottomSheetProperties.SHOW_LOADING_STATE)) {
-            if (mPendingDismissRunnable != null) {
-                return;
-            }
-            long elapsed = SystemClock.elapsedRealtime() - mLoadingStartTimeMs;
-            long remaining = Math.max(0, MIN_LOADING_TIME_MS - elapsed);
-            if (remaining > 0) {
-                mPendingDismissRunnable =
-                        () -> {
-                            mPendingDismissRunnable = null;
-                            hideImmediately(
-                                    StateChangeReason.INTERACTION_COMPLETE, /* animate= */ true);
-                            notifyDismissed(EmailVerificationPermissionUiStatus.ALLOWED);
-                        };
-                mHandler.postDelayed(mPendingDismissRunnable, remaining);
-                return;
-            }
-            hideImmediately(StateChangeReason.INTERACTION_COMPLETE, /* animate= */ true);
-            notifyDismissed(EmailVerificationPermissionUiStatus.ALLOWED);
-            return;
-        }
-        hideImmediately(StateChangeReason.INTERACTION_COMPLETE, /* animate= */ true);
-        notifyDismissed(EmailVerificationPermissionUiStatus.OTHER);
-    }
-
-    /**
-     * Destroys this component immediately, dismissing the bottom sheet without animation and
-     * cancelling any pending callbacks.
-     */
-    void destroy() {
-        hideImmediately(StateChangeReason.NONE, /* animate= */ false);
-        notifyDismissed(EmailVerificationPermissionUiStatus.OTHER);
-    }
-
-    private void hideImmediately(@StateChangeReason int hideReason, boolean animate) {
-        if (mPendingDismissRunnable != null) {
-            mHandler.removeCallbacks(mPendingDismissRunnable);
-            mPendingDismissRunnable = null;
-        }
-        mHandler.removeCallbacksAndMessages(null);
+    private void hideContent(
+            boolean animate,
+            @StateChangeReason int hideReason,
+            @EmailVerificationPermissionUiStatus int status) {
         mUiController.removeObserver(this);
         mUiController.hideContent(mContent, animate, hideReason);
         mModel.set(EmailVerificationBottomSheetProperties.SHOW_LOADING_STATE, false);
+        notifyDismissed(status);
     }
 
-    /*package*/ @Nullable Runnable getPendingDismissRunnableForTesting() {
-        return mPendingDismissRunnable;
+    /** Hides the bottom sheet (if showing). */
+    void hide() {
+        if (mDismissed) {
+            return;
+        }
+        boolean wasLoading = mModel.get(EmailVerificationBottomSheetProperties.SHOW_LOADING_STATE);
+        hideContent(
+                /* animate= */ true,
+                StateChangeReason.INTERACTION_COMPLETE,
+                wasLoading
+                        ? EmailVerificationPermissionUiStatus.ALLOWED
+                        : EmailVerificationPermissionUiStatus.OTHER);
     }
 
-    /*package*/ long getLoadingStartTimeMsForTesting() {
-        return mLoadingStartTimeMs;
+    /** Destroys this component immediately, dismissing the bottom sheet without animation. */
+    void destroy() {
+        hideContent(
+                /* animate= */ false,
+                StateChangeReason.NONE,
+                EmailVerificationPermissionUiStatus.OTHER);
     }
 }
