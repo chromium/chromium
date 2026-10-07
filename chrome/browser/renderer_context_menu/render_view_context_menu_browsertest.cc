@@ -4935,12 +4935,18 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuSubmenuBrowserTest,
   EXPECT_FALSE(
       menu->IsItemPresent(IDC_CONTENT_CONTEXT_ASK_GOOGLE_ABOUT_THIS_PAGE));
   EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
-  EXPECT_TRUE(menu->GetMenuModelAndItemIndex(
-                      IDC_CONTENT_CONTEXT_ASK_GOOGLE_ABOUT_THIS_PAGE)
-                  .has_value());
+  auto ask_google_item = menu->GetMenuModelAndItemIndex(
+      IDC_CONTENT_CONTEXT_ASK_GOOGLE_ABOUT_THIS_PAGE);
+  ASSERT_TRUE(ask_google_item.has_value());
   EXPECT_TRUE(
       menu->GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH)
           .has_value());
+  auto submenu_item = menu->GetMenuModelAndItemIndex(
+      IDC_CONTENT_CONTEXT_CONTEXTUAL_TASKS_SUBMENU);
+  ASSERT_TRUE(submenu_item.has_value());
+  EXPECT_FALSE(submenu_item->first->GetIconAt(submenu_item->second).IsEmpty());
+  EXPECT_EQ(submenu_item->first->GetIconAt(submenu_item->second),
+            ask_google_item->first->GetIconAt(ask_google_item->second));
 }
 
 class CopyTextJourneysContextMenuBrowserTest : public ContextMenuBrowserTest {

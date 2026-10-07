@@ -3312,14 +3312,15 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
     ui::SimpleMenuModel* target_model =
         use_submenu ? &contextual_tasks_submenu_model_ : &menu_model_;
 
+    const ui::ImageModel ask_google_icon = ui::ImageModel::FromVectorIcon(
+        features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
+                                          : omnibox::kSearchSparkOldIcon,
+        ui::kColorMenuIcon, kTabMenuIconSize);
+
     if (contextual_tasks::kContextualTasksContextMenuShowAskGoogle.Get()) {
       target_model->AddItemWithStringIdAndIcon(
           IDC_CONTENT_CONTEXT_ASK_GOOGLE_ABOUT_THIS_PAGE,
-          IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT_THIS_PAGE,
-          ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                             ? omnibox::kSearchSparkIcon
-                                             : omnibox::kSearchSparkOldIcon,
-                                         ui::kColorMenuIcon, kTabMenuIconSize));
+          IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT_THIS_PAGE, ask_google_icon);
       const int ask_google_command_index =
           target_model
               ->GetIndexOfCommandId(
@@ -3341,10 +3342,10 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
 
     // If using the submenu, attach it to the parent menu model.
     if (use_submenu) {
-      menu_model_.AddSubMenuWithStringId(
+      menu_model_.AddSubMenuWithStringIdAndIcon(
           IDC_CONTENT_CONTEXT_CONTEXTUAL_TASKS_SUBMENU,
           IDS_CONTEXTUAL_SEARCH_SEARCH_WITH_GOOGLE,
-          &contextual_tasks_submenu_model_);
+          &contextual_tasks_submenu_model_, ask_google_icon);
       const int submenu_index =
           menu_model_
               .GetIndexOfCommandId(IDC_CONTENT_CONTEXT_CONTEXTUAL_TASKS_SUBMENU)
