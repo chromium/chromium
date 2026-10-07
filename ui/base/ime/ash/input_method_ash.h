@@ -15,6 +15,7 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/ime/ash/text_input_method.h"
 #include "ui/base/ime/ash/text_input_target.h"
@@ -178,7 +179,15 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
 
   // Called from the engine when it completes processing.
   void ProcessKeyEventDone(ui::KeyEvent* event,
+                           base::ScopedClosureRunner in_flight,
                            ui::ime::KeyEventHandledState handled_state);
+
+  // Increments `num_handling_key_events_`. The returned runner decrements it
+  // exactly once, when run or when destroyed (e.g. the engine drops the
+  // callback it is bound to).
+  [[nodiscard]] base::ScopedClosureRunner StartHandlingKeyEvent();
+  void FinishHandlingKeyEvent();
+  void OnKeyEventCallbackDropped();
 
   bool IsPasswordOrNoneInputFieldFocused();
 
@@ -219,7 +228,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
   ui::CharacterComposer character_composer_;
 
   // Number of physical key events currently in flight to the IME engine.
-  // This is used in CommitText/UpdateCompositionText/etc.
+  // This is used in CommitText/UpdateCompositionText/etc. Changed only by
+  // `StartHandlingKeyEvent()` and `FinishHandlingKeyEvent()`; must never be
+  // reset directly because every in-flight callback owns one pending decrement.
   size_t num_handling_key_events_ = 0;
 
   TypingSessionManager typing_session_manager_;

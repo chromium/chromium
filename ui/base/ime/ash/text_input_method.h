@@ -120,7 +120,13 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputMethod {
   virtual void Reset() = 0;
 
   // Called when the key event is received.
-  // Actual implementation must call |callback| after key event handling.
+  // Implementations should invoke `callback` on the UI sequence after key event
+  // handling to perform post-IME key processing and flush buffered IME results.
+  // If `callback` is dropped without being run (e.g. when the input context
+  // changes while the key event is in flight), the key event is not
+  // post-processed and any IME results buffered while it was in flight are
+  // discarded once no other key events remain in flight. `callback` must be
+  // run or destroyed on the UI sequence.
   virtual void ProcessKeyEvent(const ui::KeyEvent& key_event,
                                KeyEventDoneCallback callback) = 0;
 

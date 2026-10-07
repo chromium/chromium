@@ -2050,4 +2050,44 @@ TEST_F(InputMethodAshKeyEventTest,
   EXPECT_EQ(dispatched_key_event_.key_code(), ui::VKEY_E);
 }
 
+TEST_F(InputMethodAshKeyEventTest,
+       DroppedKeyEventCallbackDiscardsBufferedResultsAndUnblocksCommits) {
+  input_type_ = ui::TEXT_INPUT_TYPE_TEXT;
+  input_method_ash_->OnTextInputTypeChanged(this);
+
+  ui::KeyEvent event1(ui::EventType::kKeyPressed, ui::VKEY_T, ui::DomCode::US_T,
+                      ui::EF_NONE, ui::DomKey::FromCharacter('t'),
+                      ui::EventTimeForNow());
+  input_method_ash_->DispatchKeyEvent(&event1);
+  KeyEventCallback dropped_callback =
+      mock_ime_engine_handler_->last_passed_callback();
+
+  // Buffer IME operations while the key event is in flight.
+  input_method_ash_->CommitText(
+      u"stale",
+      TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  input_method_ash_->SetComposingRange(0, 1, {});
+  std::optional<bool> autocorrect_result;
+  input_method_ash_->SetAutocorrectRange(
+      gfx::Range(0, 1), base::BindOnce([](std::optional<bool>* out,
+                                          bool result) { *out = result; },
+                                       &autocorrect_result));
+  EXPECT_FALSE(autocorrect_result.has_value());
+
+  // Drop the callback without invoking it (e.g. when InputMethodEngine
+  // discards a callback after the input context changes).
+  dropped_callback.Reset();
+
+  // Buffered autocorrect callback should be resolved with false and buffered
+  // operations discarded.
+  EXPECT_EQ(false, autocorrect_result);
+  EXPECT_TRUE(inserted_text_.empty());
+
+  // Subsequent non-key-event commits (such as virtual keyboard or candidate
+  // selection) should be committed immediately rather than buffered forever.
+  input_method_ash_->CommitText(
+      u"x", TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  EXPECT_EQ(u"x", inserted_text_);
+}
+
 }  // namespace ash
