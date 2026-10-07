@@ -308,7 +308,36 @@ class ExtensionTabsTest : public ExtensionApiTest {
 
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
 
-using ExtensionTabsTestWithApps = PlatformAppBrowserTest;
+class ExtensionTabsTestWithApps : public PlatformAppBrowserTest {
+ protected:
+  // Creates a test Chrome App window, verifies its WindowController is
+  // reachable by ID with no BrowserWindowInterface, substitutes its window ID
+  // for "$1" in `args_template`, runs `function`, and closes the app window.
+  std::string RunFunctionTargetingAppWindow(
+      scoped_refptr<ExtensionFunction> function,
+      std::string_view args_template) {
+    AppWindow* app_window = CreateTestAppWindow("{}");
+    const int app_window_id = app_window->session_id().id();
+
+    WindowController* app_window_controller =
+        ExtensionTabUtil::GetControllerInProfileWithId(
+            profile(), app_window_id, /*also_match_incognito_profile=*/false,
+            /*error_message=*/nullptr);
+    EXPECT_TRUE(app_window_controller);
+    EXPECT_FALSE(app_window_controller->GetBrowserWindowInterface());
+
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder("AppWindowTargetTest").Build();
+    function->set_extension(extension.get());
+    std::string args = base::ReplaceStringPlaceholders(
+        args_template, {base::ToString(app_window_id)}, /*offsets=*/nullptr);
+    std::string error =
+        utils::RunFunctionAndReturnError(function.get(), args, profile());
+
+    CloseAppWindow(app_window);
+    return error;
+  }
+};
 
 #endif
 
@@ -1990,63 +2019,37 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTestWithApps, NoTabsAppWindow) {
 // Verifies that tabs.move() into a Chrome App window, whose WindowController
 // has no BrowserWindowInterface, fails gracefully instead of crashing.
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTestWithApps, CannotMoveTabToAppWindow) {
-  AppWindow* app_window = CreateTestAppWindow("{}");
-  int app_window_id = app_window->session_id().id();
-
-  // The app window is reachable by ID but has no BrowserWindowInterface.
-  WindowController* app_window_controller =
-      ExtensionTabUtil::GetControllerInProfileWithId(
-          profile(), app_window_id, /*also_match_incognito_profile=*/false,
-          /*error_message=*/nullptr);
-  ASSERT_TRUE(app_window_controller);
-  ASSERT_FALSE(app_window_controller->GetBrowserWindowInterface());
-
   content::WebContents* web_contents =
       GetTabListInterface()->GetTab(0)->GetContents();
   int tab_id = ExtensionTabUtil::GetTabId(web_contents);
 
-  scoped_refptr<const Extension> extension =
-      ExtensionBuilder("MoveToAppWindowTest").Build();
-  auto function = base::MakeRefCounted<TabsMoveFunction>();
-  function->set_extension(extension.get());
-  std::string args = base::StringPrintf(
-      R"([%d, {"windowId": %d, "index": 0}])", tab_id, app_window_id);
-  std::string error =
-      utils::RunFunctionAndReturnError(function.get(), args, profile());
+  std::string error = RunFunctionTargetingAppWindow(
+      base::MakeRefCounted<TabsMoveFunction>(),
+      base::StringPrintf(R"([%d, {"windowId": $1, "index": 0}])", tab_id));
   EXPECT_EQ(ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError, error);
 
   // The tab should not have moved.
   EXPECT_EQ(web_contents, GetTabListInterface()->GetTab(0)->GetContents());
-
-  CloseAppWindow(app_window);
 }
 
 // Verifies that tabs.create() targeting a Chrome App window, whose
 // WindowController has no BrowserWindowInterface, returns
 // kTabStripNotEditableError instead of an empty error string.
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTestWithApps, CannotCreateTabInAppWindow) {
-  AppWindow* app_window = CreateTestAppWindow("{}");
-  int app_window_id = app_window->session_id().id();
-
-  // The app window is reachable by ID but has no BrowserWindowInterface.
-  WindowController* app_window_controller =
-      ExtensionTabUtil::GetControllerInProfileWithId(
-          profile(), app_window_id, /*also_match_incognito_profile=*/false,
-          /*error_message=*/nullptr);
-  ASSERT_TRUE(app_window_controller);
-  ASSERT_FALSE(app_window_controller->GetBrowserWindowInterface());
-
-  scoped_refptr<const Extension> extension =
-      ExtensionBuilder("CreateInAppWindowTest").Build();
-  auto function = base::MakeRefCounted<TabsCreateFunction>();
-  function->set_extension(extension.get());
-  std::string args =
-      base::StringPrintf(R"([{"windowId": %d}])", app_window_id);
-  std::string error =
-      utils::RunFunctionAndReturnError(function.get(), args, profile());
+  std::string error = RunFunctionTargetingAppWindow(
+      base::MakeRefCounted<TabsCreateFunction>(), R"([{"windowId": $1}])");
   EXPECT_EQ(ExtensionTabUtil::kTabStripNotEditableError, error);
+}
 
-  CloseAppWindow(app_window);
+// Verifies that tabs.highlight() targeting a Chrome App window, whose
+// WindowController has no BrowserWindowInterface, returns
+// kTabStripNotEditableError instead of crashing on a null dereference.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTestWithApps,
+                       CannotHighlightTabsInAppWindow) {
+  std::string error = RunFunctionTargetingAppWindow(
+      base::MakeRefCounted<TabsHighlightFunction>(),
+      R"([{"windowId": $1, "tabs": 0}])");
+  EXPECT_EQ(ExtensionTabUtil::kTabStripNotEditableError, error);
 }
 
 // Crashes on Mac/Win only.  http://crbug.com/40514319

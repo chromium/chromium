@@ -2562,8 +2562,12 @@ ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
   }
 
   // Don't let the extension update the tab if the user is dragging tabs.
-  TabListInterface* tab_list = ExtensionTabUtil::GetEditableTabList(
-      *window_controller->GetBrowserWindowInterface());
+  BrowserWindowInterface* browser =
+      window_controller->GetBrowserWindowInterface();
+  if (!browser) {
+    return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
+  }
+  TabListInterface* tab_list = ExtensionTabUtil::GetEditableTabList(*browser);
   if (!tab_list) {
     return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
   }
@@ -2621,8 +2625,6 @@ ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
 #if BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/496733610): Supporting CCT/PWA/TWA is currently not possible
   // in C++ browser tests on Android. Add tests once that's supported.
-  BrowserWindowInterface* browser =
-      window_controller->GetBrowserWindowInterface();
   auto browser_type = browser->GetType();
   if ((browser_type == BrowserWindowInterface::TYPE_CUSTOM_TAB ||
        browser_type == BrowserWindowInterface::TYPE_APP) &&
