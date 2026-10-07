@@ -92,11 +92,11 @@ OneTimePermissionsPageTracker::OneTimePermissionsPageTracker(
     OneTimePermissionsTracker& tracker)
     : PageUserData(page), tracker_(tracker), origin_(std::move(origin)) {
   active_page_tracker_ = tracker_->NewActivePage(origin_);
+  // Pages created hidden do not acquire a foreground condition. Note that
+  // acquiring and immediately releasing one would restart any partially
+  // elapsed expiration countdown for this origin (see crbug.com/563176035).
   if (content::WebContents::FromRenderFrameHost(&page.GetMainDocument())
-          ->GetVisibility() == content::Visibility::HIDDEN) {
-    // Make sure we track this page being in background.
-    tracker_->NewForegroundPage(origin_);
-  } else {
+          ->GetVisibility() != content::Visibility::HIDDEN) {
     foreground_page_tracker_ = tracker_->NewForegroundPage(origin_);
   }
 }
