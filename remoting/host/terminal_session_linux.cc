@@ -212,11 +212,19 @@ base::expected<base::Process, TerminalError> LaunchShellProcess(
           // Disable tmux mouse capture so the outer terminal (xterm.js) handles
           // native text selection and scrolling directly.
           {"mouse", "off"},
+          // Disable the prefix key on the outer tmux server so that shortcuts
+          // (such as Ctrl+b d to detach from an inner tmux session) are
+          // forwarded to the shell instead of detaching the CRD terminal tab.
+          {"prefix", "None"},
+          {"prefix2", "None"},
       };
 
   // clang-format off
   std::vector<std::string> tmux_cmd = {
       tmx2_path.value(),
+      // Ignore the user's ~/.tmux.conf so custom keybindings, status bars, or
+      // plugins do not affect the outer CRD persistence wrapper.
+      "-f", "/dev/null",
       // Use the CRD-specific tmux socket name to avoid conflicts with other
       // tmux sessions.
       "-L", std::string(kTmuxSocketName),
@@ -228,9 +236,16 @@ base::expected<base::Process, TerminalError> LaunchShellProcess(
   tmux_cmd.insert(
       tmux_cmd.end(),
       {
+          "unbind-key", "-a", "-T", "root", ";",
           "new-session", "-A", "-s", GetTmuxSessionName(id),
           "-e", base::StrCat({"CRD_TERMINAL_ID=", base::NumberToString(id)}),
-          "-e", "CLI_GRAPHICS=iterm2", ";",
+          "-e", "CLI_GRAPHICS=iterm2",
+          // Unset TMUX and TMUX_PANE before exec'ing the user's login shell so
+          // that users can create or attach to nested tmux/tmx2 sessions
+          // without hitting "sessions should be nested with care, unset $TMUX
+          // to force". Using exec preserves #{pane_pid} as the login shell PID
+          // for process monitoring.
+          "unset TMUX TMUX_PANE; exec \"${SHELL:-/bin/bash}\" -l", ";",
       });
   // clang-format on
 
