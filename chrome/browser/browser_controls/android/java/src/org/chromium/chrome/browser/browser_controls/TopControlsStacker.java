@@ -50,6 +50,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         TopControlType.HAIRLINE,
         TopControlType.PROGRESS_BAR,
         TopControlType.TAB_SHARING_TOOLBAR,
+        TopControlType.TOP_SCALP,
     })
     public @interface TopControlType {
         int STATUS_INDICATOR = 0;
@@ -59,6 +60,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         int HAIRLINE = 4;
         int PROGRESS_BAR = 5;
         int TAB_SHARING_TOOLBAR = 6;
+        int TOP_SCALP = 7;
     }
 
     // LINT.ThenChange(:TopControlTypeName)
@@ -116,6 +118,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
     // The pre-defined stack order for different top controls.
     private static final @TopControlType int[] STACK_ORDER =
             new int[] {
+                TopControlType.TOP_SCALP,
                 TopControlType.STATUS_INDICATOR,
                 TopControlType.TABSTRIP,
                 TopControlType.TOOLBAR,
@@ -826,6 +829,8 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
                 return "PROGRESS_BAR";
             case TopControlType.TAB_SHARING_TOOLBAR:
                 return "TAB_SHARING_TOOLBAR";
+            case TopControlType.TOP_SCALP:
+                return "TOP_SCALP";
         }
         assert false : "Unknown TopControlType: " + type;
         return "";
