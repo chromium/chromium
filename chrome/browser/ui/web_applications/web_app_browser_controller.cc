@@ -694,6 +694,20 @@ std::u16string WebAppBrowserController::GetTitle() const {
     return app_name;
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Do not omit the page title for System Web Apps (such as Terminal, Files, or
+  // Settings), as ChromeOS window management and Tast tests rely on the active
+  // page/tab title being present in the window title.
+  if (system_app()) {
+    return base::StrCat({app_name, u" - ", raw_title});
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  if (!has_tab_strip() &&
+      provider_->ui_manager().GetNumWindowsForApp(app_id()) == 1) {
+    return app_name;
+  }
+
   return base::StrCat({app_name, u" - ", raw_title});
 }
 

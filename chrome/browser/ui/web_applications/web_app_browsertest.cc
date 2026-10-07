@@ -2487,8 +2487,8 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PrefixInTitle,
   NavigateViaLinkClickToURLAndWait(
       app_browser,
       embedded_https_test_server().GetURL("app.site.test", "/simple.html"));
-  EXPECT_EQ(u"A Web App - OK", WindowMetadataController::From(app_browser)
-                                   ->GetWindowTitleForCurrentTab(false));
+  EXPECT_EQ(app_title, WindowMetadataController::From(app_browser)
+                           ->GetWindowTitleForCurrentTab(false));
 }
 
 // Ensure that web app windows display the app title instead of the page
@@ -2508,9 +2508,9 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PrefixInTitle,
       app_browser->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
-  // When we are within scope, show the page title.
-  EXPECT_EQ(u"A Web App - Google", WindowMetadataController::From(app_browser)
-                                       ->GetWindowTitleForCurrentTab(false));
+  // When we are within scope, show the app title if there is only one window.
+  EXPECT_EQ(app_title, WindowMetadataController::From(app_browser)
+                           ->GetWindowTitleForCurrentTab(false));
   NavigateViaLinkClickToURLAndWait(
       app_browser,
       embedded_https_test_server().GetURL("app.site.test", "/simple.html"));
@@ -2518,6 +2518,79 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PrefixInTitle,
   // When we are off scope, show the app title.
   EXPECT_EQ(app_title, WindowMetadataController::From(app_browser)
                            ->GetWindowTitleForCurrentTab(false));
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PrefixInTitle,
+                       MultipleAppWindowTitleTest) {
+  const GURL app_url = GetSecureAppURL();
+  const std::u16string app_title = u"A Web App";
+
+  auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
+  web_app_info->scope = app_url.GetWithEmptyPath();
+  web_app_info->title = app_title;
+  const webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
+
+  BrowserWindowInterface* const first_app_browser = LaunchWebAppBrowser(app_id);
+  content::WebContents* const first_web_contents =
+      first_app_browser->GetTabStripModel()->GetActiveWebContents();
+  EXPECT_TRUE(content::WaitForLoadStop(first_web_contents));
+
+  // When there is only one window, the title should be the app name.
+  EXPECT_EQ(app_title, WindowMetadataController::From(first_app_browser)
+                           ->GetWindowTitleForCurrentTab(false));
+
+  BrowserWindowInterface* const second_app_browser =
+      LaunchWebAppBrowser(app_id);
+  content::WebContents* const second_web_contents =
+      second_app_browser->GetTabStripModel()->GetActiveWebContents();
+  EXPECT_TRUE(content::WaitForLoadStop(second_web_contents));
+
+  // With two windows, the title should include the page title to differentiate
+  // them.
+  EXPECT_EQ(u"A Web App - Google",
+            WindowMetadataController::From(second_app_browser)
+                ->GetWindowTitleForCurrentTab(false));
+
+  // Navigate the first window to trigger a title update and check its title.
+  NavigateViaLinkClickToURLAndWait(
+      first_app_browser,
+      embedded_https_test_server().GetURL("app.com", "/simple.html"));
+  EXPECT_EQ(u"A Web App - OK", WindowMetadataController::From(first_app_browser)
+                                   ->GetWindowTitleForCurrentTab(false));
+
+  // Close the second window and navigate the first window to verify it reverts
+  // to showing only the app title.
+  CloseAndWait(second_app_browser);
+  NavigateViaLinkClickToURLAndWait(first_app_browser, app_url);
+  EXPECT_EQ(app_title, WindowMetadataController::From(first_app_browser)
+                           ->GetWindowTitleForCurrentTab(false));
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_Tabbed,
+                       TabbedAppSingleWindowTitleTest) {
+  const GURL app_url = GetSecureAppURL();
+  const std::u16string app_title = u"A Web App";
+
+  auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
+  web_app_info->scope = app_url.GetWithoutFilename();
+  web_app_info->title = app_title;
+  web_app_info->display_mode = DisplayMode::kStandalone;
+  web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
+  web_app_info->display_override.push_back(
+      DisplayOverride::Create(DisplayMode::kTabbed));
+  const webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
+
+  BrowserWindowInterface* const app_browser = LaunchWebAppBrowser(app_id);
+  content::WebContents* const web_contents =
+      app_browser->GetTabStripModel()->GetActiveWebContents();
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+  EXPECT_TRUE(
+      web_app::AppBrowserController::From(app_browser)->has_tab_strip());
+
+  // Tabbed web apps should still include the active tab's page title even when
+  // only a single window is open.
+  EXPECT_EQ(u"A Web App - Google", WindowMetadataController::From(app_browser)
+                                       ->GetWindowTitleForCurrentTab(false));
 }
 
 // Ensure that web app windows display the app title instead of the page
