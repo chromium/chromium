@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ui.bottombar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -30,7 +29,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link BottomBarConfigUtils}. */
@@ -364,23 +362,5 @@ public class BottomBarConfigUtilsUnitTest {
         assertEquals(
                 BottomBarConfigUtils.DEFAULT_BOTTOM_BAR_HEIGHT_DP,
                 BottomBarConfigUtils.getBottomBarHeightDp());
-    }
-
-    @Test
-    public void testIsNtp() {
-        assertFalse(BottomBarConfigUtils.isNtp(null));
-
-        when(mTab.getNativePage()).thenReturn(null);
-        assertFalse(BottomBarConfigUtils.isNtp(mTab));
-
-        NativePage nativePage = mock(NativePage.class);
-        when(nativePage.getHost()).thenReturn(UrlConstants.NTP_HOST);
-        when(mTab.getNativePage()).thenReturn(nativePage);
-
-        when(mTab.isOffTheRecord()).thenReturn(false);
-        assertTrue(BottomBarConfigUtils.isNtp(mTab));
-
-        when(mTab.isOffTheRecord()).thenReturn(true);
-        assertTrue(BottomBarConfigUtils.isNtp(mTab));
     }
 }

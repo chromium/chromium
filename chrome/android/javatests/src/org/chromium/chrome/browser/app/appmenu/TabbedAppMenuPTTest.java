@@ -49,7 +49,7 @@ import java.io.IOException;
 @Batch(Batch.PER_CLASS)
 // TODO: Add new tests when the flag is enabled.
 @EnableFeatures(ChromeFeatureList.ANDROID_THEME_MODULE)
-@DisableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR, ChromeFeatureList.GLIC})
+@DisableFeatures(ChromeFeatureList.GLIC)
 public class TabbedAppMenuPTTest {
     @Rule
     public AutoResetCtaTransitTestRule mCtaTestRule =

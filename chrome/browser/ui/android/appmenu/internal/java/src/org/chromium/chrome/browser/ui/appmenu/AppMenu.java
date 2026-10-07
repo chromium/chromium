@@ -126,28 +126,19 @@ class AppMenu implements OnKeyListener {
         /** Unusable space either above or below the anchor. */
         public final int anchorViewOffset;
 
-        /**
-         * Height from the top of {@link #visibleDisplayFrame} that the menu list must not cover,
-         * e.g. the top browser controls when the menu is anchored to the bottom bar. 0 means no
-         * constraint.
-         */
-        public final int reservedTopSpace;
-
         MenuSpec(
                 Rect visibleDisplayFrame,
                 Rect padding,
                 int footerHeight,
                 int headerHeight,
                 View anchorView,
-                int anchorViewOffset,
-                int reservedTopSpace) {
+                int anchorViewOffset) {
             this.visibleDisplayFrame = visibleDisplayFrame;
             this.padding = padding;
             this.footerHeight = footerHeight;
             this.headerHeight = headerHeight;
             this.anchorView = anchorView;
             this.anchorViewOffset = anchorViewOffset;
-            this.reservedTopSpace = reservedTopSpace;
         }
     }
 
@@ -276,7 +267,6 @@ class AppMenu implements OnKeyListener {
     private final int mVerticalFadeDistance;
     private final int mNegativeSoftwareVerticalOffset;
     private final int mChipHighlightExtension;
-    private final int mBottomBarMenuTopMargin;
     private final int[] mTempLocation;
     private final AppMenuVisibilityDelegate mVisibilityDelegate;
     private final boolean mDisableVerticalScrollbar;
@@ -315,7 +305,6 @@ class AppMenu implements OnKeyListener {
         mVerticalFadeDistance = res.getDimensionPixelSize(R.dimen.menu_vertical_fade_distance);
         mChipHighlightExtension =
                 res.getDimensionPixelOffset(R.dimen.menu_chip_highlight_extension);
-        mBottomBarMenuTopMargin = res.getDimensionPixelSize(R.dimen.bottom_bar_app_menu_top_margin);
 
         mTempLocation = new int[2];
         mHierarchicalMenuController = hierarchicalMenuController;
@@ -342,11 +331,6 @@ class AppMenu implements OnKeyListener {
      * @param isMenuIconAtStart Whether the menu is being shown from a menu icon positioned at the
      *     start.
      * @param addTopPaddingBeforeFirstRow Whether top padding is needed above the first row.
-     * @param isFromBottomBar Whether the menu is anchored to the bottom bar.
-     * @param reservedTopSpace Height from the top of {@code visibleDisplayFrame} that the menu list
-     *     must not cover (plus {@code R.dimen.bottom_bar_app_menu_top_margin}). 0 for no
-     *     constraint. Only honored when {@code isFromBottomBar} is true and the menu is not opened
-     *     by a permanent hardware button.
      */
     void show(
             Context context,
@@ -361,7 +345,6 @@ class AppMenu implements OnKeyListener {
             @ControlsPosition int controlsPosition,
             boolean addTopPaddingBeforeFirstRow,
             boolean isFromBottomBar,
-            int reservedTopSpace,
             FlyoutHandler<AppMenuPopup> flyoutHandler) {
         mContext = context;
         PopupWindow popup = new PopupWindow(context);
@@ -518,9 +501,6 @@ class AppMenu implements OnKeyListener {
 
         mPositionBelowAnchor = DeviceInfo.isDesktop();
 
-        // The cap's padding math assumes the bottom-bar branch of getPopupPosition(), which the
-        // permanent-button branch takes precedence over.
-        boolean usesBottomBarPositioning = isFromBottomBar && !isByPermanentButton;
         mMenuSpec =
                 new MenuSpec(
                         visibleDisplayFrame,
@@ -528,8 +508,7 @@ class AppMenu implements OnKeyListener {
                         footerHeight,
                         headerHeight,
                         anchorView,
-                        anchorViewOffset,
-                        usesBottomBarPositioning ? reservedTopSpace : 0);
+                        anchorViewOffset);
 
         if (mPositionBelowAnchor) {
             int spaceBelow =
@@ -902,17 +881,7 @@ class AppMenu implements OnKeyListener {
                         - anchorViewImpactHeight;
 
         if (mIsByPermanentButton) availableScreenSpace -= mMenuSpec.padding.top;
-        int uncappedScreenSpace = availableScreenSpace;
-        if (mMenuSpec.reservedTopSpace > 0) {
-            // availableScreenSpace already subtracts padding.bottom, but getPopupPosition() shifts
-            // the bottom-bar popup down by padding.bottom. Add it back so the list top sits at
-            // least reservedTopSpace + mBottomBarMenuTopMargin below visibleDisplayFrame.top.
-            availableScreenSpace -=
-                    mMenuSpec.reservedTopSpace + mBottomBarMenuTopMargin - mMenuSpec.padding.bottom;
-        }
-        // Report on the uncapped space: the cap can legitimately leave no room, in which case
-        // calculateHeightForItems() falls back to showing ~1.5 items past the cap.
-        if (uncappedScreenSpace <= 0 && sExceptionReporter != null) {
+        if (availableScreenSpace <= 0 && sExceptionReporter != null) {
             String logMessage =
                     "there is no screen space for app menu, mIsByPermanentButton = "
                             + mIsByPermanentButton
@@ -929,9 +898,7 @@ class AppMenu implements OnKeyListener {
                             + ", footerHeight = "
                             + mMenuSpec.footerHeight
                             + ", headerHeight = "
-                            + mMenuSpec.headerHeight
-                            + ", reservedTopSpace = "
-                            + mMenuSpec.reservedTopSpace;
+                            + mMenuSpec.headerHeight;
             PostTask.postTask(
                     TaskTraits.BEST_EFFORT_MAY_BLOCK,
                     () -> sExceptionReporter.onResult(new Throwable(logMessage)));
