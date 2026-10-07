@@ -3287,14 +3287,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return descendant_needs_paint_property_update_;
   }
 
-  void SetIsScrollAnchorObject() {
-    NOT_DESTROYED();
-    is_scroll_anchor_object_ = true;
-  }
-  // Clears the IsScrollAnchorObject bit if and only if no ScrollAnchors still
-  // reference this LayoutObject.
-  void MaybeClearIsScrollAnchorObject();
-
   bool ScrollAnchorDisablingStyleChanged() {
     NOT_DESTROYED();
     return scroll_anchor_disabling_style_changed_;
@@ -3958,7 +3950,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   unsigned is_background_attachment_fixed_object_ : 1 = false;
   unsigned can_composite_background_attachment_fixed_ : 1 = false;
-  unsigned is_scroll_anchor_object_ : 1 = false;
 
   // Whether changes in this LayoutObject's CSS properties since the last
   // layout should suppress any adjustments that would be made during the next

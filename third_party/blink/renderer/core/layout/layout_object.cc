@@ -4353,35 +4353,6 @@ void LayoutObject::InsertedIntoTree() {
   }
 }
 
-enum FindReferencingScrollAnchorsBehavior { kDontClear, kClear };
-
-static bool FindReferencingScrollAnchors(
-    LayoutObject* layout_object,
-    FindReferencingScrollAnchorsBehavior behavior) {
-  PaintLayer* layer = nullptr;
-  if (LayoutObject* parent = layout_object->Parent())
-    layer = parent->EnclosingLayer();
-  bool found = false;
-
-  // Walk up the layer tree to clear any scroll anchors that reference us.
-  while (layer) {
-    if (PaintLayerScrollableArea* scrollable_area =
-            layer->GetScrollableArea()) {
-      ScrollAnchor* anchor = scrollable_area->GetScrollAnchor();
-      DCHECK(anchor);
-      if (anchor->RefersTo(layout_object)) {
-        found = true;
-        if (behavior == kClear)
-          anchor->NotifyRemoved(layout_object);
-        else
-          return true;
-      }
-    }
-    layer = layer->Parent();
-  }
-  return found;
-}
-
 void LayoutObject::WillBeRemovedFromTree() {
   NOT_DESTROYED();
   // FIXME: We should DCHECK(isRooted()) but we have some out-of-order removals
@@ -4406,13 +4377,6 @@ void LayoutObject::WillBeRemovedFromTree() {
 
   if (Parent()->ChildrenInline()) {
     Parent()->DirtyLinesFromChangedChild(this);
-  }
-
-  if (is_scroll_anchor_object_) {
-    // Clear the bit first so that anchor.clear() doesn't recurse into
-    // findReferencingScrollAnchors.
-    is_scroll_anchor_object_ = false;
-    FindReferencingScrollAnchors(this, kClear);
   }
 
   if (LocalFrameView* frame_view = GetFrameView()) {
@@ -4477,14 +4441,6 @@ void LayoutObject::SetDescendantNeedsPaintPropertyUpdate() {
        ancestor = ancestor->Parent()) {
     ancestor->descendant_needs_paint_property_update_ = true;
   }
-}
-
-void LayoutObject::MaybeClearIsScrollAnchorObject() {
-  NOT_DESTROYED();
-  if (!is_scroll_anchor_object_) {
-    return;
-  }
-  is_scroll_anchor_object_ = FindReferencingScrollAnchors(this, kDontClear);
 }
 
 void LayoutObject::DestroyAndCleanupAnonymousWrappers(

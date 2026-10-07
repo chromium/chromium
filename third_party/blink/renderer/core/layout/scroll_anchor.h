@@ -64,7 +64,7 @@ class CORE_EXPORT ScrollAnchor final {
 
   // The LayoutObject we are currently anchored to. Lazily computed during
   // notifyBeforeLayout() and cached until the next call to clear().
-  LayoutObject* AnchorObject() const { return anchor_object_.Get(); }
+  LayoutObject* AnchorObject() const;
 
   // Called when the scroller attached to this anchor is being destroyed.
   void Dispose();
@@ -98,17 +98,11 @@ class CORE_EXPORT ScrollAnchor final {
   // identified by its selector, adjusting by its relative_offset.
   bool RestoreAnchor(const SerializedAnchor&);
 
-  // Get the serialized representation of the current anchor_object_.
-  // If there is not currently an anchor_object_, this will attempt to find one.
+  // Get the serialized representation of the current anchor-object.
+  // If there is not currently an anchor-object, this will attempt to find one.
   // Repeated calls will re-use the previously calculated selector until the
   // anchor_object it corresponds to is cleared.
   const SerializedAnchor GetSerializedAnchor();
-
-  // Checks if we hold any references to the specified object.
-  bool RefersTo(const LayoutObject*) const;
-
-  // Notifies us that an object will be removed from the layout tree.
-  void NotifyRemoved(LayoutObject*);
 
   // This anchor is not active because we are applying scroll-start.
   void CancelAdjustment() { queued_ = false; }
@@ -128,12 +122,12 @@ class CORE_EXPORT ScrollAnchor final {
 
   void FindAnchor();
   // Search for an anchor inside the specified object. The result is stored in
-  // anchor_object_. The status returned indicates whether it found something
-  // viable or not, in which case we may stop searching. Note that if kConstrain
-  // is returned, which is generally considered viable, we may need to take an
-  // additional look for OOFs inside enclosing NG fragmentation contexts. OOFs
-  // are direct children of fragmentainers, rather than being a child of their
-  // actual containing block.
+  // weak_anchor_object_. The status returned indicates whether it found
+  // something viable or not, in which case we may stop searching. Note that if
+  // kConstrain is returned, which is generally considered viable, we may need
+  // to take an additional look for OOFs inside enclosing NG fragmentation
+  // contexts. OOFs are direct children of fragmentainers, rather than being a
+  // child of their actual containing block.
   WalkStatus FindAnchorRecursive(LayoutObject*);
   WalkStatus FindAnchorInOOFs(LayoutObject*);
   bool ComputeScrollAnchorDisablingStyleChanged();
@@ -169,7 +163,7 @@ class CORE_EXPORT ScrollAnchor final {
   gfx::Vector2d ComputeAdjustment() const;
 
   // Previously calculated css selector that uniquely locates the current
-  // anchor_object_. Cleared when the anchor_object_ is cleared.
+  // anchor-object. Cleared when the anchor-object is cleared.
   String saved_selector_;
 
   // The scroller to be adjusted by this ScrollAnchor. This is also the scroller
@@ -178,12 +172,12 @@ class CORE_EXPORT ScrollAnchor final {
   Member<ScrollableArea> scroller_;
 
   // The LayoutObject we should anchor to.
-  Member<LayoutObject> anchor_object_;
+  WeakMember<LayoutObject> weak_anchor_object_;
 
   // Which corner of m_anchorObject's bounding box to anchor to.
   Corner corner_;
 
-  // Location of anchor_object_ relative to scroller block-start at the time of
+  // Location of anchor-object relative to scroller block-start at the time of
   // NotifyBeforeLayout().
   LogicalOffset saved_relative_offset_;
 
