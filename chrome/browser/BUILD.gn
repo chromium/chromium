@@ -2192,6 +2192,10 @@ source_set("core") {
       "//chrome/common/request_header_integrity",
     ]
   }
+
+  if (enable_webui_tabstrip_ntb) {
+    deps += [ "//chrome/browser/ui/webui/tabstrip_ntb" ]
+  }
 }
 
 # This target no longer has any sources of its own; it only aggregates
@@ -2706,6 +2710,11 @@ source_set("browser") {
       "//chrome/browser/new_tab_page",
       "//chrome/browser/new_tab_page:impl",
       "//chrome/browser/ui/webui/ntp_microsoft_auth",
+    ]
+  }
+
+  if (enable_webui_ntp || enable_webui_tabstrip_ntb) {
+    deps += [
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/top_chrome:impl",
     ]

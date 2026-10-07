@@ -1,0 +1,28 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/webui_features.gni")
+
+assert(enable_webui_tabstrip_ntb)
+
+source_set("tabstrip_ntb") {
+  sources = [
+    "tabstrip_ntb_ui.cc",
+    "tabstrip_ntb_ui.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/webui/top_chrome",
+    "//chrome/common",
+  ]
+
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser/flags:flags_android",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/tabstrip_ntb:resources",
+    "//chrome/browser/ui/webui:theme_source",
+  ]
+}

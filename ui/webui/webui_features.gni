@@ -34,6 +34,10 @@ declare_args() {
   # Enable the native TypeScript compiler (tsgo) instead of the JS-based one.
   # TODO(crbug.com/423789047): Remove this flag once fully committed to v7.
   use_typescript_go = true
+
+  # Enable the WebUI tab strip new tab button
+  # (chrome://tabstrip-ntb.top-chrome).
+  enable_webui_tabstrip_ntb = is_desktop_android
 }
 
 if (enable_cast_receiver || is_cast_android || is_castos) {

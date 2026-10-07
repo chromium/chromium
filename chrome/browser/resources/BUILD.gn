@@ -216,6 +216,10 @@ group("resources") {
     public_deps += [ "history:resources" ]
   }
 
+  if (enable_webui_tabstrip_ntb) {
+    public_deps += [ "tabstrip_ntb:resources" ]
+  }
+
   if (enable_compose) {
     public_deps += [ "compose:resources" ]
   }

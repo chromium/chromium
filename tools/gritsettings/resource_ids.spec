@@ -704,6 +704,10 @@
     "META": {"sizes": {"includes": [20]}},
     "includes": [4660],
   },
+   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/tabstrip_ntb/resources.grd": {
+    "META": {"sizes": {"includes": [20]}},
+    "includes": [4663],
+  },
    "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/webui_toolbar/code_cache_resources.grd": {
     "META": {"sizes": {"includes": [50]}},
     "includes": [4665],

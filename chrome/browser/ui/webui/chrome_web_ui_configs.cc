@@ -151,6 +151,10 @@
 #include "chrome/browser/ui/webui/webapks/webapks_ui.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_WEBUI_TABSTRIP_NTB)
+#include "chrome/browser/ui/webui/tabstrip_ntb/tabstrip_ntb_ui.h"  // nogncheck
+#endif  // BUILDFLAG(ENABLE_WEBUI_TABSTRIP_NTB)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/ui/webui/extensions/extensions_ui.h"
 #endif  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -419,6 +423,10 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<WebUIJsErrorUIConfig>());
   map.AddWebUIConfig(std::make_unique<WebUIToolbarConfig>());
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_WEBUI_TABSTRIP_NTB)
+  map.AddWebUIConfig(std::make_unique<tabstrip_ntb::TabStripNtbUIConfig>());
+#endif  // BUILDFLAG(ENABLE_WEBUI_TABSTRIP_NTB)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OPENBSD)
   map.AddWebUIConfig(std::make_unique<LinuxProxyConfigUI>());

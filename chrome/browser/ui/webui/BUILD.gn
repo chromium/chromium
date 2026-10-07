@@ -155,6 +155,10 @@ source_set("configs") {
     ]
   }
 
+  if (enable_webui_tabstrip_ntb) {
+    deps += [ "//chrome/browser/ui/webui/tabstrip_ntb" ]
+  }
+
   if (safe_browsing_mode == 1) {
     deps += [ "//chrome/browser/ui/webui/reset_password" ]
   }

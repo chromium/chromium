@@ -1048,6 +1048,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".tab-group-home"/>
   <variant name=".tab-search.top-chrome"/>
   <variant name=".tab-strip.top-chrome"/>
+  <variant name=".tabstrip-ntb.top-chrome"/>
   <variant name=".terminal"/>
   <variant name=".terms"/>
   <variant name=".topics-internals"/>

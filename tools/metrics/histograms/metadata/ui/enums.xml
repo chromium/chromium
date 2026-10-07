@@ -789,6 +789,7 @@ chromium-metrics-reviews@google.com.
       label="chrome-untrusted://class-tools-remote-display/"/>
   <int value="-1949142440" label="chrome://smb-credentials-dialog/"/>
   <int value="-1941995226" label="chrome://attribution-internals/"/>
+  <int value="-1924819719" label="chrome://tabstrip-ntb.top-chrome/"/>
   <int value="-1911971715" label="chrome://history/"/>
   <int value="-1899361569" label="chrome-untrusted://eche-app/"/>
   <int value="-1891730544" label="chrome://cross-device-signin-qr-bubble/"/>

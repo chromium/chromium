@@ -206,6 +206,10 @@ template("chrome_extra_paks") {
       ]
     }
 
+    if (enable_webui_tabstrip_ntb) {
+      sources += [ "$root_gen_dir/chrome/tabstrip_ntb_resources.pak" ]
+    }
+
     if (!is_android) {
       # New paks should be added here by default.
       sources += [

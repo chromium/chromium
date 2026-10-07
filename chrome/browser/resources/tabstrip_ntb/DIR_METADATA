@@ -1,0 +1,6 @@
+os: ANDROID
+buganizer_public: {
+  # Mobile > Fundamentals > Performance > Clank Performance team
+  component_id: 1516132
+}
+team_email: "clank-performance-team@google.com"

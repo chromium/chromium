@@ -385,6 +385,9 @@ inline constexpr char kChromeUINativeNewTabURL[] = "chrome-native://newtab/";
 inline constexpr char kChromeUINotificationsInternalsHost[] =
     "notifications-internals";
 inline constexpr char kChromeUISnippetsInternalsHost[] = "snippets-internals";
+inline constexpr char kChromeUITabStripNtbHost[] = "tabstrip-ntb.top-chrome";
+inline constexpr char kChromeUITabStripNtbURL[] =
+    "chrome://tabstrip-ntb.top-chrome/";
 inline constexpr char kChromeUIWebApksHost[] = "webapks";
 #else
 inline constexpr char kChromeUIAppServiceInternalsHost[] =
