@@ -44,7 +44,11 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 import dataclasses
 import os
+import pathlib
 import re
+import shlex
+import subprocess
+from typing import Any
 
 _TOP_LEVEL_VARIABLE_PATTERN = re.compile(
     r'^([A-Za-z0-9_]+)[ \t]*=[ \t]*(.*)$', re.MULTILINE)
@@ -52,6 +56,8 @@ _INDENTED_VARIABLE_PATTERN = re.compile(
     r'^[ \t]+([A-Za-z0-9_]+)[ \t]*=[ \t]*(.*)$')
 _BUILD_CXX_LINE_PATTERN = re.compile(
     r'^build\s+(\S+)\s*:\s*\S*cxx\s+(\S+)(.*)$')
+_MODULE_FILE_FLAG_PATTERN = re.compile(r'-fmodule-file=(?:[^=\s]+=)?([^\s]+)')
+_CLANG_HEADER_TRACE_LINE_PATTERN = re.compile(r'^(\.+)\s+(.+)$')
 
 
 @dataclasses.dataclass(frozen=True)
@@ -79,6 +85,60 @@ class NinjaCompileRule:
     ninja_file_path: str
     variables: Mapping[str, str]
     prerequisite_targets: tuple[str, ...] = ()
+
+
+@dataclasses.dataclass(frozen=True)
+class TranslationUnitSnapshot:
+    """Stores measured compiler input sizes and include chains for one unit.
+
+    Attributes:
+      translation_unit: Normalized path of the measured translation unit.
+      total_bytes: Total compiler input size in bytes (the translation unit's
+        own source file plus all unique `#include`d files, excluding `.pcm`).
+      included_files: Mapping from normalized file path to its byte size.
+      include_chains: Mapping from normalized header path to the tuple of
+        normalized paths forming the first `#include` chain from
+        `translation_unit` to that header. Files that clang only probes
+        (`__has_include`) or reads as module maps appear in
+        `included_files` but have no chain.
+    """
+
+    translation_unit: str
+    total_bytes: int
+    included_files: Mapping[str, int]
+    include_chains: Mapping[str, tuple[str, ...]]
+
+    def ToDict(self) -> dict[str, Any]:
+        """Serializes this snapshot to a JSON-compatible dictionary."""
+        return {
+            'translation_unit': self.translation_unit,
+            'total_bytes': self.total_bytes,
+            'included_files': dict(sorted(self.included_files.items())),
+            'include_chains': {
+                header_path: list(chain)
+                for header_path, chain in sorted(self.include_chains.items())
+            },
+        }
+
+    @classmethod
+    def FromDict(cls, raw_dictionary: Mapping[str, Any]) -> (
+            TranslationUnitSnapshot):
+        """Reconstructs a TranslationUnitSnapshot from a parsed JSON dict."""
+        included_files = {
+            str(file_path): int(byte_size)
+            for file_path, byte_size in raw_dictionary['included_files'].items()
+        }
+        include_chains = {
+            str(header_path): tuple(str(element) for element in chain)
+            for header_path, chain in raw_dictionary.get(
+                'include_chains', {}).items()
+        }
+        return cls(
+            translation_unit=str(raw_dictionary['translation_unit']),
+            total_bytes=int(raw_dictionary['total_bytes']),
+            included_files=included_files,
+            include_chains=include_chains,
+        )
 
 
 def UnescapeNinjaValue(raw_value: str) -> str:
@@ -347,3 +407,220 @@ def FindNinjaCompileRule(
     raise RuntimeError(
         f'Could not find a Ninja cxx build rule for "{translation_unit}" '
         f'(looked for "{ninja_source_path}" under {build_directory}/obj).')
+
+
+def _AreAllModuleArtifactsPresent(
+        build_directory: str, module_deps_flags: str) -> bool:
+    """Returns True if every `.pcm` referenced in `module_deps_flags` exists."""
+    for pcm_relative_path in _MODULE_FILE_FLAG_PATTERN.findall(
+            module_deps_flags):
+        pcm_full_path = os.path.join(build_directory, pcm_relative_path)
+        if not os.path.isfile(pcm_full_path):
+            return False
+    return True
+
+
+def _CollectTargetCompilerFlags(
+        compile_rule: NinjaCompileRule,
+        build_directory: str) -> list[str]:
+    """Extracts the split compiler flags for `compile_rule`."""
+    variables = compile_rule.variables
+    include_dirs = variables.get('include_dirs', '')
+
+    module_deps = variables.get('module_deps', '')
+    if module_deps and not _AreAllModuleArtifactsPresent(
+            build_directory, module_deps):
+        raise RuntimeError(
+            f'{compile_rule.translation_unit} needs prebuilt Clang modules '
+            f'that are missing under {build_directory}; rerun without '
+            f'--no-build so autoninja builds them.')
+
+    cc_module_name = variables.get('cc_module_name', '')
+    module_name_flag = (
+        f'-fmodule-name={shlex.quote(f"{cc_module_name}_Private")}'
+        if cc_module_name else ''
+    )
+
+    flag_sections = [
+        variables.get('defines', ''),
+        include_dirs,
+        variables.get('cflags', ''),
+        variables.get('cflags_cc', ''),
+        module_deps,
+        module_name_flag,
+    ]
+    combined_flags = ' '.join(
+        section for section in flag_sections if section)
+    return shlex.split(combined_flags)
+
+
+def BuildClangProbeCommand(
+        compile_rule: NinjaCompileRule,
+        build_directory: str,
+        clang_binary: str) -> list[str]:
+    """Constructs the `clang++ -M -H` argument vector for `compile_rule`.
+
+    Requires all `.pcm` files referenced in `module_deps` to exist in
+    `build_directory` so that module-enabled builds resolve the same prebuilt
+    modules as the build.
+    """
+    compiler_flags = _CollectTargetCompilerFlags(compile_rule, build_directory)
+    return (
+        [clang_binary]
+        + compiler_flags
+        + ['-M', '-H', compile_rule.ninja_source_path]
+    )
+
+
+def _IsPrebuiltModuleArtifact(file_path: str) -> bool:
+    """Returns True if `file_path` is a precompiled Clang module (`.pcm`).
+
+    `.pcm` files are binary module caches rather than source inputs, so they
+    are excluded from compiler input byte totals just as in
+    `//tools/clang/scripts/compiler_inputs_size.py`.
+    """
+    return file_path.endswith('.pcm')
+
+
+def NormalizeDependencyFilePath(
+        raw_dependency_path: str,
+        build_directory: str,
+        repository_root: str) -> tuple[str, str]:
+    """Resolves a dependency path and returns `(normalized_path, disk_path)`."""
+    resolved_path = pathlib.Path(
+        os.path.join(build_directory, raw_dependency_path)).resolve()
+    disk_path = str(resolved_path)
+
+    absolute_build_directory = str(pathlib.Path(build_directory).resolve())
+    if _IsPathWithinDirectory(disk_path, absolute_build_directory):
+        relative_to_build = os.path.relpath(
+            disk_path, absolute_build_directory).replace(os.sep, '/')
+        return relative_to_build, disk_path
+
+    absolute_repository_root = str(pathlib.Path(repository_root).resolve())
+    if _IsPathWithinDirectory(disk_path, absolute_repository_root):
+        relative_to_repo = os.path.relpath(
+            disk_path, absolute_repository_root).replace(os.sep, '/')
+        return relative_to_repo, disk_path
+
+    return disk_path.replace(os.sep, '/'), disk_path
+
+
+def ParseMakefileDependenciesOutput(
+        makefile_stdout: str,
+        build_directory: str,
+        repository_root: str) -> dict[str, str]:
+    """Parses `clang++ -M` stdout into `{normalized_path: disk_path}`.
+
+    Handles backslash-newline continuations and escaped spaces in Makefile
+    rules, excluding `.pcm` files to match `compiler_inputs_size.py`.
+    """
+    unwrapped_text = makefile_stdout.replace('\\\r\n', ' ').replace(
+        '\\\n', ' ')
+    if ':' not in unwrapped_text:
+        raise ValueError(
+            f'Unexpected clang -M output (missing ":"): {makefile_stdout!r}')
+    _, dependencies_section = unwrapped_text.split(':', 1)
+
+    normalized_to_disk_path: dict[str, str] = {}
+    for raw_token in shlex.split(dependencies_section):
+        if _IsPrebuiltModuleArtifact(raw_token):
+            continue
+        normalized_path, disk_path = NormalizeDependencyFilePath(
+            raw_dependency_path=raw_token,
+            build_directory=build_directory,
+            repository_root=repository_root,
+        )
+        normalized_to_disk_path[normalized_path] = disk_path
+    return normalized_to_disk_path
+
+
+def ParseHeaderIncludeChains(
+        header_trace_stderr: str,
+        translation_unit: str,
+        build_directory: str,
+        repository_root: str) -> dict[str, tuple[str, ...]]:
+    """Parses `clang++ -H` stderr into `{header_path: include_chain_tuple}`.
+
+    Clang prints one line per `#include` transition prefixed by dots indicating
+    the nesting depth (`.` for depth 1, `..` for depth 2, and so on). Records
+    the first `#include` chain by which each header is reached from
+    `translation_unit`.
+    """
+    include_stack: list[str] = [translation_unit]
+    include_chains: dict[str, tuple[str, ...]] = {
+        translation_unit: (translation_unit,),
+    }
+
+    for raw_line in header_trace_stderr.splitlines():
+        line_match = _CLANG_HEADER_TRACE_LINE_PATTERN.match(raw_line)
+        if line_match is None:
+            continue
+        depth = len(line_match.group(1))
+        raw_header_path = line_match.group(2).strip()
+        if _IsPrebuiltModuleArtifact(raw_header_path):
+            continue
+
+        normalized_header, _ = NormalizeDependencyFilePath(
+            raw_dependency_path=raw_header_path,
+            build_directory=build_directory,
+            repository_root=repository_root,
+        )
+        include_stack = include_stack[:depth]
+        include_stack.append(normalized_header)
+        if normalized_header not in include_chains:
+            include_chains[normalized_header] = tuple(include_stack)
+
+    return include_chains
+
+
+def _MeasureFileByteSizes(
+        normalized_to_disk_path: Mapping[str, str]) -> dict[str, int]:
+    """Reads byte sizes from disk for each path in `normalized_to_disk_path`."""
+    return {
+        normalized_path: os.path.getsize(disk_path)
+        for normalized_path, disk_path in normalized_to_disk_path.items()
+    }
+
+
+def MeasureTranslationUnit(
+        compile_rule: NinjaCompileRule,
+        build_directory: str,
+        repository_root: str,
+        clang_binary: str) -> TranslationUnitSnapshot:
+    """Runs `clang++ -M -H` for `compile_rule` and returns its snapshot."""
+    command = BuildClangProbeCommand(
+        compile_rule=compile_rule,
+        build_directory=build_directory,
+        clang_binary=clang_binary,
+    )
+    completed = subprocess.run(
+        command,
+        cwd=build_directory,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if completed.returncode != 0:
+        raise RuntimeError(
+            f'clang++ -M -H failed for {compile_rule.translation_unit} '
+            f'(exit {completed.returncode}):\n{completed.stderr}')
+
+    normalized_to_disk_path = ParseMakefileDependenciesOutput(
+        makefile_stdout=completed.stdout,
+        build_directory=build_directory,
+        repository_root=repository_root,
+    )
+    included_files = _MeasureFileByteSizes(normalized_to_disk_path)
+    include_chains = ParseHeaderIncludeChains(
+        header_trace_stderr=completed.stderr,
+        translation_unit=compile_rule.translation_unit,
+        build_directory=build_directory,
+        repository_root=repository_root,
+    )
+    return TranslationUnitSnapshot(
+        translation_unit=compile_rule.translation_unit,
+        total_bytes=sum(included_files.values()),
+        included_files=included_files,
+        include_chains=include_chains,
+    )
