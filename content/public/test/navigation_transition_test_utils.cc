@@ -4,6 +4,7 @@
 
 #include "content/public/test/navigation_transition_test_utils.h"
 
+#include "base/task/bind_post_task.h"
 #include "base/test/test_future.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
@@ -50,8 +51,8 @@ ScopedScreenshotCapturedObserverForTesting::
             CHECK_EQ(requested, expected_requested);
             std::move(callback).Run();
           },
-          run_loop_.QuitClosure(), expected_nav_entry_index,
-          expected_requested));
+          base::BindPostTaskToCurrentDefault(run_loop_.QuitClosure()),
+          expected_nav_entry_index, expected_requested));
 }
 
 ScopedScreenshotCapturedObserverForTesting::
