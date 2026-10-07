@@ -406,6 +406,12 @@ void DownloadHistory::LoadHistoryDownloads(
   std::map<std::string, int> file_name_count;
   CountFilePathOccurences(rows, &file_name_count);
 
+  // Number of downloads loaded, in total and started in the last 30/90 days.
+  const base::Time now = base::Time::Now();
+  int num_loaded = 0;
+  int num_loaded_last_30_days = 0;
+  int num_loaded_last_90_days = 0;
+
   for (const history::DownloadRow& row : rows) {
     if (ShouldSkipLoadingDownload(row, &file_name_count)) {
       ScheduleRemoveDownload(row.id);
@@ -470,6 +476,14 @@ void DownloadHistory::LoadHistoryDownloads(
     CHECK_EQ(download::DownloadItem::kInvalidId, loading_id_,
              base::NotFatalUntil::M161);
 
+    ++num_loaded;
+    if (now - row.start_time <= base::Days(30)) {
+      ++num_loaded_last_30_days;
+    }
+    if (now - row.start_time <= base::Days(90)) {
+      ++num_loaded_last_90_days;
+    }
+
     // The download might have been in the terminal state without informing
     // history DB. If this is the case, populate the new state back to history
     // DB.
@@ -516,6 +530,14 @@ void DownloadHistory::LoadHistoryDownloads(
                                 base::Milliseconds(1), base::Minutes(1), 50);
   base::UmaHistogramCounts100000("Download.History.DownloadCount",
                                  base::saturated_cast<int>(rows.size()));
+  base::UmaHistogramCounts100000("Download.History.DownloadCount.PostRemoval",
+                                 num_loaded);
+  base::UmaHistogramCounts100000(
+      "Download.History.DownloadCount.PostRemoval.Last30Days",
+      num_loaded_last_30_days);
+  base::UmaHistogramCounts100000(
+      "Download.History.DownloadCount.PostRemoval.Last90Days",
+      num_loaded_last_90_days);
 
   initial_history_query_complete_ = true;
   for (Observer& observer : observers_) {

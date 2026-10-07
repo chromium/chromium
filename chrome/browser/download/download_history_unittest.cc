@@ -626,6 +626,48 @@ TEST_F(DownloadHistoryTest, DownloadHistoryTest_DownloadCountHistogram) {
   histogram_tester.ExpectUniqueSample("Download.History.DownloadCount", 3, 1);
 }
 
+// Test that Download.History.DownloadCount.PostRemoval* histograms are emitted
+// with the number of downloads loaded, excluding removed rows.
+TEST_F(DownloadHistoryTest, DownloadCountPostRemovalHistograms) {
+  base::HistogramTester histogram_tester;
+  const base::Time now = base::Time::Now();
+
+  history::DownloadRow removed, recent, last_90_days, old;
+  // Removed because the DownloadManager doesn't create an item for it.
+  InitDownloadRow(FILE_PATH_LITERAL("/foo/removed.pdf"),
+                  "http://example.com/removed.pdf",
+                  "http://example.com/referrer.html",
+                  download::DownloadItem::COMPLETE, &removed);
+  removed.id = 101;
+  InitBasicItem(FILE_PATH_LITERAL("/foo/recent.pdf"),
+                "http://example.com/recent.pdf",
+                "http://example.com/referrer.html",
+                download::DownloadItem::COMPLETE, &recent);
+  InitBasicItem(FILE_PATH_LITERAL("/foo/last_90_days.pdf"),
+                "http://example.com/last_90_days.pdf",
+                "http://example.com/referrer.html",
+                download::DownloadItem::COMPLETE, &last_90_days);
+  last_90_days.start_time = now - base::Days(60);
+  InitBasicItem(FILE_PATH_LITERAL("/foo/old.pdf"), "http://example.com/old.pdf",
+                "http://example.com/referrer.html",
+                download::DownloadItem::COMPLETE, &old);
+  old.start_time = now - base::Days(200);
+
+  CreateDownloadHistory({CreateDownloadHistoryEntry(
+                             removed, LoadDownloadRowResult::kRemoveDownload),
+                         CreateDownloadHistoryEntry(recent),
+                         CreateDownloadHistoryEntry(last_90_days),
+                         CreateDownloadHistoryEntry(old)});
+
+  histogram_tester.ExpectUniqueSample("Download.History.DownloadCount", 4, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Download.History.DownloadCount.PostRemoval", 3, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Download.History.DownloadCount.PostRemoval.Last30Days", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Download.History.DownloadCount.PostRemoval.Last90Days", 2, 1);
+}
+
 // Test that the OnHistoryQueryComplete() observer method is invoked for an
 // observer that was added after the initial history query completing.
 TEST_F(DownloadHistoryTest, DownloadHistoryTest_OnHistoryQueryComplete_Post) {

@@ -417,6 +417,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.History.DownloadCount.PostRemoval{Window}"
+    units="downloads" expires_after="2027-09-24">
+  <owner>fdoray@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
+  <owner>chrome-downloads@google.com</owner>
+  <summary>
+    Records the number of downloads loaded from download history for a profile
+    (in DownloadHistory::LoadHistoryDownloads), {Window}. Unlike
+    Download.History.DownloadCount, this excludes rows that are removed instead
+    of being loaded (e.g. overwritten downloads removed by
+    kDeleteOverwrittenDownloads). Used to evaluate the impact of limiting the
+    number and age of downloads kept in history.
+  </summary>
+  <token key="Window">
+    <variant name="" summary="in total"/>
+    <variant name=".Last30Days"
+        summary="restricted to downloads started in the last 30 days"/>
+    <variant name=".Last90Days"
+        summary="restricted to downloads started in the last 90 days"/>
+  </token>
+</histogram>
+
 <histogram name="Download.History.LoadedInSession" enum="BooleanLoaded"
     expires_after="2027-03-18">
   <owner>qinmin@chromium.org</owner>
