@@ -19247,6 +19247,14 @@ should be able to be added at any place in this file.
   <description>Reported when the user taps the New Feature Badge</description>
 </action>
 
+<action name="MobileAIModeSearchPerformed">
+  <owner>rkgibson@google.com</owner>
+  <owner>pabouchard@google.com</owner>
+  <description>
+    Recorded when a search is performed in AI Mode. iOS only.
+  </description>
+</action>
+
 <action name="MobileAutofillAndPasswordsSettingsBack">
   <owner>jsobiech@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>

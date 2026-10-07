@@ -9,9 +9,10 @@
 #import "base/scoped_observation.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
+#import "url/gurl.h"
 
-// Observes a WebState for navigations to AIM-eligible URLs and triggers
-// eligibility fetches.
+// Observes a WebState for AIM-related navigations, recording metrics and
+// triggering eligibility fetches.
 class AimTabHelper : public web::WebStateObserver,
                      public web::WebStateUserData<AimTabHelper> {
  public:
@@ -29,6 +30,10 @@ class AimTabHelper : public web::WebStateObserver,
   friend class web::WebStateUserData<AimTabHelper>;
 
   AimTabHelper(web::WebState* web_state);
+
+  // The last committed main-frame URL without ref, used to avoid duplicate
+  // metrics on same-URL navigations.
+  GURL previous_main_frame_url_;
 
   base::ScopedObservation<web::WebState, web::WebStateObserver> observation_{
       this};

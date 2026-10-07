@@ -78,6 +78,7 @@ source_set("tab_helper") {
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/web/public",
+    "//url",
   ]
 }
 

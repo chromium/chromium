@@ -190,4 +190,24 @@ TEST_F(LevelUpSceneAgentTest, TestAutofillActionTriggersTaskCompletion) {
   EXPECT_TRUE(service_->IsTaskCompleted(TaskType::kAutofill));
 }
 
+// Tests that recording MobileAIModeSearchPerformed completes the kAISearch task
+// and not the kGemini task.
+TEST_F(LevelUpSceneAgentTest, TestAIModeSearchActionTriggersTaskCompletion) {
+  EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kAISearch));
+  EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kGemini));
+
+  // Simulate the scene becoming active to start listening.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  OCMExpect([mock_snackbar_handler_ showSnackbarMessage:[OCMArg any]]);
+
+  // Record action that should trigger AI search task completion.
+  base::RecordAction(base::UserMetricsAction("MobileAIModeSearchPerformed"));
+
+  // Verify that kAISearch task is completed and kGemini is not.
+  EXPECT_TRUE(service_->IsTaskCompleted(TaskType::kAISearch));
+  EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kGemini));
+  EXPECT_OCMOCK_VERIFY((id)mock_snackbar_handler_);
+}
+
 }  // namespace

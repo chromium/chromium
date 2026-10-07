@@ -5,10 +5,13 @@
 #import "ios/chrome/browser/aim/model/aim_tab_helper.h"
 
 #import "base/feature_list.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/search_engines/util.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -26,17 +29,27 @@ AimTabHelper::~AimTabHelper() = default;
 void AimTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  if (navigation_context->IsSameDocument() ||
-      !navigation_context->HasCommitted()) {
-    return;
-  }
-
-  if (!base::FeatureList::IsEnabled(omnibox::kAimUrlNavigationFetchEnabled)) {
+  if (!navigation_context->HasCommitted()) {
     return;
   }
 
   const GURL& url = navigation_context->GetUrl();
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
+  const GURL current_url_without_ref = url.GetWithoutRef();
+  if (previous_main_frame_url_ != current_url_without_ref &&
+      IsAimURL(current_url_without_ref)) {
+    base::RecordAction(base::UserMetricsAction("MobileAIModeSearchPerformed"));
+  }
+  previous_main_frame_url_ = current_url_without_ref;
+
+  if (navigation_context->IsSameDocument()) {
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(omnibox::kAimUrlNavigationFetchEnabled)) {
     return;
   }
 
