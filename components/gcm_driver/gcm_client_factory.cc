@@ -4,20 +4,18 @@
 
 #include "components/gcm_driver/gcm_client_factory.h"
 
-#include "base/memory/ptr_util.h"
+#include "components/fcm/engine/fcm_internals_builder.h"
 #include "components/gcm_driver/gcm_client_impl.h"
 
 namespace gcm {
 
 std::unique_ptr<GCMClient> GCMClientFactory::BuildInstance() {
-  return std::unique_ptr<GCMClient>(new GCMClientImpl(
-      base::WrapUnique<GCMInternalsBuilder>(new GCMInternalsBuilder())));
+  return std::make_unique<GCMClientImpl>(
+      std::make_unique<fcm::FcmInternalsBuilder>());
 }
 
-GCMClientFactory::GCMClientFactory() {
-}
+GCMClientFactory::GCMClientFactory() = default;
 
-GCMClientFactory::~GCMClientFactory() {
-}
+GCMClientFactory::~GCMClientFactory() = default;
 
 }  // namespace gcm

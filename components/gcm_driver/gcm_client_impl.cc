@@ -154,41 +154,9 @@ void RecordRegistrationRequestToUMA(gcm::RegistrationCacheStatus status) {
       "GCM.RegistrationCacheStatus", status,
       RegistrationCacheStatus::REGISTRATION_CACHE_STATUS_COUNT);
 }
-GCMInternalsBuilder::GCMInternalsBuilder() = default;
-GCMInternalsBuilder::~GCMInternalsBuilder() = default;
-
-base::Clock* GCMInternalsBuilder::GetClock() {
-  return base::DefaultClock::GetInstance();
-}
-
-std::unique_ptr<MCSClient> GCMInternalsBuilder::BuildMCSClient(
-    const std::string& version,
-    base::Clock* clock,
-    ConnectionFactory* connection_factory,
-    GCMStore* gcm_store,
-    scoped_refptr<base::SequencedTaskRunner> io_task_runner,
-    GCMStatsRecorder* recorder) {
-  return std::make_unique<MCSClient>(version, clock, connection_factory,
-                                     gcm_store, std::move(io_task_runner),
-                                     recorder);
-}
-
-std::unique_ptr<ConnectionFactory> GCMInternalsBuilder::BuildConnectionFactory(
-    const std::vector<GURL>& endpoints,
-    const net::BackoffEntry::Policy& backoff_policy,
-    base::RepeatingCallback<void(
-        mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>)>
-        get_socket_factory_callback,
-    scoped_refptr<base::SequencedTaskRunner> io_task_runner,
-    GCMStatsRecorder* recorder,
-    network::NetworkConnectionTracker* network_connection_tracker) {
-  return std::make_unique<ConnectionFactoryImpl>(
-      endpoints, backoff_policy, std::move(get_socket_factory_callback),
-      std::move(io_task_runner), recorder, network_connection_tracker);
-}
 
 GCMClientImpl::GCMClientImpl(
-    std::unique_ptr<GCMInternalsBuilder> internals_builder)
+    std::unique_ptr<fcm::FcmInternalsBuilder> internals_builder)
     : internals_builder_(std::move(internals_builder)),
       state_(UNINITIALIZED),
       delegate_(nullptr),

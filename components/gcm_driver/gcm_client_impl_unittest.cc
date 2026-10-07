@@ -14,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -24,6 +23,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/fcm/engine/chrome_build_info.h"
+#include "components/fcm/engine/fcm_internals_builder.h"
 #include "google_apis/gcm/base/fake_encryptor.h"
 #include "google_apis/gcm/base/mcs_message.h"
 #include "google_apis/gcm/base/mcs_util.h"
@@ -209,7 +209,7 @@ void AutoAdvancingTestClock::Advance(base::TimeDelta delta) {
   now_ += delta;
 }
 
-class FakeGCMInternalsBuilder : public GCMInternalsBuilder {
+class FakeGCMInternalsBuilder : public fcm::FcmInternalsBuilder {
  public:
   explicit FakeGCMInternalsBuilder(base::TimeDelta clock_step);
   ~FakeGCMInternalsBuilder() override;
@@ -463,9 +463,8 @@ bool GCMClientImplTest::CreateUniqueTempDir() {
 }
 
 void GCMClientImplTest::BuildGCMClient(base::TimeDelta clock_step) {
-  gcm_client_ =
-      std::make_unique<GCMClientImpl>(base::WrapUnique<GCMInternalsBuilder>(
-          new FakeGCMInternalsBuilder(clock_step)));
+  gcm_client_ = std::make_unique<GCMClientImpl>(
+      std::make_unique<FakeGCMInternalsBuilder>(clock_step));
 }
 
 void GCMClientImplTest::FailCheckin(net::HttpStatusCode response_code) {

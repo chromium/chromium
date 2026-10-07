@@ -10,13 +10,18 @@ static_library("engine") {
     "checkin_info.h",
     "chrome_build_info.cc",
     "chrome_build_info.h",
+    "fcm_internals_builder.cc",
+    "fcm_internals_builder.h",
     "fcm_stats_recorder_impl.cc",
     "fcm_stats_recorder_impl.h",
     "system_encryptor.cc",
     "system_encryptor.h",
   ]
 
-  public_deps = [ "//components/version_info:channel" ]
+  public_deps = [
+    "//components/version_info:channel",
+    "//url",
+  ]
 
   deps = [
     "//base",
@@ -25,6 +30,10 @@ static_library("engine") {
     "//components/os_crypt/async/common",
     "//components/version_info",
     "//google_apis/gcm",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
   ]
 }
 
