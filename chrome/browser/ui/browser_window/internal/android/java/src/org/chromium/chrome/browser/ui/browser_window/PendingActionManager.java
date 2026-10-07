@@ -119,19 +119,6 @@ final class PendingActionManager {
     private @Nullable Rect mFutureBoundsInDp;
 
     /**
-     * Store the maximized bounds for a pending Task.
-     *
-     * <p>A pending Task doesn't have a live Activity and is unable to get maximized bounds. We
-     * cache the maximized bounds of a live Activity for pending Tasks as the maximized bounds don't
-     * change.
-     */
-    @Nullable private static Rect sMaximumBoundsInDp;
-
-    static void setMaximumBounds(Rect maximumBoundsInDp) {
-        sMaximumBoundsInDp = maximumBoundsInDp;
-    }
-
-    /**
      * Requests an action to be performed on the pending task. Use this for actions that do not
      * require an input.
      *
@@ -139,8 +126,8 @@ final class PendingActionManager {
      */
     void requestAction(@PendingAction int action) {
         ThreadUtils.assertOnUiThread();
-        assert action != PendingAction.SET_BOUNDS : "Use requestSetBounds() and provide a Rect.";
-        assert action != PendingAction.MAXIMIZE : "Use requestMaximize() and provide a Rect.";
+        assert action != PendingAction.SET_BOUNDS && action != PendingAction.MAXIMIZE
+                : "Use requestSetBounds() and provide a Rect.";
         assert action != PendingAction.RESTORE : "Use requestRestore() and provide a Rect.";
         switch (action) {
             case PendingAction.SHOW:
@@ -165,15 +152,6 @@ final class PendingActionManager {
         }
     }
 
-    void requestMaximize() {
-        ThreadUtils.assertOnUiThread();
-        mPendingActions[0] = PendingAction.MAXIMIZE;
-        mPendingActions[1] = PendingAction.NONE;
-
-        mPendingBoundsInDp = sMaximumBoundsInDp == null ? new Rect() : sMaximumBoundsInDp;
-        updateFutureStatesInternal();
-    }
-
     void requestRestore(Rect futureBoundsInDp) {
         ThreadUtils.assertOnUiThread();
         mPendingActions[0] = PendingAction.RESTORE;
@@ -184,21 +162,23 @@ final class PendingActionManager {
     }
 
     /**
-     * Requests a SET_BOUNDS action to be performed on the pending task.
+     * Requests the task's bounds to be changed.
      *
      * @param boundsInDp The requested bounds, in dp.
+     * @param isMaximizedBounds Whether {@code boundsInDp} are the maximum window bounds.
      */
-    void requestSetBounds(Rect boundsInDp) {
+    void requestSetBounds(Rect boundsInDp, boolean isMaximizedBounds) {
         ThreadUtils.assertOnUiThread();
         if (boundsInDp.isEmpty()) return;
 
-        mPendingActions[0] = PendingAction.SET_BOUNDS;
+        mPendingActions[0] = isMaximizedBounds ? PendingAction.MAXIMIZE : PendingAction.SET_BOUNDS;
         mPendingActions[1] = PendingAction.NONE;
         mPendingBoundsInDp = boundsInDp;
-        // Cache last requested bounds for potential subsequent restoration. Pending restored
-        // bounds will be cleared after all pending actions are dispatched.
-        mFutureRestoredBoundsInDp = mPendingBoundsInDp;
-        mFutureBoundsInDp = boundsInDp;
+        if (!isMaximizedBounds) {
+            // Cache last requested bounds for potential subsequent restoration. Pending restored
+            // bounds will be cleared after all pending actions are dispatched.
+            mFutureRestoredBoundsInDp = mPendingBoundsInDp;
+        }
         updateFutureStatesInternal();
     }
 
@@ -476,6 +456,7 @@ final class PendingActionManager {
                 case PendingAction.CLOSE:
                 case PendingAction.HIDE:
                 case PendingAction.RESTORE:
+                case PendingAction.SET_BOUNDS:
                     mIsMaximizedFuture = false;
                     break;
                 default:
@@ -486,10 +467,6 @@ final class PendingActionManager {
                     || action == PendingAction.MAXIMIZE
                     || action == PendingAction.RESTORE) {
                 mFutureBoundsInDp = mPendingBoundsInDp;
-            }
-
-            if (action == PendingAction.SET_BOUNDS && sMaximumBoundsInDp != null) {
-                mIsMaximizedFuture = sMaximumBoundsInDp.equals(mFutureBoundsInDp);
             }
         }
     }

@@ -45,6 +45,7 @@ public class PendingActionManagerUnitTest {
 
     private static final Rect TEST_SET_BOUNDS_INPUT_1 = new Rect(0, 0, 100, 100);
     private static final Rect TEST_SET_BOUNDS_INPUT_2 = new Rect(0, 0, 200, 200);
+    private static final Rect TEST_MAXIMIZED_BOUNDS = new Rect(0, 0, 1000, 1000);
 
     private PendingActionManager mManager;
 
@@ -109,7 +110,7 @@ public class PendingActionManagerUnitTest {
     @Test
     public void testRequestSetBounds_withNonEmptyBounds_noPriorPendingActions_addsSetBoundsOnly() {
         // Act.
-        mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1);
+        mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1, /* isMaximizedBounds= */ false);
 
         // Assert.
         var pendingActions = mManager.getPendingActionsForTesting();
@@ -129,9 +130,40 @@ public class PendingActionManagerUnitTest {
     }
 
     @Test
+    public void testRequestSetBounds_withMaximizedBounds_doesNotSetRestoredBounds() {
+        // Act: set bounds with isMaximizedBounds = true.
+        mManager.requestSetBounds(TEST_MAXIMIZED_BOUNDS, /* isMaximizedBounds= */ true);
+
+        // Assert: action is MAXIMIZE, restored bounds not set.
+        var pendingActions = mManager.getPendingActionsForTesting();
+        assertEquals(
+                "Primary action should be MAXIMIZE.", PendingAction.MAXIMIZE, pendingActions[0]);
+        assertNull(
+                "Restored bounds should not be set for maximized bounds.",
+                mManager.getFutureRestoredBoundsInDp());
+    }
+
+    @Test
+    public void testRequestSetBounds_withNonMaximizedBounds_setsRestoredBounds() {
+        // Act: set bounds with isMaximizedBounds = false.
+        mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1, /* isMaximizedBounds= */ false);
+
+        // Assert: action is SET_BOUNDS, restored bounds are set.
+        var pendingActions = mManager.getPendingActionsForTesting();
+        assertEquals(
+                "Primary action should be SET_BOUNDS.",
+                PendingAction.SET_BOUNDS,
+                pendingActions[0]);
+        assertEquals(
+                "Restored bounds should be set for non-maximized bounds.",
+                TEST_SET_BOUNDS_INPUT_1,
+                mManager.getFutureRestoredBoundsInDp());
+    }
+
+    @Test
     public void testRequestSetBounds_withEmptyBounds_noPriorPendingActions_ignoresSetBounds() {
         // Act.
-        mManager.requestSetBounds(new Rect());
+        mManager.requestSetBounds(new Rect(), /* isMaximizedBounds= */ false);
 
         // Assert.
         var pendingActions = mManager.getPendingActionsForTesting();
@@ -143,8 +175,8 @@ public class PendingActionManagerUnitTest {
     @Test
     public void testRequestSetBounds_duplicateRequestOverridesBounds() {
         // Act.
-        mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1);
-        mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_2);
+        mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1, /* isMaximizedBounds= */ false);
+        mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_2, /* isMaximizedBounds= */ false);
 
         // Assert.
         var pendingActions = mManager.getPendingActionsForTesting();
@@ -462,7 +494,7 @@ public class PendingActionManagerUnitTest {
     @Test
     public void testIsMaximizedFuture_afterRequestMaximize_returnsTrue() {
         // Arrange.
-        mManager.requestMaximize();
+        mManager.requestSetBounds(TEST_MAXIMIZED_BOUNDS, /* isMaximizedBounds= */ true);
 
         // Assert.
         assertEquals(
@@ -472,9 +504,22 @@ public class PendingActionManagerUnitTest {
     }
 
     @Test
+    public void testIsMaximizedFuture_afterRequestSetBounds_returnsFalse() {
+        // Arrange.
+        mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1, /* isMaximizedBounds= */ false);
+
+        // Assert.
+        assertEquals(
+                "isMaximized should be false in the future when non-maximized SET_BOUNDS is in"
+                        + " progress",
+                false,
+                mManager.isMaximizedFuture(State.PENDING_UPDATE));
+    }
+
+    @Test
     public void testIsActiveFuture_afterRequestMaximize_notAffectIsActive() {
         // Arrange.
-        mManager.requestMaximize();
+        mManager.requestSetBounds(TEST_MAXIMIZED_BOUNDS, /* isMaximizedBounds= */ true);
 
         // Assert.
         assertNull(
@@ -496,7 +541,7 @@ public class PendingActionManagerUnitTest {
     @Test
     public void testSetBounds_afterSetBounds_returnsPendingBounds() {
         // Arrange.
-        mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1);
+        mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1, /* isMaximizedBounds= */ false);
 
         // Assert.
         assertEquals(
@@ -508,7 +553,7 @@ public class PendingActionManagerUnitTest {
     @Test
     public void testClearSetBounds_afterSetBounds_returnsNull() {
         // Arrange.
-        mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1);
+        mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1, /* isMaximizedBounds= */ false);
         mManager.getAndClearTargetPendingActions(PendingAction.SET_BOUNDS);
 
         // Assert.
@@ -543,9 +588,9 @@ public class PendingActionManagerUnitTest {
             // Arrange.
             mManager.clearPendingActionsForTesting();
             if (lowerPrecedenceAction == PendingAction.SET_BOUNDS) {
-                mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1);
+                mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1, /* isMaximizedBounds= */ false);
             } else if (lowerPrecedenceAction == PendingAction.MAXIMIZE) {
-                mManager.requestMaximize();
+                mManager.requestSetBounds(TEST_MAXIMIZED_BOUNDS, /* isMaximizedBounds= */ true);
             } else if (lowerPrecedenceAction == PendingAction.RESTORE) {
                 mManager.requestRestore(new Rect());
             } else {
@@ -554,7 +599,7 @@ public class PendingActionManagerUnitTest {
 
             // Act.
             if (action == PendingAction.SET_BOUNDS) {
-                mManager.requestSetBounds(bounds);
+                mManager.requestSetBounds(bounds, /* isMaximizedBounds= */ false);
             } else {
                 mManager.requestAction(action);
             }
@@ -597,9 +642,9 @@ public class PendingActionManagerUnitTest {
         for (@PendingAction int higherPrecedenceAction : higherPrecedenceActions) {
             // Arrange.
             if (higherPrecedenceAction == PendingAction.SET_BOUNDS) {
-                mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1);
+                mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1, /* isMaximizedBounds= */ false);
             } else if (higherPrecedenceAction == PendingAction.MAXIMIZE) {
-                mManager.requestMaximize();
+                mManager.requestSetBounds(TEST_MAXIMIZED_BOUNDS, /* isMaximizedBounds= */ true);
             } else if (higherPrecedenceAction == PendingAction.RESTORE) {
                 mManager.requestRestore(new Rect());
             } else {
@@ -637,9 +682,10 @@ public class PendingActionManagerUnitTest {
             for (@PendingAction int primaryAction : priorPrimaryActions) {
                 // Arrange.
                 if (primaryAction == PendingAction.SET_BOUNDS) {
-                    mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1);
+                    mManager.requestSetBounds(
+                            TEST_SET_BOUNDS_INPUT_1, /* isMaximizedBounds= */ false);
                 } else if (primaryAction == PendingAction.MAXIMIZE) {
-                    mManager.requestMaximize();
+                    mManager.requestSetBounds(TEST_MAXIMIZED_BOUNDS, /* isMaximizedBounds= */ true);
                 } else {
                     Assert.assertEquals(PendingAction.RESTORE, primaryAction);
                     mManager.requestRestore(new Rect());
@@ -684,9 +730,10 @@ public class PendingActionManagerUnitTest {
             for (@PendingAction int priorPrimaryAction : priorPrimaryActions) {
                 // Arrange.
                 if (priorPrimaryAction == PendingAction.SET_BOUNDS) {
-                    mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1);
+                    mManager.requestSetBounds(
+                            TEST_SET_BOUNDS_INPUT_1, /* isMaximizedBounds= */ false);
                 } else if (priorPrimaryAction == PendingAction.MAXIMIZE) {
-                    mManager.requestMaximize();
+                    mManager.requestSetBounds(TEST_MAXIMIZED_BOUNDS, /* isMaximizedBounds= */ true);
                 } else {
                     Assert.assertEquals(PendingAction.RESTORE, priorPrimaryAction);
                     mManager.requestRestore(new Rect());
@@ -696,7 +743,8 @@ public class PendingActionManagerUnitTest {
 
                 // Act.
                 if (action == PendingAction.SET_BOUNDS) {
-                    mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_2);
+                    mManager.requestSetBounds(
+                            TEST_SET_BOUNDS_INPUT_2, /* isMaximizedBounds= */ false);
                 } else {
                     mManager.requestAction(action);
                 }
