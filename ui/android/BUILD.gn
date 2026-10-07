@@ -849,6 +849,7 @@ robolectric_library("ui_android_junit_tests") {
     "junit/src/org/chromium/ui/modelutil/ModelListCleanerTest.java",
     "junit/src/org/chromium/ui/modelutil/ModelListPropertyChangeFilterTest.java",
     "junit/src/org/chromium/ui/modelutil/PropertyListModelTest.java",
+    "junit/src/org/chromium/ui/modelutil/PropertyModelAnimatorFactoryTest.java",
     "junit/src/org/chromium/ui/modelutil/PropertyModelTest.java",
     "junit/src/org/chromium/ui/modelutil/SimpleListObservableTest.java",
     "junit/src/org/chromium/ui/modelutil/SimpleRecyclerViewAdapterTest.java",
