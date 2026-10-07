@@ -1,7 +1,5 @@
-HTTP/1.1 200 OK
-Content-Type: text/plain
 Access-Control-Allow-Origin: *
 Access-Control-Allow-Methods: GET, OPTIONS, HEAD
 Access-Control-Allow-Headers: *
 Access-Control-Max-Age: 86400
-X-Secret-Server-Header: SuperSecret
+X-Secret-Header: SuperSecretValue
