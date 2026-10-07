@@ -75,6 +75,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -1438,6 +1439,19 @@ void ChromePaymentsAutofillClient::
       std::move(touch_to_fill_payment_method_controller);
 }
 #endif  // #if BUILDFLAG(IS_ANDROID)
+
+void ChromePaymentsAutofillClient::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->HasCommitted() ||
+      navigation_handle->IsSameDocument() ||
+      !navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+  // There is no offer manager in Incognito windows.
+  if (AutofillOfferManager* offer_manager = GetAutofillOfferManager()) {
+    offer_manager->UpdateOfferNotificationVisibility(*client_);
+  }
+}
 
 void ChromePaymentsAutofillClient::OnVisibilityChanged(
     content::Visibility visibility) {

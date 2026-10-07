@@ -15,8 +15,6 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/integrators/actor/autofill_annotations_provider_impl.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
-#include "components/autofill/core/browser/payments/autofill_offer_manager.h"
-#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/global_routing_id.h"
@@ -217,20 +215,6 @@ void ContentAutofillDriverFactory::DidFinishNavigation(
   auto* driver = DriverForFrame(navigation_handle->GetRenderFrameHost());
   if (!driver) {
     return;
-  }
-
-  if (navigation_handle->IsInPrimaryMainFrame() &&
-      client().GetPaymentsAutofillClient() &&
-      client().GetPaymentsAutofillClient()->GetAutofillOfferManager()) {
-    // If the navigation happened in the main frame and the AutofillOfferManager
-    // exists (not in Incognito windows, not in WebView), notify it about the
-    // navigation event.
-    // TODO: crbug.com/40178290 - Move out of CADF. Perhaps use the
-    // LifecycleState changes to recognize navigations.
-    client()
-        .GetPaymentsAutofillClient()
-        ->GetAutofillOfferManager()
-        ->OnDidNavigateFrame(client());
   }
 
   // If the navigation is served from BFCache, then the pre-navigation RFH is

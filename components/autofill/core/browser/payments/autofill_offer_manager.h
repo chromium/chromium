@@ -39,9 +39,6 @@ class AutofillOfferManager : public KeyedService {
   AutofillOfferManager(const AutofillOfferManager&) = delete;
   AutofillOfferManager& operator=(const AutofillOfferManager&) = delete;
 
-  // Invoked when the navigation happens.
-  void OnDidNavigateFrame(AutofillClient& client);
-
   // Updates the offer notification UI for the page that `client` currently has
   // committed.
   void UpdateOfferNotificationVisibility(AutofillClient& client);

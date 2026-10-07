@@ -18,10 +18,6 @@ AutofillOfferManager::AutofillOfferManager(
 
 AutofillOfferManager::~AutofillOfferManager() = default;
 
-void AutofillOfferManager::OnDidNavigateFrame(AutofillClient& client) {
-  UpdateOfferNotificationVisibility(client);
-}
-
 void AutofillOfferManager::UpdateOfferNotificationVisibility(
     AutofillClient& client) {
   notification_handler_.UpdateOfferNotificationVisibility(client);

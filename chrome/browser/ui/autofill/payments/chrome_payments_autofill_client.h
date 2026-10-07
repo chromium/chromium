@@ -316,6 +316,8 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
 
  private:
   // content::WebContentsObserver:
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 
   // PaymentsDataManager::Observer:
