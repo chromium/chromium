@@ -37,6 +37,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -484,6 +485,21 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kProposedRevoke, 1);
   t.ExpectBucketCount(kRevocationResultHistogram, RevocationResult::kRevoke, 1);
+}
+
+TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
+       FileUrlsNotRevoked) {
+  GURL url("file:///foo/bar.txt");
+  SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
+  SetDailyAverageNotificationCount(url, kHighNotificationCount);
+  site_engagement_service()->ResetBaseScoreForURL(url, 0);
+
+  manager()->RevokeDisruptiveNotifications();
+  EXPECT_EQ(
+      CONTENT_SETTING_ALLOW,
+      hcsm()->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
+  EXPECT_FALSE(
+      ContentSettingHelper(*hcsm()).GetRevocationEntry(url).has_value());
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
@@ -937,7 +953,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
 
   clock()->Advance(base::Days(5));
 
-  manager()->RegrantPermissionForUrl(url);
+  manager()->RegrantPermissionForOrigin(url::Origin::Create(url));
   // Notifications are again allowed.
   EXPECT_EQ(
       CONTENT_SETTING_ALLOW,
@@ -970,7 +986,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   EXPECT_EQ(
       CONTENT_SETTING_ASK,
       hcsm()->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
-  manager()->RegrantPermissionForUrl(url);
+  manager()->RegrantPermissionForOrigin(url::Origin::Create(url));
   // Notifications are still ask.
   EXPECT_EQ(
       CONTENT_SETTING_ASK,
@@ -999,8 +1015,9 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   // Undo the regrant (return to revoked state).
   content_settings::ContentSettingConstraints constraints(base::Time::Now());
   constraints.set_lifetime(base::Days(30));
-  manager()->UndoRegrantPermissionForUrl(
-      url, {ContentSettingsType::NOTIFICATIONS}, std::move(constraints));
+  manager()->UndoRegrantPermissionForOrigin(
+      url::Origin::Create(url), {ContentSettingsType::NOTIFICATIONS},
+      std::move(constraints));
 
   // Notifications are again ask.
   EXPECT_EQ(
@@ -1036,8 +1053,9 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
 
   // Attempt to undo the regrant (return to revoked state).
   content_settings::ContentSettingConstraints constraints(base::Time::Now());
-  manager()->UndoRegrantPermissionForUrl(
-      url, {ContentSettingsType::NOTIFICATIONS}, std::move(constraints));
+  manager()->UndoRegrantPermissionForOrigin(
+      url::Origin::Create(url), {ContentSettingsType::NOTIFICATIONS},
+      std::move(constraints));
 
   // Notifications are still allow because there were no "ignore" value stored
   // therefore no revocation to undo.
@@ -1067,8 +1085,9 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
 
   // Attempt to undo the regrant (return to revoked state).
   content_settings::ContentSettingConstraints constraints(base::Time::Now());
-  manager()->UndoRegrantPermissionForUrl(
-      url, {ContentSettingsType::GEOLOCATION}, std::move(constraints));
+  manager()->UndoRegrantPermissionForOrigin(url::Origin::Create(url),
+                                            {ContentSettingsType::GEOLOCATION},
+                                            std::move(constraints));
 
   // Notifications are still allow because there were no "ignore" value stored
   // therefore no revocation to undo.

@@ -733,9 +733,9 @@ TEST_P(RevokedPermissionsServiceTest, TrackOnlySingleOriginTest) {
   // Add one setting for all urls.
   SetTrackedContentSettingForType(example_url1, geolocation_type);
   SetTrackedContentSettingForType(example_url2, geolocation_type);
-  // TODO(crbug.com/40267370): The first parameter should be `example_url3`,
-  // but the test crashes.
-  hcsm()->SetContentSettingDefaultScope(GURL(example_url2), GURL(example_url3),
+  // file:// URLs and wildcard patterns shouldn't be tracked for unused site
+  // permissions.
+  hcsm()->SetContentSettingDefaultScope(GURL(example_url3), GURL(example_url3),
                                         geolocation_type,
                                         ContentSetting::CONTENT_SETTING_ALLOW);
 
@@ -746,12 +746,39 @@ TEST_P(RevokedPermissionsServiceTest, TrackOnlySingleOriginTest) {
   // Travel through time for 20 days.
   clock()->Advance(base::Days(20));
 
-  // Only `url1` should be tracked because it is the only single origin url.
+  // Only `example_url1` should be tracked because wildcard patterns and file://
+  // URLs are not tracked for unused site permissions.
   safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
   EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 1u);
   auto tracked_origin = service()->GetTrackedUnusedPermissionsForTesting()[0];
   EXPECT_EQ(GURL(tracked_origin.source.primary_pattern.ToString()),
             GURL(example_url1));
+}
+
+TEST_P(RevokedPermissionsServiceTest, FilePermissionsNotRevoked) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      content_settings::features::kSafetyCheckUnusedSitePermissions);
+
+  std::string file_url = "file:///foo/bar.txt";
+  hcsm()->SetContentSettingDefaultScope(GURL(file_url), GURL(file_url),
+                                        geolocation_type,
+                                        ContentSetting::CONTENT_SETTING_ALLOW);
+
+  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
+  EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 0u);
+  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
+
+  // Advance time past revocation threshold.
+  clock()->Advance(base::Days(70));
+
+  // Verify that file:// permissions are neither tracked nor auto-revoked.
+  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
+  EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 0u);
+  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            hcsm()->GetContentSetting(GURL(file_url), GURL(file_url),
+                                      geolocation_type));
 }
 
 TEST_P(RevokedPermissionsServiceTest, TrackUnusedButDontRevoke) {

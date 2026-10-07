@@ -170,6 +170,11 @@ UnusedSitePermissionsManager::UpdateOnBackgroundThread(
       if (!setting.primary_pattern.MatchesSingleOrigin()) {
         continue;
       }
+      // Skip file:// permissions.
+      if (setting.primary_pattern.GetSchemeType() ==
+          ContentSettingsPattern::SCHEME_FILE) {
+        continue;
+      }
       // Skip permissions that are explicitly excluded from autorevocation by
       // user.
       if (setting.metadata.autorevocation_bypassed_by_user()) {
@@ -386,10 +391,13 @@ void UnusedSitePermissionsManager::OnPageVisited(const url::Origin& origin) {
     return;
   }
 
+  GURL origin_url = origin.GetURL();
+  CHECK(origin_url.is_valid());
+
   // See which permissions of the origin actually match the URL and update them.
   auto& site_permissions = origin_entry->second;
   for (auto it = site_permissions.begin(); it != site_permissions.end();) {
-    if (it->source.primary_pattern.Matches(origin.GetURL())) {
+    if (it->source.primary_pattern.Matches(origin_url)) {
       // This should only be updated for settings that are already tracked.
       if (it->source.metadata.last_visited() != base::Time()) {
         hcsm()->UpdateLastVisitedTime(it->source.primary_pattern,
@@ -456,9 +464,11 @@ UnusedSitePermissionsManager::ExtractRevokedPermissions(
 
 void UnusedSitePermissionsManager::RegrantPermissionsForOrigin(
     const url::Origin& origin) {
+  GURL origin_url = origin.GetURL();
+  CHECK(origin_url.is_valid());
   content_settings::SettingInfo info;
   base::Value stored_value(hcsm()->GetWebsiteSetting(
-      origin.GetURL(), origin.GetURL(),
+      origin_url, origin_url,
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, &info));
 
   base::flat_map<ContentSettingsType, base::Value> revoked_permissions =
@@ -502,8 +512,7 @@ void UnusedSitePermissionsManager::RegrantPermissionsForOrigin(
   IgnoreOriginForAutoRevocation(origin);
 
   // Remove origin from revoked permissions list.
-  DeletePatternFromRevokedUnusedSitePermissionList(info.primary_pattern,
-                                                   info.secondary_pattern);
+  OnPermissionChanged(info.primary_pattern, info.secondary_pattern);
 
   // Record the days elapsed from auto-revocation to regrant.
   base::Time revoked_time =
@@ -543,10 +552,9 @@ void UnusedSitePermissionsManager::UndoRegrantPermissionsForOrigin(
       permissions_data.primary_pattern, ContentSettingsPattern::Wildcard());
 }
 
-void UnusedSitePermissionsManager::
-    DeletePatternFromRevokedUnusedSitePermissionList(
-        const ContentSettingsPattern& primary_pattern,
-        const ContentSettingsPattern& secondary_pattern) {
+void UnusedSitePermissionsManager::OnPermissionChanged(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern) {
   hcsm()->SetWebsiteSettingCustomScope(
       primary_pattern, secondary_pattern,
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, {});
@@ -577,9 +585,8 @@ UnusedSitePermissionsManager::GetRevokedPermissions() {
 void UnusedSitePermissionsManager::ClearRevokedPermissionsList() {
   for (const auto& revoked_permissions : hcsm()->GetSettingsForOneType(
            ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS)) {
-    DeletePatternFromRevokedUnusedSitePermissionList(
-        revoked_permissions.primary_pattern,
-        revoked_permissions.secondary_pattern);
+    OnPermissionChanged(revoked_permissions.primary_pattern,
+                        revoked_permissions.secondary_pattern);
   }
 }
 
@@ -688,6 +695,8 @@ UnusedSitePermissionsManager::GetUntimestampedPermissionsForTesting() {
 
 void UnusedSitePermissionsManager::IgnoreOriginForAutoRevocation(
     const url::Origin& origin) {
+  GURL origin_url = origin.GetURL();
+  CHECK(origin_url.is_valid());
   auto* registry = content_settings::PermissionSettingsRegistry::GetInstance();
 
   for (const content_settings::PermissionSettingsInfo* info : *registry) {
@@ -695,7 +704,7 @@ void UnusedSitePermissionsManager::IgnoreOriginForAutoRevocation(
 
     for (const auto& setting : hcsm()->GetSettingsForOneType(type)) {
       if (setting.primary_pattern.MatchesSingleOrigin() &&
-          setting.primary_pattern.Matches(origin.GetURL())) {
+          setting.primary_pattern.Matches(origin_url)) {
         hcsm()->SetAutorevocationBypassedByUser(
             setting.primary_pattern, setting.secondary_pattern, type);
         break;

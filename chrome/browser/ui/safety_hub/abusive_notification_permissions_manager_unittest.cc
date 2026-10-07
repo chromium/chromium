@@ -40,6 +40,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/permissions/crowd_deny_fake_safe_browsing_database_manager.h"
@@ -189,8 +190,7 @@ class AbusiveNotificationPermissionsManagerTest : public ::testing::Test {
 
   // TODO(crbug/com/342210522): When we refactor utils to be cleaner, this
   // helper will no longer be necessary.
-  bool IsRevokedSettingValueRevoked(
-      std::string url) {
+  bool IsRevokedSettingValueRevoked(std::string url) {
     base::Value stored_value =
         safety_hub_util::GetRevokedAbusiveNotificationPermissionsSettingValue(
             hcsm(), GURL(url));
@@ -328,6 +328,20 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
       AbusiveNotificationPermissionsManager::CheckResult::kPhishing, 1);
 }
 
+TEST_F(AbusiveNotificationPermissionsManagerTest, FileUrlsNotRevoked) {
+  AddAbusiveNotification("file:///foo/bar.txt",
+                         ContentSetting::CONTENT_SETTING_ALLOW);
+  auto manager = AbusiveNotificationPermissionsManager(
+      mock_database_manager(), /*v5_get_hash_protocol_manager=*/nullptr, hcsm(),
+      profile()->GetTestingPrefService());
+  RunUntilSafeBrowsingChecksComplete(&manager);
+  EXPECT_EQ(
+      safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm()).size(),
+      0u);
+  EXPECT_EQ(GetNotificationSettingValue("file:///foo/bar.txt"),
+            ContentSetting::CONTENT_SETTING_ALLOW);
+}
+
 TEST_F(AbusiveNotificationPermissionsManagerTest,
        DoesNotAddBlockedSettingToRevokedList) {
   AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW);
@@ -447,7 +461,7 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
   EXPECT_TRUE(IsRevokedSettingValueRevoked(url2));
 
   // Make sure that when we regrant url1, it is not automatically revoked again.
-  manager.RegrantPermissionForOriginIfNecessary(GURL(url1));
+  manager.RegrantPermissionForOrigin(url::Origin::Create(GURL(url1)));
   content_settings =
       safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm());
   EXPECT_EQ(content_settings.size(), 1u);
@@ -663,7 +677,7 @@ TEST_F(
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,
-       UndoRegrantPermissionForOriginIfNecessary) {
+       UndoRegrantPermissionForOrigin) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW);
   AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW);
@@ -679,7 +693,7 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
   EXPECT_TRUE(IsUrlInContentSettings(content_settings, url2));
 
   // Make sure that when we regrant url1, it is not automatically revoked again.
-  manager.RegrantPermissionForOriginIfNecessary(GURL(url1));
+  manager.RegrantPermissionForOrigin(url::Origin::Create(GURL(url1)));
   EXPECT_EQ(
       safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm()).size(),
       1u);
@@ -693,8 +707,9 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
   EXPECT_TRUE(IsRevokedSettingValueRevoked(url2));
 
   content_settings::ContentSettingConstraints constraints;
-  manager.UndoRegrantPermissionForOriginIfNecessary(
-      GURL(url1), abusive_permission_types, std::move(constraints));
+  manager.UndoRegrantPermissionForOrigin(url::Origin::Create(GURL(url1)),
+                                         abusive_permission_types,
+                                         std::move(constraints));
   EXPECT_EQ(
       safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm()).size(),
       2u);
@@ -756,14 +771,15 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
       profile()->GetTestingPrefService());
 
   // Re-grant.
-  manager.RegrantPermissionForOriginIfNecessary(GURL(url1));
+  manager.RegrantPermissionForOrigin(url::Origin::Create(GURL(url1)));
   EXPECT_TRUE(safety_hub_util::IsAbusiveNotificationRevocationIgnored(
       hcsm(), GURL(url1)));
 
   // Undo re-grant.
   content_settings::ContentSettingConstraints constraints;
-  manager.UndoRegrantPermissionForOriginIfNecessary(
-      GURL(url1), abusive_permission_types, std::move(constraints));
+  manager.UndoRegrantPermissionForOrigin(url::Origin::Create(GURL(url1)),
+                                         abusive_permission_types,
+                                         std::move(constraints));
   EXPECT_TRUE(IsRevokedSettingValueRevoked(url1));
 
   ASSERT_EQ(
@@ -786,7 +802,7 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
   RunUntilSafeBrowsingChecksComplete(&manager);
   ContentSettingsForOneType content_settings =
       safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm());
-  manager.RegrantPermissionForOriginIfNecessary(GURL(url1));
+  manager.RegrantPermissionForOrigin(url::Origin::Create(GURL(url1)));
 
   // The notifications should be allowed for `url1` and revoked for `url2`.
   EXPECT_EQ(
@@ -1163,7 +1179,7 @@ TEST_F(ShowManualNotificationRevocationsTest,
 
   // Regrant removes the permission from the list shown to the user and changes
   // the notification permission to allow.
-  manager.RegrantPermissionForOriginIfNecessary(origin_to_revoke);
+  manager.RegrantPermissionForOrigin(url::Origin::Create(origin_to_revoke));
   ASSERT_EQ(
       safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm()).size(),
       0u);
@@ -1224,7 +1240,7 @@ TEST_F(ShowManualNotificationRevocationsTest,
 
   // Regrant removes the permission from the list shown to the user and changes
   // the notification permission to allow.
-  manager.RegrantPermissionForOriginIfNecessary(origin_to_revoke);
+  manager.RegrantPermissionForOrigin(url::Origin::Create(origin_to_revoke));
   ASSERT_EQ(
       safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm()).size(),
       0u);
@@ -1235,8 +1251,9 @@ TEST_F(ShowManualNotificationRevocationsTest,
   // Undo regrant adds the permission back to the list and revokes the
   // permission again.
   content_settings::ContentSettingConstraints constraints;
-  manager.UndoRegrantPermissionForOriginIfNecessary(
-      origin_to_revoke, abusive_permission_types, std::move(constraints));
+  manager.UndoRegrantPermissionForOrigin(url::Origin::Create(origin_to_revoke),
+                                         abusive_permission_types,
+                                         std::move(constraints));
   ASSERT_EQ(
       safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm()).size(),
       1u);

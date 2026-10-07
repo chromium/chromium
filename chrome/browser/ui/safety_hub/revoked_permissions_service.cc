@@ -251,16 +251,15 @@ void RevokedPermissionsService::OnContentSettingChanged(
       (IsAbusiveNotificationAutoRevocationEnabled() &&
        abusive_notification_manager_->IsRevocationRunning()) ||
       (disruptive_notification_manager_ &&
-       disruptive_notification_manager_->IsChangingContentSettings());
+       disruptive_notification_manager_->IsRevocationRunning());
   if (is_revocation_running) {
     return;
   }
 
   if (content_settings::IsPermissionEligibleForAutoRevocation(
           content_type_set.GetType())) {
-    unused_site_permissions_manager_
-        ->DeletePatternFromRevokedUnusedSitePermissionList(primary_pattern,
-                                                           secondary_pattern);
+    unused_site_permissions_manager_->OnPermissionChanged(primary_pattern,
+                                                          secondary_pattern);
   }
 
   if (content_type_set.GetType() == ContentSettingsType::NOTIFICATIONS) {
@@ -298,12 +297,11 @@ void RevokedPermissionsService::Shutdown() {
 void RevokedPermissionsService::RegrantPermissionsForOrigin(
     const url::Origin& origin) {
   if (IsAbusiveNotificationAutoRevocationEnabled()) {
-    abusive_notification_manager_->RegrantPermissionForOriginIfNecessary(
-        origin.GetURL());
+    abusive_notification_manager_->RegrantPermissionForOrigin(origin);
   }
 
   if (disruptive_notification_manager_) {
-    disruptive_notification_manager_->RegrantPermissionForUrl(origin.GetURL());
+    disruptive_notification_manager_->RegrantPermissionForOrigin(origin);
   }
 
   unused_site_permissions_manager_->RegrantPermissionsForOrigin(origin);
@@ -315,16 +313,17 @@ void RevokedPermissionsService::UndoRegrantPermissionsForOrigin(
   for (const auto& [type, value] : permissions_data.permissions) {
     permission_types.insert(type);
   }
+  GURL rep_url = permissions_data.primary_pattern.ToRepresentativeUrl();
+  CHECK(rep_url.is_valid());
+  url::Origin origin = url::Origin::Create(rep_url);
   if (IsAbusiveNotificationAutoRevocationEnabled()) {
-    abusive_notification_manager_->UndoRegrantPermissionForOriginIfNecessary(
-        GURL(permissions_data.primary_pattern.ToString()), permission_types,
-        permissions_data.constraints.Clone());
+    abusive_notification_manager_->UndoRegrantPermissionForOrigin(
+        origin, permission_types, permissions_data.constraints.Clone());
   }
 
   if (disruptive_notification_manager_) {
-    disruptive_notification_manager_->UndoRegrantPermissionForUrl(
-        GURL(permissions_data.primary_pattern.ToString()), permission_types,
-        permissions_data.constraints.Clone());
+    disruptive_notification_manager_->UndoRegrantPermissionForOrigin(
+        origin, permission_types, permissions_data.constraints.Clone());
   }
 
   unused_site_permissions_manager_->UndoRegrantPermissionsForOrigin(
@@ -478,7 +477,7 @@ RevokedPermissionsService::GetRevokedPermissions() {
 
   if (disruptive_notification_manager_) {
     ContentSettingsForOneType revoked_disruptive_notifications =
-        disruptive_notification_manager_->GetRevokedNotifications(hcsm());
+        disruptive_notification_manager_->GetRevokedPermissions();
     for (const auto& permission : revoked_disruptive_notifications) {
       // Skip origins with revoked unused site permissions, since these were
       // handled above.

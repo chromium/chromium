@@ -84,7 +84,7 @@ RevokedPermissionsOSNotificationDisplayManager::GetRevocationUrls() {
     }
   }
   ContentSettingsForOneType revoked_disruptive_notifications =
-      DisruptiveNotificationPermissionsManager::GetRevokedNotifications(
+      DisruptiveNotificationPermissionsManager::GetRevokedPermissions(
           hcsm_.get());
   for (const auto& revoked_disruptive_notification_permission :
        revoked_disruptive_notifications) {

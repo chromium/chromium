@@ -21,6 +21,10 @@ namespace safe_browsing {
 class V5GetHashProtocolManager;
 }
 
+namespace url {
+class Origin;
+}
+
 namespace {
 // Maximum time in milliseconds to wait for the Safe Browsing service reputation
 // check. After this amount of time the outstanding check will be aborted, and
@@ -138,10 +142,10 @@ class AbusiveNotificationPermissionsManager {
   // enabled and haven't been marked as a URL to be ignored.
   void CheckNotificationPermissionOrigins();
 
-  // If the url has a revoked abusive notification permission, this method
+  // If the origin has a revoked abusive notification permission, this method
   // allows notification permissions again and adds a constraint so that this
   // permission is not auto-revoked during future Safety Hub checks.
-  void RegrantPermissionForOriginIfNecessary(const GURL& url);
+  void RegrantPermissionForOrigin(const url::Origin& origin);
 
   // If `permission_types` includes notifications, undo the actions from
   // `RegrantPermissionForOrigin` by changing the `NOTIFICATIONS` setting back
@@ -149,8 +153,8 @@ class AbusiveNotificationPermissionsManager {
   // `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` setting back to a dictionary
   // with `safety_hub::kRevokedStatusDictKeyStr` set to
   // `safety_hub::kRevokeStr`.
-  void UndoRegrantPermissionForOriginIfNecessary(
-      const GURL& url,
+  void UndoRegrantPermissionForOrigin(
+      const url::Origin& origin,
       std::set<ContentSettingsType> permission_types,
       content_settings::ContentSettingConstraints constraints);
 
@@ -221,7 +225,7 @@ class AbusiveNotificationPermissionsManager {
   FRIEND_TEST_ALL_PREFIXES(AbusiveNotificationPermissionsManagerTest,
                            SetIgnoreRevokedAbusiveNotificationPermission);
   FRIEND_TEST_ALL_PREFIXES(AbusiveNotificationPermissionsManagerTest,
-                           UndoRegrantPermissionForOriginIfNecessary);
+                           UndoRegrantPermissionForOrigin);
 
   // On object creation, checks the Safe Browsing blocklist for `url_`
   // and revokes notification permissions if blocklisted.

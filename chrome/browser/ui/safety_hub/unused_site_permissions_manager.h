@@ -91,11 +91,10 @@ class UnusedSitePermissionsManager {
   // the removed permissions list and resets its permissions.
   void UndoRegrantPermissionsForOrigin(const PermissionsData& permission);
 
-  // Removes a pattern from the list of revoked permissions so that the entry is
+  // Removes the pattern from the revoked permissions list so that the entry is
   // no longer shown to the user. Does not affect permissions themselves.
-  void DeletePatternFromRevokedUnusedSitePermissionList(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern);
+  void OnPermissionChanged(const ContentSettingsPattern& primary_pattern,
+                           const ContentSettingsPattern& secondary_pattern);
 
   // Returns the list of all permissions that have been revoked due to being
   // unused.

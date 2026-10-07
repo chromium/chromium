@@ -33,6 +33,7 @@
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/safety_hub/notification_wrapper_android.h"
@@ -362,6 +363,12 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
       continue;
     }
 
+    // Skip file:// permissions.
+    if (item.primary_pattern.GetSchemeType() ==
+        ContentSettingsPattern::SCHEME_FILE) {
+      continue;
+    }
+
     // Only user controlled permissions can be revoked.
     if (content_settings::GetSettingSourceFromProviderType(item.source) !=
         content_settings::SettingSource::kUser) {
@@ -539,15 +546,17 @@ void DisruptiveNotificationPermissionsManager::OnPermissionChanged(
       ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS, {});
 }
 
-bool DisruptiveNotificationPermissionsManager::IsChangingContentSettings() {
+bool DisruptiveNotificationPermissionsManager::IsRevocationRunning() {
   return is_revocation_running_ || is_changing_notification_permission_;
 }
 
-void DisruptiveNotificationPermissionsManager::RegrantPermissionForUrl(
-    const GURL& url) {
-  // If the user decides to regrant permissions for `url`, check if it has
+void DisruptiveNotificationPermissionsManager::RegrantPermissionForOrigin(
+    const url::Origin& origin) {
+  // If the user decides to regrant permissions for `origin`, check if it has
   // revoked disruptive notification permissions. If so, allow notification
-  // permissions and ignore the `url` from future auto-revocation.
+  // permissions and ignore the `origin` from future auto-revocation.
+  GURL url = origin.GetURL();
+  CHECK(url.is_valid());
   std::optional<RevocationEntry> revocation_entry =
       ContentSettingHelper(*hcsm_).GetRevocationEntry(url);
   if (!revocation_entry ||
@@ -577,18 +586,20 @@ void DisruptiveNotificationPermissionsManager::OnPermissionRegranted(
       (clock_->Now() - revocation_entry.timestamp).InDays());
 }
 
-void DisruptiveNotificationPermissionsManager::UndoRegrantPermissionForUrl(
-    const GURL& url,
+void DisruptiveNotificationPermissionsManager::UndoRegrantPermissionForOrigin(
+    const url::Origin& origin,
     std::set<ContentSettingsType> permission_types,
     content_settings::ContentSettingConstraints constraints) {
   // The user has decided to undo the regranted permission revocation for
-  // `url`. Only update the `NOTIFICATIONS` and
-  // `REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS` settings if the url had
+  // `origin`. Only update the `NOTIFICATIONS` and
+  // `REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS` settings if the origin had
   // revoked notification permissions.
   if (!permission_types.contains(ContentSettingsType::NOTIFICATIONS)) {
     return;
   }
 
+  GURL url = origin.GetURL();
+  CHECK(url.is_valid());
   std::optional<RevocationEntry> revocation_entry =
       ContentSettingHelper(*hcsm_).GetRevocationEntry(url);
   if (!revocation_entry ||
@@ -781,9 +792,9 @@ void DisruptiveNotificationPermissionsManager::LogMetrics(
   ContentSettingHelper(*hcsm).PersistRevocationEntry(url, *revocation_entry);
 }
 
-// Static
+// static
 ContentSettingsForOneType
-DisruptiveNotificationPermissionsManager::GetRevokedNotifications(
+DisruptiveNotificationPermissionsManager::GetRevokedPermissions(
     HostContentSettingsMap* hcsm) {
   ContentSettingsForOneType result;
   ContentSettingsForOneType revoked_permissions = hcsm->GetSettingsForOneType(
@@ -800,6 +811,11 @@ DisruptiveNotificationPermissionsManager::GetRevokedNotifications(
     }
   }
   return result;
+}
+
+ContentSettingsForOneType
+DisruptiveNotificationPermissionsManager::GetRevokedPermissions() {
+  return GetRevokedPermissions(hcsm_.get());
 }
 
 // static

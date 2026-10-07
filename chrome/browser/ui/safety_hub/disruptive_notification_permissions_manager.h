@@ -29,6 +29,10 @@ namespace site_engagement {
 class SiteEngagementService;
 }  // namespace site_engagement
 
+namespace url {
+class Origin;
+}  // namespace url
+
 // This class keeps track of disruptive notification permissions by checking the
 // average daily notification counts and site engagement score.
 class DisruptiveNotificationPermissionsManager {
@@ -117,20 +121,20 @@ class DisruptiveNotificationPermissionsManager {
   // Returns true if settings are being changed due to auto revocation or if
   // this service is responsible for changing notification permissions
   // (regrants, undoing regrants etc).
-  bool IsChangingContentSettings();
+  bool IsRevocationRunning();
 
-  // If the url has a revoked disruptive notification permission, this method
-  // allows the notification permissions again and adds a constraint so that
-  // this permission is not auto-revoked during future Safety Hub checks.
-  void RegrantPermissionForUrl(const GURL& url);
+  // If the origin has a revoked disruptive notification permission, this
+  // method allows the notification permissions again and adds a constraint so
+  // that this permission is not auto-revoked during future Safety Hub checks.
+  void RegrantPermissionForOrigin(const url::Origin& origin);
 
   // If `permission_types` includes notifications, undo the actions from
-  // `RegrantPermissionForUrl` by changing the `NOTIFICATIONS` setting back
+  // `RegrantPermissionForOrigin` by changing the `NOTIFICATIONS` setting back
   // to `CONTENT_SETTING_ASK` and the
   // `REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS` status value back to
   // `safety_hub::kRevokeStr`.
-  void UndoRegrantPermissionForUrl(
-      const GURL& url,
+  void UndoRegrantPermissionForOrigin(
+      const url::Origin& origin,
       std::set<ContentSettingsType> permission_types,
       content_settings::ContentSettingConstraints constraints);
 
@@ -167,8 +171,9 @@ class DisruptiveNotificationPermissionsManager {
 
   // Returns the list of revoked disruptive notifications, excluding proposed
   // revocations and false positives.
-  static ContentSettingsForOneType GetRevokedNotifications(
+  static ContentSettingsForOneType GetRevokedPermissions(
       HostContentSettingsMap* hcsm);
+  ContentSettingsForOneType GetRevokedPermissions();
 
   // Returns true if `url` has been revoked notification permissions because of
   // sending disruptive notifications.

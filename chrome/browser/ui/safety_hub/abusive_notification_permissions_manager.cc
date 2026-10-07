@@ -98,8 +98,8 @@ safe_browsing::NotificationRevocationSource GetNotificationRevocationSource(
     return safe_browsing::NotificationRevocationSource::
         kSuspiciousContentAutoRevocation;
   }
-  // Only `kSocialEngineeringBlocklist` and `kSafeBrowsingUnwantedRevocation` are
-  // stored in `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS`, other type of
+  // Only `kSocialEngineeringBlocklist` and `kSafeBrowsingUnwantedRevocation`
+  // are stored in `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS`, other type of
   // `NotificationRevocationSource` should never be the reason for abusive
   // notification revocation.
   return safe_browsing::NotificationRevocationSource::kUnknown;
@@ -371,11 +371,13 @@ void AbusiveNotificationPermissionsManager::
                               blocklist_check_counter);
 }
 
-void AbusiveNotificationPermissionsManager::
-    RegrantPermissionForOriginIfNecessary(const GURL& url) {
-  // If the user decides to regrant permissions for `url`, check if it has
+void AbusiveNotificationPermissionsManager::RegrantPermissionForOrigin(
+    const url::Origin& origin) {
+  // If the user decides to regrant permissions for `origin`, check if it has
   // revoked abusive notification permissions. If so, allow notification
-  // permissions and ignore the `url` from future auto-revocation.
+  // permissions and ignore the `origin` from future auto-revocation.
+  GURL url = origin.GetURL();
+  CHECK(url.is_valid());
   if (!safety_hub_util::IsUrlRevokedAbusiveNotification(hcsm_.get(), url)) {
     return;
   }
@@ -392,18 +394,19 @@ void AbusiveNotificationPermissionsManager::
       revocation_source);
 }
 
-void AbusiveNotificationPermissionsManager::
-    UndoRegrantPermissionForOriginIfNecessary(
-        const GURL& url,
-        std::set<ContentSettingsType> permission_types,
-        content_settings::ContentSettingConstraints constraints) {
-  // The user has decided to undo the regranted permission revocation for `url`.
-  // Only update the `NOTIFICATIONS` and
-  // `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` settings if the url had revoked
-  // notification permissions.
+void AbusiveNotificationPermissionsManager::UndoRegrantPermissionForOrigin(
+    const url::Origin& origin,
+    std::set<ContentSettingsType> permission_types,
+    content_settings::ContentSettingConstraints constraints) {
+  // The user has decided to undo the regranted permission revocation for
+  // `origin`. Only update the `NOTIFICATIONS` and
+  // `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` settings if the origin had
+  // revoked notification permissions.
   if (!permission_types.contains(ContentSettingsType::NOTIFICATIONS)) {
     return;
   }
+  GURL url = origin.GetURL();
+  CHECK(url.is_valid());
   base::Value stored_value(hcsm_->GetWebsiteSetting(
       url, url, ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS));
   if (stored_value.is_none()) {
@@ -667,6 +670,11 @@ bool AbusiveNotificationPermissionsManager::ShouldCheckOrigin(
   DCHECK(hcsm_);
   // Skip wildcard patterns that don't belong to a single origin.
   if (!setting.primary_pattern.MatchesSingleOrigin()) {
+    return false;
+  }
+  // Skip file:// permissions.
+  if (setting.primary_pattern.GetSchemeType() ==
+      ContentSettingsPattern::SCHEME_FILE) {
     return false;
   }
   // Skip checks when they've already been performed within the last 24 hours.
