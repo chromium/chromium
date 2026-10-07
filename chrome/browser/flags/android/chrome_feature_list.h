@@ -244,6 +244,7 @@ BASE_DECLARE_FEATURE(kLongScreenshotsLenientMemoryCheck);
 BASE_DECLARE_FEATURE(kLongScreenshotsNoMemoryCheck);
 BASE_DECLARE_FEATURE(kLongScreenshotsNumViewports);
 BASE_DECLARE_FEATURE(kMayLaunchUrlUsesSeparateStoragePartition);
+BASE_DECLARE_FEATURE(kMediaCaptureNotificationRefreshMediaTypes);
 BASE_DECLARE_FEATURE(kMostVisitedTilesCustomization);
 BASE_DECLARE_FEATURE(kMostVisitedTilesReselect);
 BASE_DECLARE_FEATURE(kMoveToFrontInLaunchIntentDispatcher);
