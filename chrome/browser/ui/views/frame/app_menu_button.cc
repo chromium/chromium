@@ -162,7 +162,7 @@ void AppMenuButton::RunActionMenu(
       browser_window_interface,
       base::BindRepeating(&AppMenuButton::OnMenuClosed,
                           weak_ptr_factory_.GetWeakPtr()));
-  action_menu_->RunMenu(menu_button_controller_);
+  action_menu_->RunMenu(menu_button_controller_, run_flags);
 
   observer_list_.Notify(&AppMenuButtonObserver::AppMenuShown);
 }

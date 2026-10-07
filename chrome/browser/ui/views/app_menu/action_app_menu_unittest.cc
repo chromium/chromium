@@ -104,11 +104,14 @@
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_separator.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/test/ax_event_counter.h"
@@ -154,7 +157,7 @@ TEST_F(ActionAppMenuTest, RunAndCloseMenu) {
 
   EXPECT_FALSE(menu.IsShowing());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
@@ -162,12 +165,48 @@ TEST_F(ActionAppMenuTest, RunAndCloseMenu) {
   EXPECT_FALSE(menu.IsShowing());
 }
 
+// On Windows, opening the menu from the keyboard selects the first item.
+// This verifies that, in that case, RunMenu() forwards the keyboard run flags.
+TEST_F(ActionAppMenuTest, KeyboardOpenSelectsFirstItemWhereSupported) {
+  ActionAppMenu menu(&mock_window_interface_, base::DoNothing());
+  menu.RunMenu(button_->button_controller(),
+               views::MenuRunner::SHOULD_SHOW_MNEMONICS |
+                   views::MenuRunner::INVOKED_FROM_KEYBOARD);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  views::MenuController* controller = root->GetMenuController();
+  ASSERT_TRUE(controller);
+  views::MenuItemView* selected = controller->GetSelectedMenuItem();
+  ASSERT_TRUE(selected);
+  if (views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard) {
+    // A top-level item is selected, not just the root.
+    EXPECT_EQ(selected->GetParentMenuItem(), root);
+  } else {
+    EXPECT_EQ(selected, root);
+  }
+}
+
+// Opening the menu with the mouse doesn't select any item.
+TEST_F(ActionAppMenuTest, MouseOpenDoesNotSelectItem) {
+  ActionAppMenu menu(&mock_window_interface_, base::DoNothing());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  views::MenuController* controller = root->GetMenuController();
+  ASSERT_TRUE(controller);
+  EXPECT_EQ(controller->GetSelectedMenuItem(), root);
+}
+
 TEST_F(ActionAppMenuTest, PopulatesSectionCardsWithStyling) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
 
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -325,7 +364,7 @@ TEST_F(ActionAppMenuTest, PopulatesRecentTabsSubmenu) {
 
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -344,7 +383,7 @@ TEST_F(ActionAppMenuTest, PassesClickDisposition) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   views::MenuItemView* root = menu.root_menu_item_for_testing();
   ASSERT_TRUE(root);
 
@@ -411,7 +450,7 @@ TEST_F(ActionAppMenuTest, PopulatesBookmarksSubmenu) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -568,7 +607,7 @@ TEST_F(ActionAppMenuTest, PopulatesBookmarksSubmenuWithManagedFolder) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -623,7 +662,7 @@ TEST_F(ActionAppMenuTest, BookmarkBarSubmenuCheckItems) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -700,7 +739,7 @@ TEST_F(ActionAppMenuTest, PopulatesTabGroupsSubmenu) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -800,7 +839,7 @@ TEST_F(ActionAppMenuTest, PopulatesStaticSubmenus) {
 
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -833,7 +872,7 @@ TEST_F(ActionAppMenuTest, InflatesTopBlockRowButtons) {
 
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -895,7 +934,7 @@ TEST_F(ActionAppMenuTest, InflatesTopBlockRowButtonsIncognito) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -973,7 +1012,7 @@ TEST_F(ActionAppMenuTest, BlockButtonClickExecutesActionAfterMenuClosed) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
 
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   ASSERT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -1009,7 +1048,7 @@ TEST_F(ActionAppMenuTest, FooterButtonClickExecutesActionAfterMenuClosed) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
 
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   ASSERT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -1060,7 +1099,7 @@ TEST_F(ActionAppMenuTest, BlockButtonSyncsEnabledStateWithActionItem) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   views::MenuItemView* root = menu.root_menu_item_for_testing();
   ASSERT_TRUE(root);
 
@@ -1095,7 +1134,7 @@ TEST_F(ActionAppMenuTest, ZoomMenuRowCreationAndChildren) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
 
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -1123,7 +1162,7 @@ TEST_F(ActionAppMenuTest, ZoomChildActionsInvocation) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
 
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   actions::ActionItem* minus_action =
@@ -1153,7 +1192,7 @@ TEST_F(ActionAppMenuTest, ColorTokensValidInDarkMode) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   ASSERT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -1187,7 +1226,7 @@ TEST_F(ActionAppMenuTest, PopulatesFooterElements) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
 
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -1256,7 +1295,7 @@ TEST_F(ActionAppMenuTest, PopulatesFooterElementsWithManagedAction) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
 
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -1337,7 +1376,7 @@ TEST_F(ActionAppMenuTest, ZoomLabelUpdatesOnZoomChange) {
       .WillRepeatedly(testing::Return(web_contents.get()));
 
   ActionAppMenu menu(&mock_window_interface_, base::DoNothing());
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* const root = menu.root_menu_item_for_testing();
@@ -1386,7 +1425,7 @@ TEST_F(ActionAppMenuTest, ZoomLabelAccessibilityAnnouncementOnZoomChange) {
       .WillRepeatedly(testing::Return(web_contents.get()));
 
   ActionAppMenu menu(&mock_window_interface_, base::DoNothing());
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   ASSERT_TRUE(menu.IsShowing());
 
   views::MenuItemView* const root = menu.root_menu_item_for_testing();
@@ -1425,7 +1464,7 @@ TEST_F(ActionAppMenuTest, ZoomLabelAccessibilityAnnouncementOnZoomChange) {
 TEST_F(ActionAppMenuTest, FullscreenActionUpdatesAccessibilityName) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* const root = menu.root_menu_item_for_testing();
@@ -1472,7 +1511,7 @@ TEST_F(ActionAppMenuTest, ZoomButtonsInkDropAtLimits) {
       .WillRepeatedly(testing::Return(web_contents.get()));
 
   ActionAppMenu menu(&mock_window_interface_, base::DoNothing());
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* const root = menu.root_menu_item_for_testing();
@@ -1531,7 +1570,7 @@ TEST_F(ActionAppMenuTest, SearchBarDisabledByDefault) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   ASSERT_TRUE(menu.IsShowing());
 
   EXPECT_EQ(menu.search_bar_for_testing(), nullptr);
@@ -1555,7 +1594,7 @@ TEST_F(ActionAppMenuWithSearchTest, SearchBarEnabledWithFeatureFlag) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   ASSERT_TRUE(menu.IsShowing());
 
   AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
@@ -1671,7 +1710,7 @@ TEST_F(ActionAppMenuWithSearchTest,
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   ASSERT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -1717,7 +1756,7 @@ TEST_F(ActionAppMenuWithSearchTest, ClearItemsBelowSearchBarKeepsNotification) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   ASSERT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -1749,7 +1788,7 @@ TEST_F(ActionAppMenuTest, PopupAndComponentLayoutInsets) {
 
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -1828,7 +1867,7 @@ TEST_F(ActionAppMenuTest, HeaderAndMenuItemBorderLayout) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -1943,7 +1982,7 @@ TEST_F(ActionAppMenuTest, BlockSectionAndMenuHostWidth) {
 
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -1988,7 +2027,7 @@ TEST_F(ActionAppMenuTest, BlockSectionAndMenuHostWidth) {
 TEST_F(ActionAppMenuTest, MaxWidthForMenu) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -2031,7 +2070,7 @@ TEST_F(ActionAppMenuTest, UpgradeNotificationRowStyling) {
       AppMenuActionItem::kMinorTextKey,
       std::make_unique<std::u16string>(u"Restart to update"));
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -2116,7 +2155,7 @@ TEST_F(ActionAppMenuTest, UpgradeNotificationWithoutMinorText) {
   upgrade_indirect_item->SetProperty(AppMenuActionItem::kMinorTextKey,
                                      std::make_unique<std::u16string>());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -2137,7 +2176,7 @@ TEST_F(ActionAppMenuTest, UpgradeNotificationHiddenWhenInvisible) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -2176,7 +2215,7 @@ TEST_F(ActionAppMenuTest, MenuItemVerticalMarginExpandedHeight) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -2231,7 +2270,7 @@ TEST_F(ActionAppMenuTest, DefaultBrowserNotificationRowStyling) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -2279,7 +2318,7 @@ TEST_F(ActionAppMenuTest, DefaultBrowserNotificationHiddenWhenInvisible) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -2325,7 +2364,7 @@ TEST_F(ActionAppMenuTest, MenuItemNewBadgeProperty) {
   print_action->SetProperty(AppMenuActionItem::kNewBadgeFeatureKey,
                             &tabs::kVerticalTabsNewBadge);
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -2365,7 +2404,7 @@ TEST_F(ActionAppMenuTest, MenuItemIsAlertedProperty) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -2404,7 +2443,7 @@ TEST_F(ActionAppMenuTest, MenuItemSecondaryTextProperty) {
   EXPECT_EQ(*secondary_text, u"Print secondary text");
   app_menu_root->AddChild(std::move(print_indirect));
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -2429,7 +2468,7 @@ TEST_F(ActionAppMenuTest, GlobalErrorNotificationRowStyling) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -2506,7 +2545,7 @@ TEST_F(ActionAppMenuTest,
 
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
   ASSERT_TRUE(root);
@@ -2545,7 +2584,7 @@ TEST_F(ActionAppMenuTest, GlobalErrorPrioritizedOverDefaultBrowser) {
 
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
   ASSERT_TRUE(root);
@@ -2586,7 +2625,7 @@ TEST_F(ActionAppMenuTest, MultipleNotificationsSeparatedBySpacingSeparator) {
 
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
   ASSERT_TRUE(root);
@@ -2630,7 +2669,7 @@ TEST_F(ActionAppMenuTest, MenuOpenAndCommandExecutionMetrics) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
 
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   ASSERT_TRUE(menu.IsShowing());
 
   EXPECT_EQ(user_action_tester.GetActionCount("ShowAppMenu"), 1);
@@ -2675,7 +2714,7 @@ TEST_F(ActionAppMenuTest, ZoomAndBlockButtonMetrics) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
 
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   ASSERT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -2749,7 +2788,7 @@ TEST_F(ActionAppMenuTest, SafetyHubNotificationMetrics) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
 
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   ASSERT_TRUE(menu.IsShowing());
 
   histogram_tester.ExpectUniqueSample(
@@ -2841,7 +2880,7 @@ TEST_F(ActionAppMenuTest, SavedTabGroupsAndSidePanelMetrics) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
 
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   ASSERT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -2953,7 +2992,7 @@ TEST_F(ActionAppMenuTest, DragAndDropDelegateForwarding) {
       actions::ActionItem::Builder().SetText(u"Item A").Build());
   app_menu_root->AddChild(std::move(submenu_action));
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   ASSERT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -3060,7 +3099,7 @@ TEST_F(ActionAppMenuTest, UpdateMenuItem) {
   actions::BaseAction* submenu_action_ptr =
       app_menu_root->AddChild(std::move(submenu_action));
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   ASSERT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -3138,7 +3177,7 @@ TEST_F(ActionAppMenuTest, BookmarksDynamicMenuUpdatesOnModelChange) {
 
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   ASSERT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -3230,7 +3269,7 @@ TEST_F(ActionAppMenuTest, BookmarksDynamicMenuDragAndDrop) {
 
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   ASSERT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
@@ -3344,7 +3383,7 @@ TEST_F(ActionAppMenuTest, AppMenuSearchQueryPopulatesResults) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
@@ -3379,7 +3418,7 @@ TEST_F(ActionAppMenuTest, AppMenuSearchQueryNoResults) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
@@ -3410,7 +3449,7 @@ TEST_F(ActionAppMenuTest, AppMenuSearchQueryShortQueryShowsNormalMenu) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
-  menu.RunMenu(button_->button_controller());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
   EXPECT_TRUE(menu.IsShowing());
 
   AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();

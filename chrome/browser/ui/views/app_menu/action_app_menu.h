@@ -49,7 +49,7 @@ class ActionAppMenu : public views::MenuDelegate,
   ActionAppMenu& operator=(const ActionAppMenu&) = delete;
   ~ActionAppMenu() override;
 
-  void RunMenu(views::MenuButtonController* host);
+  void RunMenu(views::MenuButtonController* host, int run_types);
   bool IsShowing() const;
 
   // AppMenuDragAndDropDelegate::Host:

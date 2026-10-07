@@ -198,7 +198,7 @@ ActionAppMenu::~ActionAppMenu() {
   menu_manager_.reset();
 }
 
-void ActionAppMenu::RunMenu(views::MenuButtonController* host) {
+void ActionAppMenu::RunMenu(views::MenuButtonController* host, int run_types) {
   auto root = std::make_unique<views::MenuItemView>(/*delegate=*/this);
   // Stash the raw pointer before transferring the unique_ptr ownership to
   // `menu_runner_`. This allows us to reference the root menu item view later.
@@ -222,6 +222,11 @@ void ActionAppMenu::RunMenu(views::MenuButtonController* host) {
   }
 
   int32_t types = views::MenuRunner::HAS_MNEMONICS;
+  // Forward the keyboard-related flags, so that whenever the menu is opened
+  // with a key press it shows mnemonic underlines. This also selects the first
+  // item (on Windows only).
+  types |= run_types & (views::MenuRunner::SHOULD_SHOW_MNEMONICS |
+                        views::MenuRunner::INVOKED_FROM_KEYBOARD);
   menu_runner_ = std::make_unique<views::MenuRunner>(std::move(root), types);
 
   metrics_.OnMenuOpened();
