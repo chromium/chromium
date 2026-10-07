@@ -744,41 +744,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.Later.ScheduledDownloadSize" units="Mb"
-    expires_after="2022-05-01">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>
-    The size of downloads when the user tries to download at a scheduled time.
-    Recorded when the positive button in download later dialog is clicked.
-  </summary>
-</histogram>
-
-<histogram name="Download.Later.UI.DialogChoice{DownloadDialogSource}"
-    enum="DownloadLaterDialogChoice" expires_after="2022-10-09">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>
-    The user selection in the download later dialog. Recorded when the user
-    starts a download, or clicking the change button on download infobar and
-    download home UI. {DownloadDialogSource}
-  </summary>
-  <token key="DownloadDialogSource">
-    <variant name=".DownloadHome" summary="Download home."/>
-    <variant name=".Infobar" summary="Download infobar."/>
-    <variant name=".Main" summary="Main download later dialog."/>
-  </token>
-</histogram>
-
-<histogram name="Download.Later.UI.Events" enum="DownloadLaterUiEvent"
-    expires_after="2022-10-16">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>
-    Records events for download later feature in download Android UI.
-  </summary>
-</histogram>
-
 <histogram name="Download.MediaMetadata.Event" enum="MediaMetadataEvent"
     expires_after="never">
 <!-- expires-never: Download media parser stability metrics. -->

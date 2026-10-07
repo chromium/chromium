@@ -35,17 +35,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="An ad was found but data collection was rejected"/>
 </enum>
 
-<enum name="AdvancedProtectionEnabledStatus">
-  <int value="0" label="Advanced Protection enabled status unknown"/>
-  <int value="1" label="User not signed-in or isn't under Advanced Protection"/>
-  <int value="2" label="User is signed in and under Advanced Protection"/>
-  <int value="3"
-      label="User was under Advanced Protection but disabled it or signed out"/>
-  <int value="4"
-      label="User was signed out or wasn't under Advanced Protection but now
-             is"/>
-</enum>
-
 <!-- LINT.IfChange(AllowlistAsyncMatchResult) -->
 
 <enum name="AllowlistAsyncMatchResult">

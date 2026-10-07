@@ -475,28 +475,6 @@ chromium-metrics-reviews@google.com.
   <int value="23" label="DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED"/>
 </enum>
 
-<enum name="DownloadLaterDialogChoice">
-  <int value="0" label="Download now"/>
-  <int value="1" label="On WIFI"/>
-  <int value="2" label="Download later"/>
-</enum>
-
-<enum name="DownloadLaterUiEvent">
-  <int value="0" label="DOWNLOAD_LATER_DIALOG_SHOW"/>
-  <int value="1" label="DOWNLOAD_LATER_DIALOG_COMPLETE"/>
-  <int value="2" label="DOWNLOAD_LATER_DIALOG_CANCEL"/>
-  <int value="3" label="DATE_TIME_PICKER_SHOW"/>
-  <int value="4" label="DATE_TIME_PICKER_COMPLETE"/>
-  <int value="5" label="DATE_TIME_PICKER_CANCEL"/>
-  <int value="6" label="DOWNLOAD_HOME_CHANGE_SCHEDULE_CLICKED"/>
-  <int value="7" label="DOWNLOAD_HOME_CHANGE_SCHEDULE_COMPLETE"/>
-  <int value="8" label="DOWNLOAD_HOME_CHANGE_SCHEDULE_CANCEL"/>
-  <int value="9" label="DOWNLOAD_INFOBAR_CHANGE_SCHEDULE_CLICKED"/>
-  <int value="10" label="DOWNLOAD_INFOBAR_CHANGE_SCHEDULE_COMPLETE"/>
-  <int value="11" label="DOWNLOAD_INFOBAR_CHANGE_SCHEDULE_CANCEL"/>
-  <int value="12" label="DOWNLOAD_LATER_DIALOG_EDIT_CLICKED"/>
-</enum>
-
 <enum name="DownloadMobileConfigFileUI">
   <int value="0" label="Warning alert is presented"/>
   <int value="1"

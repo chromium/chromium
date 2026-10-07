@@ -923,18 +923,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.AutomaticChange.AcceptanceWithoutAutoButton"
-    enum="PasswordCheckResolutionAction" expires_after="2025-05-04">
-  <owner>ioanap@chromium.org</owner>
-  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
-  <summary>
-    Resolution action to fix a compromised credential when there is no
-    &quot;Change password automatically&quot; button. Starting with M110, no
-    credential will have a button to change the password automatically anymore
-    so this is recorded for all compromised credentials.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.AutoSignin" enum="BooleanEnabled"
     expires_after="2026-09-08">
   <owner>mamir@chromium.org</owner>
@@ -1589,36 +1577,6 @@ chromium-metrics-reviews@google.com.
     Records the reason that caused the Password Manager error message to be
     displayed. It's recorded as soon as the message is created and the recorded
     reason is the error type. Currently only used on Android.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.ExportAndroid.CreateDirectoryError"
-    enum="PlatformFileError" expires_after="2025-03-30">
-  <owner>ioanap@chromium.org</owner>
-  <owner>atsvirchkova@google.com</owner>
-  <summary>
-    Records the error encountered when trying to create a temporary directory
-    during a user-initiated password export. Android only.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.ExportAndroid.CreateTempFileError"
-    enum="PlatformFileError" expires_after="2025-03-30">
-  <owner>ioanap@chromium.org</owner>
-  <owner>atsvirchkova@google.com</owner>
-  <summary>
-    Records the error encountered when trying to create a temporary file during
-    a user-initiated password export. Android only.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.ExportAndroid.WriteToTempFileError"
-    enum="PlatformFileError" expires_after="2025-03-30">
-  <owner>ioanap@chromium.org</owner>
-  <owner>atsvirchkova@google.com</owner>
-  <summary>
-    Records the error encountered when trying to write CSV-formatted passwords
-    to a temporary file during a user-initiated password export. Android only.
   </summary>
 </histogram>
 
