@@ -299,7 +299,7 @@
     }
   ],
   "protocol_handlers": {
-    "channel": "dev",
+    "channel": "stable",
     "extension_types": ["extension"],
     "min_manifest_version": 3
   },

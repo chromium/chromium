@@ -155,7 +155,7 @@ BASE_FEATURE_PARAM(size_t,
                    "max_script_size",
                    0);
 
-BASE_FEATURE(kExtensionProtocolHandlers, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kExtensionProtocolHandlers, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionTabContextMenu, base::FEATURE_ENABLED_BY_DEFAULT);
 
