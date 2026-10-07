@@ -3,13 +3,15 @@
 // found in the LICENSE file.
 
 import {SubmitButtonIconType} from 'chrome://new-tab-page/lazy_load.js';
+import {ContextUploadStatus} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ComposeboxSubmitElement} from 'chrome://resources/cr_components/composebox/composebox_submit.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createComposeboxElement, setupComposeboxTest} from './test_support.js';
+import {addTab, createComposeboxElement, FAKE_TOKEN_STRING, getSubmitContainer, setupComposeboxTest} from './test_support.js';
 
 suite('ComposeboxSubmitTest', () => {
   let submitButton: ComposeboxSubmitElement;
@@ -272,5 +274,112 @@ suite('ComposeboxSmartComposeSubmitTest', () => {
       charactersAccepted: 14,
       shownLength: 14,
     });
+  });
+});
+
+suite('ComposeboxDelayedTabSubmitTest', () => {
+  const testProxy = setupComposeboxTest();
+
+  // Attaches a delayed tab whose snapshot has not been taken yet, which is
+  // the state in which every submission path must be held.
+  async function attachPendingDelayedTab(): Promise<string> {
+    createComposeboxElement(testProxy, {searchboxNextEnabled: true});
+    await microtasksFinished();
+    const token = await addTab(testProxy, /*delayUpload=*/ true);
+    await testProxy.element.updateComplete;
+    assertFalse(testProxy.element.fileUploadsComplete);
+    return token;
+  }
+
+  async function markSnapshotReady(token: string) {
+    testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        token, ContextUploadStatus.kProcessing, null);
+    await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+    assertTrue(testProxy.element.fileUploadsComplete);
+  }
+
+  async function showMatch() {
+    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          queryId: testProxy.element.activeQueryId,
+          input: 'test',
+          matches: [createSearchMatchForTesting({fillIntoEdit: 'test'})],
+        }));
+    await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+    const match =
+        testProxy.element.getDropdownElement()
+            .shadowRoot.querySelector<HTMLElement>('cr-composebox-match');
+    assertTrue(!!match);
+    return match;
+  }
+
+  test('submit button is held until the snapshot is ready', async () => {
+    const token = await attachPendingDelayedTab();
+
+    getSubmitContainer(testProxy).click();
+    await microtasksFinished();
+    assertEquals(0, testProxy.searchboxHandler.getCallCount('submitQuery'));
+
+    await markSnapshotReady(token);
+    getSubmitContainer(testProxy).click();
+    await microtasksFinished();
+    assertEquals(1, testProxy.searchboxHandler.getCallCount('submitQuery'));
+  });
+
+  test('suggestion click is held until the snapshot is ready', async () => {
+    const token = await attachPendingDelayedTab();
+    const match = await showMatch();
+
+    match.click();
+    await microtasksFinished();
+    assertEquals(
+        0, testProxy.searchboxHandler.getCallCount('openAutocompleteMatch'));
+
+    await markSnapshotReady(token);
+    (await showMatch()).click();
+    await microtasksFinished();
+    assertEquals(
+        1, testProxy.searchboxHandler.getCallCount('openAutocompleteMatch'));
+  });
+
+  test('voice result is kept but not submitted while held', async () => {
+    const token = await attachPendingDelayedTab();
+
+    testProxy.element.onVoiceSearchFinalResult(
+        new CustomEvent('voice-search-final-result', {detail: 'hello'}));
+    await microtasksFinished();
+    assertEquals(0, testProxy.searchboxHandler.getCallCount('submitQuery'));
+    assertEquals('hello', testProxy.element.input);
+
+    await markSnapshotReady(token);
+    testProxy.element.onVoiceSearchFinalResult(
+        new CustomEvent('voice-search-final-result', {detail: 'hello'}));
+    await microtasksFinished();
+    assertEquals(1, testProxy.searchboxHandler.getCallCount('submitQuery'));
+  });
+
+  test('programmatic submit is held before the next render', async () => {
+    createComposeboxElement(testProxy);
+    testProxy.element.input = 'test';
+    await microtasksFinished();
+    testProxy.searchboxHandler.setPromiseResolveFor(
+        'addTabContext', FAKE_TOKEN_STRING);
+    const attachment = testProxy.element.addTabContextHandleCallback({
+      tabId: 1,
+      title: 'test',
+      url: 'https://example.com',
+      delayUpload: true,
+      origin: TabAttachmentSource.kActionChip,
+    });
+    assertTrue(testProxy.element.canSubmitFilesAndInput);
+    testProxy.element.submitQuery();
+    assertEquals(0, testProxy.searchboxHandler.getCallCount('submitQuery'));
+
+    await attachment;
+    await markSnapshotReady(FAKE_TOKEN_STRING);
+    testProxy.element.submitQuery();
+    assertEquals(1, testProxy.searchboxHandler.getCallCount('submitQuery'));
   });
 });

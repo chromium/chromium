@@ -399,6 +399,11 @@ export const ComposeboxEmbedderMixin =
         lensSendRawFileMediaTypesEnabled: boolean =
             loadTimeData.getBoolean('lensSendRawFileMediaTypesEnabled');
 
+        // One sentinel per in-flight request that may attach a delayed tab:
+        // an `addTabContext()` call, or `updateState()` awaiting
+        // `getInputState()`. Cleared wholesale by
+        // `resetDelayedTabContextRequests_()` to cancel them.
+        private pendingDelayedTabRequests_: Set<object> = new Set();
         private smartComposeAnnounceTimeout_: number|null = null;
         private updateStateComplete_: Promise<void> = Promise.resolve();
         private userInputGeneration_: number = 0;
@@ -755,6 +760,27 @@ export const ComposeboxEmbedderMixin =
           return false;
         }
 
+        // Embedders return true to keep a delayed tab unsubmittable until the
+        // backend's snapshot exists (`kProcessing`), see crbug.com/552185361.
+        shouldWaitForDelayedTabContext(): boolean {
+          return false;
+        }
+
+        // Synchronous submit guard; `canSubmitFilesAndInput` lags a render
+        // cycle and is not consulted on suggestion clicks at all.
+        private hasPendingDelayedTabContext_(): boolean {
+          return this.shouldWaitForDelayedTabContext() &&
+              (this.pendingDelayedTabRequests_.size > 0 ||
+               Array.from(this.pendingUploads)
+                   .some(
+                       token => this.attachedContext.get(token)?.delayUpload));
+        }
+
+        private resetDelayedTabContextRequests_() {
+          this.pendingDelayedTabRequests_.clear();
+          this.requestUpdate();
+        }
+
         // =====================================================================
         // Common event handlers
         // =====================================================================
@@ -841,7 +867,10 @@ export const ComposeboxEmbedderMixin =
         }
 
         private onMatchPreAccept_(e: CustomEvent<{match: AutocompleteMatch}>) {
-          this.maybeHandleSuggestionFuseboxAction_(e.detail.match, e);
+          if (!this.maybeHandleSuggestionFuseboxAction_(e.detail.match, e) &&
+              this.hasPendingDelayedTabContext_()) {
+            e.preventDefault();
+          }
         }
 
         onMatchClick(e: CustomEvent<{
@@ -974,9 +1003,23 @@ export const ComposeboxEmbedderMixin =
               isContextUploadStatusTerminal(status)) {
             this.earlyTerminalUploads.set(token, status);
           }
-          if (this.attachedContext.get(token)?.delayUpload &&
-              !isContextUploadStatusTerminal(status)) {
+          // `kProcessing` means the delayed-tab snapshot is in memory. If the
+          // token is not mapped yet, park it for the `addTabContext()` reply.
+          if (this.shouldWaitForDelayedTabContext() &&
+              this.pendingDelayedTabRequests_.size > 0 &&
+              (!existing || existing.isGhost) &&
+              status === ContextUploadStatus.kProcessing &&
+              !this.earlyTerminalUploads.has(token)) {
+            this.earlyTerminalUploads.set(token, status);
+          }
+          if (existing?.delayUpload && !isContextUploadStatusTerminal(status)) {
             if (status === ContextUploadStatus.kProcessing) {
+              // Nothing is uploading before submit, so the snapshot being
+              // ready is the terminal state for a delayed tab here.
+              if (this.shouldWaitForDelayedTabContext()) {
+                this.updateFileStatus(
+                    token, ContextUploadStatus.kUploadSuccessful, null);
+              }
               this.queryAutocomplete(/* clearMatches= */ true);
             }
             return;
@@ -1471,11 +1514,35 @@ export const ComposeboxEmbedderMixin =
           if (tabUpload.origin !== TabAttachmentSource.kAutoActive) {
             this.clearAutocompleteMatches();
           }
+          const waitForSnapshot =
+              tabUpload.delayUpload && this.shouldWaitForDelayedTabContext();
+          const pendingRequest = waitForSnapshot ? {} : null;
+          if (pendingRequest) {
+            this.pendingDelayedTabRequests_.add(pendingRequest);
+            this.requestUpdate();
+          }
           try {
             const token = await this.getSearchboxHandler().addTabContext(
                 tabUpload.tabId, tabUpload.delayUpload,
                 tabUpload.origin ?? TabAttachmentSource.kOther);
             if (!token) {
+              return null;
+            }
+            const snapshotReady = this.earlyTerminalUploads.get(token) ===
+                ContextUploadStatus.kProcessing;
+            if (snapshotReady) {
+              this.earlyTerminalUploads.delete(token);
+            }
+            // The composebox was closed or cleared while the call was in
+            // flight: drop the tab on both ends rather than resurrecting it.
+            if (pendingRequest &&
+                !this.pendingDelayedTabRequests_.has(pendingRequest)) {
+              this.earlyTerminalUploads.delete(token);
+              if (this.attachedContext.delete(token)) {
+                this.attachedContext = new Map(this.attachedContext);
+              }
+              this.getSearchboxHandler().deleteContext(
+                  token, /*fromAutoSuggestedChip=*/ false);
               return null;
             }
             // A terminal status may have arrived while this async
@@ -1499,15 +1566,10 @@ export const ComposeboxEmbedderMixin =
               }
               return null;
             }
-            // `createFromTab` optimistically reports `kUploadSuccessful`, which
-            // is only true when nothing is actually being uploaded: either the
-            // upload was delayed, or it already finished while this async
-            // `addTabContext` call was in flight. Otherwise, the
-            // upload has just started, and saying so here is what keeps the
-            // submit button disabled, since `fileUploadsComplete` is derived
-            // from these statuses.
-            const uploadInFlight =
-                !tabUpload.delayUpload && earlyStatus === null;
+            // A tab shows as in flight while its upload runs, or, for a
+            // delayed tab on a waiting embedder, until its snapshot is ready.
+            const uploadInFlight = earlyStatus === null &&
+                (!tabUpload.delayUpload || (waitForSnapshot && !snapshotReady));
             const attachment = ComposeboxFile.createFromTab(
                 token, tabUpload.tabId, tabUpload.title, tabUpload.url, {
                   supportsUnimodal: true,
@@ -1530,15 +1592,29 @@ export const ComposeboxEmbedderMixin =
               ...this.addedTabsIds.entries(),
               [tabUpload.tabId, attachment.uuid],
             ]);
+            // The early `kProcessing` was skipped above with no file to
+            // attach it to; fetch the contextual suggestions it would have.
+            if (waitForSnapshot && snapshotReady && earlyStatus === null) {
+              this.queryAutocomplete(/* clearMatches= */ true);
+            }
             this.focusInput();
             return attachment;
           } catch (e) {
+            if (pendingRequest &&
+                !this.pendingDelayedTabRequests_.has(pendingRequest)) {
+              return null;
+            }
             const err = e as ContextUploadErrorType;
             if (FILE_VALIDATION_ERRORS_MAP.has(err)) {
               this.errorMessage =
                   this.i18n(FILE_VALIDATION_ERRORS_MAP.get(err)!);
             }
             return null;
+          } finally {
+            if (pendingRequest) {
+              this.pendingDelayedTabRequests_.delete(pendingRequest);
+              this.requestUpdate();
+            }
           }
         }
 
@@ -1653,14 +1729,34 @@ export const ComposeboxEmbedderMixin =
 
         async updateState(state: Partial<ComposeboxState>) {
           if (!this.inputState) {
-            const inputStateResponse =
-                await this.getSearchboxHandler().getInputState();
-            // Check if a newer updateState is running and we can quit.
-            if (state !== this.state) {
-              return;
+            // Block submission across the `getInputState()` await when the
+            // state carries delayed tabs; their own guards start only below.
+            const pendingRequest = this.shouldWaitForDelayedTabContext() &&
+                    (state.files ||
+                     []).some(file => 'tabId' in file && file.delayUpload) ?
+                {} :
+                null;
+            if (pendingRequest) {
+              this.pendingDelayedTabRequests_.add(pendingRequest);
+              this.requestUpdate();
             }
-            if (inputStateResponse) {
-              this.inputState = inputStateResponse.state;
+            try {
+              const inputStateResponse =
+                  await this.getSearchboxHandler().getInputState();
+              // Check if a newer updateState is running and we can quit.
+              if (state !== this.state ||
+                  (pendingRequest &&
+                   !this.pendingDelayedTabRequests_.has(pendingRequest))) {
+                return;
+              }
+              if (inputStateResponse) {
+                this.inputState = inputStateResponse.state;
+              }
+            } finally {
+              if (pendingRequest) {
+                this.pendingDelayedTabRequests_.delete(pendingRequest);
+                this.requestUpdate();
+              }
             }
           }
 
@@ -1891,6 +1987,9 @@ export const ComposeboxEmbedderMixin =
         }
 
         onSubmitClick(e: MouseEvent) {
+          if (this.hasPendingDelayedTabContext_()) {
+            return;
+          }
           if (this.hasFiles() ||
               this.inputState?.activeTool !== ToolMode.kUnspecified) {
             this.getPageHandler().notifyComposeboxQuerySubmittedWithContext();
@@ -2004,6 +2103,7 @@ export const ComposeboxEmbedderMixin =
 
         clearAllInputs(
             querySubmitted: boolean, shouldBlockAutoSuggestedTabs: boolean) {
+          this.resetDelayedTabContextRequests_();
           this.clearInput();
           this.getInputElement().resetHeight();
           // Let `querySubmit` handle clearing files if the tool mode is a tool
@@ -2198,6 +2298,7 @@ export const ComposeboxEmbedderMixin =
         }
 
         closeComposebox() {
+          this.resetDelayedTabContextRequests_();
           this.resetModes();
           this.getSearchboxHandler().clearFiles(
               /*shouldBlockAutoSuggestedTabs=*/ false);
@@ -2223,7 +2324,8 @@ export const ComposeboxEmbedderMixin =
         }
 
         submitQuery(e?: KeyboardEvent|MouseEvent) {
-          if (!this.canSubmitFilesAndInput || !this.hasValidQuery()) {
+          if (this.hasPendingDelayedTabContext_() ||
+              !this.canSubmitFilesAndInput || !this.hasValidQuery()) {
             return;
           }
           // Submissions do not need a mouse or keyboard event to be submitted.
@@ -2464,6 +2566,11 @@ export const ComposeboxEmbedderMixin =
          * as still uploading until its status reaches a terminal one.
          */
         computeFileUploadsComplete(): boolean {
+          // An in-flight delayed `addTabContext()` has no file yet to carry
+          // a non-terminal status, so it is counted here explicitly.
+          if (this.pendingDelayedTabRequests_.size > 0) {
+            return false;
+          }
           for (const file of this.attachedContext.values()) {
             if (!isContextUploadStatusTerminal(file.status)) {
               return false;
@@ -2944,6 +3051,12 @@ export const ComposeboxEmbedderMixin =
         onVoiceSearchFinalResult(e: CustomEvent<string>) {
           e.stopPropagation();
           this.voiceSearchEndCleanup();
+          // Keep the transcript but do not submit while a delayed tab is
+          // still being snapshotted; the user resubmits once it settles.
+          if (this.hasPendingDelayedTabContext_()) {
+            this.input = e.detail;
+            return;
+          }
           // For contextual tasks composebox voice metrics.
           // TODO(crbug.com/466412331): Don't only fire this for composebox,
           // this should be recorded for all.
@@ -3253,6 +3366,7 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   getLensButtonElement(): HTMLElement|null;
   getFileInputsElement(): ComposeboxFileInputsElement|null;
   shouldHandleSuggestionFuseboxActions(): boolean;
+  shouldWaitForDelayedTabContext(): boolean;
   addTabContextHandleCallback(
       tabUpload: TabUpload, replaceAutoActiveTabToken?: boolean,
       onBeforeUpdateFiles?: (attachment: ComposeboxFile) => void):

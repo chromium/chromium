@@ -11,6 +11,7 @@ import type {ErrorScrimElement} from 'chrome://resources/cr_components/composebo
 import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {DriveDisclaimerStatus, TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ToolMode as ComposeboxToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -662,16 +663,189 @@ suite('NewTabPageComposeboxUploadFileTest', () => {
             histogramName, ContextualSearchInputStateDeletionType.TAB));
   });
 
-  test('processing status keeps a delayed tab submittable', async () => {
+  // Dispatches `add-tab-context` for a delayed tab while leaving the
+  // `addTabContext()` reply under the test's control.
+  function startDelayedTabAdd(): PromiseResolver<string> {
+    const reply = new PromiseResolver<string>();
+    testProxy.searchboxHandler.setResultFor(
+        testSupport.ADD_TAB_CONTEXT_FN, reply.promise);
+    dispatchDelayedTabAdd();
+    return reply;
+  }
+
+  function dispatchDelayedTabAdd() {
+    const contextMenuButton = $$(testProxy.element, '#contextEntrypoint');
+    assertTrue(!!contextMenuButton);
+    contextMenuButton.dispatchEvent(new CustomEvent('add-tab-context', {
+      detail: {id: 1, title: 'Sample Tab', delayUpload: true},
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  function onlyAttachedFile(): ComposeboxFile {
+    const files = [...testProxy.element.attachedContext.values()];
+    assertEquals(1, files.length);
+    return files[0]!;
+  }
+
+  function sendStatus(
+      token: string, status: ContextUploadStatus,
+      errorType: ContextUploadErrorType|null = null): Promise<void> {
+    testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        token, status, errorType);
+    return testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+  }
+
+  test('delayed tab is held until its snapshot is processing', async () => {
     testSupport.createComposeboxElement(testProxy);
     const token = await testSupport.addTab(testProxy, /*delayUpload=*/ true);
+    await testProxy.element.updateComplete;
     const queries =
         testProxy.searchboxHandler.getCallCount('queryAutocomplete');
 
-    testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        token, ContextUploadStatus.kProcessing, null);
+    // Nothing has been snapshotted yet, so the tab cannot be submitted.
+    assertEquals(ContextUploadStatus.kUploadStarted, onlyAttachedFile().status);
+    assertFalse(testProxy.element.fileUploadsComplete);
+
+    await sendStatus(token, ContextUploadStatus.kProcessing);
     await microtasksFinished();
 
+    assertEquals(
+        ContextUploadStatus.kUploadSuccessful, onlyAttachedFile().status);
+    assertTrue(testProxy.element.fileUploadsComplete);
+    assertEquals(
+        queries + 1,
+        testProxy.searchboxHandler.getCallCount('queryAutocomplete'));
+  });
+
+  test('processing status beating the addTabContext reply', async () => {
+    testSupport.createComposeboxElement(testProxy);
+    await microtasksFinished();
+    const queries =
+        testProxy.searchboxHandler.getCallCount('queryAutocomplete');
+    const reply = startDelayedTabAdd();
+    await testProxy.searchboxHandler.whenCalled(testSupport.ADD_TAB_CONTEXT_FN);
+    await microtasksFinished();
+    assertFalse(testProxy.element.fileUploadsComplete);
+
+    await sendStatus(
+        testSupport.FAKE_TOKEN_STRING, ContextUploadStatus.kProcessing);
+    await microtasksFinished();
+    // There is no file to attach the status to yet.
+    assertEquals(0, testProxy.element.attachedContext.size);
+    assertFalse(testProxy.element.fileUploadsComplete);
+
+    reply.resolve(testSupport.FAKE_TOKEN_STRING);
+    await microtasksFinished();
+
+    assertEquals(
+        ContextUploadStatus.kUploadSuccessful, onlyAttachedFile().status);
+    assertTrue(testProxy.element.fileUploadsComplete);
+    assertEquals(
+        queries + 1,
+        testProxy.searchboxHandler.getCallCount('queryAutocomplete'));
+  });
+
+  test('failure status beating the addTabContext reply', async () => {
+    testSupport.createComposeboxElement(testProxy);
+    await microtasksFinished();
+    const reply = startDelayedTabAdd();
+    await testProxy.searchboxHandler.whenCalled(testSupport.ADD_TAB_CONTEXT_FN);
+    await microtasksFinished();
+    assertFalse(testProxy.element.fileUploadsComplete);
+
+    await sendStatus(
+        testSupport.FAKE_TOKEN_STRING, ContextUploadStatus.kUploadFailed,
+        ContextUploadErrorType.kBrowserProcessingError);
+    reply.resolve(testSupport.FAKE_TOKEN_STRING);
+    await microtasksFinished();
+
+    assertEquals(0, testProxy.element.attachedContext.size);
+    assertTrue(testProxy.element.fileUploadsComplete);
+  });
+
+  test('rejected addTabContext releases the hold', async () => {
+    testSupport.createComposeboxElement(testProxy);
+    await microtasksFinished();
+    testProxy.searchboxHandler.setPromiseRejectFor(
+        testSupport.ADD_TAB_CONTEXT_FN,
+        ContextUploadErrorType.kBrowserProcessingError);
+    dispatchDelayedTabAdd();
+    await testProxy.searchboxHandler.whenCalled(testSupport.ADD_TAB_CONTEXT_FN);
+    await microtasksFinished();
+
+    assertEquals(0, testProxy.element.attachedContext.size);
+    assertTrue(testProxy.element.fileUploadsComplete);
+  });
+
+  test('addTabContext reply after closing is discarded', async () => {
+    testSupport.createComposeboxElement(testProxy);
+    await microtasksFinished();
+    const reply = startDelayedTabAdd();
+    await testProxy.searchboxHandler.whenCalled(testSupport.ADD_TAB_CONTEXT_FN);
+    await microtasksFinished();
+    assertFalse(testProxy.element.fileUploadsComplete);
+
+    testProxy.element.closeComposebox();
+    await microtasksFinished();
+    assertTrue(testProxy.element.fileUploadsComplete);
+
+    reply.resolve(testSupport.FAKE_TOKEN_STRING);
+    await microtasksFinished();
+
+    assertEquals(0, testProxy.element.attachedContext.size);
+    assertTrue(testProxy.element.fileUploadsComplete);
+    assertEquals(1, testProxy.searchboxHandler.getCallCount('deleteContext'));
+    assertEquals(
+        testSupport.FAKE_TOKEN_STRING,
+        testProxy.searchboxHandler.getArgs('deleteContext')[0][0]);
+  });
+
+  test('delayed tab fetch failure after attach releases the hold', async () => {
+    testSupport.createComposeboxElement(testProxy);
+    const token = await testSupport.addTab(testProxy, /*delayUpload=*/ true);
+    await testProxy.element.updateComplete;
+    assertFalse(testProxy.element.fileUploadsComplete);
+
+    await sendStatus(
+        token, ContextUploadStatus.kUploadFailed,
+        ContextUploadErrorType.kBrowserProcessingError);
+    await microtasksFinished();
+
+    assertEquals(0, testProxy.element.attachedContext.size);
+    assertTrue(testProxy.element.fileUploadsComplete);
+  });
+
+  test('non-delayed tab still waits for its upload', async () => {
+    testSupport.createComposeboxElement(testProxy);
+    const token = await testSupport.addTab(testProxy, /*delayUpload=*/ false);
+    await testProxy.element.updateComplete;
+    assertEquals(ContextUploadStatus.kUploadStarted, onlyAttachedFile().status);
+    assertFalse(testProxy.element.fileUploadsComplete);
+
+    await sendStatus(token, ContextUploadStatus.kProcessing);
+    await microtasksFinished();
+    assertEquals(ContextUploadStatus.kProcessing, onlyAttachedFile().status);
+    assertFalse(testProxy.element.fileUploadsComplete);
+  });
+
+  test('embedders that do not wait keep delayed tabs submittable', async () => {
+    testSupport.createComposeboxElement(testProxy);
+    testProxy.element.shouldWaitForDelayedTabContext = () => false;
+    const token = await testSupport.addTab(testProxy, /*delayUpload=*/ true);
+    await testProxy.element.updateComplete;
+    const queries =
+        testProxy.searchboxHandler.getCallCount('queryAutocomplete');
+    assertEquals(
+        ContextUploadStatus.kUploadSuccessful, onlyAttachedFile().status);
+    assertTrue(testProxy.element.fileUploadsComplete);
+
+    await sendStatus(token, ContextUploadStatus.kProcessing);
+    await microtasksFinished();
+
+    assertEquals(
+        ContextUploadStatus.kUploadSuccessful, onlyAttachedFile().status);
     assertTrue(testProxy.element.fileUploadsComplete);
     assertEquals(
         queries + 1,
