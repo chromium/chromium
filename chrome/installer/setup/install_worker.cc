@@ -466,11 +466,6 @@ void AddEnterpriseEnrollmentWorkItems(const InstallerState& installer_state,
   // member of base/win/OWNERS if in doubt.
   AppCommand cmd(kCmdStoreDMToken,
                  cmd_line.GetCommandLineStringWithUnsafeInsertSequences());
-
-  // TODO(rogerta): For now setting this command as web accessible is required
-  // by Google Update.  Could revisit this should Google Update change the
-  // way permissions are handled for commands.
-  cmd.set_is_web_accessible(true);
   cmd.AddCreateAppCommandWorkItems(installer_state.root_key(), install_list);
 }
 
@@ -495,11 +490,6 @@ void AddEnterpriseUnenrollmentWorkItems(const InstallerState& installer_state,
   cmd_line.AppendSwitch(switches::kVerboseLogging);
   InstallUtil::AppendModeAndChannelSwitches(&cmd_line);
   AppCommand cmd(kCmdDeleteDMToken, cmd_line.GetCommandLineString());
-
-  // TODO(rogerta): For now setting this command as web accessible is required
-  // by Google Update.  Could revisit this should Google Update change the
-  // way permissions are handled for commands.
-  cmd.set_is_web_accessible(true);
   cmd.AddCreateAppCommandWorkItems(installer_state.root_key(), install_list);
 }
 
@@ -532,11 +522,6 @@ void AddEnterpriseDeviceTrustWorkItems(const InstallerState& installer_state,
   // member of base/win/OWNERS if in doubt.
   AppCommand cmd(kCmdRotateDeviceTrustKey,
                  cmd_line.GetCommandLineStringWithUnsafeInsertSequences());
-
-  // TODO(rogerta): For now setting this command as web accessible is required
-  // by Google Update.  Could revisit this should Google Update change the
-  // way permissions are handled for commands.
-  cmd.set_is_web_accessible(true);
   cmd.AddCreateAppCommandWorkItems(installer_state.root_key(), install_list);
 }
 
@@ -589,7 +574,6 @@ void AddInstallComponentWorkItems(const InstallerState& installer_state,
 
   AppCommand cmd(kCmdInstallComponent,
                  cmd_line.GetCommandLineStringWithUnsafeInsertSequences());
-  cmd.set_is_web_accessible(true);
   cmd.AddCreateAppCommandWorkItems(installer_state.root_key(), install_list);
 }
 

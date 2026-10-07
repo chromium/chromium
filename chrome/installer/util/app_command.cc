@@ -32,27 +32,15 @@ std::wstring GetCommandKey(const std::wstring& name) {
 // static
 // Associate bool member variables with registry entries.
 const AppCommand::NamedBoolVar AppCommand::kNameBoolVars[] = {
-    {&AppCommand::sends_pings_, google_update::kRegSendsPingsField},
-    {&AppCommand::is_web_accessible_, google_update::kRegWebAccessibleField},
     {&AppCommand::is_auto_run_on_os_upgrade_,
      google_update::kRegAutoRunOnOSUpgradeField},
-    {&AppCommand::is_run_as_user_, google_update::kRegRunAsUserField},
 };
 
-AppCommand::AppCommand()
-    : sends_pings_(false),
-      is_web_accessible_(false),
-      is_auto_run_on_os_upgrade_(false),
-      is_run_as_user_(false) {}
+AppCommand::AppCommand() = default;
 
 AppCommand::AppCommand(const std::wstring& command_name,
                        const std::wstring& command_line)
-    : command_name_(command_name),
-      command_line_(command_line),
-      sends_pings_(false),
-      is_web_accessible_(false),
-      is_auto_run_on_os_upgrade_(false),
-      is_run_as_user_(false) {}
+    : command_name_(command_name), command_line_(command_line) {}
 
 AppCommand::AppCommand(AppCommand&&) = default;
 AppCommand::AppCommand(const AppCommand&) = default;

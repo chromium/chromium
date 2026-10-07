@@ -61,31 +61,15 @@ class AppCommand {
     command_line_ = command_line;
   }
 
-  bool sends_pings() const { return sends_pings_; }
-  void set_sends_pings(bool sends_pings) { sends_pings_ = sends_pings; }
-
-  bool is_web_accessible() const { return is_web_accessible_; }
-  void set_is_web_accessible(bool is_web_accessible) {
-    is_web_accessible_ = is_web_accessible;
-  }
-
   bool is_auto_run_on_os_upgrade() const { return is_auto_run_on_os_upgrade_; }
   void set_is_auto_run_on_os_upgrade(bool is_auto_run_on_os_upgrade) {
     is_auto_run_on_os_upgrade_ = is_auto_run_on_os_upgrade;
   }
 
-  bool is_run_as_user() const { return is_run_as_user_; }
-  void set_is_run_as_user(bool is_run_as_user) {
-    is_run_as_user_ = is_run_as_user;
-  }
-
  protected:
   std::wstring command_name_;
   std::wstring command_line_;
-  bool sends_pings_;
-  bool is_web_accessible_;
-  bool is_auto_run_on_os_upgrade_;
-  bool is_run_as_user_;
+  bool is_auto_run_on_os_upgrade_ = false;
 
  private:
   struct NamedBoolVar {

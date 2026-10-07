@@ -61,11 +61,8 @@ const wchar_t kRegPathField[] = L"path";
 const wchar_t kRegRLZBrandField[] = L"brand";
 const wchar_t kRegRLZReactivationBrandField[] = L"reactivationbrand";
 const wchar_t kRegReferralField[] = L"referral";
-const wchar_t kRegRunAsUserField[] = L"RunAsUser";
-const wchar_t kRegSendsPingsField[] = L"SendsPings";
 const wchar_t kRegUninstallCmdLine[] = L"UninstallCmdLine";
 const wchar_t kRegUsageStatsField[] = L"usagestats";
 const wchar_t kRegVersionField[] = L"pv";
-const wchar_t kRegWebAccessibleField[] = L"WebAccessible";
 
 }  // namespace google_update

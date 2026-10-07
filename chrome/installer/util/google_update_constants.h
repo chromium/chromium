@@ -77,12 +77,9 @@ extern const wchar_t kRegProfilesSignedIn[];
 extern const wchar_t kRegRLZBrandField[];
 extern const wchar_t kRegRLZReactivationBrandField[];
 extern const wchar_t kRegReferralField[];
-extern const wchar_t kRegRunAsUserField[];
-extern const wchar_t kRegSendsPingsField[];
 extern const wchar_t kRegUninstallCmdLine[];
 extern const wchar_t kRegUsageStatsField[];
 extern const wchar_t kRegVersionField[];
-extern const wchar_t kRegWebAccessibleField[];
 
 // Last time that chrome ran in the Time internal format.
 extern const wchar_t kRegLastRunTimeField[];
