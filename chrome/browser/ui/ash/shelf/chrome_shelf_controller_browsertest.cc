@@ -3931,3 +3931,25 @@ IN_PROC_BROWSER_TEST_F(ShelfMultiProfileBrowserTest,
 
   CloseBrowserSynchronously(browser0);
 }
+
+// Tests that GlobalBrowserCollection::GetActiveBrowser() works properly in
+// multi-user scenario, that is it should return the browser with active window
+// associated with it (crbug.com/40498682).
+IN_PROC_BROWSER_TEST_F(ShelfMultiProfileBrowserTest, GetActiveBrowser) {
+  SwitchActiveUser(account_id0());
+  BrowserWindowInterface* browser = CreateBrowser(profile0());
+  browser->GetWindow()->Activate();
+  EXPECT_EQ(browser, GetLastActiveBrowserWindowInterfaceWithAnyProfile());
+  EXPECT_TRUE(browser->GetWindow()->IsActive());
+  EXPECT_EQ(browser,
+            GlobalBrowserCollection::GetInstance()->GetActiveBrowser());
+
+  // Switch to another user's desktop with no active window.
+  SwitchActiveUser(account_id1());
+  EXPECT_EQ(browser, GetLastActiveBrowserWindowInterfaceWithAnyProfile());
+  EXPECT_FALSE(browser->GetWindow()->IsActive());
+  EXPECT_EQ(nullptr,
+            GlobalBrowserCollection::GetInstance()->GetActiveBrowser());
+
+  CloseBrowserSynchronously(browser);
+}
