@@ -43,6 +43,7 @@
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/pref_names.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/app_store_bundle/model/app_store_bundle_service.h"
 #import "ios/chrome/browser/content_suggestions/app_bundle_promo/coordinator/app_bundle_promo_mediator.h"
 #import "ios/chrome/browser/content_suggestions/app_bundle_promo/coordinator/app_bundle_promo_mediator_delegate.h"
@@ -91,6 +92,8 @@
 #import "ios/chrome/browser/level_up/model/level_up_service.h"
 #import "ios/chrome/browser/ntp/ui_bundled/home_start_data_source.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -641,6 +644,15 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
             !_tipsManager->WasSignalFired(
                 segmentation_platform::tips_manager::signals::
                     kAddressBarPositionChoiceScreenDisplayed)));
+    if (magicStackV2Enabled) {
+      inputContext->metadata_args.emplace(
+          segmentation_platform::kTipsOptInPromptNotReceivedRecently,
+          segmentation_platform::processing::ProcessedValue::FromFloat(
+              !_tipsManager->WasSignalFiredWithin(
+                  segmentation_platform::tips_manager::signals::
+                      kTipsNotificationOptInPromptReceived,
+                  base::Days(60))));
+    }
 
     // Miscellaneous signals
     BOOL isPhone = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
@@ -677,16 +689,29 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
     }
   }
 
-  if (magicStackV2Enabled && _backgroundCustomizationService) {
-    const bool has_no_ntp_background =
-        !_backgroundCustomizationService->GetCurrentCustomBackground()
-             .has_value() &&
-        !_backgroundCustomizationService->GetCurrentColorTheme().has_value();
-
+  if (magicStackV2Enabled) {
+    // TipsNotification is an app-wide client, not tied to any account. An empty
+    // `GaiaId` is passed.
+    bool notOptedIntoTipsNotifications =
+        !push_notification_settings::
+            GetMobileNotificationPermissionStatusForClient(
+                PushNotificationClientId::kTips, GaiaId());
     inputContext->metadata_args.emplace(
-        segmentation_platform::kLacksNTPBackground,
+        segmentation_platform::kNotOptInTipsNotifications,
         segmentation_platform::processing::ProcessedValue::FromFloat(
-            has_no_ntp_background));
+            notOptedIntoTipsNotifications));
+
+    if (_backgroundCustomizationService) {
+      const bool hasNoNTPBackground =
+          !_backgroundCustomizationService->GetCurrentCustomBackground()
+               .has_value() &&
+          !_backgroundCustomizationService->GetCurrentColorTheme().has_value();
+
+      inputContext->metadata_args.emplace(
+          segmentation_platform::kLacksNTPBackground,
+          segmentation_platform::processing::ProcessedValue::FromFloat(
+              hasNoNTPBackground));
+    }
   }
 
   __weak MagicStackRankingModel* weakSelf = self;

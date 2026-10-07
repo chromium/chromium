@@ -46,6 +46,11 @@ inline constexpr char kLacksNTPBackground[] = "lacks_ntp_background";
 inline constexpr char kNTPBackgroundNotSelectedRecently[] =
     "ntp_background_not_selected_recently";
 
+inline constexpr char kNotOptInTipsNotifications[] =
+    "not_opt_in_tips_notifications";
+inline constexpr char kTipsOptInPromptNotReceivedRecently[] =
+    "tips_opt_in_prompt_not_received_recently";
+
 // Input Context keys for emphemeral android modules.
 const char kIsUserSignedIn[] = "is_user_signed_in";
 const char kShouldShowNonRoleManagerDefaultBrowserPromo[] =
