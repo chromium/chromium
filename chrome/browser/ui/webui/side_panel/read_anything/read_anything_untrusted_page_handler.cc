@@ -38,6 +38,7 @@
 #include "chrome/common/read_anything/read_anything.mojom-shared.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/common/read_anything/read_anything_util.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/dom_distiller/content/browser/distiller_javascript_utils.h"
 #include "components/dom_distiller/content/browser/distiller_page_web_contents.h"
 #include "components/dom_distiller/core/distiller_page.h"
@@ -48,6 +49,7 @@
 #include "components/language/core/common/locale_util.h"
 #include "components/language_detection/core/constants.h"
 #include "components/pdf/browser/pdf_frame_util.h"
+#include "components/pdf/common/constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/translate/core/browser/language_state.h"
@@ -82,6 +84,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -185,6 +188,13 @@ constexpr int PDF_LOAD_DELAY_MS = 1000;
 // Prefix definition for logging.
 constexpr char kReadAnythingPrefix[] = "Read Anything";
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// chrome://whats-new renders its content in a single https://www.google.com
+// child frame (see the frame-src CSP in WhatsNewUI). Reading mode distills that
+// frame directly.
+constexpr char kWhatsNewEmbeddedContentOrigin[] = "https://www.google.com";
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 
 InstallationState GetInstallationStateFromStatusCode(
@@ -264,6 +274,39 @@ constexpr std::string_view kRendererScrollRequestHistogram =
     "Accessibility.ReadAnything.RendererRequestForScrollToTargetNode.Result";
 constexpr std::string_view kRendererSelectionRequestHistogram =
     "Accessibility.ReadAnything.RendererRequestForSelection.Result";
+
+// The contents MIME type is fixed when the main frame commits, so this reliably
+// identifies full-page PDFs before their content frame exists.
+bool IsFullPagePdf(content::WebContents* contents) {
+  return contents && contents->GetContentsMimeType() == pdf::kPDFMimeType;
+}
+
+// Returns whether `rfh` is a subframe of the primary page that the primary main
+// frame can already script, i.e. it is same-origin with it. Opaque main frame
+// origins are excluded because opaque-origin frames cannot script each other.
+// file:// main frame origins are excluded because all file:// URLs share one
+// url::Origin even though Blink isolates local files from each other.
+bool IsSameOriginSubframe(content::RenderFrameHost* rfh,
+                          content::RenderFrameHost* main_frame) {
+  const url::Origin& main_origin = main_frame->GetLastCommittedOrigin();
+  return rfh->GetMainFrame() == main_frame && !main_origin.opaque() &&
+         main_origin.scheme() != url::kFileScheme &&
+         rfh->GetLastCommittedOrigin().IsSameOriginWith(main_origin);
+}
+
+// chrome://whats-new only exists on Windows, Mac and Linux.
+bool IsWhatsNewEmbeddedContentFrame(content::RenderFrameHost* rfh,
+                                    content::RenderFrameHost* main_frame) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  return rfh->GetParent() == main_frame &&
+         main_frame->GetLastCommittedOrigin().IsSameOriginWith(
+             GURL(chrome::kChromeUIWhatsNewURL)) &&
+         rfh->GetLastCommittedOrigin().IsSameOriginWith(
+             GURL(kWhatsNewEmbeddedContentOrigin));
+#else
+  return false;
+#endif
+}
 
 }  // namespace
 
@@ -539,6 +582,12 @@ void ReadAnythingUntrustedPageHandler::WebContentsDestroyed() {
 
 void ReadAnythingUntrustedPageHandler::AccessibilityEventReceived(
     const ui::AXUpdatesAndEvents& details) {
+  // Only forward accessibility data for frames that Reading Mode distills.
+  if (!IsObservingTree(details.ax_tree_id)) {
+    DVLOG(2) << "Dropping accessibility event for tree " << details.ax_tree_id;
+    return;
+  }
+  forwarded_tree_ids_.insert(details.ax_tree_id);
   page_->AccessibilityEventReceived(details.ax_tree_id, details.updates,
                                     details.events);
 }
@@ -556,7 +605,11 @@ void ReadAnythingUntrustedPageHandler::AccessibilityLocationChangesReceived(
 ///////////////////////////////////////////////////////////////////////////////
 
 void ReadAnythingUntrustedPageHandler::TreeRemoved(ui::AXTreeID ax_tree_id) {
-  page_->OnAXTreeDestroyed(ax_tree_id);
+  // The registry reports removals for every tree in the browser; only tell the
+  // renderer about trees it was sent.
+  if (forwarded_tree_ids_.erase(ax_tree_id)) {
+    page_->OnAXTreeDestroyed(ax_tree_id);
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -848,14 +901,28 @@ bool ReadAnythingUntrustedPageHandler::IsObservingTree(
           : !!pdf_observer_;
 
   if (!are_contents_pdf) {
-    return rfh == contents->GetPrimaryMainFrame();
+    // `contents` is the main observed contents here.
+    content::RenderFrameHost* main_frame = contents->GetPrimaryMainFrame();
+    return rfh == main_frame || IsSameOriginSubframe(rfh, main_frame) ||
+           IsWhatsNewEmbeddedContentFrame(rfh, main_frame);
   }
 
   content::RenderFrameHost* pdf_rfh =
       chrome_pdf::features::IsOopifPdfEnabled()
           ? pdf_frame_util::FindFullPagePdfExtensionHost(contents)
           : pdf_frame_util::FindPdfChildFrame(contents->GetPrimaryMainFrame());
-  return pdf_rfh && rfh == pdf_rfh;
+  if (!pdf_rfh) {
+    return false;
+  }
+  if (rfh == pdf_rfh) {
+    return true;
+  }
+
+  // For OOPIF PDFs, `pdf_rfh` is the extension host, while PDF content lives
+  // in its child frame. Accept both so requests targeting either the extension
+  // host or the content frame succeed.
+  return chrome_pdf::features::IsOopifPdfEnabled() &&
+         rfh == pdf_frame_util::FindPdfChildFrame(pdf_rfh);
 }
 
 bool ReadAnythingUntrustedPageHandler::AreActionsAllowedInTree(
@@ -1170,7 +1237,11 @@ void ReadAnythingUntrustedPageHandler::OnImageDataDownloaded(
     const GURL& image_url,
     const std::vector<SkBitmap>& bitmaps,
     const std::vector<gfx::Size>& sizes) {
-  CHECK(IsObservingTree(target_tree_id));
+  // The target frame may have been removed or navigated while the image was
+  // downloading.
+  if (!IsObservingTree(target_tree_id)) {
+    return;
+  }
   if (!ui::IsValidAXNodeIDFromRenderer(node_id)) {
     VLOG(1) << "Received image data download notification with invalid node_id "
             << node_id;
@@ -1522,7 +1593,10 @@ void ReadAnythingUntrustedPageHandler::SetUpPdfObserver() {
   // TODO(crbug.com/340272378): When removing this feature flag, delete
   // `pdf_observer_` and integrate ReadAnythingWebContentsObserver with
   // ReadAnythingUntrustedPageHandler.
-  if (!chrome_pdf::features::IsOopifPdfEnabled()) {
+  // Only adopt the PDF guest when the tab itself is a full-page PDF. An
+  // embedded PDF on an HTML page is not distilled as a PDF.
+  if (!chrome_pdf::features::IsOopifPdfEnabled() &&
+      IsFullPagePdf(main_contents)) {
     std::vector<content::WebContents*> inner_contents =
         main_contents ? main_contents->GetInnerWebContents()
                       : std::vector<content::WebContents*>();
@@ -1557,6 +1631,7 @@ void ReadAnythingUntrustedPageHandler::CheckIfActiveAXTreeChangedToPdf() {
     is_pdf_with_frame_ = true;
     is_waiting_for_pdf_frame_ = false;
     VLOG(1) << "Sending pdf tree with id " << pdf_rfh->GetAXTreeID();
+    forwarded_tree_ids_.insert(pdf_rfh->GetAXTreeID());
     page_->OnActiveAXTreeIDChanged(
         pdf_rfh->GetAXTreeID(), pdf_rfh->GetPageUkmSourceId(), /*is_pdf=*/true);
   } else {
@@ -1650,6 +1725,7 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
 
   // When IsReadAnythingWithReadabilityEnabled is true, we still send AX tree
   // for text selection.
+  forwarded_tree_ids_.insert(rfh->GetAXTreeID());
   page_->OnActiveAXTreeIDChanged(rfh->GetAXTreeID(), rfh->GetPageUkmSourceId(),
                                  /*is_pdf=*/false);
 
