@@ -59,7 +59,6 @@ import org.chromium.components.user_prefs.UserPrefs;
     ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
     ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA
 })
-@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 @Batch(Batch.PER_CLASS)
 public class AutofillSettingsSearchTest {
 

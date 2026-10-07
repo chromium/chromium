@@ -15,6 +15,7 @@ import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.anyIntent;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
@@ -123,10 +124,7 @@ import java.util.List;
 /** Tests for various Safety Hub settings surfaces. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.DisableFeatures({
-    ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE,
-    ChromeFeatureList.SETTINGS_MULTI_COLUMN
-})
+@Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 @DisableIf.Build(
         sdk_equals = Build.VERSION_CODES.Q,
@@ -332,7 +330,6 @@ public final class SafetyHubTest {
     @Test
     @LargeTest
     @Feature({"RenderTest", "SafetyHubPermissions"})
-    @Features.DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testPermissionsSubpageAppearance() throws IOException {
         mUnusedPermissionsBridge.setPermissionsDataForReview(
                 new PermissionsData[] {PERMISSIONS_DATA_1, PERMISSIONS_DATA_2});
@@ -345,7 +342,6 @@ public final class SafetyHubTest {
     @Test
     @LargeTest
     @Feature({"RenderTest", "SafetyHubPermissions"})
-    @Features.DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testNotificationPermissionsSubpageAppearance() throws IOException {
         mUnusedPermissionsBridge.setPermissionsDataForReview(
                 new PermissionsData[] {PERMISSIONS_DATA_3, PERMISSIONS_DATA_4, PERMISSIONS_DATA_5});
@@ -358,7 +354,6 @@ public final class SafetyHubTest {
     @Test
     @LargeTest
     @Feature({"RenderTest", "SafetyHubNotifications"})
-    @Features.DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testNotificationsSubpageAppearance() throws IOException {
         mNotificationPermissionReviewBridge.setNotificationPermissionsForReview(
                 new NotificationPermissions[] {
@@ -504,7 +499,8 @@ public final class SafetyHubTest {
 
         openActionBarOverflowOrOptionsMenu(mPermissionsFragmentTestRule.getActivity());
         onViewWaiting(withText(R.string.safety_hub_go_to_site_settings_button)).perform(click());
-        onViewWaiting(withText(R.string.prefs_site_settings)).check(matches(isDisplayed()));
+        onViewWaiting(allOf(withText(R.string.prefs_site_settings), isDisplayed()))
+                .check(matches(isDisplayed()));
 
         histogramWatcher.assertExpected();
     }
@@ -693,7 +689,10 @@ public final class SafetyHubTest {
         onViewWaiting(
                         allOf(
                                 withText(R.string.push_notifications_permission_title),
-                                withParent(withId(R.id.action_bar))))
+                                anyOf(
+                                        withParent(withId(R.id.action_bar)),
+                                        withParent(withId(R.id.settings_title_in_detailed_pane))),
+                                isDisplayed()))
                 .check(matches(isDisplayed()));
 
         histogramWatcher.assertExpected();
@@ -727,7 +726,8 @@ public final class SafetyHubTest {
         // Click on the secondary button and verity that the Safe Browsing settings is opened.
         scrollToExpandedPreference(safeBrowsingTitle);
         clickOnSecondaryButtonNextToText(safeBrowsingTitle);
-        onViewWaiting(withText(R.string.prefs_safe_browsing_title)).check(matches(isDisplayed()));
+        onViewWaiting(allOf(withText(R.string.prefs_safe_browsing_title), isDisplayed()))
+                .check(matches(isDisplayed()));
 
         histogramWatcher.assertExpected();
     }
@@ -2017,7 +2017,8 @@ public final class SafetyHubTest {
         // Click on the secondary button and verify that the site settings page is opened.
         scrollToExpandedPreference(permissionsTitle);
         clickOnSecondaryButtonNextToText(permissionsTitle);
-        onViewWaiting(withText(R.string.prefs_site_settings)).check(matches(isDisplayed()));
+        onViewWaiting(allOf(withText(R.string.prefs_site_settings), isDisplayed()))
+                .check(matches(isDisplayed()));
 
         histogramWatcher.assertExpected();
     }
@@ -2116,7 +2117,10 @@ public final class SafetyHubTest {
         onViewWaiting(
                         allOf(
                                 withText(R.string.push_notifications_permission_title),
-                                withParent(withId(R.id.action_bar))))
+                                anyOf(
+                                        withParent(withId(R.id.action_bar)),
+                                        withParent(withId(R.id.settings_title_in_detailed_pane))),
+                                isDisplayed()))
                 .check(matches(isDisplayed()));
 
         histogramWatcher.assertExpected();
@@ -2488,18 +2492,19 @@ public final class SafetyHubTest {
 
     static View getRootViewSanitized(int text) {
         View[] view = {null};
-        onViewWaiting(withText(text)).check((v, e) -> view[0] = v.getRootView());
+        onViewWaiting(allOf(withText(text), isDisplayed()))
+                .check((v, e) -> view[0] = v.getRootView());
         ThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(view[0]));
         return view[0];
     }
 
     private void scrollToPreference(Matcher<View> matcher) {
-        onView(withId(R.id.recycler_view))
+        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
                 .perform(RecyclerViewActions.scrollTo(hasDescendant(matcher)));
     }
 
     private void scrollToExpandedPreference(String text) {
-        onView(withId(R.id.recycler_view))
+        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
                 .perform(
                         RecyclerViewActions.scrollTo(
                                 hasDescendant(
@@ -2516,7 +2521,8 @@ public final class SafetyHubTest {
     }
 
     private void scrollToLastPosition() {
-        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
+                .perform(RecyclerViewActions.scrollToLastPosition());
     }
 
     private void setAccountCompromisedPasswordsCount(int count) {

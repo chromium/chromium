@@ -9,7 +9,6 @@ import static org.chromium.components.browser_ui.widget.ListItemBuilder.buildSim
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +28,6 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
@@ -53,8 +51,6 @@ import java.util.Collection;
 @NullMarked
 public abstract class LanguageItemListFragment extends Fragment
         implements EmbeddableSettingsPage, ProfileDependentSetting {
-    // Request code for returning from Select Language Fragment
-    private static final int REQUEST_CODE_SELECT_LANGUAGE = 1;
 
     /**
      * Interface for helper functions to populate the LanguageItem list and used by
@@ -193,16 +189,6 @@ public abstract class LanguageItemListFragment extends Fragment
                         return;
                     }
 
-                    if (!ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
-                        // Use an Intent with extra. Return value is received via onActivityResult.
-                        Intent intent =
-                                SettingsNavigationFactory.createSettingsNavigation()
-                                        .createSettingsIntent(
-                                                getActivity(), picker, /* fragmentArgs= */ null);
-                        startActivityForResult(intent, REQUEST_CODE_SELECT_LANGUAGE);
-                        return;
-                    }
-
                     // On using fragment, the result is received via this result listener.
                     var fragmentManager = getFragmentManager();
                     assumeNonNull(fragmentManager);
@@ -228,17 +214,6 @@ public abstract class LanguageItemListFragment extends Fragment
                 });
 
         return inflatedView;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, requestCode, data);
-        if (requestCode == REQUEST_CODE_SELECT_LANGUAGE && resultCode == Activity.RESULT_OK) {
-            assumeNonNull(data);
-            String code = data.getStringExtra(SelectLanguageFragment.KEY_SELECTED_LANGUAGE);
-            assumeNonNull(code);
-            onSelectLanguageResult(code);
-        }
     }
 
     private void onSelectLanguageResult(String code) {

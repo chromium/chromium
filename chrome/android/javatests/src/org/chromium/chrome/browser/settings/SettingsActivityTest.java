@@ -120,7 +120,6 @@ public class SettingsActivityTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.SETTINGS_SINGLE_ACTIVITY})
     public void testStandaloneFragments() {
         // Start the main settings, which is an embeddable fragment.
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();

@@ -135,7 +135,6 @@ public class CookieSettingsTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void renderAllowDescriptionWhenAuxButtonClicked() throws IOException {
         onView(withId(R.id.allow_third_party_with_aux)).perform(click());
         onView(
@@ -152,7 +151,6 @@ public class CookieSettingsTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void renderBlockDescriptionAndRwsToggleWhenAuxButtonClicked() throws IOException {
         onView(withId(R.id.block_third_party_with_aux)).perform(click());
         onView(
@@ -169,10 +167,7 @@ public class CookieSettingsTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @DisableFeatures({
-        ChromeFeatureList.RELATED_WEBSITE_SETS_UI,
-        ChromeFeatureList.SETTINGS_MULTI_COLUMN
-    })
+    @DisableFeatures({ChromeFeatureList.RELATED_WEBSITE_SETS_UI})
     public void renderBlockDescriptionWhenAuxButtonClicked() throws IOException {
         onView(withId(R.id.block_third_party_with_aux)).perform(click());
         onView(

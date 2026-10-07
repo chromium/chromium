@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.language.settings;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -334,17 +332,6 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
         mPrefChangeRegistrar.destroy();
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != Activity.RESULT_OK) return;
-
-        assumeNonNull(data);
-        String code = data.getStringExtra(SelectLanguageFragment.KEY_SELECTED_LANGUAGE);
-        assumeNonNull(code);
-        onSelectLanguageResult(requestCode, code);
-    }
-
     private void onSelectLanguageResult(int requestCode, String code) {
         switch (requestCode) {
             case REQUEST_CODE_ADD_ACCEPT_LANGUAGE:
@@ -452,15 +439,6 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
                             picker,
                             /* fragmentArgs= */ null,
                             /* addToBackStack= */ true);
-            return;
-        }
-
-        if (!ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
-            // Use an Intent with extra. Return value is received via onActivityResult.
-            Intent intent =
-                    SettingsNavigationFactory.createSettingsNavigation()
-                            .createSettingsIntent(getActivity(), picker, /* fragmentArgs= */ null);
-            startActivityForResult(intent, requestCode);
             return;
         }
 

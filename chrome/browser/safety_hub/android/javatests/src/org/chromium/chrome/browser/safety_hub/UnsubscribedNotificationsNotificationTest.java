@@ -77,15 +77,11 @@ public final class UnsubscribedNotificationsNotificationTest {
         SettingsActivity settingsActivity =
                 ApplicationTestUtils.waitForActivityWithClass(
                         SettingsActivity.class,
-                        // In SettingsSingleActivity mode, if there already
-                        // exists the settings activity, it will be reused.
-                        // In such cases, the activity state is set to
-                        // PAUSED, rather than CREATED.
-                        // Because there's no guarantee of the existing
-                        // settings activity, we wait for either condition.
-                        ChromeFeatureList.sSettingsSingleActivity.isEnabled()
-                                ? EnumSet.of(Stage.PAUSED, Stage.CREATED)
-                                : EnumSet.of(Stage.CREATED),
+                        // If there already exists the settings activity, it will be reused. In such
+                        // cases, the activity state is set to PAUSED, rather than CREATED. Because
+                        // there's no guarantee of the existing settings activity, we wait for
+                        // either condition.
+                        EnumSet.of(Stage.PAUSED, Stage.CREATED),
                         () -> {
                             try {
                                 notification.actions[0].actionIntent.send();
@@ -115,15 +111,11 @@ public final class UnsubscribedNotificationsNotificationTest {
         SettingsActivity settingsActivity =
                 ApplicationTestUtils.waitForActivityWithClass(
                         SettingsActivity.class,
-                        // In SettingsSingleActivity mode, if there already
-                        // exists the settings activity, it will be reused.
-                        // In such cases, the activity state is set to
-                        // PAUSED, rather than CREATED.
-                        // Because there's no guarantee of the existing
-                        // settings activity, we wait for either condition.
-                        ChromeFeatureList.sSettingsSingleActivity.isEnabled()
-                                ? EnumSet.of(Stage.PAUSED, Stage.CREATED)
-                                : EnumSet.of(Stage.CREATED),
+                        // If there already exists the settings activity, it will be reused. In such
+                        // cases, the activity state is set to PAUSED, rather than CREATED. Because
+                        // there's no guarantee of the existing settings activity, we wait for
+                        // either condition.
+                        EnumSet.of(Stage.PAUSED, Stage.CREATED),
                         () -> {
                             try {
                                 notification.contentIntent.send();

@@ -64,7 +64,7 @@ import org.chromium.components.sync.SyncService;
 /** Unit tests for {@link SettingsHostFragment}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(qualifiers = "w720dp-h1024dp")
-@EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_MULTI_COLUMN})
+@EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
 public class SettingsHostFragmentTest {
     @Rule
     public ActivityScenarioRule<TestChromeBaseAppCompatActivity> mActivityScenarios =

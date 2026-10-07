@@ -347,7 +347,7 @@ public class SettingsInTabNavigationDelegateTest {
 
     @Test
     // SettingsHostFragment may only exist where settings-in-tab does: both flags on, tablet width.
-    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_MULTI_COLUMN})
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
     @Config(qualifiers = "w720dp-h1024dp")
     public void testStartSettings_UnmappedFragment_WithHostFragment_ShowsFragmentInHost() {
         RecordingHostFragment hostFragment = attachHostFragment();
@@ -365,7 +365,7 @@ public class SettingsInTabNavigationDelegateTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_MULTI_COLUMN})
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
     @Config(qualifiers = "w720dp-h1024dp")
     public void testStartSettings_MappedFragment_WithSearchOpen_ShowsFragmentInHost() {
         RecordingHostFragment hostFragment = attachHostFragment();
@@ -381,7 +381,7 @@ public class SettingsInTabNavigationDelegateTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_MULTI_COLUMN})
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
     @Config(qualifiers = "w720dp-h1024dp")
     public void testStartSettings_MappedFragment_WithSearchClosed_NavigatesTheTab() {
         RecordingHostFragment hostFragment = attachHostFragment();

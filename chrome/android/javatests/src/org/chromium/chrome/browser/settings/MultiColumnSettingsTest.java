@@ -362,7 +362,6 @@ public class MultiColumnSettingsTest {
     @Restriction(DeviceFormFactor.PHONE)
     @EnableFeatures({
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
-        ChromeFeatureList.SETTINGS_MULTI_COLUMN,
     })
     @DisableFeatures({
         ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2,
@@ -383,9 +382,6 @@ public class MultiColumnSettingsTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.ONLY_TABLET)
-    @EnableFeatures({
-        ChromeFeatureList.SETTINGS_MULTI_COLUMN,
-    })
     @DisableFeatures({
         ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2,
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
