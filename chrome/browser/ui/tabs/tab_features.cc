@@ -88,6 +88,7 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/bubble_manager.h"
 #include "chrome/browser/ui/autofill/one_time_tokens/gmail_otp_opt_in_bubble_controller.h"
@@ -1226,6 +1227,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
       tab.GetContents());
+
+  // Attach TrustedVaultEncryptionKeysTabHelper to the tab.
+  TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(tab.GetContents());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1759,6 +1763,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
 
   permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
       new_contents);
+
+  TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(new_contents);
 }
 
 customize_chrome::SidePanelController*

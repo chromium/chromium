@@ -1407,7 +1407,6 @@ source_set("tab_helpers_impl") {
     "//chrome/browser/sync_tab_context",
     "//chrome/browser/task_manager",
     "//chrome/browser/translate",
-    "//chrome/browser/trusted_vault",
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/find_bar",
     "//chrome/browser/ui/javascript_dialogs",

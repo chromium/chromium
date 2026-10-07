@@ -598,6 +598,7 @@ if (!is_android) {
       "//chrome/browser/tab_group_sync:factories",
       "//chrome/browser/task_manager",
       "//chrome/browser/themes",
+      "//chrome/browser/trusted_vault",
       "//chrome/browser/ui:accelerator_table",
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui:browser_commands",

@@ -48,6 +48,10 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # also attached to non-tab WebContents (e.g. payment handler WebViews) and
   # to Android tabs, so the WebContents must own it.
   'task_manager::WebContentsTags::CreateForTabContents',
+  # TrustedVaultEncryptionKeysTabHelper is also attached to non-tab profile
+  # picker sign-in WebContents in ProfilePickerSignInProvider, so the
+  # WebContents must own it.
+  'TrustedVaultEncryptionKeysTabHelper::CreateForWebContents',
   # PreRedirectionURLObserver lives in //components/webapps and is also
   # attached to non-tab WebContents in web_app::CreateWebAppInstallTabHelpers
   # for background web-app installation, so the WebContents must own it.
