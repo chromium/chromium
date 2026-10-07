@@ -165,8 +165,8 @@ class MODULES_EXPORT BaseRenderingContext2D
                     int dirty_height,
                     ExceptionState&);
 
-  virtual bool CanCreateResourceProvider() = 0;
-  virtual bool InitializeResourceProvider() = 0;
+  virtual bool CanCreateBacking() = 0;
+  virtual bool InitializeBacking() = 0;
   bool HasBacking() const;
   virtual bool IsBackingValid() const;
   virtual void ResetBacking();
@@ -371,7 +371,7 @@ class MODULES_EXPORT BaseRenderingContext2D
   void SetSharedImageProviderForTesting(
       std::unique_ptr<Canvas2DResourceProvider> provider);
   void CreateSoftwareSurface();
-  void RecordResourceProviderHistograms();
+  void RecordBackingHistograms();
   scoped_refptr<StaticBitmapImage> Snapshot();
 
   bool context_restorable_{true};

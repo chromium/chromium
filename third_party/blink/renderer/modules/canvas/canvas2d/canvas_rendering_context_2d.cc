@@ -331,7 +331,7 @@ void CanvasRenderingContext2D::WillDrawImage(CanvasImageSource* source,
     // Recreate the CRP in GPU raster mode and signal that it needs a
     // compositing update.
     canvas()->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-    DropAndRecreateExistingResourceProvider();
+    DropAndRecreateExistingBacking();
     canvas()->SetNeedsCompositingUpdate();
   }
 }
@@ -476,8 +476,8 @@ MemoryManagedPaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
       FlushIfRecordingLimitExceeded();
     }
   } else {
-    // If we have no provider, try creating one.
-    if (!InitializeResourceProvider()) [[unlikely]] {
+    // If we have no backing, try creating one.
+    if (!InitializeBacking()) [[unlikely]] {
       return nullptr;
     }
   }
@@ -749,8 +749,8 @@ CanvasRenderingContext2D::GetLastRecording() {
   return last_recording_;
 }
 
-bool CanvasRenderingContext2D::CanCreateResourceProvider() {
-  return InitializeResourceProvider();
+bool CanvasRenderingContext2D::CanCreateBacking() {
+  return InitializeBacking();
 }
 
 scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage() {
@@ -783,7 +783,7 @@ void CanvasRenderingContext2D::EnableAccelerationIfPossible() {
       AllowSoftwareToAcceleratedCanvasUpgrade(
           SharedGpuContext::ContextProviderWrapper().get())) {
     canvas()->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-    DropAndRecreateExistingResourceProvider();
+    DropAndRecreateExistingBacking();
   }
 }
 
@@ -902,7 +902,7 @@ void CanvasRenderingContext2D::PageVisibilityChanged() {
   }
 
   if (page_is_visible && IsHibernating()) {
-    InitializeResourceProvider();  // Rude awakening
+    InitializeBacking();  // Rude awakening
   }
 
   if (!element->IsPageVisible()) {
@@ -1022,7 +1022,7 @@ void CanvasRenderingContext2D::DisableAcceleration() {
   // Create and configure an unaccelerated CanvasResourceProvider.
   canvas()->SetPreferred2DRasterMode(RasterModeHint::kPreferCPU);
 
-  DropAndRecreateExistingResourceProvider();
+  DropAndRecreateExistingBacking();
 
   // We must force a paint invalidation on the canvas even if its
   // content did not change, because its layer was destroyed.
@@ -1058,7 +1058,7 @@ UniqueFontSelector* CanvasRenderingContext2D::GetFontSelector() const {
 void CanvasRenderingContext2D::SizeChanged() {
   ResetBacking();
   ResetRecorder();
-  did_fail_to_create_resource_provider_ = false;
+  did_fail_to_create_backing_ = false;
 }
 
 CanvasHibernationHandler* CanvasRenderingContext2D::GetHibernationHandler()
@@ -1074,7 +1074,7 @@ void CanvasRenderingContext2D::Dispose() {
   CanvasRenderingContext::Dispose();
 }
 
-void CanvasRenderingContext2D::CreateProvider() {
+void CanvasRenderingContext2D::CreateBacking() {
   CHECK(!HasBacking());
 
   canvas()->GetOrCreateResourceDispatcher();
@@ -1152,7 +1152,7 @@ bool CanvasRenderingContext2D::HasBacking() const {
   return BaseRenderingContext2D::HasBacking();
 }
 
-bool CanvasRenderingContext2D::InitializeResourceProvider() {
+bool CanvasRenderingContext2D::InitializeBacking() {
   HTMLCanvasElement* const element = canvas();
   if (!element) [[unlikely]] {
     return false;
@@ -1177,13 +1177,13 @@ bool CanvasRenderingContext2D::InitializeResourceProvider() {
     return IsBackingValid();
   }
 
-  if (did_fail_to_create_resource_provider_) {
+  if (did_fail_to_create_backing_) {
     ResetRecorder();
     return false;
   }
 
   if (!canvas()->IsValidImageSize()) {
-    did_fail_to_create_resource_provider_ = true;
+    did_fail_to_create_backing_ = true;
     ResetRecorder();
     if (!canvas()->Size().IsEmpty()) {
       LoseContext(CanvasRenderingContext::kInvalidCanvasSize);
@@ -1197,7 +1197,7 @@ bool CanvasRenderingContext2D::InitializeResourceProvider() {
     hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
   }
 
-  RecreateResourceProvider();
+  RecreateBacking();
 
   canvas()->UpdateMemoryUsage();
 
@@ -1211,14 +1211,14 @@ void CanvasRenderingContext2D::ResetBacking() {
   last_recording_ = std::nullopt;
 }
 
-void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
+void CanvasRenderingContext2D::DropAndRecreateExistingBacking() {
   if (!canvas() || !HasBacking()) {
     return;
   }
 
   scoped_refptr<StaticBitmapImage> image = GetImage();
   // image can be null if allocation failed in which case we should just
-  // abort the provider switch to retain the old provider, which is still
+  // abort the backing switch to retain the old backing, which is still
   // functional.
   if (!image) {
     return;
@@ -1232,8 +1232,8 @@ void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
     return;
   }
 
-  // Bail out if it's not possible to create a new provider.
-  RecreateResourceProvider();
+  // Bail out if it's not possible to create a new backing.
+  RecreateBacking();
   if (!HasBacking()) {
     return;
   }
@@ -1243,26 +1243,26 @@ void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
   canvas()->UpdateMemoryUsage();
 }
 
-void CanvasRenderingContext2D::RecreateResourceProvider() {
+void CanvasRenderingContext2D::RecreateBacking() {
   CHECK(GetHibernationHandler());
   CHECK(!HasBacking());
 
-  if (did_fail_to_create_resource_provider_) {
+  if (did_fail_to_create_backing_) {
     ResetRecorder();
     return;
   }
 
   if (canvas()->IsValidImageSize()) {
-    CreateProvider();
+    CreateBacking();
   }
 
   if (!HasBacking()) {
-    did_fail_to_create_resource_provider_ = true;
+    did_fail_to_create_backing_ = true;
     ResetRecorder();
     return;
   }
 
-  RecordResourceProviderHistograms();
+  RecordBackingHistograms();
 
   if (GetHibernationHandler()->IsHibernating()) {
     WakeUpFromHibernation();

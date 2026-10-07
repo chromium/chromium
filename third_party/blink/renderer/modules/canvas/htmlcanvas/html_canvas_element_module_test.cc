@@ -191,9 +191,8 @@ TEST_P(HTMLCanvasElementModuleTest, LowLatencyCanvasCompositorFrameOpacity) {
   EXPECT_TRUE(canvas_element().SurfaceLayerBridge());
   platform->RunUntilIdle();
 
-  // Initialize resource provider and simulate having drawn something.
-  static_cast<CanvasRenderingContext2D*>(context_.Get())
-      ->InitializeResourceProvider();
+  // Initialize backing and simulate having drawn something.
+  static_cast<CanvasRenderingContext2D*>(context_.Get())->InitializeBacking();
   canvas_element().DidDraw();
 
   EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),

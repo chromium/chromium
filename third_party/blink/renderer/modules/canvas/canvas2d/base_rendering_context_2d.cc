@@ -303,8 +303,10 @@ void BaseRenderingContext2D::CreateSoftwareSurface() {
   sw_snapshot_sk_image_id_ = 0u;
 }
 
-void BaseRenderingContext2D::RecordResourceProviderHistograms() {
+void BaseRenderingContext2D::RecordBackingHistograms() {
   CHECK(HasBacking());
+  // Note: The histogram names date back to historical usage of
+  // CanvasResourceProvider for both SharedImage and bitmap backings.
   if (shared_image_provider_) {
     base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
                               shared_image_provider_->IsAccelerated());
@@ -604,7 +606,7 @@ void BaseRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
       (!SharedGpuContext::IsGpuCompositingEnabled() &&
        SharedGpuContext::SharedImageInterfaceProvider())) {
     RestoreGuard context_is_being_restored(*this);
-    if (InitializeResourceProvider()) {
+    if (InitializeBacking()) {
       try_restore_context_event_timer_.Stop();
       DispatchContextRestoredEvent(nullptr);
       return;
@@ -900,7 +902,7 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
     return;
   }
 
-  if (isContextLost() || !CanCreateResourceProvider()) [[unlikely]] {
+  if (isContextLost() || !CanCreateBacking()) [[unlikely]] {
     return;
   }
 

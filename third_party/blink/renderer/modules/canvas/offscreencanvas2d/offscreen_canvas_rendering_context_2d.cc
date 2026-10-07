@@ -137,7 +137,7 @@ void OffscreenCanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
 
   // Make sure surface is ready for painting: fix the rendering mode now
   // because it will be too late during the paint invalidation phase.
-  if (!InitializeResourceProvider()) {
+  if (!InitializeBacking()) {
     return;
   }
 
@@ -162,15 +162,15 @@ int OffscreenCanvasRenderingContext2D::Height() const {
   return Host()->Size().height();
 }
 
-bool OffscreenCanvasRenderingContext2D::CanCreateResourceProvider() {
+bool OffscreenCanvasRenderingContext2D::CanCreateBacking() {
   const CanvasRenderingContextHost* const host = Host();
   if (host == nullptr || host->Size().IsEmpty()) [[unlikely]] {
     return false;
   }
-  return InitializeResourceProvider();
+  return InitializeBacking();
 }
 
-bool OffscreenCanvasRenderingContext2D::InitializeResourceProvider() {
+bool OffscreenCanvasRenderingContext2D::InitializeBacking() {
   DCHECK(Host() && Host()->IsOffscreenCanvas());
   OffscreenCanvas* host = HostAsOffscreenCanvas();
   if (host == nullptr) [[unlikely]] {
@@ -269,7 +269,7 @@ bool OffscreenCanvasRenderingContext2D::InitializeResourceProvider() {
     return false;
   }
 
-  RecordResourceProviderHistograms();
+  RecordBackingHistograms();
   host->DidDraw();
   return true;
 }
@@ -283,7 +283,7 @@ void OffscreenCanvasRenderingContext2D::Reset() {
 
 scoped_refptr<CanvasResource>
 OffscreenCanvasRenderingContext2D::ProduceCanvasResource(FlushReason reason) {
-  if (!InitializeResourceProvider() || !GetSharedImageProvider()) {
+  if (!InitializeBacking() || !GetSharedImageProvider()) {
     return nullptr;
   }
 
@@ -330,7 +330,7 @@ ImageBitmap* OffscreenCanvasRenderingContext2D::TransferToImageBitmap(
     return nullptr;
   }
 
-  if (!InitializeResourceProvider()) {
+  if (!InitializeBacking()) {
     return nullptr;
   }
   scoped_refptr<StaticBitmapImage> image = GetImage();
@@ -366,7 +366,7 @@ Color OffscreenCanvasRenderingContext2D::GetCurrentColor() const {
 
 MemoryManagedPaintCanvas*
 OffscreenCanvasRenderingContext2D::GetOrCreatePaintCanvas() {
-  if (isContextLost() || !InitializeResourceProvider()) [[unlikely]] {
+  if (isContextLost() || !InitializeBacking()) [[unlikely]] {
     return nullptr;
   }
   return GetPaintCanvas();

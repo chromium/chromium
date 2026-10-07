@@ -189,7 +189,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   int Width() const final;
   int Height() const final;
 
-  bool CanCreateResourceProvider() final;
+  bool CanCreateBacking() final;
 
   RespectImageOrientationEnum RespectImageOrientation() const final;
 
@@ -233,7 +233,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void SendContextLostEventIfNeeded() override;
 
-  bool InitializeResourceProvider() override;
+  bool InitializeBacking() override;
   void SetCanvas2DResourceProviderForTesting(
       std::unique_ptr<Canvas2DResourceProvider> provider,
       const gfx::Size& size);
@@ -275,7 +275,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void Dispose() override;
 
-  void CreateProvider();
+  void CreateBacking();
 
   void PruneLocalFontCache(size_t target_size);
 
@@ -297,12 +297,12 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void ColorSchemeMayHaveChanged() override;
 
-  // If the ResourceProvider currently exists, replaces it with a newly-created
-  // resource provider.
-  void DropAndRecreateExistingResourceProvider();
+  // If the backing currently exists, replaces it with a newly-created
+  // backing.
+  void DropAndRecreateExistingBacking();
 
-  // This method should be called only when both providers are null.
-  void RecreateResourceProvider();
+  // This method should be called only when there is no existing backing.
+  void RecreateBacking();
 
   void RestoreBackBuffer(const cc::PaintImage&);
 
@@ -315,9 +315,9 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   std::unique_ptr<CanvasHibernationHandler> hibernation_handler_;
 
-  // `did_fail_to_create_resource_provider_` prevents repeated attempts in
+  // `did_fail_to_create_backing_` prevents repeated attempts in
   // allocating resources after the first attempt failed.
-  bool did_fail_to_create_resource_provider_ = false;
+  bool did_fail_to_create_backing_ = false;
 
   // For privacy reasons we need to delay contextLost events until the page is
   // visible. In order to do this we will hold on to a bool here

@@ -82,7 +82,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   int Width() const final;
   int Height() const final;
 
-  bool CanCreateResourceProvider() final;
+  bool CanCreateBacking() final;
 
   // Offscreen canvas doesn't have any notion of image orientation.
   RespectImageOrientationEnum RespectImageOrientation() const final {
@@ -135,7 +135,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason);
 
-  bool InitializeResourceProvider() override;
+  bool InitializeBacking() override;
 };
 
 }  // namespace blink

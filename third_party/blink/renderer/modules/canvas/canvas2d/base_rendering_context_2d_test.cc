@@ -103,7 +103,7 @@ class TestRenderingContext2D final
   int Width() const override { return 300; }
   int Height() const override { return 300; }
 
-  bool CanCreateResourceProvider() override { return false; }
+  bool CanCreateBacking() override { return false; }
 
   RespectImageOrientationEnum RespectImageOrientation() const override {
     return kRespectImageOrientation;
@@ -179,7 +179,7 @@ class TestRenderingContext2D final
     return base::ByteSize();
   }
 
-  bool InitializeResourceProvider() override { return false; }
+  bool InitializeBacking() override { return false; }
 
   bool Is2DCanvasAccelerated() const override { return false; }
 
