@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/autofill/email_verifier/email_verification_popup_controller.h"
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/views/autofill/popup/email_verifier/email_verification_popup_view.h"
@@ -16,6 +18,10 @@ namespace {
 
 using EmailVerificationPermissionUiStatus =
     AutofillClient::EmailVerificationPermissionUiStatus;
+
+void LogPermissionUiStatus(EmailVerificationPermissionUiStatus status) {
+  base::UmaHistogramEnumeration("Blink.Evp.PermissionUi.Status", status);
+}
 
 EmailVerificationPermissionUiStatus MapReasonToStatus(
     SuggestionHidingReason reason) {
@@ -62,7 +68,7 @@ EmailVerificationPopupController::EmailVerificationPopupController(
     : content::WebContentsObserver(web_contents) {}
 
 EmailVerificationPopupController::~EmailVerificationPopupController() {
-  HideImpl(EmailVerificationPermissionUiStatus::kOther);
+  Dismiss();
 }
 
 void EmailVerificationPopupController::Show(
@@ -72,12 +78,23 @@ void EmailVerificationPopupController::Show(
     base::OnceCallback<
         void(AutofillClient::EmailVerificationPermissionUiStatus)> callback) {
   if (!web_contents()) {
+    LogPermissionUiStatus(EmailVerificationPermissionUiStatus::kOther);
     std::move(callback).Run(EmailVerificationPermissionUiStatus::kOther);
+    return;
+  }
+
+  if (is_loading_) {
+    LogPermissionUiStatus(
+        EmailVerificationPermissionUiStatus::kOverlappingPrompt);
+    std::move(callback).Run(
+        EmailVerificationPermissionUiStatus::kOverlappingPrompt);
     return;
   }
 
   if (view_) {
     HideImpl(EmailVerificationPermissionUiStatus::kOther);
+    CHECK(!view_);
+    CHECK(!is_loading_);
   }
 
   element_bounds_ = element_bounds;
@@ -99,18 +116,21 @@ void EmailVerificationPopupController::Show(
   views::Widget* parent_widget =
       views::Widget::GetTopLevelWidgetForNativeView(container_view());
 
-  view_ =
+  base::WeakPtr<EmailVerificationPopupView> view =
       view_factory_for_testing_
           ? view_factory_for_testing_.Run(GetWeakPtr(), parent_widget, issuer,
                                           email, std::move(on_view_decision))
           : EmailVerificationPopupView::Show(GetWeakPtr(), parent_widget,
                                              issuer, email,
                                              std::move(on_view_decision));
-
-  if (!view_) {
+  if (!view || !callback_) {
+    if (view) {
+      view->Hide();
+    }
     HideImpl(EmailVerificationPermissionUiStatus::kOther);
     return;
   }
+  view_ = std::move(view);
 
   content::RenderFrameHost* rfh = web_contents()->GetFocusedFrame();
   popup_hide_helper_.emplace(
@@ -137,15 +157,16 @@ void EmailVerificationPopupController::Show(
 //   retrieval is in flight. The popup will be explicitly dismissed via
 //   `Dismiss()` by `EmailVerificationController` once token retrieval
 //   completes and the minimum loading display duration has elapsed.
-// - Fatal events where the tab or web contents is torn down or navigated
-//   (`kTabGone`, `kAttachInterstitialPage`) are NOT suppressed and proceed
-//   immediately to `HideImpl()` to tear down the popup.
+// - Fatal events where the tab, web contents, or view is torn down or navigated
+//   (`kTabGone`, `kAttachInterstitialPage`, `kViewDestroyed`) are NOT
+//   suppressed and proceed immediately to `HideImpl()` to tear down the popup.
 void EmailVerificationPopupController::Hide(SuggestionHidingReason reason) {
   if (is_loading_) {
     switch (reason) {
       // Fatal events: proceed to teardown the popup immediately.
       case SuggestionHidingReason::kTabGone:
       case SuggestionHidingReason::kAttachInterstitialPage:
+      case SuggestionHidingReason::kViewDestroyed:
         break;
 
       // Transient or non-fatal events: suppressed so that the in-button spinner
@@ -173,7 +194,6 @@ void EmailVerificationPopupController::Hide(SuggestionHidingReason reason) {
       case SuggestionHidingReason::kSearchBarFocusLost:
       case SuggestionHidingReason::kStaleData:
       case SuggestionHidingReason::kUserAborted:
-      case SuggestionHidingReason::kViewDestroyed:
       case SuggestionHidingReason::kWidgetChanged:
         return;
     }
@@ -182,13 +202,7 @@ void EmailVerificationPopupController::Hide(SuggestionHidingReason reason) {
 }
 
 void EmailVerificationPopupController::Dismiss() {
-  is_loading_ = false;
-  if (view_) {
-    view_->Hide();
-    view_ = nullptr;
-  }
-  popup_hide_helper_.reset();
-  weak_ptr_factory_.InvalidateWeakPtrs();
+  HideImpl(EmailVerificationPermissionUiStatus::kOther);
 }
 
 void EmailVerificationPopupController::ViewDestroyed() {
@@ -222,7 +236,7 @@ EmailVerificationPopupController::GetElementTextDirection() const {
 
 void EmailVerificationPopupController::DidGetUserInteraction(
     const blink::WebInputEvent& event) {
-  if (is_loading_) {
+  if (!view_ || is_loading_) {
     return;
   }
   HideImpl(EmailVerificationPermissionUiStatus::kUserAborted);
@@ -230,11 +244,19 @@ void EmailVerificationPopupController::DidGetUserInteraction(
 
 void EmailVerificationPopupController::HideImpl(
     AutofillClient::EmailVerificationPermissionUiStatus status) {
-  Dismiss();
+  is_loading_ = false;
+  base::OnceCallback<void(AutofillClient::EmailVerificationPermissionUiStatus)>
+      callback = std::move(callback_);
+  popup_hide_helper_.reset();
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  if (base::WeakPtr<EmailVerificationPopupView> view =
+          std::exchange(view_, nullptr)) {
+    view->Hide();
+  }
 
-  if (callback_) {
-    base::UmaHistogramEnumeration("Blink.Evp.PermissionUi.Status", status);
-    std::move(callback_).Run(status);
+  if (callback) {
+    LogPermissionUiStatus(status);
+    std::move(callback).Run(status);
   }
 }
 
@@ -260,9 +282,7 @@ void EmailVerificationPopupController::OnConfirm() {
   // so it can initiate background token retrieval and track the loading
   // duration in parallel with the loading animation.
   if (callback_) {
-    base::UmaHistogramEnumeration(
-        "Blink.Evp.PermissionUi.Status",
-        EmailVerificationPermissionUiStatus::kAllowed);
+    LogPermissionUiStatus(EmailVerificationPermissionUiStatus::kAllowed);
     std::move(callback_).Run(EmailVerificationPermissionUiStatus::kAllowed);
   }
 }

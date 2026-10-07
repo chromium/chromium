@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/autofill/email_verifier/email_verification_controller.h"
 
+#include <utility>
+
 #include "base/check_deref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/autofill/email_verifier/email_verification_popup_controller.h"
@@ -12,6 +14,7 @@
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 
 namespace autofill {
@@ -29,9 +32,13 @@ void EmailVerificationController::ShowPopup(
     base::OnceCallback<
         void(AutofillClient::EmailVerificationPermissionUiStatus)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  hide_popup_timer_.Stop();
-  toast_timer_.Stop();
-  loading_start_time_.reset();
+  if (!popup_controller_ || !popup_controller_->is_loading() ||
+      hide_popup_timer_.IsRunning()) {
+    DismissPopup();
+    hide_popup_timer_.Stop();
+    toast_timer_.Stop();
+    loading_start_time_.reset();
+  }
 
   if (!popup_controller_) {
     popup_controller_ =
@@ -39,27 +46,31 @@ void EmailVerificationController::ShowPopup(
   }
   popup_controller_->Show(
       element_bounds_in_screen_space, issuer_site, email,
-      base::BindOnce(&EmailVerificationController::OnPopupPermissionDecision,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void EmailVerificationController::OnPopupPermissionDecision(
-    base::OnceCallback<
-        void(AutofillClient::EmailVerificationPermissionUiStatus)> callback,
-    AutofillClient::EmailVerificationPermissionUiStatus status) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // If the user confirmed the first-run prompt (`kAllowed`), the popup view has
-  // transitioned to its loading spinner, and the delegate will initiate
-  // background token retrieval upon receiving `callback`.
-  // We capture `loading_start_time_` here to track the start of the first-run
-  // loading state. This ensures that `HidePopup()` and subsequent completion
-  // toasts (verified / error) enforce `kMinimumLoadingDuration` (800ms) before
-  // tearing down the loading UI, preventing visual flickering on fast network
-  // responses.
-  if (status == AutofillClient::EmailVerificationPermissionUiStatus::kAllowed) {
-    loading_start_time_ = base::TimeTicks::Now();
-  }
-  std::move(callback).Run(status);
+      base::BindOnce(
+          [](base::WeakPtr<EmailVerificationController> self,
+             base::OnceCallback<void(
+                 AutofillClient::EmailVerificationPermissionUiStatus)> callback,
+             AutofillClient::EmailVerificationPermissionUiStatus status) {
+            if (self) {
+              DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+              // If the user confirmed the first-run prompt (`kAllowed`), the
+              // popup view has transitioned to its loading spinner, and the
+              // delegate will initiate background token retrieval upon
+              // receiving `callback`.
+              // We capture `loading_start_time_` here to track the start of the
+              // first-run loading state. This ensures that `HidePopup()` and
+              // subsequent completion toasts (verified / error) enforce
+              // `kMinimumLoadingDuration` (800ms) before tearing down the
+              // loading UI, preventing visual flickering on fast network
+              // responses.
+              if (status == AutofillClient::
+                                EmailVerificationPermissionUiStatus::kAllowed) {
+                self->loading_start_time_ = base::TimeTicks::Now();
+              }
+            }
+            std::move(callback).Run(status);
+          },
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void EmailVerificationController::HidePopup() {
@@ -81,68 +92,80 @@ void EmailVerificationController::HidePopup() {
   }
   hide_popup_timer_.Stop();
   const bool was_loading = popup_controller_->is_loading();
-  popup_controller_->Dismiss();
-  if (was_loading) {
-    // The popup is activatable and took focus when the user clicked "Verify".
-    // Once it closes, give focus back to the page so it returns to the form
-    // field, rather than letting the platform hand activation to the
-    // completion toast (whose first focusable view is its menu button).
-    web_contents_->Focus();
-    if (!toast_timer_.IsRunning()) {
-      loading_start_time_.reset();
-    }
+  DismissPopup();
+  if (was_loading && !toast_timer_.IsRunning()) {
+    loading_start_time_.reset();
   }
 }
 
 void EmailVerificationController::ShowLoadingToast() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // There is no need to check any remaining loading duration timer here
-  // because `ShowLoadingToast()` is called at the beginning of the
-  // subsequent-run verification flow to initiate the loading state. We
-  // record `loading_start_time_` here; the minimum loading display duration
-  // is only enforced later when transitioning out of loading in
-  // `ShowVerifiedToast()` or `ShowErrorToast()`.
-  loading_start_time_ = base::TimeTicks::Now();
+  // `ShowLoadingToast()` is called at the beginning of the subsequent-run
+  // verification flow to initiate the loading state. Dismiss any active or
+  // pending first-run popup first, then record `loading_start_time_` so the
+  // minimum loading display duration is enforced when transitioning out of
+  // loading in `ShowVerifiedToast()` or `ShowErrorToast()`.
+  hide_popup_timer_.Stop();
   toast_timer_.Stop();
+  loading_start_time_.reset();
+  DismissPopup();
+  loading_start_time_ = base::TimeTicks::Now();
   if (ToastController* toast_controller = GetToastController()) {
     toast_controller->MaybeShowToast(
         ToastParams(ToastId::kEmailVerificationLoading));
   }
 }
 
-bool EmailVerificationController::DeferToast(
-    base::OnceClosure show_toast_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::TimeDelta delay = GetRemainingLoadingDuration();
-  if (!delay.is_zero()) {
-    toast_timer_.Start(FROM_HERE, delay, std::move(show_toast_callback));
-    return true;
-  }
-  toast_timer_.Stop();
-  loading_start_time_.reset();
-  return false;
-}
-
 void EmailVerificationController::ShowErrorToast() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (DeferToast(base::BindOnce(&EmailVerificationController::ShowErrorToast,
-                                weak_ptr_factory_.GetWeakPtr()))) {
+  if (DeferToast(
+          base::BindOnce(&EmailVerificationController::ShowErrorToastImpl,
+                         weak_ptr_factory_.GetWeakPtr()))) {
     return;
   }
+  ShowErrorToastImpl();
+}
 
+void EmailVerificationController::ShowVerifiedToast(const GURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (DeferToast(
+          base::BindOnce(&EmailVerificationController::ShowVerifiedToastImpl,
+                         weak_ptr_factory_.GetWeakPtr(), url))) {
+    return;
+  }
+  ShowVerifiedToastImpl(url);
+}
+
+bool EmailVerificationController::IsWebContentsVisible() const {
+  return !web_contents_->IsBeingDestroyed() &&
+         web_contents_->GetVisibility() != content::Visibility::HIDDEN;
+}
+
+BrowserWindowInterface* EmailVerificationController::GetBrowserWindowInterface()
+    const {
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(&*web_contents_);
+  return tab_interface ? tab_interface->GetBrowserWindowInterface() : nullptr;
+}
+
+ToastController* EmailVerificationController::GetToastController() const {
+  if (!IsWebContentsVisible()) {
+    return nullptr;
+  }
+  BrowserWindowInterface* window_interface = GetBrowserWindowInterface();
+  return window_interface ? ToastController::From(window_interface) : nullptr;
+}
+
+void EmailVerificationController::ShowErrorToastImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ToastController* toast_controller = GetToastController()) {
     toast_controller->MaybeShowToast(
         ToastParams(ToastId::kEmailVerificationError));
   }
 }
 
-void EmailVerificationController::ShowVerifiedToast(const GURL& url) {
+void EmailVerificationController::ShowVerifiedToastImpl(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (DeferToast(base::BindOnce(&EmailVerificationController::ShowVerifiedToast,
-                                weak_ptr_factory_.GetWeakPtr(), url))) {
-    return;
-  }
-
   ToastController* toast_controller = GetToastController();
   if (!toast_controller) {
     return;
@@ -155,16 +178,44 @@ void EmailVerificationController::ShowVerifiedToast(const GURL& url) {
   toast_controller->MaybeShowToast(std::move(params));
 }
 
-BrowserWindowInterface*
-EmailVerificationController::GetBrowserWindowInterface() {
-  tabs::TabInterface* tab_interface =
-      tabs::TabInterface::MaybeGetFromContents(&*web_contents_);
-  return tab_interface ? tab_interface->GetBrowserWindowInterface() : nullptr;
+void EmailVerificationController::DismissPopup() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!popup_controller_) {
+    return;
+  }
+  const bool was_loading = popup_controller_->is_loading();
+  popup_controller_->Dismiss();
+  if (was_loading && IsWebContentsVisible()) {
+    // The popup is activatable and took focus when the user clicked "Verify".
+    // Once it closes, give focus back to the page so it returns to the form
+    // field, rather than letting the platform hand activation to the
+    // completion toast (whose first focusable view is its menu button).
+    web_contents_->Focus();
+  }
 }
 
-ToastController* EmailVerificationController::GetToastController() {
-  BrowserWindowInterface* window_interface = GetBrowserWindowInterface();
-  return window_interface ? ToastController::From(window_interface) : nullptr;
+bool EmailVerificationController::DeferToast(
+    base::OnceClosure show_toast_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::TimeDelta delay = GetRemainingLoadingDuration();
+  if (!delay.is_zero()) {
+    toast_timer_.Start(
+        FROM_HERE, delay,
+        base::BindOnce(&EmailVerificationController::OnToastTimerFired,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(show_toast_callback)));
+    return true;
+  }
+  toast_timer_.Stop();
+  loading_start_time_.reset();
+  return false;
+}
+
+void EmailVerificationController::OnToastTimerFired(
+    base::OnceClosure show_toast_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  loading_start_time_.reset();
+  std::move(show_toast_callback).Run();
 }
 
 base::TimeDelta EmailVerificationController::GetRemainingLoadingDuration()

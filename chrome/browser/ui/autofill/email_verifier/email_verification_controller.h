@@ -61,7 +61,8 @@ class EmailVerificationController {
   void HidePopup();
 
   // Displays the "Verifying email" loading toast at the top of the browser
-  // for subsequent-run verifications.
+  // for subsequent-run verifications, dismissing any open first-run permission
+  // prompt first.
   void ShowLoadingToast();
 
   // Displays the "Couldn't verify your email" error toast, deferring display
@@ -76,25 +77,23 @@ class EmailVerificationController {
  private:
   friend class EmailVerificationControllerTestApi;
 
-  BrowserWindowInterface* GetBrowserWindowInterface();
-  ToastController* GetToastController();
+  bool IsWebContentsVisible() const;
+  BrowserWindowInterface* GetBrowserWindowInterface() const;
+  ToastController* GetToastController() const;
+
+  void ShowErrorToastImpl();
+  void ShowVerifiedToastImpl(const GURL& url);
+
+  // Dismisses `popup_controller_` and restores focus to `web_contents_` if the
+  // popup was in the loading state.
+  void DismissPopup();
 
   // Defers executing `show_toast_callback` if the active loading state has not
   // yet satisfied `kMinimumLoadingDuration` (800ms). Returns true if deferred
   // via `toast_timer_`, or false if no remaining delay was needed (in which
   // case `loading_start_time_` is reset).
   bool DeferToast(base::OnceClosure show_toast_callback);
-
-  // Handles the user's decision on the first-run permission prompt popup.
-  // If granted (`kAllowed`), starts tracking the loading duration so that the
-  // in-button spinner remains visible for at least `kMinimumLoadingDuration`
-  // before the popup is dismissed or any completion toast is shown.
-  // Then forwards the decision to `callback` so the delegate can initiate
-  // token retrieval.
-  void OnPopupPermissionDecision(
-      base::OnceCallback<
-          void(AutofillClient::EmailVerificationPermissionUiStatus)> callback,
-      AutofillClient::EmailVerificationPermissionUiStatus status);
+  void OnToastTimerFired(base::OnceClosure show_toast_callback);
 
   // Computes the remaining duration needed to satisfy the minimum loading
   // display duration (800ms) across any active loading UI (first-run popup or

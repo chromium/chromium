@@ -44,7 +44,7 @@ class EmailVerificationPopupController : public AutofillPopupViewDelegate,
   ~EmailVerificationPopupController() override;
 
   // Shows the email verification popup anchored to the element bounds.
-  // `callback` is invoked with the permission UI dismissal status
+  // `callback` is invoked with the permission UI decision or dismissal status
   // (`AutofillClient::EmailVerificationPermissionUiStatus`).
   void Show(const gfx::RectF& element_bounds,
             const net::SchemefulSite& issuer,
@@ -65,7 +65,9 @@ class EmailVerificationPopupController : public AutofillPopupViewDelegate,
   void DidGetUserInteraction(const blink::WebInputEvent& event) override;
 
   // Immediately closes the popup view and cleans up controller state. Called by
-  // EmailVerificationController when the popup should be dismissed.
+  // EmailVerificationController when the popup should be dismissed. If the
+  // popup was still awaiting a user decision, resolves `callback_` with
+  // `kOther`.
   void Dismiss();
 
   bool is_loading() const { return is_loading_; }
@@ -111,6 +113,8 @@ class EmailVerificationPopupController : public AutofillPopupViewDelegate,
   // Factory function used to create the view in tests.
   ViewFactoryForTesting view_factory_for_testing_;
 
+  // Invalidated in `HideImpl()` to detach any active popup view or decision
+  // callback when the popup closes.
   base::WeakPtrFactory<EmailVerificationPopupController> weak_ptr_factory_{
       this};
 };

@@ -670,6 +670,7 @@ TEST_F(EmailVerificationPopupViewTest, MinimumLoadingDurationEnforced) {
   task_environment()->FastForwardBy(
       EmailVerificationController::kMinimumLoadingDuration / 2);
   EXPECT_TRUE(raw_popup_controller->is_loading());
+  testing::Mock::VerifyAndClearExpectations(mock_view.get());
 
   // Fast forward the remaining duration; now it should hide.
   EXPECT_CALL(*mock_view, Hide);
@@ -871,6 +872,238 @@ TEST_F(EmailVerificationPopupViewTest,
   EXPECT_TRUE(test_api(*evp_controller).is_toast_timer_running());
 }
 
+// Tests that calling ShowLoadingToast() while a first-run popup's hide timer
+// is pending cancels `hide_popup_timer_` and immediately dismisses the popup.
+TEST_F(EmailVerificationPopupViewTest, ShowLoadingToastHidesPendingPopup) {
+  auto evp_controller =
+      std::make_unique<EmailVerificationController>(web_contents());
+  auto popup_controller =
+      std::make_unique<EmailVerificationPopupController>(web_contents());
+
+  std::unique_ptr<MockEmailVerificationPopupView> mock_view;
+  SetupMockViewFactory(popup_controller.get(), mock_view);
+  test_api(*evp_controller).set_popup_controller(std::move(popup_controller));
+
+  TestFuture<EmailVerificationPermissionUiStatus> future;
+  evp_controller->ShowPopup(gfx::RectF(0, 0, 10, 10),
+                            net::SchemefulSite(GURL("https://issuer.com")),
+                            u"user@example.com", future.GetCallback());
+  ASSERT_TRUE(mock_view);
+  EXPECT_CALL(*mock_view, ShowLoadingState);
+  std::move(mock_view->decision_callback()).Run(true);
+
+  // Start the anti-flicker hide timer for the first-run popup.
+  evp_controller->HidePopup();
+  EXPECT_TRUE(test_api(*evp_controller).is_hide_popup_timer_running());
+
+  // Triggering a subsequent-run loading toast must cancel the pending hide
+  // timer and immediately dismiss the first-run popup.
+  EXPECT_CALL(*mock_view, Hide);
+  evp_controller->ShowLoadingToast();
+  EXPECT_FALSE(test_api(*evp_controller).is_hide_popup_timer_running());
+  EXPECT_TRUE(test_api(*evp_controller).loading_start_time().has_value());
+}
+
+// Tests that calling ShowLoadingToast() while a popup is open in `kShowing`
+// resolves the pending callback with `kOther`, logs
+// `Blink.Evp.PermissionUi.Status`, and does not fire a second callback if the
+// user subsequently clicks on the WebContents.
+TEST_F(EmailVerificationPopupViewTest, ShowLoadingToastWhileShowingHidesPopup) {
+  base::HistogramTester histogram_tester;
+  auto evp_controller =
+      std::make_unique<EmailVerificationController>(web_contents());
+  auto popup_controller =
+      std::make_unique<EmailVerificationPopupController>(web_contents());
+
+  std::unique_ptr<MockEmailVerificationPopupView> mock_view;
+  SetupMockViewFactory(popup_controller.get(), mock_view);
+  EmailVerificationPopupController* raw_popup_controller =
+      popup_controller.get();
+  test_api(*evp_controller).set_popup_controller(std::move(popup_controller));
+
+  TestFuture<EmailVerificationPermissionUiStatus> future;
+  evp_controller->ShowPopup(gfx::RectF(0, 0, 10, 10),
+                            net::SchemefulSite(GURL("https://issuer.com")),
+                            u"user@example.com", future.GetCallback());
+  ASSERT_TRUE(mock_view);
+
+  EXPECT_CALL(*mock_view, Hide);
+  evp_controller->ShowLoadingToast();
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), EmailVerificationPermissionUiStatus::kOther);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.PermissionUi.Status",
+      EmailVerificationPermissionUiStatus::kOther, 1);
+
+  // Subsequent user interaction on the WebContents must not trigger a stale
+  // `kUserAborted` dismissal or reset `loading_start_time_`.
+  blink::WebMouseEvent mouse_event;
+  raw_popup_controller->DidGetUserInteraction(mouse_event);
+  histogram_tester.ExpectTotalCount("Blink.Evp.PermissionUi.Status", 1);
+  EXPECT_TRUE(test_api(*evp_controller).loading_start_time().has_value());
+}
+
+// Tests that calling `ShowPopup()` while a previous popup is open in `kShowing`
+// resolves the first popup's callback with `kOther` and logs
+// `Blink.Evp.PermissionUi.Status` before showing the replacement popup.
+TEST_F(EmailVerificationPopupViewTest,
+       OverlappingShowPopupWhileShowingReplacesPopup) {
+  base::HistogramTester histogram_tester;
+  auto evp_controller =
+      std::make_unique<EmailVerificationController>(web_contents());
+  auto popup_controller =
+      std::make_unique<EmailVerificationPopupController>(web_contents());
+
+  std::unique_ptr<MockEmailVerificationPopupView> first_view;
+  SetupMockViewFactory(popup_controller.get(), first_view);
+  EmailVerificationPopupController* raw_popup_controller =
+      popup_controller.get();
+  test_api(*evp_controller).set_popup_controller(std::move(popup_controller));
+
+  TestFuture<EmailVerificationPermissionUiStatus> first_future;
+  evp_controller->ShowPopup(gfx::RectF(0, 0, 10, 10),
+                            net::SchemefulSite(GURL("https://issuer.com")),
+                            u"first@example.com", first_future.GetCallback());
+  ASSERT_TRUE(first_view);
+
+  std::unique_ptr<MockEmailVerificationPopupView> second_view;
+  SetupMockViewFactory(raw_popup_controller, second_view);
+  EXPECT_CALL(*first_view, Hide);
+
+  TestFuture<EmailVerificationPermissionUiStatus> second_future;
+  evp_controller->ShowPopup(gfx::RectF(20, 20, 10, 10),
+                            net::SchemefulSite(GURL("https://issuer.com")),
+                            u"second@example.com", second_future.GetCallback());
+
+  ASSERT_TRUE(first_future.IsReady());
+  EXPECT_EQ(first_future.Get(), EmailVerificationPermissionUiStatus::kOther);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.PermissionUi.Status",
+      EmailVerificationPermissionUiStatus::kOther, 1);
+  ASSERT_TRUE(second_view);
+  EXPECT_FALSE(second_future.IsReady());
+
+  // Explicitly dismiss the replacement popup before teardown.
+  EXPECT_CALL(*second_view, Hide);
+  raw_popup_controller->Dismiss();
+}
+
+// Tests that calling `ShowPopup()` while a first-run request is actively in
+// the loading state (`kLoading` with no pending `hide_popup_timer_`) rejects
+// the overlapping request with `kOverlappingPrompt` and preserves the active
+// loading popup and its `loading_start_time_`.
+TEST_F(EmailVerificationPopupViewTest,
+       OverlappingShowPopupWhileLoadingRejected) {
+  base::HistogramTester histogram_tester;
+  auto evp_controller =
+      std::make_unique<EmailVerificationController>(web_contents());
+  auto popup_controller =
+      std::make_unique<EmailVerificationPopupController>(web_contents());
+
+  std::unique_ptr<MockEmailVerificationPopupView> mock_view;
+  SetupMockViewFactory(popup_controller.get(), mock_view);
+  EmailVerificationPopupController* raw_popup_controller =
+      popup_controller.get();
+  test_api(*evp_controller).set_popup_controller(std::move(popup_controller));
+
+  TestFuture<EmailVerificationPermissionUiStatus> first_future;
+  evp_controller->ShowPopup(gfx::RectF(0, 0, 10, 10),
+                            net::SchemefulSite(GURL("https://issuer.com")),
+                            u"first@example.com", first_future.GetCallback());
+  ASSERT_TRUE(mock_view);
+
+  EXPECT_CALL(*mock_view, ShowLoadingState);
+  std::move(mock_view->decision_callback()).Run(true);
+  EXPECT_EQ(first_future.Get(), EmailVerificationPermissionUiStatus::kAllowed);
+  EXPECT_TRUE(raw_popup_controller->is_loading());
+  const std::optional<base::TimeTicks> initial_loading_start_time =
+      test_api(*evp_controller).loading_start_time();
+  ASSERT_TRUE(initial_loading_start_time.has_value());
+
+  // Attempt an overlapping ShowPopup while the first request is still in
+  // flight.
+  EXPECT_CALL(*mock_view, Hide).Times(0);
+  TestFuture<EmailVerificationPermissionUiStatus> second_future;
+  evp_controller->ShowPopup(gfx::RectF(20, 20, 10, 10),
+                            net::SchemefulSite(GURL("https://issuer.com")),
+                            u"second@example.com", second_future.GetCallback());
+
+  EXPECT_EQ(second_future.Get(),
+            EmailVerificationPermissionUiStatus::kOverlappingPrompt);
+  EXPECT_TRUE(raw_popup_controller->is_loading());
+  EXPECT_EQ(test_api(*evp_controller).loading_start_time(),
+            initial_loading_start_time);
+  histogram_tester.ExpectBucketCount(
+      "Blink.Evp.PermissionUi.Status",
+      EmailVerificationPermissionUiStatus::kOverlappingPrompt, 1);
+
+  // Completing the first request still respects the original 800ms timer.
+  evp_controller->HidePopup();
+  EXPECT_TRUE(test_api(*evp_controller).is_hide_popup_timer_running());
+  EXPECT_CALL(*mock_view, Hide);
+  task_environment()->FastForwardBy(
+      EmailVerificationController::kMinimumLoadingDuration);
+  EXPECT_FALSE(raw_popup_controller->is_loading());
+}
+
+// Tests that destroying `EmailVerificationController` while a popup is open
+// resolves the caller's pending callback with `kOther` and logs
+// `Blink.Evp.PermissionUi.Status`.
+TEST_F(EmailVerificationPopupViewTest,
+       ControllerDestructionWhileShowingResolvesCallback) {
+  base::HistogramTester histogram_tester;
+  auto evp_controller =
+      std::make_unique<EmailVerificationController>(web_contents());
+  auto popup_controller =
+      std::make_unique<EmailVerificationPopupController>(web_contents());
+
+  std::unique_ptr<MockEmailVerificationPopupView> mock_view;
+  SetupMockViewFactory(popup_controller.get(), mock_view);
+  test_api(*evp_controller).set_popup_controller(std::move(popup_controller));
+
+  TestFuture<EmailVerificationPermissionUiStatus> future;
+  evp_controller->ShowPopup(gfx::RectF(0, 0, 10, 10),
+                            net::SchemefulSite(GURL("https://issuer.com")),
+                            u"user@example.com", future.GetCallback());
+  ASSERT_TRUE(mock_view);
+
+  EXPECT_CALL(*mock_view, Hide);
+  evp_controller.reset();
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), EmailVerificationPermissionUiStatus::kOther);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.PermissionUi.Status",
+      EmailVerificationPermissionUiStatus::kOther, 1);
+}
+
+// Tests that if `EmailVerificationPopupView::Show()` fails to create a view,
+// `EmailVerificationPopupController::Show()` resolves `callback` with `kOther`
+// and logs `Blink.Evp.PermissionUi.Status` rather than dropping the callback.
+TEST_F(EmailVerificationPopupViewTest,
+       PopupControllerShowEarlyReturnResolvesCallback) {
+  base::HistogramTester histogram_tester;
+  auto controller =
+      std::make_unique<EmailVerificationPopupController>(web_contents());
+
+  controller->set_view_factory_for_testing(base::BindRepeating(
+      [](base::WeakPtr<EmailVerificationPopupController>, views::Widget*,
+         const net::SchemefulSite&, const std::u16string&,
+         base::OnceCallback<void(bool)>) {
+        return base::WeakPtr<EmailVerificationPopupView>();
+      }));
+
+  TestFuture<EmailVerificationPermissionUiStatus> future;
+  controller->Show(gfx::RectF(0, 0, 10, 10),
+                   net::SchemefulSite(GURL("https://issuer.com")),
+                   u"user@example.com", future.GetCallback());
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), EmailVerificationPermissionUiStatus::kOther);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.PermissionUi.Status",
+      EmailVerificationPermissionUiStatus::kOther, 1);
+}
+
 // A `WebContentsViewDelegate` that records calls to `WebContents::Focus()`. It
 // is installed through `FocusRecordingContentBrowserClient` because the test
 // `RenderWidgetHostView` does not track focus.
@@ -960,6 +1193,35 @@ TEST_F(EmailVerificationPopupViewFocusTest,
   EXPECT_CALL(*mock_view, Hide);
   evp_controller->HidePopup();
   EXPECT_EQ(focus_count(), focus_count_before + 1);
+}
+
+// Tests that calling HidePopup() while the popup is showing (before the user
+// clicks Verify) dismisses the popup immediately without returning focus to
+// the WebContents, since the non-loading popup never took activation.
+TEST_F(EmailVerificationPopupViewFocusTest,
+       HidePopupWhileShowingDismissesImmediatelyWithoutReturningFocus) {
+  auto evp_controller =
+      std::make_unique<EmailVerificationController>(web_contents());
+  auto popup_controller =
+      std::make_unique<EmailVerificationPopupController>(web_contents());
+
+  std::unique_ptr<MockEmailVerificationPopupView> mock_view;
+  SetupMockViewFactory(popup_controller.get(), mock_view);
+  test_api(*evp_controller).set_popup_controller(std::move(popup_controller));
+
+  TestFuture<EmailVerificationPermissionUiStatus> future;
+  evp_controller->ShowPopup(gfx::RectF(0, 0, 10, 10),
+                            net::SchemefulSite(GURL("https://issuer.com")),
+                            u"user@example.com", future.GetCallback());
+  ASSERT_TRUE(mock_view);
+
+  const int focus_count_before = focus_count();
+  EXPECT_CALL(*mock_view, Hide);
+  evp_controller->HidePopup();
+  EXPECT_FALSE(test_api(*evp_controller).is_hide_popup_timer_running());
+  EXPECT_EQ(focus_count(), focus_count_before);
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), EmailVerificationPermissionUiStatus::kOther);
 }
 
 }  // namespace
