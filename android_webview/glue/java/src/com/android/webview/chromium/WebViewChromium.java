@@ -190,7 +190,23 @@ class WebViewChromium
             mStartupController = StartupController.getInstance();
             factory.addWebViewAssetPath(mWebView.getContext());
             mSharedWebViewChromium = new SharedWebViewChromium(mFactory.getRunQueue());
-            mStartupController.maybeSetChromiumUiThread(Looper.myLooper());
+            Looper myLooper = Looper.myLooper();
+            // The thread looper check on the framework throws a RuntimeException when called on
+            // a thread that has not yet had a Looper initialized.
+            //
+            // We throw the same exception here since it is possible to reach Chromium's
+            // `checkThread()` before the framework check when `WebViewInitInConstructor`
+            // is enabled.
+            // Chromium `checkThread()` not only throws a synchronous `RuntimeException`, but also
+            // posts an exception on the UI thread. So, even if the app handled a synchronous
+            // exception, the app would still crash due to the asynchronous exception in the
+            // experiment arm.
+            // See b/557196960 for more details.
+            if (myLooper == null) {
+                throw new RuntimeException(
+                        "WebView cannot be initialized on a thread that has no Looper.");
+            }
+            mStartupController.maybeSetChromiumUiThread(myLooper);
             if (shouldEnableInitInConstructor()) {
                 init(null, false);
             }
