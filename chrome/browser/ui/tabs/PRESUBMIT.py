@@ -34,6 +34,10 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # WebContents in ChromeAppDelegate and looked up from arbitrary WebContents
   # by DlpContentManager, so the WebContents must own it.
   'policy::DlpContentTabHelper::MaybeCreateForWebContents',
+  # FileSystemAccessPermissionRequestManager is also attached to non-tab
+  # Chrome App window WebContents in ChromeAppDelegate::InitWebContents, so
+  # the WebContents must own it.
+  'FileSystemAccessPermissionRequestManager::CreateForWebContents',
   # The task manager tag is looked up from WebContents user data by
   # WebContentsTaskProvider, is swapped in place by WebAppTabHelper, and is
   # also attached to non-tab WebContents (e.g. payment handler WebViews) and

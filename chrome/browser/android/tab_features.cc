@@ -36,6 +36,7 @@
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/external_protocol/external_protocol_observer.h"
 #include "chrome/browser/facilitated_payments/ui/chrome_facilitated_payments_client.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/file_system_access/file_system_access_tab_helper.h"
 #include "chrome/browser/finds/core/finds_features.h"
 #include "chrome/browser/finds/core/finds_tab_helper.h"
@@ -478,6 +479,9 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   task_manager::WebContentsTags::CreateForTabContents(web_contents);
 
   media_state_observer_ = std::make_unique<MediaStateObserver>(web_contents);
+
+  // Attach FileSystemAccessPermissionRequestManager to the tab.
+  FileSystemAccessPermissionRequestManager::CreateForWebContents(web_contents);
 
   file_system_access_tab_helper_ =
       std::make_unique<FileSystemAccessTabHelper>(web_contents);

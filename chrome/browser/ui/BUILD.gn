@@ -1373,7 +1373,6 @@ source_set("tab_helpers_impl") {
     "//chrome/browser/enterprise",
     "//chrome/browser/facilitated_payments",
     "//chrome/browser/favicon",
-    "//chrome/browser/file_system_access",
     "//chrome/browser/glic:impl",
     "//chrome/browser/glic/public:features",
     "//chrome/browser/history",
