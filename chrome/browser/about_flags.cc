@@ -3429,24 +3429,6 @@ const FeatureEntry::FeatureVariation kAndroidThemeResourceProviderVariations[] =
         {"force light theme", sAndroidThemeResourceProviderParams, nullptr},
 };
 
-const FeatureEntry::FeatureParam
-    kClankOmniboxSameOriginCompleteRemovalParams[] = {
-        {"variant", "complete_removal"}};
-const FeatureEntry::FeatureParam kClankOmniboxSameOriginIndicatorParams[] = {
-    {"variant", "indicator"},
-    {"indicator_height_dp", "12"}};
-const FeatureEntry::FeatureParam kClankOmniboxSameOriginPeekParams[] = {
-    {"variant", "peek"},
-    {"peek_duration_ms", "600"}};
-const FeatureEntry::FeatureVariation
-    kClankOmniboxSameOriginMinimizationVariations[] = {
-        {"A1: Complete Removal", kClankOmniboxSameOriginCompleteRemovalParams,
-         nullptr},
-        {"A2: Indicator (12dp)", kClankOmniboxSameOriginIndicatorParams,
-         nullptr},
-        {"A3: Peek (600ms)", kClankOmniboxSameOriginPeekParams, nullptr},
-};
-
 const FeatureEntry::FeatureParam kClankMiniOmnibox44dpParams[] = {
     {"mini_toolbar_height_dp", "44"}};
 const FeatureEntry::FeatureParam kClankMiniOmnibox40dpParams[] = {
@@ -11650,10 +11632,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kClankOmniboxSameOriginMinimizationName,
      flag_descriptions::kClankOmniboxSameOriginMinimizationDescription,
      kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kClankOmniboxSameOriginMinimization,
-         kClankOmniboxSameOriginMinimizationVariations,
-         "ClankOmniboxSameOriginMinimization")},
+     FEATURE_VALUE_TYPE(chrome::android::kClankOmniboxSameOriginMinimization)},
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

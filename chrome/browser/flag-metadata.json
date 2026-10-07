@@ -1977,12 +1977,12 @@
   {
     "name": "clank-mini-omnibox",
     "owners": [ "lukedeng@chromium.org" ],
-    "expiry_milestone": 157
+    "expiry_milestone": 170
   },
   {
     "name": "clank-omnibox-same-origin-minimization",
     "owners": [ "lukedeng@chromium.org" ],
-    "expiry_milestone": 157
+    "expiry_milestone": 170
   },
   {
     "name": "clank-startup-tab-optimizations",

@@ -2125,26 +2125,6 @@ public abstract class ChromeFeatureList {
             newIntCachedFeatureParam(CLANK_MINI_OMNIBOX, "mini_toolbar_height_dp", 44);
 
     /**
-     * Visible indicator strip height in dp for Experiment A2 (Same-Origin Minimization Indicator).
-     */
-    public static final IntCachedFeatureParam sClankOmniboxSameOriginIndicatorHeightDp =
-            newIntCachedFeatureParam(
-                    CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION, "indicator_height_dp", 12);
-
-    /**
-     * Variant selector for Experiment A (Same-Origin Minimization): "complete_removal" (A1),
-     * "indicator" (A2), or "peek" (A3).
-     */
-    public static final StringCachedFeatureParam sClankOmniboxSameOriginMinimizationVariant =
-            newStringCachedFeatureParam(
-                    CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION, "variant", "complete_removal");
-
-    /** Peek dwell duration in ms before auto-retracting for Experiment A3 (Same-Origin Peek). */
-    public static final IntCachedFeatureParam sClankOmniboxSameOriginPeekDurationMs =
-            newIntCachedFeatureParam(
-                    CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION, "peek_duration_ms", 600);
-
-    /**
      * A cached parameter representing the amount of latency to inject during Clank startup based on
      * experiment configuration.
      */
@@ -2401,9 +2381,6 @@ public abstract class ChromeFeatureList {
                     sCctResizableForThirdPartiesDenylistEntries,
                     sClampAutomotiveScalingMaxScalingPercentage,
                     sClankMiniOmniboxHeightDp,
-                    sClankOmniboxSameOriginIndicatorHeightDp,
-                    sClankOmniboxSameOriginMinimizationVariant,
-                    sClankOmniboxSameOriginPeekDurationMs,
                     sClankStartupLatencyInjectionAmountMs,
                     sDefaultBrowserPromoEntryPointShowAppMenu,
                     sDesktopUAAllowedOnExternalDisplayForOem,

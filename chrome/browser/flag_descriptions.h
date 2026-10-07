@@ -6013,7 +6013,7 @@ inline constexpr char kClankOmniboxSameOriginMinimizationName[] =
     "Clank Omnibox Same-Origin Minimization";
 inline constexpr char kClankOmniboxSameOriginMinimizationDescription[] =
     "Suppresses Omnibox expansion during same-origin navigations when the user "
-    "has scrolled down (Variants A1/A2/A3).";
+    "has scrolled down.";
 
 inline constexpr char kClankStartupTabOptimizationsName[] =
     "Clank startup and tab creation optimizations";
