@@ -99,7 +99,7 @@ public class TabObserverRegistrarTest {
                                         }
                                     });
                 });
-        DOMUtils.clickNode(mCustomTabActivityTestRule.getWebContents(), "new_window");
+        DOMUtils.clickNodeWithJavaScript(mCustomTabActivityTestRule.getWebContents(), "new_window");
         openTabHelper.waitForCallback(0, 1);
 
         ThreadUtils.runOnUiThreadBlocking(
