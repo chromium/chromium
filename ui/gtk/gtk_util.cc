@@ -12,13 +12,16 @@
 #include <memory>
 #include <string_view>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/environment.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -230,7 +233,7 @@ bool GtkInitFromCommandLine(int* argc, char** argv) {
   // Callers should have already called setlocale(LC_ALL, "") and
   // setlocale(LC_NUMERIC, "C") by now. Chrome does this in
   // service_manager::Main.
-  UNSAFE_TODO(DCHECK_EQ(strcmp(setlocale(LC_NUMERIC, nullptr), "C"), 0));
+  DCHECK_EQ(std::string_view(setlocale(LC_NUMERIC, nullptr)), "C");
   // This prevents GTK from calling setlocale(LC_ALL, ""), which potentially
   // overwrites the LC_NUMERIC locale to something other than "C".
   gtk_disable_setlocale();
@@ -364,15 +367,19 @@ CairoSurface::~CairoSurface() {
 
 SkColor CairoSurface::GetAveragePixelValue(bool frame) {
   cairo_surface_flush(surface_);
-  SkColor* data =
-      reinterpret_cast<SkColor*>(cairo_image_surface_get_data(surface_));
-  int width = cairo_image_surface_get_width(surface_);
-  int height = cairo_image_surface_get_height(surface_);
-  DCHECK(4 * width == cairo_image_surface_get_stride(surface_));
+  const int width = cairo_image_surface_get_width(surface_);
+  const int height = cairo_image_surface_get_height(surface_);
+  CHECK_EQ(4 * width, cairo_image_surface_get_stride(surface_));
+  // SAFETY: `cairo_image_surface_get_data` returns a pointer to the surface's
+  // pixel buffer of `height * stride` bytes. `CHECK_EQ` above verifies that
+  // `stride == 4 * width` (`sizeof(SkColor) * width`), so the buffer contains
+  // `width * height` contiguous `SkColor` elements.
+  base::span<const SkColor> data = UNSAFE_BUFFERS(base::span(
+      reinterpret_cast<const SkColor*>(cairo_image_surface_get_data(surface_)),
+      base::checked_cast<size_t>(width * height)));
   long a = 0, r = 0, g = 0, b = 0;
   unsigned int max_alpha = 0;
-  for (int i = 0; i < width * height; i++) {
-    SkColor color = UNSAFE_TODO(data[i]);
+  for (SkColor color : data) {
     max_alpha = std::max(SkColorGetA(color), max_alpha);
     a += SkColorGetA(color);
     r += SkColorGetR(color);
@@ -458,7 +465,7 @@ GtkCssContext AppendCssNodeToStyleContext(GtkCssContext context,
   } part_type = CSS_OBJECT_NAME;
 
   static const struct {
-    const char* name;
+    std::string_view name;
     GtkStateFlags state_flag;
   } pseudo_classes[] = {
       {"active", GTK_STATE_FLAG_ACTIVE},
@@ -513,8 +520,7 @@ GtkCssContext AppendCssNodeToStyleContext(GtkCssContext context,
         case CSS_PSEUDOCLASS: {
           GtkStateFlags state_flag = GTK_STATE_FLAG_NORMAL;
           for (const auto& pseudo_class_entry : pseudo_classes) {
-            if (UNSAFE_TODO(
-                    strcmp(pseudo_class_entry.name, t.token().c_str())) == 0) {
+            if (pseudo_class_entry.name == t.token_piece()) {
               state_flag = pseudo_class_entry.state_flag;
               break;
             }
