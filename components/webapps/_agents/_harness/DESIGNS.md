@@ -66,8 +66,9 @@ date (`YYYY-MM-DD`). They must follow the naming convention:
 ### Required Structure
 
 Your Design document must follow this format and abide by Chromium
-Gitiles-flavored markdown rules (using standard relative links, no `@/` in
-markdown):
+Gitiles-flavored markdown rules (using standard relative links or links from the
+`src/` repository root like `/content/browser/...`, never `file://` URLs or `@/`
+in markdown):
 
 ```markdown
 ---

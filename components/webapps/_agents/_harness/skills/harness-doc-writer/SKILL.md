@@ -45,7 +45,8 @@ ______________________________________________________________________
 3. **Draft Proposal:**
    - Author the complete markdown document adhering strictly to the template
      structure.
-   - Ensure all markdown links use standard relative paths (never `@/`).
+   - Ensure all markdown links use standard relative paths or paths from the
+     `src/` root (e.g. `/content/browser/...`), never `file://` URLs or `@/`.
 
 ### Phase 2: Adversarial Critique Loop
 
