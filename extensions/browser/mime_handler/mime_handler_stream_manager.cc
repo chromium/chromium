@@ -600,6 +600,10 @@ void MimeHandlerStreamManager::DidFinishNavigation(
     ClearContentNavigationCrashKeys();
   }
 
+  if (!navigation_handle->HasCommitted()) {
+    return;
+  }
+
   // Maybe set up postMessage support after the PDF content host finishes
   // navigating.
   if (MaybeSetUpPostMessage(navigation_handle)) {
@@ -630,7 +634,6 @@ void MimeHandlerStreamManager::DidFinishNavigation(
     if (url == pdf_extension_url &&
         stream_info->extension_host_frame_tree_node_id() ==
             navigation_handle->GetFrameTreeNodeId() &&
-        navigation_handle->HasCommitted() &&
         !navigation_handle->IsErrorPage()) {
       stream_info->SetDidExtensionFinishNavigation();
       stream_info->delegate()->OnExtensionFrameFinished(navigation_handle,
