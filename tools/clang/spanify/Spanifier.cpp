@@ -3887,6 +3887,20 @@ class Spanifier {
       EmitSource(GetLHS(result));  // Declare unsafe buffer access.
     });
 
+    // An explicit cast of `&ptr`, e.g. `reinterpret_cast<void**>(&ptr)` or
+    // `(void**)&ptr`, lets code write a raw pointer into `ptr`'s storage.
+    // That would still compile, and be UB, if `ptr` became a span, so `ptr`
+    // is excluded. Arrays are not matched.
+    auto cast_address_of_pointer = traverse(
+        clang::TK_IgnoreUnlessSpelledInSource,
+        explicitCastExpr(hasSourceExpression(ignoringParenImpCasts(
+            unaryOperator(hasOperatorName("&"),
+                          hasUnaryOperand(expr(
+                              rhs_expr, unless(hasType(arrayType())))))))));
+    Match(cast_address_of_pointer, [](const MatchFinder::MatchResult& result) {
+      EmitExclusion(GetRHS(result));
+    });
+
     // `sizeof(c_array)` is rewritten to
     // `std_array.size() * sizeof(element_size)`.
     auto sizeof_array_expr = traverse(
