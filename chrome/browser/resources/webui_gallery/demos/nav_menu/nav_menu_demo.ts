@@ -5,7 +5,6 @@
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/cr_elements/cr_drawer/cr_drawer.js';
-import '//resources/cr_elements/cr_hidden_style.css.js';
 import './nav_menu.js';
 
 import type {CrDrawerElement} from '//resources/cr_elements/cr_drawer/cr_drawer.js';

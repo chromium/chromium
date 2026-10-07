@@ -171,7 +171,6 @@ build_webui("build") {
     ts_files += [
       "cr_radio_button/cr_radio_button_mixin.ts",
       "cr_ripple/cr_ripple_mixin_polymer.ts",
-      "cr_search_field/cr_search_field_mixin.ts",
       "find_shortcut_manager.ts",
       "find_shortcut_mixin.ts",
       "find_shortcut_mixin_lit.ts",
@@ -222,9 +221,7 @@ build_webui("build") {
       "cr_spinner_style.css",
       "cr_toolbar/cr_toolbar_selection_overlay.css",
       "md_select.css",
-      "mwb_element_shared_style.css",
       "mwb_element_shared_style_lit.css",
-      "mwb_shared_style.css",
       "mwb_shared_style_lit.css",
       "policy/cr_policy_indicator.css",
       "search_highlight_style.css",

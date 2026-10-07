@@ -4,7 +4,6 @@
 
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_tooltip/cr_tooltip.js';
-import '//resources/cr_elements/md_select.css.js';
 
 import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import type {CrTooltipElement} from '//resources/cr_elements/cr_tooltip/cr_tooltip.js';

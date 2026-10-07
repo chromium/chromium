@@ -4,9 +4,7 @@
 
 import '../controls/settings_toggle_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../settings_page/settings_section.js';
-import '../settings_shared.css.js';
 import './tab_discard/exception_list.js';
 
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
