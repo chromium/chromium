@@ -821,6 +821,7 @@ source_set("platform_browser_tests") {
     "//chrome/browser/ssl:platform_browser_tests",
     "//chrome/browser/task_manager:browser_tests",
     "//chrome/browser/usb:platform_browser_tests",
+    "//chrome/common/profiler:platform_browser_tests",
     "//chrome/renderer:platform_browser_tests",
   ]
 
@@ -1175,8 +1176,6 @@ if (is_android) {
     # "strip_debug" config that strips the debug info, on android_browsertests
     # apk.
     if (enable_arm_cfi_table) {
-      sources += [ "../common/profiler/thread_profiler_browsertest.cc" ]
-
       configs -= [ "//build/config/compiler:default_symbols" ]
       if (symbol_level == 2) {
         configs += [ "//build/config/compiler:symbols" ]
@@ -2827,15 +2826,9 @@ if (!is_android) {
         "//ui/color:accent_color_observer",
         "//ui/resources",
       ]
-
-      if (target_cpu == "x64") {
-        sources += [ "../common/profiler/thread_profiler_browsertest.cc" ]
-      }
     }
 
     if (is_mac) {
-      sources += [ "../common/profiler/thread_profiler_browsertest.cc" ]
-
       data_deps += [
         "//chrome",
         "//chrome:chrome_framework",

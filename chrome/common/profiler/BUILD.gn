@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/compiler/compiler.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 source_set("profiler") {
@@ -92,5 +93,30 @@ source_set("unit_tests") {
 
   if (enable_extensions_core) {
     deps += [ "//extensions/common" ]
+  }
+}
+
+# Included in both browser_tests and android_browsertests.
+source_set("platform_browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  if ((is_win && target_cpu == "x64") || is_mac || enable_arm_cfi_table) {
+    sources = [ "thread_profiler_browsertest.cc" ]
+
+    deps = [
+      ":profiler",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/common:channel_info",
+      "//chrome/common:constants",
+      "//chrome/test:test_support",
+      "//components/metrics",
+      "//components/version_info",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//third_party/metrics_proto",
+    ]
   }
 }
