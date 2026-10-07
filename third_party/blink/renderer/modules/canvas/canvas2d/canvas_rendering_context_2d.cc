@@ -1260,7 +1260,6 @@ void CanvasRenderingContext2D::RecreateResourceProvider() {
 
   if (canvas()->IsValidImageSize()) {
     CreateProvider();
-    canvas()->UpdateMemoryUsage();
   }
 
   if (!HasResourceProvider()) {
