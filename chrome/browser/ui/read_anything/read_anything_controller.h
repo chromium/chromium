@@ -31,6 +31,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "pdf/buildflags.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace content {
@@ -43,6 +44,16 @@ struct NativeWebKeyboardEvent;
 }  // namespace input
 
 class ReadAnythingController;
+
+#if BUILDFLAG(ENABLE_PDF)
+class GURL;
+
+// Returns `pdf_url` with the `view` open-PDF parameter in its fragment set to
+// "FitH" (fit to width). Any existing `view` parameters are replaced by a
+// single one at the end; all other fragment parameters are preserved. Exposed
+// for testing.
+GURL GetPdfUrlWithFitToWidth(const GURL& pdf_url);
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 // A helper class to observe a specific WebContents, so the ReadAnything
 // Controller can observe multiple WebContents. Event callbacks are configured

@@ -83,6 +83,13 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_utils.h"
 
+#if BUILDFLAG(ENABLE_PDF)
+#include "chrome/browser/pdf/pdf_extension_test_util.h"
+#include "chrome/common/extensions/api/pdf_viewer_private.h"
+#include "extensions/browser/event_router.h"
+#include "extensions/browser/test_event_router_observer.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
+
 using read_anything::mojom::ReadAnythingOpenTrigger;
 
 class MockReadAnythingLifecycleObserver : public ReadAnythingLifecycleObserver {
@@ -233,6 +240,28 @@ class ReadAnythingControllerBrowserTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+#if BUILDFLAG(ENABLE_PDF)
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       ShowSidePanelUI_PdfTranslation_DispatchesFitToWidth) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
+
+  extensions::TestEventRouterObserver observer(
+      extensions::EventRouter::Get(browser()->GetProfile()));
+
+  auto* controller = ReadAnythingController::From(
+      browser()->GetTabStripModel()->GetActiveTab());
+  ASSERT_TRUE(controller);
+  controller->ShowSidePanelUI(SidePanelOpenTrigger::kPdfTranslation);
+
+  observer.WaitForEventWithName(
+      extensions::api::pdf_viewer_private::OnShouldUpdateViewport::kEventName);
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
                        ShowImmersiveUI_NotifiesObservers) {

@@ -48,9 +48,37 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_PDF)
+#include <string>
+#include <vector>
+
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
+#include "chrome/browser/pdf/pdf_extension_util.h"
 #include "components/translate/content/browser/content_translate_driver.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
+
+#if BUILDFLAG(ENABLE_PDF)
+GURL GetPdfUrlWithFitToWidth(const GURL& pdf_url) {
+  std::vector<std::string> params =
+      base::SplitString(pdf_url.ref(), "&", base::KEEP_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
+
+  // Replace any existing view params, including duplicates, with a single one.
+  std::erase_if(params, [](const std::string& param) {
+    return param == "view" || base::StartsWith(param, "view=");
+  });
+  params.push_back("view=FitH");
+
+  // `Replacements` doesn't own the string, so it must outlive
+  // `ReplaceComponents()`.
+  const std::string ref = base::JoinString(params, "&");
+  GURL::Replacements replacements;
+  replacements.SetRefStr(ref);
+  return pdf_url.ReplaceComponents(replacements);
+}
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -268,6 +296,19 @@ void ReadAnythingController::OnEntryShown(ReadAnythingOpenTrigger trigger) {
   }
 
   MaybeUpdateFindBarController();
+
+#if BUILDFLAG(ENABLE_PDF)
+  // When Reading Mode opens for PDF translation, the PDF viewer's viewport
+  // becomes narrower, so fit the PDF to the new width.
+  if (trigger == ReadAnythingOpenTrigger::kPdfTranslation) {
+    content::WebContents* contents = tab_->GetContents();
+    if (contents && contents->GetPrimaryMainFrame()) {
+      pdf_extension_util::DispatchShouldUpdateViewportEvent(
+          contents->GetPrimaryMainFrame(),
+          GetPdfUrlWithFitToWidth(contents->GetLastCommittedURL()));
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
 }
 
 void ReadAnythingController::OnEntryHidden() {
