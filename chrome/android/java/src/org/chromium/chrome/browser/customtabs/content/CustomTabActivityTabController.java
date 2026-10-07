@@ -346,7 +346,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         // We may have tried to close the tab before native initialization completed (in the case of
         // a pre-render or early navigation).
         if (tab.didCloseWhileDetached()) {
-            tabModelSelector.tryCloseTab(
+            tabModelSelector.closeTab(
                     TabClosureParams.closeTab(tab).allowUndo(/* allowUndo= */ false).build());
         }
     }

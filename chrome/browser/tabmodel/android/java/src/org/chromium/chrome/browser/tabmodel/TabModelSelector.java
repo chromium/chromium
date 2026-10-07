@@ -135,8 +135,7 @@ public interface TabModelSelector {
      *
      * @param tabClosureParams A {@link TabClosureParams} for a single tab.
      */
-    // TODO(crbug.com/517544602): Rename to better reflect behavior (e.g. closeTab).
-    void tryCloseTab(TabClosureParams tabClosureParams);
+    void closeTab(TabClosureParams tabClosureParams);
 
     /** Get total tab count across all tab models */
     int getTotalTabCount();

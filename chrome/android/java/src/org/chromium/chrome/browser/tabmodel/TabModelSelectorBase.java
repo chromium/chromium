@@ -270,11 +270,11 @@ public abstract class TabModelSelectorBase
     }
 
     @Override
-    public void tryCloseTab(TabClosureParams tabClosureParams) {
+    public void closeTab(TabClosureParams tabClosureParams) {
         if (tabClosureParams.tabs == null
                 || tabClosureParams.tabs.size() != 1
                 || tabClosureParams.tabCloseType != TabCloseType.SINGLE) {
-            assert false : "Invalid tab closure params received for tryCloseTab.";
+            assert false : "Invalid tab closure params received for closeTab.";
             return;
         }
         Tab tab = tabClosureParams.tabs.get(0);

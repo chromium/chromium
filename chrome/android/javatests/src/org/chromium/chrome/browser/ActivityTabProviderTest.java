@@ -230,7 +230,7 @@ public class ActivityTabProviderTest {
         int callCount = mActivityTabChangedHelper.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    selector.tryCloseTab(
+                    selector.closeTab(
                             TabClosureParams.closeTab(getModelSelectedTab())
                                     .allowUndo(/* allowUndo= */ false)
                                     .build());
@@ -298,7 +298,7 @@ public class ActivityTabProviderTest {
                 () -> {
                     mActivity
                             .getTabModelSelector()
-                            .tryCloseTab(
+                            .closeTab(
                                     TabClosureParams.closeTab(startingTab)
                                             .allowUndo(/* allowUndo= */ false)
                                             .build());

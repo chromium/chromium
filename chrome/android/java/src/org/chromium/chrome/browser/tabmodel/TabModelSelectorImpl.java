@@ -283,7 +283,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase {
 
                     @Override
                     public void onCloseContents(Tab tab) {
-                        tryCloseTab(
+                        closeTab(
                                 TabClosureParams.closeTab(tab)
                                         .allowUndo(/* allowUndo= */ false)
                                         .build());

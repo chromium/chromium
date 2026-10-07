@@ -176,7 +176,7 @@ public class TabbedOpenInAppEntryPointUnitTest {
         ShadowLooper.idleMainLooper();
         ArgumentCaptor<TabClosureParams> closureParamsCaptor =
                 ArgumentCaptor.forClass(TabClosureParams.class);
-        verify(mTabModelSelector).tryCloseTab(closureParamsCaptor.capture());
+        verify(mTabModelSelector).closeTab(closureParamsCaptor.capture());
         assertEquals(TabClosingSource.OPEN_IN_APP, closureParamsCaptor.getValue().tabClosingSource);
 
         when(mOmniboxChipManager.isChipPlaced()).thenReturn(true);
@@ -235,14 +235,14 @@ public class TabbedOpenInAppEntryPointUnitTest {
                         eq(mIntent), eq(123L), eq(mContext), confirmationCaptor.capture());
 
         // Tab should not be closed yet.
-        verify(mTabModelSelector, never()).tryCloseTab(any());
+        verify(mTabModelSelector, never()).closeTab(any());
 
         // Simulate user confirmation in the dialog.
         confirmationCaptor.getValue().run();
         ShadowLooper.idleMainLooper();
         ArgumentCaptor<TabClosureParams> closureParamsCaptor =
                 ArgumentCaptor.forClass(TabClosureParams.class);
-        verify(mTabModelSelector).tryCloseTab(closureParamsCaptor.capture());
+        verify(mTabModelSelector).closeTab(closureParamsCaptor.capture());
         assertEquals(TabClosingSource.OPEN_IN_APP, closureParamsCaptor.getValue().tabClosingSource);
     }
 

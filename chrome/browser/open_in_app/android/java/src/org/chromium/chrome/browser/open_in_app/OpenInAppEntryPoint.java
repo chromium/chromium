@@ -304,7 +304,7 @@ public abstract class OpenInAppEntryPoint implements OpenInAppMenuItemProvider {
                                                 TabModelSelectorSupplier.getValueOrNullFrom(
                                                         tab.getWindowAndroid());
                                         if (tabModelSelector == null) return;
-                                        tabModelSelector.tryCloseTab(
+                                        tabModelSelector.closeTab(
                                                 TabClosureParams.closeTab(tab)
                                                         .allowUndo(/* allowUndo= */ false)
                                                         .tabClosingSource(

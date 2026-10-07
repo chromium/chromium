@@ -166,7 +166,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
         if (mTabModelSelectorSupplier == null) return;
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
         if (tabModelSelector == null) return;
-        tabModelSelector.tryCloseTab(
+        tabModelSelector.closeTab(
                 TabClosureParams.closeTab(mTab).allowUndo(/* allowUndo= */ false).build());
     }
 
