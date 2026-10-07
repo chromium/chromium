@@ -222,10 +222,18 @@ net::EmbeddedTestServer* XrBrowserTestBase::GetEmbeddedServer() {
   if (server_ == nullptr) {
     server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::Type::TYPE_HTTPS);
+    // Use a runtime-generated root CA certificate rather than the static
+    // root_ca_cert.pem so that certificate verification succeeds even if a
+    // test device's system clock is skewed relative to root_ca_cert.pem's
+    // hardcoded validity period.
+    net::EmbeddedTestServer::ServerCertificateConfig cert_config;
+    cert_config.root = net::EmbeddedTestServer::RootType::kUniqueRoot;
+    server_->SetSSLConfig(cert_config);
     // We need to serve from the root in order for the inclusion of the
     // test harness from //third_party to work.
     server_->ServeFilesFromSourceDirectory(".");
     EXPECT_TRUE(server_->Start()) << "Failed to start embedded test server";
+    scoped_test_root_.Reset({server_->GetRoot()});
   }
   return server_.get();
 }
@@ -303,11 +311,19 @@ void XrBrowserTestBase::CloseTab(content::WebContents* web_contents) {
 void XrBrowserTestBase::LoadFileAndAwaitInitialization(
     const std::string& test_name) {
   OnBeforeLoadFile();
-  GURL url = GetUrlForFile(test_name);
-  ASSERT_TRUE(content::NavigateToURL(GetCurrentWebContents(), url));
-  ASSERT_TRUE(PollJavaScriptBoolean("isInitializationComplete()",
-                                    kPollTimeoutMedium,
-                                    GetCurrentWebContents()))
+  const GURL url = GetUrlForFile(test_name);
+  const bool navigated = content::NavigateToURL(GetCurrentWebContents(), url);
+  if (!navigated) {
+    javascript_failed_ = true;
+  }
+  ASSERT_TRUE(navigated);
+  const bool initialized =
+      PollJavaScriptBoolean("isInitializationComplete()", kPollTimeoutMedium,
+                            GetCurrentWebContents());
+  if (!initialized) {
+    javascript_failed_ = true;
+  }
+  ASSERT_TRUE(initialized)
       << "Timed out waiting for JavaScript test initialization.";
 
 #if BUILDFLAG(IS_WIN)
@@ -326,8 +342,12 @@ void XrBrowserTestBase::RunJavaScriptOrFail(
     return;
   }
 
-  ASSERT_TRUE(content::ExecJs(web_contents, js_expression))
-      << "Failed to run given JavaScript: " << js_expression;
+  const testing::AssertionResult result =
+      content::ExecJs(web_contents, js_expression);
+  if (!result) {
+    javascript_failed_ = true;
+  }
+  ASSERT_TRUE(result) << "Failed to run given JavaScript: " << js_expression;
 }
 
 bool XrBrowserTestBase::RunJavaScriptAndExtractBoolOrFail(
@@ -339,7 +359,15 @@ bool XrBrowserTestBase::RunJavaScriptAndExtractBoolOrFail(
   }
 
   DLOG(INFO) << "Run JavaScript: " << js_expression;
-  return content::EvalJs(web_contents, js_expression).ExtractBool();
+  const content::EvalJsResult result =
+      content::EvalJs(web_contents, js_expression);
+  if (!result.is_bool()) {
+    javascript_failed_ = true;
+    ADD_FAILURE() << "Failed to evaluate boolean JavaScript: " << js_expression
+                  << " result: " << result;
+    return false;
+  }
+  return result.ExtractBool();
 }
 
 std::string XrBrowserTestBase::RunJavaScriptAndExtractStringOrFail(
@@ -350,13 +378,25 @@ std::string XrBrowserTestBase::RunJavaScriptAndExtractStringOrFail(
     return "";
   }
 
-  return content::EvalJs(web_contents, js_expression).ExtractString();
+  const content::EvalJsResult result =
+      content::EvalJs(web_contents, js_expression);
+  if (!result.is_string()) {
+    javascript_failed_ = true;
+    ADD_FAILURE() << "Failed to evaluate string JavaScript: " << js_expression
+                  << " result: " << result;
+    return "";
+  }
+  return result.ExtractString();
 }
 
 bool XrBrowserTestBase::PollJavaScriptBoolean(
     const std::string& bool_expression,
     const base::TimeDelta& timeout,
     content::WebContents* web_contents) {
+  if (javascript_failed_) {
+    LogJavaScriptFailure();
+    return false;
+  }
   bool result = false;
   base::RunLoop wait_loop(base::RunLoop::Type::kNestableTasksAllowed);
   // Lambda used because otherwise BindRepeating gets confused about which
@@ -377,8 +417,17 @@ void XrBrowserTestBase::PollJavaScriptBooleanOrFail(
     const std::string& bool_expression,
     const base::TimeDelta& timeout,
     content::WebContents* web_contents) {
-  ASSERT_TRUE(PollJavaScriptBoolean(bool_expression, timeout, web_contents))
-      << "Timed out polling JavaScript boolean expression: " << bool_expression;
+  if (javascript_failed_) {
+    LogJavaScriptFailure();
+    return;
+  }
+  const bool result =
+      PollJavaScriptBoolean(bool_expression, timeout, web_contents);
+  if (!result) {
+    javascript_failed_ = true;
+  }
+  ASSERT_TRUE(result) << "Timed out polling JavaScript boolean expression: "
+                      << bool_expression;
 }
 
 void XrBrowserTestBase::BlockOnCondition(
