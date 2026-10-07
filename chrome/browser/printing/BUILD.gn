@@ -356,10 +356,7 @@ if (enable_printing) {
 
       if (enable_pdf) {
         sources += [ "pdf_nup_converter_client_browsertest.cc" ]
-        deps += [
-          "//chrome/browser/ui",
-          "//pdf",
-        ]
+        deps += [ "//pdf" ]
       }
 
       if (enable_print_preview) {

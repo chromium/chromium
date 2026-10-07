@@ -29,7 +29,6 @@ if (!is_android) {
       "//chrome/browser/preloading",
       "//chrome/browser/preloading/prerender",
       "//chrome/browser/search_engines",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/browser_window",
       "//chrome/common:channel_info",

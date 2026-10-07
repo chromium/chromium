@@ -54,7 +54,6 @@ source_set("browser_tests") {
     "//chrome/browser/safe_browsing",
     "//chrome/browser/safe_browsing:test_support",
     "//chrome/browser/ssl",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/views/page_info",
     "//chrome/test:test_support",
     "//components/prefs",

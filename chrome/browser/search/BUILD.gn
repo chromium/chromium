@@ -207,7 +207,6 @@ if (!is_android) {
       "//chrome/browser/optimization_guide:test_support",
       "//chrome/browser/search/background",
       "//chrome/browser/search_engines",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/search",
       "//chrome/test:test_support",

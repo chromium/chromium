@@ -94,6 +94,5 @@ source_set("browser_tests") {
       "pwc_navigation_throttle_browsertest.cc",
       "pwc_security_browsertest.cc",
     ]
-    deps += [ "//chrome/browser/ui" ]
   }
 }

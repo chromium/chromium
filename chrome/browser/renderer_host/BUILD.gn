@@ -47,7 +47,6 @@ if (is_mac) {
     frameworks = [ "Cocoa.framework" ]
 
     deps = [
-      "//chrome/browser/ui",
       "//chrome/browser/ui/cocoa",
       "//third_party/blink/public/common:headers",
     ]
@@ -99,7 +98,6 @@ if (is_mac) {
       "//chrome/browser/actor/ui:actor_overlay",
       "//chrome/browser/devtools",
       "//chrome/browser/glic",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_commands",
       "//components/spellcheck/browser",
     ]
@@ -126,7 +124,6 @@ if (!is_android) {
       "//chrome/browser/search",
       "//chrome/browser/site_protection",
       "//chrome/browser/site_protection:utils",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:singleton_tabs",

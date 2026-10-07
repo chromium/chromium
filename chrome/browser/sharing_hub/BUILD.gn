@@ -37,7 +37,6 @@ source_set("impl") {
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/send_tab_to_self",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/navigator",

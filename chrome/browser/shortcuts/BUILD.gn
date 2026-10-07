@@ -149,7 +149,6 @@ if (!is_chromeos) {
       "//chrome/browser",
       "//chrome/browser:browser_process",
       "//chrome/browser/profiles",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/startup",

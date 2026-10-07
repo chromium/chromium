@@ -38,7 +38,6 @@ if (enable_extensions) {
       "//base/test:test_support",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/common:constants",

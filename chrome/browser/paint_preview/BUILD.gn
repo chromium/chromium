@@ -46,7 +46,6 @@ if (!is_android && enable_paint_preview) {
     deps = [
       "//base",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//components/paint_preview/browser",

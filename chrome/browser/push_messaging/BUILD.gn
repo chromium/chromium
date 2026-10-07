@@ -96,7 +96,6 @@ source_set("impl") {
 
   if (!is_android) {
     deps += [
-      "//chrome/browser/ui",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui/tabs:tab_strip",
       "//components/keep_alive_registry",
@@ -135,7 +134,6 @@ if (!is_android) {
       "//chrome/browser/gcm",
       "//chrome/browser/permissions",
       "//chrome/browser/permissions:test_support",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window",
       "//chrome/test:test_support",
       "//components/browsing_data/content",
