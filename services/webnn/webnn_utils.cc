@@ -333,24 +333,10 @@ std::string NotSupportedOperatorError(const mojom::ElementWiseUnary& op) {
   return base::StrCat({"Unsupported operator ", OpKindToString(op.kind), "."});
 }
 
-std::string NotSupportedArgumentTypeError(std::string_view op_name,
-                                          std::string_view argument_name,
-                                          OperandDataType type) {
-  return base::StrCat({"Unsupported data type ", DataTypeToString(type),
-                       " for ", op_name, " argument ", argument_name, "."});
-}
-
 std::string NotSupportedInputArgumentTypeError(std::string_view op_name,
                                                OperandDataType type) {
   return base::StrCat({"Unsupported data type ", DataTypeToString(type),
                        " for ", op_name, " argument input."});
-}
-
-std::string NotSupportedOptionTypeError(std::string_view op_name,
-                                        std::string_view option_name,
-                                        OperandDataType type) {
-  return base::StrCat({"Unsupported data type ", DataTypeToString(type),
-                       " for ", op_name, " option ", option_name});
 }
 
 std::vector<uint32_t> PermuteArray(base::span<const uint32_t> array,

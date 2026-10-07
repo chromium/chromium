@@ -39,19 +39,11 @@ std::string COMPONENT_EXPORT(WEBNN_SERVICE)
     NotSupportedOperatorError(const mojom::Operation& op);
 std::string COMPONENT_EXPORT(WEBNN_SERVICE)
     NotSupportedOperatorError(const mojom::ElementWiseUnary& op);
-// TODO: crbug.com/345271830 - remove these after all data type error reports
+// TODO: crbug.com/345271830 - remove this after all data type error reports
 // are moved to blink.
-std::string COMPONENT_EXPORT(WEBNN_SERVICE)
-    NotSupportedArgumentTypeError(std::string_view op_name,
-                                  std::string_view argument_name,
-                                  OperandDataType type);
 std::string COMPONENT_EXPORT(WEBNN_SERVICE)
     NotSupportedInputArgumentTypeError(std::string_view op_name,
                                        OperandDataType type);
-std::string COMPONENT_EXPORT(WEBNN_SERVICE)
-    NotSupportedOptionTypeError(std::string_view op_name,
-                                std::string_view option_name,
-                                OperandDataType type);
 
 // The length of `permutation` must be the same as `array`. The values in
 // `permutation` must be within the range [0, N-1] where N is the length of
