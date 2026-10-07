@@ -27,7 +27,9 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_path.h"
 #include "third_party/blink/renderer/core/svg/svg_mpath_element.h"
 #include "third_party/blink/renderer/core/svg/svg_path.h"
+#include "third_party/blink/renderer/core/svg/svg_path_data.h"
 #include "third_party/blink/renderer/core/svg/svg_path_query.h"
+#include "third_party/blink/renderer/core/svg/svg_path_segments_builder.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
 #include "third_party/blink/renderer/core/svg/svg_point_tear_off.h"
 #include "third_party/blink/renderer/core/svg/svg_zoom_migration.h"
@@ -150,6 +152,32 @@ void SVGPathElement::setPathData(
   }
   setAttribute(svg_names::kDAttr, AtomicString(BuildStringFromByteStream(
                                       byte_stream, kNoTransformation)));
+}
+
+SVGPathSegment* SVGPathElement::getPathSegmentAtLength(float distance) {
+  GetDocument().UpdateStyleAndLayoutForNode(this,
+                                            DocumentUpdateReason::kJavaScript);
+  EnsureComputedStyle();
+  const SVGPathByteStream& byte_stream = PathByteStream();
+  if (byte_stream.IsEmpty()) {
+    return nullptr;
+  }
+
+  // `distance` must be clamped to [0, total length].
+  SVGPathQuery path_query(byte_stream);
+  if (distance < 0) {
+    distance = 0;
+  } else {
+    distance = std::min(distance, path_query.GetTotalLength());
+  }
+
+  SVGPathSegmentsBuilder builder;
+  PathSegmentData segment_data = path_query.GetSegmentAtLength(distance);
+  builder.EmitSegment(segment_data);
+
+  HeapVector<Member<SVGPathSegment>> result = builder.Finalize();
+  CHECK_GT(result.size(), 0u);
+  return result[0].Get();
 }
 
 void SVGPathElement::DidRecalcStyle(const StyleRecalcChange change) {

@@ -18,4 +18,6 @@ interface mixin SVGPathData {
   sequence<SVGPathSegment> getPathData(optional SVGPathDataSettings settings = {});
   [MeasureAs=SVGPathElementSetPathData, RuntimeEnabled=SVGPathDataAPI]
   undefined setPathData(sequence<SVGPathSegment> pathData);
+  [MeasureAs=SVGPathElementGetPathSegmentAtLength, RuntimeEnabled=SVGPathDataAPI]
+  SVGPathSegment? getPathSegmentAtLength(float distance);
 };

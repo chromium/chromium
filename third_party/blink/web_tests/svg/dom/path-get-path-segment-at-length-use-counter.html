@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<title>SVGPathElement.getPathSegmentAtLength() use counter</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<svg>
+  <path id="path" d="M 0 0 L 10 10"/>
+</svg>
+<script>
+// Must match WebFeature value in
+// third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.
+const kSVGPathElementGetPathSegmentAtLength = 6038;
+
+test(() => {
+  assert_true(!!window.internals,
+              'window.internals is required for this test');
+  assert_true('getPathSegmentAtLength' in SVGPathElement.prototype,
+              'SVGPathDataAPI must be enabled for this test to run');
+
+  const path = document.getElementById('path');
+
+  internals.clearUseCounter(document, kSVGPathElementGetPathSegmentAtLength);
+  assert_false(
+      internals.isUseCounted(document, kSVGPathElementGetPathSegmentAtLength),
+      'baseline');
+
+  path.getPathSegmentAtLength(5);
+  assert_true(
+      internals.isUseCounted(document, kSVGPathElementGetPathSegmentAtLength),
+      'getPathSegmentAtLength() should trigger ' +
+          'SVGPathElementGetPathSegmentAtLength');
+}, 'SVGPathElement.getPathSegmentAtLength() triggers ' +
+       'SVGPathElementGetPathSegmentAtLength');
+</script>

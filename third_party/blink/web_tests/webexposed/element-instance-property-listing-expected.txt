@@ -2283,6 +2283,7 @@ svg element path
     property getBBox
     property getCTM
     property getPathData
+    property getPathSegmentAtLength
     property getPointAtLength
     property getScreenCTM
     property getTotalLength

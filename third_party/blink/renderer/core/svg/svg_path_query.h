@@ -31,6 +31,7 @@ class PointF;
 namespace blink {
 
 class SVGPathByteStream;
+struct PathSegmentData;
 
 class CORE_EXPORT SVGPathQuery {
   STACK_ALLOCATED();
@@ -40,6 +41,7 @@ class CORE_EXPORT SVGPathQuery {
 
   float GetTotalLength() const;
   gfx::PointF GetPointAtLength(float length) const;
+  PathSegmentData GetSegmentAtLength(float length) const;
 
  private:
   const SVGPathByteStream& path_byte_stream_;

@@ -9053,6 +9053,7 @@ interface SVGPathElement : SVGGeometryElement
     attribute @@toStringTag
     method constructor
     method getPathData
+    method getPathSegmentAtLength
     method setPathData
 interface SVGPatternElement : SVGElement
     attribute @@toStringTag

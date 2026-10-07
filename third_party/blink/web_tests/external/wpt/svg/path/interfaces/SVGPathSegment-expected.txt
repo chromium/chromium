@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] SVGPathSegment interface exists
-  assert_not_equals: got disallowed value undefined
-Harness: the test ran to completion.
-
