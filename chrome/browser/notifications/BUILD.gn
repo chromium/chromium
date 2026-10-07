@@ -112,6 +112,7 @@ source_set("notifications") {
   if (is_win) {
     public += [
       "notification_platform_bridge_win.h",
+      "win/notification_image_retainer.h",
       "win/notification_launch_id.h",
       "win/notification_metrics.h",
       "win/notification_template_builder.h",
@@ -299,6 +300,7 @@ source_set("impl") {
   if (is_win) {
     sources += [
       "notification_platform_bridge_win.cc",
+      "win/notification_image_retainer.cc",
       "win/notification_launch_id.cc",
       "win/notification_metrics.cc",
       "win/notification_template_builder.cc",
@@ -509,6 +511,7 @@ source_set("unit_tests") {
       "win/fake_notification_image_retainer.cc",
       "win/fake_notification_image_retainer.h",
       "win/notification_helper_launches_chrome_unittest.cc",
+      "win/notification_image_retainer_unittest.cc",
       "win/notification_launch_id_unittest.cc",
       "win/notification_template_builder_unittest.cc",
     ]

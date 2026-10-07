@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/notifications/notification_image_retainer.h"
+#include "chrome/browser/notifications/win/notification_image_retainer.h"
 
 #include <algorithm>
 #include <set>
@@ -68,8 +68,9 @@ std::vector<base::FilePath> GetFilesFromPrevSessions(
 void DeleteFiles(std::vector<base::FilePath> paths) {
   // |file_path| can be a directory, created by the old implementation, so
   // delete it recursively.
-  for (const auto& file_path : paths)
+  for (const auto& file_path : paths) {
     base::DeletePathRecursively(file_path);
+  }
 }
 
 }  // namespace
@@ -104,8 +105,9 @@ void NotificationImageRetainer::CleanupFilesFromPrevSessions() {
   // Store all file names from registered_images in an ordered set for quick
   // search.
   std::set<base::FilePath> registered_names;
-  for (const auto& pair : registered_images_)
+  for (const auto& pair : registered_images_) {
     registered_names.insert(pair.first);
+  }
 
   std::vector<base::FilePath> files =
       GetFilesFromPrevSessions(image_dir_, registered_names);
@@ -123,18 +125,21 @@ base::FilePath NotificationImageRetainer::RegisterTemporaryImage(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   scoped_refptr<base::RefCountedMemory> data = image.As1xPNGBytes();
-  if (data->size() == 0)
+  if (data->size() == 0) {
     return base::FilePath();
+  }
 
   // Create the image directory. Since Chrome doesn't delete this directory
   // after showing notifications, this directory creation should happen exactly
   // once until Chrome is re-installed.
-  if (!base::CreateDirectory(image_dir_))
+  if (!base::CreateDirectory(image_dir_)) {
     return base::FilePath();
+  }
 
   base::FilePath temp_file;
-  if (!base::CreateTemporaryFileInDir(image_dir_, &temp_file))
+  if (!base::CreateTemporaryFileInDir(image_dir_, &temp_file)) {
     return base::FilePath();
+  }
 
   const base::TimeTicks now = tick_clock_->NowTicks();
   DCHECK(registered_images_.empty() || now >= registered_images_.back().second);
@@ -175,14 +180,16 @@ void NotificationImageRetainer::DeleteExpiredFiles() {
                        [](const NameAndTime& a, const NameAndTime& b) {
                          return a.second < b.second;
                        });
-  if (end == registered_images_.begin())
+  if (end == registered_images_.begin()) {
     return;  // Nothing to delete yet.
+  }
 
   // Ship the files to be deleted off to the deletion task runner.
   std::vector<base::FilePath> files_to_delete;
   files_to_delete.reserve(end - registered_images_.begin());
-  for (auto iter = registered_images_.begin(); iter < end; ++iter)
+  for (auto iter = registered_images_.begin(); iter < end; ++iter) {
     files_to_delete.push_back(image_dir_.Append(iter->first));
+  }
 
   deletion_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&DeleteFiles, std::move(files_to_delete)));
@@ -191,6 +198,7 @@ void NotificationImageRetainer::DeleteExpiredFiles() {
   registered_images_.erase(registered_images_.begin(), end);
 
   // Stop the recurring timer if all files have been deleted.
-  if (registered_images_.empty())
+  if (registered_images_.empty()) {
     deletion_timer_.Stop();
+  }
 }
