@@ -9937,12 +9937,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.UDPSocketWinClose" units="ms" expires_after="2024-03-24">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>The time spent in closesocket call in UDPSocketWin::Close.</summary>
-</histogram>
-
 <histogram name="Net.URLLoader.AcceptCH.NeedsObserverCheck" enum="Boolean"
     expires_after="2026-08-09">
   <owner>yyanagisawa@chromium.org</owner>

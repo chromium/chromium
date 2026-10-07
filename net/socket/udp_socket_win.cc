@@ -385,10 +385,7 @@ void UDPSocketWin::Close() {
   recv_from_address_ = nullptr;
   write_callback_.Reset();
 
-  base::TimeTicks start_time = base::TimeTicks::Now();
   closesocket(socket_);
-  UMA_HISTOGRAM_TIMES("Net.UDPSocketWinClose",
-                      base::TimeTicks::Now() - start_time);
   socket_ = INVALID_SOCKET;
   addr_family_ = 0;
   is_connected_ = false;
