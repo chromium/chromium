@@ -1209,9 +1209,6 @@ bool CanvasRenderingContext2D::InitializeResourceProvider() {
 void CanvasRenderingContext2D::ResetResourceProvider() {
   BaseRenderingContext2D::ResetResourceProvider();
   last_recording_ = std::nullopt;
-  if (canvas()) {
-    canvas()->UpdateMemoryUsage();
-  }
 }
 
 void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {

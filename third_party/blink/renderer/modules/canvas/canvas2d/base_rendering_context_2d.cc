@@ -220,6 +220,9 @@ void BaseRenderingContext2D::ResetResourceProvider() {
     context_provider_wrapper_->RemoveObserver(this);
     context_provider_wrapper_.reset();
   }
+  if (Host()) {
+    Host()->UpdateMemoryUsage();
+  }
 }
 
 bool BaseRenderingContext2D::IsPaintable() const {
