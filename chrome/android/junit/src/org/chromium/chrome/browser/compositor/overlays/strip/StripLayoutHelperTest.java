@@ -358,155 +358,85 @@ public class StripLayoutHelperTest {
 
     @Test
     public void testFadeWidths_Ltr() {
-        // Setup
-        initializeTest(/* tabIndex= */ 0);
-
-        // Verify start fade.
-        float expectedStartGradient = StripLayoutHelper.NO_BUTTON_FADE_GRADIENT_WIDTH_DP;
-        float expectedStartOpaque = StripLayoutHelper.NO_BUTTON_FADE_OPAQUE_WIDTH_DP;
-        float expectedStartWidth = expectedStartGradient + expectedStartOpaque;
-        assertEquals(
-                "Left fade gradient width is incorrect.",
-                expectedStartGradient,
-                mStripLayoutHelper.getLeftFadeGradientWidth(),
-                EPSILON);
-        assertEquals(
-                "Left fade opaque width is incorrect.",
-                expectedStartOpaque,
-                mStripLayoutHelper.getLeftFadeOpaqueWidth(),
-                EPSILON);
-        assertEquals(
-                "Left fade width is incorrect.",
-                expectedStartWidth,
-                mStripLayoutHelper.getLeftFadeWidthForTesting(),
-                EPSILON);
-
-        // Verify end fade.
-        float expectedEndGradient = StripLayoutHelper.BUTTON_FADE_GRADIENT_SHORT_WIDTH_DP;
-        // End fade: 32 (NTB) + 2*8 (padding) + 24 (short gradient) = 72
-        float expectedEndWidth = 48 + expectedEndGradient;
-        float expectedEndOpaque = expectedEndWidth - expectedEndGradient;
-        assertEquals(
-                "Right fade gradient width is incorrect.",
-                expectedEndGradient,
-                mStripLayoutHelper.getRightFadeGradientWidth(),
-                EPSILON);
-        assertEquals(
-                "Right fade width is incorrect.",
-                expectedEndWidth,
-                mStripLayoutHelper.getRightFadeWidthForTesting(),
-                EPSILON);
-        assertEquals(
-                "Right fade opaque width is incorrect.",
-                expectedEndOpaque,
-                mStripLayoutHelper.getRightFadeOpaqueWidth(),
-                EPSILON);
+        doTestFadeWidths(/* rtl= */ false);
     }
 
     @Test
     public void testFadeWidths_Rtl() {
-        // Setup
-        initializeTest(
-                /* rtl= */ true, /* incognito= */ false, /* tabIndex= */ 0, /* numTabs= */ 5);
-
-        // Verify start fade.
-        float expectedStartGradient = StripLayoutHelper.NO_BUTTON_FADE_GRADIENT_WIDTH_DP;
-        float expectedStartOpaque = StripLayoutHelper.NO_BUTTON_FADE_OPAQUE_WIDTH_DP;
-        float expectedStartWidth = expectedStartGradient + expectedStartOpaque;
-        assertEquals(
-                "Right fade gradient width is incorrect.",
-                expectedStartGradient,
-                mStripLayoutHelper.getRightFadeGradientWidth(),
-                EPSILON);
-        assertEquals(
-                "Right fade opaque width is incorrect.",
-                expectedStartOpaque,
-                mStripLayoutHelper.getRightFadeOpaqueWidth(),
-                EPSILON);
-        assertEquals(
-                "Right fade width is incorrect.",
-                expectedStartWidth,
-                mStripLayoutHelper.getRightFadeWidthForTesting(),
-                EPSILON);
-
-        // Verify end fade.
-        float expectedEndGradient = StripLayoutHelper.BUTTON_FADE_GRADIENT_SHORT_WIDTH_DP;
-        // End fade: 32 (NTB) + 2*8 (padding) + 24 (short gradient) = 72
-        float expectedEndWidth = 48 + expectedEndGradient;
-        float expectedEndOpaque = expectedEndWidth - expectedEndGradient;
-        assertEquals(
-                "Left fade gradient width is incorrect.",
-                expectedEndGradient,
-                mStripLayoutHelper.getLeftFadeGradientWidth(),
-                EPSILON);
-        assertEquals(
-                "Left fade width is incorrect.",
-                expectedEndWidth,
-                mStripLayoutHelper.getLeftFadeWidthForTesting(),
-                EPSILON);
-        assertEquals(
-                "Left fade opaque width is incorrect.",
-                expectedEndOpaque,
-                mStripLayoutHelper.getLeftFadeOpaqueWidth(),
-                EPSILON);
+        doTestFadeWidths(/* rtl= */ true);
     }
 
     @Test
     public void testFadeWidths_Ltr_WithButtons() {
-        // Setup
-        initializeTest(/* tabIndex= */ 0);
-        mStripLayoutHelper.updateEndMarginForStripButtons(
-                /* trailingButtonsTouchTargetSize= */ 48f);
-
-        // Verify end fade.
-        float expectedEndGradient = StripLayoutHelper.BUTTON_FADE_GRADIENT_LONG_WIDTH_DP;
         // End fade: 32 (NTB) + 16 (glic) + 32 (MSB) + 2*8 (padding) + 32 (long gradient) = 128
-        float expectedEndWidth = 96 + expectedEndGradient;
-        float expectedEndOpaque = expectedEndWidth - expectedEndGradient;
-        assertEquals(
-                "Right fade gradient width is incorrect.",
-                expectedEndGradient,
-                mStripLayoutHelper.getRightFadeGradientWidth(),
-                EPSILON);
-        assertEquals(
-                "Right fade width is incorrect.",
-                expectedEndWidth,
-                mStripLayoutHelper.getRightFadeWidthForTesting(),
-                EPSILON);
-        assertEquals(
-                "Right fade opaque width is incorrect.",
-                expectedEndOpaque,
-                mStripLayoutHelper.getRightFadeOpaqueWidth(),
-                EPSILON);
+        doTestFadeWidthsWithButtons(
+                /* rtl= */ false,
+                /* trailingButtonsTouchTargetSize= */ 48f,
+                /* expectedEndOpaque= */ 96f);
     }
 
     @Test
     public void testFadeWidths_Rtl_WithButtons() {
+        // End fade: 32 (NTB) + 10 (glic) + 20 (MSB) + 2*8 (padding) + 32 (long gradient) = 110
+        doTestFadeWidthsWithButtons(
+                /* rtl= */ true,
+                /* trailingButtonsTouchTargetSize= */ 30f,
+                /* expectedEndOpaque= */ 78f);
+    }
+
+    private void doTestFadeWidths(boolean rtl) {
         // Setup
-        initializeTest(
-                /* rtl= */ true, /* incognito= */ false, /* tabIndex= */ 0, /* numTabs= */ 5);
-        mStripLayoutHelper.updateEndMarginForStripButtons(
-                /* trailingButtonsTouchTargetSize= */ 30f);
+        initializeTest(rtl, /* incognito= */ false, /* tabIndex= */ 0, /* numTabs= */ 5);
+
+        // Verify start fade.
+        float expectedStartGradient = StripLayoutHelper.NO_BUTTON_FADE_GRADIENT_WIDTH_DP;
+        float expectedStartOpaque = StripLayoutHelper.NO_BUTTON_FADE_OPAQUE_WIDTH_DP;
+        assertFadeWidths(/* leftFade= */ !rtl, expectedStartGradient, expectedStartOpaque);
+
+        // Verify end fade.
+        float expectedEndGradient = StripLayoutHelper.BUTTON_FADE_GRADIENT_SHORT_WIDTH_DP;
+        // End fade: 32 (NTB) + 2*8 (padding) + 24 (short gradient) = 72
+        float expectedEndOpaque = 48;
+        assertFadeWidths(/* leftFade= */ rtl, expectedEndGradient, expectedEndOpaque);
+    }
+
+    private void doTestFadeWidthsWithButtons(
+            boolean rtl, float trailingButtonsTouchTargetSize, float expectedEndOpaque) {
+        // Setup
+        initializeTest(rtl, /* incognito= */ false, /* tabIndex= */ 0, /* numTabs= */ 5);
+        mStripLayoutHelper.updateEndMarginForStripButtons(trailingButtonsTouchTargetSize);
 
         // Verify end fade.
         float expectedEndGradient = StripLayoutHelper.BUTTON_FADE_GRADIENT_LONG_WIDTH_DP;
-        // End fade: 32 (NTB) + 10 (glic) + 20 (MSB) + 2*8 (padding) + 32 (long gradient) = 110
-        float expectedEndWidth = 78 + expectedEndGradient;
-        float expectedEndOpaque = expectedEndWidth - expectedEndGradient;
+        assertFadeWidths(/* leftFade= */ rtl, expectedEndGradient, expectedEndOpaque);
+    }
+
+    /**
+     * Asserts the gradient, opaque and total widths of either the left or the right fade. The
+     * expected total width is the sum of the expected gradient and opaque widths.
+     */
+    private void assertFadeWidths(boolean leftFade, float expectedGradient, float expectedOpaque) {
+        String side = leftFade ? "Left" : "Right";
         assertEquals(
-                "Left fade gradient width is incorrect.",
-                expectedEndGradient,
-                mStripLayoutHelper.getLeftFadeGradientWidth(),
+                side + " fade gradient width is incorrect.",
+                expectedGradient,
+                leftFade
+                        ? mStripLayoutHelper.getLeftFadeGradientWidth()
+                        : mStripLayoutHelper.getRightFadeGradientWidth(),
                 EPSILON);
         assertEquals(
-                "Left fade width is incorrect.",
-                expectedEndWidth,
-                mStripLayoutHelper.getLeftFadeWidthForTesting(),
+                side + " fade opaque width is incorrect.",
+                expectedOpaque,
+                leftFade
+                        ? mStripLayoutHelper.getLeftFadeOpaqueWidth()
+                        : mStripLayoutHelper.getRightFadeOpaqueWidth(),
                 EPSILON);
         assertEquals(
-                "Left fade opaque width is incorrect.",
-                expectedEndOpaque,
-                mStripLayoutHelper.getLeftFadeOpaqueWidth(),
+                side + " fade width is incorrect.",
+                expectedGradient + expectedOpaque,
+                leftFade
+                        ? mStripLayoutHelper.getLeftFadeWidthForTesting()
+                        : mStripLayoutHelper.getRightFadeWidthForTesting(),
                 EPSILON);
     }
 
@@ -1288,7 +1218,7 @@ public class StripLayoutHelperTest {
         StripLayoutTab[] tabs =
                 initializeCloseButtonTest(
                         /* rtl= */ true, /* incognito= */ false, /* selectedIndex= */ 3);
-        mStripLayoutHelper.getNewTabButton().setDrawX(NEW_TAB_BTN_X);
+        mStripLayoutHelper.getNewTabButton().setDrawX(NEW_TAB_BTN_X_RTL);
 
         // Non-last tab not overlapping strip fade:
         // drawX(70) + tabOverlapWidth(28) > offsetXRight(20) + mediumRightFadeWidth(72)
@@ -1770,31 +1700,18 @@ public class StripLayoutHelperTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP)
     public void testTabSearchButtonFadeAndMargins_Ltr() {
-        // Setup LTR with Tab Search Button enabled
-        initializeTest(/* tabIndex= */ 0);
-        resizeStripAndUpdateLayout(STRIP_WIDTH);
-
-        // Verify mReservedStartMargin is 38.f (buttonTouchTargetSize (48) - 10.f)
-        assertEquals(
-                "Reserved start margin should be 38.f",
-                38.f,
-                mStripLayoutHelper.getReservedStartMarginForTesting(),
-                EPSILON);
-
-        // Verify left fade opaque width: buttonTouchTargetSize (48) + mButtonSideFadePadding (8)
-        assertEquals(
-                "Left fade opaque width should be 56.f",
-                56.f,
-                mStripLayoutHelper.getLeftFadeOpaqueWidth(),
-                EPSILON);
+        doTestTabSearchButtonFadeAndMargins(/* rtl= */ false);
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP)
     public void testTabSearchButtonFadeAndMargins_Rtl() {
-        // Setup RTL with Tab Search Button enabled
-        initializeTest(
-                /* rtl= */ true, /* incognito= */ false, /* tabIndex= */ 0, /* numTabs= */ 5);
+        doTestTabSearchButtonFadeAndMargins(/* rtl= */ true);
+    }
+
+    private void doTestTabSearchButtonFadeAndMargins(boolean rtl) {
+        // Setup with Tab Search Button enabled
+        initializeTest(rtl, /* incognito= */ false, /* tabIndex= */ 0, /* numTabs= */ 5);
         resizeStripAndUpdateLayout(STRIP_WIDTH);
 
         // Verify mReservedStartMargin is 38.f (buttonTouchTargetSize (48) - 10.f)
@@ -1804,11 +1721,13 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.getReservedStartMarginForTesting(),
                 EPSILON);
 
-        // Verify right fade opaque width: buttonTouchTargetSize (48) + mButtonSideFadePadding (8)
+        // Verify start fade opaque width: buttonTouchTargetSize (48) + mButtonSideFadePadding (8)
         assertEquals(
-                "Right fade opaque width should be 56.f",
+                (rtl ? "Right" : "Left") + " fade opaque width should be 56.f",
                 56.f,
-                mStripLayoutHelper.getRightFadeOpaqueWidth(),
+                rtl
+                        ? mStripLayoutHelper.getRightFadeOpaqueWidth()
+                        : mStripLayoutHelper.getLeftFadeOpaqueWidth(),
                 EPSILON);
     }
 
@@ -1945,62 +1864,21 @@ public class StripLayoutHelperTest {
 
     @Test
     public void testCloseButtonProperties_OnDesktop_MinTabWidth() {
-        DeviceInfo.setIsDesktopForTesting(true);
-        mActivity.getTheme().applyStyle(R.style.ThemeOverlay_BrowserUI_DesktopDensity, true);
-        mActivity
-                .getTheme()
-                .applyStyle(R.style.ThemeOverlay_BrowserUI_DesktopDensity_TabStrip, true);
-        initializeTest(/* tabIndex= */ 1);
-        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-        StripLayoutTab tab = tabs[0];
-
-        // Set tab width to minimum width on Desktop (68dp)
-        float minTabWidth = 68f;
-        tab.setWidth(minTabWidth);
-
-        // Force recreation or update close button state / size
-        TintedCompositorButton closeButton = tab.getCloseButton();
-
-        // On desktop, close button size is 20dp x 20dp
-        float closeButtonWidth = closeButton.getWidth();
-        float closeButtonHeight = closeButton.getHeight();
-        assertEquals(
-                "Close button width on desktop should be 20dp", 20f, closeButtonWidth, EPSILON);
-        assertEquals(
-                "Close button height on desktop should be 20dp", 20f, closeButtonHeight, EPSILON);
-
-        // Close button padding should be 5dp on desktop
-        assertEquals(
-                "Close button padding on desktop should be 5dp",
-                5f,
-                StripLayoutTab.getCloseButtonPadding(),
-                EPSILON);
-
-        // Close button should be centered horizontally inside the 68dp-wide tab:
-        // Expected X-offset = (68 - 20) / 2 = 24dp (relative to tab draw X)
-        float relativeCloseX = closeButton.getDrawX() - tab.getDrawX();
-        assertEquals("Close button should be horizontally centered", 24f, relativeCloseX, EPSILON);
-
-        // Expected Y-offset = CLOSE_BUTTON_OFFSET_Y_DESKTOP_DP = 9dp (relative to tab draw Y)
-        float relativeCloseY = closeButton.getDrawY() - tab.getDrawY();
-        assertEquals(
-                "Close button vertical offset on desktop should be 9dp",
-                9f,
-                relativeCloseY,
-                EPSILON);
+        doTestCloseButtonProperties_OnDesktop_MinTabWidth(/* rtl= */ false);
     }
 
     @Test
     public void testCloseButtonProperties_OnDesktop_MinTabWidth_Rtl() {
-        // Set layout to RTL
-        LocalizationUtils.setRtlForTesting(true);
+        doTestCloseButtonProperties_OnDesktop_MinTabWidth(/* rtl= */ true);
+    }
 
+    private void doTestCloseButtonProperties_OnDesktop_MinTabWidth(boolean rtl) {
         DeviceInfo.setIsDesktopForTesting(true);
         mActivity.getTheme().applyStyle(R.style.ThemeOverlay_BrowserUI_DesktopDensity, true);
         mActivity
                 .getTheme()
                 .applyStyle(R.style.ThemeOverlay_BrowserUI_DesktopDensity_TabStrip, true);
-        initializeTest(/* tabIndex= */ 1);
+        initializeTest(rtl, /* incognito= */ false, /* tabIndex= */ 1, /* numTabs= */ 5);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         StripLayoutTab tab = tabs[0];
 
@@ -2028,11 +1906,11 @@ public class StripLayoutHelperTest {
                 StripLayoutTab.getCloseButtonPadding(),
                 EPSILON);
 
-        // Close button should be centered horizontally inside the 68dp-wide tab in RTL:
-        // Expected X-offset in RTL = 24dp (relative to tab draw X)
+        // Close button should be centered horizontally inside the 68dp-wide tab (in both LTR and
+        // RTL): Expected X-offset = (68 - 20) / 2 = 24dp (relative to tab draw X)
         float relativeCloseX = closeButton.getDrawX() - tab.getDrawX();
         assertEquals(
-                "Close button should be horizontally centered in RTL",
+                "Close button should be horizontally centered" + (rtl ? " in RTL" : ""),
                 24f,
                 relativeCloseX,
                 EPSILON);
@@ -7167,11 +7045,29 @@ public class StripLayoutHelperTest {
     @Test
     @Feature("Pinned Tabs")
     public void testTabsDrawXAndWidth_PinnedTabs() {
-        final int numTabs = 5;
-        initializeTest(/* tabIndex= */ 0, numTabs);
+        doTestTabsDrawXAndWidth_PinnedTabs(/* rtl= */ false);
+    }
 
-        // Trigger a size change so the strip layout tab heights and widths get set.
-        resizeStrip(STRIP_WIDTH);
+    @Test
+    @Feature("Pinned Tabs")
+    public void testTabsDrawXAndWidth_PinnedTabs_Rtl() {
+        doTestTabsDrawXAndWidth_PinnedTabs(/* rtl= */ true);
+    }
+
+    private void doTestTabsDrawXAndWidth_PinnedTabs(boolean rtl) {
+        final int numTabs = 5;
+        initializeTest(rtl, /* incognito= */ false, /* tabIndex= */ 0, numTabs);
+
+        // Trigger a size change so the strip layout tab heights and widths get set. In RTL, the
+        // paddings are swapped so that the visual start padding is still PADDING_LEFT.
+        mStripLayoutHelper.onSizeChanged(
+                STRIP_WIDTH,
+                STRIP_HEIGHT,
+                /* orientationChanged= */ false,
+                TIMESTAMP,
+                rtl ? PADDING_RIGHT : PADDING_LEFT,
+                rtl ? PADDING_LEFT : PADDING_RIGHT,
+                /* topPadding= */ 0f);
 
         // Set the initial scroll offset to trigger an update to draw X positions.
         mStripLayoutHelper.setScrollOffsetForTesting(0);
@@ -7193,19 +7089,12 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setTabModel(tabModel, mTabCreator, true);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
-        float expectedDrawXWithPinnedTab = PADDING_LEFT;
-
         // 193.5(tabWidth) = (800(screenWidth) - 10(leftPadding) - 60(rightPadding) -
         // 40(pinnedTabWidth) + (28(overlapWidth) * 3) / 4(numTab).
         float expectedTabWidthWithPinnedTab = 193.5f;
 
         // Verify the tabs are resized and positioned correctly after pinning.
         for (int i = 0; i < tabs.length; i++) {
-            assertEquals(
-                    "The tab's drawX is incorrect",
-                    expectedDrawXWithPinnedTab,
-                    tabs[i].getDrawX(),
-                    0.1f);
             if (i == 0) {
                 assertTrue("The tab should be pinned", tabs[i].getIsPinned());
                 assertEquals(
@@ -7226,8 +7115,8 @@ public class StripLayoutHelperTest {
                         "The unpinned tab's close button should show",
                         tabs[i].canShowCloseButton());
             }
-            expectedDrawXWithPinnedTab += tabs[i].getWidth() - TAB_OVERLAP_WIDTH_DP;
         }
+        assertTabsDrawX(tabs, rtl);
 
         // Unpin first tab and trigger an update.
         tabModel.getTabAt(0).setIsPinned(false);
@@ -7235,110 +7124,32 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setStripLayoutTabsForTesting(new StripLayoutTab[0]);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
-        float expectedDrawXNoPinnedTab = PADDING_LEFT;
         // 168.4(tabWidth) = (800(screenWidth) - 10(leftPadding) - 60(rightPadding) +
         // 28(overlapWidth) * 4) / 5(numTab).
         float expectedWidthNoPinnedTab = 168.4f;
 
         // Verify the tabs are resized and positioned correctly after unpinning.
         tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-        expectedDrawXNoPinnedTab = PADDING_LEFT;
         for (StripLayoutTab tab : tabs) {
             assertEquals(
-                    "The tab's drawX is incorrect", expectedDrawXNoPinnedTab, tab.getDrawX(), 0.1f);
-            assertEquals(
                     "The tab's width is incorrect", expectedWidthNoPinnedTab, tab.getWidth(), 0.1f);
-            expectedDrawXNoPinnedTab += tab.getWidth() - TAB_OVERLAP_WIDTH_DP;
         }
+        assertTabsDrawX(tabs, rtl);
     }
 
-    @Test
-    @Feature("Pinned Tabs")
-    public void testTabsDrawXAndWidth_PinnedTabs_Rtl() {
-        LocalizationUtils.setRtlForTesting(true);
-        final int numTabs = 5;
-        initializeTest(/* rtl= */ true, /* incognito= */ false, /* tabIndex= */ 0, numTabs);
-
-        // Trigger a size change so the strip layout tab heights and widths get set.
-        mStripLayoutHelper.onSizeChanged(
-                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_RIGHT, PADDING_LEFT, 0f);
-
-        // Set the initial scroll offset to trigger an update to draw X positions.
-        mStripLayoutHelper.setScrollOffsetForTesting(0);
-
-        // Setup tab model and pin first tab.
-        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-        MockTabModel tabModel = new MockTabModel(mProfile, null);
-        tabModel.addTab(0);
-        tabModel.addTab(1);
-        tabModel.addTab(2);
-        tabModel.addTab(3);
-        tabModel.addTab(4);
-        tabModel.setIndex(0, TabSelectionType.FROM_NEW);
-        tabModel.setActive(true);
-        tabModel.getTabAt(0).setIsPinned(true);
-        tabs[0].setIsPinned(true);
-
-        // Trigger an update to re-compute tabs widths.
-        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, true);
-        mStripLayoutHelper.updateLayout(TIMESTAMP);
-
-        float expectedDrawXWithPinnedTab = STRIP_WIDTH - PADDING_LEFT - TAB_OVERLAP_WIDTH_DP;
-
-        // 193.5(tabWidth) = (800(screenWidth) - 10(leftPadding) - 60(rightPadding) -
-        // 40(pinnedTabWidth) + (28(overlapWidth) * 3) / 4(numTab).
-        float expectedTabWidthWithPinnedTab = 193.5f;
-
-        // Verify the tabs are resized and positioned correctly after pinning.
-        for (int i = 0; i < tabs.length; i++) {
-            if (i == 0) {
-                assertTrue("The tab should be pinned", tabs[i].getIsPinned());
-                assertEquals(
-                        "The pinned tab's width is incorrect",
-                        PINNED_TAB_WIDTH_DP,
-                        tabs[i].getWidth(),
-                        0.1f);
-                assertFalse(
-                        "The pinned tab's close button should hide", tabs[i].canShowCloseButton());
-            } else {
-                assertFalse("The tab should not be pinned", tabs[i].getIsPinned());
-                assertEquals(
-                        "The tab's width is incorrect",
-                        expectedTabWidthWithPinnedTab,
-                        tabs[i].getWidth(),
-                        0.1f);
-                assertTrue(
-                        "The unpinned tab's close button should show",
-                        tabs[i].canShowCloseButton());
-            }
-            expectedDrawXWithPinnedTab -= (tabs[i].getWidth() - TAB_OVERLAP_WIDTH_DP);
-            assertEquals(
-                    "The tab's drawX is incorrect",
-                    expectedDrawXWithPinnedTab,
-                    tabs[i].getDrawX(),
-                    0.1f);
-        }
-
-        // Unpin first tab and trigger an update.
-        tabModel.getTabAt(0).setIsPinned(false);
-        tabs[0].setIsPinned(false);
-        mStripLayoutHelper.setStripLayoutTabsForTesting(new StripLayoutTab[0]);
-        mStripLayoutHelper.updateLayout(TIMESTAMP);
-
-        float expectedDrawXNoPinnedTab = STRIP_WIDTH - PADDING_LEFT - TAB_OVERLAP_WIDTH_DP;
-        // 168.4(tabWidth) = (800(screenWidth) - 60(leftPadding) - 10(rightPadding) +
-        // 28(overlapWidth) * 4) / 5(numTab).
-        float expectedWidthNoPinnedTab = 168.4f;
-
-        // Verify the tabs are resized and positioned correctly after unpinning.
-        tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-        expectedDrawXNoPinnedTab = STRIP_WIDTH - PADDING_LEFT - TAB_OVERLAP_WIDTH_DP;
+    /**
+     * Asserts that the given tabs are laid out back-to-back (accounting for tab overlap) starting
+     * from the visual start of the strip, based on each tab's width.
+     */
+    private void assertTabsDrawX(StripLayoutTab[] tabs, boolean rtl) {
+        float expectedDrawX =
+                rtl ? STRIP_WIDTH - PADDING_LEFT - TAB_OVERLAP_WIDTH_DP : PADDING_LEFT;
         for (StripLayoutTab tab : tabs) {
-            assertEquals(
-                    "The tab's width is incorrect", expectedWidthNoPinnedTab, tab.getWidth(), 0.1f);
-            expectedDrawXNoPinnedTab -= (tab.getWidth() - TAB_OVERLAP_WIDTH_DP);
-            assertEquals(
-                    "The tab's drawX is incorrect", expectedDrawXNoPinnedTab, tab.getDrawX(), 0.1f);
+            float advance = tab.getWidth() - TAB_OVERLAP_WIDTH_DP;
+            // In RTL, a tab's draw X is its left edge, which is one advance further from the start.
+            if (rtl) expectedDrawX -= advance;
+            assertEquals("The tab's drawX is incorrect", expectedDrawX, tab.getDrawX(), 0.1f);
+            if (!rtl) expectedDrawX += advance;
         }
     }
 
