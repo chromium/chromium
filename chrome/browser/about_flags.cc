@@ -3782,6 +3782,7 @@ const FeatureEntry::FeatureVariation kMaliciousApkDownloadCheckChoices[] = {
 #if BUILDFLAG(IS_ANDROID)
 constexpr char kDisableFacilitatedPaymentsMerchantAllowlistInternalName[] =
     "disable-facilitated-payments-merchant-allowlist";
+constexpr char kOctoberTestUXRInternalName[] = "october-test-uxr";
 constexpr char kSettingsInTabUrlNavInternalName[] = "settings-in-tab-url-nav";
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -7782,6 +7783,10 @@ const FeatureEntry kFeatureEntries[] = {
 #else
      FEATURE_VALUE_TYPE(chrome::android::kSettingsInTab)},
 #endif
+
+    {kOctoberTestUXRInternalName, flag_descriptions::kOctoberTestUXRName,
+     flag_descriptions::kOctoberTestUXRDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kOctoberTestUXR)},
 
     {kSettingsInTabUrlNavInternalName,
      flag_descriptions::kSettingsInTabUrlNavName,
@@ -14266,6 +14271,10 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
            channel != version_info::Channel::DEV &&
            channel != version_info::Channel::CANARY &&
            channel != version_info::Channel::UNKNOWN;
+  }
+  // Only show the OctoberTestUXR study flag on desktops.
+  if (std::string_view(kOctoberTestUXRInternalName) == entry.internal_name) {
+    return ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_DESKTOP;
   }
   // Only show the settings in tab URL nav flag on tablets and desktops.
   if (std::string_view(kSettingsInTabUrlNavInternalName) ==

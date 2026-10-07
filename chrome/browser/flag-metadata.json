@@ -7464,6 +7464,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "october-test-uxr",
+    "owners": [ "yfriedman@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "offline-auto-fetch",
     "owners": [ "tbansal@google.com" ],
     "expiry_milestone": 135
