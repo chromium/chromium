@@ -301,7 +301,7 @@ ProfilePickerUI::ProfilePickerUI(content::WebUI* web_ui)
 
   // `content::WebContents::GetVisibleURL()` is used here because a
   // WebUIController is created before the navigation commits.
-  bool is_glic_version = web_ui->GetWebContents()->GetVisibleURL().GetQuery() ==
+  bool is_glic_version = web_ui->GetWebContents()->GetVisibleURL().query() ==
                          chrome::kChromeUIProfilePickerGlicQuery;
 
   std::unique_ptr<ProfilePickerHandler> handler =
@@ -310,7 +310,7 @@ ProfilePickerUI::ProfilePickerUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(std::move(handler));
 
   // Same as above for usage of `content::WebContents::GetVisibleURL()`.
-  if (web_ui->GetWebContents()->GetVisibleURL().GetQuery() ==
+  if (web_ui->GetWebContents()->GetVisibleURL().query() ==
       chrome::kChromeUIProfilePickerStartupQuery) {
     profile_picker_handler_->EnableStartupMetrics();
   }

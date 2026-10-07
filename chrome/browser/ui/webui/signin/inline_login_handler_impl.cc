@@ -237,7 +237,7 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::DictValue& params) {
 
   const GURL& url = GaiaUrls::GetInstance()->embedded_signin_url();
   params.Set("clientId", GaiaUrls::GetInstance()->oauth2_chrome_client_id());
-  params.Set("gaiaPath", url.GetPath().substr(1));
+  params.Set("gaiaPath", url.path().substr(1));
 
   content::WebContents* contents = web_ui()->GetWebContents();
   const GURL& current_url = contents->GetLastCommittedURL();
@@ -270,9 +270,10 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::DictValue& params) {
   // Scrape the SAML password if possible.
   params.Set("extractSamlPasswordAttributes", true);
 
-  GURL windows_url = GaiaUrls::GetInstance()->embedded_setup_windows_url();
+  const GURL& windows_url =
+      GaiaUrls::GetInstance()->embedded_setup_windows_url();
   // Redirect to specified gaia endpoint path for GCPW:
-  std::string windows_endpoint_path = windows_url.GetPath().substr(1);
+  std::string_view windows_endpoint_path = windows_url.path().substr(1);
   // Redirect to specified gaia endpoint path for GCPW:
   std::string gcpw_endpoint_path;
   if (net::GetValueForKeyInQuery(
