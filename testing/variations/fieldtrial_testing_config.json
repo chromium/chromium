@@ -8365,6 +8365,21 @@
             ]
         }
     ],
+    "GlicMessageFirstFreAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261005",
+                    "enable_features": [
+                        "GlicMessageFirstFre"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicMessageFirstOnboarding": [
         {
             "platforms": [
