@@ -46,6 +46,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/public/common/features.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_info.h"
@@ -464,6 +466,121 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+// Reuses the initiator tab when it is showing the NTP.
+IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
+                       CreateActorTabReusesNtpInitiatorTab) {
+  TaskId task_id = actor_keyed_service()->CreateTask(
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+
+  tabs::TabInterface* tab = active_tab();
+  ASSERT_TRUE(content::NavigateToURL(tab->GetContents(),
+                                     GURL(chrome::kChromeUINewTabURL)));
+  ASSERT_TRUE(search::IsNTPURL(main_frame()->GetLastCommittedURL()));
+  BrowserWindowInterface* window = tab->GetBrowserWindowInterface();
+  const int tab_count_before = window->GetTabStripModel()->count();
+
+  TestFuture<tabs::TabInterface*> future;
+  actor_keyed_service()->CreateActorTab(
+      task_id, /*open_in_background=*/false, tab->GetHandle(),
+      window->GetSessionID(), future.GetCallback());
+
+  EXPECT_EQ(future.Take(), tab);
+  EXPECT_EQ(tab_count_before, window->GetTabStripModel()->count());
+}
+
+// Reuses the initiator tab when it is showing about:blank.
+IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
+                       CreateActorTabReusesAboutBlankInitiatorTab) {
+  TaskId task_id = actor_keyed_service()->CreateTask(
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+
+  tabs::TabInterface* tab = active_tab();
+  ASSERT_TRUE(
+      content::NavigateToURL(tab->GetContents(), GURL(url::kAboutBlankURL)));
+  ASSERT_TRUE(main_frame()->GetLastCommittedURL().IsAboutBlank());
+  BrowserWindowInterface* window = tab->GetBrowserWindowInterface();
+  const int tab_count_before = window->GetTabStripModel()->count();
+
+  TestFuture<tabs::TabInterface*> future;
+  actor_keyed_service()->CreateActorTab(
+      task_id, /*open_in_background=*/false, tab->GetHandle(),
+      window->GetSessionID(), future.GetCallback());
+
+  EXPECT_EQ(future.Take(), tab);
+  EXPECT_EQ(tab_count_before, window->GetTabStripModel()->count());
+
+  // The reused tab now belongs to the task, so asking for another tab from it
+  // must create a new one even though it is still about:blank.
+  TestFuture<tabs::TabInterface*> second_future;
+  actor_keyed_service()->CreateActorTab(
+      task_id, /*open_in_background=*/false, tab->GetHandle(),
+      window->GetSessionID(), second_future.GetCallback());
+
+  tabs::TabInterface* second_tab = second_future.Take();
+  ASSERT_NE(second_tab, nullptr);
+  EXPECT_NE(second_tab, tab);
+  EXPECT_EQ(tab_count_before + 1, window->GetTabStripModel()->count());
+}
+
+// Does not reuse an empty initiator tab that is owned by a different task.
+IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
+                       CreateActorTabDoesNotReuseEmptyTabOwnedByOtherTask) {
+  TaskId first_task_id = actor_keyed_service()->CreateTask(
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+  TaskId second_task_id = actor_keyed_service()->CreateTask(
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+
+  tabs::TabInterface* tab = active_tab();
+  ASSERT_TRUE(
+      content::NavigateToURL(tab->GetContents(), GURL(url::kAboutBlankURL)));
+  BrowserWindowInterface* window = tab->GetBrowserWindowInterface();
+
+  // The first task reuses the empty tab and now owns it.
+  TestFuture<tabs::TabInterface*> first_future;
+  actor_keyed_service()->CreateActorTab(
+      first_task_id, /*open_in_background=*/false, tab->GetHandle(),
+      window->GetSessionID(), first_future.GetCallback());
+  ASSERT_EQ(first_future.Take(), tab);
+  ASSERT_TRUE(
+      actor_keyed_service()->GetTask(first_task_id)->HasTab(tab->GetHandle()));
+  const int tab_count_before = window->GetTabStripModel()->count();
+
+  // The second task must get a distinct tab even though the initiator is still
+  // about:blank.
+  TestFuture<tabs::TabInterface*> second_future;
+  actor_keyed_service()->CreateActorTab(
+      second_task_id, /*open_in_background=*/false, tab->GetHandle(),
+      window->GetSessionID(), second_future.GetCallback());
+
+  tabs::TabInterface* second_tab = second_future.Take();
+  ASSERT_NE(second_tab, nullptr);
+  EXPECT_NE(second_tab, tab);
+  EXPECT_EQ(tab_count_before + 1, window->GetTabStripModel()->count());
+}
+
+// Creates a new tab when the initiator tab is showing a non-empty page.
+IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
+                       CreateActorTabDoesNotReuseNonEmptyInitiatorTab) {
+  TaskId task_id = actor_keyed_service()->CreateTask(
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+
+  tabs::TabInterface* tab = active_tab();
+  ASSERT_TRUE(content::NavigateToURL(
+      tab->GetContents(), embedded_test_server()->GetURL("/actor/blank.html")));
+  BrowserWindowInterface* window = tab->GetBrowserWindowInterface();
+  const int tab_count_before = window->GetTabStripModel()->count();
+
+  TestFuture<tabs::TabInterface*> future;
+  actor_keyed_service()->CreateActorTab(
+      task_id, /*open_in_background=*/false, tab->GetHandle(),
+      window->GetSessionID(), future.GetCallback());
+
+  tabs::TabInterface* new_tab = future.Take();
+  ASSERT_NE(new_tab, nullptr);
+  EXPECT_NE(new_tab, tab);
+  EXPECT_EQ(tab_count_before + 1, window->GetTabStripModel()->count());
+}
+
 IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
                        AddsTabBlockedByCrossProfileCheck) {
   TaskId task_id = actor_keyed_service()->CreateTask(

@@ -126,6 +126,13 @@ base::FilePath ResolveActorTraceFilePath(const base::FilePath& path) {
 namespace actor {
 
 namespace {
+
+// Returns true if `url` is an "empty" page (the NTP or about:blank) whose tab
+// can be reused for actuation instead of opening a new one.
+bool IsEmptyTabUrl(const GURL& url) {
+  return search::IsNTPURL(url) || url.IsAboutBlank();
+}
+
 BASE_FEATURE(kGlicActorFixPageObservationCrash,
              base::FEATURE_ENABLED_BY_DEFAULT);
 }
@@ -276,16 +283,20 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
     return;
   }
 
-  // Special case: if the initiator tab is the NTP, no need to create a new
-  // tab, reuse it.
-  // TODO(crbug.com/537432406): Check for about:blank URL in addition to NTP to
-  // reuse empty tabs.
-  if (initiator_tab && search::IsNTPURL(initiator_tab->GetContents()
-                                            ->GetPrimaryMainFrame()
-                                            ->GetLastCommittedURL())) {
-    GetJournal().Log(
-        GURL(), task_id, "CreateActorTab",
-        JournalDetailsBuilder().Add("Return", "Initiator is NTP").Build());
+  // Special case: if the initiator tab is empty (the NTP or about:blank) and
+  // isn't already owned by an active task, there's no need to create a new
+  // tab, reuse it. Tabs owned by a task are not reused: newly created actor
+  // tabs start out as about:blank, so a caller asking for another tab from one
+  // of them expects a distinct tab, and a tab owned by a different task must
+  // not be shared.
+  if (initiator_tab && !GetTaskFromTab(*initiator_tab) &&
+      IsEmptyTabUrl(initiator_tab->GetContents()
+                        ->GetPrimaryMainFrame()
+                        ->GetLastCommittedURL())) {
+    GetJournal().Log(GURL(), task_id, "CreateActorTab",
+                     JournalDetailsBuilder()
+                         .Add("Return", "Initiator is an empty tab")
+                         .Build());
 
     if (!open_in_background) {
       BrowserWindowInterface* window =
