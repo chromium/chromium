@@ -70,6 +70,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CBOR.Read.{CpuState}Duration" units="microseconds"
+    expires_after="2027-03-28">
+  <owner>zgroza@chromium.org</owner>
+  <owner>src/components/cbor/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the part of CBOR.Read.Duration during which the parsing thread was
+    {CpuState}. The on-CPU part is the thread's CPU time during the parse,
+    capped at the elapsed time, and the off-CPU part is the rest, so for every
+    parse, CBOR.Read.OnCpuDuration and CBOR.Read.OffCpuDuration add up to
+    CBOR.Read.Duration. Emitted together with CBOR.Read.Duration, for the same
+    calls, unless the thread's CPU time cannot be measured precisely: on Windows
+    on Arm, on Windows clients whose CPU lacks an invariant time stamp counter
+    (TSC), and, on other Windows clients, for parses that start before the
+    process has measured the TSC frequency, which takes at least 50 ms from its
+    first reading of a thread's CPU time.
+  </summary>
+  <token key="CpuState">
+    <variant name="OffCpu"
+        summary="not running on a CPU, for example while waiting for storage
+                 to serve a major page fault, or for a CPU after being
+                 preempted"/>
+    <variant name="OnCpu"
+        summary="running on a CPU, including time spent in the kernel, for
+                 example handling minor page faults"/>
+  </token>
+</histogram>
+
 <histogram name="CBOR.Write.Duration" units="microseconds"
     expires_after="2027-03-28">
   <owner>zgroza@chromium.org</owner>

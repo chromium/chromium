@@ -11,6 +11,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
+#include "build/build_config.h"
 #include "components/cbor/cbor_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1477,9 +1479,32 @@ TEST_P(CBORReaderTest, TestDefaultMaxNestingLevelBoundary) {
 
 namespace {
 
-// `CBOR.Read.Duration` is only emitted on clients whose clock can measure it.
-int ExpectedDurationCount() {
-  return base::TimeTicks::IsHighResolution() ? 1 : 0;
+// Returns how many samples a single parse is expected to add to each
+// `CBOR.Read.*` histogram on this platform.
+base::HistogramTester::CountsMap ExpectedCountsForOneRead() {
+  base::HistogramTester::CountsMap counts = {{"CBOR.Read.Result", 1},
+                                             {"CBOR.Read.Size", 1}};
+  // Durations need a clock that can measure them. Splitting them into on- and
+  // off-CPU time also needs precise thread CPU time, which Windows on Arm
+  // lacks.
+  if (base::TimeTicks::IsHighResolution()) {
+    counts["CBOR.Read.Duration"] = 1;
+#if !(BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64))
+    if (base::ThreadTicks::IsSupported()) {
+      counts["CBOR.Read.OnCpuDuration"] = 1;
+      counts["CBOR.Read.OffCpuDuration"] = 1;
+    }
+#endif
+  }
+  return counts;
+}
+
+// On Windows, thread CPU time reads as null until the TSC frequency has been
+// measured, and a parse before then records no on- or off-CPU time.
+void WaitForThreadTicks() {
+  if (base::ThreadTicks::IsSupported()) {
+    base::ThreadTicks::WaitUntilInitialized();
+  }
 }
 
 }  // namespace
@@ -1490,6 +1515,7 @@ TEST_P(CBORReaderTest, MetricsRecordedOnSuccess) {
   // `Config::use_rust`.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatureState(kUseRustCborParser, GetParam());
+  WaitForThreadTicks();
 
   base::HistogramTester histograms;
   const std::vector<uint8_t> valid_cbor = {0x01};  // Integer 1
@@ -1497,15 +1523,17 @@ TEST_P(CBORReaderTest, MetricsRecordedOnSuccess) {
   Reader::Config config;
   ASSERT_TRUE(Reader::Read(valid_cbor, config).has_value());
 
+  EXPECT_THAT(histograms.GetTotalCountsForPrefix("CBOR.Read."),
+              testing::ContainerEq(ExpectedCountsForOneRead()));
   histograms.ExpectUniqueSample("CBOR.Read.Result",
                                 Reader::DecoderError::CBOR_NO_ERROR, 1);
-  histograms.ExpectTotalCount("CBOR.Read.Duration", ExpectedDurationCount());
   histograms.ExpectUniqueSample("CBOR.Read.Size", valid_cbor.size(), 1);
 }
 
 TEST_P(CBORReaderTest, MetricsRecordedOnError) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatureState(kUseRustCborParser, GetParam());
+  WaitForThreadTicks();
 
   base::HistogramTester histograms;
   const std::vector<uint8_t> invalid_cbor = {0x18};  // Incomplete 1-byte int
@@ -1516,10 +1544,37 @@ TEST_P(CBORReaderTest, MetricsRecordedOnError) {
   EXPECT_FALSE(Reader::Read(invalid_cbor, config).has_value());
   EXPECT_EQ(Reader::DecoderError::INCOMPLETE_CBOR_DATA, error);
 
+  EXPECT_THAT(histograms.GetTotalCountsForPrefix("CBOR.Read."),
+              testing::ContainerEq(ExpectedCountsForOneRead()));
   histograms.ExpectUniqueSample("CBOR.Read.Result",
                                 Reader::DecoderError::INCOMPLETE_CBOR_DATA, 1);
-  histograms.ExpectTotalCount("CBOR.Read.Duration", ExpectedDurationCount());
   histograms.ExpectUniqueSample("CBOR.Read.Size", invalid_cbor.size(), 1);
+}
+
+TEST_P(CBORReaderTest, MetricsSplitDurationIntoOnAndOffCpuTime) {
+  if (!ExpectedCountsForOneRead().contains("CBOR.Read.OffCpuDuration")) {
+    GTEST_SKIP() << "No precise thread CPU time on this platform";
+  }
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(kUseRustCborParser, GetParam());
+  WaitForThreadTicks();
+
+  // Only the wall clock is mocked. Parsing one byte takes nowhere near the
+  // mocked 1337 ms of CPU time, so the rest has to be reported as off-CPU.
+  base::ScopedMockElapsedTimersForTest mock_timers;
+  base::HistogramTester histograms;
+  const std::vector<uint8_t> valid_cbor = {0x01};  // Integer 1
+
+  Reader::Config config;
+  ASSERT_TRUE(Reader::Read(valid_cbor, config).has_value());
+
+  // 1337 ms falls into the overflow bucket, which starts at 100 ms.
+  const int64_t mocked_wall_us =
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMicroseconds();
+  histograms.ExpectUniqueSample("CBOR.Read.Duration", mocked_wall_us, 1);
+  histograms.ExpectUniqueSample("CBOR.Read.OffCpuDuration", mocked_wall_us, 1);
+  histograms.ExpectTotalCount("CBOR.Read.OnCpuDuration", 1);
+  histograms.ExpectBucketCount("CBOR.Read.OnCpuDuration", mocked_wall_us, 0);
 }
 
 TEST_P(CBORReaderTest, MetricsNotRecordedWhenParserIsSelectedExplicitly) {
@@ -1536,9 +1591,8 @@ TEST_P(CBORReaderTest, MetricsNotRecordedWhenParserIsSelectedExplicitly) {
   // `DoRead()` always sets `Config::use_rust`.
   ASSERT_TRUE(DoRead(valid_cbor).has_value());
 
-  histograms.ExpectTotalCount("CBOR.Read.Result", 0);
-  histograms.ExpectTotalCount("CBOR.Read.Duration", 0);
-  histograms.ExpectTotalCount("CBOR.Read.Size", 0);
+  EXPECT_THAT(histograms.GetTotalCountsForPrefix("CBOR.Read."),
+              testing::IsEmpty());
 }
 
 #else
@@ -1556,9 +1610,8 @@ TEST_P(CBORReaderTest, MetricsNotRecordedWithoutRustParser) {
   Reader::Config config;
   ASSERT_TRUE(Reader::Read(valid_cbor, config).has_value());
 
-  histograms.ExpectTotalCount("CBOR.Read.Result", 0);
-  histograms.ExpectTotalCount("CBOR.Read.Duration", 0);
-  histograms.ExpectTotalCount("CBOR.Read.Size", 0);
+  EXPECT_THAT(histograms.GetTotalCountsForPrefix("CBOR.Read."),
+              testing::IsEmpty());
 }
 
 #endif  // BUILDFLAG(USE_CBOR_RUST)

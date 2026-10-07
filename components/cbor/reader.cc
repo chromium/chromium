@@ -18,6 +18,7 @@
 
 #include <math.h>
 
+#include <algorithm>
 #include <iterator>
 #include <limits>
 #include <map>
@@ -37,6 +38,7 @@
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "build/build_config.h"
 #include "components/cbor/cbor_buildflags.h"
 #include "components/cbor/constants.h"
 #include "components/cbor/experiment_metrics.h"
@@ -117,6 +119,23 @@ const char kOutOfRangeIntegerValue[] =
 const char kMapKeyDuplicate[] = "Duplicate map keys are not allowed.";
 const char kUnknownError[] = "An unknown error occured.";
 
+// Every duration recorded for a parse uses this bucket layout, so that their
+// distributions line up.
+constexpr base::TimeDelta kDurationMin = base::Microseconds(1);
+constexpr base::TimeDelta kDurationMax = base::Milliseconds(100);
+constexpr size_t kDurationBuckets = 50;
+
+// Returns whether `base::ThreadTicks` is precise enough to split a parse's
+// wall time into on- and off-CPU time. On Windows on Arm, it comes from
+// GetThreadTimes(), which only advances once per scheduler tick (~15.6 ms).
+bool CanSplitCpuTime() {
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+  return false;
+#else
+  return base::ThreadTicks::IsSupported();
+#endif
+}
+
 class [[nodiscard]] ScopedMetricsReporter {
  public:
   ScopedMetricsReporter(size_t payload_size,
@@ -128,21 +147,47 @@ class [[nodiscard]] ScopedMetricsReporter {
   ScopedMetricsReporter& operator=(const ScopedMetricsReporter&) = delete;
 
   ~ScopedMetricsReporter() {
+    // Stop the measurements in the reverse order of starting them, and before
+    // recording anything, so that none of them includes the histogram code.
     const base::TimeDelta elapsed = timer_.Elapsed();
+    const base::ThreadTicks thread_end = thread_start_.is_null()
+                                             ? base::ThreadTicks()
+                                             : base::ThreadTicks::Now();
 
     UMA_HISTOGRAM_ENUMERATION("CBOR.Read.Result", *error_code_);
     UMA_HISTOGRAM_COUNTS_10M("CBOR.Read.Size",
                              base::saturated_cast<int>(payload_size_));
     if (base::TimeTicks::IsHighResolution()) {
       UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES("CBOR.Read.Duration", elapsed,
-                                              base::Microseconds(1),
-                                              base::Milliseconds(100), 50);
+                                              kDurationMin, kDurationMax,
+                                              kDurationBuckets);
+      // On Windows, `base::ThreadTicks::Now()` is null until the TSC frequency
+      // has been measured.
+      if (!thread_start_.is_null() && !thread_end.is_null()) {
+        // The thread clock starts before and stops after the wall clock, and
+        // both count whole microseconds, so the thread time can come out
+        // slightly longer. Capping it keeps the two parts adding up to
+        // `elapsed`.
+        const base::TimeDelta on_cpu =
+            std::min(thread_end - thread_start_, elapsed);
+        UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES("CBOR.Read.OnCpuDuration",
+                                                on_cpu, kDurationMin,
+                                                kDurationMax, kDurationBuckets);
+        UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES("CBOR.Read.OffCpuDuration",
+                                                elapsed - on_cpu, kDurationMin,
+                                                kDurationMax, kDurationBuckets);
+      }
     }
   }
 
  private:
   const size_t payload_size_;
   const base::raw_ref<const Reader::DecoderError> error_code_;
+
+  // Initialized in declaration order, so that reading the thread clock does
+  // not count towards the wall-clock duration of the parse.
+  const base::ThreadTicks thread_start_ =
+      CanSplitCpuTime() ? base::ThreadTicks::Now() : base::ThreadTicks();
   const base::ElapsedTimer timer_;
 };
 
