@@ -661,4 +661,134 @@ TEST(PdfInkTextBlinkTextInfoToPDFTextLinesTest, EmptyRunSkipped) {
   ASSERT_EQ(ink_lines[0].text_info.size(), 1u);
 }
 
+// In this test, in visual presentation order, baseline glyph 1 (character
+// "\u062A", index 2) with y-offset 0.0 is followed by a cluster for character
+// "\u0628\u064E" (index 0) consisting of base glyph 2 (y-offset 0.0) and
+// mark glyph 3 (y-offset 5.0).
+TEST(PdfInkTextBlinkTextInfoToPDFTextLinesTest,
+     RTLSplitText2DClusterPrecededByBaseline) {
+  std::vector<pdf::mojom::InkTextRunPtr> text_runs;
+  text_runs.push_back(MakeTextRunWithText(
+      gfx::RectF(100.0f, 200.0f, 30.0f, 20.0f),
+      /*typeface_run_total_advance=*/{{0.0f, 10.0f, 20.0f}},
+      {{gfx::Vector2dF(0.0f, 0.0f), gfx::Vector2dF(0.0f, 0.0f),
+        gfx::Vector2dF(0.0f, 5.0f)}},
+      u"\u0628\u064E\u062A", {2, 0, 0}));
+
+  std::vector<InkTextLine> ink_lines =
+      InkTextLine::BlinkTextInfoToPDFTextLines(text_runs, 10.0f);
+  ASSERT_THAT(ink_lines, SizeIs(1));
+  EXPECT_EQ(ink_lines[0].location, gfx::RectF(10.0f, 20.0f, 3.0f, 2.0f));
+  ASSERT_THAT(ink_lines[0].text_info, SizeIs(3));
+  EXPECT_THAT(
+      ink_lines[0].text_info[0],
+      InkTextInfoWithTextEq(FontId(0),
+                            /*glyphs=*/std::vector<uint32_t>{3},
+                            /*glyph_positions=*/std::vector<float>{0.0f},
+                            /*location=*/gfx::RectF(12.0f, 20.5f, 0.0f, 2.0f),
+                            /*is_horizontal=*/true, u"\u0628\u064E",
+                            /*join_prev_actualtext=*/false));
+  EXPECT_THAT(
+      ink_lines[0].text_info[1],
+      InkTextInfoWithTextEq(FontId(0),
+                            /*glyphs=*/std::vector<uint32_t>{2},
+                            /*glyph_positions=*/std::vector<float>{0.0f},
+                            /*location=*/gfx::RectF(11.0f, 20.0f, 0.0f, 2.0f),
+                            /*is_horizontal=*/true, u"",
+                            /*join_prev_actualtext=*/true));
+  EXPECT_THAT(
+      ink_lines[0].text_info[2],
+      InkTextInfoWithTextEq(FontId(0),
+                            /*glyphs=*/std::vector<uint32_t>{1},
+                            /*glyph_positions=*/std::vector<float>{0.0f},
+                            /*location=*/gfx::RectF(10.0f, 20.0f, 3.0f, 2.0f),
+                            /*is_horizontal=*/true, u"\u062A",
+                            /*join_prev_actualtext=*/false));
+}
+
+// In this test, in visual presentation order, a split cluster for character
+// "\u0628\u064E" (index 1) consisting of base glyph 1 (y-offset 0.0) and
+// mark glyph 2 (y-offset 5.0) is followed by baseline glyph 3 (character
+// "\u062A", index 0) with y-offset 0.0.
+TEST(PdfInkTextBlinkTextInfoToPDFTextLinesTest,
+     RTLSplitText2DClusterFollowedByBaseline) {
+  std::vector<pdf::mojom::InkTextRunPtr> text_runs;
+  text_runs.push_back(MakeTextRunWithText(
+      gfx::RectF(100.0f, 200.0f, 20.0f, 20.0f),
+      /*typeface_run_total_advance=*/{{0.0f, 0.0f, 10.0f}},
+      {{gfx::Vector2dF(0.0f, 0.0f), gfx::Vector2dF(0.0f, 5.0f),
+        gfx::Vector2dF(0.0f, 0.0f)}},
+      u"\u062A\u0628\u064E", {1, 1, 0}));
+
+  std::vector<InkTextLine> ink_lines =
+      InkTextLine::BlinkTextInfoToPDFTextLines(text_runs, 10.0f);
+  ASSERT_THAT(ink_lines, SizeIs(1));
+  EXPECT_EQ(ink_lines[0].location, gfx::RectF(10.0f, 20.0f, 2.0f, 2.0f));
+  ASSERT_THAT(ink_lines[0].text_info, SizeIs(3));
+  EXPECT_THAT(
+      ink_lines[0].text_info[0],
+      InkTextInfoWithTextEq(FontId(0),
+                            /*glyphs=*/std::vector<uint32_t>{3},
+                            /*glyph_positions=*/std::vector<float>{0.0f},
+                            /*location=*/gfx::RectF(11.0f, 20.0f, 0.0f, 2.0f),
+                            /*is_horizontal=*/true, u"\u062A",
+                            /*join_prev_actualtext=*/false));
+  EXPECT_THAT(
+      ink_lines[0].text_info[1],
+      InkTextInfoWithTextEq(FontId(0),
+                            /*glyphs=*/std::vector<uint32_t>{2},
+                            /*glyph_positions=*/std::vector<float>{0.0f},
+                            /*location=*/gfx::RectF(10.0f, 20.5f, 0.0f, 2.0f),
+                            /*is_horizontal=*/true, u"\u0628\u064E",
+                            /*join_prev_actualtext=*/false));
+  EXPECT_THAT(
+      ink_lines[0].text_info[2],
+      InkTextInfoWithTextEq(FontId(0),
+                            /*glyphs=*/std::vector<uint32_t>{1},
+                            /*glyph_positions=*/std::vector<float>{0.0f},
+                            /*location=*/gfx::RectF(10.0f, 20.0f, 2.0f, 2.0f),
+                            /*is_horizontal=*/true, u"",
+                            /*join_prev_actualtext=*/true));
+}
+
+TEST(PdfInkTextBlinkTextInfoToPDFTextLinesTest, RTLAndLTRRuns) {
+  std::vector<pdf::mojom::InkTextRunPtr> text_runs;
+  text_runs.push_back(MakeTextRunWithText(
+      gfx::RectF(100.0f, 100.0f, 40.0f, 20.0f),
+      /*typeface_run_total_advance=*/{{0.0f, 10.0f, 20.0f, 30.0f}}, {},
+      u"\u05E9\u05DC\u05D5\u05DD", {3, 2, 1, 0}));
+  text_runs.push_back(MakeTextRunWithText(
+      gfx::RectF(100.0f, 200.0f, 50.0f, 20.0f),
+      /*typeface_run_total_advance=*/{{0.0f, 10.0f, 20.0f, 30.0f, 40.0f}}, {},
+      u"Hello", {0, 1, 2, 3, 4}));
+
+  std::vector<InkTextLine> ink_lines =
+      InkTextLine::BlinkTextInfoToPDFTextLines(text_runs, 10.0f);
+  ASSERT_THAT(ink_lines, SizeIs(2));
+
+  EXPECT_EQ(ink_lines[0].location, gfx::RectF(10.0f, 10.0f, 4.0f, 2.0f));
+  ASSERT_THAT(ink_lines[0].text_info, SizeIs(1));
+  EXPECT_THAT(
+      ink_lines[0].text_info[0],
+      InkTextInfoWithTextEq(
+          FontId(0),
+          /*glyphs=*/std::vector<uint32_t>{4, 3, 2, 1},
+          /*glyph_positions=*/std::vector<float>{0.0f, -1.0f, -2.0f, -3.0f},
+          /*location=*/gfx::RectF(13.0f, 10.0f, 1.0f, 2.0f),
+          /*is_horizontal=*/true, u"\u05E9\u05DC\u05D5\u05DD",
+          /*join_prev_actualtext=*/false));
+
+  EXPECT_EQ(ink_lines[1].location, gfx::RectF(10.0f, 20.0f, 5.0f, 2.0f));
+  ASSERT_THAT(ink_lines[1].text_info, SizeIs(1));
+  EXPECT_THAT(
+      ink_lines[1].text_info[0],
+      InkTextInfoWithTextEq(
+          FontId(0),
+          /*glyphs=*/std::vector<uint32_t>{1, 2, 3, 4, 5},
+          /*glyph_positions=*/std::vector<float>{0.0f, 1.0f, 2.0f, 3.0f, 4.0f},
+          /*location=*/gfx::RectF(10.0f, 20.0f, 5.0f, 2.0f),
+          /*is_horizontal=*/true, u"Hello",
+          /*join_prev_actualtext=*/false));
+}
+
 }  // namespace chrome_pdf

@@ -46,9 +46,12 @@ struct ExtraGlyphInfo {
 // the text is on the first `InkTextInfo` and `join_prev_actualtext` is inverted
 // for the sequence.
 //
+// This function requires `glyph_info`.character_index values in ascending
+// order. This means that RTL segments must be in logical order, so that the
+// first glyph is the rightmost glyph.
+//
 // TODO(crbug.com/510015130): check `is_horizontal`: if false the rectangle
 // would need to be split on the y-axis instead of the x-axis.
-// TODO(crbug.com/507508097): Correctly handle RTL text.
 InkTextInfo MakeSubstrTextInfo(const InkTextInfo& input,
                                float y_offset,
                                base::span<const ExtraGlyphInfo> glyph_info,
@@ -59,20 +62,8 @@ InkTextInfo MakeSubstrTextInfo(const InkTextInfo& input,
   CHECK_LT(start, end);
   CHECK_EQ(input.glyphs.size(), input.glyph_positions.size());
   CHECK_EQ(input.glyphs.size(), glyph_info.size());
-
-  // TODO(crbug.com/507508097): Correctly handle RTL text. The most immediate
-  // problem is that in RTL text the glyphs have been reversed in order by Blink
-  // so while `total_advance` is ascending `character_index` will be descending.
-  // Also PDFium will reverse the string in ActualText if it heuristically
-  // determines that the text is RTL. All of that is possible to handle
-  // correctly. The real problem is handling that with 2D glyph positioning at
-  // the same time. If the entire string is wrapped in a reverse ActualText it
-  // copies correctly but the highlight rect is the size of a single character.
-  // Reversing the order of the glyphs in the PDF stream and wrapping each
-  // individually with ActualText ends up not getting the right string and the
-  // 2D offsets end up inserting spaces and newlines in between the glyphs.
-  const bool is_rtl =
-      glyph_info.back().character_index < glyph_info.front().character_index;
+  CHECK_LE(glyph_info.front().character_index,
+           glyph_info.back().character_index);
 
   const size_t count = end - start;
   const float left = input.glyph_positions[start];
@@ -89,7 +80,8 @@ InkTextInfo MakeSubstrTextInfo(const InkTextInfo& input,
                       /*y=*/input.location.y() + y_offset,
                       /*width=*/right - left,
                       /*height=*/input.location.height());
-  uint32_t start_char = glyph_info[start].character_index;
+
+  size_t start_char = glyph_info[start].character_index;
   size_t end_char = end == glyph_info.size() ? input.text.size()
                                              : glyph_info[end].character_index;
   size_t num_chars = end_char - start_char;
@@ -104,11 +96,10 @@ InkTextInfo MakeSubstrTextInfo(const InkTextInfo& input,
   //
   // The empty() check is for test cases where the text is not filled in.
   const bool join_prev_actualtext = !input.text.empty() && num_chars == 0;
-  return InkTextInfo(input.font_id, std::move(glyphs),
-                     std::move(glyph_positions), location, input.is_horizontal,
-                     input.is_synthetic_bold, input.is_synthetic_italic,
-                     !is_rtl ? input.text.substr(start_char, num_chars) : u"",
-                     join_prev_actualtext);
+  return InkTextInfo(
+      input.font_id, std::move(glyphs), std::move(glyph_positions), location,
+      input.is_horizontal, input.is_synthetic_bold, input.is_synthetic_italic,
+      input.text.substr(start_char, num_chars), join_prev_actualtext);
 }
 
 // Check if the two glyphs belong to the same Harfbuzz glyph cluster.
@@ -346,6 +337,9 @@ std::vector<InkTextLine> InkTextLine::BlinkTextInfoToPDFTextLines(
   for (const pdf::mojom::InkTextRunPtr& text_run : text_runs) {
     const std::vector<pdf::mojom::InkTypefaceRunPtr>& typeface_runs =
         text_run->typeface_runs;
+    if (typeface_runs.empty()) {
+      continue;
+    }
 
     // Create an InkTextInfo to represent `text_run`, which will later be split
     // into typeface runs.
@@ -389,6 +383,20 @@ std::vector<InkTextLine> InkTextLine::BlinkTextInfoToPDFTextLines(
       }
     }
 
+    // Blink reverses RTL segments because the Blink layout engine wants glyphs
+    // in presentation order, but in PDFs the most correct way to insert an RTL
+    // string is in logical order (so the right most glyph comes first in the
+    // stream).
+    // Also note: Blink does bidi splitting so all InkTextRuns are exclusively
+    // LTR or RTL.
+    const bool is_rtl = extra_glyph_info.back().character_index <
+                        extra_glyph_info.front().character_index;
+    if (is_rtl) {
+      std::ranges::reverse(extra_glyph_info);
+      std::ranges::reverse(text_run_info.glyphs);
+      std::ranges::reverse(text_run_info.glyph_positions);
+    }
+
     // Process `text_run_info` and `extra_glyph_info` into separate
     // `InkTextInfo` structs each representing a single PDF text object using
     // the information in `typeface_runs`.
@@ -421,17 +429,10 @@ std::vector<InkTextLine> InkTextLine::BlinkTextInfoToPDFTextLines(
       } else {
         // Convert the character_index values to indexes into
         // `typeface_run_info`.text (from indexes into `text_run`.text).
-        //
-        // TODO(crbug.com/507508097): Correctly handle RTL text. Without this
-        // condition this index adjustment causes underflow wrap-around.
-        const bool is_rtl = extra_glyph_info_span.back().character_index <
-                            extra_glyph_info_span.front().character_index;
-        if (!is_rtl) {
-          uint32_t first_character_index =
-              typeface_run_glyph_info.front().character_index;
-          for (ExtraGlyphInfo& info : typeface_run_glyph_info) {
-            info.character_index -= first_character_index;
-          }
+        const uint32_t first_character_index =
+            typeface_run_glyph_info.front().character_index;
+        for (ExtraGlyphInfo& info : typeface_run_glyph_info) {
+          info.character_index -= first_character_index;
         }
         std::vector<InkTextInfo> split_infos =
             Split2DOffsets(typeface_run_info, typeface_run_glyph_info);
