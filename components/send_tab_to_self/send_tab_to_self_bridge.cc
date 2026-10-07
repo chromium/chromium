@@ -341,6 +341,9 @@ std::optional<syncer::ModelError> SendTabToSelfBridge::ApplySyncChangesImpl(
             local_entry->MarkOpened(remote_entry->GetOpenedTime());
             opened.push_back(local_entry);
           }
+          if (remote_entry->IsActivated() && !local_entry->IsActivated()) {
+            local_entry->MarkActivated(remote_entry->GetActivatedTime());
+          }
 
           // Write to the store.
           batch->WriteData(guid,
@@ -638,6 +641,17 @@ void SendTabToSelfBridge::MarkEntryOpenedImpl(std::string_view guid,
     return;
   }
 
+  // An entry can be opened multiple times in valid production scenarios. For
+  // example, on iOS, an entry is opened automatically in the background upon
+  // arrival, while the system push notification remains in the notification
+  // center. When the user subsequently taps that notification banner, the
+  // notification client also calls MarkEntryOpened. Early-return to preserve
+  // the initial opened time, prevent duplicate TimeSentToOpened metric
+  // emissions with distorted latencies, and avoid redundant sync mutations.
+  if (entry->IsOpened()) {
+    return;
+  }
+
   DCHECK(change_processor()->IsTrackingMetadata());
 
   entry->MarkOpened(opened_time);
@@ -665,6 +679,16 @@ void SendTabToSelfBridge::MarkEntryActivatedImpl(
         guid, std::make_pair(activated_time, entry_point));
     return;
   }
+
+  // An entry can be activated multiple times (e.g. repeated user tab switching
+  // or tapping a notification or tab-card for an already active tab).
+  // Early-return to preserve the initial activation time, prevent duplicate UMA
+  // recordings (TimeOpenedToActivated, TimeSentToActivated,
+  // ActivatedEntryPoint), and avoid redundant sync mutations.
+  if (entry->IsActivated()) {
+    return;
+  }
+
   RecordActivationMetrics(entry_point, activated_time, entry->GetOpenedTime(),
                           entry->GetSharedTime());
 
@@ -1029,7 +1053,8 @@ void SendTabToSelfBridge::DoGarbageCollection() {
     DCHECK_EQ(it.first, it.second->GetGUID());
 
     if (it.second->IsExpired(clock_->Now())) {
-      if (it.second->IsOpened() && !it.second->IsActivated()) {
+      if (it.second->IsOpened() && !it.second->IsActivated() &&
+          IsTargetedToLocalDevice(*it.second)) {
         RecordActivatedEntryPoint(
             ShareActivatedEntryPoint::kSTTSEntryExpiredWithoutActivation);
       }
