@@ -895,7 +895,7 @@ def _CheckSettingsXml(input_api, output_api):
     if f.Action() != 'A':
       continue
 
-    if not f.LocalPath().endswith('.xml') or not '/java/' in f.LocalPath():
+    if not f.LocalPath().endswith('.xml') or '/java/' not in f.LocalPath():
       continue
 
     content = input_api.ReadFile(f)

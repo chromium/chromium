@@ -60,9 +60,7 @@ def main():
       return 1
 
     with open(siso_output_path, 'r') as f:
-      commands = [
-        l.strip() for l in f if l.strip().startswith('gn edit')
-      ]
+      commands = [l.strip() for l in f if l.strip().startswith('gn edit')]
 
     if not commands:
       logging.error('Build failed and no gn edit hints were found.')

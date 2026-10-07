@@ -30,7 +30,7 @@ NOT_CHROME_ERROR = (
 )
 try:
   file = open('./DIR_METADATA', 'r')
-  if not 'project: "chromium"' in file.read():
+  if 'project: "chromium"' not in file.read():
     print(NOT_CHROME_ERROR)
     exit()
 except IOError:

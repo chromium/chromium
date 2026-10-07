@@ -336,7 +336,7 @@ def add_chrome_android_feature_flag(
   else:
     # Fallback case: No feature flags were found. We can't safely insert.
     print(
-      f"Warning: No existing feature flags found in",
+      "Warning: No existing feature flags found in",
       f"{FILE_PATHS['java_feature_list']}. Could not add new flag.",
     )
     return  # Exit the step to prevent incorrect file modification.

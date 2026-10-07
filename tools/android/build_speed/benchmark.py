@@ -146,28 +146,28 @@ _BENCHMARKS = [
         name='chrome_nosig',
         from_string='IntentHandler";',
         to_string='Different<sub>UniqueString";',
-        change_file='chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.java',  # pylint: disable=line-too-long
+        change_file='chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.java',
         can_install=True,
     ),
     Benchmark(
         name='chrome_sig',
         from_string='public ChromeApplicationImpl() {}',
-        to_string='public ChromeApplicationImpl() {};public void NewInterface<sub>Method(){}',  # pylint: disable=line-too-long
-        change_file='chrome/android/java/src/org/chromium/chrome/browser/ChromeApplicationImpl.java',  # pylint: disable=line-too-long
+        to_string='public ChromeApplicationImpl() {};public void NewInterface<sub>Method(){}',
+        change_file='chrome/android/java/src/org/chromium/chrome/browser/ChromeApplicationImpl.java',
         can_install=True,
     ),
     Benchmark(
         name='module_public_sig',
         from_string='INVALID_WINDOW_ID = -1',
         to_string='INVALID_WINDOW_ID = -<sub>',
-        change_file='chrome/browser/tabwindow/android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManager.java',  # pylint: disable=line-too-long
+        change_file='chrome/browser/tabwindow/android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManager.java',
         can_install=True,
     ),
     Benchmark(
         name='module_internal_nosig',
         from_string='"TabModelSelector',
         to_string='"DifferentUnique<sub>String',
-        change_file='chrome/browser/tabwindow/internal/android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerImpl.java',  # pylint: disable=line-too-long
+        change_file='chrome/browser/tabwindow/internal/android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerImpl.java',
         can_install=True,
     ),
     Benchmark(
@@ -211,8 +211,8 @@ _BENCHMARKS = [
     Benchmark(
         name='cta_test_sig',
         from_string='public void testStartOnBlankPage() {',
-        to_string='public void NewInterface<sub>Method(){};public void testStartOnBlankPage() {',  # pylint: disable=line-too-long
-        change_file='chrome/android/javatests/src/org/chromium/chrome/browser/ExampleFreshCtaTest.java',  # pylint: disable=line-too-long
+        to_string='public void NewInterface<sub>Method(){};public void testStartOnBlankPage() {',
+        change_file='chrome/android/javatests/src/org/chromium/chrome/browser/ExampleFreshCtaTest.java',
         can_install=True,
         can_run=True,
         test_filter='*ExampleFreshCtaTest*',
@@ -221,8 +221,8 @@ _BENCHMARKS = [
         name='chrome_junit_sig',
         from_string='@Mock Profile mProfile;',
         # @org.junit.Ignore to avoid the JUnit4TestNotRun errorprone warning.
-        to_string='@org.junit.Ignore public void NewInterface<sub>Method(){};@Mock Profile mProfile;',  # pylint: disable=line-too-long
-        change_file='chrome/android/junit/src/org/chromium/chrome/browser/ExampleRobolectricTest.java',  # pylint: disable=line-too-long
+        to_string='@org.junit.Ignore public void NewInterface<sub>Method(){};@Mock Profile mProfile;',
+        change_file='chrome/android/junit/src/org/chromium/chrome/browser/ExampleRobolectricTest.java',
         can_run=True,
         test_filter='*ExampleRobolectricTest*',
     ),
@@ -747,7 +747,7 @@ def main():
             )
         print(json.dumps(json_results, indent=2))
     elif not args.quiet:
-        print(f'Summary')
+        print('Summary')
         print(f'emulator: {args.emulator}')
         print(f'gn args: {" ".join(gn_args)}')
         print(f'target: {target}')

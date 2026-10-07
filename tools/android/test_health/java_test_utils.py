@@ -139,7 +139,7 @@ def _get_java_test_health(java_ast: CompilationUnit) -> JavaTestHealth:
     for i in java_ast.imports:
         if (
             'org.chromium.chrome.test.transit.' in i.path
-            and not i.path in SHALLOW_PUBLIC_TRANSIT_DEPS
+            and i.path not in SHALLOW_PUBLIC_TRANSIT_DEPS
         ):
             print(i.path)
             tags.add(_TAG_PUBLIC_TRANSIT)

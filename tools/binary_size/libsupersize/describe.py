@@ -243,7 +243,7 @@ class DescriberText(Describer):
       last_field = 'count=%d' % len(sym)
     else:
       syms = [sym.before_symbol, sym.after_symbol] if sym.IsDelta() else [sym]
-      num_aliases = [s.num_aliases for s in syms if not s is None]
+      num_aliases = [s.num_aliases for s in syms if s is not None]
       if num_aliases[0] != num_aliases[-1]:  # If 2 distinct values.
         last_field = 'num_aliases=%d->%d' % tuple(num_aliases)
       elif num_aliases[0] > 1 or self.verbose:

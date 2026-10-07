@@ -4,7 +4,12 @@
 # found in the LICENSE file.
 
 from __future__ import print_function
-import argparse, os, sys, json, subprocess, pickle
+import argparse
+import os
+import sys
+import json
+import subprocess
+import pickle
 
 try:
   from StringIO import StringIO  # Python 2

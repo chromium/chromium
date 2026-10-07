@@ -795,7 +795,6 @@ def _RunCmd(cmd, cwd=None, verbose=False, exit_on_failure=True):
   if verbose:
     proc_stdout, proc_stderr = sys.stdout, subprocess.STDOUT
 
-  # pylint: disable=unexpected-keyword-arg
   proc = subprocess.Popen(
     cmd, cwd=cwd, stdout=proc_stdout, stderr=proc_stderr, encoding='utf-8'
   )

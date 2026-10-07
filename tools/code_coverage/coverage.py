@@ -1380,7 +1380,7 @@ def Main():
     binary_paths = [_GetBinaryPathForWebTests()]
   elif args.command:
     for i in range(len(args.command)):
-      assert not 'run_web_tests.py' in args.command[i], (
+      assert 'run_web_tests.py' not in args.command[i], (
         'run_web_tests.py is not supported via --command argument. '
         'Please use --run-web-tests argument instead.'
       )

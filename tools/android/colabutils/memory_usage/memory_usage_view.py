@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 
 _HAS_IPYTHON = False
 try:
-    if not 'unittest' in sys.modules:
+    if 'unittest' not in sys.modules:
         # Do not import IPython when running unit tests to avoid module name
         # conflicts. There is `import cProfile as profile` in IPython.
         from IPython.display import HTML, display

@@ -657,7 +657,7 @@ def run_heavyweight_resolution(src_root, revision, build_dir, target_file):
       # 6. Load isolate map at revision (from worktree)
       pyl_path = wt_path / ISOLATE_MAP_PATH
       if not pyl_path.exists():
-        print(f'Error: Isolate map not found in worktree.', file=sys.stderr)
+        print('Error: Isolate map not found in worktree.', file=sys.stderr)
         return None
 
       try:

@@ -136,12 +136,10 @@ def run_and_parse_list_java_targets(
 
     Returns a dict similar to parse_original_targets_and_jars.
     """
-    # pylint: disable=line-too-long
     # Example output with build_output_dir as 'out/Debug':
     # //gpu:gpu_benchmark: obj/gpu/gpu_benchmark__apk.processed.jar
     # //media/midi:midi_java: obj/media/midi/midi_java.javac.jar
     # //clank/third_party/google3:clock_java: ../../clank/third_party/google3/libs/clock.jar
-    # pylint: enable=line-too-long
     cmd = [
         str(src_path / 'build' / 'android' / 'list_java_targets.py'),
         '-C',
@@ -154,13 +152,11 @@ def run_and_parse_list_java_targets(
         cmd.append('-q')
     output = subprocess_utils.run_command(cmd)
     jar_dict: JarTargetDict = {}
-    # pylint: disable=line-too-long
     # Resulting jar_dict after parsing: {
     #   '//gpu:gpu_benchmark': pathlib.Path('out/Debug/obj/gpu/gpu_benchmark__apk.processed.jar'),
     #   '//media/midi:midi_java': pathlib.Path('out/Debug/obj/media/midi/midi_java.javac.jar'),
     #   '//clank/third_party/google3:clock_java: pathlib.Path('out/Debug/../../clank/third_party/google3/libs/clock.jar'),
     # }
-    # pylint: enable=line-too-long
     for line in output.splitlines():
         target_name, jar_path = line.split(': ', 1)
         jar_dict[target_name] = build_output_dir / jar_path
@@ -356,7 +352,7 @@ def main():
             )
 
     if args.skip_rebuild:
-        logging.info(f'Skipping rebuilding jars.')
+        logging.info('Skipping rebuilding jars.')
     else:
         # Always re-compile jars to have the most up-to-date jar files. This is
         # especially important when running this script locally and testing out

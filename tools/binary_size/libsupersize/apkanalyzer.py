@@ -101,7 +101,6 @@ def _ParseApkAnalyzerOutput(stdout, stderr):
     try:
       vals = line.split()
       # We want to name these columns so we know exactly which is which.
-      # pylint: disable=unused-variable
       node_type, state, defined_methods, referenced_methods, size, name = (
         vals[0],
         vals[1],

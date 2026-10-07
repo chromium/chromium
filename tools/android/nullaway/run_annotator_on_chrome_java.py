@@ -188,8 +188,8 @@ def main():
     if os.path.exists(outdir):
         shutil.rmtree(outdir)
 
-    compile_script = f'nullaway-annotator-compile.sh'
-    compile_logs = f'nullaway-annotator-compile.log'
+    compile_script = 'nullaway-annotator-compile.sh'
+    compile_logs = 'nullaway-annotator-compile.log'
     if os.path.exists(compile_logs):
         os.unlink(compile_logs)
 

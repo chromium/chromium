@@ -199,7 +199,7 @@ def scrape_owners(root, include_subdirs):
       else:
         data[rel_dirname] = {}
       for tag in ('component', 'os', 'team'):
-        if not tag in data[rel_dirname]:
+        if tag not in data[rel_dirname]:
           ancestor_tag = nearest_ancestor_tag(dirname, tag)
           if ancestor_tag:
             data[rel_dirname][tag] = ancestor_tag

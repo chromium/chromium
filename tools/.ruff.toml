@@ -10,3 +10,19 @@ exclude = [
 
 [format]
 quote-style = "preserve"
+
+[lint]
+ignore = [
+  "E402",  # module-import-not-at-top-of-file
+  "E711",  # none-comparison
+  "E712",  # true-false-comparison
+  "E721",  # type-comparison
+  "E722",  # bare-except
+  "E731",  # lambda-assignment
+  "E741",  # ambiguous-variable-name
+  "F401",  # unused-import
+  "F811",  # redefined-while-unused
+  "F821",  # undefined-name
+  "F841",  # unused-variable
+]
+

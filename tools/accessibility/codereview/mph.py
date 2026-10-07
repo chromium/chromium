@@ -112,7 +112,7 @@ class GerritParser(codereview_parser.Parser):
     self._overall_comment = comment
 
   def OnFileComment(self, path, line, text, comment):
-    if not path in self._comments:
+    if path not in self._comments:
       self._comments[path] = []
 
     self._comments[path].append(

@@ -690,7 +690,7 @@ def _run_testcases(
       whether it succeeded or not.
   """
   profraw_dir = tempfile.TemporaryDirectory()
-  profraw_file = os.path.join(profraw_dir.name, f'testcase_strategy_%p.profraw')
+  profraw_file = os.path.join(profraw_dir.name, 'testcase_strategy_%p.profraw')
   env['LLVM_PROFILE_FILE'] = profraw_file
   failures = 0
   total_runs = 0

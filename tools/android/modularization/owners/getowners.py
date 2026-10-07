@@ -120,7 +120,7 @@ def main():
 
   logging.info(f'Writing data out to {arguments.output}')
   owners_exporter.to_json_file(data, arguments.output)
-  logging.info(f'Completed.')
+  logging.info('Completed.')
 
 
 def _process_requested_path(

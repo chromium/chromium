@@ -236,7 +236,6 @@ def upload_zip_to_drive_folder(creds, zip_file):
         name = os.path.basename(zip_file)
         file_metadata = {"name": name, "parents": [GOOGLE_DRIVE_FOLDER_ID]}
         media = MediaFileUpload(zip_file, mimetype="application/zip")
-        # pylint: disable=maybe-no-member
         file = (
             service.files()
             .create(body=file_metadata, media_body=media, fields="id")

@@ -87,7 +87,7 @@ def main(argv):
     option_parser.print_help()
     sys.exit(1)
 
-  if not options.browser in constants.PACKAGE_INFO.keys():
+  if options.browser not in constants.PACKAGE_INFO.keys():
     option_parser.error('Unknown browser option ' + options.browser)
 
   devil_chromium.Initialize()

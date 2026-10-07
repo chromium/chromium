@@ -15,16 +15,7 @@ PRESUBMIT_VERSION = '2.0.0'
 def CheckLint(input_api, output_api):
   if not input_api.HasAffectedFiles(extensions=('.py', '.js', '.ts')):
     return []
-  disabled_warnings = [
-    'bad-indentation',
-    'missing-module-docstring',
-    'unspecified-encoding',
-    'used-before-assignment',
-  ]
-  results = input_api.canned_checks.RunPylint(
-    input_api, output_api, disabled_warnings=disabled_warnings, version='3.2'
-  )
-  results += input_api.canned_checks.CheckPatchFormatted(
+  results = input_api.canned_checks.CheckPatchFormatted(
     input_api, output_api, check_js=True
   )
   try:
@@ -33,7 +24,6 @@ def CheckLint(input_api, output_api):
     sys.path += [input_api.os_path.join(cwd, '..', '..', '..')]
     # Suppress import warning because the import needs to be done inside a
     # try/finally block with sys.path modifications.
-    # pylint: disable=import-outside-toplevel
     from web_dev_style import presubmit_support
 
     results += presubmit_support.CheckStyleESLint(input_api, output_api)

@@ -4,8 +4,6 @@
 # found in the LICENSE file.
 """Unit tests for inspect_coverage_build.py."""
 
-# pylint: disable=line-too-long
-
 import contextlib
 import io
 import os

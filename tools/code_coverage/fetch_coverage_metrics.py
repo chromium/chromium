@@ -68,7 +68,7 @@ def fetch_gerrit_file_lines(
     decoded = base64.b64decode(data).decode('utf-8', errors='replace')
     lines = decoded.splitlines()
     return {str(num): line for num, line in enumerate(lines, start=1)}
-  except Exception as e:  # pylint: disable=broad-except
+  except Exception as e:
     print(f'Error decoding file {file_path}: {e}', file=sys.stderr)
     return {}
 
@@ -139,7 +139,7 @@ def query_uncovered_lines(
         if line_info.get('count') == 0:
           l_num = str(line_info.get('line'))
           uncovered_dict[l_num] = file_lines.get(l_num, '')
-  except Exception as e:  # pylint: disable=broad-except
+  except Exception as e:
     print(f'Error processing lines for {path}: {e}', file=sys.stderr)
   return uncovered_dict
 
@@ -238,7 +238,7 @@ def main() -> None:
 
   try:
     percentages_data = json.loads(resp_bytes.decode('utf-8'))
-  except Exception as e:  # pylint: disable=broad-except
+  except Exception as e:
     print(f'Failed to parse percentages JSON: {e}', file=sys.stderr)
     sys.exit(1)
 

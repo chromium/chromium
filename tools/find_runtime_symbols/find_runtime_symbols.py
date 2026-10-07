@@ -23,10 +23,10 @@ _TOOLS_LINUX_PATH = os.path.join(_BASE_PATH, os.pardir, 'linux')
 sys.path.insert(0, _TOOLS_LINUX_PATH)
 
 
-from procfs import ProcMaps  # pylint: disable=F0401
+from procfs import ProcMaps
 
 try:
-  from collections import OrderedDict  # pylint: disable=E0611
+  from collections import OrderedDict
 except ImportError:
   _SIMPLEJSON_PATH = os.path.join(
     _BASE_PATH, os.pardir, os.pardir, 'third_party'
@@ -90,7 +90,6 @@ class RuntimeSymbolsInProcess:
     with open(os.path.join(prepared_data_dir, _FILES_FILENAME), mode='r') as f:
       files = json.load(f)
 
-    # pylint: disable=W0212
     for vma in symbols_in_process.maps.iter(ProcMaps.executable_and_constants):
       file_entry = files.get(vma.name)
       if not file_entry:

@@ -282,7 +282,7 @@ def get_deps(ninja_path, build_dir, target):
     matched = NODE_PATTERN.search(line)
     if matched:
       path = matched.group(1)
-      if not os.path.splitext(path)[1] in CHECK_EXTS:
+      if os.path.splitext(path)[1] not in CHECK_EXTS:
         continue
       if os.path.isabs(path):
         print(

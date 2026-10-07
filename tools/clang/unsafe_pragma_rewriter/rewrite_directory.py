@@ -120,7 +120,7 @@ def main():
       if verbose:
         print("Skipping conditionally-compiled files:")
         print("\n".join(iffy_files), "\n")
-      source_files = [x for x in source_files if not x in set(iffy_files)]
+      source_files = [x for x in source_files if x not in set(iffy_files)]
 
     if not source_files:
       print("No remaining files")
@@ -140,7 +140,7 @@ def main():
     source_files = [
       x
       for x in source_files
-      if not 'unknown target "../../' + x in ninja.stderr
+      if 'unknown target "../../' + x not in ninja.stderr
     ]
 
   if verbose:

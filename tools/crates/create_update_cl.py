@@ -220,7 +220,7 @@ def DiffCrateIds(
                 old_crate_id = result[key]
                 new_crate_id = crate_id
                 raise RuntimeError(
-                    f"Error calculating a `Cargo.lock` diff:"
+                    "Error calculating a `Cargo.lock` diff:"
                     + f" conflict between {old_crate_id} and "
                     + f"{new_crate_id}"
                 )
@@ -437,7 +437,7 @@ def UpdateCrate(
     GitAddRustFiles()
     Git("commit", "-m", description)
     if args.upload:
-        print(f"  Running `git cl upload ...` ...")
+        print("  Running `git cl upload ...` ...")
         GitClUpload(
             "--hashtag=cratesio-autoupdate",
             "--cc=chrome-rust-experiments+autoupdate@google.com",
@@ -509,7 +509,7 @@ def FinishUpdatingCrate(
 
     # git mv <vendor/old version> <vendor/new version>
     print(
-        f"  Running `git mv <old dir> <new dir>` "
+        "  Running `git mv <old dir> <new dir>` "
         + "(for better diff of major version updates)..."
     )
     for update in diff.updates:
@@ -538,7 +538,7 @@ def FinishUpdatingCrate(
         Git("reset", "--hard", "HEAD^")  # Undoing `git mv ...`
 
     # gnrt vendor
-    print(f"  Running `gnrt vendor`...")
+    print("  Running `gnrt vendor`...")
     Gnrt("vendor")
     GitAddRustFiles()
     # `INCLUSIVE_LANG_SCRIPT` below uses `git grep` and therefore depends on the
@@ -557,7 +557,7 @@ def FinishUpdatingCrate(
     GitCommit(args, "gnrt vendor")
 
     # gnrt gen
-    print(f"  Running `gnrt gen`...")
+    print("  Running `gnrt gen`...")
     Gnrt("gen")
     # Some crates (e.g. ones in the `remove_crates` list of `gnrt_config.toml`)
     # may result in no changes - this is why we have an `if` below...
@@ -567,7 +567,7 @@ def FinishUpdatingCrate(
 
     # Remove old `//third_party/rust/foo/v<old>` directories
     # (in case this is a major version update)
-    print(f"  Removing //third_party/rust/.../<old_epoch> ...")
+    print("  Removing //third_party/rust/.../<old_epoch> ...")
     for update in diff.updates:
         old_target_dir = crate_utils.ConvertCrateIdToBuildDir(
             update.old_crate_id
@@ -605,7 +605,7 @@ def FinishUpdatingCrate(
 
     # Fix up the target names
     # (in case this is a major version update)
-    print(f"  Updating the target name in BUILD.gn files...")
+    print("  Updating the target name in BUILD.gn files...")
     for update in diff.updates:
         old_target = crate_utils.ConvertCrateIdToGnLabel(update.old_crate_id)
         new_target = crate_utils.ConvertCrateIdToGnLabel(update.new_crate_id)
@@ -645,7 +645,7 @@ def FinishUpdatingCrate(
     )
 
     if args.upload:
-        print(f"  Updating CL description on Gerrit...")
+        print("  Updating CL description on Gerrit...")
         final_description = CreateCommitDescription(title, final_diff)
         GitClUpload(f"--commit-description={final_description}")
 
@@ -727,7 +727,7 @@ def GitCommit(args, title, error_if_no_changes=True):
     if IsGitDirty():
         Git("commit", "-m", title)
         if args.upload:
-            print(f"  Running `git cl upload ...` ...")
+            print("  Running `git cl upload ...` ...")
             GitClUpload("-m", title)
         return True
     else:
@@ -762,7 +762,7 @@ def BreakingUpdate(args):
 
     # gnrt update
     old_crate_ids = crate_utils.GetCurrentCrateIds()
-    print(f"Creating a major version update CL...")
+    print("Creating a major version update CL...")
     joined_remaining_args = ' '.join(args.remaining_args)
     print(f"  Running `gnrt update -- {joined_remaining_args}` ...")
     GnrtUpdate(args.remaining_args, check_stdout=True, check_exitcode=True)
@@ -781,7 +781,7 @@ def BreakingUpdate(args):
     GitAddRustFiles()
     Git("commit", "-m", description)
     if args.upload:
-        print(f"  Running `git cl upload ...` ...")
+        print("  Running `git cl upload ...` ...")
         GitClUpload(
             "--hashtag=cratesio-autoupdate",
             "--cc=chrome-rust-experiments+autoupdate@google.com",
@@ -827,7 +827,7 @@ def AutoUpdate(args):
                 )
         todo_crate_updates = todo_crate_updates_without_skips
         print(
-            f"Skipping the following crates because of `--skip`: "
+            "Skipping the following crates because of `--skip`: "
             + f"{', '.join(skipped_crate_names)}"
         )
 
@@ -939,9 +939,9 @@ def ManualUpdate(args):
     title = args.title
 
     RaiseErrorIfGitIsDirty()
-    print(f"Post-processing a manual edit of `Cargo.toml`...")
+    print("Post-processing a manual edit of `Cargo.toml`...")
 
-    print(f"  Running `gnrt vendor` to detect `Cargo.lock` changes...")
+    print("  Running `gnrt vendor` to detect `Cargo.lock` changes...")
     old_crate_ids = crate_utils.GetCurrentCrateIds()
     Gnrt("vendor")
     new_crate_ids = crate_utils.GetCurrentCrateIds()

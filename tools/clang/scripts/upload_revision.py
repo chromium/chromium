@@ -256,7 +256,7 @@ def PatchRustRemoveOverride():
   REV = '([0-9a-z-]+)'
   content = re.sub(
     f'OVERRIDE_CLANG_REVISION = \'{REV}\'',
-    f'OVERRIDE_CLANG_REVISION = None',
+    'OVERRIDE_CLANG_REVISION = None',
     content,
     count=1,
   )

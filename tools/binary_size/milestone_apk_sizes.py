@@ -6,7 +6,6 @@
 """Prints the large commits given a .csv file from a telemetry size graph."""
 
 # Our version of pylint doesn't know about python3 yet.
-# pylint: disable=unexpected-keyword-arg
 import argparse
 import csv
 import json

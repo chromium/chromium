@@ -9,7 +9,8 @@ import pathlib
 import subprocess
 import unittest
 
-import git_metadata_utils, subprocess_utils
+import git_metadata_utils
+import subprocess_utils
 
 _COMMAND_PROCESS_ERROR_LOG_REGEX = (
     r'Command ".*" failed with code \d+\.'

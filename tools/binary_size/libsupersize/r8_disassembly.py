@@ -125,7 +125,6 @@ class _WrapPeekableNoNewLine:
     )
 
 
-# pylint: disable=stop-iteration-return
 def _ExtractMethodInfo(it):
   """Extracts coarse method data from R8 DEX dump.
 

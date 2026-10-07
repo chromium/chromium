@@ -7,7 +7,10 @@
 # with some features enabled and disabled.
 # Run from the root of the Chromium src directory. -h for help.
 # The tool expects that the captured_sites_interactive_tests binary is built.
-import argparse, json, os, urllib.parse
+import argparse
+import json
+import os
+import urllib.parse
 
 
 # Extracts the names of all non-disabled captured site tests.

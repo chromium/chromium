@@ -102,7 +102,6 @@ def CollectAliasesByAddress(elf_path):
   # About 60mb of output, but piping takes ~30s, and loading it into RAM
   # directly takes 3s.
   args = [path_util.GetNmPath(), '--no-sort', '--defined-only', elf_path]
-  # pylint: disable=unexpected-keyword-arg
   proc = subprocess.Popen(
     args, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, encoding='utf-8'
   )
@@ -168,7 +167,6 @@ def CreateUniqueSymbols(elf_path, section_ranges):
     '--print-size',
     elf_path,
   ]
-  # pylint: disable=unexpected-keyword-arg
   stdout = subprocess.check_output(
     args, stderr=subprocess.DEVNULL, encoding='utf-8'
   )

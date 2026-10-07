@@ -21,7 +21,7 @@ _TOOLS_LINUX_PATH = os.path.join(BASE_PATH, os.pardir, 'linux')
 sys.path.insert(0, _TOOLS_LINUX_PATH)
 
 
-from procfs import ProcMaps  # pylint: disable=F0401
+from procfs import ProcMaps
 
 
 LOGGER = logging.getLogger('prepare_symbol_info')

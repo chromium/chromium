@@ -40,7 +40,6 @@ _THRESHOLD_FOR_PAGER = 50
 def _LessPipe():
   """Output to `less`. Yields a file object to write to."""
   try:
-    # pylint: disable=unexpected-keyword-arg
     proc = subprocess.Popen(
       ['less'], stdin=subprocess.PIPE, stdout=sys.stdout, encoding='utf-8'
     )
@@ -578,9 +577,7 @@ class _Session:
       if isinstance(value, types.ModuleType):
         continue
       if key.startswith('size_info'):
-        # pylint: disable=no-member
         lines.append(f'  {key}: Loaded from {value.size_path}')
-        # pylint: enable=no-member
     lines.append('*' * 80)
     return '\n'.join(lines)
 

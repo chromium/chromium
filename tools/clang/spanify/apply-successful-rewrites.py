@@ -614,7 +614,7 @@ def main():
         cwd=GetCWD(project),
     )
 
-    CreateNewBranch(f'spanification_apply_patches_base', project)
+    CreateNewBranch('spanification_apply_patches_base', project)
 
     # Look in the scratch directory and find all our patches.
     patches = FindSuccessfulPatchNumbers(filter_type)
@@ -672,10 +672,10 @@ def main():
         print('finished', flush=True)
         run(f'gn clean out/{target}', cwd=GetCWD(project))
 
-    print(f'working patches for all targets:', flush=True)
+    print('working patches for all targets:', flush=True)
     print(curr_result, flush=True)
     # Now we create the final branch to store the applied edits.
-    branch_name = f'spanification_apply_all_targets_final_patches'
+    branch_name = 'spanification_apply_all_targets_final_patches'
     CreateNewBranch(branch_name, project)
     applied = ApplyEdits(curr_result, branch_name, project)
     assert applied, "reached end but couldn't apply edits"
