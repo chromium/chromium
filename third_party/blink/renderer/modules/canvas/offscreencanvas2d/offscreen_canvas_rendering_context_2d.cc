@@ -214,9 +214,9 @@ bool OffscreenCanvasRenderingContext2D::InitializeResourceProvider() {
   // buffers are supported (e.g., IOSurface), but is not generically true on all
   // platforms. CanvasRenderingContext2D handles this by using a SharedImage
   // provider with SW raster/GPU compositing *only if* native mappable buffers
-  // are provided. However, in that case the fallback usage of a bitmap provider
-  // is still able to display to the screen, which is not the case here. We need
-  // to determine a proper fix for this use case.
+  // are provided. However, in that case the fallback usage of a software
+  // surface is still able to display to the screen, which is not the case here.
+  // We need to determine a proper fix for this use case.
   const bool use_shared_image =
       use_gpu_raster || (host->HasPlaceholderCanvas() &&
                          SharedGpuContext::IsGpuCompositingEnabled());
@@ -247,13 +247,13 @@ bool OffscreenCanvasRenderingContext2D::InitializeResourceProvider() {
   }
 
   if (!GetSharedImageProvider()) {
-    // Last resort fallback is to use the bitmap provider. Using this
+    // Last resort fallback is to use a software surface. Using this
     // path is normal for software-rendered OffscreenCanvases that have no
     // placeholder canvas. If there is a placeholder, its content will not be
     // visible on screen, but at least readbacks will work. Failure to create
-    // another type of resource prover above is a sign that the graphics
+    // a SharedImage provider above is a sign that the graphics
     // pipeline is in a bad state (e.g. gpu process crashed, out of memory)
-    CreateBitmapProvider();
+    CreateSoftwareSurface();
   }
 
   if (HasResourceProvider()) {

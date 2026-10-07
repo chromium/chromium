@@ -46,7 +46,7 @@ assert_true(!!window.chrome && !!chrome.gpuBenchmarking,
 
 }, 'GPU context can be lost while canvas has an invalid size.',
    // Exclude WORKER because chrome.gpuBenchmarking isn't available on workers.
-   // Use PLACEHOLDER because OFFSCREEN uses a Canvas2DBitmapProvider
+   // Use PLACEHOLDER because OFFSCREEN uses a software surface
    // in CPU compositing mode, which cannot lose context.
    {testTypes: [CanvasTestType.HTML, CanvasTestType.PLACEHOLDER]});
 

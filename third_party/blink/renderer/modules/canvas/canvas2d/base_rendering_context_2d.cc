@@ -279,7 +279,7 @@ void BaseRenderingContext2D::SetSharedImageProviderForTesting(
   shared_image_provider_ = std::move(provider);
 }
 
-void BaseRenderingContext2D::CreateBitmapProvider() {
+void BaseRenderingContext2D::CreateSoftwareSurface() {
   const gfx::Size size = Host()->Size();
   const viz::SharedImageFormat format = color_params_.GetSharedImageFormat();
   const SkAlphaType alpha_type = color_params_.GetAlphaType();

@@ -370,7 +370,7 @@ class MODULES_EXPORT BaseRenderingContext2D
   void CreateSharedImageProviderForSoftwareCompositor();
   void SetSharedImageProviderForTesting(
       std::unique_ptr<Canvas2DResourceProvider> provider);
-  void CreateBitmapProvider();
+  void CreateSoftwareSurface();
   void RecordResourceProviderHistograms();
   scoped_refptr<StaticBitmapImage> Snapshot();
 

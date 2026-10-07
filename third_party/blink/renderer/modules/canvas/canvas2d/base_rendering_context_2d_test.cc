@@ -115,7 +115,7 @@ class TestRenderingContext2D final
     return GetPaintCanvas();
   }
   using BaseRenderingContext2D::ConfigureRecorder;
-  using BaseRenderingContext2D::CreateBitmapProvider;
+  using BaseRenderingContext2D::CreateSoftwareSurface;
   using BaseRenderingContext2D::FlushIfRecordingLimitExceeded;
   using BaseRenderingContext2D::Snapshot;
   void WillDraw(const gfx::Rect& dirty_rect,
@@ -354,7 +354,7 @@ TEST(BaseRenderingContext2DTest, HdrMetadata) {
   attrs.hdr_metadata = hdr_metadata;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope, attrs);
   context->HostAsHTMLCanvasElement()->SetSize(kSize);
-  context->CreateBitmapProvider();
+  context->CreateSoftwareSurface();
 
   ASSERT_TRUE(context->HasResourceProvider());
   scoped_refptr<StaticBitmapImage> snapshot = context->Snapshot();

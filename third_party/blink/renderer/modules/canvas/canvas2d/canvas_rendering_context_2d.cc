@@ -1123,7 +1123,7 @@ void CanvasRenderingContext2D::CreateProvider() {
     // The final fallback is to raster into a bitmap that will then either be
     // uploaded into GPU memory (for GPU compositing) or copied into the Viz
     // process (for software compositing).
-    CreateBitmapProvider();
+    CreateSoftwareSurface();
   }
   if (HasResourceProvider()) {
     ConfigureRecorder(
@@ -1330,12 +1330,12 @@ void CanvasRenderingContext2D::SetCanvas2DResourceProviderForTesting(
   }
 }
 
-void CanvasRenderingContext2D::CreateBitmapProviderForTesting() {
+void CanvasRenderingContext2D::CreateSoftwareSurfaceForTesting() {
   canvas()->DiscardResources();
   hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
   ResetResourceProvider();
   ResetRecorder();
-  CreateBitmapProvider();
+  CreateSoftwareSurface();
   if (HasResourceProvider()) {
     ConfigureRecorder(canvas()->Size(), /*is_graphite=*/false);
   }

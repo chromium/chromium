@@ -748,9 +748,8 @@ TEST_P(CanvasRenderingContext2DTest,
   CreateContext(kNonOpaque);
   EXPECT_FALSE(!!CanvasElement().RateLimiter());
 
-  // Install a Canvas2DBitmapProvider, which does not support direct
-  // compositing.
-  Context2D()->CreateBitmapProviderForTesting();
+  // Install a software surface, which does not support direct compositing.
+  Context2D()->CreateSoftwareSurfaceForTesting();
 
   CanvasElement().SetIsDisplayed(true);
   EXPECT_FALSE(!!CanvasElement().RateLimiter());
@@ -860,9 +859,8 @@ TEST_P(CanvasRenderingContext2DTest, FlushNotDeferredWhenNonComposited) {
   ScopedCanvas2dDeferredFlushForTest enable_feature(true);
   CreateContext(kNonOpaque);
 
-  // Install a Canvas2DBitmapProvider, which does not support direct
-  // compositing.
-  Context2D()->CreateBitmapProviderForTesting();
+  // Install a software surface, which does not support direct compositing.
+  Context2D()->CreateSoftwareSurfaceForTesting();
   ASSERT_FALSE(Context2D()->IsComposited());
 
   // Non-composited canvas flushes immediately on kCanvasPushFrame.
