@@ -174,8 +174,9 @@ MemorySearchResult CreateMemorySearchResultForEntity(
       case EntityInstance::RecordType::kLocal:
         return true;
       case EntityInstance::RecordType::kServerWallet:
-      case EntityInstance::RecordType::kPersonalContext:
         return false;
+      case EntityInstance::RecordType::kPersonalContext:
+        NOTREACHED();
     }
     NOTREACHED();
   }();
@@ -310,7 +311,8 @@ std::vector<MemorySearchResult> FetchAutofillAiAttributeData(
   entries.reserve(entity_data_manager->GetEntityInstances().size());
   for (const EntityInstance& entity :
        entity_data_manager->GetEntityInstances()) {
-    if (entity.type() != attribute_type.entity_type()) {
+    if (entity.type() != attribute_type.entity_type() ||
+        entity.record_type() == EntityInstance::RecordType::kPersonalContext) {
       continue;
     }
     base::optional_ref<const AttributeInstance> attr =

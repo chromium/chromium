@@ -522,6 +522,41 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_AutofillAiAttributeData) {
           /*is_obfuscated=*/false, vehicle.guid().value())));
 }
 
+// Tests that RetrieveAll skips EntityInstance entries with
+// RecordType::kPersonalContext while returning kLocal and kServerWallet
+// entries.
+TEST_F(AutofillDataProviderTest,
+       RetrieveAll_FiltersOutPersonalContextEntities) {
+  EntityInstance local_vehicle = test::GetVehicleEntityInstanceWithRandomGuid(
+      {.plate = u"LOCAL1",
+       .number = u"VIN1",
+       .record_type = EntityInstance::RecordType::kLocal,
+       .use_count = 1});
+  EntityInstance wallet_vehicle = test::GetVehicleEntityInstanceWithRandomGuid(
+      {.plate = u"WALLET1",
+       .number = u"VIN2",
+       .record_type = EntityInstance::RecordType::kServerWallet,
+       .use_count = 1});
+  EntityInstance pcontext_vehicle =
+      test::GetVehicleEntityInstanceWithRandomGuid(
+          {.plate = u"PCONTEXT1",
+           .number = u"VIN3",
+           .record_type = EntityInstance::RecordType::kPersonalContext,
+           .use_count = 1});
+
+  entity_data_manager().AddOrUpdateEntityInstance(local_vehicle);
+  entity_data_manager().AddOrUpdateEntityInstance(wallet_vehicle);
+  entity_data_manager().SetPersonalContextEntitiesForTesting(
+      {pcontext_vehicle});
+  WaitForDatabase();
+  ASSERT_EQ(entity_data_manager().GetEntityInstances().size(), 3u);
+
+  EXPECT_THAT(
+      RetrieveAllHelper(retriever(), MemoryDataType::kVehiclePlateNumber),
+      UnorderedElementsAre(
+          Field(&MemorySearchResult::value, Eq(u"LOCAL1")),
+          Field(&MemorySearchResult::value, Eq(u"WALLET1"))));
+}
 
 // Tests that RetrieveAll omits address suggestions for profiles that only have
 // a name but no address data.
