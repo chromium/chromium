@@ -470,20 +470,28 @@ TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataValid_NonNumericId) {
   }
 }
 
-TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid) {
+TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid_Id) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableWalletDirectOffers};
   // Invalid id.
   EXPECT_FALSE(bridge().IsEntityDataValid(
       *CreateEntityDataFromSpecifics(TestOfferSpecifics(kInvalidId))));
+}
 
+TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid_OfferCode) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletDirectOffers};
   // Invalid offer code.
   EXPECT_FALSE(bridge().IsEntityDataValid(
       *CreateEntityDataFromSpecifics(TestOfferSpecifics(
           kId1, /*offer_code=*/"",
           /*description=*/"50% off your next purchase",
           /*pass_view_url=*/"https://safeway.com/offer-details"))));
+}
 
+TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid_OfferDetailsUrl) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletDirectOffers};
   // Invalid offer details url.
   EXPECT_FALSE(bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(
       TestOfferSpecifics(kId1, /*offer_code=*/"SAFEWAY50",
@@ -502,7 +510,11 @@ TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid) {
   missing_pass_view_url_specifics.clear_pass_view_url();
   EXPECT_FALSE(bridge().IsEntityDataValid(
       *CreateEntityDataFromSpecifics(missing_pass_view_url_specifics)));
+}
 
+TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid_IssuerDomains) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletDirectOffers};
   // Missing issuer domains.
   sync_pb::AutofillValuableSpecifics empty_issuer_domains_specifics =
       TestOfferSpecifics(kId1);
@@ -524,7 +536,11 @@ TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid) {
       "invalid_url");
   EXPECT_FALSE(bridge().IsEntityDataValid(
       *CreateEntityDataFromSpecifics(invalid_issuer_domain_specifics)));
+}
 
+TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid_OfferShortTitle) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletDirectOffers};
   // Invalid offer short title.
   EXPECT_FALSE(bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(
       TestOfferSpecifics(kId1, /*offer_code=*/"SAFEWAY50",
@@ -539,7 +555,11 @@ TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid) {
   empty_short_title_specifics.mutable_offer()->clear_offer_short_title();
   EXPECT_FALSE(bridge().IsEntityDataValid(
       *CreateEntityDataFromSpecifics(empty_short_title_specifics)));
+}
 
+TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid_Expiry) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletDirectOffers};
   // Invalid expiry (<= 0).
   EXPECT_FALSE(bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(
       TestOfferSpecifics(kId1, /*offer_code=*/"SAFEWAY50",
@@ -556,6 +576,27 @@ TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid) {
       ->clear_expiration_time_unix_epoch_micros();
   EXPECT_FALSE(bridge().IsEntityDataValid(
       *CreateEntityDataFromSpecifics(missing_expiry_specifics)));
+}
+
+// The issue time is optional, so offers without one must not be dropped.
+TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataValid_OptionalIssueTime) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletDirectOffers};
+  // Missing issue time.
+  sync_pb::AutofillValuableSpecifics missing_issue_time_specifics =
+      TestOfferSpecifics(kId1);
+  missing_issue_time_specifics.mutable_offer()
+      ->clear_issue_time_unix_epoch_micros();
+  EXPECT_TRUE(bridge().IsEntityDataValid(
+      *CreateEntityDataFromSpecifics(missing_issue_time_specifics)));
+
+  // Non-positive issue time.
+  sync_pb::AutofillValuableSpecifics negative_issue_time_specifics =
+      TestOfferSpecifics(kId1);
+  negative_issue_time_specifics.mutable_offer()
+      ->set_issue_time_unix_epoch_micros(-1);
+  EXPECT_TRUE(bridge().IsEntityDataValid(
+      *CreateEntityDataFromSpecifics(negative_issue_time_specifics)));
 }
 
 TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid_FeatureDisabled) {
@@ -594,10 +635,8 @@ TEST_F(ValuableSyncBridgeTest, MergeFullSyncData_Offers) {
   EXPECT_EQ(offers[0].GetDisplayStrings().value_prop_text,
             "50% off your next purchase");
   EXPECT_EQ(offers[0].GetOfferRewardAmount(), "50% off");
-  // The expiry is truncated to millisecond precision at ingestion, since that
-  // is the precision `PaymentsAutofillTable` persists.
   EXPECT_EQ(offers[0].GetExpiry(),
-            base::Time::UnixEpoch() + base::Milliseconds(123456));
+            base::Time::UnixEpoch() + base::Microseconds(123456789));
 }
 
 // Tests that syncing the same offers twice doesn't notify observers.

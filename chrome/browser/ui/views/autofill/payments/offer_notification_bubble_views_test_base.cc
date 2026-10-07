@@ -166,7 +166,8 @@ OfferNotificationBubbleViewsTestBase::CreateWalletDirectOfferDataWithDomains(
   return std::make_unique<AutofillOfferData>(
       offer_id, expiry, merchant_origins,
       GURL(GetDefaultTestDetailsUrlString()), DisplayStrings(),
-      GetDefaultTestPromoCode(), GetDefaultTestOfferShortTitle());
+      GetDefaultTestPromoCode(), GetDefaultTestOfferShortTitle(),
+      /*issue_time=*/base::Time());
 }
 
 void OfferNotificationBubbleViewsTestBase::SetUpOfferDataWithDomains(

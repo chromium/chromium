@@ -31,7 +31,8 @@ sync_pb::AutofillValuableSpecifics TestOfferSpecifics(
     std::string_view pass_view_url = "https://safeway.com/offer-details",
     std::string_view offer_title_image_url = "https://image.com/logo.png",
     std::string_view offer_short_title = "50% off",
-    int64_t expiration_time_unix_epoch_micros = 123456789);
+    int64_t expiration_time_unix_epoch_micros = 123456789,
+    int64_t issue_time_unix_epoch_micros = 12345678);
 
 // Creates a test `ValuableMetadata`.
 ValuableMetadata TestValuableMetadata(std::string_view id = "1");

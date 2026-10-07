@@ -38,11 +38,10 @@ void LogInitResult(WebDatabase::InitResult result) {
   base::UmaHistogramEnumeration("WebDatabase.InitResult", result);
 }
 
-// Version 158 changes the type of the `offer_id` columns from an integer to a
-// string. Clients with version 157 and below read those columns as integers,
-// which silently yields 0 for any non-numeric id, so they cannot operate on a
-// version 158 database.
-constexpr int kCompatibleVersionNumber = 158;
+// Version 160 recreates the `offer_data` table with a `NOT NULL` `issue_time`
+// column that has no default. Clients with version 159 and below do not write
+// that column, so they cannot insert offers into a version 160 database.
+constexpr int kCompatibleVersionNumber = 160;
 
 // Change the version number and possibly the compatibility version of
 // |meta_table_|.

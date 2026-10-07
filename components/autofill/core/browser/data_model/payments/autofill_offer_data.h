@@ -82,7 +82,8 @@ class AutofillOfferData {
                     GURL offer_details_url,
                     DisplayStrings display_strings,
                     std::string promo_code,
-                    std::string offer_reward_amount);
+                    std::string offer_reward_amount,
+                    base::Time issue_time);
 
   // TODO(crbug.com/40932427): Refactor this class to ensure the correct access
   // specifiers and move constructors and move assignment constructors.
@@ -104,6 +105,7 @@ class AutofillOfferData {
   OfferType GetOfferType() const { return offer_type_; }
   const std::string& GetOfferId() const { return offer_id_; }
   base::Time GetExpiry() const { return expiry_; }
+  base::Time GetIssueTime() const { return issue_time_; }
   const std::vector<GURL>& GetMerchantOrigins() const {
     return merchant_origins_;
   }
@@ -171,6 +173,10 @@ class AutofillOfferData {
   // The timestamp when the offer will expire. Expired offers will not be shown
   // in the frontend.
   base::Time expiry_;
+
+  // The timestamp when the offer was issued. Null if the issue time is unknown,
+  // since it is optional.
+  base::Time issue_time_;
 
   // The URL that contains the offer details.
   GURL offer_details_url_;

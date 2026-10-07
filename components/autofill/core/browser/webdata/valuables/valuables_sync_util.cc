@@ -158,14 +158,16 @@ void TrimOffer(sync_pb::Offer& offer) {
 AutofillOfferData CreateOfferDataFromValuableSpecifics(
     const sync_pb::AutofillValuableSpecifics& specifics) {
   const sync_pb::Offer& offer_proto = specifics.offer();
-  // `PaymentsAutofillTable` persists the expiry with millisecond precision.
-  // Truncate here so that an offer read back from the database compares equal
-  // to the one built from the specifics. Otherwise every full sync would
-  // consider the offers changed and rewrite them.
   base::Time expiry =
       base::Time::UnixEpoch() +
-      base::Milliseconds(offer_proto.expiration_time_unix_epoch_micros() /
-                         base::Time::kMicrosecondsPerMillisecond);
+      base::Microseconds(offer_proto.expiration_time_unix_epoch_micros());
+  // The issue time is optional. If it is missing (or not positive), it is left
+  // null, i.e. unknown.
+  base::Time issue_time;
+  if (offer_proto.issue_time_unix_epoch_micros() > 0) {
+    issue_time = base::Time::UnixEpoch() +
+                 base::Microseconds(offer_proto.issue_time_unix_epoch_micros());
+  }
   // Offers with issuer domains that don't parse into a URL are rejected by
   // `ValuableSyncBridge::IsEntityDataValid()`.
   std::vector<GURL> merchant_origins;
@@ -181,7 +183,7 @@ AutofillOfferData CreateOfferDataFromValuableSpecifics(
       /*offer_details_url=*/GURL(specifics.pass_view_url()),
       std::move(display_strings),
       /*promo_code=*/offer_proto.offer_code(),
-      /*offer_reward_amount=*/offer_proto.offer_short_title());
+      /*offer_reward_amount=*/offer_proto.offer_short_title(), issue_time);
 }
 
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromLoyaltyCard(

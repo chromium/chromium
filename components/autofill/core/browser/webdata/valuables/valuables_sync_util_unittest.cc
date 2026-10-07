@@ -153,7 +153,7 @@ TEST(OfferSyncUtilTest, TrimAutofillValuableSpecificsDataForCaching) {
       "https://image.com/logo.png");
   specifics.mutable_offer()->add_issuer_domains("safeway.com");
   specifics.mutable_offer()->set_description("50% off your next purchase");
-  specifics.mutable_offer()->set_issue_time_unix_epoch_micros(123456789);
+  specifics.mutable_offer()->set_issue_time_unix_epoch_micros(12345678);
   specifics.set_pass_view_url("https://safeway.com/offer-details");
 
   EXPECT_EQ(
@@ -174,14 +174,15 @@ TEST(OfferSyncUtilTest, CreateOfferDataFromValuableSpecifics) {
       "https://image.com/logo.png");
   specifics.mutable_offer()->add_issuer_domains("https://safeway.com");
   specifics.mutable_offer()->set_description("50% off your next purchase");
+  specifics.mutable_offer()->set_issue_time_unix_epoch_micros(12345678);
   specifics.set_pass_view_url("https://safeway.com/offer-details");
 
   AutofillOfferData offer = CreateOfferDataFromValuableSpecifics(specifics);
   EXPECT_EQ("999", offer.GetOfferId());
-  // The expiry is truncated to millisecond precision, matching the precision
-  // `PaymentsAutofillTable` persists.
-  EXPECT_EQ(base::Time::UnixEpoch() + base::Milliseconds(123456),
+  EXPECT_EQ(base::Time::UnixEpoch() + base::Microseconds(123456789),
             offer.GetExpiry());
+  EXPECT_EQ(base::Time::UnixEpoch() + base::Microseconds(12345678),
+            offer.GetIssueTime());
   EXPECT_EQ("SAFEWAY50", offer.GetPromoCode());
   EXPECT_EQ("50% off your next purchase",
             offer.GetDisplayStrings().value_prop_text);
@@ -190,6 +191,19 @@ TEST(OfferSyncUtilTest, CreateOfferDataFromValuableSpecifics) {
             offer.GetOfferDetailsUrl());
   EXPECT_THAT(offer.GetMerchantOrigins(),
               testing::ElementsAre(GURL("https://safeway.com")));
+}
+
+// The issue time is optional. If it is missing or not positive, the offer's
+// issue time is left null, i.e. unknown.
+TEST(OfferSyncUtilTest, CreateOfferDataFromValuableSpecifics_NoIssueTime) {
+  sync_pb::AutofillValuableSpecifics specifics = TestOfferSpecifics("999");
+  specifics.mutable_offer()->clear_issue_time_unix_epoch_micros();
+  EXPECT_TRUE(
+      CreateOfferDataFromValuableSpecifics(specifics).GetIssueTime().is_null());
+
+  specifics.mutable_offer()->set_issue_time_unix_epoch_micros(-1);
+  EXPECT_TRUE(
+      CreateOfferDataFromValuableSpecifics(specifics).GetIssueTime().is_null());
 }
 
 TEST(ValuableMetadataSyncUtilTest, CreateEntityDataFromValuableMetadata) {

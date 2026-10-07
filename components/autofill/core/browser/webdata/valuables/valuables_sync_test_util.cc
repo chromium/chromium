@@ -45,7 +45,8 @@ sync_pb::AutofillValuableSpecifics TestOfferSpecifics(
     std::string_view pass_view_url,
     std::string_view offer_title_image_url,
     std::string_view offer_short_title,
-    int64_t expiration_time_unix_epoch_micros) {
+    int64_t expiration_time_unix_epoch_micros,
+    int64_t issue_time_unix_epoch_micros) {
   sync_pb::AutofillValuableSpecifics specifics;
   specifics.set_id(id);
 
@@ -58,6 +59,9 @@ sync_pb::AutofillValuableSpecifics TestOfferSpecifics(
   if (expiration_time_unix_epoch_micros > 0) {
     offer->set_expiration_time_unix_epoch_micros(
         expiration_time_unix_epoch_micros);
+  }
+  if (issue_time_unix_epoch_micros > 0) {
+    offer->set_issue_time_unix_epoch_micros(issue_time_unix_epoch_micros);
   }
   offer->set_offer_code(offer_code);
   if (!offer_title_image_url.empty()) {

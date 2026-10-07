@@ -228,6 +228,7 @@ class VirtualCardUsageData;
 //   usage_instructions_text
 //                      Server-driven UI string to instruct the user on how they
 //                      can redeem the offer.
+//   issue_time         The timestamp when the offer was issued.
 // -----------------------------------------------------------------------------
 // offer_merchant_domain
 //                      Contains the mapping of merchant domains and card linked
@@ -602,6 +603,7 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool MigrateToVersion153ReplaceOriginWithIsUserConfirmed();
   bool MigrateToVersion156ClearLegacyOffers();
   bool MigrateToVersion158OfferIdAsString();
+  bool MigrateToVersion160AddOfferIssueTime();
 
  private:
   // Adds to `masked_credit_cards` and updates `server_card_metadata`.

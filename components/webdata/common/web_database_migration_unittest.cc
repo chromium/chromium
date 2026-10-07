@@ -2338,7 +2338,6 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion157ToCurrent) {
     sql::MetaTable meta_table;
     ASSERT_TRUE(meta_table.Init(&connection, WebDatabase::kCurrentVersionNumber,
                                 WebDatabase::kCurrentVersionNumber));
-    EXPECT_EQ(158, meta_table.GetCompatibleVersionNumber());
 
     // The remaining offer tables now declare `offer_id` as a string column.
     const std::string schema = connection.GetSchema();
@@ -2385,6 +2384,55 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion158ToCurrent) {
         "autofill_ai_entities_metadata_wallet", "entity_guid"));
     EXPECT_TRUE(connection.DoesColumnExist(
         "autofill_ai_entities_metadata_wallet", "management_url"));
+  }
+}
+
+// Version 160 recreates the offer tables with a `NOT NULL` `issue_time` column
+// in `offer_data`.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion159ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_159.sql")));
+
+  // Verify pre-conditions.
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(159, VersionFromConnection(&connection));
+    EXPECT_FALSE(connection.DoesColumnExist("offer_data", "issue_time"));
+
+    ASSERT_TRUE(connection.Execute(
+        "INSERT INTO offer_data (offer_id, offer_reward_amount, expiry, "
+        "offer_details_url, promo_code) VALUES ('123', '5%', 100, "
+        "'https://example.com', 'PROMO');"));
+    ASSERT_TRUE(connection.Execute(
+        "INSERT INTO offer_merchant_domain (offer_id, merchant_domain) VALUES "
+        "('123', 'https://example.com');"));
+  }
+
+  DoMigration();
+
+  // Verify post-conditions.
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
+              VersionFromConnection(&connection));
+
+    // Old versions cannot insert offers without an `issue_time`, so the
+    // compatible version number is updated.
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(meta_table.Init(&connection, WebDatabase::kCurrentVersionNumber,
+                                WebDatabase::kCurrentVersionNumber));
+
+    EXPECT_TRUE(connection.DoesColumnExist("offer_data", "issue_time"));
+
+    // The tables are recreated, so existing offers are dropped. They are
+    // repopulated by the next sync.
+    for (const char* table : {"offer_data", "offer_merchant_domain"}) {
+      sql::Statement s(connection.GetUniqueStatement(
+          base::StrCat({"SELECT COUNT(*) FROM ", table})));
+      ASSERT_TRUE(s.Step());
+      EXPECT_EQ(0, s.ColumnInt(0)) << table;
+    }
   }
 }
 }  // anonymous namespace
