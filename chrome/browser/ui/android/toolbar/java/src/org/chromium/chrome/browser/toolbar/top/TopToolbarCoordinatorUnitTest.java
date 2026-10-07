@@ -141,6 +141,8 @@ public class TopToolbarCoordinatorUnitTest {
             ObservableSuppliers.createNullable();
     private final NonNullObservableSupplier<Boolean> mCompositorInMotionSupplier =
             ObservableSuppliers.alwaysFalse();
+    private final NonNullObservableSupplier<Boolean> mDownloadButtonShouldShowSupplier =
+            ObservableSuppliers.alwaysFalse();
     private final BrowserStateBrowserControlsVisibilityDelegate
             mBrowserStateBrowserControlsVisibilityDelegate =
                     new BrowserStateBrowserControlsVisibilityDelegate(
@@ -214,6 +216,7 @@ public class TopToolbarCoordinatorUnitTest {
                         mModalDialogManager,
                         mSnackbarManager,
                         mOnSigninTapped,
+                        mDownloadButtonShouldShowSupplier,
                         /* suppressTabStripAtStart= */ false);
     }
 
@@ -566,6 +569,7 @@ public class TopToolbarCoordinatorUnitTest {
                 mModalDialogManager,
                 mSnackbarManager,
                 mOnSigninTapped,
+                mDownloadButtonShouldShowSupplier,
                 /* suppressTabStripAtStart= */ false);
         verify(toolbarPhone).setOnLongClickListener(mOnLongClickListener);
     }

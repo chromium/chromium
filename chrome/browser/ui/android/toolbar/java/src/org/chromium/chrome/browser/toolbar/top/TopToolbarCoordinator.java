@@ -216,6 +216,8 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
      * @param topControlsStacker The TopControlsStacker for child objects to check state from.
      * @param browserControlsVisibilityManager BrowserControlsStateProvider instance.
      * @param onSigninTapped Runnable to be called when the signin button is tapped.
+     * @param downloadButtonShouldShowSupplier Supplies whether the download toolbar button should
+     *     be shown based on download state.
      * @param suppressTabStripAtStart if {@code true}, suppress tab strip when Chrome starts.
      */
     public TopToolbarCoordinator(
@@ -265,6 +267,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             ModalDialogManager modalDialogManager,
             SnackbarManager snackbarManager,
             Runnable onSigninTapped,
+            NonNullObservableSupplier<Boolean> downloadButtonShouldShowSupplier,
             boolean suppressTabStripAtStart) {
         mSuppressTabStripAtStart = suppressTabStripAtStart;
         mToolbarLayout = toolbarLayout;
@@ -305,8 +308,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             ViewStub downloadButtonStub = mToolbarLayout.findViewById(R.id.download_button_stub);
             if (downloadButtonStub != null) {
                 // TODO(crbug.com/564646561): Wire up onButtonClickedRunnable to open the downloads
-                // page and drive button visibility via setShouldShow(...) from
-                // DownloadToolbarButtonController.
+                // page.
                 mDownloadButtonCoordinator =
                         new DownloadButtonCoordinator(
                                 mToolbarLayout.getContext(),
@@ -314,7 +316,8 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                                 normalThemeColorProvider,
                                 incognitoStateProvider,
                                 /* onButtonClickedRunnable= */ () -> {},
-                                mToolbarLayout::onWidthConsumerVisibilityChanged);
+                                mToolbarLayout::onWidthConsumerVisibilityChanged,
+                                downloadButtonShouldShowSupplier);
             }
         }
         mResourceManagerSupplier = resourceManagerSupplier;

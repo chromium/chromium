@@ -16,7 +16,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureOverrides;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
@@ -85,6 +87,17 @@ public class DownloadMessageUiControllerTest {
                 .enable(ChromeFeatureList.MALICIOUS_APK_DOWNLOAD_CHECK)
                 .param(ChromeFeatureList.sMaliciousApkDownloadCheckTelemetryOnly.getName(), false)
                 .apply();
+    }
+
+    /** Satisfies both conditions of {@link DownloadFeatures#isDownloadToolbarButtonEnabled()}. */
+    public void enableDownloadToolbarButton() {
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.DOWNLOAD_TOOLBAR_BUTTON_FOR_DESKTOP)
+                .apply();
+        DeviceInfo.setIsDesktopForTesting(true);
+        // setIsDesktopForTesting() only resets the Java override; this also re-syncs native, which
+        // was updated because the library is already loaded.
+        ResettersForTesting.register(DeviceInfo::resetIsDesktopForTesting);
     }
 
     public void enableShowBlockedSensitiveDownload(boolean enabled) {
@@ -239,6 +252,52 @@ public class DownloadMessageUiControllerTest {
         markItemComplete(item);
         mTestController.onItemUpdated(item);
         mTestController.verify(MESSAGE_SINGLE_DOWNLOAD_COMPLETE, DESCRIPTION_DOWNLOAD_COMPLETE);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Download"})
+    public void testToolbarButtonEnabled_suppressesRoutineMessages() {
+        enableDownloadToolbarButton();
+        mTestController.onDownloadStarted();
+        mTestController.verifyMessageGone();
+
+        OfflineItem item = createOfflineItem(OfflineItemState.IN_PROGRESS);
+        mTestController.onItemUpdated(item);
+        mTestController.verifyMessageGone();
+
+        markItemComplete(item);
+        mTestController.onItemUpdated(item);
+        mTestController.verifyMessageGone();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Download"})
+    public void testToolbarButtonEnabled_stillShowsDangerousMessage() {
+        enableDangerousDownloadMessage();
+        enableDownloadToolbarButton();
+        OfflineItem item = createOfflineItem(OfflineItemState.IN_PROGRESS);
+        mTestController.onItemUpdated(item);
+        mTestController.verifyMessageGone();
+
+        markItemDangerous(item);
+        mTestController.onItemUpdated(item);
+        mTestController.verify(MESSAGE_DOWNLOAD_DANGEROUS_BLOCKED, TEST_FILE_NAME);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Download"})
+    public void testToolbarButtonEnabled_stillShowsFailedMessage() {
+        enableDownloadToolbarButton();
+        OfflineItem item = createOfflineItem(OfflineItemState.IN_PROGRESS);
+        mTestController.onItemUpdated(item);
+        mTestController.verifyMessageGone();
+
+        item.state = OfflineItemState.FAILED;
+        mTestController.onItemUpdated(item);
+        mTestController.verify(MESSAGE_DOWNLOAD_FAILED, null);
     }
 
     @Test

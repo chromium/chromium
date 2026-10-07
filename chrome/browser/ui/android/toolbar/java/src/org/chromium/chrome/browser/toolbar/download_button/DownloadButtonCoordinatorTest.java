@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -28,6 +29,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -46,6 +49,8 @@ public class DownloadButtonCoordinatorTest {
     @Mock private Runnable mOnButtonClickedRunnable;
     @Mock private Runnable mOnVisibilityChangedRunnable;
 
+    private final SettableNonNullObservableSupplier<Boolean> mShouldShowSupplier =
+            ObservableSuppliers.createNonNull(false);
     private IncognitoStateProvider mIncognitoStateProvider;
     private Activity mActivity;
     private ViewStub mViewStub;
@@ -69,7 +74,8 @@ public class DownloadButtonCoordinatorTest {
                         mThemeColorProvider,
                         mIncognitoStateProvider,
                         mOnButtonClickedRunnable,
-                        mOnVisibilityChangedRunnable);
+                        mOnVisibilityChangedRunnable,
+                        mShouldShowSupplier);
     }
 
     private DownloadButtonView showAndGetView() {
@@ -196,5 +202,26 @@ public class DownloadButtonCoordinatorTest {
         assertEquals(
                 ToolbarUtils.getToolbarIconRippleId(/* isIncognito= */ false),
                 shadowOf(view.getButton().getBackground()).getCreatedFromResId());
+    }
+
+    @Test
+    public void testShouldShowSupplier_drivesShouldShow() {
+        assertFalse("Should follow initial supplier value", mCoordinator.shouldShow());
+
+        mShouldShowSupplier.set(true);
+        assertTrue("Should show when supplier becomes true", mCoordinator.shouldShow());
+        verify(mOnVisibilityChangedRunnable).run();
+
+        mShouldShowSupplier.set(false);
+        assertFalse("Should hide when supplier becomes false", mCoordinator.shouldShow());
+        verify(mOnVisibilityChangedRunnable, times(2)).run();
+    }
+
+    @Test
+    public void testDestroy_stopsObservingShouldShowSupplier() {
+        mCoordinator.destroy();
+        mShouldShowSupplier.set(true);
+        assertFalse(
+                "Destroyed coordinator should ignore supplier changes", mCoordinator.shouldShow());
     }
 }

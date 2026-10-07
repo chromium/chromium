@@ -92,6 +92,9 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperMa
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
+import org.chromium.chrome.browser.download.DownloadFeatures;
+import org.chromium.chrome.browser.download.DownloadToolbarButtonController;
+import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
@@ -338,6 +341,8 @@ public class ToolbarManager
             ObservableSuppliers.createNonNull(false);
     private final SettableNonNullObservableSupplier<Boolean> mIsTabSwitcherFinishedShowingSupplier =
             ObservableSuppliers.createNonNull(false);
+    private final SettableNonNullObservableSupplier<Boolean> mDownloadButtonShouldShowSupplier =
+            ObservableSuppliers.createNonNull(false);
     private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
             ObservableSuppliers.createNullable();
 
@@ -444,6 +449,10 @@ public class ToolbarManager
     private @MonotonicNonNull BackButtonCoordinator mBackButtonCoordinator;
     private @MonotonicNonNull ForwardButtonCoordinator mForwardButtonCoordinator;
     private @Nullable ExtensionsToolbarCoordinator mExtensionsToolbarCoordinator;
+
+    private @Nullable DownloadToolbarButtonController mDownloadToolbarButtonController;
+    private final Callback<Boolean> mDownloadButtonShouldShowObserver =
+            mDownloadButtonShouldShowSupplier::set;
 
     private final BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     private int mFullscreenFocusToken = TokenHolder.INVALID_TOKEN;
@@ -2248,6 +2257,7 @@ public class ToolbarManager
                         mModalDialogManagerSupplier.get(),
                         snackbarManager,
                         this::endFuseboxInput,
+                        mDownloadButtonShouldShowSupplier,
                         suppressTabStripAtStart);
 
         mHomepageStateListener =
@@ -2914,6 +2924,19 @@ public class ToolbarManager
 
         PictureInPictureWindowManagerBridge.initializeWithNative();
 
+        if (DownloadFeatures.isDownloadToolbarButtonEnabled()) {
+            // The offline content aggregator requires native, so the controller is created
+            // here and bridged to the toolbar via mDownloadButtonShouldShowSupplier.
+            // TODO(crbug.com/570641245): Consolidate download state observation into a shared
+            // model (seed-on-attach, single OfflineContentProvider observer) instead of the
+            // controller observing the aggregator directly alongside DownloadMessageUiController.
+            mDownloadToolbarButtonController =
+                    new DownloadToolbarButtonController(OfflineContentAggregatorFactory.get());
+            mDownloadToolbarButtonController
+                    .getShouldShowSupplier()
+                    .addSyncObserverAndCall(mDownloadButtonShouldShowObserver);
+        }
+
         TraceEvent.end("ToolbarManager.initializeWithNative");
     }
 
@@ -3117,6 +3140,14 @@ public class ToolbarManager
 
         if (mHomeButtonCoordinator != null) {
             mHomeButtonCoordinator.destroy();
+        }
+
+        if (mDownloadToolbarButtonController != null) {
+            mDownloadToolbarButtonController
+                    .getShouldShowSupplier()
+                    .removeObserver(mDownloadButtonShouldShowObserver);
+            mDownloadToolbarButtonController.destroy();
+            mDownloadToolbarButtonController = null;
         }
 
         if (mOverviewModeMenuButtonCoordinator != null) {

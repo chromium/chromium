@@ -436,6 +436,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/device_reauth/android:java",
       "//chrome/browser/devtools/android:java",
       "//chrome/browser/download/android:factory_java",
+      "//chrome/browser/download/android:features_java",
       "//chrome/browser/download/android:file_provider_java",
       "//chrome/browser/download/android:java",
       "//chrome/browser/download/android:java_resources",

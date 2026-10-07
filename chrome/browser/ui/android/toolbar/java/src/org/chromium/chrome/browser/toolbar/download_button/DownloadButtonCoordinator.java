@@ -9,6 +9,8 @@ import android.content.res.ColorStateList;
 import android.view.View;
 import android.view.ViewStub;
 
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -26,6 +28,8 @@ public class DownloadButtonCoordinator extends ToolbarChildButton {
     private @Nullable DownloadButtonView mView;
     private @Nullable PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private final Runnable mOnVisibilityChangedRunnable;
+    private final NonNullObservableSupplier<Boolean> mShouldShowSupplier;
+    private final Callback<Boolean> mShouldShowObserver = this::setShouldShow;
 
     /**
      * Creates a new {@link DownloadButtonCoordinator}.
@@ -36,6 +40,8 @@ public class DownloadButtonCoordinator extends ToolbarChildButton {
      * @param incognitoStateProvider The provider for incognito state.
      * @param onButtonClickedRunnable Runnable invoked when the download button is clicked.
      * @param onVisibilityChangedRunnable Runnable invoked when button visibility changes.
+     * @param shouldShowSupplier Supplies whether the button should be shown based on download
+     *     state. Changes are forwarded to {@link #setShouldShow(boolean)}.
      */
     public DownloadButtonCoordinator(
             Context context,
@@ -43,7 +49,8 @@ public class DownloadButtonCoordinator extends ToolbarChildButton {
             ThemeColorProvider themeColorProvider,
             IncognitoStateProvider incognitoStateProvider,
             Runnable onButtonClickedRunnable,
-            Runnable onVisibilityChangedRunnable) {
+            Runnable onVisibilityChangedRunnable,
+            NonNullObservableSupplier<Boolean> shouldShowSupplier) {
         super(context, themeColorProvider, incognitoStateProvider);
         mViewStub = viewStub;
         mOnVisibilityChangedRunnable = onVisibilityChangedRunnable;
@@ -57,10 +64,13 @@ public class DownloadButtonCoordinator extends ToolbarChildButton {
                                 incognitoStateProvider.isIncognitoSelected())
                         .build();
         mMediator = new DownloadButtonMediator(mModel, onButtonClickedRunnable);
+        mShouldShowSupplier = shouldShowSupplier;
+        mShouldShowSupplier.addSyncObserverAndCall(mShouldShowObserver);
     }
 
     @Override
     public void destroy() {
+        mShouldShowSupplier.removeObserver(mShouldShowObserver);
         super.destroy();
         if (mPropertyModelChangeProcessor != null) {
             mPropertyModelChangeProcessor.destroy();
