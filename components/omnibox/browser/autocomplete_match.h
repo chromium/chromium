@@ -927,15 +927,6 @@ struct AutocompleteMatch {
   // the match.
   GURL icon_url;
 
-  // Optional entity id for entity suggestions. Empty string means no entity ID.
-  // This is not meant for display, but internal use only. The actual UI display
-  // is controlled by the `type` and `image_url`.
-  std::string entity_id;
-
-  // Optional website URI for entity suggestions. Empty string means no website
-  // URI.
-  std::string website_uri;
-
   // Used for document suggestions to show the mime-corresponding icons.
   DocumentType document_type = DocumentType::NONE;
 

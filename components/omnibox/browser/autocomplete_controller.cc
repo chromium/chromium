@@ -103,6 +103,7 @@
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
 #include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
+#include "third_party/omnibox_proto/suggest_template_info.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -338,9 +339,12 @@ bool ShouldPreserveLastDefaultMatch(
 std::u16string GetDomain(const AutocompleteMatch& match) {
   DCHECK(match.type == omnibox::AutocompleteMatchType::kHistoryUrl ||
          match.type == omnibox::AutocompleteMatchType::kSearchSuggestEntity);
-  GURL url = match.type == omnibox::AutocompleteMatchType::kHistoryUrl
-                 ? match.destination_url
-                 : GURL(match.website_uri);
+  GURL url;
+  if (match.type == omnibox::AutocompleteMatchType::kHistoryUrl) {
+    url = match.destination_url;
+  } else if (match.suggest_template) {
+    url = GURL(match.suggest_template->website_uri());
+  }
   std::u16string url_host;
   std::u16string url_domain;
   url_formatter::SplitHost(url, &url_host, &url_domain, nullptr);
