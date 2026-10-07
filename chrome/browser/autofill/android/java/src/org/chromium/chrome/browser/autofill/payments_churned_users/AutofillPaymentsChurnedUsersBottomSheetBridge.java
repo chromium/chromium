@@ -61,6 +61,12 @@ public class AutofillPaymentsChurnedUsersBottomSheetBridge
     }
 
     @Override
+    public void onShowConfirmation() {
+        if (mNativeBridge == 0) return;
+        AutofillPaymentsChurnedUsersBottomSheetBridgeJni.get().onShowConfirmation(mNativeBridge);
+    }
+
+    @Override
     public void onUiCanceled() {
         if (mNativeBridge == 0) return;
         AutofillPaymentsChurnedUsersBottomSheetBridgeJni.get().onUiCanceled(mNativeBridge);
@@ -80,11 +86,11 @@ public class AutofillPaymentsChurnedUsersBottomSheetBridge
 
     @CalledByNative
     public void destroy() {
-        mNativeBridge = 0;
         if (mCoordinator != null) {
             mCoordinator.destroy();
             mCoordinator = null;
         }
+        mNativeBridge = 0;
     }
 
     @Nullable AutofillPaymentsChurnedUsersBottomSheetCoordinator getCoordinatorForTesting() {
@@ -94,6 +100,8 @@ public class AutofillPaymentsChurnedUsersBottomSheetBridge
     @NativeMethods
     interface Natives {
         void onUiAccepted(long nativeAutofillPaymentsChurnedUsersBottomSheetBridge);
+
+        void onShowConfirmation(long nativeAutofillPaymentsChurnedUsersBottomSheetBridge);
 
         void onUiCanceled(long nativeAutofillPaymentsChurnedUsersBottomSheetBridge);
 

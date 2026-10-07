@@ -24,6 +24,10 @@ class AutofillPaymentsChurnedUsersBottomSheetBridgeTestApi {
     bridge_->closed_callback_ = std::move(callback);
   }
 
+  void SetShowConfirmationCallback(base::OnceClosure callback) {
+    bridge_->show_confirmation_callback_ = std::move(callback);
+  }
+
  private:
   const raw_ref<AutofillPaymentsChurnedUsersBottomSheetBridge> bridge_;
 };

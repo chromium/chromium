@@ -1488,11 +1488,9 @@
   <message name="IDS_AUTOFILL_CHURNED_USERS_CONFIRMATION_BUBBLE_DESCRIPTION" desc="Description for the churned users confirmation bubble, which comes after the user has accepted the churned users bubble, letting the user know that autofill is turned on.">
     Now you can save payment methods to autofill at checkout in Chrome. <ph name="LINK_TEXT">$1<ex>View autofill settings</ex></ph>
   </message>
-  <if expr="not is_android">
-    <message name="IDS_AUTOFILL_CHURNED_USERS_CONFIRMATION_BUBBLE_LOADING_THROBBER_ACCESSIBLE_NAME" desc="Accessible name announced by the screenreader for virtual card prompt in loading state showing a throbber." is_accessibility_with_no_ui="true" formatter_data="android_java">
-      Turning on autofill
-    </message>
-  </if>
+  <message name="IDS_AUTOFILL_CHURNED_USERS_CONFIRMATION_BUBBLE_LOADING_THROBBER_ACCESSIBLE_NAME" desc="Accessible name announced by the screenreader for virtual card prompt in loading state showing a throbber." is_accessibility_with_no_ui="true" formatter_data="android_java">
+    Turning on autofill
+  </message>
   <if expr="is_android">
     <message name="IDS_AUTOFILL_CHURNED_USERS_BOTTOM_SHEET_FULL_HEIGHT" desc="The accessibility announcement when the Autofill payments churned users bottom sheet is opened at full height." formatter_data="android_java">
       Enable Payments Autofill opened at full height.

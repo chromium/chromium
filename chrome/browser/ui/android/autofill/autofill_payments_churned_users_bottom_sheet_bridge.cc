@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/android/autofill/autofill_payments_churned_users_bottom_sheet_bridge.h"
 
+#include <utility>
+
 #include "base/android/jni_android.h"
 #include "ui/android/window_android.h"
 
@@ -38,8 +40,10 @@ AutofillPaymentsChurnedUsersBottomSheetBridge::
 
 void AutofillPaymentsChurnedUsersBottomSheetBridge::RequestShowContent(
     AutofillEnableResurrectingPaymentsUsersTreatmentArm treatment_arm,
-    base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback) {
+    base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback,
+    base::OnceClosure show_confirmation_callback) {
   closed_callback_ = std::move(closed_callback);
+  show_confirmation_callback_ = std::move(show_confirmation_callback);
   if (!java_object_) {
     OnUiNotShown(nullptr);
     return;
@@ -55,19 +59,29 @@ void AutofillPaymentsChurnedUsersBottomSheetBridge::OnUiAccepted(JNIEnv* env) {
   }
 }
 
+void AutofillPaymentsChurnedUsersBottomSheetBridge::OnShowConfirmation(
+    JNIEnv* env) {
+  if (show_confirmation_callback_) {
+    std::move(show_confirmation_callback_).Run();
+  }
+}
+
 void AutofillPaymentsChurnedUsersBottomSheetBridge::OnUiCanceled(JNIEnv* env) {
+  show_confirmation_callback_.Reset();
   if (closed_callback_) {
     std::move(closed_callback_).Run(PaymentsUiClosedReason::kCancelled);
   }
 }
 
 void AutofillPaymentsChurnedUsersBottomSheetBridge::OnUiDismissed(JNIEnv* env) {
+  show_confirmation_callback_.Reset();
   if (closed_callback_) {
     std::move(closed_callback_).Run(PaymentsUiClosedReason::kNotInteracted);
   }
 }
 
 void AutofillPaymentsChurnedUsersBottomSheetBridge::OnUiNotShown(JNIEnv* env) {
+  show_confirmation_callback_.Reset();
   if (closed_callback_) {
     std::move(closed_callback_).Run(PaymentsUiClosedReason::kUnknown);
   }

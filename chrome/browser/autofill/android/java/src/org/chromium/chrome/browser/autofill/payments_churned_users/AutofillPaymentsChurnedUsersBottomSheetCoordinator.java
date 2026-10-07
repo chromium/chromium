@@ -35,6 +35,12 @@ public class AutofillPaymentsChurnedUsersBottomSheetCoordinator {
         /** Called when the user clicks the accept ("Turn on") button. */
         void onUiAccepted();
 
+        /**
+         * Called after the post-accept loading state completes and the confirmation snackbar should
+         * be shown.
+         */
+        void onShowConfirmation();
+
         /** Called when the user clicks the cancel ("No thanks") button. */
         void onUiCanceled();
 
@@ -77,6 +83,10 @@ public class AutofillPaymentsChurnedUsersBottomSheetCoordinator {
                                         .CANCEL_BUTTON_LABEL,
                                 context.getString(
                                         R.string.autofill_churned_users_bubble_cancel_button_label))
+                        .with(
+                                AutofillPaymentsChurnedUsersBottomSheetProperties
+                                        .SHOW_LOADING_STATE,
+                                false)
                         .build();
 
         mMediator =
@@ -153,5 +163,9 @@ public class AutofillPaymentsChurnedUsersBottomSheetCoordinator {
 
     View getContentViewForTesting() {
         return mView.getContentView();
+    }
+
+    PropertyModel getModelForTesting() {
+        return mModel;
     }
 }

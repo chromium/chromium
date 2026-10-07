@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.autofill.payments_churned_users.Autofi
 import static org.chromium.chrome.browser.autofill.payments_churned_users.AutofillPaymentsChurnedUsersBottomSheetProperties.HEADER_ICON;
 import static org.chromium.chrome.browser.autofill.payments_churned_users.AutofillPaymentsChurnedUsersBottomSheetProperties.ON_ACCEPT_CLICKED;
 import static org.chromium.chrome.browser.autofill.payments_churned_users.AutofillPaymentsChurnedUsersBottomSheetProperties.ON_CANCEL_CLICKED;
+import static org.chromium.chrome.browser.autofill.payments_churned_users.AutofillPaymentsChurnedUsersBottomSheetProperties.SHOW_LOADING_STATE;
 import static org.chromium.chrome.browser.autofill.payments_churned_users.AutofillPaymentsChurnedUsersBottomSheetProperties.TITLE;
 
 import android.view.View;
@@ -59,6 +60,12 @@ import org.chromium.ui.modelutil.PropertyModel;
                                     action.run();
                                 }
                             });
+        } else if (propertyKey == SHOW_LOADING_STATE) {
+            boolean showLoading = model.get(SHOW_LOADING_STATE);
+            int buttonVisibility = showLoading ? View.GONE : View.VISIBLE;
+            view.getAcceptButton().setVisibility(buttonVisibility);
+            view.getCancelButton().setVisibility(buttonVisibility);
+            view.getLoadingSpinner().setVisibility(showLoading ? View.VISIBLE : View.GONE);
         } else {
             assert false : "Unhandled update to property: " + propertyKey;
         }

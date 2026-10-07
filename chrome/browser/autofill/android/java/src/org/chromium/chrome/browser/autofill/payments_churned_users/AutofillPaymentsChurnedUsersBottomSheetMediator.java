@@ -4,9 +4,13 @@
 
 package org.chromium.chrome.browser.autofill.payments_churned_users;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -14,11 +18,23 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Mediator handling business logic for the Payments Churned Users bottom sheet. */
 @NullMarked
 /*package*/ class AutofillPaymentsChurnedUsersBottomSheetMediator implements BottomSheetObserver {
+    /**
+     * Delay in milliseconds before hiding the bottom sheet after the user clicks the accept ("Turn
+     * on") button, matching Desktop's {@code kMillisecondsUntilConfirmationBubbleIsShown}.
+     */
+    // LINT.IfChange(ChurnedUsersLoadingDelayMs)
+    static final long LOADING_DELAY_MS = 1000L;
+
+    // LINT.ThenChange(//chrome/browser/ui/autofill/payments/payments_churned_users_bubble_controller.h:ChurnedUsersLoadingDelayMs)
+
     private final BottomSheetController mBottomSheetController;
     private final BottomSheetContent mBottomSheetContent;
+    private final PropertyModel mModel;
     private final AutofillPaymentsChurnedUsersBottomSheetCoordinator.Delegate mDelegate;
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
     private boolean mIsAccepted;
     private boolean mIsCanceled;
+    private boolean mShouldShowConfirmation;
     private boolean mIsDestroyed;
 
     AutofillPaymentsChurnedUsersBottomSheetMediator(
@@ -28,11 +44,12 @@ import org.chromium.ui.modelutil.PropertyModel;
             AutofillPaymentsChurnedUsersBottomSheetCoordinator.Delegate delegate) {
         mBottomSheetController = bottomSheetController;
         mBottomSheetContent = bottomSheetContent;
+        mModel = model;
         mDelegate = delegate;
-        model.set(
+        mModel.set(
                 AutofillPaymentsChurnedUsersBottomSheetProperties.ON_ACCEPT_CLICKED,
                 this::onAcceptClicked);
-        model.set(
+        mModel.set(
                 AutofillPaymentsChurnedUsersBottomSheetProperties.ON_CANCEL_CLICKED,
                 this::onCancelClicked);
     }
@@ -55,8 +72,19 @@ import org.chromium.ui.modelutil.PropertyModel;
         }
         mIsAccepted = true;
         mDelegate.onUiAccepted();
-        mBottomSheetController.hideContent(
-                mBottomSheetContent, /* animate= */ true, StateChangeReason.INTERACTION_COMPLETE);
+        mModel.set(AutofillPaymentsChurnedUsersBottomSheetProperties.SHOW_LOADING_STATE, true);
+        mHandler.postDelayed(
+                () -> {
+                    if (mIsDestroyed) {
+                        return;
+                    }
+                    mShouldShowConfirmation = true;
+                    mBottomSheetController.hideContent(
+                            mBottomSheetContent,
+                            /* animate= */ true,
+                            StateChangeReason.INTERACTION_COMPLETE);
+                },
+                LOADING_DELAY_MS);
     }
 
     void onCancelClicked() {
@@ -77,6 +105,21 @@ import org.chromium.ui.modelutil.PropertyModel;
         if (!mIsAccepted && !mIsCanceled) {
             mDelegate.onUiDismissed();
         }
+        // When hiding after the 1,000ms loading spinner completes, wait for
+        // onSheetStateChanged(SheetState.HIDDEN) so ChromeActivitySnackbarHelper pops
+        // ParentOverrideSlot.BOTTOM_SHEET before the confirmation snackbar is shown.
+        if (!mShouldShowConfirmation) {
+            destroy();
+        }
+    }
+
+    @Override
+    public void onSheetStateChanged(@SheetState int newState, @StateChangeReason int reason) {
+        if (mIsDestroyed || !mShouldShowConfirmation || newState != SheetState.HIDDEN) {
+            return;
+        }
+        mShouldShowConfirmation = false;
+        mDelegate.onShowConfirmation();
         destroy();
     }
 
@@ -85,6 +128,8 @@ import org.chromium.ui.modelutil.PropertyModel;
             return;
         }
         mIsDestroyed = true;
+        mShouldShowConfirmation = false;
+        mHandler.removeCallbacksAndMessages(null);
         mBottomSheetController.removeObserver(this);
         mBottomSheetController.hideContent(
                 mBottomSheetContent, /* animate= */ false, StateChangeReason.NONE);

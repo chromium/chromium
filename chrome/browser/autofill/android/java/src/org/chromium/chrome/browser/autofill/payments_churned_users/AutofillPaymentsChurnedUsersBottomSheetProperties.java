@@ -8,6 +8,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for the Payments Churned Users bottom sheet. */
@@ -26,6 +27,8 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
             new WritableObjectPropertyKey<>("on_accept_clicked");
     static final WritableObjectPropertyKey<Runnable> ON_CANCEL_CLICKED =
             new WritableObjectPropertyKey<>("on_cancel_clicked");
+    static final WritableBooleanPropertyKey SHOW_LOADING_STATE =
+            new WritableBooleanPropertyKey("show_loading_state");
 
     static final PropertyKey[] ALL_KEYS = {
         HEADER_ICON,
@@ -35,6 +38,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
         CANCEL_BUTTON_LABEL,
         ON_ACCEPT_CLICKED,
         ON_CANCEL_CLICKED,
+        SHOW_LOADING_STATE,
     };
 
     private AutofillPaymentsChurnedUsersBottomSheetProperties() {}

@@ -19,7 +19,9 @@ class TabInterface;
 
 namespace autofill {
 
+// LINT.IfChange(ChurnedUsersLoadingDelayMs)
 inline constexpr int kMillisecondsUntilConfirmationBubbleIsShown = 1000;
+// LINT.ThenChange(//chrome/browser/autofill/android/java/src/org/chromium/chrome/browser/autofill/payments_churned_users/AutofillPaymentsChurnedUsersBottomSheetMediator.java:ChurnedUsersLoadingDelayMs)
 
 // Controller responsible for managing the payments churned user bubble, which
 // is a bubble that prompts the user to turn payments autofill on if they have

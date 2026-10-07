@@ -33,10 +33,12 @@ class AutofillPaymentsChurnedUsersBottomSheetBridge {
   // Requests to show the bottom sheet for the given `treatment_arm`.
   virtual void RequestShowContent(
       AutofillEnableResurrectingPaymentsUsersTreatmentArm treatment_arm,
-      base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback);
+      base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback,
+      base::OnceClosure show_confirmation_callback);
 
   // -- JNI calls bridged from Java --
   void OnUiAccepted(JNIEnv* env);
+  void OnShowConfirmation(JNIEnv* env);
   void OnUiCanceled(JNIEnv* env);
   void OnUiDismissed(JNIEnv* env);
   void OnUiNotShown(JNIEnv* env);
@@ -46,6 +48,7 @@ class AutofillPaymentsChurnedUsersBottomSheetBridge {
 
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
   base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback_;
+  base::OnceClosure show_confirmation_callback_;
 };
 
 }  // namespace autofill

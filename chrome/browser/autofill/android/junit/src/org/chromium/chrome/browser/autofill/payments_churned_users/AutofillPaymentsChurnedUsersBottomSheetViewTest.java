@@ -20,7 +20,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.R;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -69,6 +69,11 @@ public class AutofillPaymentsChurnedUsersBottomSheetViewTest {
         assertThat(
                 mView.getCancelButton().getId(),
                 equalTo(R.id.payments_churned_users_cancel_button));
+        assertThat(mView.getLoadingSpinner(), notNullValue());
+        assertThat(
+                mView.getLoadingSpinner().getId(),
+                equalTo(R.id.payments_churned_users_loading_spinner));
+        assertThat(mView.getLoadingSpinner().getVisibility(), equalTo(View.GONE));
     }
 
     @Test
@@ -149,6 +154,37 @@ public class AutofillPaymentsChurnedUsersBottomSheetViewTest {
         assertThat(mView.getCancelButton().getText().toString(), equalTo(testLabel));
         mView.getCancelButton().performClick();
         assertThat(clicked.get(), equalTo(true));
+    }
+
+    @Test
+    public void testShowLoadingState() {
+        bind(
+                mModelBuilder.with(
+                        AutofillPaymentsChurnedUsersBottomSheetProperties.SHOW_LOADING_STATE,
+                        true));
+
+        assertThat(mView.getAcceptButton().getVisibility(), equalTo(View.GONE));
+        assertThat(mView.getCancelButton().getVisibility(), equalTo(View.GONE));
+        assertThat(mView.getLoadingSpinner().getVisibility(), equalTo(View.VISIBLE));
+        assertThat(
+                mView.getLoadingSpinner().getContentDescription().toString(),
+                equalTo(
+                        mView.getContentView()
+                                .getContext()
+                                .getString(
+                                        R.string
+                                                .autofill_churned_users_confirmation_bubble_loading_throbber_accessible_name)));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mModel.set(
+                                AutofillPaymentsChurnedUsersBottomSheetProperties
+                                        .SHOW_LOADING_STATE,
+                                false));
+
+        assertThat(mView.getAcceptButton().getVisibility(), equalTo(View.VISIBLE));
+        assertThat(mView.getCancelButton().getVisibility(), equalTo(View.VISIBLE));
+        assertThat(mView.getLoadingSpinner().getVisibility(), equalTo(View.GONE));
     }
 
     private void bind(PropertyModel.Builder modelBuilder) {

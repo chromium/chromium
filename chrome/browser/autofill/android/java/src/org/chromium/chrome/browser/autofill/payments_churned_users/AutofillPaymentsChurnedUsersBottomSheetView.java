@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.material.progressindicator.CircularProgressIndicator;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.ui.widget.ButtonCompat;
@@ -23,6 +25,7 @@ import org.chromium.ui.widget.ButtonCompat;
     private final TextView mDescriptionText;
     private final ButtonCompat mAcceptButton;
     private final ButtonCompat mCancelButton;
+    private final CircularProgressIndicator mLoadingSpinner;
 
     AutofillPaymentsChurnedUsersBottomSheetView(Context context) {
         mContentView =
@@ -35,6 +38,7 @@ import org.chromium.ui.widget.ButtonCompat;
         mDescriptionText = mContentView.findViewById(R.id.payments_churned_users_description);
         mAcceptButton = mContentView.findViewById(R.id.payments_churned_users_accept_button);
         mCancelButton = mContentView.findViewById(R.id.payments_churned_users_cancel_button);
+        mLoadingSpinner = mContentView.findViewById(R.id.payments_churned_users_loading_spinner);
     }
 
     View getContentView() {
@@ -59,5 +63,9 @@ import org.chromium.ui.widget.ButtonCompat;
 
     ButtonCompat getCancelButton() {
         return mCancelButton;
+    }
+
+    CircularProgressIndicator getLoadingSpinner() {
+        return mLoadingSpinner;
     }
 }

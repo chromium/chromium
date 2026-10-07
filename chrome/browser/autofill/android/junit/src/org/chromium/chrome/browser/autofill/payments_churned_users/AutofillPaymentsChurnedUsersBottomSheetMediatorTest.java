@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill.payments_churned_users;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -17,14 +19,17 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link AutofillPaymentsChurnedUsersBottomSheetMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -107,12 +112,12 @@ public class AutofillPaymentsChurnedUsersBottomSheetMediatorTest {
         mMediator.destroy();
         mMediator.destroy();
 
-        verify(mBottomSheetController, times(1))
+        verify(mBottomSheetController)
                 .hideContent(
                         eq(mBottomSheetContent),
                         /* animate= */ eq(false),
                         eq(BottomSheetController.StateChangeReason.NONE));
-        verify(mBottomSheetController, times(1)).removeObserver(mMediator);
+        verify(mBottomSheetController).removeObserver(mMediator);
     }
 
     @Test
@@ -156,15 +161,44 @@ public class AutofillPaymentsChurnedUsersBottomSheetMediatorTest {
     }
 
     @Test
-    public void testOnAcceptClicked() {
+    public void testOnAcceptClicked_showsLoadingStateAndHidesContentAfterDelay() {
         mModel.get(AutofillPaymentsChurnedUsersBottomSheetProperties.ON_ACCEPT_CLICKED).run();
 
+        assertThat(
+                mModel.get(AutofillPaymentsChurnedUsersBottomSheetProperties.SHOW_LOADING_STATE),
+                equalTo(true));
         verify(mDelegate).onUiAccepted();
+        verify(mDelegate, times(0)).onShowConfirmation();
+        verify(mBottomSheetController, times(0))
+                .hideContent(
+                        eq(mBottomSheetContent),
+                        /* animate= */ eq(true),
+                        eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
+
+        // Once the full 1000ms delay elapses, hideContent is called to start the close animation,
+        // and onShowConfirmation waits until the sheet reaches SheetState.HIDDEN.
+        ShadowLooper.idleMainLooper(
+                AutofillPaymentsChurnedUsersBottomSheetMediator.LOADING_DELAY_MS,
+                TimeUnit.MILLISECONDS);
         verify(mBottomSheetController)
                 .hideContent(
                         eq(mBottomSheetContent),
                         /* animate= */ eq(true),
                         eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
+        verify(mDelegate, times(0)).onShowConfirmation();
+
+        // Non-HIDDEN state changes (e.g. SCROLLING during close animation) and onSheetClosed
+        // do not prematurely trigger confirmation or destroy the observer before HIDDEN.
+        mMediator.onSheetStateChanged(
+                SheetState.SCROLLING, BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
+        mMediator.onSheetClosed(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
+        verify(mDelegate, times(0)).onUiDismissed();
+        verify(mDelegate, times(0)).onShowConfirmation();
+
+        mMediator.onSheetStateChanged(
+                SheetState.HIDDEN, BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
+        verify(mDelegate).onShowConfirmation();
+        verify(mBottomSheetController).removeObserver(mMediator);
     }
 
     @Test
@@ -174,11 +208,53 @@ public class AutofillPaymentsChurnedUsersBottomSheetMediatorTest {
         mModel.get(AutofillPaymentsChurnedUsersBottomSheetProperties.ON_ACCEPT_CLICKED).run();
 
         verify(mDelegate, times(0)).onUiAccepted();
+        verify(mDelegate, times(0)).onShowConfirmation();
         verify(mBottomSheetController, times(0))
                 .hideContent(
                         eq(mBottomSheetContent),
                         /* animate= */ eq(true),
                         eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
+    }
+
+    @Test
+    public void testOnAcceptClicked_destroyedBeforeDelay_cancelsPendingHideAndConfirmation() {
+        mModel.get(AutofillPaymentsChurnedUsersBottomSheetProperties.ON_ACCEPT_CLICKED).run();
+        verify(mDelegate).onUiAccepted();
+
+        mMediator.destroy();
+
+        ShadowLooper.idleMainLooper(
+                AutofillPaymentsChurnedUsersBottomSheetMediator.LOADING_DELAY_MS,
+                TimeUnit.MILLISECONDS);
+
+        verify(mDelegate, times(0)).onShowConfirmation();
+        verify(mBottomSheetController, times(0))
+                .hideContent(
+                        eq(mBottomSheetContent),
+                        /* animate= */ eq(true),
+                        eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
+    }
+
+    @Test
+    public void testOnAcceptClicked_ignoresSubsequentAcceptAndCancelClicks() {
+        mModel.get(AutofillPaymentsChurnedUsersBottomSheetProperties.ON_ACCEPT_CLICKED).run();
+        mModel.get(AutofillPaymentsChurnedUsersBottomSheetProperties.ON_ACCEPT_CLICKED).run();
+        mModel.get(AutofillPaymentsChurnedUsersBottomSheetProperties.ON_CANCEL_CLICKED).run();
+
+        verify(mDelegate, times(1)).onUiAccepted();
+        verify(mDelegate, times(0)).onUiCanceled();
+
+        ShadowLooper.idleMainLooper(
+                AutofillPaymentsChurnedUsersBottomSheetMediator.LOADING_DELAY_MS,
+                TimeUnit.MILLISECONDS);
+        verify(mBottomSheetController)
+                .hideContent(
+                        eq(mBottomSheetContent),
+                        /* animate= */ eq(true),
+                        eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
+        mMediator.onSheetStateChanged(
+                SheetState.HIDDEN, BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
+        verify(mDelegate).onShowConfirmation();
     }
 
     @Test
@@ -208,12 +284,24 @@ public class AutofillPaymentsChurnedUsersBottomSheetMediatorTest {
     }
 
     @Test
-    public void testOnSheetClosed_afterAccept_doesNotCallDelegateOnUiDismissed() {
+    public void testOnSheetClosed_afterAccept_doesNotCallOnUiDismissedAndCancelsPendingHide() {
         mModel.get(AutofillPaymentsChurnedUsersBottomSheetProperties.ON_ACCEPT_CLICKED).run();
         verify(mDelegate).onUiAccepted();
 
-        mMediator.onSheetClosed(BottomSheetController.StateChangeReason.SWIPE);
+        mMediator.onSheetClosed(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
         verify(mDelegate, times(0)).onUiDismissed();
+
+        // Idling the looper after early sheet closure should not trigger a duplicate animated hide
+        // or show confirmation.
+        ShadowLooper.idleMainLooper(
+                AutofillPaymentsChurnedUsersBottomSheetMediator.LOADING_DELAY_MS,
+                TimeUnit.MILLISECONDS);
+        verify(mDelegate, times(0)).onShowConfirmation();
+        verify(mBottomSheetController, times(0))
+                .hideContent(
+                        eq(mBottomSheetContent),
+                        /* animate= */ eq(true),
+                        eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
     }
 
     @Test
@@ -222,6 +310,7 @@ public class AutofillPaymentsChurnedUsersBottomSheetMediatorTest {
         verify(mDelegate).onUiCanceled();
 
         mMediator.onSheetClosed(BottomSheetController.StateChangeReason.SWIPE);
+        verify(mDelegate, times(0)).onUiAccepted();
         verify(mDelegate, times(0)).onUiDismissed();
     }
 }
