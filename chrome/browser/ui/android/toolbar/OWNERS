@@ -4,4 +4,6 @@ tedchoc@chromium.org
 twellington@chromium.org
 
 per-file TabSwitcher*=file://chrome/android/java/src/org/chromium/chrome/browser/tasks/OWNERS
+per-file ...account_menu*=file://chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/account_menu/OWNERS
 per-file adaptive_*=file://chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/adaptive/OWNERS
+per-file ...signin_button*=file://chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/signin_button/OWNERS
