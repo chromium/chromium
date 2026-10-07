@@ -221,6 +221,11 @@ class Cache::BarrierCallbackForPutResponse final
   // Must be called prior to starting the load of any response.
   ScriptPromise<IDLUndefined> Promise() const { return resolver_->Promise(); }
 
+  void Detach() {
+    Stop();
+    resolver_->Detach();
+  }
+
   AbortSignal* Signal() const {
     return abort_controller_ ? abort_controller_->signal() : nullptr;
   }
@@ -882,6 +887,11 @@ ScriptPromise<IDLUndefined> Cache::put(ScriptState* script_state,
       /*require_ok_response=*/false, trace_id);
   loader->OnResponse(response, exception_state);
 
+  if (exception_state.HadException()) {
+    barrier_callback->Detach();
+    return EmptyPromise();
+  }
+
   return promise;
 }
 
@@ -1151,8 +1161,13 @@ ScriptPromise<IDLUndefined> Cache::AddAllImpl(
     // internally.
     auto* on_reject =
         MakeGarbageCollected<FetchRejectHandler>(barrier_callback);
-    scoped_fetcher_->Fetch(script_state, info, init, exception_state)
-        .Then(script_state, on_resolve, on_reject);
+    auto fetch_promise =
+        scoped_fetcher_->Fetch(script_state, info, init, exception_state);
+    if (exception_state.HadException()) {
+      barrier_callback->Detach();
+      return EmptyPromise();
+    }
+    fetch_promise.Then(script_state, on_resolve, on_reject);
   }
 
   return promise;

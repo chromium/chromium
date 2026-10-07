@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_request_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_response_undefined.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
@@ -52,6 +53,7 @@
 #include "third_party/blink/renderer/modules/cache_storage/cache_storage_blob_client_list.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/blob/testing/fake_blob_registry.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 using blink::mojom::CacheStorageError;
@@ -71,9 +73,12 @@ class ScopedFetcherForTests final : public GlobalFetch::ScopedFetcher {
 
   ScriptPromise<Response> Fetch(ScriptState* script_state,
                                 const V8RequestInfo* request_info,
-                                const RequestInit*,
+                                const RequestInit* init,
                                 ExceptionState& exception_state) override {
     ++fetch_count_;
+    if (init->hasSignal()) {
+      fetch_signals_.push_back(init->signal());
+    }
     if (expected_url_) {
       switch (request_info->GetContentType()) {
         case V8RequestInfo::ContentType::kRequest:
@@ -83,6 +88,11 @@ class ScopedFetcherForTests final : public GlobalFetch::ScopedFetcher {
           EXPECT_EQ(*expected_url_, request_info->GetAsUSVString());
           break;
       }
+    }
+
+    if (throw_on_fetch_) {
+      exception_state.ThrowTypeError("Fetch failed synchronously");
+      return EmptyPromise();
     }
 
     if (fetch_count_ <= responses_.size()) {
@@ -103,23 +113,30 @@ class ScopedFetcherForTests final : public GlobalFetch::ScopedFetcher {
     expected_url_ = expected_url;
   }
   void SetResponse(Response* response) { response_ = response; }
+  void ThrowOnFetch() { throw_on_fetch_ = true; }
   void SetResponses(const HeapVector<Member<Response>>& responses) {
     responses_ = responses;
   }
 
   uint32_t FetchCount() const override { return fetch_count_; }
+  const HeapVector<Member<AbortSignal>>& FetchSignals() const {
+    return fetch_signals_;
+  }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(response_);
     visitor->Trace(responses_);
+    visitor->Trace(fetch_signals_);
     GlobalFetch::ScopedFetcher::Trace(visitor);
   }
 
  private:
   uint32_t fetch_count_ = 0;
+  bool throw_on_fetch_ = false;
   raw_ptr<const String> expected_url_ = nullptr;
   Member<Response> response_;
   HeapVector<Member<Response>> responses_;
+  HeapVector<Member<AbortSignal>> fetch_signals_;
 };
 
 // A test implementation of the CacheStorageCache interface which returns a
@@ -1084,6 +1101,60 @@ TEST_F(CacheStorageTest, AddAllAbortMany) {
   EXPECT_TRUE(cache->IsAborted());
   // A batch logs only the first failure, even if other responses arrive later.
   EXPECT_EQ(1u, GetPage().GetConsoleMessageStorage().size());
+}
+
+TEST_F(CacheStorageTest, AddAllDetachesResolverWhenFetchThrows) {
+  ScriptState::Scope scope(GetScriptState());
+  DummyExceptionStateForTesting exception_state;
+  auto* fetcher =
+      MakeGarbageCollected<ScopedFetcherForTests>(*GetExecutionContext());
+  fetcher->ThrowOnFetch();
+  Cache* cache =
+      CreateCache(fetcher, std::make_unique<NotImplementedErrorCache>());
+
+  HeapVector<Member<V8RequestInfo>> requests;
+  requests.push_back(StringToRequestInfo("https://www.cacheadd.test/pending"));
+  {
+    auto promise = cache->addAll(GetScriptState(), requests, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_TRUE(promise.IsEmpty());
+  }
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+}
+
+TEST_F(CacheStorageTest, AddAllAbortsEarlierFetchesWhenLaterFetchThrows) {
+  ScriptState::Scope scope(GetScriptState());
+  DummyExceptionStateForTesting exception_state;
+  auto* fetcher =
+      MakeGarbageCollected<ScopedFetcherForTests>(*GetExecutionContext());
+  HeapVector<Member<Response>> responses;
+  responses.push_back(Response::Create(GetScriptState(), exception_state));
+  responses.push_back(Response::Create(GetScriptState(), exception_state));
+  fetcher->SetResponses(responses);
+  TestCache* cache =
+      CreateCache(fetcher, std::make_unique<NotImplementedErrorCache>());
+
+  HeapVector<Member<V8RequestInfo>> requests;
+  requests.push_back(StringToRequestInfo("https://www.cacheadd.test/first"));
+  requests.push_back(StringToRequestInfo("https://www.cacheadd.test/second"));
+  requests.push_back(StringToRequestInfo("https://www.cacheadd.test/throws"));
+  auto promise = cache->addAll(GetScriptState(), requests, exception_state);
+
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ("Unexpected call to fetch, no response available.",
+            exception_state.Message());
+  EXPECT_TRUE(promise.IsEmpty());
+  EXPECT_EQ(3u, fetcher->FetchCount());
+  EXPECT_TRUE(cache->IsAborted());
+  ASSERT_EQ(3u, fetcher->FetchSignals().size());
+  EXPECT_TRUE(fetcher->FetchSignals()[0]->aborted());
+  EXPECT_TRUE(fetcher->FetchSignals()[1]->aborted());
+
+  GetScriptState()->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
+      GetIsolate());
+  EXPECT_EQ("", test_cache()->GetAndClearLastErrorWebCacheMethodCalled());
+  ThreadState::Current()->CollectAllGarbageForTesting();
 }
 
 }  // namespace
