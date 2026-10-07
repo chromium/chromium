@@ -16,6 +16,8 @@ NSString* const kAssistantAIMHistorySignedOutViewAccessibilityIdentifier =
     @"AssistantAIMHistorySignedOutViewAccessibilityIdentifier";
 NSString* const kAssistantAIMNewThreadButtonAccessibilityIdentifier =
     @"AssistantAIMNewThreadButtonAccessibilityIdentifier";
+NSString* const kAssistantAIMTitleLabelAccessibilityIdentifier =
+    @"AssistantAIMTitleLabelAccessibilityIdentifier";
 NSString* const kAssistantAIMZeroStateGreetingAccessibilityIdentifier =
     @"AssistantAIMZeroStateGreetingAccessibilityIdentifier";
 

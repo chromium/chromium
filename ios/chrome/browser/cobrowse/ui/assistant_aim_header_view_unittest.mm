@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/scoped_key_window.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -45,6 +46,16 @@ void CollectButtons(UIView* view, NSMutableArray<UIButton*>* buttons) {
   for (UIView* subview in view.subviews) {
     CollectButtons(subview, buttons);
   }
+}
+
+// Returns whether `view` has a `UILargeContentViewerInteraction`.
+bool HasLargeContentViewerInteraction(UIView* view) {
+  for (id<UIInteraction> interaction in view.interactions) {
+    if ([interaction isKindOfClass:[UILargeContentViewerInteraction class]]) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // Returns a description of `button`'s accessibility label and identifier, used
@@ -204,4 +215,52 @@ TEST_F(AssistantAIMHeaderViewTest,
         pointInside:CGPointMake(kButtonCenter, kExtendedPointOffset)
           withEvent:nil]);
   }
+}
+
+// Tests that the header title label caps Dynamic Type scaling at
+// `UIContentSizeCategoryExtraExtraExtraLarge` so it fits within the 40pt header
+// bar, and enables `UILargeContentViewer` on the header view.
+TEST_F(AssistantAIMHeaderViewTest,
+       TitleLabelCapsDynamicTypeAndShowsLargeContentViewer) {
+  constexpr CGFloat kHeaderWidth = 400.0;
+  constexpr CGFloat kHeaderHeight = 40.0;
+
+  ScopedKeyWindow scoped_key_window;
+  UIWindow* window = scoped_key_window.Get();
+  header_view_.frame = CGRectMake(0, 0, kHeaderWidth, kHeaderHeight);
+  [window addSubview:header_view_];
+  [header_view_ setMode:AssistantAIMState::kHistory];
+
+  UILabel* title_label =
+      base::apple::ObjCCast<UILabel>(FindViewWithAccessibilityIdentifier(
+          header_view_, kAssistantAIMTitleLabelAccessibilityIdentifier));
+  ASSERT_TRUE(title_label);
+  EXPECT_TRUE(title_label.adjustsFontForContentSizeCategory);
+  EXPECT_NSEQ(UIContentSizeCategoryExtraExtraExtraLarge,
+              title_label.maximumContentSizeCategory);
+  EXPECT_TRUE(title_label.showsLargeContentViewer);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_AIM_HISTORY), title_label.text);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_AIM_HISTORY),
+              title_label.largeContentTitle);
+  EXPECT_TRUE(HasLargeContentViewerInteraction(header_view_));
+
+  window.traitOverrides.preferredContentSizeCategory =
+      UIContentSizeCategoryLarge;
+  [window layoutIfNeeded];
+  [header_view_ layoutIfNeeded];
+  CGFloat large_point_size = title_label.font.pointSize;
+
+  window.traitOverrides.preferredContentSizeCategory =
+      UIContentSizeCategoryExtraExtraExtraLarge;
+  [window layoutIfNeeded];
+  [header_view_ layoutIfNeeded];
+  CGFloat xxxl_point_size = title_label.font.pointSize;
+  EXPECT_GT(xxxl_point_size, large_point_size);
+
+  window.traitOverrides.preferredContentSizeCategory =
+      UIContentSizeCategoryAccessibilityExtraExtraExtraLarge;
+  [window layoutIfNeeded];
+  [header_view_ layoutIfNeeded];
+  EXPECT_EQ(xxxl_point_size, title_label.font.pointSize);
+  EXPECT_LE(CGRectGetHeight(title_label.frame), kHeaderHeight);
 }

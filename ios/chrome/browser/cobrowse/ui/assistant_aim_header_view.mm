@@ -122,6 +122,7 @@ void ApplyHeaderElementShadow(UIView* targetView) {
   if (self) {
     _mode = AssistantAIMState::kThread;
     _percentage = 1.0;
+    [self addInteraction:[[UILargeContentViewerInteraction alloc] init]];
     [self setUpLogoView];
     [self setUpCloseButton];
     [self setUpHeaderActionsView];
@@ -197,10 +198,15 @@ void ApplyHeaderElementShadow(UIView* targetView) {
   _titleLabel = [[UILabel alloc] init];
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
   _titleLabel.adjustsFontForContentSizeCategory = YES;
+  _titleLabel.maximumContentSizeCategory =
+      UIContentSizeCategoryExtraExtraExtraLarge;
+  _titleLabel.showsLargeContentViewer = YES;
   _titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
   _titleLabel.font =
       PreferredFontForTextStyle(UIFontTextStyleHeadline, UIFontWeightSemibold);
   _titleLabel.isAccessibilityElement = YES;
+  _titleLabel.accessibilityIdentifier =
+      kAssistantAIMTitleLabelAccessibilityIdentifier;
   [self updateTitleAlpha];
   [self addSubview:_titleLabel];
 

@@ -26,6 +26,9 @@ extern NSString* const kAssistantAIMHistorySignedOutViewAccessibilityIdentifier;
 // Accessibility identifier for the Assistant AIM new thread button.
 extern NSString* const kAssistantAIMNewThreadButtonAccessibilityIdentifier;
 
+// Accessibility identifier for the Assistant AIM title label.
+extern NSString* const kAssistantAIMTitleLabelAccessibilityIdentifier;
+
 // Accessibility identifier for the Assistant AIM zero state greeting label.
 extern NSString* const kAssistantAIMZeroStateGreetingAccessibilityIdentifier;
 
