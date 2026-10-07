@@ -1026,7 +1026,7 @@ TEST(AudioBufferTest, AudioBufferMemoryPoolPlanar) {
   EXPECT_EQ(0u, pool->GetPoolSizeForTesting());
 
   const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_MONO;
-  scoped_refptr<AudioBuffer> buffer = MakeAudioBuffer<uint8_t>(
+  scoped_refptr<AudioBuffer> buffer = MakeAudioBuffer<float>(
       kSampleFormatPlanarF32, kChannelLayout,
       ChannelLayoutToChannelCount(kChannelLayout), kSampleRate, 1, 1,
       kSampleRate / 100, base::TimeDelta());

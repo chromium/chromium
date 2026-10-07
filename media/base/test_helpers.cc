@@ -689,12 +689,9 @@ scoped_refptr<AudioBuffer> MakeAudioBuffer(SampleFormat format,
   const size_t channels = (channel_layout == CHANNEL_LAYOUT_DISCRETE)
                               ? channel_count
                               : ChannelLayoutToChannelCount(channel_layout);
-  scoped_refptr<AudioBuffer> output =
-      AudioBuffer::CreateBuffer(format,
-                                channel_layout,
-                                static_cast<int>(channel_count),
-                                sample_rate,
-                                static_cast<int>(frames));
+  scoped_refptr<AudioBuffer> output = AudioBuffer::CreateBuffer(
+      format, channel_layout, static_cast<int>(channel_count), sample_rate,
+      static_cast<int>(frames));
   output->set_timestamp(timestamp);
 
   const bool is_planar = IsPlanar(format);
@@ -707,13 +704,21 @@ scoped_refptr<AudioBuffer> MakeAudioBuffer(SampleFormat format,
   //   start + frames * increment
   //   start + (frames + 1) * increment
   //   start + (frames + 2) * increment, ...
-  for (size_t ch = 0; ch < channels; ++ch) {
-    T* buffer =
-        reinterpret_cast<T*>(output->channel_data()[is_planar ? ch : 0].get());
-    const T v = static_cast<T>(start + ch * frames * increment);
-    for (size_t i = 0; i < frames; ++i) {
-      UNSAFE_TODO(buffer[is_planar ? i : ch + i * channels]) =
-          static_cast<T>(v + i * increment);
+  if (is_planar) {
+    for (size_t ch = 0; ch < channels; ++ch) {
+      base::span<T> channel_data = output->planar_channel_cast<T>(ch);
+      const T v = static_cast<T>(start + ch * frames * increment);
+      for (size_t i = 0; i < frames; ++i) {
+        channel_data[i] = static_cast<T>(v + i * increment);
+      }
+    }
+  } else {
+    base::span<T> interleaved_data = output->interleaved_data_cast<T>();
+    for (size_t ch = 0; ch < channels; ++ch) {
+      const T v = static_cast<T>(start + ch * frames * increment);
+      for (size_t i = 0; i < frames; ++i) {
+        interleaved_data[ch + i * channels] = static_cast<T>(v + i * increment);
+      }
     }
   }
   return output;
@@ -736,8 +741,7 @@ scoped_refptr<AudioBuffer> MakeAudioBuffer<float>(SampleFormat format,
       static_cast<int>(frames));
   output->set_timestamp(timestamp);
 
-  const bool is_planar =
-      format == kSampleFormatPlanarS16 || format == kSampleFormatPlanarF32;
+  const bool is_planar = IsPlanar(format);
 
   // Values in channel 0 will be:
   //   (start) / max_value
@@ -747,14 +751,24 @@ scoped_refptr<AudioBuffer> MakeAudioBuffer<float>(SampleFormat format,
   //   (start + frames * increment) / max_value
   //   (start + (frames + 1) * increment) / max_value
   //   (start + (frames + 2) * increment) / max_value, ...
-  for (size_t ch = 0; ch < channels; ++ch) {
-    float* buffer = reinterpret_cast<float*>(
-        output->channel_data()[is_planar ? ch : 0].get());
-    const float v = static_cast<float>(start + ch * frames * increment);
-    for (size_t i = 0; i < frames; ++i) {
-      UNSAFE_TODO(buffer[is_planar ? i : ch + i * channels]) =
-          static_cast<float>(v + i * increment) /
-          std::numeric_limits<uint16_t>::max();
+  if (is_planar) {
+    for (size_t ch = 0; ch < channels; ++ch) {
+      base::span<float> channel_data = output->planar_channel_cast<float>(ch);
+      const float v = static_cast<float>(start + ch * frames * increment);
+      for (size_t i = 0; i < frames; ++i) {
+        channel_data[i] = static_cast<float>(v + i * increment) /
+                          std::numeric_limits<uint16_t>::max();
+      }
+    }
+  } else {
+    base::span<float> interleaved_data = output->interleaved_data_cast<float>();
+    for (size_t ch = 0; ch < channels; ++ch) {
+      const float v = static_cast<float>(start + ch * frames * increment);
+      for (size_t i = 0; i < frames; ++i) {
+        interleaved_data[ch + i * channels] =
+            static_cast<float>(v + i * increment) /
+            std::numeric_limits<uint16_t>::max();
+      }
     }
   }
   return output;
@@ -779,9 +793,9 @@ scoped_refptr<AudioBuffer> MakeBitstreamAudioBuffer(
   //   start
   //   start + increment
   //   start + 2 * increment, ...
-  uint8_t* buffer = reinterpret_cast<uint8_t*>(output->channel_data()[0].get());
+  base::span<uint8_t> buffer = output->bitstream_data();
   for (size_t i = 0; i < data_size; ++i) {
-    UNSAFE_TODO(buffer[i]) = static_cast<uint8_t>(start + i * increment);
+    buffer[i] = static_cast<uint8_t>(start + i * increment);
   }
 
   return output;

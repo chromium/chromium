@@ -199,7 +199,7 @@ scoped_refptr<AudioBuffer> MakeAudioBuffer<float>(SampleFormat format,
                                                   size_t frames,
                                                   base::TimeDelta timestamp);
 
-// Create an AudioBuffer containing bitstream data. |start| and |increment| are
+// Create an AudioBuffer containing bitstream data. `start` and `increment` are
 // used to specify the values for the data. The value is determined by:
 //   start + frames * increment
 //   start + (frames + 1) * increment
@@ -215,7 +215,7 @@ scoped_refptr<AudioBuffer> MakeBitstreamAudioBuffer(
     size_t data_size,
     base::TimeDelta timestamp);
 
-// Verify the bitstream data in an AudioBus. |start| and |increment| are
+// Verify the bitstream data in an AudioBus. `start` and `increment` are
 // used to specify the values for the data. The value is determined by:
 //   start + frames * increment
 //   start + (frames + 1) * increment
