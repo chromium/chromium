@@ -14,6 +14,7 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.build.BuildConfig;
 
@@ -37,6 +38,7 @@ public class OverrideContextWrapperTestRule implements TestRule {
 
         public void setIsAutomotive(boolean isAutomotive) {
             this.mIsAutomotive = isAutomotive;
+            DeviceInfo.resetInstanceForTesting();
         }
 
         public void setIsDesktop(boolean isDesktop) {
@@ -44,6 +46,7 @@ public class OverrideContextWrapperTestRule implements TestRule {
             // (TODO: crbug.com/430983585) Clean up this flag once the desktop
             // build is fully functional.
             BuildConfig.IS_DESKTOP_ANDROID = isDesktop;
+            DeviceInfo.resetInstanceForTesting();
         }
 
         @Override
@@ -122,17 +125,21 @@ public class OverrideContextWrapperTestRule implements TestRule {
                 boolean isDesktopToRestore = BuildConfig.IS_DESKTOP_ANDROID;
                 mContext = new OverrideTestContext(contextToRestore);
                 ContextUtils.initApplicationContextForTests(mContext);
+                DeviceInfo.resetInstanceForTesting();
 
-                base.evaluate();
-
-                // After DisableAnimationTestRule requires an initialized context to do proper
-                // teardown.
-                // This resets to the original context rather than nulling out.
-                if (contextToRestore != null) {
-                    ContextUtils.initApplicationContextForTests(contextToRestore);
+                try {
+                    base.evaluate();
+                } finally {
+                    // After DisableAnimationTestRule requires an initialized context to do proper
+                    // teardown.
+                    // This resets to the original context rather than nulling out.
+                    if (contextToRestore != null) {
+                        ContextUtils.initApplicationContextForTests(contextToRestore);
+                    }
+                    // Also reset IS_DESKTOP_ANDROID to its original value.
+                    BuildConfig.IS_DESKTOP_ANDROID = isDesktopToRestore; // nocheck
+                    DeviceInfo.resetInstanceForTesting();
                 }
-                // Also reset IS_DESKTOP_ANDROID to its original value.
-                BuildConfig.IS_DESKTOP_ANDROID = isDesktopToRestore;
             }
         };
     }
