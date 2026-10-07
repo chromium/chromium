@@ -12,6 +12,7 @@ import android.util.Size;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -21,7 +22,7 @@ import java.util.List;
 @NullMarked
 class PlayerFrameProperties {
     /** A matrix of bitmap tiles that collectively make the entire content. */
-    static final PropertyModel.WritableObjectPropertyKey<Bitmap[][]> BITMAP_MATRIX =
+    static final PropertyModel.WritableObjectPropertyKey<@Nullable Bitmap[][]> BITMAP_MATRIX =
             new PropertyModel.WritableObjectPropertyKey<>(true);
 
     /** The dimensions of each bitmap tile in the current bitmap matrix. */

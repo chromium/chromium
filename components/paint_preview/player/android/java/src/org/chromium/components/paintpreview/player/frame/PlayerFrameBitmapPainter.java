@@ -22,7 +22,7 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 class PlayerFrameBitmapPainter {
     private @Nullable Size mTileSize;
-    private Bitmap @Nullable [][] mBitmapMatrix;
+    private @Nullable Bitmap @Nullable [][] mBitmapMatrix;
     private final Rect mViewPort = new Rect();
     private final Rect mDrawBitmapSrc = new Rect();
     private final Rect mDrawBitmapDst = new Rect();
@@ -46,7 +46,7 @@ class PlayerFrameBitmapPainter {
         mInvalidateCallback.run();
     }
 
-    void updateBitmapMatrix(Bitmap[][] bitmapMatrix) {
+    void updateBitmapMatrix(@Nullable Bitmap[][] bitmapMatrix) {
         if (mDestroyed) return;
 
         mBitmapMatrix = bitmapMatrix;

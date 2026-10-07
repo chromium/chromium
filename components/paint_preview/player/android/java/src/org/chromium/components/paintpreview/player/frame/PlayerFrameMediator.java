@@ -336,7 +336,7 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
     }
 
     @Override
-    public void updateBitmapMatrix(Bitmap @Nullable [][] bitmapMatrix) {
+    public void updateBitmapMatrix(@Nullable Bitmap @Nullable [][] bitmapMatrix) {
         mModel.set(PlayerFrameProperties.BITMAP_MATRIX, bitmapMatrix);
     }
 

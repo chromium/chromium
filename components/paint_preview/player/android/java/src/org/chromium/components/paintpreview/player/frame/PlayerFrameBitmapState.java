@@ -33,19 +33,15 @@ public class PlayerFrameBitmapState {
     /** The scale factor of bitmaps. */
     private final float mScaleFactor;
 
-    /**
-     * Bitmaps that make up the contents.
-     * Should be "@Nullable Bitmap @Nullable [][]", but there is a bug in NullAway
-     * (https://github.com/uber/NullAway/issues/1150) that prevents us from doing that.
-     */
-    private Bitmap @Nullable [][] mBitmapMatrix;
+    /** Bitmaps that make up the contents. */
+    private @Nullable Bitmap @Nullable [][] mBitmapMatrix;
 
     /** Whether a request for a bitmap tile is pending. */
-    private BitmapRequestHandler @Nullable [][] mPendingBitmapRequests;
+    private @Nullable BitmapRequestHandler @Nullable [][] mPendingBitmapRequests;
 
     /**
-     * Whether we currently need a bitmap tile. This is used for deleting bitmaps that we don't
-     * need and freeing up memory.
+     * Whether we currently need a bitmap tile. This is used for deleting bitmaps that we don't need
+     * and freeing up memory.
      */
     private boolean @Nullable [][] mRequiredBitmaps;
 
@@ -92,7 +88,7 @@ public class PlayerFrameBitmapState {
         return mRequiredBitmaps;
     }
 
-    Bitmap @Nullable [][] getMatrix() {
+    @Nullable Bitmap @Nullable [][] getMatrix() {
         return mBitmapMatrix;
     }
 

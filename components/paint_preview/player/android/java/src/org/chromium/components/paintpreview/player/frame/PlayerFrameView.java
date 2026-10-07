@@ -102,7 +102,7 @@ public class PlayerFrameView extends FrameLayout {
         layoutSubFrames();
     }
 
-    void updateBitmapMatrix(Bitmap[][] bitmapMatrix) {
+    void updateBitmapMatrix(@Nullable Bitmap[][] bitmapMatrix) {
         mBitmapPainter.updateBitmapMatrix(bitmapMatrix);
     }
 

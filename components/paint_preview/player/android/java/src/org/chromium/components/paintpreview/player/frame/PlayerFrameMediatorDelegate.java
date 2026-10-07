@@ -62,7 +62,7 @@ public interface PlayerFrameMediatorDelegate {
     void forceRedrawVisibleSubframes();
 
     /** Updates the bitmap matrix in the model. */
-    void updateBitmapMatrix(Bitmap @Nullable [][] bitmapMatrix);
+    void updateBitmapMatrix(@Nullable Bitmap @Nullable [][] bitmapMatrix);
 
     /** Update the model when the bitmap state is swapped. */
     void onSwapState();
