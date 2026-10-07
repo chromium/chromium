@@ -81,14 +81,11 @@ constexpr CGFloat kChevronPadding = 8;
 NSString* PermissionSettingTitle(SitePermissionSetting setting) {
   switch (setting) {
     case SitePermissionSetting::kAllowOnce:
-      return l10n_util::GetNSString(
-          IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_ALLOW_THIS_TIME);
+      return l10n_util::GetNSString(IDS_IOS_PERMISSIONS_SETTING_ALLOWED_ONCE);
     case SitePermissionSetting::kAlwaysAllow:
-      return l10n_util::GetNSString(
-          IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_ALWAYS_ALLOW);
+      return l10n_util::GetNSString(IDS_IOS_PERMISSIONS_SETTING_ALLOWED);
     case SitePermissionSetting::kNeverAllow:
-      return l10n_util::GetNSString(
-          IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_NEVER_ALLOW);
+      return l10n_util::GetNSString(IDS_IOS_PERMISSIONS_SETTING_NOT_ALLOWED);
   }
 }
 

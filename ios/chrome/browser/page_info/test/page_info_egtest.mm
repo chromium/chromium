@@ -260,10 +260,9 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
   if (!error) {
     [[EarlGrey selectElementWithMatcher:dropdownMatcher]
         performAction:grey_tap()];
-    [[EarlGrey
-        selectElementWithMatcher:
-            chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_NEVER_ALLOW)]
+    [[EarlGrey selectElementWithMatcher:
+                   chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                       IDS_IOS_PERMISSIONS_SETTING_NOT_ALLOWED)]
         performAction:grey_tap()];
     return web::PermissionStateNotAccessible;
   }
