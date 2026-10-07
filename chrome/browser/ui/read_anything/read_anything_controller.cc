@@ -106,10 +106,20 @@ ReadAnythingControllerGlue::ReadAnythingControllerGlue(
 bool ReadAnythingController::freeze_distillation_for_testing_ = false;
 
 // static
+base::TimeDelta ReadAnythingController::ai_playback_iph_delay_ =
+    ReadAnythingController::kAiPlaybackIphDefaultDelay;
+
+// static
 void ReadAnythingController::
     SetFreezeDistillationOnCreationForTesting(  // IN-TEST
         bool locked) {
   freeze_distillation_for_testing_ = locked;
+}
+
+// static
+void ReadAnythingController::SetAiPlaybackIphDelayForTesting(  // IN-TEST
+    base::TimeDelta delay) {
+  ai_playback_iph_delay_ = delay;
 }
 
 ReadAnythingController* ReadAnythingController::From(tabs::TabInterface* tab) {
@@ -247,12 +257,24 @@ void ReadAnythingController::OnEntryShown(ReadAnythingOpenTrigger trigger) {
       user_ed->MaybeShowFeaturePromo(
           feature_engagement::kIPHReadingModePresentationModeFeature);
     }
+    if (features::IsReadAnythingReadAloudExperimentalPlaybackUiEnabled() &&
+        distillation_state_ == DistillationState::kDistillationWithContent &&
+        !ai_playback_iph_timer_.IsRunning()) {
+      ai_playback_iph_timer_.Start(
+          FROM_HERE, ai_playback_iph_delay_,
+          base::BindOnce(&ReadAnythingController::MaybeShowAiPlaybackIph,
+                         weak_factory_.GetWeakPtr()));
+    }
   }
 
   MaybeUpdateFindBarController();
 }
 
 void ReadAnythingController::OnEntryHidden() {
+  if (features::IsReadAnythingReadAloudExperimentalPlaybackUiEnabled() &&
+      !is_presentation_transitioning_) {
+    ai_playback_iph_timer_.Stop();
+  }
   std::optional<base::TimeDelta> completed_session_duration =
       RecordEntryHiddenMetrics();
 
@@ -754,6 +776,7 @@ void ReadAnythingController::OnDistillationStateChanged(
     return;
   }
 
+  distillation_state_ = new_state;
   auto* user_ed =
       BrowserUserEducationInterface::From(tab_->GetBrowserWindowInterface());
 
@@ -761,6 +784,13 @@ void ReadAnythingController::OnDistillationStateChanged(
     if (user_ed) {
       user_ed->AbortFeaturePromo(
           feature_engagement::kIPHReadingModeLineFocusFeature);
+    }
+    if (features::IsReadAnythingReadAloudExperimentalPlaybackUiEnabled()) {
+      ai_playback_iph_timer_.Stop();
+      if (user_ed) {
+        user_ed->AbortFeaturePromo(
+            feature_engagement::kIPHReadingModeAiPlaybackFeature);
+      }
     }
 
     if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
@@ -770,16 +800,36 @@ void ReadAnythingController::OnDistillationStateChanged(
 
       TogglePresentation(/*is_user_initiated=*/false);
     }
-  } else if (features::IsReadAnythingLineFocusEnabled() &&
-             new_state == DistillationState::kDistillationWithContent &&
+  } else if (new_state == DistillationState::kDistillationWithContent &&
              GetPresentationState() != PresentationState::kInactive &&
              user_ed) {
-    // Only show the line focus IPH if there is content because line focus does
-    // not do anything on an empty page.
-    user_ed->MaybeShowFeaturePromo(
-        feature_engagement::kIPHReadingModeLineFocusFeature);
+    if (features::IsReadAnythingLineFocusEnabled()) {
+      // Only show the line focus IPH if there is content because line focus
+      // does not do anything on an empty page.
+      user_ed->MaybeShowFeaturePromo(
+          feature_engagement::kIPHReadingModeLineFocusFeature);
+    }
+    if (features::IsReadAnythingReadAloudExperimentalPlaybackUiEnabled() &&
+        !ai_playback_iph_timer_.IsRunning()) {
+      ai_playback_iph_timer_.Start(
+          FROM_HERE, ai_playback_iph_delay_,
+          base::BindOnce(&ReadAnythingController::MaybeShowAiPlaybackIph,
+                         weak_factory_.GetWeakPtr()));
+    }
   }
-  distillation_state_ = new_state;
+}
+
+void ReadAnythingController::MaybeShowAiPlaybackIph() {
+  CHECK(features::IsReadAnythingReadAloudExperimentalPlaybackUiEnabled());
+  if (GetPresentationState() == PresentationState::kInactive ||
+      distillation_state_ != DistillationState::kDistillationWithContent) {
+    return;
+  }
+  if (auto* user_ed = BrowserUserEducationInterface::From(
+          tab_->GetBrowserWindowInterface())) {
+    user_ed->MaybeShowFeaturePromo(
+        feature_engagement::kIPHReadingModeAiPlaybackFeature);
+  }
 }
 
 void ReadAnythingController::OnDistillationStatus(

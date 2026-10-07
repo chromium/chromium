@@ -488,3 +488,75 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingSidePanelInteractiveTest, ToggleImages) {
               },
               "Wait for setting to change.")));
 }
+
+class ReadAnythingAiPlaybackCUJTest
+    : public PageActionInteractiveTestMixin<InteractiveFeaturePromoTest> {
+ public:
+  template <typename... Args>
+  explicit ReadAnythingAiPlaybackCUJTest(Args&&... args)
+      : PageActionInteractiveTestMixin(
+            UseDefaultTrackerAllowingPromos({std::forward<Args>(args)...})) {}
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    distillable_url_ = embedded_test_server()->GetURL("/long_text_page.html");
+    non_distillable_url_ = GURL("chrome://blank");
+    a11y::SetDistillableDomainsForTesting({distillable_url_.GetHost()});
+
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kReadAnythingOmniboxChip,
+        features::kReadAnythingReadAloudExperimentalPlaybackUi,
+        feature_engagement::kIPHReadingModeAiPlaybackFeature};
+    feature_list_.InitAndEnableFeatures(enabled_features);
+    ReadAnythingController::SetAiPlaybackIphDelayForTesting(base::Seconds(0));
+
+    InteractiveFeaturePromoTest::SetUp();
+  }
+  void SetUpOnMainThread() override {
+    InteractiveFeaturePromoTest::SetUpOnMainThread();
+    embedded_test_server()->StartAcceptingConnections();
+    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
+        ->AddHintForTesting(
+            distillable_url_, optimization_guide::proto::READER_MODE_ELIGIBLE,
+            std::optional<optimization_guide::OptimizationMetadata>());
+  }
+  void TearDownOnMainThread() override {
+    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+    ReadAnythingController::SetAiPlaybackIphDelayForTesting(
+        ReadAnythingController::kAiPlaybackIphDefaultDelay);
+    InteractiveFeaturePromoTest::TearDownOnMainThread();
+  }
+
+  using PageActionInteractiveTestMixin::InvokePageAction;
+
+  auto WaitForPageActionChipVisible() {
+    return PageActionInteractiveTestMixin::WaitForPageActionChipVisible(
+        kActionSidePanelShowReadAnything);
+  }
+
+  auto InvokePageAction() {
+    return PageActionInteractiveTestMixin::InvokePageAction(
+        kActionSidePanelShowReadAnything);
+  }
+
+  GURL distillable_url_;
+  GURL non_distillable_url_;
+  feature_engagement::test::ScopedIphFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingAiPlaybackCUJTest, ShowAndHideIph) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  RunTestSequence(
+      InstrumentTab(kActiveTab),
+      NavigateWebContents(kActiveTab, distillable_url_),
+
+      // Open Reading Mode.
+      WaitForPageActionChipVisible(), InvokePageAction(),
+
+      // Wait for the promo to show.
+      WaitForPromo(feature_engagement::kIPHReadingModeAiPlaybackFeature),
+
+      // Hide the Iph by navigating away.
+      NavigateWebContents(kActiveTab, non_distillable_url_),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
+}

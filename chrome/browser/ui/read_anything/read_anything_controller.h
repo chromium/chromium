@@ -13,6 +13,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/read_anything/read_anything_contents_wrapper.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_hats_survey_controller.h"
@@ -183,6 +185,9 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
 
   void OnDistillationStateChanged(DistillationState new_state);
 
+  static constexpr base::TimeDelta kAiPlaybackIphDefaultDelay =
+      base::Seconds(30);
+
   // Called when the Reading Mode WebUI reports the result of a distillation
   // attempt. Coordinates any follow-up work that depends on how Reading Mode
   // was opened (e.g. triggering a pending PDF translation, or logging omnibox
@@ -195,6 +200,9 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
 
   // For testing only. Pauses distillation-related reactions from occurring.
   static void SetFreezeDistillationOnCreationForTesting(bool locked);
+
+  // For testing only. Overrides the delay before showing the AI Playback IPH.
+  static void SetAiPlaybackIphDelayForTesting(base::TimeDelta delay);
 
   // Lazily creates and returns the WebUIContentsWrapper for the
   // Reading Mode WebUI. Transfers ownership of the WebUIContentsWrapper to the
@@ -241,6 +249,8 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   // ensures that find-in-page (Cmd-F) targets the IRM overlay when it's open,
   // rather than the occluded main WebContents.
   void MaybeUpdateFindBarController();
+
+  void MaybeShowAiPlaybackIph();
 
   std::unique_ptr<WebContentsObserverInstance> ra_web_ui_observer_;
   std::unique_ptr<ReadAnythingOmniboxController> omnibox_controller_;
@@ -325,6 +335,10 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
 
   DistillationState distillation_state_ = DistillationState::kUndefined;
 
+  // Timer for showing the AI Playback IPH promo after the user has used
+  // Reading Mode for at least 30 seconds.
+  base::OneShotTimer ai_playback_iph_timer_;
+
   // The trigger used the last time Reading Mode was shown. Intentionally not
   // reset when Reading Mode is hidden, so that a distillation result arriving
   // after the UI is closed is still attributed to the right entry point.
@@ -341,6 +355,7 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   base::ScopedClosureRunner main_contents_capturer_handle_;
 
   static bool freeze_distillation_for_testing_;
+  static base::TimeDelta ai_playback_iph_delay_;
 
   base::WeakPtrFactory<ReadAnythingController> weak_factory_{this};
 };

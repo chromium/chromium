@@ -659,6 +659,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_ReadingMode"
       summary="educating users to click the side panel icon to open reading
                mode"/>
+  <variant name="IPH_ReadingModeAiPlayback"
+      summary="promotes the AI playback toggle in Reading Mode"/>
   <variant name="IPH_ReadingModeKeyboardShortcut"
       summary="promotes the keyboard shortcut for reading mode"/>
   <variant name="IPH_ReadingModeLineFocus"

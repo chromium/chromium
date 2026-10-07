@@ -1375,6 +1375,23 @@ void MaybeRegisterChromeFeaturePromos(
                        "Triggered to educate users about switching from "
                        "immersive mode to side panel mode in Reading Mode.")));
 
+  if (features::IsReadAnythingReadAloudExperimentalPlaybackUiEnabled()) {
+    // kIPHReadingModeAiPlaybackFeature:
+    registry.RegisterFeature(std::move(
+        user_education::FeaturePromoSpecification::CreateForToastPromo(
+            feature_engagement::kIPHReadingModeAiPlaybackFeature,
+            kReadAnythingAiPlaybackToggleElementId,
+            IDS_READING_MODE_AI_PLAYBACK_IPH_BODY,
+            IDS_READING_MODE_AI_PLAYBACK_IPH_SCREENREADER,
+            user_education::FeaturePromoSpecification::AcceleratorInfo())
+            .SetBubbleArrow(user_education::HelpBubbleArrow::kTopRight)
+            .SetInAnyContext(true)
+            .SetMetadata(
+                157, "alfredohiguera@google.com",
+                "Triggered to encourage users to use the AI playback feature "
+                "in Reading Mode.")));
+  }
+
   // kIPHReadingModeSidePanelFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForSnoozePromo(

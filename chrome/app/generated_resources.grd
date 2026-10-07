@@ -10018,6 +10018,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_AI_PLAYBACK_TURN_OFF" desc="Tooltip label for button that turns off AI Playback in Read Aloud.">
         Turn off AI Playback
       </message>
+      <message name="IDS_READING_MODE_AI_PLAYBACK_IPH_BODY" desc="Text for the help bubble introducing AI playback in Reading Mode.">
+        Listen to this page like it's a podcast with AI playback
+      </message>
+      <message name="IDS_READING_MODE_AI_PLAYBACK_IPH_SCREENREADER" is_accessibility_with_no_ui="true" desc="Accessible text for the help bubble introducing AI playback in Reading Mode.">
+        Listen to this page like it's a podcast with AI playback using the Turn on AI Playback button in the Reading mode toolbar
+      </message>
       <message name="IDS_READING_MODE_PLAY_DESCRIPTION" desc="Accessibility description for button that plays speech in Read Aloud.">
         Listen to the text with natural voice
       </message>

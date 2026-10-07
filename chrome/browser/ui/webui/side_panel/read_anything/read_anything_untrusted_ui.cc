@@ -284,8 +284,9 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
 
   ui::TrackedElementHandlerDocumentSingleton::Register(
       this,
-      std::vector<ui::ElementIdentifier>{kReadAnythingViewModeElementId,
-                                         kReadAnythingSettingsButtonElementId});
+      std::vector<ui::ElementIdentifier>{
+          kReadAnythingViewModeElementId, kReadAnythingSettingsButtonElementId,
+          kReadAnythingAiPlaybackToggleElementId});
 }
 
 ReadAnythingUntrustedUI::~ReadAnythingUntrustedUI() = default;
