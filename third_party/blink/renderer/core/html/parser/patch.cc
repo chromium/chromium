@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/dom/throw_on_dynamic_markup_insertion_count_incrementer.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
@@ -39,15 +40,20 @@ class NodeRemovalScope {
   STACK_ALLOCATED();
 
  public:
+  explicit NodeRemovalScope(Document& document) : document_(document) {}
+
   void Remove(Node* node) { nodes_to_remove.push_back(node); }
 
   ~NodeRemovalScope() {
+    ThrowOnDynamicMarkupInsertionCountIncrementer
+        throw_on_dynamic_markup_insertions(&document_);
     for (Node* node : nodes_to_remove) {
       node->remove();
     }
   }
 
  private:
+  Document& document_;
   HeapVector<Member<Node>> nodes_to_remove;
 };
 
@@ -118,7 +124,7 @@ Patch* Patch::Prepare(ContainerNode* scope,
 
       ContainerNode* pi_parent = processing_instruction->parentNode();
       int marker_depth = 0;
-      NodeRemovalScope remove_scope;
+      NodeRemovalScope remove_scope(scope->GetDocument());
 
       for (Node* node = processing_instruction->nextSibling(); node;
            node = node->nextSibling()) {
