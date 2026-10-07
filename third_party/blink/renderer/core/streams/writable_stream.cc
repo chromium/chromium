@@ -384,6 +384,8 @@ ScriptPromise<IDLUndefined> WritableStream::Abort(ScriptState* script_state,
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
 
+  resolver->SuppressDetachCheck();
+
   // 10. Set stream.[[pendingAbortRequest]] to a new pending abort request
   //     whose promise is promise, reason is reason, and was already erroring is
   //     wasAlreadyErroring.
