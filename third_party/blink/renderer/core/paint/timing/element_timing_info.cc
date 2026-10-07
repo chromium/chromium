@@ -8,20 +8,25 @@
 
 namespace blink {
 
-ElementTimingInfo::ElementTimingInfo(const String& url,
-                                     const gfx::RectF& rect,
-                                     const base::TimeTicks& response_end,
-                                     const AtomicString& identifier,
-                                     const gfx::Size& intrinsic_size,
-                                     const AtomicString& id,
-                                     Element* element)
-    : url(url),
+ElementTimingInfo::ElementTimingInfo(
+    const AtomicString& name,
+    const String& url,
+    const gfx::RectF& rect,
+    const base::TimeTicks& response_end,
+    const AtomicString& identifier,
+    const gfx::Size& intrinsic_size,
+    const AtomicString& id,
+    Element* element,
+    PerformanceTimelineEntryIdInfo navigation_id)
+    : name(name),
+      url(url),
       rect(rect),
       response_end(response_end),
       identifier(identifier),
       intrinsic_size(intrinsic_size),
       id(id),
-      element(element) {}
+      element(element),
+      navigation_id(navigation_id) {}
 
 void ElementTimingInfo::Trace(Visitor* visitor) const {
   visitor->Trace(element);

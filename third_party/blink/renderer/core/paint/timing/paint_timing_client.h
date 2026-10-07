@@ -22,7 +22,20 @@ class TextRecord;
 // contentful element and document-level paint events to clients.
 class PaintTimingClient : public GarbageCollectedMixin {
  public:
+  // Types are listed in the order that clients should be notified, which
+  // corresponds to the spec order. Note that Soft Navigation Heuristics needs
+  // to be processed first in order to update the navigation ID on soft
+  // navigation commit, before subsequent clients are notified.
+  enum class Type {
+    kSoftNavigationHeuristics = 0,
+    kLargestContentfulPaint,
+    kElementTiming,
+    kTest,
+  };
+
   virtual ~PaintTimingClient() = default;
+
+  virtual Type GetType() const = 0;
 
   // Called when the first contentful paint for an image type element (<img> SVG
   // image, poster image, or first video frame) has been observed. The size is

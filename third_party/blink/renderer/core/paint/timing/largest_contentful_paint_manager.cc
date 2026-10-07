@@ -108,6 +108,10 @@ void LargestContentfulPaintManager::Trace(Visitor* visitor) const {
   visitor->Trace(largest_ignored_image_);
 }
 
+PaintTimingClient::Type LargestContentfulPaintManager::GetType() const {
+  return Type::kLargestContentfulPaint;
+}
+
 void LargestContentfulPaintManager::OnElementFirstContentfulPaint(
     ImageRecord* record) {
   CHECK(largest_contentful_paint_calculator_);

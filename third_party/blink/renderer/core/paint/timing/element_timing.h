@@ -67,6 +67,7 @@ class CORE_EXPORT ElementTiming final : public GarbageCollected<ElementTiming>,
   ElementTiming& operator=(const ElementTiming&) = delete;
 
   // PaintTimingClient overrides:
+  Type GetType() const override;
   void OnPaintFinished(const HeapVector<Member<ImageRecord>>&,
                        const HeapVector<Member<TextRecord>>&) override;
   void OnFramePresented(const HeapVector<Member<ImageRecord>>&,
@@ -98,9 +99,7 @@ class CORE_EXPORT ElementTiming final : public GarbageCollected<ElementTiming>,
 
   bool CanReportToElementTiming() const;
 
-  void OnTextElementPresented(const TextRecord&);
-  void OnImageElementPresented(const ElementTimingInfo&,
-                               const DOMPaintTimingInfo&);
+  void OnElementPresented(const ElementTimingInfo&, const DOMPaintTimingInfo&);
 
   void NotifyImagePaintedInternal(
       Node& generating_node,
@@ -117,6 +116,7 @@ class CORE_EXPORT ElementTiming final : public GarbageCollected<ElementTiming>,
       const PropertyTreeStateOrAlias& current_paint_chunk_properties,
       const gfx::Rect& image_border,
       base::TimeTicks load_time);
+  void QueueElementTimingInfoForReportingIfNeeded(const TextRecord&);
 
   bool EnsureContainerTiming();
 

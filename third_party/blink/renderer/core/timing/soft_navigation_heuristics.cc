@@ -468,6 +468,10 @@ void SoftNavigationHeuristics::EmitSoftNavigation(
   UpdateSoftLcpMetricsForContext(context);
 }
 
+PaintTimingClient::Type SoftNavigationHeuristics::GetType() const {
+  return Type::kSoftNavigationHeuristics;
+}
+
 void SoftNavigationHeuristics::OnPaintFinished(
     const HeapVector<Member<ImageRecord>>& image_records,
     const HeapVector<Member<TextRecord>>& text_records) {

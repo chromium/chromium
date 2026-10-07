@@ -1581,7 +1581,8 @@ TEST_P(WindowPerformanceTest, ElementTimingTraceEvent) {
       DOMPaintTimingInfo{2000, 2000},
       GetTimeOrigin() + base::Milliseconds(1000), AtomicString("identifier"),
       gfx::Size(200, 300), AtomicString("id"),
-      /*element*/ page_holder_->GetDocument().documentElement());
+      /*element*/ page_holder_->GetDocument().documentElement(),
+      performance_->NavigationId());
   auto analyzer = trace_analyzer::Stop();
   trace_analyzer::TraceEventVector events;
   Query q = Query::EventNameIs("PerformanceElementTiming");

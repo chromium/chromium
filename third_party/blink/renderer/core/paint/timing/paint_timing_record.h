@@ -86,11 +86,8 @@ class CORE_EXPORT PaintTimingRecord
     is_needed_for_lcp_ = value;
   }
 
-  // Returns true iff this record is needed for Element Timing.
-  virtual bool IsNeededForElementTiming() const { return false; }
-
   bool IsNeededForPaintTiming() const {
-    return IsNeededForLargestContentfulPaint() || IsNeededForElementTiming() ||
+    return IsNeededForLargestContentfulPaint() ||
            IsNeededForInteractionContentfulPaint();
   }
 
@@ -132,12 +129,6 @@ class CORE_EXPORT TextRecord final : public PaintTimingRecord {
     return effective_visual_size_;
   }
 
-  bool IsNeededForElementTiming() const override {
-    return is_needed_for_element_timing_;
-  }
-  void SetIsNeededForElementTiming(bool value) {
-    is_needed_for_element_timing_ = value;
-  }
   const gfx::RectF& ElementTimingRect() const { return element_timing_rect_; }
 
   bool WasPreviouslyReported() const { return was_previously_reported_; }
@@ -148,7 +139,6 @@ class CORE_EXPORT TextRecord final : public PaintTimingRecord {
  private:
   const uint64_t effective_visual_size_;
   const gfx::RectF element_timing_rect_;
-  bool is_needed_for_element_timing_ = false;
   bool was_previously_reported_ = false;
 };
 

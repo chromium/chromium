@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_ELEMENT_TIMING_INFO_H_
 
 #include "base/time/time.h"
+#include "third_party/blink/renderer/core/timing/performance_timeline_entry_id_generator.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -20,28 +21,33 @@ class Element;
 // `ElementTimingInfo` contains information captured during paint time needed to
 // create element timing or container timing entries at presentation time.
 //
-// TODO(crbug.com/535432431): Use ImageRecord directly and delete this class.
+// TODO(crbug.com/535432431): Consider creating performance entries at paint
+// time and deleting this class.
 struct ElementTimingInfo final : public GarbageCollected<ElementTimingInfo> {
-  ElementTimingInfo(const String& url,
+  ElementTimingInfo(const AtomicString& name,
+                    const String& url,
                     const gfx::RectF& rect,
                     const base::TimeTicks& response_end,
                     const AtomicString& identifier,
                     const gfx::Size& intrinsic_size,
                     const AtomicString& id,
-                    Element* element);
+                    Element* element,
+                    PerformanceTimelineEntryIdInfo navigation_id);
 
   ElementTimingInfo(const ElementTimingInfo&) = delete;
   ElementTimingInfo& operator=(const ElementTimingInfo&) = delete;
 
   void Trace(Visitor* visitor) const;
 
+  const AtomicString name;
   const String url;
   const gfx::RectF rect;
   const base::TimeTicks response_end;
   const AtomicString identifier;
   const gfx::Size intrinsic_size;
   const AtomicString id;
-  const Member<Element> element;
+  const WeakMember<Element> element;
+  PerformanceTimelineEntryIdInfo navigation_id;
 };
 
 }  // namespace blink

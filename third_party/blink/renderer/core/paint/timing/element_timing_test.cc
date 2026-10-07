@@ -16,9 +16,11 @@
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/performance_element_timing.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
+using testing::AllOf;
 using testing::ElementsAre;
 using testing::IsEmpty;
 
@@ -30,6 +32,18 @@ namespace {
 MATCHER_P(ForId, id, "") {
   CHECK_EQ(arg->EntryTypeEnum(), PerformanceEntry::EntryType::kElement);
   return static_cast<PerformanceElementTiming*>(arg.Get())->id() == id;
+}
+
+MATCHER_P(ForElement, element, "") {
+  CHECK_EQ(arg->EntryTypeEnum(), PerformanceEntry::EntryType::kElement);
+  return static_cast<PerformanceElementTiming*>(arg.Get())->element() ==
+         element;
+}
+
+MATCHER_P(ForIdentifier, identifier, "") {
+  CHECK_EQ(arg->EntryTypeEnum(), PerformanceEntry::EntryType::kElement);
+  return static_cast<PerformanceElementTiming*>(arg.Get())->identifier() ==
+         identifier;
 }
 
 }  // namespace
@@ -321,6 +335,111 @@ TEST_P(ElementTimingTest, TextElementTimingInShadowTreeIgnored) {
   SimulateRenderingAndPresentationTime();
 
   EXPECT_THAT(GetElementTimingEntries(), IsEmpty());
+}
+
+TEST_P(ElementTimingTest, ElementAndContainerTimingDecoupled) {
+  SetMainFrameBodyContent(R"HTML(
+    <p containertiming="foo">Sample paragraph text</p>
+    <img id="target" containertiming="bar" style="width: 100px; height: 100px;"/>
+  )HTML");
+  SetImageContent("target", 100, 100);
+  SimulateRenderingAndPresentationTime();
+
+  EXPECT_THAT(GetElementTimingEntries(), IsEmpty());
+}
+
+TEST_P(ElementTimingTest,
+       TextElementRemovedAndGCedBetweenPaintAndPresentation) {
+  SetMainFrameBodyContent(R"HTML(
+    <p id="target" elementtiming>Text</p>
+  )HTML");
+  WeakPersistent<Element> target(GetElementById("target"));
+  EXPECT_TRUE(target);
+
+  SimulateRendering();
+  EXPECT_THAT(GetElementTimingEntries(), IsEmpty());
+
+  GetElementById("target")->remove();
+  // The layout system might hold onto `target` until the next paint, so
+  // simulate another frame. Also flush any tasks in case anything is holding
+  // onto the node.
+  SimulateRendering();
+  test::RunPendingTasks();
+
+  // Run GC. This should collect `target`, but an entry should still be emitted
+  // because the frame was presented.
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_FALSE(target);
+
+  SimulatePresentationTime();
+
+  EXPECT_THAT(GetElementTimingEntries(),
+              ElementsAre(AllOf(ForId("target"), ForElement(nullptr))));
+}
+
+TEST_P(ElementTimingTest,
+       ImageElementRemovedAndGCedBetweenPaintAndPresentation) {
+  SetMainFrameBodyContent(R"HTML(
+    <img id="target" elementtiming="img-id" style="width: 100px; height: 100px;"/>
+  )HTML");
+  SetImageContent("target", 100, 100);
+  WeakPersistent<Element> target(GetElementById("target"));
+  EXPECT_TRUE(target);
+
+  SimulateRendering();
+  EXPECT_THAT(GetElementTimingEntries(), IsEmpty());
+
+  GetElementById("target")->remove();
+  // Run any pending tasks to clear references to the target node.
+  test::RunPendingTasks();
+  // Run GC. This should collect `target`, but an entry should still be emitted
+  // because the frame was presented.
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_FALSE(target);
+
+  SimulatePresentationTime();
+
+  EXPECT_THAT(GetElementTimingEntries(),
+              ElementsAre(AllOf(ForId("target"), ForElement(nullptr))));
+}
+
+TEST_P(ElementTimingTest, AttributeChangedBetweenPaintAndPresentation) {
+  SetMainFrameBodyContent(R"HTML(
+    <p id="initial-id" elementtiming="initial-et">Text</p>
+  )HTML");
+
+  SimulateRendering();
+  EXPECT_THAT(GetElementTimingEntries(), IsEmpty());
+
+  Element* target = GetElementById("initial-id");
+  target->setAttribute(html_names::kIdAttr, AtomicString("mutated-id"));
+  target->setAttribute(html_names::kElementtimingAttr,
+                       AtomicString("mutated-et"));
+
+  SimulatePresentationTime();
+
+  EXPECT_THAT(
+      GetElementTimingEntries(),
+      ElementsAre(AllOf(ForId("initial-id"), ForIdentifier("initial-et"),
+                        ForElement(target))));
+}
+
+TEST_P(ElementTimingTest, AttributeRemovedBetweenPaintAndPresentation) {
+  SetMainFrameBodyContent(R"HTML(
+    <p id="target" elementtiming="initial">Text</p>
+  )HTML");
+
+  SimulateRendering();
+  EXPECT_THAT(GetElementTimingEntries(), IsEmpty());
+
+  Element* target = GetElementById("target");
+  target->removeAttribute(html_names::kElementtimingAttr);
+
+  SimulatePresentationTime();
+
+  EXPECT_THAT(GetElementTimingEntries(),
+              ElementsAre(AllOf(ForId("target"), ForIdentifier("initial"),
+                                ForElement(target))));
 }
 
 }  // namespace blink

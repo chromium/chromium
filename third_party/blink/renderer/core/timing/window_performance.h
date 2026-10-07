@@ -162,7 +162,8 @@ class CORE_EXPORT WindowPerformance final : public Performance,
                         const AtomicString& identifier,
                         const gfx::Size& intrinsic_size,
                         const AtomicString& id,
-                        Element*);
+                        Element*,
+                        PerformanceTimelineEntryIdInfo navigation_id);
 
   void AddContainerTiming(const DOMPaintTimingInfo& paint_timing_info,
                           const gfx::Rect& rect,

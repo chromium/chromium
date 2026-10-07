@@ -889,6 +889,8 @@ class TestClient : public GarbageCollected<TestClient>,
  public:
   void Trace(Visitor*) const override {}
 
+  Type GetType() const override { return Type::kTest; }
+
   void OnPaintFinished(
       const HeapVector<Member<ImageRecord>>&,
       const HeapVector<Member<TextRecord>>& text_records) override {

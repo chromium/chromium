@@ -30,8 +30,11 @@ PerformanceElementTiming* PerformanceElementTiming::Create(
   // equal to 0.
   DCHECK_GE(naturalWidth, 0);
   DCHECK_GE(naturalHeight, 0);
-  DCHECK(element);
   double start_time = render_time != 0.0 ? render_time : load_time;
+  // Note: `element` can be null here if it was removed and GCed before the
+  // presentation callback ran.
+  // TODO(crbug.com/454082773): Move creation to paint time and assert that
+  // `element` is non-null.
   return MakeGarbageCollected<PerformanceElementTiming>(
       name, start_time, url, intersection_rect, render_time, load_time,
       identifier, naturalWidth, naturalHeight, id, element, source,

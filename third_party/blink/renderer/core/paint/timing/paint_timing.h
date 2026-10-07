@@ -257,14 +257,14 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
         AnimationFrameTimingInfo*,
         HeapVector<Member<TextRecord>> text_records,
         HeapVector<Member<ImageRecord>> image_records,
-        HeapVector<Member<ElementTimingInfo>> image_element_timings,
+        HeapVector<Member<ElementTimingInfo>> element_timings,
         HeapVector<Member<ImageRecord>> animated_images);
 
     bool HasPaintTimingInfo() const { return paint_timing_info.has_value(); }
 
     bool ShouldNotifyClientsOnFramePresented() const {
       return !text_records.empty() || !image_records.empty() ||
-             !image_element_timings.empty();
+             !element_timings.empty();
     }
 
     void Trace(Visitor*) const;
@@ -278,7 +278,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
     const Member<AnimationFrameTimingInfo> animation_frame_timing_info;
     const HeapVector<Member<TextRecord>> text_records;
     const HeapVector<Member<ImageRecord>> image_records;
-    const HeapVector<Member<ElementTimingInfo>> image_element_timings;
+    const HeapVector<Member<ElementTimingInfo>> element_timings;
     const HeapVector<Member<ImageRecord>> animated_images;
 
     // Values set at presentation time.

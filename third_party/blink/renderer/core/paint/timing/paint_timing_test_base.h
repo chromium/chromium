@@ -71,6 +71,8 @@ class PaintTimingRecordObserverClient final
  public:
   void Trace(Visitor* visitor) const override {}
 
+  Type GetType() const override { return Type::kTest; }
+
   void OnPaintFinished(
       const HeapVector<Member<ImageRecord>>& image_records,
       const HeapVector<Member<TextRecord>>& text_records) override {

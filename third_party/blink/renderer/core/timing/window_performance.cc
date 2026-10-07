@@ -1460,7 +1460,8 @@ void WindowPerformance::AddElementTiming(
     const AtomicString& identifier,
     const gfx::Size& intrinsic_size,
     const AtomicString& id,
-    Element* element) {
+    Element* element,
+    PerformanceTimelineEntryIdInfo navigation_id) {
   if (!DomWindow()) {
     return;
   }
@@ -1471,7 +1472,7 @@ void WindowPerformance::AddElementTiming(
   PerformanceElementTiming* entry = PerformanceElementTiming::Create(
       name, url, rect, paint_timing_info.presentation_time, coarsened_load_time,
       identifier, intrinsic_size.width(), intrinsic_size.height(), id, element,
-      DomWindow(), NavigationId().web_exposed_id);
+      DomWindow(), navigation_id.web_exposed_id);
   TRACE_EVENT2("loading", "PerformanceElementTiming", "data",
                entry->ToTracedValue(), "frame",
                GetFrameIdForTracing(DomWindow()->GetFrame()));

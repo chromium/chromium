@@ -45,6 +45,7 @@ class CORE_EXPORT LargestContentfulPaintManager
   void Trace(Visitor* visitor) const override;
 
   // PaintTimingClient:
+  Type GetType() const override;
   void OnElementFirstContentfulPaint(ImageRecord*) override;
   void OnPaintFinished(const HeapVector<Member<ImageRecord>>&,
                        const HeapVector<Member<TextRecord>>&) override;

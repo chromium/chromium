@@ -63,6 +63,8 @@ class MockPaintTimingClient : public GarbageCollected<MockPaintTimingClient>,
         });
   }
 
+  Type GetType() const override { return Type::kTest; }
+
   ~MockPaintTimingClient() override = default;
 
   MOCK_METHOD(void, OnElementFirstContentfulPaint, (ImageRecord*), (override));
