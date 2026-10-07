@@ -2622,6 +2622,24 @@ suite('ComposeboxMixinTest', () => {
       });
 
   test(
+      'getSharedTabs marks a delayed tab loading until its snapshot is ready',
+      () => {
+        const pendingFile = ComposeboxFile.createFromTab(
+            'tab-uuid', 1, 'Tab 1', 'https://example.com',
+            {delayUpload: true, status: ContextUploadStatus.kUploadStarted});
+        element.attachedContext = new Map([[pendingFile.uuid, pendingFile]]);
+        assertFalse(element.getSharedTabs()[0]!.isLoading);
+
+        element.faviconSkeletonLoaderEnabled = true;
+        assertTrue(element.getSharedTabs()[0]!.isLoading);
+
+        const readyFile = ComposeboxFile.createFromTab(
+            'tab-uuid', 1, 'Tab 1', 'https://example.com', {delayUpload: true});
+        element.attachedContext = new Map([[readyFile.uuid, readyFile]]);
+        assertFalse(element.getSharedTabs()[0]!.isLoading);
+      });
+
+  test(
       'element inputModel reflects element state and delegates getters', () => {
         element.tabFaviconChipsToCoinsEnabled = true;
         element.smartTabSharingActive = false;
