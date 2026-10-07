@@ -29,15 +29,17 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) VoiceIsolation {
       const tflite::FlatBufferModel* model,
       const media::AudioParameters& audio_params);
 
-  // Creates a VoiceIsolationComponent from `model`. `model` must remain valid
-  // for the lifetime of the component. Returns a non-null pointer on success,
-  // or a VoiceIsolationCreationResult error code on failure.
+  // Creates a VoiceIsolationComponent from `model`. The component processes
+  // mono 10 ms frames at 48 kHz (480 samples, 100 calls per second). `model`
+  // must remain valid for the lifetime of the component. Returns a non-null
+  // pointer on success, or a VoiceIsolationCreationResult error code on
+  // failure.
   static base::expected<std::unique_ptr<VoiceIsolationComponent>,
                         VoiceIsolationCreationResult>
   CreateComponent(const tflite::FlatBufferModel* model);
 
   // Creates a VoiceIsolation object wrapping an existing `component`. Requires
-  // valid 48 kHz `audio_params`. `component` must process mono 20 ms frames at
+  // valid 48 kHz `audio_params`. `component` must process mono 10 ms frames at
   // 48 kHz, like the components returned by CreateComponent(). Both values are
   // CHECKed.
   static std::unique_ptr<VoiceIsolation> Create(

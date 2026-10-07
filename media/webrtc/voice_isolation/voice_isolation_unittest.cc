@@ -5,13 +5,17 @@
 #include "media/webrtc/voice_isolation/voice_isolation.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <memory>
 #include <numeric>
+#include <utility>
 
 #include "base/test/gmock_expected_support.h"
 #include "base/test/gtest_util.h"
+#include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
+#include "media/webrtc/voice_isolation/buffered_voice_isolation.h"
 #include "media/webrtc/voice_isolation/passthrough_voice_isolation.h"
 #include "media/webrtc/voice_isolation/stft_voice_isolation.h"
 #include "media/webrtc/voice_isolation/voice_isolation_component.h"
@@ -24,9 +28,17 @@
 namespace media {
 namespace {
 
-// Frame size and rate of the component inside VoiceIsolation: 20 ms at 48 kHz.
-constexpr size_t kComponentFrameSize = 960;
-constexpr size_t kComponentFramesPerSecond = 50;
+// Frame size and rate of the component inside VoiceIsolation: 10 ms at 48 kHz,
+// as delivered by APM.
+constexpr size_t kComponentFrameSize = 480;
+constexpr size_t kComponentFramesPerSecond = 100;
+
+// Constant stereo input levels. Downmixing stereo to mono uses a 0.5 gain per
+// channel to avoid clipping full scale stereo mixes, and upmixing mono to
+// stereo copies the mono channel to both left and right.
+constexpr float kLeftLevel = 2.0f;
+constexpr float kRightLevel = 4.0f;
+constexpr float kMixedLevel = (kLeftLevel + kRightLevel) / 2;
 
 // 48 kHz stereo params with a fixed buffer size. Only the component layout or
 // `sample_rate` varies between tests.
@@ -44,6 +56,24 @@ std::unique_ptr<VoiceIsolation> CreateWithPassthroughComponent(
 }
 
 }  // namespace
+
+TEST(VoiceIsolationTest, CreateComponentProcesses10MsFrames) {
+  std::unique_ptr<tflite::FlatBufferModel> model =
+      LoadVoiceIsolationTestModel();
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<VoiceIsolationComponent> component,
+                       VoiceIsolation::CreateComponent(model.get()));
+
+  ASSERT_TRUE(component);
+  EXPECT_EQ(component->FrameSize(), kComponentFrameSize);
+  EXPECT_EQ(component->FramesPerSecond(), kComponentFramesPerSecond);
+
+  // The STFT overlap-add delays the output by 10 ms, and the buffering by one
+  // more 10 ms frame. The model itself adds no delay.
+  constexpr base::TimeDelta kStftDelay = base::Milliseconds(10);
+  constexpr base::TimeDelta kBufferingDelay = base::Milliseconds(10);
+  EXPECT_EQ(component->AlgorithmicDelay(), kStftDelay + kBufferingDelay);
+}
 
 TEST(VoiceIsolationTest, ProcessAudioDownmixesAndUpmixes) {
   // Configure the audio parameters to the same internal parameters of
@@ -70,8 +100,10 @@ TEST(VoiceIsolationTest, ProcessAudioDownmixesAndUpmixes) {
       AudioBus::Create(2, kComponentFrameSize);
 
   // Fill input bus with dummy data.
-  std::fill(input_bus->channel(0).begin(), input_bus->channel(0).end(), 2.0f);
-  std::fill(input_bus->channel(1).begin(), input_bus->channel(1).end(), 4.0f);
+  std::fill(input_bus->channel(0).begin(), input_bus->channel(0).end(),
+            kLeftLevel);
+  std::fill(input_bus->channel(1).begin(), input_bus->channel(1).end(),
+            kRightLevel);
 
   // Clear output bus to verify changes.
   output_bus->Zero();
@@ -80,15 +112,10 @@ TEST(VoiceIsolationTest, ProcessAudioDownmixesAndUpmixes) {
   // component has no STFT, so there is no delay and one call is enough.
   voice_isolation->ProcessAudio(*input_bus, *output_bus);
 
-  // Expected results:
-  // Downmixing stereo to mono uses 0.5 scale to avoid clipping full scale
-  // stereo mixes. Mono channel = left * 0.5 + right * 0.5 = 2.0 * 0.5 + 4.0 *
-  // 0.5 = 3.0. Upmixing mono to stereo simply copies the mono channel to both
-  // left and right.
+  // Both output channels hold the downmixed level.
   for (size_t i = 0; i < kComponentFrameSize; ++i) {
-    constexpr float expected = 3.0f;
-    EXPECT_FLOAT_EQ(output_bus->channel(0)[i], expected);
-    EXPECT_FLOAT_EQ(output_bus->channel(1)[i], expected);
+    EXPECT_FLOAT_EQ(output_bus->channel(0)[i], kMixedLevel);
+    EXPECT_FLOAT_EQ(output_bus->channel(1)[i], kMixedLevel);
   }
 }
 
@@ -172,8 +199,10 @@ TEST(VoiceIsolationTest, TwoStageCreationSucceedsAndProcessesAudio) {
   std::unique_ptr<AudioBus> reference_bus =
       AudioBus::Create(2, kComponentFrameSize);
 
-  std::fill(input_bus->channel(0).begin(), input_bus->channel(0).end(), 2.0f);
-  std::fill(input_bus->channel(1).begin(), input_bus->channel(1).end(), 4.0f);
+  std::fill(input_bus->channel(0).begin(), input_bus->channel(0).end(),
+            kLeftLevel);
+  std::fill(input_bus->channel(1).begin(), input_bus->channel(1).end(),
+            kRightLevel);
   output_bus->Zero();
   reference_bus->Zero();
 
@@ -202,14 +231,17 @@ TEST(VoiceIsolationTest, ClearBuffersPurgesStaleLookaheadAudio) {
                          ChannelLayoutConfig::Stereo(), kSampleRate,
                          kFrameSize);
 
-  // Wrap a passthrough component in the real STFT, as VoiceIsolation does with
-  // the model, so that the output only depends on the FIFOs and the STFT
-  // history.
+  // Wrap a passthrough component in the real STFT and BufferedVoiceIsolation,
+  // as VoiceIsolation does with the model, so that the output only depends on
+  // the FIFOs, BufferedVoiceIsolation, and the STFT history.
+  constexpr size_t kStftFrameSize = 2 * kComponentFrameSize;
+  constexpr size_t kStftFramesPerSecond = kComponentFramesPerSecond / 2;
   std::unique_ptr<VoiceIsolation> voice_isolation = VoiceIsolation::Create(
-      std::make_unique<StftVoiceIsolation>(
-          std::make_unique<PassthroughVoiceIsolation>(
-              /*frame_size=*/2 * kComponentFrameSize,
-              /*frames_per_second=*/kComponentFramesPerSecond)),
+      std::make_unique<BufferedVoiceIsolation>(
+          std::make_unique<StftVoiceIsolation>(
+              std::make_unique<PassthroughVoiceIsolation>(
+                  /*frame_size=*/2 * kStftFrameSize,
+                  /*frames_per_second=*/kStftFramesPerSecond))),
       params);
   ASSERT_NE(voice_isolation, nullptr);
 

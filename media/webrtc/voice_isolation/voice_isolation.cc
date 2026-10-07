@@ -15,6 +15,7 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/converting_audio_fifo.h"
 #include "media/webrtc/voice_isolation/band_split_voice_isolation.h"
+#include "media/webrtc/voice_isolation/buffered_voice_isolation.h"
 #include "media/webrtc/voice_isolation/passthrough_voice_isolation.h"
 #include "media/webrtc/voice_isolation/stft_voice_isolation.h"
 #include "media/webrtc/voice_isolation/tflite_voice_isolation.h"
@@ -24,11 +25,20 @@
 namespace media {
 
 namespace {
-// StftVoiceIsolation consumes one waveform frame per two DFTs.
-constexpr size_t kVoiceIsolationFrameSize =
+// StftVoiceIsolation consumes one 20 ms waveform frame per two DFTs.
+constexpr size_t kStftFrameSize =
     BandSplitVoiceIsolation::kFrameSize / BandSplitVoiceIsolation::kNumDfts;
-constexpr size_t kVoiceIsolationFramesPerSecond =
+constexpr size_t kStftFramesPerSecond =
     BandSplitVoiceIsolation::kFramesPerSecond;
+
+// External frames: 10 ms at 48 kHz, as delivered by APM. BufferedVoiceIsolation
+// combines two of them into one STFT frame.
+constexpr size_t kExternalFramesPerStftFrame =
+    BufferedVoiceIsolation::kNumBufferedFrames;
+constexpr size_t kVoiceIsolationFrameSize =
+    kStftFrameSize / kExternalFramesPerStftFrame;
+constexpr size_t kVoiceIsolationFramesPerSecond =
+    kStftFramesPerSecond * kExternalFramesPerStftFrame;
 constexpr int kVoiceIsolationSampleRate = 48000;
 static_assert(kVoiceIsolationFrameSize * kVoiceIsolationFramesPerSecond ==
               kVoiceIsolationSampleRate);
@@ -45,10 +55,13 @@ CreateVoiceIsolation(const tflite::FlatBufferModel* model) {
 
   // Wrap TfLite with BandSplitVoiceIsolation, which CHECKs the model layout,
   // to split 48kHz DFTs down to 16kHz and zero-pad high bands on
-  // reconstruction. StftVoiceIsolation performs the 48kHz STFT and iSTFT. The
-  // VoiceIsolationImpl constructor CHECKs the layout of the returned component.
-  return std::make_unique<StftVoiceIsolation>(
-      std::make_unique<BandSplitVoiceIsolation>(std::move(tflite)));
+  // reconstruction. StftVoiceIsolation performs the 48kHz STFT and iSTFT on
+  // 20 ms frames, and BufferedVoiceIsolation lets the pipeline consume the
+  // 10 ms frames delivered by APM. The VoiceIsolationImpl constructor CHECKs
+  // the layout of the returned component.
+  return std::make_unique<BufferedVoiceIsolation>(
+      std::make_unique<StftVoiceIsolation>(
+          std::make_unique<BandSplitVoiceIsolation>(std::move(tflite))));
 }
 
 class VoiceIsolationImpl : public VoiceIsolation {
