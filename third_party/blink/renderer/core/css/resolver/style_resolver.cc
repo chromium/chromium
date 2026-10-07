@@ -1636,6 +1636,51 @@ void StyleResolver::ApplyMathMLCustomStyleProperties(
   }
 }
 
+// Incremental style
+// Clones the previous ComputedStyle instead of matching stylesheet rules, then
+// applies the element's declarations in cascade order:
+//
+//   1. SVG presentation attributes with SupportsIncrementalStyle(), when
+//      SvgIncrementalStyle is enabled (kAuthorPresentationalHint).
+//   2. The whole inline style (style="").
+//
+// All eligible declarations are applied, not just changed ones, so both sets
+// can change before one recalc while preserving their cascade order.
+//
+// Stylesheet contributions remain in the clone. Animation state or base-style
+// animation data blocks incremental style. Incremental application bypasses
+// StyleCascade, so variable substitution, revert handling and anchor resolution
+// block reuse. StyleAdjuster runs again, requiring idempotent declarations. SVG
+// position and display are normalized before dependent adjustment decisions.
+// Styles with appearance still block reuse because theme adjustment runs
+// afterward.
+//
+// A presentation attribute declaration may safely lose to inline style, which
+// is applied last. If inline style ultimately wins, a loss to a stylesheet
+// declaration could also be safe, but we conservatively block reuse even then.
+// CascadeMap's InlineStyleLost() and PresentationAttributeStyleLost()
+// record losses that may make incremental reuse unsafe. These losses set
+// HasIncrementalStyleBlocker(), forcing a full cascade.
+//
+// Examples (assuming an otherwise eligible element):
+//   <rect x="10" style="opacity: 0.5">
+//     Changing x, opacity, or both stays incremental.
+//
+//   <rect x="10" style="x: 20px">
+//     Changing the x attribute stays incremental: inline x is applied last
+//     and still wins with 20px.
+//
+//   <style>rect { x: 30px }</style> <rect x="10">
+//     Changing x requires a full recalc: applying the hint would overwrite
+//     the winning author rule (30px), which is not applied incrementally.
+//
+//   <style>rect { x: 30px }</style> <rect x="10" style="x: 40px">
+//     Changing the x attribute still requires a full recalc: loss tracking
+//     records the hint's loss to the author rule even though inline x wins
+//     with 40px. Reuse is conservatively blocked.
+//
+// See SVGIncrementalStyleTest for related coverage.
+
 bool CanReapplyPropertySet(const CSSPropertyValueSet* property_set,
                            bool incremental_properties_only,
                            bool is_svg) {

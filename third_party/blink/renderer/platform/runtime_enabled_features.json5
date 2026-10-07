@@ -6405,7 +6405,7 @@
     },
     {
       name: "SvgIncrementalStyle",
-      status: "test",
+      status: "stable",
     },
     {
       name: "SvgInlineRootPixelSnappingScaleAdjustment",
