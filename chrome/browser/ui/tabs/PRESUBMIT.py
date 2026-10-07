@@ -38,6 +38,10 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # Chrome App window WebContents in ChromeAppDelegate::InitWebContents, so
   # the WebContents must own it.
   'FileSystemAccessPermissionRequestManager::CreateForWebContents',
+  # TabModalDialogManager lives in //components/javascript_dialogs and is also
+  # attached to non-tab Document Picture-in-Picture WebContents in
+  # DocumentPipHost, so the WebContents must own it.
+  'javascript_dialogs::TabModalDialogManager::CreateForWebContents',
   # PermissionRecoverySuccessRateTracker lives in //components/permissions and
   # is also attached to non-tab WebContents in
   # PaymentHandlerWebFlowViewController::PopulateSheet, DocumentPipHost, and

@@ -108,6 +108,7 @@
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/focus_tab_after_navigation_helper.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
+#include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_desktop.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/page_action/action_ids.h"
@@ -175,6 +176,7 @@
 #include "components/enterprise/net/content/enterprise_proxy_tab_helper.h"
 #include "components/history/content/browser/web_contents_top_sites_observer.h"
 #include "components/history/core/browser/top_sites.h"
+#include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/multistep_filter/core/features.h"
 #include "components/payments/core/features.h"
 #include "components/search/search.h"
@@ -1228,6 +1230,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
       tab.GetContents());
 
+  javascript_dialogs::TabModalDialogManager::CreateForWebContents(
+      tab.GetContents(),
+      std::make_unique<JavaScriptTabModalDialogManagerDelegateDesktop>(
+          tab.GetContents()));
+
   // Attach TrustedVaultEncryptionKeysTabHelper to the tab.
   TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(tab.GetContents());
 }
@@ -1788,6 +1795,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
 
   permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
       new_contents);
+
+  javascript_dialogs::TabModalDialogManager::CreateForWebContents(
+      new_contents,
+      std::make_unique<JavaScriptTabModalDialogManagerDelegateDesktop>(
+          new_contents));
 
   TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(new_contents);
 }

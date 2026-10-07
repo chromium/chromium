@@ -59,7 +59,6 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/infobars/content/content_infobar_manager.h"
-#include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_content_annotations/content/annotate_page_content_request.h"
@@ -100,10 +99,8 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_android.h"
 #include "content/public/common/content_features.h"
 #else
-#include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_desktop.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -288,19 +285,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
 
   // --- Section 2: Platform-specific tab helpers ---
 
-#if BUILDFLAG(IS_ANDROID)
-  javascript_dialogs::TabModalDialogManager::CreateForWebContents(
-      web_contents,
-      std::make_unique<JavaScriptTabModalDialogManagerDelegateAndroid>(
-          web_contents));
-#else   // BUILDFLAG(IS_ANDROID)
-  javascript_dialogs::TabModalDialogManager::CreateForWebContents(
-      web_contents,
-      std::make_unique<JavaScriptTabModalDialogManagerDelegateDesktop>(
-          web_contents));
-
+#if !BUILDFLAG(IS_ANDROID)
   web_modal::WebContentsModalDialogManager::CreateForWebContents(web_contents);
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // --- Section 3: Feature tab helpers behind BUILDFLAGs ---
   // NOT for "if enabled"; put those in section 1.

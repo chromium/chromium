@@ -93,6 +93,7 @@
 #include "chrome/browser/ui/android/context_menu_helper.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
+#include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_android.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
@@ -124,6 +125,7 @@
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/history/content/browser/web_contents_top_sites_observer.h"
 #include "components/history/core/browser/top_sites.h"
+#include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/metrics/content/metrics_services_web_contents_observer.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/page_content_annotations/content/page_content_annotations_web_contents_observer.h"
@@ -619,6 +621,11 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
       web_contents);
 
   ContextMenuHelper::CreateForWebContents(web_contents);
+
+  javascript_dialogs::TabModalDialogManager::CreateForWebContents(
+      web_contents,
+      std::make_unique<JavaScriptTabModalDialogManagerDelegateAndroid>(
+          web_contents));
 
   // Attach TrustedVaultEncryptionKeysTabHelper to the tab.
   TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(web_contents);
