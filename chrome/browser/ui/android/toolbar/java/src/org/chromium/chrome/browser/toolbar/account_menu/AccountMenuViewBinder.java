@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.account_menu;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
@@ -19,6 +20,11 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.IdentityCardProperties;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.MenuItemProperties;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.PromoCardProperties;
+import org.chromium.components.browser_ui.widget.containment.ContainerStyle;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItemController;
+import org.chromium.components.browser_ui.widget.containment.ContainmentViewStyler;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -56,6 +62,32 @@ public class AccountMenuViewBinder {
             }
         } else if (propertyKey == MenuItemProperties.CLICK_LISTENER) {
             textView.setOnClickListener(model.get(MenuItemProperties.CLICK_LISTENER));
+        } else if (propertyKey == MenuItemProperties.IS_SECTION_TOP
+                || propertyKey == MenuItemProperties.IS_SECTION_BOTTOM) {
+            Context context = view.getContext();
+            if (SigninFeatureMap.isEnabled(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU_REFINEMENTS)) {
+                ContainerStyle style =
+                        new ContainmentItemController(context)
+                                .createStandardBuilder(
+                                        model.get(MenuItemProperties.IS_SECTION_TOP),
+                                        model.get(MenuItemProperties.IS_SECTION_BOTTOM),
+                                        /* isSingleLine= */ true)
+                                .build();
+                ContainmentViewStyler.applyBackgroundStyle(view, style);
+                ContainmentViewStyler.applyMargins(view, style);
+            } else {
+                // TODO(crbug.com/565733817): Remove when SigninButtonProfileMenuRefinements is
+                // launched.
+                int horizontalPadding =
+                        context.getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.account_menu_horizontal_padding_legacy);
+                view.setPaddingRelative(
+                        horizontalPadding,
+                        view.getPaddingTop(),
+                        horizontalPadding,
+                        view.getPaddingBottom());
+            }
         } else {
             assert false : "Unhandled property key: " + propertyKey;
         }

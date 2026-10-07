@@ -119,8 +119,13 @@ found in the LICENSE file.
 
     <!-- Desktop Account Menu dimensions -->
     <dimen name="account_menu_width">380dp</dimen>
-    <dimen name="account_menu_padding_vertical">12dp</dimen>
-    <dimen name="account_menu_horizontal_padding">24dp</dimen>
+    <dimen name="account_menu_padding_top">12dp</dimen>
+    <dimen name="account_menu_padding_bottom">8dp</dimen>
+    <dimen name="account_menu_horizontal_padding">16dp</dimen>
+    <!-- TODO(crbug.com/565733817): Remove these dimens when
+         SigninButtonProfileMenuRefinements is launched. -->
+    <dimen name="account_menu_padding_vertical_legacy">12dp</dimen>
+    <dimen name="account_menu_horizontal_padding_legacy">24dp</dimen>
     <dimen name="account_menu_item_icon_padding">16dp</dimen>
     <dimen name="account_menu_item_icon_size">20dp</dimen>
     <dimen name="account_menu_row_min_height">48dp</dimen>

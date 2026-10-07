@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.toolbar.account_menu;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -84,6 +86,7 @@ import java.lang.ref.WeakReference;
     SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
     SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
 })
+@DisableFeatures(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU_REFINEMENTS)
 public class AccountMenuMediatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -291,6 +294,44 @@ public class AccountMenuMediatorTest {
     }
 
     @Test
+    @EnableFeatures(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU_REFINEMENTS)
+    public void testSignedOut_setsSectionBoundaries() {
+        mMediator.updateMenuItems(/* recordShownMetrics= */ false);
+
+        assertEquals(3, mModelList.size());
+        assertEquals(ItemType.PROMO_CARD, mModelList.get(0).type);
+
+        // First section: Autofill (single item when signed out, so both top and bottom).
+        assertTrue(mModelList.get(1).model.get(MenuItemProperties.IS_SECTION_TOP));
+        assertTrue(mModelList.get(1).model.get(MenuItemProperties.IS_SECTION_BOTTOM));
+
+        // Second section: Incognito (single item, so both top and bottom).
+        assertTrue(mModelList.get(2).model.get(MenuItemProperties.IS_SECTION_TOP));
+        assertTrue(mModelList.get(2).model.get(MenuItemProperties.IS_SECTION_BOTTOM));
+    }
+
+    @Test
+    @EnableFeatures(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU_REFINEMENTS)
+    public void testSignedIn_setsSectionBoundaries() {
+        signInAndUpdateMenu();
+
+        assertEquals(5, mModelList.size());
+        assertEquals(ItemType.IDENTITY_CARD, mModelList.get(0).type);
+
+        // First section: Autofill (top), Manage account (middle), Account settings (bottom).
+        assertTrue(mModelList.get(1).model.get(MenuItemProperties.IS_SECTION_TOP));
+        assertFalse(mModelList.get(1).model.get(MenuItemProperties.IS_SECTION_BOTTOM));
+        assertFalse(mModelList.get(2).model.get(MenuItemProperties.IS_SECTION_TOP));
+        assertFalse(mModelList.get(2).model.get(MenuItemProperties.IS_SECTION_BOTTOM));
+        assertFalse(mModelList.get(3).model.get(MenuItemProperties.IS_SECTION_TOP));
+        assertTrue(mModelList.get(3).model.get(MenuItemProperties.IS_SECTION_BOTTOM));
+
+        // Second section: Incognito (single item, so both top and bottom).
+        assertTrue(mModelList.get(4).model.get(MenuItemProperties.IS_SECTION_TOP));
+        assertTrue(mModelList.get(4).model.get(MenuItemProperties.IS_SECTION_BOTTOM));
+    }
+
+    @Test
     public void testProfileDataUpdated_updatesIdentityCard() {
         signInAndUpdateMenu();
 
@@ -371,21 +412,6 @@ public class AccountMenuMediatorTest {
     @Test
     public void testSignedOut_doesNotDisplayManageGoogleAccountItem() {
         // The FakeIdentityManager from `mAccountManagerTestRule` has no primary account by default.
-        mMediator.updateMenuItems(/* recordShownMetrics= */ false);
-
-        for (ListItem item : mModelList) {
-            if (item.type == ItemType.MENU_ITEM) {
-                assertNotEquals(
-                        R.string.manage_your_google_account,
-                        item.model.get(MenuItemProperties.TITLE_ID));
-            }
-        }
-    }
-
-    @Test
-    public void testIncognitoProfile_doesNotDisplayManageGoogleAccountItem() {
-        doReturn(true).when(mProfile).isOffTheRecord();
-
         mMediator.updateMenuItems(/* recordShownMetrics= */ false);
 
         for (ListItem item : mModelList) {

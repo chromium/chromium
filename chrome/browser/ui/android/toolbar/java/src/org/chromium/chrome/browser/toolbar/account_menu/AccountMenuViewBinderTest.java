@@ -7,15 +7,19 @@ package org.chromium.chrome.browser.toolbar.account_menu;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RippleDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,12 +33,15 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.IdentityCardProperties;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.MenuItemProperties;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.PromoCardProperties;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -58,7 +65,12 @@ public class AccountMenuViewBinderTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mAvatar = new ColorDrawable(Color.BLUE);
         mItemView =
-                (TextView) LayoutInflater.from(mActivity).inflate(R.layout.account_menu_item, null);
+                (TextView)
+                        LayoutInflater.from(mActivity)
+                                .inflate(
+                                        R.layout.account_menu_item,
+                                        new FrameLayout(mActivity),
+                                        false);
         mModel = new PropertyModel(MenuItemProperties.ALL_KEYS);
         PropertyModelChangeProcessor.create(mModel, mItemView, AccountMenuViewBinder::bindMenuItem);
     }
@@ -104,6 +116,46 @@ public class AccountMenuViewBinderTest {
                 mActivity.getString(R.string.manage_your_google_account),
                 mItemView.getText().toString());
         assertNotNull(mItemView.getCompoundDrawablesRelative()[0]);
+    }
+
+    // TODO(crbug.com/565733817): Add a render test for menu item section boundaries.
+    @Test
+    @EnableFeatures(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU_REFINEMENTS)
+    public void testBindMenuItem_sectionBoundaries() {
+        mModel.set(MenuItemProperties.IS_SECTION_TOP, true);
+        assertTrue(mItemView.getBackground() instanceof RippleDrawable);
+
+        int expectedHorizontalMargin =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.settings_item_margin);
+        int expectedVerticalMargin =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.settings_item_container_vertical_margin);
+        MarginLayoutParams layoutParams = (MarginLayoutParams) mItemView.getLayoutParams();
+        assertEquals(expectedHorizontalMargin, layoutParams.leftMargin);
+        assertEquals(expectedHorizontalMargin, layoutParams.rightMargin);
+        assertEquals(expectedVerticalMargin, layoutParams.topMargin);
+        assertEquals(expectedVerticalMargin, layoutParams.bottomMargin);
+
+        mModel.set(MenuItemProperties.IS_SECTION_BOTTOM, true);
+        int expectedSectionBottomMargin =
+                expectedVerticalMargin
+                        + mActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.settings_section_bottom_margin);
+        assertEquals(expectedSectionBottomMargin, layoutParams.bottomMargin);
+    }
+
+    @Test
+    @DisableFeatures(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU_REFINEMENTS)
+    public void testBindMenuItem_legacyPadding() {
+        mModel.set(MenuItemProperties.IS_SECTION_TOP, false);
+        int expectedLegacyPadding =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.account_menu_horizontal_padding_legacy);
+        assertEquals(expectedLegacyPadding, mItemView.getPaddingStart());
+        assertEquals(expectedLegacyPadding, mItemView.getPaddingEnd());
     }
 
     @Test

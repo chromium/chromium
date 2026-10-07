@@ -56,21 +56,43 @@ public class AccountMenuProperties {
         public static final WritableObjectPropertyKey<OnClickListener> CLICK_LISTENER =
                 new WritableObjectPropertyKey<>();
 
+        /**
+         * Whether this item is at the top of a containment section. An item with both {@code
+         * IS_SECTION_TOP} and {@code IS_SECTION_BOTTOM} set to true is a standalone single-item
+         * section; an item with both set to false is a middle item.
+         */
+        public static final WritableBooleanPropertyKey IS_SECTION_TOP =
+                new WritableBooleanPropertyKey();
+
+        /** Whether this item is at the bottom of a containment section. */
+        public static final WritableBooleanPropertyKey IS_SECTION_BOTTOM =
+                new WritableBooleanPropertyKey();
+
         public static final PropertyKey[] ALL_KEYS = {
-            TITLE_ID, START_ICON_ID, CLICK_LISTENER, SHOW_ICON_BADGE
+            TITLE_ID,
+            START_ICON_ID,
+            CLICK_LISTENER,
+            SHOW_ICON_BADGE,
+            IS_SECTION_TOP,
+            IS_SECTION_BOTTOM
         };
 
         private MenuItemProperties() {}
 
         /** Factory helper to create a MenuItem PropertyModel. */
         public static PropertyModel createModel(
-                @StringRes int titleId, @DrawableRes int iconId, OnClickListener clickListener) {
-            return new PropertyModel.Builder(ALL_KEYS)
-                    .with(TITLE_ID, titleId)
-                    .with(START_ICON_ID, iconId)
-                    .with(CLICK_LISTENER, clickListener)
-                    .with(SHOW_ICON_BADGE, false)
-                    .build();
+                @StringRes int titleId,
+                @DrawableRes int iconId,
+                OnClickListener clickListener,
+                boolean isSectionTop,
+                boolean isSectionBottom) {
+            return createModel(
+                    titleId,
+                    iconId,
+                    clickListener,
+                    /* showIconBadge= */ false,
+                    isSectionTop,
+                    isSectionBottom);
         }
 
         /** TODO(crbug.com/555648510): Remove this method error cards are implemented. */
@@ -78,12 +100,16 @@ public class AccountMenuProperties {
                 @StringRes int titleId,
                 @DrawableRes int iconId,
                 OnClickListener clickListener,
-                boolean showIconBadge) {
+                boolean showIconBadge,
+                boolean isSectionTop,
+                boolean isSectionBottom) {
             return new PropertyModel.Builder(ALL_KEYS)
                     .with(TITLE_ID, titleId)
                     .with(START_ICON_ID, iconId)
                     .with(CLICK_LISTENER, clickListener)
                     .with(SHOW_ICON_BADGE, showIconBadge)
+                    .with(IS_SECTION_TOP, isSectionTop)
+                    .with(IS_SECTION_BOTTOM, isSectionBottom)
                     .build();
         }
     }

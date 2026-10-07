@@ -5,18 +5,18 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<!-- Override default_popup_menu_bg padding to add top spacing above the header
-     and match the visible side and bottom margins (~10dp) to the spacing
-     between item sections. -->
+<!-- TODO(crbug.com/565733817): Remove this file when
+     SigninButtonProfileMenuRefinements is launched. -->
+<!-- default_popup_menu_bg adds side padding. Setting paddingHorizontal="0dp"
+     lets cards and dividers set their own side spacing. -->
 <androidx.recyclerview.widget.RecyclerView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/account_menu_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="@dimen/account_menu_padding_top"
-    android:paddingBottom="@dimen/account_menu_padding_bottom"
+    android:paddingTop="@dimen/account_menu_padding_vertical_legacy"
+    android:paddingBottom="@dimen/account_menu_padding_vertical_legacy"
     android:paddingHorizontal="0dp"
     android:clipToOutline="true"
     android:elevation="@dimen/app_menu_elevation"
-    android:background="@drawable/default_popup_menu_bg"
-    android:backgroundTint="@macro/settings_bg_color" />
+    android:background="@drawable/default_popup_menu_bg" />

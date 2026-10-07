@@ -22,6 +22,8 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.ItemType;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -68,7 +70,15 @@ public class AccountMenuCoordinator {
         }
 
         mContext = context;
-        mContentView = LayoutInflater.from(context).inflate(R.layout.account_menu, null);
+        boolean refinementsEnabled =
+                SigninFeatureMap.isEnabled(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU_REFINEMENTS);
+        mContentView =
+                LayoutInflater.from(context)
+                        .inflate(
+                                refinementsEnabled
+                                        ? R.layout.account_menu
+                                        : R.layout.account_menu_legacy,
+                                null);
 
         RecyclerView recyclerView = (RecyclerView) mContentView;
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -78,16 +88,24 @@ public class AccountMenuCoordinator {
         mAdapter = new SimpleRecyclerViewAdapter(modelList);
         mAdapter.registerType(
                 ItemType.PROMO_CARD,
-                new LayoutViewBuilder<>(R.layout.account_menu_promo_card),
+                new LayoutViewBuilder<>(
+                        refinementsEnabled
+                                ? R.layout.account_menu_promo_card
+                                : R.layout.account_menu_promo_card_legacy),
                 AccountMenuViewBinder::bindPromoCard);
         mAdapter.registerType(
                 ItemType.IDENTITY_CARD,
-                new LayoutViewBuilder<>(R.layout.account_menu_identity_card),
+                new LayoutViewBuilder<>(
+                        refinementsEnabled
+                                ? R.layout.account_menu_identity_card
+                                : R.layout.account_menu_identity_card_legacy),
                 AccountMenuViewBinder::bindIdentityCard);
         mAdapter.registerType(
                 ItemType.MENU_ITEM,
                 new LayoutViewBuilder<>(R.layout.account_menu_item),
                 AccountMenuViewBinder::bindMenuItem);
+        // TODO(crbug.com/565733817): Remove DIVIDER registration and account_menu_divider.xml when
+        // SigninButtonProfileMenuRefinements is launched.
         mAdapter.registerType(
                 ItemType.DIVIDER,
                 new LayoutViewBuilder<>(R.layout.account_menu_divider),

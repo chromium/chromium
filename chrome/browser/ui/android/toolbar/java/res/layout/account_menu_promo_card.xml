@@ -4,53 +4,45 @@ Copyright 2026 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/account_menu_promo_card"
-    style="@style/MaterialCardStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="@dimen/account_menu_card_margin_horizontal"
     android:layout_marginTop="@dimen/account_menu_card_margin_top"
-    android:layout_marginBottom="@dimen/account_menu_card_margin_bottom"
-    app:cornerRadius="@dimen/account_menu_containment_corner_radius">
+    android:padding="@dimen/account_menu_card_padding"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/account_menu_promo_avatar"
+        android:layout_width="@dimen/account_menu_avatar_size"
+        android:layout_height="@dimen/account_menu_avatar_size"
+        android:background="@drawable/oval_surface_0"
+        android:src="@drawable/account_circle"
+        app:tint="@color/default_icon_color_accent1_tint_list"
+        android:padding="14dp"
+        android:scaleType="fitCenter"
+        android:importantForAccessibility="no" />
+
+    <TextView
+        android:id="@+id/account_menu_promo_description"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="@dimen/account_menu_card_padding"
-        android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="@string/account_menu_promo_card_description"
+        android:textAppearance=
+            "@style/TextAppearance.TextMedium.Secondary" />
 
-        <ImageView
-            android:id="@+id/account_menu_promo_avatar"
-            android:layout_width="@dimen/account_menu_avatar_size"
-            android:layout_height="@dimen/account_menu_avatar_size"
-            android:background="@drawable/oval_surface_0"
-            android:src="@drawable/account_circle"
-            app:tint="@color/default_icon_color_accent1_tint_list"
-            android:padding="14dp"
-            android:scaleType="fitCenter"
-            android:importantForAccessibility="no" />
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/account_menu_signin_button"
+        style="@style/FilledButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/sign_in_to_chrome" />
 
-        <TextView
-            android:id="@+id/account_menu_promo_description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center"
-            android:text="@string/account_menu_promo_card_description"
-            android:textAppearance=
-                "@style/TextAppearance.TextMedium.Secondary" />
-
-        <org.chromium.ui.widget.ButtonCompat
-            android:id="@+id/account_menu_signin_button"
-            style="@style/FilledButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/sign_in_to_chrome" />
-
-    </LinearLayout>
-</org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
+</LinearLayout>

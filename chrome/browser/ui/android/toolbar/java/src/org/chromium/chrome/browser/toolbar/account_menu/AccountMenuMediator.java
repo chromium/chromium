@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -187,59 +188,32 @@ public class AccountMenuMediator
 
         maybeAddHeader(recordShownMetrics);
 
-        mModelList.add(
-                new ListItem(
-                        ItemType.MENU_ITEM,
-                        MenuItemProperties.createModel(
-                                R.string.menu_passwords_and_autofill,
-                                R.drawable.ic_password_manager_24dp,
-                                v -> {
-                                    recordEvent(Event.PASSWORDS_AND_AUTOFILL_CLICKED);
-                                    mDismissCallback.run();
-                                    openAutofillSettings();
-                                })));
-
-        maybeAddManageGoogleAccount();
-
-        if (mIdentityManager.hasPrimaryAccount()) {
-            SyncService syncService = assumeNonNull(SyncServiceFactory.getForProfile(mProfile));
-            boolean showIconBadge =
-                    syncService.getUserActionableError() != UserActionableError.NONE;
+        boolean isSignedIn = mIdentityManager.hasPrimaryAccount();
+        if (isSignedIn) {
             mModelList.add(
-                    new ListItem(
-                            ItemType.MENU_ITEM,
-                            MenuItemProperties.createModel(
-                                    R.string.profile_menu_account_settings_button,
-                                    R.drawable.settings_cog,
-                                    v -> {
-                                        recordEvent(Event.ACCOUNT_SETTINGS_CLICKED);
-                                        mDismissCallback.run();
-                                        openAccountSettings();
-                                    },
-                                    showIconBadge)));
+                    createPasswordsAndAutofillItem(
+                            /* isSectionTop= */ true, /* isSectionBottom= */ false));
+            mModelList.add(
+                    createManageGoogleAccountItem(
+                            /* isSectionTop= */ false, /* isSectionBottom= */ false));
+            mModelList.add(
+                    createAccountSettingsItem(
+                            /* isSectionTop= */ false, /* isSectionBottom= */ true));
+        } else {
+            mModelList.add(
+                    createPasswordsAndAutofillItem(
+                            /* isSectionTop= */ true, /* isSectionBottom= */ true));
         }
 
         if (IncognitoUtils.isIncognitoModeEnabled(mProfile)) {
-            mModelList.add(new ListItem(ItemType.DIVIDER, new PropertyModel()));
-            boolean openAsWindow = IncognitoUtils.shouldOpenIncognitoAsWindow();
-            int titleRes =
-                    openAsWindow
-                            ? R.string.menu_new_incognito_window
-                            : R.string.menu_new_incognito_tab;
+            if (!SigninFeatureMap.isEnabled(
+                    SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU_REFINEMENTS)) {
+                // TODO(crbug.com/565733817): Remove when SigninButtonProfileMenuRefinements is
+                // launched.
+                mModelList.add(new ListItem(ItemType.DIVIDER, new PropertyModel()));
+            }
             mModelList.add(
-                    new ListItem(
-                            ItemType.MENU_ITEM,
-                            MenuItemProperties.createModel(
-                                    titleRes,
-                                    R.drawable.ic_incognito_24dp,
-                                    v -> {
-                                        recordEvent(
-                                                openAsWindow
-                                                        ? Event.NEW_INCOGNITO_WINDOW_CLICKED
-                                                        : Event.NEW_INCOGNITO_TAB_CLICKED);
-                                        mDismissCallback.run();
-                                        openIncognito();
-                                    })));
+                    createIncognitoItem(/* isSectionTop= */ true, /* isSectionBottom= */ true));
         }
     }
 
@@ -394,23 +368,73 @@ public class AccountMenuMediator
         }
     }
 
-    private void maybeAddManageGoogleAccount() {
-        if (mProfile.isOffTheRecord()) {
-            return;
-        }
-        if (mIdentityManager.hasPrimaryAccount()) {
-            mModelList.add(
-                    new ListItem(
-                            ItemType.MENU_ITEM,
-                            MenuItemProperties.createModel(
-                                    R.string.manage_your_google_account,
-                                    R.drawable.ic_google_services_24dp,
-                                    v -> {
-                                        recordEvent(Event.MANAGE_GOOGLE_ACCOUNT_CLICKED);
-                                        mDismissCallback.run();
-                                        mSigninLauncher.openManageGoogleAccount(mContext);
-                                    })));
-        }
+    private ListItem createPasswordsAndAutofillItem(boolean isSectionTop, boolean isSectionBottom) {
+        return new ListItem(
+                ItemType.MENU_ITEM,
+                MenuItemProperties.createModel(
+                        R.string.menu_passwords_and_autofill,
+                        R.drawable.ic_password_manager_24dp,
+                        v -> {
+                            recordEvent(Event.PASSWORDS_AND_AUTOFILL_CLICKED);
+                            mDismissCallback.run();
+                            openAutofillSettings();
+                        },
+                        isSectionTop,
+                        isSectionBottom));
+    }
+
+    private ListItem createManageGoogleAccountItem(boolean isSectionTop, boolean isSectionBottom) {
+        return new ListItem(
+                ItemType.MENU_ITEM,
+                MenuItemProperties.createModel(
+                        R.string.manage_your_google_account,
+                        R.drawable.ic_google_services_24dp,
+                        v -> {
+                            recordEvent(Event.MANAGE_GOOGLE_ACCOUNT_CLICKED);
+                            mDismissCallback.run();
+                            mSigninLauncher.openManageGoogleAccount(mContext);
+                        },
+                        isSectionTop,
+                        isSectionBottom));
+    }
+
+    private ListItem createAccountSettingsItem(boolean isSectionTop, boolean isSectionBottom) {
+        SyncService syncService = assumeNonNull(SyncServiceFactory.getForProfile(mProfile));
+        boolean showIconBadge = syncService.getUserActionableError() != UserActionableError.NONE;
+        return new ListItem(
+                ItemType.MENU_ITEM,
+                MenuItemProperties.createModel(
+                        R.string.profile_menu_account_settings_button,
+                        R.drawable.settings_cog,
+                        v -> {
+                            recordEvent(Event.ACCOUNT_SETTINGS_CLICKED);
+                            mDismissCallback.run();
+                            openAccountSettings();
+                        },
+                        showIconBadge,
+                        isSectionTop,
+                        isSectionBottom));
+    }
+
+    private ListItem createIncognitoItem(boolean isSectionTop, boolean isSectionBottom) {
+        boolean openAsWindow = IncognitoUtils.shouldOpenIncognitoAsWindow();
+        int titleRes =
+                openAsWindow ? R.string.menu_new_incognito_window : R.string.menu_new_incognito_tab;
+        return new ListItem(
+                ItemType.MENU_ITEM,
+                MenuItemProperties.createModel(
+                        titleRes,
+                        R.drawable.ic_incognito_24dp,
+                        v -> {
+                            recordEvent(
+                                    openAsWindow
+                                            ? Event.NEW_INCOGNITO_WINDOW_CLICKED
+                                            : Event.NEW_INCOGNITO_TAB_CLICKED);
+                            mDismissCallback.run();
+                            openIncognito();
+                        },
+                        isSectionTop,
+                        isSectionBottom));
     }
 
     /** Records an account menu event: the menu being shown, or an item being selected in it. */
