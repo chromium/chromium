@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_disclosure_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
@@ -45,7 +46,8 @@ enum SectionIdentifier {
 
 // Item types for the Category Detail table view.
 enum ItemType {
-  ItemTypeDefaultSettingAsk = kItemTypeEnumZero,
+  ItemTypeDefaultSettingHeader = kItemTypeEnumZero,
+  ItemTypeDefaultSettingAsk,
   ItemTypeDefaultSettingBlock,
   ItemTypeAllowedHeader,
   ItemTypeAllowedSite,
@@ -154,13 +156,16 @@ enum ItemType {
   [self loadDefaultSettingSection];
 
   // 2. Allowed Section (only if non-empty).
-  [self loadSitesSectionWithIdentifier:SectionIdentifierAllowed
-                            headerType:ItemTypeAllowedHeader
-                              itemType:ItemTypeAllowedSite
-                             titleText:l10n_util::GetNSString(
-                                           IDS_IOS_SITE_SETTINGS_ALLOWED)
-                            sectionTag:@"Allowed"
-                                 sites:_filteredAllowedSites];
+  [self
+      loadSitesSectionWithIdentifier:SectionIdentifierAllowed
+                          headerType:ItemTypeAllowedHeader
+                            itemType:ItemTypeAllowedSite
+                           titleText:l10n_util::GetNSString(
+                                         IDS_IOS_SITE_SETTINGS_ALLOWED)
+                        subtitleText:l10n_util::GetNSString(
+                                         IDS_IOS_SITE_SETTINGS_ALLOWED_SUBTITLE)
+                          sectionTag:@"Allowed"
+                               sites:_filteredAllowedSites];
 
   // 3. Not Allowed Section (only if non-empty).
   [self loadSitesSectionWithIdentifier:SectionIdentifierNotAllowed
@@ -168,6 +173,7 @@ enum ItemType {
                               itemType:ItemTypeNotAllowedSite
                              titleText:l10n_util::GetNSString(
                                            IDS_IOS_SITE_SETTINGS_NOT_ALLOWED)
+                          subtitleText:nil
                             sectionTag:@"NotAllowed"
                                  sites:_filteredNotAllowedSites];
 }
@@ -555,6 +561,20 @@ enum ItemType {
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierDefaultSetting];
 
+  BOOL hasSiteExceptions =
+      _allAllowedSites.count > 0 || _allNotAllowedSites.count > 0;
+  if (hasSiteExceptions) {
+    TableViewTextHeaderFooterItem* header =
+        [[TableViewTextHeaderFooterItem alloc]
+            initWithType:ItemTypeDefaultSettingHeader];
+    header.text =
+        l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_DEFAULT_BEHAVIOR_HEADER);
+    header.subtitle =
+        l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_DEFAULT_BEHAVIOR_SUBTITLE);
+    [model setHeader:header
+        forSectionWithIdentifier:SectionIdentifierDefaultSetting];
+  }
+
   TableViewDetailIconItem* askItem =
       [[TableViewDetailIconItem alloc] initWithType:ItemTypeDefaultSettingAsk];
   askItem.text = [self askOptionTitle];
@@ -588,6 +608,7 @@ enum ItemType {
                             headerType:(ItemType)headerType
                               itemType:(ItemType)itemType
                              titleText:(NSString*)titleText
+                          subtitleText:(NSString*)subtitleText
                             sectionTag:(NSString*)sectionTag
                                  sites:(NSArray<SiteSettingsSiteException*>*)
                                            sites {
@@ -604,6 +625,7 @@ enum ItemType {
   TableViewDisclosureHeaderFooterItem* header =
       [[TableViewDisclosureHeaderFooterItem alloc] initWithType:headerType];
   header.text = titleText;
+  header.subtitleText = subtitleText;
   header.collapsed = [model sectionIsCollapsed:sectionIdentifier];
   [model setHeader:header forSectionWithIdentifier:sectionIdentifier];
 

@@ -8411,6 +8411,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SITE_SETTINGS_ALLOWED" desc="Text indicating that a site or permission category is allowed. Used as a section header, menu option, and setting state in Site Settings. [iOS only]">
         Allowed
       </message>
+      <message name="IDS_IOS_SITE_SETTINGS_ALLOWED_SUBTITLE" desc="Subtitle for the Allowed section header in Site Settings indicating that listed sites follow a custom setting instead of the default. [iOS only]">
+        Sites listed below follow a custom setting instead of the default
+      </message>
       <message name="IDS_IOS_SITE_SETTINGS_ASK_FIRST" desc="Subtitle shown in Site Settings for a permission category when sites must ask for permission before using it. [iOS only]">
         Ask first
       </message>
@@ -8422,6 +8425,12 @@ Handoff must also be enabled in the General section of Settings, and your device
       </message>
       <message name="IDS_IOS_SITE_SETTINGS_CAMERA_BLOCK_TITLE" desc="Title for the option in Camera settings that blocks sites from using the camera. [iOS only]">
         Don't allow sites to use your camera
+      </message>
+      <message name="IDS_IOS_SITE_SETTINGS_DEFAULT_BEHAVIOR_HEADER" desc="Header text for the default behavior section in Site Settings category detail screen. [iOS only]">
+        Default behavior
+      </message>
+      <message name="IDS_IOS_SITE_SETTINGS_DEFAULT_BEHAVIOR_SUBTITLE" desc="Subtitle for the default behavior section header in Site Settings category detail screen. [iOS only]">
+        Sites automatically follow this setting when you visit them
       </message>
       <message name="IDS_IOS_SITE_SETTINGS_DONT_ALLOW" desc="Subtitle shown in Site Settings for a permission category when the user has chosen not to allow any site to use it. [iOS only]">
         Don't allow

@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/settings/site_settings/ui/site_settings_site_exception.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_disclosure_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
@@ -81,9 +82,10 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest,
 
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_PERMISSIONS_MICROPHONE),
               GetController().title);
-  // Only 1 section initially: Default Setting.
+  // Only 1 section initially: Default Setting, with no header when empty.
   EXPECT_EQ(1, NumberOfSections());
   EXPECT_EQ(2, NumberOfItemsInSection(0));
+  EXPECT_EQ(nil, [GetController().tableViewModel headerForSectionIndex:0]);
 
   TableViewDetailIconItem* askItem =
       static_cast<TableViewDetailIconItem*>(GetTableViewItem(0, 0));
@@ -146,17 +148,31 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest,
   EXPECT_EQ(1, NumberOfItemsInSection(1));
   EXPECT_EQ(1, NumberOfItemsInSection(2));
 
+  TableViewTextHeaderFooterItem* defaultHeader =
+      static_cast<TableViewTextHeaderFooterItem*>(
+          [view_controller.tableViewModel headerForSectionIndex:0]);
+  ASSERT_NE(nil, defaultHeader);
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_DEFAULT_BEHAVIOR_HEADER),
+      defaultHeader.text);
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_DEFAULT_BEHAVIOR_SUBTITLE),
+      defaultHeader.subtitle);
+
   TableViewDisclosureHeaderFooterItem* allowedHeader =
       static_cast<TableViewDisclosureHeaderFooterItem*>(
           [view_controller.tableViewModel headerForSectionIndex:1]);
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_ALLOWED),
               allowedHeader.text);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_ALLOWED_SUBTITLE),
+              allowedHeader.subtitleText);
 
   TableViewDisclosureHeaderFooterItem* notAllowedHeader =
       static_cast<TableViewDisclosureHeaderFooterItem*>(
           [view_controller.tableViewModel headerForSectionIndex:2]);
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_NOT_ALLOWED),
               notAllowedHeader.text);
+  EXPECT_EQ(nil, notAllowedHeader.subtitleText);
 
   TableViewURLItem* allowedItem =
       static_cast<TableViewURLItem*>(GetTableViewItem(1, 0));
@@ -168,9 +184,10 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest,
   EXPECT_EQ(GURL("https://blocked.com"), notAllowedItem.URL.gurl);
   EXPECT_EQ(nil, notAllowedItem.title);
 
-  // Clearing lists should remove the sections again.
+  // Clearing lists should remove the sections and default header again.
   [view_controller setAllowedSites:@[] notAllowedSites:@[]];
   EXPECT_EQ(1, NumberOfSections());
+  EXPECT_EQ(nil, [view_controller.tableViewModel headerForSectionIndex:0]);
 }
 
 // Tests that selecting Ask or Block calls the mutator, while exception rows
