@@ -11,6 +11,7 @@ include_rules = [
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
   "+ios/chrome/browser/first_run/public/features.h",
   "+ios/chrome/browser/home_customization/coordinator",
+  "+ios/chrome/browser/home_customization/model",
   "+ios/chrome/browser/level_up/model",
   "+ios/chrome/browser/ntp/coordinator",
   "+ios/chrome/browser/ntp/model",
