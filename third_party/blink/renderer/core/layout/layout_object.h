@@ -319,6 +319,17 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   ~LayoutObject() override;
   void Trace(Visitor*) const override;
 
+  // We only support checking if an object is destroyed if held by a WeakMember.
+  template <typename T>
+    requires(std::derived_from<T, LayoutObject>)
+  static T* GetWeak(WeakMember<T> weak_member) {
+    T* ptr = weak_member.Get();
+    if (ptr && !ptr->is_destroyed_) {
+      return ptr;
+    }
+    return nullptr;
+  }
+
 // Should be added at the beginning of every method to ensure we are not
 // accessing a LayoutObject after the Desroy() call.
 #if DCHECK_IS_ON()
@@ -3521,14 +3532,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   void UpdateAfterReinsert(const ComputedStyle& old_style);
 
  protected:
-  void SetDestroyedForTesting() {
-    NOT_DESTROYED();
-    being_destroyed_ = true;
-#if DCHECK_IS_ON()
-    is_destroyed_ = true;
-#endif
-  }
-
   const ComputedStyle& SlowEffectiveStyle(StyleVariant style_variant) const;
 
   // Updates only the local style ptr of the object.  Does not update the state
@@ -4015,8 +4018,13 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // observer.
   unsigned registered_as_first_line_image_observer_ : 1 = false;
 
-  // True at start of |Destroy()| before calling |WillBeDestroyed()|.
+  // True before calling `WillBeDestroyed()`.
   unsigned being_destroyed_ : 1 = false;
+
+  // True after calling `WillBeDestroyed()`.
+  // DO NOT add a public accessor for this. Instead you should use a
+  // WeakMember, and LayoutObject::GetWeak to access.
+  unsigned is_destroyed_ : 1 = false;
 
   // Column constraints are cached on LayoutNGTable.
   // When this flag is set, any cached constraints are invalid.
@@ -4151,11 +4159,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   Member<LayoutObject> previous_;
   Member<LayoutObject> next_;
   Member<FragmentDataList> fragment_;
-
-#if DCHECK_IS_ON()
-  friend class CachedTextInputInfo;
-  bool is_destroyed_ = false;
-#endif
 };
 
 template <typename T>

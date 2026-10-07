@@ -383,9 +383,6 @@ struct SameSizeAsLayoutObject : public GarbageCollected<SameSizeAsLayoutObject>,
   unsigned bitfields2_;
   unsigned bitfields3_;
   Member<void*> members[6];
-#if DCHECK_IS_ON()
-  bool is_destroyed_;
-#endif
 };
 
 ASSERT_SIZE(LayoutObject, SameSizeAsLayoutObject);
@@ -524,9 +521,7 @@ LayoutObject::LayoutObject(Node* node)
 
 LayoutObject::~LayoutObject() {
   DCHECK(being_destroyed_);
-#if DCHECK_IS_ON()
   DCHECK(is_destroyed_);
-#endif
   InstanceCounters::DecrementCounter(InstanceCounters::kLayoutObjectCounter);
 }
 
@@ -2812,16 +2807,13 @@ void LayoutObject::DumpLayoutObject(StringBuilder& string_builder,
                                     bool dump_address,
                                     unsigned show_tree_character_offset) const {
   // This function doesn't call `NOT_DESTROYED()` to aid debugging.
-#if DCHECK_IS_ON()
-  std::optional<base::AutoReset<bool>> is_destroyed;
-  if (is_destroyed_) {
+  const bool is_destroyed = is_destroyed_;
+  if (is_destroyed) {
     string_builder.Append("[DESTROYED] ");
-
     // Temporarily reset `is_destroyed_` to make dumping possible. Code and
     // functions in this function must be safe to call for a destroyed object.
-    is_destroyed.emplace(const_cast<bool*>(&is_destroyed_), false);
+    const_cast<LayoutObject*>(this)->is_destroyed_ = false;
   }
-#endif  // DCHECK_IS_ON()
 
   string_builder.Append(DecoratedName());
 
@@ -2838,6 +2830,10 @@ void LayoutObject::DumpLayoutObject(StringBuilder& string_builder,
       string_builder.Append(' ');
     string_builder.Append('\t');
     string_builder.Append(GetNode()->ToString());
+  }
+
+  if (is_destroyed) {
+    const_cast<LayoutObject*>(this)->is_destroyed_ = true;
   }
 }
 
@@ -4541,9 +4537,9 @@ void LayoutObject::Destroy() {
   // the style into WillBeDestroyed so that the overrides explicitly check this.
   WillBeDestroyed(style_.Get());
 
+  is_destroyed_ = true;
 #if DCHECK_IS_ON()
   DCHECK(!has_ax_object_) << this;
-  is_destroyed_ = true;
 #endif
 }
 

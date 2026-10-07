@@ -1914,23 +1914,22 @@ bool LocalFrameView::UpdatePlugins() {
   EmbeddedContentSet objects;
   objects.swap(part_update_set_);
 
-  for (const auto& embedded_object : objects) {
-    LayoutEmbeddedContent& object = *embedded_object;
-
-#if DCHECK_IS_ON()
-    if (object.is_destroyed_)
+  for (const WeakMember<LayoutEmbeddedContent>& embedded_object : objects) {
+    LayoutEmbeddedContent* object = LayoutObject::GetWeak(embedded_object);
+    if (!object) {
       continue;
-#endif
+    }
 
-    auto* element = To<HTMLPlugInElement>(object.GetNode());
+    auto* element = To<HTMLPlugInElement>(object->GetNode());
 
     // The object may have already been destroyed (thus node cleared).
     if (!element)
       continue;
 
     // No need to update if it's already crashed or known to be missing.
-    if (object.ShowsUnavailablePluginIndicator())
+    if (object->ShowsUnavailablePluginIndicator()) {
       continue;
+    }
 
     if (element->NeedsPluginUpdate() && element->GetLayoutObject())
       element->UpdatePlugin();
@@ -1939,7 +1938,7 @@ bool LocalFrameView::UpdatePlugins() {
 
     // Prevent plugins from causing infinite updates of themselves.
     // FIXME: Do we really need to prevent this?
-    part_update_set_.erase(&object);
+    part_update_set_.erase(object);
   }
 
   return part_update_set_.empty();
