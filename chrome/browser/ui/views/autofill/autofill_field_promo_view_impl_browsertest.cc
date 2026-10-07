@@ -19,8 +19,10 @@
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -167,6 +169,27 @@ IN_PROC_BROWSER_TEST_F(AutofillFieldPromoViewImplBrowserTest,
                   ->GetContentsView()
                   ->Contains(view_ptr));
 
+  view->Close();
+  EXPECT_FALSE(view);
+}
+
+// Tests that the view, which is owned by the browser window, doesn't keep a
+// dangling pointer to the `WebContents` when it is closed after the tab.
+IN_PROC_BROWSER_TEST_F(AutofillFieldPromoViewImplBrowserTest,
+                       CloseAfterWebContentsDestroyed) {
+  base::WeakPtr<AutofillFieldPromoView> view = CreateView();
+
+  // Open a second tab so that closing the first one keeps the browser alive.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabURL),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  content::WebContentsDestroyedWatcher destroyed_watcher(web_contents());
+  browser()->GetTabStripModel()->CloseWebContentsAt(
+      0, TabCloseTypes::CLOSE_USER_GESTURE);
+  destroyed_watcher.Wait();
+
+  ASSERT_TRUE(view);
   view->Close();
   EXPECT_FALSE(view);
 }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/autofill_field_promo_view_impl.h"
 
+#include "base/check_deref.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
@@ -54,9 +55,8 @@ base::WeakPtr<AutofillFieldPromoView> AutofillFieldPromoView::CreateAndShow(
 AutofillFieldPromoViewImpl::AutofillFieldPromoViewImpl(
     content::WebContents* web_contents,
     const gfx::RectF& element_bounds,
-    const ui::ElementIdentifier& promo_element_identifier)
-    : web_contents_(web_contents) {
-  SetViewBounds(element_bounds);
+    const ui::ElementIdentifier& promo_element_identifier) {
+  SetViewBounds(CHECK_DEREF(web_contents), element_bounds);
   SetProperty(views::kElementIdentifierKey, promo_element_identifier);
 }
 
@@ -79,6 +79,7 @@ base::WeakPtr<AutofillFieldPromoView> AutofillFieldPromoViewImpl::GetWeakPtr() {
 }
 
 void AutofillFieldPromoViewImpl::SetViewBounds(
+    content::WebContents& web_contents,
     const gfx::RectF& element_bounds) {
   // The type of `element_bounds` is changed from `gfx::RectF` to `gfx::Rect`.
   // They need to have the same type as the web contents bounds, because they
@@ -86,14 +87,14 @@ void AutofillFieldPromoViewImpl::SetViewBounds(
   gfx::Rect element_bounds_container_bounds_intersection =
       gfx::ToEnclosingRect(element_bounds);
   // The coordinates of the element bounds are represented in a coordinate
-  // system which has the origin in the top-left corner of the `web_contents_`.
+  // system which has the origin in the top-left corner of the `web_contents`.
   //
-  // The coordinates of `web_contents_` are represented in a coordinate system
+  // The coordinates of `web_contents` are represented in a coordinate system
   // which has the origin in the top-left corner of the screen.
   //
-  // O1 - origin of the coordinate system of `web_contents_` (top-left corner
+  // O1 - origin of the coordinate system of `web_contents` (top-left corner
   // of the screen) O2 - origin of the coordinate system of the element
-  // (top-left corner of `web_contents_`)
+  // (top-left corner of `web_contents`)
   //
   //     O1
   //      *___________________________________________________________
@@ -112,10 +113,9 @@ void AutofillFieldPromoViewImpl::SetViewBounds(
   //      |__________________________________________________________|
   //
   // In order to be able to intersect them, they need to be represented in the
-  // same coordinate system. Thus, the bounds of the `web_contents_` are
+  // same coordinate system. Thus, the bounds of the `web_contents` are
   // translated so that O1 overlaps with O2.
-  gfx::Rect web_contents_translated_bounds =
-      web_contents_->GetContainerBounds();
+  gfx::Rect web_contents_translated_bounds = web_contents.GetContainerBounds();
   web_contents_translated_bounds -=
       web_contents_translated_bounds.OffsetFromOrigin();
 

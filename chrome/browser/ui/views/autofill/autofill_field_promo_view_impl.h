@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_AUTOFILL_FIELD_PROMO_VIEW_IMPL_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_AUTOFILL_FIELD_PROMO_VIEW_IMPL_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -51,10 +50,12 @@ class AutofillFieldPromoViewImpl : public AutofillFieldPromoView,
       const gfx::RectF& element_bounds,
       const ui::ElementIdentifier& promo_element_identifier);
 
-  // Places the view at the bottom of the DOM element.
-  void SetViewBounds(const gfx::RectF& element_bounds);
+  // Places the view at the bottom of the DOM element, which is in
+  // `web_contents`. The `WebContents` isn't stored, since the view is owned by
+  // the browser window and can outlive the tab.
+  void SetViewBounds(content::WebContents& web_contents,
+                     const gfx::RectF& element_bounds);
 
-  raw_ptr<content::WebContents> web_contents_;
   base::WeakPtrFactory<AutofillFieldPromoView> weak_ptr_factory_{this};
 };
 
