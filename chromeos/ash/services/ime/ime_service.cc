@@ -158,10 +158,8 @@ void ImeService::RunInMainSequence(ImeSequencedTask task, int task_id) {
 
 bool ImeService::IsFeatureEnabled(const char* feature_name) {
   static const base::Feature* kConsideredFeatures[] = {
-      &features::kAssistMultiWord,
-      &features::kAutocorrectParamsTuning,
-      &features::kImeDownloaderExperiment,
-      &features::kImeSwitchCheckConnectionStatus};
+      &features::kAssistMultiWord, &features::kAutocorrectParamsTuning,
+      &features::kImeDownloaderExperiment};
 
   static constexpr std::string_view kEnabledFeatures[] = {
       "AutocorrectByDefault",
@@ -170,6 +168,7 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
       "ImeFstDecoderParamsUpdate",
       "ImeDownloaderUpdate",
       "ImeUsEnglishModelUpdate",
+      "ImeSwitchCheckConnectionStatus",
   };
 
   // Use consistent feature flag names as in CrOS base::Feature::name and always

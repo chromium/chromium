@@ -7945,12 +7945,6 @@ inline constexpr char kImeAssistMultiWordName[] =
 inline constexpr char kImeAssistMultiWordDescription[] =
     "Enable assistive multi word suggestions for native IME";
 
-inline constexpr char kImeSwitchCheckConnectionStatusName[] =
-    "Enable IME switching using global boolean";
-inline constexpr char kImeSwitchCheckConnectionStatusDescription[] =
-    "When enabled and swapping between input methods, this prevents a race "
-    "condition.";
-
 inline constexpr char kIppFirstSetupForUsbPrintersName[] =
     "Try to setup USB printers with IPP first";
 inline constexpr char kIppFirstSetupForUsbPrintersDescription[] =

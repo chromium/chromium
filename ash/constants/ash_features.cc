@@ -1030,10 +1030,6 @@ BASE_FEATURE(kImeSystemEmojiPickerMojoSearch,
 BASE_FEATURE(kImeSystemEmojiPickerVariantGrouping,
              "SystemEmojiPickerVariantGrouping",
              base::FEATURE_DISABLED_BY_DEFAULT);
-// Enables a change in the IME switching logic such that the mojo connection
-// status is tracked via a global boolean instead of checking if the runner is
-// idle.
-BASE_FEATURE(kImeSwitchCheckConnectionStatus, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether to show new management disclosure UI page instead of the
 // management warning bubble.

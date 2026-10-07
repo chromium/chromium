@@ -6359,10 +6359,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kImeSystemEmojiPickerVariantGroupingDescription,
      kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kImeSystemEmojiPickerVariantGrouping)},
-    {"enable-cros-ime-switch-check-connection-status",
-     flag_descriptions::kImeSwitchCheckConnectionStatusName,
-     flag_descriptions::kImeSwitchCheckConnectionStatusDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kImeSwitchCheckConnectionStatus)},
     {"enable-experimental-accessibility-dictation-context-checking",
      flag_descriptions::kExperimentalAccessibilityDictationContextCheckingName,
      flag_descriptions::
