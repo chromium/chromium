@@ -356,6 +356,38 @@ void PermissionRequestManager::AddRequest(
   ReprioritizeCurrentRequestIfNeeded();
 }
 
+void PermissionRequestManager::CancelAllRequestsWithType(
+    RequestType request_type) {
+  std::vector<PermissionRequest*> pending_to_cancel;
+  for (const base::circular_deque<std::unique_ptr<PermissionRequest>>&
+           request_list : pending_permission_requests_) {
+    for (const std::unique_ptr<PermissionRequest>& request : request_list) {
+      if (request->request_type() == request_type) {
+        pending_to_cancel.push_back(request.get());
+      }
+    }
+  }
+  for (PermissionRequest* request : pending_to_cancel) {
+    if (pending_permission_requests_.Contains(request)) {
+      std::erase(validated_requests_, *request);
+      request_sources_map_.erase(
+          base::raw_ref<PermissionRequest>::from_ptr(request));
+      CancelRequestIncludingDuplicates(request);
+      FinishRequestIncludingDuplicates(request);
+      pending_permission_requests_.Erase(request);
+    }
+  }
+
+  if (can_preempt_current_request_ &&
+      std::ranges::any_of(
+          requests_,
+          [request_type](const std::unique_ptr<PermissionRequest>& element) {
+            return element->request_type() == request_type;
+          })) {
+    Ignore(/*prompt_options=*/std::monostate());
+  }
+}
+
 bool PermissionRequestManager::ReprioritizeCurrentRequestIfNeeded() {
   // Use `ShouldCurrentRequestUsePermissionElementSecondaryUI` to also include
   // allowlisted surfaces.

@@ -3213,6 +3213,75 @@ TEST_F(PermissionRequestManagerSameOriginGestureTest,
   }
 }
 
+TEST_F(PermissionRequestManagerTest, CancelPendingRequest) {
+  MockPermissionRequest::MockPermissionRequestState request1_state;
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       CreateRequest(request1_, request1_state.GetWeakPtr()));
+  manager_->CancelAllRequestsWithType(request1_.first);
+
+  EXPECT_TRUE(request1_state.cancelled);
+  EXPECT_TRUE(request1_state.finished);
+
+  WaitForBubbleToBeShown();
+
+  EXPECT_FALSE(prompt_factory_->is_visible());
+  EXPECT_EQ(prompt_factory_->show_count(), 0);
+}
+
+TEST_F(PermissionRequestManagerTest,
+       CancelPendingRequestWhileAnotherRequestIsActive) {
+  MockPermissionRequest::MockPermissionRequestState request_mic_state;
+  MockPermissionRequest::MockPermissionRequestState request1_state;
+
+  manager_->AddRequest(
+      web_contents()->GetPrimaryMainFrame(),
+      CreateRequest(request_mic_, request_mic_state.GetWeakPtr()));
+  WaitForBubbleToBeShown();
+  EXPECT_TRUE(prompt_factory_->is_visible());
+
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       CreateRequest(request1_, request1_state.GetWeakPtr()));
+  EXPECT_FALSE(request1_state.finished);
+
+  // Cancelling a queued request finalizes and destroys it immediately without
+  // waiting for the currently active request to be resolved.
+  manager_->CancelAllRequestsWithType(request1_.first);
+  EXPECT_TRUE(request1_state.cancelled);
+  EXPECT_TRUE(request1_state.finished);
+  EXPECT_TRUE(prompt_factory_->is_visible());
+  EXPECT_FALSE(request_mic_state.finished);
+
+  Accept();
+  EXPECT_TRUE(request_mic_state.granted);
+
+  WaitForBubbleToBeShown();
+  EXPECT_FALSE(prompt_factory_->is_visible());
+}
+
+TEST_F(PermissionRequestManagerTest, CancelActiveRequest) {
+  MockPermissionRequest::MockPermissionRequestState request_mic_state;
+  MockPermissionRequest::MockPermissionRequestState request1_state;
+
+  manager_->AddRequest(
+      web_contents()->GetPrimaryMainFrame(),
+      CreateRequest(request_mic_, request_mic_state.GetWeakPtr()));
+  WaitForBubbleToBeShown();
+  EXPECT_TRUE(prompt_factory_->is_visible());
+
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       CreateRequest(request1_, request1_state.GetWeakPtr()));
+
+  manager_->CancelAllRequestsWithType(request_mic_.first);
+  EXPECT_TRUE(request_mic_state.cancelled);
+  EXPECT_TRUE(request_mic_state.finished);
+  EXPECT_FALSE(request1_state.finished);
+
+  WaitForBubbleToBeShown();
+  EXPECT_TRUE(prompt_factory_->is_visible());
+  Accept();
+  EXPECT_TRUE(request1_state.granted);
+}
+
 class PermissionRequestManagerEnforceGestureTest
     : public PermissionRequestManagerTest,
       public testing::WithParamInterface<GestureGatedTestcase> {

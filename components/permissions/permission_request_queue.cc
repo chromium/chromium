@@ -94,6 +94,26 @@ PermissionRequest* PermissionRequestQueue::Peek() const {
   return it->front().get();
 }
 
+std::unique_ptr<permissions::PermissionRequest> PermissionRequestQueue::Erase(
+    PermissionRequest* request) {
+  for (base::circular_deque<std::unique_ptr<permissions::PermissionRequest>>&
+           request_list : queued_requests_) {
+    auto it = std::ranges::find_if(
+        request_list,
+        [request](
+            const std::unique_ptr<permissions::PermissionRequest>& element) {
+          return element.get() == request;
+        });
+    if (it != request_list.end()) {
+      std::unique_ptr<permissions::PermissionRequest> removed = std::move(*it);
+      request_list.erase(it);
+      --size_;
+      return removed;
+    }
+  }
+  return nullptr;
+}
+
 PermissionRequest* PermissionRequestQueue::FindDuplicate(
     PermissionRequest* request) const {
   auto priority = DetermineRequestPriority(request);

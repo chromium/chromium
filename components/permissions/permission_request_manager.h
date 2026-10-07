@@ -142,6 +142,11 @@ class PermissionRequestManager
   void AddRequest(content::RenderFrameHost* source_frame,
                   std::unique_ptr<PermissionRequest> request);
 
+  // Cancels all queued or currently in-progress requests with `request_type.
+  // Note that if a matching request is currently being displayed together with
+  // other requests of other types, they will also be cancelled.
+  void CancelAllRequestsWithType(RequestType request_type);
+
   // Will reposition the bubble (may change parent if necessary).
   void UpdateAnchor();
 

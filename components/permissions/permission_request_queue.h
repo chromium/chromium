@@ -63,6 +63,11 @@ class PermissionRequestQueue {
   std::unique_ptr<permissions::PermissionRequest> Pop();
   PermissionRequest* Peek() const;
 
+  // Removes and returns `request` from the queue if present, or nullptr if not
+  // found.
+  std::unique_ptr<permissions::PermissionRequest> Erase(
+      PermissionRequest* request);
+
   // Searches queued_requests_ and returns the first matching request, or
   // nullptr if there is no match.
   PermissionRequest* FindDuplicate(PermissionRequest* request) const;
