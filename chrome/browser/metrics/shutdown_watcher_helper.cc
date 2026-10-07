@@ -51,7 +51,7 @@ ShutdownWatcherHelper::~ShutdownWatcherHelper() {
 
 void ShutdownWatcherHelper::Arm(const base::TimeDelta& duration) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!shutdown_watchdog_);
+  CHECK(!shutdown_watchdog_, base::NotFatalUntil::M161);
   shutdown_watchdog_.emplace(GetPerChannelTimeout(duration),
                              "Shutdown watchdog thread", true, this);
   shutdown_watchdog_->Arm();

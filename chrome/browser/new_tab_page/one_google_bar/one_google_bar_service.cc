@@ -55,7 +55,7 @@ void OneGoogleBarService::Shutdown() {
   }
 
   signin_observer_.reset();
-  DCHECK(observers_.empty());
+  CHECK(observers_.empty(), base::NotFatalUntil::M161);
 }
 
 void OneGoogleBarService::Refresh() {

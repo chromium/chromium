@@ -213,7 +213,7 @@ NetErrorTabHelper::NetErrorTabHelper(tabs::TabInterface& tab,
 #endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
       dns_probe_status_(error_page::DNS_PROBE_POSSIBLE),
       scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   // If this helper is under test, it won't have a WebContents.
   if (contents)
@@ -233,9 +233,10 @@ void NetErrorTabHelper::OnMainFrameDnsError() {
 }
 
 void NetErrorTabHelper::StartDnsProbe() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(dns_error_active_);
-  DCHECK_NE(error_page::DNS_PROBE_STARTED, dns_probe_status_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(dns_error_active_, base::NotFatalUntil::M161);
+  CHECK_NE(error_page::DNS_PROBE_STARTED, dns_probe_status_,
+           base::NotFatalUntil::M161);
 
   DVLOG(1) << "Starting DNS probe.";
 
@@ -246,9 +247,11 @@ void NetErrorTabHelper::StartDnsProbe() {
 }
 
 void NetErrorTabHelper::OnDnsProbeFinished(DnsProbeStatus result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(error_page::DNS_PROBE_STARTED, dns_probe_status_);
-  DCHECK(error_page::DnsProbeStatusIsFinished(result));
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK_EQ(error_page::DNS_PROBE_STARTED, dns_probe_status_,
+           base::NotFatalUntil::M161);
+  CHECK(error_page::DnsProbeStatusIsFinished(result),
+        base::NotFatalUntil::M161);
 
   DVLOG(1) << "Finished DNS probe with result "
            << DnsProbeStatusToString(result) << ".";
@@ -270,7 +273,7 @@ void NetErrorTabHelper::RegisterProfilePrefs(
 }
 
 void NetErrorTabHelper::InitializePref(WebContents* contents) {
-  DCHECK(contents);
+  CHECK(contents, base::NotFatalUntil::M161);
 
   BrowserContext* browser_context = contents->GetBrowserContext();
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -289,8 +292,9 @@ bool NetErrorTabHelper::ProbesAllowed() const {
 }
 
 void NetErrorTabHelper::SendInfo() {
-  DCHECK_NE(error_page::DNS_PROBE_POSSIBLE, dns_probe_status_);
-  DCHECK(dns_error_page_committed_);
+  CHECK_NE(error_page::DNS_PROBE_POSSIBLE, dns_probe_status_,
+           base::NotFatalUntil::M161);
+  CHECK(dns_error_page_committed_, base::NotFatalUntil::M161);
 
   DVLOG(1) << "Sending status " << DnsProbeStatusToString(dns_probe_status_);
   content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();

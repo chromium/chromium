@@ -528,7 +528,7 @@ network::mojom::NetworkContext* SystemNetworkContextManager::GetContext() {
     // trying to create a new NetworkContext would fail, anyways, and hopefully
     // a new NetworkContext will be created on the next GetContext() call.
     content::GetNetworkService();
-    DCHECK(network_service_network_context_);
+    CHECK(network_service_network_context_, base::NotFatalUntil::M161);
   }
   return network_service_network_context_.get();
 }
@@ -563,11 +563,11 @@ SystemNetworkContextManager* SystemNetworkContextManager::CreateInstance(
 #if DCHECK_IS_ON()
   // Check that this function is not reentrant.
   static bool inside_this_function = false;
-  DCHECK(!inside_this_function);
+  CHECK(!inside_this_function, base::NotFatalUntil::M161);
   base::AutoReset now_inside_this_function(&inside_this_function, true);
 #endif  // DCHECK_IS_ON()
 
-  DCHECK(!g_system_network_context_manager);
+  CHECK(!g_system_network_context_manager, base::NotFatalUntil::M161);
   g_system_network_context_manager =
       new SystemNetworkContextManager(pref_service);
   return g_system_network_context_manager;
@@ -598,7 +598,7 @@ SystemNetworkContextManager* SystemNetworkContextManager::GetInstance() {
 
 // static
 void SystemNetworkContextManager::DeleteInstance() {
-  DCHECK(g_system_network_context_manager);
+  CHECK(g_system_network_context_manager, base::NotFatalUntil::M161);
   delete g_system_network_context_manager;
   g_system_network_context_manager = nullptr;
 }
@@ -1132,7 +1132,7 @@ void SystemNetworkContextManager::FlushProxyConfigMonitorForTesting() {
 }
 
 void SystemNetworkContextManager::FlushNetworkInterfaceForTesting() {
-  DCHECK(network_service_network_context_);
+  CHECK(network_service_network_context_, base::NotFatalUntil::M161);
   network_service_network_context_.FlushForTesting();
   if (url_loader_factory_) {
     url_loader_factory_.FlushForTesting();

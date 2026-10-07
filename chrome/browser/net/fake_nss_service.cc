@@ -22,7 +22,7 @@ net::NSSCertDatabase* NssGetterForIOThread(
     base::OnceCallback<void(net::NSSCertDatabase*)>) {
   // The check is here because the real NSS getter must also be run on the IO
   // thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
   return result;
 }
 

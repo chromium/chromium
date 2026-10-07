@@ -22,7 +22,8 @@ ExplicitlyAllowedNetworkPortsPolicyHandler::
 bool ExplicitlyAllowedNetworkPortsPolicyHandler::CheckListEntry(
     const base::Value& value) {
   const std::string* as_string = value.GetIfString();
-  DCHECK(as_string);  // ListPolicyHandler guarantees this.
+  CHECK(as_string,
+        base::NotFatalUntil::M161);  // ListPolicyHandler guarantees this.
 
   int as_int;
 
@@ -49,7 +50,7 @@ void ExplicitlyAllowedNetworkPortsPolicyHandler::ApplyList(
     const std::string& as_string = value.GetString();
     int as_int;
     const bool success = base::StringToInt(as_string, &as_int);
-    DCHECK(success);
+    CHECK(success, base::NotFatalUntil::M161);
     integer_list.Append(as_int);
   }
   prefs->SetValue(prefs::kExplicitlyAllowedNetworkPorts,

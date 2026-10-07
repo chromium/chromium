@@ -47,10 +47,10 @@ void DisplayWebAppSettings(const webapps::AppId& web_app_id, Profile* profile) {
 void DoProcessMacNotificationResponse(
     mac_notifications::mojom::NotificationActionInfoPtr info,
     std::optional<webapps::AppId> web_app_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  DCHECK(profile_manager);
+  CHECK(profile_manager, base::NotFatalUntil::M161);
 
   std::optional<int> action_index;
   if (info->button_index != kNotificationInvalidButtonIndex)

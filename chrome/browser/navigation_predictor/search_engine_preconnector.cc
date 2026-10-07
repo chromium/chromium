@@ -204,8 +204,8 @@ bool SearchEnginePreconnector::SearchEnginePreconnect2Enabled() {
 SearchEnginePreconnector::SearchEnginePreconnector(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context) {
-  DCHECK(ShouldBeEnabledForOffTheRecord() ||
-         !browser_context_->IsOffTheRecord());
+  CHECK(ShouldBeEnabledForOffTheRecord() || !browser_context_->IsOffTheRecord(),
+        base::NotFatalUntil::M161);
 }
 
 SearchEnginePreconnector::~SearchEnginePreconnector() = default;
@@ -301,9 +301,9 @@ void SearchEnginePreconnector::StartPreconnecting(bool with_startup_delay) {
 }
 
 void SearchEnginePreconnector::PreconnectDSE(bool is_startup) {
-  DCHECK(ShouldBeEnabledForOffTheRecord() ||
-         !browser_context_->IsOffTheRecord());
-  DCHECK(!timer_.IsRunning());
+  CHECK(ShouldBeEnabledForOffTheRecord() || !browser_context_->IsOffTheRecord(),
+        base::NotFatalUntil::M161);
+  CHECK(!timer_.IsRunning(), base::NotFatalUntil::M161);
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   absl::Cleanup reset_prewarmer = [this] {
     // In sticky modes, the prewarmer is kept when preconnecting is skipped.

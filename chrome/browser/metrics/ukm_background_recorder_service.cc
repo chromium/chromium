@@ -20,7 +20,7 @@ UkmBackgroundRecorderService::UkmBackgroundRecorderService(Profile* profile)
     : history_service_(HistoryServiceFactory::GetForProfile(
           profile,
           ServiceAccessType::EXPLICIT_ACCESS)) {
-  DCHECK(history_service_);
+  CHECK(history_service_, base::NotFatalUntil::M161);
 }
 
 UkmBackgroundRecorderService::~UkmBackgroundRecorderService() = default;
@@ -52,7 +52,7 @@ void UkmBackgroundRecorderService::DidGetVisibleVisitCount(
   ukm::SourceId source_id = ukm::ConvertToSourceId(
       ukm::AssignNewSourceId(), ukm::SourceIdType::HISTORY_ID);
   ukm::UkmRecorder* recorder = ukm::UkmRecorder::Get();
-  DCHECK(recorder);
+  CHECK(recorder, base::NotFatalUntil::M161);
   recorder->UpdateSourceURL(source_id, origin.GetURL());
 
   std::move(callback).Run(source_id);

@@ -321,7 +321,7 @@ StubResolverConfigReader::GetFallbackDohNameservers() {
 }
 
 void StubResolverConfigReader::OnParentalControlsDelayTimer() {
-  DCHECK(!parental_controls_delay_timer_.IsRunning());
+  CHECK(!parental_controls_delay_timer_.IsRunning(), base::NotFatalUntil::M161);
 
   // No need to act if parental controls were checked early.
   if (parental_controls_checked_)

@@ -68,7 +68,7 @@ int GetNumSecondaryAccounts(Profile* profile) {
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  DCHECK(identity_manager);
+  CHECK(identity_manager, base::NotFatalUntil::M161);
   if (!identity_manager->AreRefreshTokensLoaded()) {
     // IdentityManager hasn't finished loading accounts, return -1 to indicate
     // that we don't know the number of secondary accounts yet.
@@ -132,14 +132,16 @@ void FamilyUserMetricsProvider::OnUserSessionStarted(bool is_primary_user) {
   } else if (!IsDeviceEnterpriseEnrolled() &&
              GetManagedUserLogSegment(profile) ==
                  enterprise_management::PolicyData::K12) {
-    DCHECK(profile->GetProfilePolicyConnector()->IsManaged());
+    CHECK(profile->GetProfilePolicyConnector()->IsManaged(),
+          base::NotFatalUntil::M161);
     // This is a K-12 EDU user on an unmanaged ChromeOS device.
     family_user_log_segment_ = FamilyUserLogSegment::kStudentAtHome;
   } else if (profile->IsRegularProfile() &&
              !profile->GetProfilePolicyConnector()->IsManaged()) {
-    DCHECK(!profile->IsChild());
-    DCHECK_EQ(GetManagedUserLogSegment(profile),
-              enterprise_management::PolicyData::UNSPECIFIED);
+    CHECK(!profile->IsChild(), base::NotFatalUntil::M161);
+    CHECK_EQ(GetManagedUserLogSegment(profile),
+             enterprise_management::PolicyData::UNSPECIFIED,
+             base::NotFatalUntil::M161);
     // This is a regular unmanaged user on any device.
     family_user_log_segment_ = FamilyUserLogSegment::kRegularUser;
   } else {
@@ -193,7 +195,7 @@ void FamilyUserMetricsProvider::ObserveIdentityManager(Profile* profile) {
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  DCHECK(identity_manager);
+  CHECK(identity_manager, base::NotFatalUntil::M161);
   if (!identity_manager_observations_.IsObservingSource(identity_manager))
     identity_manager_observations_.AddObservation(identity_manager);
 }

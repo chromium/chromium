@@ -921,7 +921,7 @@ void EmitProcessUma(HistogramProcessType process_type,
   if (std::string_view(item.uma_name) == "CommandBuffer") {
     uma_name =
         EXPERIMENTAL_UMA_PREFIX "Gpu" VERSION_SUFFIX_NORMAL "CommandBuffer";
-    DCHECK(item.metric_size == MetricSize::kLarge);
+    CHECK(item.metric_size == MetricSize::kLarge, base::NotFatalUntil::M161);
   } else {
     uma_name = base::StrCat(
         {EXPERIMENTAL_UMA_PREFIX, HistogramProcessTypeToString(process_type),

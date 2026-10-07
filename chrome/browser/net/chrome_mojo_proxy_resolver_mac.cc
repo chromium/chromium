@@ -43,11 +43,11 @@ SystemProxyResolver* GetProxyResolver(const base::TimeDelta& idle_timeout) {
 ChromeMojoProxyResolverMac::ChromeMojoProxyResolverMac(
     const base::TimeDelta& idle_timeout)
     : idle_timeout_(idle_timeout) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 ChromeMojoProxyResolverMac::~ChromeMojoProxyResolverMac() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 mojo::PendingRemote<SystemProxyResolver>
@@ -72,6 +72,6 @@ ChromeMojoProxyResolverMac::CreateWithSelfOwnedReceiverForTesting(  // IN-TEST
 void ChromeMojoProxyResolverMac::GetProxyForUrl(
     const GURL& url,
     GetProxyForUrlCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   GetProxyResolver(idle_timeout_)->GetProxyForUrl(url, std::move(callback));
 }

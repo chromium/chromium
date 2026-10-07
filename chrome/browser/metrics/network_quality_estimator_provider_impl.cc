@@ -14,7 +14,8 @@
 namespace metrics {
 
 NetworkQualityEstimatorProviderImpl::NetworkQualityEstimatorProviderImpl() {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M161);
 }
 
 NetworkQualityEstimatorProviderImpl::~NetworkQualityEstimatorProviderImpl() {
@@ -38,7 +39,7 @@ void NetworkQualityEstimatorProviderImpl::PostReplyOnNetworkQualityChanged(
                                           PostReplyOnNetworkQualityChanged,
                                       weak_ptr_factory_.GetWeakPtr(),
                                       std::move(callback)));
-    DCHECK(task_posted);
+    CHECK(task_posted, base::NotFatalUntil::M161);
     return;
   }
 
@@ -60,14 +61,14 @@ void NetworkQualityEstimatorProviderImpl::PostReplyOnNetworkQualityChanged(
           base::BindOnce(&NetworkQualityEstimatorProviderImpl::
                              AddEffectiveConnectionTypeObserverNow,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  DCHECK(task_posted);
+  CHECK(task_posted, base::NotFatalUntil::M161);
 #endif
 }
 
 void NetworkQualityEstimatorProviderImpl::AddEffectiveConnectionTypeObserverNow(
     base::RepeatingCallback<void(net::EffectiveConnectionType)> callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!callback_);
+  CHECK(!callback_, base::NotFatalUntil::M161);
 
   callback_ = callback;
 

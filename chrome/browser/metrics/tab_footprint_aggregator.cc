@@ -142,7 +142,8 @@ void TabFootprintAggregator::RecordPmfs(ukm::UkmRecorder* ukm_recorder) const {
         // The SubFrameProcessPMF is viable iff |proc| is associated to
         // |page_id| only.
         if (process_state.pages.size() == 1) {
-          DCHECK_EQ(process_state.pages.front(), page_id);
+          CHECK_EQ(process_state.pages.front(), page_id,
+                   base::NotFatalUntil::M161);
           stats.AddSubFramePmf(process_state.pmf_kb);
         } else {
           stats.IgnoreSubFrame();

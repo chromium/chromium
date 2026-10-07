@@ -56,7 +56,7 @@ void FindsClient::OpenNotificationAction(const UserActionData& action_data) {
   if (url_it != action_data.custom_data.end()) {
     std::string finds_url_string = url_it->second;
     GURL finds_gurl = GURL(finds_url_string);
-    DCHECK(finds_gurl.is_valid());
+    CHECK(finds_gurl.is_valid(), base::NotFatalUntil::M161);
     finds_agent_->OpenNotificationUrl(finds_gurl);
   }
 }
@@ -80,7 +80,7 @@ void FindsClient::NotInterestedAction(const UserActionData& action_data) {
 
 void FindsClient::HandleNotificationButtonClick(
     const UserActionData& action_data) {
-  DCHECK(action_data.button_click_info.has_value());
+  CHECK(action_data.button_click_info.has_value(), base::NotFatalUntil::M161);
   // Open in Chrome button.
   if (action_data.button_click_info->type == ActionButtonType::kHelpful) {
     finds::RecordNotificationInteraction(

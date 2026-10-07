@@ -36,7 +36,7 @@ void NotificationsShownToday(
   base::Time beginning_of_today;
   bool success = ToLocalHour(0, now, 0, &beginning_of_today);
   base::Time last_shown_time = beginning_of_today;
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M161);
   for (const auto& state : client_states) {
     auto* client_state = state.second;
     int count = 0;

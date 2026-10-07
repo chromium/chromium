@@ -72,7 +72,7 @@ inline constexpr char kFeatureManagementScopeFlag[] =
 
 void IncrementPrefValue(const char* path, int num_samples) {
   PrefService* pref = g_browser_process->local_state();
-  DCHECK(pref);
+  CHECK(pref, base::NotFatalUntil::M161);
   int value = pref->GetInteger(path);
   pref->SetInteger(path, value + num_samples);
 }
@@ -83,7 +83,7 @@ ChromeOSMetricsProvider::ChromeOSMetricsProvider(
     metrics::MetricsLogUploader::MetricServiceType service_type,
     ChromeOSSystemProfileProvider* cros_system_profile_provider)
     : cros_system_profile_provider_(cros_system_profile_provider) {
-  DCHECK(cros_system_profile_provider_);
+  CHECK(cros_system_profile_provider_, base::NotFatalUntil::M161);
   if (service_type == metrics::MetricsLogUploader::UMA)
     profile_provider_ = std::make_unique<metrics::ProfileProvider>();
 }

@@ -27,8 +27,9 @@ ProxyServiceFactory::CreateProxyConfigService(PrefProxyConfigTracker* tracker,
   // The linux gsettings-based proxy settings getter relies on being initialized
   // from the UI thread. The system proxy config service could also get created
   // without full browser process by launching service manager alone.
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
-         !BrowserThread::IsThreadInitialized(BrowserThread::UI));
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
+            !BrowserThread::IsThreadInitialized(BrowserThread::UI),
+        base::NotFatalUntil::M161);
 
   std::unique_ptr<net::ProxyConfigService> base_service;
 

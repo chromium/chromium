@@ -153,7 +153,8 @@ void UsageScenarioDataStoreImpl::OnWebRTCConnectionClosed() {
   // If this was the last tab using WebRTC then the interval data should be
   // updated.
   if (webrtc_open_connection_count_ == 0) {
-    DCHECK(!has_opened_webrtc_connection_since_.is_null());
+    CHECK(!has_opened_webrtc_connection_since_.is_null(),
+          base::NotFatalUntil::M161);
     interval_data_.time_with_open_webrtc_connection +=
         tick_clock_->NowTicks() - has_opened_webrtc_connection_since_;
     has_opened_webrtc_connection_since_ = base::TimeTicks();
@@ -163,7 +164,7 @@ void UsageScenarioDataStoreImpl::OnWebRTCConnectionClosed() {
 void UsageScenarioDataStoreImpl::OnIsCapturingVideoStarted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (web_contents_capturing_video_ == 0) {
-    DCHECK(capturing_video_since_.is_null());
+    CHECK(capturing_video_since_.is_null(), base::NotFatalUntil::M161);
     capturing_video_since_ = tick_clock_->NowTicks();
   }
   ++web_contents_capturing_video_;
@@ -171,13 +172,13 @@ void UsageScenarioDataStoreImpl::OnIsCapturingVideoStarted() {
 
 void UsageScenarioDataStoreImpl::OnIsCapturingVideoEnded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GT(web_contents_capturing_video_, 0U);
+  CHECK_GT(web_contents_capturing_video_, 0U, base::NotFatalUntil::M161);
   --web_contents_capturing_video_;
 
   // If this was the last tab capturing video then the interval data should be
   // updated.
   if (web_contents_capturing_video_ == 0) {
-    DCHECK(!capturing_video_since_.is_null());
+    CHECK(!capturing_video_since_.is_null(), base::NotFatalUntil::M161);
     interval_data_.time_capturing_video +=
         tick_clock_->NowTicks() - capturing_video_since_;
     capturing_video_since_ = base::TimeTicks();
@@ -188,23 +189,23 @@ void UsageScenarioDataStoreImpl::OnAudioStarts() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Grab the current timestamp if there's no other tabs playing audio.
   if (tabs_playing_audio_ == 0) {
-    DCHECK(playing_audio_since_.is_null());
+    CHECK(playing_audio_since_.is_null(), base::NotFatalUntil::M161);
     playing_audio_since_ = tick_clock_->NowTicks();
   }
   ++tabs_playing_audio_;
-  DCHECK_GE(current_tab_count_, tabs_playing_audio_);
+  CHECK_GE(current_tab_count_, tabs_playing_audio_, base::NotFatalUntil::M161);
 }
 
 void UsageScenarioDataStoreImpl::OnAudioStops() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GT(tabs_playing_audio_, 0U);
+  CHECK_GT(tabs_playing_audio_, 0U, base::NotFatalUntil::M161);
   --tabs_playing_audio_;
-  DCHECK_GE(current_tab_count_, tabs_playing_audio_);
+  CHECK_GE(current_tab_count_, tabs_playing_audio_, base::NotFatalUntil::M161);
 
   // If this was the last tab playing audio then the interval data should be
   // updated.
   if (tabs_playing_audio_ == 0) {
-    DCHECK(!playing_audio_since_.is_null());
+    CHECK(!playing_audio_since_.is_null(), base::NotFatalUntil::M161);
     interval_data_.time_playing_audio +=
         tick_clock_->NowTicks() - playing_audio_since_;
     playing_audio_since_ = base::TimeTicks();
@@ -219,20 +220,22 @@ void UsageScenarioDataStoreImpl::OnSleepEvent() {
 void UsageScenarioDataStoreImpl::OnVideoStartsInVisibleTab() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ++visible_tabs_playing_video_;
-  DCHECK_GE(current_visible_window_count_, visible_tabs_playing_video_);
+  CHECK_GE(current_visible_window_count_, visible_tabs_playing_video_,
+           base::NotFatalUntil::M161);
   if (visible_tabs_playing_video_ == 1)
     playing_video_in_active_tab_since_ = tick_clock_->NowTicks();
 }
 
 void UsageScenarioDataStoreImpl::OnVideoStopsInVisibleTab() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GT(visible_tabs_playing_video_, 0U);
+  CHECK_GT(visible_tabs_playing_video_, 0U, base::NotFatalUntil::M161);
   --visible_tabs_playing_video_;
 
   // If this was the last visible tab playing video then the interval data
   // should be updated.
   if (visible_tabs_playing_video_ == 0) {
-    DCHECK(!playing_video_in_active_tab_since_.is_null());
+    CHECK(!playing_video_in_active_tab_since_.is_null(),
+          base::NotFatalUntil::M161);
     interval_data_.time_playing_video_in_visible_tab +=
         tick_clock_->NowTicks() - playing_video_in_active_tab_since_;
     playing_video_in_active_tab_since_ = base::TimeTicks();
@@ -243,11 +246,11 @@ void UsageScenarioDataStoreImpl::OnUkmSourceBecameVisible(
     const ukm::SourceId& source,
     const url::Origin& origin,
     extensions::ExtensionIdSet extensions_with_content_scripts) {
-  DCHECK_NE(ukm::kInvalidSourceId, source);
+  CHECK_NE(ukm::kInvalidSourceId, source, base::NotFatalUntil::M161);
   auto& origin_map_iter = origin_info_map_[origin];
   auto& source_id_iter = origin_map_iter[source];
 
-  DCHECK(source_id_iter.visible_timestamp.is_null());
+  CHECK(source_id_iter.visible_timestamp.is_null(), base::NotFatalUntil::M161);
   source_id_iter.visible_timestamp = tick_clock_->NowTicks();
 
   extensions_with_content_scripts_.merge(extensions_with_content_scripts);
@@ -256,11 +259,11 @@ void UsageScenarioDataStoreImpl::OnUkmSourceBecameVisible(
 void UsageScenarioDataStoreImpl::OnUkmSourceBecameHidden(
     const ukm::SourceId& source,
     const url::Origin& origin) {
-  DCHECK_NE(ukm::kInvalidSourceId, source);
+  CHECK_NE(ukm::kInvalidSourceId, source, base::NotFatalUntil::M161);
   auto& origin_map_iter = origin_info_map_[origin];
   auto& source_id_iter = origin_map_iter[source];
 
-  DCHECK(!source_id_iter.visible_timestamp.is_null());
+  CHECK(!source_id_iter.visible_timestamp.is_null(), base::NotFatalUntil::M161);
   source_id_iter.cumulative_visible_time +=
       tick_clock_->NowTicks() - source_id_iter.visible_timestamp;
   source_id_iter.visible_timestamp = base::TimeTicks();
@@ -340,7 +343,8 @@ void UsageScenarioDataStoreImpl::FinalizeIntervalData(base::TimeTicks now) {
       // If this SourceID is still visible then its cumulative time has to be
       // updated.
       if (!iter->second.visible_timestamp.is_null()) {
-        DCHECK(!iter->second.visible_timestamp.is_null());
+        CHECK(!iter->second.visible_timestamp.is_null(),
+              base::NotFatalUntil::M161);
         iter->second.cumulative_visible_time +=
             now - iter->second.visible_timestamp;
         iter->second.visible_timestamp = now;

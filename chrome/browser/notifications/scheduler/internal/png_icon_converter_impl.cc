@@ -59,7 +59,7 @@ PngIconConverterImpl::~PngIconConverterImpl() = default;
 
 void PngIconConverterImpl::ConvertIconToString(std::vector<SkBitmap> images,
                                                EncodeCallback callback) {
-  DCHECK(callback);
+  CHECK(callback, base::NotFatalUntil::M161);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&ConvertIconToStringInternal, std::move(images)),
@@ -69,7 +69,7 @@ void PngIconConverterImpl::ConvertIconToString(std::vector<SkBitmap> images,
 void PngIconConverterImpl::ConvertStringToIcon(
     std::vector<std::string> encoded_data,
     DecodeCallback callback) {
-  DCHECK(callback);
+  CHECK(callback, base::NotFatalUntil::M161);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&ConvertStringToIconInternal, std::move(encoded_data)),

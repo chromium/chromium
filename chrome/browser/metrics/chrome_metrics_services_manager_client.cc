@@ -190,7 +190,7 @@ ChromeMetricsServicesManagerClient::ChromeMetricsServicesManagerClient(
     : enabled_state_provider_(
           std::make_unique<ChromeEnabledStateProvider>(local_state)),
       local_state_(local_state) {
-  DCHECK(local_state);
+  CHECK(local_state, base::NotFatalUntil::M161);
 }
 
 ChromeMetricsServicesManagerClient::~ChromeMetricsServicesManagerClient() =

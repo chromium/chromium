@@ -155,7 +155,7 @@ PerUserStateManagerChromeOS::PerUserStateManagerChromeOS(
           metrics_service_client->GetStorageLimits(),
           metrics_service_client->GetUploadSigningKey()) {
   // Ensure that user_manager has been initialized.
-  DCHECK(user_manager::UserManager::IsInitialized());
+  CHECK(user_manager::UserManager::IsInitialized(), base::NotFatalUntil::M161);
 }
 
 PerUserStateManagerChromeOS::~PerUserStateManagerChromeOS() = default;
@@ -202,9 +202,9 @@ PerUserStateManagerChromeOS::GetCurrentUserReportingChoiceIfApplicable() const {
 
 void PerUserStateManagerChromeOS::SetCurrentUserMetricsChoice(
     bool user_choice) {
-  DCHECK_EQ(state_, State::USER_LOG_STORE_HANDLED);
+  CHECK_EQ(state_, State::USER_LOG_STORE_HANDLED, base::NotFatalUntil::M161);
 
-  DCHECK(current_user_);
+  CHECK(current_user_, base::NotFatalUntil::M161);
 
   // No-op if user should not be able to change metrics choice.
   if (!IsUserAllowedToChoose(current_user_)) {
@@ -282,14 +282,14 @@ void PerUserStateManagerChromeOS::ResetStateForTesting() {
 
 void PerUserStateManagerChromeOS::SetUserLogStore(
     std::unique_ptr<UnsentLogStore> log_store) {
-  DCHECK(state_ == State::USER_PROFILE_READY);
+  CHECK(state_ == State::USER_PROFILE_READY, base::NotFatalUntil::M161);
 
   metrics_service_client_->GetMetricsService()->SetUserLogStore(
       std::move(log_store));
 }
 
 void PerUserStateManagerChromeOS::UnsetUserLogStore() {
-  DCHECK_EQ(state_, State::USER_LOG_STORE_HANDLED);
+  CHECK_EQ(state_, State::USER_LOG_STORE_HANDLED, base::NotFatalUntil::M161);
   metrics_service_client_->GetMetricsService()->UnsetUserLogStore();
 }
 
@@ -298,8 +298,8 @@ void PerUserStateManagerChromeOS::ForceClientIdReset() {
 }
 
 void PerUserStateManagerChromeOS::SetReportingState(bool user_choice) {
-  DCHECK_EQ(state_, State::USER_LOG_STORE_HANDLED);
-  DCHECK(IsUserAllowedToChoose(current_user_));
+  CHECK_EQ(state_, State::USER_LOG_STORE_HANDLED, base::NotFatalUntil::M161);
+  CHECK(IsUserAllowedToChoose(current_user_), base::NotFatalUntil::M161);
 
   GetCurrentUserPrefs()->SetBoolean(prefs::kMetricsUserConsent, user_choice);
 
@@ -327,7 +327,7 @@ bool PerUserStateManagerChromeOS::HasUserLogStore() const {
 }
 
 bool PerUserStateManagerChromeOS::IsDeviceOwned() const {
-  DCHECK(IsDeviceStatusKnown());
+  CHECK(IsDeviceStatusKnown(), base::NotFatalUntil::M161);
 
   return ash::DeviceSettingsService::Get()->GetOwnershipStatus() ==
          ash::DeviceSettingsService::OwnershipStatus::kOwnershipTaken;
@@ -371,7 +371,7 @@ void PerUserStateManagerChromeOS::OnSessionWillBeTerminated() {
 }
 
 void PerUserStateManagerChromeOS::WaitForOwnershipStatus() {
-  DCHECK_EQ(state_, State::USER_LOGIN);
+  CHECK_EQ(state_, State::USER_LOGIN, base::NotFatalUntil::M161);
 
   // Device ownership determination happens asynchronously in parallel with
   // profile loading, so there is a chance that status is not known yet.
@@ -388,9 +388,10 @@ bool PerUserStateManagerChromeOS::ShouldUseUserLogStore() const {
 
 void PerUserStateManagerChromeOS::InitializeProfileMetricsState(
     ash::DeviceSettingsService::OwnershipStatus status) {
-  DCHECK_NE(status,
-            ash::DeviceSettingsService::OwnershipStatus::kOwnershipUnknown);
-  DCHECK_EQ(state_, State::USER_LOGIN);
+  CHECK_NE(status,
+           ash::DeviceSettingsService::OwnershipStatus::kOwnershipUnknown,
+           base::NotFatalUntil::M161);
+  CHECK_EQ(state_, State::USER_LOGIN, base::NotFatalUntil::M161);
 
   state_ = State::USER_PROFILE_READY;
 
@@ -465,7 +466,7 @@ void PerUserStateManagerChromeOS::InitializeProfileMetricsState(
 
 void PerUserStateManagerChromeOS::UpdateCurrentUserId(
     const std::string& new_user_id) {
-  DCHECK_EQ(state_, State::USER_LOG_STORE_HANDLED);
+  CHECK_EQ(state_, State::USER_LOG_STORE_HANDLED, base::NotFatalUntil::M161);
 
   // Updates both the user profile as well as the user ID stored in local
   // state to handle crashes appropriately.
@@ -482,7 +483,7 @@ void PerUserStateManagerChromeOS::ResetState() {
 }
 
 PrefService* PerUserStateManagerChromeOS::GetCurrentUserPrefs() const {
-  DCHECK(state_ >= State::USER_PROFILE_READY);
+  CHECK(state_ >= State::USER_PROFILE_READY, base::NotFatalUntil::M161);
   return ash::ProfileHelper::Get()->GetProfileByUser(current_user_)->GetPrefs();
 }
 

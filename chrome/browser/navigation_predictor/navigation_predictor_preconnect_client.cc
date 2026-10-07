@@ -197,7 +197,7 @@ void NavigationPredictorPreconnectClient::MaybePreconnectNow(
   auto* loading_predictor = predictors::LoadingPredictorFactory::GetForProfile(
       Profile::FromBrowserContext(browser_context_));
   GURL preconnect_url_serialized(preconnect_origin.Serialize());
-  DCHECK(preconnect_url_serialized.is_valid());
+  CHECK(preconnect_url_serialized.is_valid(), base::NotFatalUntil::M161);
 
   if (!loading_predictor)
     return;

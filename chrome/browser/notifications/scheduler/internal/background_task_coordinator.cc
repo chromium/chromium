@@ -67,8 +67,9 @@ class BackgroundTaskCoordinatorHelper {
       BackgroundTaskCoordinator::Notifications notifications) {
     for (const auto& pair : notifications) {
       for (const notifications::NotificationEntry* entry : pair.second) {
-        DCHECK_EQ(entry->schedule_params.priority,
-                  ScheduleParams::Priority::kNoThrottle);
+        CHECK_EQ(entry->schedule_params.priority,
+                 ScheduleParams::Priority::kNoThrottle,
+                 base::NotFatalUntil::M161);
         if (!entry->schedule_params.deliver_time_start.has_value()) {
           continue;
         }
@@ -85,7 +86,7 @@ class BackgroundTaskCoordinatorHelper {
     base::Time tomorrow;
     base::Time now = clock_->Now();
     bool success = ToLocalHour(0, now, 1 /*day_delta*/, &tomorrow);
-    DCHECK(success);
+    CHECK(success, base::NotFatalUntil::M161);
 
     std::map<SchedulerClientType, int> shown_per_type;
     int shown_total = 0;
@@ -106,8 +107,9 @@ class BackgroundTaskCoordinatorHelper {
 
       // Find the eariliest notification to launch the background task.
       for (const notifications::NotificationEntry* entry : pair.second) {
-        DCHECK_NE(entry->schedule_params.priority,
-                  ScheduleParams::Priority::kNoThrottle);
+        CHECK_NE(entry->schedule_params.priority,
+                 ScheduleParams::Priority::kNoThrottle,
+                 base::NotFatalUntil::M161);
         // Currently only support deliver time window.
         if (!entry->schedule_params.deliver_time_start.has_value()) {
           continue;
@@ -128,7 +130,8 @@ class BackgroundTaskCoordinatorHelper {
           deliver_time_start = tomorrow;
 
         // Deliver time window has passed.
-        DCHECK(entry->schedule_params.deliver_time_end.has_value());
+        CHECK(entry->schedule_params.deliver_time_end.has_value(),
+              base::NotFatalUntil::M161);
         if (!entry->schedule_params.deliver_time_end.has_value() ||
             deliver_time_start >
                 entry->schedule_params.deliver_time_end.value()) {

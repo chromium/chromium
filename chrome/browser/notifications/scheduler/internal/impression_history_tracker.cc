@@ -80,7 +80,7 @@ ImpressionHistoryTrackerImpl::~ImpressionHistoryTrackerImpl() = default;
 
 void ImpressionHistoryTrackerImpl::Init(Delegate* delegate,
                                         InitCallback callback) {
-  DCHECK(delegate && !delegate_);
+  CHECK(delegate && !delegate_, base::NotFatalUntil::M161);
   delegate_ = delegate;
   store_->InitAndLoad(
       base::BindOnce(&ImpressionHistoryTrackerImpl::OnStoreInitialized,
@@ -93,7 +93,7 @@ void ImpressionHistoryTrackerImpl::AddImpression(
     const Impression::ImpressionResultMap& impression_mapping,
     const Impression::CustomData& custom_data,
     std::optional<base::TimeDelta> ignore_timeout_duration) {
-  DCHECK(initialized_);
+  CHECK(initialized_, base::NotFatalUntil::M161);
   auto it = client_states_.find(type);
   if (it == client_states_.end())
     return;
@@ -109,7 +109,7 @@ void ImpressionHistoryTrackerImpl::AddImpression(
 }
 
 void ImpressionHistoryTrackerImpl::AnalyzeImpressionHistory() {
-  DCHECK(initialized_);
+  CHECK(initialized_, base::NotFatalUntil::M161);
   for (auto& client_state : client_states_)
     AnalyzeImpressionHistory(client_state.second.get());
   MaybeUpdateAllDb();
@@ -117,8 +117,8 @@ void ImpressionHistoryTrackerImpl::AnalyzeImpressionHistory() {
 
 void ImpressionHistoryTrackerImpl::GetClientStates(
     std::map<SchedulerClientType, const ClientState*>* client_states) const {
-  DCHECK(initialized_);
-  DCHECK(client_states);
+  CHECK(initialized_, base::NotFatalUntil::M161);
+  CHECK(client_states, base::NotFatalUntil::M161);
   client_states->clear();
   for (const auto& pair : client_states_) {
     client_states->emplace(pair.first, pair.second.get());
@@ -134,7 +134,7 @@ const Impression* ImpressionHistoryTrackerImpl::GetImpression(
 void ImpressionHistoryTrackerImpl::GetImpressionDetail(
     SchedulerClientType type,
     ImpressionDetail::ImpressionDetailCallback callback) {
-  DCHECK(initialized_);
+  CHECK(initialized_, base::NotFatalUntil::M161);
   auto it = client_states_.find(type);
   if (it == client_states_.end())
     return;
@@ -224,7 +224,7 @@ void ImpressionHistoryTrackerImpl::SyncRegisteredClients() {
     if (client_states_.find(type) == client_states_.end()) {
       auto new_client_data = CreateNewClientState(type, *config_);
 
-      DCHECK(new_client_data);
+      CHECK(new_client_data, base::NotFatalUntil::M161);
       store_->Add(ToDatabaseKey(type), *new_client_data.get(),
                   /*callback=*/base::DoNothing());
       client_states_.emplace(type, std::move(new_client_data));

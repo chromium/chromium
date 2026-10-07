@@ -46,7 +46,7 @@ class NetErrorDiagnosticsDialog : public ui::BaseShellDialogImpl {
   void Show(content::WebContents* web_contents,
             const std::string& failed_url,
             base::OnceClosure callback) {
-    DCHECK(!callback.is_null());
+    CHECK(!callback.is_null(), base::NotFatalUntil::M161);
 
     HWND parent =
         views::HWNDForNativeWindow(web_contents->GetTopLevelNativeWindow());
@@ -104,7 +104,8 @@ bool CanShowNetworkDiagnosticsDialog(content::WebContents* web_contents) {
 
 void ShowNetworkDiagnosticsDialog(content::WebContents* web_contents,
                                   const std::string& failed_url) {
-  DCHECK(CanShowNetworkDiagnosticsDialog(web_contents));
+  CHECK(CanShowNetworkDiagnosticsDialog(web_contents),
+        base::NotFatalUntil::M161);
 
   NetErrorDiagnosticsDialog* dialog = new NetErrorDiagnosticsDialog();
   dialog->Show(

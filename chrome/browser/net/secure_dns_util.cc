@@ -35,8 +35,8 @@ bool EntryIsForCountry(const net::DohProviderEntry* entry,
         return country_codes::CountryId(country_code) == country_id;
       });
   if (matches) {
-    DCHECK(!entry->ui_name.empty());
-    DCHECK(!entry->privacy_policy.empty());
+    CHECK(!entry->ui_name.empty(), base::NotFatalUntil::M161);
+    CHECK(!entry->privacy_policy.empty(), base::NotFatalUntil::M161);
   }
   return matches;
 }

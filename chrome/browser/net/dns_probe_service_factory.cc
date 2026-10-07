@@ -202,7 +202,7 @@ void DnsProbeServiceImpl::ProbeDns(ProbeCallback callback) {
 
 net::DnsConfigOverrides
 DnsProbeServiceImpl::GetCurrentConfigOverridesForTesting() {
-  DCHECK(current_config_runner_);
+  CHECK(current_config_runner_, base::NotFatalUntil::M161);
   return current_config_runner_->GetConfigOverridesForTesting();
 }
 
@@ -242,10 +242,10 @@ void DnsProbeServiceImpl::SetUpCurrentConfigRunner() {
 
 void DnsProbeServiceImpl::StartProbes() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(STATE_NO_RESULT, state_);
+  CHECK_EQ(STATE_NO_RESULT, state_, base::NotFatalUntil::M161);
 
-  DCHECK(!current_config_runner_->IsRunning());
-  DCHECK(!google_config_runner_->IsRunning());
+  CHECK(!current_config_runner_->IsRunning(), base::NotFatalUntil::M161);
+  CHECK(!google_config_runner_->IsRunning(), base::NotFatalUntil::M161);
 
   // Unretained safe because the callback will not be run if the DnsProbeRunner
   // is destroyed.
@@ -256,15 +256,16 @@ void DnsProbeServiceImpl::StartProbes() {
   probe_start_time_ = tick_clock_->NowTicks();
   state_ = STATE_PROBE_RUNNING;
 
-  DCHECK(current_config_runner_->IsRunning());
-  DCHECK(google_config_runner_->IsRunning());
+  CHECK(current_config_runner_->IsRunning(), base::NotFatalUntil::M161);
+  CHECK(google_config_runner_->IsRunning(), base::NotFatalUntil::M161);
 }
 
 void DnsProbeServiceImpl::OnProbeComplete() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(STATE_PROBE_RUNNING, state_);
-  DCHECK(!current_config_runner_->IsRunning() ||
-         !google_config_runner_->IsRunning());
+  CHECK_EQ(STATE_PROBE_RUNNING, state_, base::NotFatalUntil::M161);
+  CHECK(!current_config_runner_->IsRunning() ||
+            !google_config_runner_->IsRunning(),
+        base::NotFatalUntil::M161);
 
   if (current_config_runner_->IsRunning() || google_config_runner_->IsRunning())
     return;
@@ -316,9 +317,10 @@ error_page::DnsProbeStatus DnsProbeServiceImpl::EvaluateResults(
 
 void DnsProbeServiceImpl::CallCallbacks() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(STATE_RESULT_CACHED, state_);
-  DCHECK(error_page::DnsProbeStatusIsFinished(cached_result_));
-  DCHECK(!pending_callbacks_.empty());
+  CHECK_EQ(STATE_RESULT_CACHED, state_, base::NotFatalUntil::M161);
+  CHECK(error_page::DnsProbeStatusIsFinished(cached_result_),
+        base::NotFatalUntil::M161);
+  CHECK(!pending_callbacks_.empty(), base::NotFatalUntil::M161);
 
   std::vector<ProbeCallback> callbacks;
   callbacks.swap(pending_callbacks_);
@@ -331,9 +333,10 @@ void DnsProbeServiceImpl::CallCallbacks() {
 
 void DnsProbeServiceImpl::CallCallbackAsynchronously() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(STATE_RESULT_CACHED, state_);
-  DCHECK(error_page::DnsProbeStatusIsFinished(cached_result_));
-  DCHECK_EQ(1U, pending_callbacks_.size());
+  CHECK_EQ(STATE_RESULT_CACHED, state_, base::NotFatalUntil::M161);
+  CHECK(error_page::DnsProbeStatusIsFinished(cached_result_),
+        base::NotFatalUntil::M161);
+  CHECK_EQ(1U, pending_callbacks_.size(), base::NotFatalUntil::M161);
 
   std::vector<ProbeCallback> callbacks;
   callbacks.swap(pending_callbacks_);

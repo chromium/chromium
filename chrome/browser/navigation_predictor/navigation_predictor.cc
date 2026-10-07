@@ -142,9 +142,10 @@ void RecordMetricsForModelTraining(
       inputs.navigation_start_to_link_logged.InMilliseconds(), kBucketSpacing));
   builder.SetPathDepth(inputs.path_depth);
   // Path length is already bucketed.
-  DCHECK_EQ(
+  CHECK_EQ(
       inputs.path_length,
-      ukm::GetLinearBucketMin(static_cast<int64_t>(inputs.path_length), 10));
+      ukm::GetLinearBucketMin(static_cast<int64_t>(inputs.path_length), 10),
+      base::NotFatalUntil::M161);
   builder.SetPathLength(inputs.path_length);
   builder.SetPercentClickableArea(
       GetLinearBucketForRatioArea(inputs.percent_clickable_area));
@@ -217,7 +218,7 @@ NavigationPredictor::NavigationPredictor(
   // the back/forward navigation. So, DCHECK only checks if current page is
   // prerendering until deciding how to handle bfcache navigations. See also
   // https://crbug.com/40193806.
-  DCHECK(!IsPrerendering(render_frame_host));
+  CHECK(!IsPrerendering(render_frame_host), base::NotFatalUntil::M161);
 
   navigation_start_ = NowTicks();
   ukm_recorder_ = ukm::UkmRecorder::Get();
@@ -249,7 +250,7 @@ void NavigationPredictor::Create(
     return;
   }
 
-  DCHECK(web_contents->GetBrowserContext());
+  CHECK(web_contents->GetBrowserContext(), base::NotFatalUntil::M161);
   if (web_contents->GetBrowserContext()->IsOffTheRecord()) {
     return;
   }
@@ -266,7 +267,7 @@ NavigationPredictor::GetNavigationPredictorMetricsDocumentData() const {
   NavigationPredictorMetricsDocumentData* data =
       NavigationPredictorMetricsDocumentData::GetOrCreateForCurrentDocument(
           &render_frame_host());
-  DCHECK(data);
+  CHECK(data, base::NotFatalUntil::M161);
   return *data;
 }
 
@@ -274,8 +275,9 @@ void NavigationPredictor::ReportNewAnchorElements(
     std::vector<blink::mojom::AnchorElementMetricsPtr> elements,
     const std::vector<uint32_t>& removed_elements) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kNavigationPredictor));
-  DCHECK(!IsPrerendering(render_frame_host()));
+  CHECK(base::FeatureList::IsEnabled(blink::features::kNavigationPredictor),
+        base::NotFatalUntil::M161);
+  CHECK(!IsPrerendering(render_frame_host()), base::NotFatalUntil::M161);
 
   // Create the AnchorsData object for this WebContents if it doesn't already
   // exist. Note that NavigationPredictor only runs on the main frame, but get
@@ -349,7 +351,7 @@ void NavigationPredictor::ReportNewAnchorElements(
         NavigationPredictorKeyedServiceFactory::GetForProfile(
             Profile::FromBrowserContext(
                 render_frame_host().GetBrowserContext()));
-    DCHECK(service);
+    CHECK(service, base::NotFatalUntil::M161);
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(&render_frame_host());
 
@@ -513,8 +515,9 @@ void NavigationPredictor::ShouldSkipUpdateDelays(
 void NavigationPredictor::ReportAnchorElementClick(
     blink::mojom::AnchorElementClickPtr click) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kNavigationPredictor));
-  DCHECK(!IsPrerendering(render_frame_host()));
+  CHECK(base::FeatureList::IsEnabled(blink::features::kNavigationPredictor),
+        base::NotFatalUntil::M161);
+  CHECK(!IsPrerendering(render_frame_host()), base::NotFatalUntil::M161);
 
   navigation_start_to_click_ = click->navigation_start_to_click;
 
@@ -745,8 +748,9 @@ void NavigationPredictor::ReportAnchorElementPointerDown(
 void NavigationPredictor::ReportAnchorElementsEnteredViewport(
     std::vector<blink::mojom::AnchorElementEnteredViewportPtr> elements) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kNavigationPredictor));
-  DCHECK(!IsPrerendering(render_frame_host()));
+  CHECK(base::FeatureList::IsEnabled(blink::features::kNavigationPredictor),
+        base::NotFatalUntil::M161);
+  CHECK(!IsPrerendering(render_frame_host()), base::NotFatalUntil::M161);
 
   if (elements.empty()) {
     return;

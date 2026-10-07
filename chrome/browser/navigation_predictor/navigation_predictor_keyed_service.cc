@@ -59,9 +59,10 @@ NavigationPredictorKeyedService::Prediction::Prediction(
       source_document_url_(source_document_url),
       prediction_source_(prediction_source),
       sorted_predicted_urls_(sorted_predicted_urls) {
-  DCHECK_EQ(prediction_source_,
-            PredictionSource::kAnchorElementsParsedFromWebPage);
-  DCHECK(!source_document_url->is_empty());
+  CHECK_EQ(prediction_source_,
+           PredictionSource::kAnchorElementsParsedFromWebPage,
+           base::NotFatalUntil::M161);
+  CHECK(!source_document_url->is_empty(), base::NotFatalUntil::M161);
 }
 
 NavigationPredictorKeyedService::Prediction::Prediction(
@@ -98,8 +99,8 @@ NavigationPredictorKeyedService::Prediction::~Prediction() = default;
 
 const std::optional<GURL>&
 NavigationPredictorKeyedService::Prediction::source_document_url() const {
-  DCHECK_EQ(PredictionSource::kAnchorElementsParsedFromWebPage,
-            prediction_source_);
+  CHECK_EQ(PredictionSource::kAnchorElementsParsedFromWebPage,
+           prediction_source_, base::NotFatalUntil::M161);
   return source_document_url_;
 }
 
@@ -110,16 +111,16 @@ NavigationPredictorKeyedService::Prediction::sorted_predicted_urls() const {
 
 content::WebContents*
 NavigationPredictorKeyedService::Prediction::web_contents() const {
-  DCHECK_EQ(PredictionSource::kAnchorElementsParsedFromWebPage,
-            prediction_source_);
+  CHECK_EQ(PredictionSource::kAnchorElementsParsedFromWebPage,
+           prediction_source_, base::NotFatalUntil::M161);
   return web_contents_;
 }
 
 NavigationPredictorKeyedService::NavigationPredictorKeyedService(
     content::BrowserContext* browser_context)
     : search_engine_preconnector_(browser_context) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!browser_context->IsOffTheRecord());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(!browser_context->IsOffTheRecord(), base::NotFatalUntil::M161);
 
 #if !BUILDFLAG(IS_ANDROID)
   if (!SearchEnginePreconnector::ShouldBeEnabledAsKeyedService()) {
@@ -130,7 +131,7 @@ NavigationPredictorKeyedService::NavigationPredictorKeyedService(
 }
 
 NavigationPredictorKeyedService::~NavigationPredictorKeyedService() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 void NavigationPredictorKeyedService::OnPredictionUpdated(
@@ -138,12 +139,12 @@ void NavigationPredictorKeyedService::OnPredictionUpdated(
     const GURL& document_url,
     PredictionSource prediction_source,
     const std::vector<GURL>& sorted_predicted_urls) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Currently, this method is called only for anchor elements parsed from
   // webpage.
-  DCHECK_EQ(PredictionSource::kAnchorElementsParsedFromWebPage,
-            prediction_source);
+  CHECK_EQ(PredictionSource::kAnchorElementsParsedFromWebPage,
+           prediction_source, base::NotFatalUntil::M161);
 
   last_prediction_ = Prediction(web_contents, document_url, prediction_source,
                                 sorted_predicted_urls);
@@ -159,7 +160,7 @@ void NavigationPredictorKeyedService::OnPredictionUpdated(
 }
 
 void NavigationPredictorKeyedService::AddObserver(Observer* observer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   observer_list_.AddObserver(observer);
   if (last_prediction_.has_value()) {
     observer->OnPredictionUpdated(last_prediction_.value());
@@ -167,12 +168,12 @@ void NavigationPredictorKeyedService::AddObserver(Observer* observer) {
 }
 
 void NavigationPredictorKeyedService::RemoveObserver(Observer* observer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   observer_list_.RemoveObserver(observer);
 }
 
 SearchEnginePreconnector*
 NavigationPredictorKeyedService::search_engine_preconnector() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   return &search_engine_preconnector_;
 }

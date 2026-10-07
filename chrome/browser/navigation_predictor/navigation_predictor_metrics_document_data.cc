@@ -51,7 +51,7 @@ NavigationPredictorMetricsDocumentData::AnchorsData::AnchorsData() = default;
 NavigationPredictorMetricsDocumentData::AnchorsData::~AnchorsData() = default;
 
 int NavigationPredictorMetricsDocumentData::AnchorsData::MedianLinkLocation() {
-  DCHECK(!link_locations_.empty());
+  CHECK(!link_locations_.empty(), base::NotFatalUntil::M161);
   size_t median_idx = link_locations_.size() / 2;
   std::nth_element(link_locations_.begin(),
                    link_locations_.begin() + median_idx, link_locations_.end());
@@ -70,7 +70,7 @@ void NavigationPredictorMetricsDocumentData::RecordAnchorData(
     // NavigationPredictor did not record any anchor data, don't log anything.
     return;
   }
-  DCHECK(ukm_source_id == ukm_source_id_);
+  CHECK(ukm_source_id == ukm_source_id_, base::NotFatalUntil::M161);
   auto* ukm_recorder = ukm::UkmRecorder::Get();
 
   ukm::builders::NavigationPredictorPageLinkMetrics builder(
@@ -105,7 +105,7 @@ void NavigationPredictorMetricsDocumentData::RecordPageLinkClickData(
   if (!ukm_source_id_.has_value() || page_link_clicks_.empty()) {
     return;
   }
-  DCHECK(ukm_source_id == ukm_source_id_);
+  CHECK(ukm_source_id == ukm_source_id_, base::NotFatalUntil::M161);
   auto* ukm_recorder = ukm::UkmRecorder::Get();
 
   for (const auto& page_link_click : page_link_clicks_) {
@@ -146,7 +146,7 @@ void NavigationPredictorMetricsDocumentData::AddAnchorElementMetricsData(
 void NavigationPredictorMetricsDocumentData::RecordAnchorElementMetricsData(
     int anchor_index,
     const AnchorElementMetricsData& metrics) {
-  DCHECK(ukm_source_id_.has_value());
+  CHECK(ukm_source_id_.has_value(), base::NotFatalUntil::M161);
   auto* ukm_recorder = ukm::UkmRecorder::Get();
 
   ukm::builders::NavigationPredictorAnchorElementMetrics builder(
@@ -175,7 +175,7 @@ void NavigationPredictorMetricsDocumentData::RecordAnchorElementMetricsData(
   if (!ukm_source_id_.has_value() || anchor_element_metrics_.empty()) {
     return;
   }
-  DCHECK(ukm_source_id == ukm_source_id_);
+  CHECK(ukm_source_id == ukm_source_id_, base::NotFatalUntil::M161);
 
   for (const auto& [anchor_index, metrics] : anchor_element_metrics_) {
     RecordAnchorElementMetricsData(anchor_index, metrics);
@@ -198,7 +198,7 @@ void NavigationPredictorMetricsDocumentData::RecordUserInteractionsData(
   if (!ukm_source_id_.has_value() || user_interactions_.empty()) {
     return;
   }
-  DCHECK(ukm_source_id == ukm_source_id_);
+  CHECK(ukm_source_id == ukm_source_id_, base::NotFatalUntil::M161);
 
   std::optional<base::TimeDelta> navigation_start_to_now;
   if (!navigation_start_time_.is_null()) {
@@ -288,7 +288,7 @@ void NavigationPredictorMetricsDocumentData::RecordPreloadOnHoverData(
   if (!ukm_source_id_.has_value() || preload_on_hover_.empty()) {
     return;
   }
-  DCHECK(ukm_source_id == ukm_source_id_);
+  CHECK(ukm_source_id == ukm_source_id_, base::NotFatalUntil::M161);
 
   auto* ukm_recorder = ukm::UkmRecorder::Get();
   for (const auto& on_hover_data : preload_on_hover_) {

@@ -18,7 +18,7 @@ InitAwareNotificationScheduler::InitAwareNotificationScheduler(
 InitAwareNotificationScheduler::~InitAwareNotificationScheduler() = default;
 
 void InitAwareNotificationScheduler::Init(InitCallback init_callback) {
-  DCHECK(!init_success_.has_value());
+  CHECK(!init_success_.has_value(), base::NotFatalUntil::M161);
   impl_->Init(base::BindOnce(&InitAwareNotificationScheduler::OnInitialized,
                              weak_ptr_factory_.GetWeakPtr(),
                              std::move(init_callback)));
@@ -112,7 +112,7 @@ bool InitAwareNotificationScheduler::IsReady() const {
 
 void InitAwareNotificationScheduler::MaybeCacheClosure(
     base::OnceClosure closure) {
-  DCHECK(closure);
+  CHECK(closure, base::NotFatalUntil::M161);
 
   // Drop the call if initialization failed.
   if (init_success_.has_value() && !*init_success_)

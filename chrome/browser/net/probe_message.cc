@@ -68,9 +68,11 @@ void ProbeMessage::GenerateProbeRequest(const ProbePacket_Token& token,
                                         uint32_t pacing_interval_micros,
                                         uint32_t number_probe_packets,
                                         ProbePacket* probe_packet) {
-  DCHECK_LE(number_probe_packets, kMaxNumberProbePackets);
-  DCHECK_LE(probe_size, kMaxProbePacketBytes);
-  DCHECK_LE(pacing_interval_micros, kMaxPacingIntervalMicros);
+  CHECK_LE(number_probe_packets, kMaxNumberProbePackets,
+           base::NotFatalUntil::M161);
+  CHECK_LE(probe_size, kMaxProbePacketBytes, base::NotFatalUntil::M161);
+  CHECK_LE(pacing_interval_micros, kMaxPacingIntervalMicros,
+           base::NotFatalUntil::M161);
 
   SetPacketHeader(ProbePacket_Type_PROBE_REQUEST, probe_packet);
   *(probe_packet->mutable_token()) = token;
@@ -86,7 +88,7 @@ void ProbeMessage::GenerateProbeRequest(const ProbePacket_Token& token,
   probe_packet->mutable_header()->set_checksum(Checksum(*padding));
   DVLOG(3) << "Request size " << probe_packet->ByteSizeLong() << " probe size "
            << probe_size;
-  DCHECK_LE(probe_size, probe_packet->ByteSizeLong());
+  CHECK_LE(probe_size, probe_packet->ByteSizeLong(), base::NotFatalUntil::M161);
 }
 
 void ProbeMessage::SetPacketHeader(ProbePacket_Type packet_type,

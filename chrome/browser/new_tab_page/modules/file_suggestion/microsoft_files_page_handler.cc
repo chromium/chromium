@@ -957,7 +957,7 @@ void MicrosoftFilesPageHandler::RecordRequestMetrics() {
   if (num_files_in_response_.has_value()) {
     RecordResponseValueCount(num_files_in_response_.value());
   }
-  DCHECK(request_result_.has_value());
+  CHECK(request_result_.has_value(), base::NotFatalUntil::M161);
   RecordFilesRequestResult(request_result_.value());
   request_result_.reset();
   num_files_in_response_.reset();

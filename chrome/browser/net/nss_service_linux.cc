@@ -41,6 +41,6 @@ NssService::NssService(content::BrowserContext*) {}
 NssService::~NssService() = default;
 
 NssCertDatabaseGetter NssService::CreateNSSCertDatabaseGetterForIOThread() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   return base::BindOnce(&GetNSSCertDatabase);
 }

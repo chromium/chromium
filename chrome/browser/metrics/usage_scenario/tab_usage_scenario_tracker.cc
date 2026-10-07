@@ -87,7 +87,7 @@ TabUsageScenarioTracker::TabUsageScenarioTracker(
 TabUsageScenarioTracker::~TabUsageScenarioTracker() {
   // Make sure that this doesn't get destroyed after destroying the global
   // screen instance.
-  DCHECK(display::Screen::Get());
+  CHECK(display::Screen::Get(), base::NotFatalUntil::M161);
 }
 
 void TabUsageScenarioTracker::OnTabAdded(content::WebContents* web_contents) {
@@ -97,7 +97,7 @@ void TabUsageScenarioTracker::OnTabAdded(content::WebContents* web_contents) {
   // Tab is added already visible. It will not get a separate visibility update
   // so we handle the visibility here.
   if (web_contents->GetVisibility() == content::Visibility::VISIBLE) {
-    DCHECK(!visible_tabs_.contains(web_contents));
+    CHECK(!visible_tabs_.contains(web_contents), base::NotFatalUntil::M161);
     usage_scenario_data_store_->OnWindowVisible();
     InsertContentsInMapOfVisibleTabs(web_contents);
   }
@@ -114,9 +114,11 @@ void TabUsageScenarioTracker::OnTabReplaced(
     content::WebContents* new_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   OnWebContentsRemoved(old_contents);
-  DCHECK(!visible_tabs_.contains(old_contents));
-  DCHECK(!contents_playing_video_.contains(old_contents));
-  DCHECK(!contents_playing_video_fullscreen_.contains(old_contents));
+  CHECK(!visible_tabs_.contains(old_contents), base::NotFatalUntil::M161);
+  CHECK(!contents_playing_video_.contains(old_contents),
+        base::NotFatalUntil::M161);
+  CHECK(!contents_playing_video_fullscreen_.contains(old_contents),
+        base::NotFatalUntil::M161);
 
   // Start tracking |new_contents| if needed.
   if (new_contents->GetVisibility() == content::Visibility::VISIBLE)
@@ -277,7 +279,8 @@ void TabUsageScenarioTracker::OnPrimaryMainFrameNavigationCommitted(
 void TabUsageScenarioTracker::OnVideoStartedPlaying(
     content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!contents_playing_video_.contains(web_contents));
+  CHECK(!contents_playing_video_.contains(web_contents),
+        base::NotFatalUntil::M161);
   contents_playing_video_.insert(web_contents);
   if (visible_tabs_.contains(web_contents)) {
     usage_scenario_data_store_->OnVideoStartsInVisibleTab();
@@ -287,7 +290,8 @@ void TabUsageScenarioTracker::OnVideoStartedPlaying(
 void TabUsageScenarioTracker::OnVideoStoppedPlaying(
     content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(contents_playing_video_.contains(web_contents));
+  CHECK(contents_playing_video_.contains(web_contents),
+        base::NotFatalUntil::M161);
   contents_playing_video_.erase(web_contents);
   if (visible_tabs_.contains(web_contents)) {
     usage_scenario_data_store_->OnVideoStopsInVisibleTab();
@@ -306,7 +310,7 @@ void TabUsageScenarioTracker::OnDisplaysRemoved(const display::Displays&) {
 
 int TabUsageScenarioTracker::GetNumDisplays() {
   auto* screen = display::Screen::Get();
-  DCHECK(screen);
+  CHECK(screen, base::NotFatalUntil::M161);
   return screen->GetNumDisplays();
 }
 
@@ -335,8 +339,9 @@ void TabUsageScenarioTracker::OnWebContentsRemoved(
     content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto iter = visible_tabs_.find(web_contents);
-  DCHECK_EQ(iter != visible_tabs_.end(),
-            web_contents->GetVisibility() == content::Visibility::VISIBLE);
+  CHECK_EQ(iter != visible_tabs_.end(),
+           web_contents->GetVisibility() == content::Visibility::VISIBLE,
+           base::NotFatalUntil::M161);
   // If |web_contents| is tracked in the list of visible WebContents then a
   // synthetic visibility change event should be emitted.
   if (iter != visible_tabs_.end())
@@ -366,7 +371,7 @@ void TabUsageScenarioTracker::OnWebContentsRemoved(
 void TabUsageScenarioTracker::InsertContentsInMapOfVisibleTabs(
     content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!visible_tabs_.contains(web_contents));
+  CHECK(!visible_tabs_.contains(web_contents), base::NotFatalUntil::M161);
   auto iter = visible_tabs_.emplace(web_contents,
                                     GetNavigationInfoForContents(web_contents));
   if (iter.first->second.first != ukm::kInvalidSourceId) {

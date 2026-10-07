@@ -62,9 +62,10 @@ class DecisionHelper {
       }
 
       for (const notifications::NotificationEntry* notification : pair.second) {
-        DCHECK(notification);
-        DCHECK_NE(notification->schedule_params.priority,
-                  ScheduleParams::Priority::kNoThrottle);
+        CHECK(notification, base::NotFatalUntil::M161);
+        CHECK_NE(notification->schedule_params.priority,
+                 ScheduleParams::Priority::kNoThrottle,
+                 base::NotFatalUntil::M161);
         if (!ShouldFilterOut(notification))
           filtered_notifications[notification->type].emplace_back(notification);
       }
@@ -81,7 +82,8 @@ class DecisionHelper {
     bool meet_deliver_time_start =
         now >= entry->schedule_params.deliver_time_start.value();
 
-    DCHECK(entry->schedule_params.deliver_time_end.has_value());
+    CHECK(entry->schedule_params.deliver_time_end.has_value(),
+          base::NotFatalUntil::M161);
     bool meet_deliver_time_end =
         entry->schedule_params.deliver_time_end.has_value() &&
         now <= entry->schedule_params.deliver_time_end.value();
@@ -94,7 +96,7 @@ class DecisionHelper {
 
   // Picks a list of notifications to show.
   void PickNotificationToShow(Results* to_show) {
-    DCHECK(to_show);
+    CHECK(to_show, base::NotFatalUntil::M161);
     if (shown_ > config_->max_daily_shown_all_type || clients_.empty())
       return;
 
@@ -102,12 +104,14 @@ class DecisionHelper {
     // We will iterate through all client types later.
     auto it = std::ranges::find(clients_, last_shown_type_);
     if (it == clients_.end()) {
-      DCHECK_EQ(last_shown_type_, SchedulerClientType::kUnknown);
+      CHECK_EQ(last_shown_type_, SchedulerClientType::kUnknown,
+               base::NotFatalUntil::M161);
       last_shown_type_ = clients_.back();
       it = clients_.end() - 1;
     }
 
-    DCHECK_NE(last_shown_type_, SchedulerClientType::kUnknown);
+    CHECK_NE(last_shown_type_, SchedulerClientType::kUnknown,
+             base::NotFatalUntil::M161);
     size_t steps = 0u;
 
     // Circling around all clients to find new notification to show.

@@ -199,7 +199,7 @@ const char kHttpCacheFinchExperimentGroups[] =
 std::vector<std::string> TranslateStringArray(const base::ListValue& list) {
   std::vector<std::string> strings;
   for (const base::Value& value : list) {
-    DCHECK(value.is_string());
+    CHECK(value.is_string(), base::NotFatalUntil::M161);
     strings.push_back(value.GetString());
   }
   return strings;
@@ -229,9 +229,10 @@ bool IsAmbientAuthAllowedForProfile(Profile* profile) {
   }
 
   PrefService* local_state = g_browser_process->local_state();
-  DCHECK(local_state);
-  DCHECK(local_state->FindPreference(
-      prefs::kAmbientAuthenticationInPrivateModesEnabled));
+  CHECK(local_state, base::NotFatalUntil::M161);
+  CHECK(local_state->FindPreference(
+            prefs::kAmbientAuthenticationInPrivateModesEnabled),
+        base::NotFatalUntil::M161);
 
   net::AmbientAuthAllowedProfileTypes type =
       static_cast<net::AmbientAuthAllowedProfileTypes>(local_state->GetInteger(

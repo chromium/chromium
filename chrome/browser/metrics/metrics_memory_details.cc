@@ -29,7 +29,7 @@ namespace {
 void CountRenderProcessHosts(size_t* initialized_and_not_dead, size_t* all) {
   *initialized_and_not_dead = *all = 0;
 
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   for (auto iter = content::RenderProcessHost::AllHostsIterator();
        !iter.IsAtEnd(); iter.Advance()) {
     content::RenderProcessHost& render_process_host = *iter.GetCurrentValue();
@@ -101,7 +101,8 @@ void MetricsMemoryDetails::UpdateHistograms() {
 
 void MetricsMemoryDetails::UpdateSiteIsolationMetrics(
     size_t live_process_count) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M161);
 
   // Track site data for predicting process counts with out-of-process iframes.
   // See site_details.h.

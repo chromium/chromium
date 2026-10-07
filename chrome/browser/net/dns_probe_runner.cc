@@ -85,10 +85,10 @@ DnsProbeRunner::~DnsProbeRunner() {
 
 void DnsProbeRunner::RunProbe(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!callback.is_null());
-  DCHECK(host_resolver_);
-  DCHECK(callback_.is_null());
-  DCHECK(!receiver_.is_bound());
+  CHECK(!callback.is_null(), base::NotFatalUntil::M161);
+  CHECK(host_resolver_, base::NotFatalUntil::M161);
+  CHECK(callback_.is_null(), base::NotFatalUntil::M161);
+  CHECK(!receiver_.is_bound(), base::NotFatalUntil::M161);
 
   network::mojom::ResolveHostParametersPtr parameters =
       network::mojom::ResolveHostParameters::New();
@@ -123,7 +123,7 @@ void DnsProbeRunner::OnComplete(
     const net::AddressList& resolved_addresses,
     const net::HostResolverEndpointResults& alternative_endpoints) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!callback_.is_null());
+  CHECK(!callback_.is_null(), base::NotFatalUntil::M161);
 
   result_ = EvaluateResponse(resolve_error_info.error, resolved_addresses);
   receiver_.reset();

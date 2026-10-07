@@ -35,8 +35,8 @@
 using content::BrowserThread;
 
 ProxyConfigMonitor::ProxyConfigMonitor(Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(profile);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(profile, base::NotFatalUntil::M161);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   profile_ = profile;
@@ -73,8 +73,9 @@ ProxyConfigMonitor::ProxyConfigMonitor(Profile* profile) {
 }
 
 ProxyConfigMonitor::ProxyConfigMonitor(PrefService* local_state) {
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
-         !BrowserThread::IsThreadInitialized(BrowserThread::UI));
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
+            !BrowserThread::IsThreadInitialized(BrowserThread::UI),
+        base::NotFatalUntil::M161);
 
   pref_proxy_config_tracker_ =
       ProxyServiceFactory::CreatePrefProxyConfigTrackerOfLocalState(
@@ -86,8 +87,9 @@ ProxyConfigMonitor::ProxyConfigMonitor(PrefService* local_state) {
 }
 
 ProxyConfigMonitor::~ProxyConfigMonitor() {
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
-         !BrowserThread::IsThreadInitialized(BrowserThread::UI));
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
+            !BrowserThread::IsThreadInitialized(BrowserThread::UI),
+        base::NotFatalUntil::M161);
   proxy_config_service_->RemoveObserver(this);
   pref_proxy_config_tracker_->DetachFromPrefService();
 }
@@ -124,8 +126,9 @@ void ProxyConfigMonitor::FlushForTesting() {
 void ProxyConfigMonitor::OnProxyConfigChanged(
     const net::ProxyConfigWithAnnotation& config,
     net::ProxyConfigService::ConfigAvailability availability) {
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
-         !BrowserThread::IsThreadInitialized(BrowserThread::UI));
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
+            !BrowserThread::IsThreadInitialized(BrowserThread::UI),
+        base::NotFatalUntil::M161);
   for (const auto& proxy_config_client : proxy_config_client_set_) {
     switch (availability) {
       case net::ProxyConfigService::CONFIG_VALID:
@@ -148,15 +151,16 @@ void ProxyConfigMonitor::OnLazyProxyConfigPoll() {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 void ProxyConfigMonitor::OnPACScriptError(int32_t line_number,
                                           const std::string& details) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   extensions::ProxyEventRouter::GetInstance()->OnPACScriptError(
       profile_, line_number, base::UTF8ToUTF16(details));
 }
 
 void ProxyConfigMonitor::OnRequestMaybeFailedDueToProxySettings(
     int32_t net_error) {
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
-         !BrowserThread::IsThreadInitialized(BrowserThread::UI));
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
+            !BrowserThread::IsThreadInitialized(BrowserThread::UI),
+        base::NotFatalUntil::M161);
 
   if (net_error >= 0) {
     // If the error is obviously wrong, don't dispatch it to extensions. If the

@@ -294,7 +294,7 @@ void DriveService::OnTokenReceived(GoogleServiceAuthError error,
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                                       "Bearer " + token_info.token);
 
-  DCHECK(!url_loader_);
+  CHECK(!url_loader_, base::NotFatalUntil::M161);
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  kTrafficAnnotation);
   url_loader_->SetRetryOptions(0, network::SimpleURLLoader::RETRY_NEVER);

@@ -113,7 +113,7 @@ void ChromeFeatureListCreator::CreatePrefService() {
   base::FilePath local_state_file;
   bool result =
       base::PathService::Get(chrome::FILE_LOCAL_STATE, &local_state_file);
-  DCHECK(result);
+  CHECK(result, base::NotFatalUntil::M161);
 
   auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
   RegisterLocalState(pref_registry.get());
@@ -182,7 +182,7 @@ void ChromeFeatureListCreator::ConvertFlagsToSwitches() {
   // Convert active flags into switches. This needs to be done before
   // ui::ResourceBundle::InitSharedInstanceWithLocale as some loaded resources
   // are affected by experiment flags (--touch-optimized-ui in particular).
-  DCHECK(!ui::ResourceBundle::HasSharedInstance());
+  CHECK(!ui::ResourceBundle::HasSharedInstance(), base::NotFatalUntil::M161);
   TRACE_EVENT0("startup", "ChromeFeatureListCreator::ConvertFlagsToSwitches");
 
 #if BUILDFLAG(IS_CHROMEOS)

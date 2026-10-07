@@ -100,8 +100,8 @@ TabGroupsPageHandler::TabGroupsPageHandler(
     : web_contents_(web_contents),
       profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       page_handler_(this, std::move(pending_page_handler)) {
-  DCHECK(web_contents_);
-  DCHECK(profile_);
+  CHECK(web_contents_, base::NotFatalUntil::M161);
+  CHECK(profile_, base::NotFatalUntil::M161);
   tab_group_service_ =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_);
   CHECK(tab_group_service_);

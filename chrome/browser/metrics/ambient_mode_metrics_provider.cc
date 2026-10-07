@@ -20,8 +20,9 @@ AmbientModePhotoSource GetAmbientModePhotoSourcePref(
   auto value = pref_service->GetInteger(
       ash::ambient::prefs::kAmbientModePhotoSourcePref);
 
-  DCHECK_LE(0, value);
-  DCHECK_GE(static_cast<int>(AmbientModePhotoSource::kMaxValue), value);
+  CHECK_LE(0, value, base::NotFatalUntil::M161);
+  CHECK_GE(static_cast<int>(AmbientModePhotoSource::kMaxValue), value,
+           base::NotFatalUntil::M161);
 
   return static_cast<AmbientModePhotoSource>(value);
 }
@@ -41,7 +42,7 @@ void AmbientModeMetricsProvider::ProvideCurrentSessionData(
   // user.
   PrefService* pref_service =
       ProfileManager::GetActiveUserProfile()->GetPrefs();
-  DCHECK(pref_service);
+  CHECK(pref_service, base::NotFatalUntil::M161);
 
   bool enabled =
       pref_service->GetBoolean(ash::ambient::prefs::kAmbientModeEnabled);

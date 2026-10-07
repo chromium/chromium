@@ -223,7 +223,8 @@ ExtensionInstallProto::BackgroundScriptType GetBackgroundScriptType(
   // If an extension had neither a persistent background page, a lazy
   // background page nor a service worker based background script, it must not
   // have a background script.
-  DCHECK(!extensions::BackgroundInfo::HasBackgroundPage(&extension));
+  CHECK(!extensions::BackgroundInfo::HasBackgroundPage(&extension),
+        base::NotFatalUntil::M161);
   return ExtensionInstallProto::NO_BACKGROUND_SCRIPT;
 }
 
@@ -387,7 +388,7 @@ std::vector<metrics::ExtensionInstallProto> GetInstallsForProfile(
 ExtensionsMetricsProvider::ExtensionsMetricsProvider(
     metrics::MetricsStateManager* metrics_state_manager)
     : metrics_state_manager_(metrics_state_manager) {
-  DCHECK(metrics_state_manager_);
+  CHECK(metrics_state_manager_, base::NotFatalUntil::M161);
 }
 
 ExtensionsMetricsProvider::~ExtensionsMetricsProvider() = default;
@@ -395,7 +396,7 @@ ExtensionsMetricsProvider::~ExtensionsMetricsProvider() = default;
 // static
 int ExtensionsMetricsProvider::HashExtension(const std::string& extension_id,
                                              uint32_t client_key) {
-  DCHECK_LE(client_key, kExtensionListClientKeys);
+  CHECK_LE(client_key, kExtensionListClientKeys, base::NotFatalUntil::M161);
   std::string message =
       base::StringPrintf("%u:%s", client_key, extension_id.c_str());
   uint64_t output = base::legacy::CityHash64(base::as_byte_span(message));
@@ -412,7 +413,7 @@ ExtensionsMetricsProvider::GetInstalledExtensions(Profile* profile) {
 
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile);
-  DCHECK(registry);
+  CHECK(registry, base::NotFatalUntil::M161);
   return registry->GenerateInstalledExtensionsSet();
 }
 
@@ -487,7 +488,7 @@ void ExtensionsMetricsProvider::ProvideOffStoreMetric(
 
     extensions::InstallVerifier* verifier =
         extensions::InstallVerifierFactory::GetForBrowserContext(profiles[i]);
-    DCHECK(verifier);
+    CHECK(verifier, base::NotFatalUntil::M161);
 
     // Combine the state from each profile, always favoring the higher state as
     // defined by the order of ExtensionState.

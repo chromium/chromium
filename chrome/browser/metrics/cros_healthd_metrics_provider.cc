@@ -39,7 +39,7 @@ void CrosHealthdMetricsProvider::AsyncInit(base::OnceClosure done_callback) {
   const std::vector<ash::cros_healthd::mojom::ProbeCategoryEnum>
       categories_to_probe = {ash::cros_healthd::mojom::ProbeCategoryEnum::
                                  kNonRemovableBlockDevices};
-  DCHECK(init_callback_.is_null());
+  CHECK(init_callback_.is_null(), base::NotFatalUntil::M161);
   init_callback_ = std::move(done_callback);
   initialized_ = false;
 
@@ -97,8 +97,10 @@ void CrosHealthdMetricsProvider::OnProbeDone(
              << block_device_result->get_error()->msg;
     return;
   }
-  DCHECK_EQ(tag, ash::cros_healthd::mojom::NonRemovableBlockDeviceResult::Tag::
-                     kBlockDeviceInfo);
+  CHECK_EQ(tag,
+           ash::cros_healthd::mojom::NonRemovableBlockDeviceResult::Tag::
+               kBlockDeviceInfo,
+           base::NotFatalUntil::M161);
 
   for (const auto& storage : block_device_result->get_block_device_info()) {
     SystemProfileProto::Hardware::InternalStorageDevice dev;

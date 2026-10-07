@@ -66,7 +66,7 @@ void Referrer::SuggestHost(const GURL& url) {
 
   if (!url.has_host())  // TODO(jar): Is this really needed????
     return;
-  DCHECK(url == url.GetWithEmptyPath());
+  CHECK(url == url.GetWithEmptyPath(), base::NotFatalUntil::M161);
   auto it = find(url);
   if (it != end()) {
     it->second.SubresourceIsNeeded();
@@ -75,7 +75,7 @@ void Referrer::SuggestHost(const GURL& url) {
 
   if (kMaxSuggestions <= size()) {
     DeleteLeastUseful();
-    DCHECK(kMaxSuggestions > size());
+    CHECK(kMaxSuggestions > size(), base::NotFatalUntil::M161);
   }
   (*this)[url].SubresourceIsNeeded();
 }
@@ -155,8 +155,9 @@ ReferrerValue::ReferrerValue()
 }
 
 void ReferrerValue::SubresourceIsNeeded() {
-  DCHECK_GE(kWeightingForOldConnectsExpectedValue, 0);
-  DCHECK_LE(kWeightingForOldConnectsExpectedValue, 1.0);
+  CHECK_GE(kWeightingForOldConnectsExpectedValue, 0, base::NotFatalUntil::M161);
+  CHECK_LE(kWeightingForOldConnectsExpectedValue, 1.0,
+           base::NotFatalUntil::M161);
   ++navigation_count_;
   subresource_use_rate_ += 1 - kWeightingForOldConnectsExpectedValue;
 }

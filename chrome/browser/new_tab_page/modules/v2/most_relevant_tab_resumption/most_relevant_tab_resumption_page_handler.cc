@@ -209,8 +209,8 @@ MostRelevantTabResumptionPageHandler::MostRelevantTabResumptionPageHandler(
           ntp_features::kNtpTabResumptionModuleDismissalDurationParam,
           90)),
       page_handler_(this, std::move(pending_page_handler)) {
-  DCHECK(profile_);
-  DCHECK(web_contents_);
+  CHECK(profile_, base::NotFatalUntil::M161);
+  CHECK(web_contents_, base::NotFatalUntil::M161);
 }
 
 MostRelevantTabResumptionPageHandler::~MostRelevantTabResumptionPageHandler() =
@@ -311,7 +311,7 @@ void MostRelevantTabResumptionPageHandler::DismissURLVisits(
       visited_url_ranking::VisitedURLRankingServiceFactory::GetForProfile(
           profile_);
   for (const auto& url_visit : url_visits) {
-    DCHECK(!url_visit->url_key.empty());
+    CHECK(!url_visit->url_key.empty(), base::NotFatalUntil::M161);
     url_visit_dict->Set(
         url_visit->url_key,
         base::TimeToValue(base::Time::Now() + base::Seconds(30)));
@@ -532,7 +532,7 @@ void MostRelevantTabResumptionPageHandler::RemoveOldDismissedTabs() {
   ScopedDictPrefUpdate visit_dict(profile_->GetPrefs(),
                                   kDismissedVisitsPrefName);
   for (auto it = visit_dict->begin(); it != visit_dict->end(); ++it) {
-    DCHECK(!it->first.empty());
+    CHECK(!it->first.empty(), base::NotFatalUntil::M161);
     auto timestamp = base::ValueToTime(it->second);
     if (timestamp.has_value()) {
       if (timestamp.value() <
