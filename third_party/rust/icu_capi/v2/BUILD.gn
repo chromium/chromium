@@ -84,22 +84,30 @@ cargo_crate("lib") {
   deps = [
     "//third_party/rust/diplomat/v0_15:lib",
     "//third_party/rust/diplomat_runtime/v0_15:lib",
+    "//third_party/rust/fixed_decimal/v0_7:lib",
+    "//third_party/rust/icu_decimal/v2:lib",
     "//third_party/rust/icu_locale/v2:lib",
     "//third_party/rust/icu_locale_core/v2:lib",
     "//third_party/rust/icu_normalizer/v2:lib",
+    "//third_party/rust/icu_plurals/v2:lib",
     "//third_party/rust/icu_provider/v2:lib",
     "//third_party/rust/icu_provider_adapters/v2:lib",
     "//third_party/rust/writeable/v0_6:lib",
+    "//third_party/rust/zerovec/v0_11:lib",
   ]
   features = [
     "compiled_data",
+    "decimal",
     "locale",
     "normalizer",
+    "plurals",
+    "unstable",
   ]
 
   visibility = []
   visibility += [ "//:*" ]
   visibility += [ "//base/i18n/*" ]
+  visibility += [ "//third_party/rust/icu_capi/*" ]
   visibility += [ "//v8/*" ]
 
   #####################################################################

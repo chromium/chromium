@@ -79,9 +79,12 @@ features = [
 version = "2.2"
 default-features = false
 features = [
+    "compiled_data",
+    "decimal",
     "locale",
     "normalizer",
-    "compiled_data",
+    "plurals",
+    "unstable",
 ]
 
 [dependencies.icu_casemap]

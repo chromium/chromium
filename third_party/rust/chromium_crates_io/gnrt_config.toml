@@ -365,7 +365,7 @@ configs_to_add = ['//build/config/compiler:optimize']
 allow_unsafe = false
 
 [crate.fixed_decimal.extra_kv]
-allow_unsafe = false
+allow_unsafe = true
 
 [crate.flate2]
 ban_features = [
@@ -461,6 +461,7 @@ testonly = false
 visibility = [
   "//:*",
   "//base/i18n/*",
+  "//third_party/rust/icu_capi/*",
   "//v8/*",
 ]
 

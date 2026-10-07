@@ -653,6 +653,7 @@ version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "displaydoc",
+ "ryu",
  "smallvec",
  "writeable",
 ]
@@ -825,6 +826,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "diplomat 0.15.0",
  "diplomat-runtime",
+ "fixed_decimal",
  "icu_calendar",
  "icu_casemap",
  "icu_collator",
@@ -842,6 +844,7 @@ dependencies = [
  "icu_segmenter",
  "icu_time",
  "writeable",
+ "zerovec",
 ]
 
 [[package]]
