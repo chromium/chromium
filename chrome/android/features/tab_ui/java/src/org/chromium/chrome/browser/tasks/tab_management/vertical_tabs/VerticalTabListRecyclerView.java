@@ -6,15 +6,23 @@ package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
+import org.chromium.chrome.tab_ui.R;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** Custom {@link TabListRecyclerView} for the vertical tab layout. */
 @NullMarked
@@ -30,8 +38,65 @@ public class VerticalTabListRecyclerView extends TabListRecyclerView {
         return false;
     }
 
-    /** Initializes and configures the vertical tab list layout manager and animator. */
-    public void initialize(RecyclerView.Adapter<?> adapter) {
+    /**
+     * Sets up the adapter, layout manager and item animator for the vertical tab list.
+     *
+     * @param modelList The model list of the vertical tab list.
+     */
+    void initialize(TabListModel modelList) {
+        SimpleRecyclerViewAdapter adapter =
+                new SimpleRecyclerViewAdapter(modelList) {
+                    @Override
+                    public int getItemViewType(int position) {
+                        ListItem item = modelList.get(position);
+                        if (item.type == UiType.TAB) {
+                            if (TabProperties.isPinnedTab(item.model)) {
+                                return UiType.PINNED_TAB;
+                            } else if (TabProperties.isTabGroupHeader(item.model)) {
+                                return UiType.TAB_GROUP;
+                            }
+                        }
+                        return super.getItemViewType(position);
+                    }
+                };
+
+        adapter.registerType(
+                UiType.TAB,
+                parent ->
+                        (VerticalTabItemLayout)
+                                LayoutInflater.from(getContext())
+                                        .inflate(
+                                                R.layout.vertical_tab_item,
+                                                parent,
+                                                /* attachToRoot= */ false),
+                TabVerticalViewBinder::bindTab);
+
+        // Pinned tabs are rendered in a separate sticky layout. This zero-height hidden layout in
+        // the main list preserves the 1:1 index alignment with the TabModel without taking space.
+        adapter.registerType(
+                UiType.PINNED_TAB,
+                parent ->
+                        (ViewGroup)
+                                LayoutInflater.from(getContext())
+                                        .inflate(
+                                                R.layout.vertical_tab_pinned_item_hidden,
+                                                parent,
+                                                /* attachToRoot= */ false),
+                // The placeholder is never shown, so no property needs to be bound to it. It must
+                // stay GONE for the lifetime of the view.
+                (model, view, propertyKey) -> {});
+
+        adapter.registerType(
+                UiType.TAB_GROUP,
+                parent ->
+                        (ViewGroup)
+                                LayoutInflater.from(getContext())
+                                        .inflate(
+                                                R.layout.vertical_tab_group_header,
+                                                parent,
+                                                /* attachToRoot= */ false),
+                TabVerticalViewBinder::bindTabGroupHeader);
+
         LinearLayoutManager layoutManager =
                 new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         setLayoutManager(layoutManager);
@@ -58,6 +123,48 @@ public class VerticalTabListRecyclerView extends TabListRecyclerView {
                         }
                     });
         }
+    }
+
+    /**
+     * Scrolls to {@code position} via {@link #scrollToPositionWithOffset(int)} unless the item at
+     * that position is already completely visible.
+     */
+    void scrollToPositionIfNotCompletelyVisible(int position) {
+        RecyclerView.LayoutManager layoutManager = getLayoutManager();
+        if (layoutManager instanceof LinearLayoutManager lm) {
+            int firstVisible = lm.findFirstCompletelyVisibleItemPosition();
+            int lastVisible = lm.findLastCompletelyVisibleItemPosition();
+            if (firstVisible != RecyclerView.NO_POSITION
+                    && lastVisible != RecyclerView.NO_POSITION
+                    && position >= firstVisible
+                    && position <= lastVisible) {
+                return;
+            }
+        }
+        scrollToPositionWithOffset(position);
+    }
+
+    /**
+     * Runs {@code callback} with the view holder at {@code position}. If the view holder is not
+     * attached, scrolls to {@code position} and retries once after layout; {@code callback} is not
+     * run if the view holder is still unavailable.
+     */
+    void findOrScrollToViewHolder(int position, Callback<RecyclerView.ViewHolder> callback) {
+        RecyclerView.ViewHolder holder = findViewHolderForAdapterPosition(position);
+        if (holder == null) {
+            scrollToPosition(position);
+            post(
+                    () -> {
+                        RecyclerView.ViewHolder retryHolder =
+                                findViewHolderForAdapterPosition(position);
+                        if (retryHolder != null) {
+                            callback.onResult(retryHolder);
+                        }
+                    });
+            return;
+        }
+
+        callback.onResult(holder);
     }
 
     /**

@@ -24,7 +24,6 @@ import android.view.Window;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
@@ -351,58 +350,6 @@ public class VerticalTabListCoordinator {
                 new VerticalTabRailCollapseController(
                         this::setRailCollapseState, this::setCollapseButtonEnabled);
         mModelList = new TabListModel();
-        SimpleRecyclerViewAdapter adapter =
-                new SimpleRecyclerViewAdapter(mModelList) {
-                    @Override
-                    public int getItemViewType(int position) {
-                        ListItem item = mModelList.get(position);
-                        if (item.type == UiType.TAB) {
-                            if (TabProperties.isPinnedTab(item.model)) {
-                                return UiType.PINNED_TAB;
-                            } else if (TabProperties.isTabGroupHeader(item.model)) {
-                                return UiType.TAB_GROUP;
-                            }
-                        }
-                        return super.getItemViewType(position);
-                    }
-                };
-
-        adapter.registerType(
-                UiType.TAB,
-                parent ->
-                        (VerticalTabItemLayout)
-                                LayoutInflater.from(activity)
-                                        .inflate(
-                                                R.layout.vertical_tab_item,
-                                                parent,
-                                                /* attachToRoot= */ false),
-                TabVerticalViewBinder::bindTab);
-
-        // Pinned tabs are rendered in a separate sticky layout. This zero-height hidden layout in
-        // the main list preserves the 1:1 index alignment with the TabModel without taking space.
-        adapter.registerType(
-                UiType.PINNED_TAB,
-                parent ->
-                        (ViewGroup)
-                                LayoutInflater.from(activity)
-                                        .inflate(
-                                                R.layout.vertical_tab_pinned_item_hidden,
-                                                parent,
-                                                /* attachToRoot= */ false),
-                // The placeholder is never shown, so no property needs to be bound to it. It must
-                // stay GONE for the lifetime of the view.
-                (model, view, propertyKey) -> {});
-
-        adapter.registerType(
-                UiType.TAB_GROUP,
-                parent ->
-                        (ViewGroup)
-                                LayoutInflater.from(activity)
-                                        .inflate(
-                                                R.layout.vertical_tab_group_header,
-                                                parent,
-                                                /* attachToRoot= */ false),
-                TabVerticalViewBinder::bindTabGroupHeader);
 
         mContainerView =
                 (VerticalTabRailLayout)
@@ -432,7 +379,7 @@ public class VerticalTabListCoordinator {
 
         VerticalTabListRecyclerView recyclerView = mContainerView.getRecyclerView();
         mRecyclerView = recyclerView;
-        mRecyclerView.initialize(adapter);
+        mRecyclerView.initialize(mModelList);
         mOnScrollListener =
                 new RecyclerView.OnScrollListener() {
                     @Override
@@ -1075,18 +1022,7 @@ public class VerticalTabListCoordinator {
         int uiIndex = getIndexForTabScroll(activeTabId);
 
         if (uiIndex != TabModel.INVALID_TAB_INDEX) {
-            RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
-            if (layoutManager instanceof LinearLayoutManager lm) {
-                int firstVisible = lm.findFirstCompletelyVisibleItemPosition();
-                int lastVisible = lm.findLastCompletelyVisibleItemPosition();
-                if (firstVisible != RecyclerView.NO_POSITION
-                        && lastVisible != RecyclerView.NO_POSITION
-                        && uiIndex >= firstVisible
-                        && uiIndex <= lastVisible) {
-                    return;
-                }
-            }
-            mRecyclerView.scrollToPositionWithOffset(uiIndex);
+            mRecyclerView.scrollToPositionIfNotCompletelyVisible(uiIndex);
         }
     }
 
@@ -2050,25 +1986,12 @@ public class VerticalTabListCoordinator {
                     int index = mModelList.indexFromTabGroupId(tabGroupId);
                     if (index == TabModel.INVALID_TAB_INDEX) return;
 
-                    RecyclerView.ViewHolder holder =
-                            mRecyclerView.findViewHolderForAdapterPosition(index);
-                    if (holder == null) {
-                        mRecyclerView.scrollToPosition(index);
-                        mRecyclerView.post(
-                                () -> {
-                                    RecyclerView.ViewHolder retryHolder =
-                                            mRecyclerView.findViewHolderForAdapterPosition(index);
-                                    if (retryHolder != null) {
-                                        showTabGroupHeaderContextMenu(
-                                                getItemViewAnchorRectProvider(retryHolder.itemView),
-                                                tabGroupId);
-                                    }
-                                });
-                        return;
-                    }
-
-                    showTabGroupHeaderContextMenu(
-                            getItemViewAnchorRectProvider(holder.itemView), tabGroupId);
+                    mRecyclerView.findOrScrollToViewHolder(
+                            index,
+                            holder ->
+                                    showTabGroupHeaderContextMenu(
+                                            getItemViewAnchorRectProvider(holder.itemView),
+                                            tabGroupId));
                 });
     }
 
