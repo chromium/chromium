@@ -20,7 +20,6 @@
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_interactive_test_mixin.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
@@ -1373,7 +1372,7 @@ class NtpRealboxDefaultExperienceVirtualFocusInteractiveTest
  public:
   NtpRealboxDefaultExperienceVirtualFocusInteractiveTest() {
     virtual_focus_feature_list_.InitAndEnableFeature(
-        features::kRealboxVirtualFocusNavigation);
+        ntp_features::kRealboxVirtualFocusNavigation);
   }
 
  private:
@@ -1431,7 +1430,7 @@ class NtpRealboxDefaultExperienceLegacyFocusInteractiveTest
  public:
   NtpRealboxDefaultExperienceLegacyFocusInteractiveTest() {
     virtual_focus_feature_list_.InitAndDisableFeature(
-        features::kRealboxVirtualFocusNavigation);
+        ntp_features::kRealboxVirtualFocusNavigation);
   }
 
  private:

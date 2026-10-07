@@ -504,9 +504,9 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
            base::FeatureList::IsEnabled(ntp_features::kRealboxCr23Theming));
   dict.Set("searchboxCr23SteadyStateShadow",
            ntp_features::kNtpRealboxCr23SteadyStateShadow.Get());
-  dict.Set(
-      "realboxVirtualFocusNavigation",
-      base::FeatureList::IsEnabled(features::kRealboxVirtualFocusNavigation));
+  dict.Set("realboxVirtualFocusNavigation",
+           base::FeatureList::IsEnabled(
+               ntp_features::kRealboxVirtualFocusNavigation));
   dict.Set("lensOverlayVirtualFocusNavigation",
            base::FeatureList::IsEnabled(
                features::kLensOverlayVirtualFocusNavigation));
