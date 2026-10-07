@@ -11,6 +11,8 @@ source_set("voice_isolation") {
   sources = [
     "band_split_voice_isolation.cc",
     "band_split_voice_isolation.h",
+    "buffered_voice_isolation.cc",
+    "buffered_voice_isolation.h",
     "passthrough_voice_isolation.cc",
     "passthrough_voice_isolation.h",
     "stft_voice_isolation.cc",
@@ -82,6 +84,7 @@ source_set("unit_tests") {
   ]
   sources = [
     "band_split_voice_isolation_unittest.cc",
+    "buffered_voice_isolation_unittest.cc",
     "passthrough_voice_isolation_unittest.cc",
     "stft_voice_isolation_unittest.cc",
     "tflite_voice_isolation_unittest.cc",
