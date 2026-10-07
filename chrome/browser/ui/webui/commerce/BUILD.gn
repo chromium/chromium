@@ -95,7 +95,6 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/signin",
       "//chrome/browser/sync",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/webui/feedback",
       "//chrome/common",
       "//chrome/test:test_support",

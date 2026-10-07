@@ -654,7 +654,6 @@ if (!is_chromeos) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles/batch_upload",
       "//chrome/browser/signin:signin_browser_test_base",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_commands",
       "//chrome/test:test_support",
       "//components/signin/core/browser",

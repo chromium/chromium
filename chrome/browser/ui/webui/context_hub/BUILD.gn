@@ -114,7 +114,6 @@ source_set("context_hub_page_handler") {
     deps += [
       "//chrome/browser/glic",
       "//chrome/browser/tab_group_sync:factories",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui/tabs:tab_strip",

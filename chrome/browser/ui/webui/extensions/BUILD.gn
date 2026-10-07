@@ -101,9 +101,6 @@ if (enable_extensions_core) {
       "//extensions/browser",
       "//extensions/buildflags",
     ]
-    if (!is_android) {
-      deps += [ "//chrome/browser/ui" ]
-    }
   }
 
   source_set("unit_tests") {

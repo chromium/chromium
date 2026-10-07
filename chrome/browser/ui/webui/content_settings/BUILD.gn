@@ -77,7 +77,6 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/common",
       "//chrome/test:test_support",

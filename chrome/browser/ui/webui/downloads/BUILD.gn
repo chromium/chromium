@@ -116,7 +116,6 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/download",
     "//chrome/browser/download:test_support",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/common",
     "//chrome/test:test_support",
     "//components/download/public/common:public",

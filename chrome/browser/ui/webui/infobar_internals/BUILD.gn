@@ -68,7 +68,6 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/infobar_internals:resources",
     "//chrome/browser/ssl",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:collected_cookies_infobar_delegate",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",

@@ -105,7 +105,6 @@ if (!is_android) {
       "//chrome/browser/profiles/batch_upload:test_support",
       "//chrome/browser/signin:signin_browser_test_base",
       "//chrome/browser/sync",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/views/bookmarks:test_support",
       "//chrome/test:test_support",
       "//components/bookmarks/browser",

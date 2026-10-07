@@ -127,7 +127,6 @@ if (!is_android) {
       "//chrome/app:command_ids",
       "//chrome/browser/page_load_metrics",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_command_controller",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:ui_features",

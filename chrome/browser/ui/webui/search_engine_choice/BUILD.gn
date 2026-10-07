@@ -56,7 +56,6 @@ if (is_win || is_linux) {
       "//chrome/browser",
       "//chrome/browser/search_engine_choice",
       "//chrome/browser/search_engines",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/search_engine_choice",
       "//chrome/test:test_support",
       "//content/test:test_support",

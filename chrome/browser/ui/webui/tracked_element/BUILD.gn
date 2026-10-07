@@ -13,7 +13,6 @@ source_set("browser_tests") {
 
   sources = [ "tracked_element_manager_browsertest.cc" ]
   deps = [
-    "//chrome/browser/ui",
     "//chrome/browser/ui/webui/user_education_internals",
     "//chrome/test:test_support",
     "//chrome/test/interaction",

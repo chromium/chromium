@@ -50,7 +50,6 @@ if (!is_android) {
       "//chrome/browser/history_clusters",
       "//chrome/browser/prefs",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/webui/history",
       "//chrome/test:test_support",
       "//components/history_clusters/core",

@@ -58,7 +58,6 @@ if (!is_android) {
     deps = [
       ":window_metadata",
       "//base",
-      "//chrome/browser/ui",
       "//chrome/test:test_support_ui",
       "//content/test:test_support",
     ]

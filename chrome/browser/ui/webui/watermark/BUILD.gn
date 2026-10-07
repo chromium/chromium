@@ -19,7 +19,6 @@ static_library("watermark") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/enterprise/watermark:watermark_lib",
     "//chrome/browser/resources/watermark:resources_grit",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/toasts/api:toasts",
