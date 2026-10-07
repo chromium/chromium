@@ -710,6 +710,7 @@ if (!is_android) {
       "//components/tab_groups",
       "//components/tabs:impl",
       "//components/wallet/core/common:features",
+      "//components/web_modal",
       "//components/webapps/browser",
       "//net",
       "//printing/buildflags",

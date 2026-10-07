@@ -244,6 +244,7 @@
 #include "components/security_interstitials/core/features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/wallet/core/common/wallet_features.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "net/base/features.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -1235,6 +1236,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       std::make_unique<JavaScriptTabModalDialogManagerDelegateDesktop>(
           tab.GetContents()));
 
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(
+      tab.GetContents());
+
   // Attach TrustedVaultEncryptionKeysTabHelper to the tab.
   TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(tab.GetContents());
 }
@@ -1800,6 +1804,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
       new_contents,
       std::make_unique<JavaScriptTabModalDialogManagerDelegateDesktop>(
           new_contents));
+
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(new_contents);
 
   TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(new_contents);
 }

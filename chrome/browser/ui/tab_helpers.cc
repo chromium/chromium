@@ -100,8 +100,6 @@
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "content/public/common/content_features.h"
-#else
-#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -282,12 +280,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
 
   // NO! Do not just add your tab helper here. This is a large alphabetized
   // block; please insert your tab helper above in alphabetical order.
-
-  // --- Section 2: Platform-specific tab helpers ---
-
-#if !BUILDFLAG(IS_ANDROID)
-  web_modal::WebContentsModalDialogManager::CreateForWebContents(web_contents);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // --- Section 3: Feature tab helpers behind BUILDFLAGs ---
   // NOT for "if enabled"; put those in section 1.

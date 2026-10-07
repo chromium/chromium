@@ -60,6 +60,11 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # attached to non-tab WebContents in web_app::CreateWebAppInstallTabHelpers
   # for background web-app installation, so the WebContents must own it.
   'webapps::PreRedirectionURLObserver::CreateForWebContents',
+  # WebContentsModalDialogManager lives in //components/web_modal and is also
+  # attached to non-tab WebContents (such as DocumentPipHost,
+  # WebUIContentsWrapper, SimpleWebViewDialog, and DevToolsWindowViews), so
+  # the WebContents must own it.
+  'web_modal::WebContentsModalDialogManager::CreateForWebContents',
 )
 
 

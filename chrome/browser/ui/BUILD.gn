@@ -1480,7 +1480,6 @@ source_set("tab_helpers_impl") {
       "//chrome/browser/ui/read_anything",
       "//components/image_fetcher/core",
       "//components/omnibox/browser",
-      "//components/web_modal",
     ]
   }
 
