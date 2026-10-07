@@ -54,7 +54,6 @@ source_set("browser_tests") {
 
   deps = [
     ":test_support",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
     "//chrome/common:constants",
     "//components/metrics:content",

@@ -303,7 +303,6 @@ if (!is_android) {
       "//chrome/browser/download:test_support",
       "//chrome/browser/policy:test_support",
       "//chrome/browser/prefs:util",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:ui_features",

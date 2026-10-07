@@ -69,7 +69,6 @@ source_set("impl") {
     ]
   } else {
     deps += [
-      "//chrome/browser/ui",
       "//chrome/browser/ui/tabs:tab_strip",
       "//components/ntp_tiles",
     ]

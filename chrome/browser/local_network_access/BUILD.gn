@@ -45,7 +45,6 @@ if (!is_android) {
       "//chrome/browser/net",
       "//chrome/browser/policy:test_support",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//chrome/test:test_support_ui",
       "//chrome/test/base:web_feature_histogram_tester",
       "//components/content_settings/core/browser",

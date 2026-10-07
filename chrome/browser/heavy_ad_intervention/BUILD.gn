@@ -28,7 +28,6 @@ if (!is_android) {
     deps = [
       ":heavy_ad_intervention",
       "//chrome/browser:browser_process",
-      "//chrome/browser/ui",
       "//chrome/test:test_support",
       "//components/heavy_ad_intervention",
       "//components/strings:components_strings_grit",

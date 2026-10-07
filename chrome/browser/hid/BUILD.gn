@@ -205,7 +205,6 @@ if (!is_android) {
       "//chrome/browser:browser_process",
       "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser/device_notifications:browser_test_support",
-      "//chrome/browser/ui",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//content/test:test_support",
@@ -223,7 +222,6 @@ if (!is_android) {
     sources = [ "chrome_hid_realtarget_browsertest.cc" ]
     deps = [
       ":hid",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/hid",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/test:test_support_ui",

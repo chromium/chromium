@@ -29,7 +29,6 @@ source_set("browser_tests") {
   deps = [
     ":icon_transcoder",
     "//base",
-    "//chrome/browser/ui",
     "//chrome/test:test_support",
   ]
 }
