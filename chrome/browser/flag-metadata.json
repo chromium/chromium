@@ -1153,11 +1153,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "autofill-enable-new-amex-network-art",
-    "owners": [ "ferny@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 155
-  },
-  {
     "name": "autofill-enable-offers-in-clank-keyboard-accessory",
     "owners": [ "siyua@chromium.org", "siashah@google.com" ],
     "expiry_milestone": 116

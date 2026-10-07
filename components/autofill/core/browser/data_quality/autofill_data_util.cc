@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
@@ -29,7 +28,6 @@
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/browser/webdata/autofill_table_util.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -52,7 +50,7 @@ namespace {
 // https://w3c.github.io/webpayments-methods-card/#method-id
 
 constexpr PaymentRequestData kPaymentRequestData[]{
-    {kAmericanExpressCard, "amex", IDR_AUTOFILL_METADATA_CC_AMEX,
+    {kAmericanExpressCard, "amex", IDR_AUTOFILL_METADATA_CC_AMEX_NEW,
      IDS_AUTOFILL_CC_AMEX},
     {kDinersCard, "diners", IDR_AUTOFILL_METADATA_CC_DINERS,
      IDS_AUTOFILL_CC_DINERS},
@@ -495,15 +493,6 @@ std::u16string JoinNameParts(std::u16string_view given,
 
 const PaymentRequestData& GetPaymentRequestData(
     std::string_view issuer_network) {
-  if (issuer_network == kAmericanExpressCard &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableNewAmexNetworkArt)) {
-    static const PaymentRequestData& payments_request_data = {
-        kAmericanExpressCard, "amex", IDR_AUTOFILL_METADATA_CC_AMEX_NEW,
-        IDS_AUTOFILL_CC_AMEX};
-    return payments_request_data;
-  }
-
   for (const PaymentRequestData& data : kPaymentRequestData) {
     if (issuer_network == data.issuer_network) {
       return data;

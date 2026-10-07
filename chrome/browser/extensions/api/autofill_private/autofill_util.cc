@@ -40,7 +40,6 @@
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/ui/country_combobox_model.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/prefs/pref_service.h"
@@ -127,9 +126,7 @@ autofill_private::AddressEntry ProfileToAddressEntry(
 }
 
 std::string CardNetworkToIconResourceIdString(const std::string& network) {
-  if (network == autofill::kAmericanExpressCard &&
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableNewAmexNetworkArt)) {
+  if (network == autofill::kAmericanExpressCard) {
     return "chrome://theme/IDR_AUTOFILL_METADATA_CC_AMEX_NEW";
   }
 

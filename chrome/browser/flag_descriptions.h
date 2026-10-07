@@ -1141,11 +1141,6 @@ inline constexpr char kAutofillShowGmailOtpSuggestionsDescription[] =
     "When enabled, shows autofill suggestions for one-time passwords (OTPs) "
     "received in Gmail.";
 
-inline constexpr char kAutofillEnableNewAmexNetworkArtName[] =
-    "Enable new American Express network art";
-inline constexpr char kAutofillEnableNewAmexNetworkArtDescription[] =
-    "When enabled, updates the American Express network art in Autofill.";
-
 inline constexpr char kAutofillEnableOffersInClankKeyboardAccessoryName[] =
     "Enable Autofill offers in keyboard accessory";
 inline constexpr char

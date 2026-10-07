@@ -11,7 +11,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -23,7 +22,6 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/grit/components_scaled_resources.h"
@@ -1139,6 +1137,8 @@ TEST(CreditCardTest, CompareCardCreationSource) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Test we get the correct icon for each card type.
 TEST(CreditCardTest, IconResourceId) {
+  EXPECT_EQ(CreditCard::IconResourceId(Suggestion::Icon::kCardAmericanExpress),
+            IDR_AUTOFILL_METADATA_CC_AMEX_NEW);
   EXPECT_EQ(CreditCard::IconResourceId(Suggestion::Icon::kCardDiners),
             IDR_AUTOFILL_METADATA_CC_DINERS);
   EXPECT_EQ(CreditCard::IconResourceId(Suggestion::Icon::kCardDiscover),
@@ -1161,30 +1161,10 @@ TEST(CreditCardTest, IconResourceId) {
             IDR_AUTOFILL_METADATA_CC_VISA);
 }
 
-// Test we get the correct icon for Amex card type when the new Amex network art
-// is enabled.
-// TODO(crbug.com/485691023): Move this check back into `IconResourceId` after
-// `kAutofillEnableNewAmexNetworkArt` is cleaned up.
-TEST(CreditCardTest, IconResourceId_NewAmexNetworkArtEnabled) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillEnableNewAmexNetworkArt);
-
-  EXPECT_EQ(CreditCard::IconResourceId(Suggestion::Icon::kCardAmericanExpress),
-            IDR_AUTOFILL_METADATA_CC_AMEX_NEW);
-}
-
-// Test we get the correct icon for Amex card type when the new Amex network art
-// is disabled.
-TEST(CreditCardTest, IconResourceId_NewAmexNetworkArtDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(features::kAutofillEnableNewAmexNetworkArt);
-
-  EXPECT_EQ(CreditCard::IconResourceId(Suggestion::Icon::kCardAmericanExpress),
-            IDR_AUTOFILL_METADATA_CC_AMEX);
-}
-
 // Test we get the correct icon for each card type.
 TEST(CreditCardTest, IconResourceIdFromString) {
+  EXPECT_EQ(CreditCard::IconResourceId(kAmericanExpressCard),
+            IDR_AUTOFILL_METADATA_CC_AMEX_NEW);
   EXPECT_EQ(CreditCard::IconResourceId(kDinersCard),
             IDR_AUTOFILL_METADATA_CC_DINERS);
   EXPECT_EQ(CreditCard::IconResourceId(kDiscoverCard),
@@ -1202,29 +1182,6 @@ TEST(CreditCardTest, IconResourceIdFromString) {
             IDR_AUTOFILL_METADATA_CC_VERVE);
   EXPECT_EQ(CreditCard::IconResourceId(kVisaCard),
             IDR_AUTOFILL_METADATA_CC_VISA);
-}
-
-// Test we get the correct icon for Amex card type when the new Amex network art
-// is enabled.
-// TODO(crbug.com/485691023): Move this check back into
-// `IconResourceIdFromString` after `kAutofillEnableNewAmexNetworkArt` is
-// cleaned up.
-TEST(CreditCardTest, IconResourceIdFromString_NewAmexNetworkArtEnabled) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillEnableNewAmexNetworkArt);
-
-  EXPECT_EQ(CreditCard::IconResourceId(kAmericanExpressCard),
-            IDR_AUTOFILL_METADATA_CC_AMEX_NEW);
-}
-
-// Test we get the correct icon for Amex card type when the new Amex network art
-// is disabled.
-TEST(CreditCardTest, IconResourceIdFromString_NewAmexNetworkArtDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(features::kAutofillEnableNewAmexNetworkArt);
-
-  EXPECT_EQ(CreditCard::IconResourceId(kAmericanExpressCard),
-            IDR_AUTOFILL_METADATA_CC_AMEX);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

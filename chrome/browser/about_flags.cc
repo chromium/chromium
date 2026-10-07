@@ -12921,11 +12921,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kDebugToolbarPositioning)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"autofill-enable-new-amex-network-art",
-     flag_descriptions::kAutofillEnableNewAmexNetworkArtName,
-     flag_descriptions::kAutofillEnableNewAmexNetworkArtDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableNewAmexNetworkArt)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"chrome-finds-internals", flag_descriptions::kChromeFindsInternalsName,
      flag_descriptions::kChromeFindsInternalsDescription, kOsAndroid,
