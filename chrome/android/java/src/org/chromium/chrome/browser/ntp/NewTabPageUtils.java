@@ -43,13 +43,19 @@ public class NewTabPageUtils {
     }
 
     /** Action chips options for NTP Aurora V2. */
-    @IntDef({ActionChips.DEFAULT, ActionChips.INCOGNITO, ActionChips.CANVAS})
+    @IntDef({
+        ActionChips.DEFAULT,
+        ActionChips.INCOGNITO,
+        ActionChips.CREATE_IMAGE,
+        ActionChips.CANVAS
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ActionChips {
         int DEFAULT = 0;
         int INCOGNITO = 1;
-        int CANVAS = 2;
-        int NUM_ENTRIES = 3;
+        int CREATE_IMAGE = 2;
+        int CANVAS = 3;
+        int NUM_ENTRIES = 4;
     }
 
     /**
@@ -94,11 +100,37 @@ public class NewTabPageUtils {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.NTP_AURORA);
     }
 
+    /** Returns whether the Aurora layout V2 is enabled. */
+    public static boolean isNtpAuroraV2Enabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.NTP_AURORA)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.NTP_AURORA_V2);
+    }
+
     /** Returns whether the Aurora layout with updated button colors is enabled. */
     public static boolean isNtpAuroraButtonColorEnabled() {
         return isNtpAuroraEnabled()
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.NTP_AURORA,
                         ChromeFeatureList.NTP_AURORA_CHANGE_BUTTON_COLOR);
+    }
+
+    /**
+     * Returns the type of the action chip to show on the NTP, which is set by the "action_chips"
+     * param of NTP Aurora V2. Returns {@link ActionChips#DEFAULT} if NTP Aurora V2 is disabled.
+     */
+    public static @ActionChips int getMerchandisingChipsType() {
+        if (!isNtpAuroraV2Enabled()) return ActionChips.DEFAULT;
+
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.NTP_AURORA_V2, ChromeFeatureList.NTP_AURORA_V2_ACTION_CHIPS);
+    }
+
+    /**
+     * Returns whether clicking the AI Mode button on the NTP should redirect to the AI Mode
+     * omnibox, which is the case when a valid, non-default action chip type is enabled.
+     */
+    public static boolean isAiModeButtonRedirectEnabled() {
+        @ActionChips int chipType = getMerchandisingChipsType();
+        return chipType > ActionChips.DEFAULT && chipType < ActionChips.NUM_ENTRIES;
     }
 }

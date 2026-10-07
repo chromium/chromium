@@ -693,6 +693,10 @@
   <message name="IDS_OMNIBOX_HUB_HISTORY_HEADER" desc="The header for the history suggestions section.">
     History
   </message>
+  <!-- NTP Action Chips -->
+  <message name="IDS_NTP_ACTION_CHIP_CREATE_IMAGE" desc="Label of the create image merchandising chip on the NTP." formatter_data="android_java">
+    Create
+  </message>
   <!-- NTP Action Chips Fallback Prompts -->
   <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_1" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
     Help me settle a debate with a friend by providing an objective, data-driven analysis that represents both sides fairly

@@ -895,6 +895,49 @@ public class NewTabPageCoordinatorUnitTest {
                 /* hasTargetConfig= */ true);
     }
 
+    /**
+     * Verifies that the optional button is shown on an existing NTP when switching back to Google
+     * from a third party search engine without an AI Mode entry point, even though Google's
+     * AiModeButtonUiConfig arrives after the search provider info is updated.
+     */
+    @Test
+    @EnableFeatures({
+        OmniboxFeatureList.AIM3P_ENTRYPOINT,
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/2"
+    })
+    public void testOptionalButtonVisibility_SwitchBackToGoogle_CreateImage() {
+        testOptionalButtonVisibilitySwitchBackToGoogleImpl();
+    }
+
+    @Test
+    @EnableFeatures({
+        OmniboxFeatureList.AIM3P_ENTRYPOINT,
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/3"
+    })
+    public void testOptionalButtonVisibility_SwitchBackToGoogle_Canvas() {
+        testOptionalButtonVisibilitySwitchBackToGoogleImpl();
+    }
+
+    /**
+     * Verifies that clicking the AI Mode button focuses the search box in AI Mode when an action
+     * chip is enabled.
+     */
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/1"
+    })
+    public void testComposeplateButtonClicked_ActionChipsEnabled() {
+        testComposeplateButtonClickedImpl(/* expectedFocusSearchBox= */ true);
+    }
+
+    @Test
+    public void testComposeplateButtonClicked_ActionChipsDisabled() {
+        testComposeplateButtonClickedImpl(/* expectedFocusSearchBox= */ false);
+    }
+
     @Test
     public void testUpdateActionButtonVisibility_ComposeplateHiddenWhenIncognitoDisabled() {
         setupMockSubCoordinators();
@@ -1022,6 +1065,50 @@ public class NewTabPageCoordinatorUnitTest {
         // The newly created composeplate must render the config, rather than the layout's default.
         TextView buttonText = mNewTabPageLayout.findViewById(R.id.composeplate_button_text);
         assertEquals(config.text, buttonText.getText().toString());
+    }
+
+    private void testOptionalButtonVisibilitySwitchBackToGoogleImpl() {
+        // The composeplate is created in setUp() since the default search engine is Google.
+        assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
+        View optionalButton = mNewTabPageLayout.findViewById(R.id.optional_button);
+        assertEquals(View.VISIBLE, optionalButton.getVisibility());
+
+        // Third party search engine A offers an AI Mode entry point.
+        changeSearchEngine(/* isGoogle= */ false, /* hasAiModeButtonUiConfig= */ true);
+        assertEquals(View.GONE, optionalButton.getVisibility());
+
+        // Third party search engine B doesn't offer an AI Mode entry point, so the composeplate is
+        // hidden.
+        changeSearchEngine(/* isGoogle= */ false, /* hasAiModeButtonUiConfig= */ false);
+        assertEquals(TriState.FALSE, mCoordinator.getIsComposeplateEnabledForTesting());
+        assertEquals(View.GONE, optionalButton.getVisibility());
+
+        // Switches back to Google. The optional button must be shown, even though the composeplate
+        // isn't enabled yet when the search provider info is updated.
+        changeSearchEngine(/* isGoogle= */ true, /* hasAiModeButtonUiConfig= */ true);
+        assertEquals(TriState.TRUE, mCoordinator.getIsComposeplateEnabledForTesting());
+        assertEquals(View.VISIBLE, optionalButton.getVisibility());
+    }
+
+    private void testComposeplateButtonClickedImpl(boolean expectedFocusSearchBox) {
+        // The composeplate is created in setUp() since the default search engine is Google.
+        assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
+        View composeplateButton = mNewTabPageLayout.findViewById(R.id.composeplate_button);
+
+        composeplateButton.performClick();
+
+        if (expectedFocusSearchBox) {
+            verify(mManager)
+                    .focusSearchBox(
+                            /* beginVoiceSearch= */ false,
+                            AutocompleteRequestType.AI_MODE,
+                            /* showFuseboxPopup= */ false,
+                            /* pastedText= */ null);
+        } else {
+            verify(mManager, never())
+                    .focusSearchBox(
+                            anyBoolean(), eq(AutocompleteRequestType.AI_MODE), anyBoolean(), any());
+        }
     }
 
     private void testSwitchSearchEngineImpl(
