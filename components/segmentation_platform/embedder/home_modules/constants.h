@@ -101,6 +101,8 @@ inline constexpr char kAppBundlePromoEphemeralModule[] =
 inline constexpr char kDefaultBrowserPromoEphemeralModule[] =
     "default_browser_promo_ephemeral_module";
 inline constexpr char kNTPThemeEphemeralModule[] = "ntp_theme_ephemeral_module";
+inline constexpr char kTipsNotificationsEphemeralModule[] =
+    "tips_notifications_ephemeral_module";
 
 // Variation labels for emphemeral IOS modules.
 // Lens variation labels

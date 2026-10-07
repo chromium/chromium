@@ -825,6 +825,9 @@ using segmentation_platform::TipIdentifier;
       [self.delegate openMainCustomizationMenuWithIconBubbleOnDismiss:YES];
       break;
     }
+    case TipIdentifier::kTipsNotifications:
+      // TODO(crbug.com/566958720): Open the tips notifications destination.
+      NOTREACHED();
   }
 
   [self.NTPActionsDelegate tipsOpened];
