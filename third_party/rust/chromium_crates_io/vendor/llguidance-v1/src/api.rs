@@ -235,6 +235,8 @@ pub enum StopReason {
     LexerTooComplex,
     /// The parser is too complex
     ParserTooComplex,
+    /// The matcher observed a cancellation request.
+    Cancelled,
 }
 
 impl Display for StopReason {

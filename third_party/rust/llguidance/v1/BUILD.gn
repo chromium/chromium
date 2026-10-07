@@ -16,6 +16,7 @@ cargo_crate("lib") {
       "//third_party/rust/chromium_crates_io/vendor/llguidance-v1/src/lib.rs"
   sources = [
     "//third_party/rust/chromium_crates_io/vendor/llguidance-v1/src/api.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v1/src/cancellation.rs",
     "//third_party/rust/chromium_crates_io/vendor/llguidance-v1/src/constraint.rs",
     "//third_party/rust/chromium_crates_io/vendor/llguidance-v1/src/earley/from_guidance.rs",
     "//third_party/rust/chromium_crates_io/vendor/llguidance-v1/src/earley/grammar.rs",
@@ -66,7 +67,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "llguidance"
   cargo_pkg_description = "Super-fast Structured Outputs"
   cargo_pkg_repository = "https://github.com/guidance-ai/llguidance"
-  cargo_pkg_version = "1.8.0"
+  cargo_pkg_version = "1.9.1"
 
   allow_unsafe = true
 

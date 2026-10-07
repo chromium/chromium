@@ -80,16 +80,17 @@ impl TokenizerSlice {
     }
 
     fn matches(&self, rec: &mut ParserRecognizer<'_>) -> bool {
-        if self.regex.is_empty() {
+        if rec.is_cancelled() || self.regex.is_empty() {
             return false;
         }
         // set to at least 500
         let budget = 1000;
         let lexer_state = rec.lexer_state();
         let res = rec
-            .lexer_mut()
             .check_subsume(lexer_state, self.idx, budget)
             .unwrap_or(false);
+        #[cfg(test)]
+        crate::cancellation::checkpoint("slice");
         if false {
             println!("slice{} {}", self.idx, res);
         }
@@ -97,6 +98,9 @@ impl TokenizerSlice {
     }
 
     fn trie_apply(&self, rec: &mut ParserRecognizer<'_>, trg: &mut SimpleVob) {
+        if rec.is_cancelled() {
+            return;
+        }
         let t0 = crate::Instant::now();
         self.trie_with_children.add_bias(rec, trg, &[]);
         let us = t0.elapsed().as_micros() as usize;
@@ -106,7 +110,13 @@ impl TokenizerSlice {
     // possibly sets bits corresponding to matching tokens in the current slice
     // returns true if it did
     fn apply(&self, rec: &mut ParserRecognizer<'_>, trg: &mut SimpleVob) -> bool {
+        if rec.is_cancelled() {
+            return false;
+        }
         if self.matches(rec) {
+            if rec.is_cancelled() {
+                return false;
+            }
             rec.stats_mut().slices_applied += 1;
             trg.or(&self.mask_trimmed);
             true
@@ -129,6 +139,9 @@ impl TokenizerSlice {
                 }
             }
 
+            if rec.is_cancelled() {
+                return false;
+            }
             let to_apply = match num_applied {
                 // no children applied, we leave application to the caller
                 0 => return false,
@@ -375,7 +388,7 @@ impl BiasComputer for SlicedBiasComputer {
             && self.top_slice.apply(rec, &mut set)
         {
             // OK! applied
-        } else {
+        } else if !rec.is_cancelled() {
             // if not top-level applied, or cannot apply, do it by hand
             self.top_slice
                 .trie_with_children

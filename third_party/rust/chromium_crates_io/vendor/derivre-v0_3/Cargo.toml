@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.80.0"
 name = "derivre"
-version = "0.3.12"
+version = "0.3.13"
 authors = ["Michal Moskal <michal@moskal.me>"]
 build = false
 exclude = ["scripts/*"]

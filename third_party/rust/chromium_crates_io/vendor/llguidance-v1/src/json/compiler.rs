@@ -8,7 +8,7 @@ use indexmap::{IndexMap, IndexSet};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
-use super::numeric::{check_number_bounds, rx_float_range, rx_int_range};
+use super::numeric::{check_number_bounds, normalize_integer_bounds, rx_float_range, rx_int_range};
 use super::schema::{build_schema, ArraySchema, ObjectSchema, OptSchemaExt, Schema};
 use super::shared_context::PatternPropertyCache;
 use super::RetrieveWrapper;
@@ -284,30 +284,7 @@ impl Compiler {
                 message: e.to_string(),
             })
         })?;
-        let minimum = match num.get_minimum() {
-            (Some(min_val), true) => {
-                if min_val.fract() != 0.0 {
-                    Some(min_val.ceil())
-                } else {
-                    Some(min_val + 1.0)
-                }
-            }
-            (Some(min_val), false) => Some(min_val.ceil()),
-            _ => None,
-        }
-        .map(|val| val as i64);
-        let maximum = match num.get_maximum() {
-            (Some(max_val), true) => {
-                if max_val.fract() != 0.0 {
-                    Some(max_val.floor())
-                } else {
-                    Some(max_val - 1.0)
-                }
-            }
-            (Some(max_val), false) => Some(max_val.floor()),
-            _ => None,
-        }
-        .map(|val| val as i64);
+        let (minimum, maximum) = normalize_integer_bounds(num);
         let rx = rx_int_range(minimum, maximum).with_context(|| {
             format!("Failed to generate regex for integer range: min={minimum:?}, max={maximum:?}")
         })?;
@@ -948,36 +925,32 @@ impl Compiler {
         let mut required_items = vec![];
         let mut optional_items = vec![];
 
-        // If max_items is None, we can add an infinite tail of items later
-        let n_to_add = max_items.map_or(arr.prefix_items.len().max(min_items), |max| max);
+        // Consider at most maxItems prefix items.
+        let prefix_count = max_items.map_or(arr.prefix_items.len(), |max| {
+            max.min(arr.prefix_items.len())
+        });
 
-        for i in 0..n_to_add {
-            let item = if i < arr.prefix_items.len() {
-                match self.gen_json(&arr.prefix_items[i]) {
-                    Ok(node) => node,
-                    Err(e) => match e.downcast_ref::<UnsatisfiableSchemaError>() {
-                        // If it's not an UnsatisfiableSchemaError, just propagate it normally
-                        None => return Err(e),
-                        // Item is optional; don't raise UnsatisfiableSchemaError.
-                        // Set max_items to the current index, as we can't satisfy any more items.
-                        Some(_) if i >= min_items => {
-                            max_items = Some(i);
-                            break;
-                        }
-                        // Item is required; add context and propagate UnsatisfiableSchemaError
-                        Some(_) => {
-                            return Err(e.context(UnsatisfiableSchemaError {
-                                message: format!(
-                                    "prefixItems[{i}] is unsatisfiable but minItems is {min_items}"
-                                ),
-                            }));
-                        }
-                    },
-                }
-            } else if let Some(compiled) = &additional_item_grm {
-                *compiled
-            } else {
-                break;
+        for i in 0..prefix_count {
+            let item = match self.gen_json(&arr.prefix_items[i]) {
+                Ok(node) => node,
+                Err(e) => match e.downcast_ref::<UnsatisfiableSchemaError>() {
+                    // If it's not an UnsatisfiableSchemaError, just propagate it normally
+                    None => return Err(e),
+                    // Item is optional; don't raise UnsatisfiableSchemaError.
+                    // Set max_items to the current index, as we can't satisfy any more items.
+                    Some(_) if i >= min_items => {
+                        max_items = Some(i);
+                        break;
+                    }
+                    // Item is required; add context and propagate UnsatisfiableSchemaError
+                    Some(_) => {
+                        return Err(e.context(UnsatisfiableSchemaError {
+                            message: format!(
+                                "prefixItems[{i}] is unsatisfiable but minItems is {min_items}"
+                            ),
+                        }));
+                    }
+                },
             };
 
             if i < min_items {
@@ -987,10 +960,26 @@ impl Compiler {
             }
         }
 
-        if max_items.is_none() {
-            if let Some(additional_item) = additional_item_grm {
-                // Add an infinite tail of items
-                optional_items.push(self.sequence(additional_item)?);
+        // Compile the homogeneous tail compactly instead of expanding every item.
+        if let Some(additional_item) = additional_item_grm {
+            // Array bounds include the prefix items that were already compiled.
+            let explicit_items = required_items.len() + optional_items.len();
+            let remaining_min = min_items.saturating_sub(explicit_items);
+            let remaining_max = max_items.map(|max| max.saturating_sub(explicit_items));
+
+            if remaining_max != Some(0) {
+                let tail = if remaining_min == 0 && remaining_max.is_none() {
+                    self.sequence(additional_item)?
+                } else {
+                    // The tail contains at least one item; its entirety may be optional below.
+                    self.bounded_sequence(additional_item, remaining_min.max(1), remaining_max)?
+                };
+
+                if remaining_min == 0 {
+                    optional_items.push(tail);
+                } else {
+                    required_items.push(tail);
+                }
             }
         }
 
@@ -1073,8 +1062,185 @@ fn always_non_empty(ast: &RegexAst) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::api::ParserLimits;
+    use crate::api::{GrammarInit, GrammarWithLexer, ParserLimits, TopLevelGrammar};
     use serde_json::json;
+
+    fn compile_schema(schema: Value) -> Result<GrammarResult> {
+        JsonCompileOptions::default()
+            .json_to_llg(GrammarBuilder::new(None, ParserLimits::default()), schema)
+    }
+
+    #[test]
+    fn large_bounded_array_stays_compact() {
+        let result = compile_schema(json!({
+            "type": "array",
+            "items": {"type": "string"},
+            "maxItems": 30_000
+        }))
+        .expect("large bounded array should compile");
+
+        assert!(
+            result.builder.num_nodes() < 256,
+            "bounded array expanded into {} grammar symbols",
+            result.builder.num_nodes()
+        );
+    }
+
+    #[test]
+    fn large_bounded_array_with_prefix_items_stays_compact() {
+        let result = compile_schema(json!({
+            "type": "array",
+            "prefixItems": [{"type": "string"}, {"type": "integer"}],
+            "items": {"type": "boolean"},
+            "minItems": 1,
+            "maxItems": 30_000
+        }))
+        .expect("large bounded array with prefix items should compile");
+
+        assert!(result.builder.num_nodes() < 256);
+    }
+
+    #[test]
+    fn large_minimum_array_stays_compact() {
+        let result = compile_schema(json!({
+            "type": "array",
+            "items": {"type": "integer"},
+            "minItems": 29_999,
+            "maxItems": 30_000
+        }))
+        .expect("large required array should compile");
+
+        assert!(result.builder.num_nodes() < 256);
+    }
+
+    #[test]
+    fn multiple_large_bounded_array_schemas_stay_compact() {
+        let schema = json!({
+            "type": "object",
+            "properties": {
+                "values": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "minItems": 1,
+                    "maxItems": 30_000
+                }
+            },
+            "required": ["values"],
+            "additionalProperties": false
+        });
+        let variants: Vec<Value> = ["first", "second"]
+            .into_iter()
+            .enumerate()
+            .map(|(index, name)| {
+                let mut payload = schema.clone();
+                payload
+                    .as_object_mut()
+                    .expect("payload schema should be an object")
+                    .insert("$id".to_string(), json!(format!("urn:example:{index}")));
+                json!({
+                    "type": "object",
+                    "properties": {
+                        "name": {"const": name},
+                        "payload": payload
+                    },
+                    "required": ["name", "payload"],
+                    "additionalProperties": false
+                })
+            })
+            .collect();
+        let combined_schema = json!({
+            "type": "object",
+            "properties": {
+                "entries": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {"anyOf": variants}
+                }
+            },
+            "required": ["entries"],
+            "additionalProperties": false
+        });
+
+        let grammar = GrammarInit::Serialized(TopLevelGrammar {
+            grammars: vec![
+                GrammarWithLexer {
+                    lark_grammar: Some("start: @first | @second | @combined".to_string()),
+                    ..Default::default()
+                },
+                GrammarWithLexer {
+                    name: Some("first".to_string()),
+                    json_schema: Some(schema.clone()),
+                    ..Default::default()
+                },
+                GrammarWithLexer {
+                    name: Some("second".to_string()),
+                    json_schema: Some(schema),
+                    ..Default::default()
+                },
+                GrammarWithLexer {
+                    name: Some("combined".to_string()),
+                    json_schema: Some(combined_schema),
+                    ..Default::default()
+                },
+            ],
+            max_tokens: None,
+        });
+
+        let (compiled, _) = grammar
+            .clone()
+            .to_internal(None, ParserLimits::default())
+            .expect("multiple bounded-array schemas should compile");
+        grammar
+            .to_cgrammar(
+                None,
+                &mut crate::Logger::new(0, 0),
+                ParserLimits::default(),
+                vec![],
+            )
+            .expect("bounded-array grammars should fit the compact symbol representation");
+        assert!(
+            compiled.num_symbols() < 512,
+            "bounded-array grammars expanded into {} symbols",
+            compiled.num_symbols()
+        );
+    }
+
+    #[test]
+    fn zero_maximum_array_compiles() {
+        compile_schema(json!({
+            "type": "array",
+            "items": {"type": "string"},
+            "maxItems": 0
+        }))
+        .expect("empty bounded array should compile");
+    }
+
+    #[test]
+    fn optional_unsatisfiable_prefix_preserves_empty_array() {
+        compile_schema(json!({
+            "type": "array",
+            "prefixItems": [false],
+            "items": {"type": "string"},
+            "maxItems": 30_000
+        }))
+        .expect("unsatisfiable optional prefix should still allow an empty array");
+    }
+
+    #[test]
+    fn unsatisfiable_array_bounds_are_rejected() {
+        let error = compile_schema(json!({
+            "type": "array",
+            "items": {"type": "string"},
+            "minItems": 2,
+            "maxItems": 1
+        }))
+        .err()
+        .expect("inverted array bounds should be rejected");
+
+        assert!(error
+            .to_string()
+            .contains("minItems (2) is greater than maxItems (1)"));
+    }
 
     #[test]
     fn json_quote_default_allows_u_escape() {

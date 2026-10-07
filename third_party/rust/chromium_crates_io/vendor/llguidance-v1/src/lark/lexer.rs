@@ -285,7 +285,7 @@ pub fn lex_lark(input: &str) -> Result<Vec<Lexeme>> {
             lexer.try_lexeme_end(state)
         } else {
             b = input_bytes[idx];
-            lexer.advance(state, b, false)
+            lexer.advance(state, b, false, &None)
         };
 
         match res {
@@ -364,7 +364,7 @@ pub fn lex_lark(input: &str) -> Result<Vec<Lexeme>> {
                 }
 
                 state = lexer.start_state(&all_lexemes);
-                state = lexer.transition_start_state(state, transition_byte);
+                state = lexer.transition_start_state(state, transition_byte, &None);
 
                 curr_lexeme.line = line_no;
                 curr_lexeme.column = column_no;
@@ -380,7 +380,48 @@ pub fn lex_lark(input: &str) -> Result<Vec<Lexeme>> {
         idx += 1;
     }
 
+    split_compact_repeat_ranges(&mut lexemes);
     Ok(lexemes)
+}
+
+/// Split compact `~0..2`-style ranges into `Number("0"), DotDot, Number("2")`.
+///
+/// The generic number lexeme also accepts floats such as `0.`, so the lexer
+/// can greedily emit `Number("0.")` followed by `Dot` for the compact range
+/// syntax. The parser expects an integer token before `..`, so normalize that
+/// token stream here without affecting standalone float literals.
+fn split_compact_repeat_ranges(lexemes: &mut [Lexeme]) {
+    if lexemes.len() < 3 {
+        return;
+    }
+
+    for idx in 1..lexemes.len() - 1 {
+        if lexemes[idx - 1].token != Token::Tilde {
+            continue;
+        }
+
+        let (through_number, after_number) = lexemes.split_at_mut(idx + 1);
+        let number = &mut through_number[idx];
+        let dot = &mut after_number[0];
+        if number.token != Token::Number || dot.token != Token::Dot || dot.line != number.line {
+            continue;
+        }
+
+        let LexemeValue::String(value) = &mut number.value else {
+            continue;
+        };
+        let Some(integer) = value.strip_suffix('.') else {
+            continue;
+        };
+        if integer.parse::<i32>().is_err() || dot.column != number.column + value.chars().count() {
+            continue;
+        }
+
+        value.pop();
+        dot.token = Token::DotDot;
+        dot.value = LexemeValue::String("..".to_string());
+        dot.column -= 1;
+    }
 }
 
 fn parse_json_prefix<'de, T>(data: &[u8]) -> Result<(T, usize)>

@@ -371,7 +371,7 @@ impl ExprSet {
             expr_weight: vec![],
             alphabet_size,
             alphabet_words,
-            digits: [b'0', b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9'],
+            digits: *b"0123456789",
             digit_dot: b'.',
             cost: 0,
             pp: PrettyPrinter::new_simple(alphabet_size),

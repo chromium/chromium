@@ -305,12 +305,22 @@ impl RegexVec {
     /// from the cache, if it is cached, and created otherwise.
     #[inline(always)]
     pub fn transition(&mut self, state: StateID, b: u8) -> StateID {
+        self.transition_with_cancellation(state, b, &None)
+    }
+
+    #[inline(always)]
+    pub(crate) fn transition_with_cancellation(
+        &mut self,
+        state: StateID,
+        b: u8,
+        cancellation: &Option<crate::CancellationHandle>,
+    ) -> StateID {
         let idx = self.alpha.map_state(state, b);
         let new_state = self.state_table[idx];
         if new_state != StateID::MISSING {
             new_state
         } else {
-            self.transition_inner(state, b, idx)
+            self.transition_inner(state, b, idx, cancellation)
         }
     }
 
@@ -335,13 +345,26 @@ impl RegexVec {
         &mut self,
         state: StateID,
         lexeme_idx: LexemeIdx,
+        budget: u64,
+    ) -> Result<bool> {
+        self.check_subsume_with_cancellation(state, lexeme_idx, budget, None)
+    }
+
+    pub(crate) fn check_subsume_with_cancellation(
+        &mut self,
+        state: StateID,
+        lexeme_idx: LexemeIdx,
         mut budget: u64,
+        cancellation: Option<&crate::CancellationHandle>,
     ) -> Result<bool> {
         let budget0 = budget;
         assert!(self.subsume_possible(state));
         let small = self.get_rx(lexeme_idx);
         let mut res = false;
         for (idx, e) in iter_state(&self.rx_sets, state) {
+            if let Some(cancellation) = cancellation {
+                cancellation.check()?;
+            }
             if !self.subsumable.contains(idx) {
                 continue;
             }
@@ -363,6 +386,9 @@ impl RegexVec {
             //     self.exprs.expr_to_string(e),
             //     is_contained
             // );
+            if let Some(cancellation) = cancellation {
+                cancellation.check()?;
+            }
             if is_contained {
                 res = true;
                 break;
@@ -724,7 +750,13 @@ impl RegexVec {
 
     /// Given a transition (from-state and byte), create the to-state.
     /// It is assumed the to-state does not exist.
-    fn transition_inner(&mut self, state: StateID, b: u8, idx: usize) -> StateID {
+    fn transition_inner(
+        &mut self,
+        state: StateID,
+        b: u8,
+        idx: usize,
+        cancellation: &Option<crate::CancellationHandle>,
+    ) -> StateID {
         assert!(state.is_valid());
 
         let mut vec_desc = vec![];
@@ -735,13 +767,22 @@ impl RegexVec {
         // let mut state_size = 0;
 
         for (idx, e) in iter_state(&self.rx_sets, state) {
+            if cancellation.as_ref().is_some_and(|c| c.is_cancelled()) {
+                return StateID::DEAD;
+            }
             let d = self.deriv.derivative(&mut self.exprs, e, b);
+            if cancellation.as_ref().is_some_and(|c| c.is_cancelled()) {
+                return StateID::DEAD;
+            }
 
             let fuel = self.fuel.saturating_sub(self.exprs.cost() - c0);
-            let d = match self
+            let non_empty = self
                 .relevance
-                .is_non_empty_limited(&mut self.exprs, d, fuel)
-            {
+                .is_non_empty_limited(&mut self.exprs, d, fuel);
+            if cancellation.as_ref().is_some_and(|c| c.is_cancelled()) {
+                return StateID::DEAD;
+            }
+            let d = match non_empty {
                 Ok(true) => d,
                 Ok(false) => ExprRef::NO_MATCH,
                 Err(_) => {
@@ -750,10 +791,17 @@ impl RegexVec {
                 }
             };
 
+            #[cfg(test)]
+            crate::cancellation::checkpoint("lexer");
             // state_size += 1;
             if d != ExprRef::NO_MATCH {
                 Self::push_rx(&mut vec_desc, idx, d);
             }
+        }
+
+        // Do not publish an incomplete transition or change shared error state.
+        if cancellation.as_ref().is_some_and(|c| c.is_cancelled()) {
+            return StateID::DEAD;
         }
 
         // let num_deriv = self.deriv.num_deriv - d0;

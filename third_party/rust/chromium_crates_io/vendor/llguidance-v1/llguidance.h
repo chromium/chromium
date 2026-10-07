@@ -36,6 +36,14 @@
 #define LLG_DECODE_VALID_UTF8 2
 
 /**
+ * Opaque cancellation handle for one matcher.
+ *
+ * Get a handle with [`llg_matcher_get_cancellation_handle()`]. Each C handle
+ * owns an independent reference to the matcher cancellation state.
+ */
+typedef struct LlgCancellationHandle LlgCancellationHandle;
+
+/**
  * Opaque handle to a grammar constraint.
  *
  * Created by one of the `llg_new_constraint*` functions (e.g.
@@ -815,7 +823,11 @@ LLGUIDANCE_NODISCARD int32_t llg_matcher_compute_mask(struct LlgMatcher *matcher
 
 /**
  * Return a pointer to the mask computed by [`llg_matcher_compute_mask()`],
- * or null if no mask has been computed yet.
+ * or null if no mask has been computed, cancellation was requested, or an
+ * error occurred.
+ *
+ * The pointer becomes invalid after the next matcher operation or after
+ * [`llg_free_matcher()`].
  */
 const uint32_t *llg_matcher_get_mask(struct LlgMatcher *matcher);
 
@@ -823,6 +835,56 @@ const uint32_t *llg_matcher_get_mask(struct LlgMatcher *matcher);
  * Return the size of the mask in bytes.
  */
 size_t llg_matcher_get_mask_byte_size(const struct LlgMatcher *matcher);
+
+/**
+ * Get a cancellation handle for a matcher.
+ *
+ * Call this while `matcher` is idle. The returned handle can outlive the
+ * matcher. Free it with [`llg_free_cancellation_handle()`]. Cancellation
+ * becomes enabled for the matcher before the handle is returned. Cancellation
+ * handle operations may run while a worker mutates the matcher. Join the
+ * worker before accessing or freeing the matcher.
+ */
+struct LlgCancellationHandle *llg_matcher_get_cancellation_handle(struct LlgMatcher *matcher);
+
+/**
+ * Clone a cancellation handle.
+ *
+ * Each clone is a new allocation. Free each returned handle separately with
+ * [`llg_free_cancellation_handle()`]. `handle` must remain valid during this
+ * call.
+ */
+struct LlgCancellationHandle *llg_clone_cancellation_handle(const struct LlgCancellationHandle *handle);
+
+/**
+ * Request permanent cancellation for a matcher.
+ *
+ * This call does not access the matcher or wait for a worker. It is safe to
+ * call after the matcher is freed, if `handle` remains valid. Do not free the
+ * same handle allocation during this call.
+ */
+void llg_cancel(const struct LlgCancellationHandle *handle);
+
+/**
+ * Free a cancellation handle.
+ *
+ * Passing null is a safe no-op.
+ *
+ * - `handle` must be a pointer returned by
+ *   [`llg_matcher_get_cancellation_handle()`] or
+ *   [`llg_clone_cancellation_handle()`], or null.
+ * - `handle` must not have been freed already.
+ * - No other thread may access `handle` during this call.
+ */
+void llg_free_cancellation_handle(struct LlgCancellationHandle *handle);
+
+/**
+ * Check whether cancellation has been requested for a matcher.
+ *
+ * Call this while `matcher` is idle. This returns false if an earlier
+ * non-cancellation error already stopped the matcher.
+ */
+bool llg_matcher_is_cancelled(const struct LlgMatcher *matcher);
 
 /**
  * Advance the matcher by one token.
@@ -890,9 +952,11 @@ LLGUIDANCE_NODISCARD int32_t llg_matcher_reset(struct LlgMatcher *matcher);
 bool llg_matcher_is_accepting(struct LlgMatcher *matcher);
 
 /**
- * Check whether the matcher will force an EOS token.
+ * Check whether the matcher has reached a terminal state.
  *
- * Also returns true in the error state, since that is a forced stop.
+ * Returns true after normal completion, an error, or cancellation.
+ * Use [`llg_matcher_is_error()`] and [`llg_matcher_is_cancelled()`] to
+ * distinguish unsuccessful termination.
  */
 bool llg_matcher_is_stopped(const struct LlgMatcher *matcher);
 

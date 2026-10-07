@@ -9,6 +9,7 @@ use llguidance::{
 };
 
 const DEFAULT_VOCAB_SIZE: usize = 32_768;
+const CANCELLATION_ENV: &str = "LLGUIDANCE_BENCH_CANCELLATION";
 
 const BLOG_SCHEMA_JSON: &str = include_str!("../../sample_parser/data/blog.schema.json");
 
@@ -94,10 +95,26 @@ fn blog_grammar() -> TopLevelGrammar {
     TopLevelGrammar::from_json_schema(schema)
 }
 
-fn create_matcher(tok_env: &TokEnv, grammar: TopLevelGrammar, prefix: &[u8]) -> Matcher {
+fn benchmark_cancellation_enabled() -> bool {
+    match std::env::var(CANCELLATION_ENV).as_deref() {
+        Ok("enabled") => true,
+        Ok("disabled") | Err(_) => false,
+        Ok(value) => panic!("{CANCELLATION_ENV} must be enabled or disabled, got {value:?}"),
+    }
+}
+
+fn create_matcher(
+    tok_env: &TokEnv,
+    grammar: TopLevelGrammar,
+    prefix: &[u8],
+    cancellation_enabled: bool,
+) -> Matcher {
     let mut factory = ParserFactory::new_simple(tok_env).unwrap();
     factory.quiet();
     let mut matcher = Matcher::new(factory.create_parser(grammar));
+    if cancellation_enabled {
+        matcher = matcher.into_cancellable();
+    }
 
     for &byte in prefix {
         let mask = matcher.compute_mask().unwrap();
@@ -111,6 +128,7 @@ fn create_matcher(tok_env: &TokEnv, grammar: TopLevelGrammar, prefix: &[u8]) -> 
 /// Uses vocab size as throughput metric since larger vocabs require more work.
 fn bench_compute_mask(c: &mut Criterion) {
     let mut group = c.benchmark_group("compute_mask");
+    let cancellation_enabled = benchmark_cancellation_enabled();
 
     // Realistic LLM vocabulary sizes (8k to 128k)
     for vocab_size in [8_192, 32_768, 65_536, 128_000] {
@@ -120,7 +138,12 @@ fn bench_compute_mask(c: &mut Criterion) {
             &vocab_size,
             |b, &size| {
                 let tok_env = synthetic_tok_env(size);
-                let mut matcher = create_matcher(&tok_env, blog_grammar(), PREFIX_IN_STRING);
+                let mut matcher = create_matcher(
+                    &tok_env,
+                    blog_grammar(),
+                    PREFIX_IN_STRING,
+                    cancellation_enabled,
+                );
                 b.iter(|| {
                     matcher.invalidate_bias_cache();
                     black_box(matcher.compute_mask().unwrap())
@@ -136,6 +159,7 @@ fn bench_compute_mask(c: &mut Criterion) {
 fn bench_compute_mask_positions(c: &mut Criterion) {
     let mut group = c.benchmark_group("compute_mask_positions");
     let vocab_size = DEFAULT_VOCAB_SIZE;
+    let cancellation_enabled = benchmark_cancellation_enabled();
 
     let positions = [
         ("start", PREFIX_START),
@@ -149,7 +173,8 @@ fn bench_compute_mask_positions(c: &mut Criterion) {
     for (name, prefix) in positions {
         group.bench_with_input(BenchmarkId::from_parameter(name), &prefix, |b, &prefix| {
             let tok_env = synthetic_tok_env(vocab_size);
-            let mut matcher = create_matcher(&tok_env, blog_grammar(), prefix);
+            let mut matcher =
+                create_matcher(&tok_env, blog_grammar(), prefix, cancellation_enabled);
             b.iter(|| {
                 matcher.invalidate_bias_cache();
                 black_box(matcher.compute_mask().unwrap())
@@ -166,6 +191,7 @@ fn bench_token_generation(c: &mut Criterion) {
 
     let mut group = c.benchmark_group("token_generation");
     let num_tokens = 20;
+    let cancellation_enabled = benchmark_cancellation_enabled();
 
     for vocab_size in [32_768, 65_536, 128_000] {
         group.throughput(Throughput::Elements(num_tokens));
@@ -176,7 +202,14 @@ fn bench_token_generation(c: &mut Criterion) {
                 let tok_env = synthetic_tok_env(size);
 
                 b.iter_batched(
-                    || create_matcher(&tok_env, blog_grammar(), PREFIX_IN_STRING),
+                    || {
+                        create_matcher(
+                            &tok_env,
+                            blog_grammar(),
+                            PREFIX_IN_STRING,
+                            cancellation_enabled,
+                        )
+                    },
                     |mut m| {
                         for _ in 0..num_tokens {
                             let mask = m.compute_mask().unwrap();
@@ -200,6 +233,7 @@ fn bench_token_generation(c: &mut Criterion) {
 /// Important for latency-sensitive applications.
 fn bench_first_mask(c: &mut Criterion) {
     let mut group = c.benchmark_group("first_mask");
+    let cancellation_enabled = benchmark_cancellation_enabled();
 
     for vocab_size in [32_768, 65_536, 128_000] {
         group.throughput(Throughput::Elements(1));
@@ -214,6 +248,9 @@ fn bench_first_mask(c: &mut Criterion) {
                     let mut factory = ParserFactory::new_simple(&tok_env).unwrap();
                     factory.quiet();
                     let mut matcher = Matcher::new(factory.create_parser(grammar.clone()));
+                    if cancellation_enabled {
+                        matcher = matcher.into_cancellable();
+                    }
                     black_box(matcher.compute_mask().unwrap())
                 })
             },
@@ -239,6 +276,7 @@ fn bench_lazy_lexeme(c: &mut Criterion) {
 
     let mut group = c.benchmark_group("lazy_lexeme");
     let vocab_size = DEFAULT_VOCAB_SIZE;
+    let cancellation_enabled = benchmark_cancellation_enabled();
 
     // 50 'x' characters as input
     const INPUT: &[u8] = b"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
@@ -263,6 +301,7 @@ fn bench_lazy_lexeme(c: &mut Criterion) {
                             &tok_env,
                             TopLevelGrammar::from_lark(grammar.to_string()),
                             b"",
+                            cancellation_enabled,
                         )
                     },
                     |mut m| {
@@ -283,6 +322,7 @@ fn bench_lazy_lexeme_complex(c: &mut Criterion) {
 
     let mut group = c.benchmark_group("lazy_lexeme_complex");
     let vocab_size = DEFAULT_VOCAB_SIZE;
+    let cancellation_enabled = benchmark_cancellation_enabled();
 
     // Each test case: (name, grammar, input_bytes)
     let test_cases: [(&str, &str, &[u8]); 4] = [
@@ -318,6 +358,7 @@ fn bench_lazy_lexeme_complex(c: &mut Criterion) {
                         &tok_env,
                         TopLevelGrammar::from_lark(grammar.to_string()),
                         b"",
+                        cancellation_enabled,
                     )
                 },
                 |mut m| {

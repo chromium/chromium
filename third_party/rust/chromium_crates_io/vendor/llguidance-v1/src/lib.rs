@@ -33,7 +33,9 @@
 /// cbindgen:ignore
 pub mod earley;
 
+mod cancellation;
 mod hashcons;
+pub use cancellation::{CancellationHandle, Cancelled};
 mod matcher;
 mod tokenparser;
 pub use tokenparser::TokenParser;

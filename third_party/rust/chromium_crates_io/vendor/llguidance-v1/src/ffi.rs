@@ -39,8 +39,8 @@ use toktrie::{
 use crate::{
     api::{GrammarInit, ParserLimits, TopLevelGrammar},
     earley::{SlicedBiasComputer, ValidationResult},
-    panic_utils, CommitResult, Constraint, Logger, Matcher, ParserFactory, StopController,
-    TokenParser,
+    panic_utils, CancellationHandle, CommitResult, Constraint, Logger, Matcher, ParserFactory,
+    StopController, TokenParser,
 };
 
 // ---------------------------------------------------------------------------
@@ -1510,6 +1510,14 @@ pub struct LlgMatcher {
     tok_env: TokEnv,
 }
 
+/// Opaque cancellation handle for one matcher.
+///
+/// Get a handle with [`llg_matcher_get_cancellation_handle()`]. Each C handle
+/// owns an independent reference to the matcher cancellation state.
+pub struct LlgCancellationHandle {
+    handle: CancellationHandle,
+}
+
 impl LlgMatcher {
     fn wrap(&mut self, f: impl FnOnce(&mut Matcher) -> Result<i32>) -> i32 {
         if self.matcher.is_error() {
@@ -1517,8 +1525,10 @@ impl LlgMatcher {
         }
         match f(&mut self.matcher) {
             Ok(v) => v,
-            Err(e) => {
-                self.last_error = Some(make_c_string(e.to_string()));
+            Err(_) => {
+                if let Some(error) = self.matcher.get_error() {
+                    self.last_error = Some(make_c_string(error));
+                }
                 -1
             }
         }
@@ -1674,6 +1684,7 @@ pub unsafe extern "C" fn llg_matcher_compute_mask_into(
     mask_byte_len: usize,
 ) -> i32 {
     let n_elts = matcher.mask_elts();
+    matcher.clear_mask();
     matcher.wrap(|m| {
         // this may become more optimized in the future (no copy)
         let vob = m.compute_mask_or_eos()?;
@@ -1701,22 +1712,27 @@ pub unsafe extern "C" fn llg_matcher_compute_mask_into(
 #[must_use]
 pub extern "C" fn llg_matcher_compute_mask(matcher: &mut LlgMatcher) -> i32 {
     matcher.clear_mask();
-    if matcher.matcher.is_error() {
-        return -1;
-    }
-
-    if let Ok(v) = matcher.matcher.compute_mask_or_eos() {
-        matcher.saved_mask = Some(v);
-        0
-    } else {
-        -1
+    match matcher.matcher.compute_mask_or_eos() {
+        Ok(v) => {
+            matcher.saved_mask = Some(v);
+            0
+        }
+        Err(_) => -1,
     }
 }
 
 /// Return a pointer to the mask computed by [`llg_matcher_compute_mask()`],
-/// or null if no mask has been computed yet.
+/// or null if no mask has been computed, cancellation was requested, or an
+/// error occurred.
+///
+/// The pointer becomes invalid after the next matcher operation or after
+/// [`llg_free_matcher()`].
 #[no_mangle]
 pub extern "C" fn llg_matcher_get_mask(matcher: &mut LlgMatcher) -> *const u32 {
+    if matcher.matcher.is_error() {
+        matcher.clear_mask();
+        return std::ptr::null();
+    }
     matcher
         .saved_mask
         .as_ref()
@@ -1727,6 +1743,78 @@ pub extern "C" fn llg_matcher_get_mask(matcher: &mut LlgMatcher) -> *const u32 {
 #[no_mangle]
 pub extern "C" fn llg_matcher_get_mask_byte_size(matcher: &LlgMatcher) -> usize {
     matcher.mask_elts() * 4
+}
+
+/// Get a cancellation handle for a matcher.
+///
+/// Call this while `matcher` is idle. The returned handle can outlive the
+/// matcher. Free it with [`llg_free_cancellation_handle()`]. Cancellation
+/// becomes enabled for the matcher before the handle is returned. Cancellation
+/// handle operations may run while a worker mutates the matcher. Join the
+/// worker before accessing or freeing the matcher.
+#[no_mangle]
+pub extern "C" fn llg_matcher_get_cancellation_handle(
+    matcher: &mut LlgMatcher,
+) -> *mut LlgCancellationHandle {
+    matcher.matcher.enable_cancellation();
+    Box::into_raw(Box::new(LlgCancellationHandle {
+        handle: matcher
+            .matcher
+            .cancellation_handle()
+            .expect("cancellation is enabled"),
+    }))
+}
+
+/// Clone a cancellation handle.
+///
+/// Each clone is a new allocation. Free each returned handle separately with
+/// [`llg_free_cancellation_handle()`]. `handle` must remain valid during this
+/// call.
+#[no_mangle]
+pub extern "C" fn llg_clone_cancellation_handle(
+    handle: &LlgCancellationHandle,
+) -> *mut LlgCancellationHandle {
+    Box::into_raw(Box::new(LlgCancellationHandle {
+        handle: handle.handle.clone(),
+    }))
+}
+
+/// Request permanent cancellation for a matcher.
+///
+/// This call does not access the matcher or wait for a worker. It is safe to
+/// call after the matcher is freed, if `handle` remains valid. Do not free the
+/// same handle allocation during this call.
+#[no_mangle]
+pub extern "C" fn llg_cancel(handle: &LlgCancellationHandle) {
+    handle.handle.cancel();
+}
+
+/// Free a cancellation handle.
+///
+/// Passing null is a safe no-op.
+///
+/// # Safety
+/// - `handle` must be a pointer returned by
+///   [`llg_matcher_get_cancellation_handle()`] or
+///   [`llg_clone_cancellation_handle()`], or null.
+/// - `handle` must not have been freed already.
+/// - No other thread may access `handle` during this call.
+#[no_mangle]
+pub unsafe extern "C" fn llg_free_cancellation_handle(handle: *mut LlgCancellationHandle) {
+    if !handle.is_null() {
+        unsafe {
+            drop(Box::from_raw(handle));
+        }
+    }
+}
+
+/// Check whether cancellation has been requested for a matcher.
+///
+/// Call this while `matcher` is idle. This returns false if an earlier
+/// non-cancellation error already stopped the matcher.
+#[no_mangle]
+pub extern "C" fn llg_matcher_is_cancelled(matcher: &LlgMatcher) -> bool {
+    matcher.matcher.is_cancelled()
 }
 
 /// Advance the matcher by one token.
@@ -1844,9 +1932,11 @@ pub extern "C" fn llg_matcher_is_accepting(matcher: &mut LlgMatcher) -> bool {
     matcher.matcher.is_accepting().unwrap_or(false)
 }
 
-/// Check whether the matcher will force an EOS token.
+/// Check whether the matcher has reached a terminal state.
 ///
-/// Also returns true in the error state, since that is a forced stop.
+/// Returns true after normal completion, an error, or cancellation.
+/// Use [`llg_matcher_is_error()`] and [`llg_matcher_is_cancelled()`] to
+/// distinguish unsuccessful termination.
 #[no_mangle]
 pub extern "C" fn llg_matcher_is_stopped(matcher: &LlgMatcher) -> bool {
     matcher.matcher.is_stopped()
@@ -1865,6 +1955,7 @@ pub unsafe extern "C" fn llg_matcher_validate_tokens(
     tokens: *const u32,
     n_tokens: usize,
 ) -> i32 {
+    matcher.clear_mask();
     let tokens = unsafe { slice_from_ptr_or_empty(tokens, n_tokens) };
     matcher.wrap(|m| {
         m.validate_tokens(tokens)
@@ -1886,11 +1977,15 @@ pub unsafe extern "C" fn llg_matcher_compute_ff_tokens(
     output: *mut u32,
     output_len: usize,
 ) -> i32 {
+    matcher.clear_mask();
     if output.is_null() {
         return -1;
     }
     matcher.wrap(|m| {
         let v = m.compute_ff_tokens();
+        if let Some(error) = m.get_error() {
+            bail!(error);
+        }
         let v = v.as_slice();
         let len = std::cmp::min(v.len(), output_len);
         unsafe {

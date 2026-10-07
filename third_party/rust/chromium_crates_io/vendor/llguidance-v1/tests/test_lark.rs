@@ -370,6 +370,14 @@ fn test_repeat() {
         &["", "aa", "b", "aba", "abaa", "aaaaa", "aabaa"],
         &["aaaaaa"],
     );
+
+    lark_str_test_many(
+        r#"start:  HI~0..2
+           HI:  "hi"
+        "#,
+        &["", "hi", "hihi"],
+        &["hihihi", "hi hi"],
+    );
 }
 
 #[test]

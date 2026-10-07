@@ -270,8 +270,8 @@ fn next_byte() {
         &mut rx,
         vec![
             (NextByte::ForcedByte(b'a'), b'a'),
-            (NextByte::SomeBytes2([b'b', b'c']), b'b'),
-            (NextByte::SomeBytes2([b'b', b'c']), b'd'),
+            (NextByte::SomeBytes2(*b"bc"), b'b'),
+            (NextByte::SomeBytes2(*b"bc"), b'd'),
             (NextByte::ForcedByte(b'x'), b'x'),
             (NextByte::ForcedEOI, b'x'),
         ],
@@ -282,7 +282,7 @@ fn next_byte() {
         &mut rx,
         vec![
             (NextByte::ForcedByte(b'a'), b'a'),
-            (NextByte::SomeBytes2([b'B', b'b']), b'B'),
+            (NextByte::SomeBytes2(*b"Bb"), b'B'),
             (NextByte::ForcedByte(b'D'), b'D'),
         ],
     );
@@ -291,7 +291,7 @@ fn next_byte() {
     validate_next_byte(
         &mut rx,
         vec![
-            (NextByte::SomeBytes2([b'b', b'f']), b'f'),
+            (NextByte::SomeBytes2(*b"bf"), b'f'),
             (NextByte::ForcedByte(b'o'), b'o'),
             (NextByte::ForcedByte(b'o'), b'o'),
             (NextByte::ForcedEOI, b'X'),
@@ -495,6 +495,7 @@ fn test_search() {
     assert_search("^[a-z]*$", "[a-z]*");
     assert_search("^(a|b)$", "a|b");
     assert_search("^(foo)*$", "(foo)*");
+    assert_search("^(^foo$)$|^$", "foo|");
     assert_search("colou?r", ".*colou?r.*");
     assert_search("[0-9]{2,4}", ".*[0-9]{2,4}.*");
     assert_search("^[^a-z]+$", "[^a-z]+");

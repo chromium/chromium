@@ -719,11 +719,8 @@ fn simple_max_length(exprs: &ExprSet, e: ExprRef) -> Option<usize> {
         Expr::Or(_, args) => {
             let mut mx = 0;
             for a in args {
-                if let Some(l) = simple_max_length(exprs, *a) {
-                    mx = mx.max(l);
-                } else {
-                    return None;
-                }
+                let l = simple_max_length(exprs, *a)?;
+                mx = mx.max(l);
             }
             Some(mx)
         }
@@ -733,11 +730,7 @@ fn simple_max_length(exprs: &ExprSet, e: ExprRef) -> Option<usize> {
                 match a {
                     ConcatElement::Bytes(b) => sum += b.len(),
                     ConcatElement::Expr(a) => {
-                        if let Some(l) = simple_max_length(exprs, a) {
-                            sum += l;
-                        } else {
-                            return None;
-                        }
+                        sum += simple_max_length(exprs, a)?;
                     }
                 }
             }

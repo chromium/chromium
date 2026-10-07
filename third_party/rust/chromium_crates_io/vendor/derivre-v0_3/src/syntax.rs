@@ -19,6 +19,8 @@ struct StackEntry<'a> {
     result_vec_offset: usize,
     at_start: bool,
     at_end: bool,
+    start_anchored: bool,
+    end_anchored: bool,
 }
 
 #[derive(PartialEq, Eq, Debug)]
@@ -160,6 +162,8 @@ impl ExprSet {
             result_vec_offset: 0,
             at_start: true,
             at_end: true,
+            start_anchored: false,
+            end_anchored: false,
         }];
         while let Some(mut node) = todo.pop() {
             let subs = node.ast.kind().subs();
@@ -178,6 +182,14 @@ impl ExprSet {
                 );
                 let at_start = (derives_start || is_concat) && node.at_start;
                 let at_end = (derives_start || is_concat) && node.at_end;
+                let start_anchored = node.start_anchored;
+                let end_anchored = node.end_anchored;
+                let first_non_start = subs
+                    .iter()
+                    .position(|sub| !matches!(sub.kind(), HirKind::Look(Look::Start)));
+                let last_non_end = subs
+                    .iter()
+                    .rposition(|sub| !matches!(sub.kind(), HirKind::Look(Look::End)));
                 todo.push(node);
                 for (idx, sub) in subs.iter().enumerate() {
                     todo.push(StackEntry {
@@ -186,8 +198,21 @@ impl ExprSet {
                         anchored: Vec::new(),
                         result_stack_idx,
                         result_vec_offset: idx,
-                        at_start: (!is_concat || idx == 0) && at_start,
-                        at_end: (!is_concat || idx == subs.len() - 1) && at_end,
+                        at_start: (!is_concat
+                            || first_non_start.map_or(true, |first| idx <= first))
+                            && at_start,
+                        at_end: (!is_concat || last_non_end.map_or(true, |last| idx >= last))
+                            && at_end,
+                        start_anchored: at_start
+                            && (start_anchored
+                                || (is_concat
+                                    && idx > 0
+                                    && first_non_start.map_or(true, |first| idx <= first))),
+                        end_anchored: at_end
+                            && (end_anchored
+                                || (is_concat
+                                    && idx + 1 < subs.len()
+                                    && last_non_end.map_or(true, |last| idx >= last))),
                     });
                 }
                 continue;
@@ -195,8 +220,8 @@ impl ExprSet {
                 assert!(node.args.iter().all(|&x| x != ExprRef::INVALID));
             }
 
-            let mut anchored_start = false;
-            let mut anchored_end = false;
+            let mut anchored_start = node.start_anchored;
+            let mut anchored_end = node.end_anchored;
 
             let mut r = match node.ast.kind() {
                 HirKind::Empty => ExprRef::EMPTY_STRING,
