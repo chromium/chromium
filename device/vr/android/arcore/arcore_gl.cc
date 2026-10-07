@@ -930,12 +930,10 @@ void ArCoreGl::FinishRenderingFrame(WebXrFrame* frame) {
   TRACE_EVENT1("gpu", "ArCoreGl::FinishRenderingFrame", "frame", frame->index);
 
   std::vector<WebXrSharedBuffer*> reclaimed_buffers;
-  if (frame->shared_buffer &&
-      frame->shared_buffer->reclaimed_sync_token.HasData()) {
+  if (frame->shared_buffer) {
     reclaimed_buffers.push_back(frame->shared_buffer.get());
   }
-  if (frame->camera_image_shared_buffer &&
-      frame->camera_image_shared_buffer->reclaimed_sync_token.HasData()) {
+  if (frame->camera_image_shared_buffer) {
     reclaimed_buffers.push_back(frame->camera_image_shared_buffer.get());
   }
 
