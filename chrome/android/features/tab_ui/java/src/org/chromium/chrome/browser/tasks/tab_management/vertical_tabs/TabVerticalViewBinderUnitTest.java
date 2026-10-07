@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import android.animation.ObjectAnimator;
@@ -502,6 +503,7 @@ public class TabVerticalViewBinderUnitTest {
         mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
         mModel.set(TabProperties.IS_SELECTED, false);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_ID);
 
         assertEquals(View.GONE, mCloseButton.getVisibility());
 
@@ -526,6 +528,7 @@ public class TabVerticalViewBinderUnitTest {
         mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
         mModel.set(TabProperties.IS_SELECTED, true);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_ID);
 
         assertEquals(View.VISIBLE, mCloseButton.getVisibility());
 
@@ -601,6 +604,7 @@ public class TabVerticalViewBinderUnitTest {
     public void testTabHoverBackground() {
         mModel.set(TabProperties.IS_SELECTED, false);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_ID);
 
         ColorStateList bgTint = mItemView.getBackgroundTintList();
         assertNotNull(bgTint);
@@ -632,6 +636,7 @@ public class TabVerticalViewBinderUnitTest {
     public void testTabHover_StateListenerTag_ClearsHoverState() {
         mModel.set(TabProperties.IS_SELECTED, false);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_ID);
 
         MotionEvent hoverEnterEvent =
                 MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 0f, 0f, 0);
@@ -662,6 +667,7 @@ public class TabVerticalViewBinderUnitTest {
         mModel.set(TabProperties.TAB_ID, TEST_HEADER_TAB_ID);
         mModel.set(TabProperties.TAB_HOVER_LISTENER, mTabHoverListener);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_ID);
 
         MotionEvent hoverEnterEvent =
                 MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 0f, 0f, 0);
@@ -706,6 +712,7 @@ public class TabVerticalViewBinderUnitTest {
                         .with(TabProperties.IS_SELECTED, false)
                         .build();
         TabVerticalViewBinder.bindTab(model, mItemView, TabProperties.IS_SELECTED);
+        TabVerticalViewBinder.bindTab(model, mItemView, TabProperties.TAB_ID);
 
         MotionEvent hoverEnterEvent =
                 MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 0f, 0f, 0);
@@ -724,6 +731,7 @@ public class TabVerticalViewBinderUnitTest {
     public void testTabHoverBackground_Selected() {
         mModel.set(TabProperties.IS_SELECTED, true);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_ID);
 
         ColorStateList bgTintBefore = mItemView.getBackgroundTintList();
         assertNotNull("Background tint should not be null when selected", bgTintBefore);
@@ -756,6 +764,7 @@ public class TabVerticalViewBinderUnitTest {
         mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
         mModel.set(TabProperties.IS_SELECTED, false);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_ID);
 
         // Enter hover on tab row
         MotionEvent hoverEnterEvent =
@@ -798,6 +807,7 @@ public class TabVerticalViewBinderUnitTest {
         mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
         mModel.set(TabProperties.IS_SELECTED, false);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_ID);
 
         // Enter hover on tab row
         MotionEvent hoverEnterEvent =
@@ -913,6 +923,7 @@ public class TabVerticalViewBinderUnitTest {
         mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
         mModel.set(TabProperties.IS_SELECTED, false);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_ID);
 
         // Directly enter hover on close button without triggering enter on row
         MotionEvent hoverEnterEvent =
@@ -976,7 +987,7 @@ public class TabVerticalViewBinderUnitTest {
     }
 
     @Test
-    public void testBindPinnedTab_LongAndContextClick() {
+    public void testBindPinnedTab_LongClick_ContextClickListenerNotBound() {
         VerticalTabItemLayout pinnedView = inflatePinnedTabView();
 
         // 1. Test Long Click Listener
@@ -987,12 +998,14 @@ public class TabVerticalViewBinderUnitTest {
         pinnedView.performLongClick();
         verify(mLongClickListener).run(any(View.class), eq(123), any());
 
-        // 2. Test Context Click Listener
+        // 2. TAB_CONTEXT_CLICK_LISTENER is not supported for Vertical Tabs: it must not replace the
+        // row's context click consumer.
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.TAB_ID);
         mModel.set(TabProperties.TAB_CONTEXT_CLICK_LISTENER, mContextClickListener);
         TabVerticalViewBinder.bindPinnedTab(
                 mModel, pinnedView, TabProperties.TAB_CONTEXT_CLICK_LISTENER);
-        pinnedView.performContextClick(0f, 0f);
-        verify(mContextClickListener).run(any(View.class), eq(123), any());
+        assertTrue(pinnedView.performContextClick(0f, 0f));
+        verifyNoInteractions(mContextClickListener);
     }
 
     @Test
@@ -1272,6 +1285,8 @@ public class TabVerticalViewBinderUnitTest {
                 mModel, headerView, TabProperties.TAB_GROUP_CARD_COLOR);
         TabVerticalViewBinder.bindTabGroupHeader(
                 mModel, headerView, TabProperties.TAB_ACTION_BUTTON_DATA);
+        TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.TAB_GROUP_HEADER_ID);
 
         int expectedBackgroundColor =
                 TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
@@ -1320,6 +1335,8 @@ public class TabVerticalViewBinderUnitTest {
         TabVerticalViewBinder.bindTabGroupHeader(model, headerView, TabProperties.IS_INCOGNITO);
         TabVerticalViewBinder.bindTabGroupHeader(
                 model, headerView, TabProperties.TAB_ACTION_BUTTON_DATA);
+        TabVerticalViewBinder.bindTabGroupHeader(
+                model, headerView, TabProperties.TAB_GROUP_HEADER_ID);
 
         int expectedBackgroundColor =
                 TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
@@ -1367,6 +1384,8 @@ public class TabVerticalViewBinderUnitTest {
         TabVerticalViewBinder.bindTabGroupHeader(
                 mModel, headerView, TabProperties.TAB_ACTION_BUTTON_DATA);
         TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.TAB_GROUP_HEADER_ID);
+        TabVerticalViewBinder.bindTabGroupHeader(
                 mModel, headerView, TabProperties.RAIL_COLLAPSE_STATE);
 
         ImageView menuButton = headerView.findViewById(R.id.menu_button);
@@ -1393,6 +1412,8 @@ public class TabVerticalViewBinderUnitTest {
                 mModel, headerView, TabProperties.TAB_GROUP_CARD_COLOR);
         TabVerticalViewBinder.bindTabGroupHeader(
                 mModel, headerView, TabProperties.TAB_ACTION_BUTTON_DATA);
+        TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.TAB_GROUP_HEADER_ID);
 
         ImageView menuButton = headerView.findViewById(R.id.menu_button);
         assertEquals(View.GONE, menuButton.getVisibility());
@@ -1452,6 +1473,8 @@ public class TabVerticalViewBinderUnitTest {
 
         TabVerticalViewBinder.bindTabGroupHeader(
                 mModel, headerView, TabProperties.TAB_ACTION_BUTTON_DATA);
+        TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.TAB_GROUP_HEADER_ID);
 
         // Hover enter.
         MotionEvent enterEvent =
@@ -1505,6 +1528,8 @@ public class TabVerticalViewBinderUnitTest {
 
         TabVerticalViewBinder.bindTabGroupHeader(
                 mModel, headerView, TabProperties.TAB_ACTION_BUTTON_DATA);
+        TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.TAB_GROUP_HEADER_ID);
 
         @SuppressWarnings("unchecked")
         Callback<Boolean> visualCallback =
@@ -1520,6 +1545,7 @@ public class TabVerticalViewBinderUnitTest {
         mModel.set(TabProperties.TAB_HOVER_LISTENER, mTabHoverListener);
         mModel.set(TabProperties.IS_SELECTED, false);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_ID);
 
         // Focus gain
         mItemView.getOnFocusChangeListener().onFocusChange(mItemView, true);
@@ -1539,6 +1565,7 @@ public class TabVerticalViewBinderUnitTest {
         mModel.set(TabProperties.TAB_HOVER_LISTENER, mTabHoverListener);
         mModel.set(TabProperties.IS_SELECTED, false);
         TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.IS_SELECTED);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.TAB_ID);
 
         // Focus gain
         pinnedView.getOnFocusChangeListener().onFocusChange(pinnedView, true);
@@ -1561,6 +1588,8 @@ public class TabVerticalViewBinderUnitTest {
         mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
         TabVerticalViewBinder.bindTabGroupHeader(
                 mModel, headerView, TabProperties.TAB_ACTION_BUTTON_DATA);
+        TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.TAB_GROUP_HEADER_ID);
 
         // Focus gain
         headerView.getOnFocusChangeListener().onFocusChange(headerView, true);
@@ -1723,6 +1752,7 @@ public class TabVerticalViewBinderUnitTest {
 
         mModel.set(TabProperties.IS_SELECTED, false);
         TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.IS_SELECTED);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.TAB_ID);
 
         // Initially, background tint should be null for resting pinned tab
         assertNull(pinnedView.getBackgroundTintList());
@@ -1760,6 +1790,7 @@ public class TabVerticalViewBinderUnitTest {
                         .with(TabProperties.IS_SELECTED, false)
                         .build();
         TabVerticalViewBinder.bindPinnedTab(model, pinnedView, TabProperties.IS_INCOGNITO);
+        TabVerticalViewBinder.bindPinnedTab(model, pinnedView, TabProperties.TAB_ID);
 
         int unselectedColor = mActivity.getColor(R.color.gm3_baseline_surface_container_high_dark);
         ColorStateList bgTint = pinnedView.getBackgroundTintList();
@@ -1802,6 +1833,7 @@ public class TabVerticalViewBinderUnitTest {
 
         mModel.set(TabProperties.IS_SELECTED, true);
         TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.IS_SELECTED);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.TAB_ID);
 
         ColorStateList bgTintBefore = pinnedView.getBackgroundTintList();
         assertNotNull("Background tint should not be null when selected", bgTintBefore);
@@ -2213,6 +2245,7 @@ public class TabVerticalViewBinderUnitTest {
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.ALERT_STATE);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_ACTION_BUTTON_DATA);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_ID);
 
         View spinner = mItemView.findViewById(R.id.tab_loading_spinner);
 
@@ -2720,10 +2753,25 @@ public class TabVerticalViewBinderUnitTest {
         mItemView.setVisibility(View.GONE);
         mItemView.setAlpha(0f);
 
-        TabVerticalViewBinder.bindTab(mModel, mItemView, null);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_ID);
 
         assertEquals(View.VISIBLE, mItemView.getVisibility());
         assertEquals(1.0f, mItemView.getAlpha(), 0.0f);
+    }
+
+    @Test
+    public void testBindTab_PropertyUpdateDoesNotResetVisibilityAndAlpha() {
+        // E.g. a row collapsed and hidden by an in-flight drag.
+        mItemView.setVisibility(View.GONE);
+        mItemView.setAlpha(0f);
+
+        mModel.set(TabProperties.TITLE, "Loading...");
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TITLE);
+        mModel.set(TabProperties.IS_LOADING, true);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_LOADING);
+
+        assertEquals(View.GONE, mItemView.getVisibility());
+        assertEquals(0f, mItemView.getAlpha(), 0.0f);
     }
 
     @Test
@@ -2732,7 +2780,7 @@ public class TabVerticalViewBinderUnitTest {
         pinnedView.setVisibility(View.GONE);
         pinnedView.setAlpha(0f);
 
-        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, null);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.TAB_ID);
 
         assertEquals(View.VISIBLE, pinnedView.getVisibility());
         assertEquals(1.0f, pinnedView.getAlpha(), 0.0f);
@@ -2740,7 +2788,7 @@ public class TabVerticalViewBinderUnitTest {
 
     @Test
     public void testBindTab_ConsumesContextClicks() {
-        TabVerticalViewBinder.bindTab(mModel, mItemView, null);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_ID);
 
         // Perform context click on the tab row view and verify it is consumed.
         assertTrue(
@@ -2751,7 +2799,7 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     public void testBindPinnedTab_ConsumesContextClicks() {
         VerticalTabItemLayout pinnedView = inflatePinnedTabView();
-        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, null);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.TAB_ID);
 
         // Perform context click on the pinned tab view and verify it is consumed.
         assertTrue(
@@ -2762,12 +2810,43 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     public void testBindTabGroupHeader_ConsumesContextClicks() {
         ViewGroup headerView = inflateGroupHeaderView();
-        TabVerticalViewBinder.bindTabGroupHeader(mModel, headerView, null);
+        mModel.set(TabProperties.TAB_GROUP_HEADER_ID, TEST_TAB_GROUP_ID);
+        TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.TAB_GROUP_HEADER_ID);
 
         // Perform context click on the group header view and verify it is consumed.
         assertTrue(
                 "Tab group header view must consume context clicks.",
                 headerView.performContextClick());
+    }
+
+    @Test
+    public void testBindTabGroupHeader_ResetsVisibilityAndAlpha() {
+        ViewGroup headerView = inflateGroupHeaderView();
+        headerView.setVisibility(View.GONE);
+        headerView.setAlpha(0f);
+
+        mModel.set(TabProperties.TAB_GROUP_HEADER_ID, TEST_TAB_GROUP_ID);
+        TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.TAB_GROUP_HEADER_ID);
+
+        assertEquals(View.VISIBLE, headerView.getVisibility());
+        assertEquals(1.0f, headerView.getAlpha(), 0.0f);
+    }
+
+    @Test
+    public void testBindTabGroupHeader_TabIdUpdateDoesNotResetVisibilityAndAlpha() {
+        // E.g. a header collapsed and hidden by an in-flight group drag, while its representative
+        // TAB_ID is updated in place.
+        ViewGroup headerView = inflateGroupHeaderView();
+        headerView.setVisibility(View.GONE);
+        headerView.setAlpha(0f);
+
+        mModel.set(TabProperties.TAB_ID, TEST_HEADER_TAB_ID);
+        TabVerticalViewBinder.bindTabGroupHeader(mModel, headerView, TabProperties.TAB_ID);
+
+        assertEquals(View.GONE, headerView.getVisibility());
+        assertEquals(0f, headerView.getAlpha(), 0.0f);
     }
 
     @Test

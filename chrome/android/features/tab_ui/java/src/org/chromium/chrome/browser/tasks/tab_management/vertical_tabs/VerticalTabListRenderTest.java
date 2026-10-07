@@ -154,6 +154,7 @@ public class VerticalTabListRenderTest {
     private FrameLayout mRenderView;
     private int mPinnedItemWidthPx;
     private int mOriginalSmallestScreenWidthDp;
+    private int mNextTabId = 1;
 
     public VerticalTabListRenderTest(boolean isNightModeEnabled, boolean isIncognito) {
         mIsIncognito = isIncognito;
@@ -1903,7 +1904,10 @@ public class VerticalTabListRenderTest {
 
     private PropertyModel.Builder createTabListItemModelBuilder(
             String title, @Nullable Token groupId) {
+        // TAB_ID and RAIL_COLLAPSE_STATE are always set by TabListMediator for vertical tabs.
         return new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
+                .with(TabProperties.TAB_ID, mNextTabId++)
+                .with(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.EXPANDED)
                 .with(TabProperties.TITLE, title)
                 .with(TabProperties.IS_SELECTED, false)
                 .with(TabProperties.TAB_GROUP_ID, groupId)
@@ -1915,8 +1919,11 @@ public class VerticalTabListRenderTest {
             Token headerId,
             @Nullable @TabGroupColorId Integer color,
             boolean isCollapsed) {
+        // TAB_ID and RAIL_COLLAPSE_STATE are always set by TabListMediator for vertical tabs.
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
+                        .with(TabProperties.TAB_ID, mNextTabId++)
+                        .with(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.EXPANDED)
                         .with(TabProperties.TITLE, title)
                         .with(TabProperties.IS_SELECTED, false)
                         .with(TabProperties.TAB_GROUP_HEADER_ID, headerId)
