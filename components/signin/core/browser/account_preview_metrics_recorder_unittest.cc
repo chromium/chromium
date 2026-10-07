@@ -18,6 +18,7 @@
 #include "components/signin/core/browser/account_preview_data.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
 #include "components/signin/core/browser/account_preview_heuristic.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -31,6 +32,10 @@ namespace signin {
 class AccountPreviewMetricsRecorderTest : public testing::Test {
  public:
   AccountPreviewMetricsRecorderTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {switches::kEnableAccountPreviewPreferredAccount,
+         switches::kEnableAccountPreviewDataReducedTypes},
+        {});
     SigninPrefs::RegisterProfilePrefs(pref_service_.registry());
     AccountPreviewDataService::RegisterProfilePrefs(pref_service_.registry());
   }
@@ -42,8 +47,7 @@ class AccountPreviewMetricsRecorderTest : public testing::Test {
   IdentityTestEnvironment* identity_test_env() { return &identity_test_env_; }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kEnableAccountPreviewPreferredAccount};
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple pref_service_;
@@ -52,6 +56,91 @@ class AccountPreviewMetricsRecorderTest : public testing::Test {
 };
 
 TEST_F(AccountPreviewMetricsRecorderTest, RecordMetrics) {
+  base::HistogramTester histogram_tester;
+
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("user@example.com");
+  GaiaId gaia_id = account_info.GetGaiaId();
+
+  account_info = AccountInfo::Builder(account_info)
+                     .SetHostedDomain(signin::constants::kNoHostedDomainFound)
+                     .SetIsChildAccount(signin::Tribool::kFalse)
+                     .Build();
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  SigninPrefs signin_prefs(*pref_service());
+  signin::GetOrAllocateAccountMetricsId(signin_prefs, gaia_id);
+
+  AccountPreviewMetricsRecorder recorder(*pref_service(), *identity_manager(),
+                                         profile_metrics_service_);
+
+  AccountPreviewData data;
+  data.counts[syncer::APPS] = 1;
+  data.counts[syncer::DEVICE_INFO] = 12;
+  data.counts[syncer::AUTOFILL] = 2;
+  data.counts[syncer::AUTOFILL_WALLET_CREDENTIAL] = 3;
+  data.counts[syncer::BOOKMARKS] = 4;
+  data.counts[syncer::EXTENSIONS] = 5;
+  data.counts[syncer::PASSWORDS] = 6;
+  data.counts[syncer::PREFERENCES] = 7;
+  data.counts[syncer::READING_LIST] = 8;
+  data.counts[syncer::SESSIONS] = 9;
+  data.counts[syncer::THEMES] = 10;
+  data.counts[syncer::AUTOFILL_WALLET_METADATA] = 11;
+
+  recorder.RecordMetrics(gaia_id, data);
+
+  std::string_view prefix =
+      "Signin.SmartAccountSelection.OnSyncPreviewFetched.";
+  std::string_view account_suffix = ".Account0";
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({prefix, "IsManaged", account_suffix}), false, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({prefix, "IsSupervised", account_suffix}), false, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({prefix, "IsPrimary", account_suffix}), false, 1);
+
+  // Requested data types are recorded.
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({prefix, "AUTOFILL", account_suffix}), 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({prefix, "AUTOFILL", account_suffix}) + ".Profile1", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({prefix, "BOOKMARK", account_suffix}), 4, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({prefix, "PASSWORD", account_suffix}), 6, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({prefix, "READING_LIST", account_suffix}), 8, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({prefix, "WALLET_METADATA", account_suffix}), 11, 1);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({prefix, "EXTENSION", account_suffix}), 5, 1);
+#else
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({prefix, "EXTENSION", account_suffix}), 0);
+#endif
+
+  // Non-requested data types are not recorded.
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({prefix, "APP", account_suffix}), 0);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({prefix, "DEVICE_INFO", account_suffix}), 0);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({prefix, "AUTOFILL_WALLET_CREDENTIAL", account_suffix}), 0);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({prefix, "PREFERENCE", account_suffix}), 0);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({prefix, "SESSION", account_suffix}), 0);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({prefix, "THEME", account_suffix}), 0);
+}
+
+TEST_F(AccountPreviewMetricsRecorderTest, RecordMetricsLegacyDataTypes) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      switches::kEnableAccountPreviewDataReducedTypes);
   base::HistogramTester histogram_tester;
 
   AccountInfo account_info =
@@ -206,8 +295,8 @@ TEST_F(AccountPreviewMetricsRecorderTest, RecordMetricsProfileOverflow) {
                                          overflow_service);
 
   AccountPreviewData data;
-  data.counts[syncer::APPS] = 1;
-  data.counts[syncer::DEVICE_INFO] = 12;
+  data.counts[syncer::BOOKMARKS] = 1;
+  data.counts[syncer::PASSWORDS] = 12;
 
   recorder.RecordMetrics(gaia_id, data);
 
@@ -216,11 +305,12 @@ TEST_F(AccountPreviewMetricsRecorderTest, RecordMetricsProfileOverflow) {
   std::string_view account_suffix = ".Account0";
 
   histogram_tester.ExpectUniqueSample(
-      base::StrCat({prefix, "APP", account_suffix}), 1, 1);
+      base::StrCat({prefix, "BOOKMARK", account_suffix}), 1, 1);
   histogram_tester.ExpectUniqueSample(
-      base::StrCat({prefix, "DEVICE_INFO", account_suffix}), 12, 1);
+      base::StrCat({prefix, "PASSWORD", account_suffix}), 12, 1);
   histogram_tester.ExpectUniqueSample(
-      base::StrCat({prefix, "APP", account_suffix, ".Profile20Plus"}), 1, 1);
+      base::StrCat({prefix, "BOOKMARK", account_suffix, ".Profile20Plus"}), 1,
+      1);
 }
 
 TEST_F(AccountPreviewMetricsRecorderTest,

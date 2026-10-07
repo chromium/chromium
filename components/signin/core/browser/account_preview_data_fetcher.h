@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -17,6 +18,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/version_info/channel.h"
 #include "components/signin/core/browser/account_preview_data.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -34,6 +36,17 @@ class IdentityManager;
 // Test and production exposed list of data types restricted for the statistics
 // API.
 inline constexpr syncer::DataType kRequestedDataTypes[] = {
+    syncer::PASSWORDS,    syncer::BOOKMARKS,
+    syncer::AUTOFILL,     syncer::AUTOFILL_WALLET_METADATA,
+    syncer::READING_LIST,
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    syncer::EXTENSIONS,
+#endif
+};
+
+// Legacy list of data types requested when
+// `switches::kEnableAccountPreviewDataReducedTypes` is disabled.
+inline constexpr syncer::DataType kLegacyRequestedDataTypes[] = {
     syncer::AUTOFILL,     syncer::BOOKMARKS,
     syncer::PREFERENCES,  syncer::THEMES,
     syncer::PASSWORDS,    syncer::EXTENSIONS,
@@ -41,6 +54,10 @@ inline constexpr syncer::DataType kRequestedDataTypes[] = {
     syncer::DEVICE_INFO,  syncer::AUTOFILL_WALLET_METADATA,
     syncer::READING_LIST, syncer::AUTOFILL_WALLET_CREDENTIAL,
 };
+
+// Returns the list of data types to request from the statistics API and record
+// metrics for, based on `switches::kEnableAccountPreviewDataReducedTypes`.
+base::span<const syncer::DataType> GetRequestedDataTypes();
 
 // Helper class to fetch account preview data from the Sync Preview API.
 // Fetches both statistics and entities previews in parallel (after acquiring a

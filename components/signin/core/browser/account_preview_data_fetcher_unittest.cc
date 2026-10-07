@@ -47,6 +47,7 @@ class AccountPreviewDataFetcherTest : public testing::Test {
   AccountPreviewDataFetcherTest() {
     feature_list_.InitWithFeatures(
         {switches::kEnableAccountPreviewData,
+         switches::kEnableAccountPreviewDataReducedTypes,
          switches::kEnableAccountPreviewEntityPreviews},
         {});
   }
@@ -116,6 +117,49 @@ TEST_F(AccountPreviewDataFetcherTest, Success) {
   histogram_tester_.ExpectTotalCount(kFetchStateHistogram, 4);
   histogram_tester_.ExpectTotalCount(kFetchDurationSuccessHistogram, 1);
   histogram_tester_.ExpectTotalCount(kFetchDurationFailureHistogram, 0);
+}
+
+TEST_F(AccountPreviewDataFetcherTest, GetRequestedDataTypes) {
+  EXPECT_EQ(GetRequestedDataTypes(),
+            base::span<const syncer::DataType>(kRequestedDataTypes));
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      switches::kEnableAccountPreviewDataReducedTypes);
+  EXPECT_EQ(GetRequestedDataTypes(),
+            base::span<const syncer::DataType>(kLegacyRequestedDataTypes));
+}
+
+TEST_F(AccountPreviewDataFetcherTest, SuccessWithLegacyDataTypes) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      switches::kEnableAccountPreviewDataReducedTypes);
+
+  AccountInfo account_info =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+
+  MockSuccessfulStatsFetch(
+      &test_url_loader_factory_,
+      {.bookmark_count = 10, .password_count = 20, .history_count = 30});
+  MockSuccessfulPreviewsFetch(&test_url_loader_factory_, /*devices=*/{});
+
+  base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>, bool>
+      future;
+  auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
+      account_info.GetGaiaId(), identity_test_env_.identity_manager(),
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      version_info::Channel::UNKNOWN,
+      /*current_device_cache_guids=*/base::flat_set<std::string>(),
+      future.GetCallback());
+  fetcher->Start();
+
+  auto [gaia_id, result_data, hit_429] = future.Take();
+  EXPECT_EQ(account_info.GetGaiaId(), gaia_id);
+  EXPECT_FALSE(hit_429);
+  ASSERT_TRUE(result_data.has_value());
+  EXPECT_EQ(10U, result_data->counts[syncer::BOOKMARKS]);
+  EXPECT_EQ(20U, result_data->counts[syncer::PASSWORDS]);
+  EXPECT_EQ(30U, result_data->counts[syncer::HISTORY]);
 }
 
 TEST_F(AccountPreviewDataFetcherTest, SuccessWithPreviewsDisabled) {

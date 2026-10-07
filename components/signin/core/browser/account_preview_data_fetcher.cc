@@ -222,14 +222,21 @@ std::string_view GetBaseUrl(version_info::Channel channel) {
 
 }  // namespace
 
-// The list of data types to fetch statistics for. This list explicitly requests
-// only the data types currently used by metrics.
+base::span<const syncer::DataType> GetRequestedDataTypes() {
+  if (!base::FeatureList::IsEnabled(
+          switches::kEnableAccountPreviewDataReducedTypes)) {
+    return kLegacyRequestedDataTypes;
+  }
+  return kRequestedDataTypes;
+}
+
+// The list of data types to fetch statistics for.
 // static
 GURL AccountPreviewDataFetcher::GetStatsUrlForChannel(
     version_info::Channel channel) {
   GURL url(
       base::StrCat({GetBaseUrl(channel), "/dataTypes/-/dataTypesStatistics"}));
-  for (syncer::DataType data_type : signin::kRequestedDataTypes) {
+  for (syncer::DataType data_type : GetRequestedDataTypes()) {
     url = net::AppendQueryParameter(
         url, "dataTypes",
         base::NumberToString(

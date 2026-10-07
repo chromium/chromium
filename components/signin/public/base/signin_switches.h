@@ -294,6 +294,9 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const base::FeatureParam<bool> kAccountPreviewDataPersistAccounts;
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnableAccountPreviewDataReducedTypes);
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableAccountPreviewEntityPreviews);
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

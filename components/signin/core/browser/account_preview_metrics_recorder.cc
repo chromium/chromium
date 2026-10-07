@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/feature_list.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -18,8 +19,10 @@
 #include "components/signin/core/browser/account_metrics_id_allocator.h"
 #include "components/signin/core/browser/account_preview_data.h"
 #include "components/signin/core/browser/account_preview_heuristic.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type.h"
 
@@ -31,33 +34,49 @@ enum class CountScale { k100, k1000, k10000, k100000 };
 
 std::optional<CountScale> GetScaleForDataType(syncer::DataType type) {
   switch (type) {
-    case syncer::APPS:
-      return CountScale::k100;
     case syncer::AUTOFILL:
       return CountScale::k100000;
-    case syncer::AUTOFILL_WALLET_CREDENTIAL:
-      return CountScale::k100;
     case syncer::BOOKMARKS:
       return CountScale::k100000;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
     case syncer::EXTENSIONS:
       return CountScale::k100;
+#endif
     case syncer::PASSWORDS:
       return CountScale::k10000;
-    case syncer::PREFERENCES:
-      return CountScale::k1000;
     case syncer::READING_LIST:
       return CountScale::k1000;
-    case syncer::SESSIONS:
-      return CountScale::k10000;
-    case syncer::THEMES:
-      return CountScale::k100;
     case syncer::AUTOFILL_WALLET_METADATA:
       return CountScale::k100;
-    case syncer::DEVICE_INFO:
-      return CountScale::k1000;
     default:
-      return std::nullopt;
+      break;
   }
+
+  if (!base::FeatureList::IsEnabled(
+          switches::kEnableAccountPreviewDataReducedTypes)) {
+    switch (type) {
+      case syncer::APPS:
+        return CountScale::k100;
+      case syncer::AUTOFILL_WALLET_CREDENTIAL:
+        return CountScale::k100;
+#if !BUILDFLAG(ENABLE_DICE_SUPPORT)
+      case syncer::EXTENSIONS:
+        return CountScale::k100;
+#endif
+      case syncer::PREFERENCES:
+        return CountScale::k1000;
+      case syncer::SESSIONS:
+        return CountScale::k10000;
+      case syncer::THEMES:
+        return CountScale::k100;
+      case syncer::DEVICE_INFO:
+        return CountScale::k1000;
+      default:
+        break;
+    }
+  }
+
+  return std::nullopt;
 }
 
 }  // namespace
