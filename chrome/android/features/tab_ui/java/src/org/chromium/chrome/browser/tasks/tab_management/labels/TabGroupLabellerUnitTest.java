@@ -72,7 +72,7 @@ public class TabGroupLabellerUnitTest {
         MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
         mContext = ApplicationProvider.getApplicationContext();
         mTabModelSupplier.set(mTabModel);
-        when(mTabModel.tabGroupExists(GROUP_ID1)).thenReturn(true);
+        when(mTabModel.containsTabGroup(GROUP_ID1)).thenReturn(true);
         mTabGroupLabeller =
                 new TabGroupLabeller(mProfile, mTabListNotificationHandler, mTabModelSupplier);
     }
@@ -122,7 +122,7 @@ public class TabGroupLabellerUnitTest {
 
     @Test
     public void testShowAll_WrongTabModel() {
-        when(mTabModel.tabGroupExists(any())).thenReturn(false);
+        when(mTabModel.containsTabGroup(any())).thenReturn(false);
         List<PersistentMessage> messageList = List.of(makeStandardMessage());
         when(mMessagingBackendService.getMessages(anyInt())).thenReturn(messageList);
 

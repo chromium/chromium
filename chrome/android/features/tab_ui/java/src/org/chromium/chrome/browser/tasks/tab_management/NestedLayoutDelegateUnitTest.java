@@ -349,7 +349,7 @@ public class NestedLayoutDelegateUnitTest {
         addTabToModelList(TAB2_ID, TAB_GROUP_ID);
 
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(true);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab2));
 
         mDelegate.onTabClose(mTab1);

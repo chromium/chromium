@@ -137,7 +137,7 @@ public class InstantMessageDelegateImplUnitTest {
         MessagesFactory.attachMessageDispatcher(mWindowAndroid, mManagedMessageDispatcher);
 
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(true);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
         when(mIsActiveWindowSupplier.get()).thenReturn(false);
@@ -185,7 +185,7 @@ public class InstantMessageDelegateImplUnitTest {
 
     @Test
     public void testDisplayInstantaneousMessage_NotInTabModel() {
-        when(mTabModel.tabGroupExists(any())).thenReturn(false);
+        when(mTabModel.containsTabGroup(any())).thenReturn(false);
         mDelegate.displayInstantaneousMessage(
                 newInstantMessage(CollaborationEvent.TAB_REMOVED), mSuccessCallback);
         verify(mManagedMessageDispatcher, never()).enqueueWindowScopedMessage(any(), anyBoolean());
@@ -361,7 +361,7 @@ public class InstantMessageDelegateImplUnitTest {
 
     @Test
     public void testCollaborationRemoved_NoLastFocusedWindow() {
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(false);
         mDelegate.displayInstantaneousMessage(
                 newInstantMessage(CollaborationEvent.TAB_GROUP_REMOVED), mSuccessCallback);
 
@@ -370,7 +370,7 @@ public class InstantMessageDelegateImplUnitTest {
 
     @Test
     public void testCollaborationRemoved_LastFocusedWindow() {
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(false);
         when(mIsActiveWindowSupplier.get()).thenReturn(true);
         mDelegate.displayInstantaneousMessage(
                 newInstantMessage(CollaborationEvent.TAB_GROUP_REMOVED), mSuccessCallback);

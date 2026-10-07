@@ -67,7 +67,7 @@ public class TabGroupTitleUtils {
      */
     public static String getDisplayableTitle(
             Context context, TabModel tabModel, @Nullable Token tabGroupId) {
-        boolean tabGroupExists = tabGroupId != null && tabModel.tabGroupExists(tabGroupId);
+        boolean tabGroupExists = tabGroupId != null && tabModel.containsTabGroup(tabGroupId);
         String explicitTitle =
                 tabGroupExists
                         ? tabModel.getTabGroupTitle(assumeNonNull(tabGroupId))

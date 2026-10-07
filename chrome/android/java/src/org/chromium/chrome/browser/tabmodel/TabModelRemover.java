@@ -313,7 +313,7 @@ class TabModelRemover {
 
         TabModel tabModel = getTabModelInternal();
         Token tabGroupId = savedTabGroup.localId.tabGroupId;
-        if (!tabModel.tabGroupExists(tabGroupId)) {
+        if (!tabModel.containsTabGroup(tabGroupId)) {
             return new CollaborationInfo();
         }
         String title = TabGroupTitleUtils.getDisplayableTitle(mContext, tabModel, tabGroupId);

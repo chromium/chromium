@@ -45,7 +45,7 @@ public final class TabGroupSyncUtils {
      * @param localId The ID of the tab group.
      */
     public static boolean isInCurrentWindow(TabModel tabModel, LocalTabGroupId localId) {
-        return tabModel.tabGroupExists(localId.tabGroupId);
+        return tabModel.containsTabGroup(localId.tabGroupId);
     }
 
     private static boolean isInAnyWindow(LocalTabGroupId localId, List<TabModel> tabModelList) {

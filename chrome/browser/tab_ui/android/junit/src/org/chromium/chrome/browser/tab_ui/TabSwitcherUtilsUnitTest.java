@@ -106,7 +106,7 @@ public class TabSwitcherUtilsUnitTest {
         SavedTabGroup syncGroup2 = new SavedTabGroup();
         syncGroup2.localId = new LocalTabGroupId(TAB_GROUP_ID_1);
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(syncGroup1);
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID_1)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID_1)).thenReturn(true);
         doAnswer(
                         invocation -> {
                             Mockito.reset(mTabGroupSyncService);
@@ -132,7 +132,7 @@ public class TabSwitcherUtilsUnitTest {
         SavedTabGroup syncGroup = new SavedTabGroup();
         syncGroup.localId = new LocalTabGroupId(TAB_GROUP_ID_1);
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(syncGroup);
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID_1)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID_1)).thenReturn(false);
 
         TabSwitcherUtils.focusTabGroup(
                 SYNC_GROUP_ID1,
@@ -150,7 +150,7 @@ public class TabSwitcherUtilsUnitTest {
         SavedTabGroup syncGroup = new SavedTabGroup();
         syncGroup.localId = new LocalTabGroupId(TAB_GROUP_ID_1);
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(syncGroup);
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID_1)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID_1)).thenReturn(true);
 
         TabSwitcherUtils.focusTabGroup(
                 SYNC_GROUP_ID1,
@@ -215,7 +215,7 @@ public class TabSwitcherUtilsUnitTest {
         SavedTabGroup syncGroup = new SavedTabGroup();
         syncGroup.localId = new LocalTabGroupId(TAB_GROUP_ID_1);
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(syncGroup);
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID_1)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID_1)).thenReturn(true);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID_1)).thenReturn(List.of(mTab));
         when(mTabModel.indexOf(mTab)).thenReturn(0);
 

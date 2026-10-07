@@ -298,7 +298,7 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
     void onTabClose(Tab tab) {
         TabModel tabModel = mMediator.getCurrentTabModelChecked();
         Token tabGroupId = tab.getTabGroupId();
-        if (tabGroupId != null && tabModel.tabGroupExists(tabGroupId)) {
+        if (tabGroupId != null && tabModel.containsTabGroup(tabGroupId)) {
             // If the tab closed was part of a tab group, update the group to reflect the
             // closure instead of closing the tab.
             if (mUseTabGroupCardType) {

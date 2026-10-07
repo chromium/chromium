@@ -41,7 +41,7 @@ public class TabGroupLabeller extends TabObjectLabeller<Token> {
                 && !tabModel.isOffTheRecord()
                 && message.type == PersistentNotificationType.DIRTY_TAB_GROUP
                 && tabGroupId != null
-                && tabModel.tabGroupExists(tabGroupId);
+                && tabModel.containsTabGroup(tabGroupId);
     }
 
     @Override

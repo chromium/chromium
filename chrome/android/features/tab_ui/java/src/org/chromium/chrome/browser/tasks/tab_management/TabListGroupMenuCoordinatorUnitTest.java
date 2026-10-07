@@ -90,7 +90,7 @@ public class TabListGroupMenuCoordinatorUnitTest {
 
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mTabModel.isIncognitoBranded()).thenReturn(false);
-        when(mTabModel.tabGroupExists(TAB_GROUP_TOKEN)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TAB_GROUP_TOKEN)).thenReturn(true);
         MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         CollaborationServiceFactory.setForTesting(mCollaborationService);

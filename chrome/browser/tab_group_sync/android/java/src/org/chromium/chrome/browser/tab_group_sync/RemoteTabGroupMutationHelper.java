@@ -175,7 +175,7 @@ public class RemoteTabGroupMutationHelper {
         Token tabGroupId = groupId.tabGroupId;
         String title = new String();
         @TabGroupColorId int color = TabGroupColorId.GREY;
-        if (mTabModel.tabGroupExists(tabGroupId)) {
+        if (mTabModel.containsTabGroup(tabGroupId)) {
             String tmpTitle = mTabModel.getTabGroupTitle(tabGroupId);
             if (tmpTitle != null) {
                 title = tmpTitle;
@@ -396,7 +396,7 @@ public class RemoteTabGroupMutationHelper {
                 PostTask.postTask(
                         TaskTraits.UI_DEFAULT,
                         () -> {
-                            if (!mTabModel.tabGroupExists(localTabGroupId.tabGroupId)) {
+                            if (!mTabModel.containsTabGroup(localTabGroupId.tabGroupId)) {
                                 return;
                             }
                             @Nullable SavedTabGroup savedGroup =

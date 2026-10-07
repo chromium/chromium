@@ -254,7 +254,7 @@ public class LocalTabGroupMutationHelper {
     public void closeTabGroup(LocalTabGroupId localGroupId, @ClosingSource int closingSource) {
         LogUtils.log(TAG, "closeTabGroup " + localGroupId);
         Token tabGroupId = localGroupId.tabGroupId;
-        assert mTabModel.tabGroupExists(tabGroupId);
+        assert mTabModel.containsTabGroup(tabGroupId);
 
         SavedTabGroup group = mTabGroupSyncService.getGroup(localGroupId);
         boolean isCollaboration = group != null && !TextUtils.isEmpty(group.collaborationId);

@@ -96,7 +96,7 @@ public class LocalTabGroupMutationHelperUnitTest {
                 new LocalTabGroupMutationHelper(
                         mTabModel, mTabGroupSyncService, mTabCreationDelegate);
 
-        when(mTabModel.tabGroupExists(TOKEN_1)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TOKEN_1)).thenReturn(true);
 
         doNothing().when(mTabGroupSyncService).recordTabGroupEvent(mEventDetailsCaptor.capture());
 
@@ -112,7 +112,7 @@ public class LocalTabGroupMutationHelperUnitTest {
         tabs.add(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(TOKEN_1);
         when(mTabModel.getTabsInGroup(eq(TOKEN_1))).thenReturn(tabs);
-        when(mTabModel.tabGroupExists(TOKEN_1)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TOKEN_1)).thenReturn(true);
     }
 
     private Tab prepareTab(int tabId, Token tabGroupId) {
@@ -328,7 +328,7 @@ public class LocalTabGroupMutationHelperUnitTest {
         List<Tab> tabs = new ArrayList<>();
         tabs.add(mTab2);
         when(mTabModel.getTabsInGroup(eq(TOKEN_1))).thenReturn(tabs);
-        when(mTabModel.tabGroupExists(TOKEN_1)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TOKEN_1)).thenReturn(true);
 
         // SavedTabGroup from sync still refers to the old placeholder tab ID.
         SavedTabGroup savedTabGroup =

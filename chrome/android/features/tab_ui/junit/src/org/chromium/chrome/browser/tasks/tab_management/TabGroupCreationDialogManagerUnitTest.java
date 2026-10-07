@@ -53,7 +53,7 @@ public class TabGroupCreationDialogManagerUnitTest {
                         activity, mModalDialogManager, mOnTabGroupCreation);
 
         when(mTabModel.getProfile()).thenReturn(mProfile);
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(true);
     }
 
     @Test
@@ -90,7 +90,7 @@ public class TabGroupCreationDialogManagerUnitTest {
         ModalDialogProperties.Controller controller =
                 mTabGroupCreationDialogManager.getDialogControllerForTesting();
 
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(false);
         controller.onDismiss(null, DialogDismissalCause.UNKNOWN);
 
         verify(mTabModel, never()).setTabGroupColor(any(), anyInt());

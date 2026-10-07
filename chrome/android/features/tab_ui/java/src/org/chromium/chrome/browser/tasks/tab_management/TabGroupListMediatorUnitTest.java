@@ -390,8 +390,8 @@ public class TabGroupListMediatorUnitTest {
         group3.savedTabs = SyncedGroupTestHelper.tabsFromCount(1);
         group3.localId = null;
 
-        when(mTabModel.tabGroupExists(LOCAL_GROUP_ID1)).thenReturn(true);
-        when(mTabModel.tabGroupExists(LOCAL_GROUP_ID2)).thenReturn(false);
+        when(mTabModel.containsTabGroup(LOCAL_GROUP_ID1)).thenReturn(true);
+        when(mTabModel.containsTabGroup(LOCAL_GROUP_ID2)).thenReturn(false);
         List<Tab> tabList = List.of(mTab1);
         when(mComprehensiveModel.iterator()).thenAnswer(invocation -> tabList.iterator());
         when(mComprehensiveModel.getCount()).thenReturn(1);
@@ -425,8 +425,8 @@ public class TabGroupListMediatorUnitTest {
         group2.savedTabs = SyncedGroupTestHelper.tabsFromCount(1);
         group2.localId = null;
 
-        when(mTabModel.tabGroupExists(LOCAL_GROUP_ID1)).thenReturn(true);
-        when(mTabModel.tabGroupExists(LOCAL_GROUP_ID2)).thenReturn(false);
+        when(mTabModel.containsTabGroup(LOCAL_GROUP_ID1)).thenReturn(true);
+        when(mTabModel.containsTabGroup(LOCAL_GROUP_ID2)).thenReturn(false);
         List<Tab> tabList = List.of(mTab1);
         when(mComprehensiveModel.iterator()).thenAnswer(invocation -> tabList.iterator());
         when(mComprehensiveModel.getCount()).thenReturn(1);
@@ -451,7 +451,7 @@ public class TabGroupListMediatorUnitTest {
                             updatedGroup2.savedTabs = SyncedGroupTestHelper.tabsFromCount(1);
                             updatedGroup2.localId = new LocalTabGroupId(LOCAL_GROUP_ID2);
 
-                            when(mTabModel.tabGroupExists(LOCAL_GROUP_ID2)).thenReturn(true);
+                            when(mTabModel.containsTabGroup(LOCAL_GROUP_ID2)).thenReturn(true);
                         })
                 .when(mTabGroupUiActionHandler)
                 .openTabGroup(SYNC_GROUP_ID2);

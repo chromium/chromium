@@ -75,7 +75,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
             @Override
             public void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
                 TabModel tabModel = getTabModel();
-                if (!tabModel.tabGroupExists(tabGroupId)) return;
+                if (!tabModel.containsTabGroup(tabGroupId)) return;
 
                 mIsMenuFocusableUponCreation = true;
                 createAndShowMenu(

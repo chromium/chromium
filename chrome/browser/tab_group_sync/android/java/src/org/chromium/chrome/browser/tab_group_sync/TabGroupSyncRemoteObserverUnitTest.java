@@ -85,7 +85,7 @@ public class TabGroupSyncRemoteObserverUnitTest {
                         mIsActiveWindowSupplier);
         mEnabledLocalObservers = true;
 
-        when(mTabModel.tabGroupExists(TOKEN_1)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TOKEN_1)).thenReturn(true);
         when(mPrefService.getBoolean(eq(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS))).thenReturn(true);
         when(mIsActiveWindowSupplier.get()).thenReturn(true);
     }

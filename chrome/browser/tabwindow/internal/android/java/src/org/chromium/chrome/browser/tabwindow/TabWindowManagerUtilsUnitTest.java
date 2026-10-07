@@ -38,7 +38,7 @@ public class TabWindowManagerUtilsUnitTest {
         when(mTabWindowManager.findWindowIdForTabGroup(tabGroupId)).thenReturn(1);
         when(mTabWindowManager.getTabModelSelectorById(1)).thenReturn(mTabModelSelector);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
-        when(mTabModel.tabGroupExists(tabGroupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(tabGroupId)).thenReturn(true);
         when(mTabModel.getTabGroupTitle(tabGroupId)).thenReturn("Test Title");
 
         String title =

@@ -585,12 +585,9 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     @CalledByNative
     protected abstract @JniType("std::vector<TabAndroid*>") List<Tab> getAllTabs();
 
-    // TODO(crbug.com/517544602): Rename TabModel.tabGroupExists to containsTabGroup so this
-    // becomes the @Override method directly.
+    @Override
     @CalledByNative
-    protected boolean containsTabGroup(@JniType("base::Token") Token tabGroupId) {
-        return tabGroupExists(tabGroupId);
-    }
+    public abstract boolean containsTabGroup(@JniType("base::Token") @Nullable Token tabGroupId);
 
     /**
      * @return A list of tab groups in this tab model. Order is not guaranteed.

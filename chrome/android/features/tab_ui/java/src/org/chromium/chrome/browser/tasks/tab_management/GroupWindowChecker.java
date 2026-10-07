@@ -233,7 +233,7 @@ public class GroupWindowChecker {
             }
             return false;
         }
-        return mCurrentTabModel.tabGroupExists(groupId);
+        return mCurrentTabModel.containsTabGroup(groupId);
     }
 
     private boolean isGroupFullyClosing(Token groupId) {
@@ -284,7 +284,7 @@ public class GroupWindowChecker {
             return false;
         }
         TabModel otherModel = selector.getModel(mCurrentTabModel.isIncognito());
-        return !otherModel.tabGroupExists(groupId);
+        return !otherModel.containsTabGroup(groupId);
     }
 
     private boolean isWindowForGroupNotActive(Token groupId) {

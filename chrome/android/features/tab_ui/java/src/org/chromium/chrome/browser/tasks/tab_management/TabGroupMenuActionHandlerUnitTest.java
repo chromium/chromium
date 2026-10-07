@@ -102,7 +102,7 @@ public class TabGroupMenuActionHandlerUnitTest {
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
 
-        when(mTabModel.tabGroupExists(any())).thenReturn(true);
+        when(mTabModel.containsTabGroup(any())).thenReturn(true);
         when(mTabModel.getTabUngrouper()).thenReturn(mTabUngrouper);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);
         when(mTabModel.getAllTabGroupIds()).thenReturn(Collections.emptySet());
@@ -175,7 +175,7 @@ public class TabGroupMenuActionHandlerUnitTest {
         TabModel otherModel = mock(TabModel.class);
         when(otherSelector.getModel(false)).thenReturn(otherModel);
         when(otherModel.getAllTabGroupIds()).thenReturn(Collections.singleton(otherGroupId));
-        when(otherModel.tabGroupExists(otherGroupId)).thenReturn(true);
+        when(otherModel.containsTabGroup(otherGroupId)).thenReturn(true);
         when(tabWindowManager.getAllTabModelSelectors()).thenReturn(List.of(otherSelector));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager));
@@ -232,7 +232,7 @@ public class TabGroupMenuActionHandlerUnitTest {
         when(destTab.getId()).thenReturn(123);
         when(mTabModel.getTabById(123)).thenReturn(destTab);
         when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(destTab));
-        when(mTabModel.tabGroupExists(groupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(groupId)).thenReturn(true);
 
         assertTrue(mHandler.handleAddToExistingGroupAction(mTab, groupId, /* syncGroupId= */ null));
 

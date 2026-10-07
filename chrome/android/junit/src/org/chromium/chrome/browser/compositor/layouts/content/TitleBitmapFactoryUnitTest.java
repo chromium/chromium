@@ -210,7 +210,7 @@ public class TitleBitmapFactoryUnitTest {
     @Test
     public void testGetGroupTitleBitmap() {
         Token existingGroupId = new Token(/* high= */ 1L, /* low= */ 2L);
-        when(mTabModel.tabGroupExists(existingGroupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(existingGroupId)).thenReturn(true);
         when(mTabModel.getTabGroupColor(existingGroupId)).thenReturn(TabGroupColorId.GREY);
 
         Bitmap groupBitmap =
@@ -220,7 +220,7 @@ public class TitleBitmapFactoryUnitTest {
         assertTrue("Group title bitmap width should be positive.", groupBitmap.getWidth() > 0);
 
         Token nonExistentGroupId = new Token(/* high= */ 3L, /* low= */ 4L);
-        when(mTabModel.tabGroupExists(nonExistentGroupId)).thenReturn(false);
+        when(mTabModel.containsTabGroup(nonExistentGroupId)).thenReturn(false);
 
         Bitmap missingGroupBitmap =
                 mFactory.getGroupTitleBitmap(
@@ -244,7 +244,7 @@ public class TitleBitmapFactoryUnitTest {
                 Bitmap.createBitmap(
                         mFaviconDimension / 2, mFaviconDimension / 2, Bitmap.Config.ARGB_8888);
         Token groupId = new Token(/* high= */ 1L, /* low= */ 2L);
-        when(mTabModel.tabGroupExists(groupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(groupId)).thenReturn(true);
         when(mTabModel.getTabGroupColor(groupId)).thenReturn(TabGroupColorId.GREY);
 
         Bitmap tabTitle1 = mFactory.getTabTitleBitmap("First Title");

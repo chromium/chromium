@@ -134,7 +134,7 @@ public class GroupWindowInfoUnitTest {
         when(mTab2.isClosing()).thenReturn(false);
         when(mTab2.getTimestampMillis()).thenReturn(2000L);
 
-        when(mTabModel.tabGroupExists(groupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(groupId)).thenReturn(true);
         when(mTabModel.getTabCountForGroup(groupId)).thenReturn(2);
         when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.ORANGE);
         when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2));
@@ -169,7 +169,7 @@ public class GroupWindowInfoUnitTest {
         when(mTab2.isClosing()).thenReturn(true);
         when(mTab2.getTimestampMillis()).thenReturn(3000L);
 
-        when(mTabModel.tabGroupExists(groupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(groupId)).thenReturn(true);
         when(mTabModel.getTabCountForGroup(groupId)).thenReturn(2);
         when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.GREY);
         when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2));
@@ -200,7 +200,7 @@ public class GroupWindowInfoUnitTest {
         when(mTab2.isClosing()).thenReturn(false);
         when(mTab2.getTimestampMillis()).thenReturn(1000L);
 
-        when(mTabModel.tabGroupExists(groupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(groupId)).thenReturn(true);
         when(mTabModel.getTabCountForGroup(groupId)).thenReturn(2);
         when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.PURPLE);
         when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2));
@@ -225,7 +225,7 @@ public class GroupWindowInfoUnitTest {
         when(mTab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
         when(mTab1.getTimestampMillis()).thenReturn(3000L);
 
-        when(mTabModel.tabGroupExists(groupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(groupId)).thenReturn(true);
         when(mTabModel.getTabCountForGroup(groupId)).thenReturn(1);
         when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.BLUE);
         when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1));
@@ -338,7 +338,7 @@ public class GroupWindowInfoUnitTest {
     public void testForLocalGroup_flagDisabled_matchesBaseline() {
         Token groupId = Token.createRandom();
         when(mTabModel.getTabCountForGroup(groupId)).thenReturn(3);
-        when(mTabModel.tabGroupExists(groupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(groupId)).thenReturn(true);
         when(mTabModel.getTabGroupTitle(groupId)).thenReturn("Local Explicit");
         when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.BLUE);
         when(mTabModel.getTabsInGroup(groupId)).thenReturn(Collections.emptyList());

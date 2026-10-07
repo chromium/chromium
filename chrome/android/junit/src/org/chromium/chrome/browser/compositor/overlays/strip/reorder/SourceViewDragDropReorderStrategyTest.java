@@ -529,7 +529,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         mInteractingGroupTitle.setIsDraggedOffStrip(true);
 
         // Call. Simulate failed drop.
-        when(mModel.tabGroupExists(GROUP_ID1)).thenReturn(true);
+        when(mModel.containsTabGroup(GROUP_ID1)).thenReturn(true);
         mStrategy.stopReorderMode(mStripViews, mGroupTitles);
 
         // Verify restore.
@@ -599,7 +599,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         dragOutOfStrip();
         verifyDragOutOfStrip(mGroupStrategy, /* isDragCancelled= */ false);
 
-        when(mModel.tabGroupExists(GROUP_ID1)).thenReturn(true);
+        when(mModel.containsTabGroup(GROUP_ID1)).thenReturn(true);
 
         // Cancel drag and verify group is in strip
         mStrategy.stopReorderMode(mStripViews, mGroupTitles, /* isDragCancelled= */ true);

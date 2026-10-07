@@ -302,7 +302,7 @@ public class DataSharingTabManagerUnitTest {
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(mSavedTabGroup);
-        when(mTabModel.tabGroupExists(GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(GROUP_ID)).thenReturn(true);
 
         mDataSharingTabManager.displayTabGroupAnywhere(
                 COLLABORATION_ID1, /* isFromInviteFlow= */ true);

@@ -239,7 +239,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
             @TabStripLayoutType int tabStripLayout) {
         return (menuId, tabGroupId, collaborationId, listViewTouchTracker) -> {
             TabModel tabModel = tabModelSupplier.get();
-            if (!tabModel.tabGroupExists(tabGroupId)) return;
+            if (!tabModel.containsTabGroup(tabGroupId)) return;
 
             EitherGroupId eitherId = EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId));
 

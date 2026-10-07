@@ -102,7 +102,7 @@ public class StartupHelperUnitTest {
                         mRemoteMutationHelper,
                         mPrefService);
 
-        when(mTabModel.tabGroupExists(TOKEN_1)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TOKEN_1)).thenReturn(true);
 
         when(mTabGroupSyncService.getDeletedGroupIds()).thenReturn(new ArrayList<>());
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);

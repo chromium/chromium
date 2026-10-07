@@ -900,7 +900,7 @@ public class ActorTabStateHelperTest {
         Token tabGroupId = Token.createRandom();
         when(mTab.getTabGroupId()).thenReturn(tabGroupId);
         when(mTab.getId()).thenReturn(TAB_ID);
-        when(mTabModel.tabGroupExists(tabGroupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(tabGroupId)).thenReturn(true);
 
         LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
         SavedTabGroup savedGroup = new SavedTabGroup();

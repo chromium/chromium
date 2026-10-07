@@ -86,7 +86,7 @@ public class TabUiUtilsUnitTest {
 
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabsToClose);
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(true);
     }
 
     @Test
@@ -289,7 +289,7 @@ public class TabUiUtilsUnitTest {
 
     @Test
     public void testUpdateTabGroupColor() {
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(true);
         when(mTabModel.getTabGroupColor(TAB_GROUP_ID)).thenReturn(TabGroupColorId.BLUE);
         TabUiUtils.updateTabGroupColor(mTabModel, TAB_GROUP_ID, TabGroupColorId.RED);
         verify(mTabModel).setTabGroupColor(TAB_GROUP_ID, TabGroupColorId.RED);
@@ -297,14 +297,14 @@ public class TabUiUtilsUnitTest {
         TabUiUtils.updateTabGroupColor(mTabModel, TAB_GROUP_ID, TabGroupColorId.BLUE);
         verify(mTabModel, never()).setTabGroupColor(TAB_GROUP_ID, TabGroupColorId.BLUE);
 
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(false);
         TabUiUtils.updateTabGroupColor(mTabModel, TAB_GROUP_ID, TabGroupColorId.YELLOW);
         verify(mTabModel, never()).setTabGroupColor(TAB_GROUP_ID, TabGroupColorId.YELLOW);
     }
 
     @Test
     public void testUpdateTabGroupTitle() {
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(true);
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("B");
         TabUiUtils.updateTabGroupTitle(mTabModel, TAB_GROUP_ID, "A");
         verify(mTabModel).setTabGroupTitle(TAB_GROUP_ID, "A");
@@ -312,11 +312,11 @@ public class TabUiUtilsUnitTest {
         TabUiUtils.updateTabGroupTitle(mTabModel, TAB_GROUP_ID, "B");
         verify(mTabModel, never()).setTabGroupTitle(TAB_GROUP_ID, "B");
 
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(false);
         TabUiUtils.updateTabGroupTitle(mTabModel, TAB_GROUP_ID, "C");
         verify(mTabModel, never()).setTabGroupTitle(TAB_GROUP_ID, "C");
 
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(true);
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("A");
         TabUiUtils.updateTabGroupTitle(mTabModel, TAB_GROUP_ID, UNSET_TAB_GROUP_TITLE);
         verify(mTabModel).setTabGroupTitle(TAB_GROUP_ID, UNSET_TAB_GROUP_TITLE);
@@ -382,7 +382,7 @@ public class TabUiUtilsUnitTest {
                 CollaborationServiceShareOrManageEntryPoint.DIALOG_TOOLBAR_BUTTON);
         verifyNoInteractions(mDataSharingTabManager);
 
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID_2)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID_2)).thenReturn(false);
         TabUiUtils.startShareTabGroupFlow(
                 mTabModel,
                 mDataSharingTabManager,

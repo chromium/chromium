@@ -131,7 +131,7 @@ public class TabGroupSyncLocalObserverUnitTest {
 
         when(mTabModel.isTabInTabGroup(mTab1)).thenReturn(true);
         when(mTabModel.isTabInTabGroup(mTab2)).thenReturn(true);
-        when(mTabModel.tabGroupExists(TOKEN_1)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TOKEN_1)).thenReturn(true);
 
         doNothing().when(mTabModel).addObserver(mTabModelObserverCaptor.capture());
         doNothing().when(mTabModel).addTabGroupObserver(mTabGroupObserverCaptor.capture());
@@ -748,7 +748,7 @@ public class TabGroupSyncLocalObserverUnitTest {
 
     @Test
     public void testDidChangeTitleAndColorForNonExistingGroup() {
-        when(mTabModel.tabGroupExists(TOKEN_1)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TOKEN_1)).thenReturn(false);
         // Handle updates for non-existing groups.
         mTabGroupObserverCaptor.getValue().didChangeTabGroupTitle(TOKEN_1, TITLE_1);
         verify(mTabGroupSyncService, never()).updateVisualData(any(), any(), anyInt());

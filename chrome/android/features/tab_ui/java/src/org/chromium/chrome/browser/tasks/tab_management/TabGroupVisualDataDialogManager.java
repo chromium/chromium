@@ -138,7 +138,7 @@ public class TabGroupVisualDataDialogManager {
         }
 
         assert tabGroupId != null;
-        assert tabModel.tabGroupExists(tabGroupId);
+        assert tabModel.containsTabGroup(tabGroupId);
 
         mCustomView =
                 LayoutInflater.from(mContext).inflate(R.layout.tab_group_visual_data_dialog, null);

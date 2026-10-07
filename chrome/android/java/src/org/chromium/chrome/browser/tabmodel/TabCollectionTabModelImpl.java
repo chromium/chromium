@@ -200,7 +200,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             }
 
             Token tabGroupId = tab.getTabGroupId();
-            boolean restoredTabGroup = tabGroupId != null && !tabGroupExists(tabGroupId);
+            boolean restoredTabGroup = tabGroupId != null && !containsTabGroup(tabGroupId);
             int finalIndex =
                     TabCollectionTabModelImplJni.get()
                             .addTabRecursive(
@@ -1187,7 +1187,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public boolean tabGroupExists(@Nullable Token tabGroupId) {
+    public boolean containsTabGroup(@Nullable Token tabGroupId) {
         assertOnUiThread();
         if (mNativeTabCollectionTabModelImplPtr == 0 || tabGroupId == null) return false;
         return TabCollectionTabModelImplJni.get()
@@ -1232,7 +1232,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         assertOnUiThread();
         if (mNativeTabCollectionTabModelImplPtr == 0
                 || tabGroupId == null
-                || !tabGroupExists(tabGroupId)) {
+                || !containsTabGroup(tabGroupId)) {
             return Tab.INVALID_TAB_ID;
         }
         Tab tab = getLastShownTabForGroup(tabGroupId);
@@ -1450,7 +1450,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
     @Override
     public void deleteTabGroupTitle(Token tabGroupId) {
-        if (!tabGroupExists(tabGroupId)) return;
+        if (!containsTabGroup(tabGroupId)) return;
         setTabGroupTitle(tabGroupId, UNSET_TAB_GROUP_TITLE);
     }
 
@@ -1496,7 +1496,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
     @Override
     public void deleteTabGroupCollapsed(Token tabGroupId) {
-        if (!tabGroupExists(tabGroupId)) return;
+        if (!containsTabGroup(tabGroupId)) return;
         setTabGroupCollapsed(tabGroupId, /* isCollapsed= */ false, /* animate= */ false);
     }
 
@@ -1579,7 +1579,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         assert !(tabGroupId != null && tab.getIsPinned())
                 : "Pinned and grouped states are mutually exclusive.";
 
-        boolean createNewGroup = tabGroupId != null && !tabGroupExists(tabGroupId);
+        boolean createNewGroup = tabGroupId != null && !containsTabGroup(tabGroupId);
         if (createNewGroup) {
             assumeNonNull(tabGroupId);
             TabGroupVisualDataStore.migrateToTokenKeyedStorage(tab.getRootId(), tabGroupId);
@@ -1650,7 +1650,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             UndoGroupTabData undoTabData = mergedTabs.get(i);
             Tab mergedTab = undoTabData.tab;
             Token originalTabGroupId = undoTabData.originalTabGroupId;
-            boolean wasSingleOrRestoredGroup = !tabGroupExists(originalTabGroupId);
+            boolean wasSingleOrRestoredGroup = !containsTabGroup(originalTabGroupId);
             moveTabInternal(
                     mergedTab,
                     indexOf(mergedTab),
@@ -2527,7 +2527,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
      * tab in the group.
      */
     private boolean wasLastTabInGroupAndNotifyDidMoveTabOutOfGroup(Tab tab, Token oldTabGroupId) {
-        boolean isLastTabInGroup = !tabGroupExists(oldTabGroupId);
+        boolean isLastTabInGroup = !containsTabGroup(oldTabGroupId);
         for (TabGroupObserver observer : mTabGroupObservers) {
             observer.didMoveTabOutOfGroup(tab, oldTabGroupId);
         }

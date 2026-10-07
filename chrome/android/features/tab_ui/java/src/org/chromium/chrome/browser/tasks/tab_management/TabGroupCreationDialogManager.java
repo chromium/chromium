@@ -41,7 +41,7 @@ public class TabGroupCreationDialogManager {
 
         private TabGroupCreationDialogController(@Nullable Token tabGroupId, TabModel tabModel) {
             assert tabGroupId != null;
-            assert tabModel.tabGroupExists(tabGroupId);
+            assert tabModel.containsTabGroup(tabGroupId);
 
             mTabGroupId = tabGroupId;
             mTabModel = tabModel;
@@ -63,7 +63,7 @@ public class TabGroupCreationDialogManager {
 
         @Override
         public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
-            boolean stillExists = mTabModel.tabGroupExists(mTabGroupId);
+            boolean stillExists = mTabModel.containsTabGroup(mTabGroupId);
 
             final @TabGroupColorId int defaultColorId =
                     mTabGroupVisualDataDialogManager.getDefaultColorId();

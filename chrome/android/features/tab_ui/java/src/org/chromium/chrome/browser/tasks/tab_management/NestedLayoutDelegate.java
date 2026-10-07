@@ -188,7 +188,7 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
     void onTabClose(Tab tab) {
         TabModel tabModel = mMediator.getCurrentTabModelChecked();
         Token tabGroupId = tab.getTabGroupId();
-        if (tabGroupId != null && tabModel.tabGroupExists(tabGroupId)) {
+        if (tabGroupId != null && tabModel.containsTabGroup(tabGroupId)) {
             updateTabGroupHeaderId(tabGroupId);
             mMediator.updateTabGroupTitle(tabGroupId);
         }

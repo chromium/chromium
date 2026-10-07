@@ -779,7 +779,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         tab.setUrl(EXAMPLE_URL);
         when(mTabModel.getTabUngrouper()).thenReturn(mTabUngrouper);
         when(mTabModel.isTabInTabGroup(tab)).thenReturn(true);
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(true);
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(UNSET_TAB_GROUP_TITLE);
         when(mTabModel.getTabCountForGroup(eq(TAB_GROUP_ID))).thenReturn(1);
         List<Tab> tabsInGroup = Arrays.asList(tab);

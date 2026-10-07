@@ -2812,7 +2812,7 @@ public class TabListMediator implements TabListNotificationHandler {
             @Nullable String collaborationId,
             @Nullable ListViewTouchTracker listViewTouchTracker) {
         TabModel tabModel = getCurrentTabModelChecked();
-        if (!tabModel.tabGroupExists(tabGroupId)) return;
+        if (!tabModel.containsTabGroup(tabGroupId)) return;
 
         EitherGroupId eitherId = EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId));
 
@@ -2906,7 +2906,7 @@ public class TabListMediator implements TabListNotificationHandler {
                     @Override
                     public void onDismiss(PropertyModel model, int dismissalCause) {
                         if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
-                            boolean stillExists = tabModel.tabGroupExists(tabGroupId);
+                            boolean stillExists = tabModel.containsTabGroup(tabGroupId);
                             @TabGroupColorId
                             int oldColorId = tabModel.getTabGroupColorWithFallback(tabGroupId);
                             @TabGroupColorId
@@ -3082,7 +3082,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
             MultiThumbnailMetadata metadata;
             Token tabGroupId = model.get(TabProperties.TAB_GROUP_HEADER_ID);
-            if (tabGroupId != null && tabModel.tabGroupExists(tabGroupId)) {
+            if (tabGroupId != null && tabModel.containsTabGroup(tabGroupId)) {
                 @TabGroupColorId
                 int tabGroupColor = tabModel.getTabGroupColorWithFallback(tabGroupId);
                 List<Integer> actingTabIds = new ArrayList<>();

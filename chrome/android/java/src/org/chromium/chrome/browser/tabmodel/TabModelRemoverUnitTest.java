@@ -120,8 +120,8 @@ public class TabModelRemoverUnitTest {
         mTabModel.setActive(true);
 
         when(mTabModel.isIncognitoBranded()).thenReturn(false);
-        when(mTabModel.tabGroupExists(TAB_GROUP_1.tabGroupId)).thenReturn(true);
-        when(mTabModel.tabGroupExists(TAB_GROUP_2.tabGroupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TAB_GROUP_1.tabGroupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TAB_GROUP_2.tabGroupId)).thenReturn(true);
         when(mTabModel.getTabGroupTitle(any(Token.class))).thenReturn(TAB_GROUP_TITLE);
 
         doAnswer(

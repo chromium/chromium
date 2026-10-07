@@ -330,7 +330,7 @@ public final class TabGroupSyncLocalObserver {
     private void updateVisualData(Token tabGroupId) {
         // During group creation from sync, we set the title and color before the group is actually
         // created.
-        if (!mTabModel.tabGroupExists(tabGroupId)) return;
+        if (!mTabModel.containsTabGroup(tabGroupId)) return;
         mRemoteTabGroupMutationHelper.updateVisualData(new LocalTabGroupId(tabGroupId));
     }
 

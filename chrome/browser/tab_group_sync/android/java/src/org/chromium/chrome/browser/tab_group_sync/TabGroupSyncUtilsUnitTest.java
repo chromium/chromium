@@ -92,8 +92,8 @@ public class TabGroupSyncUtilsUnitTest {
                 .thenReturn(new String[] {SYNC_GROUP_ID1, SYNC_GROUP_ID2});
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(group1);
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID2)).thenReturn(group2);
-        when(mTabModel.tabGroupExists(TOKEN_1)).thenReturn(true);
-        when(mTabModel.tabGroupExists(TOKEN_2)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TOKEN_1)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TOKEN_2)).thenReturn(false);
 
         TabGroupSyncUtils.unmapLocalIdsNotInTabModel(mTabGroupSyncService, mTabModel);
 
@@ -122,7 +122,7 @@ public class TabGroupSyncUtilsUnitTest {
         TabGroupSyncUtils.unmapLocalIdsNotInTabModel(mTabGroupSyncService, mTabModel);
 
         // Shouldn't crash and never called.
-        verify(mTabModel, never()).tabGroupExists(any());
+        verify(mTabModel, never()).containsTabGroup(any());
         verify(mTabGroupSyncService, never())
                 .removeLocalTabGroupMapping(eq(LOCAL_TAB_GROUP_ID_1), anyInt());
     }
@@ -168,6 +168,6 @@ public class TabGroupSyncUtilsUnitTest {
             tab.setTabGroupId(tabGroupId);
         }
         when(mTabModel.getTabsInGroup(eq(tabGroupId))).thenReturn(tabs);
-        when(mTabModel.tabGroupExists(tabGroupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(tabGroupId)).thenReturn(true);
     }
 }

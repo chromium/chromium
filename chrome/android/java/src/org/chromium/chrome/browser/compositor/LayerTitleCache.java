@@ -237,7 +237,7 @@ public class LayerTitleCache {
     @CalledByNative
     private void buildUpdatedGroupTitle(Token groupId, boolean incognito) {
         TabModel tabModel = mTabModelSelector.getModel(incognito);
-        if (!tabModel.tabGroupExists(groupId)) return;
+        if (!tabModel.containsTabGroup(groupId)) return;
 
         String titleString = TabGroupTitleUtils.getDisplayableTitle(mContext, tabModel, groupId);
         getUpdatedGroupTitle(groupId, titleString, incognito);

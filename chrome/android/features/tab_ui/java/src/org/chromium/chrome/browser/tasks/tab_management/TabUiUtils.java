@@ -118,7 +118,7 @@ public class TabUiUtils {
      * @param tabGroupId The id of the tab group.
      */
     public static void ungroupTabGroup(TabModel tabModel, Token tabGroupId) {
-        if (!tabModel.tabGroupExists(tabGroupId)) return;
+        if (!tabModel.containsTabGroup(tabGroupId)) return;
 
         tabModel.getTabUngrouper()
                 .ungroupTabGroup(tabGroupId, /* trailing= */ false, /* allowDialog= */ true);
@@ -188,7 +188,7 @@ public class TabUiUtils {
      */
     public static boolean updateTabGroupColor(
             TabModel tabModel, Token tabGroupId, @TabGroupColorId int newGroupColor) {
-        if (!tabModel.tabGroupExists(tabGroupId)) return false;
+        if (!tabModel.containsTabGroup(tabGroupId)) return false;
 
         int curGroupColor = tabModel.getTabGroupColor(tabGroupId);
         if (curGroupColor != newGroupColor) {
@@ -209,7 +209,7 @@ public class TabUiUtils {
     public static boolean updateTabGroupTitle(
             TabModel tabModel, Token tabGroupId, String newGroupTitle) {
         assert newGroupTitle != null;
-        if (!tabModel.tabGroupExists(tabGroupId)) return false;
+        if (!tabModel.containsTabGroup(tabGroupId)) return false;
 
         String curGroupTitle = tabModel.getTabGroupTitle(tabGroupId);
         if (!newGroupTitle.equals(curGroupTitle)) {
@@ -288,7 +288,7 @@ public class TabUiUtils {
             @CollaborationServiceShareOrManageEntryPoint int entry) {
         // The tab group may have been closed in parallel with the share starting. Skip if this
         // happens.
-        if (tabGroupId == null || !tabModel.tabGroupExists(tabGroupId)) return;
+        if (tabGroupId == null || !tabModel.containsTabGroup(tabGroupId)) return;
 
         LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
         dataSharingTabManager.createOrManageFlow(

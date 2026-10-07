@@ -100,7 +100,7 @@ public class TabModelNotificationDotManagerUnitTest {
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab));
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(TITLE);
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(true);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mTabModel.getTabById(EXISTING_TAB_ID)).thenReturn(mTab);
         when(mTab.getTabGroupId()).thenReturn(TAB_GROUP_ID);

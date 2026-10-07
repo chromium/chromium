@@ -633,7 +633,7 @@ public class GroupedLayoutDelegateUnitTest {
     @DisableFeatures(ChromeFeatureList.ANDROID_TAB_UI_REFACTOR)
     public void testOnTabClose_InGroup_NotClosing_featureDisabled() {
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(true);
         when(mTabModel.representativeIndexOf(mTab1)).thenReturn(0);
         when(mTabModel.getRepresentativeTabAt(0)).thenReturn(mTab2);
         when(mTab2.isClosing()).thenReturn(false);
@@ -650,7 +650,7 @@ public class GroupedLayoutDelegateUnitTest {
         GroupedLayoutDelegate delegate =
                 new GroupedLayoutDelegate(mMediator, mModelList, mThumbnailProvider);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(true);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab2));
 
         PropertyModel groupCardModel =
@@ -671,7 +671,7 @@ public class GroupedLayoutDelegateUnitTest {
     @DisableFeatures(ChromeFeatureList.ANDROID_TAB_UI_REFACTOR)
     public void testOnTabClose_InGroup_Closing_featureDisabled() {
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(true);
         when(mTabModel.representativeIndexOf(mTab1)).thenReturn(0);
         when(mTabModel.getRepresentativeTabAt(0)).thenReturn(mTab2);
         when(mTab2.isClosing()).thenReturn(true);
@@ -688,7 +688,7 @@ public class GroupedLayoutDelegateUnitTest {
         GroupedLayoutDelegate delegate =
                 new GroupedLayoutDelegate(mMediator, mModelList, mThumbnailProvider);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(true);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of());
 
         PropertyModel groupCardModel =

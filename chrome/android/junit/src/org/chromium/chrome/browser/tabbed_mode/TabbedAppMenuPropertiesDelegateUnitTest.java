@@ -3656,7 +3656,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setUpMocksForPageMenu();
         Token token1 = new Token(1L, 1L);
         when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
-        when(mTabModel.tabGroupExists(token1)).thenReturn(true);
+        when(mTabModel.containsTabGroup(token1)).thenReturn(true);
         when(mTab.getUrl()).thenReturn(GURL.emptyGURL());
         ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         assertTrue(isMenuVisible(modelList, R.id.tab_groups_parent_menu_id));
@@ -4273,7 +4273,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(anotherTabModel.getTabGroupCount()).thenReturn(1);
         Token groupId = Token.createRandom();
         when(anotherTabModel.getAllTabGroupIds()).thenReturn(Set.of(groupId));
-        when(anotherTabModel.tabGroupExists(groupId)).thenReturn(true);
+        when(anotherTabModel.containsTabGroup(groupId)).thenReturn(true);
         when(anotherTabModel.getTabGroupTitle(groupId)).thenReturn("Group");
         when(anotherTabModel.getTabsInGroup(groupId)).thenReturn(List.of());
 

@@ -447,8 +447,7 @@ public interface TabModel extends TabList {
     int getTabCountForGroup(@Nullable Token tabGroupId);
 
     /** Returns whether a tab group exists with {@code tabGroupId}. */
-    // TODO(crbug.com/517544602): Rename to containsTabGroup to match TabListInterface.
-    boolean tabGroupExists(@Nullable Token tabGroupId);
+    boolean containsTabGroup(@Nullable Token tabGroupId);
 
     /**
      * Returns the list of {@link Tab}s that are grouped with the given {@code tabId}.

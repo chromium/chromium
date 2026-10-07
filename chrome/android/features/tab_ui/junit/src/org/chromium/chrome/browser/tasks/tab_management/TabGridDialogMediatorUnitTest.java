@@ -1062,7 +1062,7 @@ public class TabGridDialogMediatorUnitTest {
                 equalTo(CUSTOMIZED_DIALOG_TITLE));
 
         // Now mark the group as deleted and the filter should not be called.
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(false);
         mMediator.hideDialog(false);
         verify(mTabModel, never()).setTabGroupTitle(any(), anyString());
     }
@@ -2202,7 +2202,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     private void createTabGroup(List<Tab> tabs, Token tabGroupId) {
-        when(mTabModel.tabGroupExists(tabGroupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(tabGroupId)).thenReturn(true);
         when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(tabs);
         for (Tab tab : tabs) {
             when(mTabModel.isTabInTabGroup(tab)).thenReturn(true);

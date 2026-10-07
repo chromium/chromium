@@ -272,7 +272,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
 
         for (AttachedWindowInfo info : mAttachList) {
             TabModel tabModel = info.tabModel;
-            if (!tabModel.tabGroupExists(tabGroupId)) continue;
+            if (!tabModel.containsTabGroup(tabGroupId)) continue;
 
             return info;
         }

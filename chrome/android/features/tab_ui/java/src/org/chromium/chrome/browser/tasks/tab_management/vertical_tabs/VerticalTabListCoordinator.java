@@ -1979,7 +1979,7 @@ public class VerticalTabListCoordinator {
         mRecyclerView.post(
                 () -> {
                     TabModel currentModel = mTabModelSelector.getCurrentModel();
-                    if (currentModel == null || !currentModel.tabGroupExists(tabGroupId)) {
+                    if (currentModel == null || !currentModel.containsTabGroup(tabGroupId)) {
                         return;
                     }
 
@@ -1999,7 +1999,7 @@ public class VerticalTabListCoordinator {
         if (tabGroupId == null) return false;
 
         TabModel currentModel = mTabModelSelector.getCurrentModel();
-        if (currentModel == null || !currentModel.tabGroupExists(tabGroupId)) {
+        if (currentModel == null || !currentModel.containsTabGroup(tabGroupId)) {
             return false;
         }
         List<Tab> tabsInGroup = currentModel.getTabsInGroup(tabGroupId);

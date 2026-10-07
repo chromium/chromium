@@ -58,7 +58,7 @@ public class StubTabModelUnitTest {
                             "representativeIndexOf",
                             "getTabGroupCount",
                             "getTabCountForGroup",
-                            "tabGroupExists",
+                            "containsTabGroup",
                             "getRelatedTabList",
                             "getTabsInGroup",
                             "isTabInTabGroup",

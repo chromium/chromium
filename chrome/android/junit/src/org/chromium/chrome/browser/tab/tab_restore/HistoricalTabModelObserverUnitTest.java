@@ -157,7 +157,7 @@ public class HistoricalTabModelObserverUnitTest {
         @TabGroupColorId int color = TabGroupColorId.GREY;
         createGroup(tabGroupId, title, color, new MockTab[] {mockTab});
         when(mTabModel.getTabCountForGroup(tabGroupId)).thenReturn(1);
-        when(mTabModel.tabGroupExists(tabGroupId)).thenReturn(false);
+        when(mTabModel.containsTabGroup(tabGroupId)).thenReturn(false);
         when(mTabModel.isTabInTabGroup(mockTab)).thenReturn(false);
 
         mObserver.onFinishingMultipleTabClosure(
@@ -548,7 +548,7 @@ public class HistoricalTabModelObserverUnitTest {
 
         when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(Arrays.asList(tabList));
         when(mTabModel.getTabCountForGroup(tabGroupId)).thenReturn(tabList.length);
-        when(mTabModel.tabGroupExists(tabGroupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(tabGroupId)).thenReturn(true);
         when(mTabModel.getTabGroupTitle(tabGroupId)).thenReturn(title);
         when(mTabModel.getTabGroupColorWithFallback(tabGroupId)).thenReturn(color);
         for (MockTab tab : tabList) {

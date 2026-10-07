@@ -338,12 +338,12 @@ public class TabGroupRowMediatorUnitTest {
         TabModel otherModel = mock(TabModel.class);
         when(tabWindowManager.getTabModelSelectorById(2)).thenReturn(otherSelector);
         when(otherSelector.getModel(anyBoolean())).thenReturn(otherModel);
-        when(otherModel.tabGroupExists(GROUP_ID1)).thenReturn(true);
+        when(otherModel.containsTabGroup(GROUP_ID1)).thenReturn(true);
 
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_ANOTHER);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
         when(mTabModel.getTabsInGroup(GROUP_ID1)).thenReturn(List.of());
-        when(mTabModel.tabGroupExists(GROUP_ID1)).thenReturn(false);
+        when(mTabModel.containsTabGroup(GROUP_ID1)).thenReturn(false);
 
         propertyModel.get(OPEN_RUNNABLE).run();
         verifyNoInteractions(mPaneManager);
@@ -370,7 +370,7 @@ public class TabGroupRowMediatorUnitTest {
                 .thenReturn(TabWindowManager.INVALID_WINDOW_ID);
         when(tabWindowManager.findWindowIdForTabGroup(eq(GROUP_ID1), anyBoolean()))
                 .thenReturn(TabWindowManager.INVALID_WINDOW_ID);
-        when(mTabModel.tabGroupExists(GROUP_ID1)).thenReturn(false);
+        when(mTabModel.containsTabGroup(GROUP_ID1)).thenReturn(false);
 
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_ANOTHER);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
@@ -434,7 +434,7 @@ public class TabGroupRowMediatorUnitTest {
     @Test
     public void testOpen_Hidden_RemovesStaleLocalMapping() {
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.HIDDEN);
-        when(mTabModel.tabGroupExists(GROUP_ID1)).thenReturn(false);
+        when(mTabModel.containsTabGroup(GROUP_ID1)).thenReturn(false);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
         LocalTabGroupId localId = new LocalTabGroupId(GROUP_ID1);
         mSyncGroup.localId = localId;

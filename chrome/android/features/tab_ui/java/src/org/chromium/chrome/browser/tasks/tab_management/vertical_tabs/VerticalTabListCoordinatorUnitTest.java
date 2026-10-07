@@ -776,7 +776,7 @@ public class VerticalTabListCoordinatorUnitTest {
     public void testTabGroupHeaderInteraction_LaunchesGroupHeaderContextMenu() {
         TabListRecyclerView recyclerViewSpy = setupMockRecyclerViewWithTab(mMockTab1, TAB_ID_1);
         when(mMockTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(true);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mMockTab1));
 
         assertNull(mCoordinator.getTabGroupContextMenuCoordinatorForTesting());
@@ -829,7 +829,7 @@ public class VerticalTabListCoordinatorUnitTest {
         when(mTabModel.getCount()).thenReturn(1);
         when(mTabModel.getTabAt(0)).thenReturn(tab);
         when(mTabModel.isTabInTabGroup(tab)).thenReturn(true);
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(true);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(tab));
 
         createCoordinator();
@@ -1018,7 +1018,7 @@ public class VerticalTabListCoordinatorUnitTest {
                 (SimpleRecyclerViewAdapter) recyclerViewSpy.getAdapter();
         PropertyModel groupPropertyModel = adapter.getModelList().get(0).model;
         groupPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, TAB_GROUP_ID);
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(false);
 
         when(recyclerViewSpy.findChildViewUnder(200f, 150f)).thenReturn(mMockChildView);
         when(recyclerViewSpy.getChildAdapterPosition(mMockChildView)).thenReturn(0);
@@ -1043,7 +1043,7 @@ public class VerticalTabListCoordinatorUnitTest {
         PropertyModel groupPropertyModel = adapter.getModelList().get(0).model;
         groupPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, TAB_GROUP_ID);
 
-        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(true);
         when(mMockTab1.isClosing()).thenReturn(true);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mMockTab1));
 
@@ -2724,7 +2724,7 @@ public class VerticalTabListCoordinatorUnitTest {
         when(mTabModel.getTabById(TAB_ID_1)).thenReturn(unpinnedTab);
         when(mTabModel.getCount()).thenReturn(1);
         when(mTabModel.getTabAt(0)).thenReturn(unpinnedTab);
-        when(mTabModel.tabGroupExists(tabGroupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(tabGroupId)).thenReturn(true);
         when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(List.of(unpinnedTab));
 
         createCoordinator();
@@ -4378,7 +4378,7 @@ public class VerticalTabListCoordinatorUnitTest {
             when(mTabModel.getTabById(tab.getId())).thenReturn(tab);
             when(mTabModel.isTabInTabGroup(tab)).thenReturn(true);
         }
-        when(mTabModel.tabGroupExists(groupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(groupId)).thenReturn(true);
         when(mTabModel.getTabsInGroup(groupId)).thenReturn(tabsInGroup);
         when(mTabModel.getTabCountForGroup(groupId)).thenReturn(tabsInGroup.size());
         when(mTabModel.getRepresentativeTabList()).thenReturn(List.of(firstTab));

@@ -111,7 +111,7 @@ public class TabListEditorAddToGroupActionUnitTest {
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync_group_id"});
         when(mTabGroupSyncService.getGroup("sync_group_id")).thenReturn(savedGroup);
         when(mTabModel.getTabGroupCount()).thenReturn(1);
-        when(mTabModel.tabGroupExists(mTabGroupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(mTabGroupId)).thenReturn(true);
 
         mAction =
                 new TabListEditorAddToGroupAction(
@@ -185,7 +185,7 @@ public class TabListEditorAddToGroupActionUnitTest {
                         START,
                         SupplierUtils.ofNull());
         when(mTabModel.getTabGroupCount()).thenReturn(0);
-        when(mTabModel.tabGroupExists(any())).thenReturn(false);
+        when(mTabModel.containsTabGroup(any())).thenReturn(false);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);
         action.configure(
                 mTabModelSupplier, mSelectionDelegate, mActionDelegate, TabListLayoutType.FLAT);
@@ -275,7 +275,7 @@ public class TabListEditorAddToGroupActionUnitTest {
     public void testPerformAction_NoTabGroups() {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         when(mTabModel.getTabGroupCount()).thenReturn(0);
-        when(mTabModel.tabGroupExists(any())).thenReturn(false);
+        when(mTabModel.containsTabGroup(any())).thenReturn(false);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);
 
         assertTrue(mAction.performAction(tabs, Collections.emptyList()));

@@ -100,7 +100,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         when(mTab.getId()).thenReturn(TEST_LOCAL_ID);
         when(mTabModel.getTabUngrouper()).thenReturn(mTabUngrouper);
         when(mTabModel.getTabById(TEST_LOCAL_ID)).thenReturn(mTab);
-        when(mTabModel.tabGroupExists(mToken)).thenReturn(true);
+        when(mTabModel.containsTabGroup(mToken)).thenReturn(true);
         when(mTabModel.getTabsInGroup(mToken)).thenReturn(List.of(mTab));
 
         GroupWindowInfo groupInfo =
@@ -236,7 +236,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
     public void testClickRow_groupNoLongerExists() {
         PropertyModel model = mMediator.getModel();
         mSavedTabGroup.savedTabs = new ArrayList<>();
-        when(mTabModel.tabGroupExists(mToken)).thenReturn(false);
+        when(mTabModel.containsTabGroup(mToken)).thenReturn(false);
         Runnable clickRunnable = model.get(TabGroupRowProperties.ROW_CLICK_RUNNABLE);
         clickRunnable.run();
 
@@ -253,7 +253,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
 
-        when(mTabModel.tabGroupExists(mToken)).thenReturn(false);
+        when(mTabModel.containsTabGroup(mToken)).thenReturn(false);
         when(mTabWindowManager.findWindowIdForTabGroup(mToken)).thenReturn(2);
         TabModelSelector destSelector = mock(TabModelSelector.class);
         TabModel destTabModel = mock(TabModel.class);
@@ -281,7 +281,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
 
-        when(mTabModel.tabGroupExists(mToken)).thenReturn(false);
+        when(mTabModel.containsTabGroup(mToken)).thenReturn(false);
         when(mTabWindowManager.findWindowIdForTabGroup(mToken)).thenReturn(2);
         TabModelSelector destSelector = mock(TabModelSelector.class);
         TabModel destTabModel = mock(TabModel.class);

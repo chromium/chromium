@@ -2279,7 +2279,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @Override
             public void openTabGroup(@Nullable Token tabGroupId) {
                 TabModel tabModel = mTabModelSelectorSupplier.asNonNull().get().getModel(false);
-                if (!tabModel.tabGroupExists(tabGroupId)) {
+                if (!tabModel.containsTabGroup(tabGroupId)) {
                     // This method is only supposed to be called when the tab group is in the local
                     // model. However it's possible that something has recently changed. In which
                     // case just be defensive and give up.
