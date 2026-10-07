@@ -69,6 +69,8 @@ public class ActorForegroundServiceControllerImplTest {
     @Mock private SettingsActivity mSettingsActivity;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private Tab mTab;
+    @Mock private ActorTask.Natives mActorTaskJni;
+    @Mock private Profile mProfile;
 
     private ActorForegroundServiceControllerImpl mController;
     private ShadowApplication mShadowApplication;
@@ -483,19 +485,27 @@ public class ActorForegroundServiceControllerImplTest {
 
     @Test
     public void testActorTask_getTargetTabId() {
-        ActorTask task = mock(ActorTask.class);
-        when(task.getTargetTabId()).thenCallRealMethod();
+        long nativeTaskPtr = 123L;
+        ActorTaskJni.setInstanceForTesting(mActorTaskJni);
+        ActorTask task = new ActorTask(nativeTaskPtr, 1, "Task", mProfile, null);
 
-        when(task.getLastActuatedTabId()).thenReturn(789);
-        when(task.getTabs()).thenReturn(Collections.singleton(456));
+        when(mActorTaskJni.getLastActuatedTabId(nativeTaskPtr)).thenReturn(789);
+        when(mActorTaskJni.getTabs(nativeTaskPtr)).thenReturn(new int[] {456});
         assertEquals(789, task.getTargetTabId());
 
         // Fall back to any associated tab when last actuated tab ID is invalid.
-        when(task.getLastActuatedTabId()).thenReturn(Tab.INVALID_TAB_ID);
+        when(mActorTaskJni.getLastActuatedTabId(nativeTaskPtr)).thenReturn(Tab.INVALID_TAB_ID);
         assertEquals(456, task.getTargetTabId());
 
-        when(task.getTabs()).thenReturn(Collections.emptySet());
+        when(mActorTaskJni.getTabs(nativeTaskPtr)).thenReturn(new int[0]);
         assertEquals(Tab.INVALID_TAB_ID, task.getTargetTabId());
+
+        // Fallback tab ID is preserved after native destruction while getLastActuatedTabId()
+        // still returns Tab.INVALID_TAB_ID.
+        when(mActorTaskJni.getTabs(nativeTaskPtr)).thenReturn(new int[] {456});
+        task.clearNativePtr();
+        assertEquals(Tab.INVALID_TAB_ID, task.getLastActuatedTabId());
+        assertEquals(456, task.getTargetTabId());
     }
 
     public ServiceConnection getServiceConnectionForTesting() {
