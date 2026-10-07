@@ -556,4 +556,31 @@ suite('ComposeboxDragAndDrop', () => {
     await searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);
     assertEquals(1, searchboxHandler.getCallCount(ADD_FILE_CONTEXT_FN));
   });
+
+  test(
+      'handles dropped directory when file.arrayBuffer() rejects', async () => {
+        loadTimeData.overrideValues({'lensSendRawFileMediaTypesEnabled': true});
+        await createComposeboxElement();
+        await microtasksFinished();
+
+        // On macOS/POSIX, a directory reports a non-zero stat size (e.g. 64
+        // bytes on APFS) with an empty MIME type, bypassing initial size/type
+        // checks, and then rejects with NotFoundError when read via
+        // arrayBuffer().
+        const directoryFile =
+            new File([new Uint8Array(64)], 'EmptyFolder', {type: ''});
+        directoryFile.arrayBuffer = () => Promise.reject(new DOMException(
+            'A requested file or directory could not be found at the time an ' +
+                'operation was processed.',
+            'NotFoundError'));
+
+        await dispatchDragAndDropEvent(composeboxElement, [directoryFile]);
+        await microtasksFinished();
+
+        assertEquals(0, searchboxHandler.getCallCount(ADD_FILE_CONTEXT_FN));
+        assertEquals(0, composeboxElement.attachedContext.size);
+        assertEquals(
+            composeboxElement.i18n('composeboxFileUploadFailed'),
+            composeboxElement.errorMessage);
+      });
 });

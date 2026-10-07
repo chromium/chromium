@@ -2596,12 +2596,12 @@ export const ComposeboxEmbedderMixin =
           const composeboxFiles: Map<UnguessableToken, ComposeboxFile> =
               new Map();
           for (const file of files) {
-            const fileBuffer = await file.arrayBuffer();
-            const bigBuffer: BigBuffer = {
-              bytes: Array.from(new Uint8Array(fileBuffer)),
-            };
             let token: UnguessableToken;
             try {
+              const fileBuffer = await file.arrayBuffer();
+              const bigBuffer: BigBuffer = {
+                bytes: Array.from(new Uint8Array(fileBuffer)),
+              };
               token = await this.getSearchboxHandler().addFileContext(
                   {
                     fileName: file.name,
@@ -2613,11 +2613,10 @@ export const ComposeboxEmbedderMixin =
                   },
                   bigBuffer);
             } catch (e) {
-              const err = e as ContextUploadErrorType;
-              if (FILE_VALIDATION_ERRORS_MAP.has(err)) {
-                this.errorMessage =
-                    this.i18n(FILE_VALIDATION_ERRORS_MAP.get(err)!);
-              }
+              const errorKey =
+                  FILE_VALIDATION_ERRORS_MAP.get(e as ContextUploadErrorType) ??
+                  'composeboxFileUploadFailed';
+              this.errorMessage = this.i18n(errorKey);
               continue;
             }
 
@@ -2635,12 +2634,17 @@ export const ComposeboxEmbedderMixin =
             const announcer = getAnnouncerInstance();
             announcer.announce(this.i18n('composeboxFileUploadStartedText'));
           }
-          this.attachedContext = new Map([
-            ...this.attachedContext.entries(),
-            ...composeboxFiles.entries(),
-          ]);
-          this.recordFileValidationMetric(ComposeboxFileValidationError.NONE);
-          this.focusInput();
+          // `composeboxFiles.size` is 0 when all files failed in the try/catch
+          // block above, so `ComposeboxFileValidationError.NONE` is not
+          // recorded.
+          if (composeboxFiles.size > 0) {
+            this.attachedContext = new Map([
+              ...this.attachedContext.entries(),
+              ...composeboxFiles.entries(),
+            ]);
+            this.recordFileValidationMetric(ComposeboxFileValidationError.NONE);
+            this.focusInput();
+          }
         }
 
         addFileContextFromBrowser(
