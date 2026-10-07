@@ -14,6 +14,7 @@
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
+#include "sql/test/drive_error_test_vfs.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,6 +72,7 @@ class PageContentStoreTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   scoped_refptr<os_crypt_async::Encryptor> encryptor_;
+  sql::test::DriveErrorTestVfs vfs_;
   std::unique_ptr<PageContentStore> store_;
 };
 
@@ -363,6 +365,32 @@ TEST_F(PageContentStoreTest, DatabaseErrorRecovery) {
   EXPECT_THAT(store_->GetPageContent(GURL(kUrl)),
               Optional(EqualsProto(TestContent("test title"))));
   EXPECT_TRUE(store_->DeletePageContentForTabs(/*tab_ids=*/{}));
+}
+
+TEST_F(PageContentStoreTest, DatabaseNonCatastrophicError) {
+  EXPECT_TRUE(store_->AddPageContent(GURL(kUrl), TestContent("test title 1"),
+                                     /*visit_timestamp=*/base::Time::Now(),
+                                     /*extraction_timestamp=*/base::Time::Now(),
+                                     kTabId));
+
+  // Simulate a non-catastrophic error (full disk); the next write operation
+  // will fail and poison the current database handle.
+  vfs_.set_drive_full(true);
+  EXPECT_FALSE(
+      store_->AddPageContent(GURL(kUrl), TestContent("test title 2"),
+                             /*visit_timestamp=*/base::Time::Now(),
+                             /*extraction_timestamp=*/base::Time::Now(), 2));
+  vfs_.set_drive_full(false);
+
+  // The database handle was poisoned, so operations should fail until
+  // re-opened.
+  EXPECT_FALSE(store_->GetPageContent(GURL(kUrl)).has_value());
+
+  // Re-opening the database should succeed and the previously stored content
+  // should still be intact.
+  OpenStore();
+  EXPECT_THAT(store_->GetPageContent(GURL(kUrl)),
+              Optional(EqualsProto(TestContent("test title 1"))));
 }
 
 class PageContentStoreNoEncryptorTest : public testing::Test {

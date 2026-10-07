@@ -53,7 +53,7 @@ void PageContentStore::OnDatabaseError(int extended_error,
   }
 
   // Close the db.
-  db_.Close();
+  db_.Poison();
   db_initialized_ = false;
 }
 
