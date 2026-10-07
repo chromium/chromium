@@ -36,7 +36,6 @@ static_library("config") {
     "//ash/webui/status_area_internals",
     "//ash/webui/vc_background_ui",
     "//chrome/browser:browser_process",
-    "//chrome/browser:global_features",
     "//chrome/browser/app_mode",
     "//chrome/browser/ash/annotator",
     "//chrome/browser/ash/app_mode",

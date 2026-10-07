@@ -28,7 +28,6 @@ include_rules = [
   "+chrome/browser/ash/system_web_apps/apps",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/feedback",
-  "+chrome/browser/global_features.h",
   "+chrome/browser/ui/ash/holding_space",
   "+chrome/browser/ui/select_file_policy/chrome_select_file_policy.h",
   "+chrome/browser/ui/webui/about/about_ui.h",
@@ -80,6 +79,7 @@ specific_include_rules = {
     "+chrome/browser/manta/manta_service_factory.h",
   ],
   "ash_web_ui_config_manager_unittest\\.cc": [
+    "+chrome/browser/global_features.h",
     "+chrome/test/base/testing_browser_process.h",
   ],
 }

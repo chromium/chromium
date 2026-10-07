@@ -15,8 +15,6 @@ namespace ash {
 // app ui page handler.
 class RecorderAppUIDelegate {
  public:
-  virtual void InstallSoda(speech::LanguageCode language_code) = 0;
-
   virtual std::u16string GetLanguageDisplayName(
       speech::LanguageCode language_code) = 0;
 

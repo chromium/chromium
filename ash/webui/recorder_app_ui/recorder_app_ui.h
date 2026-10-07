@@ -12,6 +12,7 @@
 #include "ash/webui/recorder_app_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_ui_config.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
@@ -24,6 +25,8 @@
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+
+class PrefService;
 
 namespace media_device_salt {
 class MediaDeviceSaltService;
@@ -57,9 +60,12 @@ class RecorderAppUI
       base::OnceCallback<void(const std::optional<std::string>&)>;
   using DeviceIdMappingCallback =
       base::RepeatingCallback<void(const std::string&, WithRealIdCallback)>;
+
+  // `local_state` must be non-null and must outlive `this`.
   // `media_device_salt_service` provides the persistent salts used to
   // translate media device IDs. It must outlive `this`.
   RecorderAppUI(
+      PrefService* local_state,
       content::WebUI* web_ui,
       std::unique_ptr<RecorderAppUIDelegate> delegate,
       media_device_salt::MediaDeviceSaltService& media_device_salt_service);
@@ -210,6 +216,8 @@ class RecorderAppUI
 
   // message_center::MessageCenterObserver
   void OnQuietModeChanged(bool in_quiet_mode) override;
+
+  const raw_ref<PrefService> local_state_;
 
   mojo::Remote<MachineLearningService> ml_service_;
 

@@ -83,7 +83,6 @@
 #include "chrome/browser/ash/system_web_apps/apps/vc_background_ui/vc_background_ui_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/feedback/feedback_dialog_utils.h"
-#include "chrome/browser/global_features.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
@@ -287,9 +286,17 @@ std::unique_ptr<content::WebUIConfig> MakeCameraAppUIConfig() {
   return std::make_unique<CameraAppUIConfig>(create_controller_func);
 }
 
-std::unique_ptr<content::WebUIConfig> MakeRecorderAppUIConfig() {
+// `local_state` and `application_locale_storage` must not be null and must
+// outlive the returned config.
+std::unique_ptr<content::WebUIConfig> MakeRecorderAppUIConfig(
+    PrefService* local_state,
+    const ApplicationLocaleStorage* application_locale_storage) {
+  CHECK(local_state);
+  CHECK(application_locale_storage);
   CreateWebUIControllerFunc create_controller_func = base::BindRepeating(
-      [](content::WebUI* web_ui,
+      [](PrefService* local_state,
+         const ApplicationLocaleStorage* application_locale_storage,
+         content::WebUI* web_ui,
          const GURL& url) -> std::unique_ptr<content::WebUIController> {
         Profile* profile = Profile::FromWebUI(web_ui);
         const AccountId& account_id =
@@ -302,15 +309,15 @@ std::unique_ptr<content::WebUIConfig> MakeRecorderAppUIConfig() {
             MediaDeviceSaltServiceProvider::Get().Find(account_id);
 
         auto delegate = std::make_unique<ChromeRecorderAppUIDelegate>(
-            g_browser_process->local_state(),
-            g_browser_process->GetFeatures()->application_locale_storage(),
-            g_browser_process->variations_service(),
+            application_locale_storage, g_browser_process->variations_service(),
             user_manager::UserManager::Get(), account_id, identity_manager,
             consent_auditor);
         return std::make_unique<RecorderAppUI>(
-            web_ui, std::move(delegate),
+            local_state, web_ui, std::move(delegate),
             CHECK_DEREF(media_device_salt_service));
-      });
+      },
+      base::Unretained(local_state),
+      base::Unretained(application_locale_storage));
 
   return std::make_unique<RecorderAppUIConfig>(create_controller_func);
 }
@@ -493,7 +500,8 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
               &printing::print_management::PrintingManagerFactory::
                   CreatePrintManagementUIController)));
   AddWebUIConfig(std::make_unique<multidevice::ProximityAuthUIConfig>());
-  AddWebUIConfig(MakeRecorderAppUIConfig());
+  AddWebUIConfig(MakeRecorderAppUIConfig(&local_state_.get(),
+                                         &application_locale_storage_.get()));
   AddWebUIConfig(
       std::make_unique<RemoteMaintenanceCurtainUIConfig>(&local_state_.get()));
   AddWebUIConfig(
