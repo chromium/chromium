@@ -161,9 +161,9 @@ struct CriticalAction {
   // Tooltip describing the action category.
   string tooltip;
 
-  // Destination management URL for the action. Empty if the action has no
+  // Destination management URL for the action. Null if the action has no
   // linkout, in which case the UI renders the action as a plain label.
-  string linkout_url;
+  string? linkout_url;
 
   // Category type of the critical action.
   CriticalActionType action_type;

@@ -379,7 +379,7 @@ suite('<history-item> integration test', function() {
             id: 'webmcp',
             label: 'Used a WebMCP tool',
             tooltip: 'Website actions',
-            linkoutUrl: '',
+            linkoutUrl: null,
             actionType: CriticalActionType.kWebMcpTool,
           },
         ];
