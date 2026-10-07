@@ -34,6 +34,17 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # WebContents in ChromeAppDelegate and looked up from arbitrary WebContents
   # by DlpContentManager, so the WebContents must own it.
   'policy::DlpContentTabHelper::MaybeCreateForWebContents',
+  # extensions::TabHelper is also attached to non-tab and pre-tab WebContents
+  # (such as DocumentPipHost, ConstrainedWebDialogUI, NetworkUI, OobeUI,
+  # InlineLoginUI, ContextualTasksSidePanelCoordinator, and Prerender /
+  # NoStatePrefetch WebContents), so the WebContents must own it.
+  'extensions::TabHelper::CreateForWebContents',
+  # WebNavigationTabObserver is also attached to pre-tab PrerenderNewTabHandle
+  # WebContents in PrerenderWebContentsDelegateImpl and is looked up on
+  # old_contents by WebNavigationEventRouter::TabReplaced after
+  # TabFeatures::WillDiscardContents swaps in new_contents, so the WebContents
+  # must own it.
+  'extensions::WebNavigationTabObserver::CreateForWebContents',
   # FileSystemAccessPermissionRequestManager is also attached to non-tab
   # Chrome App window WebContents in ChromeAppDelegate::InitWebContents, so
   # the WebContents must own it.

@@ -150,8 +150,12 @@
 #include "ui/webui/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/api/web_navigation/web_navigation_tab_observer.h"
 #include "chrome/browser/extensions/navigation_extension_enabler.h"
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_manager.h"
+#include "extensions/browser/view_type_utils.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #endif
 
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
@@ -237,6 +241,13 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
           : nullptr;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  if (extensions::GetViewType(web_contents) ==
+      extensions::mojom::ViewType::kInvalid) {
+    extensions::SetViewType(web_contents,
+                            extensions::mojom::ViewType::kTabContents);
+  }
+  extensions::WebNavigationTabObserver::CreateForWebContents(web_contents);
+  extensions::TabHelper::CreateForWebContents(web_contents);
   if (tab_scoped_side_panel_registry_) {
     extension_side_panel_manager_ =
         std::make_unique<extensions::ExtensionSidePanelManager>(

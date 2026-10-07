@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
+
 source_set("prerender") {
   public = [
     "dse_prewarm_navigation_throttle.h",
@@ -50,7 +52,17 @@ source_set("impl") {
     "//components/page_load_metrics/browser",
     "//components/page_load_metrics/google/browser",
     "//components/tabs:impl",
+    "//extensions/buildflags",
   ]
+
+  if (enable_extensions_core) {
+    deps += [
+      "//chrome/browser/extensions",
+      "//chrome/browser/extensions/api/web_navigation",
+      "//extensions/browser",
+      "//extensions/common:mojom",
+    ]
+  }
 
   if (is_chromeos) {
     deps += [ "//chromeos/components/kiosk" ]

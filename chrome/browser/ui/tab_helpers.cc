@@ -102,13 +102,6 @@
 #include "content/public/common/content_features.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#include "chrome/browser/extensions/api/web_navigation/web_navigation_tab_observer.h"
-#include "chrome/browser/extensions/tab_helper.h"
-#include "extensions/browser/view_type_utils.h"
-#include "extensions/common/mojom/view_type.mojom.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/trigger_creator.h"
@@ -280,27 +273,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
 
   // NO! Do not just add your tab helper here. This is a large alphabetized
   // block; please insert your tab helper above in alphabetical order.
-
-  // --- Section 3: Feature tab helpers behind BUILDFLAGs ---
-  // NOT for "if enabled"; put those in section 1.
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  // If the web contents already have a view type, don't overwrite it here. One
-  // case where this can happen is when the user opens undocked developer tools.
-  // For all developer tools web contents, the view type is set to
-  // `kDeveloperTools` by the `DevToolsWindow` before tab helpers are attached.
-  if (extensions::GetViewType(web_contents) ==
-      extensions::mojom::ViewType::kInvalid) {
-    extensions::SetViewType(web_contents,
-                            extensions::mojom::ViewType::kTabContents);
-  }
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  // These helpers are used on Win/Mac/Linux and also desktop Android.
-  extensions::WebNavigationTabObserver::CreateForWebContents(web_contents);
-  extensions::TabHelper::CreateForWebContents(web_contents);
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   // --- Section 4: The warning ---
 

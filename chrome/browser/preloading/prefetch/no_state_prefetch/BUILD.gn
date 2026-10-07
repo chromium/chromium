@@ -54,7 +54,11 @@ source_set("impl") {
     "//extensions/buildflags",
   ]
   if (enable_extensions_core) {
-    deps += [ "//extensions/browser" ]
+    deps += [
+      "//chrome/browser/extensions",
+      "//extensions/browser",
+      "//extensions/common:mojom",
+    ]
   }
 }
 

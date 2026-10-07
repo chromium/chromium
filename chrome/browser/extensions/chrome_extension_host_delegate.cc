@@ -28,6 +28,9 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/extensions/tab_helper.h"
+#include "extensions/browser/view_type_utils.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #endif
 
 // This file contains code shared between Android and non-Android platforms.
@@ -72,6 +75,10 @@ void ChromeExtensionHostDelegate::CreateTab(
   // idempotent.
   // TODO(crbug.com/499200457): Add instrumentation test.
   TabAndroid::AttachTabHelpers(web_contents.get());
+  if (GetViewType(web_contents.get()) == mojom::ViewType::kInvalid) {
+    SetViewType(web_contents.get(), mojom::ViewType::kTabContents);
+  }
+  TabHelper::CreateForWebContents(web_contents.get());
 #endif
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());

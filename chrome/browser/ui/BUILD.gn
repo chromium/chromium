@@ -1487,18 +1487,6 @@ source_set("tab_helpers_impl") {
     deps += [ "//chrome/browser/ui/search" ]
   }
 
-  if (enable_extensions_core) {
-    deps += [
-      "//chrome/browser/extensions",
-      "//chrome/browser/extensions/api/web_navigation",
-      "//extensions/browser",
-      "//extensions/common:mojom",
-    ]
-    if (!is_android) {
-      deps += [ "//chrome/browser/web_applications" ]
-    }
-  }
-
   if (enable_offline_pages) {
     deps += [ "//chrome/browser/offline_pages" ]
   }
