@@ -6,10 +6,9 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/glic/host/glic_web_client_manager.h"
-#include "chrome/browser/glic/host/glic_web_contents_manager.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/test_support/fake_web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/test/navigation_simulator.h"
@@ -20,32 +19,6 @@
 
 namespace glic {
 namespace {
-
-class FakeWebContentsManager : public GlicWebContentsManager {
- public:
-  FakeWebContentsManager() = default;
-  ~FakeWebContentsManager() override = default;
-
-  void AttachToHost(Host* host) override {}
-  void AttachModalDialogManagerDelegate(
-      ScopedModalDialogManagerDelegate& delegate) override {}
-  void SetVisibility(content::Visibility visibility) override {}
-  content::WebContents* active_web_contents() const override { return nullptr; }
-  content::WebContents* guest_contents() const override { return nullptr; }
-  void OnActuatingChanged(bool actuating) override {}
-  void OnTaskTabsVisibilityChanged(bool has_visible_tab) override {}
-  base::CallbackListSubscription RegisterWebContentsChangedCallback(
-      WebContentsChangedCallback callback) override {
-    return base::CallbackListSubscription();
-  }
-  GlicWebClientManager& web_client_manager() override {
-    return web_client_manager_;
-  }
-  bool ShouldReloadOnShow() const override { return false; }
-
- private:
-  GlicWebClientManager web_client_manager_;
-};
 
 class GlicGuestObserverTest : public ChromeRenderViewHostTestHarness {
  public:
