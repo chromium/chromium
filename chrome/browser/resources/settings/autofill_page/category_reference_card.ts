@@ -6,19 +6,17 @@
  * @fileoverview 'category-reference-card' is a card that shows a list of
  * chips related to a certain category.
  */
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {YourSavedInfoDataCategory, YourSavedInfoDataChip} from '../metrics_browser_proxy.js';
 
-import {getTemplate} from './category_reference_card.html.js';
 import type {DataChip} from './autofill_page.js';
+import {getCss} from './category_reference_card.css.js';
+import {getHtml} from './category_reference_card.html.js';
 
 export type DataChipClickEvent = CustomEvent<{
   chipId: YourSavedInfoDataChip,
@@ -35,58 +33,46 @@ declare global {
   }
 }
 
-export class CategoryReferenceCardElement extends PolymerElement {
+export class CategoryReferenceCardElement extends CrLitElement {
   static get is() {
     return 'category-reference-card';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      cardTitle: String,
-
-      categoryId: Number,
-
-      chips: {
-        type: Array,
-        value: () => [],
-      },
-
+      cardTitle: {type: String},
+      categoryId: {type: Number},
+      chips: {type: Array},
       isExternal: {type: Boolean},
     };
   }
 
-  declare cardTitle: string;
-  declare categoryId: YourSavedInfoDataCategory;
-  declare chips: DataChip[];
-  declare isExternal: boolean;
+  accessor cardTitle: string = '';
+  accessor categoryId: YourSavedInfoDataCategory;
+  accessor chips: DataChip[] = [];
+  accessor isExternal: boolean = false;
 
-  private onDataCategoryClick_() {
-    this.dispatchEvent(new CustomEvent('data-category-click', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        categoryId: this.categoryId,
-      },
-    }));
+  protected onDataCategoryClick_() {
+    this.fire('data-category-click', {categoryId: this.categoryId});
   }
 
-  private onDataChipClick_(event: PointerEvent&{model: {item: DataChip}}) {
-    const chip: DataChip = event.model.item;
-    this.dispatchEvent(new CustomEvent('data-chip-click', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        chipId: chip.id,
-      },
-    }));
+  protected onDataChipClick_(event: Event) {
+    const target = event.currentTarget as HTMLElement;
+    const index = Number(target.dataset['index']);
+    const chip = this.chips[index];
+    this.fire('data-chip-click', {chipId: chip.id});
   }
 
   override focus() {
-    this.shadowRoot!.querySelector('cr-link-row')!.focus();
+    this.shadowRoot.querySelector('cr-link-row')!.focus();
   }
 }
 

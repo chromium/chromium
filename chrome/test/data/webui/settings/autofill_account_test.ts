@@ -5,11 +5,9 @@
 import 'chrome://settings/settings.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {loadTimeData, ProfileInfoBrowserProxyImpl, resetRouterForTesting, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 // clang-format off
 // <if expr="not is_chromeos">
 import {ChromeSigninAccessPoint, Router, routes, SignedInState, StatusAction} from 'chrome://settings/settings.js';
@@ -41,7 +39,7 @@ suite('AutofillAccount', function() {
     createAccountCardElement();
 
     await syncBrowserProxy.whenCalled('getSyncStatus');
-    flush();
+    await microtasksFinished();
   });
 
   function createAccountCardElement() {
@@ -54,8 +52,7 @@ suite('AutofillAccount', function() {
   async function setupSync(syncStatus: SyncStatus) {
     syncBrowserProxy.testSyncStatus = syncStatus;
     webUIListenerCallback('sync-status-changed', syncStatus);
-    flush();
-    await waitBeforeNextRender(accountCardElement);
+    await microtasksFinished();
   }
 
   test('displaysSyncingAccountInfo', async function() {
@@ -84,8 +81,7 @@ suite('AutofillAccount', function() {
     await syncBrowserProxy.whenCalled('getStoredAccounts');
     webUIListenerCallback(
         'stored-accounts-updated', syncBrowserProxy.storedAccounts);
-    flush();
-    await waitBeforeNextRender(syncControl);
+    await microtasksFinished();
 
     // Check that the avatar row is visible and displays correct info.
     const avatarRow = syncControl.shadowRoot!.querySelector('#avatar-row')!;
@@ -121,7 +117,7 @@ suite('AutofillAccount', function() {
     await syncBrowserProxy.whenCalled('getStoredAccounts');
     webUIListenerCallback(
         'stored-accounts-updated', syncBrowserProxy.storedAccounts);
-    await flush();
+    await microtasksFinished();
 
     assertFalse(
         isChildVisible(accountCardElement, 'settings-sync-account-control'));
@@ -145,9 +141,14 @@ suite('AutofillAccount', function() {
       signinAllowed: false,
     });
     resetRouterForTesting();
+    // Reset sync status to reflect a signed out state.
+    syncBrowserProxy.testSyncStatus = {
+      signedInState: SignedInState.SIGNED_OUT,
+      statusAction: StatusAction.NO_ACTION,
+    };
     // Re-create the element to apply the new loadTimeData.
     createAccountCardElement();
-    await flush();
+    await microtasksFinished();
 
     assertFalse(isChildVisible(accountCardElement, '#account-card'));
   });
@@ -196,7 +197,7 @@ suite('AutofillAccount', function() {
     resetRouterForTesting();
     // Re-create the element to apply the new loadTimeData.
     createAccountCardElement();
-    await flush();
+    await microtasksFinished();
     await profileInfoBrowserProxy.whenCalled('getProfileInfo');
 
     assertEquals(
@@ -207,8 +208,7 @@ suite('AutofillAccount', function() {
     // Update profile info and check again.
     webUIListenerCallback(
         'profile-info-changed', {name: 'pushedName', iconUrl: ICON_DATA_URL});
-    await flush();
-    await waitBeforeNextRender(accountCardElement);
+    await microtasksFinished();
 
     assertEquals(
         'pushedName',

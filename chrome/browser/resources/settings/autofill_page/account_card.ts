@@ -11,8 +11,6 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 import '../controls/settings_toggle_button.js';
@@ -20,16 +18,15 @@ import '../controls/settings_toggle_button.js';
 import '../people_page/sync_account_control.js';
 // </if>
 import '../icons.html.js';
-import '../settings_shared.css.js';
 
 import type {ProfileInfo} from '/shared/settings/people_page/profile_info_browser_proxy.js';
 import {ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
 import type {StoredAccount, SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {ChromeSigninAccessPoint, SignedInState, StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {SignedInState, StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {getImage} from 'chrome://resources/js/icon.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
@@ -45,93 +42,85 @@ import {AccountManagerBrowserProxyImpl} from '../people_page/account_manager_bro
 
 
 
-import {getTemplate} from './account_card.html.js';
+import {getCss} from './account_card.css.js';
+import {getHtml} from './account_card.html.js';
 
-const SettingsAccountCardElementBase = WebUiListenerMixin(PolymerElement);
+const SettingsAccountCardElementBase = WebUiListenerMixinLit(CrLitElement);
 
 export class SettingsAccountCardElement extends SettingsAccountCardElementBase {
   static get is() {
     return 'settings-account-card';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * This flag is used to conditionally show a set of new sign-in UIs to the
        * profiles that have been migrated to be consistent with the web
        * sign-ins.
        */
-      signinAllowed_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('signinAllowed');
-        },
-      },
+      signinAllowed_: {type: Boolean},
 
       /**
        * The current sync status, supplied by SyncBrowserProxy.
        */
-      syncStatus: Object,
+      syncStatus: {type: Object},
 
       // <if expr="not is_chromeos">
       /**
        * Stored accounts to the system, supplied by SyncBrowserProxy.
        */
-      storedAccounts: Object,
+      storedAccounts: {type: Array},
 
-      primaryAccountName_: String,
-      primaryAccountEmail_: String,
-      primaryAccountIconUrl_: String,
-
-      /** Expose ChromeSigninAccessPoint enum to HTML bindings. */
-      accessPointEnum_: {
-        type: Object,
-        value: ChromeSigninAccessPoint,
-      },
+      primaryAccountName_: {type: String},
+      primaryAccountEmail_: {type: String},
+      primaryAccountIconUrl_: {type: String},
       // </if>
 
       // <if expr="is_chromeos">
       /**
        * The currently selected profile icon URL. May be a data URL.
        */
-      profileIconUrl_: String,
+      profileIconUrl_: {type: String},
 
       /**
        * The current profile name.
        */
-      profileName_: String,
+      profileName_: {type: String},
 
       /**
        * Whether the profile row is clickable. The behavior depends on the
        * platform.
        */
-      isProfileActionable_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('isAccountManagerEnabled'),
-        readOnly: true,
-      },
+      isProfileActionable_: {type: Boolean},
       // </if>
     };
   }
 
-  declare private signinAllowed_: boolean;
-  declare syncStatus: SyncStatus|null;
+  private accessor signinAllowed_: boolean =
+      loadTimeData.getBoolean('signinAllowed');
+  accessor syncStatus: SyncStatus|null = null;
 
   // <if expr="not is_chromeos">
-  declare storedAccounts: StoredAccount[]|null;
-  declare private primaryAccountName_: string;
-  declare private primaryAccountEmail_: string;
-  declare private primaryAccountIconUrl_: string;
+  accessor storedAccounts: StoredAccount[]|null = null;
+  protected accessor primaryAccountName_: string = '';
+  private accessor primaryAccountEmail_: string = '';
+  protected accessor primaryAccountIconUrl_: string = '';
   // </if>
 
   // <if expr="is_chromeos">
-  declare private profileIconUrl_: string;
-  declare private profileName_: string;
-  declare private isProfileActionable_: boolean;
+  protected accessor profileIconUrl_: string = '';
+  protected accessor profileName_: string = '';
+  protected accessor isProfileActionable_: boolean =
+      loadTimeData.getBoolean('isAccountManagerEnabled');
   // </if>
 
   private syncBrowserProxy_: SyncBrowserProxy =
@@ -199,7 +188,7 @@ export class SettingsAccountCardElement extends SettingsAccountCardElementBase {
     this.profileIconUrl_ = accounts[0].pic;
   }
 
-  private onProfileClick_() {
+  protected onProfileClick_() {
     if (loadTimeData.getBoolean('isAccountManagerEnabled')) {
       // Post-SplitSettings. The browser C++ code loads OS settings in a window.
       OpenWindowProxyImpl.getInstance().openUrl(
@@ -234,20 +223,20 @@ export class SettingsAccountCardElement extends SettingsAccountCardElementBase {
   }
 
   // <if expr="not is_chromeos">
-  private onAccountClick_() {
+  protected onAccountClick_() {
     Router.getInstance().navigateTo(routes.ACCOUNT);
   }
 
-  private shouldLinkToAccountSettingsPage_(): boolean {
+  protected shouldLinkToAccountSettingsPage_(): boolean {
     return !!this.syncStatus &&
         this.syncStatus.signedInState === SignedInState.SIGNED_IN;
   }
 
-  private shouldShowSyncAccountControl_(): boolean {
-    if (this.syncStatus === undefined) {
+  protected shouldShowSyncAccountControl_(): boolean {
+    if (!this.syncStatus) {
       return false;
     }
-    return !!this.syncStatus!.syncSystemEnabled && this.signinAllowed_ &&
+    return !!this.syncStatus.syncSystemEnabled && this.signinAllowed_ &&
         !this.shouldLinkToAccountSettingsPage_();
   }
 
@@ -265,7 +254,7 @@ export class SettingsAccountCardElement extends SettingsAccountCardElementBase {
     this.primaryAccountIconUrl_ = accounts[0].avatarImage!;
   }
 
-  private getAccountRowSubtitle_(): string {
+  protected getAccountRowSubtitle_(): string {
     if (!!this.syncStatus && !!this.syncStatus.statusText &&
         this.syncStatus.statusAction === StatusAction.ENTER_PASSPHRASE) {
       return loadTimeData.substituteString(
@@ -279,14 +268,14 @@ export class SettingsAccountCardElement extends SettingsAccountCardElementBase {
   /**
    * @return A CSS image-set for multiple scale factors.
    */
-  private getIconImageSet_(iconUrl?: string): string {
+  protected getIconImageSet_(iconUrl?: string): string {
     if (!iconUrl) {
       return '';
     }
     return getImage(iconUrl);
   }
 
-  private isSyncing_() {
+  protected isSyncing_() {
     return !!this.syncStatus &&
         this.syncStatus.signedInState === SignedInState.SYNCING;
   }
@@ -300,3 +289,5 @@ declare global {
 
 customElements.define(
     SettingsAccountCardElement.is, SettingsAccountCardElement);
+
+export type AccountCardElement = SettingsAccountCardElement;

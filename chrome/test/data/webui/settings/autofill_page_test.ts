@@ -92,7 +92,7 @@ suite('AutofillPage', function() {
     const cards = autofillPage.shadowRoot!.querySelectorAll(
         'category-reference-card');
     for (const card of cards) {
-      const chips = card.shadowRoot!.querySelectorAll('cr-button');
+      const chips = card.shadowRoot.querySelectorAll('cr-button');
       for (const chip of chips) {
         const labelSpan = chip.querySelector('span:not(.counter)');
         if (labelSpan && labelSpan.textContent === chipLabel) {
