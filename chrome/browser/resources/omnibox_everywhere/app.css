@@ -8,10 +8,40 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  --loomnibox-content-width: 680px;
+  --most-visited-container-inset: 0px;
+  --most-visited-tile-count: 7;
   display: block;
   position: relative;
   transition: opacity 150ms ease;
   width: 100%;
+}
+
+:host([small-loomnibox]) {
+  --loomnibox-content-width: 480px;
+  --most-visited-tile-count: 5;
+}
+
+:host([small-font]) {
+  --cr-composebox-input-placeholder-font-size: 14px;
+  --cr-composebox-match-text-container-font-size: 14px;
+  --cr-searchbox-font-size: 14px;
+  font-size: 14px;
+}
+
+:host([dynamic-sizing]) {
+  --most-visited-container-inset: 5px;
+  width: var(--loomnibox-content-width);
+}
+
+:host([dynamic-sizing][dynamic-sizing-width='600']) {
+  --loomnibox-content-width: 600px;
+  --most-visited-tile-count: 6;
+}
+
+:host([dynamic-sizing][small-loomnibox]) {
+  --loomnibox-content-width: 480px;
+  --most-visited-tile-count: 5;
 }
 
 :host(:not([is-active])) {
@@ -178,13 +208,25 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
   z-index: 100;
 }
 
+/* Inset by 4px (2px left + 2px right) so the painted card edges align with
+ * #inputContainer inside omnibox-everywhere-omnibox, which is inset by a 2px
+ * transparent border. */
+:host([dynamic-sizing]) #mostVisitedContainer {
+  max-width: calc(100% - 4px);
+}
+
 cr-most-visited {
   -webkit-app-region: drag;
   --most-visited-focus-shadow: 0 0 0 2px var(--color-sys-primary, #1a73e8);
-  /* Total inner width for 7 tiles:
-   * 680px (default content width) - 32px (16px * 2 padding) - 4px (2px * 2 border) = 644px.
-   * Distributed evenly across 6 gaps between 7 tiles. */
-  --most-visited-gap: calc((644px - 7 * var(--most-visited-tile-size)) / 6);
+  /* Total inner width:
+   * var(--loomnibox-content-width) - 32px (16px * 2 padding) - 4px (2px * 2
+   * border) - var(--most-visited-container-inset).
+   * Distributed evenly across (var(--most-visited-tile-count) - 1) gaps. */
+  --most-visited-gap: calc(
+      (var(--loomnibox-content-width) - 36px -
+           var(--most-visited-container-inset) -
+           var(--most-visited-tile-count) * var(--most-visited-tile-size)) /
+      (var(--most-visited-tile-count) - 1));
   --most-visited-icon-margin-top: 8px;
   --most-visited-icon-size: 48px;
   --most-visited-managed-icon-left: 44px;
@@ -204,13 +246,6 @@ cr-most-visited {
    * for the URL. */
   --cr-searchbox-url-contents-flex-shrink: 0;
   --cr-searchbox-url-contents-max-width: 65%;
-}
-
-:host([small-loomnibox]) cr-most-visited {
-  /* Total inner width for 5 tiles:
-   * 480px (small content width) - 32px (16px * 2 padding) - 4px (2px * 2 border) = 444px.
-   * Distributed evenly across 4 gaps between 5 tiles. */
-  --most-visited-gap: calc((444px - 5 * var(--most-visited-tile-size)) / 4);
 }
 
 cr-most-visited[hide-title] {

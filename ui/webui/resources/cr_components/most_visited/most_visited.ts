@@ -340,7 +340,10 @@ export class MostVisitedElement extends MostVisitedElementBase {
       this.isDark_ = this.computeIsDark_();
     }
 
-    if (changedPrivateProperties.has('info_') && this.info_ !== null) {
+    // Re-slice `tiles_` when `maxTiles` updates dynamically.
+    if ((changedPrivateProperties.has('info_') ||
+         changedProperties.has('maxTiles')) &&
+        this.info_ !== null) {
       this.visible_ = this.info_.visible;
       this.customLinksEnabled_ = this.info_.customLinksEnabled;
       this.enterpriseShortcutsEnabled_ = this.info_.enterpriseShortcutsEnabled;

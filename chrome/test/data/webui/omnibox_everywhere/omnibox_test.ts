@@ -1587,6 +1587,9 @@ suite('OmniboxEverywhereAppTest', () => {
       profileEmail: 'test@example.com',
       omniboxEverywhereProfilePickerEnabled: false,
       smallLoomnibox: true,
+      dynamicSizing: false,
+      dynamicSizingWidth: 680,
+      smallFont: false,
       isPersistentMode: true,
       omniboxEverywhereMostVisitedHideTitle: true,
       initialFreStage: 0,
@@ -2389,6 +2392,89 @@ suite('OmniboxEverywhereAppTest', () => {
   });
 
   test(
+      'dynamicSizing in persistent mode updates max-tiles based on state',
+      async () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        loadTimeData.overrideValues({
+          omniboxEverywhereMostVisitedEnabled: true,
+          dynamicSizing: true,
+          isPersistentMode: true,
+          initialFreStage: 0,
+        });
+        const dynamicApp = document.createElement('omnibox-everywhere-app');
+        document.body.appendChild(dynamicApp);
+        await microtasksFinished();
+
+        const mv = dynamicApp.shadowRoot.querySelector('cr-most-visited')!;
+        assertTrue(!!mv);
+
+        // Deactivate window to enter resting state in persistent mode.
+        window.dispatchEvent(new Event('blur'));
+        await microtasksFinished();
+        assertEquals('5', mv.getAttribute('max-tiles'));
+
+        // Focus window (active state) expands to 7 tiles.
+        window.dispatchEvent(new Event('focus'));
+        await microtasksFinished();
+        assertEquals('7', mv.getAttribute('max-tiles'));
+
+        // Blur window again.
+        window.dispatchEvent(new Event('blur'));
+        await microtasksFinished();
+        assertEquals('5', mv.getAttribute('max-tiles'));
+      });
+
+  test(
+      'dynamicSizing in ephemeral mode always uses expanded max-tiles',
+      async () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        loadTimeData.overrideValues({
+          omniboxEverywhereMostVisitedEnabled: true,
+          dynamicSizing: true,
+          dynamicSizingWidth: 680,
+          isPersistentMode: false,
+          initialFreStage: 0,
+        });
+        const ephemeralApp = document.createElement('omnibox-everywhere-app');
+        document.body.appendChild(ephemeralApp);
+        await microtasksFinished();
+
+        const mv = ephemeralApp.shadowRoot.querySelector('cr-most-visited')!;
+        assertTrue(!!mv);
+        assertEquals('7', mv.getAttribute('max-tiles'));
+      });
+
+  test(
+      'dynamicSizing with 600px width updates max-tiles between 5 and 6',
+      async () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        loadTimeData.overrideValues({
+          omniboxEverywhereMostVisitedEnabled: true,
+          dynamicSizing: true,
+          dynamicSizingWidth: 600,
+          isPersistentMode: true,
+          initialFreStage: 0,
+        });
+        const dynamicApp600 = document.createElement('omnibox-everywhere-app');
+        document.body.appendChild(dynamicApp600);
+        await microtasksFinished();
+
+        assertEquals('600', dynamicApp600.getAttribute('dynamic-sizing-width'));
+        const mv = dynamicApp600.shadowRoot.querySelector('cr-most-visited')!;
+        assertTrue(!!mv);
+
+        // Resting state uses 5 tiles.
+        window.dispatchEvent(new Event('blur'));
+        await microtasksFinished();
+        assertEquals('5', mv.getAttribute('max-tiles'));
+
+        // Active state in 600px variant expands to 6 tiles.
+        window.dispatchEvent(new Event('focus'));
+        await microtasksFinished();
+        assertEquals('6', mv.getAttribute('max-tiles'));
+      });
+
+  test(
       'most visited tiles hide-title reflects hideTitle_ property',
       async () => {
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -3167,6 +3253,9 @@ suite('OmniboxEverywhereContextMenuTest', () => {
       profileEmail: 'test@example.com',
       omniboxEverywhereProfilePickerEnabled: false,
       searchboxLayoutMode: 'TallBottomContext',
+      dynamicSizing: false,
+      dynamicSizingWidth: 680,
+      smallFont: false,
       isPersistentMode: true,
     });
     testProxy = new TestSearchboxBrowserProxy();

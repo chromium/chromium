@@ -21,6 +21,7 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {getDeepActiveElement} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {FreStage, TabAttachmentSource} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {FreState, PageCallbackRouter} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
@@ -110,6 +111,21 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
         reflect: true,
         attribute: 'small-loomnibox',
       },
+      dynamicSizing_: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'dynamic-sizing',
+      },
+      dynamicSizingWidth_: {
+        type: Number,
+        reflect: true,
+        attribute: 'dynamic-sizing-width',
+      },
+      smallFont_: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'small-font',
+      },
       hideTitle_: {type: Boolean},
       freStage_: {type: Number},
       hotkeyTokens_: {type: Array},
@@ -155,6 +171,11 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       loadTimeData.getBoolean('omniboxEverywhereMostVisitedEnabled');
   protected accessor smallLoomnibox_: boolean =
       loadTimeData.getBoolean('smallLoomnibox');
+  protected accessor dynamicSizing_: boolean =
+      loadTimeData.getBoolean('dynamicSizing');
+  protected accessor dynamicSizingWidth_: number =
+      loadTimeData.getInteger('dynamicSizingWidth');
+  protected accessor smallFont_: boolean = loadTimeData.getBoolean('smallFont');
   protected accessor hideTitle_: boolean =
       loadTimeData.getBoolean('omniboxEverywhereMostVisitedHideTitle');
   protected accessor hasMostVisitedTiles_: boolean = false;
@@ -197,6 +218,15 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
     this.clearActivationTimeout_();
     this.eventTracker_.removeAll();
     this.removeListeners_();
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (this.dynamicSizing_) {
+      // In persistent mode, rest in the small 480px state (5 MVT tiles) when
+      // inactive, and expand both the searchbox and MVT row when focused.
+      this.smallLoomnibox_ = this.isPersistentMode_ && !this.isActive_;
+    }
   }
 
   private setupListeners_() {
@@ -415,6 +445,13 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
     return this.freStage_ === FreStage.kShortcutSetupChin ?
         FreChinMode.SHORTCUT_SETUP :
         FreChinMode.SHORTCUT_REMINDER;
+  }
+
+  protected getMaxMostVisitedTiles_(): number {
+    if (this.smallLoomnibox_) {
+      return 5;
+    }
+    return (this.dynamicSizing_ && this.dynamicSizingWidth_ === 600) ? 6 : 7;
   }
 
   private setIsComposebox_(isComposebox: boolean) {

@@ -364,7 +364,7 @@ void OmniboxEverywhereUIManager::ShowForProfile(Profile* profile,
   if (web_contents()) {
     if (auto* rwhv = web_contents()->GetRenderWidgetHostView()) {
       const gfx::Size kAutoResizeMinSize(GetPopupFixedWidth(), 50);
-      const gfx::Size kAutoResizeMaxSize(GetPopupFixedWidth(), 800);
+      const gfx::Size kAutoResizeMaxSize(GetPopupExpandedFixedWidth(), 800);
       rwhv->EnableAutoResize(kAutoResizeMinSize, kAutoResizeMaxSize);
     }
   }
@@ -372,9 +372,23 @@ void OmniboxEverywhereUIManager::ShowForProfile(Profile* profile,
 
 // static
 int OmniboxEverywhereUIManager::GetPopupFixedWidth() {
+  if (omnibox::kOmniboxEverywhereDynamicSizingParam.Get()) {
+    return prefs::IsEphemeralModelEnabled() ? GetPopupExpandedFixedWidth()
+                                            : kDynamicPopupSmallFixedWidth;
+  }
   return omnibox::kOmniboxEverywhereSmallLoomniboxParam.Get()
              ? kPopupSmallFixedWidth
              : kPopupFixedWidth;
+}
+
+// static
+int OmniboxEverywhereUIManager::GetPopupExpandedFixedWidth() {
+  if (omnibox::kOmniboxEverywhereDynamicSizingParam.Get()) {
+    return omnibox::kOmniboxEverywhereDynamicSizingWidthParam.Get() == 600
+               ? kDynamicPopupMediumFixedWidth
+               : kDynamicPopupLargeFixedWidth;
+  }
+  return GetPopupFixedWidth();
 }
 
 gfx::Rect OmniboxEverywhereUIManager::CalculateWidgetBounds(int height) {
@@ -1040,9 +1054,24 @@ void OmniboxEverywhereUIManager::ResizeDueToAutoResize(
     return;
   }
   constexpr int kAutoResizeMinHeight = 56;
-  gfx::Size target_size(GetPopupFixedWidth(),
+  const int target_width =
+      (omnibox::kOmniboxEverywhereDynamicSizingParam.Get() &&
+       new_size.width() > GetPopupFixedWidth())
+          ? GetPopupExpandedFixedWidth()
+          : GetPopupFixedWidth();
+  gfx::Size target_size(target_width,
                         std::max(new_size.height(), kAutoResizeMinHeight));
   if (widget_->GetSize() != target_size) {
+    if (omnibox::kOmniboxEverywhereDynamicSizingParam.Get()) {
+      // Shift `x` by half the width delta so the popup expands and collapses
+      // symmetrically from its horizontal center rather than growing only to
+      // the right.
+      gfx::Rect bounds = widget_->GetWindowBoundsInScreen();
+      bounds.set_x(bounds.x() - (target_size.width() - bounds.width()) / 2);
+      bounds.set_size(target_size);
+      widget_->SetBounds(bounds);
+      return;
+    }
     widget_->SetSize(target_size);
   }
 }

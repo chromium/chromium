@@ -482,6 +482,143 @@ TEST_F(OmniboxEverywhereUIManagerTest, SmallLoomniboxBounds) {
   ui_manager->Shutdown();
 }
 
+TEST_F(OmniboxEverywhereUIManagerTest, DynamicSizingBounds_PersistentMode) {
+  profile_.GetPrefs()->SetBoolean(omnibox_everywhere::prefs::kFreDismissed,
+                                  true);
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
+  }
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kOmniboxEverywhere, {{"DynamicSizing", "true"}});
+
+  EXPECT_EQ(
+      omnibox_everywhere::OmniboxEverywhereUIManager::GetPopupFixedWidth(),
+      omnibox_everywhere::OmniboxEverywhereUIManager::
+          kDynamicPopupSmallFixedWidth);
+
+  display::test::TestScreen test_screen(/*create_display=*/false,
+                                        /*register_screen=*/false);
+  ScopedScreenOverride screen_override(&test_screen);
+
+  display::Display display1(1, gfx::Rect(0, 0, 1920, 1080));
+  test_screen.display_list().AddDisplay(display1,
+                                        display::DisplayList::Type::PRIMARY);
+
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+
+  const gfx::Rect initial_bounds = widget->GetWindowBoundsInScreen();
+  EXPECT_EQ(initial_bounds,
+            gfx::Rect(688, 464,
+                      omnibox_everywhere::OmniboxEverywhereUIManager::
+                          kDynamicPopupSmallFixedWidth,
+                      omnibox_everywhere::OmniboxEverywhereUIManager::
+                          kDefaultRestingHeight));
+
+  // Simulating auto-resize expansion to full width.
+  ui_manager->ResizeDueToAutoResize(
+      ui_manager->web_contents(),
+      gfx::Size(omnibox_everywhere::OmniboxEverywhereUIManager::
+                    kDynamicPopupLargeFixedWidth,
+                300));
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().width(),
+            omnibox_everywhere::OmniboxEverywhereUIManager::
+                kDynamicPopupLargeFixedWidth);
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().height(), 300);
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().CenterPoint().x(),
+            initial_bounds.CenterPoint().x());
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().y(), initial_bounds.y());
+
+  // Simulating auto-resize collapse back to resting width restores initial
+  // bounds.
+  ui_manager->ResizeDueToAutoResize(
+      ui_manager->web_contents(),
+      gfx::Size(omnibox_everywhere::OmniboxEverywhereUIManager::
+                    kDynamicPopupSmallFixedWidth,
+                omnibox_everywhere::OmniboxEverywhereUIManager::
+                    kDefaultRestingHeight));
+  EXPECT_EQ(widget->GetWindowBoundsInScreen(), initial_bounds);
+
+  ui_manager->Shutdown();
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, DynamicSizingBounds_EphemeralMode) {
+  profile_.GetPrefs()->SetBoolean(omnibox_everywhere::prefs::kFreDismissed,
+                                  true);
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+  }
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kOmniboxEverywhere, {{"DynamicSizing", "true"}});
+
+  EXPECT_EQ(
+      omnibox_everywhere::OmniboxEverywhereUIManager::GetPopupFixedWidth(),
+      omnibox_everywhere::OmniboxEverywhereUIManager::
+          kDynamicPopupLargeFixedWidth);
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       DynamicSizingBounds_PersistentModeMediumWidth600) {
+  profile_.GetPrefs()->SetBoolean(omnibox_everywhere::prefs::kFreDismissed,
+                                  true);
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
+  }
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kOmniboxEverywhere,
+      {{"DynamicSizing", "true"}, {"DynamicSizingWidth", "600"}});
+
+  EXPECT_EQ(
+      omnibox_everywhere::OmniboxEverywhereUIManager::GetPopupFixedWidth(),
+      omnibox_everywhere::OmniboxEverywhereUIManager::
+          kDynamicPopupSmallFixedWidth);
+  EXPECT_EQ(omnibox_everywhere::OmniboxEverywhereUIManager::
+                GetPopupExpandedFixedWidth(),
+            omnibox_everywhere::OmniboxEverywhereUIManager::
+                kDynamicPopupMediumFixedWidth);
+
+  display::test::TestScreen test_screen(/*create_display=*/false,
+                                        /*register_screen=*/false);
+  ScopedScreenOverride screen_override(&test_screen);
+
+  display::Display display1(1, gfx::Rect(0, 0, 1920, 1080));
+  test_screen.display_list().AddDisplay(display1,
+                                        display::DisplayList::Type::PRIMARY);
+
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+
+  const gfx::Rect initial_bounds = widget->GetWindowBoundsInScreen();
+  EXPECT_EQ(initial_bounds.width(),
+            omnibox_everywhere::OmniboxEverywhereUIManager::
+                kDynamicPopupSmallFixedWidth);
+
+  // Simulating auto-resize expansion to 600px mode (664px window width).
+  ui_manager->ResizeDueToAutoResize(
+      ui_manager->web_contents(),
+      gfx::Size(omnibox_everywhere::OmniboxEverywhereUIManager::
+                    kDynamicPopupMediumFixedWidth,
+                300));
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().width(),
+            omnibox_everywhere::OmniboxEverywhereUIManager::
+                kDynamicPopupMediumFixedWidth);
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().height(), 300);
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().CenterPoint().x(),
+            initial_bounds.CenterPoint().x());
+
+  ui_manager->Shutdown();
+}
+
 // Verifies that on displays with dimensions smaller than the fixed popup width,
 // widget bounds calculation clamps width and coordinates to remain fully within
 // the visible work area without overflowing or negative positioning.
