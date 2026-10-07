@@ -4,10 +4,12 @@
 
 ## Background
 
-This documentation focuses on using Lit in the context of Chromium WebUI,
-and on compatibility between Lit and Polymer elements, since much of Chromium
-WebUI is currently written in Polymer. It assumes familiarity with the
-following:
+This documentation focuses on using Lit in the context of Chromium WebUI.
+Polymer is deprecated and unsupported for new non-CrOS WebUI development; Lit
+is required for all new non-CrOS WebUI pages and custom elements. Because some
+Chromium WebUI code is still written in Polymer, this document also covers
+compatibility between Lit and Polymer elements and migrating existing Polymer
+elements to Lit. It assumes familiarity with the following:
 
 *   Web Components: The basic foundation on which Lit is built. See
     [Introduction to Web Components from MDN](https://developer.mozilla.org/en-US/docs/Web/API/Web_components) and the related
@@ -838,7 +840,7 @@ preventing Lit from detecting any changes to the reactive properties. This
 happens because of JavaScript's [public class fields feature](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Public_class_fields). The `useDefineForClassFields: false` flag can be used to
 prevent this TS compiler behavior, but it is deprecated and will be removed in
 a future version of TS compiler. As a result it should not be used for
-compiling any new Lit or Polymer targets.
+compiling any new targets.
 
 ### i18n replacements in checked-in .html.ts files
 As mentioned in a preceding section, unlike for Polymer, the preferred approach

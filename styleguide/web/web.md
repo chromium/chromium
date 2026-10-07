@@ -14,7 +14,8 @@ This guide follows and builds on:
 * [Google HTML/CSS Style Guide](https://google.github.io/styleguide/htmlcssguide.html)
 * [Google TypeScript Style Guide](https://google.github.io/styleguide/tsguide.html)
 * [Google JavaScript Style Guide](https://google.github.io/styleguide/jsguide.html)
-* [Google Polymer Style Guide](http://go/polymer-style)
+* [WebUI Lit Style Guide](../../docs/webui/webui_lit_style_guide.md)
+* [Google Polymer Style Guide](http://go/polymer-style) (ChromeOS Ash and legacy code only)
 
 *** aside
 Note: Concerns for browser compatibility are usually not relevant for
@@ -494,9 +495,11 @@ are two types of ESLint checks:
 ## Polymer
 
 ***note
-Lit is now recommended (over Polymer) for any new WebUI development. See
-the Lit section below for additional detail on when to use Lit vs Polymer. The
-guide below still applies for any new or existing Polymer code.
+Polymer is deprecated and unsupported for new non-CrOS WebUI development. Lit
+is required for any new WebUI pages and custom elements (enforced by presubmit,
+with a few exceptions; see the Lit section below for additional detail). The
+guide below applies only to ChromeOS Ash WebUIs and to maintaining existing
+Polymer code prior to migration.
 ***
 
 Also see the [Google Polymer Style Guide](http://go/polymer-style).
@@ -607,20 +610,13 @@ https://www.polymer-project.org/2.0/docs/devguide/templates#dom-if):
 * Do not add new dependencies on `iron-` or `paper-` Polymer elements, styles,
   and behaviors. These are being removed from Chromium. In many cases, Lit-based
   equivalents already exist in `ui/webui/resources/cr_elements` (e.g.
-  `cr-collapse` should be used instead of `iron-collapse`). In other cases,
-  there is a native solution which should be used instead of the Polymer
-  solution (e.g. use `window.matchMedia()` instead of `iron-media-query`).
-  Contact the WebUI OWNERS if you are unsure what to use instead of a specific
-  Polymer feature. Exceptions:
-  * Polymer UIs can use Polymer's `iron-iconset-svg` to avoid adding a
-    dependency on Lit, which is required for using `cr-iconset`. Note that
-    Polymer UIs can and should use `cr-icon` instead of `iron-icon`, as
-    `cr-icon` can be used with icons provided in either an `iron-iconset-svg`
-    or a `cr-iconset`.
-  * UIs with a compelling use case (i.e. extremely long list of items) may use
-    `iron-list`, as a native/Lit equivalent has not yet been developed. Do not
-    use `iron-list` for relatively short lists (~20 or fewer items); use
-    `dom-repeat` in Polymer code or `items.map(...)` in Lit HTML.
+  `cr-icon` and `cr-iconset` should be used instead of `iron-icon` and
+  `iron-iconset-svg`, `cr-collapse` should be used instead of `iron-collapse`,
+  and `cr-lazy-list` / `cr-infinite-list` should be used instead of
+  `iron-list`). In other cases, there is a native solution which should be used
+  instead of the Polymer solution (e.g. use `window.matchMedia()` instead of
+  `iron-media-query`). Contact the WebUI OWNERS if you are unsure what to use
+  instead of a specific Polymer feature.
 
 * Do not add iron-icons dependency to third_party/polymer/.
   * Polymer provides icons via the `iron-icons` library, but importing each of the iconsets means importing hundreds of SVGs, which is unnecessary because Chrome uses only a small subset.
@@ -630,18 +626,20 @@ https://www.polymer-project.org/2.0/docs/devguide/templates#dom-if):
   * You may copy the SVG code from [iron-icons files](https://github.com/PolymerElements/iron-icons/blob/master/iron-icons.js).
 
 ## Lit
-Lit is now recommended (over Polymer) for new WebUI development. Lit should
-generally be used for any new WebUI pages and any new custom elements being
-added to existing pages, with the following exceptions:
+Lit is required for new non-CrOS WebUI development, as Polymer is deprecated and
+unsupported. Lit must be used for any new WebUI pages and any new custom
+elements being added to existing pages, with the following exceptions:
 
-* New custom elements that need to be a direct parent of an `iron-list` can
-  use Polymer while a Lit-based alternative is developed.
-* New custom elements in the Settings, Print Preview, and Password Manager UIs
-  that need to interact with those pages `prefs` and `model` mechanisms can
-  use Polymer, since these mechanisms rely heavily on subproperty observation
-  and are unlikely to be migrated to Lit in the near future.
+* New custom elements in the Password Manager UI that need to interact with the
+  `prefs` mechanism can use Polymer, since this mechanism relies heavily on
+  subproperty observation.
+* ChromeOS Ash WebUIs (`chrome/browser/resources/ash/`,
+  `chrome/browser/resources/chromeos/`, and `ash/webui/`).
 
-Further guidance on Lit use in Chromium can be found in a [dedicated doc](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui/webui_using_lit.md).
+Further guidance on Lit use in Chromium can be found in the
+[Using Lit in Chromium WebUI Development](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui/webui_using_lit.md)
+doc and the
+[WebUI Lit Style Guide](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui/webui_lit_style_guide.md).
 
 ## Grit processing
 
@@ -729,7 +727,7 @@ ts_library("build_ts") {
     "my_app.ts",
   ]
   deps = [
-    "//third_party/polymer/v3_0:library",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
   extra_deps = [

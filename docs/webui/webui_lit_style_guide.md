@@ -353,20 +353,15 @@ ${this.items.map(item => html`...`)}
 
 ### Formatting
 
-Wrap the return statement of your `getHtml` function or `render` method in `//
-clang-format off` and `// clang-format on` comments. This prevents
-`clang-format` from mangling the HTML template string, ensuring it remains
-readable.
+A [Lit template formatter](../../ui/webui/resources/tools/lit_template_formatter/README.md)
+is currently being rolled out on an opt-in basis to format `.html.ts` template
+files via `git cl format`. Developers can either opt in for their folders (by
+adding a `.style.lit_template_formatter` file to the folder) or run the
+formatter manually on individual `.html.ts` files:
 
-```ts
-export function getHtml(this: MyCrLitElement) {
-  // clang-format off
-  return html`
-    <!--_html_template_start_-->
-    <div>...</div>
-    <!--_html_template_end_-->`;
-  // clang-format on
-}
+```bash
+./third_party/node/linux/node-linux-x64/bin/node \
+  ui/webui/resources/tools/lit_template_formatter/main.js <path/to/file.html.ts>
 ```
 
 ### Templatized UI elements
