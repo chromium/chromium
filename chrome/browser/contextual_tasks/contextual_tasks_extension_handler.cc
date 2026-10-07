@@ -394,6 +394,10 @@ void ContextualTasksExtensionHandler::HandleOnSubmitQueryRequest() {
 
   PostSearchMessage(response_message);
 
+  // Submission moved the uploaded tabs into the session's persisted tabs, so
+  // the context library chip state may have changed.
+  UpdateContextLibraryInputState();
+
   DoSubmitQueryCleanup();
 }
 
@@ -403,6 +407,21 @@ void ContextualTasksExtensionHandler::AppendTabContextsToOnSubmitQueryResponse(
     const std::optional<base::UnguessableToken>& overlay_token) {
   auto* on_submit_response =
       response_message->mutable_on_submit_query_response();
+
+  // Report persisted tabs the user removed since the last turn (deselected,
+  // closed, or navigated away) before reading the uploaded tokens, since this
+  // also drops tokens for closed tabs. `TakeRemovedContexts()` also carries
+  // Smart Tab Sharing removals, but this surface never produces them:
+  // `SetSmartTabSharingActive()` is a no-op here because the AIM page is a
+  // website and must not be able to trigger tab sharing without a user
+  // gesture. If Smart Tab Sharing is enabled for this surface later, that
+  // gating belongs in `SetSmartTabSharingActive()` and the recent interaction
+  // check in `HandleOnSubmitQueryRequest()`, not here.
+  for (const auto& removed_id : session_handle->TakeRemovedContexts()) {
+    *on_submit_response->add_removed_contexts()->mutable_request_id() =
+        removed_id;
+  }
+
   const auto selected_tabs = GetSelectedTabs();
   // Add uploaded tab contexts directly from the session handle.
   for (const auto& file_info : session_handle->GetUploadedContextFileInfos()) {
@@ -433,12 +452,12 @@ void ContextualTasksExtensionHandler::AppendTabContextsToOnSubmitQueryResponse(
     }
   }
 
-  for (const auto& removed_id :
-       session_handle->sts_toggled_removed_contexts()) {
-    auto* removed = on_submit_response->add_removed_contexts();
-    *removed->mutable_request_id() = removed_id;
-  }
-  session_handle->set_smart_tab_sharing_toggled_since_last_turn(false);
+  // The page owns the query text, so no query length metrics are recorded
+  // here. This moves the uploaded tabs into the session's persisted tabs so
+  // they are tracked across turns and are not re-added on the next
+  // submission.
+  session_handle->MarkQuerySubmitted(/*file_tokens=*/{},
+                                     /*query_text_length=*/std::nullopt);
 }
 
 void ContextualTasksExtensionHandler::HandleOpenLinkInSidePanelMode(
