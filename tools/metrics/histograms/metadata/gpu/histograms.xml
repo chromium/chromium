@@ -2581,12 +2581,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.DelegatedCompositing.Status" enum="DelegatedStatus"
-    expires_after="2025-07-13">
+    expires_after="2027-04-07">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     An enum status result for attempted delegated compositing (success or
     failure reason) recorded every drawn frame.
+
+    Warning: this histogram was expired from 2025-07-13 to 2026-10-07; data may
+    be missing.
   </summary>
 </histogram>
 
