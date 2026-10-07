@@ -20,7 +20,7 @@ class WebUI;
 
 // The handler for Javascript messages related to the "default-browser-modal"
 // page.
-class DefaultBrowserModalHandler final
+class DefaultBrowserModalHandler
     : public default_browser_modal::mojom::PageHandler {
  public:
   DefaultBrowserModalHandler(
@@ -42,6 +42,10 @@ class DefaultBrowserModalHandler final
   void ShowUI() override;
   void CheckDefaultStatusAndMaybeClose(
       CheckDefaultStatusAndMaybeCloseCallback callback) override;
+
+ protected:
+  // Virtual for testing.
+  virtual void LaunchSettings();
 
  private:
   void OnHasAcceptedChanged(bool has_accepted);

@@ -102,18 +102,24 @@ if (is_win) {
     testonly = true
 
     sources = [
+      "default_browser_modal_handler_unittest.cc",
       "guided_setter_overlay_window_win_unittest.cc",
       "visual_guided_setter_controller_win_unittest.cc",
       "visual_guided_setter_layout_utils_unittest.cc",
     ]
 
     deps = [
+      ":default_browser_modal",
+      ":modal_mojo_bindings",
       ":visual_guided_setter",
       "//base",
       "//base/test:test_support",
+      "//chrome/browser:shell_integration",
       "//chrome/browser/default_browser",
+      "//chrome/browser/ui/startup/default_browser_prompt",
       "//chrome/test:test_support",
       "//content/test:test_support",
+      "//mojo/public/cpp/bindings",
       "//testing/gtest",
       "//ui/display",
       "//ui/display:test_support",

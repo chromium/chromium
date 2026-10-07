@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_DEFAULT_BROWSER_PROMPT_MANAGER_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_surface_manager.h"
@@ -35,6 +36,11 @@ class DefaultBrowserPromptManager {
 
   DefaultBrowserSurfaceManager* GetPromptSurfaceManager() {
     return prompt_surface_manager_.get();
+  }
+
+  void SetPromptSurfaceManagerForTesting(
+      std::unique_ptr<DefaultBrowserSurfaceManager> surface_manager) {
+    prompt_surface_manager_ = std::move(surface_manager);
   }
 
   void ShowPrompts(bool can_pin_to_taskbar);
