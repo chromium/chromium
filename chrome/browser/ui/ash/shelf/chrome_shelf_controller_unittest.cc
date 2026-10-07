@@ -98,6 +98,7 @@
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -201,6 +202,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/grit/extensions_browser_resources.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/window_parenting_client.h"
@@ -497,6 +499,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
 
     app_list::AppListSyncableServiceFactory::SetUseInTesting(true);
 
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+        test_url_loader_factory()->GetSafeWeakWrapper());
+
     if (auto_start_arc_app_test_) {
       arc_app_test_.PreProfileSetUp();
     }
@@ -521,10 +526,15 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     // fortunately, does not seem to impact to the real testing behavior
     // we workaround it by instantiating WallpaperControllerClientImpl
     // after profile creation.
-    wallpaper_controller_client_ = std::make_unique<
-        WallpaperControllerClientImpl>(
-        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
-        std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>());
+    wallpaper_controller_client_ =
+        std::make_unique<WallpaperControllerClientImpl>(
+            CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
+            std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>(
+                TestingBrowserProcess::GetGlobal()
+                    ->GetFeatures()
+                    ->application_locale_storage(),
+                TestingBrowserProcess::GetGlobal()
+                    ->shared_url_loader_factory()));
     wallpaper_controller_client_->Init();
 
     model_ = std::make_unique<ash::ShelfModel>();
@@ -735,6 +745,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     if (auto_start_arc_app_test_) {
       arc_app_test_.PostProfileTearDown();
     }
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
     ash::ConciergeClient::Shutdown();
     app_list::AppListSyncableServiceFactory::SetUseInTesting(false);
   }

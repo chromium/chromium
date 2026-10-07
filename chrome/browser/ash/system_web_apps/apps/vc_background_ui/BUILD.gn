@@ -44,6 +44,7 @@ static_library("vc_background_ui") {
     "//components/manta",
     "//components/session_manager/core",
     "//media/capture:capture_lib",
+    "//services/network/public/cpp",
     "//third_party/blink/public/mojom:mojom_platform_shared",
     "//third_party/blink/public/mojom:mojom_platform_shared_cpp_sources",
     "//ui/base",

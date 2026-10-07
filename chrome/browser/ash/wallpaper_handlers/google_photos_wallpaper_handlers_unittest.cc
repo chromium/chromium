@@ -13,20 +13,23 @@
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/signin/fake_identity_manager_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
@@ -145,10 +148,7 @@ using ash::personalization_app::mojom::GooglePhotosPhotoPtr;
 
 class GooglePhotosFetcherTestBase : public testing::Test {
  public:
-  GooglePhotosFetcherTestBase()
-      : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
-        profile_manager_(TestingBrowserProcess::GetGlobal()) {}
-
+  GooglePhotosFetcherTestBase() = default;
   GooglePhotosFetcherTestBase(const GooglePhotosFetcherTestBase&) = delete;
   GooglePhotosFetcherTestBase& operator=(const GooglePhotosFetcherTestBase&) =
       delete;
@@ -159,8 +159,22 @@ class GooglePhotosFetcherTestBase : public testing::Test {
  protected:
   // testing::Test:
   void SetUp() override {
-    ASSERT_TRUE(profile_manager_.SetUp());
-    profile_ = profile_manager_.CreateTestingProfile(kFakeTestEmail);
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
+
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            TestingBrowserProcess::GetGlobal()));
+    ASSERT_TRUE(
+        user_session_test_environment_->AddRegularUser(kFakeTestAccountId));
+    user_session_test_environment_->LogIn(kFakeTestAccountId);
+
+    profile_ = static_cast<TestingProfile*>(Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            kFakeTestAccountId)));
+    ASSERT_TRUE(profile_);
 
     // The fetchers look their IdentityManager up by AccountId through
     // ash::IdentityManagerProvider, so register `profile_`'s under the
@@ -169,14 +183,22 @@ class GooglePhotosFetcherTestBase : public testing::Test {
         kFakeTestAccountId, IdentityManagerFactory::GetForProfile(profile_));
   }
 
+  void TearDown() override {
+    identity_manager_provider_.SetIdentityManagerForAccount(kFakeTestAccountId,
+                                                            nullptr);
+    profile_ = nullptr;
+    user_session_test_environment_.reset();
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
-  user_manager::ScopedUserManager scoped_user_manager_;
-  TestingProfileManager profile_manager_;
-  raw_ptr<TestingProfile> profile_;
-  // Declared after `profile_manager_` so it is destroyed first: it holds a
-  // raw_ptr to an IdentityManager owned by a profile that `profile_manager_`
-  // destroys, and must not outlive it.
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
+  // This holds a raw_ptr to an IdentityManager owned by a profile and must not
+  // outlive it.
   ash::FakeIdentityManagerProvider identity_manager_provider_;
 };
 
@@ -190,8 +212,17 @@ class GooglePhotosEnabledFetcherTest : public GooglePhotosFetcherTestBase {
   void SetUp() override {
     GooglePhotosFetcherTestBase::SetUp();
     google_photos_enabled_fetcher_ =
-        std::make_unique<WallpaperFetcherDelegateImpl>()
+        std::make_unique<WallpaperFetcherDelegateImpl>(
+            TestingBrowserProcess::GetGlobal()
+                ->GetFeatures()
+                ->application_locale_storage(),
+            TestingBrowserProcess::GetGlobal()->shared_url_loader_factory())
             ->CreateGooglePhotosEnabledFetcher(profile(), kFakeTestAccountId);
+  }
+
+  void TearDown() override {
+    google_photos_enabled_fetcher_.reset();
+    GooglePhotosFetcherTestBase::TearDown();
   }
 
  private:
@@ -232,8 +263,17 @@ class GooglePhotosPhotosFetcherTest : public GooglePhotosFetcherTestBase {
   void SetUp() override {
     GooglePhotosFetcherTestBase::SetUp();
     google_photos_photos_fetcher_ =
-        std::make_unique<WallpaperFetcherDelegateImpl>()
+        std::make_unique<WallpaperFetcherDelegateImpl>(
+            TestingBrowserProcess::GetGlobal()
+                ->GetFeatures()
+                ->application_locale_storage(),
+            TestingBrowserProcess::GetGlobal()->shared_url_loader_factory())
             ->CreateGooglePhotosPhotosFetcher(profile(), kFakeTestAccountId);
+  }
+
+  void TearDown() override {
+    google_photos_photos_fetcher_.reset();
+    GooglePhotosFetcherTestBase::TearDown();
   }
 
  private:
@@ -349,8 +389,17 @@ class GooglePhotosAlbumsFetcherTest : public GooglePhotosFetcherTestBase {
   void SetUp() override {
     GooglePhotosFetcherTestBase::SetUp();
     google_photos_albums_fetcher_ =
-        std::make_unique<WallpaperFetcherDelegateImpl>()
+        std::make_unique<WallpaperFetcherDelegateImpl>(
+            TestingBrowserProcess::GetGlobal()
+                ->GetFeatures()
+                ->application_locale_storage(),
+            TestingBrowserProcess::GetGlobal()->shared_url_loader_factory())
             ->CreateGooglePhotosAlbumsFetcher(profile(), kFakeTestAccountId);
+  }
+
+  void TearDown() override {
+    google_photos_albums_fetcher_.reset();
+    GooglePhotosFetcherTestBase::TearDown();
   }
 
  private:

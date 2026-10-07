@@ -348,7 +348,9 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   wallpaper_controller_client_ =
       std::make_unique<WallpaperControllerClientImpl>(
           CHECK_DEREF(g_browser_process->local_state()),
-          std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>());
+          std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>(
+              g_browser_process->GetFeatures()->application_locale_storage(),
+              g_browser_process->shared_url_loader_factory()));
   wallpaper_controller_client_->Init();
 
   session_controller_client_ = std::make_unique<SessionControllerClientImpl>(

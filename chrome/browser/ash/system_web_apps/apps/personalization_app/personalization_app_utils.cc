@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -39,6 +40,7 @@
 #include "components/user_manager/user_type.h"
 #include "components/variations/service/variations_service.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
 namespace ash::personalization_app {
@@ -73,6 +75,8 @@ std::optional<std::string> GetCountryCode() {
 }  // namespace
 
 std::unique_ptr<content::WebUIController> CreatePersonalizationAppUI(
+    const ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     content::WebUI* web_ui,
     const GURL& url,
     manta::MantaService* manta_service) {
@@ -90,11 +94,13 @@ std::unique_ptr<content::WebUIController> CreatePersonalizationAppUI(
   auto wallpaper_provider = std::make_unique<
       ash::personalization_app::PersonalizationAppWallpaperProviderImpl>(
       g_browser_process->local_state(), web_ui,
-      std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>());
+      std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>(
+          application_locale_storage, shared_url_loader_factory));
   auto sea_pen_provider = std::make_unique<
       ash::personalization_app::PersonalizationAppSeaPenProviderImpl>(
       web_ui,
-      std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>(),
+      std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>(
+          application_locale_storage, std::move(shared_url_loader_factory)),
       manta_service);
   return std::make_unique<ash::personalization_app::PersonalizationAppUI>(
       web_ui, std::move(ambient_provider),

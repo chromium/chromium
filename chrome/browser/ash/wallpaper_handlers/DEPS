@@ -14,10 +14,7 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/settings",
-  "+chrome/browser/browser_process.h",
-  "+chrome/browser/global_features.h",
   "+chrome/browser/profiles",
   "+chrome/test/base",
 ]
@@ -26,6 +23,8 @@ specific_include_rules = {
   # Production code gets its IdentityManager from ash::IdentityManagerProvider;
   # only the test needs the //chrome Profile-keyed factory to seed the fake.
   "google_photos_wallpaper_handlers_unittest\\.cc": [
+    "+chrome/browser/ash/login/test",
+    "+chrome/browser/global_features.h",
     "+chrome/browser/signin",
   ],
 }

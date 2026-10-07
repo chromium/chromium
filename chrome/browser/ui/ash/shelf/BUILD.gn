@@ -204,6 +204,7 @@ source_set("unit_tests") {
     "//ash/public/cpp",
     "//ash/webui/mall:app_id",
     "//base",
+    "//chrome/browser:global_features",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/apps/app_service:test_support",
@@ -272,6 +273,7 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//extensions/browser",
     "//extensions/common",
+    "//services/network/public/cpp",
     "//testing/gtest",
   ]
 }

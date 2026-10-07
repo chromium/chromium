@@ -485,14 +485,22 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
       browser_policy_connector_ash_.get()));
   AddWebUIConfig(
       std::make_unique<personalization_app::PersonalizationAppUIConfig>(
-          base::BindRepeating([](content::WebUI* web_ui, const GURL& url)
-                                  -> std::unique_ptr<content::WebUIController> {
-            Profile* profile = Profile::FromWebUI(web_ui);
-            manta::MantaService* manta_service =
-                manta::MantaServiceFactory::GetForProfile(profile);
-            return personalization_app::CreatePersonalizationAppUI(
-                web_ui, url, manta_service);
-          })));
+          base::BindRepeating(
+              [](const ApplicationLocaleStorage* application_locale_storage,
+                 scoped_refptr<network::SharedURLLoaderFactory>
+                     shared_url_loader_factory,
+                 content::WebUI* web_ui,
+                 const GURL& url) -> std::unique_ptr<content::WebUIController> {
+                Profile* profile = Profile::FromWebUI(web_ui);
+                manta::MantaService* manta_service =
+                    manta::MantaServiceFactory::GetForProfile(profile);
+                return personalization_app::CreatePersonalizationAppUI(
+                    application_locale_storage,
+                    std::move(shared_url_loader_factory), web_ui, url,
+                    manta_service);
+              },
+              base::Unretained(&application_locale_storage_.get()),
+              shared_url_loader_factory_)));
   AddWebUIConfig(std::make_unique<PowerUIConfig>());
   AddWebUIConfig(
       std::make_unique<printing::printing_manager::PrintManagementUIConfig>(
@@ -523,14 +531,22 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
                  policy::local_user_files::LocalFilesMigrationUIConfig>());
   AddWebUIConfig(std::make_unique<UrgentPasswordExpiryNotificationUIConfig>());
   AddWebUIConfig(std::make_unique<vc_background_ui::VcBackgroundUIConfig>(
-      base::BindRepeating([](content::WebUI* web_ui, const GURL& url)
-                              -> std::unique_ptr<content::WebUIController> {
-        Profile* profile = Profile::FromWebUI(web_ui);
-        manta::MantaService* manta_service =
-            manta::MantaServiceFactory::GetForProfile(profile);
-        return vc_background_ui::CreateVcBackgroundUI(web_ui, url,
-                                                      manta_service);
-      })));
+      base::BindRepeating(
+          [](const ApplicationLocaleStorage* application_locale_storage,
+             scoped_refptr<network::SharedURLLoaderFactory>
+                 shared_url_loader_factory,
+             content::WebUI* web_ui,
+             const GURL& url) -> std::unique_ptr<content::WebUIController> {
+            Profile* profile = Profile::FromWebUI(web_ui);
+            manta::MantaService* manta_service =
+                manta::MantaServiceFactory::GetForProfile(profile);
+            return vc_background_ui::CreateVcBackgroundUI(
+                application_locale_storage,
+                std::move(shared_url_loader_factory), web_ui, url,
+                manta_service);
+          },
+          base::Unretained(&application_locale_storage_.get()),
+          shared_url_loader_factory_)));
   AddWebUIConfig(std::make_unique<GrowthInternalsUIConfig>());
   AddWebUIConfig(
       std::make_unique<FloatingWorkspaceUIConfig>(&local_state_.get()));
