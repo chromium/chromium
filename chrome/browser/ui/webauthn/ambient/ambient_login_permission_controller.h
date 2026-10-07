@@ -37,6 +37,8 @@ class AmbientLoginPermissionController
 
   State state() const { return state_; }
 
+  void Reset();
+
   void SetFinishedNotificationForTesting(base::OnceClosure finished_closure);
 
   base::WeakPtr<AmbientLoginPermissionController> GetWeakPtr();

@@ -52,6 +52,22 @@ void AmbientLoginPermissionController::SetFinishedNotificationForTesting(
   finished_closure_ = std::move(finished_closure);
 }
 
+void AmbientLoginPermissionController::Reset() {
+  if (state_ == State::kIdle) {
+    return;
+  }
+  state_ = State::kIdle;
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&page().GetMainDocument());
+  permissions::PermissionRequestManager* manager =
+      web_contents
+          ? permissions::PermissionRequestManager::FromWebContents(web_contents)
+          : nullptr;
+  if (manager) {
+    manager->CancelAllRequestsWithType(permissions::RequestType::kAmbientLogin);
+  }
+}
+
 void AmbientLoginPermissionController::OnRequestFinished() {
   state_ = State::kIdle;
   if (finished_closure_) {

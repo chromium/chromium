@@ -65,6 +65,14 @@ class MockAmbientDelegate : public TestPermissionBubbleViewDelegate {
                            base::Unretained(this)),
             base::DoNothing()));
     set_requests(std::move(requests));
+
+    ON_CALL(*this, Accept)
+        .WillByDefault([this](const PromptOptions& prompt_options) {
+          for (const std::unique_ptr<permissions::PermissionRequest>& request :
+               Requests()) {
+            request->PermissionGranted(prompt_options, /*is_one_time=*/false);
+          }
+        });
   }
 
   void OnCredentialSelected(size_t index) {
