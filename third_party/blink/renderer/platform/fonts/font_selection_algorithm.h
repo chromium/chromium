@@ -40,8 +40,8 @@ class PLATFORM_EXPORT FontSelectionAlgorithm {
       : request_(request), capabilities_bounds_(capabilities_bounds) {}
 
   bool IsBetterMatchForRequest(
-      const FontSelectionCapabilities& firstCapabilities,
-      const FontSelectionCapabilities& secondCapabilities);
+      const FontSelectionCapabilities& first_capabilities,
+      const FontSelectionCapabilities& second_capabilities);
 
   struct DistanceResult {
     FontSelectionValue distance;

@@ -30,12 +30,12 @@ uint32_t NumberedTag(uint32_t base_tag, uint32_t number) {
   return base_tag;
 }
 
-uint32_t ssTag(uint32_t number) {
+uint32_t SsTag(uint32_t number) {
   uint32_t base_tag = HB_TAG('s', 's', 0, 0);
   return NumberedTag(base_tag, number);
 }
 
-uint32_t cvTag(uint32_t number) {
+uint32_t CvTag(uint32_t number) {
   uint32_t base_tag = HB_TAG('c', 'v', 0, 0);
   return NumberedTag(base_tag, number);
 }
@@ -154,7 +154,7 @@ scoped_refptr<FontVariantAlternates> FontVariantAlternates::Resolve(
       if (!styleset_resolved.empty()) {
         for (auto styleset_entry : styleset_resolved) {
           if (styleset_entry <= kMaxTag) {
-            clone->resolved_features_.emplace_back(ssTag(styleset_entry), 1u);
+            clone->resolved_features_.emplace_back(SsTag(styleset_entry), 1u);
           }
         }
       }
@@ -173,7 +173,7 @@ scoped_refptr<FontVariantAlternates> FontVariantAlternates::Resolve(
         }
         if (character_variant_resolved[0] <= kMaxTag) {
           clone->resolved_features_.emplace_back(
-              cvTag(character_variant_resolved[0]), feature_value);
+              CvTag(character_variant_resolved[0]), feature_value);
         }
       }
     }

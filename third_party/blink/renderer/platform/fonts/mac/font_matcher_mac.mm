@@ -632,10 +632,10 @@ void ClampVariationValuesToFontAcceptableRange(
                                            FontSelectionValue(axis_max_value)});
 
     if (axis_id_value == kWeightTag && weight != kNormalWeightValue) {
-      weight = capabilities_range.clampToRange(weight);
+      weight = capabilities_range.ClampToRange(weight);
     }
     if (axis_id_value == kWidthTag && width != kNormalWidthValue) {
-      width = capabilities_range.clampToRange(width);
+      width = capabilities_range.ClampToRange(width);
     }
   }
 }

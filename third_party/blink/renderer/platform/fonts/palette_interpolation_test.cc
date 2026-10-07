@@ -20,37 +20,38 @@
 #include <utility>
 #include <vector>
 
+namespace blink {
+
 namespace {
 
 constexpr double kMaxAlphaDifference = 0.01;
 
-blink::String pathToColorPalettesTestFont() {
+String PathToColorPalettesTestFont() {
   base::FilePath wpt_palette_font_path(
-      blink::StringToFilePath(blink::test::BlinkWebTestsDir()));
+      StringToFilePath(test::BlinkWebTestsDir()));
   wpt_palette_font_path = wpt_palette_font_path.Append(FILE_PATH_LITERAL(
       "external/wpt/css/css-fonts/resources/COLR-palettes-test-font.ttf"));
-  return blink::FilePathToString(wpt_palette_font_path);
+  return FilePathToString(wpt_palette_font_path);
 }
-blink::String pathToNonColorTestFont() {
-  return blink::test::BlinkWebTestsFontsTestDataPath("Ahem.ttf");
+
+String PathToNonColorTestFont() {
+  return test::BlinkWebTestsFontsTestDataPath("Ahem.ttf");
 }
 
 }  // namespace
-
-namespace blink {
 
 class PaletteInterpolationTest : public FontTestBase {
  protected:
   void SetUp() override {
     FontDescription::VariantLigatures ligatures;
 
-    Font* color_palette_font = blink::test::CreateTestFont(
-        AtomicString("Ahem"), pathToColorPalettesTestFont(), 16, &ligatures);
+    Font* color_palette_font = test::CreateTestFont(
+        AtomicString("Ahem"), PathToColorPalettesTestFont(), 16, &ligatures);
     color_palette_typeface_ =
         sk_ref_sp(color_palette_font->PrimaryFont()->PlatformData().Typeface());
 
-    Font* non_color_font = blink::test::CreateTestFont(
-        AtomicString("Ahem"), pathToNonColorTestFont(), 16, &ligatures);
+    Font* non_color_font = test::CreateTestFont(
+        AtomicString("Ahem"), PathToNonColorTestFont(), 16, &ligatures);
     non_color_ahem_typeface_ =
         sk_ref_sp(non_color_font->PrimaryFont()->PlatformData().Typeface());
   }

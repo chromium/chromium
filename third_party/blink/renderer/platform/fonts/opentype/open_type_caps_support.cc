@@ -14,7 +14,7 @@ namespace blink {
 
 namespace {
 
-bool activationSelectorPresent(
+bool ActivationSelectorPresent(
     hb_face_t* hb_face,
     const hb_aat_layout_feature_type_t feature_type,
     const hb_aat_layout_feature_selector_t enabled_selector_expectation) {
@@ -188,18 +188,20 @@ bool OpenTypeCapsSupport::SupportsAatFeature(uint32_t tag) const {
 
     // Check for new style small caps, feature id 38.
     if (aat_features.Contains(HB_AAT_LAYOUT_FEATURE_TYPE_LOWER_CASE)) {
-      if (activationSelectorPresent(
+      if (ActivationSelectorPresent(
               hb_face, HB_AAT_LAYOUT_FEATURE_TYPE_LOWER_CASE,
-              HB_AAT_LAYOUT_FEATURE_SELECTOR_LOWER_CASE_SMALL_CAPS))
+              HB_AAT_LAYOUT_FEATURE_SELECTOR_LOWER_CASE_SMALL_CAPS)) {
         return true;
+      }
     }
 
     // Check for old style small caps enabling selector, feature id 3.
     if (aat_features.Contains(HB_AAT_LAYOUT_FEATURE_TYPE_LETTER_CASE)) {
-      if (activationSelectorPresent(hb_face,
-                                    HB_AAT_LAYOUT_FEATURE_TYPE_LETTER_CASE,
-                                    HB_AAT_LAYOUT_FEATURE_SELECTOR_SMALL_CAPS))
+      if (ActivationSelectorPresent(
+              hb_face, HB_AAT_LAYOUT_FEATURE_TYPE_LETTER_CASE,
+              HB_AAT_LAYOUT_FEATURE_SELECTOR_SMALL_CAPS)) {
         return true;
+      }
     }
 
     // Neither old or new style small caps present.
@@ -210,7 +212,7 @@ bool OpenTypeCapsSupport::SupportsAatFeature(uint32_t tag) const {
     if (!aat_features.Contains(HB_AAT_LAYOUT_FEATURE_TYPE_UPPER_CASE))
       return false;
 
-    return activationSelectorPresent(
+    return ActivationSelectorPresent(
         hb_face, HB_AAT_LAYOUT_FEATURE_TYPE_UPPER_CASE,
         HB_AAT_LAYOUT_FEATURE_SELECTOR_UPPER_CASE_SMALL_CAPS);
   }

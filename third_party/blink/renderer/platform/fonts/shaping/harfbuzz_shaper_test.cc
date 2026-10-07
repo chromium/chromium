@@ -1800,15 +1800,15 @@ TEST_F(HarfBuzzShaperTest, SafeToBreakLatinDiscretionaryLigatures) {
 
   // Add zero-width spaces at some of the safe to break offsets.
   String inserted_zero_width_spaces(u"RA\u200BD\u200BDAYoVa\u200BD\u200BD");
-  HarfBuzzShaper refShaper(inserted_zero_width_spaces);
-  const ShapeResult* referenceResult =
-      refShaper.Shape(font, TextDirection::kLtr);
+  HarfBuzzShaper ref_shaper(inserted_zero_width_spaces);
+  const ShapeResult* reference_result =
+      ref_shaper.Shape(font, TextDirection::kLtr);
 
   // Results should be identical if it truly is safe to break at the designated
   // safe-to-break offsets because otherwise, the zero-width spaces would have
   // altered the text spacing, for example by breaking apart ligatures or
   // kerning pairs.
-  EXPECT_EQ(result->SnappedWidth(), referenceResult->SnappedWidth());
+  EXPECT_EQ(result->SnappedWidth(), reference_result->SnappedWidth());
 
   // Zero-width spaces were inserted, so we need to account for that by
   // offseting the index that we compare against.
@@ -1818,7 +1818,7 @@ TEST_F(HarfBuzzShaperTest, SafeToBreakLatinDiscretionaryLigatures) {
       inserts_offset++;
     EXPECT_EQ(
         result->SnappedStartPositionForOffset(i),
-        referenceResult->SnappedStartPositionForOffset(i + inserts_offset));
+        reference_result->SnappedStartPositionForOffset(i + inserts_offset));
   }
 }
 

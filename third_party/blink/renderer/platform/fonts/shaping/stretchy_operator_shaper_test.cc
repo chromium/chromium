@@ -57,7 +57,7 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
 
   // Calculate glyph indices of stretchy operator's parts.
   Vector<UChar32> v, h;
-  retrieveGlyphForStretchyOperators(math, v, h);
+  RetrieveGlyphForStretchyOperators(math, v, h);
 
   // Stretch operators to target sizes (in font units) 125, 250, 375, 500, 625,
   // 750, 875, 1000, 1125, ..., 3750, 3875, 4000.
@@ -266,7 +266,7 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariantsCenteredOnBaseline) {
 
   // Calculate glyph indices of stretchy operator's parts.
   Vector<UChar32> v, h;
-  retrieveGlyphForStretchyOperators(math, v, h);
+  RetrieveGlyphForStretchyOperators(math, v, h);
 
   constexpr wtf_size_t kRepetitionCount = 5;
   float overlap = 750;

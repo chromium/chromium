@@ -30,10 +30,10 @@ const UChar32 kOverBraceCodePoint = 0x23DE;
 const UChar32 kVerticalArrow = 0x295C;
 const UChar32 kHorizontalArrow = 0x295A;
 const UChar32 kRadical = 0x221A;
-PLATFORM_EXPORT void retrieveGlyphForStretchyOperators(
-    const blink::Font* operatorsWoff,
-    Vector<UChar32>& verticalGlyphs,
-    Vector<UChar32>& horizontalGlyphs);
+PLATFORM_EXPORT void RetrieveGlyphForStretchyOperators(
+    const blink::Font* operators_woff,
+    Vector<UChar32>& vertical_glyphs,
+    Vector<UChar32>& horizontal_glyphs);
 
 // The largeop-displayoperatorminheight*-2AFF-italiccorrection*.woff fonts
 // contain the largeop 0x2AFF character from the MathML operator dictionary,

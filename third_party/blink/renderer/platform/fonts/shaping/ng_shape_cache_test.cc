@@ -24,50 +24,50 @@ class NGShapeCacheTest : public FontTestBase {
 };
 
 TEST_F(NGShapeCacheTest, AddEntriesAndCacheHits) {
-  auto ShapeResultFunc = []() -> ShaperResult {
+  auto shape_result_func = []() -> ShaperResult {
     // For the purposes of this test the actual internals of the shape result
     // doesn't matter.
     return {MakeGarbageCollected<ShapeResult>(0, 0, TextDirection::kLtr),
             /*can_cache=*/true};
   };
 
-  auto CreateKey = [](const String& text,
-                      TextDirection direction) -> ShapeCacheKey {
+  auto create_key = [](const String& text,
+                       TextDirection direction) -> ShapeCacheKey {
     return ShapeCacheKey(text, 0, text.length(), g_null_atom, {}, direction);
   };
 
   // Adding an entry is successful.
-  const auto* entry_A_LTR =
-      cache->GetOrCreate(CreateKey("A", TextDirection::kLtr), ShapeResultFunc);
-  ASSERT_TRUE(entry_A_LTR);
+  const auto* entry_a_ltr = cache->GetOrCreate(
+      create_key("A", TextDirection::kLtr), shape_result_func);
+  ASSERT_TRUE(entry_a_ltr);
 
   // Adding the same entry again hits cache.
-  EXPECT_EQ(
-      cache->GetOrCreate(CreateKey("A", TextDirection::kLtr), ShapeResultFunc),
-      entry_A_LTR);
+  EXPECT_EQ(cache->GetOrCreate(create_key("A", TextDirection::kLtr),
+                               shape_result_func),
+            entry_a_ltr);
 
   // Adding the an entry with different text does not hit cache.
-  const auto* entry_B_LTR =
-      cache->GetOrCreate(CreateKey("B", TextDirection::kLtr), ShapeResultFunc);
-  ASSERT_TRUE(entry_B_LTR);
-  EXPECT_NE(entry_B_LTR, entry_A_LTR);
+  const auto* entry_b_ltr = cache->GetOrCreate(
+      create_key("B", TextDirection::kLtr), shape_result_func);
+  ASSERT_TRUE(entry_b_ltr);
+  EXPECT_NE(entry_b_ltr, entry_a_ltr);
 
   // Adding the same entry again hits cache.
-  EXPECT_EQ(
-      cache->GetOrCreate(CreateKey("B", TextDirection::kLtr), ShapeResultFunc),
-      entry_B_LTR);
+  EXPECT_EQ(cache->GetOrCreate(create_key("B", TextDirection::kLtr),
+                               shape_result_func),
+            entry_b_ltr);
 
   // Adding the an entry with different direction does not hit cache.
-  const auto* entry_A_RTL =
-      cache->GetOrCreate(CreateKey("A", TextDirection::kRtl), ShapeResultFunc);
-  ASSERT_TRUE(entry_A_RTL);
-  EXPECT_NE(entry_A_RTL, entry_A_LTR);
-  EXPECT_NE(entry_A_RTL, entry_B_LTR);
+  const auto* entry_a_rtl = cache->GetOrCreate(
+      create_key("A", TextDirection::kRtl), shape_result_func);
+  ASSERT_TRUE(entry_a_rtl);
+  EXPECT_NE(entry_a_rtl, entry_a_ltr);
+  EXPECT_NE(entry_a_rtl, entry_b_ltr);
 
   // Adding the same entry again hits cache.
-  EXPECT_EQ(
-      cache->GetOrCreate(CreateKey("A", TextDirection::kRtl), ShapeResultFunc),
-      entry_A_RTL);
+  EXPECT_EQ(cache->GetOrCreate(create_key("A", TextDirection::kRtl),
+                               shape_result_func),
+            entry_a_rtl);
 }
 
 TEST_F(NGShapeCacheTest, FontPerformanceMetrics) {

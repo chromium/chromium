@@ -89,19 +89,19 @@ std::optional<CharacterFallbackKey> CharacterFallbackKey::Make(
     int16_t raw_font_style,
     uint8_t orientation,
     float font_size) {
-  CharacterFallbackKey returnKey;
+  CharacterFallbackKey return_key;
 
-  returnKey.font_identifier = BuildIdentifierKey(ct_font);
+  return_key.font_identifier = BuildIdentifierKey(ct_font);
 
-  if (returnKey.font_identifier.empty()) {
+  if (return_key.font_identifier.empty()) {
     return std::nullopt;
   }
 
-  returnKey.weight = raw_font_weight;
-  returnKey.style = raw_font_style;
-  returnKey.font_size = font_size;
-  returnKey.orientation = orientation;
-  return returnKey;
+  return_key.weight = raw_font_weight;
+  return_key.style = raw_font_style;
+  return_key.font_size = font_size;
+  return_key.orientation = orientation;
+  return return_key;
 }
 
 uint32_t CharacterFallbackKeyHashTraits::GetHash(

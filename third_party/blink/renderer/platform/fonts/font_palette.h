@@ -51,7 +51,7 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
     BasePaletteValueType type;
     int index;
 
-    bool hasValue() { return type != kNoBasePalette; }
+    bool HasValue() { return type != kNoBasePalette; }
     bool operator==(const BasePaletteValue& other) const {
       return type == other.type && index == other.index;
     }

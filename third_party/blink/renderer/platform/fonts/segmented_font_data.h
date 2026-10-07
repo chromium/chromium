@@ -66,8 +66,8 @@ class PLATFORM_EXPORT SegmentedFontData : public FontData {
 
 template <>
 struct DowncastTraits<SegmentedFontData> {
-  static bool AllowFrom(const FontData& fontData) {
-    return fontData.IsSegmented();
+  static bool AllowFrom(const FontData& font_data) {
+    return font_data.IsSegmented();
   }
 };
 

@@ -20,15 +20,15 @@ std::array<const char*, kMaxTypesettingFeatureIndex + 1> kFeatureNames = {
 
 String ToString(TypesettingFeatures features) {
   StringBuilder builder;
-  int featureCount = 0;
+  StringView delimiter;
   for (int i = 0; i <= kMaxTypesettingFeatureIndex; i++) {
     if (features & (1 << i)) {
-      if (featureCount++ > 0)
-        builder.Append(",");
+      builder.Append(delimiter);
       builder.Append(kFeatureNames[i]);
+      delimiter = ",";
     }
   }
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 }  // namespace blink

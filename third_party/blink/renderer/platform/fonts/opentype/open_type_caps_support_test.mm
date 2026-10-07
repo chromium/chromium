@@ -21,7 +21,7 @@ namespace blink {
 
 class OpenTypeCapsSupportTest : public FontTestBase {};
 
-void ensureHasNativeSmallCaps(const String& font_family_name) {
+void EnsureHasNativeSmallCaps(const String& font_family_name) {
   sk_sp<SkTypeface> test_typeface = skia::MakeTypefaceFromName(
       font_family_name.Utf8().c_str(), SkFontStyle());
   FontPlatformData* font_platform_data = MakeGarbageCollected<FontPlatformData>(
@@ -58,8 +58,9 @@ TEST_F(OpenTypeCapsSupportTest, SmallCapsForMacAATFonts) {
                          // small-caps
       "Baskerville"};    // has new-style (feature id 38, "Upper Case")
                          // small-case.
-  for (const auto& test_font : test_fonts)
-    ensureHasNativeSmallCaps(test_font);
+  for (const auto& test_font : test_fonts) {
+    EnsureHasNativeSmallCaps(test_font);
+  }
 }
 
 }  // namespace blink

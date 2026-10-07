@@ -18,33 +18,36 @@
 #include <utility>
 #include <vector>
 
+namespace blink {
+
 namespace {
-blink::String pathToColrPalettesTestFont() {
+
+String PathToColrPalettesTestFont() {
   base::FilePath wpt_palette_font_path(
-      blink::StringToFilePath(blink::test::BlinkWebTestsDir()));
+      StringToFilePath(test::BlinkWebTestsDir()));
   wpt_palette_font_path = wpt_palette_font_path.Append(FILE_PATH_LITERAL(
       "external/wpt/css/css-fonts/resources/COLR-palettes-test-font.ttf"));
-  return blink::FilePathToString(wpt_palette_font_path);
+  return FilePathToString(wpt_palette_font_path);
 }
-blink::String pathToNonColrTestFont() {
-  return blink::test::BlinkWebTestsFontsTestDataPath("Ahem.ttf");
-}
-}  // namespace
 
-namespace blink {
+String PathToNonColrTestFont() {
+  return test::BlinkWebTestsFontsTestDataPath("Ahem.ttf");
+}
+
+}  // namespace
 
 class OpenTypeCpalLookupTest : public FontTestBase {
  protected:
   void SetUp() override {
     FontDescription::VariantLigatures ligatures;
 
-    Font* colr_palette_font = blink::test::CreateTestFont(
-        AtomicString("Ahem"), pathToColrPalettesTestFont(), 16, &ligatures);
+    Font* colr_palette_font = test::CreateTestFont(
+        AtomicString("Ahem"), PathToColrPalettesTestFont(), 16, &ligatures);
     colr_palette_typeface_ =
         sk_ref_sp(colr_palette_font->PrimaryFont()->PlatformData().Typeface());
 
-    Font* non_colr_font = blink::test::CreateTestFont(
-        AtomicString("Ahem"), pathToNonColrTestFont(), 16, &ligatures);
+    Font* non_colr_font = test::CreateTestFont(
+        AtomicString("Ahem"), PathToNonColrTestFont(), 16, &ligatures);
     non_colr_ahem_typeface_ =
         sk_ref_sp(non_colr_font->PrimaryFont()->PlatformData().Typeface());
   }

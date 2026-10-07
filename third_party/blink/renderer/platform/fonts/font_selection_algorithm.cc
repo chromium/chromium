@@ -135,27 +135,29 @@ auto FontSelectionAlgorithm::WeightDistance(
 }
 
 bool FontSelectionAlgorithm::IsBetterMatchForRequest(
-    const FontSelectionCapabilities& firstCapabilities,
-    const FontSelectionCapabilities& secondCapabilities) {
-  auto stretchDistanceFirst = StretchDistance(firstCapabilities).distance;
-  auto stretchDistanceSecond = StretchDistance(secondCapabilities).distance;
-  if (stretchDistanceFirst < stretchDistanceSecond)
+    const FontSelectionCapabilities& first_capabilities,
+    const FontSelectionCapabilities& second_capabilities) {
+  auto stretch_distance_first = StretchDistance(first_capabilities).distance;
+  auto stretch_distance_second = StretchDistance(second_capabilities).distance;
+  if (stretch_distance_first < stretch_distance_second) {
     return true;
-  if (stretchDistanceFirst > stretchDistanceSecond)
+  }
+  if (stretch_distance_first > stretch_distance_second) {
     return false;
+  }
 
-  auto styleDistanceFirst = StyleDistance(firstCapabilities).distance;
-  auto styleDistanceSecond = StyleDistance(secondCapabilities).distance;
-  if (styleDistanceFirst < styleDistanceSecond)
+  auto style_distance_first = StyleDistance(first_capabilities).distance;
+  auto style_distance_second = StyleDistance(second_capabilities).distance;
+  if (style_distance_first < style_distance_second) {
     return true;
-  if (styleDistanceFirst > styleDistanceSecond)
+  }
+  if (style_distance_first > style_distance_second) {
     return false;
+  }
 
-  auto weightDistanceFirst = WeightDistance(firstCapabilities).distance;
-  auto weightDistanceSecond = WeightDistance(secondCapabilities).distance;
-  if (weightDistanceFirst < weightDistanceSecond)
-    return true;
-  return false;
+  auto weight_distance_first = WeightDistance(first_capabilities).distance;
+  auto weight_distance_second = WeightDistance(second_capabilities).distance;
+  return weight_distance_first < weight_distance_second;
 }
 
 }  // namespace blink

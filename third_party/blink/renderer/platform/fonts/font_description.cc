@@ -613,8 +613,8 @@ void FontDescription::MergeFontVariationSettingsWithDescriptor(
   SetVariationSettings(font_variation_settings);
 }
 
-String FontDescription::ToString(GenericFamilyType familyType) {
-  switch (familyType) {
+String FontDescription::ToString(GenericFamilyType family_type) {
+  switch (family_type) {
     case GenericFamilyType::kNoFamily:
       return "None";
     case GenericFamilyType::kStandardFamily:

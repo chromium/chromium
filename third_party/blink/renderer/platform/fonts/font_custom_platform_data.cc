@@ -137,7 +137,7 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
     Vector<SkFontArguments::VariationPosition::Coordinate, 0> variation;
 
     SkFontArguments::VariationPosition::Coordinate weight_coordinate = {
-        kWghtTag, SkFloatToScalar(selection_capabilities.weight.clampToRange(
+        kWghtTag, SkFloatToScalar(selection_capabilities.weight.ClampToRange(
                       selection_request.weight))};
     std::optional<SkFontParameters::Variation::Axis> wght_parameters =
         RetrieveVariationDesignParametersByTag(base_typeface_, kWghtTag);
@@ -148,7 +148,7 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
       if (wght_range.IsValid()) {
         weight_coordinate = {
             kWghtTag,
-            SkFloatToScalar(wght_range.clampToRange(selection_request.weight))};
+            SkFloatToScalar(wght_range.ClampToRange(selection_request.weight))};
         bool has_bold_variations = wght_range.maximum > kNormalWeightValue;
         synthetic_bold = bold && !has_bold_variations &&
                          selection_request.weight >= kBoldThreshold;
@@ -156,7 +156,7 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
     }
 
     SkFontArguments::VariationPosition::Coordinate width_coordinate = {
-        kWdthTag, SkFloatToScalar(selection_capabilities.width.clampToRange(
+        kWdthTag, SkFloatToScalar(selection_capabilities.width.ClampToRange(
                       selection_request.width))};
     std::optional<SkFontParameters::Variation::Axis> wdth_parameters =
         RetrieveVariationDesignParametersByTag(base_typeface_, kWdthTag);
@@ -167,7 +167,7 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
       if (wdth_range.IsValid()) {
         width_coordinate = {
             kWdthTag,
-            SkFloatToScalar(wdth_range.clampToRange(selection_request.width))};
+            SkFloatToScalar(wdth_range.ClampToRange(selection_request.width))};
       }
     }
     std::optional<SkFontParameters::Variation::Axis> ital_parameters;
@@ -195,7 +195,7 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
     // skew. See note in https://drafts.csswg.org/css-fonts/#font-style-prop -
     // map value from CSS to OpenType here.
     SkFontArguments::VariationPosition::Coordinate slant_coordinate = {
-        kSlntTag, SkFloatToScalar(-selection_capabilities.slope.clampToRange(
+        kSlntTag, SkFloatToScalar(-selection_capabilities.slope.ClampToRange(
                       selection_request.slope))};
     std::optional<SkFontParameters::Variation::Axis> slnt_parameters =
         RetrieveVariationDesignParametersByTag(base_typeface_, kSlntTag);
@@ -209,7 +209,7 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
       if (slnt_range.IsValid()) {
         slant_coordinate = {
             kSlntTag,
-            SkFloatToScalar(slnt_range.clampToRange(-selection_request.slope))};
+            SkFloatToScalar(slnt_range.ClampToRange(-selection_request.slope))};
         bool has_right_slanted_variations =
             slnt_range.minimum < kNormalSlopeValue;
         synthetic_italic = synthesize_italic && !has_right_slanted_variations &&
@@ -247,9 +247,9 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
         std::optional<SkFontParameters::Variation::Axis> opsz_parameters =
             RetrieveVariationDesignParametersByTag(return_typeface, kOpszTag);
         if (opsz_parameters) {
-          float opszDefault = opsz_parameters->def;
+          float opsz_default = opsz_parameters->def;
           SkFontArguments::VariationPosition::Coordinate opsz_coordinate = {
-              kOpszTag, SkFloatToScalar(opszDefault)};
+              kOpszTag, SkFloatToScalar(opsz_default)};
           variation.push_back(opsz_coordinate);
         }
       }

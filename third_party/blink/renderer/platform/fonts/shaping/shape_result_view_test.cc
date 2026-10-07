@@ -32,8 +32,8 @@ class ShapeResultViewTest : public FontTestBase {
 };
 
 TEST_F(ShapeResultViewTest, ExpandRange) {
-  auto GetExpandedRange = [](const String& text, bool ltr, wtf_size_t from,
-                             wtf_size_t to) -> Vector<wtf_size_t> {
+  auto get_expanded_range = [](const String& text, bool ltr, wtf_size_t from,
+                               wtf_size_t to) -> Vector<wtf_size_t> {
     FontDescription::VariantLigatures ligatures(
         FontDescription::kEnabledLigaturesState);
     Font* font = test::CreateTestFont(
@@ -50,19 +50,19 @@ TEST_F(ShapeResultViewTest, ExpandRange) {
 
   // "ffi" is a ligature, therefore a single glyph. Any range that includes one
   // of the letters must be expanded to all of them.
-  EXPECT_EQ(GetExpandedRange("efficient", true, 0, 1), Vector({0u, 1u}));
-  EXPECT_EQ(GetExpandedRange("efficient", true, 0, 2), Vector({0u, 4u}));
-  EXPECT_EQ(GetExpandedRange("efficient", true, 3, 4), Vector({1u, 4u}));
-  EXPECT_EQ(GetExpandedRange("efficient", true, 4, 6), Vector({4u, 6u}));
-  EXPECT_EQ(GetExpandedRange("efficient", true, 6, 7), Vector({6u, 7u}));
-  EXPECT_EQ(GetExpandedRange("efficient", true, 0, 9), Vector({0u, 9u}));
+  EXPECT_EQ(get_expanded_range("efficient", true, 0, 1), Vector({0u, 1u}));
+  EXPECT_EQ(get_expanded_range("efficient", true, 0, 2), Vector({0u, 4u}));
+  EXPECT_EQ(get_expanded_range("efficient", true, 3, 4), Vector({1u, 4u}));
+  EXPECT_EQ(get_expanded_range("efficient", true, 4, 6), Vector({4u, 6u}));
+  EXPECT_EQ(get_expanded_range("efficient", true, 6, 7), Vector({6u, 7u}));
+  EXPECT_EQ(get_expanded_range("efficient", true, 0, 9), Vector({0u, 9u}));
 
-  EXPECT_EQ(GetExpandedRange("tneiciffe", false, 0, 1), Vector({0u, 1u}));
-  EXPECT_EQ(GetExpandedRange("tneiciffe", false, 0, 2), Vector({0u, 2u}));
-  EXPECT_EQ(GetExpandedRange("tneiciffe", false, 3, 4), Vector({3u, 4u}));
-  EXPECT_EQ(GetExpandedRange("tneiciffe", false, 4, 6), Vector({4u, 8u}));
-  EXPECT_EQ(GetExpandedRange("tneiciffe", false, 6, 7), Vector({5u, 8u}));
-  EXPECT_EQ(GetExpandedRange("tneiciffe", false, 0, 9), Vector({0u, 9u}));
+  EXPECT_EQ(get_expanded_range("tneiciffe", false, 0, 1), Vector({0u, 1u}));
+  EXPECT_EQ(get_expanded_range("tneiciffe", false, 0, 2), Vector({0u, 2u}));
+  EXPECT_EQ(get_expanded_range("tneiciffe", false, 3, 4), Vector({3u, 4u}));
+  EXPECT_EQ(get_expanded_range("tneiciffe", false, 4, 6), Vector({4u, 8u}));
+  EXPECT_EQ(get_expanded_range("tneiciffe", false, 6, 7), Vector({5u, 8u}));
+  EXPECT_EQ(get_expanded_range("tneiciffe", false, 0, 9), Vector({0u, 9u}));
 }
 
 // http://crbug.com/1221008

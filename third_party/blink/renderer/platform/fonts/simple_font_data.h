@@ -265,8 +265,8 @@ ALWAYS_INLINE gfx::RectF SimpleFontData::BoundsForGlyph(Glyph glyph) const {
 
 template <>
 struct DowncastTraits<SimpleFontData> {
-  static bool AllowFrom(const FontData& fontData) {
-    return !fontData.IsSegmented();
+  static bool AllowFrom(const FontData& font_data) {
+    return !font_data.IsSegmented();
   }
 };
 

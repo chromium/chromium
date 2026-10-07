@@ -50,20 +50,20 @@ class PLATFORM_EXPORT FontSelectionValue {
 
   // Explicit because it is lossy.
   explicit constexpr FontSelectionValue(int x)
-      : backing_(ClampTo<int16_t>(x * fractionalEntropy)) {}
+      : backing_(ClampTo<int16_t>(x * kFractionalEntropy)) {}
 
   // Explicit because it is lossy.
   explicit constexpr FontSelectionValue(float x)
-      : backing_(ClampTo<int16_t>(x * fractionalEntropy)) {}
+      : backing_(ClampTo<int16_t>(x * kFractionalEntropy)) {}
 
   // Explicit because it is lossy.
   explicit constexpr FontSelectionValue(double x)
-      : backing_(ClampTo<int16_t>(x * fractionalEntropy)) {}
+      : backing_(ClampTo<int16_t>(x * kFractionalEntropy)) {}
 
   constexpr operator float() const {
     // floats have 23 fractional bits, but only 14 fractional bits are
     // necessary, so every value can be represented losslessly.
-    return backing_ / static_cast<float>(fractionalEntropy);
+    return backing_ / static_cast<float>(kFractionalEntropy);
   }
 
   constexpr FontSelectionValue ClampToObliqueRange() const;
@@ -95,10 +95,11 @@ class PLATFORM_EXPORT FontSelectionValue {
  protected:
   enum class RawTag { RawTag };
 
-  constexpr FontSelectionValue(int16_t rawValue, RawTag) : backing_(rawValue) {}
+  constexpr FontSelectionValue(int16_t raw_value, RawTag)
+      : backing_(raw_value) {}
 
  private:
-  static constexpr int fractionalEntropy = 4;
+  static constexpr int kFractionalEntropy = 4;
   // TODO(drott) crbug.com/745910 - Consider making this backed by a checked
   // arithmetic type.
   int16_t backing_{0};
@@ -117,14 +118,14 @@ inline constexpr FontSelectionValue FontSelectionValue::operator-(
 inline constexpr FontSelectionValue FontSelectionValue::operator*(
     const FontSelectionValue& other) const {
   return FontSelectionValue(
-      static_cast<int32_t>(backing_) * other.backing_ / fractionalEntropy,
+      static_cast<int32_t>(backing_) * other.backing_ / kFractionalEntropy,
       RawTag::RawTag);
 }
 
 inline constexpr FontSelectionValue FontSelectionValue::operator/(
     const FontSelectionValue& other) const {
   return FontSelectionValue(
-      static_cast<int32_t>(backing_) / other.backing_ * fractionalEntropy,
+      static_cast<int32_t>(backing_) / other.backing_ * kFractionalEntropy,
       RawTag::RawTag);
 }
 
@@ -159,8 +160,8 @@ inline constexpr bool FontSelectionValue::operator>=(
 
 inline constexpr FontSelectionValue kItalicThreshold = FontSelectionValue(14);
 
-static constexpr inline bool isItalic(FontSelectionValue fontStyle) {
-  return fontStyle >= kItalicThreshold;
+static constexpr inline bool IsItalic(FontSelectionValue font_style) {
+  return font_style >= kItalicThreshold;
 }
 
 inline constexpr FontSelectionValue kFontSelectionZeroValue =
@@ -208,8 +209,8 @@ inline constexpr FontSelectionValue kExtraLightWeightValue =
 
 inline constexpr FontSelectionValue kThinWeightValue = FontSelectionValue(100);
 
-static constexpr inline bool isFontWeightBold(FontSelectionValue fontWeight) {
-  return fontWeight >= kBoldThreshold;
+static constexpr inline bool IsFontWeightBold(FontSelectionValue font_weight) {
+  return font_weight >= kBoldThreshold;
 }
 
 inline constexpr FontSelectionValue kUpperWeightSearchThreshold =
@@ -288,7 +289,7 @@ struct FontSelectionRange {
     return minimum.RawValue() << 16 | maximum.RawValue();
   }
 
-  FontSelectionValue clampToRange(FontSelectionValue selection_value) const {
+  FontSelectionValue ClampToRange(FontSelectionValue selection_value) const {
     return std::clamp(selection_value, minimum, maximum);
   }
 

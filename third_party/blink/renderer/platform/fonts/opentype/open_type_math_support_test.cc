@@ -274,7 +274,7 @@ TEST_F(OpenTypeMathSupportTest, MathVariantsWithTable) {
 
   // Retrieve glyph indices of stretchy operator's parts.
   Vector<UChar32> v, h;
-  retrieveGlyphForStretchyOperators(math, v, h);
+  RetrieveGlyphForStretchyOperators(math, v, h);
 
   // Vertical variants for vertical operator.
   {
