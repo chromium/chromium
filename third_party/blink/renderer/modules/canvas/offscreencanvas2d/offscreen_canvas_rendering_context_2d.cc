@@ -397,6 +397,9 @@ sk_sp<PaintFilter> OffscreenCanvasRenderingContext2D::StateGetFilter() {
 void OffscreenCanvasRenderingContext2D::Dispose() {
   FlushForImageListener::Get()->RemoveObserver(this);
   ResetResourceProvider();
+  if (Host()) {
+    Host()->UpdateMemoryUsage();
+  }
   ResetRecorder();
   CanvasRenderingContext::Dispose();
 }
