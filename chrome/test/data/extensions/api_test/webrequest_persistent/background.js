@@ -17,7 +17,8 @@ async function flushStorage() {
   storageComplete = undefined;
 }
 
-// Increments a counter storing the number of seen events.
+// Increments a counter storing the number of seen events, and notifies the test
+// once the new count is stored.
 function beforeRequestListener() {
   isUsingStorage = true;
   chrome.storage.local.get({requestCount: 0}, (result) => {
@@ -30,6 +31,7 @@ function beforeRequestListener() {
       if (storageComplete) {
         storageComplete();
       }
+      chrome.test.sendMessage('event received');
     });
   });
 }

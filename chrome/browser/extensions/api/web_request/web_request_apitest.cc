@@ -6763,9 +6763,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiPrerenderingTest, LoadIntoNewTab) {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // A clunky test suite class to allow for waiting for a message to be sent from
-// the extension's background context when it starts up. We need this because
-// we don't currently have a good way of waiting for a service worker context to
-// be fully initialized.
+// the extension's persistent background page when it starts up on browser
+// restart, which can happen before the test body runs. Service workers don't
+// need this: they stay dormant across restarts until an event wakes them up.
 class WebRequestPersistentListenersTest
     : public ExtensionWebRequestApiTestWithContextType {
  public:
@@ -6800,10 +6800,13 @@ IN_PROC_BROWSER_TEST_P(WebRequestPersistentListenersTest,
                     {.wait_for_registration_stored = true});
   ASSERT_TRUE(extension);
 
-  // Navigate to example.com (a site the extension has access to).
+  // Navigate to example.com (a site the extension has access to), and wait for
+  // the extension to record the request.
+  ExtensionTestMessageListener event_listener("event received");
   ASSERT_TRUE(NavigateToURL(
       GetActiveWebContents(),
       embedded_test_server()->GetURL("example.com", "/simple.html")));
+  ASSERT_TRUE(event_listener.WaitUntilSatisfied());
 
   // Validate that we have a single request seen by the extension.
   base::Value request_count = BackgroundScriptExecutor::ExecuteScript(
@@ -6833,16 +6836,16 @@ IN_PROC_BROWSER_TEST_P(WebRequestPersistentListenersTest,
     WaitForReadyMessage();
   }
 
-  // Navigate once more to example.com.
+  // Navigate once more to example.com, and wait for the extension to record
+  // the request. Neither the navigation completing nor, for service workers,
+  // the "ready" message guarantees that the listener ran: the matching request
+  // wakes up the dormant worker on demand, and the event is dispatched only
+  // after the worker finishes executing its background script.
+  ExtensionTestMessageListener event_listener("event received");
   ASSERT_TRUE(NavigateToURL(
       GetActiveWebContents(),
       embedded_test_server()->GetURL("example.com", "/simple.html")));
-
-  // Now that a matching network request has occurred, the dormant service
-  // worker is woken up on demand and executes its background script.
-  if (GetContextType() == ContextType::kServiceWorker) {
-    WaitForReadyMessage();
-  }
+  ASSERT_TRUE(event_listener.WaitUntilSatisfied());
 
   // We should now have two records seen by the extension.
   base::Value request_count = BackgroundScriptExecutor::ExecuteScript(
