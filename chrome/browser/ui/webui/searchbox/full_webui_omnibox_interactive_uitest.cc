@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -45,6 +46,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -529,6 +531,21 @@ class FullWebUIOmniboxInteractiveTestBase
                        return popup_widget && popup_widget->IsActive();
                      },
                      "WaitForPopupWidgetActive"));
+  }
+
+  // Waits for the popup to be fully open and coherently focused: visible,
+  // `kFull`, logically focused, and holding native widget activation.
+  auto WaitForPopupActive() {
+    return Steps(
+        InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+        WaitForPopupState(OmniboxPopupState::kFull),
+        WaitForEditModelFocus(true),
+        PollUntil(
+            [this]() -> bool {
+              auto* widget = GetPopupWidget(browser());
+              return widget && widget->IsActive();
+            },
+            "WaitForPopupWidgetActive"));
   }
 
   auto WaitForBrowserActive() {
@@ -1551,6 +1568,58 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       WaitForWebUIInputValue("example text"),
       InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)));
 }
+
+#if BUILDFLAG(IS_MAC)
+// Verifies that a window deactivated while a tab switch restores omnibox focus
+// (e.g. when a tab is dragged out of it) doesn't take activation back, and that
+// reactivating it restores omnibox focus. Only macOS Views doesn't activate
+// windows on focus changes.
+IN_PROC_BROWSER_TEST_P(
+    FullWebUIOmniboxInteractiveTest,
+    DISABLED_WindowSwitchDuringTabSwitchDoesNotStealActivation) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      WaitForOmniboxFocus(true), OpenAndActivateSecondBrowserWindow(),
+      WaitForPopupDismissed(), ReactivateBrowserWindow(), WaitForPopupActive(),
+      AddInstrumentedTab(kTab2, GURL("chrome://version/")),
+      WaitForWebContentsReady(kTab2), WaitForPopupDismissed(),
+      PollUntil([this]() { return IsBrowserOrPopupActive(browser()); },
+                "WaitForBrowserActive"),
+      // Activate the second window before the popup's deferred focus request
+      // for tab 1 runs.
+      Do([this]() {
+        browser()->tab_strip_model()->ActivateTabAt(1);
+        BrowserView::GetBrowserViewForBrowser(second_browser_)->Activate();
+      }),
+      WaitForPopupTransitionLockout(),
+      CheckResult([this]() { return IsBrowserOrPopupActive(second_browser_); },
+                  true, "SecondBrowserStaysActive"),
+      WaitForPopupDismissed(), ReactivateBrowserWindow(), WaitForPopupActive(),
+      WaitForOmniboxFocus(true));
+}
+
+// Verifies that a single click on the web page blurs the omnibox in fullscreen
+// and after leaving fullscreen with the omnibox focused. Only macOS moves the
+// location bar into an overlay widget in fullscreen.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       ClickWebPageInFullscreenDismissesPopup) {
+  RunTestSequence(
+      WaitForBrowserActive(),
+      AddInstrumentedTab(kTab1, GURL("chrome://version/")),
+      WaitForWebContentsReady(kTab1),
+      Do([this]() { ui_test_utils::ToggleFullscreenModeAndWait(browser()); }),
+      WaitForPopupTransitionLockout(),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_L,
+                   ui::EF_PLATFORM_ACCELERATOR),
+      WaitForPopupReady(), WaitForPopupActive(), ClickWebPageBody(kTab1),
+      WaitForPopupDismissed(), WaitForPopupTransitionLockout(),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_L,
+                   ui::EF_PLATFORM_ACCELERATOR),
+      WaitForPopupActive(),
+      Do([this]() { ui_test_utils::ToggleFullscreenModeAndWait(browser()); }),
+      WaitForPopupActive(), ClickWebPageBody(kTab1), WaitForPopupDismissed());
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 // Verifies that focusing the native Omnibox with an active selection range
 // (e.g. from double-clicking or dragging in Views) preserves the exact
