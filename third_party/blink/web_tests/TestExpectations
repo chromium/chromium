@@ -1028,6 +1028,9 @@ crbug.com/1219058 external/wpt/css/css-text/letter-spacing/letter-spacing-end-of
 crbug.com/429929881 external/wpt/css/css-text/line-breaking/line-breaking-019.html [ Failure ]
 crbug.com/1098801 external/wpt/css/css-text/overflow-wrap/overflow-wrap-normal-keep-all-001.html [ Failure ]
 
+# CSS Text: `text-spacing-trim`
+crbug.com/542686223 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-end-span-001.html [ Failure ]
+
 crbug.com/40260693 external/wpt/css/css-pseudo/first-letter-c0.tentative.html [ Failure ]
 
 # CSS Inline `initial-letter` property.
