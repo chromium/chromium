@@ -501,6 +501,77 @@ public class TabBottomSheetCoordinatorUnitTest {
     }
 
     @Test
+    public void testOnSheetOffsetChanged_WhenSheetContentNull_DoesNotThrow() {
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+
+        // Destroy coordinator so mSheetContent is cleaned up and null.
+        mCoordinator.destroy();
+        assertNull(mCoordinator.getSheetContentForTesting());
+        assertFalse(mCoordinator.isSheetCurrentlyManagedForTesting());
+
+        when(mMockBottomSheetController.getSheetState()).thenReturn(SheetState.SCROLLING);
+
+        // onSheetOffsetChanged during settle animation when content is null must not throw.
+        observer.onSheetOffsetChanged(0.5f, 250f);
+    }
+
+    @Test
+    public void testOnSheetOffsetChanged_WhenNotShowingTabBottomSheet_DoesNotThrow() {
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+
+        // Swap out content to simulate another feature opening in BottomSheetController.
+        observer.onSheetContentChanged(mock(BottomSheetContent.class));
+        assertFalse(mCoordinator.isSheetCurrentlyManagedForTesting());
+
+        when(mMockBottomSheetController.getSheetState()).thenReturn(SheetState.SCROLLING);
+
+        // onSheetOffsetChanged when tab bottom sheet is not currently showing must not throw.
+        observer.onSheetOffsetChanged(0.5f, 250f);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_RESIZE_WEBVIEW
+    })
+    public void testOnSheetOffsetChanged_WithResizing_WhenContentNullDuringSettle_DoesNotThrow() {
+        ResizingStrategy mockStrategy = mock(ResizingStrategy.class);
+        ResizingStrategyFactory.setForTesting(mockStrategy);
+        createCoordinator();
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+
+        // Destroy coordinator so mSheetContent is cleaned up and null during settle.
+        mCoordinator.destroy();
+        assertNull(mCoordinator.getSheetContentForTesting());
+
+        when(mMockBottomSheetController.getSheetState()).thenReturn(SheetState.SCROLLING);
+
+        observer.onSheetOffsetChanged(0.5f, 250f);
+        verify(mockStrategy, never())
+                .onSheetOffsetChanged(anyFloat(), anyFloat(), anyFloat(), anyFloat());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_RESIZE_WEBVIEW
+    })
+    public void testOnSheetOffsetChanged_WithResizing_CallsResizingStrategy() {
+        ResizingStrategy mockStrategy = mock(ResizingStrategy.class);
+        ResizingStrategyFactory.setForTesting(mockStrategy);
+        createCoordinator();
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+
+        when(mMockBottomSheetController.getSheetState()).thenReturn(SheetState.SCROLLING);
+        when(mMockBottomSheetController.getContainerHeight()).thenReturn(CONTAINER_HEIGHT);
+
+        observer.onSheetOffsetChanged(0.5f, 500f);
+
+        verify(mockStrategy)
+                .onSheetOffsetChanged(anyFloat(), anyFloat(), anyFloat(), eq((float) MAX_OFFSET));
+    }
+
+    @Test
     public void testTouchEventObserver_OnInterceptTouchEvent() {
         BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
 

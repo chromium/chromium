@@ -435,7 +435,8 @@ public class TabBottomSheetCoordinator {
                 if (canResizeWebView()) {
                     assert mResizingStrategy != null;
                     mResizingStrategy.onSheetResizingStatusChanged(
-                            state == SheetState.SCROLLING && !mBottomSheetController.isSmallScreen());
+                            state == SheetState.SCROLLING
+                                    && !mBottomSheetController.isSmallScreen());
                 }
 
                 if (state != SheetState.SCROLLING && state != SheetState.NONE) {
@@ -486,10 +487,13 @@ public class TabBottomSheetCoordinator {
 
             @Override
             public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
+                if (mSheetContent == null || !mIsShowingTabBottomSheet) {
+                    return;
+                }
+
                 if (mBottomSheetController.getSheetState() == SheetState.SCROLLING) {
                     mMediator.onSheetOffsetChanged(offsetPx);
                     if (canResizeWebView()) {
-                        assert mSheetContent != null;
                         assert mResizingStrategy != null;
                         float peekHeight = mSheetContent.getPeekHeight();
                         float halfRatio = mSheetContent.getHalfHeightRatio();
