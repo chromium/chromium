@@ -57,7 +57,7 @@ class LensOverlayEntryPointController : public TemplateURLServiceObserver,
 
   // Whether the entry points should be enabled. Enabled means the Lens Overlay
   // functionality is available.
-  bool IsEnabled() const;
+  virtual bool IsEnabled() const;
 
   // Returns true if the Lens Overlay entrypoints should be hidden. This is
   // different from IsEnabled() as IsEnabled() returns true if the Lens Overlay

@@ -840,6 +840,11 @@ class ContextualTasksUiService : public KeyedService {
     // the WebContents.
     std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
         pending_session_handle;
+
+    // Whether the task was explicitly initiated to open in the side panel.
+    // Used to verify that pending navigations for ineligible users are destined
+    // for the side panel.
+    bool is_side_panel_task = false;
   };
 
   // Per-task UI state keyed by task ID.

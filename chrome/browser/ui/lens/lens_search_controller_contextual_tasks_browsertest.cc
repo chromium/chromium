@@ -1304,13 +1304,15 @@ IN_PROC_BROWSER_TEST_F(LensSearchControllerStartZeroStateSessionTest,
       lens::LensOverlayInvocationSource::kContentAreaContextMenuPage,
       GURL("https://www.google.com/search?q=test"),
       omnibox::AutocompleteMatchType::kSearchWhatYouTyped,
-      /*is_zero_prefix_suggestion=*/false);
+      /*is_zero_prefix_suggestion=*/false,
+      /*grant_session_permission=*/false);
 
   controller->IssueContextualSearchRequest(
       lens::LensOverlayInvocationSource::kOmniboxPageAction,
       GURL("https://www.google.com/search?q=test2"),
       omnibox::AutocompleteMatchType::kSearchWhatYouTyped,
-      /*is_zero_prefix_suggestion=*/false);
+      /*is_zero_prefix_suggestion=*/false,
+      /*grant_session_permission=*/false);
 }
 
 class LensSearchControllerAskGoogleOmniboxRoutingTest

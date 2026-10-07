@@ -36,7 +36,6 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
-#include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/smart_tab_sharing_metrics.h"
 #include "chrome/browser/feature_engagement/non_iph_promo.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -102,9 +101,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
-#include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
-#include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
@@ -1745,52 +1742,6 @@ void ContextualSearchboxHandler::RecordTabAddedMetric(
       webui::GetBrowserWindowInterface(web_contents_));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-bool ContextualSearchboxHandler::ShouldOpenInLensSidePanel(
-    content::WebContents* active_web_contents,
-    contextual_search::ContextualSearchSessionHandle* session_handle) {
-  if (!active_web_contents || !session_handle) {
-    return false;
-  }
-
-  // Only queries where the active tab is in context are eligible to route to
-  // the Lens/Contextual Tasks side panel.
-  if (!session_handle->IsTabInContext(
-          sessions::SessionTabHelper::IdForTab(active_web_contents))) {
-    return false;
-  }
-
-  // If Contextual Tasks CoBrowse is enabled and eligible, do not route to the
-  // side panel here so the navigation can be intercepted and handled by
-  // CoBrowse.
-  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
-      contextual_tasks::EntryPointEligibilityManager::IsEligible(profile_)) {
-    return false;
-  }
-
-  // If Contextual Tasks UI / Nexus (e.g. kContextualTasksSidePanel) is enabled,
-  // route to the side panel even when multiple tabs/tokens are attached.
-  if (contextual_tasks::IsContextualTasksUIEnabled()) {
-    return true;
-  }
-
-  // Fallback to the Lens side panel if Lens Overlay and AIM M3 are enabled and
-  // there is only a single context token.
-  if (session_handle->GetSubmittedContextTokens().size() != 1) {
-    return false;
-  }
-  auto* browser_window_interface =
-      webui::GetBrowserWindowInterface(web_contents_);
-  if (!browser_window_interface) {
-    return false;
-  }
-  auto* entry_point_controller =
-      lens::LensOverlayEntryPointController::From(browser_window_interface);
-  return entry_point_controller && entry_point_controller->IsEnabled() &&
-         lens::IsAimM3Enabled(profile_);
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 void ContextualSearchboxHandler::DeleteContext(
     const base::UnguessableToken& context_token,
     bool from_automatic_chip) {
@@ -2441,59 +2392,45 @@ void ContextualSearchboxHandler::ProcessContextAndOpenUrl(
       profile_->GetPrefs());
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (OmniboxPopupWebContentsHelper::FromWebContents(web_contents_.get())) {
+  if (OmniboxPopupWebContentsHelper::FromWebContents(web_contents_.get()) &&
+      disposition == WindowOpenDisposition::CURRENT_TAB) {
     auto* browser_window_interface =
         webui::GetBrowserWindowInterface(web_contents_);
     auto* tab_list = TabListInterface::From(browser_window_interface);
     auto* active_tab = tab_list ? tab_list->GetActiveTab() : nullptr;
     auto* active_web_contents =
         active_tab ? active_tab->GetContents() : nullptr;
-
-    if (ShouldOpenInLensSidePanel(active_web_contents,
-                                  new_contextual_session_handle.get()) &&
-        // Only hand the composebox URL straight to the Contextual Tasks panel
-        // for users eligible for it. Ineligible users (signed out, or signed
-        // in without the primary account in the cookie jar) cannot have the
-        // query fulfilled there and would land on an empty zero-state thread,
-        // so they fall through to OpenUrl(), which routes them to the Lens
-        // side panel.
-        contextual_tasks::EntryPointEligibilityManager::IsEligible(profile_)) {
+    auto* lens_search_controller = LensSearchController::From(active_tab);
+    omnibox::ChromeAimEntryPoint aim_entry_point =
+        GetAimEntryPoint(client()->GetPageClassification(/*is_prefetch=*/false),
+                         new_contextual_session_handle.get());
+    if (lens_search_controller &&
+        lens_search_controller->StartContextualAimQueryInSidePanel(
+            url, new_contextual_session_handle, aim_entry_point)) {
+      BrowserWindow* const browser_window =
+          browser_window_interface
+              ? BrowserWindow::FromBrowser(browser_window_interface)
+              : nullptr;
+      auto* location_bar =
+          browser_window ? browser_window->GetLocationBar() : nullptr;
+      if (location_bar) {
+        if (auto* controller = location_bar->GetOmniboxController()) {
+          if (auto* popup_state_manager = controller->popup_state_manager()) {
+            popup_state_manager->SetPopupState(OmniboxPopupState::kNone);
+          }
+        }
+        location_bar->Revert();
+      }
+      if (active_web_contents) {
+        active_web_contents->Focus();
+      }
       if (base::FeatureList::IsEnabled(
               omnibox::kContextManagementInComposebox)) {
-        if (auto* ui_service =
-                contextual_tasks::ContextualTasksUiServiceFactory::
-                    GetForBrowserContext(profile_)) {
-          BrowserWindow* const browser_window =
-              browser_window_interface
-                  ? BrowserWindow::FromBrowser(browser_window_interface)
-                  : nullptr;
-          auto* location_bar =
-              browser_window ? browser_window->GetLocationBar() : nullptr;
-          if (location_bar) {
-            if (auto* controller = location_bar->GetOmniboxController()) {
-              if (auto* popup_state_manager =
-                      controller->popup_state_manager()) {
-                popup_state_manager->SetPopupState(OmniboxPopupState::kNone);
-              }
-            }
-            location_bar->Revert();
-          }
-          contextual_tasks::StartTaskUiOptions options;
-          options.entry_point = GetAimEntryPoint(
-              client()->GetPageClassification(/*is_prefetch=*/false),
-              new_contextual_session_handle.get());
-          ui_service->StartTaskUiInSidePanel(
-              browser_window_interface, active_tab, url,
-              std::move(new_contextual_session_handle), options);
-          if (active_web_contents) {
-            active_web_contents->Focus();
-          }
-          ClearFiles(/*should_block_auto_suggested_tabs=*/false,
-                     /*query_submitted=*/true);
-          contextual_session_handle->ClearSubmittedContextTokens();
-          return;
-        }
+        ClearFiles(/*should_block_auto_suggested_tabs=*/false,
+                   /*query_submitted=*/true);
       }
+      contextual_session_handle->ClearSubmittedContextTokens();
+      return;
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -2596,38 +2533,10 @@ void ContextualSearchboxHandler::OpenUrl(
     content::OpenURLParams params =
         content::OpenURLParams::CreateBrowserInitiated(
             url, disposition, ui::PAGE_TRANSITION_LINK);
-    // If the current tab is part of the context list, navigate in the lens side
-    // panel if co-browsing is disabled.
     auto* tab_list = TabListInterface::From(browser_window_interface);
     auto* active_tab = tab_list ? tab_list->GetActiveTab() : nullptr;
     auto* active_web_contents =
         active_tab ? active_tab->GetContents() : nullptr;
-
-    auto* contextual_session_handle = GetContextualSessionHandle();
-    if (ShouldOpenInLensSidePanel(active_web_contents,
-                                  contextual_session_handle)) {
-      // Open in AIM in lens side panel.
-      if (auto* lens_search_controller =
-              LensSearchController::FromWebUIWebContents(active_web_contents)) {
-        // There technically might not be a match associated with this query
-        // since a user can submit a query with just a file.
-        std::string query_text;
-        net::GetValueForKeyInQuery(url, "q", &query_text);
-        auto invocation_source =
-            contextual_session_handle &&
-                    contextual_session_handle->invocation_source().has_value()
-                ? contextual_session_handle->invocation_source().value()
-                : lens::LensOverlayInvocationSource::kOmniboxContextualQuery;
-        lens_search_controller->IssueContextualSearchRequest(
-            invocation_source, url,
-            query_text.empty()
-                ? omnibox::AutocompleteMatchType::kSearchSuggest
-                : omnibox::AutocompleteMatchType::kSearchWhatYouTyped,
-            /*is_zero_prefix_suggestion=*/query_text.empty());
-        active_web_contents->Focus();
-        return;
-      }
-    }
 
     auto* target_web_contents = active_web_contents->OpenURL(
         params, std::move(navigation_handle_callback));

@@ -99,6 +99,8 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -107,6 +109,7 @@
 #include "chrome/browser/ui/webui/searchbox/omnibox_composebox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/lens/lens_features.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #endif
@@ -2825,14 +2828,24 @@ TEST_F(SearchboxOmniboxClientNavigationTest,
 class MockContextualTasksUiService
     : public contextual_tasks::ContextualTasksUiService {
  public:
-  explicit MockContextualTasksUiService(Profile* profile)
-      : ContextualTasksUiService(profile,
-                                 /*delegate=*/nullptr,
-                                 /*contextual_tasks_service=*/nullptr,
-                                 /*identity_manager=*/nullptr,
-                                 /*aim_eligibility_service=*/nullptr,
-                                 /*eligibility_manager=*/nullptr,
-                                 /*cookie_synchronizer=*/nullptr) {}
+  explicit MockContextualTasksUiService(
+      Profile* profile,
+      std::unique_ptr<contextual_tasks::ContextualTasksEligibilityManager>
+          eligibility_manager = nullptr)
+      : ContextualTasksUiService(
+            profile,
+            /*delegate=*/nullptr,
+            /*contextual_tasks_service=*/nullptr,
+            /*identity_manager=*/nullptr,
+            /*aim_eligibility_service=*/nullptr,
+            eligibility_manager
+                ? std::move(eligibility_manager)
+                : std::make_unique<
+                      contextual_tasks::ContextualTasksEligibilityManager>(
+                      profile ? profile->GetPrefs() : nullptr,
+                      /*identity_manager=*/nullptr,
+                      /*aim_eligibility_service=*/nullptr),
+            /*cookie_synchronizer=*/nullptr) {}
   ~MockContextualTasksUiService() override = default;
 
   MOCK_METHOD(void,
@@ -2844,6 +2857,37 @@ class MockContextualTasksUiService
                    session_handle,
                contextual_tasks::StartTaskUiOptions options),
               (override));
+};
+
+class MockLensSearchController : public LensSearchController {
+ public:
+  explicit MockLensSearchController(tabs::TabInterface* tab)
+      : LensSearchController(tab) {}
+  ~MockLensSearchController() override = default;
+
+  MOCK_METHOD(void,
+              IssueContextualSearchRequest,
+              (lens::LensOverlayInvocationSource invocation_source,
+               const GURL& destination_url,
+               omnibox::AutocompleteMatchType match_type,
+               bool is_zero_prefix_suggestion,
+               bool grant_session_permission),
+              (override));
+};
+
+class TestLensOverlayEntryPointController
+    : public lens::LensOverlayEntryPointController {
+ public:
+  explicit TestLensOverlayEntryPointController(
+      BrowserWindowInterface* browser_window_interface)
+      : LensOverlayEntryPointController(browser_window_interface) {}
+  ~TestLensOverlayEntryPointController() override = default;
+
+  bool IsEnabled() const override { return is_enabled_; }
+  void set_is_enabled(bool is_enabled) { is_enabled_ = is_enabled; }
+
+ private:
+  bool is_enabled_ = true;
 };
 
 class OmniboxComposeboxHandlerTest : public SearchboxHandlerTest {
@@ -2871,7 +2915,12 @@ class OmniboxComposeboxHandlerTest : public SearchboxHandlerTest {
             unowned_user_data_host_, *tab_list_);
 
     SetupMockTabListInterface(*tab_list_, &mock_tab_);
-    SetupMockTabInterface(mock_tab_, web_contents_.get(), profile());
+    SetupMockTabInterface(mock_tab_, web_contents_.get(), profile(),
+                          &browser_window_interface_,
+                          &mock_tab_user_data_host_);
+    lens_search_controller_ =
+        std::make_unique<testing::NiceMock<MockLensSearchController>>(
+            &mock_tab_);
 
     auto mock_context_controller = std::make_unique<testing::NiceMock<
         contextual_search::MockContextualSearchContextController>>();
@@ -2912,6 +2961,7 @@ class OmniboxComposeboxHandlerTest : public SearchboxHandlerTest {
     test_omnibox_view_.reset();
     omnibox_controller_.reset();
     session_handle_.reset();
+    lens_search_controller_.reset();
     tab_list_registration_.reset();
     tab_list_.reset();
     web_contents_.reset();
@@ -2922,10 +2972,13 @@ class OmniboxComposeboxHandlerTest : public SearchboxHandlerTest {
   testing::NiceMock<MockBrowserWindowInterface> browser_window_interface_;
   BrowserWindowFeatures browser_window_features_;
   ui::UnownedUserDataHost unowned_user_data_host_;
+  ui::UnownedUserDataHost mock_tab_user_data_host_;
   std::unique_ptr<testing::NiceMock<MockTabListInterface>> tab_list_;
   std::unique_ptr<ui::ScopedUnownedUserData<TabListInterface>>
       tab_list_registration_;
   tabs::MockTabInterface mock_tab_;
+  std::unique_ptr<testing::NiceMock<MockLensSearchController>>
+      lens_search_controller_;
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> web_contents_;
   testing::NiceMock<MockSearchboxPage> searchbox_page_;
@@ -3079,9 +3132,10 @@ TEST_F(OmniboxComposeboxHandlerTest,
   feature_list.InitWithFeatures(
       /*enabled_features=*/
       {omnibox::kContextManagementInComposebox,
+       contextual_tasks::kContextualTasks,
        contextual_tasks::kContextualTasksSidePanel,
        contextual_tasks::kContextualTasksForceEntryPointEligibility},
-      /*disabled_features=*/{contextual_tasks::kContextualTasks});
+      /*disabled_features=*/{});
 
   auto* mock_ui_service = static_cast<MockContextualTasksUiService*>(
       contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
@@ -3144,9 +3198,10 @@ TEST_F(OmniboxComposeboxHandlerTest,
   feature_list.InitWithFeatures(
       /*enabled_features=*/
       {omnibox::kContextManagementInComposebox,
+       contextual_tasks::kContextualTasks,
        contextual_tasks::kContextualTasksSidePanel,
        contextual_tasks::kContextualTasksForceEntryPointEligibility},
-      /*disabled_features=*/{contextual_tasks::kContextualTasks});
+      /*disabled_features=*/{});
 
   auto* mock_ui_service = static_cast<MockContextualTasksUiService*>(
       contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
@@ -3207,9 +3262,10 @@ TEST_F(OmniboxComposeboxHandlerTest,
   feature_list.InitWithFeatures(
       /*enabled_features=*/
       {omnibox::kContextManagementInComposebox,
+       contextual_tasks::kContextualTasks,
        contextual_tasks::kContextualTasksSidePanel,
        contextual_tasks::kContextualTasksForceEntryPointEligibility},
-      /*disabled_features=*/{contextual_tasks::kContextualTasks});
+      /*disabled_features=*/{});
 
   auto* mock_ui_service = static_cast<MockContextualTasksUiService*>(
       contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
@@ -3284,9 +3340,10 @@ TEST_F(
   feature_list.InitWithFeatures(
       /*enabled_features=*/
       {omnibox::kContextManagementInComposebox,
+       contextual_tasks::kContextualTasks,
        contextual_tasks::kContextualTasksSidePanel,
        contextual_tasks::kContextualTasksForceEntryPointEligibility},
-      /*disabled_features=*/{contextual_tasks::kContextualTasks});
+      /*disabled_features=*/{});
 
   auto* mock_ui_service = static_cast<MockContextualTasksUiService*>(
       contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
@@ -3327,8 +3384,8 @@ TEST_F(
   EXPECT_EQ(session_handle_->GetSubmittedContextTokens().size(), 2u);
 
   // The active tab is not part of the submitted context, so
-  // ShouldOpenInLensSidePanel is false and ProcessContextAndOpenUrl must NOT
-  // call StartTaskUiInSidePanelImpl directly.
+  // StartContextualAimQueryInSidePanel returns false and
+  // ProcessContextAndOpenUrl must NOT call StartTaskUiInSidePanelImpl directly.
   EXPECT_CALL(*mock_ui_service,
               StartTaskUiInSidePanelImpl(testing::_, testing::_, testing::_,
                                          testing::_, testing::_))
@@ -3336,5 +3393,220 @@ TEST_F(
 
   OpenUrl(GURL("https://www.google.com/search?q=test"),
           WindowOpenDisposition::CURRENT_TAB);
+}
+
+TEST_F(OmniboxComposeboxHandlerTest,
+       StartContextualAimQueryInSidePanel_SignedOutUnificationOpensSidePanel) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{omnibox::kContextManagementInComposebox, {}},
+       {contextual_tasks::kContextualTasksSidePanel, {}},
+       {lens::features::kLensSidePanelUnification,
+        {{"allow-signed-out", "true"}}}},
+      /*disabled_features=*/{
+          contextual_tasks::kContextualTasksForceEntryPointEligibility});
+
+  testing::NiceMock<MockAimEligibilityService> mock_aim_eligibility_service(
+      *profile()->GetPrefs(), nullptr, nullptr, nullptr);
+  ON_CALL(mock_aim_eligibility_service, IsAimEligible())
+      .WillByDefault(testing::Return(true));
+
+  auto* mock_ui_service = static_cast<MockContextualTasksUiService*>(
+      contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
+          ->SetTestingFactoryAndUse(
+              profile(),
+              base::BindLambdaForTesting([&](content::BrowserContext* context)
+                                             -> std::unique_ptr<KeyedService> {
+                auto* prof = Profile::FromBrowserContext(context);
+                auto eligibility_manager = std::make_unique<
+                    contextual_tasks::ContextualTasksEligibilityManager>(
+                    prof->GetPrefs(), /*identity_manager=*/nullptr,
+                    &mock_aim_eligibility_service);
+                return std::make_unique<
+                    testing::NiceMock<MockContextualTasksUiService>>(
+                    prof, std::move(eligibility_manager));
+              })));
+
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents_.get(), base::BindRepeating([](content::WebContents*) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+  SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(web_contents_.get());
+
+  base::UnguessableToken active_tab_token = base::UnguessableToken::Create();
+  contextual_search::FileInfo file_info;
+  file_info.file_token = active_tab_token;
+  file_info.tab_session_id = active_tab_id;
+
+  auto* mock_controller =
+      static_cast<contextual_search::MockContextualSearchContextController*>(
+          session_handle_->GetController());
+  EXPECT_CALL(*mock_controller, GetFileInfo(active_tab_token))
+      .WillRepeatedly(testing::Return(&file_info));
+
+  session_handle_->set_submitted_context_tokens({active_tab_token});
+
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      passed_session_handle;
+  EXPECT_CALL(*mock_ui_service,
+              StartTaskUiInSidePanelImpl(&browser_window_interface_, &mock_tab_,
+                                         testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&](BrowserWindowInterface*, tabs::TabInterface*, const GURL&,
+              std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+                  handle,
+              contextual_tasks::StartTaskUiOptions options) {
+            passed_session_handle = std::move(handle);
+          });
+
+  OpenUrl(GURL("https://www.google.com/search?q=test"),
+          WindowOpenDisposition::CURRENT_TAB);
+
+  ASSERT_TRUE(passed_session_handle);
+  EXPECT_THAT(passed_session_handle->GetSubmittedContextTokens(),
+              testing::ElementsAre(active_tab_token));
+
+  contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
+      ->SetTestingFactory(profile(), {});
+}
+
+TEST_F(
+    OmniboxComposeboxHandlerTest,
+    StartContextualAimQueryInSidePanel_ReturnsFalseForInvalidOrIneligibleInputs) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {omnibox::kContextManagementInComposebox,
+       contextual_tasks::kContextualTasks,
+       contextual_tasks::kContextualTasksSidePanel,
+       contextual_tasks::kContextualTasksForceEntryPointEligibility},
+      /*disabled_features=*/{});
+
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents_.get(), base::BindRepeating([](content::WebContents*) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+
+  // 1. Null session handle returns false.
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle> null_handle;
+  EXPECT_FALSE(lens_search_controller_->StartContextualAimQueryInSidePanel(
+      GURL("https://www.google.com/search?q=test"), null_handle,
+      omnibox::UNKNOWN_AIM_ENTRY_POINT));
+
+  // 2. No tabs attached returns false and leaves session_handle_ intact.
+  session_handle_->set_submitted_context_tokens({});
+  EXPECT_FALSE(lens_search_controller_->StartContextualAimQueryInSidePanel(
+      GURL("https://www.google.com/search?q=test"), session_handle_,
+      omnibox::UNKNOWN_AIM_ENTRY_POINT));
+  EXPECT_TRUE(session_handle_);
+
+  // 3. Single non-active tab attached returns false and leaves session_handle_
+  // intact.
+  base::UnguessableToken other_tab_token = base::UnguessableToken::Create();
+  contextual_search::FileInfo file_info;
+  file_info.file_token = other_tab_token;
+  file_info.tab_session_id = SessionID::FromSerializedValue(999);
+
+  auto* mock_controller =
+      static_cast<contextual_search::MockContextualSearchContextController*>(
+          session_handle_->GetController());
+  EXPECT_CALL(*mock_controller, GetFileInfo(other_tab_token))
+      .WillRepeatedly(testing::Return(&file_info));
+  session_handle_->set_submitted_context_tokens({other_tab_token});
+
+  EXPECT_FALSE(lens_search_controller_->StartContextualAimQueryInSidePanel(
+      GURL("https://www.google.com/search?q=test"), session_handle_,
+      omnibox::UNKNOWN_AIM_ENTRY_POINT));
+  EXPECT_TRUE(session_handle_);
+}
+
+TEST_F(
+    OmniboxComposeboxHandlerTest,
+    StartContextualAimQueryInSidePanel_FallbackToIssueContextualSearchRequest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {omnibox::kContextManagementInComposebox,
+       lens::features::kLensSearchAimM3},
+      /*disabled_features=*/{
+          contextual_tasks::kContextualTasks,
+          contextual_tasks::kContextualTasksSidePanel,
+          contextual_tasks::kContextualTasksRearchitecture,
+          contextual_tasks::kContextualTasksSidePanelRearchitecture,
+          contextual_tasks::kContextualTasksForceEntryPointEligibility});
+
+  TestLensOverlayEntryPointController entry_point_controller(
+      &browser_window_interface_);
+
+  AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindLambdaForTesting([](content::BrowserContext* context)
+                                     -> std::unique_ptr<KeyedService> {
+        auto* prof = Profile::FromBrowserContext(context);
+        auto service =
+            std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
+                *prof->GetPrefs(), nullptr, nullptr, nullptr);
+        ON_CALL(*service, IsAimEligible()).WillByDefault(testing::Return(true));
+        ON_CALL(*service, IsCsbEligible()).WillByDefault(testing::Return(true));
+        return service;
+      }));
+
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents_.get(), base::BindRepeating([](content::WebContents*) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+  SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(web_contents_.get());
+
+  base::UnguessableToken active_tab_token = base::UnguessableToken::Create();
+  contextual_search::FileInfo active_file_info;
+  active_file_info.file_token = active_tab_token;
+  active_file_info.tab_session_id = active_tab_id;
+
+  base::UnguessableToken second_tab_token = base::UnguessableToken::Create();
+  contextual_search::FileInfo second_file_info;
+  second_file_info.file_token = second_tab_token;
+  second_file_info.tab_session_id =
+      SessionID::FromSerializedValue(active_tab_id.id() + 1);
+
+  auto* mock_controller =
+      static_cast<contextual_search::MockContextualSearchContextController*>(
+          session_handle_->GetController());
+  EXPECT_CALL(*mock_controller, GetFileInfo(active_tab_token))
+      .WillRepeatedly(testing::Return(&active_file_info));
+  EXPECT_CALL(*mock_controller, GetFileInfo(second_tab_token))
+      .WillRepeatedly(testing::Return(&second_file_info));
+
+  // Multiple tokens are not supported by the legacy Lens side panel fallback.
+  session_handle_->set_submitted_context_tokens(
+      {active_tab_token, second_tab_token});
+  EXPECT_CALL(*lens_search_controller_,
+              IssueContextualSearchRequest(testing::_, testing::_, testing::_,
+                                           testing::_, testing::_))
+      .Times(0);
+  EXPECT_FALSE(lens_search_controller_->StartContextualAimQueryInSidePanel(
+      GURL("https://www.google.com/search?q=test"), session_handle_,
+      omnibox::UNKNOWN_AIM_ENTRY_POINT));
+  EXPECT_TRUE(session_handle_);
+
+  // A single active-tab token falls back to IssueContextualSearchRequest and
+  // resets session_handle_.
+  session_handle_->set_submitted_context_tokens({active_tab_token});
+  GURL target_url("https://www.google.com/search?q=test");
+  EXPECT_CALL(
+      *lens_search_controller_,
+      IssueContextualSearchRequest(
+          lens::LensOverlayInvocationSource::kOmniboxContextualQuery,
+          target_url, omnibox::AutocompleteMatchType::kSearchWhatYouTyped,
+          /*is_zero_prefix_suggestion=*/false,
+          /*grant_session_permission=*/false))
+      .Times(1);
+  EXPECT_TRUE(lens_search_controller_->StartContextualAimQueryInSidePanel(
+      target_url, session_handle_, omnibox::UNKNOWN_AIM_ENTRY_POINT));
+  EXPECT_FALSE(session_handle_);
+
+  AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(profile(), {});
 }
 #endif

@@ -11,6 +11,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/lens/lens_composebox_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_event_handler.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
@@ -49,9 +51,12 @@
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/prefs/pref_service.h"
+#include "components/sessions/content/session_tab_helper.h"
+#include "net/base/url_util.h"
 #include "skia/ext/codec_utils.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -482,6 +487,68 @@ void LensSearchController::StartZeroStateSessionInSidePanel(
 
   ui_service->StartTaskUiInSidePanel(bwi, tab_, creation_url,
                                      std::move(session_handle), options);
+}
+
+bool LensSearchController::StartContextualAimQueryInSidePanel(
+    const GURL& url,
+    std::unique_ptr<contextual_search::ContextualSearchSessionHandle>&
+        session_handle,
+    omnibox::ChromeAimEntryPoint aim_entry_point) {
+  if (!tab_ || !tab_->GetContents() || !tab_->GetBrowserWindowInterface() ||
+      !session_handle) {
+    return false;
+  }
+
+  // The active tab context must have already been uploaded to
+  // `session_handle`. To start a query with the active tab uploaded for the
+  // caller, use `IssueContextualSearchRequest` or `IssueTextSearchRequest`
+  // instead.
+  content::WebContents* active_web_contents = tab_->GetContents();
+  if (!session_handle->IsTabInContext(
+          sessions::SessionTabHelper::IdForTab(active_web_contents))) {
+    return false;
+  }
+
+  Profile* profile = GetProfile();
+  auto* eligibility_manager =
+      contextual_tasks::ContextualTasksEligibilityManager::GetForProfile(
+          profile);
+  if (eligibility_manager && eligibility_manager->IsSidePanelAvailable()) {
+    if (auto* ui_service = contextual_tasks::ContextualTasksUiServiceFactory::
+            GetForBrowserContext(profile)) {
+      invocation_source_ = session_handle->invocation_source();
+      contextual_tasks::StartTaskUiOptions options;
+      options.entry_point = aim_entry_point;
+      ui_service->StartTaskUiInSidePanel(tab_->GetBrowserWindowInterface(),
+                                         tab_, url, std::move(session_handle),
+                                         options);
+      return true;
+    }
+  }
+
+  if (session_handle->GetSubmittedContextTokens().size() != 1) {
+    return false;
+  }
+
+  auto* entry_point_controller = lens::LensOverlayEntryPointController::From(
+      tab_->GetBrowserWindowInterface());
+  if (!entry_point_controller || !entry_point_controller->IsEnabled() ||
+      !lens::IsAimM3Enabled(profile)) {
+    return false;
+  }
+
+  std::string query_text;
+  net::GetValueForKeyInQuery(url, "q", &query_text);
+  auto invocation_source = session_handle->invocation_source().value_or(
+      lens::LensOverlayInvocationSource::kOmniboxContextualQuery);
+  session_handle.reset();
+  IssueContextualSearchRequest(
+      invocation_source, url,
+      query_text.empty() ? omnibox::AutocompleteMatchType::kSearchSuggest
+                         : omnibox::AutocompleteMatchType::kSearchWhatYouTyped,
+      /*is_zero_prefix_suggestion=*/query_text.empty(),
+      /*grant_session_permission=*/false);
+  return true;
 }
 
 void LensSearchController::CloseLensAsync(

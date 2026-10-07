@@ -23,6 +23,10 @@
 #include "ui/gfx/geometry/rect.h"
 #include "url/origin.h"
 
+namespace contextual_search {
+class ContextualSearchSessionHandle;
+}  // namespace contextual_search
+
 namespace lens {
 class LensOverlayQueryController;
 class LensSessionMetricsLogger;
@@ -131,12 +135,12 @@ class LensSearchController {
   // is fully opened.
   // TODO(crbug.com/403629222): Revisit if it makes sense to pass the
   // destination URL instead of the query text directly.
-  void IssueContextualSearchRequest(
+  virtual void IssueContextualSearchRequest(
       lens::LensOverlayInvocationSource invocation_source,
       const GURL& destination_url,
       omnibox::AutocompleteMatchType match_type,
       bool is_zero_prefix_suggestion,
-      bool grant_session_permission = false);
+      bool grant_session_permission);
 
   // If `suppress_contextualization` is true, queries will not be performed with
   // contextualization for the duration of the session. However,
@@ -159,6 +163,20 @@ class LensSearchController {
       omnibox::ChromeAimEntryPoint entry_point,
       lens::LensOverlayInvocationSource invocation_source,
       bool open_lens_overlay = false);
+
+  // Attempts to open a pre-constructed AIM query `url` with `session_handle`
+  // in the side panel for this tab. The active tab context must have already
+  // been uploaded to `session_handle`; to start a query that uploads the active
+  // tab for the caller, use `IssueContextualSearchRequest` or
+  // `IssueTextSearchRequest` instead. Returns true and takes ownership of
+  // `session_handle` if opened in the side panel; returns false and leaves
+  // `session_handle` untouched if the query should not or cannot be opened in
+  // the side panel.
+  [[nodiscard]] virtual bool StartContextualAimQueryInSidePanel(
+      const GURL& url,
+      std::unique_ptr<contextual_search::ContextualSearchSessionHandle>&
+          session_handle,
+      omnibox::ChromeAimEntryPoint aim_entry_point);
 
   // Starts the closing process of the overlay. This is an asynchronous process
   // with the following sequence:

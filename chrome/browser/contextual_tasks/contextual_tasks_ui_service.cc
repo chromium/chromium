@@ -1342,42 +1342,19 @@ bool ContextualTasksUiService::ShouldRedirectIneligibleRequest(
 bool ContextualTasksUiService::IsSessionAllowedWhileIneligible(
     content::WebContents* web_contents,
     const base::Uuid& task_id) const {
+  if (!lens::features::IsLensSidePanelUnificationEnabled()) {
+    return false;
+  }
+
   // Allow if the side panel is available and the request is destined for the
   // side panel.
   if (eligibility_manager_ && eligibility_manager_->IsSidePanelAvailable()) {
     if (web_contents && IsWebContentsInSidePanel(web_contents)) {
       return true;
     }
-  }
-
-  if (!lens::features::IsLensSidePanelUnificationEnabled()) {
-    return false;
-  }
-
-  // Allow cobrowse session if we reached here from lens entry points. It will
-  // end up in opening the side panel.
-  if (web_contents) {
-    auto* helper =
-        ContextualSearchWebContentsHelper::FromWebContents(web_contents);
-    auto* session_handle = helper ? helper->session_handle() : nullptr;
-    if (session_handle) {
-      auto* metrics_recorder = session_handle->GetMetricsRecorder();
-      if (metrics_recorder &&
-          metrics_recorder->source() ==
-              contextual_search::ContextualSearchSource::kLens) {
-        return true;
-      }
-    }
-  }
-
-  if (task_id.is_valid()) {
-    auto it = task_states_.find(task_id);
-    if (it != task_states_.end() && it->second.pending_session_handle) {
-      auto* metrics_recorder =
-          it->second.pending_session_handle->GetMetricsRecorder();
-      if (metrics_recorder &&
-          metrics_recorder->source() ==
-              contextual_search::ContextualSearchSource::kLens) {
+    if (task_id.is_valid()) {
+      auto it = task_states_.find(task_id);
+      if (it != task_states_.end() && it->second.is_side_panel_task) {
         return true;
       }
     }
@@ -1391,6 +1368,7 @@ void ContextualTasksUiService::AddPendingSessionHandleForTesting(  // IN-TEST
     std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
         session_handle) {
   TaskState& state = task_states_[task_id];
+  state.is_side_panel_task = true;
   if (!state.pending_session_handle) {
     state.pending_session_handle = std::move(session_handle);
   }
@@ -3529,6 +3507,7 @@ void ContextualTasksUiService::StartTaskUiInSidePanelImpl(
       // pending task so the former still happens.
       controller->SetPendingTaskForTab(tab_interface, task_id);
     }
+    task_state->is_side_panel_task = true;
     if (session_handle && !task_state->pending_session_handle) {
       task_state->pending_session_handle = std::move(session_handle);
     }
@@ -3622,6 +3601,7 @@ void ContextualTasksUiService::InitSidePanelWithGhostLoader(
   TaskState& task_state = task_states_[task_id];
   task_state.waiting_for_url = true;
   task_state.pending_url_callback.Reset();
+  task_state.is_side_panel_task = true;
   AssociateWebContentsToTask(tab_interface->GetContents(), task_id);
   if (session_handle && !task_state.pending_session_handle) {
     task_state.pending_session_handle = std::move(session_handle);
@@ -3698,6 +3678,7 @@ void ContextualTasksUiService::StartTaskUiInSidePanelWithErrorPage(
       !panel_contents || !controller->IsPanelOpenForContextualTask();
   if (panel_was_closed) {
     TaskState& task_state = task_states_[task_id];
+    task_state.is_side_panel_task = true;
     if (!task_state.pending_error_page_source.has_value()) {
       task_state.pending_error_page_source = source;
     }

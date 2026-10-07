@@ -4328,40 +4328,25 @@ TEST_F(ContextualTasksUiServiceTest, HandleNavigation_WebUI_TokensNotLoaded) {
 
 TEST_F(
     ContextualTasksUiServiceTest,
-    HandleNavigation_WebUI_AimNotEligible_NoRedirect_WhenLensSessionUnderUnification) {
+    HandleNavigation_WebUI_SignedOut_NoRedirect_WhenInSidePanelUnderUnification) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {contextual_tasks::kContextualTasks,
-       lens::features::kLensSidePanelUnification},
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{contextual_tasks::kContextualTasks, {}},
+       {lens::features::kLensSidePanelUnification,
+        {{"allow-signed-out", "true"}}}},
       {});
   GURL webui_url(chrome::kChromeUIContextualTasksURL);
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
-  identity_test_env_->MakePrimaryAccountAvailable(
-      "user@gmail.com", signin::ConsentLevel::kSignin);
+  service_for_nav_->GetFakeEligibilityManager()->SetIsEligible(false);
+  service_for_nav_->GetFakeEligibilityManager()->SetIsEligibleWithoutIdentity(
+      true);
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
 
-  EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
-      .WillRepeatedly(Return(false));
-
-  // Create and associate a Lens-initiated contextual search session.
-  auto* contextual_search_service =
-      ContextualSearchServiceFactory::GetForProfile(profile_.get());
-  ASSERT_TRUE(contextual_search_service);
-  auto session_handle = contextual_search_service->CreateSession(
-      contextual_tasks::CreateQueryControllerConfigParams(),
-      contextual_search::ContextualSearchSource::kLens,
-      /*invocation_source=*/std::nullopt);
-  ASSERT_TRUE(session_handle);
-
-  auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
-      web_contents.get());
-  helper->SetTaskSession(std::nullopt, std::move(session_handle),
-                         /*input_state_model=*/nullptr);
-
-  // The navigation should not be redirected, so HandleNavigation should return
-  // false.
-  EXPECT_FALSE(real_service_->HandleNavigation(
+  // The navigation should not be redirected when the WebContents is in the side
+  // panel and the side panel is available.
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(webui_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true, /*is_mobile_ua=*/false, std::nullopt,
@@ -4370,11 +4355,12 @@ TEST_F(
 
 TEST_F(
     ContextualTasksUiServiceTest,
-    HandleNavigation_WebUI_AimNotEligible_NoRedirect_WhenPendingLensSessionUnderUnification) {
+    HandleNavigation_WebUI_SignedOut_NoRedirect_WhenPendingLensSessionUnderUnification) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {contextual_tasks::kContextualTasks,
-       lens::features::kLensSidePanelUnification},
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{contextual_tasks::kContextualTasks, {}},
+       {lens::features::kLensSidePanelUnification,
+        {{"allow-signed-out", "true"}}}},
       {});
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   GURL webui_url =
@@ -4383,11 +4369,8 @@ TEST_F(
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
-  identity_test_env_->MakePrimaryAccountAvailable(
-      "user@gmail.com", signin::ConsentLevel::kSignin);
-
   EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
-      .WillRepeatedly(Return(false));
+      .WillRepeatedly(Return(true));
 
   // Create a Lens-initiated contextual search session.
   auto* contextual_search_service =
@@ -4414,13 +4397,16 @@ TEST_F(
 
 TEST_F(
     ContextualTasksUiServiceTest,
-    HandleNavigation_WebUI_AimNotEligible_Redirects_WhenNonLensSessionUnderUnification) {
+    HandleNavigation_WebUI_AimNotEligible_Redirects_WhenLensSessionUnderUnification) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {contextual_tasks::kContextualTasks,
        lens::features::kLensSidePanelUnification},
       {});
-  GURL webui_url(chrome::kChromeUIContextualTasksURL);
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  GURL webui_url =
+      net::AppendQueryParameter(GURL(chrome::kChromeUIContextualTasksURL),
+                                kTaskQueryParam, task_id.AsLowercaseString());
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
 
@@ -4430,8 +4416,46 @@ TEST_F(
   EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
       .WillRepeatedly(Return(false));
 
-  // Create and associate a non-Lens initiated contextual search session (e.g.
-  // kOmnibox).
+  auto* contextual_search_service =
+      ContextualSearchServiceFactory::GetForProfile(profile_.get());
+  ASSERT_TRUE(contextual_search_service);
+  auto session_handle = contextual_search_service->CreateSession(
+      contextual_tasks::CreateQueryControllerConfigParams(),
+      contextual_search::ContextualSearchSource::kLens,
+      /*invocation_source=*/std::nullopt);
+  ASSERT_TRUE(session_handle);
+
+  real_service_->AddPendingSessionHandleForTesting(task_id,
+                                                   std::move(session_handle));
+
+  // When AIM is not eligible, IsSidePanelAvailable() is false, so the
+  // navigation should be redirected.
+  EXPECT_TRUE(real_service_->HandleNavigation(
+      CreateOpenUrlParams(webui_url, false), web_contents.get(),
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
+      /*is_same_site_or_from_ui=*/true, /*is_mobile_ua=*/false, std::nullopt,
+      std::nullopt, blink::mojom::WindowFeatures()));
+}
+
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_WebUI_SignedOut_NoRedirect_WhenOmniboxSessionUnderUnification) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{contextual_tasks::kContextualTasks, {}},
+       {lens::features::kLensSidePanelUnification,
+        {{"allow-signed-out", "true"}}}},
+      {});
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  GURL webui_url =
+      net::AppendQueryParameter(GURL(chrome::kChromeUIContextualTasksURL),
+                                kTaskQueryParam, task_id.AsLowercaseString());
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
+      .WillRepeatedly(Return(true));
+
   auto* contextual_search_service =
       ContextualSearchServiceFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(contextual_search_service);
@@ -4441,13 +4465,38 @@ TEST_F(
       /*invocation_source=*/std::nullopt);
   ASSERT_TRUE(session_handle);
 
-  auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
-      web_contents.get());
-  helper->SetTaskSession(std::nullopt, std::move(session_handle),
-                         /*input_state_model=*/nullptr);
+  real_service_->AddPendingSessionHandleForTesting(task_id,
+                                                   std::move(session_handle));
 
-  // The navigation should still be redirected, so HandleNavigation should
-  // return true.
+  EXPECT_FALSE(real_service_->HandleNavigation(
+      CreateOpenUrlParams(webui_url, false), web_contents.get(),
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
+      /*is_same_site_or_from_ui=*/true, /*is_mobile_ua=*/false, std::nullopt,
+      std::nullopt, blink::mojom::WindowFeatures()));
+}
+
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_WebUI_SignedOut_Redirects_WhenOmniboxSessionWithoutSidePanel) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{contextual_tasks::kContextualTasks, {}},
+       {lens::features::kLensSidePanelUnification,
+        {{"allow-signed-out", "true"}}}},
+      {});
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  GURL webui_url =
+      net::AppendQueryParameter(GURL(chrome::kChromeUIContextualTasksURL),
+                                kTaskQueryParam, task_id.AsLowercaseString());
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
+      .WillRepeatedly(Return(true));
+
+  // The request is not marked as side panel (is_side_panel_task is false and
+  // web_contents is a tab, not in the side panel). Even with an Omnibox session
+  // under unification, it should be redirected.
   EXPECT_TRUE(real_service_->HandleNavigation(
       CreateOpenUrlParams(webui_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,

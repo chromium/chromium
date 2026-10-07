@@ -291,6 +291,7 @@ source_set("unit_tests") {
 
     if (!is_android) {
       deps += [
+        "//chrome/browser/ui/lens",
         "//chrome/browser/ui/tabs:tab_strip",
         "//chrome/browser/ui/tabs:test_support",
         "//chrome/browser/ui/webui/omnibox_popup",
