@@ -25,6 +25,7 @@ Steps used to create the current version (or roll a newer one):
    $ git checkout origin/main -- BUILD.gn DEPS DIR_METADATA OWNERS \
      PRESUBMIT.py PRESUBMIT_test.py README.chromium \
      check_file_lists.py check_file_lists_test.py \
+     compile_size_probe.py compile_size_probe_test.py \
      gen_extra_chromium_files.py proto_library.gni proto_sources.gni \
      proto_wkt.gni roll_protobuf.py roll_protobuf_test.py \
      ':(glob)patches/*'

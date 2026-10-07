@@ -67,6 +67,8 @@ CHROMIUM_OWNED_FILES = frozenset({
     'README.chromium',
     'check_file_lists.py',
     'check_file_lists_test.py',
+    'compile_size_probe.py',
+    'compile_size_probe_test.py',
     'gen_extra_chromium_files.py',
     'proto_library.gni',
     'proto_sources.gni',
