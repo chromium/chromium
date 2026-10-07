@@ -28,6 +28,10 @@
 #include "content/public/browser/global_routing_id.h"
 #include "google_apis/gaia/gaia_id.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/webauthn/icloud_recovery_util.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace base {
 class TickClock;
 class SequencedTaskRunner;
@@ -272,11 +276,9 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   void EnrollICloudRecoveryKey(
       std::unique_ptr<trusted_vault::ICloudRecoveryKey> key);
 
-  // Called when Chrome has retrieved the iCloud recovery keys present in the
-  // current device.
-  void OnICloudKeysRetrievedForRecovery(
-      std::vector<std::unique_ptr<trusted_vault::ICloudRecoveryKey>>
-          local_icloud_keys);
+  // Called when Chrome has attempted recovery using the iCloud recovery keys
+  // present in the current device.
+  void OnICloudKeychainRecoveryComplete(webauthn::ICloudRecoveryResult result);
 #endif  // BUILDFLAG(IS_MAC)
 
   // Called when the enclave enrollment is complete.

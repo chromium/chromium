@@ -81,7 +81,10 @@ source_set("webauthn") {
   }
 
   if (is_mac) {
-    public += [ "chrome_authenticator_request_delegate_mac.h" ]
+    public += [
+      "chrome_authenticator_request_delegate_mac.h",
+      "icloud_recovery_util.h",
+    ]
   }
 }
 
@@ -196,7 +199,10 @@ source_set("impl") {
   }
 
   if (is_mac) {
-    sources += [ "chrome_authenticator_request_delegate_mac.mm" ]
+    sources += [
+      "chrome_authenticator_request_delegate_mac.mm",
+      "icloud_recovery_util.cc",
+    ]
   }
 
   if (is_win) {
@@ -487,6 +493,7 @@ source_set("unit_tests") {
 
     if (is_mac) {
       sources += [
+        "icloud_recovery_util_unittest.cc",
         "local_credential_management_mac_unittest.mm",
         "unexportable_key_utils_mac_unittest.mm",
       ]

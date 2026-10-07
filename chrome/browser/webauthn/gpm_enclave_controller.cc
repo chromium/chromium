@@ -85,7 +85,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "chrome/common/chrome_version.h"
+#include "chrome/browser/webauthn/icloud_recovery_util.h"
 #include "components/trusted_vault/icloud_recovery_key_mac.h"
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -230,11 +230,6 @@ using Step = AuthenticatorRequestDialogModel::Step;
 //                           +----------------------+
 
 namespace {
-
-#if BUILDFLAG(IS_MAC)
-constexpr char kICloudKeychainRecoveryKeyAccessGroup[] =
-    MAC_TEAM_IDENTIFIER_STRING ".com.google.common.folsom";
-#endif  // BUILDFLAG(IS_MAC)
 
 // Pick an enclave user verification method for a specific request.
 EnclaveUserVerificationMethod PickEnclaveUserVerificationMethod(
@@ -858,12 +853,12 @@ void GPMEnclaveController::OnDeviceAdded(bool success) {
 
 void GPMEnclaveController::RecoverSecurityDomain() {
 #if BUILDFLAG(IS_MAC)
+  CHECK(!download_account_state_request_);
   model_->DisableUiOrShowLoadingDialog();
-  trusted_vault::ICloudRecoveryKey::Retrieve(
-      base::BindOnce(&GPMEnclaveController::OnICloudKeysRetrievedForRecovery,
-                     weak_ptr_factory_.GetWeakPtr()),
-      trusted_vault::SecurityDomainId::kPasskeys,
-      kICloudKeychainRecoveryKeyAccessGroup);
+  webauthn::RecoverSecurityDomainSecretFromICloudKeychain(
+      security_domain_icloud_recovery_keys_,
+      base::BindOnce(&GPMEnclaveController::OnICloudKeychainRecoveryComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
 #else
   ShowSecurityDomainRecoveryUI();
 #endif  // BUILDFLAG(IS_MAC)
@@ -876,7 +871,7 @@ void GPMEnclaveController::MaybeAddICloudRecoveryKey() {
       base::BindOnce(&GPMEnclaveController::OnICloudKeysRetrievedForEnrollment,
                      weak_ptr_factory_.GetWeakPtr()),
       trusted_vault::SecurityDomainId::kPasskeys,
-      kICloudKeychainRecoveryKeyAccessGroup);
+      webauthn::kICloudKeychainRecoveryKeyAccessGroup);
 }
 
 void GPMEnclaveController::OnICloudKeysRetrievedForEnrollment(
@@ -908,7 +903,7 @@ void GPMEnclaveController::OnICloudKeysRetrievedForEnrollment(
       base::BindOnce(&GPMEnclaveController::EnrollICloudRecoveryKey,
                      weak_ptr_factory_.GetWeakPtr()),
       trusted_vault::SecurityDomainId::kPasskeys,
-      kICloudKeychainRecoveryKeyAccessGroup);
+      webauthn::kICloudKeychainRecoveryKeyAccessGroup);
 }
 
 void GPMEnclaveController::EnrollICloudRecoveryKey(
@@ -924,49 +919,17 @@ void GPMEnclaveController::EnrollICloudRecoveryKey(
                           weak_ptr_factory_.GetWeakPtr())));
 }
 
-void GPMEnclaveController::OnICloudKeysRetrievedForRecovery(
-    std::vector<std::unique_ptr<trusted_vault::ICloudRecoveryKey>>
-        local_icloud_keys) {
-  // Find the matching pair of local iCloud private key and the SDS recovery
-  // member.
-  auto local_icloud_key_it = local_icloud_keys.end();
-  auto recovery_icloud_key_it = std::ranges::find_if(
-      security_domain_icloud_recovery_keys_,
-      [&local_icloud_key_it,
-       &local_icloud_keys](const auto& recovery_icloud_key) {
-        std::vector<uint8_t> public_key =
-            recovery_icloud_key.public_key->ExportToBytes();
-        local_icloud_key_it = std::ranges::find_if(
-            local_icloud_keys,
-            [&public_key](const auto& key) { return key->id() == public_key; });
-        return local_icloud_key_it != local_icloud_keys.end();
-      });
-  if (local_icloud_key_it == local_icloud_keys.end()) {
-    FIDO_LOG(DEBUG) << "Could not find matching iCloud recovery key";
+void GPMEnclaveController::OnICloudKeychainRecoveryComplete(
+    webauthn::ICloudRecoveryResult result) {
+  CHECK(!download_account_state_request_);
+  if (!result.has_value()) {
     ShowSecurityDomainRecoveryUI();
     return;
   }
-  const auto member_key_it = std::ranges::max_element(
-      recovery_icloud_key_it->member_keys,
-      [](const auto& k1, const auto& k2) { return k1.version < k2.version; });
-  std::optional<std::vector<uint8_t>> security_domain_secret =
-      trusted_vault::DecryptTrustedVaultWrappedKey(
-          (*local_icloud_key_it)->key()->private_key(),
-          member_key_it->wrapped_key);
-  if (!security_domain_secret) {
-    FIDO_LOG(ERROR)
-        << "Could not decrypt security domain secret with iCloud key";
-    ShowSecurityDomainRecoveryUI();
-    return;
-  }
-  FIDO_LOG(EVENT) << "Successful recovery from iCloud recovery key";
   recovered_with_icloud_keychain_ = true;
   store_keys_lock_ = enclave_manager_->GetStoreKeysLock();
-  enclave_manager_->StoreKeys(
-      user_gaia_id_,
-      {trusted_vault::TrustedVaultKeyAndVersion(
-          std::move(*security_domain_secret), member_key_it->version)},
-      std::nullopt);
+  enclave_manager_->StoreKeys(user_gaia_id_, {std::move(*result)},
+                              std::nullopt);
 }
 
 #endif  // BUILDFLAG(IS_MAC)
