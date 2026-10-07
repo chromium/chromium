@@ -225,15 +225,48 @@ enum class PclmulStreamType {
   NEON_PCLMUL_EOR3,
 };
 
+// Selects the kind of stores used to write the destination buffer when the CRC
+// is computed while copying.
+enum class CopyType {
+  // Don't copy at all, just compute the CRC of the input.
+  kNone,
+  // Copy with regular stores, leaving the destination in the cache.
+  kTemporal,
+  // Copy with non-temporal stores, which bypass some levels of cache.
+  kNonTemporal,
+};
+
 // Base class for CRC32AcceleratedX86ARMCombinedMultipleStreams containing the
 // methods and data that don't need the template arguments.
 class CRC32AcceleratedX86ARMCombinedMultipleStreamsBase
     : public CRC32AcceleratedX86ARMCombined {
  protected:
+  // Copies 64 bytes from `src` to `dst`, using the kind of stores selected by
+  // `copy_type`. Does nothing if `copy_type` is NONE.
+  template <CopyType copy_type>
   ABSL_INTERNAL_ATTRIBUTE_AVX ABSL_ATTRIBUTE_ALWAYS_INLINE static void
-  Copy64Bytes(char* dst, const uint8_t* src) {
-    PrefetchToLocalCache(reinterpret_cast<const char*>(src) + kPrefetchHorizon);
-    V256_CopyPairU(dst, src);
+  Copy64Bytes(uint8_t* dst, const uint8_t* src) {
+    if constexpr (copy_type == CopyType::kNonTemporal) {
+      V256_CopyPairNonTemporal(dst, src);
+    } else if constexpr (copy_type == CopyType::kTemporal) {
+      V256_CopyPairU(dst, src);
+    } else {
+      static_assert(copy_type == CopyType::kNone);
+    }
+  }
+
+  // Stores the 64 bytes held in `v0` and `v1` to `dst`, using the kind of
+  // stores selected by `copy_type`. Does nothing if `copy_type` is NONE.
+  template <CopyType copy_type>
+  ABSL_INTERNAL_ATTRIBUTE_AVX ABSL_ATTRIBUTE_ALWAYS_INLINE static void
+  Store64Bytes(uint8_t* dst, V256 v0, V256 v1) {
+    if constexpr (copy_type == CopyType::kNonTemporal) {
+      V256_StorePairNonTemporal(dst, v0, v1);
+    } else if constexpr (copy_type == CopyType::kTemporal) {
+      V256_StorePairU(dst, v0, v1);
+    } else {
+      static_assert(copy_type == CopyType::kNone);
+    }
   }
 
   // Update partialCRC with crc of 64 byte block. Calling FinalizePclmulStream
@@ -318,7 +351,6 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreamsBase
     return crc;
   }
 
-  template <bool copy_data = false>
   ABSL_ATTRIBUTE_ALWAYS_INLINE void Process64BytesPclmul(V256, V256,
                                                          V128*) const {}
 
@@ -570,29 +602,33 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
  public:
   void Extend(uint32_t* crc, const void* bytes,
               const size_t length) const override {
-    Extend<false>(crc, bytes, length);
+    Extend<CopyType::kNone>(crc, bytes, length);
   }
 
   void ExtendAndCopy(uint32_t* crc, void* __restrict dst,
-                     const void* __restrict src, size_t length) const override {
-    Extend<true>(crc, src, length, dst);
-    StoreFence();
+                     const void* __restrict src, size_t length,
+                     bool non_temporal) const override {
+    if (non_temporal) {
+      Extend<CopyType::kNonTemporal>(crc, src, length, dst);
+    } else {
+      Extend<CopyType::kTemporal>(crc, src, length, dst);
+    }
   }
 
-  template <bool copy = false>
+  template <CopyType copy_type>
   ABSL_ATTRIBUTE_HOT void Extend(uint32_t* crc, const void* bytes,
                                  const size_t length,
                                  void* __restrict dst = nullptr) const {
     if constexpr (pclmul_stream_type != PclmulStreamType::NONE) {
       if (length >= kMediumCutoff) {
-        ExtendWithPclmul<copy>(crc, bytes, length, dst);
+        ExtendWithPclmul<copy_type>(crc, bytes, length, dst);
         return;
       }
     }
-    ExtendWithoutPclmul<copy>(crc, bytes, length, dst);
+    ExtendWithoutPclmul<copy_type != CopyType::kNone>(crc, bytes, length, dst);
   }
 
-  template <bool copy = false>
+  template <bool copy>
   ABSL_ATTRIBUTE_HOT void ExtendWithoutPclmul(
       uint32_t* crc, const void* bytes, const size_t length,
       void* __restrict dst = nullptr) const {
@@ -701,7 +737,7 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
     *crc = l;
   }
 
-  template <bool copy = false>
+  template <CopyType copy_type>
   ABSL_INTERNAL_ATTRIBUTE_AVX ABSL_ATTRIBUTE_HOT void ExtendWithPclmul(
       uint32_t* crc, const void* bytes, const size_t length,
       void* __restrict dst = nullptr) const {
@@ -715,8 +751,10 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
     uint32_t l = *crc;
     uint64_t l64;
 
-    if constexpr (copy) {
-      // Align destination pointer for V256 non-temporal stores.
+    if constexpr (copy_type != CopyType::kNone) {
+      // Align the destination pointer to a cache line. Non-temporal stores
+      // require the destination to be aligned to the store size, and aligning
+      // regular stores avoids writes that straddle two cache lines.
       constexpr size_t kAlignment = 64;
       uintptr_t dst_addr = reinterpret_cast<uintptr_t>(d);
       size_t bytes_to_align =
@@ -756,7 +794,7 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
 
     uint8_t* dst_crc_streams[kMaxStreams];
     uint8_t* dst_pclmul_streams[kMaxStreams];
-    if constexpr (copy) {
+    if constexpr (copy_type != CopyType::kNone) {
       uint8_t* dst_stream_start = reinterpret_cast<uint8_t*>(d);
       for (size_t i = 0; i < num_crc_streams; i++) {
         dst_crc_streams[i] = dst_stream_start;
@@ -778,14 +816,14 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
       V256_LoadPairU(pclmul_streams[j], &pclmul_v0_0[j], &pclmul_v1_0[j]);
     }
 
-    if constexpr (copy) {
+    if constexpr (copy_type != CopyType::kNone) {
       for (size_t j = 0; j < num_crc_streams; j++) {
-        V256_CopyPairNonTemporal(dst_crc_streams[j], crc_streams[j]);
+        Copy64Bytes<copy_type>(dst_crc_streams[j], crc_streams[j]);
         dst_crc_streams[j] += 64;
       }
       for (size_t j = 0; j < num_pclmul_streams; j++) {
-        V256_StorePairNonTemporal(dst_pclmul_streams[j], pclmul_v0_0[j],
-                                  pclmul_v1_0[j]);
+        Store64Bytes<copy_type>(dst_pclmul_streams[j], pclmul_v0_0[j],
+                                pclmul_v1_0[j]);
         dst_pclmul_streams[j] += 64;
       }
     }
@@ -822,12 +860,13 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
       }
 
       for (size_t j = 0; j < num_pclmul_streams; j++) {
-        if constexpr (copy) {
-          ProcessPclmulStream<true>(pclmul_streams[j], dst_pclmul_streams[j],
-                                    partialCRC[j]);
+        if constexpr (copy_type != CopyType::kNone) {
+          ProcessPclmulStream<copy_type>(pclmul_streams[j],
+                                         dst_pclmul_streams[j], partialCRC[j]);
           dst_pclmul_streams[j] += 64;
         } else {
-          ProcessPclmulStream<false>(pclmul_streams[j], nullptr, partialCRC[j]);
+          ProcessPclmulStream<CopyType::kNone>(pclmul_streams[j], nullptr,
+                                               partialCRC[j]);
         }
         pclmul_streams[j] += 64;
       }
@@ -846,9 +885,9 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
         crc_streams[1] += 16 * 4;
         crc_streams[2] += 16 * 4;
       }
-      if constexpr (copy) {
+      if constexpr (copy_type != CopyType::kNone) {
         for (size_t j = 0; j < num_crc_streams; j++) {
-          V256_CopyPairNonTemporal(dst_crc_streams[j], crc_streams[j] - 64);
+          Copy64Bytes<copy_type>(dst_crc_streams[j], crc_streams[j] - 64);
           dst_crc_streams[j] += 64;
         }
       }
@@ -876,14 +915,14 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
     // Update p and d.
     if constexpr (num_pclmul_streams > 0) {
       p = pclmul_streams[num_pclmul_streams - 1];
-      if constexpr (copy) {
+      if constexpr (copy_type != CopyType::kNone) {
         d = reinterpret_cast<char*>(dst_pclmul_streams[num_pclmul_streams - 1]);
         size_t remaining_to_copy = static_cast<size_t>(e - p);
         std::memcpy(d, p, remaining_to_copy);
       }
     } else {
       p = crc_streams[num_crc_streams - 1];
-      if constexpr (copy) {
+      if constexpr (copy_type != CopyType::kNone) {
         d = reinterpret_cast<char*>(dst_crc_streams[num_crc_streams - 1]);
         size_t remaining_to_copy = static_cast<size_t>(e - p);
         std::memcpy(d, p, remaining_to_copy);
@@ -913,6 +952,17 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
     }
 
     *crc = l;
+
+    if constexpr (copy_type == CopyType::kNonTemporal) {
+      // According to the Intel 64 Software Developer's Manual
+      // (https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html),
+      // non-temporal stores are weakly ordered due to bypassing caches, so
+      // they have to be fenced before the copy is visible to other threads.
+      // Regular stores are ordered and need no fence. Note that the fence is
+      // placed after all stores, to avoid unnecessary serialization and a
+      // performance hit.
+      NonTemporalStoreFence();
+    }
   }
 
  private:
@@ -934,7 +984,7 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
     }
   }
 
-  template <bool copy = false>
+  template <CopyType copy_type>
   ABSL_INTERNAL_ATTRIBUTE_AVX ABSL_ATTRIBUTE_ALWAYS_INLINE void
   ProcessPclmulStream(const uint8_t* stream, uint8_t* dst_stream,
                       V128* partialCRC) const {
@@ -944,9 +994,7 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
       const uint8_t* src_ptr = stream;
       V256 v0, v1;
       V256_LoadPairU(src_ptr, &v0, &v1);
-      if constexpr (copy) {
-        V256_StorePairNonTemporal(dst_stream, v0, v1);
-      }
+      Store64Bytes<copy_type>(dst_stream, v0, v1);
       if constexpr (pclmul_stream_type == PclmulStreamType::VPCLMUL) {
         V256 loopMultiplicands = V256_Broadcast128(
             reinterpret_cast<const V128*>(kFoldAcross512Bits));
@@ -1020,15 +1068,23 @@ CRCImpl* TryNewCRC32AcceleratedX86ARMCombined() {
       return new CRC32AcceleratedX86ARMCombinedMultipleStreams<
           3, 1, PclmulStreamType::PCLMUL>();
 #endif
+    case CpuType::kIntelSapphirerapids:
+    case CpuType::kIntelEmeraldrapids:
+    case CpuType::kIntelGraniterapids:
+#if defined(ABSL_CRC_INTERNAL_HAVE_X86_SIMD) &&                   \
+    (defined(__AVX__) || defined(ABSL_INTERNAL_CAN_FORCE_AVX)) && \
+    (!defined(_MSC_VER) || defined(__clang__))
+      return new CRC32AcceleratedX86ARMCombinedMultipleStreams<
+          3, 3, PclmulStreamType::VPCLMUL>();
+#else
+      [[fallthrough]];
+#endif
     // PCLMULQDQ is fast, use combined PCLMULQDQ + CRC implementation.
     case CpuType::kIntelCascadelakeXeon:
     case CpuType::kIntelSkylakeXeon:
     case CpuType::kIntelBroadwell:
     case CpuType::kIntelSkylake:
     case CpuType::kIntelIcelake:
-    case CpuType::kIntelSapphirerapids:
-    case CpuType::kIntelEmeraldrapids:
-    case CpuType::kIntelGraniterapids:
       return new CRC32AcceleratedX86ARMCombinedMultipleStreams<
           3, 2, PclmulStreamType::PCLMUL>();
     // PCLMULQDQ is slow, don't use it.

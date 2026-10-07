@@ -36,11 +36,13 @@
 #include <random>
 #include <set>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "gmock/gmock.h"
@@ -82,8 +84,8 @@ struct RawHashSetTestOnlyAccess {
     return std::forward<C>(c).common();
   }
   template <typename C>
-  static auto GetSlots(const C& c) -> decltype(c.slot_array(c.capacity())) {
-    return c.slot_array(c.capacity());
+  static auto GetSlots(C& c) -> decltype(c.slot_array(c.capacity())) {
+    return c.is_small() ? c.single_slot() : c.slot_array(c.capacity());
   }
   template <typename C>
   static size_t CountTombstones(const C& c) {
@@ -723,15 +725,16 @@ TEST(Util, probe_seq) {
   size_t capacity = 127;
   probe_seq<16> seq(ProbeCapacity{capacity}, /*hash=*/0);
   auto gen = [&]() {
-    size_t res = seq.offset();
     seq.next();
-    return res;
+    return seq.offset();
   };
   std::vector<size_t> offsets(8);
-  std::generate_n(offsets.begin(), 8, gen);
+  offsets[0] = seq.offset();
+  std::generate_n(offsets.begin() + 1, 7, gen);
   EXPECT_THAT(offsets, ElementsAre(0, 16, 48, 96, 32, 112, 80, 64));
   seq = probe_seq<16>(ProbeCapacity{capacity}, /*hash=*/128);
-  std::generate_n(offsets.begin(), 8, gen);
+  offsets[0] = seq.offset();
+  std::generate_n(offsets.begin() + 1, 7, gen);
   EXPECT_THAT(offsets, ElementsAre(0, 16, 48, 96, 32, 112, 80, 64));
 }
 
@@ -819,7 +822,9 @@ TEST(HashtableDataTest, HashtableInlineDataSize) {
   EXPECT_EQ(data.size(), 5);
 
   constexpr size_t kHugeIncrement =
-      (size_t(1) << (sizeof(size_t) == 4 ? 31 : 39));
+      (size_t(1) << (sizeof(size_t) == 4
+                         ? 31
+                         : HashtableInlineData::kSizeBitCount - 2));
   data.increment_size(kHugeIncrement);
   EXPECT_EQ(data.size(), kHugeIncrement + 5);
 
@@ -1916,6 +1921,94 @@ TEST(Table, InsertOverloads) {
 
   EXPECT_THAT(t, UnorderedElementsAre(Pair("", ""), Pair("ABC", ""),
                                       Pair("DEF", "!!!")));
+}
+
+struct CopyTracker {
+  static inline int num_copies = 0;
+  CopyTracker() = default;
+  CopyTracker(const CopyTracker&) { ++num_copies; }
+  CopyTracker(CopyTracker&&) = default;
+
+  bool operator==(const CopyTracker&) const { return true; }
+
+  template <typename H>
+  friend H AbslHashValue(H h, const CopyTracker&) {
+    return H::combine(std::move(h));
+  }
+};
+
+struct MoveTracker {
+  static inline int num_destructions = 0;
+  static inline int num_moves = 0;
+  ~MoveTracker() { ++num_destructions; }
+  MoveTracker() = default;
+  MoveTracker(const MoveTracker&) = default;
+  MoveTracker(MoveTracker&&) { ++num_moves; }
+
+  bool operator==(const MoveTracker&) const { return true; }
+
+  template <typename H>
+  friend H AbslHashValue(H h, const MoveTracker&) {
+    return H::combine(std::move(h));
+  }
+};
+
+TEST(Table, InsertDoesNotAccidentallyCopy) {
+  CopyTracker::num_copies = 0;
+  {
+    ValueTable<CopyTracker> tc;
+    EXPECT_TRUE(tc.insert(CopyTracker()).second);
+    tc.insert(tc.end(), CopyTracker());
+  }
+  EXPECT_EQ(CopyTracker::num_copies, 0);
+
+  int num_default_constructs = 0;
+  MoveTracker::num_moves = 0;
+  MoveTracker::num_destructions = 0;
+  {
+    ValueTable<MoveTracker> tm;
+    EXPECT_TRUE(tm.insert((++num_default_constructs, MoveTracker())).second);
+    tm.insert(tm.end(), (++num_default_constructs, MoveTracker()));
+  }
+  EXPECT_EQ(MoveTracker::num_destructions - num_default_constructs,
+            MoveTracker::num_moves);
+}
+
+TEST(Table, InsertWithMovesCollapsedIntoCopy) {
+  {
+    ValueTable<std::string_view> t;
+    EXPECT_TRUE(t.insert(std::string_view("a")).second);
+    EXPECT_EQ(*t.insert(t.end(), std::string_view("b")), "b");
+  }
+  {
+    ValueTable<std::array<int, 2>> t;
+    EXPECT_TRUE(t.insert(std::array<int, 2>{1, 2}).second);
+    EXPECT_EQ(*t.insert(t.end(), std::array<int, 2>{3, 4}),
+              (std::array<int, 2>{3, 4}));
+  }
+  {
+    ValueTable<std::optional<int>> t;
+    EXPECT_TRUE(t.insert(std::optional<int>(1)).second);
+    EXPECT_EQ(*t.insert(t.end(), std::optional<int>(2)), 2);
+  }
+  {
+    ValueTable<std::pair<int, int>> t;
+    EXPECT_TRUE(t.insert(std::pair<int, int>{1, 2}).second);
+    EXPECT_EQ(*t.insert(t.end(), std::pair<int, int>{3, 4}),
+              (std::pair<int, int>{3, 4}));
+  }
+  {
+    ValueTable<std::tuple<int, int>> t;
+    EXPECT_TRUE(t.insert(std::tuple<int, int>{1, 2}).second);
+    EXPECT_EQ(*t.insert(t.end(), std::tuple<int, int>{3, 4}),
+              (std::tuple<int, int>{3, 4}));
+  }
+  {
+    ValueTable<std::variant<int, double>> t;
+    EXPECT_TRUE(t.insert(std::variant<int, double>{1}).second);
+    EXPECT_EQ(*t.insert(t.end(), std::variant<int, double>{2.5}),
+              (std::variant<int, double>{2.5}));
+  }
 }
 
 TYPED_TEST(SooTest, LargeTable) {
@@ -5119,7 +5212,9 @@ TEST(Table, MaxValidSize) {
       if (key_size <= 4) {
         ASSERT_EQ(max_size, uint64_t{1} << 8 * key_size);
       } else if (i <= 21) {
-        ASSERT_GE(max_size, uint64_t{1} << 40);
+        // Small slot sizes are limited only by the number of size bits.
+        ASSERT_GE(max_size,
+                  (uint64_t{1} << HashtableInlineData::kSizeBitCount) - 1);
       }
       ASSERT_LE(max_size, uint64_t{1} << HashtableInlineData::kSizeBitCount);
       ASSERT_LT(absl::uint128(max_size) * slot_size, uint64_t{1} << 63);

@@ -458,6 +458,7 @@ cc_test(
         ":test_instance_tracker",
         "//absl/base:config",
         "//absl/base:no_destructor",
+        "//absl/functional:overload",
         "//absl/meta:type_traits",
         "//absl/strings:string_view",
         "@googletest//:gtest",
@@ -732,6 +733,7 @@ cc_library(
         "//absl/base:core_headers",
         "//absl/base:throw_delegate",
         "//absl/meta:type_traits",
+        "//absl/numeric:bits",
     ],
 )
 
@@ -833,6 +835,7 @@ cc_library(
         "//absl/memory",
         "//absl/meta:type_traits",
         "//absl/numeric:bits",
+        "//absl/strings:string_view",
         "//absl/utility",
     ],
 )

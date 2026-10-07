@@ -70,6 +70,7 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
         "//absl:__subpackages__",
+        "@do_not_use_for_gloop_visibility_only//gloop/util/coding/elias_fano:__subpackages__",
         "@do_not_use_for_gloop_visibility_only//gloop/util/sysinfo/topology:__subpackages__",
     ],
     deps = [

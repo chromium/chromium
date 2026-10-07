@@ -22,6 +22,7 @@
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
+#include "absl/crc/internal/crc.h"
 
 #ifdef __SSE4_2__
 #include <immintrin.h>
@@ -78,18 +79,18 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace crc_internal {
 
-#if defined(ABSL_CRC_INTERNAL_HAVE_ARM_SIMD) || \
-    defined(ABSL_CRC_INTERNAL_HAVE_X86_SIMD)
-
 #if defined(ABSL_CRC_INTERNAL_HAVE_ARM_SIMD)
 using V128 = uint64x2_t;
-#else
+#elif defined(ABSL_CRC_INTERNAL_HAVE_X86_SIMD)
 // Note: Do not use __m128i_u, it is not portable.
 // Use V128_LoadU() perform an unaligned load from __m128i*.
 using V128 = __m128i;
+#else
+using V128 = std::array<uint64_t, 2>;
 #endif
 
-#if defined(__AVX__) || defined(ABSL_INTERNAL_CAN_FORCE_AVX)
+#if (defined(__AVX__) || defined(ABSL_INTERNAL_CAN_FORCE_AVX)) && \
+    defined(ABSL_CRC_INTERNAL_HAVE_X86_SIMD)
 using V256 = __m256i;
 #else
 // Placeholder for V256 when AVX is not available.
@@ -158,10 +159,16 @@ int64_t V128_Low64(const V128 l);
 // Add packed 64-bit integers in |l| and |r|.
 V128 V128_Add64(const V128 l, const V128 r);
 
-// Performs a store fence on architectures that require it.
-void StoreFence();
+// Performs a store fence on architectures that require it (x86) after
+// non-temporal stores.
+//
+// Debug builds track that this function is called after all tracked
+// non-temporal store functions, via the weak hooks
+// DebugReportNonTemporalStore() and DebugReportStoreFence() in crc.h.
+void NonTemporalStoreFence();
 
-#if defined(__AVX__) || defined(ABSL_INTERNAL_CAN_FORCE_AVX)
+#if (defined(__AVX__) || defined(ABSL_INTERNAL_CAN_FORCE_AVX)) && \
+    defined(ABSL_CRC_INTERNAL_HAVE_X86_SIMD)
 ABSL_INTERNAL_ATTRIBUTE_AVX inline V256 V256_LoadU(const void* src);
 ABSL_INTERNAL_ATTRIBUTE_AVX inline V256 V256_Broadcast128(const V128* src);
 ABSL_INTERNAL_ATTRIBUTE_AVX inline void V256_StoreU(void* dst, V256 data);
@@ -192,8 +199,6 @@ ABSL_INTERNAL_ATTRIBUTE_AVX inline void V256_CopyPairU(void* dst,
                                                        const void* src);
 ABSL_INTERNAL_ATTRIBUTE_AVX inline void V256_CopyPairNonTemporal(
     void* dst, const void* src);
-
-#endif
 
 #if defined(ABSL_CRC_INTERNAL_HAVE_X86_SIMD)
 
@@ -261,9 +266,6 @@ inline int64_t V128_Low64(const V128 l) { return _mm_cvtsi128_si64(l); }
 inline V128 V128_Add64(const V128 l, const V128 r) {
   return _mm_add_epi64(l, r);
 }
-
-inline void StoreFence() { _mm_sfence(); }
-
 #elif defined(ABSL_CRC_INTERNAL_HAVE_ARM_SIMD)
 
 inline uint32_t CRC32_u8(uint32_t crc, uint8_t v) { return __crc32cb(crc, v); }
@@ -370,10 +372,16 @@ inline int64_t V128_Low64(const V128 l) {
 }
 
 inline V128 V128_Add64(const V128 l, const V128 r) { return vaddq_u64(l, r); }
+#endif  // ABSL_CRC_INTERNAL_HAVE_X86_SIMD || ABSL_CRC_INTERNAL_HAVE_ARM_SIMD
 
-inline void StoreFence() {}
-
+inline void NonTemporalStoreFence() {
+#if defined(ABSL_CRC_INTERNAL_HAVE_X86_SIMD)
+  _mm_sfence();
 #endif
+  // Despite other architectures not needing an actual fence instruction, we
+  // note the fence in debug builds for consistency with x86.
+  DebugReportStoreFence();
+}
 
 #if (defined(__AVX__) || defined(ABSL_INTERNAL_CAN_FORCE_AVX)) && \
     defined(ABSL_CRC_INTERNAL_HAVE_X86_SIMD)
@@ -393,9 +401,9 @@ ABSL_INTERNAL_ATTRIBUTE_AVX inline void V256_StoreU(void* dst, V256 data) {
 ABSL_INTERNAL_ATTRIBUTE_AVX inline void V256_StoreNonTemporal(void* dst,
                                                               V256 data) {
   _mm256_stream_si256(reinterpret_cast<__m256i*>(dst), data);
+  DebugReportNonTemporalStore();
 }
-#elif defined(ABSL_CRC_INTERNAL_HAVE_X86_SIMD) || \
-    defined(ABSL_CRC_INTERNAL_HAVE_ARM_SIMD)
+#else
 template <typename T>
 inline T V256_LoadU(const void* src) {
   T res;
@@ -416,12 +424,14 @@ inline void V256_StoreU(void* dst, const T& data) {
 
 template <typename T>
 inline void V256_StoreNonTemporal(void* dst, const T& data) {
+  // This architecture has no streaming store, so the data goes through the
+  // cache and is already strongly ordered. It is still counted, so that the
+  // StoreFence() contract is checked identically on every architecture.
   std::memcpy(dst, &data, sizeof(T));
+  DebugReportNonTemporalStore();
 }
-#endif
-
-#if defined(ABSL_CRC_INTERNAL_HAVE_ARM_SIMD) || \
-    defined(ABSL_CRC_INTERNAL_HAVE_X86_SIMD)
+#endif  // (defined(__AVX__) || defined(ABSL_INTERNAL_CAN_FORCE_AVX)) &&
+        // defined(ABSL_CRC_INTERNAL_HAVE_X86_SIMD)
 
 ABSL_INTERNAL_ATTRIBUTE_AVX inline void V256_LoadPairU(const void* src,
                                                        V256* v0, V256* v1) {
@@ -458,9 +468,6 @@ ABSL_INTERNAL_ATTRIBUTE_AVX inline void V256_CopyPairNonTemporal(
   V256_LoadPairU(src, &v0, &v1);
   V256_StorePairNonTemporal(dst, v0, v1);
 }
-
-#endif  // defined(ABSL_CRC_INTERNAL_HAVE_ARM_SIMD) ||
-        // defined(ABSL_CRC_INTERNAL_HAVE_X86_SIMD)
 
 }  // namespace crc_internal
 ABSL_NAMESPACE_END

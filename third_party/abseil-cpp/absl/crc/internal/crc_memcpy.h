@@ -52,10 +52,11 @@ class CrcMemcpy {
  public:
   static crc32c_t CrcAndCopy(void* __restrict dst, const void* __restrict src,
                              std::size_t length,
-                             crc32c_t initial_crc = crc32c_t{0}) {
+                             crc32c_t initial_crc = crc32c_t{0},
+                             bool non_temporal = false) {
     uint32_t crc = static_cast<uint32_t>(initial_crc);
     crc ^= 0xffffffffU;
-    CRC::Crc32c()->ExtendAndCopy(&crc, dst, src, length);
+    CRC::Crc32c()->ExtendAndCopy(&crc, dst, src, length, non_temporal);
     crc ^= 0xffffffffU;
     return crc32c_t{crc};
   }
@@ -113,8 +114,9 @@ class CrcNonTemporalMemcpyAVXEngine : public CrcMemcpyEngine {
 // the generic fallback version.
 inline crc32c_t Crc32CAndCopy(void* __restrict dst, const void* __restrict src,
                               std::size_t length,
-                              crc32c_t initial_crc = crc32c_t{0}) {
-  return CrcMemcpy::CrcAndCopy(dst, src, length, initial_crc);
+                              crc32c_t initial_crc = crc32c_t{0},
+                              bool non_temporal = false) {
+  return CrcMemcpy::CrcAndCopy(dst, src, length, initial_crc, non_temporal);
 }
 
 }  // namespace crc_internal

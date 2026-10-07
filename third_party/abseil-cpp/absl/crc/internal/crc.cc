@@ -46,6 +46,7 @@
 #include <cstring>
 #include <iterator>
 
+#include "absl/base/attributes.h"
 #include "absl/base/internal/endian.h"
 #include "absl/base/internal/raw_logging.h"
 #include "absl/base/prefetch.h"
@@ -426,7 +427,8 @@ CRC::~CRC() {}
 CRC::CRC() {}
 
 void CRC::ExtendAndCopy(uint32_t* crc, void* __restrict dst,
-                        const void* __restrict src, size_t length) const {
+                        const void* __restrict src, size_t length,
+                        bool /*non_temporal*/) const {
   std::memcpy(dst, src, length);
   Extend(crc, dst, length);
 }
@@ -436,6 +438,16 @@ CRC* CRC::Crc32c() {
   static CRC* singleton = CRCImpl::NewInternal();
   return singleton;
 }
+
+#ifndef NDEBUG
+ABSL_ATTRIBUTE_WEAK
+#endif
+void DebugReportNonTemporalStore() {}
+
+#ifndef NDEBUG
+ABSL_ATTRIBUTE_WEAK
+#endif
+void DebugReportStoreFence() {}
 
 }  // namespace crc_internal
 ABSL_NAMESPACE_END

@@ -18,6 +18,7 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "absl/base/attributes.h"
 #include "absl/base/config.h"
 
 // This class implements CRCs (aka Rabin Fingerprints).
@@ -50,7 +51,8 @@ class CRC {
   // Copy 'length' bytes from 'src' to 'dst' and extend the CRC with the copied
   // bytes.
   virtual void ExtendAndCopy(uint32_t* crc, void* __restrict dst,
-                             const void* __restrict src, size_t length) const;
+                             const void* __restrict src, size_t length,
+                             bool non_temporal) const;
 
   // Equivalent to Extend(crc, bytes, length) where "bytes"
   // points to an array of "length" zero bytes.
@@ -81,6 +83,10 @@ class CRC {
   CRC(const CRC&) = delete;
   CRC& operator=(const CRC&) = delete;
 };
+// Bookkeeping hooks called by non-temporal store functions and
+// NonTemporalStoreFence(), for use in tests.
+void DebugReportNonTemporalStore();
+void DebugReportStoreFence();
 
 }  // namespace crc_internal
 ABSL_NAMESPACE_END

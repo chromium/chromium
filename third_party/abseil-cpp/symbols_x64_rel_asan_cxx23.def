@@ -527,6 +527,7 @@ EXPORTS
     ?AsciiStrToUpper@absl@@YAXPEAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
     ?AsciiStrToUpper@ascii_internal@absl@@YAXPEADPEBD_K@Z
     ?AssertHeld@Mutex@absl@@QEBAXXZ
+    ?AssertInSooModeImpl@CommonFields@container_internal@absl@@AEBAXXZ
     ?AssertNotDebugCapacityImpl@CommonFields@container_internal@absl@@AEBAXXZ
     ?AssertNotHeld@Mutex@absl@@QEBAXXZ
     ?AssertReaderHeld@Mutex@absl@@QEBAXXZ
@@ -615,6 +616,8 @@ EXPORTS
     ?CurrentThreadIdentityIfPresent@base_internal@absl@@YAPEAUThreadIdentity@12@XZ
     ?CurrentValue@FlagImpl@flags_internal@absl@@EEBA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@XZ
     ?DataGuard@FlagImpl@flags_internal@absl@@AEBAAEAVMutex@3@XZ
+    ?DebugReportNonTemporalStore@crc_internal@absl@@YAXXZ
+    ?DebugReportStoreFence@crc_internal@absl@@YAXXZ
     ?DecodeFrom@ProtoField@log_internal@absl@@QEAA_NPEAV?$Span@$$CBD@3@@Z
     ?DecodeRustPunycode@debugging_internal@absl@@YAPEADUDecodeRustPunycodeOptions@12@@Z
     ?DecodeWaitCycles@SpinLock@base_internal@absl@@KA_JI@Z
@@ -697,7 +700,7 @@ EXPORTS
     ?ExitOnDFatal@log_internal@absl@@YA_NXZ
     ?ExpectedChecksum@Cord@absl@@QEBA?AV?$optional@I@__Cr@std@@XZ
     ?Extend@CRC32@crc_internal@absl@@UEBAXPEAIPEBX_K@Z
-    ?ExtendAndCopy@CRC@crc_internal@absl@@UEBAXPEAIPEIAXPEIBX_K@Z
+    ?ExtendAndCopy@CRC@crc_internal@absl@@UEBAXPEAIPEIAXPEIBX_K_N@Z
     ?ExtendByZeroes@CRC32@crc_internal@absl@@UEBAXPEAI_K@Z
     ?ExtendByZeroesImpl@CRC32@crc_internal@absl@@CAXPEAI_KQEBI2@Z
     ?ExtendCrc32cByZeroes@absl@@YA?AVcrc32c_t@1@V21@_K@Z

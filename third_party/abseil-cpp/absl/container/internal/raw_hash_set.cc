@@ -175,7 +175,6 @@ inline Group::NonIterableBitMaskType probe_till_first_non_full_group(
       return mask;
     }
     seq.next();
-    ABSL_SWISSTABLE_ASSERT(seq.index() <= capacity && "full table!");
   }
 }
 
@@ -276,6 +275,20 @@ void IterateOverFullSlotsImpl(const CommonFields& c, size_t slot_size, Fn cb) {
 }
 
 }  // namespace
+
+#ifndef NDEBUG
+ReentranceGuard::ReentranceGuard(CommonFields& common)
+    : common_(common), capacity_(common.maybe_invalid_capacity()) {
+  common_.set_capacity(HashtableCapacity::CreateReentrance());
+}
+
+ReentranceGuard::~ReentranceGuard() { common_.set_capacity(capacity_); }
+#endif  // NDEBUG
+
+void CommonFields::AssertInSooModeImpl() const {
+  ABSL_SWISSTABLE_ASSERT(capacity() == SooCapacity());
+  ABSL_SWISSTABLE_ASSERT(!has_infoz());
+}
 
 void CommonFields::AssertNotDebugCapacityImpl() const {
   const HashtableCapacity cap = maybe_invalid_capacity();
@@ -807,7 +820,7 @@ void ClearBackingArrayNoReuse(CommonFields& c,
 
 template <bool kSooEnabled>
 void* SingleSlotAddress(CommonFields& c) {
-  return kSooEnabled ? c.soo_data() : c.slot_array(/*capacity=*/1);
+  return kSooEnabled ? c.soo_data() : c.single_non_soo_slot();
 }
 
 template <bool kSooEnabled>
@@ -840,7 +853,7 @@ void DestructNonSoo(CommonFields& c, const DtorPolicy& __restrict policy,
     if (c.is_small()) {
       if (!c.empty()) {
         static_assert(kMaxSmallCapacity == 1);
-        policy.destroy_slot(&c, c.slot_array(/*capacity=*/1));
+        policy.destroy_slot(&c, c.single_non_soo_slot());
       }
     } else {
       DestroySlots(c, policy.slot_size, policy.destroy_slot);
@@ -980,7 +993,8 @@ namespace {
 size_t FindNewPositionsAndTransferSlots(
     CommonFields& common, const PolicyFunctions& __restrict policy,
     ctrl_t* old_ctrl, void* old_slots, size_t old_capacity) {
-  void* new_slots = common.slot_array(common.capacity());
+  void* new_slots = common.is_small() ? common.single_non_soo_slot()
+                                      : common.slot_array(common.capacity());
   const void* hash_fn = policy.hash_fn(common);
   const size_t slot_size = policy.slot_size;
   const size_t seed = common.seed().seed();
@@ -1012,7 +1026,7 @@ size_t FindNewPositionsAndTransferSlots(
   return total_probe_length;
 }
 
-ABSL_ATTRIBUTE_NOINLINE ABSL_ATTRIBUTE_COLD void ReportGrowthToInfozImpl(
+ABSL_ATTRIBUTE_COLD ABSL_ATTRIBUTE_NOINLINE void ReportGrowthToInfozImpl(
     CommonFields& common, HashtablezInfoHandle infoz, size_t hash,
     size_t total_probe_length, size_t distance_from_desired) {
   infoz.RecordStorageChanged(common.size() - 1, common.capacity());
@@ -1023,7 +1037,7 @@ ABSL_ATTRIBUTE_NOINLINE ABSL_ATTRIBUTE_COLD void ReportGrowthToInfozImpl(
 }
 
 // Specialization to avoid passing two 0s from hot function.
-ABSL_ATTRIBUTE_NOINLINE ABSL_ATTRIBUTE_COLD void
+ABSL_ATTRIBUTE_COLD ABSL_ATTRIBUTE_NOINLINE void
 ReportSingleGroupTableGrowthToInfoz(CommonFields& common, ctrl_t* old_ctrl,
                                     size_t hash) {
   ReportGrowthToInfozImpl(common, common.infoz_from_control(old_ctrl), hash,
@@ -1032,7 +1046,7 @@ ReportSingleGroupTableGrowthToInfoz(CommonFields& common, ctrl_t* old_ctrl,
 }
 
 // Specialization that computes hash and generates new seed.
-ABSL_ATTRIBUTE_NOINLINE ABSL_ATTRIBUTE_COLD void
+ABSL_ATTRIBUTE_COLD ABSL_ATTRIBUTE_NOINLINE void
 ReportSingleElementTableGrowthToInfozAndForceSample(
     CommonFields& common, const PolicyFunctions& __restrict policy,
     absl::FunctionRef<size_t(size_t)> get_hash) {
@@ -1048,7 +1062,7 @@ ReportSingleElementTableGrowthToInfozAndForceSample(
 // Outlines cold infoz recording so callers do not inline infoz extraction
 // or spill registers across SetCtrl. `common` is first and `hash` is third to
 // match argument order in callers.
-ABSL_ATTRIBUTE_NOINLINE ABSL_ATTRIBUTE_COLD void ReportInsertMissToInfoz(
+ABSL_ATTRIBUTE_COLD ABSL_ATTRIBUTE_NOINLINE void ReportInsertMissToInfoz(
     CommonFields& common, size_t probe_length, size_t hash) {
   common.infoz().RecordInsertMiss(hash, probe_length);
 }
@@ -1056,7 +1070,7 @@ ABSL_ATTRIBUTE_NOINLINE ABSL_ATTRIBUTE_COLD void ReportInsertMissToInfoz(
 // Outlines cold infoz recording with computation of hash so callers can
 // avoid calling the hash function and seed extraction in the hot path.
 // `common` is first and `get_hash` is third to match argument order in callers.
-ABSL_ATTRIBUTE_NOINLINE ABSL_ATTRIBUTE_COLD void
+ABSL_ATTRIBUTE_COLD ABSL_ATTRIBUTE_NOINLINE void
 ReportInsertMissToInfozAndComputeHash(
     CommonFields& common, size_t probe_length,
     absl::FunctionRef<size_t(size_t)> get_hash) {
@@ -1066,26 +1080,25 @@ ReportInsertMissToInfozAndComputeHash(
 // Outlines cold infoz recording with computation of probe_length so callers can
 // skip tracking of probe_length. `common` is first and `hash` is third to match
 // argument order in callers.
-ABSL_ATTRIBUTE_NOINLINE ABSL_ATTRIBUTE_COLD void
+ABSL_ATTRIBUTE_COLD ABSL_ATTRIBUTE_NOINLINE void
 ReportInsertMissToInfozAndComputeProbeLength(CommonFields& common,
                                              size_t target, size_t hash) {
   const size_t cap = common.capacity();
   auto seq = probe(ProbeCapacity{cap}, hash);
   while (((target - seq.offset()) & cap) >= Group::kWidth) {
     seq.next();
-    ABSL_SWISSTABLE_ASSERT(seq.index() < common.capacity());
   }
   common.infoz().RecordInsertMiss(hash, seq.index());
 }
 
-ABSL_ATTRIBUTE_NOINLINE ABSL_ATTRIBUTE_COLD void ReportGrowthToInfoz(
+ABSL_ATTRIBUTE_COLD ABSL_ATTRIBUTE_NOINLINE void ReportGrowthToInfoz(
     CommonFields& common, ctrl_t* old_ctrl, size_t hash,
     size_t total_probe_length, size_t distance_from_desired) {
   ReportGrowthToInfozImpl(common, common.infoz_from_control(old_ctrl), hash,
                           total_probe_length, distance_from_desired);
 }
 
-ABSL_ATTRIBUTE_NOINLINE ABSL_ATTRIBUTE_COLD void ReportResizeToInfoz(
+ABSL_ATTRIBUTE_COLD ABSL_ATTRIBUTE_NOINLINE void ReportResizeToInfoz(
     CommonFields& common, HashtablezInfoHandle infoz,
     size_t total_probe_length) {
   infoz.RecordStorageChanged(common.size(), common.capacity());
@@ -1094,7 +1107,7 @@ ABSL_ATTRIBUTE_NOINLINE ABSL_ATTRIBUTE_COLD void ReportResizeToInfoz(
   common.set_infoz(infoz);
 }
 
-ABSL_ATTRIBUTE_NOINLINE ABSL_ATTRIBUTE_COLD void
+ABSL_ATTRIBUTE_COLD ABSL_ATTRIBUTE_NOINLINE void
 ReportResizeToInfozAndForceSample(CommonFields& common,
                                   const PolicyFunctions& __restrict policy,
                                   size_t total_probe_length) {
@@ -1407,6 +1420,7 @@ template <typename ProbedItem>
 ABSL_ATTRIBUTE_NOINLINE size_t DecodeAndInsertImpl(
     CommonFields& c, const PolicyFunctions& __restrict policy,
     const ProbedItem* start, const ProbedItem* end, void* old_slots) {
+  ABSL_SWISSTABLE_ASSERT(!c.is_small());
   const HashtableCapacity new_capacity = c.capacity_impl();
 
   void* new_slots = c.slot_array(new_capacity.capacity());
@@ -1445,9 +1459,10 @@ constexpr size_t kNoMarkedElementsSentinel = ~size_t{};
 ABSL_ATTRIBUTE_NOINLINE size_t ProcessProbedMarkedElements(
     CommonFields& c, const PolicyFunctions& __restrict policy, ctrl_t* old_ctrl,
     void* old_slots, size_t start) {
-  size_t old_capacity = PreviousCapacity(c.capacity());
+  const size_t new_capacity = c.capacity();
+  const size_t old_capacity = PreviousCapacity(new_capacity);
   const size_t slot_size = policy.slot_size;
-  void* new_slots = c.slot_array(c.capacity());
+  void* new_slots = c.slot_array(new_capacity);
   size_t total_probe_length = 0;
   const void* hash_fn = policy.hash_fn(c);
   auto hash_slot = policy.hash_slot;
@@ -1746,7 +1761,7 @@ void* Grow1To3AndPrepareInsert(CommonFields& common,
   ABSL_SWISSTABLE_ASSERT(common.blocked_element_count() == 0);
   constexpr size_t kOldCapacity = 1;
   constexpr size_t kNewCapacity = NextCapacity(kOldCapacity);
-  void* old_slots = common.slot_array(kOldCapacity);
+  void* old_slots = common.single_non_soo_slot();
   // old_slots == old_ctrl in case of capacity == 1.
   ctrl_t* old_ctrl = static_cast<ctrl_t*>(old_slots);
 
@@ -1881,7 +1896,7 @@ void* PrepareInsertSmallNonSoo(CommonFields& common,
     if (common.empty()) {
       IncrementSmallSizeNonSoo(common, policy);
       // Compute before `RecordInsertMissCold` to avoid reloading `control_`.
-      void* res = common.slot_array(/*capacity=*/1);
+      void* res = common.single_non_soo_slot();
       // Call NOINLINE function to move infoz instructions out of line.
       if (common.has_infoz()) {
         ReportInsertMissToInfozAndComputeHash(common, /*probe_length=*/0,
@@ -1921,7 +1936,7 @@ namespace {
 
 // Called whenever the table needs to vacate empty slots either by removing
 // tombstones via rehash or growth to next capacity.
-ABSL_ATTRIBUTE_NOINLINE ABSL_ATTRIBUTE_COLD void*
+ABSL_ATTRIBUTE_COLD ABSL_ATTRIBUTE_NOINLINE void*
 RehashOrGrowToNextCapacityAndPrepareInsert(
     CommonFields& common, const PolicyFunctions& __restrict policy,
     size_t new_hash) {
@@ -2134,7 +2149,9 @@ void ResizeAllocatedTableWithSeedChange(
 
   const size_t old_capacity = common.capacity();
   ctrl_t* const old_ctrl = common.control();
-  void* const old_slots = common.slot_array(old_capacity);
+  void* const old_slots = IsSmallCapacity(old_capacity)
+                              ? common.single_non_soo_slot()
+                              : common.slot_array(old_capacity);
   const size_t old_blocked_element_count = common.blocked_element_count();
 
   const size_t slot_size = policy.slot_size;
@@ -2262,8 +2279,10 @@ void Rehash(CommonFields& common, const PolicyFunctions& __restrict policy,
         ABSL_SWISSTABLE_ASSERT(common.has_infoz());
         return;
       }
+      // Reducing from large capacity to SOO.
       ABSL_SWISSTABLE_ASSERT(slot_size <= sizeof(HeapOrSoo));
       ABSL_SWISSTABLE_ASSERT(policy.slot_align <= alignof(HeapOrSoo));
+      ABSL_SWISSTABLE_ASSERT(!IsSmallCapacity(cap));
       HeapOrSoo tmp_slot;
       size_t begin_offset = FindFirstFullSlot(0, cap, common.control());
       policy.transfer_n(
@@ -2319,7 +2338,7 @@ void Copy(CommonFields& common, const PolicyFunctions& __restrict policy,
     const void* other_slot =
         other_capacity <= soo_capacity ? other.soo_data()
         : IsSmallCapacity(other_capacity)
-            ? other.slot_array(other_capacity)
+            ? other.single_non_soo_slot()
             : SlotAddress(other.slot_array(other_capacity),
                           FindFirstFullSlot(0, other_capacity, other.control()),
                           slot_size);

@@ -504,6 +504,7 @@ absl_cc_test(
     absl::config
     absl::container_memory
     absl::no_destructor
+    absl::overload
     absl::string_view
     absl::test_instance_tracker
     absl::type_traits
@@ -745,6 +746,7 @@ absl_cc_library(
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
+    absl::bits
     absl::common_policy_traits
     absl::config
     absl::container_memory
@@ -829,6 +831,7 @@ absl_cc_library(
     absl::optional
     absl::prefetch
     absl::raw_logging_internal
+    absl::string_view
     absl::utility
     absl::weakly_mixed_integer
   PUBLIC
