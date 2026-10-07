@@ -15,17 +15,23 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/run_loop.h"
+#import "base/test/ios/wait_util.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "base/values.h"
 #import "components/enterprise/device_trust/core/common_types.h"
 #import "components/enterprise/device_trust/core/mock_device_trust_service.h"
 #import "components/keyed_service/core/keyed_service.h"
+#import "ios/chrome/browser/enterprise/connectors/device_trust/features.h"
 #import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_challenge_tab_helper.h"
 #import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_service_factory_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/test/ios_chrome_test_with_web_state.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/script_message.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/js_test_util.h"
@@ -33,6 +39,7 @@
 #import "ios/web/public/web_state.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 #import "url/origin.h"
@@ -490,6 +497,63 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, DefaultRoutingTimesOut) {
   late_response.challenge_response = "late_payload";
   std::move(saved_callback).Run(late_response);
   DeviceTrustChallengeTabHelper::RemoveFromWebState(web_state());
+}
+
+// Test fixture executing the Device Trust script in a real WebState. Uses the
+// ChromeWebClient so that DeviceTrustJavaScriptFeature is registered through
+// the production code path.
+class DeviceTrustJavaScriptFeatureWebStateTest
+    : public IOSChromeTestWithWebState {
+ protected:
+  DeviceTrustJavaScriptFeatureWebStateTest()
+      : IOSChromeTestWithWebState(WebClientMode::kChromeWebClient) {
+    scoped_feature_list_.InitWithFeatures(
+        {enterprise_connectors::features::kEnableIOSDeviceTrustConnector,
+         web::features::kAssertOnJavaScriptErrors},
+        {});
+  }
+
+  DeviceTrustJavaScriptFeature* feature() {
+    return DeviceTrustJavaScriptFeature::GetInstance();
+  }
+
+  // Returns the result of evaluating `script` in the page content world.
+  id EvaluateInPage(NSString* script) {
+    return web::test::ExecuteJavaScriptForFeatureAndReturnResult(
+        web_state(), script, feature());
+  }
+
+  // Returns whether `window.chrome.enterprise.deviceTrust` is installed in the
+  // page content world.
+  bool IsDeviceTrustAPIInstalled() {
+    return [EvaluateInPage(@"Boolean(window.chrome?.enterprise?.deviceTrust)")
+        boolValue];
+  }
+
+  // Waits for the asynchronously executed script to install the API.
+  [[nodiscard]] bool WaitForDeviceTrustAPI() {
+    return base::test::ios::WaitUntilConditionOrTimeout(
+        base::test::ios::kWaitForJSCompletionTimeout, ^bool {
+          return IsDeviceTrustAPIInstalled();
+        });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies that the API is not present in a page until SetupDeviceTrustAPI()
+// executes the script in its main frame, and that the script installs it.
+TEST_F(DeviceTrustJavaScriptFeatureWebStateTest, SetupDeviceTrustAPI) {
+  LoadHtml(@"<html><body></body></html>");
+  web::WebFrame* main_frame = WaitForMainFrame(feature());
+  ASSERT_TRUE(main_frame);
+  ASSERT_FALSE(IsDeviceTrustAPIInstalled());
+  EXPECT_TRUE(feature()->SetupDeviceTrustAPI(main_frame));
+  EXPECT_TRUE(WaitForDeviceTrustAPI());
+  EXPECT_NSEQ(@"function",
+              EvaluateInPage(@"typeof window.chrome.enterprise.deviceTrust."
+                             @"getAttestation"));
 }
 
 }  // namespace

@@ -61,8 +61,8 @@ NSString* const kMessageHandlerName = @"DeviceTrustMessageHandler";
 
 @end
 
-// Base fixture that loads the Device Trust script but does not install the
-// public API onto `window`.
+// Base fixture that registers the native message handler but does not inject
+// the Device Trust script, as on pages that are not allowlisted.
 class DeviceTrustJsTest : public web::JavascriptTest {
  public:
   DeviceTrustJsTest()
@@ -78,7 +78,9 @@ class DeviceTrustJsTest : public web::JavascriptTest {
     web::JavascriptTest::SetUp();
 
     AddGCrWebScript();
-    AddUserScript(@"device_trust");
+    if (ShouldInjectDeviceTrustScript()) {
+      AddUserScript(@"device_trust");
+    }
     ASSERT_TRUE(LoadHtml(@"<html><body><script>"
                          @"window.testResult = null;"
                          @"window.testError = null;"
@@ -86,11 +88,14 @@ class DeviceTrustJsTest : public web::JavascriptTest {
                          @"</script></body></html>"));
   }
 
-  // Invokes the gCrWeb internal setup method to install the public API.
-  void SetupDeviceTrustAPI() {
-    ASSERT_TRUE([web::test::ExecuteJavaScript(
-        web_view(), @"__gCrWeb.callFunctionInGcrWeb('deviceTrust', "
-                    @"'setupDeviceTrustAPI', []); true;") boolValue]);
+  // Whether the Device Trust script is added to the web view, as the browser
+  // does on demand for allowlisted main frames.
+  virtual bool ShouldInjectDeviceTrustScript() const { return false; }
+
+  // Runs the Device Trust script again in the current document.
+  void RunDeviceTrustScriptAgain() {
+    web::test::ExecuteJavaScriptInWebView(
+        web_view(), web::test::GetPageScript(@"device_trust"));
   }
 
   // Waits for the JS-to-Native bridge to receive a message.
@@ -123,20 +128,17 @@ class DeviceTrustJsTest : public web::JavascriptTest {
   DeviceTrustReplyMessageHandler* handler_;
 };
 
-// Verifies that window.chrome.enterprise.deviceTrust is not exposed before
-// SetupDeviceTrustAPI() is called.
-TEST_F(DeviceTrustJsTest, APINotInstalledBeforeSetup) {
+// Verifies that window.chrome.enterprise.deviceTrust is not exposed when the
+// script has not been injected.
+TEST_F(DeviceTrustJsTest, APINotInstalledWithoutScript) {
   EXPECT_NSEQ(@NO,
               GetJsVar(@"Boolean(window.chrome?.enterprise?.deviceTrust)"));
 }
 
-// Test fixture where the Device Trust API is explicitly installed.
+// Test fixture where the Device Trust script is injected, installing the API.
 class DeviceTrustJsAPIEnabledTest : public DeviceTrustJsTest {
  protected:
-  void SetUp() override {
-    DeviceTrustJsTest::SetUp();
-    SetupDeviceTrustAPI();
-  }
+  bool ShouldInjectDeviceTrustScript() const override { return true; }
 };
 
 // Verifies that the API object is frozen and cannot be mutated.
@@ -399,15 +401,15 @@ TEST_F(DeviceTrustJsAPIEnabledTest, PreventsTamperingAndOverriding) {
   EXPECT_NSEQ(@"secure_challenge", GetLastMessage()[@"challengeRequest"]);
 }
 
-// Verifies that calling SetupDeviceTrustAPI multiple times is idempotent
-// and preserves the exact same API object reference.
-TEST_F(DeviceTrustJsAPIEnabledTest, SetupIsIdempotent) {
+// Verifies that running the script more than once in the same document is
+// idempotent and preserves the exact same API object reference.
+TEST_F(DeviceTrustJsAPIEnabledTest, RepeatedExecutionIsIdempotent) {
   ASSERT_TRUE([web::test::ExecuteJavaScript(
       web_view(),
       @"window.originalDeviceTrustAPI = window.chrome.enterprise.deviceTrust;"
       @"true;") boolValue]);
 
-  SetupDeviceTrustAPI();
+  RunDeviceTrustScriptAgain();
 
   EXPECT_NSEQ(@YES, GetJsVar(@"window.originalDeviceTrustAPI === "
                              @"window.chrome.enterprise.deviceTrust"));

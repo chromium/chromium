@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessageWithReply, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
 const MESSAGE_HANDLER_NAME = 'DeviceTrustMessageHandler';
@@ -116,6 +115,7 @@ function setupDeviceTrustAPI(): void {
   }
 }
 
-const deviceTrust = new CrWebApi('deviceTrust');
-deviceTrust.addFunction('setupDeviceTrustAPI', setupDeviceTrustAPI);
-gCrWeb.registerApi(deviceTrust);
+// This script is executed by the browser only in the main frame of pages
+// allowlisted by the Device Trust policies, so the API is installed as soon as
+// the script runs.
+setupDeviceTrustAPI();

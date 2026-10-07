@@ -7,10 +7,7 @@ import("//ios/web/public/js_messaging/optimize_ts.gni")
 optimize_ts("device_trust_api_ts") {
   visibility = [ ":model" ]
   sources = [ "resources/device_trust.ts" ]
-  deps = [
-    "//ios/web/public/js_messaging:gcrweb",
-    "//ios/web/public/js_messaging:util_scripts",
-  ]
+  deps = [ "//ios/web/public/js_messaging:util_scripts" ]
 }
 
 source_set("model") {
@@ -90,6 +87,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:ios_chrome_test_with_web_state",
+    "//ios/web/common:features",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",

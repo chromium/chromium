@@ -51,9 +51,6 @@ const char kExampleOtherUrl[] = "https://example.com/other";
 const char kAttackerUrl[] = "https://attacker.com";
 const char kAttackerLoginUrl[] = "https://attacker.com/login";
 const char kWildcardPattern[] = "*";
-const char16_t kExpectedSetupScript[] =
-    u"__gCrWeb.callFunctionInGcrWeb('deviceTrust', "
-    u"'setupDeviceTrustAPI', []);";
 const char kFunnelHistogram[] = "Enterprise.DeviceTrust.Attestation.Funnel";
 const char kPolicyLevelHistogram[] =
     "Enterprise.DeviceTrust.Attestation.PolicyLevel";
@@ -222,7 +219,6 @@ TEST_F(DeviceTrustChallengeTabHelperTest, SetUpAPIForMainFrame) {
   web::FakeWebFrame* main_frame_ptr =
       SetupMainFrame(url::Origin::Create(GURL(kExampleUrl)));
   EXPECT_EQ(main_frame_ptr->GetJavaScriptCallHistory().size(), 1u);
-  EXPECT_EQ(main_frame_ptr->GetLastJavaScriptCall(), kExpectedSetupScript);
 }
 
 // Verifies that non-main (child) frames do not trigger the API setup even if
@@ -242,7 +238,6 @@ TEST_F(DeviceTrustChallengeTabHelperTest, SetUpAPIForWildcardAllowlist) {
   SetAllowlistPatterns({kWildcardPattern});
   web::FakeWebFrame* main_frame_ptr = SetupMainFrame(GURL(kExampleUrl));
   EXPECT_EQ(main_frame_ptr->GetJavaScriptCallHistory().size(), 1u);
-  EXPECT_EQ(main_frame_ptr->GetLastJavaScriptCall(), kExpectedSetupScript);
 }
 
 // Verifies that main frames with an opaque origin do not trigger the API setup
@@ -282,7 +277,6 @@ TEST_F(DeviceTrustChallengeTabHelperTest, SetupAPIForMatchingPath) {
   SetAllowlistPatterns({kExampleLoginUrl});
   web::FakeWebFrame* main_frame_ptr = SetupMainFrame(GURL(kExampleLoginUrl));
   EXPECT_EQ(main_frame_ptr->GetJavaScriptCallHistory().size(), 1u);
-  EXPECT_EQ(main_frame_ptr->GetLastJavaScriptCall(), kExpectedSetupScript);
 }
 
 // Verifies that when an allowlist pattern is path-scoped, the API is not set up
@@ -326,8 +320,6 @@ TEST_F(DeviceTrustChallengeTabHelperTest, SetupAPIAfterMainFrameRemoved) {
   web_frames_manager_->RemoveWebFrame(main_frame_ptr->GetFrameId());
   web::FakeWebFrame* replacement_frame_ptr = SetupMainFrame(GURL(kExampleUrl));
   EXPECT_EQ(replacement_frame_ptr->GetJavaScriptCallHistory().size(), 1u);
-  EXPECT_EQ(replacement_frame_ptr->GetLastJavaScriptCall(),
-            kExpectedSetupScript);
 }
 
 // Verifies that when the tab helper is created after an allowlisted main frame
@@ -341,7 +333,6 @@ TEST_F(DeviceTrustChallengeTabHelperTest, SetupAPIForExistingMainFrame) {
   DeviceTrustChallengeTabHelper::CreateForWebState(web_state_.get(),
                                                    mock_service());
   EXPECT_EQ(main_frame_ptr->GetJavaScriptCallHistory().size(), 1u);
-  EXPECT_EQ(main_frame_ptr->GetLastJavaScriptCall(), kExpectedSetupScript);
 }
 
 // Verifies that when the tab helper is created after a non-allowlisted main

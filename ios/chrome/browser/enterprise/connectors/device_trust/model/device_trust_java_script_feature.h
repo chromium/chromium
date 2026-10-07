@@ -23,15 +23,19 @@ class WebFrame;
 class WebState;
 }  // namespace web
 
-// JavaScriptFeature that loads the Device Trust support script,
-// installs the public API on browser-side request, and receives
-// `getAttestation()` requests.
+// JavaScriptFeature that receives `getAttestation()` requests from the
+// `window.chrome.enterprise.deviceTrust` API. The script implementing the API
+// is not injected into every page: it is executed on browser-side request in
+// the main frame of pages allowlisted by the Device Trust policies.
 class DeviceTrustJavaScriptFeature : public web::JavaScriptFeature {
  public:
   static DeviceTrustJavaScriptFeature* GetInstance();
 
-  // Attaches the `window.chrome.enterprise.deviceTrust` API to `web_frame`.
-  void SetupDeviceTrustAPI(web::WebFrame* web_frame);
+  // Executes the script installing the `window.chrome.enterprise.deviceTrust`
+  // API in `web_frame`, which must be a main frame. Executing it more than
+  // once in the same window has no effect. Returns true if the execution was
+  // requested.
+  bool SetupDeviceTrustAPI(web::WebFrame* web_frame);
 
   DeviceTrustJavaScriptFeature(const DeviceTrustJavaScriptFeature&) = delete;
   DeviceTrustJavaScriptFeature& operator=(const DeviceTrustJavaScriptFeature&) =

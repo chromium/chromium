@@ -7,6 +7,7 @@
 #import <utility>
 
 #import "base/functional/bind.h"
+#import "base/no_destructor.h"
 #import "base/notreached.h"
 #import "base/values.h"
 #import "components/enterprise/device_trust/core/common_types.h"
@@ -19,13 +20,26 @@
 
 namespace {
 constexpr char kScriptHandlerName[] = "DeviceTrustMessageHandler";
-constexpr char kDeviceTrustAPIName[] = "device_trust";
+constexpr char kDeviceTrustScriptName[] = "device_trust";
 // LINT.IfChange(MaxChallengeRequestLength)
 constexpr size_t kMaxChallengeRequestLength = 1024;
 // LINT.ThenChange(//ios/chrome/browser/enterprise/connectors/device_trust/model/resources/device_trust.ts:MaxChallengeRequestLength)
 
 using ReplyCallback =
     base::OnceCallback<void(const base::Value* reply, NSString* error)>;
+
+// Returns the script installing the Device Trust API. It is executed on
+// demand by SetupDeviceTrustAPI() rather than registered as a user script, so
+// that only allowlisted pages receive it. A single instance keeps the
+// inject-once token stable across executions in the same window.
+const web::JavaScriptFeature::FeatureScript& GetDeviceTrustScript() {
+  static const base::NoDestructor<web::JavaScriptFeature::FeatureScript> script(
+      web::JavaScriptFeature::FeatureScript::CreateWithFilename(
+          kDeviceTrustScriptName,
+          web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
+          web::JavaScriptFeature::FeatureScript::TargetFrames::kMainFrame));
+  return *script;
+}
 
 // Resolves the originating JS promise with the signed payload.
 void ResolveAttestationRequest(ReplyCallback callback,
@@ -154,26 +168,20 @@ DeviceTrustJavaScriptFeature* DeviceTrustJavaScriptFeature::GetInstance() {
   return instance.get();
 }
 
-// Injected into `kPageContentWorld` so that the
-// `window.chrome.enterprise.deviceTrust` API is exposed to the webpage's
-// JavaScript context (e.g. Identity Providers executing Device Trust
-// attestation during authentication).
+// Configured in `kPageContentWorld` so that the
+// `window.chrome.enterprise.deviceTrust` API, once installed, is exposed to the
+// webpage's JavaScript context (e.g. Identity Providers executing Device Trust
+// attestation during authentication). No script is registered for automatic
+// injection: see SetupDeviceTrustAPI().
 DeviceTrustJavaScriptFeature::DeviceTrustJavaScriptFeature()
-    : web::JavaScriptFeature(
-          web::ContentWorld::kPageContentWorld,
-          {web::JavaScriptFeature::FeatureScript::CreateWithFilename(
-              kDeviceTrustAPIName,
-              web::JavaScriptFeature::FeatureScript::InjectionTime::
-                  kDocumentStart,
-              web::JavaScriptFeature::FeatureScript::TargetFrames::
-                  kMainFrame)}) {}
+    : web::JavaScriptFeature(web::ContentWorld::kPageContentWorld,
+                             /*feature_scripts=*/{}) {}
 
 DeviceTrustJavaScriptFeature::~DeviceTrustJavaScriptFeature() = default;
 
-void DeviceTrustJavaScriptFeature::SetupDeviceTrustAPI(
+bool DeviceTrustJavaScriptFeature::SetupDeviceTrustAPI(
     web::WebFrame* web_frame) {
-  CallJavaScriptFunction(web_frame, "deviceTrust.setupDeviceTrustAPI",
-                         /*parameters=*/{});
+  return ExecuteFeatureScript(web_frame, GetDeviceTrustScript());
 }
 
 std::optional<std::string>
