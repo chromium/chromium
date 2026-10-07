@@ -254,6 +254,39 @@ TEST_F(LanguageModelTest, VerifyMojoConversion) {
   }
 }
 
+TEST_F(LanguageModelTest, TextPrefixWithoutMultimodalInput) {
+  ScopedAIPromptAPIMultimodalInputForTest scoped_multimodal(false);
+  V8TestingScope scope;
+  LanguageModel* language_model =
+      CreateLanguageModel(scope.GetExecutionContext());
+  auto* message = MakeGarbageCollected<LanguageModelMessage>();
+  message->setRole(
+      V8LanguageModelMessageRole(V8LanguageModelMessageRole::Enum::kAssistant));
+  message->setContent(
+      MakeGarbageCollected<V8UnionLanguageModelMessageContentSequenceOrString>(
+          "hello, "));
+  message->setPrefix(true);
+  HeapVector<Member<LanguageModelMessage>> messages;
+  messages.push_back(message);
+  auto* input = MakeGarbageCollected<V8LanguageModelPrompt>(messages);
+
+  DummyExceptionStateForTesting exception_state;
+  auto promise = language_model->prompt(scope.GetScriptState(), input,
+                                        LanguageModelPromptOptions::Create(),
+                                        exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  ScriptPromiseTester tester(scope.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+
+  EXPECT_EQ(mock_remote_->call_count_, 1);
+  ASSERT_EQ(mock_remote_->last_prompts_.size(), 1u);
+  const auto& prompt = mock_remote_->last_prompts_[0];
+  EXPECT_EQ(prompt->role, mojom::blink::AILanguageModelPromptRole::kAssistant);
+  EXPECT_TRUE(prompt->is_prefix);
+  ASSERT_EQ(prompt->content.size(), 1u);
+  EXPECT_EQ(prompt->content[0]->get_text(), "hello, ");
+}
+
 TEST_F(LanguageModelTest, MojoDisconnectPrompt) {
   V8TestingScope scope;
   LanguageModel* language_model =

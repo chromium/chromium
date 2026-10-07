@@ -463,13 +463,6 @@ void LanguageModelPromptBuilder::Build(const V8LanguageModelPrompt* input) {
       }
     }
     if (message->prefix()) {
-      if (!RuntimeEnabledFeatures::AIPromptAPIMultimodalInputEnabled(
-              ExecutionContext::From(script_state_))) {
-        Reject(DOMException::Create(
-            "Assistant response prefix is not supported.",
-            DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError)));
-        return;
-      }
       if (message->role() != V8LanguageModelMessageRole::Enum::kAssistant) {
         Reject(DOMException::Create(
             "Assistant response prefix must use the assistant role.",
