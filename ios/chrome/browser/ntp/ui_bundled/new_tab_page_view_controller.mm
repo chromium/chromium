@@ -620,11 +620,20 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
     CGFloat oldOffset = self.collectionView.contentOffset.y;
     [self updateFeedInsetsForContentAbove];
     CGFloat newHeightAboveFeed = self.collectionView.contentInset.top;
-    CGFloat change = newHeightAboveFeed - oldHeightAboveFeed;
-    // Offset the change by subtracting it from the content offset, in order to
-    // visually keep the same scroll position, but don't allow an offset that
-    // is lower than the top.
-    [self setContentOffset:MAX(oldOffset - change, -newHeightAboveFeed)];
+    if (self.hasSavedOffsetFromPreviousScrollState) {
+      // A scroll position was restored (e.g. navigating back to the NTP) and
+      // the user has not scrolled since. Async updates to the content above
+      // the feed (e.g. Most Visited Tiles resizing) must not override it, so
+      // re-apply the saved offset instead of shifting the current one, which
+      // may have been clamped by transient layout passes.
+      [self setContentOffset:self.savedScrollOffset];
+    } else {
+      CGFloat change = newHeightAboveFeed - oldHeightAboveFeed;
+      // Offset the change by subtracting it from the content offset, in order
+      // to visually keep the same scroll position, but don't allow an offset
+      // that is lower than the top.
+      [self setContentOffset:MAX(oldOffset - change, -newHeightAboveFeed)];
+    }
     if (!self.feedVisible) {
       [self setMinimumHeight];
     }
