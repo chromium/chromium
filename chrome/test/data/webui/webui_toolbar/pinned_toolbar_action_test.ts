@@ -25,6 +25,7 @@ suite('PinnedToolbarAction', function() {
       stopTracking: (element: HTMLElement) => {
         stopTrackingCalls.push(element);
       },
+      notifyElementActivated: () => {},
     };
     TrackedElementManager.setInstance(mockManager as any);
 

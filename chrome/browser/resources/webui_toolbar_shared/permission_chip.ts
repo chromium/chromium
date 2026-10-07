@@ -5,6 +5,7 @@
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import './icons.js';
 
+import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {ensureTransitionEndEvent} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -177,6 +178,7 @@ export class PermissionChipElement extends PermissionChipElementBase {
     if (!this.chipState) {
       return;
     }
+    TrackedElementManager.getInstance().notifyElementActivated(this);
     // Note:'click' event dispatches using PointerEvents. Keyboard clicks
     // (Enter/Space) also dispatch PointerEvents, but they have an empty
     // pointerType (""). We only want to suppress true pointer interactions

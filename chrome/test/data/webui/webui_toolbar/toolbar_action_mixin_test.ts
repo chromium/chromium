@@ -98,6 +98,7 @@ suite('ToolbarActionMixinTest', function() {
       stopTracking: (el: HTMLElement) => {
         stopTrackingCalls.push(el);
       },
+      notifyElementActivated: () => {},
     };
     TrackedElementManager.setInstance(mockManager as any);
 

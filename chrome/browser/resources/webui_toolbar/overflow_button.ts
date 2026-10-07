@@ -6,6 +6,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {BUTTON_LEFT, getClickSourceType, getContextMenuPosition, HelpBubbleAnchorMixin} from '/shared/toolbar_button.js';
 import type {OverflowMenuItem} from '/shared/toolbar_ui_api.mojom-webui.js';
@@ -74,6 +75,7 @@ export class OverflowButtonElement extends OverflowButtonElementBase {
   // Shows a popup menu containing menu items corresponding to any overflowed
   // controls.
   private handleMenuClick_(e: Event) {
+    TrackedElementManager.getInstance().notifyElementActivated(this);
     BrowserProxyImpl.getInstance().toolbarUIHandler.showOverflowMenu(
         this.getOverflowedMenuItems(), getContextMenuPosition(this),
         getClickSourceType(e));

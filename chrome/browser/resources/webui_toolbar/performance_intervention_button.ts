@@ -6,6 +6,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '/strings.m.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {HelpBubbleAnchorMixin, HighlightTracker} from '/shared/toolbar_button.js';
 import type {PerformanceInterventionControlState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
@@ -57,6 +58,7 @@ export class PerformanceInterventionButtonElement extends
 
   protected onClick_(e: PointerEvent) {
     if (!this.highlightTracker.shouldSkipClick(e)) {
+      TrackedElementManager.getInstance().notifyElementActivated(this);
       this.browserProxy_.toolbarUIHandler
           .onPerformanceInterventionButtonClicked();
     }

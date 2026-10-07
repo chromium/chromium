@@ -7,6 +7,7 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 import './icons.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {getContextMenuPosition, getContextMenuSourceType, HelpBubbleAnchorMixin} from '/shared/toolbar_button.js';
 import type {GlicButtonState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
@@ -75,6 +76,7 @@ export class GlicButtonElement extends GlicButtonElementBase {
   }
 
   protected onClick_() {
+    TrackedElementManager.getInstance().notifyElementActivated(this);
     this.browserProxy_.toolbarUIHandler.onGlicButtonClicked();
   }
 

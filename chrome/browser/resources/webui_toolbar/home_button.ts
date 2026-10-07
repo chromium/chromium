@@ -6,6 +6,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '/strings.m.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 import {getContextMenuPosition, getEventDispositionFlags, HelpBubbleAnchorMixin, PressHandler, roundedIconsEnabled} from '/shared/toolbar_button.js';
@@ -68,6 +69,7 @@ export class HomeButtonElement extends HomeButtonElementBase {
   }
 
   private onShortPress_(e: PointerEvent) {
+    TrackedElementManager.getInstance().notifyElementActivated(this);
     const flags = getEventDispositionFlags(e);
     this.browserProxy_.browserControlsHandler.navigateHome(flags);
   }

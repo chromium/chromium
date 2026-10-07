@@ -77,6 +77,7 @@ suite('PinnedToolbarActions', function() {
     const mockTrackedElementManager = {
       startTracking: () => {},
       stopTracking: () => {},
+      notifyElementActivated: () => {},
     };
     TrackedElementManager.setInstance(mockTrackedElementManager as any);
 

@@ -39,6 +39,7 @@ suite('ContentSettingIcon', function() {
       stopTracking: (element: HTMLElement) => {
         stopTrackingCalls.push(element);
       },
+      notifyElementActivated: () => {},
     };
     TrackedElementManager.setInstance(mockManager as TrackedElementManager);
 
@@ -517,7 +518,7 @@ suite('ContentSettingIcon', function() {
     await microtasksFinished();
 
     assertEquals(1, startTrackingCalls.length);
-    assertEquals(icon.$.chip, startTrackingCalls[0]![0]);
+    assertEquals(icon, startTrackingCalls[0]![0]);
     assertEquals('test-id', startTrackingCalls[0]![1]);
     assertEquals(0, stopTrackingCalls.length);
   });
@@ -544,7 +545,7 @@ suite('ContentSettingIcon', function() {
 
     assertEquals(1, startTrackingCalls.length);
     assertEquals(1, stopTrackingCalls.length);
-    assertEquals(icon.$.chip, stopTrackingCalls[0]!);
+    assertEquals(icon, stopTrackingCalls[0]!);
   });
 
   test('Stop tracking and start tracking when identifier changes', async () => {
@@ -568,9 +569,9 @@ suite('ContentSettingIcon', function() {
     await microtasksFinished();
 
     assertEquals(1, stopTrackingCalls.length);
-    assertEquals(icon.$.chip, stopTrackingCalls[0]!);
+    assertEquals(icon, stopTrackingCalls[0]!);
     assertEquals(2, startTrackingCalls.length);
-    assertEquals(icon.$.chip, startTrackingCalls[1]![0]);
+    assertEquals(icon, startTrackingCalls[1]![0]);
     assertEquals('test-id-2', startTrackingCalls[1]![1]);
   });
 
@@ -587,6 +588,6 @@ suite('ContentSettingIcon', function() {
 
     icon.remove();
     assertEquals(1, stopTrackingCalls.length);
-    assertEquals(icon.$.chip, stopTrackingCalls[0]!);
+    assertEquals(icon, stopTrackingCalls[0]!);
   });
 });

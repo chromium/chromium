@@ -7,6 +7,7 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '/shared/icons.js';
 
 import {assertNotReachedCase} from '//resources/js/assert.js';
+import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ContentSettingImageState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
@@ -270,6 +271,7 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
   }
 
   protected showContentSettingsBubble_(e: PointerEvent) {
+    TrackedElementManager.getInstance().notifyElementActivated(this);
     // Keyboard synthetic clicks generate PointerEvents with an empty
     // pointerType in WebUI, whereas natural pointer clicks have a valid
     // pointerType (e.g., 'mouse', 'touch', 'pen').

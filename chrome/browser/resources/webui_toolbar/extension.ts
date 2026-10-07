@@ -6,6 +6,7 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import '/shared/icon_from_table.js';
 
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
+import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ExtensionActionInfo} from '/shared/extensions_bar_data_model.mojom-webui.js';
@@ -117,6 +118,7 @@ export class ExtensionElement extends ExtensionElementBase {
     if (this.highlightTracker.shouldSkipClick(e)) {
       return;
     }
+    TrackedElementManager.getInstance().notifyElementActivated(this);
     this.browserProxy_.toolbarUIHandler.executeExtensionAction(this.state.id);
   }
 

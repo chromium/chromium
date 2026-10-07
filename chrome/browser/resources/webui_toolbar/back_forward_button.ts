@@ -7,6 +7,7 @@ import '//resources/cr_elements/icons.html.js';
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
@@ -100,6 +101,7 @@ export class BackForwardButtonElement extends BackForwardButtonElementBase {
     if (!this.state.enabled) {
       return;
     }
+    TrackedElementManager.getInstance().notifyElementActivated(this);
     const flags = getEventDispositionFlags(e);
     if (this.direction === 'back') {
       this.browserProxy_.browserControlsHandler.back(flags);

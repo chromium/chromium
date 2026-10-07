@@ -10,6 +10,7 @@ export function getHtml(this: ContentSettingIconElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <toolbar-chip-button outset-focus-ring animates-label id="chip"
+    class="${this.hasHelpBubble ? 'help-anchor-highlight' : ''}"
     .buttonTabIndex="${0}"
     ?is-menu-open="${this.trackedHighlighted}"
     ?has-label="${this.shouldShowLabel_ && !!this.state.explanatoryString}"

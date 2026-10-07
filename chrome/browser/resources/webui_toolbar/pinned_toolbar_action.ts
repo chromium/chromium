@@ -10,6 +10,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assertNotReachedCase} from '//resources/js/assert.js';
+import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {IconTable} from '/shared/icon_table.js';
@@ -117,6 +118,7 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase {
 
   protected onActionClick_(e: PointerEvent) {
     if (!this.highlightTracker.shouldSkipClick(e)) {
+      TrackedElementManager.getInstance().notifyElementActivated(this);
       this.browserProxy_.toolbarUIHandler.invokePinnedToolbarAction(
           this.state.action);
     }

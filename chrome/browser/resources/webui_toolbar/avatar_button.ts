@@ -7,6 +7,7 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/icons.html.js';
 import '/shared/icon_from_table.js';
 
+import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {HelpBubbleAnchorMixin, HighlightTracker} from '/shared/toolbar_button.js';
@@ -112,6 +113,7 @@ export class AvatarButtonElement extends AvatarButtonElementBase {
 
   protected onClick_(e: PointerEvent) {
     if (!this.highlightTracker.shouldSkipClick(e)) {
+      TrackedElementManager.getInstance().notifyElementActivated(this);
       // TODO(behamilton): Log an error if this fails.
       BrowserProxyImpl.getInstance().toolbarUIHandler.showAvatarMenu();
     }

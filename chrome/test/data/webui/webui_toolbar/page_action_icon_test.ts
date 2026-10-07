@@ -100,6 +100,7 @@ suite('PageActionIconTest', function() {
       stopTracking: (element: HTMLElement) => {
         stopTrackingCalls.push(element);
       },
+      notifyElementActivated: () => {},
     };
     TrackedElementManager.setInstance(mockManager as TrackedElementManager);
 
@@ -372,7 +373,7 @@ suite('PageActionIconTest', function() {
     await microtasksFinished();
 
     assertEquals(1, startTrackingCalls.length);
-    assertEquals(icon.$.button, startTrackingCalls[0]!.element);
+    assertEquals(icon, startTrackingCalls[0]!.element);
     assertEquals('test-id', startTrackingCalls[0]!.nativeId);
     assertEquals(0, stopTrackingCalls.length);
   });
@@ -399,7 +400,7 @@ suite('PageActionIconTest', function() {
 
     assertEquals(1, startTrackingCalls.length);
     assertEquals(1, stopTrackingCalls.length);
-    assertEquals(icon.$.button, stopTrackingCalls[0]!);
+    assertEquals(icon, stopTrackingCalls[0]!);
   });
 
   test('Stop tracking and start tracking when identifier changes', async () => {
@@ -423,9 +424,9 @@ suite('PageActionIconTest', function() {
     await microtasksFinished();
 
     assertEquals(1, stopTrackingCalls.length);
-    assertEquals(icon.$.button, stopTrackingCalls[0]!);
+    assertEquals(icon, stopTrackingCalls[0]!);
     assertEquals(2, startTrackingCalls.length);
-    assertEquals(icon.$.button, startTrackingCalls[1]!.element);
+    assertEquals(icon, startTrackingCalls[1]!.element);
     assertEquals('test-id-2', startTrackingCalls[1]!.nativeId);
   });
 
@@ -442,7 +443,7 @@ suite('PageActionIconTest', function() {
 
     icon.remove();
     assertEquals(1, stopTrackingCalls.length);
-    assertEquals(icon.$.button, stopTrackingCalls[0]!);
+    assertEquals(icon, stopTrackingCalls[0]!);
   });
 
   test('Highlight changed callback updates is-menu-open', async () => {

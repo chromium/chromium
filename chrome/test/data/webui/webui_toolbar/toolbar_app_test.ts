@@ -193,6 +193,7 @@ suite('ToolbarAppTest', () => {
     stopTracking: (element: HTMLElement) => {
       stopTrackingCalls.push(element);
     },
+    notifyElementActivated: (_element: HTMLElement) => {},
   };
 
   setup(() => {

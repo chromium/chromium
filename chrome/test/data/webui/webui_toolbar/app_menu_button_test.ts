@@ -143,6 +143,12 @@ suite('AppMenuButtonTest', function() {
       pointerType: 'mouse',
     }));
 
+    // Also verify a plain MouseEvent('click') with detail > 0 (where
+    // pointerType is undefined) is ignored.
+    button.dispatchEvent(new MouseEvent('click', {
+      detail: 1,
+    }));
+
     assertEquals(0, toolbarUiHandler.getCallCount('showContextMenu'));
   });
 

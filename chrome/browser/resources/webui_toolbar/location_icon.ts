@@ -8,6 +8,7 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {isMac} from '//resources/js/platform.js';
+import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {DragEventSource} from '//resources/mojo/ui/base/dragdrop/mojom/drag_drop_types.mojom-webui.js';
@@ -309,6 +310,7 @@ export class LocationIconElement extends LocationIconElementBase {
 
   protected onClick_(e: PointerEvent) {
     if (this.clickable && !this.isDragging_) {
+      TrackedElementManager.getInstance().notifyElementActivated(this);
       // Note: 'click' and 'auxclick' events are dispatched using PointerEvents.
       // Keyboard clicks (Enter/Space) also dispatch PointerEvents, but they
       // have an empty pointerType (""). We only want to suppress true pointer

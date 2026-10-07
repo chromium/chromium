@@ -7,6 +7,7 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 import './toolbar_chip_button.js';
 
 import {skColorToRgba} from '//resources/js/color_utils.js';
+import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {ensureTransitionEndEvent} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -314,6 +315,7 @@ export class PageActionIconElement extends PageActionIconElementBase {
   }
 
   protected onClick_(e: Event) {
+    TrackedElementManager.getInstance().notifyElementActivated(this);
     this.browserProxy_.toolbarUIHandler.onPageActionClick(
         this.state.pageActionId, this.getPageActionTrigger_(e));
   }

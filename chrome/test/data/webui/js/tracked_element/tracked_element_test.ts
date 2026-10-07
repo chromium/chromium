@@ -756,6 +756,7 @@ suite('TrackedElementTest', function() {
     assertTrue(result.success);
     assertTrue(!!clickedEvent);
     assertEquals(1, (clickedEvent as MouseEvent).detail);
+    assertEquals('mouse', (clickedEvent as PointerEvent).pointerType);
     assertTrue(!!pointerDownEvent);
     assertEquals('mouse', (pointerDownEvent as PointerEvent).pointerType);
     assertTrue(!!pointerUpEvent);
@@ -790,6 +791,7 @@ suite('TrackedElementTest', function() {
     assertTrue(result.success);
     assertTrue(!!clickedEvent);
     assertEquals(1, (clickedEvent as MouseEvent).detail);
+    assertEquals('touch', (clickedEvent as PointerEvent).pointerType);
     assertTrue(!!pointerDownEvent);
     assertEquals('touch', (pointerDownEvent as PointerEvent).pointerType);
     assertTrue(!!pointerUpEvent);
@@ -826,6 +828,49 @@ suite('TrackedElementTest', function() {
         assertTrue(result.success);
         assertTrue(!!clickedEvent);
         assertEquals(1, (clickedEvent as MouseEvent).detail);
+        assertEquals('mouse', (clickedEvent as PointerEvent).pointerType);
+        assertTrue(!!pointerDownEvent);
+        assertEquals('mouse', (pointerDownEvent as PointerEvent).pointerType);
+        assertTrue(!!pointerUpEvent);
+        assertEquals('mouse', (pointerUpEvent as PointerEvent).pointerType);
+      });
+
+  test(
+      'clickElement_ recurses across multiple shadow roots to find button',
+      async () => {
+        const outerHost = document.createElement('div');
+        const outerShadow = outerHost.attachShadow({mode: 'open'});
+        const middleHost = document.createElement('div');
+        const middleShadow = middleHost.attachShadow({mode: 'open'});
+        const innerButton = document.createElement('button');
+        innerButton.id = 'inner-button';
+        middleShadow.appendChild(innerButton);
+        outerShadow.appendChild(middleHost);
+        document.body.appendChild(outerHost);
+
+        let clickedEvent: MouseEvent|null = null;
+        let pointerDownEvent: PointerEvent|null = null;
+        let pointerUpEvent: PointerEvent|null = null;
+        innerButton.addEventListener('click', (e: MouseEvent) => {
+          clickedEvent = e;
+        });
+        innerButton.addEventListener('pointerdown', (e: PointerEvent) => {
+          pointerDownEvent = e;
+        });
+        innerButton.addEventListener('pointerup', (e: PointerEvent) => {
+          pointerUpEvent = e;
+        });
+
+        manager.startTracking(
+            outerHost, ELEMENT_ID.nativeIdentifier,
+            {secondaryId: ELEMENT_ID.secondaryIdentifier});
+        await waitForVisibilityEvents();
+
+        const result =
+            await managerRemote.clickElement(ELEMENT_ID, InputType.kMouse);
+        assertTrue(result.success);
+        assertTrue(!!clickedEvent);
+        assertEquals('mouse', (clickedEvent as PointerEvent).pointerType);
         assertTrue(!!pointerDownEvent);
         assertEquals('mouse', (pointerDownEvent as PointerEvent).pointerType);
         assertTrue(!!pointerUpEvent);

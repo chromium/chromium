@@ -8,6 +8,7 @@ import './icons.js';
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {getContextMenuPosition, getContextMenuSourceType} from '/shared/toolbar_button.js';
 import type {BatterySaverControlState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
@@ -62,6 +63,7 @@ export class BatterySaverButtonElement extends BatterySaverButtonElementBase {
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   protected onClick_(e: MouseEvent) {
+    TrackedElementManager.getInstance().notifyElementActivated(this);
     this.browserProxy_.toolbarUIHandler.showContextMenu(
         ContextMenuType.kBatterySaver, getContextMenuPosition(this),
         getContextMenuSourceType(e), /*showMenuToken=*/ null);

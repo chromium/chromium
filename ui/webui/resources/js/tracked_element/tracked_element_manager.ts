@@ -577,7 +577,9 @@ export class TrackedElementManager {
 
   notifyElementActivated(element: HTMLElement) {
     const el = this.getDataForElement_(element);
-    assert(el);
+    if (!el) {
+      return;
+    }
     this.trackedElementHandler_.trackedElementActivated(
         TrackedElementManager.elementToIdentifier_(el));
   }
@@ -699,6 +701,26 @@ export class TrackedElementManager {
     });
   }
 
+  private findInteractiveElement_(root: ShadowRoot): HTMLElement|null {
+    const inner = root.querySelector<HTMLElement>(
+        'button, [role="button"], cr-icon-button, cr-button');
+    if (inner) {
+      if (inner.shadowRoot) {
+        return this.findInteractiveElement_(inner.shadowRoot) ?? inner;
+      }
+      return inner;
+    }
+    for (const child of root.querySelectorAll<HTMLElement>('*')) {
+      if (child.shadowRoot) {
+        const found = this.findInteractiveElement_(child.shadowRoot);
+        if (found) {
+          return found;
+        }
+      }
+    }
+    return null;
+  }
+
   private async clickElement_(
       id: TrackedElementIdentifier,
       inputType: InputType): Promise<{success: boolean}> {
@@ -712,14 +734,11 @@ export class TrackedElementManager {
     let target = trackedElement.element;
 
     // If the element is a container with a shadow root, try to find the actual
-    // interactive element inside.
+    // interactive element inside, recursing across nested shadow roots if
+    // needed.
     if (target.shadowRoot &&
         !['BUTTON', 'INPUT', 'A', 'SELECT'].includes(target.tagName)) {
-      const inner = target.shadowRoot.querySelector(
-          'button, [role="button"], cr-icon-button, cr-button');
-      if (inner) {
-        target = inner as HTMLElement;
-      }
+      target = this.findInteractiveElement_(target.shadowRoot) ?? target;
     }
 
     await this.waitUntilNotDisabled_(target, id);
@@ -794,11 +813,14 @@ export class TrackedElementManager {
           clientX: bounds.left + bounds.width / 2,
           clientY: bounds.top + bounds.height / 2,
         }));
-        target.dispatchEvent(new MouseEvent('click', {
+        target.dispatchEvent(new PointerEvent('click', {
           bubbles: true,
           composed: true,
           button: 0,  // Left
           detail: 1,  // Single click
+          pointerId: 1,
+          pointerType,
+          isPrimary: true,
           clientX: bounds.left + bounds.width / 2,
           clientY: bounds.top + bounds.height / 2,
         }));

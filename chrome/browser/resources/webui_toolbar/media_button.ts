@@ -7,6 +7,7 @@ import '/strings.m.js';
 import './icons.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 import {getContextMenuPosition, HelpBubbleAnchorMixin, HighlightTracker, PressHandler} from '/shared/toolbar_button.js';
@@ -67,6 +68,7 @@ export class MediaButtonElement extends MediaButtonElementBase {
 
   private onShortPress_(e: PointerEvent) {
     if (!this.highlightTracker.shouldSkipClick(e)) {
+      TrackedElementManager.getInstance().notifyElementActivated(this);
       this.browserProxy_.toolbarUIHandler.onMediaButtonClicked();
     }
   }
