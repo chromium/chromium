@@ -23,6 +23,7 @@ VIEWS_EXPORT BASE_DECLARE_FEATURE(kHandleMissingWmDestroy);
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kKeyboardAccessibleTooltipInViews);
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kNativeViewHostManagesLayers);
 #if BUILDFLAG(IS_MAC)
+VIEWS_EXPORT BASE_DECLARE_FEATURE(kMacActivateWidgetOnFocusRequest);
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kNotifyCompositorOfSpaceVisibilityOnMacOs);
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kNotifyCompositorOfWindowVisibilityOnMacOs);
 #endif

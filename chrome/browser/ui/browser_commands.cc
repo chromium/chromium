@@ -216,6 +216,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/views_features.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -2667,6 +2668,15 @@ namespace {
 // Delegate's -windowDidBecomeKey).
 void ActivateWindowAfterFocusCommand(BrowserWindowInterface* browser) {
 #if BUILDFLAG(IS_MAC)
+  // With kMacActivateWidgetOnFocusRequest, focusing a View in an inactive
+  // widget already activates it (see
+  // views::FocusManager::SetFocusedViewWithReason()).
+  // TODO(crbug.com/40486728): Remove this function once
+  // kMacActivateWidgetOnFocusRequest is removed.
+  if (base::FeatureList::IsEnabled(
+          views::features::kMacActivateWidgetOnFocusRequest)) {
+    return;
+  }
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   if (!browser_view || browser_view->IsActive()) {
     return;
