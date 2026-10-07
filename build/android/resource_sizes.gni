@@ -83,16 +83,4 @@ template("android_size_bot_config") {
   }
   _output_json_path = "$root_build_dir/config/${invoker.name}_size_config.json"
   write_file(_output_json_path, _out_json, "json")
-
-  # Emits a second copy of the config under an older name. Trybots read the
-  # config filename from properties deployed from origin/main rather than from
-  # the patch under test, so a config cannot be renamed in a single CL.
-  # TODO(crbug.com/532501271): Remove once //clank's size config no longer needs
-  # it, i.e. once android-internal-binary-size passes
-  # size_config_json=config/ChromeAndWebViewGoogle_size_config.json.
-  if (defined(invoker.legacy_name)) {
-    _legacy_output_json_path =
-        "$root_build_dir/config/${invoker.legacy_name}_size_config.json"
-    write_file(_legacy_output_json_path, _out_json, "json")
-  }
 }
