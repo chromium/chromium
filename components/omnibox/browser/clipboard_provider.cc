@@ -389,6 +389,13 @@ void ClipboardProvider::NewClipboardImageMatch(
     return;
   }
   gfx::ImageSkia image_skia = *optional_image.value().ToImageSkia();
+  // Converting a platform image (such as a `UIImage` on iOS) to `ImageSkia` can
+  // fail and yield a null `ImageSkia` even when `optional_image->IsEmpty()` is
+  // false. `ImageSkia::MakeThreadSafe()` requires non-null storage.
+  if (image_skia.isNull()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
   image_skia.MakeThreadSafe();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,

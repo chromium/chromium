@@ -9,10 +9,12 @@
 #include <utility>
 
 #include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -29,6 +31,7 @@
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_png_rep.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
@@ -403,6 +406,38 @@ TEST_F(ClipboardProviderTest, CreateImageMatchWithContent) {
     // Should be fine.
     waiter.WaitForMatchUpdated();
   }
+}
+
+// Test that `NewClipboardImageMatch` returns `std::nullopt` instead of crashing
+// when given an empty `gfx::Image` or a `gfx::Image` whose conversion to
+// `gfx::ImageSkia` produces a null `ImageSkia`.
+TEST_F(ClipboardProviderTest, NewClipboardImageMatchWithEmptyOrNullImageSkia) {
+  {
+    SCOPED_TRACE("Nullopt image");
+    base::test::TestFuture<std::optional<AutocompleteMatch>> future;
+    provider_->NewClipboardImageMatch(std::nullopt, future.GetCallback());
+    EXPECT_EQ(std::nullopt, future.Get());
+  }
+  {
+    SCOPED_TRACE("Empty gfx::Image");
+    base::test::TestFuture<std::optional<AutocompleteMatch>> future;
+    provider_->NewClipboardImageMatch(gfx::Image(), future.GetCallback());
+    EXPECT_EQ(std::nullopt, future.Get());
+  }
+#if BUILDFLAG(IS_IOS)
+  {
+    SCOPED_TRACE("Non-empty gfx::Image with null ToImageSkia()");
+    std::vector<gfx::ImagePNGRep> reps = {gfx::ImagePNGRep(
+        base::MakeRefCounted<base::RefCountedString>("invalid"), -1.0f)};
+    gfx::Image invalid_image(reps);
+    ASSERT_FALSE(invalid_image.IsEmpty());
+    ASSERT_TRUE(invalid_image.ToImageSkia()->isNull());
+
+    base::test::TestFuture<std::optional<AutocompleteMatch>> future;
+    provider_->NewClipboardImageMatch(invalid_image, future.GetCallback());
+    EXPECT_EQ(std::nullopt, future.Get());
+  }
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 #if BUILDFLAG(IS_ANDROID)
