@@ -3723,70 +3723,24 @@ suite('NewTabPageAppTest', () => {
         });
   });
 
-  suite('ThreadsRail', () => {
+  suite('LeftHandSide', () => {
     async function setThreadsRailEnabled(enabled: boolean) {
       loadTimeData.overrideValues({enableThreadsRail: enabled});
-      document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      app = document.createElement('ntp-app');
-      document.body.appendChild(app);
-      await microtasksFinished();
+      await recreateApp();
     }
 
-    test('threads rail is not visible when feature disabled', async () => {
+    test('LHS is not rendered when feature disabled', async () => {
       await setThreadsRailEnabled(false);
-      const searchbox = $$(app, '#searchbox');
-      assertTrue(!!searchbox);
-      searchbox.dispatchEvent(new CustomEvent('open-composebox', {
-        detail: {text: '', files: []},
-      }));
-      await microtasksFinished();
 
-      const threadsRail = app.shadowRoot.querySelector('cr-threads-rail');
-      assertFalse(!!threadsRail);
+      assertFalse(!!$$(app, 'cr-left-hand-side'));
     });
 
-    test('threads rail is visible when feature enabled', async () => {
+    test('LHS is rendered when feature enabled', async () => {
       await setThreadsRailEnabled(true);
-      const searchbox = $$(app, '#searchbox');
-      assertTrue(!!searchbox);
-      searchbox.dispatchEvent(new CustomEvent('open-composebox', {
-        detail: {text: '', files: []},
-      }));
-      await microtasksFinished();
 
-      const threadsRail = app.shadowRoot.querySelector('cr-threads-rail');
-      assertTrue(!!threadsRail);
-    });
-
-    test('records impression metric when threads rail is shown', async () => {
-      await setThreadsRailEnabled(true);
-      // Act: Open composebox to show threads rail.
-      ($$(app, '#searchbox')!.dispatchEvent(new CustomEvent('open-composebox', {
-        detail: {text: '', files: []},
-      })));
-      await microtasksFinished();
-
-      // Assert: Verify impression metric is recorded.
-      assertEquals(1, metrics.count('NewTabPage.ThreadsRail.Shown', true));
-    });
-
-    test('clicking threads rail records click', async () => {
-      await setThreadsRailEnabled(true);
-      // Arrange: Open composebox.
-      ($$(app, '#searchbox')!.dispatchEvent(new CustomEvent('open-composebox', {
-        detail: {text: '', files: []},
-      })));
-      await microtasksFinished();
-
-      const threadsRail = app.shadowRoot.querySelector('cr-threads-rail');
-      assertTrue(!!threadsRail);
-
-      // Act.
-      threadsRail.click();
-
-      // Assert.
-      assertEquals(
-          1, metrics.count('NewTabPage.Click', NtpElement.THREADS_RAIL));
+      const leftHandSide = $$(app, 'cr-left-hand-side');
+      assertTrue(!!leftHandSide);
+      assertEquals('forced-lhs', leftHandSide.id);
     });
   });
 

@@ -1,8 +1,10 @@
 <!-- #html_wrapper_imports_start
 import {SubmitButtonIconType} from '//resources/cr_components/composebox/composebox.js';
 #html_wrapper_imports_end -->
-<div id="content"
-  ?ntp-threads-rail-open="${this.showComposebox_ && this.enableThreadsRail_}">
+<div id="content">
+  ${this.enableThreadsRail_ ?
+    html`<cr-left-hand-side id="forced-lhs"></cr-left-hand-side>` :
+    ''}
   ${this.lazyRender_ && this.microsoftModuleEnabled_ ? html`
     <iframe id="microsoftAuth" src="${this.microsoftAuthIframePath_}"></iframe>
   ` : ''}
@@ -86,10 +88,6 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
               .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled_}"
               >
           </ntp-composebox>
-        ${this.enableThreadsRail_ ? html`
-          <cr-threads-rail id="threadsRail">
-          </cr-threads-rail>
-        ` : ''}
       </div>
     ` : ''}
     ${this.showLensUploadDialog_ ? html`

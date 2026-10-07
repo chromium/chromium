@@ -5,9 +5,9 @@
 import './logo.js';
 import './ntp_composebox.js';
 import './ntp_searchbox.js';
+import './left_hand_side.js';
 import '/strings.m.js';
 import 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
-import 'chrome://resources/cr_components/composebox/threads_rail.js';
 import 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import 'chrome://resources/cr_components/search/animated_glow.js';
 
@@ -860,11 +860,6 @@ export class AppElement extends AppElementBase {
       this.updateOneGoogleBarAppearance_();
     }
 
-    if (changedPrivateProperties.has('showComposebox_') &&
-        this.showComposebox_ && this.enableThreadsRail_) {
-      recordBoolean('NewTabPage.ThreadsRail.Shown', true);
-    }
-
     if (changedPrivateProperties.has('showVoiceSearchOverlay_') &&
         this.voiceSearchCoherenceAnySearchboxExperimentEnabled_) {
       if (this.showVoiceSearchOverlay_) {
@@ -1650,7 +1645,7 @@ export class AppElement extends AppElementBase {
         case $$(this, '#modules'):
           recordClick(NtpElement.MODULE);
           return;
-        case $$(this, '#threadsRail'):
+        case $$(this, 'cr-left-hand-side'):
           recordClick(NtpElement.THREADS_RAIL);
           return;
         default:

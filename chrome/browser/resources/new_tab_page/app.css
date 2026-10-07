@@ -35,8 +35,6 @@
   --ntp-protected-icon-background-color: transparent;
   --ntp-protected-icon-background-color-hovered: rgba(255, 255, 255, 0.1);
   --ntp-scrim-opacity_: 1;
-  --threads-rail-width: 76px;
-  --threads-rail-focus-outline-color: var(--color-new-tab-page-focus-ring);
 
 <if expr="is_android">
   /* Use Google Sans Text for the NTP realbox on Android. The @font-face
@@ -170,18 +168,6 @@ cr-most-visited {
   padding-top: var(--ntp-one-google-bar-height);
   position: relative;
   z-index: 1;
-}
-
-/*
- * Below 900px, the threads rail will shift the main content aside.
- * This happens in conjunction with the realbox width change as well,
- * when the total width reaches 824px + 76px (realbox + rail).
- */
-@media (max-width: 900px) {
-  #content[ntp-threads-rail-open] {
-    margin-inline-start: var(--threads-rail-width);
-    width: calc(100% - var(--threads-rail-width));
-  }
 }
 
 :host([show-composebox_]) #content,
@@ -561,4 +547,10 @@ ntp-lens-upload-dialog {
   #linkIcon {
     -webkit-mask-image: url(icons/link.svg);
   }
+}
+
+#forced-lhs {
+  height: 100%;
+  inset-inline-start: 0;
+  position: fixed;
 }

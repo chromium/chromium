@@ -382,11 +382,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, MAYBE_ActionChips) {
           "runMochaSuite('NewTabPageAppTest ActionChips')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, ThreadsRail) {
-  RunTest("new_tab_page/app_test.js",
-          "runMochaSuite('NewTabPageAppTest ThreadsRail')");
-}
-
 IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, ReducedMotion) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppReducedMotionTest')");
@@ -437,6 +432,11 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, ContextMenuAnimation) {
 IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, EnergyEffectVariant) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest EnergyEffectVariant')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, LeftHandSide) {
+  RunTest("new_tab_page/app_test.js",
+          "runMochaSuite('NewTabPageAppTest LeftHandSide')");
 }
 
 class NewTabPageModulesMostRelevantTabResumptionModuleTest
