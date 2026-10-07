@@ -87,7 +87,7 @@ A form control element `t` is *unowned* iff `t` is accessible and no outermost
 form element owns `t`. That is, to be explicit, `t` is unowned iff `t` is
 accessible and
 
-- `t` is not [associated] with any form element or
+- `t` is not [associated] with any form element and
 - `t` has no [shadow-including] form element ancestor in another [node tree].
 
 We refer to the collection of unowned form controls as the *unowned form* and, in
