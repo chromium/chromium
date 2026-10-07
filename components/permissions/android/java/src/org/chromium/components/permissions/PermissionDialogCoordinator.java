@@ -201,7 +201,12 @@ public class PermissionDialogCoordinator {
 
     /** Dismiss the current dialog, called from native. */
     public void dismissFromNative() {
-        assumeNonNull(mMediator).dismissFromNative();
+        // When ModalDialogManager is null (e.g. during tab or activity destruction), showDialog()
+        // calls mDialogDelegate.onDismiss() before mMediator is initialized, which synchronously
+        // destroys the native prompt and calls back into dismissFromNative().
+        if (mMediator != null) {
+            mMediator.dismissFromNative();
+        }
     }
 
     /** Dismiss the dialog by the close button. */
