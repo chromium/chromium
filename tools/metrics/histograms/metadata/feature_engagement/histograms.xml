@@ -661,6 +661,8 @@ chromium-metrics-reviews@google.com.
                mode"/>
   <variant name="IPH_ReadingModeAiPlayback"
       summary="promotes the AI playback toggle in Reading Mode"/>
+  <variant name="IPH_ReadingModeAiPlaybackSettings"
+      summary="promotes Reading Mode settings after trying AI playback"/>
   <variant name="IPH_ReadingModeKeyboardShortcut"
       summary="promotes the keyboard shortcut for reading mode"/>
   <variant name="IPH_ReadingModeLineFocus"

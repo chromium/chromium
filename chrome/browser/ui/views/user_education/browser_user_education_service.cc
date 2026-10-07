@@ -1390,6 +1390,21 @@ void MaybeRegisterChromeFeaturePromos(
                 157, "alfredohiguera@google.com",
                 "Triggered to encourage users to use the AI playback feature "
                 "in Reading Mode.")));
+
+    // kIPHReadingModeAiPlaybackSettingsFeature:
+    registry.RegisterFeature(std::move(
+        user_education::FeaturePromoSpecification::CreateForToastPromo(
+            feature_engagement::kIPHReadingModeAiPlaybackSettingsFeature,
+            kReadAnythingSettingsButtonElementId,
+            IDS_READING_MODE_AI_PLAYBACK_SETTINGS_IPH_BODY,
+            IDS_READING_MODE_AI_PLAYBACK_SETTINGS_IPH_SCREENREADER,
+            user_education::FeaturePromoSpecification::AcceleratorInfo())
+            .SetBubbleArrow(user_education::HelpBubbleArrow::kTopRight)
+            .SetInAnyContext(true)
+            .SetMetadata(
+                157, "alfredohiguera@google.com",
+                "Triggered after trying AI playback to inform users they can "
+                "customize settings in Reading Mode.")));
   }
 
   // kIPHReadingModeSidePanelFeature:

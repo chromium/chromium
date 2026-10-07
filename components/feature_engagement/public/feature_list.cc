@@ -311,6 +311,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHReadingListEntryPointFeature,
     &kIPHReadingListInSidePanelFeature,
     &kIPHReadingModeAiPlaybackFeature,
+    &kIPHReadingModeAiPlaybackSettingsFeature,
     &kIPHReadingModeKeyboardShortcutFeature,
     &kIPHReadingModeLineFocusFeature,
     &kIPHReadingModePageActionLabelFeature,

@@ -486,6 +486,8 @@ DEFINE_VARIATION_PARAM(kIPHReadingListInSidePanelFeature,
                        "IPH_ReadingListInSidePanel");
 DEFINE_VARIATION_PARAM(kIPHReadingModeAiPlaybackFeature,
                        "IPH_ReadingModeAiPlayback");
+DEFINE_VARIATION_PARAM(kIPHReadingModeAiPlaybackSettingsFeature,
+                       "IPH_ReadingModeAiPlaybackSettings");
 DEFINE_VARIATION_PARAM(kIPHReadingModeKeyboardShortcutFeature,
                        "IPH_ReadingModeKeyboardShortcut");
 DEFINE_VARIATION_PARAM(kIPHReadingModeLineFocusFeature,
@@ -908,6 +910,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHReadingListEntryPointFeature),
         VARIATION_ENTRY(kIPHReadingListInSidePanelFeature),
         VARIATION_ENTRY(kIPHReadingModeAiPlaybackFeature),
+        VARIATION_ENTRY(kIPHReadingModeAiPlaybackSettingsFeature),
         VARIATION_ENTRY(kIPHReadingModeKeyboardShortcutFeature),
         VARIATION_ENTRY(kIPHReadingModeLineFocusFeature),
         VARIATION_ENTRY(kIPHReadingModePageActionLabelFeature),

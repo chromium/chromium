@@ -234,6 +234,9 @@ BASE_FEATURE(kIPHReadingListInSidePanelFeature,
 BASE_FEATURE(kIPHReadingModeAiPlaybackFeature,
              "IPH_ReadingModeAiPlayback",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHReadingModeAiPlaybackSettingsFeature,
+             "IPH_ReadingModeAiPlaybackSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHReadingModeKeyboardShortcutFeature,
              "IPH_ReadingModeKeyboardShortcut",
              base::FEATURE_ENABLED_BY_DEFAULT);

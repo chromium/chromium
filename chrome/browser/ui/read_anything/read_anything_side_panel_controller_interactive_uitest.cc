@@ -505,7 +505,8 @@ class ReadAnythingAiPlaybackCUJTest
     std::vector<base::test::FeatureRef> enabled_features = {
         features::kReadAnythingOmniboxChip,
         features::kReadAnythingReadAloudExperimentalPlaybackUi,
-        feature_engagement::kIPHReadingModeAiPlaybackFeature};
+        feature_engagement::kIPHReadingModeAiPlaybackFeature,
+        feature_engagement::kIPHReadingModeAiPlaybackSettingsFeature};
     feature_list_.InitAndEnableFeatures(enabled_features);
     ReadAnythingController::SetAiPlaybackIphDelayForTesting(base::Seconds(0));
 
@@ -559,4 +560,25 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingAiPlaybackCUJTest, ShowAndHideIph) {
       NavigateWebContents(kActiveTab, non_distillable_url_),
       WaitForHide(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingAiPlaybackCUJTest,
+                       ToggleAiPlaybackShowsSettingsPromo) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  RunTestSequence(
+      InstrumentTab(kActiveTab),
+      NavigateWebContents(kActiveTab, distillable_url_),
+
+      // Open Reading Mode.
+      WaitForPageActionChipVisible(), InvokePageAction(),
+
+      // Wait for the AI playback promo to show.
+      WaitForPromo(feature_engagement::kIPHReadingModeAiPlaybackFeature),
+
+      // Click the AI playback toggle button.
+      InAnyContext(PressButton(kReadAnythingAiPlaybackToggleElementId)),
+
+      // Verify the settings toast promo shows.
+      WaitForPromo(
+          feature_engagement::kIPHReadingModeAiPlaybackSettingsFeature));
 }

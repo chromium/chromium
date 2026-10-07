@@ -790,6 +790,8 @@ void ReadAnythingController::OnDistillationStateChanged(
       if (user_ed) {
         user_ed->AbortFeaturePromo(
             feature_engagement::kIPHReadingModeAiPlaybackFeature);
+        user_ed->AbortFeaturePromo(
+            feature_engagement::kIPHReadingModeAiPlaybackSettingsFeature);
       }
     }
 
@@ -843,6 +845,8 @@ void ReadAnythingController::OnAiPlaybackStateChanged(bool enabled) {
     user_ed->NotifyFeaturePromoFeatureUsed(
         feature_engagement::kIPHReadingModeAiPlaybackFeature,
         FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+    user_ed->MaybeShowFeaturePromo(
+        feature_engagement::kIPHReadingModeAiPlaybackSettingsFeature);
   }
 }
 
