@@ -148,7 +148,6 @@ import java.util.List;
     ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU,
     ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU,
 })
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ChromeContextMenuPopulatorTest {
     private static final String DATA_URL = "data:encodedstringblahblah";
     private static final String PAGE_URL = "http://www.blah.com/page_url";
@@ -177,10 +176,8 @@ public class ChromeContextMenuPopulatorTest {
     @Rule
     public OverrideContextWrapperTestRule mAutomotiveRule = new OverrideContextWrapperTestRule();
 
-    @Mock private Activity mActivity;
     @Mock private TabContextMenuItemDelegate mItemDelegate;
     @Mock private Tab mTab;
-    private UserDataHost mUserDataHost;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private ShareDelegate mShareDelegate;
     @Mock private ExternalAuthUtils mExternalAuthUtils;
@@ -200,6 +197,8 @@ public class ChromeContextMenuPopulatorTest {
     @Mock private TranslateBridge.Natives mTranslateBridgeMock;
     @Mock private GlicKeyedService mGlicKeyedService;
 
+    private Activity mActivity;
+    private UserDataHost mUserDataHost;
     private ChromeContextMenuPopulator mPopulator;
 
     @Before
@@ -258,6 +257,7 @@ public class ChromeContextMenuPopulatorTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    mActivity = new Activity();
                     ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
                 });
         ForcedSigninStatusProvider.setInstanceForTesting(mMockForcedSigninStatusProvider);
@@ -281,6 +281,7 @@ public class ChromeContextMenuPopulatorTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ApplicationStatus.resetActivitiesForInstrumentationTests();
+                    mActivity = null;
                 });
     }
 
