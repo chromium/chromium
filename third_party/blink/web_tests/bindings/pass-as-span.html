@@ -1,22 +1,12 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
+<script src="../resources/sab-polyfill.js"></script>
 <script>
 // Maximum allowed size of a buffer source in Blink (PartitionAlloc's
 // MaxAllocationSize(): (1 << 31) - (1 << 21)).
 const kMaxAllocationSize = 2145386496;
-const kWasmPageSize = 65536;
-const kLargeBufferPages = 33000;
-const kLargeBufferByteLength = kLargeBufferPages * kWasmPageSize;
-
-function allocateLargeArrayBuffer(shared = false) {
-  const memory = new WebAssembly.Memory({
-    initial: kLargeBufferPages,
-    maximum: kLargeBufferPages,
-    shared,
-  });
-  return memory.buffer;
-}
+const kLargeBufferByteLength = kMaxAllocationSize + 4;
 
 test(() => {
   const passAsSpanTest = internals.passAsSpanTest();
@@ -41,16 +31,9 @@ test(() => {
   assert_equals(passAsSpanTest.testUnlimitedTypedArrayOrSequence([1, 2, 3, 4]), 4);
 }, "PassAsSpan basic conversions for small buffers, views, and sequences");
 
-let cachedLargeBuffer;
-function getLargeArrayBuffer() {
-  if (!cachedLargeBuffer) {
-    cachedLargeBuffer = allocateLargeArrayBuffer(/*shared=*/false);
-  }
-  return cachedLargeBuffer;
-}
+const largeBuffer = new ArrayBuffer(kLargeBufferByteLength);
 
 test(() => {
-  const largeBuffer = getLargeArrayBuffer();
   const passAsSpanTest = internals.passAsSpanTest();
 
   assert_throws_js(RangeError, () => {
@@ -86,7 +69,6 @@ test(() => {
 }, "BufferSourceTypeNoSizeLimit with [PassAsSpan] BufferSource");
 
 test(() => {
-  const largeBuffer = getLargeArrayBuffer();
   const passAsSpanTest = internals.passAsSpanTest();
 
   const maxAllowedU8 = new Uint8Array(largeBuffer, 0, kMaxAllocationSize);
@@ -120,7 +102,7 @@ test(() => {
 }, "BufferSourceTypeNoSizeLimit with typed [PassAsSpan] arguments");
 
 test(() => {
-  const largeSharedBuffer = allocateLargeArrayBuffer(/*shared=*/true);
+  const largeSharedBuffer = new SharedArrayBuffer(kLargeBufferByteLength);
   const passAsSpanTest = internals.passAsSpanTest();
 
   assert_throws_js(RangeError, () => {
