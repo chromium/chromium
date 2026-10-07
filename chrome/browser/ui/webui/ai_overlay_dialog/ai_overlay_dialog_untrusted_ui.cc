@@ -141,6 +141,8 @@ AiOverlayDialogUntrustedUI::AiOverlayDialogUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "useMes", base::FeatureList::IsEnabled(features::kAiOverlayDialog) &&
                     features::kAiOverlayDialogUseMes.Get());
+  html_source->AddBoolean("enablePageTools",
+                          features::kAiOverlayDialogPageTools.Get());
   html_source->AddBoolean("aiOverlayDisableNavigationContext",
                           base::FeatureList::IsEnabled(
                               features::kAiOverlayDisableNavigationContext));

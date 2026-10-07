@@ -71,7 +71,9 @@ class FakePage : public ai_overlay_dialog::mojom::Page {
                      const std::optional<std::string>& content) override {}
   void UpdateCurrentPageContext(
       const std::string& page_title,
-      ai_overlay_dialog::mojom::PageContentNodePtr root_node) override {}
+      ai_overlay_dialog::mojom::PageContentNodePtr root_node,
+      std::vector<ai_overlay_dialog::mojom::WebMcpToolDefinitionPtr>
+          webmcp_tools) override {}
   void SetInputCaptionsVisible(bool visible) override {}
   void SetOutputCaptionsVisible(bool visible) override {}
   void SetUsePersona(bool use_persona) override {}

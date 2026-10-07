@@ -21,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "build/android_buildflags.h"
 #include "build/build_config.h"
@@ -33,16 +34,23 @@
 #include "chrome/browser/ui/webui/ai_overlay_dialog/page_context_monitor.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/tools/generated_tool_definitions.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/tools/tools.h"
+#include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/actor_constants.h"
+#include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/optimization_guide/content/browser/page_content_image_extractor.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 
@@ -261,12 +269,14 @@ void AiOverlayDialogPageHandler::DidChangePage(
 
 void AiOverlayDialogPageHandler::UpdateCurrentPageContext(
     const std::u16string& title,
-    ai_overlay_dialog::mojom::PageContentNodePtr root_node) {
+    ai_overlay_dialog::mojom::PageContentNodePtr root_node,
+    std::vector<ai_overlay_dialog::mojom::WebMcpToolDefinitionPtr>
+        webmcp_tools) {
   VLOG(1) << "Update Current Page Context";
   VLOG(1) << "\tTitle: " << base::UTF16ToUTF8(title);
 
-  page_->UpdateCurrentPageContext(base::UTF16ToUTF8(title),
-                                  std::move(root_node));
+  page_->UpdateCurrentPageContext(
+      base::UTF16ToUTF8(title), std::move(root_node), std::move(webmcp_tools));
 }
 
 void AiOverlayDialogPageHandler::OnInputCaptionsVisibleChanged(bool visible) {
@@ -449,6 +459,122 @@ void AiOverlayDialogPageHandler::GetImageBytes(
             std::move(cb).Run(std::move(out_result));
           },
           std::move(callback)));
+}
+
+void AiOverlayDialogPageHandler::ExecuteWebMcpTool(
+    const std::string& tool_name,
+    ::base::Value args,
+    ExecuteWebMcpToolCallback callback) {
+  if (!features::kAiOverlayDialogPageTools.Get()) {
+    std::move(callback).Run(base::unexpected("Page tools are not enabled."));
+    return;
+  }
+
+  content::WebContents* web_contents =
+      GetActiveWebContentsFromBrowser(browser_);
+  if (!web_contents || !web_contents->GetPrimaryMainFrame()) {
+    std::move(callback).Run(base::unexpected("No active browser tab."));
+    return;
+  }
+
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+
+  PageContextMonitor* page_context_monitor =
+      untrusted_ui_ ? untrusted_ui_->page_context_monitor() : nullptr;
+
+  // 1. TOCTOU Check: Verify the primary main frame's DocumentIdentifier still
+  // matches the document snapshot from which PageContextMonitor extracted the
+  // tools.
+  auto current_doc_id = optimization_guide::DocumentIdentifierUserData::
+                            GetOrCreateForCurrentDocument(rfh)
+                                ->token();
+  if (!page_context_monitor ||
+      current_doc_id != page_context_monitor->active_document_id()) {
+    std::move(callback).Run(base::unexpected(
+        "The active page changed or navigated away since the tool was "
+        "discovered."));
+    return;
+  }
+
+  // 2. Verify tool exists on the current document and check consequential
+  // annotation.
+  const CachedWebMcpTool* tool_meta =
+      page_context_monitor->GetWebMcpTool(tool_name);
+  if (!tool_meta) {
+    std::move(callback).Run(base::unexpected(
+        "Unknown WebMCP tool on active document: " + tool_name));
+    return;
+  }
+
+  if (tool_meta->consequential) {
+    // TODO(gklassen): Require verbal confirmation from the user before
+    // executing consequential (state-mutating) WebMCP tools once verbal
+    // confirmation is implemented.
+    DVLOG(1)
+        << "Executing consequential WebMCP tool without verbal confirmation: "
+        << tool_name;
+  }
+
+  // 3. Construct ToolInvocation and invoke directly on ChromeRenderFrame.
+  std::string arguments_json;
+  if (args.is_string()) {
+    arguments_json = args.GetString();
+  } else if (!base::JSONWriter::Write(args, &arguments_json)) {
+    arguments_json = "{}";
+  }
+
+  auto invocation = actor::mojom::ToolInvocation::New();
+  invocation->task_id = actor::TaskId();
+  invocation->execution_id = base::UnguessableToken::Create();
+  auto script_action = actor::mojom::ScriptToolAction::New();
+  script_action->name = tool_name;
+  script_action->input_arguments = std::move(arguments_json);
+  invocation->action =
+      actor::mojom::ToolAction::NewScriptTool(std::move(script_action));
+  invocation->target =
+      actor::mojom::ToolTarget::NewDomNodeId(actor::kRootElementDomNodeId);
+
+  // Provide transient user activation to the frame so WebMCP navigations are
+  // permitted.
+  rfh->NotifyUserActivation(
+      blink::mojom::UserActivationNotificationType::kActorWebMCP);
+
+  mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> render_frame;
+  rfh->GetRemoteAssociatedInterfaces()->GetInterface(&render_frame);
+  auto* raw_render_frame = render_frame.get();
+
+  raw_render_frame->InvokeTool(
+      std::move(invocation),
+      base::BindOnce(&AiOverlayDialogPageHandler::OnWebMcpToolInvoked,
+                     weak_factory_.GetWeakPtr(), std::move(render_frame),
+                     std::move(callback)));
+}
+
+void AiOverlayDialogPageHandler::OnWebMcpToolInvoked(
+    mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> /*keep_alive*/,
+    ExecuteWebMcpToolCallback callback,
+    actor::mojom::ActionResultPtr result) {
+  constexpr size_t kMaxWebMcpResultBytes = 16 * 1024;  // 16 KB cap
+
+  if (!result || !result->script_tool_response ||
+      !result->script_tool_response->result.has_value()) {
+    std::move(callback).Run(base::unexpected(
+        "WebMCP tool execution failed or returned no result."));
+    return;
+  }
+
+  std::string output = result->script_tool_response->result.value();
+  if (output.size() > kMaxWebMcpResultBytes) {
+    output.resize(kMaxWebMcpResultBytes);
+  }
+
+  std::optional<base::Value> parsed =
+      base::JSONReader::Read(output, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (parsed.has_value()) {
+    std::move(callback).Run(base::ok(std::move(*parsed)));
+  } else {
+    std::move(callback).Run(base::ok(base::Value(std::move(output))));
+  }
 }
 
 void AiOverlayDialogPageHandler::StartStreamingSession() {
@@ -972,6 +1098,26 @@ void AiOverlayDialogPageHandler::OnToolCall(
               }
               base::DictValue dict;
               dict.Set("message", result.value());
+              std::move(cb).Run(ToolResponse::Success(std::move(dict)));
+            },
+            std::move(response_callback)));
+    return;
+  }
+
+  if (base::StartsWith(name, "webmcp_")) {
+    std::string raw_tool_name = name.substr(7);
+    ExecuteWebMcpTool(
+        raw_tool_name, base::Value(arguments.Clone()),
+        base::BindOnce(
+            [](ToolResponseCallback cb,
+               base::expected<base::Value, std::string> result) {
+              if (!result.has_value()) {
+                std::move(cb).Run(ToolFailure(result.error()));
+                return;
+              }
+              base::DictValue dict;
+              dict.Set("status", "ok");
+              dict.Set("result", std::move(result.value()));
               std::move(cb).Run(ToolResponse::Success(std::move(dict)));
             },
             std::move(response_callback)));

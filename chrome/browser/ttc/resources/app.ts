@@ -9,7 +9,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 
-import type {PageContentNode} from './ai_overlay_dialog.mojom-webui.js';
+import type {PageContentNode, WebMcpToolDefinition} from './ai_overlay_dialog.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './ai_overlay_dialog.mojom-webui.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
@@ -279,10 +279,12 @@ export class AppElement extends CrLitElement {
             {url, title, content: null, hasHadContent: false});
     const updateContextId =
         this.pageCallbackRouter.updateCurrentPageContext.addListener(
-            (title: string, rootNode: PageContentNode|null) => {
+            (title: string, rootNode: PageContentNode|null,
+             webmcpTools: WebMcpToolDefinition[]) => {
               if (this.initialPageContext) {
                 this.initialPageContext.title = title;
                 this.initialPageContext.content = rootNode ?? null;
+                this.initialPageContext.webmcpTools = webmcpTools ?? [];
                 this.initialPageContext.hasHadContent ||= Boolean(rootNode);
               }
             });

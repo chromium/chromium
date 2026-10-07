@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {PageContentNode} from './ai_overlay_dialog.mojom-webui.js';
+import type {PageContentNode, WebMcpToolDefinition} from './ai_overlay_dialog.mojom-webui.js';
 import {log, warnLog} from './logging.js';
 
 const FILE = 'PageContextManager';
@@ -27,6 +27,12 @@ export interface PageContext {
    * Can be null when loading a new page until content becomes available.
    */
   content: PageContentNode|null;
+
+  /**
+   * WebMCP script tools registered on the current page's document model
+   * context.
+   */
+  webmcpTools?: WebMcpToolDefinition[];
 
   /**
    * Tracks whether the PageContext has ever been contentful.
@@ -70,7 +76,9 @@ export class PageContextManager {
     this.listeners.push(listener);
   }
 
-  updateCurrentPageContext(title: string, rootNode: PageContentNode|string|null = null) {
+  updateCurrentPageContext(
+      title: string, rootNode: PageContentNode|string|null = null,
+      webmcpTools: WebMcpToolDefinition[] = []) {
     log(FILE, 'updateCurrentPageContext', title);
     if (!this.context) {
       warnLog(FILE, 'updateCurrentPageContext called without context');
@@ -81,6 +89,7 @@ export class PageContextManager {
     this.context.title = title;
     const node = typeof rootNode === 'string' ? null : (rootNode ?? null);
     this.context.content = node;
+    this.context.webmcpTools = webmcpTools;
     this.context.hasHadContent ||= Boolean(this.context.content);
 
     for (const listener of this.listeners) {
@@ -93,12 +102,21 @@ export class PageContextManager {
     }
   }
 
-  createNewPageContext(url: string, title: string|null, content: PageContentNode|string|null = null) {
+  createNewPageContext(
+      url: string, title: string|null,
+      content: PageContentNode|string|null = null,
+      webmcpTools: WebMcpToolDefinition[] = []) {
     log(FILE, 'CreateNewPageContext', title, url);
 
     const oldContext = this.context ? {...this.context} : null;
     const node = typeof content === 'string' ? null : (content ?? null);
-    this.context = {url, title, content: node, hasHadContent: Boolean(node)};
+    this.context = {
+      url,
+      title,
+      content: node,
+      webmcpTools,
+      hasHadContent: Boolean(node),
+    };
 
     for (const listener of this.listeners) {
       const event: PageContextChangeEvent = {

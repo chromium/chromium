@@ -5,6 +5,7 @@
 module ai_overlay_dialog.mojom;
 
 import "mojo/public/mojom/base/big_buffer.mojom";
+import "mojo/public/mojom/base/values.mojom";
 import "chrome/browser/ui/webui/ai_overlay_dialog/tools/tools.mojom";
 import "third_party/blink/public/mojom/dom/dom_node_id.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -54,6 +55,15 @@ struct ImageBytesResult {
 struct RememberedNote {
   string key;
   string value;
+};
+
+// Metadata for a WebMCP tool exposed by the active page's ModelContext.
+struct WebMcpToolDefinition {
+  string name;
+  string description;
+  mojo_base.mojom.Value input_schema;
+  bool read_only;
+  bool consequential;
 };
 
 // Factory for creating a PageHandler.
@@ -134,6 +144,11 @@ interface PageHandler {
 
   // Closes the active streaming session with the backend.
   StopStreamingSession();
+
+  // Executes a WebMCP tool registered on the active tab's document via
+  // direct renderer InvokeTool dispatch.
+  ExecuteWebMcpTool(string tool_name, mojo_base.mojom.Value args)
+      => result<mojo_base.mojom.Value, string>;
 };
 
 // Implemented by the WebUI (TypeScript/JS). Called by the Browser C++.
@@ -145,7 +160,9 @@ interface Page {
   DidChangePage(string url, string? title, string? content);
 
   // Passes context about the current page to the app.
-  UpdateCurrentPageContext(string page_title, PageContentNode? root_node);
+  UpdateCurrentPageContext(string page_title,
+                           PageContentNode? root_node,
+                           array<WebMcpToolDefinition> webmcp_tools);
 
   // TODO(crbug.com/535704548): Consider renaming SetInputCaptionsVisible to
   // SetInputCaptionsEnabled to avoid confusion with time-based/ephemeral visibility.

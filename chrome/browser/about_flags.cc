@@ -3896,9 +3896,16 @@ const FeatureEntry::FeatureVariation kGlicOSIconVariantVariations[] = {
 };
 
 const FeatureEntry::FeatureParam kAiOverlayDialog_Mes[] = {{"use_mes", "true"}};
+const FeatureEntry::FeatureParam kAiOverlayDialog_PageTools[] = {
+    {"enable_page_tools", "true"}};
+const FeatureEntry::FeatureParam kAiOverlayDialog_MesAndPageTools[] = {
+    {"use_mes", "true"},
+    {"enable_page_tools", "true"}};
 
 const FeatureEntry::FeatureVariation kAiOverlayDialogVariations[] = {
-    {"with MES", kAiOverlayDialog_Mes, nullptr}};
+    {"with MES", kAiOverlayDialog_Mes, nullptr},
+    {"with Page Tools", kAiOverlayDialog_PageTools, nullptr},
+    {"with MES and Page Tools", kAiOverlayDialog_MesAndPageTools, nullptr}};
 
 const FeatureEntry::FeatureParam kAutofillShowTypePredictionsAsTitle[] = {
     {"as-title", "true"}};

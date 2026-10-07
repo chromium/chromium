@@ -42,7 +42,9 @@ class MockPage : public ai_overlay_dialog::mojom::Page {
                      const std::optional<std::string>& content) override {}
   void UpdateCurrentPageContext(
       const std::string& title,
-      ai_overlay_dialog::mojom::PageContentNodePtr root_node) override {}
+      ai_overlay_dialog::mojom::PageContentNodePtr root_node,
+      std::vector<ai_overlay_dialog::mojom::WebMcpToolDefinitionPtr>
+          webmcp_tools) override {}
   void SetInputCaptionsVisible(bool visible) override {}
   void SetOutputCaptionsVisible(bool visible) override {}
   void SetUsePersona(bool use_persona) override {}
@@ -326,6 +328,30 @@ TEST_F(AiOverlayDialogPageHandlerTest, StreamingSession_HandlesToolCall) {
 
   handler_remote()->StopStreamingSession();
   handler_remote().FlushForTesting();
+}
+
+TEST_F(AiOverlayDialogPageHandlerTest, ExecuteWebMcpToolDisabledByDefault) {
+  base::test::TestFuture<base::expected<base::Value, std::string>> future;
+  handler()->ExecuteWebMcpTool(
+      "test_tool", base::Value(base::Value::Type::DICT), future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Page tools are not enabled.");
+}
+
+TEST_F(AiOverlayDialogPageHandlerTest, ExecuteWebMcpToolNoActiveTab) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kAiOverlayDialog, {{"enable_page_tools", "true"}}}}, {});
+
+  base::test::TestFuture<base::expected<base::Value, std::string>> future;
+  handler()->ExecuteWebMcpTool(
+      "test_tool", base::Value(base::Value::Type::DICT), future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "No active browser tab.");
 }
 
 }  // namespace
