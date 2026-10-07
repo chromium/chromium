@@ -1696,6 +1696,26 @@
             ]
         }
     ],
+    "AutofillAiWalletServerProvidedDeepLink": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261007",
+                    "enable_features": [
+                        "AutofillAiWalletServerProvidedDeepLink"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillAndroidKeyboardAccessoryDynamicPositioning": [
         {
             "platforms": [
