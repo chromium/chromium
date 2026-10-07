@@ -708,18 +708,20 @@ void ChromeCaptureModeDelegate::FinalizeSavedFile(
     auto notification =
         std::make_unique<policy::skyvault::SkyvaultCaptureUploadNotification>(
             path, for_video);
-    auto notification_ptr = notification.get();
+    auto notification_weak_ptr = notification->GetWeakPtr();
     auto uploader = ash::cloud_upload::OdfsSkyvaultUploader::Upload(
         profile, path, policy::local_user_files::UploadTrigger::kScreenCapture,
         base::BindRepeating(
             &policy::skyvault::SkyvaultCaptureUploadNotification::
                 UpdateProgress,
-            notification->GetWeakPtr()),
+            notification_weak_ptr),
         base::BindOnce(&CaptureFileFinalized, path, std::move(callback),
                        std::move(notification)),
         thumbnail);
-    notification_ptr->SetCancelClosure(base::BindOnce(
-        &ash::cloud_upload::OdfsSkyvaultUploader::Cancel, uploader));
+    if (notification_weak_ptr) {
+      notification_weak_ptr->SetCancelClosure(base::BindOnce(
+          &ash::cloud_upload::OdfsSkyvaultUploader::Cancel, uploader));
+    }
     return;
   }
   std::move(callback).Run(/*success=*/true, path);
@@ -765,9 +767,9 @@ void ChromeCaptureModeDelegate::DetectTextInImage(
     // Request `PerformOcr` asynchronously, so that it can be handled similarly
     // to the case where the OCR is not ready yet.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&ChromeCaptureModeDelegate::PerformOcr,
-                                  weak_ptr_factory_.GetWeakPtr(), image,
-                                  std::move(callback)));
+      FROM_HERE, base::BindOnce(&ChromeCaptureModeDelegate::PerformOcr,
+                                weak_ptr_factory_.GetWeakPtr(), image,
+                                std::move(callback)));
     return;
   }
 

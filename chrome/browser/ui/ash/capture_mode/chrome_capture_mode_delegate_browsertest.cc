@@ -23,6 +23,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
+#include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -160,6 +161,52 @@ IN_PROC_BROWSER_TEST_F(ChromeCaptureModeDelegateBrowserTest,
                                     {}, deleted_metadata_future.GetCallback());
   EXPECT_EQ(base::File::Error::FILE_ERROR_NOT_FOUND,
             deleted_metadata_future.Get<base::File::Error>());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeCaptureModeDelegateBrowserTest,
+                       OdfsUploadFailsSynchronously) {
+  ChromeCaptureModeDelegate* delegate = ChromeCaptureModeDelegate::Get();
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  // Mount ODFS.
+  file_manager::test::FakeProvidedFileSystemOneDrive* provided_file_system =
+      file_manager::test::MountFakeProvidedFileSystemOneDrive(
+          browser()->GetProfile());
+  ASSERT_TRUE(provided_file_system);
+
+  const std::string test_file_name = "capture_mode_delegate_fail.test";
+  base::FilePath original_file =
+      delegate->GetOneDriveVirtualPath().Append(test_file_name);
+  base::FilePath redirected_path = delegate->RedirectFilePath(original_file);
+  ASSERT_NE(redirected_path, original_file);
+
+  base::File file(redirected_path,
+                  base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  ASSERT_TRUE(file.IsValid());
+  file.Close();
+
+  // Revoke the ODFS mount point so OdfsSkyvaultUploader::StartIOTask() fails
+  // synchronously during OdfsSkyvaultUploader::Upload(), destroying the upload
+  // notification before Upload() returns.
+  const base::FilePath mount_path =
+      provided_file_system->GetFileSystemInfo().mount_path();
+  const std::string mount_point_name = mount_path.BaseName().AsUTF8Unsafe();
+  ASSERT_TRUE(
+      storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
+          mount_point_name));
+
+  base::test::TestFuture<bool, const base::FilePath&> path_future;
+  delegate->FinalizeSavedFile(path_future.GetCallback(), redirected_path,
+                              gfx::Image(), /*for_video=*/false);
+  EXPECT_FALSE(path_future.Get<0>());
+
+  // Re-register the mount point so file_system_provider::Service::Shutdown()
+  // can cleanly unmount it during browser teardown.
+  ASSERT_TRUE(
+      storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+          mount_point_name, storage::kFileSystemTypeProvided,
+          storage::FileSystemMountOption(
+              storage::FlushPolicy::FLUSH_ON_COMPLETION),
+          mount_path));
 }
 
 // The OCR service is not supported on ChromeOS browser tests, so we can't check
