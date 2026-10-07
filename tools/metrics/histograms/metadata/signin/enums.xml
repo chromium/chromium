@@ -1009,6 +1009,7 @@ chromium-metrics-reviews@google.com.
   <int value="107" label="Tab Context Containers Service"/>
   <int value="108" label="Site Token Provider"/>
   <int value="109" label="Device Authorization Request"/>
+  <int value="110" label="CMTG Device Key Provider"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/base/oauth_consumer_id.h:OAuthConsumerId) -->

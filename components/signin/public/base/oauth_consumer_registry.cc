@@ -334,6 +334,7 @@ constexpr char kRemoteActorLoginCredentialsServiceName[] =
     "remote_actor_login_credentials_service";
 constexpr char kDeviceAuthorizationRequestName[] =
     "device_authorization_request";
+constexpr char kCmtgDeviceKeyProviderName[] = "cmtg_device_key_provider";
 }  // namespace
 
 namespace signin {
@@ -799,6 +800,10 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
       return OAuthConsumer(
           /*name=*/kDeviceAuthorizationRequestName,
           /*scopes=*/{GaiaConstants::kChromeSyncOAuth2Scope});
+    case OAuthConsumerId::kCmtgDeviceKeyProvider:
+      return OAuthConsumer(
+          /*name=*/kCmtgDeviceKeyProviderName,
+          /*scopes=*/{kCryptAuthOAuth2Scope});
   }
 }
 
