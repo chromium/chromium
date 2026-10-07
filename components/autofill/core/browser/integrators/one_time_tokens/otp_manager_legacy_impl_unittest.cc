@@ -7,7 +7,6 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -19,17 +18,13 @@
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager_legacy_impl_test_api.h"
-#include "components/autofill/core/browser/integrators/one_time_tokens/otp_metrics_tracker.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/one_time_tokens/core/browser/mock_one_time_token_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
-#include "components/one_time_tokens/core/browser/util/expiring_subscription_manager.h"
 #include "components/one_time_tokens/core/common/one_time_token_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,7 +35,6 @@ using ::base::test::RunOnceCallback;
 using ::one_time_tokens::OneTimeTokenServiceImpl;
 using ::testing::_;
 using ::testing::ElementsAre;
-using ::testing::NiceMock;
 using ::testing::Test;
 
 namespace autofill {
@@ -48,8 +42,6 @@ namespace autofill {
 namespace {
 
 constexpr char kDefaultOtpValue[] = "123456";
-constexpr base::TimeDelta kTestFieldDetectionToTickleLatency =
-    base::Milliseconds(420);
 
 constexpr char kPhishGuardCheckPerformedHistogram[] =
     "Autofill.OneTimeTokens.PhishGuard.CheckPerformed";
@@ -76,21 +68,6 @@ class MockOtpPhishGuardDelegate : public OtpPhishGuardDelegate {
               (LocalFrameToken, base::OnceCallback<void(bool is_phishing)>),
               (override));
 };
-
-void SetUpTickleSubscription(
-    one_time_tokens::MockOneTimeTokenService& mock_ott_service,
-    one_time_tokens::ExpiringSubscriptionManager<
-        void(one_time_tokens::OneTimeTokenSource)>& sub_manager) {
-  ON_CALL(mock_ott_service,
-          SubscribeToTickles(one_time_tokens::OneTimeTokenSource::kGmail, _, _))
-      .WillByDefault(
-          [&sub_manager](
-              one_time_tokens::OneTimeTokenSource, base::Time exp,
-              one_time_tokens::OneTimeTokenService::TickleCallback cb) {
-            return sub_manager.Subscribe(
-                exp, std::move(cb), /*expiration_callback=*/base::DoNothing());
-          });
-}
 
 }  // namespace
 
@@ -195,84 +172,6 @@ TEST_F(OtpManagerLegacyImplTest, OtpForm_QueryIssued) {
   // As the form has a OTP field, the SMS backend is queried.
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp).Times(1);
   AddFormWithOtpField();
-}
-
-// Tests that the FieldDetectionToTickleLatency metric is recorded when an OTP
-// field is detected and a tickle arrives.
-TEST_F(OtpManagerLegacyImplTest,
-       FieldDetectionToTickleLatency_OtpFormLogsMetric) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillGmailOtpPreLaunchMetrics);
-  NiceMock<one_time_tokens::MockOneTimeTokenService> mock_ott_service;
-  one_time_tokens::ExpiringSubscriptionManager<void(
-      one_time_tokens::OneTimeTokenSource)>
-      sub_manager;
-  SetUpTickleSubscription(mock_ott_service, sub_manager);
-
-  autofill_client().set_otp_metrics_tracker(std::make_unique<OtpMetricsTracker>(
-      &mock_ott_service, autofill_client()));
-
-  OtpManagerLegacyImpl otp_manager(autofill_manager(), &mock_ott_service);
-  AddFormWithOtpField();
-
-  task_environment_.FastForwardBy(kTestFieldDetectionToTickleLatency);
-  sub_manager.Notify(one_time_tokens::OneTimeTokenSource::kGmail);
-
-  histogram_tester_.ExpectUniqueTimeSample(
-      OtpMetricsTracker::kFieldDetectionToTickleLatencyHistogram,
-      kTestFieldDetectionToTickleLatency, 1);
-}
-
-// Tests that the FieldDetectionToTickleLatency metric is not recorded when no
-// OTP field is detected.
-TEST_F(OtpManagerLegacyImplTest,
-       FieldDetectionToTickleLatency_NonOtpFormDoesNotLogMetric) {
-  NiceMock<one_time_tokens::MockOneTimeTokenService> mock_ott_service;
-  one_time_tokens::ExpiringSubscriptionManager<void(
-      one_time_tokens::OneTimeTokenSource)>
-      sub_manager;
-  SetUpTickleSubscription(mock_ott_service, sub_manager);
-
-  autofill_client().set_otp_metrics_tracker(std::make_unique<OtpMetricsTracker>(
-      &mock_ott_service, autofill_client()));
-
-  OtpManagerLegacyImpl otp_manager(autofill_manager(), &mock_ott_service);
-  AddFormWithFirstNameField();
-
-  task_environment_.FastForwardBy(kTestFieldDetectionToTickleLatency);
-  sub_manager.Notify(one_time_tokens::OneTimeTokenSource::kGmail);
-
-  histogram_tester_.ExpectTotalCount(
-      OtpMetricsTracker::kFieldDetectionToTickleLatencyHistogram, 0);
-}
-
-// Tests that OtpMetricsTracker records latency when a tickle arrives before an
-// OTP field is detected.
-TEST_F(OtpManagerLegacyImplTest,
-       TickleReceivedBeforeOtpForm_NotifiesOtpMetricsTracker) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillGmailOtpPreLaunchMetrics);
-  NiceMock<one_time_tokens::MockOneTimeTokenService> mock_ott_service;
-  one_time_tokens::ExpiringSubscriptionManager<void(
-      one_time_tokens::OneTimeTokenSource)>
-      sub_manager;
-  SetUpTickleSubscription(mock_ott_service, sub_manager);
-
-  autofill_client().set_otp_metrics_tracker(std::make_unique<OtpMetricsTracker>(
-      &mock_ott_service, autofill_client()));
-
-  OtpManagerLegacyImpl otp_manager(autofill_manager(), &mock_ott_service);
-
-  sub_manager.Notify(one_time_tokens::OneTimeTokenSource::kGmail);
-  task_environment_.FastForwardBy(kTestFieldDetectionToTickleLatency);
-
-  AddFormWithOtpField();
-
-  histogram_tester_.ExpectUniqueTimeSample(
-      OtpMetricsTracker::kTickleToFieldDetectionLatencyHistogram,
-      kTestFieldDetectionToTickleLatency, 1);
-  histogram_tester_.ExpectTotalCount(
-      OtpMetricsTracker::kFieldDetectionToTickleLatencyHistogram, 0);
 }
 
 // Tests that `GetOtpSuggestions` triggers an OTP retrieval from the
