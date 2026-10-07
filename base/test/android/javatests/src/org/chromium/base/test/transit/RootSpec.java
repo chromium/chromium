@@ -109,7 +109,7 @@ public abstract class RootSpec {
      * 1. An Activity's subwindows.
      * </pre>
      */
-    public static RootSpec activityRoot(Supplier<? extends Activity> activitySupplier) {
+    public static RootSpec activityRoot(Supplier<? extends @Nullable Activity> activitySupplier) {
         return new VersatileRootSpec(
                 VersatileRootSpec.RootType.SUPPLIED_ACTIVITY_ROOT,
                 /* allowsFocusedDialogs= */ false,
@@ -139,7 +139,8 @@ public abstract class RootSpec {
      * 2. Dialogs.
      * </pre>
      */
-    public static RootSpec activityOrDialogRoot(Supplier<? extends Activity> activitySupplier) {
+    public static RootSpec activityOrDialogRoot(
+            Supplier<? extends @Nullable Activity> activitySupplier) {
         return new VersatileRootSpec(
                 VersatileRootSpec.RootType.SUPPLIED_ACTIVITY_OR_DIALOG_ROOT,
                 /* allowsFocusedDialogs= */ true,
@@ -192,12 +193,12 @@ public abstract class RootSpec {
 
         private final @RootType int mType;
         private final boolean mAllowsFocusedDialogs;
-        private final @Nullable Supplier<? extends Activity> mActivitySupplier;
+        private final @Nullable Supplier<? extends @Nullable Activity> mActivitySupplier;
 
         private VersatileRootSpec(
                 @RootType int rootType,
                 boolean allowsFocusedDialogs,
-                @Nullable Supplier<? extends Activity> activitySupplier) {
+                @Nullable Supplier<? extends @Nullable Activity> activitySupplier) {
             mType = rootType;
             mAllowsFocusedDialogs = allowsFocusedDialogs;
             mActivitySupplier = activitySupplier;

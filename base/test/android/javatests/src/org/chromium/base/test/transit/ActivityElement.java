@@ -257,7 +257,8 @@ public class ActivityElement<ActivityT extends Activity> extends Element<Activit
             // Store all task ids of Activities known to Public Transit.
             mExistingTaskIds = new HashMap<>();
             for (Station<?> activeStation : TrafficControl.getActiveStations()) {
-                ActivityElement<?> knownActivityElement = activeStation.getActivityElement();
+                ActivityElement<? extends Activity> knownActivityElement =
+                        activeStation.getActivityElement();
                 if (knownActivityElement != null) {
                     mExistingTaskIds.put(knownActivityElement.value().getTaskId(), activeStation);
                 }

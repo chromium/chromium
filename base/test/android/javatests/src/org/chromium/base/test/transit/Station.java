@@ -124,7 +124,8 @@ public abstract class Station<HostActivityT extends Activity> extends Conditiona
         assertInPhase(Phase.NEW);
         if (mActivityElement != null) {
             originStation.assertInPhase(Phase.ACTIVE);
-            ActivityElement<?> originActivityElement = originStation.getActivityElement();
+            ActivityElement<? extends Activity> originActivityElement =
+                    originStation.getActivityElement();
             if (originActivityElement != null) {
                 Activity originActivity = originActivityElement.value();
                 Class<?> declaredClass = mActivityElement.getActivityClass();

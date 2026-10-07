@@ -82,7 +82,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 
 /**
  * Provides the ability for the NotificationPlatformBridgeAndroid to talk to the Android platform
@@ -782,15 +781,12 @@ public class NotificationPlatformBridge {
                                 Log.e(TAG, "Failed to display notification.", e);
                             }
                         })
-                .exceptionally(
-                        (Function<Throwable, @Nullable Void>)
-                                error -> {
-                                    Log.e(
-                                            TAG,
-                                            "Error occured when displaying notification.",
-                                            error);
-                                    return null;
-                                });
+                .whenComplete(
+                        (unused, error) -> {
+                            if (error != null) {
+                                Log.e(TAG, "Error occured when displaying notification.", error);
+                            }
+                        });
     }
 
     private CompletableFuture<String> getWebApkPackage(String scopeUrl) {
