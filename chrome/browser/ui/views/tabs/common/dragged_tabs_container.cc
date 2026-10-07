@@ -507,14 +507,9 @@ gfx::Vector2d DraggedTabsContainer::GetDraggingViewPositionForBounds(
 
       // If applying an offset for the drag-start animation, ensure we clamp
       // the offsets to the scroll view bounds.
-      const auto* scroll_view = GetScrollViewForContainer();
-      CHECK(scroll_view);
-      gfx::Rect clamping_bounds = views::View::ConvertRectToTarget(
-          scroll_view, base::to_address(host_view_),
-          scroll_view->GetLocalBounds());
       gfx::Rect view_bounds(gfx::PointAtOffsetFromOrigin(target),
                             dragging_view->size());
-      view_bounds.AdjustToFit(clamping_bounds);
+      view_bounds.AdjustToFit(GetDraggingViewsClampingBounds());
       target = view_bounds.OffsetFromOrigin();
     }
   }
@@ -522,20 +517,24 @@ gfx::Vector2d DraggedTabsContainer::GetDraggingViewPositionForBounds(
   return target;
 }
 
-gfx::Rect DraggedTabsContainer::GetDraggingViewsBoundsAtPointClamped(
-    const gfx::Point& point_in_container) const {
-  gfx::Rect bounding_box_for_point =
-      GetDraggingViewsBoundsAtPoint(point_in_container);
-
+gfx::Rect DraggedTabsContainer::GetDraggingViewsClampingBounds() const {
   const auto* scroll_view = GetScrollViewForContainer();
   CHECK(scroll_view);
   gfx::Rect clamping_bounds = views::View::ConvertRectToTarget(
       scroll_view, base::to_address(host_view_), scroll_view->GetLocalBounds());
-  clamping_bounds.set_width(
-      clamping_bounds.width() -
-      GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding));
-  bounding_box_for_point.AdjustToFit(clamping_bounds);
+  if (drag_layout_ != DragLayout::kHorizontal) {
+    clamping_bounds.set_width(
+        clamping_bounds.width() -
+        GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding));
+  }
+  return clamping_bounds;
+}
 
+gfx::Rect DraggedTabsContainer::GetDraggingViewsBoundsAtPointClamped(
+    const gfx::Point& point_in_container) const {
+  gfx::Rect bounding_box_for_point =
+      GetDraggingViewsBoundsAtPoint(point_in_container);
+  bounding_box_for_point.AdjustToFit(GetDraggingViewsClampingBounds());
   return bounding_box_for_point;
 }
 

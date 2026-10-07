@@ -187,6 +187,10 @@ class DraggedTabsContainer : public TabDragTarget,
   bool IsHorizontalDragSupported() const;
   bool IsVerticalDragSupported() const;
 
+  // Returns the bounds in `host_view_` coordinates to which dragged views
+  // should be clamped.
+  gfx::Rect GetDraggingViewsClampingBounds() const;
+
   // Returns the bounds of the box containing all dragged views, adjusted to
   // the point `point_in_container` and clamped to the bounds of the
   // scroll view, which should be used for visual representation of the dragged
