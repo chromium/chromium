@@ -146,7 +146,7 @@ void FeatureListQueryProcessor::CreateProcessors(
         feature_processor_state.AppendProcessor(
             GetUmaFeatureProcessor(ukm_manager, std::move(type.second),
                                    feature_processor_state, false),
-            true);
+            Data::DataType::INPUT_UMA);
         break;
       case Data::DataType::INPUT_CUSTOM:
         feature_processor_state.AppendProcessor(
@@ -154,7 +154,7 @@ void FeatureListQueryProcessor::CreateProcessors(
                 std::move(type.second),
                 feature_processor_state.prediction_time(),
                 input_delegate_holder_.get()),
-            true);
+            Data::DataType::INPUT_CUSTOM);
         break;
       case Data::DataType::INPUT_UKM:
         if (!ukm_manager->IsUkmEngineEnabled()) {
@@ -169,13 +169,13 @@ void FeatureListQueryProcessor::CreateProcessors(
                 std::move(type.second),
                 feature_processor_state.prediction_time(),
                 input_delegate_holder_.get(), ukm_manager->GetUkmDatabase()),
-            true);
+            Data::DataType::INPUT_UKM);
         break;
       case Data::DataType::OUTPUT_UMA:
         feature_processor_state.AppendProcessor(
             GetUmaFeatureProcessor(ukm_manager, std::move(type.second),
                                    feature_processor_state, true),
-            false);
+            Data::DataType::OUTPUT_UMA);
         break;
     }
   }

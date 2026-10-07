@@ -404,6 +404,18 @@ TEST_F(MetadataUtilsTest, ValidateMetadataAndInputFeatures) {
   EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
             metadata_utils::ValidateMetadataAndFeatures(metadata));
 
+  // Verify that sql_feature is validated with ValidateMetadataSqlFeature.
+  auto* input3 = metadata.add_input_features();
+  proto::SqlFeature* sql_feature = input3->mutable_sql_feature();
+  EXPECT_EQ(metadata_utils::ValidationResult::kFeatureSqlQueryEmpty,
+            metadata_utils::ValidateMetadataAndFeatures(metadata));
+  sql_feature->set_sql("SELECT COUNT(*) FROM metrics WHERE param = ?");
+  EXPECT_EQ(metadata_utils::ValidationResult::kFeatureBindValuesInvalid,
+            metadata_utils::ValidateMetadataAndFeatures(metadata));
+  sql_feature->set_sql("SELECT COUNT(*) FROM metrics");
+  EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
+            metadata_utils::ValidateMetadataAndFeatures(metadata));
+
   // Verify that setting both features and input_features list is invalid.
   auto* feature3 = metadata.add_features();
   feature3->set_type(proto::SignalType::HISTOGRAM_VALUE);

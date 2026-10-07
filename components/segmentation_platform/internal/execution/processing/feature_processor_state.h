@@ -65,9 +65,8 @@ class FeatureProcessorState {
   PopNextProcessor();
 
   // Add a processor to the list of processors waiting for processing.
-  // TODO(haileywang): Send Data::DataType instead of bool.
   void AppendProcessor(std::unique_ptr<QueryProcessor> processor,
-                       bool is_input);
+                       Data::DataType type);
 
   // Temporarily store indexed tensor results.
   void AppendIndexedTensors(const QueryProcessor::IndexedTensors& result,
