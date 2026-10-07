@@ -58,10 +58,16 @@ const net::NetworkTrafficAnnotationTag kEphemeralPromoTrafficAnnotation =
           }
         })");
 
+// Deprecated preference key from M156 storing the promo animation file path in
+// `prefs::kIosNtpEphemeralThemeData`, retained in `kFilePathKeys` so cached
+// promo files are deleted during cleanup.
+constexpr std::string_view kDeprecatedEphemeralThemeAnimationPromoPathKey =
+    "animation_promo_path";
+
 // Preference keys storing file paths in `prefs::kIosNtpEphemeralThemeData`.
 constexpr std::array<std::string_view, 2> kFilePathKeys = {
     kEphemeralThemeAnimationPathKey,
-    kEphemeralThemeAnimationPromoPathKey,
+    kDeprecatedEphemeralThemeAnimationPromoPathKey,
 };
 
 // Creates `dir_path` if needed and writes `contents` to `file_path`.
@@ -94,10 +100,10 @@ std::vector<base::FilePath> ExtractSavedFilePaths(
   return file_paths;
 }
 
-// Deletes the ephemeral theme files at `file_paths`.
+// Deletes the ephemeral theme files or directories at `file_paths`.
 void DeleteEphemeralThemeFiles(std::vector<base::FilePath> file_paths) {
   for (const base::FilePath& file_path : file_paths) {
-    base::DeleteFile(file_path);
+    base::DeletePathRecursively(file_path);
   }
 }
 
@@ -183,9 +189,6 @@ void EphemeralThemeDataManager::FetchEphemeralThemeData(
   std::vector<EphemeralThemeAsset> assets = {
       {GURL(kNewTabPageEphemeralThemeAnimationUrlParam.Get()),
        kEphemeralThemeAnimationFileName, kEphemeralThemeAnimationPathKey},
-      {GURL(kNewTabPageEphemeralThemeAnimationPromoUrlParam.Get()),
-       kEphemeralThemePromoAnimationFileName,
-       kEphemeralThemeAnimationPromoPathKey},
   };
 
   // Validate all required asset URLs upfront before starting the parallel
@@ -227,6 +230,9 @@ void EphemeralThemeDataManager::CleanupEphemeralThemeData() {
 
   std::vector<base::FilePath> file_paths = ExtractSavedFilePaths(
       pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData));
+  if (!state_path_.empty()) {
+    file_paths.push_back(state_path_.AppendASCII(kEphemeralThemeDirectoryName));
+  }
   if (file_paths.empty()) {
     pref_service_->ClearPref(prefs::kIosNtpEphemeralThemeData);
     return;
@@ -343,10 +349,6 @@ void EphemeralThemeDataManager::OnAllAssetsProcessed() {
       kEphemeralThemeAnimationColorMappingKey,
       ParseColorMappingDict(
           kNewTabPageEphemeralThemeAnimationColorMappingParam.Get()));
-  pending_theme_dict_.Set(
-      kEphemeralThemeAnimationPromoColorMappingKey,
-      ParseColorMappingDict(
-          kNewTabPageEphemeralThemeAnimationPromoColorMappingParam.Get()));
   pending_theme_dict_.Set(kEphemeralThemeSeedColorKey,
                           kNewTabPageEphemeralThemeSeedColorParam.Get());
   pending_theme_dict_.Set(kEphemeralThemeVersionKey,

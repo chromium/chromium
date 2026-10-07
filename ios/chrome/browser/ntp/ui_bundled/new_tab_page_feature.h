@@ -102,15 +102,6 @@ BASE_DECLARE_FEATURE_PARAM(std::string,
 BASE_DECLARE_FEATURE_PARAM(std::string,
                            kNewTabPageEphemeralThemeAnimationColorMappingParam);
 
-// URL parameter for the ephemeral theme promo Lottie animation.
-BASE_DECLARE_FEATURE_PARAM(std::string,
-                           kNewTabPageEphemeralThemeAnimationPromoUrlParam);
-
-// JSON string parameter for the ephemeral theme promo light/dark color mapping.
-BASE_DECLARE_FEATURE_PARAM(
-    std::string,
-    kNewTabPageEphemeralThemeAnimationPromoColorMappingParam);
-
 // Seed color parameter for the ephemeral theme.
 BASE_DECLARE_FEATURE_PARAM(std::string,
                            kNewTabPageEphemeralThemeSeedColorParam);

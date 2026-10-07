@@ -11,6 +11,9 @@
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
+#import "base/run_loop.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -31,14 +34,9 @@ namespace {
 constexpr char kAnimationUrl[] = "https://www.gstatic.com/theme_animation.json";
 constexpr char kAnimationColorMappingJson[] =
     R"({"light":{"**.Theme.Fill 1.Color":"#34A853"}})";
-constexpr char kPromoUrl[] = "https://www.gstatic.com/promo_animation.json";
-constexpr char kPromoColorMappingJson[] =
-    R"({"light":{"**.Background.Fill 1.Color":"#1A73E8"}})";
 constexpr char kSeedColor[] = "#1A73E8";
 constexpr char kAnimationLottieJsonBody[] =
     R"({"v":"5.7.4","name":"theme","layers":[]})";
-constexpr char kPromoLottieJsonBody[] =
-    R"({"v":"5.7.4","name":"promo","layers":[]})";
 
 }  // namespace
 
@@ -60,8 +58,6 @@ class EphemeralThemeDataManagerTest : public PlatformTest {
         kNewTabPageEphemeralTheme,
         {{"animation-url", kAnimationUrl},
          {"animation-colormapping", kAnimationColorMappingJson},
-         {"animation-promo-url", kPromoUrl},
-         {"animation-promo-colormapping", kPromoColorMappingJson},
          {"seed-color", kSeedColor},
          {"version", "1"}});
   }
@@ -76,9 +72,9 @@ class EphemeralThemeDataManagerTest : public PlatformTest {
   std::unique_ptr<EphemeralThemeDataManager> manager_;
 };
 
-// Test that `FetchEphemeralThemeData` downloads both animation assets in
-// parallel, writes them to disk, populates `prefs::kIosNtpEphemeralThemeData`,
-// and invokes the completion callback once all parallel operations complete.
+// Test that `FetchEphemeralThemeData` downloads the animation assets, writes
+// them to disk, populates `prefs::kIosNtpEphemeralThemeData`, and invokes the
+// completion callback once all parallel operations complete.
 TEST_F(EphemeralThemeDataManagerTest, FetchesAndSavesAllAssetsInParallel) {
   InitEphemeralThemeFeatureWithValidParams();
 
@@ -87,12 +83,9 @@ TEST_F(EphemeralThemeDataManagerTest, FetchesAndSavesAllAssetsInParallel) {
                                     completion_future.GetCallback());
 
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kAnimationUrl));
-  EXPECT_TRUE(test_url_loader_factory_.IsPending(kPromoUrl));
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       kAnimationUrl, kAnimationLottieJsonBody);
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      kPromoUrl, kPromoLottieJsonBody);
 
   ASSERT_TRUE(completion_future.Wait());
   EXPECT_TRUE(manager_->HasCachedData());
@@ -103,14 +96,10 @@ TEST_F(EphemeralThemeDataManagerTest, FetchesAndSavesAllAssetsInParallel) {
       temp_dir_.GetPath().AppendASCII(kEphemeralThemeDirectoryName);
   base::FilePath expected_animation_file =
       bundle_dir.AppendASCII(kEphemeralThemeAnimationFileName);
-  base::FilePath expected_promo_file =
-      bundle_dir.AppendASCII(kEphemeralThemePromoAnimationFileName);
 
   std::string file_contents;
   ASSERT_TRUE(base::ReadFileToString(expected_animation_file, &file_contents));
   EXPECT_EQ(kAnimationLottieJsonBody, file_contents);
-  ASSERT_TRUE(base::ReadFileToString(expected_promo_file, &file_contents));
-  EXPECT_EQ(kPromoLottieJsonBody, file_contents);
 
   const base::DictValue& saved_dict =
       pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData);
@@ -121,46 +110,37 @@ TEST_F(EphemeralThemeDataManagerTest, FetchesAndSavesAllAssetsInParallel) {
   EXPECT_EQ(1, saved_dict.FindInt(kEphemeralThemeVersionKey));
 }
 
-// Test that if any parallel asset download fails,
-// `prefs::kIosNtpEphemeralThemeData` is not populated, partially written files
-// are cleaned up, and the completion callback is not invoked.
-TEST_F(EphemeralThemeDataManagerTest,
-       CleansUpPartialFilesAndSkipsPrefWriteWhenOneDownloadFails) {
+// Test that if the asset download fails, `prefs::kIosNtpEphemeralThemeData` is
+// not populated and the completion callback is not invoked.
+TEST_F(EphemeralThemeDataManagerTest, SkipsPrefWriteWhenDownloadFails) {
   InitEphemeralThemeFeatureWithValidParams();
 
-  base::test::TestFuture<void> completion_future;
-  manager_->FetchEphemeralThemeData(HomeCustomizationBackgroundStyle::kDefault,
-                                    completion_future.GetCallback());
+  bool completion_called = false;
+  base::RunLoop run_loop;
+  manager_->FetchEphemeralThemeData(
+      HomeCustomizationBackgroundStyle::kDefault,
+      base::BindOnce(
+          [](bool* called, base::ScopedClosureRunner) { *called = true; },
+          &completion_called,
+          base::ScopedClosureRunner(run_loop.QuitClosure())));
 
   base::FilePath bundle_dir =
       temp_dir_.GetPath().AppendASCII(kEphemeralThemeDirectoryName);
   base::FilePath animation_file =
       bundle_dir.AppendASCII(kEphemeralThemeAnimationFileName);
-  base::FilePath promo_file =
-      bundle_dir.AppendASCII(kEphemeralThemePromoAnimationFileName);
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      kAnimationUrl, kAnimationLottieJsonBody);
+      kAnimationUrl, std::string(), net::HTTP_NOT_FOUND);
+  run_loop.Run();
 
-  // Wait for the first asset to be written to disk before failing the 2nd.
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return base::PathExists(animation_file); }));
-
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      kPromoUrl, std::string(), net::HTTP_NOT_FOUND);
-
-  // Wait for the partial file to be cleaned up after the barrier completes.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !base::PathExists(animation_file) && !base::PathExists(promo_file);
-  }));
-
-  EXPECT_FALSE(completion_future.IsReady());
+  EXPECT_FALSE(base::PathExists(animation_file));
+  EXPECT_FALSE(completion_called);
   EXPECT_FALSE(manager_->HasCachedData());
 }
 
 // Test that `UpdatePreEphemeralBackgroundStyle` updates the saved background
-// style and `CleanupEphemeralThemeData` deletes the saved files and clears the
-// pref.
+// style and `CleanupEphemeralThemeData` deletes the saved files (including any
+// legacy promo file in the ephemeral theme directory) and clears the pref.
 TEST_F(EphemeralThemeDataManagerTest,
        UpdatesBackgroundStyleAndCleansUpFilesAndPrefs) {
   InitEphemeralThemeFeatureWithValidParams();
@@ -171,8 +151,6 @@ TEST_F(EphemeralThemeDataManagerTest,
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       kAnimationUrl, kAnimationLottieJsonBody);
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      kPromoUrl, kPromoLottieJsonBody);
   ASSERT_TRUE(completion_future.Wait());
 
   EXPECT_EQ(HomeCustomizationBackgroundStyle::kDefault,
@@ -185,13 +163,13 @@ TEST_F(EphemeralThemeDataManagerTest,
 
   base::FilePath bundle_dir =
       temp_dir_.GetPath().AppendASCII(kEphemeralThemeDirectoryName);
+  base::FilePath legacy_promo_file =
+      bundle_dir.AppendASCII("ephemeral_promo.json");
+  ASSERT_TRUE(base::WriteFile(legacy_promo_file, "{}"));
+
   manager_->CleanupEphemeralThemeData();
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !manager_->HasCachedData() &&
-           !base::PathExists(
-               bundle_dir.AppendASCII(kEphemeralThemeAnimationFileName)) &&
-           !base::PathExists(
-               bundle_dir.AppendASCII(kEphemeralThemePromoAnimationFileName));
+    return !manager_->HasCachedData() && !base::PathExists(bundle_dir);
   }));
 }

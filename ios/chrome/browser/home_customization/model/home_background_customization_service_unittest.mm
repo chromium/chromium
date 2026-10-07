@@ -1397,10 +1397,9 @@ TEST_F(HomeBackgroundCustomizationServiceTest, SetAndPersistEphemeralTheme) {
 }
 
 // Test that when both ephemeral theme features are enabled, the service
-// downloads the main animation JSON and the promo animation JSON in parallel,
-// writes both to disk, saves their file paths and parsed color mapping
-// dictionaries in `kIosNtpEphemeralThemeData`, and registers the promo for
-// single display.
+// downloads the animation JSON, writes it to disk, saves its file path and
+// parsed color mapping dictionary in `kIosNtpEphemeralThemeData`, and registers
+// the promo for single display.
 TEST_F(HomeBackgroundCustomizationServiceTest,
        FetchesAndSavesEphemeralThemeDataInParallelAndRegistersPromo) {
   base::ScopedTempDir temp_dir;
@@ -1410,22 +1409,14 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
       "https://www.gstatic.com/theme_animation.json";
   static constexpr char kAnimationColorMappingJson[] =
       R"({"light":{"**.Theme.Fill 1.Color":"#34A853"}})";
-  static constexpr char kPromoUrl[] =
-      "https://www.gstatic.com/promo_animation.json";
-  static constexpr char kPromoColorMappingJson[] =
-      R"({"light":{"**.Background.Fill 1.Color":"#1A73E8"}})";
   static constexpr char kSeedColor[] = "#1A73E8";
   static constexpr char kAnimationLottieJsonBody[] =
       R"({"v":"5.7.4","name":"theme","layers":[]})";
-  static constexpr char kPromoLottieJsonBody[] =
-      R"({"v":"5.7.4","name":"promo","layers":[]})";
 
   feature_list_.InitWithFeaturesAndParameters(
       {{kNewTabPageEphemeralTheme,
         {{"animation-url", kAnimationUrl},
          {"animation-colormapping", kAnimationColorMappingJson},
-         {"animation-promo-url", kPromoUrl},
-         {"animation-promo-colormapping", kPromoColorMappingJson},
          {"seed-color", kSeedColor},
          {"version", "1"}}},
        {feature_engagement::kIPHiOSPromoEphemeralThemeFeature, {}}},
@@ -1441,14 +1432,10 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
       background_image_service_.get(), test_shared_loader_factory_,
       temp_dir.GetPath(), &mock_promos_manager);
 
-  // Both downloads should be started in parallel.
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kAnimationUrl));
-  EXPECT_TRUE(test_url_loader_factory_.IsPending(kPromoUrl));
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       kAnimationUrl, kAnimationLottieJsonBody);
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      kPromoUrl, kPromoLottieJsonBody);
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData).empty();
@@ -1463,16 +1450,6 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
   ASSERT_TRUE(base::ReadFileToString(expected_animation_file,
                                      &saved_animation_contents));
   EXPECT_EQ(kAnimationLottieJsonBody, saved_animation_contents);
-
-  base::FilePath expected_promo_file =
-      temp_dir.GetPath()
-          .AppendASCII(kEphemeralThemeDirectoryName)
-          .AppendASCII(kEphemeralThemePromoAnimationFileName);
-  EXPECT_TRUE(base::PathExists(expected_promo_file));
-  std::string saved_promo_contents;
-  ASSERT_TRUE(
-      base::ReadFileToString(expected_promo_file, &saved_promo_contents));
-  EXPECT_EQ(kPromoLottieJsonBody, saved_promo_contents);
 
   const base::DictValue& saved_theme_data =
       pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData);
@@ -1493,22 +1470,6 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
   ASSERT_TRUE(theme_color_val);
   EXPECT_EQ("#34A853", *theme_color_val);
 
-  const std::string* saved_promo_path =
-      saved_theme_data.FindString(kEphemeralThemeAnimationPromoPathKey);
-  ASSERT_TRUE(saved_promo_path);
-  EXPECT_EQ(expected_promo_file.value(), *saved_promo_path);
-
-  const base::DictValue* saved_promo_colors =
-      saved_theme_data.FindDict(kEphemeralThemeAnimationPromoColorMappingKey);
-  ASSERT_TRUE(saved_promo_colors);
-  const base::DictValue* promo_light_dict =
-      saved_promo_colors->FindDict("light");
-  ASSERT_TRUE(promo_light_dict);
-  const std::string* promo_color_val =
-      promo_light_dict->FindString("**.Background.Fill 1.Color");
-  ASSERT_TRUE(promo_color_val);
-  EXPECT_EQ("#1A73E8", *promo_color_val);
-
   const std::string* saved_seed_color =
       saved_theme_data.FindString(kEphemeralThemeSeedColorKey);
   ASSERT_TRUE(saved_seed_color);
@@ -1526,9 +1487,9 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
             saved_background_style.value());
 }
 
-// Test that the service skips re-downloading the animation JSONs when both
-// paths are already cached in prefs and the version parameter is not greater
-// than the cached version.
+// Test that the service skips re-downloading the animation JSON when the path
+// is already cached in prefs and the version parameter is not greater than the
+// cached version.
 TEST_F(HomeBackgroundCustomizationServiceTest,
        SkipsDownloadWhenEphemeralThemeDataAlreadyCached) {
   base::ScopedTempDir temp_dir;
@@ -1536,22 +1497,16 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
 
   static constexpr char kAnimationUrl[] =
       "https://www.gstatic.com/theme_animation.json";
-  static constexpr char kPromoUrl[] =
-      "https://www.gstatic.com/promo_animation.json";
 
   feature_list_.InitWithFeaturesAndParameters(
       {{kNewTabPageEphemeralTheme,
-        {{"animation-url", kAnimationUrl},
-         {"animation-promo-url", kPromoUrl},
-         {"version", "1"}}},
+        {{"animation-url", kAnimationUrl}, {"version", "1"}}},
        {feature_engagement::kIPHiOSPromoEphemeralThemeFeature, {}}},
       {});
 
   base::DictValue cached_dict;
   cached_dict.Set(kEphemeralThemeAnimationPathKey,
                   "/tmp/ephemeral_animation.json");
-  cached_dict.Set(kEphemeralThemeAnimationPromoPathKey,
-                  "/tmp/ephemeral_promo.json");
   cached_dict.Set(kEphemeralThemeVersionKey, 1);
   pref_service_->SetDict(prefs::kIosNtpEphemeralThemeData,
                          std::move(cached_dict));
@@ -1578,14 +1533,11 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
 
   static constexpr char kAnimationUrl[] =
       "https://www.gstatic.com/theme_animation_v2.json";
-  static constexpr char kPromoUrl[] =
-      "https://www.gstatic.com/promo_animation_v2.json";
   static constexpr char kSeedColor[] = "#EA4335";
 
   feature_list_.InitWithFeaturesAndParameters(
       {{kNewTabPageEphemeralTheme,
         {{"animation-url", kAnimationUrl},
-         {"animation-promo-url", kPromoUrl},
          {"seed-color", kSeedColor},
          {"version", "2"}}},
        {feature_engagement::kIPHiOSPromoEphemeralThemeFeature, {}}},
@@ -1594,8 +1546,6 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
   base::DictValue cached_dict;
   cached_dict.Set(kEphemeralThemeAnimationPathKey,
                   "/tmp/old_ephemeral_animation.json");
-  cached_dict.Set(kEphemeralThemeAnimationPromoPathKey,
-                  "/tmp/old_ephemeral_promo.json");
   cached_dict.Set(kEphemeralThemeSeedColorKey, "#1A73E8");
   cached_dict.Set(kEphemeralThemeVersionKey, 1);
   pref_service_->SetDict(prefs::kIosNtpEphemeralThemeData,
@@ -1612,11 +1562,8 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
       temp_dir.GetPath(), &mock_promos_manager);
 
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kAnimationUrl));
-  EXPECT_TRUE(test_url_loader_factory_.IsPending(kPromoUrl));
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       kAnimationUrl, R"({"v":"5.7.4","name":"theme_v2","layers":[]})");
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      kPromoUrl, R"({"v":"5.7.4","name":"promo_v2","layers":[]})");
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData)
@@ -1654,17 +1601,15 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
 
 // Test that when the ephemeral theme feature is disabled and the current
 // background is `kEphemeral` with a saved background style of `kDefault`, the
-// service restores the default background, deletes the 2 asset files, and
-// clears `kIosNtpEphemeralThemeData`.
+// service restores the default background, deletes the asset file, and clears
+// `kIosNtpEphemeralThemeData`.
 TEST_F(HomeBackgroundCustomizationServiceTest,
        CleansUpEphemeralThemeAndRestoresDefaultBackgroundWhenFeatureDisabled) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::FilePath animation_file = temp_dir.GetPath().AppendASCII("anim.json");
-  base::FilePath promo_file = temp_dir.GetPath().AppendASCII("promo.json");
   ASSERT_TRUE(base::WriteFile(animation_file, "{}"));
-  ASSERT_TRUE(base::WriteFile(promo_file, "{}"));
 
   pref_service_->SetList(prefs::kIosRecentlyUsedBackgrounds, {});
   {
@@ -1685,7 +1630,6 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
 
     base::DictValue theme_dict;
     theme_dict.Set(kEphemeralThemeAnimationPathKey, animation_file.value());
-    theme_dict.Set(kEphemeralThemeAnimationPromoPathKey, promo_file.value());
     theme_dict.Set(
         kPreEphemeralThemeBackgroundStyleKey,
         static_cast<int>(HomeCustomizationBackgroundStyle::kDefault));
@@ -1708,13 +1652,12 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
   EXPECT_FALSE(service_->GetCurrentCustomBackground().has_value());
   EXPECT_TRUE(pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData).empty());
   EXPECT_FALSE(base::PathExists(animation_file));
-  EXPECT_FALSE(base::PathExists(promo_file));
 }
 
 // Test that when the ephemeral theme feature is disabled and the current
 // background is `kEphemeral` with a non-default saved background style, the
-// service restores the most recently used user background, deletes the 2 asset
-// files, and clears `kIosNtpEphemeralThemeData`.
+// service restores the most recently used user background, deletes the asset
+// file, and clears `kIosNtpEphemeralThemeData`.
 TEST_F(
     HomeBackgroundCustomizationServiceTest,
     CleansUpEphemeralThemeAndRestoresRecentlyUsedBackgroundWhenFeatureDisabled) {
@@ -1722,9 +1665,7 @@ TEST_F(
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::FilePath animation_file = temp_dir.GetPath().AppendASCII("anim.json");
-  base::FilePath promo_file = temp_dir.GetPath().AppendASCII("promo.json");
   ASSERT_TRUE(base::WriteFile(animation_file, "{}"));
-  ASSERT_TRUE(base::WriteFile(promo_file, "{}"));
 
   sync_pb::UserColorTheme color_theme = GenerateUserColorTheme(0xff0000);
   pref_service_->SetList(prefs::kIosRecentlyUsedBackgrounds, {});
@@ -1735,7 +1676,6 @@ TEST_F(
 
     base::DictValue theme_dict;
     theme_dict.Set(kEphemeralThemeAnimationPathKey, animation_file.value());
-    theme_dict.Set(kEphemeralThemeAnimationPromoPathKey, promo_file.value());
     theme_dict.Set(
         kPreEphemeralThemeBackgroundStyleKey,
         static_cast<int>(HomeCustomizationBackgroundStyle::kDefault));
@@ -1773,21 +1713,18 @@ TEST_F(
   EXPECT_EQ(color_theme, restored_color.value());
   EXPECT_TRUE(pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData).empty());
   EXPECT_FALSE(base::PathExists(animation_file));
-  EXPECT_FALSE(base::PathExists(promo_file));
 }
 
 // Test that when the ephemeral theme feature is disabled and the current
 // background is not `kEphemeral`, the service keeps the current background,
-// deletes the 2 asset files, and clears `kIosNtpEphemeralThemeData`.
+// deletes the asset file, and clears `kIosNtpEphemeralThemeData`.
 TEST_F(HomeBackgroundCustomizationServiceTest,
        CleansUpEphemeralThemeFilesWhenNotEphemeralAndFeatureDisabled) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::FilePath animation_file = temp_dir.GetPath().AppendASCII("anim.json");
-  base::FilePath promo_file = temp_dir.GetPath().AppendASCII("promo.json");
   ASSERT_TRUE(base::WriteFile(animation_file, "{}"));
-  ASSERT_TRUE(base::WriteFile(promo_file, "{}"));
 
   sync_pb::UserColorTheme color_theme = GenerateUserColorTheme(0x00ff00);
   pref_service_->SetList(prefs::kIosRecentlyUsedBackgrounds, {});
@@ -1802,7 +1739,6 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
 
     base::DictValue theme_dict;
     theme_dict.Set(kEphemeralThemeAnimationPathKey, animation_file.value());
-    theme_dict.Set(kEphemeralThemeAnimationPromoPathKey, promo_file.value());
     theme_dict.Set(kPreEphemeralThemeBackgroundStyleKey,
                    static_cast<int>(HomeCustomizationBackgroundStyle::kColor));
     pref_service_->SetDict(prefs::kIosNtpEphemeralThemeData,
@@ -1820,5 +1756,4 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
   EXPECT_EQ(color_theme, current_color.value());
   EXPECT_TRUE(pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData).empty());
   EXPECT_FALSE(base::PathExists(animation_file));
-  EXPECT_FALSE(base::PathExists(promo_file));
 }

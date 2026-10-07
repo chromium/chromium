@@ -20,12 +20,8 @@ source_set("coordinator") {
     "home_customization_data_conversion.h",
     "home_customization_data_conversion.mm",
     "home_customization_delegate.h",
-    "home_customization_ephemeral_theme_promo_coordinator.h",
-    "home_customization_ephemeral_theme_promo_coordinator.mm",
     "home_customization_ephemeral_theme_promo_display_handler.h",
     "home_customization_ephemeral_theme_promo_display_handler.mm",
-    "home_customization_ephemeral_theme_promo_mediator.h",
-    "home_customization_ephemeral_theme_promo_mediator.mm",
     "home_customization_mediator.h",
     "home_customization_mediator.mm",
     "home_customization_navigation_delegate.h",
@@ -89,7 +85,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/tips_manager/model:tips_manager",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/util",
     "//skia",
     "//ui/base",
@@ -107,7 +102,6 @@ source_set("unit_tests") {
   sources = [
     "home_customization_background_configuration_mediator_unittest.mm",
     "home_customization_coordinator_unittest.mm",
-    "home_customization_ephemeral_theme_promo_mediator_unittest.mm",
     "home_customization_mediator_unittest.mm",
   ]
   frameworks = [

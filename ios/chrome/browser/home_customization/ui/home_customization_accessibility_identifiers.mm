@@ -30,6 +30,3 @@ NSString* const kRainbowSliderAccessibilityIdentifier =
 
 NSString* const kCustomColorCellAccessibilityIdentifier =
     @"kCustomColorCellAccessibilityIdentifier";
-
-NSString* const kHomeCustomizationEphemeralThemePromoAccessibilityIdentifier =
-    @"kHomeCustomizationEphemeralThemePromoAccessibilityIdentifier";

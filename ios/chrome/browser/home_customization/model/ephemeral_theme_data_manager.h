@@ -37,10 +37,6 @@ inline constexpr std::string_view kEphemeralThemeAnimationPathKey =
     "animation_path";
 inline constexpr std::string_view kEphemeralThemeAnimationColorMappingKey =
     "animation_colormapping";
-inline constexpr std::string_view kEphemeralThemeAnimationPromoPathKey =
-    "animation_promo_path";
-inline constexpr std::string_view kEphemeralThemeAnimationPromoColorMappingKey =
-    "animation_promo_colormapping";
 inline constexpr std::string_view kEphemeralThemeSeedColorKey = "seed_color";
 inline constexpr std::string_view kEphemeralThemeVersionKey = "version";
 inline constexpr std::string_view kPreEphemeralThemeBackgroundStyleKey =
@@ -50,8 +46,6 @@ inline constexpr std::string_view kEphemeralThemeDirectoryName =
     "ephemeral_theme";
 inline constexpr std::string_view kEphemeralThemeAnimationFileName =
     "ephemeral_animation.json";
-inline constexpr std::string_view kEphemeralThemePromoAnimationFileName =
-    "ephemeral_promo.json";
 
 // Manages downloading, disk persistence, cleanup, and preference storage for
 // New Tab Page ephemeral theme assets (`prefs::kIosNtpEphemeralThemeData`).
@@ -86,10 +80,10 @@ class EphemeralThemeDataManager {
       HomeCustomizationBackgroundStyle style);
 
   // Evaluates Finch parameters and asynchronously downloads the ephemeral theme
-  // assets (main animation JSON and promo animation JSON) in parallel if not
-  // already cached in prefs or if the configured version is newer than the
-  // cached version. Once all assets are saved to disk, populates
-  // `prefs::kIosNtpEphemeralThemeData` and invokes `completion`.
+  // assets in parallel if not already cached in prefs or if the configured
+  // version is newer than the cached version. Once all assets are saved to
+  // disk, populates `prefs::kIosNtpEphemeralThemeData` and invokes
+  // `completion`.
   void FetchEphemeralThemeData(
       HomeCustomizationBackgroundStyle current_background_style,
       base::OnceClosure completion = base::DoNothing());
