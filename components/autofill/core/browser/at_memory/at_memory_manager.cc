@@ -1108,7 +1108,7 @@ void AtMemoryManager::ShowNoResultsStateSuggestions(
       suggestions.push_back(CreateNoDataSuggestion());
       break;
     case MemorySearchStatus::kPartialResponseSuccess:
-      break;
+      return;
     case MemorySearchStatus::kNoConnectionFailure:
       suggestions.push_back(CreateNoConnectionSuggestion(query));
       break;
@@ -1117,6 +1117,13 @@ void AtMemoryManager::ShowNoResultsStateSuggestions(
       suggestions.push_back(CreateGenericErrorSuggestion());
       break;
   }
+  CHECK(!suggestions.empty());
+  // For `kNoConnectionFailure`, `main_text` contains `query` instead of the
+  // error message.
+  suggestions.front().a11y_announcement =
+      result.status == MemorySearchStatus::kNoConnectionFailure
+          ? l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION)
+          : suggestions.front().main_text.value;
   MaybeAppendPersonalContextNotice(suggestions);
   SendSuggestions(std::move(suggestions));
 }

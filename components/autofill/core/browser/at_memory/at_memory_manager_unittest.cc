@@ -1882,6 +1882,48 @@ TEST_P(AtMemoryManagerTest, SearchResults_SetsA11yAnnouncementOnSearchResults) {
           HasNoA11yAnnouncement()));
 }
 
+struct NoResultsA11yTestCase {
+  MemorySearchStatus status;
+  int expected_message_id;
+  bool glic_enabled = false;
+};
+
+class AtMemoryManagerNoResultsA11yTest
+    : public AtMemoryManagerTestBase,
+      public WithParamInterface<NoResultsA11yTestCase> {};
+
+// Tests that when search returns no entries or fails, the returned suggestion
+// has the corresponding a11y announcement.
+TEST_P(AtMemoryManagerNoResultsA11yTest,
+       SearchResults_SetsA11yAnnouncementOnNoResults) {
+  SeeFormAndShowPopup();
+  autofill_client().set_is_glic_enabled(GetParam().glic_enabled);
+
+  std::vector<Suggestion> final_suggestions;
+  MockQueryResultsAndExpectCallback(u"query", GetParam().status,
+                                    /*entries=*/{}, final_suggestions);
+  manager().OnSearchSubmitted(u"query");
+  EXPECT_THAT(final_suggestions,
+              ElementsAre(HasA11yAnnouncement(GetParam().expected_message_id)));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AtMemoryManagerNoResultsA11yTest,
+    Values(NoResultsA11yTestCase{MemorySearchStatus::kFinalResponseSuccess,
+                                 IDS_AUTOFILL_AT_MEMORY_NO_DATA},
+           NoResultsA11yTestCase{MemorySearchStatus::kUnsupportedQuery,
+                                 IDS_AUTOFILL_AT_MEMORY_NO_DATA},
+           NoResultsA11yTestCase{MemorySearchStatus::kUnsupportedQuery,
+                                 IDS_AUTOFILL_AT_MEMORY_UNSUPPORTED_QUERY_TITLE,
+                                 /*glic_enabled=*/true},
+           NoResultsA11yTestCase{MemorySearchStatus::kNoConnectionFailure,
+                                 IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION},
+           NoResultsA11yTestCase{MemorySearchStatus::kInferenceFailure,
+                                 IDS_AUTOFILL_AT_MEMORY_GENERIC_ERROR},
+           NoResultsA11yTestCase{MemorySearchStatus::kInternalFailure,
+                                 IDS_AUTOFILL_AT_MEMORY_GENERIC_ERROR}));
+
 // Tests that when search results arrive, the fetching timer is cancelled.
 TEST_P(AtMemoryManagerTest, FetchingState_TimerStopsWhenResultsReceived) {
   SeeFormAndShowPopup();
