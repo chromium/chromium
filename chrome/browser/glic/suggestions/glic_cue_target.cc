@@ -146,12 +146,15 @@ bool GlicCueTarget::IsPageEligible(
   bool passes_shopping = false;
   for (const page_content_annotations::Category& category :
        result.GetCategoryResults()) {
-    if (category.category_type ==
+    if (base::FeatureList::IsEnabled(features::kGlicContextualCuesHandleEdu) &&
+        category.category_type ==
             page_content_annotations::CategoryType::kEducation &&
         category.score > contextual_cueing::kEduClassifierThreshold.Get()) {
       passes_edu = true;
     }
-    if (category.category_type ==
+    if (base::FeatureList::IsEnabled(
+            features::kGlicContextualCuesHandleShopping) &&
+        category.category_type ==
             page_content_annotations::CategoryType::kShopping &&
         category.score >
             contextual_cueing::kShoppingClassifierThreshold.Get()) {
@@ -172,6 +175,14 @@ bool GlicCueTarget::IsPageEligible(
 }
 
 bool GlicCueTarget::IsEligible() const {
+  if (!base::FeatureList::IsEnabled(features::kGlicContextualCuesHandleEdu) &&
+      !base::FeatureList::IsEnabled(
+          features::kGlicContextualCuesHandleShopping)) {
+    CUEING_LOG(
+        "GlicCueTarget::IsEligible failed: Both Edu and Shopping cues "
+        "disabled.");
+    return false;
+  }
   auto* window = tab_->GetBrowserWindowInterface();
   if (!window) {
     CUEING_LOG("GlicCueTarget::IsEligible failed: No window.");
