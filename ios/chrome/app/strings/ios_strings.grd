@@ -4994,6 +4994,12 @@ You can restart anytime.
       <message name="IDS_IOS_LEVEL_UP_WALKTHROUGH_OPEN_SETTINGS" desc="Text of the bubble for the Level Up walkthrough prompting the user to open Settings. [iOS only]">
         Open Settings
       </message>
+      <message name="IDS_IOS_LEVEL_UP_WALKTHROUGH_PAYMENT_METHODS_IPH_TEXT" desc="Text of the bubble for the Level Up walkthrough prompting the user to edit or add a payment method. [iOS only]">
+        Choose a saved payment method to edit, or add a new payment method
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_WALKTHROUGH_PAYMENT_METHODS_IPH_TITLE" desc="Title of the bubble for the Level Up walkthrough prompting the user to edit or add a payment method. [iOS only]">
+        Edit or add a new payment method
+      </message>
       <message name="IDS_IOS_LEVEL_UP_WELCOME" desc="The welcome text displayed in the user profile header of the Level Up feature screen. [iOS only]">
         Welcome
       </message>

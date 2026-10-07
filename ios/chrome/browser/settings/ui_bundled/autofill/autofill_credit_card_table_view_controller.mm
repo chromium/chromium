@@ -970,24 +970,16 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
   UIView* targetView = self.view;
   CHECK(targetView.window);
 
-  CGPoint anchorPoint = CGPointZero;
-  BubbleArrowDirection arrowDirection = BubbleArrowDirectionDown;
+  CGRect safeAreaFrame = targetView.safeAreaLayoutGuide.layoutFrame;
+  CGPoint anchorPointInView =
+      CGPointMake(CGRectGetMidX(safeAreaFrame), CGRectGetMaxY(safeAreaFrame));
+  CGPoint anchorPoint = [targetView convertPoint:anchorPointInView
+                                          toView:targetView.window];
 
-  if (self.tableView.visibleCells.count > 0) {
-    UITableViewCell* cell = self.tableView.visibleCells.firstObject;
-    if (cell.window) {
-      CGPoint anchorPointInCell =
-          CGPointMake(CGRectGetMidX(cell.bounds), CGRectGetMaxY(cell.bounds));
-      anchorPoint = [cell convertPoint:anchorPointInCell toView:cell.window];
-      arrowDirection = BubbleArrowDirectionUp;
-    }
-  } else {
-    anchorPoint = CGPointMake(0.5 * CGRectGetWidth(targetView.bounds),
-                              0.5 * CGRectGetHeight(targetView.bounds));
-  }
-
-  NSString* text =
-      l10n_util::GetNSString(IDS_IOS_LEVEL_UP_WALKTHROUGH_OPEN_PAYMENT_METHODS);
+  NSString* title = l10n_util::GetNSString(
+      IDS_IOS_LEVEL_UP_WALKTHROUGH_PAYMENT_METHODS_IPH_TITLE);
+  NSString* text = l10n_util::GetNSString(
+      IDS_IOS_LEVEL_UP_WALKTHROUGH_PAYMENT_METHODS_IPH_TEXT);
 
   __weak __typeof(self) weakSelf = self;
   CallbackWithIPHDismissalReasonType dismissalCallback =
@@ -998,13 +990,13 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
   BubbleViewControllerPresenter* presenter =
       [[BubbleViewControllerPresenter alloc]
                    initWithText:text
-                          title:nil
-                 arrowDirection:arrowDirection
-                      alignment:BubbleAlignmentBottomOrTrailing
+                          title:title
+                 arrowDirection:BubbleArrowDirectionDown
+                      alignment:BubbleAlignmentCenter
                      bubbleType:BubbleViewTypeRichWithNext
-                pageControlPage:BubblePageControlPageFourth
-          totalPageControlPages:4
-          customNextButtonTitle:l10n_util::GetNSString(IDS_IOS_IPH_BUBBLE_NEXT)
+                pageControlPage:BubblePageControlPageFifth
+          totalPageControlPages:5
+          customNextButtonTitle:nil
               dismissalCallback:dismissalCallback];
   presenter.dismissalTimerDisabled = YES;
 

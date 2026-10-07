@@ -258,6 +258,9 @@ enum class YourSavedInfoDataCategory {
       initWithBaseNavigationController:self.baseNavigationController
                                browser:self.browser];
   _autofillCreditCardCoordinator.delegate = self;
+  _autofillCreditCardCoordinator.shouldShowLevelUpPaymentMethodsWalkthroughIPH =
+      self.shouldShowLevelUpPaymentMethodsWalkthroughIPH;
+  self.shouldShowLevelUpPaymentMethodsWalkthroughIPH = NO;
   [_autofillCreditCardCoordinator start];
 }
 
