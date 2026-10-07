@@ -4695,7 +4695,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_LENS_PRODUCT_NAME" desc="The brand name of Google Lens that will appear in menu titles as a single string.">
         Google Lens
       </message>
-      <message name="IDS_IOS_LENS_PRODUCT_NAME_TRUNCATED" desc="The brand name of Google Lens that will appear in menu titles as a single string, truncated.">
+      <message name="IDS_IOS_LENS_PRODUCT_NAME_TRUNCATED" desc="The brand name of Google Lens that will appear in menu titles as a single string, truncated." meaning="Refers to the Google Lens product and should follow the translation rules for it.">
         Lens
       </message>
       <message name="IDS_IOS_LENS_PROMO_INSTRUCTIONS_STEP1" desc="The text for step 1 in the Lens Promo instructions view.">

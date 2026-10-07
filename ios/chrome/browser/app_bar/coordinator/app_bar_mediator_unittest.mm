@@ -2808,7 +2808,7 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonCustomization_Menu) {
   // "Ask Gemini" is checked as the assistant button shows Gemini.
   ExpectAssistantButtonMenuEntries(
       menu, {{IDS_IOS_APP_BAR_ASK_GEMINI, /*checked=*/true},
-             {IDS_IOS_LENS_PRODUCT_NAME_TRUNCATED, /*checked=*/false},
+             {IDS_IOS_LENS_PRODUCT_NAME, /*checked=*/false},
              {IDS_IOS_APP_BAR_ACCOUNT, /*checked=*/false}});
 }
 
@@ -2824,7 +2824,7 @@ TEST_F(AppBarMediatorTest,
 
   ExpectAssistantButtonMenuEntries(
       UpdateAssistantButtonAndGetMenu(),
-      {{IDS_IOS_LENS_PRODUCT_NAME_TRUNCATED, /*checked=*/true},
+      {{IDS_IOS_LENS_PRODUCT_NAME, /*checked=*/true},
        {IDS_IOS_APP_BAR_ACCOUNT, /*checked=*/false}});
 }
 
@@ -2846,7 +2846,7 @@ TEST_F(AppBarMediatorTest,
   ExpectAssistantButtonMenuEntries(
       UpdateAssistantButtonAndGetMenu(),
       {{IDS_IOS_APP_BAR_ASK_GEMINI, /*checked=*/true},
-       {IDS_IOS_LENS_PRODUCT_NAME_TRUNCATED, /*checked=*/false},
+       {IDS_IOS_LENS_PRODUCT_NAME, /*checked=*/false},
        {IDS_IOS_APP_BAR_ACCOUNT, /*checked=*/false}});
 }
 
@@ -2918,7 +2918,7 @@ TEST_F(AppBarMediatorTest,
   ExpectAssistantButtonMenuEntries(
       UpdateAssistantButtonAndGetMenu(),
       {{IDS_IOS_APP_BAR_ASK_GEMINI, /*checked=*/true},
-       {IDS_IOS_LENS_PRODUCT_NAME_TRUNCATED, /*checked=*/false}});
+       {IDS_IOS_LENS_PRODUCT_NAME, /*checked=*/false}});
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
@@ -2939,7 +2939,7 @@ TEST_F(
 
   ExpectAssistantButtonMenuEntries(
       UpdateAssistantButtonAndGetMenu(),
-      {{IDS_IOS_LENS_PRODUCT_NAME_TRUNCATED, /*checked=*/false},
+      {{IDS_IOS_LENS_PRODUCT_NAME, /*checked=*/false},
        {IDS_IOS_APP_BAR_ACCOUNT, /*checked=*/true}});
 }
 

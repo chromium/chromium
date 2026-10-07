@@ -73,7 +73,7 @@ TEST_F(AppBarAssistantButtonMenuFactoryTest, TestAllEntries) {
   ASSERT_EQ(kAllEntriesCount, menu.children.count);
   ExpectAction(menu, kAskGeminiEntryIndex, IDS_IOS_APP_BAR_ASK_GEMINI,
                /*checked=*/false);
-  ExpectAction(menu, kLensEntryIndex, IDS_IOS_LENS_PRODUCT_NAME_TRUNCATED,
+  ExpectAction(menu, kLensEntryIndex, IDS_IOS_LENS_PRODUCT_NAME,
                /*checked=*/true);
   ExpectAction(menu, kAccountEntryIndex, IDS_IOS_APP_BAR_ACCOUNT,
                /*checked=*/false);

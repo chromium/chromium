@@ -24,11 +24,10 @@
                                   checkedState:checkedState]];
   }
   if (showLens) {
-    [actions
-        addObject:
-            [self actionWithTitleID:IDS_IOS_LENS_PRODUCT_NAME_TRUNCATED
-                     preferredState:AppBarAssistantButtonPreferredState::kLens
-                       checkedState:checkedState]];
+    [actions addObject:[self actionWithTitleID:IDS_IOS_LENS_PRODUCT_NAME
+                                preferredState:
+                                    AppBarAssistantButtonPreferredState::kLens
+                                  checkedState:checkedState]];
   }
   if (showAccount) {
     [actions
