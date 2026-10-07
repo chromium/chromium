@@ -19,7 +19,6 @@
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
-#include "chrome/browser/password_manager/factories/password_counter_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_context_menu_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -39,7 +38,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"
-#include "components/password_manager/core/browser/password_counter.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_manual_fallback_metrics_recorder.h"
@@ -274,30 +272,22 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
     return;
   }
 
-  ContentPasswordManagerDriver* password_manager_driver =
-      ContentPasswordManagerDriver::GetForRenderFrameHost(rfh);
-
-  bool add_passwords_fallback = false;
-
   // Do not show password manager context menu options for input fields that
   // cannot be filled by the driver. See crbug.com/40061116.
-  if (password_manager_driver) {
-    add_passwords_fallback =
-        ShouldAddPasswordsManualFallbackItem(*password_manager_driver);
-  }
+  const bool add_passwords_fallback =
+      ShouldAddPasswordsManualFallbackItem(*rfh, params_);
 
   if (add_passwords_fallback) {
-    Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
-    password_manager::PasswordCounter* counter =
-        PasswordCounterFactory::GetForProfile(profile);
+    ContentPasswordManagerDriver& password_manager_driver =
+        CHECK_DEREF(ContentPasswordManagerDriver::GetForRenderFrameHost(rfh));
     const bool select_passwords_option_shown =
-        counter && counter->autofillable_passwords() > 0;
-    AddPasswordsManualFallbackItems(*password_manager_driver,
+        ShouldShowSelectPasswordContextMenuItem(*rfh, params_);
+    AddPasswordsManualFallbackItems(password_manager_driver,
                                     select_passwords_option_shown);
 
     if (select_passwords_option_shown) {
       LogSelectPasswordManualFallbackContextMenuEntryShown(
-          CHECK_DEREF(password_manager_driver));
+          password_manager_driver);
     }
   }
   const bool add_at_memory_fallback = MaybeAddAtMemoryItem();
@@ -305,26 +295,6 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
   if (add_passwords_fallback || add_at_memory_fallback) {
     menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
   }
-}
-
-bool AutofillContextMenuManager::ShouldAddPasswordsManualFallbackItem(
-    ContentPasswordManagerDriver& driver) {
-  if (!driver.CanShowAutofillUi()) {
-    return false;
-  }
-  // Password suggestions should not be triggered on text areas.
-  if (params_.form_control_type == blink::mojom::FormControlType::kTextArea) {
-    return false;
-  }
-
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManualFallbackSecurityChecks) &&
-      (!driver.HasValidURL(/*may_kill_renderer*/ false) ||
-       !driver.IsRenderFrameHostSupported())) {
-    return false;
-  }
-  return driver.GetPasswordManager()->GetClient()->IsFillingEnabled(
-      driver.GetLastCommittedOrigin(), driver.GetLastCommittedURL());
 }
 
 void AutofillContextMenuManager::AddPasswordsManualFallbackItems(

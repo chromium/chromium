@@ -74,11 +74,6 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // true if the item was added, false otherwise.
   bool MaybeAddAtMemoryItem();
 
-  // Checks if the currently focused field is a password field and whether
-  // password filling is enabled.
-  bool ShouldAddPasswordsManualFallbackItem(
-      password_manager::ContentPasswordManagerDriver& password_manager_driver);
-
   // Adds the passwords manual fallback context menu entries.
   //
   // The entries are displayed in the following order:

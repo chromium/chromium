@@ -4,13 +4,20 @@
 
 #include "chrome/browser/ui/autofill/autofill_context_menu_utils.h"
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
+#include "chrome/browser/password_manager/factories/password_counter_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/at_memory/at_memory_enablement_util.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_counter.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
@@ -100,6 +107,46 @@ void ExecuteAtMemoryContextMenuCommand(
       {autofill_driver->GetFrameToken(),
        FieldRendererId(params.field_renderer_id.value())},
       AutofillSuggestionTriggerSource::kAtMemoryContextMenu);
+}
+
+bool ShouldAddPasswordsManualFallbackItem(
+    content::RenderFrameHost& rfh,
+    const content::ContextMenuParams& params) {
+  if (!ShouldShowAutofillContextMenu(params) ||
+      params.is_content_editable_for_autofill ||
+      params.form_control_type == blink::mojom::FormControlType::kTextArea) {
+    return false;
+  }
+
+  auto* driver =
+      password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
+          &rfh);
+  if (!driver || !driver->CanShowAutofillUi()) {
+    return false;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordManualFallbackSecurityChecks) &&
+      (!driver->HasValidURL(/*may_kill_renderer=*/false) ||
+       !driver->IsRenderFrameHostSupported())) {
+    return false;
+  }
+
+  return driver->GetPasswordManager()->GetClient()->IsFillingEnabled(
+      driver->GetLastCommittedOrigin(), driver->GetLastCommittedURL());
+}
+
+bool ShouldShowSelectPasswordContextMenuItem(
+    content::RenderFrameHost& rfh,
+    const content::ContextMenuParams& params) {
+  if (!ShouldAddPasswordsManualFallbackItem(rfh, params)) {
+    return false;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(rfh.GetBrowserContext());
+  password_manager::PasswordCounter* counter =
+      PasswordCounterFactory::GetForProfile(profile);
+  return counter && counter->autofillable_passwords() > 0;
 }
 
 }  // namespace autofill

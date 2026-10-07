@@ -27,6 +27,19 @@ void ExecuteAtMemoryContextMenuCommand(
     content::RenderFrameHost& rfh,
     const content::ContextMenuParams& params);
 
+// Returns true if password manual fallback items should be added to the context
+// menu for `rfh` and `params`.
+bool ShouldAddPasswordsManualFallbackItem(
+    content::RenderFrameHost& rfh,
+    const content::ContextMenuParams& params);
+
+// Returns true if the "Select password" manual fallback item should be added
+// to the context menu for `rfh` and `params` (i.e. password filling is allowed
+// on the field and the user has at least one saved autofillable password).
+bool ShouldShowSelectPasswordContextMenuItem(
+    content::RenderFrameHost& rfh,
+    const content::ContextMenuParams& params);
+
 }  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_CONTEXT_MENU_UTILS_H_
