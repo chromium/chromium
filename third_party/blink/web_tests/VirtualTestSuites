@@ -2048,26 +2048,6 @@
     "expires": "Dec 1, 2024"
   },
   {
-    "prefix": "media-foundation-for-clear-frameserver",
-    "owners": [
-      "media-dev@chromium.org",
-      "frankli@microsoft.com"
-    ],
-    "platforms": [
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/media-source",
-      "media"
-    ],
-    "args": [
-      "--use-gpu-in-tests",
-      "--force-mfmediaengine-renderer",
-      "--enable-features=MediaFoundationClearRendering:strategy/frame-server"
-    ],
-    "expires": "Dec 1, 2024"
-  },
-  {
     "prefix": "media-caption-settings-button-disabled",
     "owners": [
       "media-dev@chromium.org",

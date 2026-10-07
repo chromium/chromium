@@ -1,1 +1,0 @@
-This directory is dedicated for testing the "Media Foundation for Clear" feature.
