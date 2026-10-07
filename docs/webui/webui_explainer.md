@@ -116,13 +116,13 @@ map.AddWebUIConfig(std::make_unique<donuts::DonutsUIConfig>());
 
 ```
 
-If a factory knows how to handle a host (returns a `WebUIFactoryFunction`), the
+If a factory knows how to handle a URL (`UseWebUIForURL()` returns true), the
 navigation machinery [grants the renderer process WebUI
 bindings](#webui-bindings) via the child security policy.
 
 ```c++
 // RenderFrameHostImpl::AllowBindings():
-if (bindings_flags.Has(BindingsPolicyValue::kWebUi)) {
+if (!webui_bindings.empty()) {
   ChildProcessSecurityPolicyImpl::GetInstance()->GrantWebUIBindings(
       GetProcess()->GetDeprecatedID());
 }
@@ -847,7 +847,9 @@ to the call are serialized to JSON and the parameter list is wrapped with
 "functionCallName(" + argumentsAsJson + ")"
 ```
 
-and sent to the renderer via a `FrameMsg_JavaScriptExecuteRequest` IPC message.
+and sent to the renderer via the
+`blink.mojom.LocalFrame.JavaScriptExecuteRequest` Mojo method (see
+`RenderFrameHostImpl::ExecuteJavaScript()`).
 
 While this works, it implies that:
 
@@ -1041,8 +1043,10 @@ bindings](#webui-bindings).
 
 ```c++
 // RenderFrameImpl::DidClearWindowObject():
-if (enabled_bindings_.Has(BindingsPolicyValue::kWebUi))
-  WebUIExtension::Install(frame_);
+if (enabled_bindings_.Has(BindingsPolicyValue::kWebUi) ||
+    enabled_bindings_.Has(BindingsPolicyValue::kWebUiHistograms)) {
+  WebUIExtension::Install(frame_, enabled_bindings_);
+}
 ```
 
 If the bindings exist, a global `chrome.send()` function is exposed to the
@@ -1063,18 +1067,16 @@ The `chrome.send()` method takes a message name and argument list.
 chrome.send('messageName', [arg1, arg2, ...]);
 ```
 
-The message name and argument list are serialized to JSON and sent via the
-`FrameHostMsg_WebUISend` IPC message from the renderer to the browser.
+The message name and argument list are sent via the
+`content.mojom.WebUIHost.Send` Mojo method from the renderer to the browser.
 
 ```c++
-// In the renderer (WebUIExtension::Send()):
-render_frame->Send(new FrameHostMsg_WebUISend(render_frame->GetRoutingID(),
-                                              frame->GetDocument().Url(),
-                                              message, *content));
+// In the renderer (WebUIExtensionData::SendMessage()):
+remote_->Send(message, std::move(args));
 ```
 ```c++
-// In the browser (WebUIImpl::OnMessageReceived()):
-IPC_MESSAGE_HANDLER(FrameHostMsg_WebUISend, OnWebUISend)
+// In the browser (WebUIImpl::Send()):
+ProcessWebUIMessage(source_url, message, std::move(args));
 ```
 
 The browser-side code does a map lookup for the message name and calls the found
@@ -1082,7 +1084,7 @@ callback with the deserialized arguments:
 
 ```c++
 // WebUIImpl::ProcessWebUIMessage():
-message_callbacks_.find(message)->second.Run(&args);
+message_callbacks_.find(message)->second.Run(args);
 ```
 
 #### addWebUiListener()
