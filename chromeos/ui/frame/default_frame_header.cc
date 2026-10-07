@@ -18,6 +18,8 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/native_widget_aura.h"
 #include "ui/views/widget/widget.h"
@@ -33,20 +35,14 @@ void TileRoundRect(gfx::Canvas* canvas,
                    const cc::PaintFlags& flags,
                    const gfx::Rect& bounds,
                    int corner_radius) {
-  SkRect rect = gfx::RectToSkRect(bounds);
-  const SkScalar corner_radius_scalar = SkIntToScalar(corner_radius);
-  const SkVector radii[4] = {
-      {corner_radius_scalar, corner_radius_scalar},  // top-left
-      {corner_radius_scalar, corner_radius_scalar},  // top-right
-      {0, 0},                                        // bottom-right
-      {0, 0},                                        // bottom-left
-  };
   // Antialiasing can result in blending a transparent pixel and
   // leave non opaque alpha between the frame and the client area.
   // Extend 1dp to make sure it's fully opaque.
-  rect.fBottom += 1;
+  gfx::Rect rect = bounds;
+  rect.set_height(rect.height() + 1);
 
-  const SkPath path = SkPath::RRect(SkRRect::MakeRectRadii(rect, radii));
+  const SkPath path = SkPath::RRect(gfx::RoundedRectToSkRRect(
+      rect, gfx::RoundedCornersF(corner_radius, corner_radius, 0, 0)));
   canvas->DrawPath(path, flags);
 }
 
