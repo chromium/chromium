@@ -56,26 +56,30 @@ void XRViewGeometry::UpdateProjectionMatrixFromFoV(float up_rad,
   float right_tan = tanf(right_rad);
   float x_scale = 2.0f / (left_tan + right_tan);
   float y_scale = 2.0f / (up_tan + down_tan);
-  float inv_nf = 1.0f / (near_depth - far_depth);
+  float z_scale;
+  float z_translate;
 
-  // Compute the appropriate matrix for the graphics API being used.
-  // WebGPU uses a clip space with a depth range of [0, 1], which requires a
-  // different projection matrix than WebGL, which uses a clip space with a
-  // depth range of [-1, 1].
-  if (graphics_api_ == XRGraphicsBinding::Api::kWebGPU) {
-    projection_matrix_ = gfx::Transform::ColMajor(
-        x_scale, 0.0f, 0.0f, 0.0f, 0.0f, y_scale, 0.0f, 0.0f,
-        -((left_tan - right_tan) * x_scale * 0.5),
-        ((up_tan - down_tan) * y_scale * 0.5), far_depth * inv_nf, -1.0f, 0.0f,
-        0.0f, far_depth * near_depth * inv_nf, 0.0f);
+  if (far_depth == std::numeric_limits<float>::infinity()) {
+    z_scale = -1.0f;
+    z_translate = graphics_api_ == XRGraphicsBinding::Api::kWebGPU
+                      ? -near_depth
+                      : -2.0f * near_depth;
   } else {
-    projection_matrix_ = gfx::Transform::ColMajor(
-        x_scale, 0.0f, 0.0f, 0.0f, 0.0f, y_scale, 0.0f, 0.0f,
-        -((left_tan - right_tan) * x_scale * 0.5),
-        ((up_tan - down_tan) * y_scale * 0.5),
-        (near_depth + far_depth) * inv_nf, -1.0f, 0.0f, 0.0f,
-        (2.0f * far_depth * near_depth) * inv_nf, 0.0f);
+    float inv_nf = 1.0f / (near_depth - far_depth);
+    if (graphics_api_ == XRGraphicsBinding::Api::kWebGPU) {
+      z_scale = far_depth * inv_nf;
+      z_translate = far_depth * near_depth * inv_nf;
+    } else {
+      z_scale = (near_depth + far_depth) * inv_nf;
+      z_translate = 2.0f * far_depth * near_depth * inv_nf;
+    }
   }
+
+  projection_matrix_ =
+      gfx::Transform::ColMajor(x_scale, 0.0f, 0.0f, 0.0f, 0.0f, y_scale, 0.0f,
+                               0.0f, -((left_tan - right_tan) * x_scale * 0.5),
+                               ((up_tan - down_tan) * y_scale * 0.5), z_scale,
+                               -1.0f, 0.0f, 0.0f, z_translate, 0.0f);
 }
 
 void XRViewGeometry::UpdateProjectionMatrixFromAspect(float fovy,
@@ -83,19 +87,28 @@ void XRViewGeometry::UpdateProjectionMatrixFromAspect(float fovy,
                                                       float near_depth,
                                                       float far_depth) {
   float f = 1.0f / tanf(fovy / 2);
-  float inv_nf = 1.0f / (near_depth - far_depth);
+  float z_scale;
+  float z_translate;
 
-  if (graphics_api_ == XRGraphicsBinding::Api::kWebGPU) {
-    projection_matrix_ = gfx::Transform::ColMajor(
-        f / aspect, 0.0f, 0.0f, 0.0f, 0.0f, f, 0.0f, 0.0f, 0.0f, 0.0f,
-        far_depth * inv_nf, -1.0f, 0.0f, 0.0f, far_depth * near_depth * inv_nf,
-        0.0f);
+  if (far_depth == std::numeric_limits<float>::infinity()) {
+    z_scale = -1.0f;
+    z_translate = graphics_api_ == XRGraphicsBinding::Api::kWebGPU
+                      ? -near_depth
+                      : -2.0f * near_depth;
   } else {
-    projection_matrix_ = gfx::Transform::ColMajor(
-        f / aspect, 0.0f, 0.0f, 0.0f, 0.0f, f, 0.0f, 0.0f, 0.0f, 0.0f,
-        (far_depth + near_depth) * inv_nf, -1.0f, 0.0f, 0.0f,
-        (2.0f * far_depth * near_depth) * inv_nf, 0.0f);
+    float inv_nf = 1.0f / (near_depth - far_depth);
+    if (graphics_api_ == XRGraphicsBinding::Api::kWebGPU) {
+      z_scale = far_depth * inv_nf;
+      z_translate = far_depth * near_depth * inv_nf;
+    } else {
+      z_scale = (far_depth + near_depth) * inv_nf;
+      z_translate = 2.0f * far_depth * near_depth * inv_nf;
+    }
   }
+
+  projection_matrix_ = gfx::Transform::ColMajor(
+      f / aspect, 0.0f, 0.0f, 0.0f, 0.0f, f, 0.0f, 0.0f, 0.0f, 0.0f, z_scale,
+      -1.0f, 0.0f, 0.0f, z_translate, 0.0f);
 
   inv_projection_dirty_ = true;
 }

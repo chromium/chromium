@@ -6,11 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_VIEW_GEOMETRY_H_
 
 #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/xr/xr_graphics_binding.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace blink {
-class XRViewGeometry {
+class MODULES_EXPORT XRViewGeometry {
  public:
   explicit XRViewGeometry(XRGraphicsBinding::Api graphics_api);
   XRViewGeometry(const device::mojom::blink::XRViewGeometryPtr& view_geometry,

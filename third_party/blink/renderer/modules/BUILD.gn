@@ -695,6 +695,7 @@ source_set("unit_tests") {
     "worklet/worklet_thread_test_common.h",
     "xr/xr_rigid_transform_test.cc",
     "xr/xr_test_utils.cc",
+    "xr/xr_view_geometry_test.cc",
     "xr/xr_view_test.cc",
   ]
 
