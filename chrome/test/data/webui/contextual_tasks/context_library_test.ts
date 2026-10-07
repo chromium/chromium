@@ -191,4 +191,27 @@ suite('ContextLibraryTest', () => {
     assertEquals(0, app.tabs.length);
     assertEquals(0, app.submittedTabIds.size);
   });
+
+  test(
+      'Caches default ExtensionBrowserProxyImpl on window across bundles',
+      () => {
+        app.remove();
+        delete window.__extensionBrowserProxyInstance;
+
+        const mojoGlobal = Mojo as {bindInterface: typeof Mojo.bindInterface};
+        const originalBindInterface = mojoGlobal.bindInterface;
+        mojoGlobal.bindInterface = () => {};
+        try {
+          const secondApp = document.createElement('context-library');
+          document.body.appendChild(secondApp);
+          secondApp.remove();
+
+          assertTrue(!!window.__extensionBrowserProxyInstance);
+          assertEquals(
+              window.__extensionBrowserProxyInstance,
+              ExtensionBrowserProxyImpl.getInstance());
+        } finally {
+          mojoGlobal.bindInterface = originalBindInterface;
+        }
+      });
 });

@@ -40,8 +40,6 @@ export interface ExtensionBrowserProxy {
   handler: ExtensionPageHandlerInterface;
 }
 
-let extensionInstance: ExtensionBrowserProxy|null = null;
-
 declare global {
   interface Window {
     __extensionBrowserProxyInstance?: ExtensionBrowserProxy;
@@ -64,12 +62,12 @@ export class ExtensionBrowserProxyImpl implements ExtensionBrowserProxy {
   }
 
   static getInstance(): ExtensionBrowserProxy {
-    return window.__extensionBrowserProxyInstance || extensionInstance ||
-        (extensionInstance = new ExtensionBrowserProxyImpl());
+    return window.__extensionBrowserProxyInstance ||
+        (window.__extensionBrowserProxyInstance =
+             new ExtensionBrowserProxyImpl());
   }
 
   static setInstance(proxy: ExtensionBrowserProxy) {
     window.__extensionBrowserProxyInstance = proxy;
-    extensionInstance = proxy;
   }
 }

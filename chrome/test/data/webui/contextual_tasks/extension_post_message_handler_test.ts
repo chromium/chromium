@@ -300,4 +300,25 @@ suite('ExtensionPostMessageHandlerTest', () => {
 
         assertEquals(0, postedMessages.length);
       });
+
+  test(
+      'Caches default ExtensionBrowserProxyImpl on window across bundles',
+      () => {
+        delete window.__extensionBrowserProxyInstance;
+
+        const mojoGlobal = Mojo as {bindInterface: typeof Mojo.bindInterface};
+        const originalBindInterface = mojoGlobal.bindInterface;
+        mojoGlobal.bindInterface = () => {};
+        try {
+          const defaultHandler = new ExtensionPostMessageHandler();
+          defaultHandler.destroy();
+
+          assertTrue(!!window.__extensionBrowserProxyInstance);
+          assertEquals(
+              window.__extensionBrowserProxyInstance,
+              ExtensionBrowserProxyImpl.getInstance());
+        } finally {
+          mojoGlobal.bindInterface = originalBindInterface;
+        }
+      });
 });
