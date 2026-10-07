@@ -1180,6 +1180,17 @@ inline LayoutStateToolbarPassKey PassKey() {
 
 #pragma mark - ToolbarCommands
 
+- (void)triggerToolbarSlideInAnimation {
+  if (IsChromeNextIaEnabled()) {
+    [_topToolbarViewController triggerToolbarSlideInAnimation];
+    [_bottomToolbarViewController triggerToolbarSlideInAnimation];
+    return;
+  }
+  for (id<ToolbarCommands> coordinator in self.coordinators) {
+    [coordinator triggerToolbarSlideInAnimation];
+  }
+}
+
 - (void)indicateLensOverlayVisible:(BOOL)lensOverlayVisible {
   if (IsChromeNextIaEnabled()) {
     [_topLocationBarCoordinator setLensOverlayVisible:lensOverlayVisible];

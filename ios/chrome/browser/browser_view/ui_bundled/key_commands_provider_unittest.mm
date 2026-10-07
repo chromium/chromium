@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/lens/model/lens_browser_agent.h"
 #import "ios/chrome/browser/lens_overlay/public/lens_overlay_availability.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
@@ -85,6 +86,7 @@ class KeyCommandsProviderTest : public PlatformTest {
     [scene_state_ addAgent:layout_guide_scene_agent];
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
     web_state_list_ = browser_->GetWebStateList();
+    LensBrowserAgent::CreateForBrowser(browser_.get());
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
 
     bookmark_model_ = ios::BookmarkModelFactory::GetForProfile(profile_.get());

@@ -25,6 +25,10 @@ bool IsLensOverlaySameTabNavigationEnabled(const PrefService* prefs) {
   return isIPhone;
 }
 
+bool IsLVFUnifiedExperienceEnabled(const PrefService* prefs) {
+  return IsLensOverlayAllowedByPolicy(prefs);
+}
+
 bool IsLensOverlayLandscapeOrientationEnabled(const PrefService* prefs) {
   return base::FeatureList::IsEnabled(kLensOverlayEnableLandscapeCompatibility);
 }

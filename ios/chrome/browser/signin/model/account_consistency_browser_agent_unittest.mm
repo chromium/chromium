@@ -11,6 +11,7 @@
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/test/ios/test_utils.h"
+#import "ios/chrome/browser/lens/model/lens_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -82,6 +83,7 @@ class AccountConsistencyBrowserAgentTest : public PlatformTest {
                      forProtocol:@protocol(BrowserCoordinatorCommands)];
 
     base_view_controller_mock_ = OCMStrictClassMock([UIViewController class]);
+    LensBrowserAgent::CreateForBrowser(browser_);
     WebNavigationBrowserAgent::CreateForBrowser(browser_);
     AccountConsistencyBrowserAgent::CreateForBrowser(
         browser_, base_view_controller_mock_,

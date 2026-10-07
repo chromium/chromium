@@ -894,6 +894,11 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
       }];
 }
 
+- (void)triggerToolbarSlideInAnimation {
+  // TODO(crbug.com/472279443): Implement this.
+  NOTREACHED();
+}
+
 - (void)hideBannerPromo {
   if (!_bannerPromoVisible) {
     return;

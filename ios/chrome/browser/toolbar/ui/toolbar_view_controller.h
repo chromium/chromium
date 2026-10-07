@@ -77,6 +77,9 @@
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 
+// Triggers the animation for the slide in of the toolbar.
+- (void)triggerToolbarSlideInAnimation;
+
 // Shows/Hides the location bar.
 - (void)setLocationBarHidden:(BOOL)hidden;
 

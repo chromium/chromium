@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/legacy_toolbar_mediator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_type.h"
+#import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
@@ -210,6 +211,7 @@ class MainToolbarCoordinatorTest : public PlatformTest {
 
     OmniboxFocusBrowserAgent::CreateForBrowser(browser);
     AutocompleteBrowserAgent::CreateForBrowser(browser);
+    WebNavigationBrowserAgent::CreateForBrowser(browser);
     // FullscreenController depends on ToolbarsSizeBrowserAgent, so the agent
     ToolbarsSizeBrowserAgent::CreateForBrowser(browser);
     FullscreenController::CreateForBrowser(browser);

@@ -190,10 +190,12 @@
     }
     return;
   }
-  [self.consumer setCanGoBack:self.navigationBrowserAgent->CanGoBack(webState)];
-  [self.consumer
-      setCanGoForward:self.navigationBrowserAgent->CanGoForward(webState)
-             animated:animated];
+  BOOL canGoBack = self.navigationBrowserAgent &&
+                   self.navigationBrowserAgent->CanGoBack(webState);
+  [self.consumer setCanGoBack:canGoBack];
+  BOOL canGoForward = self.navigationBrowserAgent &&
+                      self.navigationBrowserAgent->CanGoForward(webState);
+  [self.consumer setCanGoForward:canGoForward animated:animated];
 
   const GURL visibleURL = webState->GetVisibleURL();
   [self.consumer setShareEnabled:!visibleURL.is_empty() && !isNtp];

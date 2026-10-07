@@ -117,6 +117,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_coordinator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_view_finder_coordinator.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
@@ -463,6 +464,7 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   KeyCommandsProvider* _keyCommandsProvider;
   BubblePresenterCoordinator* _bubblePresenterCoordinator;
   ToolbarAccessoryPresenter* _toolbarAccessoryPresenter;
+  LensCoordinator* _lensCoordinator;
   LensViewFinderCoordinator* _lensViewFinderCoordinator;
   LensOverlayCoordinator* _lensOverlayCoordinator;
   MainToolbarCoordinator* _toolbarCoordinator;
@@ -1082,8 +1084,12 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
       componentFactory:[[NewTabPageComponentFactory alloc] init]];
   _NTPCoordinator.toolbarDelegate = _toolbarCoordinator;
 
-  _lensViewFinderCoordinator =
-      [[LensViewFinderCoordinator alloc] initWithBrowser:browser];
+  if (IsLVFUnifiedExperienceEnabled(profile->GetPrefs())) {
+    _lensViewFinderCoordinator =
+        [[LensViewFinderCoordinator alloc] initWithBrowser:browser];
+  } else {
+    _lensCoordinator = [[LensCoordinator alloc] initWithBrowser:browser];
+  }
 
   _safeAreaProvider = [[SafeAreaProvider alloc] initWithBrowser:browser];
 
@@ -1150,8 +1156,14 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   // The Lens coordinator needs to be started before the primary toolbar
   // coordinator so that the LensCommands dispatcher is correctly registered in
   // time.
-  _lensViewFinderCoordinator.baseViewController = viewController;
-  [_lensViewFinderCoordinator start];
+  if (IsLVFUnifiedExperienceEnabled(self.profile->GetPrefs())) {
+    _lensViewFinderCoordinator.baseViewController = viewController;
+    [_lensViewFinderCoordinator start];
+  } else {
+    _lensCoordinator.baseViewController = viewController;
+    _lensCoordinator.delegate = viewController;
+    [_lensCoordinator start];
+  }
 
   _toolbarCoordinator.baseViewController = viewController;
   if (!IsChromeNextIaEnabled()) {
@@ -1214,8 +1226,13 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   [_lensOverlayCoordinator stop];
   _lensOverlayCoordinator = nil;
 
-  [_lensViewFinderCoordinator stop];
-  _lensViewFinderCoordinator = nil;
+  if (IsLVFUnifiedExperienceEnabled(self.profile->GetPrefs())) {
+    [_lensViewFinderCoordinator stop];
+    _lensViewFinderCoordinator = nil;
+  } else {
+    [_lensCoordinator stop];
+    _lensCoordinator = nil;
+  }
 
   // This can be removed if the browser agent guarenteed to be detroyed before
   // profile keyed objects.
