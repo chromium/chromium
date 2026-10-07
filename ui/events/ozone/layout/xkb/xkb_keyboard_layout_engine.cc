@@ -1059,8 +1059,8 @@ KeyboardCode XkbKeyboardLayoutEngine::DifficultKeyboardCode(
   // active, because it changes the function of the keypad keys (e.g. from
   // navigation keys to numeric/decimal keys) rather than being a shortcut
   // modifier.
-  xkb_mod_mask_t num_lock_flags = xkb_modifier_converter_.MaskFromUiFlags(
-      ui_flags & ui::EF_NUM_LOCK_ON);
+  xkb_mod_mask_t num_lock_flags =
+      xkb_flags & xkb_modifier_converter_.MaskFromUiFlags(ui::EF_NUM_LOCK_ON);
   xkb_keysym_t plain_keysym;
   uint32_t plain_character;
   if (!XkbLookup(xkb_keycode, num_lock_flags, &plain_keysym, &plain_character))
