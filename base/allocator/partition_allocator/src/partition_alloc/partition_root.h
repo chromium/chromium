@@ -530,16 +530,9 @@ class alignas(internal::kPartitionCachelineSize)
 
   // Because clients directly invoke FreeInline(), temporary keep Free()
   // PA_ALWAYS_INLINE. Instead, FreeInline() is PA_NOINLINE.
-  template <FreeFlags flags = FreeFlags::kNone>
-  PA_ALWAYS_INLINE void Free(void* object) {
-    FreeInline<flags>(object);
-  }
-
-  // WithSize will be a FreeFlags::kSize
-  template <FreeFlags flags = FreeFlags::kNone>
-  PA_ALWAYS_INLINE void Free(void* object,
-                             FreeHintType<FreeHintFlags(flags)> hint) {
-    FreeInline<flags>(object, hint);
+  template <FreeFlags flags = FreeFlags::kNone, FreeHint... Hint>
+  PA_ALWAYS_INLINE void Free(void* object, Hint... hint) {
+    FreeInline<flags>(object, hint...);
   }
 
   template <FreeFlags flags = FreeFlags::kNone>
@@ -548,49 +541,35 @@ class alignas(internal::kPartitionCachelineSize)
   // After making all callers depend on Free<flags>() instead of
   // FreeInline<flags>(), make FreeInline<flags> PA_ALWAYS_INLINE again. If
   // possible, make FreeInline private.
-  template <FreeFlags flags = FreeFlags::kNone>
-  PA_NOINLINE void FreeInline(void* object);
-  template <FreeFlags flags = FreeFlags::kNone>
-  PA_NOINLINE void FreeInline(void* object,
-                              FreeHintType<FreeHintFlags(flags)> hint);
+  template <FreeFlags flags = FreeFlags::kNone, FreeHint... Hint>
+  PA_NOINLINE void FreeInline(void* object, Hint... hint);
   // |object| must be a non-null pointer.
   PA_ALWAYS_INLINE std::pair<SlotStart, internal::SlotSpanMetadata*>
   GetSlotStartAndSlotSpanFromAddress(void* object);
 
-  template <FreeFlags flags = FreeFlags::kNone>
-  PA_NOINLINE static void FreeInUnknownRoot(void* object);
-  template <FreeFlags flags = FreeFlags::kNone>
-  PA_NOINLINE static void FreeInUnknownRoot(
-      void* object,
-      FreeHintType<FreeHintFlags(flags)> hint);
-  template <FreeFlags flags = FreeFlags::kNone>
-  PA_ALWAYS_INLINE static void FreeInlineInUnknownRoot(void* object);
-  template <FreeFlags flags = FreeFlags::kNone>
-  PA_ALWAYS_INLINE static void FreeInlineInUnknownRoot(
-      void* object,
-      FreeHintType<FreeHintFlags(flags)> hint);
+  template <FreeFlags flags = FreeFlags::kNone, FreeHint... Hint>
+  PA_NOINLINE static void FreeInUnknownRoot(void* object, Hint... hint);
+  template <FreeFlags flags = FreeFlags::kNone, FreeHint... Hint>
+  PA_ALWAYS_INLINE static void FreeInlineInUnknownRoot(void* object,
+                                                       Hint... hint);
   // |object| must be a non-null pointer.
   PA_ALWAYS_INLINE static PartitionRoot* GetRootFromAddressInFirstSuperpage(
       void* object);
 
   PA_NOINLINE static PartitionRoot* GetRootFromAddress(void* object);
 
-  template <FreeFlags flags>
+  template <FreeFlags flags, FreeHint... Hint>
   PA_ALWAYS_INLINE void FreeNoHooksImmediate(SlotStart slot_start,
-                                             SlotSpanMetadata* slot_span);
-  template <FreeFlags flags>
-  PA_ALWAYS_INLINE void FreeNoHooksImmediate(
-      SlotStart slot_start,
-      SlotSpanMetadata* slot_span,
-      FreeHintType<FreeHintFlags(flags)> hint);
+                                             SlotSpanMetadata* slot_span,
+                                             Hint... hint);
   // Immediately frees the pointer bypassing the quarantine. `slot_start` is the
   // beginning of the slot that contains `object`.
-  template <FreeFlags flags>
+  template <FreeFlags flags, FreeHint... Hint>
   PA_ALWAYS_INLINE void FreeNoHooksImmediateInternal(
       SlotStart slot_start,
       SlotSpanMetadata* slot_span,
-      FreeHintType<FreeHintFlags(flags)> hint,
-      internal::BucketSizeDetails size_details);
+      internal::BucketSizeDetails size_details,
+      Hint... hint);
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   // Actual free operation on BRP dequarantine.
@@ -848,12 +827,9 @@ class alignas(internal::kPartitionCachelineSize)
   static inline bool sort_smaller_slot_span_free_lists_ = true;
   static inline bool sort_active_slot_spans_ = false;
 
-  template <FreeFlags flags = FreeFlags::kNone>
-  PA_ALWAYS_INLINE void FreeInlineInternal(void* object);
-  template <FreeFlags flags = FreeFlags::kNone>
-  PA_ALWAYS_INLINE void FreeInlineInternal(
-      void* object,
-      FreeHintType<FreeHintFlags(flags)> hint);
+  // `hint` are the caller's `FreeHint`s, if it passed any.
+  template <FreeFlags flags = FreeFlags::kNone, FreeHint... Hint>
+  PA_ALWAYS_INLINE void FreeInlineInternal(void* object, Hint... hint);
 
   // Common path of Free() and FreeInUnknownRoot(). Returns
   // true if the caller should return immediately.

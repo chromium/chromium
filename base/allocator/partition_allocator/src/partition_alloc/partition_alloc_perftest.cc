@@ -119,9 +119,8 @@ class PartitionAllocator : public Allocator {
     // Even though it's easy to invoke the fast path with
     // alloc_.Free<kNoHooks>(), we chose to use the slower path, because it's
     // more common with PA-E.
-    PartitionRoot::FreeInUnknownRoot<partition_alloc::FreeFlags::kNoHooks |
-                                     partition_alloc::FreeFlags::kWithSizeHint>(
-        data, {.size = size});
+    PartitionRoot::FreeInUnknownRoot<partition_alloc::FreeFlags::kNoHooks>(
+        data, FreeSizeHint{size});
   }
 
  private:
@@ -155,9 +154,8 @@ class PartitionAllocatorWithThreadCache : public Allocator {
     // Even though it's easy to invoke the fast path with
     // alloc_.Free<kNoHooks>(), we chose to use the slower path, because it's
     // more common with PA-E.
-    PartitionRoot::FreeInUnknownRoot<partition_alloc::FreeFlags::kNoHooks |
-                                     FreeFlags::kWithSizeHint>(data,
-                                                               {.size = size});
+    PartitionRoot::FreeInUnknownRoot<partition_alloc::FreeFlags::kNoHooks>(
+        data, FreeSizeHint{size});
   }
 
  private:

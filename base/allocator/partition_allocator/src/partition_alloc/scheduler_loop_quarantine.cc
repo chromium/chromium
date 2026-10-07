@@ -127,7 +127,7 @@ BatchFreeQueue<QuarantineTarget::kSanitizedObjects>::Purge() {
         // the object is still alive.
         root_->FreeNoHooksImmediateInternal<
             FreeFlags::kSchedulerLoopQuarantine | FreeFlags::kNoHooks>(
-            entry.slot_start.Tag(), entry.slot_span, {}, size_details);
+            entry.slot_start.Tag(), entry.slot_span, size_details);
       } else {
         // We will check whether the object's refcount is equal to zero or not.
         // If the refcount is equal to zero, provide the object for miracle

@@ -48,8 +48,7 @@ constexpr partition_alloc::FreeFlags GetFreeFlags(MemorySafetyCheck checks) {
         partition_alloc::FreeFlags::kSchedulerLoopQuarantineForSanitizedObject;
   }
   if (static_cast<bool>(checks & MemorySafetyCheck::kInfiniteQuarantine)) {
-    flags |= partition_alloc::FreeFlags::kIntendedLeak |
-             partition_alloc::FreeFlags::kWithTypeIdHint;
+    flags |= partition_alloc::FreeFlags::kIntendedLeak;
   }
   return flags;
 }
@@ -126,7 +125,8 @@ NOINLINE void HandleMemorySafetyCheckedOperatorDelete(
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if constexpr (IsLeakedSanitizedObject(checks)) {
     return GetPartitionRootForLeakedSecurityObjectAllocation()
-        ->Free<GetFreeFlags(checks)>(ptr, {.type_id = type_id});
+        ->Free<GetFreeFlags(checks)>(ptr,
+                                     partition_alloc::FreeTypeIdHint{type_id});
   }
   if constexpr (ShouldUsePartitionAlloc(checks)) {
     GetPartitionRootForMemorySafetyCheckedAllocation()
@@ -145,7 +145,8 @@ NOINLINE void HandleMemorySafetyCheckedOperatorDelete(
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if constexpr (IsLeakedSanitizedObject(checks)) {
     return GetPartitionRootForLeakedSecurityObjectAllocation()
-        ->Free<GetFreeFlags(checks)>(ptr, {.type_id = type_id});
+        ->Free<GetFreeFlags(checks)>(ptr,
+                                     partition_alloc::FreeTypeIdHint{type_id});
   }
   if constexpr (ShouldUsePartitionAlloc(checks)) {
     GetPartitionRootForMemorySafetyCheckedAllocation()

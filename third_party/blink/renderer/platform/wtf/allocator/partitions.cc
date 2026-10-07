@@ -373,8 +373,7 @@ void Partitions::BufferAlignedFree(void* p) {
 
 // static
 void Partitions::BufferFreeWithSize(void* p, size_t size) {
-  BufferPartition()->Free<partition_alloc::FreeFlags::kWithSizeHint>(
-      p, {.size = size});
+  BufferPartition()->Free(p, partition_alloc::FreeSizeHint{size});
 }
 
 // static

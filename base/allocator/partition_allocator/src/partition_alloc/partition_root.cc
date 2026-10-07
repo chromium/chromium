@@ -2137,21 +2137,14 @@ PA_NOINLINE void* PartitionRoot::Realloc(void* ptr,
 
 // After fixing all callers, this method will be `Free(void* object)` and
 // will invoke `FreeInline<flags>(object)`.
-template <FreeFlags flags>
-PA_NOINLINE void PartitionRoot::FreeInline(void* object) {
-  FreeInlineInternal<flags>(object);
+template <FreeFlags flags, FreeHint... Hint>
+PA_NOINLINE void PartitionRoot::FreeInline(void* object, Hint... hint) {
+  FreeInlineInternal<flags>(object, hint...);
 }
 
-template <FreeFlags flags>
-PA_NOINLINE void PartitionRoot::FreeInline(
-    void* object,
-    FreeHintType<FreeHintFlags(flags)> hint) {
-  FreeInlineInternal<flags>(object, hint);
-}
-
-template <FreeFlags flags>
-PA_NOINLINE void PartitionRoot::FreeInUnknownRoot(void* object) {
-  FreeInlineInUnknownRoot<flags>(object);
+template <FreeFlags flags, FreeHint... Hint>
+PA_NOINLINE void PartitionRoot::FreeInUnknownRoot(void* object, Hint... hint) {
+  FreeInlineInUnknownRoot<flags>(object, hint...);
 }
 
 template <FreeFlags flags>
@@ -2165,13 +2158,6 @@ PA_NOINLINE void PartitionRoot::AlignedFree(void* object) {
       FreeFlags::kNone;
 #endif  // PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
   FreeInline<flags | kMaybeAlignedFreeForMemoryTool>(object);
-}
-
-template <FreeFlags flags>
-PA_NOINLINE void PartitionRoot::FreeInUnknownRoot(
-    void* object,
-    FreeHintType<FreeHintFlags(flags)> hint) {
-  FreeInlineInUnknownRoot<flags>(object, hint);
 }
 
 #define DEFINE_PARTITION_ROOT_EXPORT_TEMPLATE 1

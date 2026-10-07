@@ -346,7 +346,7 @@ GetPartitionAllocWithSizedFreeTestParams() {
   auto params = GetPartitionAllocTestParams();
   auto free_with_size_func = [](PartitionRoot* root, void* ptr, size_t size,
                                 size_t) {
-    root->Free<FreeFlags::kWithSizeHint>(ptr, {.size = size});
+    root->Free(ptr, FreeSizeHint{size});
   };
   params.emplace_back(PartitionAllocTestParam{BucketDistribution::kNeutral,
                                               false, free_with_size_func});
@@ -360,8 +360,7 @@ GetPartitionAllocWithFreeWithSizeAndAlignmentTestParams() {
   auto params = GetPartitionAllocTestParams();
   auto free_with_size_and_alignment_func = [](PartitionRoot* root, void* ptr,
                                               size_t size, size_t alignment) {
-    root->Free<FreeFlags::kWithSizeHint | FreeFlags::kWithAlignmentHint>(
-        ptr, {.size = size, .alignment = alignment});
+    root->Free(ptr, FreeSizeHint{size}, FreeAlignmentHint{alignment});
   };
   params.emplace_back(PartitionAllocTestParam{
       BucketDistribution::kNeutral, false, free_with_size_and_alignment_func});
@@ -4387,8 +4386,7 @@ TEST_P(PartitionAllocTest, IntendedLeak) {
       SlotSpan::FromSlotStart(SlotStart::Unchecked(ptr).Untag(), root.get());
 
   constexpr const uint64_t kTypeId = 0xDEADBEAFu;
-  root->Free<FreeFlags::kIntendedLeak | FreeFlags::kWithTypeIdHint>(
-      ptr, {.type_id = kTypeId});
+  root->Free<FreeFlags::kIntendedLeak>(ptr, FreeTypeIdHint{kTypeId});
 
   // Leaked objects will be never found in the freelist of the `slot_span`.
   EXPECT_NE(SlotStart::Unchecked(ptr).Untag().value(),
