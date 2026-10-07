@@ -85,21 +85,43 @@ void CueTimeline::AddCueInternal(TextTrackCue* cue) {
 }
 
 void CueTimeline::RemoveCues(TextTrack*, const TextTrackCueList* cues) {
-  for (wtf_size_t i = 0; i < cues->length(); ++i)
-    RemoveCueInternal(cues->AnonymousIndexedGetter(i));
+  HeapVector<Member<TextTrackCue>> deactivated_cues;
+  for (wtf_size_t i = 0; i < cues->length(); ++i) {
+    TextTrackCue* cue = cues->AnonymousIndexedGetter(i);
+    if (RemoveCueInternal(cue)) {
+      deactivated_cues.push_back(cue);
+    }
+  }
+  // Remove display trees after all cues have been detached from the timeline,
+  // as RemoveDisplayTree() may synchronously dispatch blur/focusout events that
+  // re-enter CueTimeline.
+  for (TextTrackCue* cue : deactivated_cues) {
+    if (!cue->IsActive()) {
+      cue->RemoveDisplayTree(TextTrackCue::kDontNotifyRegion);
+    }
+  }
   if (!MediaElement().IsShowPosterFlagSet()) {
     InvokeTimeMarchesOn();
   }
 }
 
 void CueTimeline::RemoveCue(TextTrack*, TextTrackCue* cue) {
-  RemoveCueInternal(cue);
+  if (RemoveCueInternal(cue)) {
+    // Since the cue will be removed from the media element and likely the
+    // TextTrack might also be destructed, notifying the region of the cue
+    // removal shouldn't be done.
+    cue->RemoveDisplayTree(TextTrackCue::kDontNotifyRegion);
+  }
   if (!MediaElement().IsShowPosterFlagSet()) {
     InvokeTimeMarchesOn();
   }
 }
 
-void CueTimeline::RemoveCueInternal(TextTrackCue* cue) {
+void CueTimeline::WillChangeCue(TextTrack*, TextTrackCue* cue) {
+  RemoveCueInternal(cue);
+}
+
+bool CueTimeline::RemoveCueInternal(TextTrackCue* cue) {
   newly_introduced_cues_.erase(cue);
   CueInterval interval = CreateCueInterval(cue);
   cue_tree_.Remove(interval);
@@ -109,11 +131,9 @@ void CueTimeline::RemoveCueInternal(TextTrackCue* cue) {
     DCHECK(cue->IsActive());
     currently_active_cues_.EraseAt(index);
     cue->SetIsActive(false);
-    // Since the cue will be removed from the media element and likely the
-    // TextTrack might also be destructed, notifying the region of the cue
-    // removal shouldn't be done.
-    cue->RemoveDisplayTree(TextTrackCue::kDontNotifyRegion);
+    return true;
   }
+  return false;
 }
 
 void CueTimeline::HideCues(TextTrack*, const TextTrackCueList* cues) {

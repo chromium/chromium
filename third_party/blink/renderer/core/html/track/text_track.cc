@@ -121,6 +121,8 @@ void TextTrack::setMode(const V8TextTrackMode& mode) {
   if (mode_ == mode.AsEnum())
     return;
 
+  mode_ = mode.AsEnum();
+
   if (cues_ && GetCueTimeline()) {
     // If mode changes to disabled, remove this track's cues from the client
     // because they will no longer be accessible from the cues() function.
@@ -130,9 +132,10 @@ void TextTrack::setMode(const V8TextTrackMode& mode) {
       GetCueTimeline()->HideCues(this, cues_.Get());
   }
 
-  mode_ = mode.AsEnum();
-
-  if (mode != TextTrackMode::kDisabled && GetReadinessState() == kLoaded) {
+  // Recheck `mode_` in case synchronous script (e.g., blur/focusout during
+  // RemoveCues() or HideCues()) changed the track mode.
+  if (mode != TextTrackMode::kDisabled && mode_ == mode &&
+      GetReadinessState() == kLoaded) {
     if (cues_ && GetCueTimeline())
       GetCueTimeline()->AddCues(this, cues_.Get());
   }
@@ -223,8 +226,11 @@ void TextTrack::addCue(TextTrackCue* cue) {
 
   // 3. If the given cue is in a text track list of cues, then remove cue
   // from that text track list of cues.
-  if (TextTrack* cue_track = cue->track())
+  // Loop in case removing the cue's display tree synchronously fires a
+  // blur/focusout event whose listener re-adds `cue` to a track.
+  while (TextTrack* cue_track = cue->track()) {
     cue_track->removeCue(cue, ASSERT_NO_EXCEPTION);
+  }
 
   // 4. Add cue to the method's TextTrack object's text track's text track list
   // of cues.
@@ -280,9 +286,12 @@ void TextTrack::removeCue(TextTrackCue* cue, ExceptionState& exception_state) {
 
 void TextTrack::CueWillChange(TextTrackCue* cue) {
   // The cue may need to be repositioned in the media element's interval tree,
-  // may need to be re-rendered, etc, so remove it before the modification...
-  if (GetCueTimeline())
-    GetCueTimeline()->RemoveCue(this, cue);
+  // may need to be re-rendered, etc, so detach it from the timeline before the
+  // modification, but defer display tree removal until CueDidChange() so
+  // synchronous blur/focusout events cannot observe the cue mid-mutation.
+  if (GetCueTimeline()) {
+    GetCueTimeline()->WillChangeCue(this, cue);
+  }
 }
 
 void TextTrack::CueDidChange(TextTrackCue* cue, bool update_cue_index) {
@@ -296,11 +305,15 @@ void TextTrack::CueDidChange(TextTrackCue* cue, bool update_cue_index) {
 
   // Since a call to cueDidChange is always preceded by a call to
   // cueWillChange, the cue should no longer be active when we reach this
-  // point (since it was removed from the timeline in cueWillChange).
+  // point (since it was detached from the timeline in cueWillChange).
   DCHECK(!cue->IsActive());
 
-  if (mode_ == TextTrackMode::kDisabled)
+  // Removing the display tree may synchronously dispatch blur/focusout events
+  // whose listeners move the cue or disable the track.
+  cue->RemoveDisplayTree(TextTrackCue::kDontNotifyRegion);
+  if (cue->track() != this || mode_ == TextTrackMode::kDisabled) {
     return;
+  }
 
   // ... and add it back again if the track is enabled.
   if (GetCueTimeline())

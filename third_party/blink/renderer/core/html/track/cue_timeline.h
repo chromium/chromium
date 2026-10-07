@@ -61,6 +61,7 @@ class CORE_EXPORT CueTimeline final : public GarbageCollected<CueTimeline> {
   void AddCue(TextTrack*, TextTrackCue*);
   void RemoveCues(TextTrack*, const TextTrackCueList*);
   void RemoveCue(TextTrack*, TextTrackCue*);
+  void WillChangeCue(TextTrack*, TextTrackCue*);
   void HideCues(TextTrack*, const TextTrackCueList*);
 
   const CueList& CurrentlyActiveCues() const { return currently_active_cues_; }
@@ -87,7 +88,8 @@ class CORE_EXPORT CueTimeline final : public GarbageCollected<CueTimeline> {
   HTMLMediaElement& MediaElement() const { return *media_element_; }
 
   void AddCueInternal(TextTrackCue*);
-  void RemoveCueInternal(TextTrackCue*);
+  // Detaches `cue` from the timeline and returns true if it was active.
+  bool RemoveCueInternal(TextTrackCue*);
   void TimeMarchesOn();
   void UpdateActiveCuePastAndFutureNodes();
 
