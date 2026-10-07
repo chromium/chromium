@@ -1030,7 +1030,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                                 + " detection, go to Chrome settings"));
 
         ButtonCompat acceptButton = mView.getContentView().findViewById(R.id.accept_button);
-        assertThat(acceptButton.getText(), is("Enable Pix in Wallet"));
+        assertThat(acceptButton.getText(), is("Link your account"));
         ButtonCompat declineButton = mView.getContentView().findViewById(R.id.decline_button);
         assertThat(declineButton.getText(), is("Not now"));
 

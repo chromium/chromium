@@ -94,7 +94,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/pix_account_linking_prompt_accept_button_top_margin"
         style="@style/FilledButton"
-        android:text="@string/pix_account_linking_prompt_accept" />
+        android:text="@string/pix_account_linking_prompt_link_account" />
 
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/decline_button"
