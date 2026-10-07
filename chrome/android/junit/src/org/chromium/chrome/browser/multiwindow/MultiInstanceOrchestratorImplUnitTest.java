@@ -1170,12 +1170,43 @@ public class MultiInstanceOrchestratorImplUnitTest {
         // Setup.
         ((MultiInstanceOrchestratorImpl) mMultiInstanceOrchestrator).clearAssignmentsForTesting();
         reset(mTabbedCrashRecoveryDelegate);
+        MultiWindowTestUtils.createInstance(
+                /* instanceId= */ 0, "https://www.google.com", /* tabCount= */ 1, /* taskId= */ 0);
+        MultiWindowTestUtils.createInstance(
+                /* instanceId= */ 1, "https://www.google.com", /* tabCount= */ 1, /* taskId= */ 1);
+        ChromeMultiInstancePersistentStore.writeIsRecoverable(0, true);
+        ChromeMultiInstancePersistentStore.writeIsRecoverable(1, true);
 
-        // Act: Initialize the first ChromeTabbedActivity.
+        // Act: Initialize the first ChromeTabbedActivity when crash recovery is not eligible.
         mMultiInstanceOrchestrator.onInitialize(mTabbedActivity1, mMultiInstanceManager1);
 
-        // Verify: Metadata initialization is triggered.
+        // Verify: Metadata initialization is triggered and stale recoverable state is cleared.
         verify(mTabbedCrashRecoveryDelegate).initializeCrashRecoveryMetadata();
+        assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(0));
+        assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
+    }
+
+    @Test
+    public void
+            testOnInitialize_firstTabbedActivity_crashRecoveryEligible_preservesRecoverableState() {
+        // Setup.
+        ((MultiInstanceOrchestratorImpl) mMultiInstanceOrchestrator).clearAssignmentsForTesting();
+        reset(mTabbedCrashRecoveryDelegate);
+        doReturn(true).when(mTabbedCrashRecoveryDelegate).initializeCrashRecoveryMetadata();
+        MultiWindowTestUtils.createInstance(
+                /* instanceId= */ 0, "https://www.google.com", /* tabCount= */ 1, /* taskId= */ 0);
+        MultiWindowTestUtils.createInstance(
+                /* instanceId= */ 1, "https://www.google.com", /* tabCount= */ 1, /* taskId= */ 1);
+        ChromeMultiInstancePersistentStore.writeIsRecoverable(0, true);
+        ChromeMultiInstancePersistentStore.writeIsRecoverable(1, true);
+
+        // Act: Initialize the first ChromeTabbedActivity when crash recovery is eligible.
+        mMultiInstanceOrchestrator.onInitialize(mTabbedActivity1, mMultiInstanceManager1);
+
+        // Verify: Metadata initialization is triggered and recoverable state is preserved.
+        verify(mTabbedCrashRecoveryDelegate).initializeCrashRecoveryMetadata();
+        assertTrue(ChromeMultiInstancePersistentStore.readIsRecoverable(0));
+        assertTrue(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
     }
 
     @Test
@@ -1288,7 +1319,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
     }
 
     @Test
-    public void testOnActivityStateChange_destroyed_lastTabbedActivity_resetsStartupPolicy() {
+    public void testOnActivityStateChange_destroyed_lastTabbedActivity_resetsStartupState() {
         // Setup: Activity 1 is the only registered activity.
         ApplicationStatus.onStateChangeForTesting(mTabbedActivity1, ActivityState.CREATED);
         ((MultiInstanceOrchestratorImpl) mMultiInstanceOrchestrator).clearAssignmentsForTesting();
@@ -1299,11 +1330,11 @@ public class MultiInstanceOrchestratorImplUnitTest {
         ApplicationStatus.onStateChangeForTesting(mTabbedActivity1, ActivityState.DESTROYED);
 
         // Verify: Last activity destruction triggers delegate reset.
-        verify(mTabbedStartupWindowPolicyDelegate).resetPolicy();
+        verify(mTabbedStartupWindowPolicyDelegate).resetState();
     }
 
     @Test
-    public void testOnActivityStateChange_destroyed_uninitializedActivity_resetsStartupPolicy() {
+    public void testOnActivityStateChange_destroyed_uninitializedActivity_resetsStartupState() {
         // Setup: No activity is registered in the orchestrator.
         ApplicationStatus.onStateChangeForTesting(mTabbedActivity1, ActivityState.CREATED);
         ((MultiInstanceOrchestratorImpl) mMultiInstanceOrchestrator).clearAssignmentsForTesting();
@@ -1313,7 +1344,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
         ApplicationStatus.onStateChangeForTesting(mTabbedActivity1, ActivityState.DESTROYED);
 
         // Verify: Reset is triggered because no living tabbed activities exist.
-        verify(mTabbedStartupWindowPolicyDelegate).resetPolicy();
+        verify(mTabbedStartupWindowPolicyDelegate).resetState();
     }
 
     @Test
@@ -1327,7 +1358,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
         ApplicationStatus.onStateChangeForTesting(mTabbedActivity1, ActivityState.DESTROYED);
 
         // Verify: Reset is not triggered because Activity 2 is still living.
-        verify(mTabbedStartupWindowPolicyDelegate, never()).resetPolicy();
+        verify(mTabbedStartupWindowPolicyDelegate, never()).resetState();
     }
 
     private void doTestOpenUrlInOtherWindowWithIncognitoWindowingEnabled(

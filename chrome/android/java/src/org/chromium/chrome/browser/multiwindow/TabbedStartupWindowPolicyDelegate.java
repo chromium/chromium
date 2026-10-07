@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.multiwindow;
 import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.app.ActivityManager.AppTask;
-import android.content.Intent;
 
 import androidx.annotation.IntDef;
 
@@ -46,7 +45,8 @@ import java.util.Set;
  */
 @JNINamespace("chrome::android")
 @NullMarked
-public class TabbedStartupWindowPolicyDelegate implements SyncStateChangedListener {
+/* package */ class TabbedStartupWindowPolicyDelegate extends BaseTabbedStartupDelegate
+        implements SyncStateChangedListener {
     /* package */ static final int PREF_UNSET = -1;
 
     /**
@@ -106,14 +106,6 @@ public class TabbedStartupWindowPolicyDelegate implements SyncStateChangedListen
 
     private TabbedStartupWindowPolicyDelegate() {}
 
-    /** Returns the singleton instance of {@link TabbedStartupWindowPolicyDelegate}. */
-    public static TabbedStartupWindowPolicyDelegate getInstance() {
-        if (sInstance == null) {
-            sInstance = new TabbedStartupWindowPolicyDelegate();
-        }
-        return sInstance;
-    }
-
     // SyncService.SyncStateChangedListener implementation.
     @Override
     public void syncStateChanged() {
@@ -121,13 +113,28 @@ public class TabbedStartupWindowPolicyDelegate implements SyncStateChangedListen
         updateCachedRestoreOnStartupUrlsPref();
     }
 
-    /**
-     * Initializes the delegate with native preferences once native is ready. This method is
-     * idempotent and can be safely called multiple times across activity lifecycles.
-     *
-     * @param profile The {@link Profile} associated with the browser session.
-     */
-    public void initializeWithNative(Profile profile) {
+    // BaseTabbedStartupDelegate implementation.
+    @Override
+    protected void onAllWindowsRestored(long durationMillis) {
+        // TODO: Record startup window restoration metrics here.
+    }
+
+    @Override
+    protected void resetState() {
+        super.resetState();
+        mStartupPolicyClaimed = false;
+        mHasEvaluatedStartupUrls = false;
+        mCanRestoreWindows = false;
+    }
+
+    /* package */ static TabbedStartupWindowPolicyDelegate getInstance() {
+        if (sInstance == null) {
+            sInstance = new TabbedStartupWindowPolicyDelegate();
+        }
+        return sInstance;
+    }
+
+    /* package */ void onNativeInitialized(Profile profile) {
         if (!MultiWindowUtils.isRestoreOnStartupPrefSyncEnabled()) return;
         // Early return if already initialized to ensure idempotency across multiple activities.
         if (mPrefChangeRegistrar != null) return;
@@ -146,12 +153,7 @@ public class TabbedStartupWindowPolicyDelegate implements SyncStateChangedListen
         updateCachedRestoreOnStartupUrlsPref();
     }
 
-    /**
-     * Records session state on termination that determines next session startup behavior.
-     *
-     * @param startupPolicy The {@link SessionStartupPolicy} to write.
-     */
-    public void maybeSaveSessionStateOnTermination(@SessionStartupPolicy int startupPolicy) {
+    /* package */ void maybeSaveSessionStateOnTermination(@SessionStartupPolicy int startupPolicy) {
         if (!MultiWindowUtils.isNewStartupWindowPolicyEnabled()) {
             return;
         }
@@ -174,14 +176,7 @@ public class TabbedStartupWindowPolicyDelegate implements SyncStateChangedListen
         ChromeMultiInstancePersistentStore.writeSessionStartupPolicy(startupPolicy);
     }
 
-    /**
-     * Resolves the list of startup URLs to launch based on the session startup preference, if
-     * applicable for this browser process. This evaluation occurs at most once per browser process.
-     *
-     * @param incognito Whether the startup is in incognito mode.
-     * @return The list of valid startup URLs to open, or an empty list if none apply.
-     */
-    public List<String> resolveStartupUrls(boolean incognito) {
+    /* package */ List<String> resolveStartupUrls(boolean incognito) {
         if (!MultiWindowUtils.isMultiInstanceApi31Enabled()
                 || !MultiWindowUtils.isRestoreOnStartupPrefSyncEnabled()
                 || mHasEvaluatedStartupUrls) {
@@ -307,62 +302,24 @@ public class TabbedStartupWindowPolicyDelegate implements SyncStateChangedListen
         int startupPolicy = ChromeMultiInstancePersistentStore.readSessionStartupPolicy();
         ChromeMultiInstancePersistentStore.clearSessionStartupPolicy();
 
-        if (mCanRestoreWindows && startupPolicy == SessionStartupPolicy.RESTORE_ALL) {
-            maybeRestoreWindowsAfterLaunch(activity);
+        if (!mCanRestoreWindows || startupPolicy != SessionStartupPolicy.RESTORE_ALL) {
+            return;
         }
-    }
 
-    /* package */ void resetPolicy() {
-        mStartupPolicyClaimed = false;
-        mHasEvaluatedStartupUrls = false;
-        mCanRestoreWindows = false;
-    }
-
-    private void maybeRestoreWindowsAfterLaunch(ChromeTabbedActivity activity) {
         int currentInstanceId = activity.getWindowId();
         Set<Integer> allIds = ChromeMultiInstancePersistentStore.readAllInstanceIds();
         Map<Integer, AppTask> appTasksById = MultiWindowUtils.getAppTasksById(activity);
-        boolean isMultiWindowMode = activity.isInMultiWindowMode();
         boolean windowsRestored = false;
         for (int windowId : allIds) {
-            if (windowId == currentInstanceId) {
-                continue;
-            }
-
-            // If Chrome starts in a fullscreen window and a restorable window's task is still
-            // alive after previous app termination, skip processing such a window because we want
-            // the host window to be in the foreground during such launch anyway.
-            if (!isMultiWindowMode && MultiWindowUtils.isTaskAlive(windowId, appTasksById)) {
-                continue;
-            }
-
-            if (ChromeMultiInstancePersistentStore.readIsRecoverable(windowId)) {
-                Intent intent =
-                        MultiWindowUtils.createNewWindowIntent(
+            int taskId = ChromeMultiInstancePersistentStore.readTaskId(windowId);
+            if (windowId != currentInstanceId
+                    && ChromeMultiInstancePersistentStore.readIsRecoverable(windowId)) {
+                windowsRestored |=
+                        restoreWindow(
                                 activity,
                                 windowId,
-                                /* preferNew= */ false,
-                                /* openAdjacently= */ isMultiWindowMode,
+                                appTasksById.get(taskId),
                                 NewWindowAppSource.RELAUNCH);
-                if (intent != null) {
-                    // Finish any existing live task for this instance before starting a new
-                    // activity in multi-window mode, to avoid creating duplicate tasks and leaving
-                    // the old task orphaned in non-multiwindow mode.
-                    if (MultiWindowUtils.isTaskAlive(windowId, appTasksById)) {
-                        int taskId = ChromeMultiInstancePersistentStore.readTaskId(windowId);
-                        AppTask task = appTasksById.get(taskId);
-                        if (task != null) {
-                            task.finishAndRemoveTask();
-                        }
-                    }
-
-                    // Reset recoverability of an instance before creating a new activity for it to
-                    // avoid propagating stale state for a window to a future session if the
-                    // activity creation fails during restoration in the current session.
-                    ChromeMultiInstancePersistentStore.writeIsRecoverable(windowId, false);
-                    activity.startActivity(intent);
-                    windowsRestored = true;
-                }
             }
         }
         if (windowsRestored) {
@@ -408,7 +365,7 @@ public class TabbedStartupWindowPolicyDelegate implements SyncStateChangedListen
             mSyncService = null;
         }
         mPrefService = null;
-        resetPolicy();
+        resetState();
     }
 
     /* package */ static void setInstanceForTesting(
@@ -418,7 +375,7 @@ public class TabbedStartupWindowPolicyDelegate implements SyncStateChangedListen
     }
 
     @NativeMethods
-    public interface Natives {
+    /* package */ interface Natives {
         @JniType("std::vector<std::string>")
         List<String> getSessionStartupUrls(@JniType("PrefService*") PrefService prefService);
 

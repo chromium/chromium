@@ -58,7 +58,6 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SessionStartupPolicy;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
@@ -346,10 +345,8 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         // Setup.
         writeCrashExitReasonToPrefs();
 
-        // Act.
-        mDelegate.initializeCrashRecoveryMetadata();
-
-        // Verify.
+        // Act & Verify.
+        assertFalse(mDelegate.initializeCrashRecoveryMetadata());
         assertFalse(
                 mDelegate.maybeShowCrashRecoveryDialog(mModalDialogManagerSupplier, mHostActivity));
     }
@@ -368,43 +365,10 @@ public class TabbedCrashRecoveryDelegateUnitTest {
                 ChromePreferenceKeys.LAST_SESSION_BROWSER_EXIT_REASON,
                 ApplicationExitInfo.REASON_USER_REQUESTED);
 
-        // Act.
-        mDelegate.initializeCrashRecoveryMetadata();
-
-        // Verify.
+        // Act & Verify.
+        assertFalse(mDelegate.initializeCrashRecoveryMetadata());
         assertFalse(
                 mDelegate.maybeShowCrashRecoveryDialog(mModalDialogManagerSupplier, mHostActivity));
-        assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(HOST_WINDOW_ID));
-        assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
-        assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(2));
-    }
-
-    @Test
-    public void
-            testInitializeCrashRecoveryMetadata_pendingSessionStartupPolicy_doesNotClearRecoverableState() {
-        // Setup: Recoverable windows and pending RESTORE_ALL session startup policy.
-        setupOtherCrashedWindows(
-                /* numNonVisibleWindows= */ 0,
-                /* numDefaultDisplayWindows= */ 2,
-                /* numNonDefaultDisplayWindows= */ 0);
-        ChromeMultiInstancePersistentStore.writeSessionStartupPolicy(
-                SessionStartupPolicy.RESTORE_ALL);
-
-        // Setup: Write non-crash exit reason.
-        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
-        prefs.writeInt(
-                ChromePreferenceKeys.LAST_SESSION_BROWSER_EXIT_REASON,
-                ApplicationExitInfo.REASON_USER_REQUESTED);
-
-        // Act.
-        mDelegate.initializeCrashRecoveryMetadata();
-
-        // Verify: Recoverable state is preserved because a session startup policy is pending.
-        assertFalse(
-                mDelegate.maybeShowCrashRecoveryDialog(mModalDialogManagerSupplier, mHostActivity));
-        assertTrue(ChromeMultiInstancePersistentStore.readIsRecoverable(HOST_WINDOW_ID));
-        assertTrue(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
-        assertTrue(ChromeMultiInstancePersistentStore.readIsRecoverable(2));
     }
 
     @Test
@@ -652,7 +616,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         // Verify: Only the visible window (windowId=2) should be started.
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
         verify(mHostActivity).startActivity(intentCaptor.capture());
-        mDelegate.registerRecovery(2);
+        mDelegate.registerRestoration(2);
 
         Intent intent = intentCaptor.getValue();
         assertNotNull(intent);
@@ -670,7 +634,39 @@ public class TabbedCrashRecoveryDelegateUnitTest {
     }
 
     @Test
-    public void testInitiateAndRegisterRecovery_recordsMetrics() {
+    public void testRestoreWindows_clearsStrongReferencesImmediately() {
+        // Setup: 1 host + 1 visible window (Id 1).
+        setupOtherCrashedWindows(
+                /* numNonVisibleWindows= */ 0,
+                /* numDefaultDisplayWindows= */ 1,
+                /* numNonDefaultDisplayWindows= */ 0); // windowId=1
+        setupPreRecoveryAppTasks(HOST_WINDOW_ID);
+        setupAndShowCrashRecoveryDialog();
+
+        // Act: Click positive (restore).
+        mDelegate.restoreWindows(mHostActivity, MultiWindowUtils.getAppTasksById(mHostActivity));
+
+        // Verify: Strong references are cleared immediately after restoreWindows returns.
+        assertTrue(mDelegate.getNonVisibleWindowsForTesting().isEmpty());
+        assertTrue(mDelegate.getVisibleWindowsForTesting().isEmpty());
+        assertNull(mDelegate.getCrashedWindowsForTesting());
+        assertFalse(mDelegate.isCrashRecoveryEligibleForTesting());
+
+        // Verify: Pending restoration window set is NOT cleared yet because window 1 hasn't
+        // registered restoration.
+        assertEquals(1, mDelegate.getWindowIdsPendingRestorationForTesting().size());
+        assertTrue(mDelegate.getWindowIdsPendingRestorationForTesting().contains(1));
+
+        // Act: Register restoration for window 1 via TabbedStartupCoordinator.
+        TabbedStartupCoordinator.onWindowCreated(
+                /* windowId= */ 1, NewWindowAppSource.CRASH_RECOVERY);
+
+        // Verify: Pending restoration window set is now empty (fully reset).
+        assertTrue(mDelegate.getWindowIdsPendingRestorationForTesting().isEmpty());
+    }
+
+    @Test
+    public void testInitiateAndRegisterRestoration_recordsMetrics() {
         // Setup.
         setupOtherCrashedWindows(
                 /* numNonVisibleWindows= */ 0,
@@ -697,7 +693,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
                         .build();
 
         // Act: Recover first window (windowId=1).
-        mDelegate.registerRecovery(1);
+        mDelegate.registerRestoration(1);
 
         // Verify: Metrics should not be recorded yet because window 2 is still pending.
         noRecordsWatcher.assertExpected();
@@ -711,7 +707,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
                         .build();
 
         // Act: Recover second window (windowId=2).
-        mDelegate.registerRecovery(2);
+        mDelegate.registerRestoration(2);
 
         // Verify: All windows recovered, success metrics should be recorded.
         expectedWatcher.assertExpected();
@@ -1204,37 +1200,6 @@ public class TabbedCrashRecoveryDelegateUnitTest {
     private void assertStateReset() {
         assertTrue(mDelegate.getNonVisibleWindowsForTesting().isEmpty());
         assertTrue(mDelegate.getVisibleWindowsForTesting().isEmpty());
-        assertTrue(mDelegate.getWindowIdsPendingRecoveryForTesting().isEmpty());
-    }
-
-    @Test
-    public void testRestoreWindows_clearsStrongReferencesImmediately() {
-        // Setup: 1 host + 1 visible window (Id 1).
-        setupOtherCrashedWindows(
-                /* numNonVisibleWindows= */ 0,
-                /* numDefaultDisplayWindows= */ 1,
-                /* numNonDefaultDisplayWindows= */ 0); // windowId=1
-        setupPreRecoveryAppTasks(HOST_WINDOW_ID);
-        setupAndShowCrashRecoveryDialog();
-
-        // Act: Click positive (restore).
-        mDelegate.restoreWindows(mHostActivity, MultiWindowUtils.getAppTasksById(mHostActivity));
-
-        // Verify: Strong references are cleared immediately after restoreWindows returns.
-        assertTrue(mDelegate.getNonVisibleWindowsForTesting().isEmpty());
-        assertTrue(mDelegate.getVisibleWindowsForTesting().isEmpty());
-        assertNull(mDelegate.getCrashedWindowsForTesting());
-        assertFalse(mDelegate.isCrashRecoveryEligibleForTesting());
-
-        // Verify: Pending recovery window set is NOT cleared yet because window 1 hasn't registered
-        // recovery.
-        assertEquals(1, mDelegate.getWindowIdsPendingRecoveryForTesting().size());
-        assertTrue(mDelegate.getWindowIdsPendingRecoveryForTesting().contains(1));
-
-        // Act: Register recovery for window 1.
-        mDelegate.registerRecovery(1);
-
-        // Verify: Pending recovery window set is now empty (fully reset).
-        assertTrue(mDelegate.getWindowIdsPendingRecoveryForTesting().isEmpty());
+        assertTrue(mDelegate.getWindowIdsPendingRestorationForTesting().isEmpty());
     }
 }

@@ -154,7 +154,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowA
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.multiwindow.TabbedCrashRecoveryDelegate;
+import org.chromium.chrome.browser.multiwindow.TabbedStartupCoordinator;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageController;
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController;
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController.RationaleDelegate;
@@ -2931,8 +2931,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @return whether a prompt or promo is actually displayed.
      */
     private boolean maybeShowRequiredPromptsAndPromos(Profile profile, boolean intentWithEffect) {
-        if (TabbedCrashRecoveryDelegate.getInstance()
-                .maybeShowCrashRecoveryDialog(mModalDialogManagerSupplier, mActivity)) {
+        if (TabbedStartupCoordinator.maybeShowCrashRecoveryPrompt(
+                mModalDialogManagerSupplier, mActivity)) {
             return true;
         }
 

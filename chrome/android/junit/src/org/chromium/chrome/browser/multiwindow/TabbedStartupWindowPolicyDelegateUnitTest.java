@@ -37,6 +37,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SessionStartupPolicy;
 import org.chromium.chrome.browser.multiwindow.TabbedStartupWindowPolicyDelegate.StartupMode;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -201,8 +202,8 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
 
         // Verify.
         verify(mTabbedActivity, never()).startActivity(any());
-        assertTrue(
-                "isRecoverable should remain true when task is alive in non-multiwindow mode.",
+        assertFalse(
+                "isRecoverable should be cleared when task is alive in non-multiwindow mode.",
                 ChromeMultiInstancePersistentStore.readIsRecoverable(1));
     }
 
@@ -499,7 +500,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
                 .thenReturn(List.of("https://www.google.com"));
 
         // Act.
-        mDelegate.initializeWithNative(mProfile);
+        mDelegate.onNativeInitialized(mProfile);
 
         // Verify.
         assertEquals(
@@ -518,7 +519,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         when(mMockDelegateNatives.getSessionStartupUrls(mPrefService)).thenReturn(List.of());
 
         // Act.
-        mDelegate.initializeWithNative(mProfile);
+        mDelegate.onNativeInitialized(mProfile);
 
         // Verify.
         assertTrue(ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls().isEmpty());
@@ -534,7 +535,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         when(mSyncService.getSelectedTypes()).thenReturn(Set.of());
 
         // Act.
-        mDelegate.initializeWithNative(mProfile);
+        mDelegate.onNativeInitialized(mProfile);
 
         // Verify that persistent store returns UNSET and empty URLs.
         assertEquals(
@@ -553,7 +554,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         when(mSyncService.getAccountInfo()).thenReturn(null);
 
         // Act.
-        mDelegate.initializeWithNative(mProfile);
+        mDelegate.onNativeInitialized(mProfile);
 
         // Verify that persistent store returns UNSET and empty URLs.
         assertEquals(
@@ -572,7 +573,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         SyncServiceFactory.setInstanceForTesting(null);
 
         // Act.
-        mDelegate.initializeWithNative(mProfile);
+        mDelegate.onNativeInitialized(mProfile);
 
         // Verify that persistent store returns UNSET and empty URLs.
         assertEquals(
@@ -588,7 +589,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
                 .thenReturn(SessionStartupPref.NEW_TAB);
         when(mMockDelegateNatives.getSessionStartupUrls(mPrefService))
                 .thenReturn(List.of("https://www.google.com"));
-        mDelegate.initializeWithNative(mProfile);
+        mDelegate.onNativeInitialized(mProfile);
         assertEquals(
                 SessionStartupPref.NEW_TAB,
                 ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue());
@@ -611,7 +612,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
                 .thenReturn(SessionStartupPref.NEW_TAB);
         when(mMockDelegateNatives.getSessionStartupUrls(mPrefService))
                 .thenReturn(List.of("https://www.google.com"));
-        mDelegate.initializeWithNative(mProfile);
+        mDelegate.onNativeInitialized(mProfile);
         assertEquals(
                 SessionStartupPref.NEW_TAB,
                 ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue());
@@ -635,7 +636,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         when(mMockDelegateNatives.getSessionStartupUrls(mPrefService))
                 .thenReturn(List.of("https://www.google.com"));
         when(mSyncService.getSelectedTypes()).thenReturn(Set.of());
-        mDelegate.initializeWithNative(mProfile);
+        mDelegate.onNativeInitialized(mProfile);
         assertEquals(
                 TabbedStartupWindowPolicyDelegate.PREF_UNSET,
                 ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue());
@@ -661,7 +662,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
                 .thenReturn(SessionStartupPref.NEW_TAB);
 
         // Act.
-        mDelegate.initializeWithNative(mProfile);
+        mDelegate.onNativeInitialized(mProfile);
 
         // Verify that persistent store returns default values.
         assertEquals(
@@ -925,7 +926,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
     }
 
     @Test
-    public void testResetPolicy_resetsStartupPolicyClaimed() {
+    public void testResetState_resetsStartupPolicyClaimed() {
         // Setup.
         ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(
                 SessionStartupPref.NEW_TAB);
@@ -934,10 +935,25 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         assertFalse(mDelegate.shouldForceNewInstancePolicy(false));
 
         // Act.
-        mDelegate.resetPolicy();
+        mDelegate.resetState();
 
         // Verify.
         assertTrue(mDelegate.shouldForceNewInstancePolicy(false));
+    }
+
+    @Test
+    public void testOnWindowCreated_relaunchSource_registersRestoration() {
+        // Setup.
+        setupRecoverableInstances(SessionStartupPolicy.RESTORE_ALL);
+        mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.UNMAPPED_TASK);
+        mDelegate.applyPolicy(mTabbedActivity);
+        assertTrue(mDelegate.getWindowIdsPendingRestorationForTesting().contains(1));
+
+        // Act.
+        TabbedStartupCoordinator.onWindowCreated(/* windowId= */ 1, NewWindowAppSource.RELAUNCH);
+
+        // Verify.
+        assertTrue(mDelegate.getWindowIdsPendingRestorationForTesting().isEmpty());
     }
 
     private void setupRecoverableInstances(@SessionStartupPolicy int startupPolicy) {

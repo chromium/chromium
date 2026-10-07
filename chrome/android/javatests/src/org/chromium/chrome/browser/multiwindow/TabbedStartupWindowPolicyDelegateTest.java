@@ -105,7 +105,7 @@ public class TabbedStartupWindowPolicyDelegateTest {
                 () -> {
                     TabbedStartupWindowPolicyDelegate.getInstance().resetForTesting();
                     TabbedStartupWindowPolicyDelegate.getInstance()
-                            .initializeWithNative(ProfileManager.getLastUsedRegularProfile());
+                            .onNativeInitialized(ProfileManager.getLastUsedRegularProfile());
                 });
     }
 
@@ -262,7 +262,7 @@ public class TabbedStartupWindowPolicyDelegateTest {
                 () -> {
                     ((MultiInstanceOrchestratorImpl) MultiInstanceOrchestratorImpl.getInstance())
                             .clearAssignmentsForTesting();
-                    TabbedStartupWindowPolicyDelegate.getInstance().resetPolicy();
+                    TabbedStartupWindowPolicyDelegate.getInstance().resetState();
                     ChromeMultiInstancePersistentStore.writeSessionStartupPolicy(
                             SessionStartupPolicy.RESTORE_ALL);
                     ChromeMultiInstancePersistentStore.writeLastAccessedTime(/* instanceId= */ 2);
@@ -274,7 +274,7 @@ public class TabbedStartupWindowPolicyDelegateTest {
         ChromeTabbedActivity newActivity = createNewWindow(/* preferNew= */ true);
 
         // Verify: Window restoration is suppressed (b/555556913). The startup policy is cleared,
-        // but maybeRestoreWindowsAfterLaunch() is skipped so instance 2 is NOT restored (no
+        // but window restoration in applyPolicy() is skipped so instance 2 is NOT restored (no
         // activity is launched for it).
         assertSingleNtpTab(newActivity);
         CriteriaHelper.pollUiThread(
@@ -296,7 +296,7 @@ public class TabbedStartupWindowPolicyDelegateTest {
     private void setRestoreOnStartupPref(int pref) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabbedStartupWindowPolicyDelegate.getInstance().resetPolicy();
+                    TabbedStartupWindowPolicyDelegate.getInstance().resetState();
                     // Updating the native preference triggers TabbedStartupWindowPolicyDelegate's
                     // PrefChangeRegistrar observer (updateCachedRestoreOnStartupPref), which
                     // verifies that History sync is active and persists the pref value to
@@ -309,7 +309,7 @@ public class TabbedStartupWindowPolicyDelegateTest {
     private void setRestoreOnStartupUrlsPref(List<String> startupUrls) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabbedStartupWindowPolicyDelegate.getInstance().resetPolicy();
+                    TabbedStartupWindowPolicyDelegate.getInstance().resetState();
                     PrefService prefService =
                             UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     // Setting the native SessionStartupPref updates both kRestoreOnStartup (to

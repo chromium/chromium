@@ -119,29 +119,19 @@ import java.util.function.Supplier;
         if (activity instanceof ChromeTabbedActivity tabbedActivity) {
             mInitializedTabbedActivityCount++;
             if (mInitializedTabbedActivityCount == 1) {
-                // Restore any windows from a relaunch and finalize startup policy consumption
-                // before evaluating crash recovery metadata so that relaunch restoration can
-                // consume the recoverable state before non-crash cleanup occurs.
-                TabbedStartupWindowPolicyDelegate.getInstance().applyPolicy(tabbedActivity);
-                TabbedCrashRecoveryDelegate.getInstance().initializeCrashRecoveryMetadata();
+                TabbedStartupCoordinator.processStartupWindow(tabbedActivity);
             }
         }
     }
 
     @Override
     public void onForegroundBrowserProcessInitialized() {
-        if (!MultiWindowUtils.isSessionRestoreAfterCrashEnabled()) return;
-
-        // If a ChromeTabbedActivity has already initialized, immediate crash recovery was already
-        // evaluated / handled. Do not set a pending crash recovery state.
+        // If a ChromeTabbedActivity has already initialized, cold startup window state has already
+        // been evaluated.
         if (mInitializedTabbedActivityCount > 0) {
             return;
         }
-
-        // This means that there is no ChromeTabbedActivity to initiate crash recovery when the
-        // browser process starts after a crash. Track this as a pending task that can be
-        // addressed when the next ChromeTabbedActivity is registered with the orchestrator.
-        TabbedCrashRecoveryDelegate.getInstance().maybeDeferCrashRecovery();
+        TabbedStartupCoordinator.onForegroundBrowserProcessInitialized();
     }
 
     @Override
@@ -714,7 +704,7 @@ import java.util.function.Supplier;
                 // starting up, preventing races during overlapping window launches.
                 if (mInitializedTabbedActivityCount == 0
                         && MultiWindowUtils.getRunningTabbedActivityCount() == 0) {
-                    TabbedStartupWindowPolicyDelegate.getInstance().resetPolicy();
+                    TabbedStartupCoordinator.resetStartupState();
                 }
             }
         }

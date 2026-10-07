@@ -203,8 +203,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedIns
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManagerFactory;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.multiwindow.TabbedCrashRecoveryDelegate;
-import org.chromium.chrome.browser.multiwindow.TabbedStartupWindowPolicyDelegate;
+import org.chromium.chrome.browser.multiwindow.TabbedStartupCoordinator;
 import org.chromium.chrome.browser.multiwindow.TabbedWindowStateTracker;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
@@ -1678,7 +1677,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
             super.finishNativeInitialization();
 
-            TabbedStartupWindowPolicyDelegate.getInstance().initializeWithNative(originalProfile);
+            TabbedStartupCoordinator.onNativeInitialized(originalProfile);
 
             // Deliberately not deferred to onDeferredStartup(): this timestamp is not just a
             // metric, it gates feature eligibility (e.g. the Setup List time window, which treats
@@ -2605,9 +2604,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             if (getSavedInstanceState() == null
                     && mTabModelOrchestrator.getRestoredTabCount() == 0) {
                 boolean incognito = mSupportedProfileType == SupportedProfileType.OFF_THE_RECORD;
-                List<String> startupUrls =
-                        TabbedStartupWindowPolicyDelegate.getInstance()
-                                .resolveStartupUrls(incognito);
+                List<String> startupUrls = TabbedStartupCoordinator.resolveStartupUrls(incognito);
                 if (!startupUrls.isEmpty()) {
                     LoadUrlParams loadUrlParams = new LoadUrlParams(startupUrls.get(0));
                     getTabCreator(incognito)
@@ -3448,10 +3445,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         int newWindowAppSource =
                 intent.getIntExtra(
                         IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, NewWindowAppSource.UNKNOWN);
-        if (newWindowAppSource == NewWindowAppSource.CRASH_RECOVERY
-                && MultiWindowUtils.isSessionRestoreAfterCrashEnabled()) {
-            TabbedCrashRecoveryDelegate.getInstance().registerRecovery(mWindowId);
-        }
+        TabbedStartupCoordinator.onWindowCreated(mWindowId, newWindowAppSource);
     }
 
     @Override

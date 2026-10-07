@@ -268,7 +268,9 @@ class ChromeMultiInstancePersistentStore extends MultiInstancePersistentStore {
     }
 
     static void writeIsRecoverable(int instanceId, boolean isRecoverable) {
-        if (MultiWindowUtils.isSessionRestoreAfterCrashEnabled() && hasInstance(instanceId)) {
+        if ((MultiWindowUtils.isSessionRestoreAfterCrashEnabled()
+                        || MultiWindowUtils.isNewStartupWindowPolicyEnabled())
+                && hasInstance(instanceId)) {
             assert sData != null;
             putInstance(
                     instanceId, getInstanceFromProto(instanceId).setIsRecoverable(isRecoverable));
