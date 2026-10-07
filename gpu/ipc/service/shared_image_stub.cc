@@ -301,31 +301,11 @@ void SharedImageStub::OnCreateSharedImageWithBuffer(
                params->si_info->meta.size.height());
   gfx::GpuMemoryBufferHandle buffer_handle = std::move(params->buffer_handle);
 
-#if BUILDFLAG(IS_OZONE)
-  if (channel_->client_type() == viz::mojom::GpuClientType::kOOPVD &&
-      buffer_handle.type == gfx::NATIVE_PIXMAP) {
-    const auto& pixmap_handle = buffer_handle.native_pixmap_handle();
-    auto format = params->si_info->meta.format;
-    // Video Buffer may be packed to have a tighter stride than shared memory
-    // row, examples are NV15 or MT2T, where there's no padding bits within the
-    // component.
-    if (!gfx::CanFitImageForSizeAndFormat(pixmap_handle,
-                                          params->si_info->meta.size, format,
-                                          /*assume_single_memory_object=*/false,
-                                          /*maybe_packed=*/true)) {
-      LOG(ERROR)
-          << "SharedImageStub: Unable to import buffer, failed validation.";
-      OnError();
-      return;
-    }
-    if (gfx::CloneHandleForIPC(pixmap_handle).planes.empty()) {
-      LOG(ERROR) << "SharedImageStub: Unable to import buffer, failed to dup "
-                    "buffer fds.";
-      OnError();
-      return;
-    }
+  if (!ValidateGpuMemoryBufferHandleWithMetadata(buffer_handle,
+                                                 params->si_info->meta)) {
+    OnError();
+    return;
   }
-#endif  // BUILDFLAG(IS_OZONE)
 
   if (!CreateSharedImage(
           params->mailbox,
@@ -626,6 +606,63 @@ void SharedImageStub::OnError() {
 
 uint64_t SharedImageStub::GetSize() const {
   return memory_tracker_->GetSize();
+}
+
+bool SharedImageStub::CopyNativeBufferToSharedMemoryAsync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion shared_memory) {
+  if (!ValidateGpuMemoryBufferHandle(buffer_handle)) {
+    return false;
+  }
+
+  return factory_->CopyNativeBufferToSharedMemoryAsync(
+      std::move(buffer_handle), std::move(shared_memory));
+}
+
+bool SharedImageStub::ValidateGpuMemoryBufferHandle(
+    const gfx::GpuMemoryBufferHandle& buffer_handle) {
+  // Shared memory always allowed.
+  if (buffer_handle.type == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER) {
+    return true;
+  }
+
+  // TODO(crbug.com/565252393): Add validation
+  return true;
+}
+
+bool SharedImageStub::ValidateGpuMemoryBufferHandleWithMetadata(
+    const gfx::GpuMemoryBufferHandle& buffer_handle,
+    const SharedImageMetadata& metadata) {
+  if (!ValidateGpuMemoryBufferHandle(buffer_handle)) {
+    return false;
+  }
+
+#if BUILDFLAG(IS_OZONE)
+  if (channel_->client_type() == viz::mojom::GpuClientType::kOOPVD &&
+      buffer_handle.type == gfx::NATIVE_PIXMAP) {
+    const auto& pixmap_handle = buffer_handle.native_pixmap_handle();
+    auto format = metadata.format;
+    // Video Buffer may be packed to have a tighter stride than shared memory
+    // row, examples are NV15 or MT2T, where there's no padding bits within the
+    // component.
+    if (!gfx::CanFitImageForSizeAndFormat(pixmap_handle, metadata.size, format,
+                                          /*assume_single_memory_object=*/false,
+                                          /*maybe_packed=*/true)) {
+      LOG(ERROR)
+          << "SharedImageStub: Unable to import buffer, failed validation.";
+      return false;
+    }
+    if (gfx::CloneHandleForIPC(pixmap_handle).planes.empty()) {
+      LOG(ERROR) << "SharedImageStub: Unable to import buffer, failed to dup "
+                    "buffer fds.";
+      return false;
+    }
+  }
+
+#endif  // BUILDFLAG(IS_OZONE)
+
+  // TODO(crbug.com/565252393): Add validation
+  return true;
 }
 
 std::string SharedImageStub::GetLabel(const std::string& debug_label) const {

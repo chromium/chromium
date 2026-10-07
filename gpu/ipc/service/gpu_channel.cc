@@ -631,7 +631,6 @@ void GpuChannelMessageFilter::CopyNativeGmbToSharedMemoryAsync(
 
   std::move(callback).Run(
       gpu_channel_->shared_image_stub()
-          ->factory()
           ->CopyNativeBufferToSharedMemoryAsync(std::move(buffer_handle),
                                                 std::move(shared_memory)));
 }

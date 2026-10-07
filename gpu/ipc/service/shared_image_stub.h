@@ -64,6 +64,10 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub {
                                   base::OnceCallback<void(bool)> callback);
 #endif
 
+  bool CopyNativeBufferToSharedMemoryAsync(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion shared_memory);
+
 #if BUILDFLAG(IS_FUCHSIA)
   void RegisterSysmemBufferCollection(zx::eventpair service_handle,
                                       zx::channel sysmem_token,
@@ -118,6 +122,16 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub {
 
   ContextResult Initialize();
   void OnError();
+
+  // Validates GpuMemoryBufferHandle received via IPC, based only on handle.
+  bool ValidateGpuMemoryBufferHandle(
+      const gfx::GpuMemoryBufferHandle& buffer_handle);
+
+  // Validates GpuMemoryBufferHandle received via IPC (as above) and does
+  // additional checks that handle's metadata matches SharedImageMetadata.
+  bool ValidateGpuMemoryBufferHandleWithMetadata(
+      const gfx::GpuMemoryBufferHandle& buffer_handle,
+      const SharedImageMetadata& metadata);
 
   std::string GetLabel(const std::string& debug_label) const;
 
