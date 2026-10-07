@@ -152,6 +152,12 @@ std::string GetInvocationSourceString(mojom::InvocationSource source) {
       return "ContextHubTopics";
     case mojom::InvocationSource::kContextHubAutoTodos:
       return "ContextHubAutoTodos";
+    case mojom::InvocationSource::kWebContentsContextMenuLink:
+      return "WebContentsContextMenuLink";
+    case mojom::InvocationSource::kWebContentsContextMenuPage:
+      return "WebContentsContextMenuPage";
+    case mojom::InvocationSource::kWebContentsContextMenuTextSelection:
+      return "WebContentsContextMenuTextSelection";
   }
 }
 

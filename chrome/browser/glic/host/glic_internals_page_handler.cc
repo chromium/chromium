@@ -276,6 +276,12 @@ std::string InvocationSourceToString(glic::mojom::InvocationSource source) {
       return "kContextHubTopics";
     case glic::mojom::InvocationSource::kContextHubAutoTodos:
       return "kContextHubAutoTodos";
+    case glic::mojom::InvocationSource::kWebContentsContextMenuLink:
+      return "kWebContentsContextMenuLink";
+    case glic::mojom::InvocationSource::kWebContentsContextMenuPage:
+      return "kWebContentsContextMenuPage";
+    case glic::mojom::InvocationSource::kWebContentsContextMenuTextSelection:
+      return "kWebContentsContextMenuTextSelection";
   }
   LOG(ERROR) << "Unexpected value for InvocationSource: "
              << static_cast<int>(source);

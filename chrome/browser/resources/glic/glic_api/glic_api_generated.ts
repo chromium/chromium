@@ -725,6 +725,16 @@ export enum InvocationSource {
   CONTEXT_HUB_TOPICS = 44,
   // From the Context Hub AutoTodos UI.
   CONTEXT_HUB_AUTO_TODOS = 45,
+  // User clicked "Ask Gemini" on a link in the context menu. Android only;
+  // desktop has no link-specific item.
+  WEB_CONTENTS_CONTEXT_MENU_LINK = 46,
+  // User clicked "Ask Gemini" on the page in the context menu. On desktop,
+  // also clicks that don't attach the selection.
+  WEB_CONTENTS_CONTEXT_MENU_PAGE = 47,
+  // User clicked "Ask Gemini" on selected text, from the context menu on
+  // desktop (when the selection is attached) or the text selection menu on
+  // Android.
+  WEB_CONTENTS_CONTEXT_MENU_TEXT_SELECTION = 48,
 }
 
 // Target for actuation.

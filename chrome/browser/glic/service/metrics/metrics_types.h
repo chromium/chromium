@@ -207,7 +207,19 @@ enum class ResponseSegmentation {
   kContextHubAutoTodosAttachedAudio = 182,
   kContextHubAutoTodosDetachedText = 183,
   kContextHubAutoTodosDetachedAudio = 184,
-  kMaxValue = kContextHubAutoTodosDetachedAudio,
+  kWebContentsContextMenuLinkAttachedText = 185,
+  kWebContentsContextMenuLinkAttachedAudio = 186,
+  kWebContentsContextMenuLinkDetachedText = 187,
+  kWebContentsContextMenuLinkDetachedAudio = 188,
+  kWebContentsContextMenuPageAttachedText = 189,
+  kWebContentsContextMenuPageAttachedAudio = 190,
+  kWebContentsContextMenuPageDetachedText = 191,
+  kWebContentsContextMenuPageDetachedAudio = 192,
+  kWebContentsContextMenuTextSelectionAttachedText = 193,
+  kWebContentsContextMenuTextSelectionAttachedAudio = 194,
+  kWebContentsContextMenuTextSelectionDetachedText = 195,
+  kWebContentsContextMenuTextSelectionDetachedAudio = 196,
+  kMaxValue = kWebContentsContextMenuTextSelectionDetachedAudio,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicResponseSegmentation)
 

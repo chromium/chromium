@@ -207,6 +207,9 @@ chromium-metrics-reviews@google.com.
   <variant name="UniversalCart"/>
   <variant name="Unsupported"/>
   <variant name="WebContentsContextMenu"/>
+  <variant name="WebContentsContextMenuLink"/>
+  <variant name="WebContentsContextMenuPage"/>
+  <variant name="WebContentsContextMenuTextSelection"/>
   <variant name="WebContinuity"/>
   <variant name="WebDragDrop"/>
   <variant name="WhatsNew"/>

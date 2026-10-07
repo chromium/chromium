@@ -170,9 +170,19 @@ enum InvocationSource {
   [MinVersion=30] kContextHubTopics = 44,
   // From the Context Hub AutoTodos UI.
   [MinVersion=31] kContextHubAutoTodos = 45,
+  // User clicked "Ask Gemini" on a link in the context menu. Android only;
+  // desktop has no link-specific item.
+  [MinVersion=32] kWebContentsContextMenuLink = 46,
+  // User clicked "Ask Gemini" on the page in the context menu. On desktop,
+  // also clicks that don't attach the selection.
+  [MinVersion=32] kWebContentsContextMenuPage = 47,
+  // User clicked "Ask Gemini" on selected text, from the context menu on
+  // desktop (when the selection is attached) or the text selection menu on
+  // Android.
+  [MinVersion=32] kWebContentsContextMenuTextSelection = 48,
 };
 
-// LINT.ThenChange(
+// LINT.ThenChange(//chrome/browser/glic/public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedService.java:GlicInvocationSource,
 //  //tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource,
 // //tools/metrics/histograms/metadata/glic/histograms.xml:GlicInvocationSource,
 //  //chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation

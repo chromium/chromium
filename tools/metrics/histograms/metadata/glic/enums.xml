@@ -687,7 +687,7 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="From capture region hotkey"/>
   <int value="21" label="In-product help"/>
   <int value="22" label="User clicked an anchored contextual cue chip"/>
-  <int value="23" label="Context menu"/>
+  <int value="23" label="Context menu (Deprecated M157)"/>
   <int value="24" label="Text selection nudge"/>
   <int value="25" label="Text selection widget"/>
   <int value="26" label="(Obsolete) Zero-state Auto-summarize"/>
@@ -710,6 +710,9 @@ chromium-metrics-reviews@google.com.
   <int value="43" label="History page chat linkout"/>
   <int value="44" label="Context Hub topics"/>
   <int value="45" label="Context Hub AutoTodos"/>
+  <int value="46" label="Context menu link"/>
+  <int value="47" label="Context menu page"/>
+  <int value="48" label="Context menu text selection"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/common/glic_enums.mojom:InvocationSource) -->
@@ -1227,6 +1230,18 @@ chromium-metrics-reviews@google.com.
   <int value="182" label="Context Hub AutoTodos, attached, audio mode."/>
   <int value="183" label="Context Hub AutoTodos, detached, text mode."/>
   <int value="184" label="Context Hub AutoTodos, detached, audio mode."/>
+  <int value="185" label="Context menu link, attached, text mode."/>
+  <int value="186" label="Context menu link, attached, audio mode."/>
+  <int value="187" label="Context menu link, detached, text mode."/>
+  <int value="188" label="Context menu link, detached, audio mode."/>
+  <int value="189" label="Context menu page, attached, text mode."/>
+  <int value="190" label="Context menu page, attached, audio mode."/>
+  <int value="191" label="Context menu page, detached, text mode."/>
+  <int value="192" label="Context menu page, detached, audio mode."/>
+  <int value="193" label="Context menu text selection, attached, text mode."/>
+  <int value="194" label="Context menu text selection, attached, audio mode."/>
+  <int value="195" label="Context menu text selection, detached, text mode."/>
+  <int value="196" label="Context menu text selection, detached, audio mode."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation) -->

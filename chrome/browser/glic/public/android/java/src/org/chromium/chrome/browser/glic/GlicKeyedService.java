@@ -36,9 +36,13 @@ public interface GlicKeyedService {
         GlicInvocationSource.TOP_CHROME_BUTTON,
         GlicInvocationSource.NUDGE,
         GlicInvocationSource.THREE_DOTS_MENU,
+        GlicInvocationSource.SHARED_IMAGE,
         GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU,
         GlicInvocationSource.TOOLBAR_BUTTON,
         GlicInvocationSource.TAB_CONTEXT_MENU,
+        GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU_LINK,
+        GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU_PAGE,
+        GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU_TEXT_SELECTION,
         GlicInvocationSource.MAX_VALUE,
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -47,13 +51,18 @@ public interface GlicKeyedService {
         int TOP_CHROME_BUTTON = 3;
         int NUDGE = 6;
         int THREE_DOTS_MENU = 7;
+        int SHARED_IMAGE = 13;
         int WEB_CONTENTS_CONTEXT_MENU = 23;
         int TOOLBAR_BUTTON = 31;
         int TAB_CONTEXT_MENU = 41;
-        int MAX_VALUE = 42;
+        int WEB_CONTENTS_CONTEXT_MENU_LINK = 46;
+        int WEB_CONTENTS_CONTEXT_MENU_PAGE = 47;
+        int WEB_CONTENTS_CONTEXT_MENU_TEXT_SELECTION = 48;
+        // Must match the largest mojom value, since MAX_VALUE + 1 bounds Glic.EntryPoint.Click.
+        int MAX_VALUE = 48;
     }
 
-    // LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource)
+    // LINT.ThenChange(//chrome/common/glic_enums.mojom:InvocationSource)
 
     /**
      * Toggles the Glic user interface.
