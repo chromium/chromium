@@ -290,8 +290,7 @@ std::vector<DropData::Metadata> DropDataToMetaData(const DropData& drop_data) {
 
   for (const auto& file_system_file : drop_data.file_system_files) {
     if (!file_system_file.url.is_empty()) {
-      metadata.push_back(
-          DropData::Metadata::CreateForFileSystemUrl(file_system_file.url));
+      metadata.push_back(DropData::Metadata::CreateForFileSystemFile());
     }
   }
 

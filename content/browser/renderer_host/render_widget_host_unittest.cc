@@ -2875,6 +2875,15 @@ TEST_F(RenderWidgetHostDragTest, DragEnterDoesNotLeakPaths) {
       base::FilePath(FILE_PATH_LITERAL("/another/absolute/path/to/file2.txt")),
       base::FilePath());
 
+  // Regression test for https://crbug.com/553276670: `file_system_files` URLs
+  // must not be sent to hovered renderers on DragTargetDragEnter(), as they
+  // contain mount identifiers, user hashes, and full directory paths.
+  DropData::FileSystemFileInfo file_system_file;
+  file_system_file.url = GURL(
+      "filesystem:chrome://file-manager/external/"
+      "odfs:odfs:secret_username_hash/private/dir/report.pdf");
+  drop_data.file_system_files.push_back(file_system_file);
+
   // Call DragTargetDragEnter.
   base::RunLoop run_loop;
   GetRenderWidgetHost()->DragTargetDragEnter(
@@ -2886,10 +2895,10 @@ TEST_F(RenderWidgetHostDragTest, DragEnterDoesNotLeakPaths) {
           run_loop.QuitClosure()));
   run_loop.Run();
 
-  // Verify that the paths sent to renderer are sanitized to BaseName.
+  // Verify that the paths and filesystem URLs sent to renderer are sanitized.
   const auto& captured_drag_data = mock_frame_widget.drag_data();
   ASSERT_TRUE(captured_drag_data);
-  ASSERT_EQ(captured_drag_data->items.size(), 2u);
+  ASSERT_EQ(captured_drag_data->items.size(), 3u);
 
   const auto& item1 = captured_drag_data->items[0];
   ASSERT_TRUE(item1->is_file());
@@ -2903,6 +2912,10 @@ TEST_F(RenderWidgetHostDragTest, DragEnterDoesNotLeakPaths) {
   EXPECT_EQ(item2->get_file()->path,
             base::FilePath(FILE_PATH_LITERAL("file2.txt")));
   EXPECT_TRUE(item2->get_file()->display_name.empty());
+
+  const auto& item3 = captured_drag_data->items[2];
+  ASSERT_TRUE(item3->is_file_system_file());
+  EXPECT_TRUE(item3->get_file_system_file()->url.is_empty());
 }
 
 // A plain <img> drag on macOS populates `file_contents` but supplies neither a

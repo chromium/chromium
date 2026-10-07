@@ -74,7 +74,7 @@ struct CONTENT_EXPORT DropData {
     static Metadata CreateForFilePath(
         const base::FilePath& filename,
         const base::FilePath& display_name = base::FilePath());
-    static Metadata CreateForFileSystemUrl(const GURL& file_system_url);
+    static Metadata CreateForFileSystemFile();
     static Metadata CreateForBinary(const GURL& file_contents_url);
 
     Metadata();
@@ -85,7 +85,6 @@ struct CONTENT_EXPORT DropData {
     std::u16string mime_type;
     base::FilePath filename;
     base::FilePath display_name;
-    GURL file_system_url;
     GURL file_contents_url;
   };
 

@@ -333,7 +333,6 @@ blink::mojom::DragDataPtr DropMetaDataToDragData(
     if (meta_data_item.kind == DropData::Kind::FILESYSTEMFILE) {
       blink::mojom::DragItemFileSystemFilePtr item =
           blink::mojom::DragItemFileSystemFile::New();
-      item->url = meta_data_item.file_system_url;
       items.push_back(
           blink::mojom::DragItem::NewFileSystemFile(std::move(item)));
       continue;

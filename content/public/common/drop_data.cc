@@ -45,11 +45,9 @@ DropData::Metadata DropData::Metadata::CreateForFilePath(
 }
 
 // static
-DropData::Metadata DropData::Metadata::CreateForFileSystemUrl(
-    const GURL& file_system_url) {
+DropData::Metadata DropData::Metadata::CreateForFileSystemFile() {
   Metadata metadata;
   metadata.kind = Kind::FILESYSTEMFILE;
-  metadata.file_system_url = file_system_url;
   return metadata;
 }
 
