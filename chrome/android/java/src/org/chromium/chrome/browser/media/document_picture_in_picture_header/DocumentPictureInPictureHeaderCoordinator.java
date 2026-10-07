@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.media.document_picture_in_picture_header;
 
 import android.content.Context;
-import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -34,7 +33,7 @@ public class DocumentPictureInPictureHeaderCoordinator {
      * @param themeColorProvider The theme color provider to observe for theme color changes.
      */
     public DocumentPictureInPictureHeaderCoordinator(
-            View view,
+            DocumentPictureInPictureHeaderView view,
             DesktopWindowStateManager desktopWindowStateManager,
             ThemeColorProvider themeColorProvider,
             Context context,

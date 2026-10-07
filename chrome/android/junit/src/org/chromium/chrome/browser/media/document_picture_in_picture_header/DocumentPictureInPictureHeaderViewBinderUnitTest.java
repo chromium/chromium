@@ -17,9 +17,9 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -45,7 +45,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 public class DocumentPictureInPictureHeaderViewBinderUnitTest {
     private Context mContext;
-    private ViewGroup mHeaderView;
+    private DocumentPictureInPictureHeaderView mHeaderView;
     private ImageView mBackToTabButton;
     private ImageView mSecurityIcon;
     private TextView mUrlBar;
@@ -57,21 +57,18 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
-        mHeaderView = new FrameLayout(mContext);
+        mHeaderView =
+                (DocumentPictureInPictureHeaderView)
+                        LayoutInflater.from(mContext)
+                                .inflate(
+                                        R.layout.document_picture_in_picture_header_layout,
+                                        /* root= */ null);
         mHeaderView.setLayoutParams(
                 new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0));
 
-        mSecurityIcon = new ImageView(mContext);
-        mSecurityIcon.setId(R.id.document_picture_in_picture_header_security_icon);
-        mHeaderView.addView(mSecurityIcon, new ViewGroup.LayoutParams(0, 0));
-
-        mBackToTabButton = new ImageView(mContext);
-        mBackToTabButton.setId(R.id.document_picture_in_picture_header_back_to_tab);
-        mHeaderView.addView(mBackToTabButton, new ViewGroup.LayoutParams(0, 0));
-
-        mUrlBar = new TextView(mContext);
-        mUrlBar.setId(R.id.document_picture_in_picture_header_url_bar);
-        mHeaderView.addView(mUrlBar, new ViewGroup.LayoutParams(0, 0));
+        mSecurityIcon = mHeaderView.getSecurityIconForTesting();
+        mBackToTabButton = mHeaderView.getBackToTabButtonForTesting();
+        mUrlBar = mHeaderView.getUrlBarForTesting();
 
         mModel =
                 new PropertyModel.Builder(DocumentPictureInPictureHeaderProperties.ALL_KEYS)
@@ -218,5 +215,12 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
         assertEquals(size, mSecurityIcon.getLayoutParams().width);
         assertEquals(size, mSecurityIcon.getLayoutParams().height);
         assertEquals(size, mUrlBar.getLayoutParams().height);
+    }
+
+    @Test
+    public void testInflationAndChildViewCaching() {
+        assertNotNull(mHeaderView.getSecurityIconForTesting());
+        assertNotNull(mHeaderView.getUrlBarForTesting());
+        assertNotNull(mHeaderView.getBackToTabButtonForTesting());
     }
 }

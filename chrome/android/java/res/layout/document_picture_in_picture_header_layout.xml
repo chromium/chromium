@@ -9,7 +9,7 @@ found in the LICENSE file.
 Height, visibility and background color of this node are set programmatically
 by DocumentPictureInPictureHeaderViewBinder.
 -->
-<LinearLayout
+<org.chromium.chrome.browser.media.document_picture_in_picture_header.DocumentPictureInPictureHeaderView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/document_picture_in_picture_header"
@@ -58,4 +58,4 @@ by DocumentPictureInPictureHeaderViewBinder.
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scaleType="center" />
-</LinearLayout>
+</org.chromium.chrome.browser.media.document_picture_in_picture_header.DocumentPictureInPictureHeaderView>

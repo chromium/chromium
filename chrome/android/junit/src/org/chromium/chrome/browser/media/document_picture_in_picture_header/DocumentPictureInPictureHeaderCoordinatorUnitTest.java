@@ -48,7 +48,7 @@ public class DocumentPictureInPictureHeaderCoordinatorUnitTest {
     private WebContents mWebContents;
     private ActivityController<Activity> mActivityController;
     private Activity mActivity;
-    private View mView;
+    private DocumentPictureInPictureHeaderView mView;
     private DocumentPictureInPictureHeaderCoordinator mCoordinator;
 
     @Before
