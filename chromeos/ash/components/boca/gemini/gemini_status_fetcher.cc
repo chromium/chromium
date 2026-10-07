@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
@@ -57,7 +58,7 @@ GeminiStatusFetcher::GeminiStatusFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrefService* pref_service)
     : gaia_id_(std::move(gaia_id)),
-      identity_manager_(identity_manager),
+      identity_manager_(CHECK_DEREF(identity_manager)),
       url_loader_factory_(url_loader_factory),
       pref_service_(pref_service) {}
 
@@ -90,7 +91,7 @@ void GeminiStatusFetcher::GetStatusInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   request_in_progress_ = true;
-  request_sender_ = CreateSender(url_loader_factory_, identity_manager_,
+  request_sender_ = CreateSender(url_loader_factory_, &identity_manager_.get(),
                                  GetGeminiStatusRequest::kTrafficAnnotation);
   auto request_delegate = std::make_unique<GetGeminiStatusRequest>(
       gaia_id_, base::BindOnce(&GeminiStatusFetcher::OnStatusResponse,

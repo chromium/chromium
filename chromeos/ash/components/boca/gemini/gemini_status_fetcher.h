@@ -38,6 +38,7 @@ class GeminiStatusFetcher {
  public:
   using GetStatusCallback = base::OnceCallback<void(bool)>;
 
+  // `identity_manager` must be non-null and must outlive `this`.
   GeminiStatusFetcher(
       std::string gaia_id,
       signin::IdentityManager* identity_manager,
@@ -60,7 +61,7 @@ class GeminiStatusFetcher {
   void OnStatusResponse(std::optional<bool> result);
 
   const std::string gaia_id_;
-  const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ref<signin::IdentityManager> identity_manager_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const raw_ptr<PrefService> pref_service_;
 
