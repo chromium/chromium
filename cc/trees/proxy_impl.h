@@ -82,7 +82,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplDelegate,
   void SetPauseRendering(bool pause_rendering,
                          bool delay_until_visibility_change);
   void SetNeedsRedrawOnImpl(const gfx::Rect& damage_rect);
-  void SetNeedsCommitOnImpl(BeginMainFrameReason reason,
+  void SetNeedsCommitOnImpl(BeginMainFrameReasons reason,
                             bool urgent,
                             bool unthrottle_next);
   void SendEarlyFinalBeginMainFrame();
@@ -229,10 +229,6 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplDelegate,
 
   int consecutive_no_damage_main_frames() const {
     return scheduler_->consecutive_no_damage_main_frames();
-  }
-
-  void set_begin_main_frame_reason(BeginMainFrameReason reason) {
-    begin_main_frame_reason_.set(static_cast<int>(reason));
   }
 
   const int layer_tree_host_id_;

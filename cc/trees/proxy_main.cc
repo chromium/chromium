@@ -153,7 +153,7 @@ void ProxyMain::RecordBeginMainFrameMetrics(
     const BeginMainFrameReasons& begin_main_frame_reason,
     const base::ElapsedTimer& timer,
     std::string_view suffix) const {
-  constexpr size_t num_buckets = 1 << begin_main_frame_reason.size();
+  constexpr size_t num_buckets = 1 << BeginMainFrameReasons::size();
 
   base::UmaHistogramCustomMicrosecondsTimes(
       base::StrCat({"Compositing.BeginMainFrame.TimeUs", suffix}),
@@ -715,7 +715,7 @@ void ProxyMain::SetShouldWarmUp() {
 void ProxyMain::SetNeedsAnimate(BeginMainFrameReason reason, bool urgent) {
   DCHECK(IsMainThread());
   needs_begin_main_frame_ = true;
-  set_begin_main_frame_reason(reason);
+  begin_main_frame_reason_ |= reason;
   if (SendCommitRequestToImplThreadIfNeeded(reason, ANIMATE_PIPELINE_STAGE,
                                             urgent)) {
     TRACE_EVENT_INSTANT("cc", "ProxyMain::SetNeedsAnimate", "urgent", urgent);
@@ -1110,7 +1110,7 @@ void ProxyMain::RequestBeginMainFrameNotExpected(bool new_state) {
 }
 
 bool ProxyMain::SendCommitRequestToImplThreadIfNeeded(
-    BeginMainFrameReason reason,
+    BeginMainFrameReasons reason,
     CommitPipelineStage required_stage,
     bool urgent) {
   DCHECK(IsMainThread());

@@ -37,14 +37,45 @@ enum class BeginMainFrameReason {
   kMaxValue = kDelayedTimerFired,
 };
 
-inline constexpr size_t BeginMainFrameReasonSize =
-    static_cast<size_t>(BeginMainFrameReason::kMaxValue) + 1;
+class CC_EXPORT BeginMainFrameReasons {
+ public:
+  constexpr BeginMainFrameReasons() = default;
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr BeginMainFrameReasons(BeginMainFrameReason reason)
+      : reasons_(1ULL << static_cast<size_t>(reason)) {}
 
-// We use this metric in a bitfield. UMA can only record 1000 buckets for a
-// histogram. So, assert that we do not go over this max size.
-static_assert(1 << BeginMainFrameReasonSize < 1000);
+  static constexpr size_t size() { return kSize; }
 
-using BeginMainFrameReasons = std::bitset<BeginMainFrameReasonSize>;
+  unsigned long to_ulong() const { return reasons_.to_ulong(); }
+
+  BeginMainFrameReasons& reset() {
+    reasons_.reset();
+    return *this;
+  }
+
+  BeginMainFrameReasons& operator|=(const BeginMainFrameReasons& other) {
+    reasons_ |= other.reasons_;
+    return *this;
+  }
+
+  friend BeginMainFrameReasons operator|(BeginMainFrameReasons lhs,
+                                         const BeginMainFrameReasons& rhs) {
+    lhs |= rhs;
+    return lhs;
+  }
+
+  friend bool operator==(const BeginMainFrameReasons& lhs,
+                         const BeginMainFrameReasons& rhs) = default;
+
+ private:
+  static constexpr size_t kSize =
+      static_cast<size_t>(BeginMainFrameReason::kMaxValue) + 1;
+  // We use this metric in a bitfield. UMA can only record 1000 buckets for a
+  // histogram. So, assert that we do not go over this max size.
+  static_assert(1 << kSize < 1000);
+
+  std::bitset<kSize> reasons_;
+};
 
 // Latency timing data for Main Frame lifecycle updates triggered by cc.
 // The data is captured in LocalFrameViewUKMAggregator and passed back through
