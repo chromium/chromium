@@ -404,7 +404,6 @@ AXNode* AXNode::GetDeepestLastDescendant() const {
 
 AXNode* AXNode::GetDeepestLastDescendantCrossingTreeBoundary() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
-  DCHECK(!IsIgnored()) << "Called unignored method on ignored node: " << *this;
   if (!GetChildCountCrossingTreeBoundary())
     return nullptr;
 
