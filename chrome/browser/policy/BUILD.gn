@@ -479,6 +479,9 @@ source_set("policy_specific_browser_tests") {
       "//chrome/browser/on_device_translation:test_support",
     ]
   }
+  if (is_chromeos) {
+    deps += [ "//chrome/browser/ui/ash/login" ]
+  }
 }
 
 source_set("browser_tests") {
@@ -511,6 +514,7 @@ source_set("browser_tests") {
     "//chrome/browser:main_extra_parts",
     "//chrome/browser/background",
     "//chrome/browser/invalidation",
+    "//chrome/browser/net",
     "//chrome/browser/policy:policy_util",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search",
@@ -754,6 +758,9 @@ source_set("browser_tests") {
       "//chrome/browser/ui/webui/certificate_manager",
     ]
   }
+  if (!is_android) {
+    deps += [ "//chrome/browser/device_identity" ]
+  }
 }
 
 source_set("android_browsertests") {
@@ -848,6 +855,7 @@ source_set("unit_tests") {
     ":test_support",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/prefs",
+    "//chrome/browser/ui:enterprise_startup_dialog",
     "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
     "//components/account_id:test_support",
@@ -986,6 +994,9 @@ source_set("unit_tests") {
   if (enable_extensions) {
     sources += [ "chrome_extension_policy_migrator_unittest.cc" ]
     deps += [ ":policy_migrator" ]
+  }
+  if (!is_android) {
+    deps += [ "//chrome/browser/device_identity" ]
   }
 }
 

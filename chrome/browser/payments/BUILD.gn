@@ -25,6 +25,7 @@ source_set("impl") {
 
   deps = [
     "//base",
+    "//chrome/browser/net",
     "//components/payments/core",
     "//content/public/browser",
     "//net",
@@ -44,7 +45,6 @@ source_set("impl") {
       "//chrome/browser/autofill",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/signin",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/views/payments",
       "//chrome/browser/ui/web_applications",

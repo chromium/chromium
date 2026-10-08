@@ -467,6 +467,7 @@ if (!is_android) {
       ":component_updater",
       ":impl",
       "//base",
+      "//chrome/browser/net",
       "//chrome/browser/ssl:test_support",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",

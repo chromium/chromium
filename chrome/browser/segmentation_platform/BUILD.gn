@@ -113,6 +113,7 @@ source_set("impl") {
     "//chrome/browser/sync",
     "//chrome/browser/ui/browser_window",
     "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service",
     "//components/compose:buildflags",
     "//components/metrics_services_manager",
     "//components/search",
@@ -131,15 +132,12 @@ source_set("impl") {
       "//chrome/android:jni_headers",
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/flags:flags_android",
-      "//chrome/browser/ui",
       "//chrome/browser/ui/android/tab_model",
       "//chrome/browser/ui/android/toolbar",
-      "//components/commerce/core:shopping_service",
       "//components/segmentation_platform/embedder/home_modules:constants",
     ]
   } else {
     deps += [
-      "//chrome/browser/ui",
       "//chrome/browser/ui/sync",
       "//chrome/browser/ui/tabs:tab_strip",
       "//components/tabs:public",

@@ -754,6 +754,7 @@ source_set("platform_browser_tests") {
     ":test_support",
     "//base",
     "//chrome/browser:chrome_browser_main",
+    "//chrome/browser/net",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_test_utils",
     "//content/test:test_support",
@@ -855,6 +856,9 @@ if (!is_android) {
 
     if (is_win) {
       deps += [ "//sandbox/win:common" ]
+    }
+    if (is_chromeos) {
+      deps += [ "//chrome/browser/ui/ash/login" ]
     }
   }
 }

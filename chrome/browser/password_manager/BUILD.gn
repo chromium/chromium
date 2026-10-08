@@ -724,6 +724,7 @@ if (!is_android) {
       "//chrome/browser/password_manager:impl",
       "//chrome/browser/password_manager/factories",
       "//chrome/browser/sync:factories",
+      "//chrome/browser/ui:tab_dialogs",
       "//chrome/browser/ui/passwords",
       "//chrome/test:test_support",
       "//components/autofill/core/common",

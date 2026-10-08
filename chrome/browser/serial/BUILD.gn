@@ -159,6 +159,7 @@ if (!is_android) {
       "//base",
       "//base/test:test_support",
       "//build:chromeos_buildflags",
+      "//chrome/browser/ui/dialogs:browser_dialogs",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",

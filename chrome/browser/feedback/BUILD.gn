@@ -204,6 +204,7 @@ source_set("unit_tests") {
   testonly = true
 
   deps = [
+    ":feedback",
     ":feedback_impl",
     "//base/test:test_support",
     "//chrome/browser/performance_manager:test_support",
@@ -258,9 +259,11 @@ if (!is_android) {
     ]
 
     deps = [
+      ":feedback",
       ":feedback_impl",
       "//base",
       "//chrome/browser/ui:browser_commands",
+      "//chrome/browser/ui/webui/feedback",
       "//chrome/browser/updater",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",

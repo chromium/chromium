@@ -30,6 +30,7 @@ if (enable_captive_portal_detection) {
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/platform_apps:browser_test_support",
       "//chrome/browser/extensions:test_support",
+      "//chrome/browser/net",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_window_header",

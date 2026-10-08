@@ -789,6 +789,7 @@ source_set("unit_tests") {
     ":safe_browsing",
     ":test_support",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/net",
     "//chrome/browser/safe_browsing:advanced_protection",
     "//chrome/browser/site_protection:utils",
     "//chrome/test:test_support",
@@ -1302,7 +1303,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = []
-  deps = []
+  deps = [ "//chrome/browser/net" ]
 
   if (!is_android) {
     deps += [

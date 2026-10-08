@@ -32,6 +32,7 @@ source_set("impl") {
   deps = [
     ":digital_credentials",
     "//base",
+    "//chrome/browser/net",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/content",
@@ -51,7 +52,6 @@ source_set("impl") {
   } else {
     sources += [ "digital_identity_provider_desktop.cc" ]
     deps += [
-      "//chrome/browser/ui",
       "//chrome/browser/ui/views/accessibility",
       "//chrome/browser/ui/views/digital_credentials",
       "//components/constrained_window",

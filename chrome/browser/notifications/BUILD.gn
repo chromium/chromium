@@ -446,6 +446,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":impl",
     ":notifications",
     ":test_support",
     "//base",
