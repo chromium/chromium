@@ -14,6 +14,10 @@ import("//build/util/lastchange.gni")
 #     info_plists:
 #         (optional), list of string, the plist files to merge and tweak.
 #
+#     dedup_list:
+#         (optional), boolean, whether to deduplicate list entries when
+#         merging plists. Defaults to true.
+#
 #     args:
 #         (optional), list of string, the arguments to pass to the
 #         tweak_info_plist.py script.
@@ -40,10 +44,18 @@ template("tweak_info_plist") {
       sources = invoker.info_plists
       outputs = [ _source_name ]
       args = [
-               "merge",
-               "-f=xml1",
-               "-o=" + rebase_path(_source_name, root_build_dir),
-             ] + rebase_path(invoker.info_plists, root_build_dir)
+        "merge",
+        "-f=xml1",
+        "-o=" + rebase_path(_source_name, root_build_dir),
+      ]
+      if (defined(invoker.dedup_list)) {
+        if (invoker.dedup_list) {
+          args += [ "--dedup-list" ]
+        } else {
+          args += [ "--no-dedup-list" ]
+        }
+      }
+      args += rebase_path(invoker.info_plists, root_build_dir)
     }
   } else {
     assert(defined(invoker.info_plist),

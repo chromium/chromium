@@ -109,31 +109,37 @@ def SavePList(path, format, data):
         plistlib.dump(data, f, fmt=plist_format[format])
 
 
-def MergePList(plist1, plist2):
+def MergePList(plist1, plist2, dedup_list=True):
     """Merges |plist1| with |plist2| recursively.
 
     Creates a new dictionary representing a Property List (.plist) files by
     merging the two dictionary |plist1| and |plist2| recursively (only for
-    dictionary values). List value will be concatenated.
+    dictionary values). List value will be concatenated. If |dedup_list| is
+    True, duplicate items are removed while preserving order.
 
     Args:
       plist1: a dictionary representing a Property List (.plist) file
       plist2: a dictionary representing a Property List (.plist) file
+      dedup_list: boolean indicating whether to deduplicate list entries
 
     Returns:
       A new dictionary representing a Property List (.plist) file by merging
       |plist1| with |plist2|. If any value is a dictionary, they are merged
       recursively, otherwise |plist2| value is used. If values are list, they
-      are concatenated.
+      are concatenated (and deduplicated if |dedup_list| is True).
     """
     result = plist1.copy()
     for key, value in plist2.items():
         if isinstance(value, dict):
             old_value = result.get(key)
             if isinstance(old_value, dict):
-                value = MergePList(old_value, value)
+                value = MergePList(old_value, value, dedup_list=dedup_list)
         if isinstance(value, list):
-            value = plist1.get(key, []) + plist2.get(key, [])
+            value = []
+            for plist in (plist1, plist2):
+                for item in plist.get(key, []):
+                    if not dedup_list or item not in value:
+                        value.append(item)
         result[key] = value
     return result
 
@@ -175,6 +181,12 @@ class MergeAction(Action):
             help='version of Xcode, ignored (can be used to force rebuild)',
         )
         parser.add_argument(
+            '--dedup-list',
+            action=argparse.BooleanOptionalAction,
+            default=True,
+            help='deduplicate list entries when merging',
+        )
+        parser.add_argument(
             'path', nargs="+", help='path to plist files to merge'
         )
 
@@ -182,7 +194,9 @@ class MergeAction(Action):
     def _Execute(args):
         data = {}
         for filename in args.path:
-            data = MergePList(data, LoadPList(filename))
+            data = MergePList(
+                data, LoadPList(filename), dedup_list=args.dedup_list
+            )
         SavePList(args.output, args.format, data)
 
 
