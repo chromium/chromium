@@ -1,0 +1,61 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/python.gni")
+
+# Generates a Java class with a nested class per feature in the
+# kFeaturesExposedToJava arrays of the given C++ files. See README.md.
+#
+# The output is $target_gen_dir/$target_name.srcjar. List the target in the
+# srcjar_deps of exactly one android_library().
+#
+# Variables:
+#   sources: C++ files that define kFeaturesExposedToJava.
+#   class_name: Fully-qualified name of the generated Java class, e.g.
+#     "org.chromium.chrome.browser.flags.ChromeFeatures".
+#   feature_map_class_name: (Optional) Fully-qualified FeatureMap subclass used
+#     by all sources. By default, each source's FeatureMap is derived from its
+#     JNI_<Name>_GetNativeMap function and assumed to be in the same package as
+#     class_name.
+#   deps: (Optional) Must include the targets that generate any generated
+#     FEATURE_DEFINITION_FILEs.
+#
+# Example:
+#   java_flag_generator("java_flags") {
+#     sources = [ "android/chrome_feature_list.cc" ]
+#     class_name = "org.chromium.chrome.browser.flags.ChromeFeatures"
+#   }
+template("java_flag_generator") {
+  assert(defined(invoker.sources), "java_flag_generator() requires sources")
+  assert(defined(invoker.class_name),
+         "java_flag_generator() requires class_name")
+
+  action_with_pydeps(target_name) {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
+    script = "//base/android/java_flag_generator/java_flag_generator.py"
+    inputs = invoker.sources
+    _srcjar = "$target_gen_dir/$target_name.srcjar"
+    outputs = [ _srcjar ]
+    depfile = "$target_gen_dir/$target_name.d"
+    args = [
+      "--class-name",
+      invoker.class_name,
+      "--source-root",
+      rebase_path("//", root_build_dir),
+      "--root-gen-dir",
+      rebase_path(root_gen_dir, root_build_dir),
+      "--output-srcjar",
+      rebase_path(_srcjar, root_build_dir),
+      "--depfile",
+      rebase_path(depfile, root_build_dir),
+    ]
+    if (defined(invoker.feature_map_class_name)) {
+      args += [
+        "--feature-map-class-name",
+        invoker.feature_map_class_name,
+      ]
+    }
+    args += rebase_path(invoker.sources, root_build_dir)
+  }
+}
