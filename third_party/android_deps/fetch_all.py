@@ -390,7 +390,7 @@ def _InitSubprojects(android_deps_dir, build_android_deps_dir,
 
 
 def _BuildGradleCmd(build_android_deps_dir, task):
-    # --no-daemon: the packager bot runs the androidx and autorolled rolls
+    # --no-daemon: the packager bot runs the androidx and android_deps rolls
     # back to back with identical buildSrc copies. A reused daemon serves the
     # second run stale Groovy metaclass state from the first, breaking the
     # private method call in BuildConfigGenerator.main(). A fresh JVM costs a
@@ -512,7 +512,7 @@ def _CreateAarInfos(aar_files):
 def _FixArchiveNames(android_deps_dir):
     # Make sure the .aar / .jar has the filename according to the cipd.yaml
     # file. 3pp bot does this transformation for us, but it's needed for
-    # --local and for the autorolled / androidx packages.
+    # --local and for the android_deps / androidx packages.
     src_libs_dir = os.path.join(android_deps_dir, _LIBS_DIR)
     # Match .aar and .jar
     for src_path in FindInDirectory(src_libs_dir, '*.?ar'):

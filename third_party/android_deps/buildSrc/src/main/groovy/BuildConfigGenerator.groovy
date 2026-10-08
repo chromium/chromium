@@ -50,18 +50,13 @@ class BuildConfigGenerator extends DefaultTask {
     private static final String LIBS_DIRECTORY = 'libs'
 
     private static final String ANDROIDX_PROJECT_PATH = 'third_party/androidx'
-    private static final String AUTOROLLED_PROJECT_PATH = 'third_party/android_deps'
     private static final String MAIN_PROJECT_PATH = 'third_party/android_deps'
-    private static final List<String> ALLOWED_PROJECT_PATHS = [ANDROIDX_PROJECT_PATH, AUTOROLLED_PROJECT_PATH, MAIN_PROJECT_PATH]
+    private static final List<String> ALLOWED_PROJECT_PATHS = [ANDROIDX_PROJECT_PATH, MAIN_PROJECT_PATH]
 
     // The 3pp bot now adds an epoch to the version tag, this needs to be kept in sync with 3pp epoch at:
     /* groovylint-disable-next-line LineLength */
     // https://source.chromium.org/chromium/infra/infra/+/master:recipes/recipe_modules/support_3pp/resolved_spec.py?q=symbol:PACKAGE_EPOCH&ss=chromium
     private static final String THREEPP_EPOCH = '2'
-
-    // Used to disable breaking changes while the migration to autorolling
-    // portions of android_deps is complete. See http://crbug.com/40774645
-    private static final boolean AUTOROLL_MIGRATION_IN_PROGRESS = false
 
     // Use this to exclude a dep from being depended upon but keep the target.
     private static final List<String> DISALLOW_DEPS = [
@@ -434,15 +429,9 @@ No modifications.
         allProjects.add(project)
         allProjects.addAll(project.subprojects)
 
-        // During the migration, when processing the main project, do not tag
-        // autorolled deps as such since they should be treated normally until
-        // the migration is complete.
-        boolean tagTargetsAsAutorolled = !AUTOROLL_MIGRATION_IN_PROGRESS || pathToBuildGradle == AUTOROLLED_PROJECT_PATH
-
         ChromiumDepGraph graph = new ChromiumDepGraph(
                 projects: allProjects, logger: project.logger, skipLicenses: skipLicenses,
-                warnOnStaleDeps: pathToBuildGradle == MAIN_PROJECT_PATH,
-                tagTargetsAsAutorolled: tagTargetsAsAutorolled)
+                warnOnStaleDeps: pathToBuildGradle == MAIN_PROJECT_PATH)
 
         // 1. Parse the dependency data
         graph.timeIt("** Collecting all dependencies info") {
@@ -681,14 +670,6 @@ No modifications.
     }
 
     boolean partOfCurrentProject(ChromiumDepGraph.DependencyDescription dependency) {
-        if (AUTOROLL_MIGRATION_IN_PROGRESS) {
-            if (pathToBuildGradle == MAIN_PROJECT_PATH
-                && dependency.projectPath == AUTOROLLED_PROJECT_PATH) {
-                // During the migration, keep the autorolled targets in the main
-                // BUILD.gn until the migration is complete.
-                return true
-            }
-        }
         return dependency.projectPath == pathToBuildGradle
     }
 

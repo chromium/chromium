@@ -156,9 +156,6 @@ class ChromiumDepGraph {
             io_perfmark_perfmark_api: new PropertyOverride(
                     licenseUrl: 'https://raw.githubusercontent.com/perfmark/perfmark/refs/heads/master/LICENSE',
                     licenseName: 'Apache 2.0'),
-            jakarta_inject_jakarta_inject_api: new PropertyOverride(
-                    // Help gradle resolve the same version that our 3pp script does.
-                    versionFilter: '\\d+\\.\\d+\\.\\d+$'),
             javax_annotation_javax_annotation_api: new PropertyOverride(
                     isShipped: false,  // Annotations are stripped by R8.
                     licenseName: 'CDDL-1.1, GPL-2.0-with-classpath-exception',
@@ -271,7 +268,7 @@ class ChromiumDepGraph {
             org_jetbrains_kotlinx_kotlinx_serialization_core_jvm: new PropertyOverride(
                     resolveVersion: '1.7.3'),
             org_jetbrains_kotlinx_kotlinx_serialization_json: new PropertyOverride(
-                    resolveVersion: '1.7.3', overrideLatest: true),
+                    resolveVersion: '1.7.3'),
             org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm: new PropertyOverride(
                     resolveVersion: '1.7.3'),
             io_reactivex_rxjava3_rxjava: new PropertyOverride(
@@ -303,9 +300,6 @@ class ChromiumDepGraph {
     Logger logger
     boolean skipLicenses
     boolean warnOnStaleDeps
-
-    // TODO: remove (set to true) when AUTOROLL_MIGRATION_IN_PROGRESS = false
-    boolean tagTargetsAsAutorolled
 
     private static String makeModuleIdInner(String group, String module, String version) {
         // Does not include version because by default the resolution strategy for gradle is to use the newest version
@@ -413,7 +407,7 @@ class ChromiumDepGraph {
             } else {
                 assert false : 'Unknown config ' + key
             }
-            if (tagTargetsAsAutorolled && key.endsWith("Latest")) {
+            if (key.endsWith("Latest")) {
                 autorolledIds.addAll(values)
             }
         }
@@ -467,12 +461,6 @@ class ChromiumDepGraph {
                 if (overrides.supportsAndroid != null) {
                     dep.supportsAndroid = overrides.supportsAndroid
                 }
-                // If overrideLatest is true, set it recursively on the dep and all its children. This is convenient
-                // since you do not have to set it on a whole set of old deps.
-                if (overrides.overrideLatest) {
-                    recursivelyOverrideLatestVersion(dep)
-                }
-                dep.versionFilter = overrides.versionFilter
             } else {
                 if (warnOnStaleDeps) {
                     logger.warn('PROPERTY_OVERRIDES has stale dep: ' + id)
@@ -498,17 +486,6 @@ class ChromiumDepGraph {
 
     private static String sanitize(String input) {
         return input.replaceAll('[:.-]', '_')
-    }
-
-    private void recursivelyOverrideLatestVersion(DependencyDescription dep) {
-        dep.overrideLatest = true
-        dep.children.each { childID ->
-            PropertyOverride overrides = PROPERTY_OVERRIDES.get(childID)
-            if (!overrides?.resolveVersion) {
-                DependencyDescription child = dependencies.get(childID)
-                recursivelyOverrideLatestVersion(child)
-            }
-        }
     }
 
     private static boolean areAllModuleArtifactsSameFile(Set<ResolvedArtifact> artifacts) {
@@ -926,13 +903,6 @@ class ChromiumDepGraph {
         List<String> children
         String cipdSuffix
         String cpePrefix
-        // The fetch_all.py normally fetches the latest version instead of the declared version in build.gradle. When
-        // overrideLatest is set to true, the actual version resolved by gradle (based on what is declared in
-        // build.gradle as well as the version other dependencies need) will be used.
-        Boolean overrideLatest
-        // When set, //third_party/android_deps/fetch_common.py will only versions that contain this string to be valid.
-        // This variable is not used in groovy code.
-        String versionFilter
 
         String getDirectoryPath() {
             return BuildConfigGenerator.LIBS_DIRECTORY + '/' + directoryName
@@ -970,9 +940,8 @@ class ChromiumDepGraph {
             return Paths.get(basePath).relativize(Paths.get(this.projectPath)).toString()
         }
 
-        // When writing the BUILD.gn, the paths of autorolled deps is rebased
-        // with respect to the main project path since the autorolled BUILD.gn
-        // is imported to the main BUILD.gn
+        // Autorolled deps (including androidx) write paths relative to
+        // MAIN_PROJECT_PATH, e.g. "../androidx/cipd/..." in androidx's BUILD.gn.
         String getRebasedCommittedDirectoryPath(String currentProjectPath) {
             if (currentProjectPath == this.projectPath) {
                 return this.committedDirectoryPath
@@ -999,9 +968,6 @@ class ChromiumDepGraph {
             if (isAndroidx) {
                 return BuildConfigGenerator.ANDROIDX_PROJECT_PATH
             }
-            if (isAutorolled) {
-                return BuildConfigGenerator.AUTOROLLED_PROJECT_PATH
-            }
             return BuildConfigGenerator.MAIN_PROJECT_PATH
         }
 
@@ -1010,9 +976,6 @@ class ChromiumDepGraph {
             if (isAndroidx) {
                 return BuildConfigGenerator.ANDROIDX_PROJECT_PATH
             }
-            // While autorolled targets are generated as part of
-            // AUTOROLLED_PROJECT_PATH's BUILD.gn, it is declared inside a gn
-            // template to be imported into the MAIN_PROJECT_PATH's BUILD.gn.
             return BuildConfigGenerator.MAIN_PROJECT_PATH
         }
     }
@@ -1031,7 +994,5 @@ class ChromiumDepGraph {
         Boolean supportsAndroid
         // Set to true if this dependency is not needed.
         Boolean exclude
-        Boolean overrideLatest
-        String versionFilter
     }
 }

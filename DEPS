@@ -419,9 +419,8 @@ vars = {
   # the commit queue can handle CLs rolling android_sdk_build-tools_version
   # and whatever else without interference from each other.
   'android_sdk_build-tools_version': 'version_37.0.0',
-  # Shared by the //third_party/android_deps/autorolled/cipd and
-  # //third_party/android_deps/cipd entries while autorolled/ is collapsed into
-  # android_deps/ (crbug.com/562517138). Rolled by the android_deps autoroller.
+  # Used by the //third_party/android_deps/cipd entry. Rolled by the
+  # android_deps autoroller.
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling android_deps_autorolled_version
   # and whatever else without interference from each other.
@@ -3482,16 +3481,6 @@ deps = {
       'condition': 'checkout_android_prebuilts_build_tools',
   },
 
-  'src/third_party/android_deps/autorolled/cipd': {
-      'packages': [
-          {
-              'package': 'chromium/third_party/android_deps/autorolled',
-              'version': Var('android_deps_autorolled_version'),
-          },
-      ],
-      'condition': 'checkout_android and non_git_source',
-      'dep_type': 'cipd',
-  },
   'src/third_party/android_deps/cipd': {
       'packages': [
           {

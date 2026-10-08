@@ -35,7 +35,7 @@ For AndroidX libries, see [`//third_party/androidx/README.md`]
 [`//docs/adding_to_third_party.md`]: /docs/adding_to_third_party.md
 [`//third_party/androidx/README.md`]: /third_party/androidx/README.md
 
-### Adding an Autorolled Library (Preferred)
+### Adding an Autorolled Library
 
 1. Add the gradle entry for the desired target to `//third_party/android_deps/build.gradle.template`
 2. Do a trial run (downloads files locally):
@@ -47,73 +47,6 @@ For AndroidX libries, see [`//third_party/androidx/README.md`]
 
 [trigger the packager manually]: https://luci-scheduler.appspot.com/jobs/chromium/android-androidx-packager
 
-### Adding a Non-Autorolled Library
-
-1) Add the gradle entry for the desired target to `//third_party/android_deps/build.gradle`
-2) Do a trial run (downloads files locally):
-   ```
-   third_party/android_deps/fetch_all.py --local
-   ```
-3) Assuming it works fine, upload & submit you changes to `build.gradle` and everything in `libs/`.
-   * Revert your local changes to `DEPS` and `BUILD.gn`
-4) Wait for the [3pp-linux-amd64-packager] to run (or [trigger it manually] to expedite)
-5) Run `fetch_all.py --local` again, and this time commit all the changes.
-
-[3pp-linux-amd64-packager]: https://ci.chromium.org/ui/p/chromium/builders/ci/3pp-linux-amd64-packager
-[trigger it manually]: https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
-
-### Adding or Updating a Non-Autorolled Library
-
-1. Update `build.gradle` with the new dependency or the new versions.
-
-2. Run `fetch_all.py --local` to update your current workspace with the changes.
-   This will update, among other things, your top-level `DEPS` file. If this is a
-   new library, you can skip directly to step 5 since the next step is not going
-   to work for you.
-
-3. Run `gclient sync` to make sure that cipd has access to the versions you are
-   trying to roll. This might fail with a cipd error failing to resolve a tag.
-
-4. If the previous step works, upload your cl and you are done, if not continue
-   with the steps.
-
-5. Add a `overrideLatest` property override to your package in
-   `ChromiumDepGraph.groovy` in the [`PROPERTY_OVERRIDES`] map, set it to `true`.
-
-6. Run `fetch_all.py --local` again.
-
-7. `git add` all the 3pp related changes and create a CL for review. Keep the
-   `3pp/`, `.gradle`, `OWNERS`, `.groovy` changes in the CL and revert the other
-   files. The other files should be committed in a follow up CL. Example git
-   commands:
-   * `git add third_party/android_deps{*.gradle,*.groovy,*3pp*,*OWNERS,*README.md}`
-   * `git commit -m commit_message`
-   * `git restore third_party/android_deps DEPS`
-   * `git clean -id`
-
-8. Land the first CL in the previous step and wait for the corresponding 3pp
-   packager to create the new CIPD packages. The 3pp packager runs every 6
-   hours.  You can see the latest runs [here][3pp_bot]. See
-   [`//docs/cipd_and_3pp.md`][cipd_and_3pp_doc] for how it works. Anyone on the
-   Clank Commons team and any trooper can trigger the bot on demand for you.
-
-9. If your follow up CL takes more than a day please revert the original CL.
-   Once the bot uploads to cipd there is no need to keep the modified 3pp files.
-   The bot runs 4 times a day. When you are ready to land the follow up CL, you
-   can land everything together since the cipd packages have already been
-   uploaded.
-
-10. Remove your `overrideLatest` property override entry in
-    `ChromiumDepGraph.groovy` so that the 3pp bot goes back to downloading and
-    storing the latest versions of your package so that it is available when you
-    next try to roll.
-
-11. Run `fetch_all.py --local` again. Create a CL with the changes and land it.
-
-[3pp_bot]: https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager
-[cipd_and_3pp_doc]: ../../docs/cipd_and_3pp.md
-[`PROPERTY_OVERRIDES`]: /third_party/android_deps/buildSrc/src/main/groovy/ChromiumDepGraph.groovy
-
 ## Common Issues
 
 ### Missing Metadata
@@ -122,10 +55,14 @@ E.g. missing license, HTML in license, missing URL or description:
 
 * Add an entry to [`PROPERTY_OVERRIDES`]
 
+[`PROPERTY_OVERRIDES`]: /third_party/android_deps/buildSrc/src/main/groovy/ChromiumDepGraph.groovy
+
 ### BUILD.gn Needs Customization
 
 * For AndroidX, add an entry to `//third_party/androidx/customizations.gni`
-* For others, add an entry to [`addSpecialTreatment()`]
+* For others, add an entry to [`addSpecialTreatment()`], or for hand-written
+  targets, edit `//third_party/android_deps/overrides.gni` (`BUILD.gn` is
+  overwritten by the roller)
 
 [`addSpecialTreatment()`]: /third_party/android_deps/buildSrc/src/main/groovy/BuildConfigGenerator.groovy
 
