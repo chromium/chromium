@@ -10,8 +10,6 @@
 //     third_party/blink/public/mojom/locks/lock_manager.mojom
 //
 
-private let mojoPrefix = "blink.mojom."
-
 ///
 /// Interfaces
 ///
@@ -296,10 +294,12 @@ extension ILType {
 ///
 /// Generators
 ///
-// TODO(crbug.com/500386713) Consider using mojoBuiltins or another list instead of regex
+/// Names of every ObjectGroup registered by this profile.
+private let mojoTargetGroups = Set(mojoObjectGroups.map { $0.name })
+
 private func isTargetObject(type: ILType) -> Bool {
     guard type.Is(.object()), let group = type.group else { return false }
-    return group.starts(with: mojoPrefix)
+    return mojoTargetGroups.contains(group)
 }
 
 /// Mojo variant of the builtin `MethodCallGenerator` that operates only on
@@ -372,6 +372,26 @@ private let MojoBlinkMojomLockRequestRouterListenerGenerator = CodeGenerator(
     b.callMethod("addListener", on: listenerHost, withArgs: [callback])
 }
 
+/// Every ObjectGroup registered by this profile. Also used by `isTargetObject`
+/// to decide which variables the Mojo generators operate on.
+private let mojoObjectGroups: [ObjectGroup] = [
+    .blinkMojomLockManagerRemote,
+    .blinkMojomLockManagerRemoteWrapper,
+    .blinkMojomLockManagerPendingReceiver,
+    .blinkMojomLockHandleRemote,
+    .blinkMojomLockHandleRemoteWrapper,
+    .blinkMojomLockHandlePendingReceiver,
+    .blinkMojomLockRequestCallbackRouter,
+    .blinkMojomLockRequestCallbackRouterReceiverHelper,
+    .blinkMojomLockRequestRemote,
+    .blinkMojomLockRequestRemoteWrapper,
+    .blinkMojomLockRequestPendingReceiver,
+    .blinkMojomLockRequestGrantedCallbackReceiver,
+    .blinkMojomLockRequestFailedCallbackReceiver,
+    .blinkMojomLockInfo,
+    .blinkMojomLockManagerQueryStateResponseParams,
+] + commonMojoObjectGroups
+
 private let mojoBuiltins: [String: ILType] = [
     /// Profiles declare this method, a wrapper method around `getRemote` that follows
     /// the Singleton pattern, in `codePrefix`. This method ensures: (1) `getRemote`
@@ -436,23 +456,7 @@ let mojoLockManagerProfile = Profile(
         "ExplorationMutator", "ProbingMutator", "PropertyAccessorMutator"
     ],
     additionalBuiltins: mojoBuiltins.merging(commonMojoBuiltins) { (existing, _) in existing },
-    additionalObjectGroups: [
-        .blinkMojomLockManagerRemote,
-        .blinkMojomLockManagerRemoteWrapper,
-        .blinkMojomLockManagerPendingReceiver,
-        .blinkMojomLockHandleRemote,
-        .blinkMojomLockHandleRemoteWrapper,
-        .blinkMojomLockHandlePendingReceiver,
-        .blinkMojomLockRequestCallbackRouter,
-        .blinkMojomLockRequestCallbackRouterReceiverHelper,
-        .blinkMojomLockRequestRemote,
-        .blinkMojomLockRequestRemoteWrapper,
-        .blinkMojomLockRequestPendingReceiver,
-        .blinkMojomLockRequestGrantedCallbackReceiver,
-        .blinkMojomLockRequestFailedCallbackReceiver,
-        .blinkMojomLockInfo,
-        .blinkMojomLockManagerQueryStateResponseParams,
-    ] + commonMojoObjectGroups,
+    additionalObjectGroups: mojoObjectGroups,
     additionalEnumerations: [
         .jsBlinkMojomLockMode,
         .jsBlinkMojomLockManager_WaitMode,
