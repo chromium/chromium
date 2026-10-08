@@ -1066,6 +1066,9 @@ void BrowserActions::InitializeChromeMenuActions() {
               : vector_icons::kBusinessChromeRefreshOldIcon)
           .SetEnabled(
               enterprise_isolated_mode::IsolatedModeReplacesIncognito(profile))
+          .SetProperty(
+              actions::kShortTitleTextKey,
+              new std::u16string(l10n_util::GetStringUTF16(IDS_ISOLATED)))
           .SetAccelerator(GetAcceleratorForCommandId(IDC_NEW_INCOGNITO_WINDOW))
           .Build());
 

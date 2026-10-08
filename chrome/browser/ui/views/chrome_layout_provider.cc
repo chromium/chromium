@@ -109,7 +109,7 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
       // with other items.
       return gfx::Insets::VH(0, 12);
     case INSETS_ACTION_APP_MENU_BLOCK_ENTRY_BUTTON:
-      return gfx::Insets::VH(8, 0);
+      return gfx::Insets::VH(11, 0);
     default:
       return LayoutProvider::GetInsetsMetric(metric);
   }
@@ -279,7 +279,7 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_ICON_SIZE:
       return 20;
     case DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_LINE_HEIGHT:
-      return 16;
+      return 13;
     case DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_SPACING:
       return 12;
     case DISTANCE_ACTION_APP_MENU_FOOTER_BOTTOM_CONTAINER_SPACING:
@@ -296,7 +296,7 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_ACTION_APP_MENU_BLOCK_ROW_SPACING:
       return 8;
     case DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_BETWEEN_CHILD_SPACING:
-      return 4;
+      return 1;
     case DISTANCE_ACTION_APP_MENU_MAX_WIDTH:
       return 800;
   }

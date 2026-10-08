@@ -78,7 +78,7 @@ AppMenuBlockButton::AppMenuBlockButton(PressedCallback callback)
 
   label_ = AddChildView(std::make_unique<views::Label>());
   label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  label_->SetTextStyle(views::style::STYLE_BODY_4);
+  label_->SetTextStyle(views::style::STYLE_BODY_5);
   label_->SetLineHeight(provider->GetDistanceMetric(
       DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_LINE_HEIGHT));
   label_->SetMultiLine(true);

@@ -603,7 +603,13 @@ void ActionAppMenuManager::AddBlockHeaderActions(actions::ActionItem* root) {
             section.AddAction(
                 kActionNewIsolatedWindow,
                 {.display_type = DisplayType::kBlock,
-                 .text_override = l10n_util::GetStringUTF16(IDS_ISOLATED)});
+                 .text_override =
+                     profile->IsEnterpriseIsolatedModeProfile()
+                         ? std::make_optional(
+                               BrowserActions::GetCleanTitleAndTooltipText(
+                                   l10n_util::GetStringUTF16(
+                                       IDS_NEW_ISOLATED_WINDOW)))
+                         : std::nullopt});
           } else {
             section.AddAction(
                 kActionNewIncognitoWindow,
