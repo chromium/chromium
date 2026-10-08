@@ -8,6 +8,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
@@ -99,8 +100,16 @@ class DefaultBrowserPromptInteractiveTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/571643040): Failing on Linux MSan.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_ShowsDefaultBrowserPromptOnNewTab \
+  DISABLED_ShowsDefaultBrowserPromptOnNewTab
+#else
+#define MAYBE_ShowsDefaultBrowserPromptOnNewTab \
+  ShowsDefaultBrowserPromptOnNewTab
+#endif
 IN_PROC_BROWSER_TEST_F(DefaultBrowserPromptInteractiveTest,
-                       ShowsDefaultBrowserPromptOnNewTab) {
+                       MAYBE_ShowsDefaultBrowserPromptOnNewTab) {
   DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
   RunTestSequence(
       WaitForShow(ConfirmInfoBar::kInfoBarElementId),
