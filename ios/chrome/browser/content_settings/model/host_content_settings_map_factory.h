@@ -6,29 +6,21 @@
 #define IOS_CHROME_BROWSER_CONTENT_SETTINGS_MODEL_HOST_CONTENT_SETTINGS_MAP_FACTORY_H_
 
 #import "base/memory/scoped_refptr.h"
-#import "base/no_destructor.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
-#import "ios/chrome/browser/shared/model/profile/refcounted_profile_keyed_service_factory_ios.h"
-
-class HostContentSettingsMap;
+#import "ios/chrome/browser/shared/model/profile/typed_refcounted_profile_keyed_service_factory_ios.h"
 
 namespace ios {
 
 // Singleton that owns all HostContentSettingsMaps and associates them with
 // profiles.
 class HostContentSettingsMapFactory
-    : public RefcountedProfileKeyedServiceFactoryIOS {
+    : public TypedRefcountedProfileKeyedServiceFactoryIOS<
+          HostContentSettingsMapFactory,
+          HostContentSettingsMap> {
  public:
-  static scoped_refptr<HostContentSettingsMap> GetForProfile(
-      ProfileIOS* profile);
-  static HostContentSettingsMapFactory* GetInstance();
+  HostContentSettingsMapFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<HostContentSettingsMapFactory>;
-
-  HostContentSettingsMapFactory();
-  ~HostContentSettingsMapFactory() override;
-
   // RefcountedProfileKeyedServiceFactoryIOS implementation.
   bool ServiceIsRequiredForContextInitialization() const override;
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(

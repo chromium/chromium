@@ -38,40 +38,19 @@ scoped_refptr<RefcountedKeyedService> BuildShortcutsBackend(
 }  // namespace
 
 // static
-scoped_refptr<ShortcutsBackend> ShortcutsBackendFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<ShortcutsBackend>(
-      profile, /*create=*/true);
-}
-
-// static
-scoped_refptr<ShortcutsBackend> ShortcutsBackendFactory::GetForProfileIfExists(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<ShortcutsBackend>(
-      profile, /*create=*/false);
-}
-
-// static
-ShortcutsBackendFactory* ShortcutsBackendFactory::GetInstance() {
-  static base::NoDestructor<ShortcutsBackendFactory> instance;
-  return instance.get();
-}
-
-// static
 ShortcutsBackendFactory::TestingFactory
 ShortcutsBackendFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildShortcutsBackend);
 }
 
-ShortcutsBackendFactory::ShortcutsBackendFactory()
-    : RefcountedProfileKeyedServiceFactoryIOS(
+ShortcutsBackendFactory::ShortcutsBackendFactory(PassKey key)
+    : TypedRefcountedProfileKeyedServiceFactoryIOS(
+          std::move(key),
           "ShortcutsBackend",
           TestingCreation::kNoServiceForTests) {
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());
 }
-
-ShortcutsBackendFactory::~ShortcutsBackendFactory() {}
 
 scoped_refptr<RefcountedKeyedService>
 ShortcutsBackendFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {

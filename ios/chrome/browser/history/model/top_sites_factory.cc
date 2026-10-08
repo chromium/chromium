@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/no_destructor.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/top_sites_impl.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -19,28 +18,14 @@
 
 namespace ios {
 
-// static
-scoped_refptr<history::TopSites> TopSitesFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<history::TopSites>(
-      profile, /*create=*/true);
-}
-
-// static
-TopSitesFactory* TopSitesFactory::GetInstance() {
-  static base::NoDestructor<TopSitesFactory> instance;
-  return instance.get();
-}
-
-TopSitesFactory::TopSitesFactory()
-    : RefcountedProfileKeyedServiceFactoryIOS(
+TopSitesFactory::TopSitesFactory(PassKey key)
+    : TypedRefcountedProfileKeyedServiceFactoryIOS(
+          std::move(key),
           "TopSites",
           TestingCreation::kNoServiceForTests) {
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
 }
-
-TopSitesFactory::~TopSitesFactory() = default;
 
 scoped_refptr<RefcountedKeyedService> TopSitesFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {

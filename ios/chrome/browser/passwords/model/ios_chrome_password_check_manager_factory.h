@@ -5,26 +5,22 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_PASSWORD_CHECK_MANAGER_FACTORY_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_PASSWORD_CHECK_MANAGER_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/refcounted_profile_keyed_service_factory_ios.h"
-
-class IOSChromePasswordCheckManager;
+#import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
+#import "ios/chrome/browser/shared/model/profile/typed_refcounted_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns weak pointer to IOSChromePasswordCheckManager.
 class IOSChromePasswordCheckManagerFactory
-    : public RefcountedProfileKeyedServiceFactoryIOS {
+    : public TypedRefcountedProfileKeyedServiceFactoryIOS<
+          IOSChromePasswordCheckManagerFactory,
+          IOSChromePasswordCheckManager> {
  public:
-  static scoped_refptr<IOSChromePasswordCheckManager> GetForProfile(
-      ProfileIOS* profile);
-  static IOSChromePasswordCheckManagerFactory* GetInstance();
+  IOSChromePasswordCheckManagerFactory(PassKey key);
+
+  // Returns the default factory for tests.
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend class base::NoDestructor<IOSChromePasswordCheckManagerFactory>;
-
-  IOSChromePasswordCheckManagerFactory();
-  ~IOSChromePasswordCheckManagerFactory() override;
-
+  // RefcountedProfileKeyedServiceFactoryIOS implementation.
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
 };

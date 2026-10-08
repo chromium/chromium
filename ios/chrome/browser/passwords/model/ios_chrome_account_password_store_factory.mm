@@ -8,7 +8,6 @@
 #import <utility>
 
 #import "base/functional/callback_helpers.h"
-#import "base/no_destructor.h"
 #import "base/time/time.h"
 #import "components/affiliations/core/browser/affiliation_service.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -28,41 +27,16 @@
 using affiliations::AffiliationService;
 using password_manager::AffiliatedMatchHelper;
 
-// static
-scoped_refptr<password_manager::PasswordStoreInterface>
-IOSChromeAccountPasswordStoreFactory::GetForProfile(
-    ProfileIOS* profile,
-    ServiceAccessType access_type) {
-  // `profile` gets always redirected to a non-Incognito one below, so
-  // Incognito & IMPLICIT_ACCESS means that incognito browsing session would
-  // result in traces in the normal Profile without the user knowing it.
-  if (access_type == ServiceAccessType::IMPLICIT_ACCESS &&
-      profile->IsOffTheRecord()) {
-    return nullptr;
-  }
-  return GetInstance()
-      ->GetServiceForProfileAs<password_manager::PasswordStoreInterface>(
-          profile, /*create=*/true);
-}
-
-// static
-IOSChromeAccountPasswordStoreFactory*
-IOSChromeAccountPasswordStoreFactory::GetInstance() {
-  static base::NoDestructor<IOSChromeAccountPasswordStoreFactory> instance;
-  return instance.get();
-}
-
-IOSChromeAccountPasswordStoreFactory::IOSChromeAccountPasswordStoreFactory()
-    : RefcountedProfileKeyedServiceFactoryIOS(
+IOSChromeAccountPasswordStoreFactory::IOSChromeAccountPasswordStoreFactory(
+    PassKey key)
+    : TypedRefcountedProfileKeyedServiceFactoryIOS(
+          std::move(key),
           "AccountPasswordStore",
           ProfileSelection::kRedirectedInIncognito,
           TestingCreation::kNoServiceForTests) {
   DependsOn(CredentialsCleanerRunnerFactory::GetInstance());
   DependsOn(IOSChromeAffiliationServiceFactory::GetInstance());
 }
-
-IOSChromeAccountPasswordStoreFactory::~IOSChromeAccountPasswordStoreFactory() =
-    default;
 
 scoped_refptr<RefcountedKeyedService>
 IOSChromeAccountPasswordStoreFactory::BuildServiceInstanceFor(

@@ -6,7 +6,6 @@
 
 #import "base/memory/ref_counted.h"
 #import "base/memory/scoped_refptr.h"
-#import "base/no_destructor.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
@@ -33,22 +32,10 @@ scoped_refptr<RefcountedKeyedService> BuildInstance(ProfileIOS* profile) {
 }
 }  // namespace
 
-// static
-IOSChromePasswordCheckManagerFactory*
-IOSChromePasswordCheckManagerFactory::GetInstance() {
-  static base::NoDestructor<IOSChromePasswordCheckManagerFactory> instance;
-  return instance.get();
-}
-
-// static
-scoped_refptr<IOSChromePasswordCheckManager>
-IOSChromePasswordCheckManagerFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<IOSChromePasswordCheckManager>(
-      profile, /*create=*/true);
-}
-
-IOSChromePasswordCheckManagerFactory::IOSChromePasswordCheckManagerFactory()
-    : RefcountedProfileKeyedServiceFactoryIOS("PasswordCheckManager") {
+IOSChromePasswordCheckManagerFactory::IOSChromePasswordCheckManagerFactory(
+    PassKey key)
+    : TypedRefcountedProfileKeyedServiceFactoryIOS(std::move(key),
+                                                   "PasswordCheckManager") {
   DependsOn(IOSChromeAccountPasswordStoreFactory::GetInstance());
   DependsOn(IOSChromeAffiliationServiceFactory::GetInstance());
   DependsOn(IOSChromeBulkLeakCheckServiceFactory::GetInstance());
@@ -56,17 +43,14 @@ IOSChromePasswordCheckManagerFactory::IOSChromePasswordCheckManagerFactory()
   DependsOn(IOSPasskeyModelFactory::GetInstance());
 }
 
-IOSChromePasswordCheckManagerFactory::~IOSChromePasswordCheckManagerFactory() =
-    default;
+// static
+IOSChromePasswordCheckManagerFactory::TestingFactory
+IOSChromePasswordCheckManagerFactory::GetDefaultFactory() {
+  return base::BindOnce(&BuildInstance);
+}
 
 scoped_refptr<RefcountedKeyedService>
 IOSChromePasswordCheckManagerFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   return BuildInstance(profile);
-}
-
-// static
-IOSChromePasswordCheckManagerFactory::TestingFactory
-IOSChromePasswordCheckManagerFactory::GetDefaultFactory() {
-  return base::BindOnce(&BuildInstance);
 }

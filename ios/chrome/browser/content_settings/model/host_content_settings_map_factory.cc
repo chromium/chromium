@@ -4,32 +4,17 @@
 
 #include "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 
-#include "base/no_destructor.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace ios {
 
-// static
-scoped_refptr<HostContentSettingsMap>
-HostContentSettingsMapFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<HostContentSettingsMap>(
-      profile, /*create=*/true);
-}
-
-// static
-HostContentSettingsMapFactory* HostContentSettingsMapFactory::GetInstance() {
-  static base::NoDestructor<HostContentSettingsMapFactory> instance;
-  return instance.get();
-}
-
-HostContentSettingsMapFactory::HostContentSettingsMapFactory()
-    : RefcountedProfileKeyedServiceFactoryIOS(
+HostContentSettingsMapFactory::HostContentSettingsMapFactory(PassKey key)
+    : TypedRefcountedProfileKeyedServiceFactoryIOS(
+          std::move(key),
           "HostContentSettingsMap",
           ProfileSelection::kOwnInstanceInIncognito) {}
-
-HostContentSettingsMapFactory::~HostContentSettingsMapFactory() = default;
 
 bool HostContentSettingsMapFactory::ServiceIsRequiredForContextInitialization()
     const {
