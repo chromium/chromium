@@ -66,5 +66,26 @@ TEST_F(ActorKeyedServiceAdapterTest, StartTaskPropagatesTabId) {
   EXPECT_EQ(result.tab_id(), 99);
 }
 
+TEST_F(ActorKeyedServiceAdapterTest, StopTaskStopsExistingTaskAndReturnsTrue) {
+  optimization_guide::proto::BrowserStartTask start_request;
+  base::test::TestFuture<optimization_guide::proto::BrowserStartTaskResult>
+      start_future;
+  adapter_.StartTask("session_alpha", start_request,
+                     start_future.GetCallback());
+  TaskId task_id(start_future.Get().task_id());
+  ASSERT_TRUE(actor_service_.GetTask(task_id));
+
+  base::test::TestFuture<bool> stop_future;
+  adapter_.StopTask(task_id, stop_future.GetCallback());
+  EXPECT_TRUE(stop_future.Get());
+  EXPECT_FALSE(actor_service_.GetTask(task_id));
+}
+
+TEST_F(ActorKeyedServiceAdapterTest, StopTaskReturnsFalseForUnknownTask) {
+  base::test::TestFuture<bool> stop_future;
+  adapter_.StopTask(TaskId(9999), stop_future.GetCallback());
+  EXPECT_FALSE(stop_future.Get());
+}
+
 }  // namespace
 }  // namespace actor

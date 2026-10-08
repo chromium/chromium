@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -54,8 +55,15 @@ void ActorKeyedServiceAdapter::StartTask(
 
 void ActorKeyedServiceAdapter::StopTask(TaskId task_id,
                                         StopTaskCallback callback) {
-  // TODO(crbug.com/565390793): Pipe StopTask to ActorKeyedService.
-  NOTIMPLEMENTED();
+  if (!actor_service_->GetTask(task_id)) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // TODO(crbug.com/571106281): Update StoppedReason to one provided by the
+  // downstream message.
+  actor_service_->StopTask(task_id, ActorTask::StoppedReason::kTaskComplete);
+  std::move(callback).Run(true);
 }
 
 void ActorKeyedServiceAdapter::Act(
