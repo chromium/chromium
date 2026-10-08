@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AppOpsManager;
 import android.app.PictureInPictureParams;
 import android.content.ComponentName;
 import android.content.Context;
@@ -155,10 +156,38 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
         assertTrue(mActivity.isInPictureInPictureMode());
     }
 
+    /**
+     * Verify that full screen video will try to enter PiP on Android Q. Unlike web
+     * Picture-in-Picture, fullscreen video PiP does not require Android R.
+     */
+    @Test
+    @Config(sdk = Build.VERSION_CODES.Q)
+    public void attemptPictureInPictureSuccessfullyOnAndroidQ() {
+        setHasFullscreenVideo(true);
+        mController.attemptPictureInPicture();
+        assertTrue(mActivity.isInPictureInPictureMode());
+    }
+
     /** Verify that lack of full screen video results in no pip */
     @Test
     public void pictureInPictureFailsWithoutVideo() {
         setHasFullscreenVideo(false);
+        mController.attemptPictureInPicture();
+        assertFalse(mActivity.isInPictureInPictureMode());
+    }
+
+    /**
+     * Verify that Picture in Picture is blocked when disallowed via AppOpsManager system settings.
+     */
+    @Test
+    public void pictureInPictureBlockedWhenAppOpsDisabled() {
+        setHasFullscreenVideo(true);
+        Shadows.shadowOf((AppOpsManager) mActivity.getSystemService(Context.APP_OPS_SERVICE))
+                .setMode(
+                        AppOpsManager.OPSTR_PICTURE_IN_PICTURE,
+                        mActivity.getApplicationInfo().uid,
+                        mActivity.getPackageName(),
+                        AppOpsManager.MODE_IGNORED);
         mController.attemptPictureInPicture();
         assertFalse(mActivity.isInPictureInPictureMode());
     }

@@ -73,7 +73,7 @@ import java.util.concurrent.TimeoutException;
 })
 @EnableFeatures({MediaFeatures.AUTO_PICTURE_IN_PICTURE_ANDROID})
 @Restriction(RESTRICTION_TYPE_NON_AUTO)
-// PictureInPicture#isEnabled() is true on Android 11+.
+// Web Picture-in-Picture requires Android 11+.
 @DisableIf.Build(sdk_is_less_than = VERSION_CODES.R)
 @Batch(Batch.PER_CLASS)
 public class AutoPictureInPictureTabHelperTest {

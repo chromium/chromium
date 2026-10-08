@@ -1438,8 +1438,12 @@ public class ContextMenuTest {
     }
 
     private Integer[] maybeAddPictureInPictureItem(Integer[] baseItems) {
+        // The item is only shown when web Picture-in-Picture is enabled, which also requires
+        // Android R. See ActivityTabWebContentsDelegateAndroid#isPictureInPictureEnabled.
+        // TODO(crbug.com/568761242): Remove the SDK check once the minimum SDK is Android R+.
         return addItemsIf(
-                PictureInPicture.isEnabled(mActivityTestRule.getActivity()),
+                VERSION.SDK_INT >= VERSION_CODES.R
+                        && PictureInPicture.isEnabled(mActivityTestRule.getActivity()),
                 baseItems,
                 new Integer[] {R.id.contextmenu_picture_in_picture});
     }

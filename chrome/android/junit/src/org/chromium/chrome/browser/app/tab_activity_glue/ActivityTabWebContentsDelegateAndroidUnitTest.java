@@ -898,4 +898,15 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         BrowserUiUtils.setIsAndroidAutoProjectedForTesting(true);
         assertFalse(mTabWebContentsDelegateAndroid.isPictureInPictureEnabled());
     }
+
+    /** Web Picture-in-Picture requires Android R (b/143784148), unlike fullscreen video PiP. */
+    @Test
+    @Config(sdk = Build.VERSION_CODES.Q)
+    public void testIsPictureInPictureEnabled_suppressedBeforeAndroidR() {
+        Shadows.shadowOf(mActivity.getPackageManager())
+                .setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
+        BrowserUiUtils.setIsAndroidAutoProjectedForTesting(false);
+
+        assertFalse(mTabWebContentsDelegateAndroid.isPictureInPictureEnabled());
+    }
 }

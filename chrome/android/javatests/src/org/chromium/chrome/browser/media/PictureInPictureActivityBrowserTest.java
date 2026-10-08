@@ -51,7 +51,7 @@ import java.util.concurrent.TimeoutException;
     MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY
 })
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-// PictureInPicture#isEnabled() is true on Android 11+.
+// Web Picture-in-Picture requires Android 11+.
 @DisableIf.Build(sdk_is_less_than = VERSION_CODES.R)
 public class PictureInPictureActivityBrowserTest {
     @Rule

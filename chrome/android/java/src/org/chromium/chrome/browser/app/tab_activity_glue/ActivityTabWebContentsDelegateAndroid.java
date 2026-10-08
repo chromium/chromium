@@ -66,7 +66,6 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
@@ -682,13 +681,18 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     protected boolean isPictureInPictureEnabled() {
+        // Web Picture-in-Picture requires Android R, since some versions of Android crash when the
+        // activity enters Picture-in-Picture immediately after it exits Picture-in-Picture. See
+        // b/143784148. This check lives here rather than in PictureInPicture#isEnabled because
+        // fullscreen video Picture-in-Picture is still supported on Android Q.
+        // TODO(crbug.com/568761242): Remove once the minimum SDK is Android R or above.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            return false;
+        }
         // Pass mActivity rather than mActivity.getApplicationContext() because the Activity
         // context is tied to the specific display's UI mode, whereas the global Application
         // context is shared across all displays.
-        if (mActivity == null || BrowserUiUtils.isAndroidAutoProjected(mActivity)) {
-            return false;
-        }
-        return PictureInPicture.isEnabled(mActivity.getApplicationContext());
+        return mActivity != null && PictureInPicture.isEnabled(mActivity);
     }
 
     private boolean hasRepositionWindowsPermission() {

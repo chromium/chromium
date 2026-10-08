@@ -253,7 +253,7 @@ public class TabAlertIndicatorTest {
 
     @Test
     @SmallTest
-    // PictureInPicture#isEnabled() is true on Android 11+.
+    // Web Picture-in-Picture requires Android 11+.
     @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.R)
     // PiP is not supported for automotive.
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
@@ -595,6 +595,10 @@ public class TabAlertIndicatorTest {
     }
 
     private boolean isPiPEnabled() {
-        return PictureInPicture.isEnabled(mActivityTestRule.getActivity());
+        // Web Picture-in-Picture also requires Android R. See
+        // ActivityTabWebContentsDelegateAndroid#isPictureInPictureEnabled.
+        // TODO(crbug.com/568761242): Remove the SDK check once the minimum SDK is Android R+.
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                && PictureInPicture.isEnabled(mActivityTestRule.getActivity());
     }
 }
