@@ -1446,6 +1446,9 @@ source_set("contents_web_view") {
       "//ui/wm",
     ]
   }
+  if (is_linux || is_chromeos) {
+    deps += [ "//chrome/browser/actor" ]
+  }
 }
 
 source_set("multi_contents_drop_target_view") {
