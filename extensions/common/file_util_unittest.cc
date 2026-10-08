@@ -38,6 +38,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/test/file_path_reparse_point_win.h"
+#endif
+
 using extensions::mojom::ManifestLocation;
 
 namespace extensions {
@@ -282,6 +286,120 @@ TEST_F(FileUtilTest, UninstallRemovesAllPackedExtensionVersions) {
   EXPECT_FALSE(base::DirectoryExists(version_2.DirName()));
   EXPECT_FALSE(base::DirectoryExists(version_3.DirName()));
   EXPECT_TRUE(base::DirectoryExists(extensions_dir));
+}
+
+// Verifies that InstallExtension refuses to install an extension whose
+// destination directory is a symlink pointing to a sibling extension
+// directory (https://crbug.com/561892119).
+TEST_F(FileUtilTest, InstallExtensionRejectsSymlinkToSiblingExtension) {
+  base::ScopedTempDir temp;
+  ASSERT_TRUE(temp.CreateUniqueTempDir());
+
+  base::FilePath profile_dir = temp.GetPath().AppendASCII("Default");
+  base::FilePath extensions_dir = profile_dir.AppendASCII("TestExtensions");
+  ASSERT_TRUE(base::CreateDirectory(extensions_dir));
+
+  base::FilePath sibling_dir = extensions_dir.AppendASCII("sibling_dir");
+  ASSERT_TRUE(base::CreateDirectory(sibling_dir));
+
+  base::FilePath target_dir = extensions_dir.AppendASCII(kExtensionId);
+#if BUILDFLAG(IS_POSIX)
+  ASSERT_TRUE(base::CreateSymbolicLink(sibling_dir, target_dir));
+#elif BUILDFLAG(IS_WIN)
+  ASSERT_TRUE(base::CreateDirectory(target_dir));
+  auto reparse_point =
+      base::test::FilePathReparsePoint::Create(target_dir, sibling_dir);
+  ASSERT_TRUE(reparse_point.has_value());
+#endif
+
+  base::FilePath src = temp.GetPath().AppendASCII("src");
+  ASSERT_TRUE(base::CreateDirectory(src));
+  base::FilePath extension_content;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(src, &extension_content));
+
+  base::FilePath installed_path =
+      file_util::InstallExtension(src, kExtensionId, "1.0", extensions_dir);
+  EXPECT_TRUE(installed_path.empty());
+
+  EXPECT_TRUE(base::IsDirectoryEmpty(sibling_dir));
+  EXPECT_TRUE(base::DirectoryExists(src));
+}
+
+// Verifies that InstallExtension refuses to install an extension whose
+// destination directory is a symlink pointing outside the extensions
+// directory (https://crbug.com/561892119).
+TEST_F(FileUtilTest, InstallExtensionRejectsSymlinkOutsideExtensionsDir) {
+  base::ScopedTempDir temp;
+  ASSERT_TRUE(temp.CreateUniqueTempDir());
+
+  base::FilePath profile_dir = temp.GetPath().AppendASCII("Default");
+  base::FilePath extensions_dir = profile_dir.AppendASCII("TestExtensions");
+  ASSERT_TRUE(base::CreateDirectory(extensions_dir));
+
+  base::FilePath outside_dir = temp.GetPath().AppendASCII("outside");
+  ASSERT_TRUE(base::CreateDirectory(outside_dir));
+
+  base::FilePath target_dir = extensions_dir.AppendASCII(kExtensionId);
+#if BUILDFLAG(IS_POSIX)
+  ASSERT_TRUE(base::CreateSymbolicLink(outside_dir, target_dir));
+#elif BUILDFLAG(IS_WIN)
+  ASSERT_TRUE(base::CreateDirectory(target_dir));
+  auto reparse_point =
+      base::test::FilePathReparsePoint::Create(target_dir, outside_dir);
+  ASSERT_TRUE(reparse_point.has_value());
+#endif
+
+  base::FilePath src = temp.GetPath().AppendASCII("src");
+  ASSERT_TRUE(base::CreateDirectory(src));
+  base::FilePath extension_content;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(src, &extension_content));
+
+  base::FilePath installed_path =
+      file_util::InstallExtension(src, kExtensionId, "1.0", extensions_dir);
+  EXPECT_TRUE(installed_path.empty());
+
+  EXPECT_TRUE(base::IsDirectoryEmpty(outside_dir));
+  EXPECT_TRUE(base::DirectoryExists(src));
+}
+
+// Verifies that InstallExtension refuses to install an extension when
+// `extensions_dir/Temp` is a symlink pointing outside the expected temp
+// directory (https://crbug.com/561892119).
+TEST_F(FileUtilTest, InstallExtensionRejectsSymlinkTempDir) {
+  base::ScopedTempDir temp;
+  ASSERT_TRUE(temp.CreateUniqueTempDir());
+
+  base::FilePath profile_dir = temp.GetPath().AppendASCII("Default");
+  base::FilePath extensions_dir = profile_dir.AppendASCII("TestExtensions");
+  ASSERT_TRUE(base::CreateDirectory(extensions_dir));
+
+  base::FilePath outside_dir = temp.GetPath().AppendASCII("outside");
+  ASSERT_TRUE(base::CreateDirectory(outside_dir));
+
+  base::FilePath temp_dir =
+      extensions_dir.Append(file_util::kTempDirectoryName);
+#if BUILDFLAG(IS_POSIX)
+  ASSERT_TRUE(base::CreateSymbolicLink(outside_dir, temp_dir));
+#elif BUILDFLAG(IS_WIN)
+  ASSERT_TRUE(base::CreateDirectory(temp_dir));
+  auto reparse_point =
+      base::test::FilePathReparsePoint::Create(temp_dir, outside_dir);
+  ASSERT_TRUE(reparse_point.has_value());
+#endif
+
+  base::FilePath src = temp.GetPath().AppendASCII("src");
+  ASSERT_TRUE(base::CreateDirectory(src));
+  base::FilePath extension_content;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(src, &extension_content));
+
+  EXPECT_TRUE(file_util::GetInstallTempDir(extensions_dir).empty());
+
+  base::FilePath installed_path =
+      file_util::InstallExtension(src, kExtensionId, "1.0", extensions_dir);
+  EXPECT_TRUE(installed_path.empty());
+
+  EXPECT_TRUE(base::IsDirectoryEmpty(outside_dir));
+  EXPECT_TRUE(base::DirectoryExists(src));
 }
 
 TEST_F(FileUtilTest, LoadExtensionWithMetadataFolder) {
