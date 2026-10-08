@@ -915,7 +915,9 @@ BookmarkManagerPrivateOpenInNewWindowFunction::RunOnReady() {
   });
   CHECK_EQ(urls.size(), url_and_ids.size(), base::NotFatalUntil::M161);
 
-  CHECK(!calling_profile->IsOffTheRecord(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/570603809): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!calling_profile->IsOffTheRecord());
   Profile* window_profile =
       incognito_result == windows_util::IncognitoResult::kIncognito
           ? calling_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
