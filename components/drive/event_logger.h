@@ -14,6 +14,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/logging.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "components/drive/drive_export.h"
 
@@ -62,10 +63,10 @@ class COMPONENTS_DRIVE_EXPORT EventLogger {
   std::vector<Event> GetHistory();
 
  private:
-  base::circular_deque<Event> history_;  // guarded by lock_.
-  size_t history_size_;  // guarded by lock_.
-  int next_event_id_;  // guarded by lock_.
   base::Lock lock_;
+  base::circular_deque<Event> history_ GUARDED_BY(lock_);
+  size_t history_size_ GUARDED_BY(lock_);
+  int next_event_id_ GUARDED_BY(lock_);
 };
 
 }  // namespace drive
