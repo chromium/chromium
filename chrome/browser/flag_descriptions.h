@@ -251,6 +251,10 @@ inline constexpr char kAndroidOpenIncognitoAsWindowRestrictionsDescription[] =
     "Enables physical memory and display size restrictions when opening "
     "incognito tabs in a new window.";
 
+inline constexpr char kAndroidMultiprofileName[] = "Android Multi-Profile";
+inline constexpr char kAndroidMultiprofileDescription[] =
+    "Enable multi-profile support on Android.";
+
 inline constexpr char kEnforceIncognitoIsolationName[] =
     "Enforce Incognito Isolation";
 inline constexpr char kEnforceIncognitoIsolationDescription[] =

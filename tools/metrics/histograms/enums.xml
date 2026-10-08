@@ -12659,6 +12659,7 @@ from previous Chrome versions.
   <int value="-703038214" label="ActorLiveNotification:enabled"/>
   <int value="-702477233" label="ContentFullscreen:enabled"/>
   <int value="-701652734" label="UnoPhase2FollowUp:enabled"/>
+  <int value="-701427021" label="AndroidMultiprofile:disabled"/>
   <int value="-700762821" label="RequestDesktopSiteForTablets:disabled"/>
   <int value="-700490514" label="DeviceBoundSessionsRefreshQuota:enabled"/>
   <int value="-700388124" label="OmniboxPedalsAndroidBatch1:enabled"/>
@@ -16348,6 +16349,7 @@ from previous Chrome versions.
   <int value="417931522" label="MenuSimplification:enabled"/>
   <int value="418769094" label="MixedContentSiteSetting:enabled"/>
   <int value="419984818" label="ExtensionManifestV2DeprecationWarning:enabled"/>
+  <int value="419990945" label="AndroidMultiprofile:enabled"/>
   <int value="420160748" label="CornerShortcuts:enabled"/>
   <int value="420200188" label="JapaneseOSSettings:disabled"/>
   <int value="420356964" label="OobeJelly:enabled"/>

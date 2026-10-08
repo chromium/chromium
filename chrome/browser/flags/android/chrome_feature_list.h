@@ -59,6 +59,7 @@ BASE_DECLARE_FEATURE(kAndroidFreLayoutUpdate);
 BASE_DECLARE_FEATURE(kAndroidHistoryClustering);
 BASE_DECLARE_FEATURE(kAndroidKeyboardShortcutHints);
 BASE_DECLARE_FEATURE(kAndroidKeyboardShortcutOpenFile);
+BASE_DECLARE_FEATURE(kAndroidMultiprofile);
 BASE_DECLARE_FEATURE(kAndroidNewManagementNotice);
 BASE_DECLARE_FEATURE(kAndroidNewTabButtonTabstripWebUI);
 BASE_DECLARE_FEATURE(kAndroidOmniboxFocusedNewTabPage);

@@ -469,6 +469,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "android-multiprofile",
+    "owners": [ "lokeric@google.com", "sideyilmaz@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "android-navigation-blur-transition-animation",
     "owners": [
       "evanluo@google.com",

@@ -11790,6 +11790,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidDesktopWebPrefsLargeDisplaysDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kAndroidDesktopWebPrefsLargeDisplays)},
+
+    {"android-multiprofile", flag_descriptions::kAndroidMultiprofileName,
+     flag_descriptions::kAndroidMultiprofileDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidMultiprofile)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

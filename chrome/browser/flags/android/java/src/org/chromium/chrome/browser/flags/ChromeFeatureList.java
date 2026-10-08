@@ -286,6 +286,7 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_KEYBOARD_SHORTCUT_HINTS = "AndroidKeyboardShortcutHints";
     public static final String ANDROID_KEYBOARD_SHORTCUT_OPEN_FILE =
             "AndroidKeyboardShortcutOpenFile";
+    public static final String ANDROID_MULTIPROFILE = "AndroidMultiprofile";
     public static final String ANDROID_NEW_MANAGEMENT_NOTICE = "AndroidNewManagementNotice";
     public static final String ANDROID_NEW_TAB_BUTTON_TABSTRIP_WEB_UI =
             "AndroidNewTabButtonTabstripWebUI";
@@ -980,6 +981,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_ELEGANT_TEXT_HEIGHT, true);
     public static final CachedFlag sAndroidKeyboardShortcutOpenFile =
             newCachedFlag(ANDROID_KEYBOARD_SHORTCUT_OPEN_FILE, false);
+    public static final CachedFlag sAndroidMultiprofile =
+            newCachedFlag(ANDROID_MULTIPROFILE, false, /* defaultValueInTests= */ false);
     public static final CachedFlag sAndroidOpenIncognitoAsWindow =
             newCachedFlag(ANDROID_OPEN_INCOGNITO_AS_WINDOW, true);
     public static final CachedFlag sAndroidOpenIncognitoAsWindowRestrictions =
@@ -1505,6 +1508,7 @@ public abstract class ChromeFeatureList {
                     sAndroidDesktopWebUiHistory,
                     sAndroidElegantTextHeight,
                     sAndroidKeyboardShortcutOpenFile,
+                    sAndroidMultiprofile,
                     sAndroidOpenIncognitoAsWindow,
                     sAndroidOpenIncognitoAsWindowRestrictions,
                     sAndroidPageInfoAsAppMenuItem,
