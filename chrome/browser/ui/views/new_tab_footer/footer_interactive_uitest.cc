@@ -46,8 +46,9 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabElementId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFooterLocalElementId);
 
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
-const DeepQuery kFooterCustomizeChromeButton{
-    "new-tab-footer-app", "ntp-customize-buttons", "#customizeButton"};
+DeepQuery FooterCustomizeChromeButton() {
+  return {"new-tab-footer-app", "ntp-customize-buttons", "#customizeButton"};
+}
 
 }  // namespace
 
@@ -106,7 +107,7 @@ class FooterInteractiveTestBase
   InteractiveTestApi::MultiStep OpenSidePanel(
       const ui::ElementIdentifier& contents_id) {
     return Steps(EnsureNotPresent(kSidePanelElementId),
-                 ExecuteJsAt(contents_id, kFooterCustomizeChromeButton,
+                 ExecuteJsAt(contents_id, FooterCustomizeChromeButton(),
                              "el => el.click()"),
                  WaitForShow(kSidePanelElementId));
   }
@@ -114,7 +115,7 @@ class FooterInteractiveTestBase
   InteractiveTestApi::MultiStep CloseSidePanel(
       const ui::ElementIdentifier& contents_id) {
     return Steps(EnsurePresent(kSidePanelElementId),
-                 ExecuteJsAt(contents_id, kFooterCustomizeChromeButton,
+                 ExecuteJsAt(contents_id, FooterCustomizeChromeButton(),
                              "el => el.click()"),
                  WaitForHide(kSidePanelElementId));
   }
@@ -497,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest,
       // Open 1P WebUI NTP and wait for footer to show.
       OpenNewTabAndWaitForFooter(chrome::ChromeUINewTabPageURLAsGURL()),
       // Ensure customize chrome button only shows in footer and not on NTP.
-      Steps(EnsurePresent(kFooterLocalElementId, kFooterCustomizeChromeButton),
+      Steps(EnsurePresent(kFooterLocalElementId, FooterCustomizeChromeButton()),
             EnsureNotPresent(kNewTabElementId, kNtpCustomizeChromeButton)),
       Do([=]() {
         // Disable management notice to hide footer.
@@ -517,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest,
       OpenNewTabAndWaitForFooter(
           GURL(chrome::kChromeUINewTabPageThirdPartyURL)),
       // Ensure customize chrome button hides in footer.
-      EnsureNotPresent(kFooterLocalElementId, kFooterCustomizeChromeButton));
+      EnsureNotPresent(kFooterLocalElementId, FooterCustomizeChromeButton()));
 }
 
 IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest,

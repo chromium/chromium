@@ -5129,7 +5129,6 @@ if (!is_android && !is_chromeos_device) {
     use_xvfb = use_xvfb_in_this_config
 
     sources = [
-      "../browser/ui/views/new_tab_footer/footer_interactive_uitest.cc",
       "//ui/base/clipboard/clipboard_unittest.cc",
       "base/interactive_ui_tests_main.cc",
     ]
@@ -5277,7 +5276,6 @@ if (!is_android && !is_chromeos_device) {
       "//components/contextual_search:test_support",
       "//components/enterprise:test_support",
       "//components/feature_engagement/test:test_support",
-      "//components/fullscreen_control",
       "//components/media_router/browser:test_support",
       "//components/passage_embeddings/core:test_support",
       "//components/sync:test_support",
@@ -5320,6 +5318,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/views/autofill/payments:interactive_ui_tests",
       "//chrome/browser/ui/views/location_bar:interactive_ui_tests",
       "//chrome/browser/ui/views/location_bar/cookie_controls:interactive_ui_tests",
+      "//chrome/browser/ui/views/new_tab_footer:interactive_ui_tests",
       "//chrome/browser/ui/views/tabs/groups:interactive_ui_tests",
       "//chrome/browser/ui/webui/print_preview:interactive_ui_tests",
     ]
@@ -5411,9 +5410,6 @@ if (!is_android && !is_chromeos_device) {
 
     if (toolkit_views) {
       sources += [
-        "../browser/ui/views/fullscreen_control/fullscreen_control_view_interactive_uitest.cc",
-        "../browser/ui/views/location_bar/webui_location_bar_interactive_uitest.cc",
-        "../browser/ui/views/page_action/collaboration_messaging_page_action_icon_view_interactive_uitest.cc",
         "../browser/ui/views/test/view_event_test_base.cc",
         "../browser/ui/views/test/view_event_test_base.h",
       ]
@@ -5434,7 +5430,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/views/data_sharing:interactive_ui_tests",
         "//chrome/browser/ui/views/exclusive_access",
         "//chrome/browser/ui/views/exclusive_access:interactive_ui_tests",
-        "//chrome/browser/ui/views/fullscreen_control",
+        "//chrome/browser/ui/views/fullscreen_control:interactive_ui_tests",
         "//chrome/browser/ui/views/media_router:interactive_ui_tests",
         "//chrome/browser/ui/views/omnibox:interactive_ui_tests",
         "//chrome/browser/ui/views/page_action:interactive_ui_tests",
@@ -5573,10 +5569,7 @@ if (!is_android && !is_chromeos_device) {
 
     if (is_mac) {
       sources += [
-        "../browser/ui/views/location_bar/webui_location_bar_interactive_uitest_mac.h",
-        "../browser/ui/views/location_bar/webui_location_bar_interactive_uitest_mac.mm",
         "//ui/display/mac/test/virtual_display_util_mac_interactive_uitest.mm",
-        "base/in_process_browser_test_mac_interactive_uitest.mm",
       ]
 
       data_deps += [
@@ -5588,6 +5581,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/apps/platform_apps:browser_test_support",
         "//chrome/browser/spellchecker:interactive_ui_tests",
         "//chrome/browser/ui/cocoa:interactive_ui_tests",
+        "//chrome/test/base:interactive_ui_tests",
       ]
     }
 
@@ -5661,13 +5655,7 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (enable_compose) {
-      sources += [ "../browser/ui/views/compose/compose_interactive_uitest.cc" ]
-
-      deps += [
-        "//chrome/browser/ui/views/compose",
-        "//components/compose/core/browser",
-        "//components/compose/core/browser:features",
-      ]
+      deps += [ "//chrome/browser/ui/views/compose:interactive_ui_tests" ]
     }
 
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

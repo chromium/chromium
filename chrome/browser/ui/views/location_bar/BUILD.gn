@@ -369,7 +369,19 @@ source_set("interactive_ui_tests") {
     "location_icon_view_interactive_uitest.cc",
     "record_replay_page_action_controller_interactive_uitest.cc",
     "selected_keyword_view_interactive_uitest.cc",
+    "webui_location_bar_interactive_uitest.cc",
   ]
+
+  if (is_mac) {
+    sources += [
+      "webui_location_bar_interactive_uitest_mac.h",
+      "webui_location_bar_interactive_uitest_mac.mm",
+    ]
+  }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
   deps = [
     ":location_bar",
@@ -387,6 +399,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/views/translate",
     "//chrome/browser/ui/views/web_apps/frame_toolbar:test_support",
     "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_frame_toolbar_view",
+    "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
@@ -396,6 +409,7 @@ source_set("interactive_ui_tests") {
     "//testing/gtest",
     "//ui/events:test_support",
     "//ui/views:test_support",
+    "//ui/webui/tracked_element:test_support",
   ]
 }
 

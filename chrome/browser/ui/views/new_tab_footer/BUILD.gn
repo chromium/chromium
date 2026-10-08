@@ -52,3 +52,16 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
   ]
 }
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "footer_interactive_uitest.cc" ]
+  deps = [
+    ":new_tab_footer",
+    "//base/test:test_support",
+    "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+  ]
+}

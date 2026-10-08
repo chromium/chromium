@@ -1279,6 +1279,22 @@ if (!is_android) {
   }
 }
 
+if (is_mac) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "in_process_browser_test_mac_interactive_uitest.mm" ]
+    deps = [
+      ":in_process_browser_test",
+      "//base/test:test_support",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/test:test_support_ui",
+      "//content/test:test_support",
+      "//ui/base",
+    ]
+  }
+}
+
 if (is_android) {
   source_set("android_ui_test_utils") {
     testonly = true

@@ -40,3 +40,22 @@ source_set("impl") {
   # allow_circular_includes_from entry on //chrome/browser/ui:ui.
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "fullscreen_control_view_interactive_uitest.cc" ]
+  deps = [
+    ":fullscreen_control",
+    "//base",
+    "//chrome/browser/ui/browser_web_contents_delegate",
+    "//chrome/browser/ui/views/exclusive_access",
+    "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/fullscreen_control",
+  ]
+  if (use_aura) {
+    deps += [ "//ui/aura:test_support" ]
+  }
+}

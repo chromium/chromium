@@ -200,7 +200,10 @@ source_set("interactive_ui_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "page_action_interactive_uitest.cc" ]
+  sources = [
+    "collaboration_messaging_page_action_icon_view_interactive_uitest.cc",
+    "page_action_interactive_uitest.cc",
+  ]
 
   deps = [
     ":page_action",
