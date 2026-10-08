@@ -778,18 +778,7 @@ void ClientSharedImage::CreateGpuFenceForSyncTokens(
     base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback) {
   CHECK(gl && context_support);
 
-  if (base::FeatureList::IsEnabled(
-          features::kUseAutomaticSyncTokenManagement)) {
-    // Ignore the the input `sync_tokens`.
-    SyncToken dummy_sync_token;
-    for (auto& shared_image : shared_images) {
-      shared_image->WaitSyncTokenInternal(gl, dummy_sync_token);
-    }
-  } else {
-    for (auto& sync_token : sync_tokens) {
-      gl->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
-    }
-  }
+  WaitSyncTokensInternal(std::move(shared_images), std::move(sync_tokens), gl);
 
   GLuint id = gl->CreateGpuFenceCHROMIUM();
   context_support->GetGpuFence(id, std::move(callback));
@@ -1095,6 +1084,15 @@ void ClientSharedImage::WaitSyncTokenAndFinish(gles2::GLES2Interface* gl,
   gl->Finish();
 }
 
+void ClientSharedImage::WaitSyncTokenAndFinish(
+    std::vector<scoped_refptr<ClientSharedImage>> shared_images,
+    std::vector<SyncToken> sync_tokens,
+    gles2::GLES2Interface* gl) {
+  CHECK(gl);
+  WaitSyncTokensInternal(std::move(shared_images), std::move(sync_tokens), gl);
+  gl->Finish();
+}
+
 void ClientSharedImage::WaitSyncTokenInternal(InterfaceBase* ib,
                                               const SyncToken& sync_token) {
   if (base::FeatureList::IsEnabled(
@@ -1107,6 +1105,24 @@ void ClientSharedImage::WaitSyncTokenInternal(InterfaceBase* ib,
     }
   } else {
     ib->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+  }
+}
+
+void ClientSharedImage::WaitSyncTokensInternal(
+    std::vector<scoped_refptr<ClientSharedImage>> shared_images,
+    std::vector<SyncToken> sync_tokens,
+    InterfaceBase* ib) {
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    // Ignore the input `sync_tokens`.
+    SyncToken dummy_sync_token;
+    for (auto& shared_image : shared_images) {
+      shared_image->WaitSyncTokenInternal(ib, dummy_sync_token);
+    }
+  } else {
+    for (auto& sync_token : sync_tokens) {
+      ib->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+    }
   }
 }
 

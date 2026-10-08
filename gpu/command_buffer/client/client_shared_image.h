@@ -320,6 +320,11 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   void WaitSyncTokenAndFinish(gles2::GLES2Interface* gl,
                               const SyncToken& sync_token);
 
+  static void WaitSyncTokenAndFinish(
+      std::vector<scoped_refptr<ClientSharedImage>> shared_images,
+      std::vector<SyncToken> sync_tokens,
+      gles2::GLES2Interface* gl);
+
   // When the UseAutomaticSyncTokenManagement feature is enabled, this function
   // returns all tracked SyncTokens for this SharedImage. When the feature is
   // disabled, this function returns a 1-element vector containing the input
@@ -526,6 +531,10 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   std::vector<SyncToken> CollectSyncTokens();
 
   void WaitSyncTokenInternal(InterfaceBase* ib, const SyncToken& sync_token);
+  static void WaitSyncTokensInternal(
+      std::vector<scoped_refptr<ClientSharedImage>> shared_images,
+      std::vector<SyncToken> sync_tokens,
+      InterfaceBase* ib);
 
   // Helper function for `StoreSyncTokenInternal` and
   // `StoreSyncTokenVectorInternal`; Must be called while holding `lock_`.

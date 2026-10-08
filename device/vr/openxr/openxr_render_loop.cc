@@ -983,10 +983,8 @@ void OpenXrRenderLoop::SubmitFrameDrawnIntoTexture(
   // No GPU fence: a CPU finish guarantees the WebGL write completed before the
   // binding reads the shared image. WaitOnFence is a no-op without a fence FD.
   // TODO(crbug.com/506004811): use a GL-signal/Vulkan-wait fence if available.
-  for (const auto& sync_token : combined_sync_tokens) {
-    gl->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
-  }
-  gl->Finish();
+  gpu::ClientSharedImage::WaitSyncTokenAndFinish(
+      std::move(shared_images), std::move(combined_sync_tokens), gl);
   TRACE_EVENT_END("xr", perfetto::Track(frame_index));
   MarkFrameSubmitted(frame_index);
   MaybeCompositeAndSubmit(layer_ids);
