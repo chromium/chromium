@@ -66,9 +66,6 @@ TEST_F(ServiceWorkerGlobalScopeTest,
                             security_origin_.get(), script_url),
                         WorkerBackingThreadStartupData::CreateDefault(),
                         std::make_unique<WorkerDevToolsParams>());
-  worker_thread_->EvaluateClassicScript(script_url,
-                                        "//fake service worker script", nullptr,
-                                        v8_inspector::V8StackTraceId());
 
   base::WaitableEvent completion_event;
   PostCrossThreadTask(
@@ -141,9 +138,6 @@ TEST_F(ServiceWorkerGlobalScopeTest,
                             security_origin_.get(), script_url),
                         WorkerBackingThreadStartupData::CreateDefault(),
                         std::make_unique<WorkerDevToolsParams>());
-  worker_thread_->EvaluateClassicScript(script_url,
-                                        "//fake service worker script", nullptr,
-                                        v8_inspector::V8StackTraceId());
 
   base::WaitableEvent completion_event;
   PostCrossThreadTask(
@@ -216,9 +210,6 @@ TEST_F(ServiceWorkerGlobalScopeTest, RaceNetworkRequestLoaderStateTransitions) {
                             security_origin_.get(), script_url),
                         WorkerBackingThreadStartupData::CreateDefault(),
                         std::make_unique<WorkerDevToolsParams>());
-  worker_thread_->EvaluateClassicScript(script_url,
-                                        "//fake service worker script", nullptr,
-                                        v8_inspector::V8StackTraceId());
 
   base::WaitableEvent completion_event;
   PostCrossThreadTask(
