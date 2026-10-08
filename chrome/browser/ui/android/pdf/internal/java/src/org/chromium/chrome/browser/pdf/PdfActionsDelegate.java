@@ -58,6 +58,13 @@ public interface PdfActionsDelegate {
     /** Returns the URI of the PDF document. */
     @Nullable Uri getUri();
 
+    /**
+     * Show pdf specific find in page UI.
+     *
+     * @return whether the pdf specific find in page UI is shown.
+     */
+    boolean findInPage();
+
     /** Returns whether the current PDF is loaded in Incognito mode. */
     boolean isIncognito();
 

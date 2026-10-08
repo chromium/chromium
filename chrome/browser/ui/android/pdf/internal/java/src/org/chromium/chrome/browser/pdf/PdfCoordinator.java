@@ -25,6 +25,7 @@ import android.provider.OpenableColumns;
 import android.system.Os;
 import android.text.format.Formatter;
 import android.util.SparseArray;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -405,12 +406,27 @@ public class PdfCoordinator
             mPdfView = pdfView;
             mIsPdfViewSetup = false;
 
+            pdfView.setOnKeyListener(this::handleFindInPageKey);
+
             if (getView() != null && mViewTag != null) getView().setTag(mViewTag);
             if (PdfUtils.isInlinePdfV2Enabled()) {
                 pdfView.setFormFillingEnabled(
                         PdfUtils.isInlinePdfV2FormFillingEnabled() && !isEditModeEnabled());
             }
             maybeSetupPdfView();
+        }
+
+        @VisibleForTesting
+        boolean handleFindInPageKey(View v, int keyCode, KeyEvent event) {
+            if (keyCode == KeyEvent.KEYCODE_F && event.hasModifiers(KeyEvent.META_CTRL_ON)) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
+                    if (mDelegate != null) {
+                        mDelegate.findInPage();
+                    }
+                }
+                return true;
+            }
+            return false;
         }
 
         private void maybeSetupPdfView() {
@@ -632,6 +648,9 @@ public class PdfCoordinator
                 mPdfView.removeOnFirstContentLoadListener(mFirstContentLoadListener);
             }
             mFirstContentLoadListener = null;
+            if (mPdfView != null) {
+                mPdfView.setOnKeyListener(null);
+            }
             mPdfView = null;
         }
 
@@ -786,6 +805,7 @@ public class PdfCoordinator
             super.onEnterEditMode();
             PdfUtils.recordEditFabAction();
             if (mDelegate != null) {
+                setTextSearchActive(false);
                 mDelegate.onEditModeChanged(true);
             }
         }
@@ -1365,11 +1385,27 @@ public class PdfCoordinator
     @Override
     public boolean findInPage() {
         if (mChromePdfViewerFragment != null && mChromePdfViewerFragment.mIsLoadDocumentSuccess) {
+            if (isEditModeActive()) {
+                if (hasUnsavedChanges()) {
+                    showFindInPageDisabledToast();
+                    return false;
+                }
+                exitEditMode();
+            }
             mChromePdfViewerFragment.setTextSearchActive(true);
             PdfUtils.recordFindInPage(mFindInPageCount++);
             return true;
         }
         return false;
+    }
+
+    @VisibleForTesting
+    void showFindInPageDisabledToast() {
+        Toast.makeText(
+                        mActivity,
+                        R.string.pdf_find_in_page_disabled_unsaved_changes,
+                        Toast.LENGTH_SHORT)
+                .show();
     }
 
     /**
