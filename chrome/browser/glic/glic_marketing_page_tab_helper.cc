@@ -4,7 +4,11 @@
 
 #include "chrome/browser/glic/glic_marketing_page_tab_helper.h"
 
+#include <algorithm>
+#include <vector>
+
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -20,6 +24,26 @@
 
 namespace glic {
 namespace {
+
+std::vector<GURL> ParseAllowedMarketingUrls() {
+  std::string allowlist_str = features::kGlicMarketingUrlAllowlist.Get();
+  std::vector<GURL> urls;
+  for (std::string_view piece :
+       base::SplitStringPiece(allowlist_str, ",", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY)) {
+    GURL url(piece);
+    if (url.is_valid()) {
+      urls.push_back(std::move(url));
+    }
+  }
+  return urls;
+}
+
+const std::vector<GURL>& GetAllowedMarketingUrls() {
+  static const base::NoDestructor<std::vector<GURL>> cached_urls(
+      ParseAllowedMarketingUrls());
+  return *cached_urls;
+}
 
 void RecordMarketingAutoOpen(Profile* profile) {
   if (profile) {
@@ -58,8 +82,8 @@ void GlicMarketingPageTabHelper::DidFinishNavigation(
     return;
   }
 
-  std::string allowlist_str = features::kGlicMarketingUrlAllowlist.Get();
-  if (allowlist_str.empty()) {
+  const std::vector<GURL>& allowed_urls = GetAllowedMarketingUrls();
+  if (allowed_urls.empty()) {
     return;
   }
 
@@ -67,24 +91,10 @@ void GlicMarketingPageTabHelper::DidFinishNavigation(
   replacements.ClearQuery();
   replacements.ClearRef();
 
-  // TODO(b/549556810): Cache the split strings instead of parsing every
-  // time.
-  std::vector<std::string_view> urls = base::SplitStringPiece(
-      allowlist_str, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  bool is_matched = false;
   const GURL current_url_match =
       navigation_handle->GetURL().ReplaceComponents(replacements);
 
-  for (const auto& url_str : urls) {
-    GURL allowed_url(url_str);
-    if (allowed_url.is_valid() && current_url_match == allowed_url) {
-      is_matched = true;
-      break;
-    }
-  }
-
-  if (!is_matched) {
+  if (!std::ranges::contains(allowed_urls, current_url_match)) {
     return;
   }
 
