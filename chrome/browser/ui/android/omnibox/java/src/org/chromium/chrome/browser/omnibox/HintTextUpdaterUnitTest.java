@@ -39,6 +39,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineNameObserver;
@@ -59,6 +60,7 @@ import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
 import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
+import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.url.GURL;
 
 /** Unit tests for {@link HintTextUpdater}. */
@@ -100,6 +102,8 @@ public class HintTextUpdaterUnitTest {
             ObservableSuppliers.createMonotonic();
     private final SettableMonotonicObservableSupplier<SearchEngineService>
             mSearchEngineServiceSupplier = ObservableSuppliers.createMonotonic();
+    private final SettableNullableObservableSupplier<AiModeButtonUiConfig>
+            mAiModeButtonUiConfigSupplier = ObservableSuppliers.createNullable();
 
     private HintTextUpdater mUpdater;
     private SearchEngineNameObserver mSearchEngineNameObserver;
@@ -145,6 +149,10 @@ public class HintTextUpdaterUnitTest {
                         mProfileSupplier,
                         mUpdateHintTextCallback);
 
+        mAiModeButtonUiConfigSupplier.set(createTestAiModeButtonUiConfig(AIM_ACTIVATION_HINT_TEXT));
+        lenient()
+                .when(mSearchEngineService.getAiModeButtonUiConfigSupplier())
+                .thenReturn(mAiModeButtonUiConfigSupplier);
         lenient()
                 .when(mSearchEngineService.getOmniboxHintString())
                 .thenReturn("Search Google or type URL");
@@ -156,6 +164,18 @@ public class HintTextUpdaterUnitTest {
 
         mUpdater.beginInput(mAutocompleteInput);
         clearInvocations(mUpdateHintTextCallback);
+    }
+
+    private static AiModeButtonUiConfig createTestAiModeButtonUiConfig(String placeholderText) {
+        return new AiModeButtonUiConfig(
+                "AI Mode",
+                "Ask AI Mode in Google Search",
+                "AI Mode button, press Enter to ask AI Mode",
+                "Always show AI Mode",
+                placeholderText,
+                GURL.emptyGURL(),
+                /* navigationUrl= */ "",
+                GURL.emptyGURL());
     }
 
     private void assertHintText(String expected) {
@@ -527,6 +547,20 @@ public class HintTextUpdaterUnitTest {
         mUpdater.onTitleChanged();
 
         verify(mUpdateHintTextCallback).onResult(eq(""));
+    }
+
+    @Test
+    public void testAimActivationHint_UpdatesWithAiModeButtonUiConfig() {
+        setupAimActivationHintShowing();
+
+        clearInvocations(mUpdateHintTextCallback);
+        mAiModeButtonUiConfigSupplier.set(
+                createTestAiModeButtonUiConfig("Press tab then enter to ask AI Mode for Bing"));
+        assertHintText("Press tab then enter to ask AI Mode for Bing");
+
+        clearInvocations(mUpdateHintTextCallback);
+        mAiModeButtonUiConfigSupplier.set(null);
+        assertHintText("");
     }
 
     @Test

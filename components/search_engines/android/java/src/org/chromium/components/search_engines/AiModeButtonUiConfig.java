@@ -55,10 +55,6 @@ public final class AiModeButtonUiConfig {
     /**
      * Omnibox hint text shown while the AI Mode entry point is engaged. {@code
      * IDS_AI_MODE_OMNIBOX_PLACEHOLDER}, e.g. "Press tab then enter to ask AI Mode".
-     *
-     * <p>Note this is the desktop variant. Android clients likely want {@code
-     * IDS_AI_MODE_OMNIBOX_PLACEHOLDER_ANDROID}, which prefixes a {@code <tab_key>} placeholder for
-     * the rendered key glyph; see crbug.com/561690870.
      */
     public final String placeholderText;
 

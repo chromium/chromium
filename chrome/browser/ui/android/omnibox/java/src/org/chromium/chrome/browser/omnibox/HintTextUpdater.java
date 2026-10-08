@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.omnibox;
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetricsInt;
 import android.graphics.drawable.Drawable;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ImageSpan;
 
@@ -35,8 +37,7 @@ import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
 import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 import org.chromium.components.omnibox.ToolModeUtils;
-import org.chromium.ui.text.SpanApplier;
-import org.chromium.ui.text.SpanApplier.SpanInfo;
+import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.url.GURL;
 
 /**
@@ -55,24 +56,22 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
     private final NonNullObservableSupplier<Boolean> mActivationChipSelectedSupplier;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final SearchEngineNameObserver mSearchEngineNameObserver = this::updateHintText;
+    private final Callback<@Nullable AiModeButtonUiConfig> mAiModeButtonUiConfigObserver =
+            _ -> updateHintText();
     private final Callback<@AutocompleteRequestType Integer> mAutocompleteRequestTypeObserver =
-            (type) -> updateHintText();
+            _ -> updateHintText();
     private final Callback<@Nullable SiteSearchData> mSiteSearchDataObserver =
-            (siteSearchData) -> updateHintText();
+            _ -> updateHintText();
     private final Callback<SearchEngineService> mSearchEngineServiceObserver =
             this::onSearchEngineServiceChanged;
-    private final Callback<@FuseboxState Integer> mFuseboxStateObserver =
-            (state) -> updateHintText();
+    private final Callback<@FuseboxState Integer> mFuseboxStateObserver = _ -> updateHintText();
     private final Callback<@FuseboxLayoutMode Integer> mFuseboxLayoutModeObserver =
-            (mode) -> updateHintText();
-    private final Callback<Boolean> mActivationChipVisibilityObserver =
-            (visible) -> updateHintText();
-    private final Callback<Boolean> mActivationChipSelectedObserver =
-            (selected) -> updateHintText();
-    private final Callback<Profile> mProfileObserver = (profile) -> updateHintText();
-    private final Callback<String> mUserTextObserver = (text) -> updateHintText();
-    private final Callback<@DisplayState Integer> mDisplayStateObserver =
-            (state) -> updateHintText();
+            _ -> updateHintText();
+    private final Callback<Boolean> mActivationChipVisibilityObserver = _ -> updateHintText();
+    private final Callback<Boolean> mActivationChipSelectedObserver = _ -> updateHintText();
+    private final Callback<Profile> mProfileObserver = _ -> updateHintText();
+    private final Callback<String> mUserTextObserver = _ -> updateHintText();
+    private final Callback<@DisplayState Integer> mDisplayStateObserver = _ -> updateHintText();
 
     private @Nullable SearchEngineService mSearchEngineService;
     private @Nullable AutocompleteInput mCurrentInput;
@@ -117,6 +116,9 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
         mSearchEngineServiceSupplier.removeObserver(mSearchEngineServiceObserver);
         if (mSearchEngineService != null) {
             mSearchEngineService.removeSearchEngineNameObserver(mSearchEngineNameObserver);
+            mSearchEngineService
+                    .getAiModeButtonUiConfigSupplier()
+                    .removeObserver(mAiModeButtonUiConfigObserver);
         }
         mFuseboxCoordinator.getFuseboxStateSupplier().removeObserver(mFuseboxStateObserver);
         mFuseboxCoordinator
@@ -167,10 +169,16 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
     private void onSearchEngineServiceChanged(@Nullable SearchEngineService service) {
         if (mSearchEngineService != null) {
             mSearchEngineService.removeSearchEngineNameObserver(mSearchEngineNameObserver);
+            mSearchEngineService
+                    .getAiModeButtonUiConfigSupplier()
+                    .removeObserver(mAiModeButtonUiConfigObserver);
         }
         mSearchEngineService = service;
         if (mSearchEngineService != null) {
             mSearchEngineService.addSearchEngineNameObserver(mSearchEngineNameObserver);
+            mSearchEngineService
+                    .getAiModeButtonUiConfigSupplier()
+                    .addSyncObserver(mAiModeButtonUiConfigObserver);
         }
         updateHintText();
     }
@@ -194,8 +202,13 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
         }
 
         if (useAimActivationOrEmptyHint()) {
-            if (triggerOrAlreadyShowingActivationHint()) {
-                mUpdateHintTextCallback.onResult(getAimActivationHintWithSpan());
+            AiModeButtonUiConfig config =
+                    mSearchEngineService.getAiModeButtonUiConfigSupplier().get();
+            if (config != null
+                    && !TextUtils.isEmpty(config.placeholderText)
+                    && triggerOrAlreadyShowingActivationHint()) {
+                mUpdateHintTextCallback.onResult(
+                        getAimActivationHintWithSpan(config.placeholderText));
             } else {
                 mUpdateHintTextCallback.onResult("");
             }
@@ -360,16 +373,18 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
         }
     }
 
-    private CharSequence getAimActivationHintWithSpan() {
-        String rawHint =
-                mResourceProvider.getString(
-                        R.string.ai_mode_omnibox_placeholder_android,
-                        mResourceProvider.getString(R.string.ai_mode_entrypoint_label));
+    private CharSequence getAimActivationHintWithSpan(String placeholderText) {
         Drawable keyboardTabDrawable = mResourceProvider.getDrawable(R.drawable.ic_keyboard_tab);
         if (keyboardTabDrawable == null) {
-            return rawHint;
+            return placeholderText;
         }
-        ImageSpan imageSpan = new TextSizedImageSpan(keyboardTabDrawable);
-        return SpanApplier.applySpans(rawHint, new SpanInfo("<tab_key>", "</tab_key>", imageSpan));
+        // The first space is replaced by the ImageSpan; the second separates the icon from text.
+        SpannableString spanned = new SpannableString("  " + placeholderText);
+        spanned.setSpan(
+                new TextSizedImageSpan(keyboardTabDrawable),
+                /* start= */ 0,
+                /* end= */ 1,
+                Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        return spanned;
     }
 }
