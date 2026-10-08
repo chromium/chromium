@@ -12,6 +12,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,9 +21,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.R;
+import org.chromium.components.autofill.AutofillEnableResurrectingPaymentsUsersTreatmentArm;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -45,13 +50,14 @@ public class AutofillPaymentsChurnedUsersBottomSheetMediatorTest {
 
     @Before
     public void setUp() {
-        mModel =
-                new PropertyModel.Builder(
-                                AutofillPaymentsChurnedUsersBottomSheetProperties.ALL_KEYS)
-                        .build();
         mMediator =
                 new AutofillPaymentsChurnedUsersBottomSheetMediator(
-                        mBottomSheetController, mBottomSheetContent, mModel, mDelegate);
+                        RuntimeEnvironment.getApplication(),
+                        mBottomSheetController,
+                        mBottomSheetContent,
+                        AutofillEnableResurrectingPaymentsUsersTreatmentArm.SECURITY,
+                        mDelegate);
+        mModel = mMediator.getModel();
     }
 
     @Test
@@ -133,7 +139,11 @@ public class AutofillPaymentsChurnedUsersBottomSheetMediatorTest {
                     mock(AutofillPaymentsChurnedUsersBottomSheetCoordinator.Delegate.class);
             AutofillPaymentsChurnedUsersBottomSheetMediator mediator =
                     new AutofillPaymentsChurnedUsersBottomSheetMediator(
-                            controller, mBottomSheetContent, mModel, delegate);
+                            RuntimeEnvironment.getApplication(),
+                            controller,
+                            mBottomSheetContent,
+                            AutofillEnableResurrectingPaymentsUsersTreatmentArm.SECURITY,
+                            delegate);
 
             mediator.onSheetClosed(reason);
 
@@ -312,5 +322,70 @@ public class AutofillPaymentsChurnedUsersBottomSheetMediatorTest {
         mMediator.onSheetClosed(BottomSheetController.StateChangeReason.SWIPE);
         verify(mDelegate, times(0)).onUiAccepted();
         verify(mDelegate, times(0)).onUiDismissed();
+    }
+
+    @Test
+    public void testModel_securityArm() {
+        Context context = RuntimeEnvironment.getApplication();
+        assertThat(
+                mModel.get(AutofillPaymentsChurnedUsersBottomSheetProperties.HEADER_ICON),
+                equalTo(R.drawable.autofill_payments_churned_users_security_illustration));
+        assertThat(
+                mModel.get(AutofillPaymentsChurnedUsersBottomSheetProperties.TITLE),
+                equalTo(context.getString(R.string.autofill_churned_users_bubble_security_title)));
+        assertThat(
+                mModel.get(AutofillPaymentsChurnedUsersBottomSheetProperties.DESCRIPTION),
+                equalTo(
+                        context.getString(
+                                R.string.autofill_churned_users_bubble_security_description)));
+        assertThat(
+                mModel.get(AutofillPaymentsChurnedUsersBottomSheetProperties.ACCEPT_BUTTON_LABEL),
+                equalTo(
+                        context.getString(
+                                R.string.autofill_churned_users_bubble_accept_button_label)));
+        assertThat(
+                mModel.get(AutofillPaymentsChurnedUsersBottomSheetProperties.CANCEL_BUTTON_LABEL),
+                equalTo(
+                        context.getString(
+                                R.string.autofill_churned_users_bubble_cancel_button_label)));
+    }
+
+    @Test
+    public void testModel_convenienceArm() {
+        Context context = RuntimeEnvironment.getApplication();
+        AutofillPaymentsChurnedUsersBottomSheetMediator mediator =
+                new AutofillPaymentsChurnedUsersBottomSheetMediator(
+                        context,
+                        mBottomSheetController,
+                        mBottomSheetContent,
+                        AutofillEnableResurrectingPaymentsUsersTreatmentArm.CONVENIENCE,
+                        mDelegate);
+        assertThat(
+                mediator.getModel()
+                        .get(AutofillPaymentsChurnedUsersBottomSheetProperties.HEADER_ICON),
+                equalTo(R.drawable.autofill_payments_churned_users_convenience_illustration));
+        assertThat(
+                mediator.getModel().get(AutofillPaymentsChurnedUsersBottomSheetProperties.TITLE),
+                equalTo(
+                        context.getString(
+                                R.string.autofill_churned_users_bubble_convenience_title)));
+        assertThat(
+                mediator.getModel()
+                        .get(AutofillPaymentsChurnedUsersBottomSheetProperties.DESCRIPTION),
+                equalTo(
+                        context.getString(
+                                R.string.autofill_churned_users_bubble_convenience_description)));
+        assertThat(
+                mediator.getModel()
+                        .get(AutofillPaymentsChurnedUsersBottomSheetProperties.ACCEPT_BUTTON_LABEL),
+                equalTo(
+                        context.getString(
+                                R.string.autofill_churned_users_bubble_accept_button_label)));
+        assertThat(
+                mediator.getModel()
+                        .get(AutofillPaymentsChurnedUsersBottomSheetProperties.CANCEL_BUTTON_LABEL),
+                equalTo(
+                        context.getString(
+                                R.string.autofill_churned_users_bubble_cancel_button_label)));
     }
 }

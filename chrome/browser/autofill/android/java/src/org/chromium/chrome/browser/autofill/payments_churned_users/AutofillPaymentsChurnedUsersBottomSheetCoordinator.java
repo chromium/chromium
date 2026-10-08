@@ -7,12 +7,8 @@ package org.chromium.chrome.browser.autofill.payments_churned_users;
 import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.DrawableRes;
-import androidx.annotation.StringRes;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.autofill.R;
 import org.chromium.components.autofill.AutofillEnableResurrectingPaymentsUsersTreatmentArm;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -24,7 +20,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class AutofillPaymentsChurnedUsersBottomSheetCoordinator {
     private final AutofillPaymentsChurnedUsersBottomSheetMediator mMediator;
     private final AutofillPaymentsChurnedUsersBottomSheetView mView;
-    private final PropertyModel mModel;
     private @Nullable
             PropertyModelChangeProcessor<
                     PropertyModel, AutofillPaymentsChurnedUsersBottomSheetView, PropertyKey>
@@ -61,92 +56,15 @@ public class AutofillPaymentsChurnedUsersBottomSheetCoordinator {
         AutofillPaymentsChurnedUsersBottomSheetContent content =
                 new AutofillPaymentsChurnedUsersBottomSheetContent(mView.getContentView());
 
-        mModel =
-                new PropertyModel.Builder(
-                                AutofillPaymentsChurnedUsersBottomSheetProperties.ALL_KEYS)
-                        .with(
-                                AutofillPaymentsChurnedUsersBottomSheetProperties.HEADER_ICON,
-                                getHeaderIconResId(treatmentArm))
-                        .with(
-                                AutofillPaymentsChurnedUsersBottomSheetProperties.TITLE,
-                                context.getString(getTitleResId(treatmentArm)))
-                        .with(
-                                AutofillPaymentsChurnedUsersBottomSheetProperties.DESCRIPTION,
-                                context.getString(getDescriptionResId(treatmentArm)))
-                        .with(
-                                AutofillPaymentsChurnedUsersBottomSheetProperties
-                                        .ACCEPT_BUTTON_LABEL,
-                                context.getString(
-                                        R.string.autofill_churned_users_bubble_accept_button_label))
-                        .with(
-                                AutofillPaymentsChurnedUsersBottomSheetProperties
-                                        .CANCEL_BUTTON_LABEL,
-                                context.getString(
-                                        R.string.autofill_churned_users_bubble_cancel_button_label))
-                        .with(
-                                AutofillPaymentsChurnedUsersBottomSheetProperties
-                                        .SHOW_LOADING_STATE,
-                                false)
-                        .build();
-
         mMediator =
                 new AutofillPaymentsChurnedUsersBottomSheetMediator(
-                        bottomSheetController, content, mModel, delegate);
+                        context, bottomSheetController, content, treatmentArm, delegate);
 
         mModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
-                        mModel, mView, AutofillPaymentsChurnedUsersBottomSheetViewBinder::bind);
-    }
-
-    private static @DrawableRes int getHeaderIconResId(
-            @AutofillEnableResurrectingPaymentsUsersTreatmentArm int treatmentArm) {
-        switch (treatmentArm) {
-            case AutofillEnableResurrectingPaymentsUsersTreatmentArm.SECURITY:
-                return R.drawable.autofill_payments_churned_users_security_illustration;
-            case AutofillEnableResurrectingPaymentsUsersTreatmentArm.CONVENIENCE:
-                return R.drawable.autofill_payments_churned_users_convenience_illustration;
-            case AutofillEnableResurrectingPaymentsUsersTreatmentArm.MESSAGE:
-            // The MESSAGE arm displays an Android Message banner via AutofillMessageController
-            // rather than this bottom sheet, so the bottom sheet should never be created for
-            // this arm.
-            default:
-                assert false : "Unhandled treatment arm: " + treatmentArm;
-                return R.drawable.autofill_payments_churned_users_security_illustration;
-        }
-    }
-
-    private static @StringRes int getTitleResId(
-            @AutofillEnableResurrectingPaymentsUsersTreatmentArm int treatmentArm) {
-        switch (treatmentArm) {
-            case AutofillEnableResurrectingPaymentsUsersTreatmentArm.SECURITY:
-                return R.string.autofill_churned_users_bubble_security_title;
-            case AutofillEnableResurrectingPaymentsUsersTreatmentArm.CONVENIENCE:
-                return R.string.autofill_churned_users_bubble_convenience_title;
-            case AutofillEnableResurrectingPaymentsUsersTreatmentArm.MESSAGE:
-            // The MESSAGE arm displays an Android Message banner via AutofillMessageController
-            // rather than this bottom sheet, so the bottom sheet should never be created for
-            // this arm.
-            default:
-                assert false : "Unhandled treatment arm: " + treatmentArm;
-                return R.string.autofill_churned_users_bubble_security_title;
-        }
-    }
-
-    private static @StringRes int getDescriptionResId(
-            @AutofillEnableResurrectingPaymentsUsersTreatmentArm int treatmentArm) {
-        switch (treatmentArm) {
-            case AutofillEnableResurrectingPaymentsUsersTreatmentArm.SECURITY:
-                return R.string.autofill_churned_users_bubble_security_description;
-            case AutofillEnableResurrectingPaymentsUsersTreatmentArm.CONVENIENCE:
-                return R.string.autofill_churned_users_bubble_convenience_description;
-            case AutofillEnableResurrectingPaymentsUsersTreatmentArm.MESSAGE:
-            // The MESSAGE arm displays an Android Message banner via AutofillMessageController
-            // rather than this bottom sheet, so the bottom sheet should never be created for
-            // this arm.
-            default:
-                assert false : "Unhandled treatment arm: " + treatmentArm;
-                return R.string.autofill_churned_users_bubble_security_description;
-        }
+                        mMediator.getModel(),
+                        mView,
+                        AutofillPaymentsChurnedUsersBottomSheetViewBinder::bind);
     }
 
     public void requestShowContent() {
@@ -166,6 +84,6 @@ public class AutofillPaymentsChurnedUsersBottomSheetCoordinator {
     }
 
     PropertyModel getModelForTesting() {
-        return mModel;
+        return mMediator.getModel();
     }
 }

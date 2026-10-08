@@ -9,7 +9,6 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for the Payments Churned Users bottom sheet. */
 @NullMarked
@@ -23,10 +22,10 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
             new ReadableObjectPropertyKey<>("accept_button_label");
     static final ReadableObjectPropertyKey<String> CANCEL_BUTTON_LABEL =
             new ReadableObjectPropertyKey<>("cancel_button_label");
-    static final WritableObjectPropertyKey<Runnable> ON_ACCEPT_CLICKED =
-            new WritableObjectPropertyKey<>("on_accept_clicked");
-    static final WritableObjectPropertyKey<Runnable> ON_CANCEL_CLICKED =
-            new WritableObjectPropertyKey<>("on_cancel_clicked");
+    static final ReadableObjectPropertyKey<Runnable> ON_ACCEPT_CLICKED =
+            new ReadableObjectPropertyKey<>("on_accept_clicked");
+    static final ReadableObjectPropertyKey<Runnable> ON_CANCEL_CLICKED =
+            new ReadableObjectPropertyKey<>("on_cancel_clicked");
     static final WritableBooleanPropertyKey SHOW_LOADING_STATE =
             new WritableBooleanPropertyKey("show_loading_state");
 
