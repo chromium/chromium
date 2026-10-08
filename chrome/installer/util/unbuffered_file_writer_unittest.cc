@@ -19,6 +19,7 @@
 #include "base/logging.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -107,6 +108,7 @@ TEST_F(UnbufferedFileWriterTest, CommitChunks) {
                      [&index](auto& slot) { return slot == index++; })));
 }
 
+#if defined(ARCH_CPU_64_BITS)
 // Tests writing a very large file.
 TEST_F(UnbufferedFileWriterTest, VeryLarge) {
   static constexpr auto kFileSize = base::GiB(2.333);
@@ -117,6 +119,20 @@ TEST_F(UnbufferedFileWriterTest, VeryLarge) {
   ASSERT_THAT(writer.Commit(std::nullopt), HasValue());
   ASSERT_THAT(base::GetFileSize(path), testing::Optional(kFileSize.InBytes()));
 }
+#else
+// Tests that creating a writer fails when the requested buffer size cannot be
+// allocated in a 32-bit process's virtual address space.
+TEST_F(UnbufferedFileWriterTest, VeryLargeAllocationFails) {
+  static constexpr auto kFileSize = base::GiB(4) - base::MiB(1);
+  base::FilePath path = temp_dir().Append(FILE_PATH_LITERAL("very_large"));
+  base::HistogramTester histogram_tester;
+  ASSERT_THAT(UnbufferedFileWriter::Create(path, kFileSize.InBytes()),
+              ErrorIs(ERROR_NOT_ENOUGH_MEMORY));
+  histogram_tester.ExpectUniqueSample(
+      "Setup.Install.UnbufferedFileWriter.Allocate.Error",
+      ERROR_NOT_ENOUGH_MEMORY, 1);
+}
+#endif
 
 // Tests that creation fails if the target file already exists.
 TEST_F(UnbufferedFileWriterTest, FileExists) {
