@@ -4699,8 +4699,6 @@ crbug.com/862589 virtual/threaded/fast/idle-callback/long_idle_periods.html [ Pa
 # Sheriff 2018-09-10
 crbug.com/881207 fast/js/regress/splice-to-remove.html [ Pass Timeout ]
 
-crbug.com/882689 http/tests/security/cookies/third-party-cookie-blocking-worker.html [ Failure Pass ]
-
 # Sheriff 2018-10-15
 crbug.com/895257 [ Mac ] external/wpt/css/css-fonts/variations/at-font-face-font-matching.html [ Failure Pass ]
 

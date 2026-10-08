@@ -2122,7 +2122,7 @@ crbug.com/554992299 [ tvOS26-simulator ] http/tests/priorities/resource-load-pri
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/security/XFrameOptions/x-frame-options-deny-multiple-clients.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/security/canvas-remote-read-remote-image-document-domain.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/security/contentSecurityPolicy/source-list-parsing-04.html [ Skip Timeout ]
-crbug.com/554992299 [ tvOS26-simulator ] http/tests/security/cookies/third-party-cookie-blocking-worker.html [ Failure ]
+crbug.com/554992299 [ tvOS26-simulator ] http/tests/security/cookies/third-party-cookie-blocking-worker.https.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/security/cross-frame-access-callback-explicit-domain-ALLOW.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/security/cross-frame-access-callback-explicit-domain-DENY.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/security/cross-frame-access-child-explicit-domain.html [ Failure ]

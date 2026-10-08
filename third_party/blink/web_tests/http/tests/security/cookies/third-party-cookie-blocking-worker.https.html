@@ -3,28 +3,28 @@
 <title>Third-party cookie blocking tests for Worker</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/get-host-info.js"></script>
 <script>
-// This test cannot be a WPT test because it tests Chromium's third-party cookie
-// blocking flag via testRunner.
 var host_info = get_host_info();
 
+// HTTPS must be used because the cross-site cookie needs SameSite=None, and
+// SameSite=None cookies must be Secure.
 var REMOTE_SET_COOKIES_URL =
-    host_info['HTTP_REMOTE_ORIGIN'] +
+    host_info['HTTPS_REMOTE_ORIGIN'] +
     '/security/cookies/resources/cross-origin-set-cookies.php';
 var REMOTE_ECHO_JSON_URL =
-    host_info['HTTP_REMOTE_ORIGIN'] + '/cookies/resources/echo-json.php';
+    host_info['HTTPS_REMOTE_ORIGIN'] + '/cookies/resources/echo-json.php';
 var REMOTE_IFRAME_URL =
-    host_info['HTTP_REMOTE_ORIGIN'] +
+    host_info['HTTPS_REMOTE_ORIGIN'] +
     '/security/cookies/resources/third-party-cookie-blocking-worker-iframe.php';
 
-promise_test(t => {
-  if (window.testRunner) {
-    testRunner.setBlockThirdPartyCookies(false);
-  }
+promise_test(async t => {
+  await test_driver.set_storage_access('*', '*', 'allowed');
   return fetch(new Request(
-        REMOTE_SET_COOKIES_URL +
-        '?SetCookie=' + encodeURIComponent('hello=world;path=/'),
+        REMOTE_SET_COOKIES_URL + '?SetCookie=' +
+        encodeURIComponent('hello=world;path=/;SameSite=None;Secure'),
         {mode: 'cors', credentials: 'include'}))
       .then(_ => fetch(REMOTE_ECHO_JSON_URL, {credentials: 'include'}))
       .then(response => response.json())
@@ -41,7 +41,7 @@ promise_test(t => {
           add_result_callback(_ => frame.remove());
           return promise;
         })
-      .then(msg => {
+      .then(async msg => {
           assert_equals(
               msg.data.iframe_request_cookie['hello'], 'world',
               'Cookies must be sent while requesting a third-party iframe ' +
@@ -61,9 +61,7 @@ promise_test(t => {
               'allowed.');
 
           // We're now re-running the test with third-party cookies blocked.
-          if (window.testRunner) {
-            testRunner.setBlockThirdPartyCookies(true);
-          }
+          await test_driver.set_storage_access('*', '*', 'blocked');
           return fetch(REMOTE_ECHO_JSON_URL, {credentials: 'include'});
         })
       .then(response => response.json())
