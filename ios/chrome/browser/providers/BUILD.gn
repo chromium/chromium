@@ -56,6 +56,7 @@ group("chromium_providers") {
     "//ios/chrome/browser/providers/signin:chromium_signin_resources",
     "//ios/chrome/browser/providers/signin:chromium_signin_sso",
     "//ios/chrome/browser/providers/signin:chromium_trusted_vault",
+    "//ios/chrome/browser/providers/switcher_info:chromium_switcher_info",
     "//ios/chrome/browser/providers/text_zoom:chromium_text_zoom",
     "//ios/chrome/browser/providers/ui_utils:chromium_ui_utils",
     "//ios/chrome/browser/providers/unit_conversion:chromium_unit_conversion",

@@ -50,6 +50,7 @@ group("providers") {
     "//ios/chrome/test/providers/screenshot_protection",
     "//ios/chrome/test/providers/share_kit",
     "//ios/chrome/test/providers/signin",
+    "//ios/chrome/test/providers/switcher_info",
     "//ios/chrome/test/providers/text_zoom",
     "//ios/chrome/test/providers/ui_utils",
     "//ios/chrome/test/providers/unit_conversion",
