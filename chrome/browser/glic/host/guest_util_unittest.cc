@@ -4,7 +4,12 @@
 
 #include "chrome/browser/glic/host/guest_util.h"
 
+#include <optional>
+#include <vector>
+
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -12,6 +17,8 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -22,11 +29,13 @@
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/skills/features.h"
 #include "components/skills/public/skills_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/url_util.h"
 #include "pdf/buildflags.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -69,13 +78,34 @@ class GuestUtilMultiInstanceTest : public testing::Test {
 
   TestingProfile* CreateTestingProfileWithPrimaryAccount(
       const std::string& email,
+      std::optional<size_t> session_index = std::nullopt,
       const std::string& name = "signed_in_profile") {
+    test_url_loader_factory_.ClearResponses();
+    TestingProfile::TestingFactories testing_factories =
+        IdentityTestEnvironmentProfileAdaptor::
+            GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+                {TestingProfile::TestingFactory{
+                    ChromeSigninClientFactory::GetInstance(),
+                    base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                        &test_url_loader_factory_)}});
     TestingProfile* profile = profile_manager_.CreateTestingProfile(
-        name, IdentityTestEnvironmentProfileAdaptor::
-                  GetIdentityTestEnvironmentFactories());
+        name, std::move(testing_factories));
     IdentityTestEnvironmentProfileAdaptor adaptor(profile);
-    adaptor.identity_test_env()->MakePrimaryAccountAvailable(
-        email, signin::ConsentLevel::kSignin);
+    adaptor.identity_test_env()->SetTestURLLoaderFactory(
+        &test_url_loader_factory_);
+    AccountInfo account_info =
+        adaptor.identity_test_env()->MakePrimaryAccountAvailable(
+            email, signin::ConsentLevel::kSignin);
+    if (session_index.has_value()) {
+      std::vector<signin::CookieParamsForTest> cookie_accounts;
+      for (size_t i = 0; i < *session_index; ++i) {
+        std::string other_email = base::StringPrintf("other%zu@gmail.com", i);
+        cookie_accounts.push_back(
+            {other_email, signin::GetTestGaiaIdForEmail(other_email)});
+      }
+      cookie_accounts.push_back({email, account_info.GetGaiaId()});
+      adaptor.identity_test_env()->SetCookieAccounts(cookie_accounts);
+    }
     return profile;
   }
 
@@ -85,6 +115,7 @@ class GuestUtilMultiInstanceTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
 };
 
 TEST_F(GuestUtilTest, GetLocalizedGuestURLDoesNotChangeLanguageParameter) {
@@ -124,13 +155,61 @@ TEST_F(GuestUtilMultiInstanceTest,
 }
 
 TEST_F(GuestUtilMultiInstanceTest,
-       GetGlicGuestURLWithSignedInAccount_NoWebviewEnabled) {
+       GetGlicGuestURLWithSignedInAccount_SessionIndex0_NoWebviewEnabled) {
   ScopedBrowserLocale scoped_locale("en");
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kGlicNoWebview);
 
-  TestingProfile* profile =
-      CreateTestingProfileWithPrimaryAccount("user@gmail.com");
+  // When the primary account is at session index 0 in the cookie jar, authuser
+  // is omitted to avoid an unnecessary HTTP 302 redirect.
+  TestingProfile* profile = CreateTestingProfileWithPrimaryAccount(
+      "user@gmail.com", /*session_index=*/0);
+  EXPECT_EQ(GURL("https://www.example.com/glic?hl=en"), GetGuestURL(profile));
+}
+
+TEST_F(
+    GuestUtilMultiInstanceTest,
+    GetGlicGuestURLWithSignedInAccount_NonZeroSessionIndex_NoWebviewEnabled) {
+  ScopedBrowserLocale scoped_locale("en");
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicNoWebview);
+
+  // When the primary account is at a non-zero session index, authuser is
+  // appended for disambiguation.
+  TestingProfile* profile = CreateTestingProfileWithPrimaryAccount(
+      "user@gmail.com", /*session_index=*/1);
+  EXPECT_EQ(
+      GURL("https://www.example.com/glic?authuser=user%40gmail.com&hl=en"),
+      GetGuestURL(profile));
+}
+
+TEST_F(GuestUtilMultiInstanceTest,
+       GetGlicGuestURLWithSignedInAccount_NotInCookieJar_NoWebviewEnabled) {
+  ScopedBrowserLocale scoped_locale("en");
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicNoWebview);
+
+  // When the primary account is not found in the cookie jar, disambiguation
+  // is required and authuser is appended.
+  TestingProfile* profile = CreateTestingProfileWithPrimaryAccount(
+      "user@gmail.com", /*session_index=*/std::nullopt);
+  EXPECT_EQ(
+      GURL("https://www.example.com/glic?authuser=user%40gmail.com&hl=en"),
+      GetGuestURL(profile));
+}
+
+TEST_F(GuestUtilMultiInstanceTest,
+       GetGlicGuestURLWithSignedInAccount_StaleCookies_NoWebviewEnabled) {
+  ScopedBrowserLocale scoped_locale("en");
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicNoWebview);
+
+  // Even if the primary account is at session index 0, if the cookie jar is not
+  // fresh, do not trust the cookie list and append authuser.
+  TestingProfile* profile = CreateTestingProfileWithPrimaryAccount(
+      "user@gmail.com", /*session_index=*/0);
+  IdentityTestEnvironmentProfileAdaptor adaptor(profile);
+  adaptor.identity_test_env()->SetFreshnessOfAccountsInGaiaCookie(false);
   EXPECT_EQ(
       GURL("https://www.example.com/glic?authuser=user%40gmail.com&hl=en"),
       GetGuestURL(profile));

@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/host/guest_util.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -58,6 +59,7 @@
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/origin_matcher/origin_matcher.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/skills/features.h"
 #include "components/tabs/public/tab_interface.h"
@@ -288,6 +290,13 @@ GURL MaybeAppendAuthUser(const GURL& guest_url,
           .email;
   if (email.empty()) {
     return guest_url;
+  }
+  if (identity_manager->GetAccountsInCookieJar().AreAccountsFresh()) {
+    std::optional<size_t> session_index =
+        identity_manager->GetSessionIndexForPrimaryAccount();
+    if (session_index && *session_index == 0) {
+      return guest_url;
+    }
   }
   return net::AppendQueryParameter(guest_url, "authuser", email);
 }
@@ -971,7 +980,6 @@ void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
       base::FeatureList::IsEnabled(features::kGlicGetTabFaviconById);
   state->enable_process_counter_abuse_verdict =
       base::FeatureList::IsEnabled(features::kGlicProcessCounterAbuseVerdict);
-
 
   state->enable_gmail_otp_opt_in =
       base::FeatureList::IsEnabled(features::kGlicActorAutofillOneTimePassword);
