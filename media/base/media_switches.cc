@@ -963,9 +963,6 @@ BASE_FEATURE(kResumeBackgroundVideo,
 BASE_FEATURE(kRevokeMediaSourceObjectURLOnAttach,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables Rust version of MPEG parser (MP3/ADTS). Remove after M152 stable.
-BASE_FEATURE(kRustMpegAudioDataParser, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable the Speaker Change Detection feature, which inserts a line break when
 // the Speech On-Device API (SODA) detects a speaker change.
 BASE_FEATURE(kSpeakerChangeDetection, base::FEATURE_DISABLED_BY_DEFAULT);

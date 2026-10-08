@@ -8,9 +8,7 @@
 
 #include "build/build_config.h"
 #include "media/base/channel_layout.h"
-#include "media/base/media_log.h"
 #include "media/formats/mp4/aac.h"
-#include "media/formats/mpeg/adts_constants.h"
 #include "media/formats/mpeg/lib.rs.h"
 
 namespace media {
@@ -63,26 +61,10 @@ std::optional<ADTSStreamParser::Header> ADTSStreamParser::ParseHeader(
   return ConvertFfiHeader(ffi_res);
 }
 
-constexpr uint32_t kADTSStartCodeMask = 0xfff00000;
-
 ADTSStreamParser::ADTSStreamParser()
-    : MPEGAudioStreamParserBase(kADTSStartCodeMask, AudioCodec::kAAC, 0) {}
+    : MPEGAudioStreamParserBase(AudioCodec::kAAC, 0) {}
 
 ADTSStreamParser::~ADTSStreamParser() = default;
-
-size_t ADTSStreamParser::GetMinHeaderSize() const {
-  return kADTSHeaderMinSize;
-}
-
-std::optional<ADTSStreamParser::Header> ADTSStreamParser::ParseFrameHeader(
-    base::span<const uint8_t> data) {
-  auto header = ParseHeader(data);
-  if (!header) {
-    LIMITED_MEDIA_LOG(DEBUG, media_log(), adts_parse_error_limit_, 5)
-        << "Invalid ADTS header.";
-  }
-  return header;
-}
 
 MPEGAudioStreamParserBase::Header ADTSStreamParser::FfiHeaderToHeader(
     const formats::mpeg::MpegAudioHeaderInfo& ffi_header) const {

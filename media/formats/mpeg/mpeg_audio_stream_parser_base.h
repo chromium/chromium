@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <optional>
 #include <set>
 #include <vector>
 
@@ -16,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/audio_timestamp_helper.h"
-#include "media/base/bit_reader.h"
 #include "media/base/byte_queue.h"
 #include "media/base/media_export.h"
 #include "media/base/stream_parser.h"
@@ -50,13 +48,9 @@ class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
     // Subclass-specific extra data configurations (e.g., AudioSpecificConfig).
     std::vector<uint8_t> extra_data;
   };
-  // |start_code_mask| is used to find the start of each frame header.  Also
-  // referred to as the sync code in the MP3 and ADTS header specifications.
   // |codec_delay| is the number of samples the decoder will output before the
   // first real frame.
-  MPEGAudioStreamParserBase(uint32_t start_code_mask,
-                            AudioCodec audio_codec,
-                            int codec_delay);
+  MPEGAudioStreamParserBase(AudioCodec audio_codec, int codec_delay);
 
   MPEGAudioStreamParserBase(const MPEGAudioStreamParserBase&) = delete;
   MPEGAudioStreamParserBase& operator=(const MPEGAudioStreamParserBase&) =
@@ -79,18 +73,9 @@ class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
   [[nodiscard]] ParseStatus Parse(int max_pending_bytes_to_inspect) override;
 
  protected:
-  // Returns the minimum header size required to parse a frame header.
-  virtual size_t GetMinHeaderSize() const = 0;
-
-  // Parses the frame header. Returns std::nullopt if parsing failed.
-  virtual std::optional<Header> ParseFrameHeader(
-      base::span<const uint8_t> data) = 0;
-
   // Converts a Rust FFI header info struct into the C++ parser Header struct.
   virtual Header FfiHeaderToHeader(
       const formats::mpeg::MpegAudioHeaderInfo& ffi_header) const = 0;
-
-  MediaLog* media_log() const { return media_log_.get(); }
 
  private:
   enum State {
@@ -99,44 +84,11 @@ class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
     PARSE_ERROR
   };
 
-  ParseStatus ParseRust(int max_pending_bytes_to_inspect);
-  ParseStatus ParseLegacy(int max_pending_bytes_to_inspect);
-
   bool ProcessAudioFrame(const Header& header,
                          base::span<const uint8_t> data,
                          BufferQueue* buffers);
 
   void ChangeState(State state);
-
-  // Parsing functions for various byte stream elements.  |data| & |size|
-  // describe the data available for parsing.
-  //
-  // Returns:
-  // > 0 : The number of bytes parsed.
-  //   0 : If more data is needed to parse the entire element.
-  // < 0 : An error was encountered during parsing.
-  int ParseFrame(base::span<const uint8_t> data, BufferQueue* buffers);
-  int ParseIcecastHeader(const uint8_t* data, int size);
-  int ParseID3v1(const uint8_t* data, int size);
-  int ParseID3v2(const uint8_t* data, int size);
-
-  // Parses an ID3v2 "sync safe" integer.
-  // |reader| - A BitReader to read from.
-  // |value| - Set to the integer value read, if true is returned.
-  //
-  // Returns true if the integer was successfully parsed and |value|
-  // was set.
-  // Returns false if an error was encountered. The state of |value| is
-  // undefined when false is returned.
-  bool ParseSyncSafeInt(BitReader* reader, int32_t* value);
-
-  // Scans |data| for the next valid start code.
-  // Returns:
-  // > 0 : The number of bytes that should be skipped to reach the
-  //       next start code..
-  //   0 : If a valid start code was not found and more data is needed.
-  // < 0 : An error was encountered during parsing.
-  int FindNextValidStartCode(const uint8_t* data, int size);
 
   // Sends the buffers in |buffers| to |new_buffers_cb_| and then clears
   // |buffers|.
@@ -153,7 +105,6 @@ class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
   NewBuffersCB new_buffers_cb_;
   NewMediaSegmentCB new_segment_cb_;
   EndMediaSegmentCB end_of_segment_cb_;
-  std::unique_ptr<MediaLog> media_log_;
 
   // Tracks how much data has not yet been attempted to be parsed from `queue_`
   // between calls to Parse(). AppendToParseBuffer() increases this from 0 as
@@ -168,7 +119,6 @@ class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
   AudioDecoderConfig config_;
   std::unique_ptr<AudioTimestampHelper> timestamp_helper_;
   bool in_media_segment_ = false;
-  const uint32_t start_code_mask_;
   const AudioCodec audio_codec_;
   const int codec_delay_;
 };
