@@ -226,6 +226,7 @@ public class AwVariationsSeedFetcherTest {
     @Before
     public void setUp() throws IOException {
         AwVariationsSeedFetcher.setMocks(mScheduler, mDownloader);
+        AwVariationsSeedFetcher.resetRestrictModeForTesting();
         mOriginalPlatformServiceBridge = PlatformServiceBridge.getInstance();
         PlatformServiceBridge.injectInstance(mPlatformServiceBridge);
         VariationsTestUtils.deleteSeeds();

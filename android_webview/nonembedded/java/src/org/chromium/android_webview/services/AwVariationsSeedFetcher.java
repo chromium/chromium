@@ -91,6 +91,9 @@ public class AwVariationsSeedFetcher extends JobService {
     private static final int sJitter =
             new Random().nextInt((int) VariationsFastFetchModeUtils.MAX_ALLOWABLE_SEED_AGE_MS);
     private static boolean sUseSmallJitterForTesting;
+    // The value of the "restrict" param sent with seed requests. Null until first computed, then
+    // reused across jobs for the lifetime of the process.
+    private static volatile @Nullable String sRestrictMode;
 
     private static long currentTimeMillis() {
         if (sTestClock != null) {
@@ -382,8 +385,11 @@ public class AwVariationsSeedFetcher extends JobService {
                     sMockDownloader != null ? sMockDownloader : VariationsSeedFetcher.get();
             String milestone = String.valueOf(VersionConstants.PRODUCT_MAJOR_VERSION);
 
-            // This runs on a background thread, so it's OK for this call to block.
-            String restrictMode = PlatformServiceBridge.getInstance().getVariationsRestrictMode();
+            if (sRestrictMode == null) {
+                // This runs on a background thread, so it's OK for this call to block.
+                sRestrictMode = PlatformServiceBridge.getInstance().getVariationsRestrictMode();
+            }
+            String restrictMode = sRestrictMode;
             RecordHistogram.recordBooleanHistogram(
                     SEED_REQUEST_HAS_RESTRICT_PARAM_HISTOGRAM_NAME, !restrictMode.isEmpty());
 
@@ -516,6 +522,12 @@ public class AwVariationsSeedFetcher extends JobService {
     public static void setDateForTesting(Date date) {
         sDateForTesting = date;
         ResettersForTesting.register(() -> sDateForTesting = null);
+    }
+
+    /** Clears the cached restrict mode so that it's recomputed on the next seed request. */
+    public static void resetRestrictModeForTesting() {
+        sRestrictMode = null;
+        ResettersForTesting.register(() -> sRestrictMode = null);
     }
 
     /** Determines whether the currently scheduled job is in Fast Mode and periodic. */
