@@ -128,10 +128,13 @@ class PageContentExtractionService : public KeyedService,
 
   class Observer : public base::CheckedObserver {
    public:
-    // Invoked when `page_content` is extracted for `page`. The extraction is
-    // triggered for every page once the page has sufficiently loaded. The
-    // `page_content` holds either the APC for a non-PDF page; or the PDF text
-    // for a PDF page.
+    // Invoked when `page_content` is extracted for `page`, whether
+    // automatically (once the page loads and settles, or when the tab is
+    // hidden, depending on configuration) or on demand. May be invoked multiple
+    // times for the same `page` (e.g., on eligible same-document navigations,
+    // tab hides, or on-demand refreshes), or not at all if extraction is
+    // skipped or fails. `page_content` holds either the APC for a non-PDF page
+    // or the PDF text for a PDF page.
     //
     // For non-PDF pages, the extracted content and its server upload
     // eligibility are cached before this method is called, so synchronous
@@ -264,10 +267,10 @@ class PageContentExtractionService : public KeyedService,
   void GetOnDiskCachedTabIds(GetAllTabIdsCallback callback);
 
  protected:
-  // Invoked when `page_content` is extracted for `page`, to notify the
-  // observers. The `page_content` holds either the APC for a non-PDF page; or
-  // the PDF text for a PDF page. `tab_id` for the tab where page is loaded, if
-  // available.
+  // Invoked when `page_content` (either the APC for a non-PDF page or the PDF
+  // text for a PDF page) is extracted for `page`. Notifies observers and, if
+  // enabled for non-PDF pages, updates the on-disk cache using `tab_id` and
+  // `screenshot_data`.
   virtual void OnPageContentExtracted(
       content::Page& page,
       PageContent page_content,
