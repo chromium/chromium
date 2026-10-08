@@ -283,7 +283,7 @@ class TRACING_EXPORT EtwConsumer
 
   // Returns a new perfetto trace event to be emitted for an ETW event with a
   // given event header. The timestamp and cpu fields of the returned event are
-  // prepopulated.
+  // prepopulated. Clears interned data and starts a new packet first if needed.
   perfetto::protos::pbzero::EtwTraceEvent* MakeNextEvent(
       const EVENT_HEADER& header,
       const ETW_BUFFER_CONTEXT& buffer_context)
@@ -300,7 +300,7 @@ class TRACING_EXPORT EtwConsumer
 
   // Returns a new perfetto trace event to be emitted for an ETW event with a
   // given `QueryPerformanceCounter` (QPC) timestamp.
-  perfetto::protos::pbzero::EtwTraceEvent* MakeNextEventWithTimestamp(
+  perfetto::protos::pbzero::EtwTraceEvent* AppendEvent(
       uint64_t qpc_timestamp,
       const ETW_BUFFER_CONTEXT& buffer_context)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
@@ -309,11 +309,13 @@ class TRACING_EXPORT EtwConsumer
   void FinalizePreviousData() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Finalizes previous data and starts a new packet, i.e., event bundle.
-  void StartNewPacket(uint64_t qpc_timestamp)
+  void StartNewPacket(uint64_t qpc_timestamp, uint32_t sequence_flags)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Clears interned data.
-  void ResetEmittedState() VALID_CONTEXT_REQUIRED(sequence_checker_);
+  // If incremental state needs to be reset, clears interned data and starts a
+  // new packet. Returns whether incremental state was reset.
+  bool MaybeClearInternedDataAndStartNewPacket(uint64_t qpc_timestamp)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   const ActiveProcesses& active_processes() const { return active_processes_; }
 
