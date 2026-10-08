@@ -10,6 +10,7 @@
 
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/lens/ref_counted_lens_overlay_client_logs.h"
@@ -171,11 +172,14 @@ TEST_F(LensBitmapProcessingTest, EncodeImage_Opaque) {
   EXPECT_TRUE(success);
   EXPECT_EQ(expected_output,
             std::string(base::as_string_view(output->as_vector())));
-  ASSERT_EQ(359, ref_counted_logs->client_logs()
-                   .phase_latencies_metadata()
-                   .phase(0)
-                   .image_encode_data()
-                   .encoded_image_size_bytes());
+  // JPEG output size is encoder-dependent. Verify the logged size describes
+  // the bytes actually produced.
+  ASSERT_EQ(base::checked_cast<int64_t>(output->as_vector().size()),
+            ref_counted_logs->client_logs()
+                .phase_latencies_metadata()
+                .phase(0)
+                .image_encode_data()
+                .encoded_image_size_bytes());
 }
 
 TEST_F(LensBitmapProcessingTest, EncodeImage_Transparent) {

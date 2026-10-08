@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/base64url.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
@@ -1568,6 +1569,7 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
                 .phase_latencies_metadata()
                 .phase_size(),
             1);
+  // The logged encoded size should describe the image payload being uploaded.
   EXPECT_EQ(controller()
                 .last_sent_file_upload_request()
                 ->client_logs()
@@ -1575,7 +1577,14 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
                 .phase(0)
                 .image_encode_data()
                 .encoded_image_size_bytes(),
-            360);
+            base::checked_cast<int64_t>(
+                controller()
+                    .last_sent_file_upload_request()
+                    ->objects_request()
+                    .image_data()
+                    .payload()
+                    .image_bytes()
+                    .size()));
   EXPECT_EQ(controller()
                 .last_sent_file_upload_request()
                 ->objects_request()
