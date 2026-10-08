@@ -68,6 +68,16 @@ class JourneysDatabase {
   // Returns the database for the functions in this interface. The descendant
   // of this class implements this function to return its database.
   virtual sql::Database& GetDB() = 0;
+
+ private:
+  // Deletes the rows of `journey_id` from all child tables, i.e. every table
+  // except `journeys`. Attempts all deletions even if one fails, and returns
+  // true if all succeeded.
+  //
+  // When adding a child table, update `DeleteChildRows()`,
+  // `DeleteAllJourneys()` and `DropJourneysTables()`; the schema-enumerating
+  // tests in journeys_database_unittest.cc fail otherwise.
+  bool DeleteChildRows(const std::string& journey_id);
 };
 
 }  // namespace history::journeys

@@ -41,6 +41,13 @@ JourneyRow ParseJourneyRow(sql::Statement& s) {
   return journey;
 }
 
+// Runs `statement`, whose only parameter is a journey ID, for `journey_id`.
+bool RunForJourney(sql::Statement& statement, const std::string& journey_id) {
+  statement.Reset(true);
+  statement.BindString(0, journey_id);
+  return statement.Run();
+}
+
 }  // namespace
 
 JourneysDatabase::JourneysDatabase() = default;
@@ -130,9 +137,9 @@ bool JourneysDatabase::InitJourneysTables() {
 }
 
 bool JourneysDatabase::DropJourneysTables() {
-  return GetDB().Execute("DROP TABLE IF EXISTS journey_history_entries") &&
-         GetDB().Execute("DROP TABLE IF EXISTS journey_continuation_queries") &&
-         GetDB().Execute("DROP TABLE IF EXISTS journeys");
+  return GetDB().Execute("DROP TABLE IF EXISTS journeys") &&
+         GetDB().Execute("DROP TABLE IF EXISTS journey_history_entries") &&
+         GetDB().Execute("DROP TABLE IF EXISTS journey_continuation_queries");
 }
 
 bool JourneysDatabase::AddOrUpdateJourneys(
@@ -147,14 +154,6 @@ bool JourneysDatabase::AddOrUpdateJourneys(
       SQL_FROM_HERE,
       "INSERT OR REPLACE INTO journeys (journey_id, title, emoji, overview, "
       "short_overview, creation_time_micros) VALUES(?, ?, ?, ?, ?, ?)"));
-
-  sql::Statement delete_entries(GetDB().GetCachedStatement(
-      SQL_FROM_HERE,
-      "DELETE FROM journey_history_entries WHERE journey_id = ?"));
-
-  sql::Statement delete_queries(GetDB().GetCachedStatement(
-      SQL_FROM_HERE,
-      "DELETE FROM journey_continuation_queries WHERE journey_id = ?"));
 
   sql::Statement insert_entry(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
@@ -197,15 +196,7 @@ bool JourneysDatabase::AddOrUpdateJourneys(
     }
 
     // 2. Clear old child rows in case of update to avoid orphaned entries.
-    delete_entries.Reset(true);
-    delete_entries.BindString(0, journey.journey_id);
-    if (!delete_entries.Run()) {
-      return false;
-    }
-
-    delete_queries.Reset(true);
-    delete_queries.BindString(0, journey.journey_id);
-    if (!delete_queries.Run()) {
+    if (!DeleteChildRows(journey.journey_id)) {
       return false;
     }
 
@@ -348,35 +339,16 @@ bool JourneysDatabase::DeleteJourneys(
   sql::Statement s_journey(GetDB().GetCachedStatement(
       SQL_FROM_HERE, "DELETE FROM journeys WHERE journey_id = ?"));
 
-  sql::Statement s_entries(GetDB().GetCachedStatement(
-      SQL_FROM_HERE,
-      "DELETE FROM journey_history_entries WHERE journey_id = ?"));
-
-  sql::Statement s_queries(GetDB().GetCachedStatement(
-      SQL_FROM_HERE,
-      "DELETE FROM journey_continuation_queries WHERE journey_id = ?"));
-
   bool all_succeeded = true;
   for (const std::string& journey_id : journey_ids) {
     if (journey_id.empty()) {
       continue;
     }
 
-    s_journey.Reset(true);
-    s_journey.BindString(0, journey_id);
-    if (!s_journey.Run()) {
+    if (!RunForJourney(s_journey, journey_id)) {
       all_succeeded = false;
     }
-
-    s_entries.Reset(true);
-    s_entries.BindString(0, journey_id);
-    if (!s_entries.Run()) {
-      all_succeeded = false;
-    }
-
-    s_queries.Reset(true);
-    s_queries.BindString(0, journey_id);
-    if (!s_queries.Run()) {
+    if (!DeleteChildRows(journey_id)) {
       all_succeeded = false;
     }
   }
@@ -388,6 +360,22 @@ bool JourneysDatabase::DeleteAllJourneys() {
   return GetDB().Execute("DELETE FROM journeys") &&
          GetDB().Execute("DELETE FROM journey_history_entries") &&
          GetDB().Execute("DELETE FROM journey_continuation_queries");
+}
+
+bool JourneysDatabase::DeleteChildRows(const std::string& journey_id) {
+  sql::Statement delete_history_entries(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "DELETE FROM journey_history_entries WHERE journey_id = ?"));
+  sql::Statement delete_continuation_queries(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "DELETE FROM journey_continuation_queries WHERE journey_id = ?"));
+
+  // Attempt every deletion, even if an earlier one fails.
+  const bool deleted_history_entries =
+      RunForJourney(delete_history_entries, journey_id);
+  const bool deleted_continuation_queries =
+      RunForJourney(delete_continuation_queries, journey_id);
+  return deleted_history_entries && deleted_continuation_queries;
 }
 
 }  // namespace history::journeys
