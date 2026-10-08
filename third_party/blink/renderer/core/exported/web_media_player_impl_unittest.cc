@@ -1175,6 +1175,28 @@ TEST_F(WebMediaPlayerImplTest, LoadPreloadMetadataSuspend) {
             data_source_size);
 }
 
+// Verify that re-entrant Shutdown() during OnPipelineSuspended() does not
+// destroy `pipeline_controller_` while it is still on the call stack.
+TEST_F(WebMediaPlayerImplTest, ShutdownDuringOnPipelineSuspended) {
+  InitializeWebMediaPlayerImpl();
+  base::RunLoop loop;
+  EXPECT_CALL(*client_, CouldPlayIfEnoughData())
+      .WillOnce(Return(false))
+      .WillOnce([&]() {
+        EXPECT_CALL(*client_, SetCcLayer(nullptr));
+        EXPECT_CALL(*client_, MediaRemotingStopped(_));
+        wmpi_->Shutdown();
+        loop.Quit();
+        return true;
+      });
+  wmpi_->SetPreload(WebMediaPlayer::kPreloadMetaData);
+  Load(kAudioOnlyTestFile);
+  loop.Run();
+
+  wmpi_.reset();
+  CycleThreads();
+}
+
 // Verify that Play() before kReadyStateHaveEnough doesn't increase buffer size.
 TEST_F(WebMediaPlayerImplTest, NoBufferSizeIncreaseUntilHaveEnough) {
   InitializeWebMediaPlayerImpl();
