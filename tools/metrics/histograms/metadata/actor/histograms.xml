@@ -508,6 +508,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.Notification.PermissionState"
+    enum="ActorNotificationPermissionState" expires_after="2027-09-30">
+  <owner>bbetini@google.com</owner>
+  <owner>ritikagup@google.com</owner>
+  <summary>
+    Recorded once per task when an Actor task starts. Captures the notification
+    permission state for Actor notifications (enabled, channel disabled in app
+    settings, or disabled at the OS level). Note that this metric is only
+    recorded on Android.
+  </summary>
+</histogram>
+
 <histogram name="Actor.ObservationDelay.DidNavigate" enum="Boolean"
     expires_after="2027-02-28">
   <owner>dtapuska@google.com</owner>

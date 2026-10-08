@@ -253,6 +253,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/password_manager/core/browser/actor_login/internal/actor_login_metrics.h:ActorLoginSelectedAccountType) -->
 
+<!-- LINT.IfChange(ActorNotificationPermissionState) -->
+
+<enum name="ActorNotificationPermissionState">
+  <int value="0" label="Enabled"/>
+  <int value="1" label="ChannelDisabled"/>
+  <int value="2" label="OsDisabled"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/android/java/src/org/chromium/chrome/browser/actor/ActorMetrics.java:ActorNotificationPermissionState) -->
+
 <!-- LINT.IfChange(ActorObservationOutcome) -->
 
 <enum name="ActorObservationOutcome">
