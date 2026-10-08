@@ -8,12 +8,12 @@
 
 #import <string>
 
-#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -21,32 +21,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
-
-// Returns the first subview of `view` (or `view` itself) whose accessibility
-// identifier is `identifier`, or nil if there is none.
-UIView* FindViewWithAccessibilityIdentifier(UIView* view,
-                                            NSString* identifier) {
-  if ([view.accessibilityIdentifier isEqualToString:identifier]) {
-    return view;
-  }
-  for (UIView* subview in view.subviews) {
-    UIView* match = FindViewWithAccessibilityIdentifier(subview, identifier);
-    if (match) {
-      return match;
-    }
-  }
-  return nil;
-}
-
-// Appends every `UIButton` in the hierarchy of `view` to `buttons`.
-void CollectButtons(UIView* view, NSMutableArray<UIButton*>* buttons) {
-  if ([view isKindOfClass:[UIButton class]]) {
-    [buttons addObject:base::apple::ObjCCastStrict<UIButton>(view)];
-  }
-  for (UIView* subview in view.subviews) {
-    CollectButtons(subview, buttons);
-  }
-}
 
 // Returns whether `view` has a `UILargeContentViewerInteraction`.
 bool HasLargeContentViewerInteraction(UIView* view) {
@@ -77,7 +51,7 @@ class AssistantAIMHeaderViewTest : public PlatformTest {
   AssistantAIMHeaderView* header_view_;
 };
 
-// Test that each header button has the expected accessibility identifier and
+// Tests that each header button has the expected accessibility identifier and
 // localized accessibility label, so VoiceOver users know what it does.
 TEST_F(AssistantAIMHeaderViewTest, ButtonsHaveAccessibilityLabels) {
   struct ExpectedButton {
@@ -102,19 +76,19 @@ TEST_F(AssistantAIMHeaderViewTest, ButtonsHaveAccessibilityLabels) {
 
   for (const ExpectedButton& expected : expected_buttons) {
     SCOPED_TRACE(base::SysNSStringToUTF8(expected.identifier));
-    UIButton* button = base::apple::ObjCCast<UIButton>(
-        FindViewWithAccessibilityIdentifier(header_view_, expected.identifier));
+    UIButton* button = chrome_test_util::FindViewById<UIButton>(
+        header_view_, expected.identifier);
     ASSERT_TRUE(button);
     ASSERT_GT(expected.label.length, 0u);
     EXPECT_NSEQ(expected.label, button.accessibilityLabel);
   }
 }
 
-// Test that every button in the header, including the ones hidden in the
+// Tests that every button in the header, including the ones hidden in the
 // current mode, has an accessibility label and identifier.
 TEST_F(AssistantAIMHeaderViewTest, AllButtonsAreLabeledAndIdentified) {
-  NSMutableArray<UIButton*>* buttons = [NSMutableArray array];
-  CollectButtons(header_view_, buttons);
+  NSArray<UIButton*>* buttons =
+      chrome_test_util::FindViewsByClass<UIButton>(header_view_);
   ASSERT_GT(buttons.count, 0u);
 
   for (UIButton* button in buttons) {
@@ -124,8 +98,9 @@ TEST_F(AssistantAIMHeaderViewTest, AllButtonsAreLabeledAndIdentified) {
   }
 }
 
-// Test that the visible header action buttons in the pill fill the 40pt capsule
-// height and receive touches 1pt inside the top and bottom edges of the pill.
+// Tests that the visible header action buttons in the pill fill the 40pt
+// capsule height and receive touches 1pt inside the top and bottom edges of the
+// pill.
 TEST_F(AssistantAIMHeaderViewTest, ActionButtonsFillPillHeight) {
   constexpr CGFloat kHeaderWidth = 400.0;
   constexpr CGFloat kHeaderHeight = 40.0;
@@ -159,8 +134,8 @@ TEST_F(AssistantAIMHeaderViewTest, ActionButtonsFillPillHeight) {
 
     for (NSString* identifier in test_case.visible_identifiers) {
       SCOPED_TRACE(base::SysNSStringToUTF8(identifier));
-      UIButton* button = base::apple::ObjCCast<UIButton>(
-          FindViewWithAccessibilityIdentifier(header_view_, identifier));
+      UIButton* button =
+          chrome_test_util::FindViewById<UIButton>(header_view_, identifier);
       ASSERT_TRUE(button);
       ASSERT_FALSE(button.hidden);
       ASSERT_TRUE(button.superview);
@@ -184,7 +159,7 @@ TEST_F(AssistantAIMHeaderViewTest, ActionButtonsFillPillHeight) {
   }
 }
 
-// Test that both the back and close buttons use `ExtendedTouchTargetButton`
+// Tests that both the back and close buttons use `ExtendedTouchTargetButton`
 // (accepting touches within a 44pt diameter circle outside their 40x40pt
 // bounds) and set `tintColor` to `clearColor` to avoid a tinted glass rim.
 TEST_F(AssistantAIMHeaderViewTest,
@@ -207,8 +182,8 @@ TEST_F(AssistantAIMHeaderViewTest,
   for (NSString* identifier in identifiers) {
     SCOPED_TRACE(base::SysNSStringToUTF8(identifier));
     ExtendedTouchTargetButton* button =
-        base::apple::ObjCCast<ExtendedTouchTargetButton>(
-            FindViewWithAccessibilityIdentifier(header_view_, identifier));
+        chrome_test_util::FindViewById<ExtendedTouchTargetButton>(header_view_,
+                                                                  identifier);
     ASSERT_TRUE(button);
     EXPECT_NSEQ([UIColor clearColor], button.tintColor);
     EXPECT_TRUE([button
@@ -231,9 +206,8 @@ TEST_F(AssistantAIMHeaderViewTest,
   [window addSubview:header_view_];
   [header_view_ setMode:AssistantAIMState::kHistory];
 
-  UILabel* title_label =
-      base::apple::ObjCCast<UILabel>(FindViewWithAccessibilityIdentifier(
-          header_view_, kAssistantAIMTitleLabelAccessibilityIdentifier));
+  UILabel* title_label = chrome_test_util::FindViewById<UILabel>(
+      header_view_, kAssistantAIMTitleLabelAccessibilityIdentifier);
   ASSERT_TRUE(title_label);
   EXPECT_TRUE(title_label.adjustsFontForContentSizeCategory);
   EXPECT_NSEQ(UIContentSizeCategoryExtraExtraExtraLarge,
@@ -293,8 +267,8 @@ TEST_F(AssistantAIMHeaderViewTest, ButtonsShowLargeContentViewer) {
 
   for (const ExpectedButton& expected : expected_buttons) {
     SCOPED_TRACE(base::SysNSStringToUTF8(expected.identifier));
-    UIButton* button = base::apple::ObjCCast<UIButton>(
-        FindViewWithAccessibilityIdentifier(header_view_, expected.identifier));
+    UIButton* button = chrome_test_util::FindViewById<UIButton>(
+        header_view_, expected.identifier);
     ASSERT_TRUE(button);
     EXPECT_TRUE(button.showsLargeContentViewer);
     EXPECT_TRUE(button.scalesLargeContentImage);

@@ -6,32 +6,12 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
-
-namespace {
-
-// Returns the first subview of `view` (or `view` itself) whose accessibility
-// identifier is `identifier`, or nil if there is none.
-UIView* FindViewWithAccessibilityIdentifier(UIView* view,
-                                            NSString* identifier) {
-  if ([view.accessibilityIdentifier isEqualToString:identifier]) {
-    return view;
-  }
-  for (UIView* subview in view.subviews) {
-    UIView* match = FindViewWithAccessibilityIdentifier(subview, identifier);
-    if (match) {
-      return match;
-    }
-  }
-  return nil;
-}
-
-}  // namespace
 
 class ComposeboxMenuSharedTabsViewControllerTest : public PlatformTest {
  protected:
@@ -53,10 +33,9 @@ class ComposeboxMenuSharedTabsViewControllerTest : public PlatformTest {
 
   // Returns the disclaimer text view.
   UITextView* DisclaimerTextView() {
-    UIView* view = FindViewWithAccessibilityIdentifier(
+    return chrome_test_util::FindViewById<UITextView>(
         view_controller_.view,
         kComposeboxSharedTabsDisclaimerAccessibilityIdentifier);
-    return base::apple::ObjCCast<UITextView>(view);
   }
 
   // Returns the font of the disclaimer's attributed text at `index`.

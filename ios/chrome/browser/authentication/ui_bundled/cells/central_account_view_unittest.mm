@@ -7,7 +7,6 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <UIKit/UIKit.h>
 
-#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/ai_subscription_chip_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
@@ -18,6 +17,7 @@
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/public/provider/chrome/browser/intelligence/signin/signin_ai_logo.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -28,60 +28,33 @@
 
 namespace {
 
-// Recursively searches `view` and its subviews for a view with the given
-// `accessibility_id`. Returns nil if not found.
-UIView* FindSubviewWithAccessibilityIdentifier(UIView* view,
-                                               NSString* accessibility_id) {
-  if ([view.accessibilityIdentifier isEqualToString:accessibility_id]) {
-    return view;
-  }
-  for (UIView* subview in view.subviews) {
-    if (UIView* found =
-            FindSubviewWithAccessibilityIdentifier(subview, accessibility_id)) {
-      return found;
-    }
-  }
-  return nil;
-}
-
-// Returns true if `view` or any of its recursive subviews has the given
-// `accessibility_id`.
-bool HasSubviewWithAccessibilityIdentifier(UIView* view,
-                                           NSString* accessibility_id) {
-  return FindSubviewWithAccessibilityIdentifier(view, accessibility_id) != nil;
-}
-
 // Returns the avatar image displayed in `account_view`.
 UIImage* GetAvatarImage(CentralAccountView* account_view) {
-  UIImageView* avatar_image_view = base::apple::ObjCCastStrict<UIImageView>(
-      FindSubviewWithAccessibilityIdentifier(
-          account_view, kIdentityAvatarImageAccessibilityIdentifier));
+  UIImageView* avatar_image_view = chrome_test_util::FindViewById<UIImageView>(
+      account_view, kIdentityAvatarImageAccessibilityIdentifier);
   return avatar_image_view.image;
 }
 
 // Returns the title text displayed in `account_view`.
 NSString* GetTitle(CentralAccountView* account_view) {
-  UILabel* title_label = base::apple::ObjCCastStrict<UILabel>(
-      FindSubviewWithAccessibilityIdentifier(
-          account_view, kCentralAccountViewTitleAccessibilityIdentifier));
+  UILabel* title_label = chrome_test_util::FindViewById<UILabel>(
+      account_view, kCentralAccountViewTitleAccessibilityIdentifier);
   return title_label.text;
 }
 
 // Returns the subtitle text displayed in `account_view`.
 NSString* GetSubtitle(CentralAccountView* account_view) {
-  UILabel* subtitle_label = base::apple::ObjCCastStrict<UILabel>(
-      FindSubviewWithAccessibilityIdentifier(
-          account_view, kCentralAccountViewSubtitleAccessibilityIdentifier));
+  UILabel* subtitle_label = chrome_test_util::FindViewById<UILabel>(
+      account_view, kCentralAccountViewSubtitleAccessibilityIdentifier);
   return subtitle_label.text;
 }
 
 // Returns the management description displayed in `account_view`, or nil if
 // the view is not managed.
 NSString* GetManagementDescription(CentralAccountView* account_view) {
-  UILabel* management_label = base::apple::ObjCCastStrict<UILabel>(
-      FindSubviewWithAccessibilityIdentifier(
-          account_view,
-          kCentralAccountViewManagementDescriptionAccessibilityIdentifier));
+  UILabel* management_label = chrome_test_util::FindViewById<UILabel>(
+      account_view,
+      kCentralAccountViewManagementDescriptionAccessibilityIdentifier);
   return management_label.text;
 }
 
@@ -243,8 +216,9 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithAITierRing) {
                           managementDescription:nil
                                 useLargeMargins:YES];
 
-  EXPECT_TRUE(HasSubviewWithAccessibilityIdentifier(
-      accountView, kPremiumAvatarRingAccessibilityIdentifier));
+  EXPECT_NE(chrome_test_util::FindViewById(
+                accountView, kPremiumAvatarRingAccessibilityIdentifier),
+            nil);
 
   EXPECT_NSEQ(GetAvatarImage(accountView), image);
   EXPECT_NSEQ(GetTitle(accountView), mainText);
@@ -271,8 +245,8 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithAISubscriptionChip) {
                           managementDescription:nil
                                 useLargeMargins:YES];
 
-  EXPECT_TRUE(HasSubviewWithAccessibilityIdentifier(accountView,
-                                                    kAISubscriptionChipId));
+  EXPECT_NE(chrome_test_util::FindViewById(accountView, kAISubscriptionChipId),
+            nil);
 }
 
 // Tests accessibility labels when AI tier is present.

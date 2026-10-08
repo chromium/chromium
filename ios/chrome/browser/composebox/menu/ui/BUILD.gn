@@ -76,6 +76,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/composebox/ui:favicons_accordion",
     "//ios/chrome/browser/composebox/ui:state",
     "//ios/chrome/test:test_support",
+    "//ios/chrome/test/app:test_support",
     "//testing/gtest",
     "//ui/base",
     "//url",

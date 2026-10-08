@@ -4,19 +4,6 @@
 
 #import "ios/chrome/browser/composebox/ui/composebox_ui_test_util.h"
 
-UIView* FindViewWithIdentifier(UIView* view, NSString* identifier) {
-  if ([view.accessibilityIdentifier isEqualToString:identifier]) {
-    return view;
-  }
-  for (UIView* subview in view.subviews) {
-    UIView* match = FindViewWithIdentifier(subview, identifier);
-    if (match) {
-      return match;
-    }
-  }
-  return nil;
-}
-
 BOOL HasLargeContentViewerInteraction(UIView* view) {
   for (id<UIInteraction> interaction in view.interactions) {
     if ([interaction isKindOfClass:[UILargeContentViewerInteraction class]]) {

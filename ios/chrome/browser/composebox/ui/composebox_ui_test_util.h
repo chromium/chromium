@@ -7,10 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-// Returns the first view with `identifier` in the hierarchy of `view`, or `nil`
-// if none is found.
-UIView* FindViewWithIdentifier(UIView* view, NSString* identifier);
-
 // Returns whether `view` has a `UILargeContentViewerInteraction`.
 BOOL HasLargeContentViewerInteraction(UIView* view);
 

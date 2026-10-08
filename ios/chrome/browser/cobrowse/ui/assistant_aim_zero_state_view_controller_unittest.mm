@@ -6,34 +6,14 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/apple/foundation_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-namespace {
-
-// Returns the first subview of `view` (or `view` itself) whose accessibility
-// identifier is `identifier`, or nil if there is none.
-UIView* FindViewWithAccessibilityIdentifier(UIView* view,
-                                            NSString* identifier) {
-  if ([view.accessibilityIdentifier isEqualToString:identifier]) {
-    return view;
-  }
-  for (UIView* subview in view.subviews) {
-    UIView* match = FindViewWithAccessibilityIdentifier(subview, identifier);
-    if (match) {
-      return match;
-    }
-  }
-  return nil;
-}
-
-}  // namespace
 
 class AssistantAIMZeroStateViewControllerTest : public PlatformTest {
  protected:
@@ -59,10 +39,9 @@ class AssistantAIMZeroStateViewControllerTest : public PlatformTest {
 
   // Returns the greeting label.
   UILabel* GreetingLabel() {
-    UIView* view = FindViewWithAccessibilityIdentifier(
+    return chrome_test_util::FindViewById<UILabel>(
         view_controller_.view,
         kAssistantAIMZeroStateGreetingAccessibilityIdentifier);
-    return base::apple::ObjCCast<UILabel>(view);
   }
 
   ScopedKeyWindow scoped_key_window_;

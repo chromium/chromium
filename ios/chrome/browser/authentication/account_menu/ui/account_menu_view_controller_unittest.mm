@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/authentication/account_menu/ui/account_menu_view_controller.h"
 
-#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -40,6 +39,7 @@
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
@@ -57,52 +57,32 @@ const FakeSystemIdentity* kSecondaryIdentity2 =
     [FakeSystemIdentity fakeIdentity3];
 UIImage* kPrimaryAccountAvatar = [[UIImage alloc] init];
 
-// Recursively searches `view` and its subviews for a view with the given
-// `accessibility_id`. Returns nil if not found.
-UIView* FindSubviewWithAccessibilityIdentifier(UIView* view,
-                                               NSString* accessibility_id) {
-  if ([view.accessibilityIdentifier isEqualToString:accessibility_id]) {
-    return view;
-  }
-  for (UIView* subview in view.subviews) {
-    if (UIView* found =
-            FindSubviewWithAccessibilityIdentifier(subview, accessibility_id)) {
-      return found;
-    }
-  }
-  return nil;
-}
-
 // Returns the avatar image displayed in `account_view`.
 UIImage* GetAvatarImage(CentralAccountView* account_view) {
-  UIImageView* avatar_image_view = base::apple::ObjCCastStrict<UIImageView>(
-      FindSubviewWithAccessibilityIdentifier(
-          account_view, kIdentityAvatarImageAccessibilityIdentifier));
+  UIImageView* avatar_image_view = chrome_test_util::FindViewById<UIImageView>(
+      account_view, kIdentityAvatarImageAccessibilityIdentifier);
   return avatar_image_view.image;
 }
 
 // Returns the title text displayed in `account_view`.
 NSString* GetTitle(CentralAccountView* account_view) {
-  UILabel* title_label = base::apple::ObjCCastStrict<UILabel>(
-      FindSubviewWithAccessibilityIdentifier(
-          account_view, kCentralAccountViewTitleAccessibilityIdentifier));
+  UILabel* title_label = chrome_test_util::FindViewById<UILabel>(
+      account_view, kCentralAccountViewTitleAccessibilityIdentifier);
   return title_label.text;
 }
 
 // Returns the subtitle text displayed in `account_view`.
 NSString* GetSubtitle(CentralAccountView* account_view) {
-  UILabel* subtitle_label = base::apple::ObjCCastStrict<UILabel>(
-      FindSubviewWithAccessibilityIdentifier(
-          account_view, kCentralAccountViewSubtitleAccessibilityIdentifier));
+  UILabel* subtitle_label = chrome_test_util::FindViewById<UILabel>(
+      account_view, kCentralAccountViewSubtitleAccessibilityIdentifier);
   return subtitle_label.text;
 }
 
 // Returns whether `account_view` displays a management description.
 bool IsManaged(CentralAccountView* account_view) {
-  UILabel* management_label = base::apple::ObjCCastStrict<UILabel>(
-      FindSubviewWithAccessibilityIdentifier(
-          account_view,
-          kCentralAccountViewManagementDescriptionAccessibilityIdentifier));
+  UILabel* management_label = chrome_test_util::FindViewById<UILabel>(
+      account_view,
+      kCentralAccountViewManagementDescriptionAccessibilityIdentifier);
   return management_label.text != nil;
 }
 
@@ -260,9 +240,8 @@ class AccountMenuViewControllerTest : public PlatformTest {
 
   // The UITableView* of the account menu view controller.
   UITableView* TableView() {
-    return base::apple::ObjCCastStrict<UITableView>(
-        FindSubviewWithAccessibilityIdentifier(view_controller_.view,
-                                               kAccountMenuTableViewId));
+    return chrome_test_util::FindViewById<UITableView>(view_controller_.view,
+                                                       kAccountMenuTableViewId);
   }
 
   //  Returns the cell at `path`.
@@ -506,9 +485,8 @@ TEST_F(AccountMenuViewControllerTest, TestMissingGivenName) {
   viewController.mutator = mutator_;
   [viewController view];
 
-  UITableView* tableView = base::apple::ObjCCastStrict<UITableView>(
-      FindSubviewWithAccessibilityIdentifier(viewController.view,
-                                             kAccountMenuTableViewId));
+  UITableView* tableView = chrome_test_util::FindViewById<UITableView>(
+      viewController.view, kAccountMenuTableViewId);
   UIView* header = tableView.tableHeaderView;
   EXPECT_TRUE([header isKindOfClass:[CentralAccountView class]]);
   CentralAccountView* centralAccountView =
@@ -532,9 +510,8 @@ TEST_F(AccountMenuViewControllerTest, TestMissingNames) {
   viewController.mutator = mutator_;
   [viewController view];
 
-  UITableView* tableView = base::apple::ObjCCastStrict<UITableView>(
-      FindSubviewWithAccessibilityIdentifier(viewController.view,
-                                             kAccountMenuTableViewId));
+  UITableView* tableView = chrome_test_util::FindViewById<UITableView>(
+      viewController.view, kAccountMenuTableViewId);
   UIView* header = tableView.tableHeaderView;
   EXPECT_TRUE([header isKindOfClass:[CentralAccountView class]]);
   CentralAccountView* centralAccountView =

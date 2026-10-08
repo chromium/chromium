@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_view_controller.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -36,25 +37,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using webauthn::PasskeyWelcomeScreenPurpose;
-
-namespace {
-
-// Returns whether `view` or any of its descendants is a label displaying
-// `text`.
-bool HasLabelWithText(UIView* view, NSString* text) {
-  UILabel* label = base::apple::ObjCCast<UILabel>(view);
-  if ([label.text isEqualToString:text]) {
-    return true;
-  }
-  for (UIView* subview in view.subviews) {
-    if (HasLabelWithText(subview, text)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-}  // namespace
 
 // Test fixture for `PasskeyWelcomeScreenCoordinator`. An identity is signed in
 // to the original profile so that the welcome screen has an email to display.
@@ -132,8 +114,9 @@ TEST_F(PasskeyWelcomeScreenCoordinatorTest, ShowsPrimaryAccountEmail) {
 
   PasskeyWelcomeScreenViewController* welcome_screen = PresentedWelcomeScreen();
   ASSERT_TRUE(welcome_screen);
-  EXPECT_TRUE(
-      HasLabelWithText(welcome_screen.view, ExpectedEnrollmentFooter()));
+  EXPECT_NE(chrome_test_util::FindLabelWithText(welcome_screen.view,
+                                                ExpectedEnrollmentFooter()),
+            nil);
 }
 
 // Tests that the welcome screen displays the original profile's primary account
@@ -146,6 +129,7 @@ TEST_F(PasskeyWelcomeScreenCoordinatorTest,
 
   PasskeyWelcomeScreenViewController* welcome_screen = PresentedWelcomeScreen();
   ASSERT_TRUE(welcome_screen);
-  EXPECT_TRUE(
-      HasLabelWithText(welcome_screen.view, ExpectedEnrollmentFooter()));
+  EXPECT_NE(chrome_test_util::FindLabelWithText(welcome_screen.view,
+                                                ExpectedEnrollmentFooter()),
+            nil);
 }

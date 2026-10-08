@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_test_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -42,10 +43,10 @@ class ComposeboxInputPlateViewControllerTest : public PlatformTest {
   ComposeboxInputPlateViewController* view_controller_;
 };
 
-// Test that the Plus button shows its label in the Large Content Viewer, as it
+// Tests that the Plus button shows its label in the Large Content Viewer, as it
 // only has an image.
 TEST_F(ComposeboxInputPlateViewControllerTest, TestPlusButtonLargeContent) {
-  UIView* plus_button = FindViewWithIdentifier(
+  UIView* plus_button = chrome_test_util::FindViewById(
       view_controller_.view, kComposeboxPlusButtonAccessibilityIdentifier);
   ASSERT_TRUE(plus_button);
 

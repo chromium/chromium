@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -71,24 +72,6 @@
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
-
-namespace {
-
-// Returns whether `view` or any of its subviews has `accessibility_id`.
-bool HasSubviewWithAccessibilityIdentifier(UIView* view,
-                                           NSString* accessibility_id) {
-  if ([view.accessibilityIdentifier isEqualToString:accessibility_id]) {
-    return true;
-  }
-  for (UIView* subview in view.subviews) {
-    if (HasSubviewWithAccessibilityIdentifier(subview, accessibility_id)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-}  // namespace
 
 class ManageSyncSettingsMediatorTest : public PlatformTest {
  public:
@@ -742,7 +725,7 @@ TEST_F(ManageSyncSettingsMediatorTest,
   EXPECT_OCMOCK_VERIFY(mockCommandHandler);
 }
 
-// Test that the AI tier avatar ring and subscription chip are shown in the
+// Tests that the AI tier avatar ring and subscription chip are shown in the
 // central account view only when `kAiSubscriptionAvatarRingFollowupIOS` is
 // enabled, the AI subscription tier is positive, and there is no sync error.
 TEST_F(ManageSyncSettingsMediatorTest, TestAITierRingAndChip) {
@@ -760,10 +743,11 @@ TEST_F(ManageSyncSettingsMediatorTest, TestAITierRingAndChip) {
         manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
 
     UIView* headerView = consumer_.tableView.tableHeaderView;
-    EXPECT_FALSE(HasSubviewWithAccessibilityIdentifier(
-        headerView, kPremiumAvatarRingAccessibilityIdentifier));
-    EXPECT_FALSE(HasSubviewWithAccessibilityIdentifier(headerView,
-                                                       kAISubscriptionChipId));
+    EXPECT_EQ(chrome_test_util::FindViewById(
+                  headerView, kPremiumAvatarRingAccessibilityIdentifier),
+              nil);
+    EXPECT_EQ(chrome_test_util::FindViewById(headerView, kAISubscriptionChipId),
+              nil);
   }
 
   // Feature enabled.
@@ -777,60 +761,66 @@ TEST_F(ManageSyncSettingsMediatorTest, TestAITierRingAndChip) {
         subscription_eligibility::prefs::kAiSubscriptionTier, 0);
 
     UIView* headerView = consumer_.tableView.tableHeaderView;
-    EXPECT_FALSE(HasSubviewWithAccessibilityIdentifier(
-        headerView, kPremiumAvatarRingAccessibilityIdentifier));
-    EXPECT_FALSE(HasSubviewWithAccessibilityIdentifier(headerView,
-                                                       kAISubscriptionChipId));
+    EXPECT_EQ(chrome_test_util::FindViewById(
+                  headerView, kPremiumAvatarRingAccessibilityIdentifier),
+              nil);
+    EXPECT_EQ(chrome_test_util::FindViewById(headerView, kAISubscriptionChipId),
+              nil);
 
     // Tier changes to positive (1); ring and chip should appear.
     profile_->GetPrefs()->SetInteger(
         subscription_eligibility::prefs::kAiSubscriptionTier, 1);
 
     headerView = consumer_.tableView.tableHeaderView;
-    EXPECT_TRUE(HasSubviewWithAccessibilityIdentifier(
-        headerView, kPremiumAvatarRingAccessibilityIdentifier));
-    EXPECT_TRUE(HasSubviewWithAccessibilityIdentifier(headerView,
-                                                      kAISubscriptionChipId));
+    EXPECT_NE(chrome_test_util::FindViewById(
+                  headerView, kPremiumAvatarRingAccessibilityIdentifier),
+              nil);
+    EXPECT_NE(chrome_test_util::FindViewById(headerView, kAISubscriptionChipId),
+              nil);
 
     // Tier changes back to 0; ring and chip should disappear.
     profile_->GetPrefs()->SetInteger(
         subscription_eligibility::prefs::kAiSubscriptionTier, 0);
 
     headerView = consumer_.tableView.tableHeaderView;
-    EXPECT_FALSE(HasSubviewWithAccessibilityIdentifier(
-        headerView, kPremiumAvatarRingAccessibilityIdentifier));
-    EXPECT_FALSE(HasSubviewWithAccessibilityIdentifier(headerView,
-                                                       kAISubscriptionChipId));
+    EXPECT_EQ(chrome_test_util::FindViewById(
+                  headerView, kPremiumAvatarRingAccessibilityIdentifier),
+              nil);
+    EXPECT_EQ(chrome_test_util::FindViewById(headerView, kAISubscriptionChipId),
+              nil);
 
     // Tier changes to 1 again; ring and chip should appear.
     profile_->GetPrefs()->SetInteger(
         subscription_eligibility::prefs::kAiSubscriptionTier, 1);
 
     headerView = consumer_.tableView.tableHeaderView;
-    EXPECT_TRUE(HasSubviewWithAccessibilityIdentifier(
-        headerView, kPremiumAvatarRingAccessibilityIdentifier));
-    EXPECT_TRUE(HasSubviewWithAccessibilityIdentifier(headerView,
-                                                      kAISubscriptionChipId));
+    EXPECT_NE(chrome_test_util::FindViewById(
+                  headerView, kPremiumAvatarRingAccessibilityIdentifier),
+              nil);
+    EXPECT_NE(chrome_test_util::FindViewById(headerView, kAISubscriptionChipId),
+              nil);
 
     // Trigger a sync error; ring and chip should be hidden.
     sync_service_->SetPersistentAuthError();
     [mediator_ onSyncStateChanged];
 
     headerView = consumer_.tableView.tableHeaderView;
-    EXPECT_FALSE(HasSubviewWithAccessibilityIdentifier(
-        headerView, kPremiumAvatarRingAccessibilityIdentifier));
-    EXPECT_FALSE(HasSubviewWithAccessibilityIdentifier(headerView,
-                                                       kAISubscriptionChipId));
+    EXPECT_EQ(chrome_test_util::FindViewById(
+                  headerView, kPremiumAvatarRingAccessibilityIdentifier),
+              nil);
+    EXPECT_EQ(chrome_test_util::FindViewById(headerView, kAISubscriptionChipId),
+              nil);
 
     // Resolve the sync error; ring and chip should be shown again.
     sync_service_->ClearAuthError();
     [mediator_ onSyncStateChanged];
 
     headerView = consumer_.tableView.tableHeaderView;
-    EXPECT_TRUE(HasSubviewWithAccessibilityIdentifier(
-        headerView, kPremiumAvatarRingAccessibilityIdentifier));
-    EXPECT_TRUE(HasSubviewWithAccessibilityIdentifier(headerView,
-                                                      kAISubscriptionChipId));
+    EXPECT_NE(chrome_test_util::FindViewById(
+                  headerView, kPremiumAvatarRingAccessibilityIdentifier),
+              nil);
+    EXPECT_NE(chrome_test_util::FindViewById(headerView, kAISubscriptionChipId),
+              nil);
   }
 }
 
