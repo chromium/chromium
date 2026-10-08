@@ -2392,9 +2392,9 @@ class HarfBuzzShaperIftTest : public HarfBuzzShaperTest {
   static constexpr char kFontCoveringA[] = "roboto-ift.ttf";
   static constexpr char kFontCoveringAB[] = "Ahem.woff";
 
-  // U+0378 is an unassigned code point, so nothing has a glyph for it: not the
-  // test data fonts, and not the system fallback fonts.
-  const String unmappable_text_{u"\u0378"};
+  // U+FDD0 is a noncharacter, so FontCache skips platform font fallback for it.
+  // Neither the test font nor the last-resort fallback font has a glyph for it.
+  const String unmappable_text_{u"\uFDD0"};
 
   // Appends a font family backed by `font_path` to the font-family list.
   // Returns the font, whose subset extension requests succeed or fail
@@ -2521,8 +2521,8 @@ TEST_F(HarfBuzzShaperIftTest, ShapesWithLastFontEvenWhenExtensionFails) {
   HarfBuzzShaper shaper(unmappable_text_);
   const ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
 
-  // No font has a glyph for the character, so the shaper exhausts the fallback
-  // chain, including the system fonts, and comes back to the primary font to
+  // The noncharacter bypasses system fallback. The shaper exhausts the font
+  // list and the last-resort fallback, then returns to the primary font to
   // render .notdef with. Extension fails there a second time, but as the last
   // font to shape it is used anyway: dropping the text is not an option.
   EXPECT_THAT(primary.ExtensionRequests(),
