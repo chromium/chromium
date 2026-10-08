@@ -198,26 +198,6 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
 }  // namespace
 
 // static
-syncer::DeviceInfoSyncService* DeviceInfoSyncServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<syncer::DeviceInfoSyncService>(
-      profile, /*create=*/true);
-}
-
-// static
-syncer::DeviceInfoSyncService*
-DeviceInfoSyncServiceFactory::GetForProfileIfExists(ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<syncer::DeviceInfoSyncService>(
-      profile, /*create=*/false);
-}
-
-// static
-DeviceInfoSyncServiceFactory* DeviceInfoSyncServiceFactory::GetInstance() {
-  static base::NoDestructor<DeviceInfoSyncServiceFactory> instance;
-  return instance.get();
-}
-
-// static
 void DeviceInfoSyncServiceFactory::GetAllDeviceInfoTrackers(
     std::vector<const syncer::DeviceInfoTracker*>* trackers) {
   DCHECK(trackers);
@@ -233,15 +213,14 @@ void DeviceInfoSyncServiceFactory::GetAllDeviceInfoTrackers(
   }
 }
 
-DeviceInfoSyncServiceFactory::DeviceInfoSyncServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("DeviceInfoSyncService") {
+DeviceInfoSyncServiceFactory::DeviceInfoSyncServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "DeviceInfoSyncService") {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(SyncInvalidationsServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(IOSPersonalContextEligibilityServiceFactory::GetInstance());
 }
-
-DeviceInfoSyncServiceFactory::~DeviceInfoSyncServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 DeviceInfoSyncServiceFactory::BuildServiceInstanceFor(

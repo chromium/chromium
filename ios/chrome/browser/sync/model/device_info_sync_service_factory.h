@@ -8,34 +8,26 @@
 #import <memory>
 #import <vector>
 
-#import "base/no_destructor.h"
 #import "components/sync_device_info/device_info_sync_service.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace syncer {
-class DeviceInfoSyncService;
 class DeviceInfoTracker;
 }  // namespace syncer
 
 // Singleton that owns all DeviceInfoSyncService and associates them with
 // ProfileIOS.
-class DeviceInfoSyncServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class DeviceInfoSyncServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<DeviceInfoSyncServiceFactory,
+                                                syncer::DeviceInfoSyncService> {
  public:
-  static syncer::DeviceInfoSyncService* GetForProfile(ProfileIOS* profile);
-  static syncer::DeviceInfoSyncService* GetForProfileIfExists(
-      ProfileIOS* profile);
-  static DeviceInfoSyncServiceFactory* GetInstance();
+  DeviceInfoSyncServiceFactory(PassKey key);
 
   // Iterates over profiles and returns any trackers that can be found.
   static void GetAllDeviceInfoTrackers(
       std::vector<const syncer::DeviceInfoTracker*>* trackers);
 
  private:
-  friend class base::NoDestructor<DeviceInfoSyncServiceFactory>;
-
-  DeviceInfoSyncServiceFactory();
-  ~DeviceInfoSyncServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
