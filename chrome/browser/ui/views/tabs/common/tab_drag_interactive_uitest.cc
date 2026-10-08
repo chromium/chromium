@@ -69,6 +69,8 @@ using PinnedURLs = std::vector<URL>;
 int TabSelectModifier() {
 #if BUILDFLAG(IS_MAC)
   return ui_controls::kCommand;
+#elif BUILDFLAG(IS_CHROMEOS)
+  return ui_controls::kShift;
 #else
   return ui_controls::kControl;
 #endif
@@ -679,13 +681,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragOverSplitInGroup) {
       ReleaseMouse());
 }
 
-// TODO(crbug.com/40249472): Fails on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DragMultipleTabs DISABLED_DragMultipleTabs
-#else
-#define MAYBE_DragMultipleTabs DragMultipleTabs
-#endif
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, MAYBE_DragMultipleTabs) {
+IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragMultipleTabs) {
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
   RunTestSequence(
@@ -708,13 +704,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, MAYBE_DragMultipleTabs) {
       ReleaseMouse());
 }
 
-// TODO(crbug.com/40249472): Fails on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DragMultipleTabsInGroup DISABLED_DragMultipleTabsInGroup
-#else
-#define MAYBE_DragMultipleTabsInGroup DragMultipleTabsInGroup
-#endif
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, MAYBE_DragMultipleTabsInGroup) {
+IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragMultipleTabsInGroup) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
@@ -838,16 +828,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragOutOfGroup) {
       }));
 }
 
-// TODO(crbug.com/40249472): Fails on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DragMultiplePinnedTabsWithinContainer \
-  DISABLED_DragMultiplePinnedTabsWithinContainer
-#else
-#define MAYBE_DragMultiplePinnedTabsWithinContainer \
-  DragMultiplePinnedTabsWithinContainer
-#endif
 IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
-                       MAYBE_DragMultiplePinnedTabsWithinContainer) {
+                       DragMultiplePinnedTabsWithinContainer) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
@@ -1178,7 +1160,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragToScroll) {
       ReleaseMouse());
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragToDetachIntoNewWindow) {
   RunTestSequence(
       AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
@@ -1363,220 +1344,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DetachTabPreservesActiveTab) {
       CheckResult([this]() { return browser()->GetTabStripModel()->count(); },
                   2));
 }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-
-#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
-// TODO(crbug.com/40249472): Remove the VerticalTabDragDetachTest fixture and
-// associated tests once other platforms are migrated to the robust Kombucha
-// verbs and verified.
-// TODO(crbug.com/40249472): Widget DnD creates a blocking loop that isn't
-// compatible with out the testing framework generates mouse events. As a
-// workaround for Windows, we can send the input events asynchronously.
-//
-// All tests that involve detaching into a new window must use these custom
-// verbs.
-class VerticalTabDragDetachTest : public VerticalTabDragTest {
- public:
-  VerticalTabDragDetachTest() = default;
-  ~VerticalTabDragDetachTest() override = default;
-
-  auto DragTabTo(int tab_index, const gfx::Point& point) {
-    const char kTabToDrag[] = "Tab to drag";
-    return Steps(
-        NameDescendantViewByType<TabView>(kBrowserViewElementId, kTabToDrag,
-                                          tab_index),
-        MoveMouseTo(kTabToDrag),
-        ClickMouse(ui_controls::MouseButton::LEFT, /*release=*/false),
-        Do([&]() {
-          ASSERT_TRUE(ui_controls::SendMouseMove(point.x(), point.y()));
-        }));
-  }
-
-  auto ReleaseMouseAsync() {
-    return Do([&]() {
-      ASSERT_TRUE(ui_controls::SendMouseEvents(
-          ui_controls::MouseButton::LEFT, ui_controls::MouseButtonState::UP));
-    });
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest, DragToDetachIntoNewWindow) {
-  RunTestSequence(
-      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
-      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
-      DragTabTo(1, GetBrowserView().GetBoundsInScreen().top_right() +
-                       gfx::Vector2d(50, 50)),
-      PollState(kBrowserCountPoller, GetBrowserCount()),
-      WaitForState(kBrowserCountPoller, 2), WaitForDetachedWindowVisible(),
-      ReleaseMouseAsync(), PollState(kDragStatePoller, GetDragActive()),
-      WaitForState(kDragStatePoller, false), Do([&]() {
-        TabStripModel* tab_strip_model = GetLatestBrowser().GetTabStripModel();
-        ASSERT_NE(nullptr, tab_strip_model);
-        EXPECT_EQ(1, tab_strip_model->count());
-        EXPECT_EQ(GURL(chrome::kChromeUIBookmarksURL),
-                  tab_strip_model->GetWebContentsAt(0)->GetURL());
-        EXPECT_EQ(2, browser()->GetTabStripModel()->count());
-      }));
-}
-
-// TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS. Fails on
-// Windows.
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN)
-#define MAYBE_DragToDetachIntoNewWindowWithVerticalTabsState \
-  DragToDetachIntoNewWindowWithVerticalTabsState
-#else
-#define MAYBE_DragToDetachIntoNewWindowWithVerticalTabsState \
-  DISABLED_DragToDetachIntoNewWindowWithVerticalTabsState
-#endif
-IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest,
-                       MAYBE_DragToDetachIntoNewWindowWithVerticalTabsState) {
-  const int kInitialWidth = 250;
-  vertical_tab_strip_state_controller()->RequestCollapse(true);
-  vertical_tab_strip_state_controller()->SetUncollapsedWidth(kInitialWidth);
-
-  RunTestSequence(
-      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
-      DragTabTo(1, GetBrowserView().GetBoundsInScreen().top_right() +
-                       gfx::Vector2d(50, 50)),
-      PollState(kBrowserCountPoller, GetBrowserCount()),
-      WaitForState(kBrowserCountPoller, 2), ReleaseMouseAsync(),
-      PollState(kDragStatePoller, GetDragActive()),
-      WaitForState(kDragStatePoller, false), Do([&]() {
-        BrowserWindowInterface& new_browser = GetLatestBrowser();
-        auto* controller =
-            tabs::VerticalTabStripStateController::From(&new_browser);
-        ASSERT_NE(nullptr, controller);
-        EXPECT_TRUE(controller->IsCollapsed());
-        EXPECT_EQ(kInitialWidth, controller->GetUncollapsedWidth());
-      }));
-}
-
-IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest, DragToDetachThenCancel) {
-  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Skipping test because it fails with InitialWebUI enabled. "
-                    "See b/464087732.";
-  }
-  RunTestSequence(
-      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
-      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
-      DragTabTo(1, GetBrowserView().GetBoundsInScreen().top_right() +
-                       gfx::Vector2d(50, 50)),
-      PollState(kBrowserCountPoller, GetBrowserCount()),
-      WaitForState(kBrowserCountPoller, 2), PressEscAsync(),
-      WaitForState(kBrowserCountPoller, 1),
-      PollState(kDragStatePoller, GetDragActive()),
-      WaitForState(kDragStatePoller, false), Do([&]() {
-        TabStripModel* tab_strip_model = browser()->GetTabStripModel();
-        ASSERT_NE(nullptr, tab_strip_model);
-        ASSERT_EQ(3, tab_strip_model->count());
-        EXPECT_EQ(GURL(chrome::kChromeUIBookmarksURL),
-                  tab_strip_model->GetWebContentsAt(1)->GetURL());
-      }));
-}
-
-IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest, DragToDetachThenReattach) {
-  RunTestSequence(
-      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
-      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
-      DragTabTo(2, GetBrowserView().GetBoundsInScreen().top_right() +
-                       gfx::Vector2d(50, 50)),
-      PollState(kBrowserCountPoller, GetBrowserCount()),
-      WaitForState(kBrowserCountPoller, 2),
-      MoveMouseToTabAsync(1, DragPosition::kAbove),
-      WaitForState(kBrowserCountPoller, 1), ReleaseMouseAsync(),
-      PollState(kDragStatePoller, GetDragActive()),
-      WaitForState(kDragStatePoller, false), Do([&]() {
-        TabStripModel* tab_strip_model = browser()->GetTabStripModel();
-        ASSERT_NE(nullptr, tab_strip_model);
-        EXPECT_EQ(3, tab_strip_model->count());
-      }));
-}
-
-#if !BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DetachMultipleTabs DetachMultipleTabs
-#else
-#define MAYBE_DetachMultipleTabs DISABLED_DetachMultipleTabs
-#endif
-IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest, MAYBE_DetachMultipleTabs) {
-  RunTestSequence(
-      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
-      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
-      SelectTabAt(1),
-      CheckResult(
-          [this]() { return browser()->GetTabStripModel()->IsTabSelected(1); },
-          true),
-      CheckResult(
-          [this]() { return browser()->GetTabStripModel()->IsTabSelected(2); },
-          true),
-      DragTabTo(1, GetBrowserView().GetBoundsInScreen().top_right() +
-                       gfx::Vector2d(50, 50)),
-      PollState(kBrowserCountPoller, GetBrowserCount()),
-      WaitForState(kBrowserCountPoller, 2), WaitForDetachedWindowVisible(),
-      ReleaseMouseAsync(), PollState(kDragStatePoller, GetDragActive()),
-      WaitForState(kDragStatePoller, false), Do([&]() {
-        TabStripModel* new_tab_strip_model =
-            GetLatestBrowser().GetTabStripModel();
-        ASSERT_NE(nullptr, new_tab_strip_model);
-        EXPECT_EQ(2, new_tab_strip_model->count());
-        EXPECT_EQ(GURL(chrome::kChromeUIBookmarksURL),
-                  new_tab_strip_model->GetWebContentsAt(0)->GetURL());
-        EXPECT_EQ(GURL(chrome::kChromeUISettingsURL),
-                  new_tab_strip_model->GetWebContentsAt(1)->GetURL());
-        EXPECT_EQ(1, browser()->GetTabStripModel()->count());
-      }));
-}
-
-// TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS. Fails on
-// Windows.
-#if !BUILDFLAG(IS_WIN)
-#define MAYBE_DetachPinnedTab DetachPinnedTab
-#else
-#define MAYBE_DetachPinnedTab DISABLED_DetachPinnedTab
-#endif
-IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest, MAYBE_DetachPinnedTab) {
-  RunTestSequence(
-      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
-      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
-      PinTabAt(0), PinTabAt(1),
-      DragTabTo(1, GetBrowserView().GetBoundsInScreen().top_right() +
-                       gfx::Vector2d(50, 50)),
-
-      PollState(kBrowserCountPoller, GetBrowserCount()),
-      WaitForState(kBrowserCountPoller, 2), ReleaseMouseAsync(),
-      PollState(kDragStatePoller, GetDragActive()),
-      WaitForState(kDragStatePoller, false), Do([&]() {
-        TabStripModel* new_tab_strip_model =
-            GetLatestBrowser().GetTabStripModel();
-        ASSERT_NE(nullptr, new_tab_strip_model);
-        EXPECT_EQ(GURL(chrome::kChromeUIBookmarksURL),
-                  new_tab_strip_model->GetWebContentsAt(0)->GetURL());
-        EXPECT_EQ(2, browser()->GetTabStripModel()->count());
-      }));
-}
-
-IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest, DetachTabPreservesActiveTab) {
-  RunTestSequence(
-      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
-      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
-      Do([&]() {
-        browser()->GetTabStripModel()->ActivateTabAt(
-            0, TabStripUserGestureDetails(
-                   TabStripUserGestureDetails::GestureType::kOther));
-      }),
-      CheckResult(
-          [this]() { return browser()->GetTabStripModel()->active_index(); },
-          0),
-      DragTabTo(2, GetBrowserView().GetBoundsInScreen().top_right() +
-                       gfx::Vector2d(50, 50)),
-      PollState(kBrowserCountPoller, GetBrowserCount()),
-      WaitForState(kBrowserCountPoller, 2), ReleaseMouseAsync(),
-      PollState(kDragStatePoller, GetDragActive()),
-      WaitForState(kDragStatePoller, false), Do([&]() {
-        EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
-        EXPECT_EQ(2, browser()->GetTabStripModel()->count());
-      }));
-}
-#endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 
 // TODO(crbug.com/490650365): Add regression test once detach tests are working.
 
