@@ -80,8 +80,6 @@ const char url5[] = "https://example5.com:443";
 const char url6[] = "https://example6.com:443";
 const char url7[] = "https://example7.com:443";
 const char url8[] = "https://example8.com:443";
-const ContentSettingsType automatic_downloads_type =
-    ContentSettingsType::AUTOMATIC_DOWNLOADS;
 const ContentSettingsType geolocation_type = ContentSettingsType::GEOLOCATION;
 const ContentSettingsType mediastream_type =
     ContentSettingsType::MEDIASTREAM_CAMERA;
@@ -570,7 +568,11 @@ TEST_P(RevokedPermissionsServiceTest, RevokedPermissionsServiceTest) {
     SetupAbusiveNotificationSite(url3, ContentSetting::CONTENT_SETTING_ALLOW);
     SetupSafeNotificationSite(url4);
   }
-  EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 0u);
+  EXPECT_EQ(service()
+                ->unused_site_permissions_manager_for_testing()
+                ->GetTrackedUnusedPermissionsForTesting()
+                .size(),
+            0u);
   EXPECT_EQ(0U, GetRevokedUnusedPermissions(hcsm()).size());
   safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
   if (ShouldSetupSafeBrowsing()) {
@@ -590,7 +592,11 @@ TEST_P(RevokedPermissionsServiceTest, RevokedPermissionsServiceTest) {
   safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
   std::unique_ptr<RevokedPermissionsTabHelper> tab_helper;
   if (ShouldSetupUnusedSites()) {
-    EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 3u);
+    EXPECT_EQ(service()
+                  ->unused_site_permissions_manager_for_testing()
+                  ->GetTrackedUnusedPermissionsForTesting()
+                  .size(),
+              3u);
     EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
     // Visit `url2` and check that the corresponding content setting got
     // updated.
@@ -610,7 +616,11 @@ TEST_P(RevokedPermissionsServiceTest, RevokedPermissionsServiceTest) {
               future - precision);
 
     // Check that the service is only tracking one entry now.
-    EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 1u);
+    EXPECT_EQ(service()
+                  ->unused_site_permissions_manager_for_testing()
+                  ->GetTrackedUnusedPermissionsForTesting()
+                  .size(),
+              1u);
   }
 
   // Travel through time for 50 days to make permissions be revoked.
@@ -627,11 +637,17 @@ TEST_P(RevokedPermissionsServiceTest, RevokedPermissionsServiceTest) {
 
   if (ShouldSetupUnusedSites()) {
     // url2 should be on tracked permissions list.
-    EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 2u);
+    EXPECT_EQ(service()
+                  ->unused_site_permissions_manager_for_testing()
+                  ->GetTrackedUnusedPermissionsForTesting()
+                  .size(),
+              2u);
     EXPECT_EQ(url2, service()
+                        ->unused_site_permissions_manager_for_testing()
                         ->GetTrackedUnusedPermissionsForTesting()[0]
                         .source.primary_pattern.ToString());
     EXPECT_EQ(url2, service()
+                        ->unused_site_permissions_manager_for_testing()
                         ->GetTrackedUnusedPermissionsForTesting()[1]
                         .source.primary_pattern.ToString());
     // `url1` should be on revoked permissions list.
@@ -682,9 +698,9 @@ TEST_P(RevokedPermissionsServiceTest,
   scoped_feature.InitAndEnableFeature(
       content_settings::features::kSafetyCheckUnusedSitePermissions);
 
-  // Disable auto-revocation by setting kUnusedSitePermissionsRevocationEnabled
-  // pref to false and turning off safe browsing. This should stop the repeated
-  // timer.
+  // Disable auto-revocation by setting
+  // kUnusedSitePermissionsRevocationEnabled pref to false and turning off
+  // safe browsing. This should stop the repeated timer.
   prefs()->SetBoolean(safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled,
                       false);
 
@@ -726,165 +742,6 @@ TEST_P(RevokedPermissionsServiceTest,
   }
 }
 
-TEST_P(RevokedPermissionsServiceTest, TrackOnlySingleOriginTest) {
-  std::string example_url1 = "https://example1.com";
-  std::string example_url2 = "https://[*.]example2.com";
-  std::string example_url3 = "file:///foo/bar.txt";
-  // Add one setting for all urls.
-  SetTrackedContentSettingForType(example_url1, geolocation_type);
-  SetTrackedContentSettingForType(example_url2, geolocation_type);
-  // file:// URLs and wildcard patterns shouldn't be tracked for unused site
-  // permissions.
-  hcsm()->SetContentSettingDefaultScope(GURL(example_url3), GURL(example_url3),
-                                        geolocation_type,
-                                        ContentSetting::CONTENT_SETTING_ALLOW);
-
-  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
-  EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 0u);
-  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
-
-  // Travel through time for 20 days.
-  clock()->Advance(base::Days(20));
-
-  // Only `example_url1` should be tracked because wildcard patterns and file://
-  // URLs are not tracked for unused site permissions.
-  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
-  EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 1u);
-  auto tracked_origin = service()->GetTrackedUnusedPermissionsForTesting()[0];
-  EXPECT_EQ(GURL(tracked_origin.source.primary_pattern.ToString()),
-            GURL(example_url1));
-}
-
-TEST_P(RevokedPermissionsServiceTest, FilePermissionsNotRevoked) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(
-      content_settings::features::kSafetyCheckUnusedSitePermissions);
-
-  std::string file_url = "file:///foo/bar.txt";
-  hcsm()->SetContentSettingDefaultScope(GURL(file_url), GURL(file_url),
-                                        geolocation_type,
-                                        ContentSetting::CONTENT_SETTING_ALLOW);
-
-  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
-  EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 0u);
-  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
-
-  // Advance time past revocation threshold.
-  clock()->Advance(base::Days(70));
-
-  // Verify that file:// permissions are neither tracked nor auto-revoked.
-  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
-  EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 0u);
-  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            hcsm()->GetContentSetting(GURL(file_url), GURL(file_url),
-                                      geolocation_type));
-}
-
-TEST_P(RevokedPermissionsServiceTest, TrackUnusedButDontRevoke) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(
-      content_settings::features::kSafetyCheckUnusedSitePermissions);
-  SetTrackedContentSettingForType(url1, geolocation_type,
-                                  ContentSetting::CONTENT_SETTING_BLOCK);
-
-  // Travel through time for 20 days.
-  clock()->Advance(base::Days(20));
-
-  // GEOLOCATION permission should be on the tracked unused site permissions
-  // list as it is denied 20 days before. The permission is not suitable for
-  // revocation and this test verifies that RevokeUnusedPermissions() does not
-  // enter infinite loop in such case.
-  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
-  auto unused_permissions = service()->GetTrackedUnusedPermissionsForTesting();
-  ASSERT_EQ(unused_permissions.size(), 1u);
-  EXPECT_EQ(unused_permissions[0].type, geolocation_type);
-  EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), GURL(url1)).size(), 0u);
-}
-
-TEST_P(RevokedPermissionsServiceTest, SecondaryPatternAlwaysWildcard) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(
-      content_settings::features::kSafetyCheckUnusedSitePermissions);
-
-  const ContentSettingsType types[] = {geolocation_type,
-                                       automatic_downloads_type};
-  content_settings::ContentSettingConstraints constraint;
-  constraint.set_track_last_visit_for_autoexpiration(true);
-
-  // Test combinations of a single origin |primary_pattern| and different
-  // |secondary_pattern|s: equal to primary pattern, different single origin
-  // pattern, with domain with wildcard, wildcard.
-  for (const auto type : types) {
-    hcsm()->SetContentSettingDefaultScope(
-        GURL("https://example1.com"), GURL("https://example1.com"), type,
-        ContentSetting::CONTENT_SETTING_ALLOW, constraint);
-    hcsm()->SetContentSettingDefaultScope(
-        GURL("https://example2.com"), GURL("https://example3.com"), type,
-        ContentSetting::CONTENT_SETTING_ALLOW, constraint);
-    hcsm()->SetContentSettingDefaultScope(
-        GURL("https://example3.com"), GURL("https://[*.]example1.com"), type,
-        ContentSetting::CONTENT_SETTING_ALLOW, constraint);
-    hcsm()->SetContentSettingDefaultScope(
-        GURL("https://example4.com"), GURL("*"), type,
-        ContentSetting::CONTENT_SETTING_ALLOW, constraint);
-  }
-
-  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
-  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
-
-  // Travel through time for 70 days so that permissions are revoked.
-  clock()->Advance(base::Days(70));
-  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
-
-  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 4u);
-  for (auto unused_permission : GetRevokedUnusedPermissions(hcsm())) {
-    EXPECT_EQ(unused_permission.secondary_pattern,
-              ContentSettingsPattern::Wildcard());
-  }
-}
-
-TEST_P(RevokedPermissionsServiceTest, MultipleRevocationsForSameOrigin) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(
-      content_settings::features::kSafetyCheckUnusedSitePermissions);
-
-  // Grant GEOLOCATION permission for the url.
-  SetTrackedContentSettingForType(url1, geolocation_type);
-  EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 0u);
-  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
-
-  // Travel through time for 20 days.
-  clock()->Advance(base::Days(20));
-
-  // Grant MEDIASTREAM_CAMERA permission for the url.
-  SetTrackedContentSettingForType(url1, mediastream_type);
-
-  // GEOLOCATION permission should be on the tracked unused site permissions
-  // list as it is granted 20 days before. MEDIASTREAM_CAMERA permission should
-  // not be tracked as it is just granted.
-  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
-  EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 1u);
-  EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting()[0].type,
-            geolocation_type);
-
-  // Travel through time for 50 days.
-  clock()->Advance(base::Days(50));
-
-  // GEOLOCATION permission should be on the revoked permissions list as it is
-  // granted 70 days before. MEDIASTREAM_CAMERA permission should be on the
-  // recently unused permissions list as it is granted 50 days before.
-  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
-  EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), GURL(url1)).size(), 1u);
-  EXPECT_EQ(
-      UnusedSitePermissionsManager::ConvertKeyToContentSettingsType(
-          GetRevokedPermissionsForOneOrigin(hcsm(), GURL(url1))[0].GetString()),
-      geolocation_type);
-  EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 1u);
-  EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting()[0].type,
-            mediastream_type);
-}
-
 // TODO(crbug.com/40928115): Flaky on all platforms.
 TEST_P(RevokedPermissionsServiceTest,
        DISABLED_ClearRevokedPermissionsListAfter30d) {
@@ -914,8 +771,8 @@ TEST_P(RevokedPermissionsServiceTest,
   // Travel through time for 30 days.
   clock()->Advance(base::Days(30));
 
-  // No permission should be on the revoked permissions list as they are revoked
-  // more than 30 days before.
+  // No permission should be on the revoked permissions list as they are
+  // revoked more than 30 days before.
   safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
   EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), GURL(url1)).size(), 0u);
 }
@@ -1074,8 +931,8 @@ TEST_P(RevokedPermissionsServiceTest, RegrantPermissionsForOrigin) {
                                                     /*is_regranted=*/true);
   }
 
-  // Undoing `url3` adds it back to the revoked abusive notification permissions
-  // list.
+  // Undoing `url3` adds it back to the revoked abusive notification
+  // permissions list.
   UndoRegrantPermissionsForUrl(url3, abusive_permission_types);
   if (ShouldSetupUnusedSites()) {
     EXPECT_EQ(2U, GetRevokedUnusedPermissions(hcsm()).size());
@@ -1159,8 +1016,8 @@ TEST_P(RevokedPermissionsServiceTest, RegrantPreventsAutorevoke) {
     ExpectRevokedAbusiveNotificationSettingValues(url3);
   }
 
-  // After regranting permissions they are not revoked again even after >60 days
-  // pass.
+  // After regranting permissions they are not revoked again even after >60
+  // days pass.
   service()->RegrantPermissionsForOrigin(url::Origin::Create(GURL(url1)));
   service()->RegrantPermissionsForOrigin(url::Origin::Create(GURL(url2)));
   service()->RegrantPermissionsForOrigin(url::Origin::Create(GURL(url3)));
@@ -1221,120 +1078,6 @@ TEST_P(RevokedPermissionsServiceTest, UndoRegrantPermissionsForOrigin) {
   clock()->Advance(base::Days(70));
   safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
   EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 1u);
-}
-
-TEST_F(RevokedPermissionsServiceTestBase,
-       UndoRegrantPermissionsForOrigin_GeolocationWithOptions) {
-  struct TestCase {
-    GeolocationSetting setting;
-    const char* url;
-  } test_cases[] = {
-      {{PermissionOption::kAllowed, PermissionOption::kDenied},
-       "https://example-approx-allow-precise-deny.com"},
-      {{PermissionOption::kAllowed, PermissionOption::kAsk},
-       "https://example-approx-allow-precise-ask.com"},
-      {{PermissionOption::kAllowed, PermissionOption::kAllowed},
-       "https://example-approx-allow-precise-allow.com"},
-  };
-
-  for (const auto& test_case : test_cases) {
-    auto* info =
-        content_settings::PermissionSettingsRegistry::GetInstance()->Get(
-            ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
-    GURL test_url(test_case.url);
-    base::Value initial_value = info->delegate().ToValue(test_case.setting);
-
-    content_settings::ContentSettingConstraints constraint;
-    constraint.set_track_last_visit_for_autoexpiration(true);
-    hcsm()->SetPermissionSettingDefaultScope(
-        test_url, test_url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
-        test_case.setting, constraint);
-
-    EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
-
-    clock()->Advance(base::Days(70));
-    safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
-
-    EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 1u);
-    std::unique_ptr<RevokedPermissionsResult> result =
-        service()->GetRevokedPermissions();
-    EXPECT_EQ(result->GetRevokedPermissions().size(), 1u);
-    const ContentSettingPatternSource revoked_permission =
-        GetRevokedUnusedPermissions(hcsm())[0];
-
-    service()->RegrantPermissionsForOrigin(url::Origin::Create(test_url));
-
-    EXPECT_TRUE(GetAutorevocationBypassedByUser(
-        test_url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS));
-
-    service()->UndoRegrantPermissionsForOrigin(
-        result->GetRevokedPermissions().front());
-
-    EXPECT_FALSE(GetAutorevocationBypassedByUser(
-        test_url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS));
-    EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 1u);
-
-    hcsm()->SetWebsiteSettingDefaultScope(
-        test_url, test_url, revoked_unused_site_type, base::Value());
-  }
-}
-
-TEST_F(RevokedPermissionsServiceTestBase,
-       RegrantGeolocationWithOptionsAfterRevokingGeolocation) {
-  base::test::ScopedFeatureList scoped_feature{
-      content_settings::features::kApproximateGeolocationPermission};
-
-  GURL test_url(url1);
-  url::Origin test_origin = url::Origin::Create(test_url);
-
-  // Setup a revoked GEOLOCATION permission.
-  SetupRevokedUnusedPermissionSite(url1);
-  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 1u);
-
-  service()->RegrantPermissionsForOrigin(test_origin);
-  EXPECT_EQ(
-      hcsm()->GetPermissionSetting(
-          test_url, test_url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS),
-      PermissionSetting(
-          GeolocationSetting({.approximate = PermissionOption::kAllowed,
-                              .precise = PermissionOption::kAllowed})));
-}
-
-TEST_P(RevokedPermissionsServiceTest, NotRevokeNotificationPermission) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(
-      content_settings::features::kSafetyCheckUnusedSitePermissions);
-
-  // Grant GEOLOCATION and NOTIFICATION permission for the url.
-  SetTrackedContentSettingForType(url1, geolocation_type);
-  hcsm()->SetContentSettingDefaultScope(GURL(url1), GURL(url1),
-                                        notifications_type,
-                                        ContentSetting::CONTENT_SETTING_ALLOW);
-  EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 0u);
-  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
-
-  // Travel through time for 70 days.
-  clock()->Advance(base::Days(70));
-
-  // GEOLOCATION permission should be on the revoked permissions list, but
-  // NOTIFICATION permissions should not be as notification permissions are out
-  // of scope.
-  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
-  EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), GURL(url1)).size(), 1u);
-  EXPECT_EQ(
-      UnusedSitePermissionsManager::ConvertKeyToContentSettingsType(
-          GetRevokedPermissionsForOneOrigin(hcsm(), GURL(url1))[0].GetString()),
-      geolocation_type);
-
-  // Clearing revoked permissions list should delete unused GEOLOCATION from it
-  // but leave used NOTIFICATION permissions intact.
-  service()->ClearRevokedPermissionsList();
-  EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), GURL(url1)).size(), 0u);
-  EXPECT_EQ(hcsm()->GetContentSetting(GURL(url1), GURL(url1), geolocation_type),
-            ContentSetting::CONTENT_SETTING_ASK);
-  EXPECT_EQ(
-      hcsm()->GetContentSetting(GURL(url1), GURL(url1), notifications_type),
-      ContentSetting::CONTENT_SETTING_ALLOW);
 }
 
 TEST_P(RevokedPermissionsServiceTest, ClearRevokedPermissionsList) {
@@ -1456,8 +1199,8 @@ TEST_P(RevokedPermissionsServiceTest,
   }
 
   // If we grant revoked unused permission (geolocation) again for `url3`, it
-  // will be removed from the list of revoked unused sites but not from the list
-  // of revoked abusive notification sites.
+  // will be removed from the list of revoked unused sites but not from the
+  // list of revoked abusive notification sites.
   hcsm()->SetContentSettingDefaultScope(
       GURL(url3), GURL(url3), geolocation_type, CONTENT_SETTING_ALLOW);
   if (ShouldSetupUnusedSites()) {
@@ -1686,9 +1429,9 @@ TEST_P(RevokedPermissionsServiceTest, AutoRevocationSetting) {
   ResetService();
   EXPECT_TRUE(service()->IsTimerRunningForTesting());
 
-  // Disable auto-revocation by setting kUnusedSitePermissionsRevocationEnabled
-  // pref to false and turning off safe browsing. This should stop the repeated
-  // timer.
+  // Disable auto-revocation by setting
+  // kUnusedSitePermissionsRevocationEnabled pref to false and turning off
+  // safe browsing. This should stop the repeated timer.
   prefs()->SetBoolean(safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled,
                       false);
   prefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
@@ -1808,8 +1551,8 @@ TEST_P(RevokedPermissionsServiceTest, ChangingSettingOnRevokedSettingClearsIt) {
     ExpectRevokedAbusiveNotificationPermissionSize(2U);
   }
 
-  // Fast forward 20 more days will cause auto-cleanup of unused sites, but not
-  // abusive sites.
+  // Fast forward 20 more days will cause auto-cleanup of unused sites, but
+  // not abusive sites.
   clock()->Advance(base::Days(20));
   safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
   if (ShouldSetupUnusedSites()) {
@@ -1968,307 +1711,3 @@ INSTANTIATE_TEST_SUITE_P(
 #endif
         /*should_setup_unused_sites=*/testing::Bool(),
         /*should_setup_disruptive_sites=*/testing::Bool()));
-
-// TODO(crbug.com/40267370): Clean-up after the backfill is done.
-class RevokedPermissionsServiceBackfillTest
-    : public ChromeRenderViewHostTestHarness {
- public:
-  RevokedPermissionsServiceBackfillTest() = default;
-
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-    base::Time time;
-    ASSERT_TRUE(base::Time::FromString("2025-09-07 13:00", &time));
-    clock_.SetNow(time);
-
-    prefs()->SetBoolean(
-        safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled, true);
-    prefs()->SetBoolean(
-        safety_hub_prefs::kUnusedSitePermissionsRevocationBackfillCompleted,
-        false);
-
-    ResetService();
-
-    callback_count_ = 0;
-
-    // The following lines also serve to first access and thus create the two
-    // services.
-    hcsm()->SetClockForTesting(&clock_);
-    service()->SetClockForTesting(&clock_);
-  }
-
-  void TearDown() override {
-    service()->SetClockForTesting(base::DefaultClock::GetInstance());
-    hcsm()->SetClockForTesting(base::DefaultClock::GetInstance());
-
-    // ~BrowserTaskEnvironment() will properly call Shutdown on the services.
-    ChromeRenderViewHostTestHarness::TearDown();
-  }
-
-  TestingProfile::TestingFactories GetTestingFactories() const override {
-    return {// Needed for background UKM reporting.
-            TestingProfile::TestingFactory{
-                HistoryServiceFactory::GetInstance(),
-                base::BindRepeating(&BuildTestHistoryService)}};
-  }
-
-  void ResetService() {
-    // Setting the factory has the side effect of resetting the service
-    // instance.
-    RevokedPermissionsServiceFactory::GetInstance()->SetTestingFactory(
-        profile(), base::BindRepeating(&BuildRevokedPermissionsService));
-  }
-
-  base::SimpleTestClock* clock() { return &clock_; }
-
-  RevokedPermissionsService* service() {
-    return RevokedPermissionsServiceFactory::GetForProfile(profile());
-  }
-
-  HostContentSettingsMap* hcsm() {
-    return HostContentSettingsMapFactory::GetForProfile(profile());
-  }
-
-  sync_preferences::TestingPrefServiceSyncable* prefs() {
-    return profile()->GetTestingPrefService();
-  }
-
-  base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
-
-  uint8_t callback_count() { return callback_count_; }
-
-  ContentSettingsForOneType GetRevokedUnusedPermissions(
-      HostContentSettingsMap* hcsm) {
-    return hcsm->GetSettingsForOneType(revoked_unused_site_type);
-  }
-
-  void SetUntrackedContentSettingForType(
-      std::string url,
-      ContentSettingsType setting_type,
-      ContentSetting setting_value = ContentSetting::CONTENT_SETTING_ALLOW) {
-    content_settings::ContentSettingConstraints constraint;
-    constraint.set_track_last_visit_for_autoexpiration(false);
-    hcsm()->SetContentSettingDefaultScope(GURL(url), GURL(url), setting_type,
-                                          setting_value, constraint);
-  }
-
- private:
-  base::SimpleTestClock clock_;
-  uint8_t callback_count_;
-  base::test::ScopedFeatureList feature_list_;
-  scoped_refptr<MockSafeBrowsingDatabaseManager> fake_database_manager_;
-  std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
-      safe_browsing_factory_;
-};
-
-TEST_F(RevokedPermissionsServiceBackfillTest,
-       LastVisitedBackfill_NothingToBackfill) {
-  feature_list()->InitAndEnableFeature(
-      permissions::features::
-          kSafetyHubUnusedPermissionRevocationForAllSurfaces);
-
-  base::HistogramTester histogram_tester;
-  const std::string completion_status_histogram_name =
-      "Settings.SafetyHub.UnusedSitePermissionsModule."
-      "Backfill.CompletionStatus";
-  const std::string run_status_histogram_name =
-      "Settings.SafetyHub.UnusedSitePermissionsModule."
-      "Backfill.RunStatus";
-  const std::string count_histogram_name =
-      "Settings.SafetyHub.UnusedSitePermissionsModule."
-      "Backfill.ListCountOnCompletion";
-
-  // Check that backfill status is 'not completed' before triggering the
-  // backfill.
-  EXPECT_FALSE(prefs()->GetBoolean(
-      safety_hub_prefs::kUnusedSitePermissionsRevocationBackfillCompleted));
-
-  // Trigger the background task and check that it did not find any
-  // untimestamped permissions and recorded the backfill completion status for
-  // the user as 'not completed'.
-  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
-  EXPECT_EQ(service()->GetUntimestampedPermissionsForTesting().size(), 0u);
-  EXPECT_EQ(
-      1U,
-      histogram_tester.GetAllSamples(completion_status_histogram_name).size());
-  histogram_tester.ExpectBucketCount(completion_status_histogram_name, false,
-                                     1);
-
-  // Check that UI thread that starts on background task completion marked the
-  // backfill as completed.
-  EXPECT_TRUE(prefs()->GetBoolean(
-      safety_hub_prefs::kUnusedSitePermissionsRevocationBackfillCompleted));
-
-  // Assert that one backfill attempt and one backfill completion are recorded
-  // in UMA metrics.
-  EXPECT_EQ(2U,
-            histogram_tester.GetAllSamples(run_status_histogram_name).size());
-  histogram_tester.ExpectBucketCount(run_status_histogram_name,
-                                     false /*run started*/, 1);
-  histogram_tester.ExpectBucketCount(run_status_histogram_name,
-                                     true /*run completed*/, 1);
-
-  // Assert that the number of timestamped permissions (zero) is recorded in UMA
-  // metrics.
-  histogram_tester.ExpectTotalCount(count_histogram_name, 1);
-  histogram_tester.ExpectUniqueSample(count_histogram_name, 0, 1);
-}
-
-TEST_F(RevokedPermissionsServiceBackfillTest,
-       LastVisitedBackfill_SuccessfullCompletion) {
-  feature_list()->InitAndEnableFeature(
-      permissions::features::
-          kSafetyHubUnusedPermissionRevocationForAllSurfaces);
-
-  base::HistogramTester histogram_tester;
-  const std::string completion_status_histogram_name =
-      "Settings.SafetyHub.UnusedSitePermissionsModule."
-      "Backfill.CompletionStatus";
-  const std::string run_status_histogram_name =
-      "Settings.SafetyHub.UnusedSitePermissionsModule."
-      "Backfill.RunStatus";
-  const std::string count_histogram_name =
-      "Settings.SafetyHub.UnusedSitePermissionsModule."
-      "Backfill.ListCountOnCompletion";
-
-  // Add two permissions without `last_visited` timestamp.
-  SetUntrackedContentSettingForType(url5, geolocation_type);
-  SetUntrackedContentSettingForType(url4, mediastream_type);
-
-  // Trigger the background task and check that it added both permissions to
-  // `untimestamped_permissions_` list and recorded the backfill completion
-  // status for the user as 'not completed'.
-  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
-  EXPECT_EQ(service()->GetUntimestampedPermissionsForTesting().size(), 2u);
-  EXPECT_EQ(service()->GetUntimestampedPermissionsForTesting()[0].type,
-            geolocation_type);
-  EXPECT_EQ(service()->GetUntimestampedPermissionsForTesting()[1].type,
-            mediastream_type);
-  EXPECT_EQ(
-      1U,
-      histogram_tester.GetAllSamples(completion_status_histogram_name).size());
-  histogram_tester.ExpectBucketCount(completion_status_histogram_name, false,
-                                     1);
-
-  // Check that UI thread that starts on background task completion performed
-  // the backfill process on the `untimestampe_permissions_` leaving them
-  // timestamped with `last_visited` that lies within the past 7 days.
-  //
-  // The `last_visited` is coarsed by `GetCoarseVisitedTime` [1] due to privacy.
-  // It rounds given timestamp down to the nearest multiple of 7 in the past.
-  // [1] components/content_settings/core/browser/content_settings_utils.cc
-  const base::Time now = clock()->Now();
-  content_settings::SettingInfo info;
-  hcsm()->GetWebsiteSetting(GURL(url5), GURL(), geolocation_type, &info);
-  EXPECT_GE(info.metadata.last_visited(), now - base::Days(7));
-  EXPECT_LE(info.metadata.last_visited(), now);
-  hcsm()->GetWebsiteSetting(GURL(url4), GURL(), mediastream_type, &info);
-  EXPECT_GE(info.metadata.last_visited(), now - base::Days(7));
-  EXPECT_LE(info.metadata.last_visited(), now);
-  EXPECT_TRUE(prefs()->GetBoolean(
-      safety_hub_prefs::kUnusedSitePermissionsRevocationBackfillCompleted));
-
-  // Assert that one backfill attempt and one backfill completion are recorded
-  // in UMA metrics.
-  EXPECT_EQ(2U,
-            histogram_tester.GetAllSamples(run_status_histogram_name).size());
-  histogram_tester.ExpectBucketCount(run_status_histogram_name,
-                                     false /*started*/, 1);
-  histogram_tester.ExpectBucketCount(run_status_histogram_name,
-                                     true /*completed*/, 1);
-
-  // Assert that the number of timestamped permissions (two) is recorded in UMA
-  // metrics.
-  histogram_tester.ExpectTotalCount(count_histogram_name, 1);
-  histogram_tester.ExpectUniqueSample(count_histogram_name, 2, 1);
-}
-
-TEST_F(RevokedPermissionsServiceBackfillTest,
-       LastVisitedBackfill_RevokedAsUsual) {
-  feature_list()->InitAndEnableFeature(
-      permissions::features::
-          kSafetyHubUnusedPermissionRevocationForAllSurfaces);
-
-  base::HistogramTester histogram_tester;
-  const std::string completion_status_histogram_name =
-      "Settings.SafetyHub.UnusedSitePermissionsModule."
-      "Backfill.CompletionStatus";
-
-  // Add two permissions without `last_visited` timestamp.
-  SetUntrackedContentSettingForType(url5, geolocation_type);
-  SetUntrackedContentSettingForType(url4, mediastream_type);
-
-  // Trigger the backfill and check both permissions were timestamped and the
-  // backfill completion status was recorded for the user as 'not completed'.
-  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
-  EXPECT_EQ(service()->GetUntimestampedPermissionsForTesting().size(), 2u);
-  EXPECT_TRUE(prefs()->GetBoolean(
-      safety_hub_prefs::kUnusedSitePermissionsRevocationBackfillCompleted));
-  EXPECT_EQ(
-      1U,
-      histogram_tester.GetAllSamples(completion_status_histogram_name).size());
-  histogram_tester.ExpectBucketCount(completion_status_histogram_name, false,
-                                     1);
-
-  // Move forward for 10 days and trigger the background task again.
-  clock()->Advance(base::Days(10));
-  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
-
-  // Check that on consecutive runs the completion status for the user recorded
-  // as 'completed'.
-  EXPECT_EQ(
-      2U,
-      histogram_tester.GetAllSamples(completion_status_histogram_name).size());
-  histogram_tester.ExpectBucketCount(completion_status_histogram_name, true, 1);
-
-  // Check that backfilled permissions start being tracked as unused just like
-  // permissions stamped on creation.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return service()->GetTrackedUnusedPermissionsForTesting().size() == 2u;
-  })) << "Backfilled permissions are not being tracked as unused.";
-  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
-
-  // Check that backfilled permissions get auto-revoked just like
-  // permissions stamped on creation.
-  clock()->Advance(base::Days(60));
-  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return GetRevokedUnusedPermissions(hcsm()).size() == 2u;
-  })) << "Backfilled permissions are not being auto-revoked.";
-  EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 0u);
-}
-
-TEST_F(RevokedPermissionsServiceBackfillTest, LastVisitedBackfill_FlagIsOff) {
-  feature_list()->InitAndDisableFeature(
-      permissions::features::
-          kSafetyHubUnusedPermissionRevocationForAllSurfaces);
-
-  base::HistogramTester histogram_tester;
-
-  // Trigger the UpdateAsync() that would perform the backfill if the flag was
-  // enabled.
-  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
-
-  // Check that backfill did not run.
-  EXPECT_FALSE(prefs()->GetBoolean(
-      safety_hub_prefs::kUnusedSitePermissionsRevocationBackfillCompleted));
-
-  // Assert that no completion status for the user is recorded.
-  EXPECT_EQ(0U,
-            histogram_tester
-                .GetAllSamples("Settings.SafetyHub.UnusedSitePermissionsModule."
-                               "Backfill.CompletionStatus")
-                .size());
-
-  // Assert that no backfill attempts or completions are recorded in UMA
-  // metrics.
-  histogram_tester.ExpectTotalCount(
-      "Settings.SafetyHub.UnusedSitePermissionsModule.Backfill.RunStatus", 0);
-
-  // Assert that no counts of timestamped permissions are recorded in UMA
-  // metrics.
-  histogram_tester.ExpectTotalCount(
-      "Settings.SafetyHub.UnusedSitePermissionsModule.Backfill."
-      "ListCountOnCompletion",
-      0);
-}

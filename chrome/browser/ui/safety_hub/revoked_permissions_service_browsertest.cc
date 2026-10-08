@@ -123,7 +123,10 @@ IN_PROC_BROWSER_TEST_F(RevokedPermissionsServiceBrowserTest,
                                      CONTENT_SETTING_ALLOW, constraints);
   clock.SetNow(now);
   safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service);
-  ASSERT_EQ(service->GetTrackedUnusedPermissionsForTesting().size(), 1u);
+  ASSERT_EQ(service->unused_site_permissions_manager_for_testing()
+                ->GetTrackedUnusedPermissionsForTesting()
+                .size(),
+            1u);
   ASSERT_EQ(GetRevokedUnusedPermissions(map).size(), 0u);
 
   // Check that the timestamp is initially in the past.
@@ -177,9 +180,11 @@ IN_PROC_BROWSER_TEST_F(RevokedPermissionsServiceBrowserTest,
                                      CONTENT_SETTING_ALLOW, constraints);
   clock.SetNow(now);
 
-  // Check if the content setting is still ALLOW, before auto-revocation.
   safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service);
-  ASSERT_EQ(service->GetTrackedUnusedPermissionsForTesting().size(), 1u);
+  ASSERT_EQ(service->unused_site_permissions_manager_for_testing()
+                ->GetTrackedUnusedPermissionsForTesting()
+                .size(),
+            1u);
   ASSERT_EQ(GetRevokedUnusedPermissions(map).size(), 0u);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             map->GetContentSetting(url, url, ContentSettingsType::GEOLOCATION));
@@ -189,7 +194,10 @@ IN_PROC_BROWSER_TEST_F(RevokedPermissionsServiceBrowserTest,
 
   // Check if the content setting turn to ASK, when auto-revocation happens.
   safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service);
-  ASSERT_EQ(service->GetTrackedUnusedPermissionsForTesting().size(), 0u);
+  ASSERT_EQ(service->unused_site_permissions_manager_for_testing()
+                ->GetTrackedUnusedPermissionsForTesting()
+                .size(),
+            0u);
   ASSERT_EQ(GetRevokedUnusedPermissions(map).size(), 1u);
   EXPECT_EQ(CONTENT_SETTING_ASK,
             map->GetContentSetting(url, url, ContentSettingsType::GEOLOCATION));

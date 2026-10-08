@@ -548,18 +548,6 @@ void RevokedPermissionsService::OnPermissionsAutorevocationControlChanged() {
   }
 }
 
-std::vector<ContentSettingEntry>
-RevokedPermissionsService::GetTrackedUnusedPermissionsForTesting() {
-  return unused_site_permissions_manager_
-      ->GetTrackedUnusedPermissionsForTesting();  // IN-TEST
-}
-
-UnusedSitePermissionsManager::UntimestampedPermissionList
-RevokedPermissionsService::GetUntimestampedPermissionsForTesting() {
-  return unused_site_permissions_manager_
-      ->GetUntimestampedPermissionsForTesting();  // IN-TEST
-}
-
 void RevokedPermissionsService::SetClockForTesting(base::Clock* clock) {
   clock_ = clock;
   if (disruptive_notification_manager_) {
