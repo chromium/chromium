@@ -26,8 +26,12 @@ suite('ComposeboxDropdown', () => {
     dropdown.richImageSuggestionsEnabled = false;
     dropdown.result = createAutocompleteResultForTesting({
       matches: [
-        createAutocompleteMatch({contents: 'match 1'}),
-        createAutocompleteMatch({contents: 'match 2'}),
+        createAutocompleteMatch({
+          suggestTemplate: createSuggestTemplateInfo({primaryText: 'match 1'}),
+        }),
+        createAutocompleteMatch({
+          suggestTemplate: createSuggestTemplateInfo({primaryText: 'match 2'}),
+        }),
       ],
     });
     await microtasksFinished();
@@ -61,19 +65,20 @@ suite('ComposeboxDropdown', () => {
       },
       matches: [
         createAutocompleteMatch({
-          contents: 'text match',
+          suggestTemplate:
+              createSuggestTemplateInfo({primaryText: 'text match'}),
           suggestionGroupId: 100,
         }),
         createAutocompleteMatch({
-          contents: 'image match 1',
           suggestTemplate: createSuggestTemplateInfo({
+            primaryText: 'image match 1',
             image: {url: 'https://example.com/image1.png', dominantColor: ''},
           }),
           suggestionGroupId: 101,
         }),
         createAutocompleteMatch({
-          contents: 'image match 2',
           suggestTemplate: createSuggestTemplateInfo({
+            primaryText: 'image match 2',
             image: {url: 'https://example.com/image2.png', dominantColor: ''},
           }),
           suggestionGroupId: 101,
@@ -123,7 +128,10 @@ suite('ComposeboxDropdown', () => {
         },
       },
       matches: [
-        createAutocompleteMatch({contents: 'match', suggestionGroupId: 100}),
+        createAutocompleteMatch({
+          suggestTemplate: createSuggestTemplateInfo({primaryText: 'match'}),
+          suggestionGroupId: 100,
+        }),
       ],
     });
     await microtasksFinished();
@@ -152,8 +160,14 @@ suite('ComposeboxDropdown', () => {
         },
       },
       matches: [
-        createAutocompleteMatch({contents: 'm0', suggestionGroupId: 100}),
-        createAutocompleteMatch({contents: 'm1', suggestionGroupId: 101}),
+        createAutocompleteMatch({
+          suggestTemplate: createSuggestTemplateInfo({primaryText: 'm0'}),
+          suggestionGroupId: 100,
+        }),
+        createAutocompleteMatch({
+          suggestTemplate: createSuggestTemplateInfo({primaryText: 'm1'}),
+          suggestionGroupId: 101,
+        }),
       ],
     });
     await microtasksFinished();
@@ -185,11 +199,13 @@ suite('ComposeboxDropdown', () => {
           },
           matches: [
             createAutocompleteMatch({
-              contents: 'image match 1',
+              suggestTemplate:
+                  createSuggestTemplateInfo({primaryText: 'image match 1'}),
               suggestionGroupId: 101,
             }),
             createAutocompleteMatch({
-              contents: 'image match 2',
+              suggestTemplate:
+                  createSuggestTemplateInfo({primaryText: 'image match 2'}),
               suggestionGroupId: 101,
             }),
           ],
@@ -235,12 +251,13 @@ suite('ComposeboxDropdown', () => {
       dropdown.result = createAutocompleteResultForTesting({
         matches: [
           createAutocompleteMatch({
-            contents: 'visible text match',
+            suggestTemplate:
+                createSuggestTemplateInfo({primaryText: 'visible text match'}),
           }),
           createAutocompleteMatch({
-            contents: 'hidden image match',
             suggestStyle: SuggestStyle.kRichImage,
             suggestTemplate: createSuggestTemplateInfo({
+              primaryText: 'hidden image match',
               image: {url: 'https://example.com/hidden.png', dominantColor: ''},
             }),
           }),
@@ -255,22 +272,23 @@ suite('ComposeboxDropdown', () => {
       dropdown.result = createAutocompleteResultForTesting({
         matches: [
           createAutocompleteMatch({
-            contents: 'image match 1',
             suggestStyle: SuggestStyle.kRichImage,
             suggestTemplate: createSuggestTemplateInfo({
+              primaryText: 'image match 1',
               image: {url: 'https://example.com/image1.png', dominantColor: ''},
             }),
           }),
           createAutocompleteMatch({
-            contents: 'image match 2',
             suggestStyle: SuggestStyle.kRichImage,
             suggestTemplate: createSuggestTemplateInfo({
+              primaryText: 'image match 2',
               image: {url: 'https://example.com/image2.png', dominantColor: ''},
             }),
           }),
           createAutocompleteMatch({
-            contents: 'image match 3 without image',
             suggestStyle: SuggestStyle.kRichImage,
+            suggestTemplate: createSuggestTemplateInfo(
+                {primaryText: 'image match 3 without image'}),
           }),
         ],
       });
@@ -311,16 +329,16 @@ suite('ComposeboxDropdown', () => {
       dropdown.result = createAutocompleteResultForTesting({
         matches: [
           createAutocompleteMatch({
-            contents: 'image match 1 updated',
             suggestStyle: SuggestStyle.kRichImage,
             suggestTemplate: createSuggestTemplateInfo({
+              primaryText: 'image match 1 updated',
               image: {url: 'https://example.com/image1.png', dominantColor: ''},
             }),
           }),
           createAutocompleteMatch({
-            contents: 'image match 2 updated',
             suggestStyle: SuggestStyle.kRichImage,
             suggestTemplate: createSuggestTemplateInfo({
+              primaryText: 'image match 2 updated',
               image: {url: 'https://example.com/image2.png', dominantColor: ''},
             }),
           }),
@@ -336,9 +354,9 @@ suite('ComposeboxDropdown', () => {
       dropdown.result = createAutocompleteResultForTesting({
         matches: [
           createAutocompleteMatch({
-            contents: 'failed image match',
             suggestStyle: SuggestStyle.kRichImage,
             suggestTemplate: createSuggestTemplateInfo({
+              primaryText: 'failed image match',
               image: {url: 'https://example.com/error.png', dominantColor: ''},
             }),
           }),
@@ -355,9 +373,9 @@ suite('ComposeboxDropdown', () => {
       dropdown.result = createAutocompleteResultForTesting({
         matches: [
           createAutocompleteMatch({
-            contents: 'failed image match retry',
             suggestStyle: SuggestStyle.kRichImage,
             suggestTemplate: createSuggestTemplateInfo({
+              primaryText: 'failed image match retry',
               image: {url: 'https://example.com/error.png', dominantColor: ''},
             }),
           }),
@@ -378,8 +396,14 @@ suite('ComposeboxDropdown', () => {
         dropdown.result = createAutocompleteResultForTesting({
           input: '',
           matches: [
-            createAutocompleteMatch({contents: 'image match 1'}),
-            createAutocompleteMatch({contents: 'image match 2'}),
+            createAutocompleteMatch({
+              suggestTemplate:
+                  createSuggestTemplateInfo({primaryText: 'image match 1'}),
+            }),
+            createAutocompleteMatch({
+              suggestTemplate:
+                  createSuggestTemplateInfo({primaryText: 'image match 2'}),
+            }),
           ],
         });
         await microtasksFinished();
@@ -394,10 +418,18 @@ suite('ComposeboxDropdown', () => {
         dropdown.result = createAutocompleteResultForTesting({
           input: 'test',
           matches: [
-            createAutocompleteMatch(
-                {contents: 'test', allowedToBeDefaultMatch: true}),
-            createAutocompleteMatch({contents: 'suggestion 1'}),
-            createAutocompleteMatch({contents: 'suggestion 2'}),
+            createAutocompleteMatch({
+              suggestTemplate: createSuggestTemplateInfo({primaryText: 'test'}),
+              allowedToBeDefaultMatch: true,
+            }),
+            createAutocompleteMatch({
+              suggestTemplate:
+                  createSuggestTemplateInfo({primaryText: 'suggestion 1'}),
+            }),
+            createAutocompleteMatch({
+              suggestTemplate:
+                  createSuggestTemplateInfo({primaryText: 'suggestion 2'}),
+            }),
           ],
         });
         await microtasksFinished();

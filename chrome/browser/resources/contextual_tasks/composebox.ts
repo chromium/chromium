@@ -51,9 +51,7 @@ function recordVoiceSearchAction(voiceSearchState: VoiceSearchState) {
 }
 
 function createGhostMatch(): AutocompleteMatch {
-  return createAutocompleteMatch({
-    contents: '\u200b',
-    description: '\u200b',
+  const match = createAutocompleteMatch({
     type: 'SEARCH_SUGGEST',
     isSearchType: true,
     iconPath:
@@ -61,6 +59,9 @@ function createGhostMatch(): AutocompleteMatch {
              '//resources/cr_components/searchbox/icons/search_spark.svg' :
              '//resources/cr_components/searchbox/icons/search_spark_old.svg'),
   });
+  match.suggestTemplate.primaryText = '\u200b';
+  match.suggestTemplate.secondaryText = '\u200b';
+  return match;
 }
 export interface ContextualTasksComposeboxElement {
   $: {

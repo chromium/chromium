@@ -901,7 +901,8 @@ suite('SearchboxTest', () => {
         iconUrl: 'https://helloworld-2.com/url.png',
         iconPath: fallbackIconPath,
         isEnterpriseSearchAggregatorPeopleType: true,
-        contents: 'helloworld-2.com',
+        suggestTemplate:
+            createSuggestTemplateInfo({primaryText: 'helloworld-2.com'}),
         destinationUrl: 'https://helloworld-2.com/',
         fillIntoEdit: 'https://helloworld-2.com',
       }),

@@ -7,7 +7,7 @@ import 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import type {OmniboxPopupPageRemote} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, SearchboxBrowserProxy} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import type {OmniboxPopupAppElement, OmniboxPopupContextualEntrypointButtonElement} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
-import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {createAutocompleteResultForTesting, createSearchMatchForTesting, createSuggestTemplateInfo} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {RenderType, SelectionDirection, SelectionLineState, SelectionStep, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -436,10 +436,16 @@ suite('AppTestSelectionControl', () => {
     testProxy.page.autocompleteResultChanged(
         createAutocompleteResultForTesting({
           matches: [
-            createSearchMatchForTesting({contents: 'a'}),
-            createSearchMatchForTesting(
-                {contents: 'b', supportsDeletion: true}),
-            createSearchMatchForTesting({contents: 'c'}),
+            createSearchMatchForTesting({
+              suggestTemplate: createSuggestTemplateInfo({primaryText: 'a'}),
+            }),
+            createSearchMatchForTesting({
+              suggestTemplate: createSuggestTemplateInfo({primaryText: 'b'}),
+              supportsDeletion: true,
+            }),
+            createSearchMatchForTesting({
+              suggestTemplate: createSuggestTemplateInfo({primaryText: 'c'}),
+            }),
           ],
         }));
     return microtasksFinished();

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {createAutocompleteMatch} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {createAutocompleteMatch, createSuggestTemplateInfo} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {SearchboxIconElement} from '//resources/cr_components/searchbox/searchbox_icon.js';
 import type {AutocompleteMatch} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
@@ -125,11 +125,13 @@ export function createClipboardEvent(name: string): ClipboardEvent {
 export function createUrlMatch(modifiers: Partial<AutocompleteMatch> = {}):
     AutocompleteMatch {
   return createAutocompleteMatch({
-    contents: 'helloworld.com',
-    contentsClass: [{offset: 0, style: 1}],
     destinationUrl: 'https://helloworld.com/',
     fillIntoEdit: 'https://helloworld.com',
     type: 'url-what-you-typed',
+    suggestTemplate: createSuggestTemplateInfo({
+      primaryText: 'helloworld.com',
+      primaryTextClass: [{offset: 0, style: 1}],
+    }),
     ...modifiers,
   });
 }

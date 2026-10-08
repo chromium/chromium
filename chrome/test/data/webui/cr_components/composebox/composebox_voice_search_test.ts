@@ -12,6 +12,7 @@ import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_component
 import {VoiceSearchAction, VoiceSearchError} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
+import {createSuggestTemplateInfo} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -1251,26 +1252,26 @@ suite('ComposeboxVoiceSearch', () => {
 
   test('Submits the voice transcript accurately after stop click', async () => {
     const voiceTranscript = 'voice query';
-    searchboxHandler.setResultMapperFor(
-        'queryAutocomplete', () => {
-          return Promise.resolve({
-            result: {
-              input: voiceTranscript,
-              matches: [
-                createAutocompleteMatch({
-                  contents: voiceTranscript,
-                  fillIntoEdit: voiceTranscript,
-                  allowedToBeDefaultMatch: true,
-                  destinationUrl: 'about:blank',
-                }),
-              ],
-              suggestionGroupsMap: {},
-              smartComposeInlineHint: '',
-              showAimActivityLink: false,
-              sequenceId: 0,
-            },
-          });
-        });
+    searchboxHandler.setResultMapperFor('queryAutocomplete', () => {
+      return Promise.resolve({
+        result: {
+          input: voiceTranscript,
+          matches: [
+            createAutocompleteMatch({
+              suggestTemplate:
+                  createSuggestTemplateInfo({primaryText: voiceTranscript}),
+              fillIntoEdit: voiceTranscript,
+              allowedToBeDefaultMatch: true,
+              destinationUrl: 'about:blank',
+            }),
+          ],
+          suggestionGroupsMap: {},
+          smartComposeInlineHint: '',
+          showAimActivityLink: false,
+          sequenceId: 0,
+        },
+      });
+    });
 
     loadTimeData.overrideValues({
       voiceSearchCoherenceComposeboxesEnabled: true,

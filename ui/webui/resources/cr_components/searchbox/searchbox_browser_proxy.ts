@@ -30,10 +30,6 @@ export function createAutocompleteMatch(
     showContextualDescription: false,
     supportsDeletion: false,
     suggestionGroupId: -1,
-    contents: '',
-    contentsClass: [{offset: 0, style: 0}],
-    description: '',
-    descriptionClass: [{offset: 0, style: 0}],
     destinationUrl: '',
     inlineAutocompletion: '',
     fillIntoEdit: '',
@@ -56,6 +52,10 @@ export function createAutocompleteMatch(
 export function createSuggestTemplateInfo(
     modifiers: Partial<SuggestTemplateInfo> = {}): SuggestTemplateInfo {
   const base: SuggestTemplateInfo = {
+    primaryText: '',
+    primaryTextClass: [{offset: 0, style: 0}],
+    secondaryText: '',
+    secondaryTextClass: [{offset: 0, style: 0}],
     secondaryTextPlacement: SecondaryTextPlacement.kUnspecified,
     image: null,
   };
@@ -82,13 +82,14 @@ export function createSearchMatchForTesting(
     modifiers: Partial<AutocompleteMatch> = {}): AutocompleteMatch {
   const base = createAutocompleteMatch({
     isSearchType: true,
-    contents: 'hello world',
-    contentsClass: [{offset: 0, style: 0}],
-    description: 'Google search',
-    descriptionClass: [{offset: 0, style: 4}],
     destinationUrl: 'https://www.google.com/search?q=hello+world',
     fillIntoEdit: 'hello world',
     type: 'search-what-you-typed',
+    suggestTemplate: createSuggestTemplateInfo({
+      primaryText: 'hello world',
+      secondaryText: 'Google search',
+      secondaryTextClass: [{offset: 0, style: 4}],
+    }),
   });
 
   return Object.assign(base, modifiers);

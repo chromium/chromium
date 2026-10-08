@@ -11,8 +11,9 @@ import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
-import type {ACMatchClassification, AutocompleteMatch, OmniboxPopupSelection, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, OmniboxPopupSelection, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {KeywordType, SelectionLineState, SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {ACMatchClassification} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import {SecondaryTextPlacement} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 
 import {createAutocompleteMatch, SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
@@ -432,11 +433,14 @@ export class SearchboxMatchElement extends CrLitElement {
     }
   }
 
+  // TODO(crbug.com/571054281): Rename "contents" and "description" in this
+  // element (methods, properties, CSS) to primary and secondary text, to
+  // match SuggestTemplateInfo. Also do this in cr-composebox-match.
   private computeContentsHtml_(): TrustedHTML {
     if (!this.match) {
       return window.trustedTypes!.emptyHTML;
     }
-    // See //chrome/browser/ui/webui/searchbox/searchbox_handler.cc
+    // See //components/omnibox/browser/suggest_template_info_mojo_utils.cc
     return this.sanitizeInnerHtml_(
         this.renderTextWithClassifications_(
                 this.getMatchContents_(),
@@ -590,22 +594,20 @@ export class SearchboxMatchElement extends CrLitElement {
     return container;
   }
 
-  // `contents` and `description` are already swapped in the browser when
-  // needed, so `contents` is always the primary text.
   private getMatchContents_(): string {
-    return this.match ? this.match.contents : '';
+    return this.match ? this.match.suggestTemplate.primaryText : '';
   }
 
   private getMatchDescription_(): string {
-    return this.match ? this.match.description : '';
+    return this.match ? this.match.suggestTemplate.secondaryText : '';
   }
 
   private getMatchContentsClassifications_(): ACMatchClassification[] {
-    return this.match ? this.match.contentsClass : [];
+    return this.match ? this.match.suggestTemplate.primaryTextClass : [];
   }
 
   private getMatchDescriptionClassifications_(): ACMatchClassification[] {
-    return this.match ? this.match.descriptionClass : [];
+    return this.match ? this.match.suggestTemplate.secondaryTextClass : [];
   }
 
   protected getFocusIndicatorCssClass_(): string {

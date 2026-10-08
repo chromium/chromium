@@ -4,7 +4,14 @@
 
 module suggest_template_info.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
+
+// See components/omnibox/browser/autocomplete_match.h.
+struct ACMatchClassification {
+  uint32 offset;
+  int32 style;
+};
 
 // Where to display the secondary text relative to the primary text.
 // Maps to SuggestTemplateInfo.SecondaryTextPlacement in
@@ -29,9 +36,12 @@ struct Image {
   string dominant_color;
 };
 
-// Presentation template for a suggestion. Its fields correspond to the
+// Presentation template for a suggestion. Its fields should correspond to the
 // client-supported, rendering-relevant subset of the SuggestTemplateInfo proto
 // message in //third_party/omnibox_proto/suggest_template_info.proto.
+//
+// TODO(crbug.com/568347195): Use FormattedString for the primary and
+// secondary text, so it matches how the proto defines these.
 //
 // This is populated for every match at the Mojo boundary, including matches
 // that did not receive a SuggestTemplateInfo from the server (e.g. local
@@ -39,6 +49,12 @@ struct Image {
 // This lets the WebUI render all matches from a single presentation contract
 // rather than re-deriving layout from match types or ad-hoc flags.
 struct SuggestTemplateInfo {
+  // The primary text of the suggestion and its styling.
+  mojo_base.mojom.String16 primary_text;
+  array<ACMatchClassification> primary_text_class;
+  // The secondary text of the suggestion (e.g. a subtitle) and its styling.
+  mojo_base.mojom.String16 secondary_text;
+  array<ACMatchClassification> secondary_text_class;
   // Where to display the secondary text relative to the primary text.
   SecondaryTextPlacement secondary_text_placement =
       SecondaryTextPlacement.kUnspecified;

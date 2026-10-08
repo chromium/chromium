@@ -143,31 +143,33 @@ function paintFinished(): Promise<void> {
   return new Promise(resolve => afterNextPaint(resolve));
 }
 
-function createCalculatorMatch(modifiers: Partial<AutocompleteMatch>):
+function createCalculatorMatch(modifiers: Partial<AutocompleteMatch> = {}):
     AutocompleteMatch {
   return createAutocompleteMatch({
     isSearchType: true,
-    contents: '2 + 3',
-    contentsClass: [{offset: 0, style: 0}],
-    description: '5',
-    descriptionClass: [{offset: 0, style: 0}],
     destinationUrl: 'https://www.google.com/search?q=2+%2B+3',
     fillIntoEdit: '5',
     type: 'search-calculator-answer',
     iconPath: 'calculator_cr23.svg',
+    suggestTemplate: createSuggestTemplateInfo({
+      primaryText: '2 + 3',
+      secondaryText: '5',
+      secondaryTextPlacement: SecondaryTextPlacement.kBelowPrimaryText,
+    }),
     ...modifiers,
   });
 }
 
 function verifyMatch(match: AutocompleteMatch, matchEl: SearchboxMatchElement) {
   assertEquals('option', matchEl.getAttribute('role'));
+  const {primaryText, secondaryText} = match.suggestTemplate;
   const separatorText =
-      match.description ? loadTimeData.getString('searchboxSeparator') : '';
+      secondaryText ? loadTimeData.getString('searchboxSeparator') : '';
   const contents = matchEl.$.contents.textContent;
   const separator = matchEl.$.separator.textContent;
   const description = matchEl.$.description.textContent;
   const text = contents + separator + description;
-  assertEquals(match.contents + separatorText + match.description, text);
+  assertEquals(primaryText + separatorText + secondaryText, text);
 }
 
 const FOCUS_EVENTS = ['blur', 'focus', 'focusin', 'focusout'] as const;
@@ -1110,7 +1112,7 @@ suite('SearchboxMixinTest', () => {
 
     const matches = [createSearchMatchForTesting({
       allowedToBeDefaultMatch: true,
-      contents: 'hello',
+      suggestTemplate: createSuggestTemplateInfo({primaryText: 'hello'}),
     })];
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
       queryId: element.activeQueryId,
@@ -1359,11 +1361,7 @@ suite('SearchboxMixinTest', () => {
 
   test('match calculator answer type', async () => {
     const mockInput = element.getInputElement();
-    const matches = [createCalculatorMatch({
-      suggestTemplate: createSuggestTemplateInfo({
-        secondaryTextPlacement: SecondaryTextPlacement.kBelowPrimaryText,
-      }),
-    })];
+    const matches = [createCalculatorMatch()];
 
     await simulateUserTextInput(mockInput, '2 + 3');
 
@@ -2093,11 +2091,13 @@ suite('SearchboxMixinTest', () => {
   test('Tab key on non-default match does not enter keyword mode', async () => {
     const defaultMatch = createSearchMatchForTesting({
       allowedToBeDefaultMatch: true,
-      contents: 'google search',
+      suggestTemplate:
+          createSuggestTemplateInfo({primaryText: 'google search'}),
     });
     const secondaryMatchWithKeyword = createSearchMatchForTesting({
       allowedToBeDefaultMatch: false,
-      contents: 'google bookmarks',
+      suggestTemplate:
+          createSuggestTemplateInfo({primaryText: 'google bookmarks'}),
       keywordModel: createMatchKeywordModelForTesting({
         type: KeywordType.kChip,
         keyword: 'google.com',
@@ -2168,7 +2168,7 @@ suite('SearchboxMixinTest', () => {
     const mockInput = element.getInputElement();
     const match = createSearchMatchForTesting({
       allowedToBeDefaultMatch: true,
-      contents: 'youtube',
+      suggestTemplate: createSuggestTemplateInfo({primaryText: 'youtube'}),
       fillIntoEdit: 'youtube.com',
       keywordModel: createMatchKeywordModelForTesting({
         type: KeywordType.kChip,
@@ -2216,7 +2216,7 @@ suite('SearchboxMixinTest', () => {
         const mockInput = element.getInputElement();
         const match = createSearchMatchForTesting({
           allowedToBeDefaultMatch: true,
-          contents: 'youtube',
+          suggestTemplate: createSuggestTemplateInfo({primaryText: 'youtube'}),
           fillIntoEdit: 'youtube.com',
           keywordModel: createMatchKeywordModelForTesting({
             type: KeywordType.kChip,

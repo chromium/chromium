@@ -123,5 +123,43 @@ TEST(SuggestTemplateInfoMojoUtilsTest, PopulatesImageFromMatch) {
   }
 }
 
+TEST(SuggestTemplateInfoMojoUtilsTest, PopulatesTextFromMatch) {
+  AutocompleteMatch match;
+  match.contents = u"example.com";
+  match.contents_class = {{0, ACMatchClassification::URL}};
+  match.description = u"Example Title";
+  match.description_class = {{0, ACMatchClassification::MATCH}};
+
+  // The contents are the primary text and the description is the secondary
+  // text.
+  {
+    mojom::SuggestTemplateInfoPtr suggest_template =
+        CreateSuggestTemplateInfo(match);
+    EXPECT_EQ(suggest_template->primary_text, u"example.com");
+    ASSERT_EQ(suggest_template->primary_text_class.size(), 1u);
+    EXPECT_EQ(suggest_template->primary_text_class[0]->style,
+              ACMatchClassification::URL);
+    EXPECT_EQ(suggest_template->secondary_text, u"Example Title");
+    ASSERT_EQ(suggest_template->secondary_text_class.size(), 1u);
+    EXPECT_EQ(suggest_template->secondary_text_class[0]->style,
+              ACMatchClassification::MATCH);
+  }
+  // `swap_contents_and_description` is resolved here, and the classifications
+  // travel with their text.
+  {
+    match.swap_contents_and_description = true;
+    mojom::SuggestTemplateInfoPtr suggest_template =
+        CreateSuggestTemplateInfo(match);
+    EXPECT_EQ(suggest_template->primary_text, u"Example Title");
+    ASSERT_EQ(suggest_template->primary_text_class.size(), 1u);
+    EXPECT_EQ(suggest_template->primary_text_class[0]->style,
+              ACMatchClassification::MATCH);
+    EXPECT_EQ(suggest_template->secondary_text, u"example.com");
+    ASSERT_EQ(suggest_template->secondary_text_class.size(), 1u);
+    EXPECT_EQ(suggest_template->secondary_text_class[0]->style,
+              ACMatchClassification::URL);
+  }
+}
+
 }  // namespace
 }  // namespace suggest_template_info

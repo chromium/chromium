@@ -6,7 +6,7 @@ import {isMac} from '//resources/js/platform.js';
 import {OmniboxEscapeAction, omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, sanitizeTextForPaste, SearchboxBrowserProxy, stripJavascriptSchemas, UrlDeemphasisMode} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import type {OmniboxInputState, OmniboxPopupContextualEntrypointButtonElement, OmniboxPopupPageRemote, OmniboxPopupSearchboxElement, UrlEmphasis} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {KeywordModeEntryMethod} from 'chrome://resources/cr_components/searchbox/keyword_mode_manager.js';
-import {createAutocompleteResultForTesting, createMatchKeywordModelForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {createAutocompleteResultForTesting, createMatchKeywordModelForTesting, createSearchMatchForTesting, createSuggestTemplateInfo} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {KeywordType, RenderType, SelectionDirection, SelectionLineState, SelectionStep, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -3178,13 +3178,14 @@ suite('OmniboxPopupSearchboxTest', function() {
  suite('InputIconState', () => {
    test('InputMatchUpdatesWithSelectedMatch', async () => {
      const navMatch = createSearchMatchForTesting({
-       contents: 'example.com',
+       suggestTemplate: createSuggestTemplateInfo({primaryText: 'example.com'}),
        destinationUrl: 'https://example.com/',
        isSearchType: false,
        type: 'history-url',
      });
      const searchMatch = createSearchMatchForTesting({
-       contents: 'example query',
+       suggestTemplate:
+           createSuggestTemplateInfo({primaryText: 'example query'}),
        destinationUrl: 'https://www.google.com/search?q=example',
        isSearchType: true,
        type: 'search-what-you-typed',
@@ -3209,14 +3210,18 @@ suite('OmniboxPopupSearchboxTest', function() {
      await microtasksFinished();
      assertEquals(
          searchbox.result!.matches[1], searchbox.$.input.selectedMatch);
-     assertEquals('example query', searchbox.$.input.selectedMatch?.contents);
+     assertEquals(
+         'example query',
+         searchbox.$.input.selectedMatch?.suggestTemplate.primaryText);
 
      // When navigating to match 0, input's selectedMatch should be match 0.
      searchbox.selectedMatchIndex = 0;
      await microtasksFinished();
      assertEquals(
          searchbox.result!.matches[0], searchbox.$.input.selectedMatch);
-     assertEquals('example.com', searchbox.$.input.selectedMatch?.contents);
+     assertEquals(
+         'example.com',
+         searchbox.$.input.selectedMatch?.suggestTemplate.primaryText);
 
      // When navigating back to unselected, input's selectedMatch should return
      // to null.
@@ -3338,7 +3343,7 @@ suite('OmniboxPopupSearchboxTest', function() {
    const keyword = 'youtube.com';
    const match = createSearchMatchForTesting({
      allowedToBeDefaultMatch: true,
-     contents: 'youtube',
+     suggestTemplate: createSuggestTemplateInfo({primaryText: 'youtube'}),
      keywordModel: createMatchKeywordModelForTesting({
        type: KeywordType.kChip,
        keyword,
@@ -3379,7 +3384,7 @@ suite('OmniboxPopupSearchboxTest', function() {
    searchbox.virtualFocusEnabled = false;
    const match = createSearchMatchForTesting({
      allowedToBeDefaultMatch: true,
-     contents: 'youtube.com',
+     suggestTemplate: createSuggestTemplateInfo({primaryText: 'youtube.com'}),
    });
    searchbox.activeQueryId = 0;
    searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
@@ -3739,11 +3744,11 @@ suite('OmniboxPopupSearchboxTest', function() {
 
        const match1 = createSearchMatchForTesting({
          allowedToBeDefaultMatch: true,
-         contents: 'match 1',
+         suggestTemplate: createSuggestTemplateInfo({primaryText: 'match 1'}),
        });
        const match2 = createSearchMatchForTesting({
          allowedToBeDefaultMatch: false,
-         contents: 'match 2',
+         suggestTemplate: createSuggestTemplateInfo({primaryText: 'match 2'}),
        });
        localSearchbox.activeQueryId = 0;
        localSearchbox.onAutocompleteResultChanged(
@@ -3891,7 +3896,7 @@ suite('OmniboxPopupSearchboxTest', function() {
          input: 'test',
          matches: [createSearchMatchForTesting({
            allowedToBeDefaultMatch: true,
-           contents: 'match 1',
+           suggestTemplate: createSuggestTemplateInfo({primaryText: 'match 1'}),
          })],
        }));
    await microtasksFinished();
@@ -3975,7 +3980,7 @@ suite('OmniboxPopupSearchboxTest', function() {
          input: 'test',
          matches: [createSearchMatchForTesting({
            allowedToBeDefaultMatch: true,
-           contents: 'match 1',
+           suggestTemplate: createSuggestTemplateInfo({primaryText: 'match 1'}),
          })],
        }));
    await microtasksFinished();
@@ -4076,7 +4081,8 @@ suite('OmniboxPopupSearchboxTest', function() {
              input: 'test',
              matches: [createSearchMatchForTesting({
                allowedToBeDefaultMatch: true,
-               contents: 'match 1',
+               suggestTemplate:
+                   createSuggestTemplateInfo({primaryText: 'match 1'}),
              })],
            }));
        await microtasksFinished();
@@ -4286,7 +4292,8 @@ suite('OmniboxPopupSearchboxTest', function() {
 
        const match = createSearchMatchForTesting({
          allowedToBeDefaultMatch: true,
-         contents: 'first match',
+         suggestTemplate:
+             createSuggestTemplateInfo({primaryText: 'first match'}),
        });
        searchbox.activeQueryId = 0;
        searchbox.onAutocompleteResultChanged(
@@ -4395,7 +4402,7 @@ suite('OmniboxPopupSearchboxTest', function() {
 
    const match = createSearchMatchForTesting({
      allowedToBeDefaultMatch: true,
-     contents: 'first match',
+     suggestTemplate: createSuggestTemplateInfo({primaryText: 'first match'}),
      inlineAutocompletion: ' match',
    });
    searchbox.activeQueryId = 0;

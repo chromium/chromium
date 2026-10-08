@@ -9,7 +9,7 @@ import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/com
 import {VoiceSearchAction} from 'chrome://resources/cr_components/composebox/composebox_mixin.js';
 import {ComposeboxProxyImpl, createAutocompleteMatch} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
-import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {createAutocompleteResultForTesting, createSearchMatchForTesting, createSuggestTemplateInfo} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import {InputMethod, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SuggestStyle} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -469,7 +469,8 @@ suite('ComposeboxAutocomplete', () => {
 
       const matches = [
         createSearchMatchForTesting({
-          contents: 'zps suggestion',
+          suggestTemplate:
+              createSuggestTemplateInfo({primaryText: 'zps suggestion'}),
           destinationUrl: 'https://google.com/',
         }),
       ];

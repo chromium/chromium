@@ -115,10 +115,6 @@ struct AutocompleteMatch {
   mojo_base.mojom.String16 a11y_label;
   bool allowed_to_be_default_match;
   array<Action> actions;
-  mojo_base.mojom.String16 contents;
-  array<ACMatchClassification> contents_class;
-  mojo_base.mojom.String16 description;
-  array<ACMatchClassification> description_class;
   url.mojom.Url destination_url;
   mojo_base.mojom.String16 inline_autocompletion;
   mojo_base.mojom.String16 fill_into_edit;

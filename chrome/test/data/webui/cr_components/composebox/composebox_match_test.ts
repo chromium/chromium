@@ -47,8 +47,10 @@ suite('ComposeboxMatch', () => {
   test('renders match contents', async () => {
     // Single-row matches don't show their description.
     matchElement.match = createAutocompleteMatch({
-      contents: 'test contents',
-      description: 'test description',
+      suggestTemplate: createSuggestTemplateInfo({
+        primaryText: 'test contents',
+        secondaryText: 'test description',
+      }),
     });
     await microtasksFinished();
 
@@ -58,9 +60,9 @@ suite('ComposeboxMatch', () => {
 
   test('renders the secondary text below the primary text', async () => {
     matchElement.match = createAutocompleteMatch({
-      contents: 'test contents',
-      description: 'test description',
       suggestTemplate: createSuggestTemplateInfo({
+        primaryText: 'test contents',
+        secondaryText: 'test description',
         secondaryTextPlacement: SecondaryTextPlacement.kBelowPrimaryText,
       }),
     });
@@ -89,8 +91,8 @@ suite('ComposeboxMatch', () => {
     // that they do not pick it up.
     matchElement.richImageSuggestionsEnabled = true;
     matchElement.match = createAutocompleteMatch({
-      contents: 'test contents',
       suggestTemplate: createSuggestTemplateInfo({
+        primaryText: 'test contents',
         secondaryTextPlacement: SecondaryTextPlacement.kBelowPrimaryText,
         image: {url: 'https://example.com/image.png', dominantColor: ''},
       }),
@@ -121,9 +123,9 @@ suite('ComposeboxMatch', () => {
     el.overrideClampLineNum = 3;
     document.body.appendChild(el);
     el.match = createAutocompleteMatch({
-      contents: 'Very long text '.repeat(20),
-      description: 'test description',
       suggestTemplate: createSuggestTemplateInfo({
+        primaryText: 'Very long text '.repeat(20),
+        secondaryText: 'test description',
         secondaryTextPlacement: SecondaryTextPlacement.kBelowPrimaryText,
       }),
     });
@@ -273,7 +275,9 @@ suite('ComposeboxMatch', () => {
 
   test('iconContainer does not shrink with long text', async () => {
     matchElement.match = createAutocompleteMatch({
-      contents: 'Very long text '.repeat(20),
+      suggestTemplate: createSuggestTemplateInfo({
+        primaryText: 'Very long text '.repeat(20),
+      }),
     });
     await microtasksFinished();
 
@@ -320,9 +324,9 @@ suite('ComposeboxMatch', () => {
     matchElement.richImageSuggestionsEnabled = true;
     matchElement.matchIndex = 1;
     matchElement.match = createAutocompleteMatch({
-      contents: 'test contents',
       suggestStyle: SuggestStyle.kRichImage,
       suggestTemplate: createSuggestTemplateInfo({
+        primaryText: 'test contents',
         image: {url: 'https://example.com/image.png', dominantColor: ''},
       }),
     });

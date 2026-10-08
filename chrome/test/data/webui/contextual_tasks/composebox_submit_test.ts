@@ -15,7 +15,7 @@ import {ContextUploadStatus, ToolMode} from 'chrome://resources/cr_components/co
 import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
-import {createAutocompleteMatch, createAutocompleteResultForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {createAutocompleteMatch, createAutocompleteResultForTesting, createSuggestTemplateInfo} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteResult, PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -1576,7 +1576,8 @@ suite('ContextualTasksComposeboxForkInjectInputTest', () => {
           input: TEST_QUERY,
           matches: [createAutocompleteMatch({
             allowedToBeDefaultMatch: false,
-            contents: TEST_QUERY,
+            suggestTemplate:
+                createSuggestTemplateInfo({primaryText: TEST_QUERY}),
           })],
         }));
     await flushAndSettle();
@@ -1609,7 +1610,8 @@ suite('ContextualTasksComposeboxForkInjectInputTest', () => {
           matches: [
             createAutocompleteMatch({
               allowedToBeDefaultMatch: false,
-              contents: OTHER_QUERY,
+              suggestTemplate:
+                  createSuggestTemplateInfo({primaryText: OTHER_QUERY}),
             }),
             createAutocompleteMatch({allowedToBeDefaultMatch: false}),
           ],

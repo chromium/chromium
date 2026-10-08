@@ -4,6 +4,9 @@
 
 #include "components/omnibox/browser/suggest_template_info_mojo_utils.h"
 
+#include <vector>
+
+#include "base/containers/to_vector.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "third_party/omnibox_proto/suggest_template_info.pb.h"
@@ -11,6 +14,16 @@
 namespace suggest_template_info {
 
 namespace {
+
+// Converts `classifications` to their Mojo representation.
+std::vector<mojom::ACMatchClassificationPtr> CreateClassifications(
+    const ACMatchClassifications& classifications) {
+  return base::ToVector(classifications,
+                        [](const ACMatchClassification& classification) {
+                          return mojom::ACMatchClassification::New(
+                              classification.offset, classification.style);
+                        });
+}
 
 // Returns where to place the secondary text of `match` relative to its primary
 // text. The placement from the server-provided SuggestTemplateInfo takes
@@ -54,6 +67,20 @@ mojom::ImagePtr GetImage(const AutocompleteMatch& match) {
 mojom::SuggestTemplateInfoPtr CreateSuggestTemplateInfo(
     const AutocompleteMatch& match) {
   auto suggest_template = mojom::SuggestTemplateInfo::New();
+  // Resolve `swap_contents_and_description` here so the UI can always render
+  // `contents` as the primary text and `description` as the secondary text.
+  // NOTE: We read in the contents and description from the class on purpose
+  // instead of the SuggestTemplateInfo proto fields. This is because the
+  // SuggestTemplateInfo fields aren't updated during the match deduping
+  // process and for other transformations that happen to the match during
+  // the autocomplete lifecycle.
+  const bool swap = match.swap_contents_and_description;
+  suggest_template->primary_text = swap ? match.description : match.contents;
+  suggest_template->primary_text_class = CreateClassifications(
+      swap ? match.description_class : match.contents_class);
+  suggest_template->secondary_text = swap ? match.contents : match.description;
+  suggest_template->secondary_text_class = CreateClassifications(
+      swap ? match.contents_class : match.description_class);
   suggest_template->secondary_text_placement = GetSecondaryTextPlacement(match);
   suggest_template->image = GetImage(match);
   return suggest_template;
