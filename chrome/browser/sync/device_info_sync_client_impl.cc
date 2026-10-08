@@ -15,6 +15,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "chrome/browser/personal_context/personal_context_eligibility_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
@@ -140,20 +141,15 @@ DeviceInfoSyncClientImpl::GetGlicExperimentalTriggeringCapabilities() const {
   return service->enabling().GetExperimentalTriggeringCapabilities();
 }
 
-std::optional<syncer::DeviceInfo::PersonalContextInfo>
+syncer::DeviceInfo::PersonalContextInfo::StatusOrInfo
 DeviceInfoSyncClientImpl::GetLocalPersonalContextInfo() const {
-  if (!base::FeatureList::IsEnabled(
-          personal_context::features::kPersonalContextHandleEncryptedPayloads)) {
-    return std::nullopt;
-  }
-  std::vector<uint8_t> public_key =
-      personal_context::PersonalContextKeyManager::
-          GetOrCreateLocalPublicKeyBytes(profile_->GetPrefs());
-  if (public_key.empty()) {
-    return std::nullopt;
-  }
-  return syncer::DeviceInfo::PersonalContextInfo{
-      .serialized_tink_keyset = std::move(public_key)};
+  const personal_context::PersonalContextEligibilityService*
+      eligibility_service =
+          PersonalContextEligibilityServiceFactory::GetForProfile(profile_);
+  CHECK(eligibility_service);
+
+  return personal_context::PersonalContextKeyManager::
+      GetLocalPersonalContextInfo(profile_->GetPrefs(), eligibility_service);
 }
 
 }  // namespace browser_sync

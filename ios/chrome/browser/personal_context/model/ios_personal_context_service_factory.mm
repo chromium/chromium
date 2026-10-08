@@ -8,6 +8,7 @@
 #import "base/functional/bind.h"
 #import "components/personal_context/core/personal_context_features.h"
 #import "components/personal_context/core/personal_context_service_impl.h"
+#import "ios/chrome/browser/personal_context/model/ios_personal_context_eligibility_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
@@ -27,7 +28,8 @@ std::unique_ptr<KeyedService> BuildPersonalContextService(ProfileIOS* profile) {
   return std::make_unique<PersonalContextServiceImpl>(
       profile->GetSharedURLLoaderFactory(),
       IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
-      DeviceInfoSyncServiceFactory::GetForProfile(profile));
+      DeviceInfoSyncServiceFactory::GetForProfile(profile),
+      IOSPersonalContextEligibilityServiceFactory::GetForProfile(profile));
 }
 
 }  // namespace
@@ -59,6 +61,7 @@ IOSPersonalContextServiceFactory::IOSPersonalContextServiceFactory()
                                     TestingCreation::kNoServiceForTests) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
+  DependsOn(IOSPersonalContextEligibilityServiceFactory::GetInstance());
 }
 
 IOSPersonalContextServiceFactory::~IOSPersonalContextServiceFactory() = default;

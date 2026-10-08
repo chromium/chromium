@@ -107,6 +107,7 @@ source_set("sync") {
     "//chrome/browser/metrics",
     "//chrome/browser/notebooks",
     "//chrome/browser/password_manager/factories",
+    "//chrome/browser/personal_context",
     "//chrome/browser/signin",
     "//chrome/browser/skills",
     "//chrome/browser/subscription_eligibility",

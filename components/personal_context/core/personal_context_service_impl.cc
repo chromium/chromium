@@ -11,11 +11,13 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/personal_context/core/network/personal_context_manager.h"
+#include "components/personal_context/core/personal_context_features.h"
 #include "components/personal_context/core/personal_context_key_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -257,14 +259,19 @@ PersonalContextServiceImpl::PersonalContextServiceImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
     PrefService* pref_service,
-    syncer::DeviceInfoSyncService* device_info_sync_service)
+    syncer::DeviceInfoSyncService* device_info_sync_service,
+    PersonalContextEligibilityService* eligibility_service)
     : personal_context_manager_(std::make_unique<PersonalContextManager>(
           std::move(url_loader_factory),
-          identity_manager)),
-      key_manager_(pref_service ? std::make_unique<PersonalContextKeyManager>(
-                                      pref_service,
-                                      device_info_sync_service)
-                                : nullptr) {}
+          identity_manager)) {
+  if (base::FeatureList::IsEnabled(
+          features::kPersonalContextHandleEncryptedPayloads)) {
+    key_manager_ = pref_service ? std::make_unique<PersonalContextKeyManager>(
+                                      pref_service, device_info_sync_service,
+                                      eligibility_service)
+                                : nullptr;
+  }
+}
 
 PersonalContextServiceImpl::~PersonalContextServiceImpl() = default;
 

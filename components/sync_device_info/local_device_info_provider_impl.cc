@@ -51,8 +51,6 @@ const DeviceInfo* LocalDeviceInfoProviderImpl::GetLocalDeviceInfo() const {
   local_device_info_->set_send_tab_to_self_receiving_type(
       sync_client_->GetSendTabToSelfReceivingType());
   local_device_info_->set_sharing_info(sync_client_->GetLocalSharingInfo());
-  local_device_info_->set_personal_context_info(
-      sync_client_->GetLocalPersonalContextInfo());
 
   // Do not update previous values if the service is not fully initialized.
   // std::nullopt means that the value is unknown yet and the previous value
@@ -81,6 +79,22 @@ const DeviceInfo* LocalDeviceInfoProviderImpl::GetLocalDeviceInfo() const {
                  std::get_if<DeviceInfo::PhoneAsASecurityKeyInfo>(
                      &paask_status)) {
     local_device_info_->set_paask_info(std::move(*info));
+  } else {
+    NOTREACHED();
+  }
+
+  DeviceInfo::PersonalContextInfo::StatusOrInfo personal_context_status =
+      sync_client_->GetLocalPersonalContextInfo();
+  if (std::get_if<DeviceInfo::PersonalContextInfo::NotReady>(
+          &personal_context_status)) {
+    // `sync_client_` will call `RefreshLocalDeviceInfo` when it's ready.
+  } else if (std::get_if<DeviceInfo::PersonalContextInfo::NotEligible>(
+                 &personal_context_status)) {
+    local_device_info_->set_personal_context_info(std::nullopt);
+  } else if (DeviceInfo::PersonalContextInfo* info =
+                 std::get_if<DeviceInfo::PersonalContextInfo>(
+                     &personal_context_status)) {
+    local_device_info_->set_personal_context_info(std::move(*info));
   } else {
     NOTREACHED();
   }
@@ -136,6 +150,7 @@ void LocalDeviceInfoProviderImpl::Initialize(
   DataTypeSet last_interested_data_types;
   std::optional<DeviceInfo::PhoneAsASecurityKeyInfo> paask_info;
   std::optional<base::Time> auto_sign_out_last_signin_timestamp;
+  std::optional<DeviceInfo::PersonalContextInfo> personal_context_info;
   if (device_info_restored_from_store) {
     last_fcm_registration_token =
         device_info_restored_from_store->fcm_registration_token();
@@ -144,6 +159,8 @@ void LocalDeviceInfoProviderImpl::Initialize(
     paask_info = device_info_restored_from_store->paask_info();
     auto_sign_out_last_signin_timestamp =
         device_info_restored_from_store->auto_sign_out_last_signin_timestamp();
+    personal_context_info =
+        device_info_restored_from_store->personal_context_info();
   }
 
   // The local device doesn't have a last updated timestamps. It will be set in
@@ -166,8 +183,7 @@ void LocalDeviceInfoProviderImpl::Initialize(
       sync_client_->GetGlicExperimentalTriggeringState(),
       sync_client_->GetGlicExperimentalTriggeringVersion(),
       sync_client_->GetGlicExperimentalTriggeringCapabilities(),
-      android_os_build_fingerprint_prefix,
-      sync_client_->GetLocalPersonalContextInfo());
+      android_os_build_fingerprint_prefix, personal_context_info);
 
   full_hardware_class_ = full_hardware_class;
 
