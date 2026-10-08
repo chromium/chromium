@@ -26,7 +26,6 @@
 ContentSettingsType ContentSettingsTypeForPermission(
     web::Permission permission) {
   switch (permission) {
-    // TODO(crbug.com/552561353): Add support for geolocation permissions.
     case web::PermissionCamera:
       return ContentSettingsType::MEDIASTREAM_CAMERA;
     case web::PermissionMicrophone:
