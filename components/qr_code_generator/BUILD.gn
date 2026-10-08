@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
-import("//build/config/rust.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 declare_args() {
@@ -11,7 +9,6 @@ declare_args() {
   enable_qr_print = false
 }
 
-# Error type shared between C++ and Rust.
 source_set("error") {
   public = [ "error.h" ]
 }
@@ -33,17 +30,6 @@ source_set("bitmap_generator") {
   ]
 }
 
-# TODO(https://crbug.com/533546009): After Crubit bakes and sticks on the
-# Stable release channel, then it should be okay to assume that
-# `enable_cpp_api_from_rust` will be forever true (and remove
-# `cxx::bridge`-related bits of QR code generator in this `BUILD.gn` file, bits
-# in `.cc` files, and the whole `qr_code_generator_ffi_glue.rs` file).
-buildflag_header("cpp_api_from_rust_buildflags") {
-  header = "cpp_api_from_rust_buildflags.h"
-  flags = [ "ENABLE_CPP_API_FROM_RUST=$enable_cpp_api_from_rust" ]
-  visibility = [ ":qr_code_generator" ]
-}
-
 source_set("qr_code_generator") {
   # Enforces that `qr_code_generator.h` does not #include headers from private
   # `deps`, which also stops GN from forwarding the Crubit bindings' hard_deps
@@ -51,33 +37,14 @@ source_set("qr_code_generator") {
   check_includes_strict = true
   public = [ "qr_code_generator.h" ]
   sources = [ "qr_code_generator.cc" ]
-  deps = [ ":cpp_api_from_rust_buildflags" ]
-  if (enable_cpp_api_from_rust) {
-    deps += [
-      "//build/rust/crubit",
-      "//third_party/rust/qr_code/v2:cpp_api_from_rust",
-    ]
-  } else {
-    deps += [ ":qr_code_generator_ffi_glue" ]
-  }
+  deps = [
+    "//build/rust/crubit",
+    "//third_party/rust/qr_code/v2:cpp_api_from_rust",
+  ]
   public_deps = [
     ":error",
     "//base",
   ]
-}
-
-if (!enable_cpp_api_from_rust) {
-  rust_static_library("qr_code_generator_ffi_glue") {
-    allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
-    crate_root = "qr_code_generator_ffi_glue.rs"
-    sources = [ "qr_code_generator_ffi_glue.rs" ]
-    cxx_bindings = [ "qr_code_generator_ffi_glue.rs" ]
-    visibility = [ ":qr_code_generator" ]
-    deps = [
-      ":error",
-      "//third_party/rust/qr_code/v2:lib",
-    ]
-  }
 }
 
 source_set("unit_tests") {
