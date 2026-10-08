@@ -238,8 +238,6 @@ external/wpt/trusted-types/navigate-to-javascript-url-007-crash.html [ Crash ]
 external/wpt/trusted-types/eval-function-constructor.html [ Failure Pass ]
 external/wpt/trusted-types/eval-function-constructor-untrusted-arguments-and-applying-default-policy.html [ Failure Pass ]
 
-crbug.com/1462226 wpt_internal/prerender/restriction-web-auth.https.html [ Crash Failure Pass Timeout ]
-
 crbug.com/436805487 inspector-protocol/css/css-get-navigation-queries.js [ Failure ]
 crbug.com/436805487 wpt_internal/route/link-to-004.html [ Failure ]
 

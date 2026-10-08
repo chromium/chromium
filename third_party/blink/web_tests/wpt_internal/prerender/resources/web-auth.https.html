@@ -3,13 +3,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/speculation-rules/prerender/resources/utils.js"></script>
 <script src="/speculation-rules/prerender/resources/deferred-promise-utils.js"></script>
-<script type="module">
-
-// Access external/wpt/credential-management/support/otpcredential-helper.js in
-// order to test navigator.credentials.get() which needs to use a mock
-// OTPRequest.
-import {Status, expectOTPRequest} from
-    '/credential-management/support/otpcredential-helper.js';
+<script>
 
 const params = new URLSearchParams(location.search);
 
@@ -22,12 +16,17 @@ if (!isPrerendering) {
   loadInitiatorPage();
 } else {
   const prerenderEventCollector = new PrerenderEventCollector();
-  const promise = new Promise(async (resolve, reject) => {
-    await expectOTPRequest().andReturn(
-        () => ({status: Status.SUCCESS, otp: "ABC123"}));
-    const sms = await navigator.credentials.get({otp: {transport: ["sms"]}});
-    prerenderEventCollector.addEvent(`SMS Code: ${sms.code}`);
-    resolve();
+  // Pass an invalid RP ID ('127.0.0.1') that is validated by the browser's
+  // Authenticator service (blink.mojom.Authenticator) rather than the renderer.
+  // During prerendering, MojoBinderPolicyApplier defers binding
+  // blink.mojom.Authenticator until activation, at which point the browser
+  // immediately rejects the request with SecurityError without requiring a
+  // virtual authenticator.
+  const promise = navigator.credentials.get({
+    publicKey: {
+      challenge: new Uint8Array([1, 2, 3, 4]),
+      rpId: '127.0.0.1',
+    }
   });
   prerenderEventCollector.start(promise, 'navigator.credentials.get');
 }

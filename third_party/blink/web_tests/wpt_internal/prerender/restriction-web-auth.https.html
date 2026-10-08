@@ -26,10 +26,9 @@ promise_test(async t => {
 
   const result = await gotMessage;
   const expected = [
-    {event: 'started waiting navigator.credentials.get',  prerendering: true},
-    {event: 'prerendering change',                        prerendering: false},
-    {event: 'SMS Code: ABC123',                           prerendering: false},
-    {event: 'finished waiting navigator.credentials.get', prerendering: false},
+    {event: 'started waiting navigator.credentials.get',            prerendering: true},
+    {event: 'prerendering change',                                  prerendering: false},
+    {event: 'navigator.credentials.get rejected: SecurityError',    prerendering: false},
   ];
   assert_equals(result.length, expected.length);
   for (let i = 0; i < result.length; i++) {
