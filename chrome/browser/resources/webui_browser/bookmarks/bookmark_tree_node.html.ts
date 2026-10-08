@@ -7,7 +7,6 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {BookmarkTreeNodeElement} from './bookmark_tree_node.js';
 
 export function getHtml(this: BookmarkTreeNodeElement) {
-  // clang-format off
   return html`
 ${this.node.folder ? html`
   <details>
@@ -35,7 +34,7 @@ ${this.node.url ? html`
   <div class="bookmark-item">
     ${this.node.url.faviconUrl ? html`
       <img src="${this.node.url.faviconUrl}" width="16" height="16"
-           style="margin-right: 4px; vertical-align: middle;">
+          style="margin-right: 4px; vertical-align: middle;">
     ` : ''}
     <a href="${this.node.url.url}" target="_blank">
       ${this.node.url.title || this.node.url.url}
@@ -44,7 +43,5 @@ ${this.node.url ? html`
     <button @click="${this.onMoveClick}">Move</button>
     <button @click="${this.onDeleteClick}">Delete</button>
   </div>
-` : ''}
-`;
-  // clang-format on
+` : ''}`;
 }

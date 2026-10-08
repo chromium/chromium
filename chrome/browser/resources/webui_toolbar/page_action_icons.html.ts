@@ -7,12 +7,9 @@ import {html, repeat} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PageActionIconsElement} from './page_action_icons.js';
 
 export function getHtml(this: PageActionIconsElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 ${repeat(this.pageActionStates, item => item.pageActionId, item => html`
-  <page-action-icon .state="${item}">
-  </page-action-icon>
+  <page-action-icon .state="${item}"></page-action-icon>
 `)}
 <!--_html_template_end_-->`;
-  // clang-format on
 }

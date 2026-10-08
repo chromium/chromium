@@ -8,12 +8,9 @@ import type {BatterySaverButtonElement} from './battery_saver_button.js';
 
 export function getHtml(this: BatterySaverButtonElement) {
   return html`
-    <cr-icon-button id="button" class="iph-visual-target"
-        iron-icon="webui-toolbar:battery_saver_refresh_custom"
-        aria-label="${this.getLabel_()}"
-        aria-haspopup="dialog"
-        title="${this.getTooltip_()}"
-        @click="${this.onClick_}">
-    </cr-icon-button>
-  `;
+<cr-icon-button id="button" class="iph-visual-target"
+    iron-icon="webui-toolbar:battery_saver_refresh_custom"
+    aria-label="${this.getLabel_()}" aria-haspopup="dialog"
+    title="${this.getTooltip_()}" @click="${this.onClick_}">
+</cr-icon-button>`;
 }

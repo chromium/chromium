@@ -8,57 +8,52 @@ import type {WebuiBrowserSearchboxElement} from './webui_browser_searchbox.js';
 
 export function getHtml(this: WebuiBrowserSearchboxElement) {
   return html`
-    <div id="inputWrapper" ?unbounded="${this.unboundedSupported_}"
-        @focusout="${this.onInputWrapperFocusout_}"
-        @keydown="${this.onInputWrapperKeydown_}"
-        @keyup="${this.onInputWrapperKeyup_}"
-        @beforetoggle="${this.onInputWrapperBeforetoggle_}"
-        @toggle="${this.onInputWrapperToggle_}">
-      <cr-searchbox-input id="input"
-          exportparts="searchbox-input"
-          ?dropdown-is-visible="${this.dropdownIsVisible}"
-          input-aria-live="${this.inputAriaLive}"
-          ?multi-line-enabled="${this.multiLineEnabled}"
-          placeholder-text="${this.computePlaceholderText_()}"
-          searchbox-aria-description="${this.searchboxAriaDescription}"
-          searchbox-icon="${this.searchboxIcon_}"
-          .selectedMatch="${this.selectedMatch}"
-          ?input-has-matches="${this.hasMatches()}"
-          @focusin="${this.onInputFocusin_}"
-          @searchbox-input-text-updated="${this.onSearchboxInputTextUpdated_}"
-          @input-focus-changed="${this.onInputFocusChanged}">
-        ${this.shouldShowVoiceLens_(this.searchboxVoiceSearchEnabled_) ? html`
-          <div slot="action-buttons"
-              class="searchbox-icon-button-container voice">
-            <button id="voiceSearchButton" class="searchbox-icon-button"
-                @click="${this.onVoiceSearchClick_}"
-                title="${this.i18n('voiceSearchButtonLabel')}">
-            </button>
-          </div>
-        `: ''}
-        ${this.shouldShowVoiceLens_(this.searchboxLensSearchEnabled_) ? html`
-          <div slot="action-buttons"
-              class="searchbox-icon-button-container lens">
-            <button id="lensSearchButton" class="searchbox-icon-button"
-                @click="${this.onLensSearchClick_}"
-                title="${this.i18n('lensSearchButtonLabel')}">
-            </button>
-          </div>
-        ` : ''}
-      </cr-searchbox-input>
-      <div class="dropdownContainer">
-        <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
-            exportparts="dropdown-content"
-            role="listbox" .result="${this.result}"
-            .selection="${this.selection}"
-            @selection-changed="${this.onSelectionChanged}"
+<div id="inputWrapper" ?unbounded="${this.unboundedSupported_}"
+    @focusout="${this.onInputWrapperFocusout_}"
+    @keydown="${this.onInputWrapperKeydown_}"
+    @keyup="${this.onInputWrapperKeyup_}"
+    @beforetoggle="${this.onInputWrapperBeforetoggle_}"
+    @toggle="${this.onInputWrapperToggle_}">
+  <cr-searchbox-input id="input" exportparts="searchbox-input"
+      ?dropdown-is-visible="${this.dropdownIsVisible}"
+      input-aria-live="${this.inputAriaLive}"
+      ?multi-line-enabled="${this.multiLineEnabled}"
+      placeholder-text="${this.computePlaceholderText_()}"
+      searchbox-aria-description="${this.searchboxAriaDescription}"
+      searchbox-icon="${this.searchboxIcon_}"
+      .selectedMatch="${this.selectedMatch}"
+      ?input-has-matches="${this.hasMatches()}"
+      @focusin="${this.onInputFocusin_}"
+      @searchbox-input-text-updated="${this.onSearchboxInputTextUpdated_}"
+      @input-focus-changed="${this.onInputFocusChanged}">
+    ${this.shouldShowVoiceLens_(this.searchboxVoiceSearchEnabled_) ? html`
+      <div slot="action-buttons" class="searchbox-icon-button-container voice">
+        <button id="voiceSearchButton" class="searchbox-icon-button"
+            @click="${this.onVoiceSearchClick_}"
+            title="${this.i18n('voiceSearchButtonLabel')}">
+        </button>
+      </div>
+    ` : ''}
+    ${this.shouldShowVoiceLens_(this.searchboxLensSearchEnabled_) ? html`
+      <div slot="action-buttons" class="searchbox-icon-button-container lens">
+        <button id="lensSearchButton" class="searchbox-icon-button"
+            @click="${this.onLensSearchClick_}"
+            title="${this.i18n('lensSearchButtonLabel')}">
+        </button>
+      </div>
+    ` : ''}
+  </cr-searchbox-input>
+  <div class="dropdownContainer">
+    <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
+        exportparts="dropdown-content" role="listbox" .result="${this.result}"
+        .selection="${this.selection}"
+        @selection-changed="${this.onSelectionChanged}"
         selected-match-index="${this.selectedMatchIndex}"
         @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
-            @match-focusin="${this.onMatchFocusin}"
-            @match-click="${this.onMatchClick}"
-            ?hidden="${!this.dropdownIsVisible}">
-        </cr-searchbox-dropdown>
-      </div>
-    </div>
-  `;
+        @match-focusin="${this.onMatchFocusin}"
+        @match-click="${this.onMatchClick}"
+        ?hidden="${!this.dropdownIsVisible}">
+    </cr-searchbox-dropdown>
+  </div>
+</div>`;
 }

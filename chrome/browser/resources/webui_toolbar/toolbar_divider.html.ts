@@ -7,8 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ToolbarDividerElement} from './toolbar_divider.js';
 
 export function getHtml(this: ToolbarDividerElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <!--_html_template_end_-->`;
-  // clang-format on
 }

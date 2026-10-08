@@ -7,74 +7,76 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {WebuiBrowserAppElement} from './app.js';
 
 export function getHtml(this: WebuiBrowserAppElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="rootContainer">
   <div id="topContainer">
     <div class="titlebarDiv" @mousedown="${this.onTabDragMousedown_}">
       <div class="tabstripDiv" style="margin-left:${this.tabStripInset_}px">
         <webui-browser-tab-strip id="tabstrip"
-            ?inactive-frame="${this.inactive_}"
-            @tab-added="${this.onTabAdded_}"
+            ?inactive-frame="${this.inactive_}" @tab-added="${this.onTabAdded_}"
             @tab-closed="${this.onTabClosed_}"
             @tab-updated="${this.onTabUpdated_}">
         </webui-browser-tab-strip>
       </div>
-      <if expr="not is_macosx">
-        <div class="captionButtonsDiv">
-          <cr-button type="button" class="caption-button"
+<if expr="not is_macosx">
+      <div class="captionButtonsDiv">
+        <cr-button type="button" class="caption-button"
             @click="${this.onMinimizeClick_}">
-            <cr-icon icon="webui-browser:chrome-minimize"></cr-icon>
-          </cr-button>
-          <cr-button type="button" class="caption-button"
+          <cr-icon icon="webui-browser:chrome-minimize"></cr-icon>
+        </cr-button>
+        <cr-button type="button" class="caption-button"
             @click="${this.onMaximizeClick_}">
-            <cr-icon icon="webui-browser:chrome-maximize"></cr-icon>
-          </cr-button>
-          <cr-button type="button" class="caption-button"
+          <cr-icon icon="webui-browser:chrome-maximize"></cr-icon>
+        </cr-button>
+        <cr-button type="button" class="caption-button"
             @click="${this.onCloseClick_}">
-            <cr-icon icon="webui-browser:close"></cr-icon>
-          </cr-button>
-        </div>
-      </if>
+          <cr-icon icon="webui-browser:close"></cr-icon>
+        </cr-button>
+      </div>
+</if>
     </div>
     <div id="searchBar">
       <cr-icon-button id="backButton" iron-icon="cr:arrow-back"
-        ?disabled="${this.backButtonDisabled_}"
-        @click="${this.onBackClick_}"
-        @contextmenu="${this.onBackContextmenu_}"></cr-icon-button>
+          ?disabled="${this.backButtonDisabled_}" @click="${this.onBackClick_}"
+          @contextmenu="${this.onBackContextmenu_}">
+      </cr-icon-button>
       <cr-icon-button id="forwardButton" iron-icon="cr:arrow-forward"
-        ?disabled="${this.forwardButtonDisabled_}"
-        @click="${this.onForwardClick_}"
-        @contextmenu="${this.onForwardContextmenu_}"></cr-icon-button>
+          ?disabled="${this.forwardButtonDisabled_}"
+          @click="${this.onForwardClick_}"
+          @contextmenu="${this.onForwardContextmenu_}">
+      </cr-icon-button>
       <cr-icon-button class="${this.reloadOrStopIcon_}"
-        title="${this.reloadOrStopTooltip_()}"
-        @click="${this.onReloadOrStopClick_}"></cr-icon-button>
+          title="${this.reloadOrStopTooltip_()}"
+          @click="${this.onReloadOrStopClick_}">
+      </cr-icon-button>
       <div id="addressBox">
         <webui-browser-searchbox id="address"></webui-browser-searchbox>
         <cr-button id="locationIconButton" type="button"
-          ?hidden="${!this.showLocationIconButton_}"
-          @click="${this.onLocationIconClick_}">
-          <cr-icon id="locationIcon"
-            icon="webui-browser:${this.locationIcon_}"></cr-icon>
+            ?hidden="${!this.showLocationIconButton_}"
+            @click="${this.onLocationIconClick_}">
+          <cr-icon id="locationIcon" icon="webui-browser:${this.locationIcon_}">
+          </cr-icon>
         </cr-button>
       </div>
       <webui-browser-extensions-bar id="extensionsBar">
       </webui-browser-extensions-bar>
       <cr-icon-button id="bookmarksButton"
-        iron-icon="webui-browser:bookmark-filled"
-        @click="${this.onBookmarksClick_}"></cr-icon-button>
+          iron-icon="webui-browser:bookmark-filled"
+          @click="${this.onBookmarksClick_}">
+      </cr-icon-button>
       <cr-icon-button id="avatarButton" iron-icon="cr:person-filled"
-        @click="${this.onAvatarClick_}"></cr-icon-button>
+          @click="${this.onAvatarClick_}">
+      </cr-icon-button>
       <cr-icon-button id="appMenuButton" iron-icon="cr:more-vert"
-        title="$i18n{appMenuTooltip}"
-        @click="${this.onAppMenuClick_}"></cr-icon-button>
+          title="$i18n{appMenuTooltip}" @click="${this.onAppMenuClick_}">
+      </cr-icon-button>
     </div>
     <webui-browser-bookmark-bar id="bookmarkBar" hidden>
     </webui-browser-bookmark-bar>
   </div>
   <div id="main">
     <content-region id="contentRegion"
-      ?showing-side-panel="${this.showingSidePanel_}">
+        ?showing-side-panel="${this.showingSidePanel_}">
     </content-region>
     <side-panel id="sidePanel" @side-panel-closed="${this.onSidePanelClosed_}">
     </side-panel>
@@ -82,5 +84,4 @@ export function getHtml(this: WebuiBrowserAppElement) {
 </div>
 
 <!--_html_template_end_-->`;
-  // clang-format on
 }

@@ -7,16 +7,13 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {TabElement} from './tab.js';
 
 export function getHtml(this: TabElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div class="tab">
   <div id="faviconContainer">
     <div id="favicon"></div>
   </div>
   <span id="title">${this.tabData.title}</span>
-  <cr-icon-button
-      class="close"
-      iron-icon="cr:close"
+  <cr-icon-button class="close" iron-icon="cr:close"
       @click="${this.onCloseClick}">
   </cr-icon-button>
   <div id="bottomCorners" ?hidden="${!this.tabData.isActive}">
@@ -25,5 +22,4 @@ export function getHtml(this: TabElement) {
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

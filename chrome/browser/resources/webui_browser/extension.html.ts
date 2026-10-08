@@ -8,11 +8,8 @@ import type {ExtensionElement} from './extension.js';
 
 export function getHtml(this: ExtensionElement) {
   return html`
-    <cr-button type="button"
-      @pointerdown="${this.highlightTracker_.onPointerdown}"
-      @click="${this.onClick}"
-      @contextmenu="${this.onContextmenu_}">
-      <icon-from-table .iconHandle="${this.iconHandle}"></icon-from-table>
-    </cr-button>
-  `;
+<cr-button type="button" @pointerdown="${this.highlightTracker_.onPointerdown}"
+    @click="${this.onClick}" @contextmenu="${this.onContextmenu_}">
+  <icon-from-table .iconHandle="${this.iconHandle}"></icon-from-table>
+</cr-button>`;
 }

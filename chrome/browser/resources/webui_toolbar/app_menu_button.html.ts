@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AppMenuButtonElement} from './app_menu_button.js';
 
 export function getHtml(this: AppMenuButtonElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <toolbar-chip-button id="button" class="${this.getHighlightClass_()}"
     ?is-menu-open="${this.state.isContextMenuVisible}"
@@ -15,16 +14,17 @@ export function getHtml(this: AppMenuButtonElement) {
     ?outset-focus-ring="${!!this.state.labelText}"
     @pointerdown="${this.onPointerdown_}" @click="${this.onClick_}"
     @focusin="${this.onFocusin_}" @focusout="${this.onFocusout_}"
-    .ariaLabel="${this.state.accessibilityText}"
-    .ariaHasPopup="${'menu'}"
+    .ariaLabel="${this.state.accessibilityText}" .ariaHasPopup="${'menu'}"
     .ariaExpanded="${this.state.isContextMenuVisible ? 'true' : 'false'}"
     .tooltip="${this.getTooltip_()}">
-  ${this.state.labelText ? html`<span>${this.state.labelText}</span>` : ''}
+  ${this.state.labelText ? html`
+    <span>${this.state.labelText}</span>
+  ` : ''}
   <cr-icon id="icon"
-      icon="${this.glowUpActive ? this.getAnimatedIcon_() : 'webui-toolbar:more_vert'}"
+      icon="${this.glowUpActive ? this.getAnimatedIcon_() :
+                                  'webui-toolbar:more_vert'}"
       slot="suffix-icon">
   </cr-icon>
 </toolbar-chip-button>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

@@ -7,15 +7,12 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PerformanceInterventionButtonElement} from './performance_intervention_button.js';
 
 export function getHtml(this: PerformanceInterventionButtonElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <cr-icon-button id="button" class="iph-visual-target"
-    iron-icon="webui-toolbar:speed"
-    @click="${this.onClick_}"
+    iron-icon="webui-toolbar:speed" @click="${this.onClick_}"
     @pointerdown="${this.highlightTracker.onPointerdown}"
     title="${this.getTooltip_()}" aria-label="${this.getLabel_()}"
     suppress-rtl-flip>
 </cr-icon-button>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

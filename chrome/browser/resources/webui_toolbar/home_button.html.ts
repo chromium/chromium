@@ -13,12 +13,10 @@ export function getHtml(this: HomeButtonElement) {
     @pointerdown="${this.pressHandler_.onPointerdown}"
     @pointerup="${this.pressHandler_.onPointerup}"
     @pointercancel="${this.pressHandler_.onPointercancel}"
-    @click="${this.onClick_}"
-    @contextmenu="${this.pressHandler_.onContextmenu}"
-    @dragenter="${this.onDragEnter_}"
-    @dragover="${this.onDragOver_}"
-    @drop="${this.onDrop_}"
-    title="${this.getTooltip_()}" aria-label="${this.getLabel_()}"
+    @click="${this.onClick_}" @contextmenu="${this.pressHandler_.onContextmenu}"
+    @dragenter="${this.onDragEnter_}" @dragover="${this.onDragOver_}"
+    @drop="${this.onDrop_}" title="${this.getTooltip_()}"
+    aria-label="${this.getLabel_()}"
     ?is-menu-open="${this.state.isContextMenuVisible}">
 </cr-icon-button>
 <!--_html_template_end_-->`;

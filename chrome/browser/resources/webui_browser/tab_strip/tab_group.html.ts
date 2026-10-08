@@ -7,11 +7,9 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {TabGroupElement} from './tab_group.js';
 
 export function getHtml(this: TabGroupElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="chip">
   <span id="title">${this.groupData.title}</span>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

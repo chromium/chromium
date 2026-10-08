@@ -7,14 +7,11 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {BookmarksElement} from './bookmarks.js';
 
 export function getHtml(this: BookmarksElement) {
-  // clang-format off
   return html`
 <div id="container">
   <webui-browser-bookmark-tree-node
       id="${this.rootNode_.folder?.id!.value || this.rootNode_.url?.id!.value}"
       .node="${this.rootNode_}">
   </webui-browser-bookmark-tree-node>
-</div>
-`;
-  // clang-format on
+</div>`;
 }

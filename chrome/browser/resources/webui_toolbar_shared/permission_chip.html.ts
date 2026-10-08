@@ -7,26 +7,21 @@ import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PermissionChipElement} from './permission_chip.js';
 
 export function getHtml(this: PermissionChipElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
-<button id="chip" class="iph-visual-target" type="button"
-    role="button"
-    tabindex="0"
-    ?collapsed="${this.isFullyCollapsed_}"
+<button id="chip" class="iph-visual-target" type="button" role="button"
+    tabindex="0" ?collapsed="${this.isFullyCollapsed_}"
     aria-label="${this.chipState?.accessibilityName || ''}"
     title="${this.chipState?.tooltip || ''}"
     @pointerenter="${this.onPointerenter_}"
     @pointerleave="${this.onPointerleave_}"
     @pointercancel="${this.onPointercancel_}"
-    @pointerdown="${this.onPointerdown_}"
-    @click="${this.onClick_}">
+    @pointerdown="${this.onPointerdown_}" @click="${this.onClick_}">
   ${this.getIconName_() ? html`
-    <cr-icon id="icon"
-        .icon="${this.getIconName_()}">
-    </cr-icon>` : nothing}
-  <span id="message" ?visible="${!this.isFullyCollapsed_}"
-  >${this.chipState?.message || ''}</span>
+    <cr-icon id="icon" .icon="${this.getIconName_()}"></cr-icon>
+  ` : nothing}
+  <span id="message" ?visible="${!this.isFullyCollapsed_}"><!--
+    -->${this.chipState?.message || ''}<!--
+  --></span>
 </button>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

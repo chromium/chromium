@@ -7,17 +7,13 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {WebviewElement} from './webview.js';
 
 export function getHtml(this: WebviewElement) {
-  // clang-format off
   return html`
 ${this.enableSurfaceEmbed ? html`
   ${this.guestId ? html`
     <embed class="content" type="application/x-chromium-surface-embed"
         data-content-id="${this.guestId}">
-    </embed>
   ` : html``}
 ` : html`
   <iframe class="content"></iframe>
-`}
-`;
-  // clang-format on
+`}`;
 }

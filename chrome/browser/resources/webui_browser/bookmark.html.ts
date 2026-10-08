@@ -9,14 +9,14 @@ import {BookmarkType} from './bookmark_bar.mojom-webui.js';
 
 export function getHtml(this: BookmarkElement) {
   return html`
-  <div class="bookmark">
-    <div id="faviconContainer">
-      ${
-      this.data.type === BookmarkType.FOLDER ?
-          html`<cr-icon id="folderIcon" icon="webui-browser:folder"></cr-icon>` :
-          html`<div id="favicon"></div>`}
-    </div>
-    <span class="bookmarkTitle">${this.data.title}</span>
+<div class="bookmark">
+  <div id="faviconContainer">
+    ${this.data.type === BookmarkType.FOLDER ? html`
+      <cr-icon id="folderIcon" icon="webui-browser:folder"></cr-icon>
+    ` : html`
+      <div id="favicon"></div>
+    `}
   </div>
-  `;
+  <span class="bookmarkTitle">${this.data.title}</span>
+</div>`;
 }

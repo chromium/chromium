@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SelectedKeywordElement} from './selected_keyword.js';
 
 export function getHtml(this: SelectedKeywordElement) {
-  // clang-format off
   // TODO(crbug.com/503784002): Tooltip rendering is a little different here.
   // We always show the full one, rather than showing whatever is in use
   // only when truncated.
@@ -17,15 +16,16 @@ export function getHtml(this: SelectedKeywordElement) {
   </icon-from-table>
   <div id="text-wrap">
     <div id="short-wrap">
-      <span id="short" aria-hidden="true">${
-          this.selectedKeywordState.shortName}</span>
+      <span id="short" aria-hidden="true"><!--
+        -->${this.selectedKeywordState.shortName}<!--
+      --></span>
     </div>
     <!-- Since long is always a11y visible, it's the one we announce -->
-    <span id="long" aria-live="polite" aria-atomic="true">${
-        this.selectedKeywordState.fullName}</span>
+    <span id="long" aria-live="polite" aria-atomic="true"><!--
+      -->${this.selectedKeywordState.fullName}<!--
+    --></span>
   </div>
 </div>
 <div id="separator"></div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

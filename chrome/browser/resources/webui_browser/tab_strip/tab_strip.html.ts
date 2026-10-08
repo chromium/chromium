@@ -7,26 +7,24 @@ import {html, repeat} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {TabStripElement} from './tab_strip.js';
 
 export function getHtml(this: TabStripElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="tabstrip">
-    ${repeat(this.items_, item => item.id, item => item.type === 'tab' ? html`
-          <webui-browser-tab id="${this.tabIdToDomId(item.id)}"
-               .tabData="${item.tabData}"
-               .dragInProgress="${this.dragInProgress_}"
-               ?inactive-frame="${this.inactiveFrame}"
-               @tab-close-click="${this.onTabCloseClick}">
-          </webui-browser-tab>
-        ` : html`
-          <webui-browser-tab-group .collectionId="${item.id}"
-               .groupData="${item.groupData}">
-          </webui-browser-tab-group>
-        `)}
+  ${repeat(this.items_, item => item.id, item => html`
+    ${item.type === 'tab' ? html`
+      <webui-browser-tab id="${this.tabIdToDomId(item.id)}"
+          .tabData="${item.tabData}" .dragInProgress="${this.dragInProgress_}"
+          ?inactive-frame="${this.inactiveFrame}"
+          @tab-close-click="${this.onTabCloseClick}">
+      </webui-browser-tab>
+    ` : html`
+      <webui-browser-tab-group .collectionId="${item.id}"
+          .groupData="${item.groupData}">
+      </webui-browser-tab-group>
+    `}
+  `)}
   <cr-icon-button id="newTabButton" iron-icon="cr:add"
-      title="$i18n{tooltipNewTab}"
-      @click="${this.onNewTabButtonClick_}">
+      title="$i18n{tooltipNewTab}" @click="${this.onNewTabButtonClick_}">
   </cr-icon-button>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

@@ -8,11 +8,11 @@ import type {IconFromTableElement} from './icon_from_table.js';
 import {IconType} from './icon_handle.mojom-webui.js';
 
 export function getHtml(this: IconFromTableElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="container" style="${this.getIconColorCss_() ?? nothing}">
-  ${this.iconInfo_.type === IconType.kIconSet ?
-      html`<cr-icon .icon="${this.iconInfo_.urlOrName}"></cr-icon>` : html`
+  ${this.iconInfo_.type === IconType.kIconSet ? html`
+    <cr-icon .icon="${this.iconInfo_.urlOrName}"></cr-icon>
+  ` : html`
     ${this.iconInfo_.type === IconType.kMaskUrl ? html`
       <div id="maskIconContainer"
           style="mask-image: url(${this.iconInfo_.urlOrName});">
@@ -25,5 +25,4 @@ export function getHtml(this: IconFromTableElement) {
   `}
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }
