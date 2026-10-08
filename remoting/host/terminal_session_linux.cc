@@ -56,6 +56,19 @@ constexpr std::string_view kTmx2Path = "/usr/bin/tmx2";
 constexpr std::string_view kTmuxSessionPrefix = "chrome-remote-desktop-";
 constexpr std::string_view kTmuxSocketName = "chrome-remote-desktop";
 
+// When tmux attaches a VT100-like client, `tty_send_requests()` emits Primary
+// DA (`\x1b[c`), Secondary DA (`\x1b[>c`), and Extended DA (`\x1b[>q`) queries
+// and starts a 5-second timeout (`TTY_QUERY_TIMEOUT`). If the client's
+// responses arrive after the timeout (e.g. due to reconnect or scrollback
+// processing latency), tmux rejects them as device attribute responses and
+// forwards the raw escape sequences as literal keystrokes into the shell pane.
+// Intercepting the queries on the host and replying locally on the PTY avoids
+// the network round-trip and immediately satisfies `TTY_ALL_REQUEST_FLAGS` in
+// tmux (preventing tmux's 500ms `escape-time` query-wait override).
+constexpr std::string_view kTmuxDeviceAttributesQuery = "\x1b[c\x1b[>c\x1b[>q";
+constexpr char kTmuxDeviceAttributesReply[] =
+    "\x1b[?1;2c\x1b[>0;276;0c\x1bP>|xterm.js\x1b\\";
+
 std::string GetTmuxSessionName(int32_t id) {
   return base::StrCat({kTmuxSessionPrefix, base::NumberToString(id)});
 }
@@ -543,7 +556,18 @@ class TerminalSessionLinux : public TerminalSession {
             base::BindOnce(&TerminalSessionLinux::OnShellPidRetrieved,
                            weak_factory_.GetWeakPtr()));
       }
-      output_callback_.Run(id_, std::string(buffer, bytes_read));
+      std::string output(buffer, bytes_read);
+      if (!device_attributes_handled_) {
+        size_t pos = output.find(kTmuxDeviceAttributesQuery);
+        if (pos != std::string::npos) {
+          device_attributes_handled_ = true;
+          output.erase(pos, kTmuxDeviceAttributesQuery.size());
+          Write(kTmuxDeviceAttributesReply);
+        }
+      }
+      if (!output.empty()) {
+        output_callback_.Run(id_, std::move(output));
+      }
     } else {
       if (bytes_read < 0) {
         PLOG(ERROR) << "read from PTY manager failed";
@@ -637,6 +661,7 @@ class TerminalSessionLinux : public TerminalSession {
   std::optional<pid_t> shell_pid_ GUARDED_BY_CONTEXT(sequence_checker_);
   bool shell_pid_retrieval_started_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
+  bool device_attributes_handled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
