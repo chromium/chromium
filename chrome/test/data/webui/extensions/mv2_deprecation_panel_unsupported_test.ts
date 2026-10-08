@@ -6,9 +6,11 @@
 import 'chrome://extensions/extensions.js';
 
 import type {ExtensionsMv2DeprecationPanelElement} from 'chrome://extensions/extensions.js';
+import {PluralStringProxyImpl} from 'chrome://extensions/extensions.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
@@ -19,8 +21,10 @@ suite('ExtensionsMV2DeprecationPanel_UnsupportedStage', function() {
   let mockDelegate: TestService;
 
   setup(function() {
+    PluralStringProxyImpl.setInstance(new TestPluralStringProxy());
     mockDelegate = new TestService();
 
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     panelElement = document.createElement('extensions-mv2-deprecation-panel');
     panelElement.extensions = [createExtensionInfo({
       name: 'Extension A',
