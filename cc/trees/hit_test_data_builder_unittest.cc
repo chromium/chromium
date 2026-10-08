@@ -50,8 +50,8 @@ constexpr uint32_t kChildSurfaceFlags =
 gfx::MaskFilterInfo CreateTestGradientMaskFilterInfo(
     const gfx::RRectF& rounded_rect) {
   gfx::LinearGradient gradient_mask(45);
-  gradient_mask.AddStep(0.f, 0xff);
-  gradient_mask.AddStep(1.f, 0x00);
+  gradient_mask.AddStep(0.0f, 0xff);
+  gradient_mask.AddStep(1.0f, 0x00);
   return gfx::MaskFilterInfo(rounded_rect, gradient_mask);
 }
 
@@ -479,7 +479,7 @@ TEST_F(HitTestDataBuilderTest, EmitsDuplicateSurfaceIds) {
 // those pixels back into the child surface's coordinate space.
 TEST_F(HitTestDataBuilderTest, AppliesDeviceScaleAndInverseTransform) {
   LayerImpl* root = SetupDefaultRootLayer(gfx::Size(400, 300));
-  host_impl()->active_tree()->SetDeviceScaleFactor(2.f);
+  host_impl()->active_tree()->SetDeviceScaleFactor(2.0f);
   SurfaceLayerImpl* surface =
       AddHitTestableSurfaceLayer(root, 15, gfx::Size(101, 79));
   surface->SetOffsetToTransformParent(gfx::Vector2dF(10, 20));
@@ -499,7 +499,7 @@ TEST_F(HitTestDataBuilderTest, AppliesDeviceScaleAndInverseTransform) {
 TEST_F(HitTestDataBuilderTest, NonInvertibleTransformUsesIdentity) {
   LayerImpl* root = SetupDefaultRootLayer(gfx::Size(400, 300));
   SurfaceLayerImpl* surface = AddHitTestableSurfaceLayer(root, 20);
-  CreateTransformNode(surface).local = gfx::Transform::MakeScale(0.f);
+  CreateTransformNode(surface).local = gfx::Transform::MakeScale(0.0f);
 
   std::optional<viz::HitTestRegionList> result = BuildHitTestDataAfterUpdate();
   ASSERT_TRUE(result);
@@ -523,7 +523,7 @@ TEST_F(HitTestDataBuilderTest, FlattensThreeDimensionalTransform) {
   ASSERT_EQ(1u, result->regions.size());
   EXPECT_FALSE(surface->ScreenSpaceTransform().IsFlat());
   EXPECT_TRUE(result->regions[0].transform.IsFlat());
-  gfx::Transform expected_transform = gfx::Transform::MakeScale(2.f, 1.f);
+  gfx::Transform expected_transform = gfx::Transform::MakeScale(2.0f, 1.0f);
   // Flattening removes 3D rotation but retains its 2D perspective.
   expected_transform.set_rc(3, 0, -0.0692820323);
   EXPECT_TRUE(expected_transform.ApproximatelyEqual(
@@ -546,6 +546,7 @@ TEST_F(HitTestDataBuilderTest, UnclippedSurfaceUsesBounds) {
   std::optional<viz::HitTestRegionList> result = BuildHitTestData();
   ASSERT_TRUE(result);
   ASSERT_EQ(1u, result->regions.size());
+  EXPECT_EQ(kChildSurfaceFlags, result->regions[0].flags);
   EXPECT_EQ(gfx::RRectF(gfx::RectF(0, 0, 100, 80)), result->regions[0].rect);
 }
 
@@ -907,7 +908,7 @@ TEST_F(HitTestDataBuilderTest, UsesTransformedBoundsForOverlapContributors) {
       AddHitTestableSurfaceLayer(root, 70, gfx::Size(5, 5));
   target->SetOffsetToTransformParent(gfx::Vector2dF(15, 0));
   LayerImpl* blocker = AddHitTestableLayer(root, gfx::Size(10, 10));
-  CreateTransformNode(blocker).local.Scale(2.f);
+  CreateTransformNode(blocker).local.Scale(2.0f);
 
   std::optional<viz::HitTestRegionList> result = BuildHitTestDataAfterUpdate();
   ASSERT_TRUE(result);
@@ -925,7 +926,7 @@ TEST_F(HitTestDataBuilderTest, UsesTransformedBoundsForOverlapTargets) {
   LayerImpl* root = SetupDefaultRootLayer(gfx::Size(400, 300));
   SurfaceLayerImpl* target =
       AddHitTestableSurfaceLayer(root, 72, gfx::Size(10, 10));
-  CreateTransformNode(target).local.Scale(2.f);
+  CreateTransformNode(target).local.Scale(2.0f);
   AddHitTestableLayer(root, gfx::Size(5, 5), gfx::Vector2dF(15, 0));
 
   std::optional<viz::HitTestRegionList> result = BuildHitTestDataAfterUpdate();
@@ -1007,7 +1008,7 @@ TEST_F(HitTestDataBuilderTest,
   target->SetOffsetToTransformParent(gfx::Vector2dF(150, 0));
   SurfaceLayerImpl* skipped_surface = AddHitTestableSurfaceLayer(root, 81);
   skipped_surface->SetRange(viz::SurfaceRange(), std::nullopt);
-  CreateTransformNode(skipped_surface).local.Scale(2.f);
+  CreateTransformNode(skipped_surface).local.Scale(2.0f);
   CreateClipNode(skipped_surface).clip = gfx::RectF(10, 10);
 
   UpdateDrawPropertiesForHitTestData();
@@ -1105,6 +1106,18 @@ class HitTestDataBuilderRoundedCornersTest
         features::kVizHitTestRoundedCorners, GetParam());
   }
 
+  void ExpectHitTestRegionForRoundedCorners(const viz::HitTestRegion& region,
+                                            const gfx::RRectF& rounded_rect) {
+    // TODO(crbug.com/40572334): When rounded-corner hit testing is supported,
+    // the expectations will need updates to reflect viz handling the query.
+    // This includes verifying the full RRectF and not just the rect portion.
+    EXPECT_EQ(kChildSurfaceFlags | viz::HitTestRegionFlags::kHitTestAsk,
+              region.flags);
+    EXPECT_EQ(viz::AsyncHitTestReasons::kIrregularClip,
+              region.async_hit_test_reasons);
+    EXPECT_EQ(gfx::RRectF(rounded_rect.rect()), region.rect);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -1120,9 +1133,9 @@ TEST_P(HitTestDataBuilderRoundedCornersTest,
        RoundedCornerMaskFilterInfoRequiresAsyncHitTest) {
   LayerImpl* root = SetupDefaultRootLayer(gfx::Size(400, 300));
   SurfaceLayerImpl* surface = AddHitTestableSurfaceLayer(root, 189);
+  const gfx::RRectF rounded_mask(0.0f, 0.0f, 100.0f, 100.0f, 10.0f);
   EffectNode& effect = CreateEffectNode(surface);
-  effect.mask_filter_info =
-      gfx::MaskFilterInfo(gfx::RRectF(0.f, 0.f, 100.f, 100.f, 10.f));
+  effect.mask_filter_info = gfx::MaskFilterInfo(rounded_mask);
   effect.is_fast_rounded_corner = true;
   const int effect_id = effect.id;
 
@@ -1138,13 +1151,170 @@ TEST_P(HitTestDataBuilderRoundedCornersTest,
   std::optional<viz::HitTestRegionList> result = BuildHitTestData();
   ASSERT_TRUE(result);
   ASSERT_EQ(1u, result->regions.size());
+  ExpectHitTestRegionForRoundedCorners(result->regions[0], rounded_mask);
+}
+
+// Verify distinct X/Y radii at every corner to ensure they are correctly and
+// independently handled.
+TEST_P(HitTestDataBuilderRoundedCornersTest, RoundedMaskWithDeviceScaleFactor) {
+  LayerImpl* root = SetupDefaultRootLayer(gfx::Size(400, 300));
+  constexpr float kDeviceScaleFactor = 2.0f;
+  host_impl()->active_tree()->SetDeviceScaleFactor(kDeviceScaleFactor);
+  SurfaceLayerImpl* surface = AddHitTestableSurfaceLayer(root, 206);
+  const gfx::RRectF rounded_mask(0.0f, 0.0f, 100.0f, 100.0f, 1.0f, 2.0f, 3.0f,
+                                 4.0f, 5.0f, 6.0f, 7.0f, 8.0f);
+  CreateEffectNode(surface).mask_filter_info =
+      gfx::MaskFilterInfo(rounded_mask);
+
+  UpdateDrawPropertiesForHitTestData();
+  ASSERT_EQ(rounded_mask,
+            GetEffectNode(surface)->mask_filter_info.rounded_corner_bounds());
+  ASSERT_FALSE(surface->is_clipped());
+  ASSERT_EQ(gfx::Rect(surface->bounds()), surface->visible_layer_rect());
+
+  std::optional<viz::HitTestRegionList> result = BuildHitTestData();
+  ASSERT_TRUE(result);
+  ASSERT_EQ(1u, result->regions.size());
+  gfx::RRectF expected_scaled_rounded_mask = rounded_mask;
+  expected_scaled_rounded_mask.Scale(kDeviceScaleFactor);
+  ExpectHitTestRegionForRoundedCorners(result->regions[0],
+                                       expected_scaled_rounded_mask);
+}
+
+// A layer transform is handled separately from device scale factor. The mask
+// and geometry remain in the surface's local coordinate space.
+TEST_P(HitTestDataBuilderRoundedCornersTest,
+       RoundedMaskWithScaledTransformUsesLocalGeometry) {
+  LayerImpl* root = SetupDefaultRootLayer(gfx::Size(400, 300));
+  SurfaceLayerImpl* surface = AddHitTestableSurfaceLayer(root, 207);
+  CreateTransformNode(surface).local.Scale(2.0f, 1.5f);
+  const gfx::RRectF rounded_mask(0.0f, 0.0f, 100.0f, 100.0f, 10.0f);
+  CreateEffectNode(surface).mask_filter_info =
+      gfx::MaskFilterInfo(rounded_mask);
+
+  UpdateDrawPropertiesForHitTestData();
+  ASSERT_EQ(rounded_mask,
+            GetEffectNode(surface)->mask_filter_info.rounded_corner_bounds());
+  ASSERT_EQ(surface->transform_tree_index(),
+            GetEffectNode(surface)->transform_id);
+  ASSERT_FALSE(surface->is_clipped());
+  ASSERT_EQ(gfx::Rect(surface->bounds()), surface->visible_layer_rect());
+
+  std::optional<viz::HitTestRegionList> result = BuildHitTestData();
+  ASSERT_TRUE(result);
+  ASSERT_EQ(1u, result->regions.size());
+  ExpectHitTestRegionForRoundedCorners(result->regions[0], rounded_mask);
+}
+
+// The builder must query rounded corners using the surface's transform ID,
+// not the mask's, so a transform-space mismatch still requires fallback.
+TEST_P(HitTestDataBuilderRoundedCornersTest,
+       RoundedMaskInDifferentTransformSpaceRequiresAsyncHitTest) {
+  LayerImpl* root = SetupDefaultRootLayer(gfx::Size(400, 300));
+  SurfaceLayerImpl* surface = AddHitTestableSurfaceLayer(root, 210);
+  const gfx::RRectF rounded_mask(0.0f, 0.0f, 100.0f, 100.0f, 10.0f);
+
+  // Keep the mask in the original transform space, then give the surface
+  // a distinct identity transform node.
+  CreateEffectNode(surface).mask_filter_info =
+      gfx::MaskFilterInfo(rounded_mask);
+  CreateTransformNode(surface);
+
+  UpdateDrawPropertiesForHitTestData();
+  ASSERT_NE(surface->transform_tree_index(),
+            GetEffectNode(surface)->transform_id);
+  ASSERT_EQ(rounded_mask,
+            GetEffectNode(surface)->mask_filter_info.rounded_corner_bounds());
+  ASSERT_FALSE(surface->is_clipped());
+  ASSERT_EQ(gfx::Rect(surface->bounds()), surface->visible_layer_rect());
+
+  std::optional<viz::HitTestRegionList> result = BuildHitTestData();
+  ASSERT_TRUE(result);
+  ASSERT_EQ(1u, result->regions.size());
   EXPECT_EQ(kChildSurfaceFlags | viz::HitTestRegionFlags::kHitTestAsk,
             result->regions[0].flags);
   EXPECT_EQ(viz::AsyncHitTestReasons::kIrregularClip,
             result->regions[0].async_hit_test_reasons);
   EXPECT_EQ(gfx::RRectF(gfx::RectF(surface->bounds())),
             result->regions[0].rect);
-  EXPECT_FALSE(result->regions[0].rect.HasRoundedCorners());
+}
+
+// Verify that a rotated, unclipped surface that shares its transform space with
+// a rounded mask requires an async hit test if viz rounded corner hit testing
+// is disabled, or a synchronous hit test if viz support is enabled. Note that
+// it's important to keep the surface inside the viewport so clipping doesn't
+// independently require an async hit test.
+TEST_P(HitTestDataBuilderRoundedCornersTest, RoundedMaskWithRotatedTransform) {
+  LayerImpl* root = SetupDefaultRootLayer(gfx::Size(400, 300));
+  SurfaceLayerImpl* surface = AddHitTestableSurfaceLayer(root, 211);
+  TransformNode& transform = CreateTransformNode(surface);
+  transform.post_translation = gfx::Vector2dF(100, 100);
+  transform.local.Rotate(45);
+  const gfx::RRectF rounded_mask(0.0f, 0.0f, 100.0f, 100.0f, 10.0f);
+  CreateEffectNode(surface).mask_filter_info =
+      gfx::MaskFilterInfo(rounded_mask);
+
+  UpdateDrawPropertiesForHitTestData();
+  ASSERT_EQ(rounded_mask,
+            GetEffectNode(surface)->mask_filter_info.rounded_corner_bounds());
+  ASSERT_EQ(surface->transform_tree_index(),
+            GetEffectNode(surface)->transform_id);
+  ASSERT_FALSE(surface->ScreenSpaceTransform().Preserves2dAxisAlignment());
+  ASSERT_FALSE(surface->is_clipped());
+  ASSERT_EQ(gfx::Rect(surface->bounds()), surface->visible_layer_rect());
+
+  std::optional<viz::HitTestRegionList> result = BuildHitTestData();
+  ASSERT_TRUE(result);
+  ASSERT_EQ(1u, result->regions.size());
+  ExpectHitTestRegionForRoundedCorners(result->regions[0], rounded_mask);
+}
+
+// The builder must add the surface's offset to its local bounds before passing
+// them to EffectTree::GetRoundedCornersForHitTest, which expects bounds in
+// transform-node space. The generated HitTestRegion::rect must remain local:
+//   Surface-local bounds:         (0, 0, 200, 200)
+//   Surface offset:               (0, 133)
+//   Mask in transform-node space: (0, 133, 200, 200)
+// The mask and surface cover the same area but their rectangle origins differ
+// because they are expressed in different coordinate spaces.
+TEST_P(HitTestDataBuilderRoundedCornersTest,
+       RoundedMaskWithOffsetToTransformParent) {
+  LayerImpl* root = SetupDefaultRootLayer(gfx::Size(400, 400));
+  LayerImpl* rounded_ancestor = AddLayerInActiveTree<LayerImpl>();
+  rounded_ancestor->SetBounds(gfx::Size(200, 200));
+  CopyProperties(root, rounded_ancestor);
+  const gfx::RRectF rounded_mask(0.0f, 133.0f, 200.0f, 200.0f, 12.0f);
+  CreateEffectNode(rounded_ancestor).mask_filter_info =
+      gfx::MaskFilterInfo(rounded_mask);
+  SurfaceLayerImpl* surface =
+      AddHitTestableSurfaceLayer(rounded_ancestor, 212, gfx::Size(200, 200));
+  surface->SetOffsetToTransformParent(gfx::Vector2dF(0.0f, 133.0f));
+
+  UpdateDrawPropertiesForHitTestData();
+  ASSERT_EQ(rounded_ancestor->effect_tree_index(),
+            surface->effect_tree_index());
+  ASSERT_EQ(rounded_mask,
+            GetEffectNode(surface)->mask_filter_info.rounded_corner_bounds());
+  ASSERT_EQ(surface->transform_tree_index(),
+            GetEffectNode(surface)->transform_id);
+  // To verify the behavior of `GetRoundedCornersForHitTest` when viz rounded
+  // corner support is enabled, the offset must be non-zero and the mask and
+  // bounds rectangles must differ.
+  ASSERT_EQ(gfx::Vector2dF(0.0f, 133.0f),
+            surface->offset_to_transform_parent());
+  ASSERT_NE(rounded_mask.rect(), gfx::RectF(surface->bounds()));
+  ASSERT_FALSE(surface->is_clipped());
+  ASSERT_EQ(gfx::Rect(surface->bounds()), surface->visible_layer_rect());
+
+  std::optional<viz::HitTestRegionList> result = BuildHitTestData();
+  ASSERT_TRUE(result);
+  ASSERT_EQ(1u, result->regions.size());
+  // With the feature enabled, applying the offset when comparing bounds lets
+  // this coincident mask use rounded, synchronous hit testing. Omitting the
+  // offset would incorrectly force async fallback. With the feature disabled,
+  // async fallback is expected.
+  ExpectHitTestRegionForRoundedCorners(
+      result->regions[0], gfx::RRectF(gfx::RectF(surface->bounds()), 12.0f));
 }
 
 // When the fast path rejects a rounded clip, `EmitClipMaskLayer()` converts it
@@ -1180,7 +1350,6 @@ TEST_P(HitTestDataBuilderRoundedCornersTest,
             result->regions[0].async_hit_test_reasons);
   EXPECT_EQ(gfx::RRectF(gfx::RectF(surface->bounds())),
             result->regions[0].rect);
-  EXPECT_FALSE(result->regions[0].rect.HasRoundedCorners());
 }
 
 // Masked geometry must select the visible rect before converting it to device
@@ -1195,7 +1364,7 @@ TEST_P(HitTestDataBuilderRoundedCornersTest,
   EffectNode& effect = CreateEffectNode(surface);
   effect.render_surface_reason = RenderSurfaceReason::kTest;
   effect.mask_filter_info = CreateTestGradientMaskFilterInfo(
-      gfx::RRectF(0.f, 0.f, 100.f, 80.f, 10.f));
+      gfx::RRectF(0.0f, 0.0f, 100.0f, 80.0f, 10.0f));
 
   UpdateDrawPropertiesForHitTestData();
   ASSERT_FALSE(surface->is_clipped());
@@ -1211,8 +1380,8 @@ TEST_P(HitTestDataBuilderRoundedCornersTest,
   EXPECT_EQ(gfx::RRectF(gfx::RectF(0, 0, 40, 30)), result->regions[0].rect);
 }
 
-// Rectangular clips are normally synchronous, but clip classification must not
-// clear the asynchronous hit testing required by the mask.
+// Rectangular clips are normally synchronous, but must not clear the
+// asynchronous hit testing required by the gradient mask.
 TEST_P(HitTestDataBuilderRoundedCornersTest,
        RectangularClipWithMaskRequiresAsyncHitTest) {
   LayerImpl* root = SetupDefaultRootLayer(gfx::Size(400, 300));
@@ -1220,7 +1389,7 @@ TEST_P(HitTestDataBuilderRoundedCornersTest,
   constexpr gfx::Rect kVisibleRect(7, 11, 53, 31);
   CreateClipNode(surface).clip = gfx::RectF(kVisibleRect);
   CreateEffectNode(surface).mask_filter_info = CreateTestGradientMaskFilterInfo(
-      gfx::RRectF(0.f, 0.f, 100.f, 100.f, 10.f));
+      gfx::RRectF(0.0f, 0.0f, 100.0f, 100.0f, 10.0f));
 
   std::optional<viz::HitTestRegionList> result = BuildHitTestDataAfterUpdate();
   ASSERT_TRUE(result);
@@ -1232,13 +1401,12 @@ TEST_P(HitTestDataBuilderRoundedCornersTest,
   EXPECT_EQ(gfx::RRectF(gfx::RectF(kVisibleRect)), result->regions[0].rect);
 }
 
-// Gradient alpha cannot be represented by rounded-corner hit-test geometry,
-// so it remains an irregular clip.
+// Gradient alpha cannot be represented by rounded-corner hit-test geometry.
 TEST_P(HitTestDataBuilderRoundedCornersTest, GradientMaskRequiresAsyncHitTest) {
   LayerImpl* root = SetupDefaultRootLayer(gfx::Size(400, 300));
   SurfaceLayerImpl* surface = AddHitTestableSurfaceLayer(root, 200);
   CreateEffectNode(surface).mask_filter_info = CreateTestGradientMaskFilterInfo(
-      gfx::RRectF(0.f, 0.f, 100.f, 100.f, 10.f));
+      gfx::RRectF(0.0f, 0.0f, 100.0f, 100.0f, 10.0f));
 
   std::optional<viz::HitTestRegionList> result = BuildHitTestDataAfterUpdate();
   ASSERT_TRUE(result);
@@ -1249,7 +1417,97 @@ TEST_P(HitTestDataBuilderRoundedCornersTest, GradientMaskRequiresAsyncHitTest) {
             result->regions[0].async_hit_test_reasons);
   EXPECT_EQ(gfx::RRectF(gfx::RectF(surface->bounds())),
             result->regions[0].rect);
-  EXPECT_FALSE(result->regions[0].rect.HasRoundedCorners());
+}
+
+// An overlapped surface needs kHitTestAsk, but without a mask or a clip in its
+// render target, HitTestRegion::rect must retain its full local bounds rather
+// than the smaller, offset visible rect. This test guards against extending the
+// rounded-mask fallback's visible-rect selection to every async region.
+TEST_P(HitTestDataBuilderRoundedCornersTest,
+       OverlappedUnclippedSurfaceUsesBounds) {
+  LayerImpl* root = SetupDefaultRootLayer(gfx::Size(53, 31));
+  SurfaceLayerImpl* surface =
+      AddHitTestableSurfaceLayer(root, 195, gfx::Size(100, 80));
+  CreateTransformNode(surface).local.Translate(-7.0f, -11.0f);
+  CreateEffectNode(surface).render_surface_reason = RenderSurfaceReason::kTest;
+  AddHitTestableLayer(root, gfx::Size(20, 20));
+
+  UpdateDrawPropertiesForHitTestData();
+  ASSERT_FALSE(surface->is_clipped());
+  ASSERT_EQ(gfx::Rect(7, 11, 53, 31), surface->visible_layer_rect());
+
+  std::optional<viz::HitTestRegionList> result = BuildHitTestData();
+  ASSERT_TRUE(result);
+  ASSERT_EQ(1u, result->regions.size());
+  EXPECT_EQ(kChildSurfaceFlags | viz::HitTestRegionFlags::kHitTestAsk,
+            result->regions[0].flags);
+  EXPECT_EQ(viz::AsyncHitTestReasons::kOverlappedRegion,
+            result->regions[0].async_hit_test_reasons);
+  EXPECT_EQ(gfx::RRectF(gfx::RectF(0, 0, 100, 80)), result->regions[0].rect);
+}
+
+// Overlap must retain kHitTestAsk even when the rounded mask is representable.
+// Unlike `OverlappedUnclippedSurfaceUsesBounds`, this masked surface must use
+// its visible rect, including its nonzero origin, for HitTestRegion::rect. The
+// builder must discard any returned radii so rounded geometry cannot reject a
+// point before async hit testing resolves it.
+TEST_P(HitTestDataBuilderRoundedCornersTest,
+       OverlappedRoundedMaskUsesVisibleRectWithoutCorners) {
+  LayerImpl* root = SetupDefaultRootLayer(gfx::Size(53, 31));
+  SurfaceLayerImpl* surface =
+      AddHitTestableSurfaceLayer(root, 185, gfx::Size(100, 80));
+  CreateTransformNode(surface).local.Translate(-7.0f, -11.0f);
+  EffectNode& effect = CreateEffectNode(surface);
+  effect.render_surface_reason = RenderSurfaceReason::kTest;
+  effect.mask_filter_info =
+      gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(surface->bounds()), 10.0f));
+  AddHitTestableLayer(root, gfx::Size(20, 20));
+
+  UpdateDrawPropertiesForHitTestData();
+  ASSERT_FALSE(surface->is_clipped());
+  constexpr gfx::Rect kVisibleRect(7, 11, 53, 31);
+  ASSERT_EQ(kVisibleRect, surface->visible_layer_rect());
+
+  std::optional<viz::HitTestRegionList> result = BuildHitTestData();
+  ASSERT_TRUE(result);
+  ASSERT_EQ(1u, result->regions.size());
+  // TODO(crbug.com/40572334): When rounded-corner hit testing is supported,
+  // the expectations will need updates to reflect viz ability to handle the
+  // rounded corner portion of the query.
+  EXPECT_EQ(kChildSurfaceFlags | viz::HitTestRegionFlags::kHitTestAsk,
+            result->regions[0].flags);
+  EXPECT_EQ(viz::AsyncHitTestReasons::kOverlappedRegion |
+                viz::AsyncHitTestReasons::kIrregularClip,
+            result->regions[0].async_hit_test_reasons);
+  EXPECT_EQ(gfx::RRectF(gfx::RectF(kVisibleRect)), result->regions[0].rect);
+}
+
+// The rectangular clip cuts through the rounded mask's bottom corners. This
+// exposes a limitation in rounded-rectangle representation, as provided to viz,
+// where a rounded corner is defined by the rect corners + the radii for that
+// corner. If we change the rect's corners, then we move the rounded corner
+// center which changes the overall clipping geometry. This test verifies that
+// this scenario requires async testing with the current implementation.
+TEST_P(HitTestDataBuilderRoundedCornersTest,
+       ClippedRoundedMaskWithMismatchedBoundsRequiresAsyncHitTest) {
+  LayerImpl* root = SetupDefaultRootLayer(gfx::Size(400, 300));
+  SurfaceLayerImpl* surface = AddHitTestableSurfaceLayer(root, 189);
+  constexpr gfx::Rect kVisibleRect(0, 0, 100, 95);
+  CreateClipNode(surface).clip = gfx::RectF(kVisibleRect);
+  CreateEffectNode(surface).mask_filter_info =
+      gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(surface->bounds()), 10.0f));
+
+  UpdateDrawPropertiesForHitTestData();
+  ASSERT_TRUE(surface->is_clipped());
+
+  std::optional<viz::HitTestRegionList> result = BuildHitTestData();
+  ASSERT_TRUE(result);
+  ASSERT_EQ(1u, result->regions.size());
+  EXPECT_EQ(kChildSurfaceFlags | viz::HitTestRegionFlags::kHitTestAsk,
+            result->regions[0].flags);
+  EXPECT_EQ(viz::AsyncHitTestReasons::kIrregularClip,
+            result->regions[0].async_hit_test_reasons);
+  EXPECT_EQ(gfx::RRectF(gfx::RectF(kVisibleRect)), result->regions[0].rect);
 }
 
 std::string RoundedCornersFeatureTestName(
