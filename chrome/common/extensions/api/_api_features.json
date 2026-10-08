@@ -75,9 +75,18 @@
   },
   "app": {
     "blocklist": [
-      "2FC374607C2DF285634B67C64A2E356C607091C3",  // Quickoffice
-      "3727DD3E564B6055387425027AD74C58784ACC15",  // Quickoffice internal
-      "12E618C3C6E97495AAECF2AC12DEB082353241C6",  // QO component extension
+      // Quickoffice
+      "2FC374607C2DF285634B67C64A2E356C607091C3",
+      // Quickoffice (SHA-256)
+      "5F81F9FE1F4F499490466BC3861653FE72DE22E2BA8E4E5769DED9FB2C7EE2D0",
+      // Quickoffice internal
+      "3727DD3E564B6055387425027AD74C58784ACC15",
+      // Quickoffice internal (SHA-256)
+      "04C5C683BDBBDA3120FDD1043E96E551185C57F38BE14EE17B5993F6AD4C592F",
+      // QO component extension
+      "12E618C3C6E97495AAECF2AC12DEB082353241C6",
+      // QO component extension (SHA-256)
+      "0EEEFAA87E292CD986DD0528E90F9128A936B1C4E1C53E7FAA0244594C69DF94",
       "06BE211D5F014BAB34BC22D9DDA09C63A81D828E",  // Official xkb extension
       "F94EE6AB36D6C6588670B2B01EB65212D9C64E33",  // Open source xkb extension
       "B9EF10DDFEA11EF77873CC5009809E5037FC4C7A"   // Google input tools
@@ -621,11 +630,20 @@
     "dependencies": ["permission:login"],
     "contexts": ["privileged_extension"],
     "allowlist": [
-      "93B7178E8C275515C38D4F43D9DF4648F0EA9B03", // Identity Card Connector
-      "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519", // Login screen APIs test extension
+      // Identity Card Connector
+      "93B7178E8C275515C38D4F43D9DF4648F0EA9B03",
+      // Identity Card Connector (SHA-256)
+      "BABE7AD8BDBAFCD146D50861BF6981DA7AC2961C1982E5F78EDBD7A5FAA62259",
+      // Login screen APIs test extension
+      "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519",
+      // Login screen APIs test extension (SHA-256)
+      "9C98730E21CB6AC1A7EA3CE3D528F8CD68BDBDA5BFCD008965F9AB1C1B0C82ED",
       "3F5995FE79A861F019C6F093BEF98D73FA9D3A5F", // Login screen APIs in-session test extension
       // https://crbug.com/433867146
-      "4B7E9789426EBD1BB3F99D72690DAE303FC042DF", // AuthX Secure for ChromeOS
+      // AuthX Secure for ChromeOS
+      "4B7E9789426EBD1BB3F99D72690DAE303FC042DF",
+      // AuthX Secure for ChromeOS (SHA-256)
+      "728AA38F805D9F046321CA8CFE30621958B2F45C1920F3172B64A9A459DABFF5",
       // https://crbug.com/485245112
       "36F5326E7683E204CE9CE1532093D8BB9CD5D280"  // AuthX in-session extension
     ]
@@ -636,11 +654,20 @@
   }, {
     "dependencies": ["permission:login"],
     "allowlist": [
-      "93B7178E8C275515C38D4F43D9DF4648F0EA9B03", // Identity Card Connector
-      "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519", // Login screen APIs test extension
+      // Identity Card Connector
+      "93B7178E8C275515C38D4F43D9DF4648F0EA9B03",
+      // Identity Card Connector (SHA-256)
+      "BABE7AD8BDBAFCD146D50861BF6981DA7AC2961C1982E5F78EDBD7A5FAA62259",
+      // Login screen APIs test extension
+      "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519",
+      // Login screen APIs test extension (SHA-256)
+      "9C98730E21CB6AC1A7EA3CE3D528F8CD68BDBDA5BFCD008965F9AB1C1B0C82ED",
       "3F5995FE79A861F019C6F093BEF98D73FA9D3A5F", // Login screen APIs in-session test extension
       // https://crbug.com/433867146
-      "4B7E9789426EBD1BB3F99D72690DAE303FC042DF", // AuthX Secure for ChromeOS
+      // AuthX Secure for ChromeOS
+      "4B7E9789426EBD1BB3F99D72690DAE303FC042DF",
+      // AuthX Secure for ChromeOS (SHA-256)
+      "728AA38F805D9F046321CA8CFE30621958B2F45C1920F3172B64A9A459DABFF5",
       // https://crbug.com/485245112
       "36F5326E7683E204CE9CE1532093D8BB9CD5D280", // AuthX in-session extension
       // Only has access to login.exitCurrentSession
