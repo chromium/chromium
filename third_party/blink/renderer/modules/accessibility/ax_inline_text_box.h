@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/layout/inline/abstract_inline_text_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_block_flow_iterator.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace blink {
 
@@ -105,6 +106,9 @@ class AXInlineTextBox final : public AXObject {
 
   // Holds one of two possible values that identify this AXInlineTextBox,
   // depending on the algorithm being used.
+  GC_PLUGIN_IGNORE(
+      "crbug.com/570923792: Variant/optional/raw_ptr/raw_ref of "
+      "GCed/traceable/Member is disallowed")
   std::variant<Member<AbstractInlineTextBox>,
                AXBlockFlowIterator::FragmentIndex>
       data_;

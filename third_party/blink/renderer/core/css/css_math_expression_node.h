@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
 namespace blink {
@@ -1210,6 +1211,9 @@ class CORE_EXPORT RandomCacheKey : public GarbageCollected<RandomCacheKey> {
     const AtomicString ua_ident;
     ElementScoped is_element_scoped;
   };
+  GC_PLUGIN_IGNORE(
+      "crbug.com/570923792: Variant/optional/raw_ptr/raw_ref of "
+      "GCed/traceable/Member is disallowed")
   std::variant<RandomName, Member<const CSSPrimitiveValue>> value_;
 };
 

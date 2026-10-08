@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/style/scoped_css_name.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 
@@ -118,6 +119,9 @@ class CORE_EXPORT StyleTimeline {
   }
 
  private:
+  GC_PLUGIN_IGNORE(
+      "crbug.com/570923792: Variant/optional/raw_ptr/raw_ref of "
+      "GCed/traceable/Member is disallowed")
   std::variant<CSSValueID, Member<const ScopedCSSName>, ScrollData, ViewData>
       data_;
 };
