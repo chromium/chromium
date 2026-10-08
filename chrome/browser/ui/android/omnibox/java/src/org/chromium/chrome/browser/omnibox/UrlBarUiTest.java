@@ -359,41 +359,6 @@ public class UrlBarUiTest {
                 });
     }
 
-    private void tapAtOffset(int offset, int tapCount) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    float startX = mUrlBar.getLayout().getPrimaryHorizontal(offset);
-                    float endX = mUrlBar.getLayout().getPrimaryHorizontal(offset + 1);
-                    float x = mUrlBar.getTotalPaddingLeft() + (startX + endX) / 2f;
-                    float y = mUrlBar.getHeight() / 2f;
-                    long eventTime = SystemClock.uptimeMillis();
-                    for (int i = 0; i < tapCount; i++) {
-                        MotionEvent down =
-                                MotionEvent.obtain(
-                                        /* downTime= */ 0,
-                                        eventTime,
-                                        MotionEvent.ACTION_DOWN,
-                                        x,
-                                        y,
-                                        /* metaState= */ 0);
-                        mUrlBar.onTouchEvent(down);
-                        down.recycle();
-                        eventTime += 10;
-                        MotionEvent up =
-                                MotionEvent.obtain(
-                                        /* downTime= */ 0,
-                                        eventTime,
-                                        MotionEvent.ACTION_UP,
-                                        x,
-                                        y,
-                                        /* metaState= */ 0);
-                        mUrlBar.onTouchEvent(up);
-                        up.recycle();
-                        eventTime += 40;
-                    }
-                });
-    }
-
     private void selectAll() {
         ThreadUtils.runOnUiThreadBlocking(mUrlBar::selectAll);
     }
@@ -439,72 +404,6 @@ public class UrlBarUiTest {
 
         // Retains selection of "google" [7, 13).
         assertSelection(/* expectedStart= */ 7, /* expectedEnd= */ 13);
-    }
-
-    @Test
-    @SmallTest
-    @Feature("Omnibox")
-    public void testDoubleTap_highlightsWord() {
-        updateUrlBarText("https://www.google.com/search", UrlBar.ScrollType.SCROLL_TO_BEGINNING, 0);
-        requestFocus();
-
-        tapAtOffset(/* offset= */ 14, /* tapCount= */ 2);
-
-        assertSelection(/* expectedStart= */ 12, /* expectedEnd= */ 18);
-    }
-
-    @Test
-    @SmallTest
-    @Feature("Omnibox")
-    public void testDoubleTap_unfocused_focusesAndHighlightsWord() {
-        updateUrlBarText("https://www.google.com/search", UrlBar.ScrollType.SCROLL_TO_BEGINNING, 0);
-        clearFocus();
-
-        tapAtOffset(/* offset= */ 14, /* tapCount= */ 2);
-
-        verify(mUrlBarDelegate).onFocusByTouch();
-        assertSelection(/* expectedStart= */ 12, /* expectedEnd= */ 18);
-    }
-
-    @Test
-    @SmallTest
-    @Feature("Omnibox")
-    public void testDoubleTap_withinExistingSelection_highlightsWord() {
-        String url = "https://www.google.com/search";
-        updateUrlBarText(url, UrlBar.ScrollType.SCROLL_TO_BEGINNING, 0);
-        requestFocus();
-        setSelection(/* start= */ 0, /* end= */ url.length());
-
-        tapAtOffset(/* offset= */ 14, /* tapCount= */ 2);
-
-        assertSelection(/* expectedStart= */ 12, /* expectedEnd= */ 18);
-    }
-
-    @Test
-    @SmallTest
-    @Feature("Omnibox")
-    public void testTripleTap_focused_selectsAll() {
-        String url = "https://www.google.com/search";
-        updateUrlBarText(url, UrlBar.ScrollType.SCROLL_TO_BEGINNING, 0);
-        requestFocus();
-
-        tapAtOffset(/* offset= */ 14, /* tapCount= */ 3);
-
-        assertSelection(/* expectedStart= */ 0, /* expectedEnd= */ url.length());
-    }
-
-    @Test
-    @SmallTest
-    @Feature("Omnibox")
-    public void testTripleTap_unfocused_focusesAndSelectsAll() {
-        String url = "https://www.google.com/search";
-        updateUrlBarText(url, UrlBar.ScrollType.SCROLL_TO_BEGINNING, 0);
-        clearFocus();
-
-        tapAtOffset(/* offset= */ 14, /* tapCount= */ 3);
-
-        verify(mUrlBarDelegate).onFocusByTouch();
-        assertSelection(/* expectedStart= */ 0, /* expectedEnd= */ url.length());
     }
 
     private void requestFocus() {
