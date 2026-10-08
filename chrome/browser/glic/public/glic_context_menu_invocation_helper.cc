@@ -157,13 +157,18 @@ void GlicContextMenuInvocationHelper::HandleSmartSuggestionClick(
   // Selections in editable fields are ignored.
   // TODO(b/559202240): Pre-select the image when `params` targets an image.
   gfx::Rect selection_bounds;
+  auto interaction_options = selection::InteractionOptions::New();
   if (!params.is_editable &&
       !base::TrimWhitespace(params.selection_text, base::TRIM_ALL).empty()) {
     selection_bounds =
         web_contents->GetTextSelectionBounds(&frame).value_or(gfx::Rect());
+    if (!selection_bounds.IsEmpty()) {
+      interaction_options->hide_handles = true;
+      interaction_options->disable_multi_select = true;
+    }
   }
   controller->ShowWithSelection(&frame, selection_bounds,
-                                selection::InteractionOptions::New());
+                                std::move(interaction_options));
 #endif
 }
 

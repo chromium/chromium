@@ -1100,9 +1100,10 @@ class GlicSmartSuggestionContextMenuBrowserTest
     : public GlicContextMenuBrowserTestBase {
  public:
   GlicSmartSuggestionContextMenuBrowserTest() {
-    feature_list_.InitWithFeatures({features::kGlic, features::kGlicContextMenu,
-                                    features::kGlicSuggestionContextMenu},
-                                   {});
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlic, features::kGlicContextMenu,
+                              features::kGlicSuggestionContextMenu},
+        /*disabled_features=*/{features::kGlicSelectionPrompt});
   }
 
  protected:
@@ -1136,6 +1137,65 @@ IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
   ASSERT_OK(RunUntilEqual([&]() { return controller->state(); },
                           SelectionOverlayController::State::kOverlay,
                           "Timed out waiting for the selection overlay."));
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 0u);
+  content::RenderFrameHost* overlay_frame = controller->GetOverlayMainFrame();
+  ASSERT_TRUE(overlay_frame);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(overlay_frame, R"(
+      (() => {
+        const app = document.querySelector('selection-overlay-app');
+        const overlay =
+            app?.shadowRoot?.querySelector('glic-selection-overlay');
+        return !!app?.screenshot_ && !!overlay &&
+               !overlay.hideHandles && !overlay.disableMultiSelect;
+      })();
+    )")
+        .ExtractBool();
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
+                       ExecWithTextSelectionPreselectsRegionAndSetsOptions) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+
+  web_contents->SelectAll();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    std::optional<gfx::Rect> bounds = web_contents->GetTextSelectionBounds(
+        web_contents->GetPrimaryMainFrame());
+    return bounds.has_value() && !bounds->IsEmpty();
+  }));
+
+  content::ContextMenuParams params;
+  // Only needs to be non-empty; the bounds come from the real selection above.
+  params.selection_text = u"OK";
+  auto menu = CreateContextMenuWithParams(params);
+  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION));
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION,
+                       /*event_flags=*/0);
+
+  ASSERT_OK(RunUntilEqual([&]() { return controller->state(); },
+                          SelectionOverlayController::State::kOverlay,
+                          "Timed out waiting for the selection overlay."));
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 1u);
+  content::RenderFrameHost* overlay_frame = controller->GetOverlayMainFrame();
+  ASSERT_TRUE(overlay_frame);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(overlay_frame, R"(
+      (() => {
+        const app = document.querySelector('selection-overlay-app');
+        const overlay =
+            app?.shadowRoot?.querySelector('glic-selection-overlay');
+        return !!app?.screenshot_ && !!overlay &&
+               overlay.hideHandles && overlay.disableMultiSelect;
+      })();
+    )")
+        .ExtractBool();
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
