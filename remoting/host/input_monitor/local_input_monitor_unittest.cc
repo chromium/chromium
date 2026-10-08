@@ -150,8 +150,10 @@ INSTANTIATE_TEST_SUITE_P(
             .extra_info = kCrdInputExtraInfo,
             .expected_is_crd = false,
         },
+        // TODO(crbug.com/570142789): Re-enable once non-CRD software-injected
+        // input can be distinguished from Direct Touch and IME input.
         IsCrdInjectedInputTestCase{
-            .test_name = "SoftwareMouseNoExtraInfo",
+            .test_name = "DISABLED_SoftwareMouseNoExtraInfo",
             .dwType = RIM_TYPEMOUSE,
             .has_device_handle = false,
             .extra_info = 0,
@@ -178,8 +180,10 @@ INSTANTIATE_TEST_SUITE_P(
             .extra_info = kCrdInputExtraInfo,
             .expected_is_crd = false,
         },
+        // TODO(crbug.com/570142789): Re-enable once non-CRD software-injected
+        // input can be distinguished from Direct Touch and IME input.
         IsCrdInjectedInputTestCase{
-            .test_name = "SoftwareKeyboardNoExtraInfo",
+            .test_name = "DISABLED_SoftwareKeyboardNoExtraInfo",
             .dwType = RIM_TYPEKEYBOARD,
             .has_device_handle = false,
             .extra_info = 0,

@@ -23,22 +23,19 @@ namespace remoting {
 // 32-bit ULONG. Defining this signature as uint32_t reflects this constraint.
 inline constexpr uint32_t kCrdInputExtraInfo = 0x43524430;  // 'CRD0'
 
-// Returns true if the RAWINPUT event represents input injected by CRD.
-// Remote (injected) input events do not specify a device handle and are
-// stamped with kCrdInputExtraInfo. Software-injected input from assistive
-// technologies or other local sources does not bear this signature and will
-// return false so it can be handled as local input.
+// Returns true if the RAWINPUT event represents software-injected input.
+// TODO(crbug.com/570142789): Checking kCrdInputExtraInfo on events with a null
+// device handle causes synthesized mouse events from InjectTouchInput() (Direct
+// Touch mode) and keystrokes re-injected by third-party IMEs via SendInput() to
+// be misclassified as local input. Treat all software-injected mouse and
+// keyboard events (hDevice == nullptr) as remote input until a more robust
+// mechanism is implemented.
 inline bool IsCrdInjectedInput(const RAWINPUT& event) {
   if (event.header.hDevice != nullptr) {
     return false;
   }
-  if (event.header.dwType == RIM_TYPEMOUSE) {
-    return event.data.mouse.ulExtraInformation == kCrdInputExtraInfo;
-  }
-  if (event.header.dwType == RIM_TYPEKEYBOARD) {
-    return event.data.keyboard.ExtraInformation == kCrdInputExtraInfo;
-  }
-  return false;
+  return event.header.dwType == RIM_TYPEMOUSE ||
+         event.header.dwType == RIM_TYPEKEYBOARD;
 }
 
 }  // namespace remoting
