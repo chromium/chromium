@@ -31,6 +31,7 @@
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/file_system_access/features.h"
+#include "content/browser/file_system_access/file_system_access.pb.h"
 #include "content/browser/file_system_access/file_system_access_data_transfer_token_impl.h"
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
@@ -405,6 +406,29 @@ class FileSystemAccessManagerImplTest : public testing::Test {
     std::vector<uint8_t> serialized = serialize_future.Take();
     EXPECT_FALSE(serialized.empty());
 
+    manager_->DeserializeHandle(kTestStorageKey, serialized,
+                                token_remote.InitWithNewPipeAndPassReceiver());
+    base::test::TestFuture<FileSystemAccessTransferTokenImpl*> resolve_future;
+    manager_->ResolveTransferToken(std::move(token_remote),
+                                   resolve_future.GetCallback());
+    return resolve_future.Get();
+  }
+
+  std::string SerializePathForTesting(const base::FilePath& path) {
+    auto path_bytes = base::as_byte_span(path.value());
+    return std::string(path_bytes.begin(), path_bytes.end());
+  }
+
+  FileSystemAccessTransferTokenImpl* DeserializeAndResolveToken(
+      const FileSystemAccessHandleData& data) {
+    std::string serialized_string;
+    EXPECT_TRUE(data.SerializeToString(&serialized_string));
+    std::vector<uint8_t> serialized(serialized_string.begin(),
+                                    serialized_string.end());
+    EXPECT_FALSE(serialized.empty());
+
+    mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
+        token_remote;
     manager_->DeserializeHandle(kTestStorageKey, serialized,
                                 token_remote.InitWithNewPipeAndPassReceiver());
     base::test::TestFuture<FileSystemAccessTransferTokenImpl*> resolve_future;
@@ -1821,6 +1845,183 @@ TEST_F(FileSystemAccessManagerImplTest, SerializeHandle_ExternalFile) {
   EXPECT_EQ(ask_grant_, token->GetReadGrant());
   EXPECT_EQ(ask_grant2_, token->GetWriteGrant());
 }
+
+TEST_F(FileSystemAccessManagerImplTest,
+       DeserializeHandle_Native_InvalidRelativePath) {
+  const base::FilePath root_path = dir_.GetPath().AppendASCII("foo");
+  const base::FilePath invalid_relative_paths[] = {
+      base::FilePath(FILE_PATH_LITERAL("..")),
+      base::FilePath(FILE_PATH_LITERAL("../bar")),
+      base::FilePath(FILE_PATH_LITERAL("../other_dir")),
+      base::FilePath(FILE_PATH_LITERAL("sub/../../bar")),
+      base::FilePath(FILE_PATH_LITERAL(".")),
+      base::FilePath(FILE_PATH_LITERAL("./bar")),
+      dir_.GetPath().AppendASCII("bar"),
+#if BUILDFLAG(IS_WIN)
+      base::FilePath(FILE_PATH_LITERAL("C:bar")),
+      base::FilePath(FILE_PATH_LITERAL("\\bar")),
+#endif
+  };
+
+  EXPECT_CALL(permission_context_, GetReadPermissionGrant).Times(0);
+  EXPECT_CALL(permission_context_, GetWritePermissionGrant).Times(0);
+
+  for (auto handle_type : {FileSystemAccessHandleData::kFile,
+                           FileSystemAccessHandleData::kDirectory}) {
+    for (const auto& relative_path : invalid_relative_paths) {
+      FileSystemAccessHandleData data;
+      data.set_handle_type(handle_type);
+      data.mutable_local()->set_root_path(SerializePathForTesting(root_path));
+      data.mutable_local()->set_relative_path(
+          SerializePathForTesting(relative_path));
+      EXPECT_FALSE(DeserializeAndResolveToken(data)) << relative_path;
+    }
+  }
+}
+
+TEST_F(FileSystemAccessManagerImplTest,
+       DeserializeHandle_Native_InvalidRootPath) {
+  const base::FilePath invalid_root_paths[] = {
+      base::FilePath(),
+      dir_.GetPath().AppendASCII("foo").Append(FILE_PATH_LITERAL("../bar")),
+      base::FilePath(FILE_PATH_LITERAL("relative/root")),
+  };
+
+  EXPECT_CALL(permission_context_, GetReadPermissionGrant).Times(0);
+  EXPECT_CALL(permission_context_, GetWritePermissionGrant).Times(0);
+
+  for (const auto& root_path : invalid_root_paths) {
+    FileSystemAccessHandleData data;
+    data.set_handle_type(FileSystemAccessHandleData::kDirectory);
+    data.mutable_local()->set_root_path(SerializePathForTesting(root_path));
+    data.mutable_local()->set_relative_path(
+        SerializePathForTesting(base::FilePath()));
+    EXPECT_FALSE(DeserializeAndResolveToken(data)) << root_path;
+  }
+}
+
+TEST_F(FileSystemAccessManagerImplTest,
+       DeserializeHandle_External_InvalidPaths) {
+  EXPECT_CALL(permission_context_, GetReadPermissionGrant).Times(0);
+  EXPECT_CALL(permission_context_, GetWritePermissionGrant).Times(0);
+
+  {
+    FileSystemAccessHandleData data;
+    data.set_handle_type(FileSystemAccessHandleData::kFile);
+    data.mutable_external()->set_root_path(SerializePathForTesting(
+        base::FilePath::FromUTF8Unsafe(kTestMountPoint).AppendASCII("foo")));
+    data.mutable_external()->set_relative_path(
+        SerializePathForTesting(base::FilePath(FILE_PATH_LITERAL("../bar"))));
+    EXPECT_FALSE(DeserializeAndResolveToken(data));
+  }
+
+  {
+    FileSystemAccessHandleData data;
+    data.set_handle_type(FileSystemAccessHandleData::kFile);
+    data.mutable_external()->set_root_path(
+        SerializePathForTesting(base::FilePath::FromUTF8Unsafe(kTestMountPoint)
+                                    .Append(FILE_PATH_LITERAL("../foo"))));
+    data.mutable_external()->set_relative_path(
+        SerializePathForTesting(base::FilePath()));
+    EXPECT_FALSE(DeserializeAndResolveToken(data));
+  }
+
+  // Unregistered external mounts produce an invalid `root` URL. Without the
+  // `root.is_valid()` check, `CreateCrackedFileSystemURL` on
+  // `kFileSystemTypeUnknown` returns a URL with `is_valid() == true`.
+  {
+    FileSystemAccessHandleData data;
+    data.set_handle_type(FileSystemAccessHandleData::kFile);
+    data.mutable_external()->set_root_path(SerializePathForTesting(
+        base::FilePath::FromUTF8Unsafe("unregistered_mount")
+            .AppendASCII("foo")));
+    data.mutable_external()->set_relative_path(
+        SerializePathForTesting(base::FilePath()));
+    EXPECT_FALSE(DeserializeAndResolveToken(data));
+  }
+
+#if BUILDFLAG(IS_WIN)
+  // A bare drive letter passes `IsValidRootPath` for `kExternal`, but
+  // `FilePath::BaseName()` strips the drive letter and returns an empty string.
+  {
+    FileSystemAccessHandleData data;
+    data.set_handle_type(FileSystemAccessHandleData::kDirectory);
+    data.mutable_external()->set_root_path(
+        SerializePathForTesting(base::FilePath(FILE_PATH_LITERAL("C:"))));
+    data.mutable_external()->set_relative_path(
+        SerializePathForTesting(base::FilePath()));
+    EXPECT_FALSE(DeserializeAndResolveToken(data));
+  }
+#endif
+}
+
+TEST_F(FileSystemAccessManagerImplTest,
+       DeserializeHandle_Sandboxed_InvalidData) {
+  // `CreateCrackedFileSystemURL` for `kFileSystemTypeTemporary` does not reject
+  // `..` or `.` segments, so `DeserializeHandle` must reject them directly.
+  const base::FilePath invalid_virtual_paths[] = {
+      base::FilePath(FILE_PATH_LITERAL("../bar")),
+      base::FilePath(FILE_PATH_LITERAL(".")),
+      base::FilePath(FILE_PATH_LITERAL("./bar")),
+      base::FilePath(FILE_PATH_LITERAL("a/./b")),
+  };
+  for (const auto& virtual_path : invalid_virtual_paths) {
+    FileSystemAccessHandleData data;
+    data.set_handle_type(FileSystemAccessHandleData::kFile);
+    data.mutable_sandboxed()->set_virtual_path(
+        SerializePathForTesting(virtual_path));
+    EXPECT_FALSE(DeserializeAndResolveToken(data)) << virtual_path;
+  }
+
+  {
+    FileSystemAccessHandleData data;
+    data.set_handle_type(FileSystemAccessHandleData::kFile);
+    EXPECT_FALSE(DeserializeAndResolveToken(data));
+  }
+}
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(FileSystemAccessManagerImplTest,
+       SerializeHandle_AndroidContentUri_FileInsideDirectory) {
+  const base::FilePath kRootTreeUri("content://authority/tree/foo");
+  const base::FilePath kChildDocUri(
+      "content://authority/tree/foo/document/doc%3Abar");
+  const PathInfo kRootPathInfo(kRootTreeUri, "foo_dir");
+
+  auto grant = base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+      FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
+      kRootPathInfo);
+  storage::FileSystemURL child_url =
+      file_system_context_->CreateCrackedFileSystemURL(
+          blink::StorageKey(), storage::kFileSystemTypeLocal, kChildDocUri);
+  FileSystemAccessFileHandleImpl file(manager_.get(), binding_context_,
+                                      child_url, "bar", {grant, grant});
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
+  manager_->CreateTransferToken(file,
+                                token_remote.InitWithNewPipeAndPassReceiver());
+
+  EXPECT_CALL(
+      permission_context_,
+      GetReadPermissionGrant(
+          kTestStorageKey.origin(), kRootPathInfo, HandleType::kDirectory,
+          FileSystemAccessPermissionContext::AccessTrigger::kLoadFromStorage))
+      .WillOnce(testing::Return(ask_grant_));
+  EXPECT_CALL(
+      permission_context_,
+      GetWritePermissionGrant(
+          kTestStorageKey.origin(), kRootPathInfo, HandleType::kDirectory,
+          FileSystemAccessPermissionContext::AccessTrigger::kLoadFromStorage))
+      .WillOnce(testing::Return(ask_grant2_));
+
+  FileSystemAccessTransferTokenImpl* token =
+      SerializeAndDeserializeToken(std::move(token_remote));
+  ASSERT_TRUE(token);
+  EXPECT_EQ(kChildDocUri, token->url().path());
+  EXPECT_EQ(HandleType::kFile, token->type());
+  EXPECT_EQ(ask_grant_, token->GetReadGrant());
+  EXPECT_EQ(ask_grant2_, token->GetWriteGrant());
+}
+#endif
 
 // FileSystemAccessManager should successfully resolve a
 // FileSystemAccessDataTransferToken representing a file in the user's file

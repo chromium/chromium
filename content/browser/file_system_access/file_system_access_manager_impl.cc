@@ -1175,6 +1175,45 @@ base::FilePath DeserializePath(const std::string& bytes) {
   return base::FilePath(s);
 }
 
+bool IsValidRootPath(FileSystemAccessHandleData::DataCase data_case,
+                     const base::FilePath& root_path) {
+  if (root_path.empty() || root_path.ReferencesParent()) {
+    return false;
+  }
+  if (data_case == FileSystemAccessHandleData::kLocal) {
+#if BUILDFLAG(IS_ANDROID)
+    if (root_path.IsContentUri()) {
+      return true;
+    }
+#endif
+    return root_path.IsAbsolute();
+  }
+  return true;
+}
+
+bool IsPlainRelativePath(const base::FilePath& path) {
+  if (path.empty()) {
+    return true;
+  }
+  if (path.IsAbsolute() || path.ReferencesParent()) {
+    return false;
+  }
+  // `FilePath::GetComponents()` drops a leading `.`, so check the prefix first.
+  if (path.value().starts_with(base::FilePath::kCurrentDirectory) &&
+      (path.value().size() == 1 ||
+       base::FilePath::IsSeparator(path.value()[1]))) {
+    return false;
+  }
+  for (const auto& component : path.GetComponents()) {
+    if (component.empty() || component == base::FilePath::kCurrentDirectory ||
+        base::FilePath::IsSeparator(component[0]) ||
+        base::FilePath(component).BaseName().value() != component) {
+      return false;
+    }
+  }
+  return true;
+}
+
 std::string SerializeURLImpl(const storage::FileSystemURL& url,
                              FileSystemAccessPermissionContext::HandleType type,
                              base::FilePath root_permission_path,
@@ -1303,8 +1342,21 @@ void FileSystemAccessManagerImpl::DeserializeHandle(
     case FileSystemAccessHandleData::kSandboxed: {
       base::FilePath virtual_path =
           DeserializePath(data.sandboxed().virtual_path());
+      // Reject non-plain relative paths, including `..` and `.` segments.
+      // `ObfuscatedFileUtil` strips `.` via `VirtualPath::GetComponents()`,
+      // while `FileSystemAccessLockManager` preserves `.` via
+      // `FilePath::GetComponents()`, which would alias paths without sharing
+      // locks.
+      if (!IsPlainRelativePath(virtual_path)) {
+        // Drop `token`, and directly return.
+        return;
+      }
       storage::FileSystemURL url = context()->CreateCrackedFileSystemURL(
           storage_key, storage::kFileSystemTypeTemporary, virtual_path);
+      if (!url.is_valid()) {
+        // Drop `token`, and directly return.
+        return;
+      }
       // Apply bucket information.
       auto bucket_callback = base::BindOnce(
           [](storage::FileSystemURL url,
@@ -1347,18 +1399,44 @@ void FileSystemAccessManagerImpl::DeserializeHandle(
 
       base::FilePath root_path = DeserializePath(file_data.root_path());
       base::FilePath relative_path = DeserializePath(file_data.relative_path());
+      if (!IsValidRootPath(data.data_case(), root_path) ||
+          !IsPlainRelativePath(relative_path)) {
+        // Drop `token`, and directly return.
+        return;
+      }
+
+      std::string display_name = !file_data.display_name().empty()
+                                     ? file_data.display_name()
+                                     : root_path.BaseName().AsUTF8Unsafe();
+      // `BaseName()` can be empty on Windows when `root_path` is a bare drive
+      // letter (e.g., `kExternal` with `root_path = L"C:"`), which would fail
+      // the `CHECK` in `PathInfo`.
+      if (display_name.empty()) {
+        // Drop `token`, and directly return.
+        return;
+      }
+
       PathInfo path_info(data.data_case() == FileSystemAccessHandleData::kLocal
                              ? PathType::kLocal
                              : PathType::kExternal,
-                         root_path,
-                         !file_data.display_name().empty()
-                             ? file_data.display_name()
-                             : root_path.BaseName().AsUTF8Unsafe());
+                         root_path, std::move(display_name));
       storage::FileSystemURL root = CreateFileSystemURLFromPath(path_info);
+      if (!root.is_valid()) {
+        // Drop `token`, and directly return.
+        return;
+      }
 
       storage::FileSystemURL child = context()->CreateCrackedFileSystemURL(
           root.storage_key(), root.mount_type(),
           root.virtual_path().Append(relative_path));
+      // `IsPlainRelativePath()` already guarantees containment; `IsParent()` is
+      // kept as an additional consistency check.
+      if (!child.is_valid() ||
+          (!relative_path.empty() &&
+           !root.virtual_path().IsParent(child.virtual_path()))) {
+        // Drop `token`, and directly return.
+        return;
+      }
 
       const bool is_directory =
           data.handle_type() == FileSystemAccessHandleData::kDirectory;
@@ -1379,7 +1457,8 @@ void FileSystemAccessManagerImpl::DeserializeHandle(
       break;
     }
     case FileSystemAccessHandleData::DATA_NOT_SET:
-      NOTREACHED();
+      // Drop `token`, and directly return.
+      return;
   }
 }
 

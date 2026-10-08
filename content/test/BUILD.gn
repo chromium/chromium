@@ -3315,6 +3315,7 @@ test("content_unittests") {
     "//content/browser/cache_storage:cache_storage_proto",
     "//content/browser/devtools:devtools_background_services_proto",
     "//content/browser/download:proto",
+    "//content/browser/file_system_access:proto",
     "//content/browser/indexed_db:unit_tests",
     "//content/browser/notifications:notification_proto",
     "//content/browser/tracing/traces_internals:mojo_bindings",
