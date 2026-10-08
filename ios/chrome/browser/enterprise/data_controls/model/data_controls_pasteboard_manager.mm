@@ -14,6 +14,7 @@
 #import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
+#import "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #import "components/open_from_clipboard/clipboard_async_wrapper_ios.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_pasteboard_manager_observer.h"
@@ -50,9 +51,10 @@ void ReplacePasteboardItemsWithPlaceholder(UIPasteboard* pasteboard) {
 }
 
 // Converts an `image_item` into a base64 encoded string and returns it if
-// possible, otherwise returns an empty string. Returns std::nullopt if the size
-// exceeds `kMaxPasteboardContentSizeToProcess`.
-std::optional<std::string> HandleImageItem(id image_item) {
+// possible, otherwise returns an empty string (including when the size
+// reaches or exceeds `BinaryUploadService::kMaxUploadSizeBytes` so that
+// oversized images are skipped).
+std::string HandleImageItem(id image_item) {
   DCHECK(!web::WebThread::CurrentlyOn(web::WebThread::UI));
   NSData* image_data = nil;
   // The item might be UIImage or NSData, depending on the source of the copy.
@@ -62,28 +64,31 @@ std::optional<std::string> HandleImageItem(id image_item) {
     image_data = data;
   }
 
-  if (!image_data) {
+  if (!image_data ||
+      image_data.length >=
+          enterprise_connectors::BinaryUploadService::kMaxUploadSizeBytes) {
     return std::string();
-  }
-
-  if (image_data.length > data_controls::kMaxPasteboardContentSizeToProcess) {
-    return std::nullopt;
   }
 
   NSString* image_string =
       [image_data base64EncodedStringWithOptions:/*No Formatting*/ 0];
+  if (image_string.length >=
+      enterprise_connectors::BinaryUploadService::kMaxUploadSizeBytes) {
+    return std::string();
+  }
   return base::SysNSStringToUTF8(image_string);
 }
 
 // Process all the pasteboard items in a for loop and return with a
 // `PasteboardContentDLP` containing a string of concatenated text and a base64
-// encoded image string. Returns std::nullopt if the size of the text or image
-// exceeds `kMaxPasteboardContentSizeToProcess`.
+// encoded image string. Returns `std::nullopt` if the size of the text exceeds
+// `kMaxPasteboardContentSizeToProcess`.
 std::optional<data_controls::PasteboardContentDLP> ProcessPasteboardItems(
     NSArray<NSDictionary<NSString*, id>*>* items) {
   DCHECK(!web::WebThread::CurrentlyOn(web::WebThread::UI));
   data_controls::PasteboardContentDLP content = {};
   NSUInteger text_size = 0;
+  bool first_image_read = false;
 
   for (NSDictionary<NSString*, id>* item in items) {
     for (NSString* key in item) {
@@ -91,12 +96,9 @@ std::optional<data_controls::PasteboardContentDLP> ProcessPasteboardItems(
           [key isEqualToString:UTTypeJPEG.identifier]) {
         // If the image is already read, this is not the first image in the
         // pasteboard and we don't return it.
-        if (content.image.empty()) {
-          std::optional<std::string> image = HandleImageItem(item[key]);
-          if (!image.has_value()) {
-            return std::nullopt;
-          }
-          content.image = *std::move(image);
+        if (!first_image_read) {
+          content.image = HandleImageItem(item[key]);
+          first_image_read = true;
         }
         // Skip to the next representation key to avoid falling to the check for
         // NSData class below and add the image representation to the text

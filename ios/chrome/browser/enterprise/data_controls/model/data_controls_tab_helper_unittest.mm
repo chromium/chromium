@@ -18,6 +18,7 @@
 #import "base/test/test_future.h"
 #import "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #import "components/enterprise/common/proto/connectors.pb.h"
+#import "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #import "components/enterprise/connectors/core/cloud_content_scanning/clipboard_request_handler.h"
 #import "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #import "components/enterprise/connectors/core/common.h"
@@ -1658,6 +1659,43 @@ TEST_F(DataControlsTabHelperTest,
       base::BindRepeating(
           &enterprise_connectors::CreateTestClipboardRequestHandlerIOS,
           enterprise_connectors::TriggeredRule::ACTION_UNSPECIFIED));
+
+  base::test::TestFuture<bool> future;
+  tab_helper()->ShouldAllowPaste(future.GetCallback());
+
+  EXPECT_TRUE(future.Get());
+
+  enterprise_connectors::ClipboardRequestHandler::ResetFactoryForTesting();
+}
+
+// Test that pasting an image larger than `kMaxUploadSizeBytes` is allowed
+// directly without scanning when a content analysis bulk data entry rule is
+// set.
+TEST_F(DataControlsTabHelperTest,
+       ShouldAllowPaste_BulkDataEntry_LargeImageAllowedDirectly) {
+  feature_list_.InitAndEnableFeature(
+      enterprise_connectors::kEnableBulkDataEntryConnectorIOS);
+  SetBulkDataEntryRule();
+
+  web_state_->SetCurrentURL(GURL(kAllowedUrl));
+
+  // Set pasteboard image size exceeding `kMaxUploadSizeBytes` (50 MB).
+  EXPECT_TRUE(WaitForPasteboardContentChanged(base::BindOnce(^{
+    UIPasteboard.generalPasteboard.items = @[ @{
+      UTTypePNG.identifier : [NSMutableData
+          dataWithLength:enterprise_connectors::BinaryUploadService::
+                             kMaxUploadSizeBytes +
+                         1]
+    } ];
+  })));
+
+  // Set up the mock clipboard request handler factory to return BLOCK if a scan
+  // is triggered. Since the image exceeds the upload size limit, it is skipped
+  // and no scan is performed, so the paste should be allowed directly.
+  enterprise_connectors::ClipboardRequestHandler::SetFactoryForTesting(
+      base::BindRepeating(
+          &enterprise_connectors::CreateTestClipboardRequestHandlerIOS,
+          enterprise_connectors::TriggeredRule::BLOCK));
 
   base::test::TestFuture<bool> future;
   tab_helper()->ShouldAllowPaste(future.GetCallback());

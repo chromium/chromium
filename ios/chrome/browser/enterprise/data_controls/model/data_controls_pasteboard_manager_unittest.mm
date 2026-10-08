@@ -12,6 +12,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
+#import "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_pasteboard_manager_observer.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_test_utils.h"
@@ -526,17 +527,18 @@ TEST_F(DataControlsPasteboardManagerTest, GetCorrectPasteboardFirstImageOnly) {
   EXPECT_NE(result->image, expected_image_blue);
 }
 
-// Tests that GetPasteboardTextAndImage invokes the callback with std::nullopt
-// when the pasteboard image content is larger than
-// kMaxPasteboardContentSizeToProcess.
+// Tests that `GetPasteboardTextAndImage` invokes the callback with an empty
+// image string when the pasteboard image content reaches or exceeds
+// `BinaryUploadService::kMaxUploadSizeBytes`.
 TEST_F(DataControlsPasteboardManagerTest,
-       GetPasteboardExceedsLimitReturnsNullopt) {
+       GetPasteboardImageExceedsLimitReturnsEmptyImage) {
   // Clear the pasteboard.
   UIPasteboard.generalPasteboard.items = @[];
   base::test::TestFuture<std::optional<PasteboardContentDLP>> future;
 
   NSData* large_image_data =
-      [NSMutableData dataWithLength:kMaxPasteboardContentSizeToProcess + 1];
+      [NSMutableData dataWithLength:enterprise_connectors::BinaryUploadService::
+                                        kMaxUploadSizeBytes];
 
   UIPasteboard.generalPasteboard.items =
       @[ @{UTTypePNG.identifier : large_image_data} ];
@@ -544,7 +546,9 @@ TEST_F(DataControlsPasteboardManagerTest,
   manager_->GetPasteboardTextAndImage(future.GetCallback());
   std::optional<PasteboardContentDLP> result = future.Take();
 
-  EXPECT_FALSE(result.has_value());
+  ASSERT_TRUE(result.has_value());
+  EXPECT_TRUE(result->text.empty());
+  EXPECT_TRUE(result->image.empty());
 }
 
 // Tests that GetPasteboardTextAndImage invokes the callback with std::nullopt

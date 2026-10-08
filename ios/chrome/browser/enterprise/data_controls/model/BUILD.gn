@@ -23,6 +23,7 @@ source_set("model") {
     "//base",
     "//components/enterprise/common/proto:connectors_proto_gen",
     "//components/enterprise/connectors/core",
+    "//components/enterprise/connectors/core:cloud_content_scanning",
     "//components/enterprise/data_controls/core/browser",
     "//components/enterprise/data_controls/core/browser:features",
     "//components/open_from_clipboard:open_from_clipboard_impl",
