@@ -5843,7 +5843,9 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/bnpl_metrics.h:PayLaterTabsFormEvent) -->
 
-<enum name="PaymentsChurnedUsersBubbleShowResult">
+<!-- LINT.IfChange(PaymentsChurnedUsersUiShowResult) -->
+
+<enum name="PaymentsChurnedUsersUiShowResult">
   <int value="0" label="Shown successfully"/>
   <int value="1" label="Off The Record"/>
   <int value="2" label="No Cached Form"/>
@@ -5853,6 +5855,8 @@ Called by update_autofill_enums.py.-->
   <int value="6" label="Pref Not User Controlled"/>
   <int value="7" label="No Account Info Present"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/payments/payments_churned_users_metrics.h:PaymentsChurnedUsersUiShowResult) -->
 
 <enum name="PaymentsUiClosedReason">
   <int value="0" label="Unknown"/>

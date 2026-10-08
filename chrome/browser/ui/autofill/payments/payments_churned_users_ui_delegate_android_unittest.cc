@@ -134,17 +134,17 @@ class PaymentsChurnedUsersUiDelegateAndroidTest
   }
 
   void ExpectShowResultRecorded(
-      autofill_metrics::PaymentsChurnedUsersBubbleShowResult show_result,
+      autofill_metrics::PaymentsChurnedUsersUiShowResult show_result,
       base::HistogramBase::Count32 expected_count = 1) {
     histogram_tester_.ExpectUniqueSample(
-        "Autofill.PaymentsChurnedUsersBubble.ShowResult", show_result,
+        "Autofill.PaymentsChurnedUsersUi.ShowResult", show_result,
         expected_count);
   }
 
   void ExpectResultRecorded(PaymentsUiClosedReason closed_reason,
                             base::HistogramBase::Count32 expected_count = 1) {
     histogram_tester_.ExpectUniqueSample(
-        "Autofill.PaymentsChurnedUsersBubble.Result", closed_reason,
+        "Autofill.PaymentsChurnedUsersUi.Result", closed_reason,
         expected_count);
   }
 
@@ -230,7 +230,7 @@ TEST_F(PaymentsChurnedUsersUiDelegateAndroidTest,
   delegate()->ShowPaymentsChurnedUsersUI(closed_callback.Get());
 
   ExpectShowResultRecorded(
-      autofill_metrics::PaymentsChurnedUsersBubbleShowResult::kShown);
+      autofill_metrics::PaymentsChurnedUsersUiShowResult::kShown);
 
   ASSERT_TRUE(shown_message_model);
   EXPECT_EQ(shown_message_model->GetType(),
@@ -318,7 +318,7 @@ TEST_F(PaymentsChurnedUsersUiDelegateAndroidTest,
   delegate()->ShowPaymentsChurnedUsersUI(second_closed_callback.Get());
 
   ExpectShowResultRecorded(
-      autofill_metrics::PaymentsChurnedUsersBubbleShowResult::kShown);
+      autofill_metrics::PaymentsChurnedUsersUiShowResult::kShown);
 
   EXPECT_CALL(initial_closed_callback, Run(PaymentsUiClosedReason::kAccepted));
   EXPECT_CALL(*mock_snackbar_controller(),

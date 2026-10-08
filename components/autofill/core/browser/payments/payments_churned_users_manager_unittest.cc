@@ -438,9 +438,9 @@ TEST_F(PaymentsChurnedUsersManagerTest, Metrics_NotShownReason_OffTheRecord) {
   SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.PaymentsChurnedUsersBubble.ShowResult",
+      "Autofill.PaymentsChurnedUsersUi.ShowResult",
       /*sample=*/
-      autofill_metrics::PaymentsChurnedUsersBubbleShowResult::kOffTheRecord,
+      autofill_metrics::PaymentsChurnedUsersUiShowResult::kOffTheRecord,
       /*expected_bucket_count=*/1);
 }
 
@@ -457,9 +457,9 @@ TEST_F(PaymentsChurnedUsersManagerTest, Metrics_NotShownReason_NoCachedForm) {
       AutofillManager::Observer::FieldTypeSource::kAutofillServer, false);
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.PaymentsChurnedUsersBubble.ShowResult",
+      "Autofill.PaymentsChurnedUsersUi.ShowResult",
       /*sample=*/
-      autofill_metrics::PaymentsChurnedUsersBubbleShowResult::kNoCachedForm,
+      autofill_metrics::PaymentsChurnedUsersUiShowResult::kNoCachedForm,
       /*expected_bucket_count=*/1);
 }
 
@@ -483,9 +483,9 @@ TEST_F(PaymentsChurnedUsersManagerTest,
   SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.PaymentsChurnedUsersBubble.ShowResult",
+      "Autofill.PaymentsChurnedUsersUi.ShowResult",
       /*sample=*/
-      autofill_metrics::PaymentsChurnedUsersBubbleShowResult::
+      autofill_metrics::PaymentsChurnedUsersUiShowResult::
           kStrikeDatabaseBlocked,
       /*expected_bucket_count=*/1);
 }
@@ -501,9 +501,9 @@ TEST_F(PaymentsChurnedUsersManagerTest, Metrics_NotShownReason_FormNotVisible) {
                                  /*is_visible=*/false);
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.PaymentsChurnedUsersBubble.ShowResult",
+      "Autofill.PaymentsChurnedUsersUi.ShowResult",
       /*sample=*/
-      autofill_metrics::PaymentsChurnedUsersBubbleShowResult::
+      autofill_metrics::PaymentsChurnedUsersUiShowResult::
           kNoVisibleCreditCardForm,
       /*expected_bucket_count=*/1);
 }
@@ -520,9 +520,9 @@ TEST_F(PaymentsChurnedUsersManagerTest,
   SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/false);
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.PaymentsChurnedUsersBubble.ShowResult",
+      "Autofill.PaymentsChurnedUsersUi.ShowResult",
       /*sample=*/
-      autofill_metrics::PaymentsChurnedUsersBubbleShowResult::
+      autofill_metrics::PaymentsChurnedUsersUiShowResult::
           kNoVisibleCreditCardForm,
       /*expected_bucket_count=*/1);
 }
@@ -542,10 +542,9 @@ TEST_F(PaymentsChurnedUsersManagerTest,
   SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.PaymentsChurnedUsersBubble.ShowResult",
+      "Autofill.PaymentsChurnedUsersUi.ShowResult",
       /*sample=*/
-      autofill_metrics::PaymentsChurnedUsersBubbleShowResult::
-          kPrefAlreadyTurnedOn,
+      autofill_metrics::PaymentsChurnedUsersUiShowResult::kPrefAlreadyTurnedOn,
       /*expected_bucket_count=*/1);
 }
 
@@ -566,9 +565,9 @@ TEST_F(PaymentsChurnedUsersManagerTest,
   SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.PaymentsChurnedUsersBubble.ShowResult",
+      "Autofill.PaymentsChurnedUsersUi.ShowResult",
       /*sample=*/
-      autofill_metrics::PaymentsChurnedUsersBubbleShowResult::
+      autofill_metrics::PaymentsChurnedUsersUiShowResult::
           kPrefNotUserControlled,
       /*expected_bucket_count=*/1);
 }

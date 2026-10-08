@@ -116,10 +116,9 @@ TEST_F(PaymentsChurnedUsersUiDelegateDesktopTest,
   delegate().ShowPaymentsChurnedUsersUI(/*closed_callback=*/base::DoNothing());
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.PaymentsChurnedUsersBubble.ShowResult",
+      "Autofill.PaymentsChurnedUsersUi.ShowResult",
       /*sample=*/
-      autofill_metrics::PaymentsChurnedUsersBubbleShowResult::
-          kNoAccountInfoPresent,
+      autofill_metrics::PaymentsChurnedUsersUiShowResult::kNoAccountInfoPresent,
       /*expected_bucket_count=*/1);
 }
 

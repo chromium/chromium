@@ -8,15 +8,15 @@
 
 namespace autofill::autofill_metrics {
 
-void LogPaymentsChurnedUsersBubbleResult(PaymentsUiClosedReason closed_reason) {
-  base::UmaHistogramEnumeration("Autofill.PaymentsChurnedUsersBubble.Result",
+void LogPaymentsChurnedUsersUiResult(PaymentsUiClosedReason closed_reason) {
+  base::UmaHistogramEnumeration("Autofill.PaymentsChurnedUsersUi.Result",
                                 closed_reason);
 }
 
-void LogPaymentsChurnedUsersBubbleShowResult(
-    PaymentsChurnedUsersBubbleShowResult result) {
-  base::UmaHistogramEnumeration(
-      "Autofill.PaymentsChurnedUsersBubble.ShowResult", result);
+void LogPaymentsChurnedUsersUiShowResult(
+    PaymentsChurnedUsersUiShowResult result) {
+  base::UmaHistogramEnumeration("Autofill.PaymentsChurnedUsersUi.ShowResult",
+                                result);
 }
 
 }  // namespace autofill::autofill_metrics

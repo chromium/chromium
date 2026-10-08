@@ -70,8 +70,8 @@ void PaymentsChurnedUsersUiDelegateAndroid::ShowPaymentsChurnedUsersUI(
               base::BindOnce(
                   &PaymentsChurnedUsersUiDelegateAndroid::OnMessageDismissed,
                   weak_ptr_factory_.GetWeakPtr())));
-      autofill_metrics::LogPaymentsChurnedUsersBubbleShowResult(
-          autofill_metrics::PaymentsChurnedUsersBubbleShowResult::kShown);
+      autofill_metrics::LogPaymentsChurnedUsersUiShowResult(
+          autofill_metrics::PaymentsChurnedUsersUiShowResult::kShown);
       break;
   }
 }
@@ -136,7 +136,7 @@ void PaymentsChurnedUsersUiDelegateAndroid::OnOptInUiClosed(
   }
   if (GetTreatmentArm() ==
       AutofillEnableResurrectingPaymentsUsersTreatmentArm::kMessage) {
-    autofill_metrics::LogPaymentsChurnedUsersBubbleResult(closed_reason);
+    autofill_metrics::LogPaymentsChurnedUsersUiResult(closed_reason);
   }
   std::move(closed_callback_).Run(closed_reason);
 }

@@ -159,9 +159,8 @@ IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
                SAVE_PAYMENT_METHOD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUBBLE_VIEWS;
   }));
 
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.PaymentsChurnedUsersBubble.Result",
-      PaymentsUiClosedReason::kAccepted, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.PaymentsChurnedUsersUi.Result",
+                                      PaymentsUiClosedReason::kAccepted, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -192,9 +191,8 @@ IN_PROC_BROWSER_TEST_P(
                SAVE_PAYMENT_METHOD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUBBLE_VIEWS;
   }));
 
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.PaymentsChurnedUsersBubble.Result",
-      PaymentsUiClosedReason::kAccepted, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.PaymentsChurnedUsersUi.Result",
+                                      PaymentsUiClosedReason::kAccepted, 1);
 
   // Close the confirmation bubble and verify that no new accept metric was
   // logged.
@@ -208,9 +206,8 @@ IN_PROC_BROWSER_TEST_P(
       views::Widget::ClosedReason::kCloseButtonClicked);
   destroyed_waiter.Wait();
 
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.PaymentsChurnedUsersBubble.Result",
-      PaymentsUiClosedReason::kAccepted, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.PaymentsChurnedUsersUi.Result",
+                                      PaymentsUiClosedReason::kAccepted, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
@@ -225,9 +222,8 @@ IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
   GetBubbleView()->CancelDialog();
   destroyed_waiter.Wait();
 
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.PaymentsChurnedUsersBubble.Result",
-      PaymentsUiClosedReason::kCancelled, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.PaymentsChurnedUsersUi.Result",
+                                      PaymentsUiClosedReason::kCancelled, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
@@ -244,9 +240,8 @@ IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
       GetBubbleView()->GetBubbleFrameView()->close_button());
   destroyed_waiter.Wait();
 
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.PaymentsChurnedUsersBubble.Result",
-      PaymentsUiClosedReason::kClosed, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.PaymentsChurnedUsersUi.Result",
+                                      PaymentsUiClosedReason::kClosed, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
@@ -257,8 +252,8 @@ IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
   EXPECT_TRUE(IsBubbleShowing());
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.PaymentsChurnedUsersBubble.ShowResult",
-      autofill_metrics::PaymentsChurnedUsersBubbleShowResult::kShown, 1);
+      "Autofill.PaymentsChurnedUsersUi.ShowResult",
+      autofill_metrics::PaymentsChurnedUsersUiShowResult::kShown, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
@@ -269,9 +264,8 @@ IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
   EXPECT_FALSE(IsBubbleShowing());
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.PaymentsChurnedUsersBubble.ShowResult",
-      autofill_metrics::PaymentsChurnedUsersBubbleShowResult::
-          kNoAccountInfoPresent,
+      "Autofill.PaymentsChurnedUsersUi.ShowResult",
+      autofill_metrics::PaymentsChurnedUsersUiShowResult::kNoAccountInfoPresent,
       1);
 }
 

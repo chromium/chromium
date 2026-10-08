@@ -42,23 +42,23 @@ void PaymentsChurnedUsersManager::OnFieldTypesDetermined(
     AutofillManager::Observer::FieldTypeSource source,
     bool small_forms_were_parsed) {
   if (client_->IsOffTheRecord()) {
-    autofill_metrics::LogPaymentsChurnedUsersBubbleShowResult(
-        autofill_metrics::PaymentsChurnedUsersBubbleShowResult::kOffTheRecord);
+    autofill_metrics::LogPaymentsChurnedUsersUiShowResult(
+        autofill_metrics::PaymentsChurnedUsersUiShowResult::kOffTheRecord);
     return;
   }
 
   const FormStructure* form_structure = manager.FindCachedFormById(form);
   if (!form_structure) {
-    autofill_metrics::LogPaymentsChurnedUsersBubbleShowResult(
-        autofill_metrics::PaymentsChurnedUsersBubbleShowResult::kNoCachedForm);
+    autofill_metrics::LogPaymentsChurnedUsersUiShowResult(
+        autofill_metrics::PaymentsChurnedUsersUiShowResult::kNoCachedForm);
     return;
   }
 
   if (strike_database_ && strike_database_->ShouldBlockFeature() &&
       !base::FeatureList::IsEnabled(
           features::kAutofillIgnorePaymentsChurnedUsersStrikesForTesting)) {
-    autofill_metrics::LogPaymentsChurnedUsersBubbleShowResult(
-        autofill_metrics::PaymentsChurnedUsersBubbleShowResult::
+    autofill_metrics::LogPaymentsChurnedUsersUiShowResult(
+        autofill_metrics::PaymentsChurnedUsersUiShowResult::
             kStrikeDatabaseBlocked);
     return;
   }
@@ -71,8 +71,8 @@ void PaymentsChurnedUsersManager::OnFieldTypesDetermined(
       });
 
   if (!is_visible_credit_card_form) {
-    autofill_metrics::LogPaymentsChurnedUsersBubbleShowResult(
-        autofill_metrics::PaymentsChurnedUsersBubbleShowResult::
+    autofill_metrics::LogPaymentsChurnedUsersUiShowResult(
+        autofill_metrics::PaymentsChurnedUsersUiShowResult::
             kNoVisibleCreditCardForm);
     return;
   }
@@ -86,19 +86,19 @@ void PaymentsChurnedUsersManager::OnFieldTypesDetermined(
       prefs->FindPreference(prefs::kAutofillCreditCardEnabled);
   if (pref) {
     // If autofill is already turned on, there is no need to display the churned
-    // users bubble.
+    // users UI.
     if (pref->GetValue()->GetBool()) {
-      autofill_metrics::LogPaymentsChurnedUsersBubbleShowResult(
-          autofill_metrics::PaymentsChurnedUsersBubbleShowResult::
+      autofill_metrics::LogPaymentsChurnedUsersUiShowResult(
+          autofill_metrics::PaymentsChurnedUsersUiShowResult::
               kPrefAlreadyTurnedOn);
       return;
     }
 
     // If autofill was not turned off by the user, there is no need to display
-    // the churned users bubble.
+    // the churned users UI.
     if (!pref->IsUserControlled()) {
-      autofill_metrics::LogPaymentsChurnedUsersBubbleShowResult(
-          autofill_metrics::PaymentsChurnedUsersBubbleShowResult::
+      autofill_metrics::LogPaymentsChurnedUsersUiShowResult(
+          autofill_metrics::PaymentsChurnedUsersUiShowResult::
               kPrefNotUserControlled);
       return;
     }

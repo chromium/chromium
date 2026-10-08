@@ -49,8 +49,8 @@ void PaymentsChurnedUsersUiDelegateDesktop::ShowPaymentsChurnedUsersUI(
       payments_client->GetPaymentsDataManager()
           .GetAccountInfoForPaymentsServer());
   if (account_info.IsEmpty()) {
-    autofill_metrics::LogPaymentsChurnedUsersBubbleShowResult(
-        autofill_metrics::PaymentsChurnedUsersBubbleShowResult::
+    autofill_metrics::LogPaymentsChurnedUsersUiShowResult(
+        autofill_metrics::PaymentsChurnedUsersUiShowResult::
             kNoAccountInfoPresent);
     return;
   }

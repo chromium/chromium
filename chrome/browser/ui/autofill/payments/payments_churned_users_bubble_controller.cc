@@ -74,7 +74,7 @@ void PaymentsChurnedUsersBubbleController::OnBubbleDiscarded() {
 void PaymentsChurnedUsersBubbleController::OnBubbleClosed(
     PaymentsUiClosedReason closed_reason) {
   ResetBubbleViewAndInformBubbleManager();
-  autofill_metrics::LogPaymentsChurnedUsersBubbleResult(
+  autofill_metrics::LogPaymentsChurnedUsersUiResult(
       is_accepted_ ? PaymentsUiClosedReason::kAccepted : closed_reason);
 
   if (closed_reason == PaymentsUiClosedReason::kCancelled ||
@@ -208,8 +208,8 @@ void PaymentsChurnedUsersBubbleController::DoShowBubble() {
           ->ShowPaymentsChurnedUsersBubble(web_contents(), this, is_reshow_);
   if (created_bubble) {
     SetBubbleView(*created_bubble);
-    autofill_metrics::LogPaymentsChurnedUsersBubbleShowResult(
-        autofill_metrics::PaymentsChurnedUsersBubbleShowResult::kShown);
+    autofill_metrics::LogPaymentsChurnedUsersUiShowResult(
+        autofill_metrics::PaymentsChurnedUsersUiShowResult::kShown);
   }
 #endif
 }
