@@ -271,16 +271,18 @@ macro_rules! float_conv {
     ($name:ident, $to:ident, $from:ident, $ty:ty) => {
         float_conv!($name, $to, $from, $ty, no_fmt);
 
-        //hack: we can losslessly go to float, so use those fmt impls
         impl std::fmt::Display for $name {
             fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-                self.$to().fmt(f)
+                if f.precision().is_some() {
+                    return std::fmt::Display::fmt(&self.$to(), f);
+                }
+                fmt_shortest(self.0 as i64, Self::FRACT_BITS as u32, f)
             }
         }
 
         impl std::fmt::Debug for $name {
             fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-                self.$to().fmt(f)
+                std::fmt::Display::fmt(self, f)
             }
         }
 
@@ -332,6 +334,46 @@ macro_rules! float_conv {
             }
         }
     };
+}
+
+/// Format a fixed-point value as the shortest decimal that parses back to it.
+///
+/// The value is exactly `raw / 2^fract_bits`. We pick the fewest fractional
+/// digits whose nearest decimal is strictly within half a step of it, as
+/// `fontTools`' `fixedToStr` does, and omit the decimal point for integral
+/// values. Width, fill, alignment and sign flags behave as they do for
+/// floats.
+fn fmt_shortest(raw: i64, fract_bits: u32, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+    let one = 1u128 << fract_bits;
+    let magnitude = u128::from(raw.unsigned_abs());
+    for places in 0..=5 {
+        let pow = 10u128.pow(places);
+        let digits = (2 * magnitude * pow + one) / (2 * one);
+        if (digits * one).abs_diff(magnitude * pow) * 2 < pow {
+            let mut buf = [0u8; 32];
+            return f.pad_integral(raw >= 0, "", write_decimal(digits, places, &mut buf));
+        }
+    }
+    // Rounding leaves `digits * one` within `one / 2` of `magnitude * pow`,
+    // so five places always pass since `one <= 2^16 < 10^5`.
+    unreachable!()
+}
+
+/// Write `digits / 10^places` as a decimal at the end of `buf` and return it.
+fn write_decimal(mut digits: u128, places: u32, buf: &mut [u8; 32]) -> &str {
+    let mut pos = buf.len();
+    let mut written = 0;
+    while written <= places || digits != 0 {
+        if written == places && places != 0 {
+            pos -= 1;
+            buf[pos] = b'.';
+        }
+        pos -= 1;
+        buf[pos] = b'0' + (digits % 10) as u8;
+        digits /= 10;
+        written += 1;
+    }
+    std::str::from_utf8(&buf[pos..]).expect("only ASCII digits and '.'")
 }
 
 fixed_impl!(F2Dot14, 16, 14, i16);
@@ -837,6 +879,193 @@ mod tests {
         assert_eq!(F26Dot6::ONE / F26Dot6::ONE, F26Dot6::ONE);
         assert_eq!(F26Dot6::ONE / F26Dot6::ZERO, F26Dot6(0x7FFFFFFF));
         assert_eq!(-F26Dot6::ONE / F26Dot6::ZERO, F26Dot6(-0x7FFFFFFF));
+    }
+
+    #[cfg(feature = "std")]
+    mod display {
+        use super::*;
+
+        #[test]
+        fn f2dot14() {
+            let cases = [
+                (F2Dot14(9830), "0.6"),
+                (F2Dot14(-10139), "-0.61884"),
+                (F2Dot14::ONE, "1"),
+                (F2Dot14::NEG_ONE, "-1"),
+                (F2Dot14::ZERO, "0"),
+                (F2Dot14::MIN, "-2"),
+                (F2Dot14::MAX, "1.99994"),
+                (F2Dot14::EPSILON, "0.00006"),
+                (F2Dot14(-1), "-0.00006"),
+                (F2Dot14::from_f32(0.5), "0.5"),
+                (F2Dot14::from_f32(-0.25), "-0.25"),
+            ];
+            for (value, expected) in cases {
+                assert_eq!(value.to_string(), expected, "{:?}", value.to_bits());
+            }
+        }
+
+        #[test]
+        fn f4dot12_f6dot10() {
+            assert_eq!(F4Dot12::from_f32(0.6).to_string(), "0.6");
+            assert_eq!(F4Dot12::MIN.to_string(), "-8");
+            assert_eq!(F4Dot12::MAX.to_string(), "7.9998");
+            assert_eq!(F6Dot10::from_f32(-0.6).to_string(), "-0.6");
+            assert_eq!(F6Dot10::MIN.to_string(), "-32");
+            assert_eq!(F6Dot10::MAX.to_string(), "31.999");
+        }
+
+        #[test]
+        fn fixed() {
+            let cases = [
+                (Fixed::from_f64(0.6), "0.6"),
+                (Fixed::from_f64(-0.6), "-0.6"),
+                (Fixed::from_f64(-1.5), "-1.5"),
+                (Fixed::from_i32(1000), "1000"),
+                (Fixed::from_f64(32767.5), "32767.5"),
+                (Fixed::MAX, "32767.99998"),
+                (Fixed::MIN, "-32768"),
+                (Fixed::EPSILON, "0.00002"),
+                (Fixed(-1), "-0.00002"),
+            ];
+            for (value, expected) in cases {
+                assert_eq!(value.to_string(), expected, "{:?}", value.to_bits());
+            }
+        }
+
+        #[test]
+        fn f26dot6() {
+            let cases = [
+                (F26Dot6(1), "0.02"),
+                (F26Dot6(-3), "-0.05"),
+                (F26Dot6(32), "0.5"),
+                (F26Dot6(65), "1.02"),
+                (F26Dot6(-96), "-1.5"),
+                (F26Dot6(100 * 64 + 16), "100.25"),
+                (F26Dot6::from_i32(-7), "-7"),
+                (F26Dot6::MIN, "-33554432"),
+                (F26Dot6::MAX, "33554431.98"),
+            ];
+            for (value, expected) in cases {
+                assert_eq!(value.to_string(), expected, "{:?}", value.to_bits());
+            }
+        }
+
+        #[test]
+        fn f48dot16() {
+            let cases = [
+                (F48Dot16::from_f64(0.6), "0.6"),
+                (F48Dot16::from_i64(1 << 40), "1099511627776"),
+                (F48Dot16::from_f64(-1099511627776.5), "-1099511627776.5"),
+                (F48Dot16::MAX, "140737488355327.99998"),
+                (F48Dot16::MIN, "-140737488355328"),
+                (F48Dot16(i64::MIN + 1), "-140737488355327.99998"),
+            ];
+            for (value, expected) in cases {
+                assert_eq!(value.to_string(), expected, "{:?}", value.to_bits());
+            }
+        }
+
+        /// Checks that `text` parses back to `raw` and is as short as possible.
+        ///
+        /// A decimal with one fewer place that also round-trips would lie
+        /// within half a step of the value, and then so would one of the two
+        /// such decimals nearest it. `from_f64` returns `None` for inputs it
+        /// would saturate, since those don't round-trip in any real sense.
+        fn check_shortest(
+            raw: i64,
+            text: &str,
+            fract_bits: u32,
+            from_f64: impl Fn(f64) -> Option<i64>,
+        ) {
+            assert_ne!(text, "-0");
+            let parsed: f64 = text.parse().unwrap();
+            assert_eq!(from_f64(parsed), Some(raw), "{text} does not round-trip");
+            let places = text
+                .split_once('.')
+                .map_or(0, |(_, fract)| fract.len() as u32);
+            if places == 0 {
+                return;
+            }
+            let pow = 10i128.pow(places - 1);
+            let floor = (i128::from(raw) * pow).div_euclid(1 << fract_bits);
+            for shorter in [floor, floor + 1] {
+                let shorter = shorter as f64 / pow as f64;
+                assert_ne!(from_f64(shorter), Some(raw), "{text} could be {shorter}");
+            }
+        }
+
+        macro_rules! check_all {
+            ($fixed:ident, $raws:expr) => {
+                let one = $fixed::ONE.to_bits() as f64;
+                let min = ($fixed::MIN.to_bits() as f64 - 0.5) / one;
+                let max = ($fixed::MAX.to_bits() as f64 + 0.5) / one;
+                for raw in $raws {
+                    check_shortest(
+                        raw as i64,
+                        &$fixed(raw).to_string(),
+                        $fixed::FRACT_BITS as u32,
+                        |x| (min < x && x < max).then(|| $fixed::from_f64(x).to_bits() as i64),
+                    );
+                }
+            };
+        }
+
+        #[test]
+        fn shortest_all_f2dot14() {
+            check_all!(F2Dot14, i16::MIN..=i16::MAX);
+        }
+
+        #[test]
+        fn shortest_all_f4dot12() {
+            check_all!(F4Dot12, i16::MIN..=i16::MAX);
+        }
+
+        #[test]
+        fn shortest_all_f6dot10() {
+            check_all!(F6Dot10, i16::MIN..=i16::MAX);
+        }
+
+        fn sampled_i32() -> impl Iterator<Item = i32> {
+            (i32::MIN..=i32::MIN + 2000)
+                .chain(-200_000..=200_000)
+                .chain((i32::MIN..=i32::MAX).step_by(65_521))
+                .chain(i32::MAX - 2000..=i32::MAX)
+        }
+
+        #[test]
+        fn shortest_sampled_fixed() {
+            check_all!(Fixed, sampled_i32());
+        }
+
+        #[test]
+        fn shortest_sampled_f26dot6() {
+            check_all!(F26Dot6, sampled_i32());
+        }
+
+        #[test]
+        fn formatter_flags() {
+            let value = F2Dot14(9830);
+            assert_eq!(format!("{value:.2}"), "0.60");
+            assert_eq!(format!("{value:.2?}"), "0.60");
+            assert_eq!(format!("{value:>8}"), "     0.6");
+            assert_eq!(format!("{value:8}"), "     0.6");
+            assert_eq!(format!("{value:<8}|"), "0.6     |");
+            assert_eq!(format!("{value:*^9}"), "***0.6***");
+            assert_eq!(format!("{value:08}"), "000000.6");
+            assert_eq!(format!("{value:+}"), "+0.6");
+            assert_eq!(format!("{value:?}"), "0.6");
+            // Where the shortest decimal is also what f64 prints, every flag
+            // should agree with it.
+            for (value, float) in [(F2Dot14::from_f32(-1.5), -1.5f64), (F2Dot14::ONE, 1.0)] {
+                assert_eq!(format!("{value}"), format!("{float}"));
+                assert_eq!(format!("{value:.3}"), format!("{float:.3}"));
+                assert_eq!(format!("{value:>8}"), format!("{float:>8}"));
+                assert_eq!(format!("{value:<8}"), format!("{float:<8}"));
+                assert_eq!(format!("{value:08}"), format!("{float:08}"));
+                assert_eq!(format!("{value:+09}"), format!("{float:+09}"));
+            }
+        }
     }
 
     #[cfg(feature = "serde")]

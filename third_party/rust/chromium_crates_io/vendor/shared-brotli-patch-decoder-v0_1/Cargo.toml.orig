@@ -1,6 +1,6 @@
 [package]
 name = "shared-brotli-patch-decoder"
-version = "0.1.5"
+version = "0.1.6"
 description = "Wrapper around brotli-sys which allows for decoding shared brotli (https://datatracker.ietf.org/doc/draft-vandevenne-shared-brotli-format/) encoded patch data."
 edition.workspace = true
 license.workspace = true
@@ -18,7 +18,7 @@ rust-brotli = ["dep:brotli-decompressor"]
 
 
 [dependencies]
-brotli-decompressor = {version = "5.0.0", optional = true}
+brotli-decompressor = {version = "6.0.1", optional = true}
 cfg-if = "1.0.0"
 
 [build-dependencies]

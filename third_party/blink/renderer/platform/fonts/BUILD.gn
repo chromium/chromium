@@ -13,8 +13,8 @@ rust_static_library("font_format") {
   }
   deps = [
     "//third_party/rust/font_types/v0_12:lib",
-    "//third_party/rust/read_fonts/v0_43:lib",
-    "//third_party/rust/skrifa/v0_46:lib",
+    "//third_party/rust/read_fonts/v0_45:lib",
+    "//third_party/rust/skrifa/v0_48:lib",
   ]
 }
 
@@ -26,8 +26,8 @@ rust_static_library("ift_patcher_rs") {
     cpp_namespace = "ift_patcher_rs"
   }
   deps = [
-    "//third_party/rust/incremental_font_transfer/v0_7:lib",
+    "//third_party/rust/incremental_font_transfer/v0_9:lib",
     "//third_party/rust/log/v0_4:lib",
-    "//third_party/rust/read_fonts/v0_43:lib",
+    "//third_party/rust/read_fonts/v0_45:lib",
   ]
 }

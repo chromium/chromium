@@ -1,0 +1,101 @@
+use crate::ot::apply::ApplyContext;
+use read_fonts::{
+    tables::{gpos::ValueFormat, variations::DeltaSetIndex},
+    FontData,
+};
+
+#[allow(unused_assignments)]
+pub(super) fn apply(
+    ctx: &mut ApplyContext,
+    idx: usize,
+    data: &FontData,
+    mut offset: usize,
+    format: ValueFormat,
+) -> Option<bool> {
+    let scale = ctx.scale;
+    let pos = &mut ctx.buffer.pos[idx];
+    let is_horizontal = ctx.buffer.direction.is_horizontal();
+    let mut worked = false;
+    macro_rules! read_value {
+        () => {{
+            let value = data.read_at::<i16>(offset).ok()? as i32;
+            worked |= value != 0;
+            offset += 2;
+            value
+        }};
+    }
+    if format.contains(ValueFormat::X_PLACEMENT) {
+        pos.x_offset = pos.x_offset.saturating_add(scale.scale_x(read_value!()));
+    }
+    if format.contains(ValueFormat::Y_PLACEMENT) {
+        pos.y_offset = pos.y_offset.saturating_add(scale.scale_y(read_value!()));
+    }
+    if format.contains(ValueFormat::X_ADVANCE) {
+        if is_horizontal {
+            pos.x_advance = pos.x_advance.saturating_add(scale.scale_x(read_value!()));
+        } else {
+            offset += 2;
+        }
+    }
+    if format.contains(ValueFormat::Y_ADVANCE) {
+        if !is_horizontal {
+            pos.y_advance = pos.y_advance.saturating_sub(scale.scale_y(read_value!()));
+        } else {
+            offset += 2;
+        }
+    }
+    if !format.intersects(ValueFormat::ANY_DEVICE_OR_VARIDX) {
+        return Some(worked);
+    }
+    if let Some(vs) = &ctx.layout.ot.var_store {
+        let coords = ctx.layout.ot.coords;
+        macro_rules! read_delta {
+            () => {{
+                let rec_offset = data.read_at::<u16>(offset).ok()? as usize;
+                offset += 2;
+                // Keep the delta fractional; scale_x_f rounds once, matching
+                // HarfBuzz's em_scalef (rounding whole font units first would
+                // lose up to half a unit).
+                let mut value = 0.0f32;
+                // Offset is nullable
+                if rec_offset != 0 {
+                    let format = data.read_at::<u16>(rec_offset + 4).ok()?;
+                    // DeltaFormat specifier for a VariationIndex table
+                    // See <https://learn.microsoft.com/en-us/typography/opentype/spec/chapter2#device-and-variationindex-tables>
+                    const VARIATION_INDEX_FORMAT: u16 = 0x8000;
+                    if format == VARIATION_INDEX_FORMAT {
+                        let outer = data.read_at::<u16>(rec_offset).ok()?;
+                        let inner = data.read_at::<u16>(rec_offset + 2).ok()?;
+                        value = vs
+                            .compute_delta(DeltaSetIndex { outer, inner }, coords)
+                            .unwrap_or_default()
+                            .to_f64() as f32;
+                        worked |= value != 0.0;
+                    }
+                }
+                value
+            }};
+        }
+        if format.contains(ValueFormat::X_PLACEMENT_DEVICE) {
+            pos.x_offset = pos.x_offset.saturating_add(scale.scale_x_f(read_delta!()));
+        }
+        if format.contains(ValueFormat::Y_PLACEMENT_DEVICE) {
+            pos.y_offset = pos.y_offset.saturating_add(scale.scale_y_f(read_delta!()));
+        }
+        if format.contains(ValueFormat::X_ADVANCE_DEVICE) {
+            if is_horizontal {
+                pos.x_advance = pos.x_advance.saturating_add(scale.scale_x_f(read_delta!()));
+            } else {
+                offset += 2;
+            }
+        }
+        if format.contains(ValueFormat::Y_ADVANCE_DEVICE) {
+            if !is_horizontal {
+                pos.y_advance = pos.y_advance.saturating_sub(scale.scale_y_f(read_delta!()));
+            } else {
+                offset += 2;
+            }
+        }
+    }
+    Some(worked)
+}

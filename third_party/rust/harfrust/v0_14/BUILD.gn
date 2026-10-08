@@ -1,0 +1,146 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "harfrust"
+  epoch = "0.14"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/aat/common.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/aat/kern.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/aat/kerx.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/aat/layout.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/aat/map.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/aat/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/aat/morx.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/aat/trak.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/algs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/buffer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/cache.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/direction.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/fallback.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/feature.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/language.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/normalize.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/once.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/options.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/apply.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/contextual.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/gpos/cursive.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/gpos/mark.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/gpos/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/gpos/pair.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/gpos/single.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/gpos/value.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/gsub/alternate.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/gsub/ligature.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/gsub/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/gsub/multiple.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/gsub/reverse_chain.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/gsub/single.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/layout.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/lookup.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/map.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/shaper/arabic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/shaper/arabic_fallback.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/shaper/arabic_pua.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/shaper/arabic_table.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/shaper/hangul.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/shaper/hebrew.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/shaper/indic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/shaper/indic_machine.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/shaper/indic_table.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/shaper/khmer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/shaper/khmer_machine.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/shaper/machine_cursor.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/shaper/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/shaper/myanmar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/shaper/myanmar_machine.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/shaper/syllabic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/shaper/thai.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/shaper/use_.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/shaper/use_machine.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/shaper/use_table.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/ot/shaper/vowel_constraints.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/parse_setting.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/plan.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/planner.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/scale.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/script.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/set_digest.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/shape.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/shaper_font.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/tag.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/tag_table.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/text_parser.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/unicode/emoji_table.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/unicode/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/harfrust-v0_14/src/unicode/ucd_table.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_name = "harfrust"
+  cargo_pkg_description = "A complete HarfBuzz shaping algorithm port to Rust."
+  cargo_pkg_repository = "https://github.com/harfbuzz/harfrust"
+  cargo_pkg_version = "0.14.0"
+
+  allow_unsafe = false
+
+  deps = [
+    "//third_party/rust/bitflags/v2:lib",
+    "//third_party/rust/bytemuck/v1:lib",
+    "//third_party/rust/icu_normalizer/v2:lib",
+    "//third_party/rust/icu_properties/v2:lib",
+    "//third_party/rust/read_fonts/v0_45:lib",
+    "//third_party/rust/smallvec/v1:lib",
+  ]
+  features = [
+    "default",
+    "icu",
+    "std",
+  ]
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
+}

@@ -1,7 +1,5 @@
-use std::io::{self, Cursor, Write};
-
 use crate::decode_error::DecodeError;
-use brotli_decompressor::BrotliDecompressCustomDict;
+use brotli_decompressor::{BrotliDecompressStream, BrotliResult, BrotliState, StandardAlloc};
 
 #[allow(dead_code)]
 pub fn shared_brotli_decode_rust(
@@ -9,51 +7,65 @@ pub fn shared_brotli_decode_rust(
     shared_dictionary: Option<&[u8]>,
     max_uncompressed_length: usize,
 ) -> Result<Vec<u8>, DecodeError> {
-    let mut input_buffer: [u8; 4096] = [0; 4096];
-    let mut output_buffer: [u8; 4096] = [0; 4096];
-
-    let mut cursor = Cursor::new(encoded);
-    let mut output = BoundedOutput(Default::default(), max_uncompressed_length);
-
-    let mut dict: Vec<u8> = Default::default();
-    if let Some(dict_data) = shared_dictionary {
-        dict.extend_from_slice(dict_data);
+    if let Some(dict) = shared_dictionary {
+        if dict.is_empty() {
+            return Err(DecodeError::InvalidDictionary);
+        }
     }
 
-    BrotliDecompressCustomDict(
-        &mut cursor,
-        &mut output,
-        &mut input_buffer,
-        &mut output_buffer,
-        dict,
-    )
-    .map_err(DecodeError::from_io_error)?;
+    let alloc_u8 = StandardAlloc::default();
+    let alloc_u32 = StandardAlloc::default();
+    let alloc_hc = StandardAlloc::default();
 
-    if cursor.get_ref().len() as u64 > cursor.position() {
+    let mut state = BrotliState::new(alloc_u8, alloc_u32, alloc_hc);
+    if let Some(dict) = shared_dictionary {
+        if !state.attach_dictionary(dict.to_vec().into()) {
+            return Err(DecodeError::InvalidDictionary);
+        }
+    }
+
+    let mut sink = vec![0u8; max_uncompressed_length];
+    let mut available_in = encoded.len();
+    let mut input_offset = 0;
+    let mut available_out = sink.len();
+    let mut output_offset = 0;
+    let mut total_out = 0;
+
+    loop {
+        let result = BrotliDecompressStream(
+            &mut available_in,
+            &mut input_offset,
+            encoded,
+            &mut available_out,
+            &mut output_offset,
+            &mut sink,
+            &mut total_out,
+            &mut state,
+        );
+
+        match result {
+            BrotliResult::ResultSuccess => break,
+            BrotliResult::ResultFailure => {
+                return Err(DecodeError::InvalidStream);
+            }
+            BrotliResult::NeedsMoreInput if available_in == 0 => {
+                return Err(DecodeError::InvalidStream);
+            }
+            BrotliResult::NeedsMoreOutput if available_out == 0 => {
+                return Err(DecodeError::MaxSizeExceeded);
+            }
+            _ => continue,
+        }
+    }
+
+    if available_in > 0 {
         return Err(DecodeError::ExcessInputData);
     }
 
-    Ok(output.0)
-}
-
-#[allow(dead_code)]
-struct BoundedOutput(Vec<u8>, usize);
-
-#[allow(dead_code)]
-impl Write for BoundedOutput {
-    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
-        if self.1 < buf.len() {
-            // hit the write bound, return an error.
-            return Err(io::Error::new(
-                io::ErrorKind::OutOfMemory,
-                "Max output size reached.",
-            ));
-        }
-        self.1 -= buf.len();
-        self.0.write(buf)
+    if total_out > sink.len() {
+        return Err(DecodeError::MaxSizeExceeded);
     }
 
-    fn flush(&mut self) -> std::io::Result<()> {
-        self.0.flush()
-    }
+    sink.resize(total_out, 0);
+    Ok(sink)
 }

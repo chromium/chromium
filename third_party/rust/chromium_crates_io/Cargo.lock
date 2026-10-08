@@ -675,7 +675,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "font-types"
-version = "0.12.5"
+version = "0.12.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bytemuck",
@@ -728,14 +728,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "harfrust"
-version = "0.13.3"
+version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bitflags",
  "bytemuck",
  "icu_normalizer",
  "icu_properties",
- "once_cell",
  "read-fonts",
  "smallvec",
 ]
@@ -1192,7 +1191,7 @@ dependencies = [
 
 [[package]]
 name = "incremental-font-transfer"
-version = "0.7.0"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "font-types",
@@ -1836,12 +1835,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "read-fonts"
-version = "0.43.3"
+version = "0.45.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bytemuck",
  "font-types",
  "once_cell",
+ "yoke",
 ]
 
 [[package]]
@@ -2062,7 +2062,7 @@ dependencies = [
 
 [[package]]
 name = "shared-brotli-patch-decoder"
-version = "0.1.5"
+version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "cc",
@@ -2106,7 +2106,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "skera"
-version = "0.6.0"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "hashbrown",
@@ -2117,7 +2117,7 @@ dependencies = [
 
 [[package]]
 name = "skrifa"
-version = "0.46.2"
+version = "0.48.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bytemuck",
@@ -2838,7 +2838,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "write-fonts"
-version = "0.52.0"
+version = "0.54.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "font-types",

@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "shared-brotli-patch-decoder"
-version = "0.1.5"
+version = "0.1.6"
 build = "build.rs"
 autolib = false
 autobins = false
@@ -37,7 +37,7 @@ name = "shared_brotli_patch_decoder"
 path = "src/lib.rs"
 
 [dependencies.brotli-decompressor]
-version = "5.0.0"
+version = "6.0.1"
 optional = true
 
 [dependencies.cfg-if]
