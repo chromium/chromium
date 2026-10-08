@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/ai_mode_button_config.h"
 #include "components/search_engines/search_engine_type.h"
@@ -37,8 +38,13 @@ AiModeButtonUiConfig::AiModeButtonUiConfig(
                                            dse_name)
               : l10n_util::GetStringFUTF16(IDS_AI_MODE_ENTRYPOINT_TOOLTIP_3P,
                                            name)),
+#if BUILDFLAG(IS_IOS)
+      a11y_label(
+          l10n_util::GetStringFUTF16(IDS_AI_MODE_ENTRYPOINT_ACC_LABEL, name)),
+#else
       a11y_label(
           l10n_util::GetStringFUTF16(IDS_AI_MODE_ENTRYPOINT_ACC_FOCUSED, name)),
+#endif
       context_menu_label(
           l10n_util::GetStringFUTF16(IDS_AI_MODE_ENTRYPOINT_CONTEXT_MENU_SHOW,
                                      name)),
@@ -46,7 +52,8 @@ AiModeButtonUiConfig::AiModeButtonUiConfig(
           l10n_util::GetStringFUTF16(IDS_AI_MODE_OMNIBOX_PLACEHOLDER, name)),
       favicon_url(favicon_url),
       navigation_url(navigation_url),
-      navigation_url_empty(navigation_url_empty) {}
+      navigation_url_empty(navigation_url_empty) {
+}
 AiModeButtonUiConfig::AiModeButtonUiConfig(const AiModeButtonUiConfig&) =
     default;
 AiModeButtonUiConfig::AiModeButtonUiConfig(AiModeButtonUiConfig&&) = default;

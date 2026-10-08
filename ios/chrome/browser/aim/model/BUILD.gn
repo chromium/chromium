@@ -120,6 +120,7 @@ source_set("unit_tests") {
     "//components/omnibox/common",
     "//components/search_engines",
     "//components/signin/public/identity_manager:test_support",
+    "//components/strings",
     "//components/variations:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",

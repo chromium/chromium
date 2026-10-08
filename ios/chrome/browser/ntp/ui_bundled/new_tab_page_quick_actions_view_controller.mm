@@ -45,16 +45,22 @@ constexpr CGFloat kLeadingActionWidthFactor = 0.36;
   NSString* _aimTitle;
   // The custom icon for the AIM button.
   UIImage* _aimIcon;
+  // The custom accessibility label for the AIM button.
+  NSString* _aimAccessibilityLabel;
 }
 
 #pragma mark - Public
 
-- (void)setAIMTitle:(NSString*)title icon:(UIImage*)icon {
+- (void)setAIMTitle:(NSString*)title
+                  icon:(UIImage*)icon
+    accessibilityLabel:(NSString*)accessibilityLabel {
   _aimTitle = [title copy];
   _aimIcon = icon;
+  _aimAccessibilityLabel = [accessibilityLabel copy];
   [NewTabPageQuickActionsButtonFactory updateButton:_aimButton
                                           withTitle:_aimTitle
-                                               icon:_aimIcon];
+                                               icon:_aimIcon
+                                 accessibilityLabel:_aimAccessibilityLabel];
 }
 
 #pragma mark - Accessors & Mutators
@@ -89,9 +95,10 @@ constexpr CGFloat kLeadingActionWidthFactor = 0.36;
     case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
     case AimButtonRefactorArm::kDisabled: {
       _buttonStackView = [self createButtonStackView];
-      _aimButton =
-          [NewTabPageQuickActionsButtonFactory aimButtonWithTitle:_aimTitle
-                                                             icon:_aimIcon];
+      _aimButton = [NewTabPageQuickActionsButtonFactory
+          aimButtonWithTitle:_aimTitle
+                        icon:_aimIcon
+          accessibilityLabel:_aimAccessibilityLabel];
       _incognitoSearchButton = [NewTabPageQuickActionsButtonFactory
           incognitoSearchButtonWithTitle:YES];
       [_buttonStackView addArrangedSubview:_aimButton];
@@ -101,9 +108,10 @@ constexpr CGFloat kLeadingActionWidthFactor = 0.36;
     }
     case AimButtonRefactorArm::kImageGenerationQuickAction: {
       _buttonStackView = [self createButtonStackView];
-      _aimButton =
-          [NewTabPageQuickActionsButtonFactory aimButtonWithTitle:_aimTitle
-                                                             icon:_aimIcon];
+      _aimButton = [NewTabPageQuickActionsButtonFactory
+          aimButtonWithTitle:_aimTitle
+                        icon:_aimIcon
+          accessibilityLabel:_aimAccessibilityLabel];
       _aimImageGenerationButton =
           [NewTabPageQuickActionsButtonFactory aimImageGenerationButton];
       _incognitoSearchButton = [NewTabPageQuickActionsButtonFactory
@@ -124,9 +132,10 @@ constexpr CGFloat kLeadingActionWidthFactor = 0.36;
     }
     case AimButtonRefactorArm::kAttachImageQuickAction: {
       _buttonStackView = [self createButtonStackView];
-      _aimButton =
-          [NewTabPageQuickActionsButtonFactory aimButtonWithTitle:_aimTitle
-                                                             icon:_aimIcon];
+      _aimButton = [NewTabPageQuickActionsButtonFactory
+          aimButtonWithTitle:_aimTitle
+                        icon:_aimIcon
+          accessibilityLabel:_aimAccessibilityLabel];
       _aimAttachImageButton =
           [NewTabPageQuickActionsButtonFactory aimAttachImageButton];
       _incognitoSearchButton = [NewTabPageQuickActionsButtonFactory

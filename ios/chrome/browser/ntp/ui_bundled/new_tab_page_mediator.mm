@@ -861,8 +861,10 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   [self.headerConsumer setAIMAllowed:aimAllowed];
   [self.headerConsumer setFuseboxEligible:fuseboxEligible];
   if (_aiModeButtonServiceIOS) {
-    [self.consumer setAIMTitle:_aiModeButtonServiceIOS->GetTitle()
-                          icon:_aiModeButtonServiceIOS->GetIcon()];
+    [self.consumer
+               setAIMTitle:_aiModeButtonServiceIOS->GetTitle()
+                      icon:_aiModeButtonServiceIOS->GetIcon()
+        accessibilityLabel:_aiModeButtonServiceIOS->GetAccessibilityLabel()];
   }
 
   if (aimAllowed == _isAIMAllowed) {

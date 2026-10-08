@@ -11,12 +11,16 @@
 @interface NewTabPageQuickActionsButtonFactory : NSObject
 
 // Returns an AI Mode Quick Action button.
-+ (UIButton*)aimButtonWithTitle:(NSString*)title icon:(UIImage*)icon;
++ (UIButton*)aimButtonWithTitle:(NSString*)title
+                           icon:(UIImage*)icon
+             accessibilityLabel:(NSString*)accessibilityLabel;
 
-// Updates the title and icon of an existing Quick Action `button`.
+// Updates the title, icon, and accessibility label of an existing Quick Action
+// `button`.
 + (void)updateButton:(UIButton*)button
-           withTitle:(NSString*)title
-                icon:(UIImage*)icon;
+             withTitle:(NSString*)title
+                  icon:(UIImage*)icon
+    accessibilityLabel:(NSString*)accessibilityLabel;
 
 // Returns a Quick Action button for opening AI Mode with the Image Generation
 // chip active.

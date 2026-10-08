@@ -64,6 +64,11 @@
   <message name="IDS_AI_MODE_ENTRYPOINT_ACC_FOCUSED" desc="Accessibility announcement when the omnibox AI Mode entrypoint gains focus.">
     <ph name="AI_ENGINE_NAME">$1<ex>AI Mode</ex></ph> button, press Enter to ask <ph name="AI_ENGINE_NAME">$1<ex>AI Mode</ex></ph>
   </message>
+  <if expr="is_ios">
+    <message name="IDS_AI_MODE_ENTRYPOINT_ACC_LABEL" desc="Accessibility label for the AI Mode entrypoint.">
+      Ask <ph name="AI_ENGINE_NAME">$1<ex>AI Mode</ex></ph>
+    </message>
+  </if>
   <if expr="use_titlecase">
     <message name="IDS_AI_MODE_ENTRYPOINT_CONTEXT_MENU_SHOW" desc="In Title Case: Text label for the omnibox context menu option to toggle showing the omnibox AI Mode entrypoint.">
       Always Show <ph name="AI_ENGINE_NAME">$1<ex>AI Mode</ex></ph>

@@ -191,8 +191,10 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   BOOL _didNotifyCustomizationBadgeDisplay;
   BOOL _useNewBadgeForCustomizationMenu;
 
+  // The title, icon, and accessibility label for the AI Mode button.
   NSString* _aimTitle;
   UIImage* _aimIcon;
+  NSString* _aimAccessibilityLabel;
 }
 
 - (void)viewDidLoad {
@@ -306,7 +308,9 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
         [[NewTabPageQuickActionsViewController alloc] init];
     _quickActionsViewController.layoutGuideCenter = self.layoutGuideCenter;
     _quickActionsViewController.NTPShortcutsHandler = self.NTPShortcutsHandler;
-    [_quickActionsViewController setAIMTitle:_aimTitle icon:_aimIcon];
+    [_quickActionsViewController setAIMTitle:_aimTitle
+                                        icon:_aimIcon
+                          accessibilityLabel:_aimAccessibilityLabel];
     [self addChildViewController:_quickActionsViewController];
 
     _quickActionsViewController.view.translatesAutoresizingMaskIntoConstraints =
@@ -1431,10 +1435,15 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   [self updateActionButtons];
 }
 
-- (void)setAIMTitle:(NSString*)title icon:(UIImage*)icon {
+- (void)setAIMTitle:(NSString*)title
+                  icon:(UIImage*)icon
+    accessibilityLabel:(NSString*)accessibilityLabel {
   _aimTitle = [title copy];
   _aimIcon = icon;
-  [_quickActionsViewController setAIMTitle:title icon:icon];
+  _aimAccessibilityLabel = [accessibilityLabel copy];
+  [_quickActionsViewController setAIMTitle:_aimTitle
+                                      icon:_aimIcon
+                        accessibilityLabel:_aimAccessibilityLabel];
 }
 
 - (void)setFuseboxEligible:(BOOL)eligible {

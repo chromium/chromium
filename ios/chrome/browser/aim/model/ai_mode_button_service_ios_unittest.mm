@@ -6,12 +6,13 @@
 
 #import <memory>
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/mock_callback.h"
 #import "base/test/scoped_feature_list.h"
-#import "components/omnibox/browser/mock_aim_eligibility_service.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/aim/model/ai_mode_button_service_ios_factory.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/aim/model/mock_ios_chrome_aim_eligibility_service.h"
@@ -93,6 +94,8 @@ TEST_F(AIModeButtonServiceIOSTest, GoogleDseProperties) {
   EXPECT_TRUE(service_->IsButtonAvailable());
   EXPECT_NSEQ(service_->GetTitle(),
               l10n_util::GetNSString(IDS_IOS_NTP_QUICK_ACTIONS_AIM));
+  EXPECT_NSEQ(service_->GetAccessibilityLabel(),
+              l10n_util::GetNSString(IDS_IOS_NTP_QUICK_ACTIONS_AIM));
   EXPECT_NE(service_->GetIcon(), nil);
   EXPECT_TRUE(service_->GetUrl().is_valid());
 
@@ -125,6 +128,12 @@ TEST_F(AIModeButtonServiceIOSTest, ThirdPartyDseEnabledWithDebugConfig) {
       .WillRepeatedly(testing::Return(true));
   EXPECT_TRUE(service_->IsButtonAvailable());
   EXPECT_NSEQ(service_->GetTitle(), @"AI Mode for Bing (ĄÜÔ)");
+  // `AiModeButtonService` populates `a11y_label` using
+  // `IDS_AI_MODE_ENTRYPOINT_ACC_LABEL` formatted with the button text.
+  EXPECT_NSEQ(
+      service_->GetAccessibilityLabel(),
+      base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
+          IDS_AI_MODE_ENTRYPOINT_ACC_LABEL, u"AI Mode for Bing (ĄÜÔ)")));
   EXPECT_NE(service_->GetIcon(), nil);
   EXPECT_TRUE(service_->GetUrl().is_valid());
 
@@ -144,12 +153,14 @@ TEST_F(AIModeButtonServiceIOSTest, ThirdPartyDseWithoutAimConfig) {
   EXPECT_FALSE(service_->IsButtonAvailable());
   EXPECT_NSEQ(service_->GetTitle(),
               l10n_util::GetNSString(IDS_IOS_NTP_QUICK_ACTIONS_AIM));
+  EXPECT_NSEQ(service_->GetAccessibilityLabel(),
+              l10n_util::GetNSString(IDS_IOS_NTP_QUICK_ACTIONS_AIM));
 }
 
 // Tests state change notifications when DSE changes.
 TEST_F(AIModeButtonServiceIOSTest, StateChangedNotificationOnDseChange) {
   base::MockRepeatingClosure state_changed_callback;
-  auto subscription =
+  base::CallbackListSubscription subscription =
       service_->RegisterStateChangedCallback(state_changed_callback.Get());
 
   EXPECT_CALL(state_changed_callback, Run()).Times(testing::AtLeast(1));

@@ -129,22 +129,26 @@ UIButton* CreateQuickActionButton(UIImage* image, NSString* title) {
 
 @implementation NewTabPageQuickActionsButtonFactory
 
-+ (UIButton*)aimButtonWithTitle:(NSString*)title icon:(UIImage*)icon {
-  // TODO(crbug.com/549020046): Add an accessibility label to this button.
++ (UIButton*)aimButtonWithTitle:(NSString*)title
+                           icon:(UIImage*)icon
+             accessibilityLabel:(NSString*)accessibilityLabel {
   UIButton* aimButton = CreateQuickActionButton(icon, title);
   aimButton.accessibilityIdentifier = kNTPAIMQuickActionIdentifier;
+  aimButton.accessibilityLabel = accessibilityLabel;
   return aimButton;
 }
 
 + (void)updateButton:(UIButton*)button
-           withTitle:(NSString*)title
-                icon:(UIImage*)icon {
+             withTitle:(NSString*)title
+                  icon:(UIImage*)icon
+    accessibilityLabel:(NSString*)accessibilityLabel {
   if (!button) {
     return;
   }
   UIButtonConfiguration* configuration = button.configuration;
   ConfigureButtonTitleAndIcon(configuration, icon, title);
   button.configuration = configuration;
+  button.accessibilityLabel = accessibilityLabel;
 }
 
 + (UIButton*)aimImageGenerationButton {

@@ -44,8 +44,10 @@
 // Whether AIM is allowed.
 - (void)setAIMAllowed:(BOOL)allowed;
 
-// Sets the title and icon for the AI Mode button.
-- (void)setAIMTitle:(NSString*)title icon:(UIImage*)icon;
+// Sets the title, icon, and accessibility label for the AI Mode button.
+- (void)setAIMTitle:(NSString*)title
+                  icon:(UIImage*)icon
+    accessibilityLabel:(NSString*)accessibilityLabel;
 
 // Sets whether the omnibox is in the bottom position.
 - (void)setOmniboxInBottomPosition:(BOOL)isBottomOmnibox;

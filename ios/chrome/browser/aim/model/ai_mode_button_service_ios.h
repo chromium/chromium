@@ -25,7 +25,7 @@ class AIModeButtonServiceIOS : public KeyedService,
  public:
   AIModeButtonServiceIOS(TemplateURLService* template_url_service,
                          AimEligibilityService* aim_eligibility_service,
-                         AiModeButtonService* ai_mode_button_service = nullptr);
+                         AiModeButtonService* ai_mode_button_service);
   AIModeButtonServiceIOS(const AIModeButtonServiceIOS&) = delete;
   AIModeButtonServiceIOS& operator=(const AIModeButtonServiceIOS&) = delete;
   ~AIModeButtonServiceIOS() override;
@@ -38,6 +38,9 @@ class AIModeButtonServiceIOS : public KeyedService,
 
   // The title for the AI Mode button.
   NSString* GetTitle() const;
+
+  // The accessibility label for the AI Mode button.
+  NSString* GetAccessibilityLabel() const;
 
   // The icon for the AI Mode button.
   UIImage* GetIcon() const;
@@ -55,6 +58,10 @@ class AIModeButtonServiceIOS : public KeyedService,
   void OnTemplateURLServiceShuttingDown() override;
 
  private:
+  // Returns the 3P AI mode button UI config if the default search provider is
+  // not Google and a valid config is available, or nullptr otherwise.
+  const AiModeButtonUiConfig* GetThirdPartyConfig() const;
+
   // Called when the eligibility service notifies that AIM eligibility changed.
   void OnEligibilityChanged();
 

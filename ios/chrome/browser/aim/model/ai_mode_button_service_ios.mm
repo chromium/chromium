@@ -90,7 +90,7 @@ void AIModeButtonServiceIOS::OnEligibilityChanged() {
 }
 
 void AIModeButtonServiceIOS::OnAiModeButtonConfigChanged(
-    const AiModeButtonUiConfig* config) {
+    const AiModeButtonUiConfig* /*config*/) {
   NotifyStateChanged();
 }
 
@@ -98,20 +98,37 @@ void AIModeButtonServiceIOS::NotifyStateChanged() {
   state_changed_callbacks_.Notify();
 }
 
+const AiModeButtonUiConfig* AIModeButtonServiceIOS::GetThirdPartyConfig()
+    const {
+  if (!template_url_service_ || !ai_mode_button_service_ ||
+      search::DefaultSearchProviderIsGoogle(template_url_service_)) {
+    return nullptr;
+  }
+  return ai_mode_button_service_->GetCurrentConfig();
+}
+
 NSString* AIModeButtonServiceIOS::GetTitle() const {
-  if (ai_mode_button_service_ &&
-      !search::DefaultSearchProviderIsGoogle(template_url_service_)) {
-    if (const AiModeButtonUiConfig* config =
-            ai_mode_button_service_->GetCurrentConfig()) {
+  if (const AiModeButtonUiConfig* config = GetThirdPartyConfig()) {
+    if (!config->text.empty()) {
       return base::SysUTF16ToNSString(config->text);
     }
   }
   return l10n_util::GetNSString(IDS_IOS_NTP_QUICK_ACTIONS_AIM);
 }
 
+NSString* AIModeButtonServiceIOS::GetAccessibilityLabel() const {
+  if (const AiModeButtonUiConfig* config = GetThirdPartyConfig()) {
+    if (!config->a11y_label.empty()) {
+      return base::SysUTF16ToNSString(config->a11y_label);
+    }
+  }
+  return GetTitle();
+}
+
 UIImage* AIModeButtonServiceIOS::GetIcon() const {
   Symbol symbol = SymbolMagnifyingglassSpark;
-  if (!search::DefaultSearchProviderIsGoogle(template_url_service_)) {
+  if (template_url_service_ &&
+      !search::DefaultSearchProviderIsGoogle(template_url_service_)) {
     symbol = SymbolSearch;
   }
   if (IsNewTabPageUICleanupEnabled()) {
@@ -127,12 +144,8 @@ UIImage* AIModeButtonServiceIOS::GetIcon() const {
 }
 
 GURL AIModeButtonServiceIOS::GetUrl() const {
-  if (ai_mode_button_service_ &&
-      !search::DefaultSearchProviderIsGoogle(template_url_service_)) {
-    if (const AiModeButtonUiConfig* config =
-            ai_mode_button_service_->GetCurrentConfig()) {
-      return GURL(config->navigation_url_empty);
-    }
+  if (const AiModeButtonUiConfig* config = GetThirdPartyConfig()) {
+    return GURL(config->navigation_url_empty);
   }
   if (!template_url_service_) {
     return GURL();

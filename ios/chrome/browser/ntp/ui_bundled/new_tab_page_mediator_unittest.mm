@@ -469,6 +469,9 @@ TEST_F(NewTabPageMediatorTest, TestAIMEligible) {
   id ntp_consumer = OCMProtocolMock(@protocol(NewTabPageConsumer));
   mediator_.consumer = ntp_consumer;
   OCMExpect([ntp_consumer setAIMAllowed:YES]);
+  OCMExpect([ntp_consumer setAIMTitle:[OCMArg isNotNil]
+                                 icon:[OCMArg isNotNil]
+                   accessibilityLabel:[OCMArg isNotNil]]);
   OCMExpect([header_consumer_ setAIMAllowed:YES]);
   [mediator_ setUp];
 

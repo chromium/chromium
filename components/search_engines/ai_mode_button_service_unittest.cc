@@ -16,6 +16,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/ai_mode_button_config.h"
 #include "components/search_engines/search_engine_type.h"
@@ -73,8 +74,12 @@ TEST_F(AiModeButtonServiceTest, ConfigWithGoogleDse) {
   EXPECT_EQ(std::u16string_view(config->text), u"AI Mode");
   EXPECT_EQ(std::u16string_view(config->tooltip),
             u"Ask AI Mode in Google Search");
+#if BUILDFLAG(IS_IOS)
+  EXPECT_EQ(std::u16string_view(config->a11y_label), u"Ask AI Mode");
+#else
   EXPECT_EQ(std::u16string_view(config->a11y_label),
             u"AI Mode button, press Enter to ask AI Mode");
+#endif
   // Context menu item capitalization is platform dependent.
   EXPECT_THAT(std::u16string_view(config->context_menu_label),
               testing::AnyOf(u"Always Show AI Mode", u"Always show AI Mode"));
@@ -277,9 +282,13 @@ TEST_F(AiModeButtonServiceTest, DebugConfig) {
     EXPECT_EQ(config->id, SearchEngineType::SEARCH_ENGINE_BING);
     EXPECT_EQ(config->text, u"AI Mode for Bing (ĄÜÔ)");
     EXPECT_EQ(config->tooltip, u"Ask AI Mode for Bing (ĄÜÔ)");
+#if BUILDFLAG(IS_IOS)
+    EXPECT_EQ(config->a11y_label, u"Ask AI Mode for Bing (ĄÜÔ)");
+#else
     EXPECT_EQ(config->a11y_label,
               u"AI Mode for Bing (ĄÜÔ) button, press Enter to ask AI Mode "
               u"for Bing (ĄÜÔ)");
+#endif
     EXPECT_THAT(config->context_menu_label,
                 testing::AnyOf(u"Always Show AI Mode for Bing (ĄÜÔ)",
                                u"Always show AI Mode for Bing (ĄÜÔ)"));
