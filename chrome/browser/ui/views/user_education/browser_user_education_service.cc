@@ -2889,6 +2889,12 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
           158, "xinlongyi@google.com",
           "Shown on the Extensions and Skills item in the app menu.")));
 
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      contextual_tasks::kContextualTasksUpdatedEntryPoints,
+      user_education::Metadata(
+          157, "nguyenbryan@google.com",
+          "Shown on Ask Google about this page in context and app menus.")));
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   registry.RegisterFeature(user_education::NewBadgeSpecification(
       switches::kCrossDeviceSigninFromDesktop,

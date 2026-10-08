@@ -2762,8 +2762,8 @@ void RenderViewContextMenu::AppendCopyItem() {
   if (menu_model_.GetItemCount()) {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
   }
-    menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_COPY,
-                                    IDS_CONTENT_CONTEXT_COPY);
+  menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_COPY,
+                                  IDS_CONTENT_CONTEXT_COPY);
 }
 
 void RenderViewContextMenu::AppendLinkToTextItems() {
@@ -2827,8 +2827,7 @@ void RenderViewContextMenu::AppendPartialTranslateItem() {
 
   std::u16string label;
   if (is_menu_simplification_enabled) {
-      label =
-          l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PARTIAL_TRANSLATE_V2);
+    label = l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PARTIAL_TRANSLATE_V2);
   } else {
     label = l10n_util::GetStringFUTF16(
         IDS_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
@@ -3329,6 +3328,11 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
               .value();
       target_model->SetElementIdentifierAt(ask_google_command_index,
                                            kAskGoogleAboutThisPageItem);
+      target_model->SetIsNewFeatureAt(
+          ask_google_command_index,
+          UserEducationService::MaybeShowNewBadge(
+              GetBrowserContext(),
+              contextual_tasks::kContextualTasksUpdatedEntryPoints));
     }
 
     target_model->AddItemWithStringIdAndIcon(

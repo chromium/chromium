@@ -268,7 +268,6 @@ const gfx::VectorIcon& GetSendTabToSelfIcon() {
                                            : kDevicesChromeRefreshOldIcon;
 }
 
-
 #if !BUILDFLAG(IS_CHROMEOS)
 std::u16string GetSyncSectionTitle(Profile* profile,
                                    signin::IdentityManager* identity_manager) {
@@ -2351,10 +2350,15 @@ void AppMenuModel::Build() {
       AddItemWithStringIdAndVectorIcon(
           target_model, IDC_ASK_GOOGLE_ABOUT_THIS_PAGE,
           IDS_CONTEXTUAL_SEARCH_ASK_GOOGLE_ABOUT_THIS_PAGE, search_spark_icon);
-      target_model->SetElementIdentifierAt(
+      const size_t ask_google_command_index =
           target_model->GetIndexOfCommandId(IDC_ASK_GOOGLE_ABOUT_THIS_PAGE)
-              .value(),
-          kAskGoogleAboutThisPageItem);
+              .value();
+      target_model->SetElementIdentifierAt(ask_google_command_index,
+                                           kAskGoogleAboutThisPageItem);
+      target_model->SetIsNewFeatureAt(
+          ask_google_command_index,
+          BrowserUserEducationInterface::From(browser())->MaybeShowNewBadgeFor(
+              contextual_tasks::kContextualTasksUpdatedEntryPoints));
     }
 
     AddItemWithStringIdAndVectorIcon(

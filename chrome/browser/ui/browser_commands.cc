@@ -3160,6 +3160,11 @@ void ExecAskGoogleAboutThisPage(
   if (!browser) {
     return;
   }
+  if (auto* const user_education =
+          BrowserUserEducationInterface::From(browser)) {
+    user_education->NotifyNewBadgeFeatureUsed(
+        contextual_tasks::kContextualTasksUpdatedEntryPoints);
+  }
   if (contextual_tasks::kContextualTasksContextMenuRouteAskGoogleToOmnibox
           .Get()) {
     BrowserWindow* window = BrowserWindow::FromBrowser(browser);

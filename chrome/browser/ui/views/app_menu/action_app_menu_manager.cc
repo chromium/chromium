@@ -891,7 +891,9 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
             if (show_ask_google) {
               target.AddAction(
                   kActionAskGoogleAboutThisPageFromAppMenu,
-                  {.element_id = AppMenuModel::kAskGoogleAboutThisPageItem});
+                  {.new_badge_feature =
+                       &contextual_tasks::kContextualTasksUpdatedEntryPoints,
+                   .element_id = AppMenuModel::kAskGoogleAboutThisPageItem});
             }
             target.AddAction(
                 kActionShowLensOverlayFromAppMenu,
