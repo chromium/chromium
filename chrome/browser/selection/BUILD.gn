@@ -12,7 +12,6 @@ source_set("selection") {
     "suggestion.h",
     "suggestion_service.cc",
     "suggestion_service.h",
-    "suggestion_tool.cc",
     "suggestion_tool.h",
   ]
 

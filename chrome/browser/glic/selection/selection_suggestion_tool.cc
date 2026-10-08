@@ -34,16 +34,6 @@ SelectionSuggestionTool::ToolId SelectionSuggestionTool::GetToolId() const {
   return optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME;
 }
 
-void SelectionSuggestionTool::RequestSuggestions(
-    const ::selection::AreaOfInterest& processed_area,
-    ::selection::SuggestionsCallback callback) {
-  std::move(callback).Run({}, /*complete=*/true);
-}
-
-bool SelectionSuggestionTool::SupportsServerSuggestions() const {
-  return true;
-}
-
 std::unique_ptr<::selection::Suggestion>
 SelectionSuggestionTool::CreateSuggestion(
     const ::selection::AreaOfInterest& processed_area,

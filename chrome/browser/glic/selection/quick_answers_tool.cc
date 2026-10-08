@@ -48,22 +48,29 @@ QuickAnswersTool::QuickAnswersTool(tabs::TabInterface& tab) : tab_(tab) {}
 
 QuickAnswersTool::~QuickAnswersTool() = default;
 
-QuickAnswersTool::ToolId QuickAnswersTool::GetToolId() const {
-  return optimization_guide::proto::SMART_SELECTION_TOOL_QUICK_ANSWERS;
-}
-
-void QuickAnswersTool::RequestSuggestions(
-    const ::selection::AreaOfInterest& processed_area,
-    ::selection::SuggestionsCallback callback) {
-  std::vector<std::unique_ptr<::selection::Suggestion>> suggestions;
+// static
+std::unique_ptr<::selection::Suggestion> QuickAnswersTool::CreateSuggestion(
+    tabs::TabInterface& tab,
+    const ::selection::AreaOfInterest& processed_area) {
   if (processed_area.selected_text.has_value() &&
       !processed_area.selected_text->empty() &&
       processed_area.text_surrounding_selection.has_value() &&
       !processed_area.text_surrounding_selection->empty()) {
-    suggestions.push_back(std::make_unique<ExplainSuggestion>(
-        *tab_, BuildQuickAnswersRequest(*tab_, processed_area)));
+    return std::make_unique<ExplainSuggestion>(
+        tab, BuildQuickAnswersRequest(tab, processed_area));
   }
-  std::move(callback).Run(std::move(suggestions), /*complete=*/true);
+  return nullptr;
+}
+
+QuickAnswersTool::ToolId QuickAnswersTool::GetToolId() const {
+  return optimization_guide::proto::SMART_SELECTION_TOOL_QUICK_ANSWERS;
+}
+
+std::unique_ptr<::selection::Suggestion> QuickAnswersTool::CreateSuggestion(
+    const ::selection::AreaOfInterest& processed_area,
+    const optimization_guide::proto::SmartSelectionSuggestion&
+        server_suggestion) {
+  return CreateSuggestion(*tab_, processed_area);
 }
 
 }  // namespace glic

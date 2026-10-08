@@ -14,12 +14,10 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
-#include "base/containers/extend.h"
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -57,10 +55,7 @@ proto::AreaOfInterest ToProtoAreaOfInterest(const AreaOfInterest& aoi) {
 }
 
 // Builds a request proto for `aoi` and `tools`, excluding screenshot data.
-// Returns `std::nullopt` if no tools supporting server suggestions are
-// registered.
-std::optional<proto::SmartSelectionSuggestionsRequest>
-BuildServerSuggestionsRequest(
+proto::SmartSelectionSuggestionsRequest BuildServerSuggestionsRequest(
     const AreaOfInterest& aoi,
     const base::flat_map<SuggestionTool::ToolId, raw_ptr<SuggestionTool>>&
         tools) {
@@ -68,16 +63,10 @@ BuildServerSuggestionsRequest(
   proto::SmartSelectionClientCapabilities& capabilities =
       *request.mutable_client_capabilities();
   for (const auto& [tool_id, tool] : tools) {
-    if (!tool->SupportsServerSuggestions()) {
-      continue;
-    }
     proto::SmartSelectionToolWithCapabilities& tool_cap =
         *capabilities.add_available_tools();
     tool_cap.set_tool(tool_id);
     // TODO(crbug.com/561489586): Populate tool capabilities.
-  }
-  if (capabilities.available_tools().empty()) {
-    return std::nullopt;
   }
 
   if (g_browser_process) {
@@ -114,8 +103,7 @@ std::vector<std::unique_ptr<Suggestion>> ExtractSuggestionsFromResponse(
   for (const proto::SmartSelectionSuggestion& server_suggestion :
        response->suggestions()) {
     if (const raw_ptr<SuggestionTool>* tool =
-            base::FindOrNull(tools, server_suggestion.tool());
-        tool && (*tool)->SupportsServerSuggestions()) {
+            base::FindOrNull(tools, server_suggestion.tool())) {
       if (std::unique_ptr<Suggestion> suggestion =
               (*tool)->CreateSuggestion(aoi, server_suggestion)) {
         suggestions.emplace_back(std::move(suggestion));
@@ -128,30 +116,6 @@ std::vector<std::unique_ptr<Suggestion>> ExtractSuggestionsFromResponse(
 }  // namespace
 
 DEFINE_USER_DATA(SuggestionService);
-
-struct SuggestionService::ActiveRequest
-    : public base::RefCounted<ActiveRequest> {
-  ActiveRequest(const AreaOfInterest& aoi,
-                size_t num_tools,
-                SuggestionsCallback cb)
-      : aoi(aoi), remaining_tools(num_tools), callback(std::move(cb)) {}
-
-  bool complete() const {
-    return remaining_tools == 0 && !is_awaiting_server_suggestions;
-  }
-
-  const AreaOfInterest aoi;
-  size_t remaining_tools;
-  SuggestionsCallback callback;
-  bool in_synchronous_dispatch = true;
-  bool has_synchronous_response = false;
-  bool is_awaiting_server_suggestions = false;
-  std::vector<std::unique_ptr<Suggestion>> synchronous_suggestions;
-
- private:
-  friend class base::RefCounted<ActiveRequest>;
-  ~ActiveRequest() = default;
-};
 
 // static
 SuggestionService* SuggestionService::From(tabs::TabInterface* tab) {
@@ -202,37 +166,32 @@ void SuggestionService::UpdateScreenContent(
     const SkBitmap& screenshot,
     const optimization_guide::proto::AnnotatedPageContent& apc) {}
 
-void SuggestionService::RequestSuggestions(const AreaOfInterest& processed_area,
+void SuggestionService::RequestSuggestions(AreaOfInterest processed_area,
                                            SuggestionsCallback callback) {
-  if (tools_.empty()) {
+  if (tools_.empty() || !remote_model_executor_ ||
+      !IsFeatureGroupEnabled(kSmartSelectionServerSuggestions)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
-                       std::vector<std::unique_ptr<Suggestion>>(),
-                       /*complete=*/true));
+                       std::vector<std::unique_ptr<Suggestion>>()));
     return;
   }
 
-  auto active_request = base::MakeRefCounted<ActiveRequest>(
-      processed_area, tools_.size(), std::move(callback));
-  const base::flat_map<SuggestionTool::ToolId, raw_ptr<SuggestionTool>>
-      tools_snapshot = tools_;
-  for (const auto& [tool_id, tool] : tools_snapshot) {
-    tool->RequestSuggestions(
-        active_request->aoi,
-        base::BindRepeating(&SuggestionService::OnToolSuggestions,
-                            weak_factory_.GetWeakPtr(), active_request,
-                            base::OwnedRef(false)));
-  }
+  proto::SmartSelectionSuggestionsRequest request =
+      BuildServerSuggestionsRequest(processed_area, tools_);
 
-  active_request->in_synchronous_dispatch = false;
-  RequestServerSuggestions(active_request);
-
-  if (active_request->has_synchronous_response) {
-    active_request->callback.Run(
-        std::exchange(active_request->synchronous_suggestions, {}),
-        active_request->complete());
-  }
+  SkBitmap screenshot = processed_area.screenshot;
+  // TODO(crbug.com/561489586): Investigate alternative image encoding and
+  // compression mechanisms.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&gfx::PNGCodec::EncodeBGRASkBitmap, std::move(screenshot),
+                     /*discard_transparency=*/false),
+      base::BindOnce(&SuggestionService::SendServerSuggestionsRequest,
+                     weak_factory_.GetWeakPtr(), std::move(processed_area),
+                     std::move(callback), std::move(request)));
 }
 
 bool SuggestionService::IsFeatureGroupEnabled(
@@ -242,36 +201,9 @@ bool SuggestionService::IsFeatureGroupEnabled(
              : base::FeatureList::IsEnabled(feature);
 }
 
-void SuggestionService::RequestServerSuggestions(
-    scoped_refptr<ActiveRequest> active_request) {
-  if (!remote_model_executor_ ||
-      !IsFeatureGroupEnabled(kSmartSelectionServerSuggestions)) {
-    return;
-  }
-
-  std::optional<proto::SmartSelectionSuggestionsRequest> request =
-      BuildServerSuggestionsRequest(active_request->aoi, tools_);
-  if (!request.has_value()) {
-    return;
-  }
-
-  active_request->is_awaiting_server_suggestions = true;
-  const SkBitmap& screenshot = active_request->aoi.screenshot;
-  // TODO(crbug.com/561489586): Investigate alternative image encoding and
-  // compression mechanisms.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::TaskPriority::USER_VISIBLE,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&gfx::PNGCodec::EncodeBGRASkBitmap, screenshot,
-                     /*discard_transparency=*/false),
-      base::BindOnce(&SuggestionService::SendServerSuggestionsRequest,
-                     weak_factory_.GetWeakPtr(), std::move(active_request),
-                     *std::move(request)));
-}
-
 void SuggestionService::SendServerSuggestionsRequest(
-    scoped_refptr<ActiveRequest> active_request,
+    AreaOfInterest processed_area,
+    SuggestionsCallback callback,
     proto::SmartSelectionSuggestionsRequest request,
     std::optional<std::vector<uint8_t>> png_bytes) {
   if (png_bytes.has_value()) {
@@ -286,40 +218,17 @@ void SuggestionService::SendServerSuggestionsRequest(
       optimization_guide::ModelBasedCapabilityKey::kSmartSelectionSuggestions,
       request, {.execution_timeout = kSmartSelectionServerTimeout.Get()},
       base::BindOnce(&SuggestionService::OnServerSuggestions,
-                     weak_factory_.GetWeakPtr(), std::move(active_request)));
+                     weak_factory_.GetWeakPtr(), std::move(processed_area),
+                     std::move(callback)));
 }
 
 void SuggestionService::OnServerSuggestions(
-    scoped_refptr<ActiveRequest> active_request,
+    AreaOfInterest processed_area,
+    SuggestionsCallback callback,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
-  if (!active_request->is_awaiting_server_suggestions) {
-    return;
-  }
-  active_request->is_awaiting_server_suggestions = false;
-
-  active_request->callback.Run(
-      ExtractSuggestionsFromResponse(active_request->aoi, result, tools_),
-      active_request->complete());
-}
-
-void SuggestionService::OnToolSuggestions(
-    scoped_refptr<ActiveRequest> active_request,
-    bool& tool_completed,
-    std::vector<std::unique_ptr<Suggestion>> suggestions,
-    bool complete) {
-  if (complete && !tool_completed) {
-    tool_completed = true;
-    active_request->remaining_tools--;
-  }
-  if (active_request->in_synchronous_dispatch) {
-    active_request->has_synchronous_response = true;
-    base::Extend(active_request->synchronous_suggestions,
-                 std::move(suggestions));
-    return;
-  }
-  active_request->callback.Run(std::move(suggestions),
-                               active_request->complete());
+  std::move(callback).Run(
+      ExtractSuggestionsFromResponse(processed_area, result, tools_));
 }
 
 }  // namespace selection

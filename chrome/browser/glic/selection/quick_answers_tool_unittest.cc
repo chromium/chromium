@@ -23,6 +23,7 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/proto/features/quick_answers.pb.h"
+#include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
@@ -74,26 +75,14 @@ TEST_F(QuickAnswersToolTest, ExecutesQuickAnswersModelWithExpectedRequest) {
       u"Learn about quantum computing and its applications.";
 
   QuickAnswersTool tool(mock_tab_);
-  std::vector<std::unique_ptr<::selection::Suggestion>> received_suggestions;
-  bool received_complete = false;
+  optimization_guide::proto::SmartSelectionSuggestion server_suggestion;
+  std::unique_ptr<::selection::Suggestion> suggestion =
+      tool.CreateSuggestion(aoi, server_suggestion);
 
-  tool.RequestSuggestions(
-      aoi,
-      base::BindLambdaForTesting(
-          [&](std::vector<std::unique_ptr<::selection::Suggestion>> suggestions,
-              bool complete) {
-            received_suggestions = std::move(suggestions);
-            received_complete = complete;
-          }));
-
-  EXPECT_TRUE(received_complete);
-  ASSERT_EQ(received_suggestions.size(), 1u);
-  EXPECT_EQ(received_suggestions[0]->GetLabel(), u"Explain");
-  ASSERT_TRUE(received_suggestions[0]->GetAction()->is_inline_fulfillment());
-  EXPECT_EQ(received_suggestions[0]
-                ->GetAction()
-                ->get_inline_fulfillment()
-                ->resource_name,
+  ASSERT_NE(suggestion, nullptr);
+  EXPECT_EQ(suggestion->GetLabel(), u"Explain");
+  ASSERT_TRUE(suggestion->GetAction()->is_inline_fulfillment());
+  EXPECT_EQ(suggestion->GetAction()->get_inline_fulfillment()->resource_name,
             "explain_fulfillment.js");
 
   bool model_executed = false;
@@ -135,7 +124,7 @@ TEST_F(QuickAnswersToolTest, ExecutesQuickAnswersModelWithExpectedRequest) {
           });
 
   mojo::AssociatedRemote<selection::ExplainFulfillment> fulfillment;
-  received_suggestions[0]->Execute(mojo::GenericPendingAssociatedReceiver(
+  suggestion->Execute(mojo::GenericPendingAssociatedReceiver(
       fulfillment.BindNewEndpointAndPassDedicatedReceiver()));
 
   base::test::TestFuture<const std::string&> explanation;
@@ -157,17 +146,10 @@ TEST_F(QuickAnswersToolTest, HandlesModelExecutionError) {
   aoi.selected_text = u"selected term";
   aoi.text_surrounding_selection = u"Surrounding context for selected term.";
 
-  QuickAnswersTool tool(mock_tab_);
-  std::vector<std::unique_ptr<::selection::Suggestion>> received_suggestions;
-  tool.RequestSuggestions(
-      aoi,
-      base::BindLambdaForTesting(
-          [&](std::vector<std::unique_ptr<::selection::Suggestion>> suggestions,
-              bool complete) {
-            received_suggestions = std::move(suggestions);
-          }));
+  std::unique_ptr<::selection::Suggestion> suggestion =
+      QuickAnswersTool::CreateSuggestion(mock_tab_, aoi);
 
-  ASSERT_EQ(received_suggestions.size(), 1u);
+  ASSERT_NE(suggestion, nullptr);
 
   bool model_executed = false;
   EXPECT_CALL(
@@ -200,7 +182,7 @@ TEST_F(QuickAnswersToolTest, HandlesModelExecutionError) {
           });
 
   mojo::AssociatedRemote<selection::ExplainFulfillment> fulfillment;
-  received_suggestions[0]->Execute(mojo::GenericPendingAssociatedReceiver(
+  suggestion->Execute(mojo::GenericPendingAssociatedReceiver(
       fulfillment.BindNewEndpointAndPassDedicatedReceiver()));
 
   base::test::TestFuture<const std::string&> explanation;
@@ -212,34 +194,17 @@ TEST_F(QuickAnswersToolTest, HandlesModelExecutionError) {
 
 TEST_F(QuickAnswersToolTest,
        DoesNotPresentSuggestionWhenSelectedOrSurroundingTextIsEmpty) {
-  QuickAnswersTool tool(mock_tab_);
-
-  auto request_suggestions = [&](const ::selection::AreaOfInterest& aoi) {
-    std::vector<std::unique_ptr<::selection::Suggestion>> received_suggestions;
-    bool received_complete = false;
-    tool.RequestSuggestions(
-        aoi, base::BindLambdaForTesting(
-                 [&](std::vector<std::unique_ptr<::selection::Suggestion>>
-                         suggestions,
-                     bool complete) {
-                   received_suggestions = std::move(suggestions);
-                   received_complete = complete;
-                 }));
-    EXPECT_TRUE(received_complete);
-    return received_suggestions;
-  };
-
   // Both unset.
   {
     ::selection::AreaOfInterest aoi;
-    EXPECT_TRUE(request_suggestions(aoi).empty());
+    EXPECT_EQ(QuickAnswersTool::CreateSuggestion(mock_tab_, aoi), nullptr);
   }
 
   // Missing selected_text.
   {
     ::selection::AreaOfInterest aoi;
     aoi.text_surrounding_selection = u"Surrounding text";
-    EXPECT_TRUE(request_suggestions(aoi).empty());
+    EXPECT_EQ(QuickAnswersTool::CreateSuggestion(mock_tab_, aoi), nullptr);
   }
 
   // Empty selected_text.
@@ -247,14 +212,14 @@ TEST_F(QuickAnswersToolTest,
     ::selection::AreaOfInterest aoi;
     aoi.selected_text = u"";
     aoi.text_surrounding_selection = u"Surrounding text";
-    EXPECT_TRUE(request_suggestions(aoi).empty());
+    EXPECT_EQ(QuickAnswersTool::CreateSuggestion(mock_tab_, aoi), nullptr);
   }
 
   // Missing text_surrounding_selection.
   {
     ::selection::AreaOfInterest aoi;
     aoi.selected_text = u"Selected";
-    EXPECT_TRUE(request_suggestions(aoi).empty());
+    EXPECT_EQ(QuickAnswersTool::CreateSuggestion(mock_tab_, aoi), nullptr);
   }
 
   // Empty text_surrounding_selection.
@@ -262,7 +227,7 @@ TEST_F(QuickAnswersToolTest,
     ::selection::AreaOfInterest aoi;
     aoi.selected_text = u"Selected";
     aoi.text_surrounding_selection = u"";
-    EXPECT_TRUE(request_suggestions(aoi).empty());
+    EXPECT_EQ(QuickAnswersTool::CreateSuggestion(mock_tab_, aoi), nullptr);
   }
 }
 

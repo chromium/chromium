@@ -25,6 +25,7 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/selection/features.h"
 #include "chrome/browser/selection/suggestion_service.h"
 #include "chrome/browser/selection/suggestion_tool.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -212,22 +213,42 @@ namespace {
 
 class FakePromptSuggestionTool : public ::selection::SuggestionTool {
  public:
-  explicit FakePromptSuggestionTool(tabs::TabInterface* tab) : tab_(tab) {}
+  explicit FakePromptSuggestionTool(tabs::TabInterface* tab) : tab_(tab) {
+    QueueServerResponse();
+  }
   ~FakePromptSuggestionTool() override = default;
 
   ToolId GetToolId() const override {
     return optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME;
   }
 
-  void RequestSuggestions(const ::selection::AreaOfInterest& processed_area,
-                          ::selection::SuggestionsCallback callback) override {
-    std::vector<std::unique_ptr<::selection::Suggestion>> suggestions;
-    suggestions.push_back(
-        std::make_unique<SelectionSuggestion>(*tab_, u"Ask Gemini"));
-    std::move(callback).Run(std::move(suggestions), /*complete=*/true);
+  std::unique_ptr<::selection::Suggestion> CreateSuggestion(
+      const ::selection::AreaOfInterest& processed_area,
+      const optimization_guide::proto::SmartSelectionSuggestion&
+          server_suggestion) override {
+    QueueServerResponse();
+    return std::make_unique<SelectionSuggestion>(*tab_, u"Ask Gemini");
   }
 
  private:
+  void QueueServerResponse() {
+    optimization_guide::proto::SmartSelectionSuggestionsResponse response;
+    auto* s = response.add_suggestions();
+    s->set_tool(
+        optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+    s->set_label("Ask Gemini");
+    optimization_guide::proto::Any any;
+    any.set_value(response.SerializeAsString());
+    any.set_type_url(
+        base::StrCat({"type.googleapis.com/", response.GetTypeName()}));
+    OptimizationGuideKeyedServiceFactory::GetForProfile(tab_->GetProfile())
+        ->AddExecutionResultForTesting(
+            optimization_guide::ModelBasedCapabilityKey::
+                kSmartSelectionSuggestions,
+            optimization_guide::OptimizationGuideModelExecutionResult(
+                std::move(any), nullptr));
+  }
+
   raw_ptr<tabs::TabInterface> tab_;
 };
 
@@ -239,7 +260,8 @@ class SelectionOverlayInteractiveTestWithPrompt
   SelectionOverlayInteractiveTestWithPrompt() {
     feature_list_.InitWithFeatures(
         {features::kGlicSelectionOverlayPrompt,
-         features::kGlicSelectionOverlayPromptBox},
+         features::kGlicSelectionOverlayPromptBox,
+         ::selection::kSmartSelectionServerSuggestions},
         {});
   }
 
@@ -273,7 +295,8 @@ class SelectionOverlayInteractiveTestWithPromptWithoutBox
  public:
   SelectionOverlayInteractiveTestWithPromptWithoutBox() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlicSelectionOverlayPrompt},
+        /*enabled_features=*/{features::kGlicSelectionOverlayPrompt,
+                              ::selection::kSmartSelectionServerSuggestions},
         /*disabled_features=*/{features::kGlicSelectionOverlayPromptBox});
   }
 

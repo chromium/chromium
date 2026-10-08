@@ -25,6 +25,7 @@
 #include "chrome/browser/glic/selection/selection_suggestion.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/selection/features.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -232,7 +233,9 @@ SelectionOverlayController::SelectionOverlayController(
     PrefService* pref_service)
     : OverlayBaseController(tab, pref_service),
       scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {
-  if (base::FeatureList::IsEnabled(kQuickAnswersSelectionSuggestions)) {
+  if (base::FeatureList::IsEnabled(kQuickAnswersSelectionSuggestions) &&
+      base::FeatureList::IsEnabled(
+          ::selection::kSmartSelectionServerSuggestions)) {
     quick_answers_tool_ = std::make_unique<QuickAnswersTool>(CHECK_DEREF(tab_));
     if (auto* suggestion_service = ::selection::SuggestionService::From(tab_)) {
       suggestion_service->RegisterTool(quick_answers_tool_.get());
@@ -964,14 +967,6 @@ void SelectionOverlayController::RequestNewSuggestions(
   uint64_t generation = ++region_data.generation;
   base::UnguessableToken region_id = region_data.region->id;
 
-  if (base::FeatureList::IsEnabled(kStaticSelectionSuggestions)) {
-    std::vector<std::unique_ptr<::selection::Suggestion>> static_suggestions;
-    static_suggestions.emplace_back(std::make_unique<SelectionSuggestion>(
-        CHECK_DEREF(tab_), u"Ask Gemini"));
-    OnSuggestionsReceived(region_id, generation, std::move(static_suggestions),
-                          /*complete=*/false);
-  }
-
   ::selection::AreaOfInterest aoi;
   aoi.screenshot = redacted_screenshot_;
   aoi.selected_text = region_data.selected_text;
@@ -998,17 +993,36 @@ void SelectionOverlayController::RequestNewSuggestions(
     }
   }
 
+  std::vector<std::unique_ptr<::selection::Suggestion>> static_suggestions;
+  if (base::FeatureList::IsEnabled(kStaticSelectionSuggestions)) {
+    static_suggestions.emplace_back(std::make_unique<SelectionSuggestion>(
+        CHECK_DEREF(tab_), u"Ask Gemini"));
+  }
+  if (base::FeatureList::IsEnabled(kQuickAnswersSelectionSuggestions) &&
+      !base::FeatureList::IsEnabled(
+          ::selection::kSmartSelectionServerSuggestions)) {
+    if (auto suggestion =
+            QuickAnswersTool::CreateSuggestion(CHECK_DEREF(tab_), aoi)) {
+      static_suggestions.push_back(std::move(suggestion));
+    }
+  }
+  if (!static_suggestions.empty()) {
+    OnSuggestionsReceived(region_id, generation, /*complete=*/false,
+                          std::move(static_suggestions));
+  }
+
   suggestion_service->RequestSuggestions(
-      aoi,
-      base::BindRepeating(&SelectionOverlayController::OnSuggestionsReceived,
-                          weak_factory_.GetWeakPtr(), region_id, generation));
+      std::move(aoi),
+      base::BindOnce(&SelectionOverlayController::OnSuggestionsReceived,
+                     weak_factory_.GetWeakPtr(), region_id, generation,
+                     /*complete=*/true));
 }
 
 void SelectionOverlayController::OnSuggestionsReceived(
     const base::UnguessableToken& region_id,
     uint64_t generation,
-    std::vector<std::unique_ptr<::selection::Suggestion>> suggestions,
-    bool complete) {
+    bool complete,
+    std::vector<std::unique_ptr<::selection::Suggestion>> suggestions) {
   SelectedRegionData* region_data =
       base::FindOrNull(selected_regions_, region_id);
   if (!region_data || region_data->generation != generation) {

@@ -14,7 +14,6 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/selection/suggestion.h"
 #include "chrome/browser/selection/suggestion_tool.h"
@@ -40,6 +39,10 @@ class TabInterface;
 }
 
 namespace selection {
+
+// Callback signature for suggestions retrieval.
+using SuggestionsCallback = base::OnceCallback<void(
+    std::vector<std::unique_ptr<Suggestion>> suggestions)>;
 
 // TabFeature associated service for requesting zero-state or context-aware
 // selection suggestions from registered feature tools.
@@ -72,37 +75,28 @@ class SuggestionService {
 
   // Requests zero-state or context-aware suggestions from registered tools
   // for the active selection context in the tab's WebContents.
-  virtual void RequestSuggestions(const AreaOfInterest& processed_area,
+  virtual void RequestSuggestions(AreaOfInterest processed_area,
                                   SuggestionsCallback callback);
 
  private:
-  struct ActiveRequest;
-
   // Returns whether `feature` is enabled for the profile, falling back to
   // `base::FeatureList::IsEnabled` if `google_groups_manager_` is null.
   bool IsFeatureGroupEnabled(const base::Feature& feature) const;
 
-  // Requests suggestions for `active_request` from MES.
-  void RequestServerSuggestions(scoped_refptr<ActiveRequest> active_request);
-
   // Attaches `png_bytes` (if any) to `request` and sends it to MES.
   void SendServerSuggestionsRequest(
-      scoped_refptr<ActiveRequest> active_request,
+      AreaOfInterest processed_area,
+      SuggestionsCallback callback,
       optimization_guide::proto::SmartSelectionSuggestionsRequest request,
       std::optional<std::vector<uint8_t>> png_bytes);
 
   // Processes the server response by calling tools to convert the response into
   // `Suggestion`s and calling the initial `callback` with them.
   void OnServerSuggestions(
-      scoped_refptr<ActiveRequest> active_request,
+      AreaOfInterest processed_area,
+      SuggestionsCallback callback,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
-
-  void OnToolSuggestions(
-      scoped_refptr<ActiveRequest> active_request,
-      bool& tool_completed,
-      std::vector<std::unique_ptr<Suggestion>> suggestions,
-      bool complete);
 
   const raw_ref<tabs::TabInterface> tab_;
   const raw_ptr<optimization_guide::RemoteModelExecutor> remote_model_executor_;

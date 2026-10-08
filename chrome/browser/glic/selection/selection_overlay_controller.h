@@ -232,8 +232,8 @@ class SelectionOverlayController
   void OnSuggestionsReceived(
       const base::UnguessableToken& region_id,
       uint64_t generation,
-      std::vector<std::unique_ptr<::selection::Suggestion>> suggestions,
-      bool complete);
+      bool complete,
+      std::vector<std::unique_ptr<::selection::Suggestion>> suggestions);
   glic::mojom::AdditionalContextPtr CreateAdditionalContext(
       std::vector<std::pair<base::UnguessableToken,
                             glic::mojom::CapturedRegionPtr>> regions);

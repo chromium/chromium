@@ -43,7 +43,6 @@ namespace {
 
 using ::base::test::RunOnceCallback;
 using ::base::test::TestFuture;
-using ::base::test::TestFutureMode;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Field;
@@ -75,27 +74,12 @@ class TestSuggestion : public Suggestion {
 class CustomTestTool : public SuggestionTool {
  public:
   explicit CustomTestTool(
-      std::u16string label = u"Custom Action",
       ToolId tool_id =
-          optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME,
-      bool supports_server_suggestions = true)
-      : label_(std::move(label)),
-        tool_id_(tool_id),
-        supports_server_suggestions_(supports_server_suggestions) {}
+          optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME)
+      : tool_id_(tool_id) {}
   ~CustomTestTool() override = default;
 
   ToolId GetToolId() const override { return tool_id_; }
-
-  void RequestSuggestions(const AreaOfInterest& processed_area,
-                          SuggestionsCallback callback) override {
-    std::vector<std::unique_ptr<Suggestion>> suggestions;
-    suggestions.push_back(std::make_unique<TestSuggestion>(label_));
-    std::move(callback).Run(std::move(suggestions), /*complete=*/true);
-  }
-
-  bool SupportsServerSuggestions() const override {
-    return supports_server_suggestions_;
-  }
 
   std::unique_ptr<Suggestion> CreateSuggestion(
       const AreaOfInterest& processed_area,
@@ -109,28 +93,7 @@ class CustomTestTool : public SuggestionTool {
   }
 
  private:
-  const std::u16string label_;
   const ToolId tool_id_;
-  const bool supports_server_suggestions_;
-};
-
-class AsyncCustomTestTool : public SuggestionTool {
- public:
-  AsyncCustomTestTool() = default;
-  ~AsyncCustomTestTool() override = default;
-
-  ToolId GetToolId() const override {
-    return optimization_guide::proto::SMART_SELECTION_TOOL_GOOGLE_SEARCH;
-  }
-
-  void RequestSuggestions(const AreaOfInterest& processed_area,
-                          SuggestionsCallback callback) override {
-    std::vector<std::unique_ptr<Suggestion>> suggestions;
-    suggestions.push_back(std::make_unique<TestSuggestion>(u"Async Action"));
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), std::move(suggestions),
-                                  /*complete=*/true));
-  }
 };
 
 class SuggestionServiceUnitTest : public testing::Test {
@@ -162,75 +125,30 @@ class SuggestionServiceUnitTest : public testing::Test {
   std::optional<SuggestionService> service_;
 };
 
-// Tests that registered tools provide suggestions and unregistering them works.
+// Tests that registering and unregistering tools works.
 TEST_F(SuggestionServiceUnitTest, RegisterAndUnregisterCustomTool) {
   EXPECT_EQ(SuggestionService::From(&mock_tab()), &service());
 
   CustomTestTool tool1(
-      u"Static Action 1",
       optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
   CustomTestTool tool2(
-      u"Static Action 2",
       optimization_guide::proto::SMART_SELECTION_TOOL_GOOGLE_LENS);
   service().RegisterTool(&tool1);
   service().RegisterTool(&tool2);
 
-  AreaOfInterest aoi;
-  TestFuture<std::vector<std::unique_ptr<Suggestion>>, bool> future{
-      TestFutureMode::kQueue};
-  service().RequestSuggestions(aoi, future.GetRepeatingCallback());
-
-  // Both synchronous tools are batched into a single callback invocation
-  // with complete=true.
-  auto [batch, complete] = future.Take();
-  EXPECT_TRUE(complete);
-  EXPECT_THAT(batch, ElementsAre(SuggestionWithLabel(u"Static Action 1"),
-                                 SuggestionWithLabel(u"Static Action 2")));
-
   service().UnregisterTool(&tool1);
   service().UnregisterTool(&tool2);
 
-  service().RequestSuggestions(aoi, future.GetRepeatingCallback());
-  auto [empty_batch, empty_complete] = future.Take();
-  EXPECT_TRUE(empty_complete);
-  EXPECT_THAT(empty_batch, IsEmpty());
-}
-
-// Tests that asynchronous tools return their suggestions in subsequent batches.
-TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithAsyncTool) {
-  CustomTestTool static_tool(u"Static Action");
-  AsyncCustomTestTool async_tool;
-  service().RegisterTool(&static_tool);
-  service().RegisterTool(&async_tool);
-
-  AreaOfInterest aoi;
-  TestFuture<std::vector<std::unique_ptr<Suggestion>>, bool> future{
-      TestFutureMode::kQueue};
-  service().RequestSuggestions(aoi, future.GetRepeatingCallback());
-
-  // First batch: Synchronous tool suggestions.
-  auto [static_suggestions, static_complete] = future.Take();
-  EXPECT_FALSE(static_complete);
-  EXPECT_THAT(static_suggestions,
-              ElementsAre(SuggestionWithLabel(u"Static Action")));
-
-  // Second batch: Async custom tool suggestions.
-  auto [async_suggestions, async_complete] = future.Take();
-  EXPECT_TRUE(async_complete);
-  EXPECT_THAT(async_suggestions,
-              ElementsAre(SuggestionWithLabel(u"Async Action")));
-
-  service().UnregisterTool(&static_tool);
-  service().UnregisterTool(&async_tool);
+  // Re-registering with the same ToolId succeeds after unregistering.
+  service().RegisterTool(&tool1);
+  service().UnregisterTool(&tool1);
 }
 
 // Tests that we CHECK that one cannot registering two tools with the same id.
 TEST_F(SuggestionServiceUnitTest, DuplicateToolRegistrationChecks) {
   CustomTestTool tool1(
-      u"Static Action 1",
       optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
   CustomTestTool tool2(
-      u"Static Action 2",
       optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
   service().RegisterTool(&tool1);
   EXPECT_CHECK_DEATH(service().RegisterTool(&tool2));
@@ -240,28 +158,24 @@ TEST_F(SuggestionServiceUnitTest, DuplicateToolRegistrationChecks) {
 // Tests that we CHECK that one cannot register a tool with an unspecified id.
 TEST_F(SuggestionServiceUnitTest, UnspecifiedToolRegistrationChecks) {
   CustomTestTool unspecified_tool(
-      u"Unspecified Action",
       optimization_guide::proto::SMART_SELECTION_TOOL_UNSPECIFIED);
   EXPECT_CHECK_DEATH(service().RegisterTool(&unspecified_tool));
 }
 
 // Tests that server suggestions are not requested when the feature is disabled.
 TEST_F(SuggestionServiceUnitTest, ServerSuggestionsDisabledByDefault) {
-  CustomTestTool static_tool(u"Static Action");
-  service().RegisterTool(&static_tool);
+  CustomTestTool tool;
+  service().RegisterTool(&tool);
 
   EXPECT_CALL(mock_model_executor(), ExecuteModel).Times(0);
 
   AreaOfInterest aoi;
-  TestFuture<std::vector<std::unique_ptr<Suggestion>>, bool> future{
-      TestFutureMode::kQueue};
-  service().RequestSuggestions(aoi, future.GetRepeatingCallback());
+  TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+  service().RequestSuggestions(aoi, future.GetCallback());
 
-  auto [batch, complete] = future.Take();
-  EXPECT_TRUE(complete);
-  EXPECT_THAT(batch, ElementsAre(SuggestionWithLabel(u"Static Action")));
+  EXPECT_THAT(future.Take(), IsEmpty());
 
-  service().UnregisterTool(&static_tool);
+  service().UnregisterTool(&tool);
 }
 
 // Tests that server suggestions are not requested when the feature is
@@ -273,21 +187,18 @@ TEST_F(SuggestionServiceUnitTest,
       kSmartSelectionServerSuggestions,
       {{variations::internal::kGoogleGroupFeatureParamName, "1234"}});
 
-  CustomTestTool static_tool(u"Static Action");
-  service().RegisterTool(&static_tool);
+  CustomTestTool tool;
+  service().RegisterTool(&tool);
 
   EXPECT_CALL(mock_model_executor(), ExecuteModel).Times(0);
 
   AreaOfInterest aoi;
-  TestFuture<std::vector<std::unique_ptr<Suggestion>>, bool> future{
-      TestFutureMode::kQueue};
-  service().RequestSuggestions(aoi, future.GetRepeatingCallback());
+  TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+  service().RequestSuggestions(aoi, future.GetCallback());
 
-  auto [batch, complete] = future.Take();
-  EXPECT_TRUE(complete);
-  EXPECT_THAT(batch, ElementsAre(SuggestionWithLabel(u"Static Action")));
+  EXPECT_THAT(future.Take(), IsEmpty());
 
-  service().UnregisterTool(&static_tool);
+  service().UnregisterTool(&tool);
 }
 
 // Tests that server suggestions fall back to `base::FeatureList::IsEnabled`
@@ -301,7 +212,6 @@ TEST_F(SuggestionServiceUnitTest,
                                            &mock_model_executor(),
                                            /*google_groups_manager=*/nullptr);
   CustomTestTool gemini_tool(
-      u"Static Action",
       optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
   service_without_groups.RegisterTool(&gemini_tool);
 
@@ -323,46 +233,27 @@ TEST_F(SuggestionServiceUnitTest,
           /*log_entry=*/nullptr));
 
   AreaOfInterest aoi;
-  TestFuture<std::vector<std::unique_ptr<Suggestion>>, bool> future{
-      TestFutureMode::kQueue};
-  service_without_groups.RequestSuggestions(aoi, future.GetRepeatingCallback());
+  TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+  service_without_groups.RequestSuggestions(aoi, future.GetCallback());
 
-  auto [static_batch, static_complete] = future.Take();
-  EXPECT_FALSE(static_complete);
-  EXPECT_THAT(static_batch, ElementsAre(SuggestionWithLabel(u"Static Action")));
-
-  auto [server_batch, server_complete] = future.Take();
-  EXPECT_TRUE(server_complete);
-  EXPECT_THAT(server_batch,
+  EXPECT_THAT(future.Take(),
               ElementsAre(SuggestionWithLabel(u"Server Gemini Action")));
 
   service_without_groups.UnregisterTool(&gemini_tool);
 }
 
-// Tests that server suggestions are not requested when no registered tool
-// supports them.
+// Tests that server suggestions are not requested when no tools are registered.
 TEST_F(SuggestionServiceUnitTest,
-       ServerSuggestionsNotRequestedWhenNoToolSupportsThem) {
+       ServerSuggestionsNotRequestedWhenNoToolsRegistered) {
   base::test::ScopedFeatureList feature_list{kSmartSelectionServerSuggestions};
-
-  CustomTestTool local_only_tool(
-      u"Static Action",
-      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME,
-      /*supports_server_suggestions=*/false);
-  service().RegisterTool(&local_only_tool);
 
   EXPECT_CALL(mock_model_executor(), ExecuteModel).Times(0);
 
   AreaOfInterest aoi;
-  TestFuture<std::vector<std::unique_ptr<Suggestion>>, bool> future{
-      TestFutureMode::kQueue};
-  service().RequestSuggestions(aoi, future.GetRepeatingCallback());
+  TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+  service().RequestSuggestions(aoi, future.GetCallback());
 
-  auto [batch, complete] = future.Take();
-  EXPECT_TRUE(complete);
-  EXPECT_THAT(batch, ElementsAre(SuggestionWithLabel(u"Static Action")));
-
-  service().UnregisterTool(&local_only_tool);
+  EXPECT_THAT(future.Take(), IsEmpty());
 }
 
 // Tests that server suggestions are requested, parsed, and returned.
@@ -370,14 +261,8 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithServerSuggestions) {
   base::test::ScopedFeatureList feature_list{kSmartSelectionServerSuggestions};
 
   CustomTestTool gemini_tool(
-      u"Static Action",
       optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
-  CustomTestTool local_only_tool(
-      u"Local Only Action",
-      optimization_guide::proto::SMART_SELECTION_TOOL_GOOGLE_SEARCH,
-      /*supports_server_suggestions=*/false);
   service().RegisterTool(&gemini_tool);
-  service().RegisterTool(&local_only_tool);
 
   optimization_guide::proto::SmartSelectionSuggestionsResponse response;
   optimization_guide::proto::SmartSelectionSuggestion* s1 =
@@ -393,13 +278,8 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithServerSuggestions) {
 
   optimization_guide::proto::SmartSelectionSuggestion* s3 =
       response.add_suggestions();
-  s3->set_tool(optimization_guide::proto::SMART_SELECTION_TOOL_GOOGLE_SEARCH);
-  s3->set_label("Local Only Tool Action");
-
-  optimization_guide::proto::SmartSelectionSuggestion* s4 =
-      response.add_suggestions();
-  s4->set_tool(optimization_guide::proto::SMART_SELECTION_TOOL_UNSPECIFIED);
-  s4->set_label("Unspecified Tool Action");
+  s3->set_tool(optimization_guide::proto::SMART_SELECTION_TOOL_UNSPECIFIED);
+  s3->set_label("Unspecified Tool Action");
 
   EXPECT_CALL(mock_model_executor(),
               ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
@@ -443,26 +323,13 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithServerSuggestions) {
   aoi.screenshot.eraseColor(SK_ColorRED);
   aoi.bounds = gfx::Rect(10, 20, 30, 40);
 
-  TestFuture<std::vector<std::unique_ptr<Suggestion>>, bool> future{
-      TestFutureMode::kQueue};
-  service().RequestSuggestions(aoi, future.GetRepeatingCallback());
+  TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+  service().RequestSuggestions(aoi, future.GetCallback());
 
-  // First batch: Synchronous tool suggestions, with complete=false while
-  // waiting for MES.
-  auto [static_batch, static_complete] = future.Take();
-  EXPECT_FALSE(static_complete);
-  EXPECT_THAT(static_batch,
-              ElementsAre(SuggestionWithLabel(u"Static Action"),
-                          SuggestionWithLabel(u"Local Only Action")));
-
-  // Second batch: Server suggestions, with complete=true.
-  auto [server_batch, server_complete] = future.Take();
-  EXPECT_TRUE(server_complete);
-  EXPECT_THAT(server_batch,
+  EXPECT_THAT(future.Take(),
               ElementsAre(SuggestionWithLabel(u"Server Gemini Action")));
 
   service().UnregisterTool(&gemini_tool);
-  service().UnregisterTool(&local_only_tool);
 }
 
 // Tests that server errors still complete the suggestion request.
@@ -473,7 +340,6 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsServerError) {
       {{kSmartSelectionServerTimeout.name, "5s"}});
 
   CustomTestTool gemini_tool(
-      u"Static Action",
       optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
   service().RegisterTool(&gemini_tool);
 
@@ -498,17 +364,10 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsServerError) {
           /*log_entry=*/nullptr));
 
   AreaOfInterest aoi;
-  TestFuture<std::vector<std::unique_ptr<Suggestion>>, bool> future{
-      TestFutureMode::kQueue};
-  service().RequestSuggestions(aoi, future.GetRepeatingCallback());
+  TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+  service().RequestSuggestions(aoi, future.GetCallback());
 
-  auto [static_batch, static_complete] = future.Take();
-  EXPECT_FALSE(static_complete);
-  EXPECT_THAT(static_batch, ElementsAre(SuggestionWithLabel(u"Static Action")));
-
-  auto [server_batch, server_complete] = future.Take();
-  EXPECT_TRUE(server_complete);
-  EXPECT_THAT(server_batch, IsEmpty());
+  EXPECT_THAT(future.Take(), IsEmpty());
 
   service().UnregisterTool(&gemini_tool);
 }
