@@ -55,7 +55,7 @@ class PortalMonitorImpl : public NetworkChangeNotifierLinux::PortalMonitor {
       // 2. In unit test suites (e.g. `net_unittests`), cross-platform tests
       //    call `NetworkChangeNotifier::CreateIfNeeded()` across sequential
       //    `TaskEnvironment`s without calling
-      //    `dbus_thread_linux::ShutdownOnDBusThreadAndBlock()`. Using
+      //    `dbus_thread_linux::Shutdown()`. Using
       //    process-global D-Bus singletons retains a stale origin `TaskRunner`
       //    from the first test's destroyed `TaskEnvironment`. Owning a private
       //    bus here and shutting it down in `~PortalMonitorImpl()` ties the
@@ -70,6 +70,11 @@ class PortalMonitorImpl : public NetworkChangeNotifierLinux::PortalMonitor {
       options.dbus_task_runner = base::ThreadPool::CreateSingleThreadTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
           base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+      // `dbus::Bus` aborts the process without this. Losing the bus means
+      // losing the portal, so handle it like the portal going away.
+      options.disconnected_callback = base::BindOnce(
+          &PortalMonitorImpl::OnNameOwnerChanged,
+          weak_ptr_factory_.GetWeakPtr(), std::string(), std::string());
       bus_ = base::MakeRefCounted<dbus::Bus>(std::move(options));
     } else {
       bus_->AssertOnOriginThread();
