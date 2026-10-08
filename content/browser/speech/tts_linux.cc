@@ -43,11 +43,24 @@ using PlatformVoices = std::map<std::string, SPDChromeVoice>;
 constexpr int kInvalidUtteranceId = -1;
 constexpr int kInvalidMessageUid = -1;
 
+std::string& SpeechDispatcherLibraryPath() {
+  static base::NoDestructor<std::string> library_path("libspeechd.so.2");
+  return *library_path;
+}
+
 }  // namespace
+
+base::AutoReset<std::string> SetSpeechDispatcherLibraryPathForTesting(
+    const std::string& library_path) {
+  CHECK(!library_path.empty());
+  return base::AutoReset<std::string>(&SpeechDispatcherLibraryPath(),
+                                      library_path);
+}
 
 class TtsPlatformImplBackgroundWorker {
  public:
-  TtsPlatformImplBackgroundWorker() = default;
+  explicit TtsPlatformImplBackgroundWorker(std::string library_path)
+      : library_path_(std::move(library_path)) {}
   TtsPlatformImplBackgroundWorker(const TtsPlatformImplBackgroundWorker&) =
       delete;
   TtsPlatformImplBackgroundWorker& operator=(
@@ -92,6 +105,7 @@ class TtsPlatformImplBackgroundWorker {
                                 SPDNotificationType state,
                                 char* index_mark);
 
+  const std::string library_path_;
   LibSpeechdLoader libspeechd_loader_;
   raw_ptr<SPDConnection> conn_ = nullptr;
   int msg_uid_ = kInvalidMessageUid;
@@ -250,7 +264,7 @@ void TtsPlatformImplBackgroundWorker::Shutdown() {
 }
 
 bool TtsPlatformImplBackgroundWorker::InitializeSpeechd() {
-  return libspeechd_loader_.Load("libspeechd.so.2");
+  return libspeechd_loader_.Load(library_path_);
 }
 
 void TtsPlatformImplBackgroundWorker::InitializeVoices(PlatformVoices* voices) {
@@ -401,7 +415,8 @@ void TtsPlatformImplBackgroundWorker::IndexMarkCallback(
 //
 
 TtsPlatformImplLinux::TtsPlatformImplLinux()
-    : worker_(base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {
+    : worker_(base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
+              SpeechDispatcherLibraryPath()) {
   CHECK(BrowserThread::CurrentlyOn(content::BrowserThread::UI),
         base::NotFatalUntil::M159);
   const base::CommandLine& command_line =

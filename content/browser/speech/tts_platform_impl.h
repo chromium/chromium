@@ -7,10 +7,20 @@
 
 #include <string>
 
+#include "base/auto_reset.h"
+#include "build/build_config.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/tts_platform.h"
 
 namespace content {
+
+#if BUILDFLAG(IS_LINUX)
+// Overrides the library path captured when the Linux TTS singleton is created.
+// Must be called before TtsPlatform::GetInstance().
+CONTENT_EXPORT base::AutoReset<std::string>
+SetSpeechDispatcherLibraryPathForTesting(const std::string& library_path);
+#endif
 
 // Abstract platform implementation.
 class TtsPlatformImpl : public TtsPlatform {

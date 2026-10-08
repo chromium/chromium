@@ -1426,6 +1426,21 @@ static_library("content_test_entry") {
   sources = [ "content_test_launcher_exe.cc" ]
 }
 
+if (is_linux) {
+  shared_library("fake_speech_dispatcher") {
+    testonly = true
+    sources = [
+      "../browser/speech/test/fake_speech_dispatcher.cc",
+      "../browser/speech/test/fake_speech_dispatcher.h",
+    ]
+
+    if (is_cfi) {
+      # Model a system library outside the CFI-instrumented browser executable.
+      configs -= [ "//build/config/sanitizers:default_sanitizer_flags" ]
+    }
+  }
+}
+
 test("content_browsertests") {
   use_xvfb = use_xvfb_in_this_config
 
@@ -1840,7 +1855,11 @@ test("content_browsertests") {
   ]
 
   if (is_linux) {
-    sources += [ "../browser/network/address_map_linux_browsertest.cc" ]
+    sources += [
+      "../browser/network/address_map_linux_browsertest.cc",
+      "../browser/speech/test/fake_speech_dispatcher.h",
+      "../browser/speech/tts_linux_browsertest.cc",
+    ]
   }
 
   if (is_android) {
@@ -2059,6 +2078,9 @@ test("content_browsertests") {
     "//mojo/public/js:bindings_lite",
     "//url/mojom:url_mojom_scheme_host_port_js_data_deps",
   ]
+  if (is_linux) {
+    data_deps += [ ":fake_speech_dispatcher" ]
+  }
 
   data = [
     "data/",

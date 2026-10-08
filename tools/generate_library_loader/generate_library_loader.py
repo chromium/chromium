@@ -30,7 +30,7 @@ HEADER_TEMPLATE = """// This is generated file. Do not modify directly.
 
 #include <string>
 
-class %(class_name)s {
+%(cfi_unchecked_callee_define)sclass %(class_name)s {
  public:
   %(class_name)s();
   ~%(class_name)s();
@@ -56,12 +56,14 @@ class %(class_name)s {
   void operator=(const %(class_name)s&);
 };
 
-#endif  // %(unique_prefix)s
+%(cfi_unchecked_callee_undef)s#endif  // %(unique_prefix)s
 """
 
 
-HEADER_MEMBER_TEMPLATE = """  decltype(&::%(function_name)s) %(function_name)s;
-"""
+HEADER_MEMBER_TEMPLATE = (
+  "  decltype(&::%(function_name)s) %(function_name)s"
+  "%(cfi_unchecked_callee)s;\n"
+)
 
 
 IMPL_TEMPLATE = """// This is generated file. Do not modify directly.
@@ -144,6 +146,9 @@ def main():
   parser.add_option('--bundled-header')
   parser.add_option('--use-extern-c', action='store_true', default=False)
   parser.add_option('--link-directly', type=int, default=0)
+  parser.add_option(
+    '--cfi-unchecked-callee', action='store_true', default=False
+  )
 
   options, args = parser.parse_args()
 
@@ -172,10 +177,15 @@ def main():
   member_decls = []
   member_init = []
   member_cleanup = []
+  cfi_unchecked_callee = (
+    ' %s_CFI_UNCHECKED_CALLEE' % unique_prefix
+    if options.cfi_unchecked_callee
+    else ''
+  )
   for fn in args:
     member_decls.append(
       HEADER_MEMBER_TEMPLATE
-      % {'function_name': fn, 'unique_prefix': unique_prefix}
+      % {'function_name': fn, 'cfi_unchecked_callee': cfi_unchecked_callee}
     )
     member_init.append(
       IMPL_MEMBER_INIT_TEMPLATE
@@ -221,6 +231,23 @@ def main():
     'wrapped_header_include': wrapped_header_include,
     'class_name': options.name,
     'member_decls': ''.join(member_decls),
+    'cfi_unchecked_callee_define': (
+      '#if defined(__clang__)\n'
+      '#if !__has_attribute(cfi_unchecked_callee)\n'
+      '#error cfi_unchecked_callee requires a newer Clang\n'
+      '#endif\n'
+      '#define %s_CFI_UNCHECKED_CALLEE [[clang::cfi_unchecked_callee]]\n'
+      '#else\n'
+      '#define %s_CFI_UNCHECKED_CALLEE\n'
+      '#endif\n' % (unique_prefix, unique_prefix)
+      if options.cfi_unchecked_callee
+      else ''
+    ),
+    'cfi_unchecked_callee_undef': (
+      '#undef %s_CFI_UNCHECKED_CALLEE\n' % unique_prefix
+      if options.cfi_unchecked_callee
+      else ''
+    ),
   }
 
   impl_contents = IMPL_TEMPLATE % {

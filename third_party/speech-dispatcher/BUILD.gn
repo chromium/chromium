@@ -6,6 +6,7 @@ import("//tools/generate_library_loader/generate_library_loader.gni")
 
 generate_library_loader("speech-dispatcher") {
   name = "LibSpeechdLoader"
+  cfi_unchecked_callee = true
   output_h = "libspeechd.h"
   output_cc = "libspeechd.cc"
   header = "<libspeechd.h>"

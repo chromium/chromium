@@ -9,6 +9,12 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "fake_speech_dispatcher\\.cc": [
+    "+third_party/speech-dispatcher/libspeechd.h",
+  ],
+  "tts_linux_browsertest\\.cc": [
+    "+third_party/speech-dispatcher/speechd_types.h",
+  ],
   "tts_controller_impl\\.cc": [
     # TtsControllerImpl uses GetLanguage(), which is not grd related.
     "+ui/base/l10n/l10n_util.h",
