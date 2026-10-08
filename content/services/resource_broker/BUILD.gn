@@ -17,3 +17,19 @@ source_set("resource_broker") {
 
   deps = [ "//base" ]
 }
+
+source_set("tests") {
+  testonly = true
+
+  sources = [ "resource_broker_service_impl_unittest.cc" ]
+
+  public_deps = [ ":resource_broker" ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//content/services/resource_broker/public/mojom",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+  ]
+}

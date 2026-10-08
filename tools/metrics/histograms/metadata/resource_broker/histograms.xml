@@ -1,0 +1,33 @@
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Resource Broker histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="ResourceBroker.LifecycleEvent"
+    enum="ResourceBrokerLifecycleEvent" expires_after="2027-07-12">
+  <owner>aattar@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Recorded when discrete Resource Broker lifecycle milestones occur in the
+    browser process: when the service is initially launched, and when the
+    service is permanently disabled for the session due to a rapid crash loop (3
+    or more crashes within 10 minutes).
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

@@ -4,8 +4,12 @@
 
 module resource_broker.mojom;
 
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
-import "mojo/public/mojom/base/work_in_progress.mojom";
+
+struct BrokerConfig {
+  mojo_base.mojom.UnguessableToken session_nonce;
+};
 
 // Control interface for the Resource Broker service.
 //
@@ -17,7 +21,11 @@ import "mojo/public/mojom/base/work_in_progress.mojom";
 // substitute, or serve responses, and does not share memory with renderers.
 // Its only outputs are aggregated metrics. Serving behavior, if ever built,
 // will be a separate default-off feature adding new messages to this interface.
-[ServiceSandbox=sandbox.mojom.Sandbox.kService,
- RuntimeFeature=mojo_base.mojom.kMojomWorkInProgress]
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface ResourceBrokerService {
+  // Initializes the resource broker service with the given configuration.
+  // Called exactly once per broker epoch (process lifetime); passing an
+  // invalid config or calling this more than once triggers a CHECK failure.
+  // |config| contains the service configuration (e.g. session nonce).
+  Initialize(BrokerConfig config);
 };

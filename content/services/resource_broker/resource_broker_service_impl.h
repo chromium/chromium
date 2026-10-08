@@ -22,8 +22,15 @@ class ResourceBrokerServiceImpl : public mojom::ResourceBrokerService {
 
   ~ResourceBrokerServiceImpl() override;
 
+  // mojom::ResourceBrokerService implementation:
+  void Initialize(mojom::BrokerConfigPtr config) override;
+
+  const mojom::BrokerConfigPtr& config_for_testing() const { return config_; }
+
  private:
   mojo::Receiver<mojom::ResourceBrokerService> receiver_;
+  bool initialized_ = false;
+  mojom::BrokerConfigPtr config_;
 };
 
 }  // namespace resource_broker

@@ -1,0 +1,32 @@
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<!-- LINT.IfChange(ResourceBrokerLifecycleEvent) -->
+
+<enum name="ResourceBrokerLifecycleEvent">
+  <int value="0" label="Launched"/>
+  <int value="1" label="DisabledDueToCrashLoop"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/resource_broker/resource_broker_host.h:ResourceBrokerLifecycleEvent) -->
+
+</enums>
+
+</histogram-configuration>

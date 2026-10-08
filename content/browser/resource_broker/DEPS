@@ -1,0 +1,9 @@
+include_rules = [
+  "+content/services/resource_broker/public/mojom",
+]
+
+specific_include_rules = {
+  "resource_broker_host_unittest\\.cc": [
+    "+content/services/resource_broker/resource_broker_service_impl.h",
+  ],
+}

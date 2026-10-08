@@ -16,6 +16,7 @@
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
 #include "components/services/storage/storage_service_impl.h"
 #include "content/child/child_process.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/utility/content_utility_client.h"
 #include "content/public/utility/utility_thread.h"
@@ -408,7 +409,9 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunAudio);
 
   services.Add(RunDataDecoder);
-  services.Add(RunResourceBroker);
+  if (base::FeatureList::IsEnabled(features::kResourceBroker)) {
+    services.Add(RunResourceBroker);
+  }
   services.Add(RunStorageService);
   services.Add(RunTracing);
   services.Add(RunVideoCapture);

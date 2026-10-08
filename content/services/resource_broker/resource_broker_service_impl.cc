@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/check.h"
+
 namespace resource_broker {
 
 ResourceBrokerServiceImpl::ResourceBrokerServiceImpl(
@@ -13,5 +15,13 @@ ResourceBrokerServiceImpl::ResourceBrokerServiceImpl(
     : receiver_(this, std::move(receiver)) {}
 
 ResourceBrokerServiceImpl::~ResourceBrokerServiceImpl() = default;
+
+void ResourceBrokerServiceImpl::Initialize(mojom::BrokerConfigPtr config) {
+  CHECK(!initialized_);
+  CHECK(config);
+  CHECK(!config->session_nonce.is_empty());
+  initialized_ = true;
+  config_ = std::move(config);
+}
 
 }  // namespace resource_broker
