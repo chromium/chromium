@@ -12,7 +12,7 @@ import type {OrganizerListSectionItem, OrganizerListSectionItemDescriptionPart} 
 import type {BrowserProxy, ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, TabsRemovedInfo} from '../tab_search.mojom-webui.js';
 import {browserProxyFactory} from '../tab_search.mojom-webui.js';
 
-import {compareTimeDescending, getTabDescriptionParts, tokenToString} from './tab_delegate_utils.js';
+import {compareTimeDescending, tokenToString} from './tab_delegate_utils.js';
 
 // Union type to represent all possible recently closed items (tabs, tab groups,
 // split views).
@@ -134,7 +134,8 @@ export class RecentTabsDelegate implements
       OrganizerListSectionItem<RecentlyClosedItem> {
     return {
       title: [tab.title],
-      description: getTabDescriptionParts([tab.url], tab.lastActiveElapsedText),
+      description:
+          tab.lastActiveElapsedText ? [{text: tab.lastActiveElapsedText}] : [],
       prefixIcon: {
         url: tab.url,
       },

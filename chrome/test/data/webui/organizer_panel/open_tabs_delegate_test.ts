@@ -182,12 +182,9 @@ suite('OpenTabsDelegateTest', () => {
 
     // Most recent tab.
     assertDeepEquals([youtubeTab.title], items[0]!.title);
-    assertEquals(2, items[0]!.description?.length);
+    assertEquals(1, items[0]!.description?.length);
     assertDeepEquals(
-        {text: 'www.youtube.com', elideFromStart: true},
-        items[0]!.description?.[0]);
-    assertDeepEquals(
-        {text: youtubeTab.lastActiveElapsedText}, items[0]!.description?.[1]);
+        {text: youtubeTab.lastActiveElapsedText}, items[0]!.description?.[0]);
     assertEquals(youtubeTab.url, items[0]!.prefixIcon?.url);
     assertEquals('cr:close', items[0]!.hoveredActionButton?.icon);
     assertEquals('Close tab', items[0]!.hoveredActionButton?.ariaLabel);
@@ -196,24 +193,18 @@ suite('OpenTabsDelegateTest', () => {
 
     // Second most recent tab.
     assertDeepEquals([chromiumTab.title], items[1]!.title);
-    assertEquals(2, items[1]!.description?.length);
+    assertEquals(1, items[1]!.description?.length);
     assertDeepEquals(
-        {text: 'www.chromium.org', elideFromStart: true},
-        items[1]!.description?.[0]);
-    assertDeepEquals(
-        {text: chromiumTab.lastActiveElapsedText}, items[1]!.description?.[1]);
+        {text: chromiumTab.lastActiveElapsedText}, items[1]!.description?.[0]);
     assertEquals(chromiumTab.url, items[1]!.prefixIcon?.url);
     assertDeepEquals(
         {type: OpenTabsItemType.TAB, tab: chromiumTab}, items[1]!.data);
 
     // Least recent tab.
     assertDeepEquals([googleTab.title], items[2]!.title);
-    assertEquals(2, items[2]!.description?.length);
+    assertEquals(1, items[2]!.description?.length);
     assertDeepEquals(
-        {text: 'www.google.com', elideFromStart: true},
-        items[2]!.description?.[0]);
-    assertDeepEquals(
-        {text: googleTab.lastActiveElapsedText}, items[2]!.description?.[1]);
+        {text: googleTab.lastActiveElapsedText}, items[2]!.description?.[0]);
     assertEquals(googleTab.url, items[2]!.prefixIcon?.url);
     assertDeepEquals(
         {type: OpenTabsItemType.TAB, tab: googleTab}, items[2]!.data);
@@ -418,7 +409,7 @@ suite('OpenTabsDelegateTest', () => {
     assertDeepEquals([updatedTab.title], client.items[2]!.title);
     assertDeepEquals(
         {text: updatedTab.lastActiveElapsedText},
-        client.items[2]!.description?.[1]);
+        client.items[2]!.description?.[0]);
   });
 
   test('notifies client when tabs are removed', async () => {
@@ -469,9 +460,7 @@ suite('OpenTabsDelegateTest', () => {
   test(
       'returns split view tabs with stacked favicons icon and orientation',
       async () => {
-        const splitTab1Hostname = 'docs.google.com';
         const splitTab1ElapsedText = '3m ago';
-        const splitTab2Hostname = 'sheets.google.com';
         const splitTab2ElapsedText = '7m ago';
 
         const splitTab1 = createTab({
@@ -506,14 +495,8 @@ suite('OpenTabsDelegateTest', () => {
 
         const item = items[0]!;
         assertDeepEquals([SPLIT_TAB_1_TITLE, SPLIT_TAB_2_TITLE], item.title);
-        assertEquals(3, item.description?.length);
-        assertDeepEquals(
-            {text: splitTab1Hostname, elideFromStart: true},
-            item.description?.[0]);
-        assertDeepEquals(
-            {text: splitTab2Hostname, elideFromStart: true},
-            item.description?.[1]);
-        assertDeepEquals({text: splitTab1ElapsedText}, item.description?.[2]);
+        assertEquals(1, item.description?.length);
+        assertDeepEquals({text: splitTab1ElapsedText}, item.description?.[0]);
         assertEquals(2, item.prefixIcon?.stackedFavicons?.urls?.length);
         assertEquals(
             SPLIT_TAB_1_URL, item.prefixIcon?.stackedFavicons?.urls?.[0]);
@@ -657,15 +640,13 @@ suite('OpenTabsDelegateTest', () => {
         assertEquals(1, items.length);
 
         const description = items[0]!.description;
-        assertEquals(3, description?.length);
-        assertDeepEquals(
-            {text: 'www.example.com', elideFromStart: true}, description?.[0]);
-        assertDeepEquals({text: '2m ago'}, description?.[1]);
-        assertEquals('Work Group', description?.[2]!.text);
+        assertEquals(2, description?.length);
+        assertDeepEquals({text: '2m ago'}, description?.[0]);
+        assertEquals('Work Group', description?.[1]!.text);
 
         const container = document.createElement('div');
         document.body.appendChild(container);
-        render(description![2]!.prefixElement!, container);
+        render(description![1]!.prefixElement!, container);
         const dot = container.querySelector('tab-group-dot');
         assertTrue(!!dot);
         assertEquals(Color.kBlue, dot.color);
@@ -713,12 +694,13 @@ suite('OpenTabsDelegateTest', () => {
         assertEquals(1, items.length);
 
         const description = items[0]!.description;
-        assertEquals(4, description?.length);
-        assertEquals('Split Group', description?.[3]!.text);
+        assertEquals(2, description?.length);
+        assertDeepEquals({text: '3m ago'}, description?.[0]);
+        assertEquals('Split Group', description?.[1]!.text);
 
         const container = document.createElement('div');
         document.body.appendChild(container);
-        render(description![3]!.prefixElement!, container);
+        render(description![1]!.prefixElement!, container);
         const dot = container.querySelector('tab-group-dot');
         assertTrue(!!dot);
         assertEquals(Color.kGreen, dot.color);

@@ -124,32 +124,23 @@ suite('RecentTabsDelegateTest', () => {
 
     // Most recent tab.
     assertDeepEquals([youtubeTab.title], items[0]!.title);
-    assertEquals(2, items[0]!.description?.length);
+    assertEquals(1, items[0]!.description?.length);
     assertDeepEquals(
-        {text: 'www.youtube.com', elideFromStart: true},
-        items[0]!.description?.[0]);
-    assertDeepEquals(
-        {text: youtubeTab.lastActiveElapsedText}, items[0]!.description?.[1]);
+        {text: youtubeTab.lastActiveElapsedText}, items[0]!.description?.[0]);
     assertEquals(youtubeTab.url, items[0]!.prefixIcon?.url);
 
     // Second most recent tab.
     assertDeepEquals([chromiumTab.title], items[1]!.title);
-    assertEquals(2, items[1]!.description?.length);
+    assertEquals(1, items[1]!.description?.length);
     assertDeepEquals(
-        {text: 'www.chromium.org', elideFromStart: true},
-        items[1]!.description?.[0]);
-    assertDeepEquals(
-        {text: chromiumTab.lastActiveElapsedText}, items[1]!.description?.[1]);
+        {text: chromiumTab.lastActiveElapsedText}, items[1]!.description?.[0]);
     assertEquals(chromiumTab.url, items[1]!.prefixIcon?.url);
 
     // Least recent tab.
     assertDeepEquals([googleTab.title], items[2]!.title);
-    assertEquals(2, items[2]!.description?.length);
+    assertEquals(1, items[2]!.description?.length);
     assertDeepEquals(
-        {text: 'www.google.com', elideFromStart: true},
-        items[2]!.description?.[0]);
-    assertDeepEquals(
-        {text: googleTab.lastActiveElapsedText}, items[2]!.description?.[1]);
+        {text: googleTab.lastActiveElapsedText}, items[2]!.description?.[0]);
     assertEquals(googleTab.url, items[2]!.prefixIcon?.url);
   });
 
