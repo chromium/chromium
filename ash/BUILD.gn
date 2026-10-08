@@ -4980,6 +4980,25 @@ static_library("interactive_ui_test_support") {
   ]
 }
 
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "drag_drop/drag_drop_interactive_uitest.cc" ]
+  deps = [
+    ":ash",
+    ":interactive_ui_test_support",
+    ":test_support",
+    "//base",
+    "//testing/gtest",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/base:test_support",
+    "//ui/base/dragdrop/mojom",
+    "//ui/compositor",
+    "//ui/views",
+  ]
+}
+
 # NOTE: Ash uses DEPS files to restrict access to its internals, rather than a
 # GN "public" section. See README.md for notes on dependencies.
 static_library("test_support") {

@@ -5443,10 +5443,8 @@ if (!is_android && !is_chromeos_device) {
       }
 
       if (is_chromeos) {
-        sources += [ "//ash/drag_drop/drag_drop_interactive_uitest.cc" ]
-
         deps += [
-          "//ash:interactive_ui_test_support",
+          "//ash:interactive_ui_tests",
           "//chrome/browser/ash/accessibility:test_support",
           "//chrome/browser/ash/child_accounts:test_support",
           "//chrome/browser/ash/child_accounts/time_limits:test_support",
