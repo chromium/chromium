@@ -7,6 +7,8 @@ import("//testing/test.gni")
 source_set("core") {
   sources = [
     "checker_id.h",
+    "client_tool.cc",
+    "client_tool.h",
     "concepts.h",
     "origin_gating_cache.cc",
     "origin_gating_cache.h",

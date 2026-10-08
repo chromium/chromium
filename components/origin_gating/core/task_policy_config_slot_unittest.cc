@@ -19,15 +19,25 @@ constexpr std::string_view kOtherHost = "other.com";
 
 namespace origin_gating {
 
+enum class SlotTestTool {
+  kClick = 1,
+  kNavigate = 2,
+};
+
+template <>
+const ToolDomain ToolDomain::kInstance<SlotTestTool>{};
+
 TaskPolicyConfig CreateConfigAllowingNavigation(std::string_view domain) {
   net::SchemefulSite site(GURL(base::StrCat({"https://", domain})));
-  return TaskPolicyConfig({
-      {TaskPolicyConfig::Location(site),
-       TaskPolicyConfig::Rule(
-           /*navigation_sources=*/{},
-           {TaskPolicyConfig::Rule::Resource::kSession},
-           {TaskPolicyConfig::Rule::Capability::kAll})},
-  });
+  return TaskPolicyConfig(
+      {
+          {TaskPolicyConfig::Location(site),
+           TaskPolicyConfig::Rule(/*navigation_sources=*/{},
+                                  {TaskPolicyConfig::Rule::Resource::kSession},
+                                  {ClientTool(SlotTestTool::kClick),
+                                   ClientTool(SlotTestTool::kNavigate)})},
+      },
+      ClientTool(SlotTestTool::kNavigate));
 }
 
 class TaskPolicyConfigSlotTest : public testing::Test {
@@ -47,14 +57,16 @@ TEST_F(TaskPolicyConfigSlotTest, Assign_EmptyConfig) {
   TaskPolicyConfigSlot slot;
   slot.Assign(TaskPolicyConfig());
   EXPECT_TRUE(slot.has_value());
-  EXPECT_FALSE(slot.value().IsActuationAllowed(kExampleOrigin));
+  EXPECT_FALSE(slot.value().IsActuationAllowed(
+      kExampleOrigin, ClientTool(SlotTestTool::kClick)));
 }
 
 TEST_F(TaskPolicyConfigSlotTest, Assign_NonemptyConfig) {
   TaskPolicyConfigSlot slot;
   slot.Assign(CreateConfigAllowingNavigation(kExampleHost));
   EXPECT_TRUE(slot.has_value());
-  EXPECT_TRUE(slot.value().IsActuationAllowed(kExampleOrigin));
+  EXPECT_TRUE(slot.value().IsActuationAllowed(
+      kExampleOrigin, ClientTool(SlotTestTool::kClick)));
 }
 
 TEST_F(TaskPolicyConfigSlotTest, Assign_PresentConfigThenIgnoresSecondCall) {
@@ -63,8 +75,10 @@ TEST_F(TaskPolicyConfigSlotTest, Assign_PresentConfigThenIgnoresSecondCall) {
 
   slot.Assign(CreateConfigAllowingNavigation(kOtherHost));
   ASSERT_TRUE(slot.has_value());
-  EXPECT_FALSE(slot.value().IsActuationAllowed(kOtherOrigin));
-  EXPECT_TRUE(slot.value().IsActuationAllowed(kExampleOrigin));
+  EXPECT_FALSE(slot.value().IsActuationAllowed(
+      kOtherOrigin, ClientTool(SlotTestTool::kClick)));
+  EXPECT_TRUE(slot.value().IsActuationAllowed(
+      kExampleOrigin, ClientTool(SlotTestTool::kClick)));
 }
 
 }  // namespace origin_gating

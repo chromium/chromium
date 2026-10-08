@@ -12,7 +12,10 @@
 
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
+#include "base/types/pass_key.h"
+#include "components/origin_gating/core/client_tool.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/origin.h"
 
 namespace base {
@@ -29,7 +32,7 @@ namespace origin_gating {
 // will be disallowed.
 //
 // Location rules may include a wildcard Location to allow visiting any site
-// (with a given set of resources and capabilities).
+// (with a given set of resources and allowed tools).
 class TaskPolicyConfig {
  public:
   class Location;
@@ -48,17 +51,21 @@ class TaskPolicyConfig {
   // Constructs a TaskPolicyConfig mapping locations to security rules.
   // An empty `location_rules` map acts as a global blocklist, disallowing all
   // navigations and actuations. A wildcard Location entry can be provided to
-  // allow access to all sites with specified resources and capabilities.
-  explicit TaskPolicyConfig(LocationRules location_rules);
+  // allow access to all sites with specified resources and allowed tools.
+  // Navigation to a location is allowed only if its rule allows
+  // `navigate_tool`. All allowed tools across all rules, and `navigate_tool`,
+  // must share the same `ToolDomain`.
+  TaskPolicyConfig(LocationRules location_rules, ClientTool navigate_tool);
 
   // Indicates whether or not navigation from `source` to `destination` is
   // allowed according to this config.
   bool IsNavigationAllowed(const url::Origin& source,
                            const url::Origin& destination) const;
 
-  // Indicates whether or not actuation is allowed when the browser is
+  // Indicates whether or not the actor can execute `tool` when the browser is
   // navigated to `location_origin`.
-  bool IsActuationAllowed(const url::Origin& location_origin) const;
+  bool IsActuationAllowed(const url::Origin& location_origin,
+                          const ClientTool& tool) const;
 
   // Serializes `this` as a Value for debugging. Note: the precise format of
   // this object is not guaranteed to be stable.
@@ -103,20 +110,7 @@ class TaskPolicyConfig {
       kMax = kSession
     };
 
-    // How a matching location may be interacted with. An empty set of
-    // capabilities means no capabilities are allowed and interaction is
-    // blocked.
-    enum class Capability {
-      // May navigate to and interact with the page, as well as execute tools
-      // on it.
-      kAll,
-      kMin = kAll,
-      kMax = kAll
-    };
-
     using ResourceSet = base::EnumSet<Resource, Resource::kMin, Resource::kMax>;
-    using CapabilitySet =
-        base::EnumSet<Capability, Capability::kMin, Capability::kMax>;
 
     Rule();
     Rule(const Rule&);
@@ -128,14 +122,22 @@ class TaskPolicyConfig {
     //   one of these source locations to match this rule. If empty, all
     //   navigations to the location match this rule regardless of source.
     // - `resources`: The set of accessible resources granted by this rule.
-    // - `capabilities`: The set of capabilities granted by this rule.
+    // - `allowed_tools`: The set of tools allowed on this location. An empty
+    //   set means no tools are allowed and interaction/navigation is blocked.
     explicit Rule(std::vector<Location> navigation_sources,
                   ResourceSet resources,
-                  CapabilitySet capabilities);
+                  absl::flat_hash_set<ClientTool> allowed_tools);
     ~Rule();
 
     bool MatchesNavigationSource(const url::Origin& source_origin) const;
-    bool CanNavigate() const;
+    bool CanActuate(const ClientTool& tool) const;
+
+    // Exposed so `TaskPolicyConfig` can check that all tools share a
+    // `ToolDomain`.
+    const absl::flat_hash_set<ClientTool>& allowed_tools(
+        base::PassKey<TaskPolicyConfig>) const {
+      return allowed_tools_;
+    }
 
     // Serializes `this` as a value for debugging.
     base::Value ToDebugValue() const;
@@ -145,11 +147,12 @@ class TaskPolicyConfig {
    private:
     std::vector<Location> navigation_sources_;
     ResourceSet resources_;
-    CapabilitySet capabilities_;
+    absl::flat_hash_set<ClientTool> allowed_tools_;
   };
 
  private:
   LocationRules location_rules_;
+  std::optional<ClientTool> navigate_tool_;
 
   friend bool operator==(const TaskPolicyConfig&,
                          const TaskPolicyConfig&) = default;

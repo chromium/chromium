@@ -17,9 +17,11 @@
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/public/mojom/actor_types.mojom-forward.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/origin_gating/core/task_policy_config.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/tabs/public/tab_interface.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 // Conversion function for turning optimization_guide::proto::* types into
 // ToolRequests usable by the actor framework.
@@ -29,14 +31,27 @@ class BrowserContext;
 
 class Profile;
 
-namespace optimization_guide::proto {
-class Actions;
-class AgentContainerConfig;
-}  // namespace optimization_guide::proto
+namespace origin_gating {
+template <>
+inline const ToolDomain ToolDomain::kInstance<
+    optimization_guide::proto::RuleMetadata::ActuationCapability>{};
+}  // namespace origin_gating
 
 namespace actor {
 class ActorTask;
 class ToolRequest;
+
+// Returns the set of all supported Actor ClientTools.
+absl::flat_hash_set<origin_gating::ClientTool> GetAllActorTools();
+
+// Converts RuleMetadata capabilities into a set of allowed ClientTools.
+absl::flat_hash_set<origin_gating::ClientTool> ConvertCapabilitiesToTools(
+    const optimization_guide::proto::RuleMetadata& metadata);
+
+// Returns the ClientTool corresponding to a ToolRequest. Requests without a
+// corresponding capability map to `CAPABILITY_UNKNOWN`, which is never allowed
+// by a TaskPolicyConfig.
+origin_gating::ClientTool GetClientToolForRequest(const ToolRequest& request);
 
 origin_gating::TaskPolicyConfig ConvertAgentContainerConfig(
     const optimization_guide::proto::AgentContainerConfig& config);

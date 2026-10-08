@@ -1488,7 +1488,9 @@ void ExecutionEngine::SafetyChecksForNextAction() {
       main_frame->GetLastCommittedURL(), main_frame->GetLastCommittedOrigin());
   GetOriginGatingChecker().ComputeGatingDecision(
       std::make_unique<PageActionGatingContext>(web_contents.GetWeakPtr()),
-      GateableEvent(origin_gating::PageActionEvent{.destination = url}),
+      GateableEvent(origin_gating::PageActionEvent{
+          .destination = url,
+          .tool = GetClientToolForRequest(GetNextAction())}),
       base::BindOnce(&ResolveGatingDecision,
                      journal_->CreatePendingAsyncEntry(
                          url, task_->id(), MakeBrowserTrackUUID(task_->id()),

@@ -15,6 +15,7 @@
 #include "base/containers/enum_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "components/origin_gating/core/client_tool.h"
 #include "components/origin_gating/core/concepts.h"
 #include "url/gurl.h"
 
@@ -51,6 +52,7 @@ struct PageActionEvent {
                          const PageActionEvent&) = default;
 
   GURL destination;
+  ClientTool tool;
 };
 
 // The event being evaluated by origin gating. A single predicate

@@ -47,13 +47,10 @@ enum class OtherTestCustomPredicate {
   kOtherCustom2,
 };
 
-TaskPolicyConfig::Rule AllowlistedRule() {
-  return TaskPolicyConfig::Rule(
-      /*navigation_sources=*/{},
-      /*resources=*/{TaskPolicyConfig::Rule::Resource::kSession},
-      /*capabilities=*/
-      {TaskPolicyConfig::Rule::Capability::kAll});
-}
+enum class CheckerTestTool {
+  kClick = 1,
+  kNavigate = 2,
+};
 
 }  // namespace
 
@@ -65,7 +62,24 @@ template <>
 const CustomPredicateDomain&
     CustomPredicateDomain::kInstance<OtherTestCustomPredicate>{};
 
+template <>
+const ToolDomain ToolDomain::kInstance<CheckerTestTool>{};
+
 namespace {
+
+TaskPolicyConfig::Rule ClicksAllowedRule() {
+  return TaskPolicyConfig::Rule(
+      /*navigation_sources=*/{},
+      /*resources=*/{TaskPolicyConfig::Rule::Resource::kSession},
+      /*allowed_tools=*/{ClientTool(CheckerTestTool::kClick)});
+}
+
+TaskPolicyConfig::Rule NavigationAllowedRule() {
+  return TaskPolicyConfig::Rule(
+      /*navigation_sources=*/{},
+      /*resources=*/{TaskPolicyConfig::Rule::Resource::kSession},
+      /*allowed_tools=*/{ClientTool(CheckerTestTool::kNavigate)});
+}
 
 class MockDelegate : public OriginGatingChecker::Delegate {
  public:
@@ -815,13 +829,12 @@ TEST_F(OriginGatingCheckerTest,
           OriginGatingConfiguration::CacheScope::kOrigin));
 
   // Configure the slot on the checker.
-  checker->task_policy_config_slot().Assign(TaskPolicyConfig({{
-      {TaskPolicyConfig::Location(TaskPolicyConfig::Wildcard()),
-       TaskPolicyConfig::Rule(
-           /*navigation_sources=*/{},
-           /*resources=*/{TaskPolicyConfig::Rule::Resource::kSession},
-           /*capabilities=*/{TaskPolicyConfig::Rule::Capability::kAll})},
-  }}));
+  checker->task_policy_config_slot().Assign(TaskPolicyConfig(
+      {{
+          {TaskPolicyConfig::Location(TaskPolicyConfig::Wildcard()),
+           NavigationAllowedRule()},
+      }},
+      ClientTool(CheckerTestTool::kNavigate)));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -875,13 +888,12 @@ TEST_F(OriginGatingCheckerTest,
           OriginGatingConfiguration::CacheScope::kOrigin));
 
   // Configure the slot to allow actuation.
-  checker->task_policy_config_slot().Assign(TaskPolicyConfig({{
-      {TaskPolicyConfig::Location(TaskPolicyConfig::Wildcard()),
-       TaskPolicyConfig::Rule(
-           /*navigation_sources=*/{},
-           /*resources=*/{TaskPolicyConfig::Rule::Resource::kSession},
-           /*capabilities=*/{TaskPolicyConfig::Rule::Capability::kAll})},
-  }}));
+  checker->task_policy_config_slot().Assign(TaskPolicyConfig(
+      {{
+          {TaskPolicyConfig::Location(TaskPolicyConfig::Wildcard()),
+           ClicksAllowedRule()},
+      }},
+      ClientTool(CheckerTestTool::kNavigate)));
 
   GURL destination("https://foo.com");
 
@@ -892,7 +904,10 @@ TEST_F(OriginGatingCheckerTest,
   base::test::TestFuture<std::unique_ptr<GatingDecisionContext>, GatingDecision>
       future;
   checker->ComputeGatingDecision(
-      nullptr, GateableEvent(PageActionEvent{.destination = destination}),
+      nullptr,
+      GateableEvent(
+          PageActionEvent{.destination = destination,
+                          .tool = ClientTool(CheckerTestTool::kClick)}),
       future.GetCallback());
 
   GatingDecision decision = future.Get<1>();
@@ -919,7 +934,10 @@ TEST_F(OriginGatingCheckerTest,
   base::test::TestFuture<std::unique_ptr<GatingDecisionContext>, GatingDecision>
       future;
   checker->ComputeGatingDecision(
-      nullptr, GateableEvent(PageActionEvent{.destination = destination}),
+      nullptr,
+      GateableEvent(
+          PageActionEvent{.destination = destination,
+                          .tool = ClientTool(CheckerTestTool::kClick)}),
       future.GetCallback());
 
   GatingDecision decision = future.Get<1>();
@@ -928,8 +946,8 @@ TEST_F(OriginGatingCheckerTest,
 }
 
 // ActorContainerConfig usage doesn't necessarily preclude blockage by other
-// predicates, even if the actor container config predicate is listed first in
-// the predicate order.
+// predicates, even if the task policy config predicate is listed first in the
+// predicate order.
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_ActorContainerConfig_InterleavedPredicates) {
   const GURL kAllowedByConfigAndListSite("https://allowedbyboth.com");
@@ -969,18 +987,20 @@ TEST_F(OriginGatingCheckerTest,
           },
           OriginGatingConfiguration::CacheScope::kOrigin));
 
-  checker->task_policy_config_slot().Assign(
-      TaskPolicyConfig(/*location_rules=*/{
+  checker->task_policy_config_slot().Assign(TaskPolicyConfig(
+      /*location_rules=*/
+      {
           // Allowed on the below sites, blocked elsewhere.
           {TaskPolicyConfig::Location(
                net::SchemefulSite(kAllowedByConfigAndListSite)),
-           AllowlistedRule()},
+           NavigationAllowedRule()},
           {TaskPolicyConfig::Location(
                net::SchemefulSite(kAllowedByConfigIgnoredByListSite)),
-           AllowlistedRule()},
+           NavigationAllowedRule()},
           {TaskPolicyConfig::Location(net::SchemefulSite(kBlockedByListSite)),
-           AllowlistedRule()},
-      }));
+           NavigationAllowedRule()},
+      },
+      ClientTool(CheckerTestTool::kNavigate)));
 
   EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _)).Times(0);
   EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
@@ -1026,6 +1046,58 @@ TEST_F(OriginGatingCheckerTest,
         GateableEvent(NavigationResponseEvent{
             .source = kBlockedByConfigAndListSite,
             .destination = kBlockedByConfigAndListSite}));
+    EXPECT_FALSE(decision.is_allowed);
+    EXPECT_EQ(decision.attribution, DecisionSource::kBlockByTaskPolicyConfig);
+  }
+}
+
+TEST_F(OriginGatingCheckerTest,
+       BuiltInPredicate_TaskPolicyConfig_PageActionToolGating) {
+  auto checker = OriginGatingChecker::CreateForTesting(
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration(
+          {
+              {DecisionSource::kBlockByTaskPolicyConfig,
+               GateableEventSet::All()},
+              {DecisionSource::kAllowByTaskPolicyConfig,
+               GateableEventSet::All()},
+          },
+          OriginGatingConfiguration::CacheScope::kOrigin));
+
+  // Configure the slot to allow kClick tool only.
+  checker->task_policy_config_slot().Assign(TaskPolicyConfig(
+      {{
+          {TaskPolicyConfig::Location(TaskPolicyConfig::Wildcard()),
+           TaskPolicyConfig::Rule(
+               /*navigation_sources=*/{},
+               /*resources=*/{TaskPolicyConfig::Rule::Resource::kSession},
+               /*allowed_tools=*/{ClientTool(CheckerTestTool::kClick)})},
+      }},
+      ClientTool(CheckerTestTool::kNavigate)));
+
+  GURL destination("https://foo.com");
+
+  EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _)).Times(0);
+  EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
+
+  // Allowed tool: kClick
+  {
+    GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+        *checker, nullptr,
+        GateableEvent(
+            PageActionEvent{.destination = destination,
+                            .tool = ClientTool(CheckerTestTool::kClick)}));
+    EXPECT_TRUE(decision.is_allowed);
+    EXPECT_EQ(decision.attribution, DecisionSource::kAllowByTaskPolicyConfig);
+  }
+
+  // Blocked tool: kNavigate
+  {
+    GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
+        *checker, nullptr,
+        GateableEvent(
+            PageActionEvent{.destination = destination,
+                            .tool = ClientTool(CheckerTestTool::kNavigate)}));
     EXPECT_FALSE(decision.is_allowed);
     EXPECT_EQ(decision.attribution, DecisionSource::kBlockByTaskPolicyConfig);
   }
@@ -1482,10 +1554,12 @@ TEST_F(OriginGatingCheckerTest,
 
   checker->AllowNavigationTo(destination_origin, /*is_user_confirmed=*/false);
 
-  EXPECT_CALL(
-      delegate_,
-      DoesOriginRequireUserConfirmation(
-          _, GateableEvent(PageActionEvent{.destination = destination}), _))
+  EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(
+                             _,
+                             GateableEvent(PageActionEvent{
+                                 .destination = destination,
+                                 .tool = ClientTool(CheckerTestTool::kClick)}),
+                             _))
       .WillOnce(
           base::test::RunOnceCallback<2>(/*requires_user_confirmation=*/false));
   EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
@@ -1493,7 +1567,10 @@ TEST_F(OriginGatingCheckerTest,
   base::test::TestFuture<std::unique_ptr<GatingDecisionContext>, GatingDecision>
       future;
   checker->ComputeGatingDecision(
-      nullptr, GateableEvent(PageActionEvent{.destination = destination}),
+      nullptr,
+      GateableEvent(
+          PageActionEvent{.destination = destination,
+                          .tool = ClientTool(CheckerTestTool::kClick)}),
       future.GetCallback());
   GatingDecision decision = future.Get<1>();
   EXPECT_TRUE(decision.is_allowed);
@@ -1574,7 +1651,10 @@ TEST_F(OriginGatingCheckerTest, PredicateRuns_WhenEventApplicable) {
   base::test::TestFuture<std::unique_ptr<GatingDecisionContext>, GatingDecision>
       future;
   checker->ComputeGatingDecision(
-      nullptr, GateableEvent(PageActionEvent{.destination = destination}),
+      nullptr,
+      GateableEvent(
+          PageActionEvent{.destination = destination,
+                          .tool = ClientTool(CheckerTestTool::kClick)}),
       future.GetCallback());
   GatingDecision decision = future.Get<1>();
   EXPECT_TRUE(decision.is_allowed);
@@ -1599,15 +1679,19 @@ TEST_F(OriginGatingCheckerTest, EventReachesPredicateAndDelegate) {
 
   GURL destination("https://foo.com");
 
-  EXPECT_CALL(
-      delegate_,
-      DoesOriginRequireUserConfirmation(
-          _, GateableEvent(PageActionEvent{.destination = destination}), _))
+  EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(
+                             _,
+                             GateableEvent(PageActionEvent{
+                                 .destination = destination,
+                                 .tool = ClientTool(CheckerTestTool::kClick)}),
+                             _))
       .WillOnce(base::test::RunOnceCallback<2>(false));
-  EXPECT_CALL(
-      delegate_,
-      OnNoVerdict(_, GateableEvent(PageActionEvent{.destination = destination}),
-                  false, _))
+  EXPECT_CALL(delegate_,
+              OnNoVerdict(_,
+                          GateableEvent(PageActionEvent{
+                              .destination = destination,
+                              .tool = ClientTool(CheckerTestTool::kClick)}),
+                          false, _))
       .WillOnce(base::test::RunOnceCallback<3>(
           OriginGatingChecker::Delegate::NoVerdictResult{
               .is_allowed = true, .did_prompt_user = false}));
@@ -1615,7 +1699,10 @@ TEST_F(OriginGatingCheckerTest, EventReachesPredicateAndDelegate) {
   base::test::TestFuture<std::unique_ptr<GatingDecisionContext>, GatingDecision>
       future;
   checker->ComputeGatingDecision(
-      nullptr, GateableEvent(PageActionEvent{.destination = destination}),
+      nullptr,
+      GateableEvent(
+          PageActionEvent{.destination = destination,
+                          .tool = ClientTool(CheckerTestTool::kClick)}),
       future.GetCallback());
   GatingDecision decision = future.Get<1>();
   EXPECT_TRUE(decision.is_allowed);

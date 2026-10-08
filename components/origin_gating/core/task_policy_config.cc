@@ -5,12 +5,15 @@
 #include "components/origin_gating/core/task_policy_config.h"
 
 #include <algorithm>
+#include <iterator>
 #include <string>
 #include <string_view>
 #include <variant>
+#include <vector>
 
 #include "base/check.h"
 #include "base/containers/map_util.h"
+#include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -22,14 +25,6 @@
 namespace origin_gating {
 
 namespace {
-
-std::string_view ActuationCapabilityToString(
-    TaskPolicyConfig::Rule::Capability capability) {
-  switch (capability) {
-    case TaskPolicyConfig::Rule::Capability::kAll:
-      return "CAPABILITY_ALL";
-  }
-}
 
 std::string_view ResourceToString(TaskPolicyConfig::Rule::Resource resource) {
   switch (resource) {
@@ -48,8 +43,19 @@ TaskPolicyConfig::TaskPolicyConfig(TaskPolicyConfig&&) = default;
 
 TaskPolicyConfig::~TaskPolicyConfig() = default;
 
-TaskPolicyConfig::TaskPolicyConfig(LocationRules location_rules)
-    : location_rules_(std::move(location_rules)) {}
+TaskPolicyConfig::TaskPolicyConfig(LocationRules location_rules,
+                                   ClientTool navigate_tool)
+    : location_rules_(std::move(location_rules)),
+      navigate_tool_(navigate_tool) {
+  std::vector<ClientTool> all_tools = {navigate_tool};
+  for (const auto& [location, rule] : location_rules_) {
+    std::ranges::copy(rule.allowed_tools(base::PassKey<TaskPolicyConfig>()),
+                      std::back_inserter(all_tools));
+  }
+  CHECK(std::ranges::all_of(all_tools, [&](const ClientTool& tool) {
+    return tool.IsSameDomain(navigate_tool);
+  })) << "All tools in a TaskPolicyConfig must share a ToolDomain";
+}
 
 TaskPolicyConfig::Location::Location(Wildcard) : data_(Wildcard()) {}
 
@@ -105,10 +111,10 @@ TaskPolicyConfig::Rule& TaskPolicyConfig::Rule::operator=(Rule&&) = default;
 
 TaskPolicyConfig::Rule::Rule(std::vector<Location> navigation_sources,
                              ResourceSet resources,
-                             CapabilitySet capabilities)
+                             absl::flat_hash_set<ClientTool> allowed_tools)
     : navigation_sources_(std::move(navigation_sources)),
       resources_(std::move(resources)),
-      capabilities_(std::move(capabilities)) {}
+      allowed_tools_(std::move(allowed_tools)) {}
 
 TaskPolicyConfig::Rule::~Rule() = default;
 
@@ -120,9 +126,8 @@ bool TaskPolicyConfig::Rule::MatchesNavigationSource(
          });
 }
 
-bool TaskPolicyConfig::Rule::CanNavigate() const {
-  return capabilities_.Has(Capability::kAll) &&
-         resources_.Has(Resource::kSession);
+bool TaskPolicyConfig::Rule::CanActuate(const ClientTool& tool) const {
+  return allowed_tools_.contains(tool) && resources_.Has(Resource::kSession);
 }
 
 base::Value TaskPolicyConfig::Rule::ToDebugValue() const {
@@ -131,9 +136,13 @@ base::Value TaskPolicyConfig::Rule::ToDebugValue() const {
     sources.Append(source.ToDebugString());
   }
 
-  base::ListValue capabilities;
-  for (auto capability : capabilities_) {
-    capabilities.Append(ActuationCapabilityToString(capability));
+  // Sort for a stable order, since `allowed_tools_` is unordered.
+  std::vector<base::Value> tool_values =
+      base::ToVector(allowed_tools_, &ClientTool::ToDebugValue);
+  std::ranges::sort(tool_values);
+  base::ListValue allowed_tools;
+  for (auto& tool_value : tool_values) {
+    allowed_tools.Append(std::move(tool_value));
   }
 
   base::ListValue resources;
@@ -143,44 +152,47 @@ base::Value TaskPolicyConfig::Rule::ToDebugValue() const {
 
   return base::Value(base::DictValue()
                          .Set("navigation_sources", std::move(sources))
-                         .Set("capabilities", std::move(capabilities))
+                         .Set("allowed_tools", std::move(allowed_tools))
                          .Set("accessible_resources", std::move(resources)));
 }
 
 bool TaskPolicyConfig::IsNavigationAllowed(
     const url::Origin& source,
     const url::Origin& destination) const {
+  if (!navigate_tool_.has_value()) {
+    return false;
+  }
   if (const auto* rule =
           base::FindOrNull(location_rules_, Location(destination));
       rule && rule->MatchesNavigationSource(source)) {
-    return rule->CanNavigate();
+    return rule->CanActuate(*navigate_tool_);
   }
   if (const auto* rule = base::FindOrNull(
           location_rules_, Location(net::SchemefulSite(destination)));
       rule && rule->MatchesNavigationSource(source)) {
-    return rule->CanNavigate();
+    return rule->CanActuate(*navigate_tool_);
   }
   if (const auto* rule =
           base::FindOrNull(location_rules_, Location(Wildcard()));
       rule && rule->MatchesNavigationSource(source)) {
-    return rule->CanNavigate();
+    return rule->CanActuate(*navigate_tool_);
   }
   return false;
 }
 
-bool TaskPolicyConfig::IsActuationAllowed(
-    const url::Origin& location_origin) const {
+bool TaskPolicyConfig::IsActuationAllowed(const url::Origin& location_origin,
+                                          const ClientTool& tool) const {
   if (const auto* rule =
           base::FindOrNull(location_rules_, Location(location_origin))) {
-    return rule->CanNavigate();
+    return rule->CanActuate(tool);
   }
   if (const auto* rule = base::FindOrNull(
           location_rules_, Location(net::SchemefulSite(location_origin)))) {
-    return rule->CanNavigate();
+    return rule->CanActuate(tool);
   }
   if (const auto* rule =
           base::FindOrNull(location_rules_, Location(Wildcard()))) {
-    return rule->CanNavigate();
+    return rule->CanActuate(tool);
   }
   return false;
 }

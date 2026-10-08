@@ -20,6 +20,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
+#include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
@@ -638,13 +639,15 @@ TEST_F(GlicPasswordChangeActuatorTest,
   const auto& config =
       GetContainerConfig(GURL("https://auth.target.org/change_password"),
                          GURL("https://credential.com/login"));
+  const origin_gating::ClientTool kClickTool(
+      optimization_guide::proto::RuleMetadata::CAPABILITY_CLICK);
 
   EXPECT_TRUE(config.IsActuationAllowed(
-      url::Origin::Create(GURL("https://auth.target.org"))));
+      url::Origin::Create(GURL("https://auth.target.org")), kClickTool));
   EXPECT_TRUE(config.IsActuationAllowed(
-      url::Origin::Create(GURL("https://sub.auth.target.org"))));
+      url::Origin::Create(GURL("https://sub.auth.target.org")), kClickTool));
   EXPECT_TRUE(config.IsActuationAllowed(
-      url::Origin::Create(GURL("https://target.org"))));
+      url::Origin::Create(GURL("https://target.org")), kClickTool));
 }
 
 // Verifies that TaskPolicyConfig permits actuation on the credential site
@@ -654,11 +657,14 @@ TEST_F(GlicPasswordChangeActuatorTest,
   const auto& config =
       GetContainerConfig(GURL("https://auth.target.org/change_password"),
                          GURL("https://credential.com/login"));
+  const origin_gating::ClientTool kClickTool(
+      optimization_guide::proto::RuleMetadata::CAPABILITY_CLICK);
 
   EXPECT_TRUE(config.IsActuationAllowed(
-      url::Origin::Create(GURL("https://credential.com"))));
+      url::Origin::Create(GURL("https://credential.com")), kClickTool));
   EXPECT_TRUE(config.IsActuationAllowed(
-      url::Origin::Create(GURL("https://accounts.credential.com"))));
+      url::Origin::Create(GURL("https://accounts.credential.com")),
+      kClickTool));
 }
 
 // Verifies that TaskPolicyConfig allows navigation between the target site
@@ -684,9 +690,11 @@ TEST_F(GlicPasswordChangeActuatorTest,
   const auto& config =
       GetContainerConfig(GURL("https://auth.example.org/change_password"),
                          GURL("https://example.com/login"));
+  const origin_gating::ClientTool kClickTool(
+      optimization_guide::proto::RuleMetadata::CAPABILITY_CLICK);
 
   EXPECT_FALSE(config.IsActuationAllowed(
-      url::Origin::Create(GURL("https://attacker.com"))));
+      url::Origin::Create(GURL("https://attacker.com")), kClickTool));
   EXPECT_FALSE(config.IsNavigationAllowed(
       url::Origin::Create(GURL("https://auth.example.org")),
       url::Origin::Create(GURL("https://attacker.com"))));
@@ -697,14 +705,16 @@ TEST_F(GlicPasswordChangeActuatorTest,
 TEST_F(GlicPasswordChangeActuatorTest,
        TaskPolicyConfigDefaultsToCredentialSite) {
   const auto& config = GetContainerConfig();
+  const origin_gating::ClientTool kClickTool(
+      optimization_guide::proto::RuleMetadata::CAPABILITY_CLICK);
 
   EXPECT_TRUE(config.IsActuationAllowed(
-      url::Origin::Create(GURL("https://example.com"))));
+      url::Origin::Create(GURL("https://example.com")), kClickTool));
   EXPECT_TRUE(config.IsActuationAllowed(
-      url::Origin::Create(GURL("https://auth.example.com"))));
+      url::Origin::Create(GURL("https://auth.example.com")), kClickTool));
 
   EXPECT_FALSE(config.IsActuationAllowed(
-      url::Origin::Create(GURL("https://attacker.com"))));
+      url::Origin::Create(GURL("https://attacker.com")), kClickTool));
   EXPECT_FALSE(config.IsNavigationAllowed(
       url::Origin::Create(GURL("https://example.com")),
       url::Origin::Create(GURL("https://attacker.com"))));
@@ -716,18 +726,20 @@ TEST_F(GlicPasswordChangeActuatorTest, TaskPolicyConfigAllowsAffiliatedSites) {
   const std::string kAffiliatedRealm = "https://affiliated.com/";
   SetupAffiliations(kAffiliatedRealm);
   const auto& config = GetContainerConfig();
+  const origin_gating::ClientTool kClickTool(
+      optimization_guide::proto::RuleMetadata::CAPABILITY_CLICK);
 
-  EXPECT_TRUE(
-      config.IsActuationAllowed(url::Origin::Create(GURL(kAffiliatedRealm))));
   EXPECT_TRUE(config.IsActuationAllowed(
-      url::Origin::Create(GURL("https://sub.affiliated.com"))));
+      url::Origin::Create(GURL(kAffiliatedRealm)), kClickTool));
+  EXPECT_TRUE(config.IsActuationAllowed(
+      url::Origin::Create(GURL("https://sub.affiliated.com")), kClickTool));
 
   EXPECT_TRUE(
       config.IsNavigationAllowed(url::Origin::Create(GURL(kTestUrl)),
                                  url::Origin::Create(GURL(kAffiliatedRealm))));
 
   EXPECT_FALSE(config.IsActuationAllowed(
-      url::Origin::Create(GURL("https://attacker.com"))));
+      url::Origin::Create(GURL("https://attacker.com")), kClickTool));
 }
 
 // Verifies that when AffiliationService fails to return affiliations, the

@@ -122,9 +122,10 @@ Decision EvaluateActorContainerConfig(
     return Decision::kNoDecision;
   }
   const TaskPolicyConfig& config = config_slot.value();
-  if (event.GetIfPageAction()) {
-    return config.IsActuationAllowed(destination_origin) ? Decision::kAllowed
-                                                         : Decision::kBlocked;
+  if (const PageActionEvent* page_action = event.GetIfPageAction()) {
+    return config.IsActuationAllowed(destination_origin, page_action->tool)
+               ? Decision::kAllowed
+               : Decision::kBlocked;
   }
 
   CHECK(source_origin.has_value());

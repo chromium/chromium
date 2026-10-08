@@ -137,7 +137,18 @@ class MockActorEngineExecutionUpdatesDelegate
   bool on_will_execute_called_ = false;
 };
 
+enum class TestTool {
+  kClick = 1,
+};
+
 }  // namespace
+}  // namespace actor
+
+template <>
+const origin_gating::ToolDomain
+    origin_gating::ToolDomain::kInstance<actor::TestTool>{};
+
+namespace actor {
 
 // Test fixture for ActorEngine.
 class ActorEngineTest : public PlatformTest {
@@ -798,7 +809,8 @@ TEST_F(ActorEngineOriginGatingTest, BlocksActionOnBlockedUrl) {
   checker_->ComputeGatingDecision(
       std::make_unique<origin_gating::GatingDecisionContext>(),
       origin_gating::GateableEvent(origin_gating::PageActionEvent{
-          .destination = GURL("https://malicious.com")}),
+          .destination = GURL("https://malicious.com"),
+          .tool = origin_gating::ClientTool(TestTool::kClick)}),
       future.GetCallback());
 
   const origin_gating::GatingDecision& decision = future.Get<1>();

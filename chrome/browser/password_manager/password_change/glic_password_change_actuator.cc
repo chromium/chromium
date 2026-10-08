@@ -16,6 +16,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/glic/actor/glic_actor_task_manager.h"
@@ -192,14 +193,16 @@ origin_gating::TaskPolicyConfig BuildPasswordChangeContainerConfig(
       /*navigation_sources=*/{},
       /*resources=*/
       {origin_gating::TaskPolicyConfig::Rule::Resource::kSession},
-      /*capabilities=*/
-      {origin_gating::TaskPolicyConfig::Rule::Capability::kAll});
+      /*allowed_tools=*/actor::GetAllActorTools());
 
   for (const auto& origin : allowed_origins) {
     rules.emplace(origin_gating::TaskPolicyConfig::Location(origin), rule);
   }
 
-  return origin_gating::TaskPolicyConfig(std::move(rules));
+  return origin_gating::TaskPolicyConfig(
+      std::move(rules),
+      origin_gating::ClientTool(
+          optimization_guide::proto::RuleMetadata::CAPABILITY_NAVIGATE));
 }
 
 affiliations::FacetURI GetFacetURI(const GURL& url) {
