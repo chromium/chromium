@@ -543,6 +543,38 @@ TEST_F(OmniboxEverywhereUIManagerTest, DynamicSizingBounds_PersistentMode) {
                     kDefaultRestingHeight));
   EXPECT_EQ(widget->GetWindowBoundsInScreen(), initial_bounds);
 
+  // Expanding when parked flush with the left edge clamps to work_area.x().
+  const gfx::Rect work_area = display1.work_area();
+  widget->SetBounds(
+      gfx::Rect(work_area.x(), initial_bounds.y(),
+                OmniboxEverywhereUIManager::kDynamicPopupSmallFixedWidth,
+                OmniboxEverywhereUIManager::kDefaultRestingHeight));
+  ui_manager->ResizeDueToAutoResize(
+      ui_manager->web_contents(),
+      gfx::Size(OmniboxEverywhereUIManager::kDynamicPopupLargeFixedWidth, 300));
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().x(), work_area.x());
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().width(),
+            OmniboxEverywhereUIManager::kDynamicPopupLargeFixedWidth);
+
+  // Collapse back to small width and park flush with the right edge; expanding
+  // clamps to work_area.right().
+  ui_manager->ResizeDueToAutoResize(
+      ui_manager->web_contents(),
+      gfx::Size(OmniboxEverywhereUIManager::kDynamicPopupSmallFixedWidth,
+                OmniboxEverywhereUIManager::kDefaultRestingHeight));
+  widget->SetBounds(
+      gfx::Rect(work_area.right() -
+                    OmniboxEverywhereUIManager::kDynamicPopupSmallFixedWidth,
+                initial_bounds.y(),
+                OmniboxEverywhereUIManager::kDynamicPopupSmallFixedWidth,
+                OmniboxEverywhereUIManager::kDefaultRestingHeight));
+  ui_manager->ResizeDueToAutoResize(
+      ui_manager->web_contents(),
+      gfx::Size(OmniboxEverywhereUIManager::kDynamicPopupLargeFixedWidth, 300));
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().right(), work_area.right());
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().width(),
+            OmniboxEverywhereUIManager::kDynamicPopupLargeFixedWidth);
+
   ui_manager->Shutdown();
 }
 
@@ -2404,6 +2436,7 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   const int widget_height = widget->GetWindowBoundsInScreen().height();
 
   // Simulate dragging the widget past the right/bottom edge of the work area.
+  ui_manager->OnWidgetUserDragStarted(widget);
   gfx::Rect offscreen_right_bottom(work_area.right() - 50,
                                    work_area.bottom() - 50, widget_width,
                                    widget_height);
@@ -2411,7 +2444,6 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   EXPECT_FALSE(work_area.Contains(widget->GetWindowBoundsInScreen()));
 
   // Ending the user drag clamps bounds back within the work area.
-  ui_manager->OnWidgetUserDragStarted(widget);
   ui_manager->OnWidgetUserDragEnded(widget);
 
   EXPECT_TRUE(work_area.Contains(widget->GetWindowBoundsInScreen()));
@@ -2419,16 +2451,112 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   EXPECT_EQ(widget->GetWindowBoundsInScreen().bottom(), work_area.bottom());
 
   // Simulate dragging the widget past the top/left edge.
+  ui_manager->OnWidgetUserDragStarted(widget);
   gfx::Rect offscreen_top_left(work_area.x() - 100, work_area.y() - 100,
                                widget_width, widget_height);
   widget->SetBounds(offscreen_top_left);
   EXPECT_FALSE(work_area.Contains(widget->GetWindowBoundsInScreen()));
 
-  ui_manager->OnWidgetUserDragStarted(widget);
   ui_manager->OnWidgetUserDragEnded(widget);
 
   EXPECT_TRUE(work_area.Contains(widget->GetWindowBoundsInScreen()));
   EXPECT_EQ(widget->GetWindowBoundsInScreen().origin(), work_area.origin());
+
+  ui_manager->Shutdown();
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ResizeDueToAutoResizeAdjustsToFitWorkArea \
+  DISABLED_ResizeDueToAutoResizeAdjustsToFitWorkArea
+#else
+#define MAYBE_ResizeDueToAutoResizeAdjustsToFitWorkArea \
+  ResizeDueToAutoResizeAdjustsToFitWorkArea
+#endif
+TEST_F(OmniboxEverywhereUIManagerTest,
+       MAYBE_ResizeDueToAutoResizeAdjustsToFitWorkArea) {
+  display::test::TestScreen test_screen(/*create_display=*/false,
+                                        /*register_screen=*/false);
+  ScopedScreenOverride screen_override(&test_screen);
+
+  display::Display display1(1, gfx::Rect(0, 0, 1920, 1080));
+  display1.set_work_area(gfx::Rect(0, 50, 1920, 1030));
+  // Add a second display stacked directly below display1 to verify that
+  // expanding the dropdown near the bottom of display1 clamps within display1
+  // rather than jumping to display2.
+  display::Display display2(2, gfx::Rect(0, 1080, 1920, 1080));
+  test_screen.display_list().AddDisplay(display1,
+                                        display::DisplayList::Type::PRIMARY);
+  test_screen.display_list().AddDisplay(
+      display2, display::DisplayList::Type::NOT_PRIMARY);
+  test_screen.set_cursor_screen_point(gfx::Point(500, 500));
+
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+
+  const gfx::Rect work_area = display1.work_area();
+  const int widget_width = widget->GetWindowBoundsInScreen().width();
+  const int widget_height = widget->GetWindowBoundsInScreen().height();
+
+  // Position the widget near the bottom of the work area (still fully inside).
+  gfx::Rect near_bottom(work_area.x() + 100, work_area.bottom() - widget_height,
+                        widget_width, widget_height);
+  widget->SetBounds(near_bottom);
+  EXPECT_TRUE(work_area.Contains(widget->GetWindowBoundsInScreen()));
+
+  // Simulate the suggestions dropdown opening via AutoResize (expanding height
+  // to 500px), which would overflow past the bottom of the work area.
+  const int expanded_height = 500;
+  ui_manager->ResizeDueToAutoResize(ui_manager->web_contents(),
+                                    gfx::Size(widget_width, expanded_height));
+
+  EXPECT_TRUE(work_area.Contains(widget->GetWindowBoundsInScreen()));
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().height(), expanded_height);
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().bottom(), work_area.bottom());
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().y(),
+            work_area.bottom() - expanded_height);
+
+  ui_manager->Shutdown();
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_OnWidgetBoundsChangedAdjustsToFitWorkArea \
+  DISABLED_OnWidgetBoundsChangedAdjustsToFitWorkArea
+#else
+#define MAYBE_OnWidgetBoundsChangedAdjustsToFitWorkArea \
+  OnWidgetBoundsChangedAdjustsToFitWorkArea
+#endif
+TEST_F(OmniboxEverywhereUIManagerTest,
+       MAYBE_OnWidgetBoundsChangedAdjustsToFitWorkArea) {
+  display::test::TestScreen test_screen(/*create_display=*/false,
+                                        /*register_screen=*/false);
+  ScopedScreenOverride screen_override(&test_screen);
+
+  display::Display display1(1, gfx::Rect(0, 0, 1920, 1080));
+  display1.set_work_area(gfx::Rect(0, 50, 1920, 1030));
+  test_screen.display_list().AddDisplay(display1,
+                                        display::DisplayList::Type::PRIMARY);
+
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+
+  const gfx::Rect work_area = display1.work_area();
+  const int widget_width = widget->GetWindowBoundsInScreen().width();
+  const int widget_height = widget->GetWindowBoundsInScreen().height();
+
+  // Moving or resizing the widget outside of the work area when not dragging
+  // should immediately clamp it back into the work area.
+  gfx::Rect offscreen_right_bottom(work_area.right() - 50,
+                                   work_area.bottom() - 50, widget_width,
+                                   widget_height);
+  widget->SetBounds(offscreen_right_bottom);
+
+  EXPECT_TRUE(work_area.Contains(widget->GetWindowBoundsInScreen()));
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().right(), work_area.right());
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().bottom(), work_area.bottom());
 
   ui_manager->Shutdown();
 }

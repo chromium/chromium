@@ -170,6 +170,8 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void OnWidgetVisibilityOnScreenChanged(views::Widget* widget,
                                          bool visible) override;
   void OnWidgetShowStateChanged(views::Widget* widget) override;
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override;
   void OnWidgetDestroying(views::Widget* widget) override;
   void OnWidgetUserDragStarted(views::Widget* widget) override;
   void OnWidgetUserDragEnded(views::Widget* widget) override;
@@ -347,6 +349,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void MaybeShowLensPromo();
   void EndLensPromo();
   static gfx::Rect CalculateWidgetBounds(int height);
+  void AdjustWidgetBoundsToWorkArea();
 
   // Try and acquire process and profile keep alives. If unsuccessful, releases
   // keep alives (if any) and returns false.
@@ -424,6 +427,9 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   // Re-entrancy guard to prevent recursive closing or processing deactivation
   // events while Close() is executing synchronously on the stack.
   bool is_closing_ = false;
+  // Re-entrancy guard to prevent OnWidgetBoundsChanged from re-entering when
+  // AdjustWidgetBoundsToWorkArea() or ResizeDueToAutoResize() updates bounds.
+  bool is_adjusting_bounds_ = false;
   std::optional<gfx::Size> pending_auto_resize_size_;
   std::optional<SkRegion> draggable_region_;
 
