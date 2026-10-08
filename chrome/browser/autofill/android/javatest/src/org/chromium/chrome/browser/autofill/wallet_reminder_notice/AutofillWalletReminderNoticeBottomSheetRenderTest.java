@@ -131,25 +131,24 @@ public class AutofillWalletReminderNoticeBottomSheetRenderTest {
                 new LegalMessageLine(
                         "Payment methods, loyalty cards, and other passes that you add in Chrome"
                                 + " are saved in Google Wallet.");
-        LegalMessageLine line2 = new LegalMessageLine("");
-        String line3Text =
+        String line2Text =
                 "Depending on your Wallet settings, some of this info can be used to"
                         + " personalize experiences, as well as improve services through"
                         + " analytics and measurement. Learn more about how your saved info is"
                         + " used";
-        LegalMessageLine line3 =
+        LegalMessageLine line2 =
                 new LegalMessageLine(
-                        line3Text,
+                        line2Text,
                         List.of(
                                 createLink(
-                                        line3Text,
+                                        line2Text,
                                         "Wallet settings",
                                         "https://wallet.google.com/settings"),
                                 createLink(
-                                        line3Text,
+                                        line2Text,
                                         "Learn more about how your saved info is used",
                                         "https://support.google.com/wallet")));
-        return List.of(line1, line2, line3);
+        return List.of(line1, line2);
     }
 
     private static LegalMessageLine.Link createLink(String fullText, String linkText, String url) {
