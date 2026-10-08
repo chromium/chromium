@@ -846,11 +846,9 @@ void GpuChannelManager::PerformImmediateCleanup() {
   }
 
 #if BUILDFLAG(ENABLE_VULKAN)
-  if (shared_context_state_->GrContextIsVulkan()) {
-    // TODO(lizeb): Also perform this on GL devices.
-    if (auto* context = shared_context_state_->gr_context()) {
-      context->flushAndSubmit(GrSyncCpu::kYes);
-    }
+  if (shared_context_state_->GrContextIsVulkan() ||
+      shared_context_state_->IsGraphiteVulkan()) {
+    shared_context_state_->FlushAndSubmit(/*sync_to_cpu=*/true);
 
     DCHECK(vulkan_context_provider_);
     auto* fence_helper =

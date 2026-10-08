@@ -19,6 +19,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "gpu/command_buffer/common/shm_count.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/graphite/BackendSemaphore.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/PrecompileContext.h"
@@ -83,12 +84,6 @@ std::string_view PendingCommandsRangeSuffix(int num_pending_commands) {
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/gpu/histograms.xml:PendingCommandsRange)
 
-struct FinishedContext {
-  skgpu::graphite::GpuFinishedProc old_finished_proc;
-  skgpu::graphite::GpuFinishedContext old_context;
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner;
-};
-
 std::pair<skgpu::graphite::GpuFinishedProc, skgpu::graphite::GpuFinishedContext>
 CreateFinishedProcThreadSafe(
     skgpu::graphite::GpuFinishedProc finished_proc,
@@ -96,6 +91,12 @@ CreateFinishedProcThreadSafe(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK(finished_proc);
   DCHECK(task_runner);
+
+  struct FinishedContext {
+    skgpu::graphite::GpuFinishedProc old_finished_proc;
+    skgpu::graphite::GpuFinishedContext old_context;
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner;
+  };
 
   // Ensure finishedProc is called on the original thread.
   auto* context = new FinishedContext{finished_proc, finished_context,
@@ -115,6 +116,38 @@ CreateFinishedProcThreadSafe(
   };
 
   return {thread_safe_finished_proc, context};
+}
+
+std::pair<skgpu::graphite::GpuFinishedProc, skgpu::graphite::GpuFinishedContext>
+CreateFinishedProcWithCleanup(
+    skgpu::graphite::GpuFinishedProc finished_proc,
+    skgpu::graphite::GpuFinishedContext finished_context,
+    base::OnceClosure cleanup_task) {
+  DCHECK(cleanup_task);
+
+  struct CleanupContext {
+    skgpu::graphite::GpuFinishedProc old_finished_proc;
+    skgpu::graphite::GpuFinishedContext old_context;
+    base::OnceClosure cleanup_task;
+  };
+
+  auto* context = new CleanupContext{finished_proc, finished_context,
+                                     std::move(cleanup_task)};
+
+  auto finished_proc_with_cleanup = [](void* ctx,
+                                       skgpu::CallbackResult result) {
+    auto context = base::WrapUnique(static_cast<CleanupContext*>(ctx));
+    if (context->old_finished_proc) {
+      context->old_finished_proc(context->old_context, result);
+    }
+    // If the submit failed then don't run cleanup as it may delete objects that
+    // are used next submit.
+    if (result == skgpu::CallbackResult::kSuccess) {
+      std::move(context->cleanup_task).Run();
+    }
+  };
+
+  return {finished_proc_with_cleanup, context};
 }
 
 struct AsyncReadContext {
@@ -270,6 +303,11 @@ GraphiteSharedContext::AutoLock::~AutoLock() {
     context_->locked_thread_id_.store(base::kInvalidThreadId,
                                       std::memory_order_relaxed);
   }
+}
+
+base::OnceClosure
+GraphiteSharedContext::Delegate::CreateSubmitCleanupCallback() {
+  return base::OnceClosure();
 }
 
 GraphiteSharedContext::GraphiteSharedContext(
@@ -490,7 +528,8 @@ void GraphiteSharedContext::submit(skgpu::graphite::SubmitInfo submit_info) {
   CHECK(SubmitImpl(submit_info));
 }
 
-bool GraphiteSharedContext::SubmitImpl(skgpu::graphite::SubmitInfo submit_info) {
+bool GraphiteSharedContext::SubmitImpl(
+    skgpu::graphite::SubmitInfo submit_info) {
   const int num_pending_commands = num_pending_commands_;
   num_pending_commands_ = 0;
   num_pending_recordings_ = 0;
@@ -503,8 +542,16 @@ bool GraphiteSharedContext::SubmitImpl(skgpu::graphite::SubmitInfo submit_info) 
     InsertSemaphoreOnlyRecording();
   }
 
+  // Ask the backend for deferred cleanup work (e.g. VulkanFenceHelper tasks)
+  // that must wait for all previously submitted GPU work to finish.
+  base::OnceClosure cleanup_callback;
+  if (delegate_ && !IsThreadSafe()) {
+    cleanup_callback = delegate_->CreateSubmitCleanupCallback();
+  }
+
   if (submit_info.fSync == skgpu::graphite::SyncToCpu::kNo &&
-      !submit_info.fFinishedProc && !graphite_context_->hasPendingGPUWork()) {
+      !submit_info.fFinishedProc && !cleanup_callback &&
+      !graphite_context_->hasPendingGPUWork()) {
     // Skip submitting if there is no pending GPU work and no finish proc. If a
     // finish proc is provided, we must call submit() even without new work so
     // that it can be triggered when all previously submitted work completes.
@@ -537,9 +584,14 @@ bool GraphiteSharedContext::SubmitImpl(skgpu::graphite::SubmitInfo submit_info) 
   // a separate submit below.
   submit_info.fSync = skgpu::graphite::SyncToCpu::kNo;
 
-  // Ensure fFinishedProc is called on the original thread if there is only one
-  // graphite::Context.
-  if (submit_info.fFinishedProc && task_runner) {
+  if (cleanup_callback) {
+    std::tie(submit_info.fFinishedProc, submit_info.fFinishedContext) =
+        CreateFinishedProcWithCleanup(submit_info.fFinishedProc,
+                                      submit_info.fFinishedContext,
+                                      std::move(cleanup_callback));
+  } else if (submit_info.fFinishedProc && task_runner) {
+    // Ensure fFinishedProc is called on the original thread if there is only
+    // one graphite::Context.
     std::tie(submit_info.fFinishedProc, submit_info.fFinishedContext) =
         CreateFinishedProcThreadSafe(submit_info.fFinishedProc,
                                      submit_info.fFinishedContext,

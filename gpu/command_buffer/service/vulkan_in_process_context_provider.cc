@@ -319,6 +319,13 @@ void VulkanInProcessContextProvider::ReportProgress() {
   // TODO(crbug.com/552951905): Implement ProgressReporter hook.
 }
 
+base::OnceClosure
+VulkanInProcessContextProvider::CreateSubmitCleanupCallback() {
+  // Associate all cleanup tasks enqueued so far with the upcoming submit so
+  // they run once the GPU has finished with the resources they reference.
+  return device_queue_->GetFenceHelper()->CreateExternalCallback();
+}
+
 std::optional<uint32_t> VulkanInProcessContextProvider::GetSyncCpuMemoryLimit()
     const {
   // Return nullopt to indicate that there's no limit.

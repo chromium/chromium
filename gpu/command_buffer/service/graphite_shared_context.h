@@ -47,6 +47,14 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
     virtual bool IsContextLost() const = 0;
     // Tells the GPU watchdog that the GPU thread is making progress.
     virtual void ReportProgress() = 0;
+
+    // Returns a closure to run once all GPU work submitted has finished. Called
+    // every submit when in single threaded mode. Returning a null closure means
+    // there is nothing to clean up.
+    //
+    // If a submit fails the associated callback will never be run. This must
+    // not result in leaked resources.
+    virtual base::OnceClosure CreateSubmitCleanupCallback();
   };
 
   using SkImageReadPixelsCallback = base::OnceCallback<

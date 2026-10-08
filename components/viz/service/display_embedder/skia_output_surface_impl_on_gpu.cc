@@ -87,6 +87,7 @@
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
+#include "third_party/skia/include/gpu/graphite/GraphiteTypes.h"
 #include "third_party/skia/include/gpu/graphite/Surface.h"
 #include "third_party/skia/include/private/chromium/GrDeferredDisplayList.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
@@ -391,26 +392,31 @@ SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
   // SharedContextState, we need to explicitly invoke the factory's destructor
   // before deleting ImplOnGpu's other member variables.
   shared_image_factory_.reset();
-  if (has_context && gr_context()) {
-    TRACE_EVENT0("viz", "Cleanup");
-    std::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
-    if (dependency_->GetGrShaderCache()) {
-      cache_use.emplace(dependency_->GetGrShaderCache(),
-                        gpu::kDisplayCompositorClientId);
+  if (has_context) {
+    if (gr_context()) {
+      TRACE_EVENT0("viz", "Cleanup");
+      std::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
+      if (dependency_->GetGrShaderCache()) {
+        cache_use.emplace(dependency_->GetGrShaderCache(),
+                          gpu::kDisplayCompositorClientId);
+      }
+      // This ensures any outstanding callbacks for promise images are
+      // performed.
+      GrFlushInfo flush_info = {};
+      gpu::AddVulkanCleanupTaskForSkiaFlush(
+          context_state_->vk_context_provider(), &flush_info);
+      gl::ScopedProgressReporter scoped_process_reporter(
+          context_state_->progress_reporter());
+      gr_context()->flush(flush_info);
+      gr_context()->submit(GrSyncCpu::kYes);
+    } else if (context_state_->IsGraphiteVulkan()) {
+      context_state_->FlushAndSubmit(/*sync_to_cpu=*/true);
     }
-    // This ensures any outstanding callbacks for promise images are
-    // performed.
-    GrFlushInfo flush_info = {};
-    gpu::AddVulkanCleanupTaskForSkiaFlush(context_state_->vk_context_provider(),
-                                          &flush_info);
-    gl::ScopedProgressReporter scoped_process_reporter(
-        context_state_->progress_reporter());
-    gr_context()->flush(flush_info);
-    gr_context()->submit(GrSyncCpu::kYes);
 
 #if BUILDFLAG(ENABLE_VULKAN)
     // No frame will come for us, make sure that all the cleanup is done.
-    if (context_state_->GrContextIsVulkan()) {
+    if (context_state_->GrContextIsVulkan() ||
+        context_state_->IsGraphiteVulkan()) {
       DCHECK(context_state_->vk_context_provider());
       auto* fence_helper = context_state_->vk_context_provider()
                                ->GetDeviceQueue()

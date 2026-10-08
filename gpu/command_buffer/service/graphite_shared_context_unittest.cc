@@ -4,6 +4,8 @@
 
 #include "gpu/command_buffer/service/graphite_shared_context.h"
 
+#include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread.h"
@@ -46,6 +48,7 @@ class MockDelegate : public GraphiteSharedContext::Delegate {
               (override));
   MOCK_METHOD(bool, IsContextLost, (), (const, override));
   MOCK_METHOD(void, ReportProgress, (), (override));
+  MOCK_METHOD(base::OnceClosure, CreateSubmitCleanupCallback, (), (override));
 };
 
 // Test fixture for GraphiteSharedContext with thread safety enabled.
@@ -371,6 +374,90 @@ TEST_P(GraphiteSharedContextTest, ReadPixelsContextLost) {
       surface.get(), ii, SkIRect::MakeWH(64, 64), SkImage::RescaleGamma::kSrc,
       SkImage::RescaleMode::kNearest, readback_future.GetCallback(), nullptr));
   EXPECT_FALSE(readback_future.IsReady());
+}
+
+// Test that the delegate's cleanup callback runs once submitted work finishes.
+TEST_P(GraphiteSharedContextTest, SubmitRunsCleanupCallback) {
+  if (is_thread_safe()) {
+    GTEST_SKIP()
+        << "Cleanup callbacks only supported when context is not thread safe";
+  }
+
+  auto recorder = graphite_shared_context_->makeRecorder();
+  ASSERT_TRUE(recorder);
+
+  auto ii = SkImageInfo::Make(64, 64, kN32_SkColorType, kPremul_SkAlphaType);
+  auto surface = SkSurfaces::RenderTarget(recorder.get(), ii);
+  surface->getCanvas()->clear(SK_ColorRED);
+  auto recording = recorder->snap();
+  ASSERT_TRUE(recording);
+
+  skgpu::graphite::InsertRecordingInfo info = {};
+  info.fRecording = recording.get();
+  EXPECT_TRUE(graphite_shared_context_->insertRecording(info));
+
+  bool cleanup_ran = false;
+  EXPECT_CALL(delegate_, CreateSubmitCleanupCallback())
+      .WillOnce([&cleanup_ran]() {
+        return base::BindOnce([](bool* ran) { *ran = true; }, &cleanup_ran);
+      });
+  graphite_shared_context_->submit(skgpu::graphite::SyncToCpu::kYes);
+  EXPECT_TRUE(cleanup_ran);
+}
+
+// Test that a cleanup callback forces a submit even when there is no pending
+// GPU work, so deferred cleanup still makes progress.
+TEST_P(GraphiteSharedContextTest, CleanupCallbackWithoutPendingWork) {
+  if (is_thread_safe()) {
+    GTEST_SKIP()
+        << "Cleanup callbacks only supported when context is not thread safe";
+  }
+
+  bool cleanup_ran = false;
+  EXPECT_CALL(delegate_, CreateSubmitCleanupCallback())
+      .WillOnce([&cleanup_ran]() {
+        return base::BindOnce([](bool* ran) { *ran = true; }, &cleanup_ran);
+      })
+      .WillRepeatedly([]() { return base::OnceClosure(); });
+  graphite_shared_context_->submit(skgpu::graphite::SyncToCpu::kNo);
+  // Wait for all outstanding GPU work, which processes finished procs.
+  graphite_shared_context_->submit(skgpu::graphite::SyncToCpu::kYes);
+  EXPECT_TRUE(cleanup_ran);
+}
+
+// Test that the cleanup callback is chained with a caller provided finished
+// proc and that both run, with the finished proc running first.
+TEST_P(GraphiteSharedContextTest, CleanupCallbackChainsFinishedProc) {
+  if (is_thread_safe()) {
+    GTEST_SKIP()
+        << "Cleanup callbacks only supported when context is not thread safe";
+  }
+
+  struct FinishedState {
+    bool finished_proc_ran = false;
+    bool cleanup_ran = false;
+    bool finished_proc_ran_first = false;
+  } state;
+
+  EXPECT_CALL(delegate_, CreateSubmitCleanupCallback()).WillOnce([&state]() {
+    return base::BindOnce(
+        [](FinishedState* state) {
+          state->cleanup_ran = true;
+          state->finished_proc_ran_first = state->finished_proc_ran;
+        },
+        base::Unretained(&state));
+  });
+
+  skgpu::graphite::SubmitInfo submit_info(skgpu::graphite::SyncToCpu::kYes);
+  submit_info.fFinishedContext = &state;
+  submit_info.fFinishedProc = [](void* ctx, skgpu::CallbackResult) {
+    static_cast<FinishedState*>(ctx)->finished_proc_ran = true;
+  };
+  graphite_shared_context_->submit(submit_info);
+
+  EXPECT_TRUE(state.finished_proc_ran);
+  EXPECT_TRUE(state.cleanup_ran);
+  EXPECT_TRUE(state.finished_proc_ran_first);
 }
 
 INSTANTIATE_TEST_SUITE_P(, GraphiteSharedContextTest, testing::Bool());
