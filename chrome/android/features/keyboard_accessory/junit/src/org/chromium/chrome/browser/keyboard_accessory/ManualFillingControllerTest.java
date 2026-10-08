@@ -2026,6 +2026,56 @@ public class ManualFillingControllerTest {
     }
 
     @Test
+    public void testLargeFormAccessoryWithDynamicPositioningIncludesViewportLeftOffset() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        final int density = 2;
+        final int paddingForNotch = 5;
+        final int barHeight = 10;
+        final int leftBound = 10;
+        final int topBound = 20;
+        final int rightBound = 30;
+        final int bottomBound = 40;
+        final int horizontalMargin = 20;
+        final int viewportLeftOffset = 240;
+
+        addBrowserTab(mMediator, 1111, null);
+        mModel.set(KEYBOARD_EXTENSION_STATE, HIDDEN);
+        reset(mMockKeyboardAccessory, mMockAccessorySheet);
+        when(mMockKeyboardAccessory.empty()).thenReturn(false);
+
+        simulateVisibleViewportBounds(
+                /* left= */ viewportLeftOffset,
+                /* top= */ 0,
+                /* right= */ 1000,
+                /* bottom= */ 1000);
+        mController.setFieldBounds(new RectF(leftBound, topBound, rightBound, bottomBound));
+
+        when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_height))
+                .thenReturn(barHeight);
+        when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_notch_height))
+                .thenReturn(paddingForNotch);
+        when(mMockResources.getDimensionPixelSize(
+                        R.dimen.keyboard_accessory_bar_dynamic_positioning_horizontal_margin))
+                .thenReturn(horizontalMargin);
+
+        mController.show(
+                /* waitForKeyboard= */ true,
+                /* shouldShowOnLargeFormFactor= */ true,
+                /* isContentEditable= */ false);
+
+        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
+        verify(mMockKeyboardAccessory).setStyle(mStyleCaptor.capture());
+        KeyboardAccessoryStyle style = mStyleCaptor.getValue();
+        assertFalse(style.isDocked());
+        assertEquals(KeyboardAccessoryStyle.NotchPosition.TOP, style.getNotchPosition());
+
+        assertEquals(bottomBound * density, style.getVerticalOffset());
+        assertEquals(
+                viewportLeftOffset + leftBound * density + horizontalMargin,
+                style.getHorizontalOffset());
+    }
+
+    @Test
     public void testNonLargeFormAccessoryNotFloating() {
         DeviceInfo.setIsDesktopForTesting(false);
         when(mMockSoftKeyboardDelegate.isSoftKeyboardShowing(any())).thenReturn(true);
@@ -2433,8 +2483,13 @@ public class ManualFillingControllerTest {
     }
 
     private void simulateVisibleViewportSize(@Px int width, @Px int height) {
-        RectF visibleViewport =
-                new RectF(/* left= */ 0, /* top= */ 0, /* right= */ width, /* bottom= */ height);
+        simulateVisibleViewportBounds(
+                /* left= */ 0, /* top= */ 0, /* right= */ width, /* bottom= */ height);
+    }
+
+    private void simulateVisibleViewportBounds(
+            @Px int left, @Px int top, @Px int right, @Px int bottom) {
+        RectF visibleViewport = new RectF(left, top, right, bottom);
         Mockito.doAnswer(
                         (Answer<Void>)
                                 (invocationOnMock) -> {

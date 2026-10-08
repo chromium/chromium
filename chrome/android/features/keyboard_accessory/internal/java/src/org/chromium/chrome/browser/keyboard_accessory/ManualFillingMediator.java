@@ -1109,6 +1109,12 @@ class ManualFillingMediator
     private @Px int getHorizontalOffset() {
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
+            CompositorViewHolder compositorViewHolder =
+                    assumeNonNull(mActivity.getCompositorViewHolderSupplier().get());
+            RectF viewport = new RectF();
+            compositorViewHolder.getVisibleViewport(viewport);
+
+            @Px int viewportLeft = Math.round(viewport.left);
             @Px
             int leftBound =
                     Math.round(
@@ -1117,7 +1123,7 @@ class ManualFillingMediator
             final int marginResId =
                     R.dimen.keyboard_accessory_bar_dynamic_positioning_horizontal_margin;
             @Px int offset = mActivity.getResources().getDimensionPixelSize(marginResId);
-            return leftBound + offset;
+            return viewportLeft + leftBound + offset;
         }
         return 0;
     }
