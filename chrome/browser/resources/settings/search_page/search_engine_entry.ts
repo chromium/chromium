@@ -28,7 +28,7 @@ import {loadTimeData} from '../i18n_setup.js';
 
 import {getCss} from './search_engine_entry.css.js';
 import {getHtml} from './search_engine_entry.html.js';
-import type {SearchEngine, SearchEnginesBrowserProxy} from './search_engines_browser_proxy.js';
+import type {SearchEngine, SearchEngineId, SearchEnginesBrowserProxy} from './search_engines_browser_proxy.js';
 import {ChoiceMadeLocation, SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from './search_engines_browser_proxy.js';
 
 const SettingsSearchEngineEntryElementBase =
@@ -68,7 +68,7 @@ export class SettingsSearchEngineEntryElement extends
     default: false,
     displayName: '',
     iconPath: '',
-    id: '',
+    id: '' as SearchEngineId,
     isManaged: false,
     isRecommendedFromPolicy: false,
     isOmniboxExtension: false,

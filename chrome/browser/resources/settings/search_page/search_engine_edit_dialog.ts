@@ -26,10 +26,6 @@ import {getHtml} from './search_engine_edit_dialog.html.js';
 import type {CategorizedTemplateUrls, SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo} from './search_engines_browser_proxy.js';
 import {SearchEnginesBrowserProxyImpl} from './search_engines_browser_proxy.js';
 
-// The `id` to use when a new search engine is added. An empty ID signals to the
-// backend that no existing engine is being edited.
-const DEFAULT_MODEL_ID: string = '';
-
 export interface SettingsSearchEngineEditDialogElement {
   $: {
     actionButton: CrButtonElement,
@@ -99,7 +95,7 @@ export class SettingsSearchEngineEditDialogElement extends
             this.updateEnginesFromSearchEnginesInfo_.bind(this));
 
     this.browserProxy_.searchEngineEditStarted(
-        this.model ? this.model.id : DEFAULT_MODEL_ID);
+        this.model ? this.model.id : null);
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {

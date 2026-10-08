@@ -13,7 +13,7 @@ import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
-import {createSampleSearchEngine, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
+import {createSampleSearchEngine, engineId, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
 // clang-format on
 
 function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
@@ -27,12 +27,12 @@ function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
 }
 
 function generateSearchEngineInfo(): SearchEnginesInfo {
-  const searchEngines0 =
-      createSampleSearchEngine({canBeDefault: true, default: true, id: 'db:0'});
+  const searchEngines0 = createSampleSearchEngine(
+      {canBeDefault: true, default: true, id: engineId('db:0')});
   const searchEngines1 =
-      createSampleSearchEngine({canBeDefault: true, id: 'db:1'});
+      createSampleSearchEngine({canBeDefault: true, id: engineId('db:1')});
   const searchEngines2 =
-      createSampleSearchEngine({canBeDefault: true, id: 'db:2'});
+      createSampleSearchEngine({canBeDefault: true, id: engineId('db:2')});
 
   return {
     defaults: [searchEngines0, searchEngines1, searchEngines2],
@@ -44,12 +44,12 @@ function generateSearchEngineInfo(): SearchEnginesInfo {
 
 function generateDefaultSearchEnginePickerData():
     DefaultSearchEnginePickerData {
-  const searchEngines0 =
-      createSampleSearchEngine({canBeDefault: true, default: true, id: 'db:0'});
+  const searchEngines0 = createSampleSearchEngine(
+      {canBeDefault: true, default: true, id: engineId('db:0')});
   const searchEngines1 =
-      createSampleSearchEngine({canBeDefault: true, id: 'db:1'});
+      createSampleSearchEngine({canBeDefault: true, id: engineId('db:1')});
   const searchEngines2 =
-      createSampleSearchEngine({canBeDefault: true, id: 'db:2'});
+      createSampleSearchEngine({canBeDefault: true, id: engineId('db:2')});
 
   return {
     primary: [searchEngines0, searchEngines1, searchEngines2],

@@ -639,17 +639,18 @@ void SearchEnginesHandler::HandleRemoveSearchEngine(
 void SearchEnginesHandler::HandleSearchEngineEditStarted(
     const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
-  const std::string& engine_id = args[0].GetString();
 
-  // An empty ID indicates that a new search engine is being added.
+  // A null ID indicates that a new search engine is being added.
   TemplateURL* engine = nullptr;
-  if (!engine_id.empty()) {
-    engine = list_controller_.GetTemplateURL(ParseTemplateURLId(engine_id));
+  if (const std::string* engine_id = args[0].GetIfString()) {
+    engine = list_controller_.GetTemplateURL(ParseTemplateURLId(*engine_id));
     if (!engine) {
       // The engine may have been removed in the meantime (e.g. from another
       // tab).
       return;
     }
+  } else {
+    CHECK(args[0].is_none());
   }
 
   edit_controller_ = std::make_unique<EditSearchEngineController>(

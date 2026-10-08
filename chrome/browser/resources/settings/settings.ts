@@ -150,7 +150,7 @@ export type {OmniboxEverywhereBrowserProxy} from './search_page/omnibox_everywhe
 export {SettingsOmniboxEverywhereSectionElement} from './search_page/omnibox_everywhere_section.js';
 export {SettingsSearchEngineListDialogElement} from './search_page/search_engine_list_dialog.js';
 export {ChoiceMadeLocation, SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from './search_page/search_engines_browser_proxy.js';
-export type {CategorizedTemplateUrls, DefaultSearchEnginePickerData, SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo} from './search_page/search_engines_browser_proxy.js';
+export type {CategorizedTemplateUrls, DefaultSearchEnginePickerData, SearchEngine, SearchEngineId, SearchEnginesBrowserProxy, SearchEnginesInfo} from './search_page/search_engines_browser_proxy.js';
 export {SettingsSearchPageElement} from './search_page/search_page.js';
 export {SettingsSearchPageIndexElement} from './search_page/search_page_index.js';
 export {SiteShortcutsPageElement} from './search_page/site_shortcuts_page.js';

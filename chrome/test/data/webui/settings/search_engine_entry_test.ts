@@ -14,7 +14,7 @@ import {loadTimeData} from 'chrome://settings/settings.js';
 
 import {TestExtensionControlBrowserProxy} from './test_extension_control_browser_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
-import {createSampleOmniboxExtension, createSampleSearchEngine, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
+import {createSampleOmniboxExtension, createSampleSearchEngine, engineId, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
 // clang-format on
 
 function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
@@ -347,7 +347,7 @@ suite('EnterpriseSiteSearchEntryTests', function() {
    */
   const createSampleManagedSearchEngine = (): SearchEngine => {
     return createSampleSearchEngine({
-      id: 'db:1',
+      id: engineId('db:1'),
       name: 'managed',
       canBeEdited: false,
       displayName: 'Managed',
@@ -361,7 +361,7 @@ suite('EnterpriseSiteSearchEntryTests', function() {
   const createSampleOverridableSearchEngine =
       (isFeatured: boolean): SearchEngine => {
         return createSampleSearchEngine({
-          id: 'db:1',
+          id: engineId('db:1'),
           name: 'recommended',
           canBeEdited: !isFeatured,
           canBeRemoved: !isFeatured,

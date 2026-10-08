@@ -12,7 +12,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {loadTimeData} from 'chrome://settings/settings.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createSampleSearchEngine, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
+import {createSampleSearchEngine, engineId, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
 
 // clang-format on
 
@@ -26,7 +26,7 @@ function generateCategorizedTemplateUrls(): CategorizedTemplateUrls {
     activeFeatureShortcuts: [
       createSampleSearchEngine({
         name: 'Feature 1',
-        id: 'db:30',
+        id: engineId('db:30'),
         url: 'chrome://feature1',
         keyword: 'f1',
       }),
@@ -34,7 +34,7 @@ function generateCategorizedTemplateUrls(): CategorizedTemplateUrls {
     inactiveFeatureShortcuts: [
       createSampleSearchEngine({
         name: 'Inactive Feature 1',
-        id: 'db:40',
+        id: engineId('db:40'),
         url: 'chrome://infeature1',
         keyword: 'if1',
       }),

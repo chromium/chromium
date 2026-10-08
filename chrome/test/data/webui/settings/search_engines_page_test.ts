@@ -13,7 +13,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
-import {createSampleOmniboxExtension, createSampleSearchEngine, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
+import {createSampleOmniboxExtension, createSampleSearchEngine, engineId, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
 // clang-format on
 
 function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
@@ -39,13 +39,13 @@ suite('SearchEnginePageTests', function() {
   const searchEnginesInfo: SearchEnginesInfo = {
     defaults: [
       createSampleSearchEngine({
-        id: 'db:0',
+        id: engineId('db:0'),
         name: 'search_engine_default_A',
         displayName: 'A displayName',
         keyword: 'default A',
       }),
       createSampleSearchEngine({
-        id: 'db:1',
+        id: engineId('db:1'),
         name: 'search_engine_default_B',
         displayName: 'B displayName',
         keyword: 'default B',
@@ -53,7 +53,7 @@ suite('SearchEnginePageTests', function() {
         urlLocked: true,
       }),
       createSampleSearchEngine({
-        id: 'db:2',
+        id: engineId('db:2'),
         name: 'search_engine_default_C',
         displayName: 'C displayName',
         keyword: 'default C',
@@ -63,7 +63,7 @@ suite('SearchEnginePageTests', function() {
         isManaged: true,
       }),
       createSampleSearchEngine({
-        id: 'db:3',
+        id: engineId('db:3'),
         name: 'search_engine_default_D',
         displayName: 'D displayName',
         keyword: 'default D',
@@ -73,9 +73,9 @@ suite('SearchEnginePageTests', function() {
       }),
     ],
     actives: [
-      createSampleSearchEngine({id: 'db:4'}),
+      createSampleSearchEngine({id: engineId('db:4')}),
       createSampleSearchEngine({
-        id: 'db:5',
+        id: engineId('db:5'),
         name: 'search_engine_active_E',
         displayName: 'E displayName',
         keyword: 'active E',
@@ -84,7 +84,7 @@ suite('SearchEnginePageTests', function() {
         isManaged: true,
       }),
       createSampleSearchEngine({
-        id: 'db:6',
+        id: engineId('db:6'),
         name: 'search_engine_active_F',
         displayName: 'F displayName',
         keyword: 'active F',
@@ -94,20 +94,24 @@ suite('SearchEnginePageTests', function() {
     ],
     others: [
       createSampleSearchEngine({
-        id: 'db:7',
+        id: engineId('db:7'),
         name: 'search_engine_G',
         displayName: 'search_engine_G displayName',
       }),
       createSampleSearchEngine({
-        id: 'db:8',
+        id: engineId('db:8'),
         name: 'search_engine_F',
         keyword: 'search_engine_F keyword',
       }),
-      createSampleSearchEngine({id: 'db:9', name: 'search_engine_E'}),
-      createSampleSearchEngine({id: 'db:10', name: 'search_engine_D'}),
-      createSampleSearchEngine({id: 'db:11', name: 'search_engine_C'}),
-      createSampleSearchEngine({id: 'db:12', name: 'search_engine_B'}),
-      createSampleSearchEngine({id: 'db:13', name: 'search_engine_A'}),
+      createSampleSearchEngine({id: engineId('db:9'), name: 'search_engine_E'}),
+      createSampleSearchEngine(
+          {id: engineId('db:10'), name: 'search_engine_D'}),
+      createSampleSearchEngine(
+          {id: engineId('db:11'), name: 'search_engine_C'}),
+      createSampleSearchEngine(
+          {id: engineId('db:12'), name: 'search_engine_B'}),
+      createSampleSearchEngine(
+          {id: engineId('db:13'), name: 'search_engine_A'}),
     ],
     extensions: [createSampleOmniboxExtension()],
   };

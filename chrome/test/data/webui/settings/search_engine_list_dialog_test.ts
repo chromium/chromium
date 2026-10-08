@@ -10,16 +10,20 @@ import {loadTimeData, SearchEnginesBrowserProxyImpl, ChoiceMadeLocation} from 'c
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createSampleSearchEngine, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
+import {createSampleSearchEngine, engineId, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
 // clang-format on
 
 function generateActiveSiteShortcuts(): SearchEngine[] {
   const searchEngines0 = createSampleSearchEngine(
-      {canBeDefault: true, isPrepopulated: true, id: 'db:0'});
+      {canBeDefault: true, isPrepopulated: true, id: engineId('db:0')});
   const searchEngines1 = createSampleSearchEngine(
-      {canBeDefault: true, isPrepopulated: true, id: 'db:1'});
-  const searchEngines2 = createSampleSearchEngine(
-      {canBeDefault: true, isPrepopulated: false, default: true, id: 'db:2'});
+      {canBeDefault: true, isPrepopulated: true, id: engineId('db:1')});
+  const searchEngines2 = createSampleSearchEngine({
+    canBeDefault: true,
+    isPrepopulated: false,
+    default: true,
+    id: engineId('db:2'),
+  });
 
   return [searchEngines0, searchEngines1, searchEngines2];
 }

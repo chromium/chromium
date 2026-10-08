@@ -651,11 +651,11 @@ TEST_F(SearchEnginesHandlerTest, SetIsActiveSearchEngine) {
       template_url_service->GetTemplateURLForKeyword(u"bar_com")->is_active());
 }
 
-TEST_F(SearchEnginesHandlerTest, SearchEngineEditStartedWithEmptyId) {
+TEST_F(SearchEnginesHandlerTest, SearchEngineEditStartedWithNullId) {
   ConfigureTestWithRegularProfile();
 
   base::ListValue args;
-  args.Append("");
+  args.Append(base::Value());
   web_ui()->HandleReceivedMessage("searchEngineEditStarted", args);
   EXPECT_TRUE(has_edit_controller());
 }

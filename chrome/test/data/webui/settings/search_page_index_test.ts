@@ -11,7 +11,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
-import {createSampleSearchEngine, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
+import {createSampleSearchEngine, engineId, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
 
 function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
   return [
@@ -29,12 +29,12 @@ function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
 }
 
 function generateSearchEngineInfo(): SearchEnginesInfo {
-  const searchEngines0 =
-      createSampleSearchEngine({canBeDefault: true, default: true, id: 'db:0'});
+  const searchEngines0 = createSampleSearchEngine(
+      {canBeDefault: true, default: true, id: engineId('db:0')});
   const searchEngines1 =
-      createSampleSearchEngine({canBeDefault: true, id: 'db:1'});
+      createSampleSearchEngine({canBeDefault: true, id: engineId('db:1')});
   const searchEngines2 =
-      createSampleSearchEngine({canBeDefault: true, id: 'db:2'});
+      createSampleSearchEngine({canBeDefault: true, id: engineId('db:2')});
 
   return {
     defaults: [searchEngines0, searchEngines1, searchEngines2],
@@ -45,12 +45,16 @@ function generateSearchEngineInfo(): SearchEnginesInfo {
 }
 
 function generateCategorizedTemplateUrls(): CategorizedTemplateUrls {
-  const searchEngines0 = createSampleSearchEngine(
-      {canBeDefault: true, isPrepopulated: true, default: true, id: 'db:0'});
+  const searchEngines0 = createSampleSearchEngine({
+    canBeDefault: true,
+    isPrepopulated: true,
+    default: true,
+    id: engineId('db:0'),
+  });
   const searchEngines1 = createSampleSearchEngine(
-      {canBeDefault: true, id: 'db:1', isPrepopulated: true});
+      {canBeDefault: true, id: engineId('db:1'), isPrepopulated: true});
   const searchEngines2 =
-      createSampleSearchEngine({canBeDefault: true, id: 'db:2'});
+      createSampleSearchEngine({canBeDefault: true, id: engineId('db:2')});
 
   return {
     activeSiteShortcuts: [searchEngines0, searchEngines1, searchEngines2],

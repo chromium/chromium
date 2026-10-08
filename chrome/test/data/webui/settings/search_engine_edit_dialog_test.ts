@@ -12,7 +12,7 @@ import type {SearchEngine} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createSampleSearchEngine, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
+import {createSampleSearchEngine, engineId, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
 // clang-format on
 
 suite('SearchEngineEditDialog', function() {
@@ -82,9 +82,9 @@ suite('SearchEngineEditDialog', function() {
   // Tests that the dialog calls 'searchEngineEditStarted' and
   // 'searchEngineEditCancelled' when closed from the 'cancel' button.
   test('DialogOpenAndCancel', async function() {
-    // No model is set, so an empty ID is passed to signal a new engine.
+    // No model is set, so null is passed to signal a new engine.
     const id = await browserProxy.whenCalled('searchEngineEditStarted');
-    assertEquals('', id);
+    assertEquals(null, id);
     dialog.$.cancel.click();
     await browserProxy.whenCalled('searchEngineEditCancelled');
   });
@@ -140,11 +140,11 @@ suite('SearchEngineEditDialog', function() {
   });
 
   test('DialogCloseWhenEnginesChangedModelEngineNotFound', function() {
-    dialog.model = createSampleSearchEngine({id: 'db:0', name: 'G'});
+    dialog.model = createSampleSearchEngine({id: engineId('db:0'), name: 'G'});
     webUIListenerCallback('search-engines-changed', {
       activeSiteShortcuts: [],
       inactiveSiteShortcuts:
-          [createSampleSearchEngine({id: 'db:1', name: 'H'})],
+          [createSampleSearchEngine({id: engineId('db:1'), name: 'H'})],
       activeFeatureShortcuts: [],
       inactiveFeatureShortcuts: [],
     });
@@ -166,7 +166,7 @@ suite('SearchEngineEditDialog', function() {
 
   test('EditSearchEngineDialog_IsManaged', function() {
     const engine = createSampleSearchEngine({
-      id: 'db:1',
+      id: engineId('db:1'),
       name: 'search_engine_active_E',
       displayName: 'E displayName',
       keyword: 'active E',
@@ -183,7 +183,7 @@ suite('SearchEngineEditDialog', function() {
 
   test('EditSearchEngineDialog_IsManaged_Readonly', function() {
     const engine = createSampleSearchEngine({
-      id: 'db:2',
+      id: engineId('db:2'),
       name: 'search_engine_active_F',
       displayName: 'F displayName',
       keyword: 'active F',
@@ -200,7 +200,7 @@ suite('SearchEngineEditDialog', function() {
 
   test('EditSearchEngineDialog_Prepopulated_IsManaged', function() {
     const engine = createSampleSearchEngine({
-      id: 'db:3',
+      id: engineId('db:3'),
       name: 'search_engine_default_B',
       displayName: 'B displayName',
       keyword: 'default B',
@@ -218,7 +218,7 @@ suite('SearchEngineEditDialog', function() {
 
   test('EditSearchEngineDialog_Prepopulated_IsManaged_Readonly', function() {
     const engine = createSampleSearchEngine({
-      id: 'db:4',
+      id: engineId('db:4'),
       name: 'search_engine_default_D',
       displayName: 'D displayName',
       keyword: 'default D',
@@ -236,7 +236,7 @@ suite('SearchEngineEditDialog', function() {
 
   test('EditSearchEngineDialog_UrlLocked', function() {
     const engine = createSampleSearchEngine({
-      id: 'db:5',
+      id: engineId('db:5'),
       name: 'search_engine_default_B',
       displayName: 'B displayName',
       keyword: 'default B',
@@ -278,11 +278,11 @@ suite('SearchEngineEditDialogInSearchEnginesPage', function() {
   });
 
   test('DialogCloseWhenEnginesChangedModelEngineNotFound', function() {
-    dialog.model = createSampleSearchEngine({id: 'db:0', name: 'G'});
+    dialog.model = createSampleSearchEngine({id: engineId('db:0'), name: 'G'});
     webUIListenerCallback('search-engines-changed', {
       defaults: [],
       actives: [],
-      others: [createSampleSearchEngine({id: 'db:1', name: 'H'})],
+      others: [createSampleSearchEngine({id: engineId('db:1'), name: 'H'})],
       extensions: [],
     });
     return browserProxy.whenCalled('searchEngineEditCancelled');
