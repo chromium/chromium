@@ -1921,7 +1921,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mAppMenuCoordinator.getAppMenuHandler(),
                             menuButtonView,
                             bookmarkModel,
-                            mXrSpaceModeObservableSupplier);
+                            mXrSpaceModeObservableSupplier,
+                            getBottomSheetController(),
+                            mModalDialogManagerSupplier.get(),
+                            mActivityLifecycleDispatcher);
         }
     }
 

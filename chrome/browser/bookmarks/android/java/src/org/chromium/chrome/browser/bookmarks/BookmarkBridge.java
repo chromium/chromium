@@ -797,6 +797,24 @@ class BookmarkBridge {
         }
     }
 
+    /** Notifies observers that the bookmark manager has been opened. */
+    public void notifyBookmarkManagerOpened() {
+        for (BookmarkModelObserver observer : mObservers) {
+            observer.bookmarkManagerOpened();
+        }
+    }
+
+    /**
+     * Notifies observers that a bookmark folder's contents are being viewed.
+     *
+     * @param folderId The {@link BookmarkId} of the folder being viewed.
+     */
+    public void notifyBookmarkFolderViewed(@Nullable BookmarkId folderId) {
+        for (BookmarkModelObserver observer : mObservers) {
+            observer.bookmarkFolderViewed(folderId);
+        }
+    }
+
     /**
      * Reorders the bookmarks of the folder "parent" to be as specified by newOrder.
      *

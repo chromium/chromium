@@ -14,6 +14,7 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -113,6 +114,7 @@ public class BookmarkFolderPickerActivityTest {
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    mBookmarkModel.removeObserver(mBookmarkModelObserver);
                     mBookmarkModel.removeAllUserBookmarks();
                 });
     }
@@ -141,6 +143,8 @@ public class BookmarkFolderPickerActivityTest {
 
         BookmarkItem oldParent = getBookmarkItem(mMobileFolderId);
         BookmarkItem newParent = getBookmarkItem(folder);
+        verify(mBookmarkModelObserver).bookmarkFolderViewed(mMobileFolderId);
+        verify(mBookmarkModelObserver, times(2)).bookmarkFolderViewed(folder);
         verifyBookmarkMoved(oldParent, 0, newParent, 0);
         verifyNoMoreInteractions(mBookmarkModelObserver);
 
@@ -176,6 +180,7 @@ public class BookmarkFolderPickerActivityTest {
 
         BookmarkItem oldParent = getBookmarkItem(mMobileFolderId);
         BookmarkItem newParent = getBookmarkItem(mLocalOrSyncableReadingListFolder);
+        verify(mBookmarkModelObserver).bookmarkFolderViewed(mLocalOrSyncableReadingListFolder);
         verifyBookmarkMoved(oldParent, 0, newParent, 0);
         verifyNoMoreInteractions(mBookmarkModelObserver);
 

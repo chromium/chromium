@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 
 /**
@@ -103,6 +105,17 @@ public abstract class BookmarkModelObserver {
     public void editBookmarksEnabledChanged() {
         bookmarkModelChanged();
     }
+
+    /** Invoked when the bookmark manager is opened. */
+    public void bookmarkManagerOpened() {}
+
+    /**
+     * Invoked when the contents of a bookmark folder are viewed (in the bookmark manager or folder
+     * picker).
+     *
+     * @param folderId The {@link BookmarkId} of the folder being viewed.
+     */
+    public void bookmarkFolderViewed(@Nullable BookmarkId folderId) {}
 
     /**
      * Invoked when there are changes to the bookmark model that don't trigger any of the other

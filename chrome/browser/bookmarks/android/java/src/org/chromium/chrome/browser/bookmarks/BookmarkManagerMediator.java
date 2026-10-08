@@ -257,6 +257,7 @@ class BookmarkManagerMediator
                     onBackPressStateChanged();
 
                     BookmarkId currentId = assumeNonNull(getCurrentFolderId());
+                    mBookmarkModel.notifyBookmarkFolderViewed(currentId);
                     setBookmarks(
                             mBookmarkQueryHandler.buildBookmarkListForParent(
                                     currentId, mCurrentPowerFilter));
@@ -531,6 +532,7 @@ class BookmarkManagerMediator
         mDragStateDelegate.onBookmarkDelegateInitialized(this);
 
         updateShoppingFilterVisible();
+        mBookmarkModel.notifyBookmarkManagerOpened();
 
         // TODO(https://crbug.com/40255666): This logic is here to keep the same execution order
         // from when it was in the original adapter. It doesn't conceptually make sense to be here,
