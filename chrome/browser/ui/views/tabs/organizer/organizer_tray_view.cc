@@ -96,12 +96,6 @@ class OrganizerTrayView::EventObserver : public ui::EventObserver,
     if (!focused_now || !tray_->GetVisible() || tray_->Contains(focused_now)) {
       return;
     }
-
-    // If the panel is closing due to focus being lost (e.g., a tab group was
-    // focused or a tab was activated), the last focused view before the panel
-    // was opened should not be refocused.
-    tray_->last_focused_view_before_opening_.SetView(nullptr);
-
     tray_->ClosePanel();
   }
 
@@ -236,18 +230,10 @@ void OrganizerTrayView::AddedToWidget() {
 void OrganizerTrayView::VisibilityChanged(views::View* from, bool visible) {
   if (visible) {
     event_observer_ = std::make_unique<EventObserver>(*this);
-    last_focused_view_before_opening_.SetView(
-        GetFocusManager()->GetFocusedView());
-    GetFocusManager()->SetFocusedView(this);
     controls_view_->UpdateTooltipText();
     TooltipTextChanged();
   } else {
     event_observer_.reset();
-    if (last_focused_view_before_opening_) {
-      GetFocusManager()->SetFocusedView(
-          last_focused_view_before_opening_.view());
-      last_focused_view_before_opening_.SetView(nullptr);
-    }
   }
 }
 

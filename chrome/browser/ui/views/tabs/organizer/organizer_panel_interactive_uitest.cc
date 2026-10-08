@@ -346,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest, TrayCloseOnClickOutside) {
 
 IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest, TrayGrabsFocusOnOpen) {
   RunTestSequence(SetVerticalTabsEnabled(false), OpenOrganizerPanel(),
-                  CheckViewProperty(OrganizerTrayView::kTrayElementId,
+                  CheckViewProperty(OrganizerPanelView::kWebViewElementId,
                                     &views::View::HasFocus, true));
 }
 

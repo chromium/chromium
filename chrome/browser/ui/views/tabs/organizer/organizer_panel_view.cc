@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -27,10 +29,13 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_observer.h"
+#include "ui/views/view_tracker.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_extension_view.h"
@@ -65,23 +70,64 @@ BEGIN_METADATA(OrganizerPanelWebView)
 END_METADATA
 
 // The normal implementation of the panel view.
-class OrganizerPanelViewImpl : public OrganizerPanelView {
+class OrganizerPanelViewImpl : public OrganizerPanelView,
+                               public views::ViewObserver {
  public:
   explicit OrganizerPanelViewImpl(BrowserWindowInterface& browser)
-      : OrganizerPanelView(browser) {
+      : OrganizerPanelView(browser), browser_(browser) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
-    auto* const web_view = AddChildView(
+    web_view_ = AddChildView(
         std::make_unique<OrganizerPanelWebView>(browser.GetProfile()));
-    webui::SetBrowserWindowInterface(web_view->GetWebContents(), &browser);
+    webui::SetBrowserWindowInterface(web_view_->GetWebContents(), &browser);
     views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
-        web_view->GetWebContents(), SK_ColorTRANSPARENT);
-    web_view->LoadInitialURL(GURL(chrome::kChromeUIOrganizerPanelURL));
-    web_view->SetProperty(
+        web_view_->GetWebContents(), SK_ColorTRANSPARENT);
+    web_view_->LoadInitialURL(GURL(chrome::kChromeUIOrganizerPanelURL));
+    web_view_->SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                  views::MaximumFlexSizeRule::kUnbounded));
-    web_view->SetProperty(views::kElementIdentifierKey, kWebViewElementId);
+    web_view_->SetProperty(views::kElementIdentifierKey, kWebViewElementId);
+    observation_.Observe(web_view_);
   }
+
+  ~OrganizerPanelViewImpl() override { web_view_ = nullptr; }
+
+  // views::ViewObserver
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               views::View* starting_view,
+                               bool visible) override {
+    auto* const focus_manager = GetFocusManager();
+    if (!focus_manager) {
+      return;
+    }
+    auto* const currently_focused = focus_manager->GetFocusedView();
+    if (visible) {
+      if (web_view_ && web_view_->IsDrawn()) {
+        previously_focused_view_.SetView(currently_focused);
+        web_view_->RequestFocus();
+      } else {
+        previously_focused_view_.SetView(nullptr);
+      }
+    } else if (previously_focused_view_) {
+      if (!currently_focused || Contains(currently_focused)) {
+        focus_manager->SetFocusedView(previously_focused_view_.view());
+      }
+      previously_focused_view_.SetView(nullptr);
+    } else if (!currently_focused || Contains(currently_focused)) {
+      // Losing visibility and there's no view to set as currently focused.
+      // Focus the location bar.
+      if (auto* browser_view =
+              BrowserView::GetBrowserViewForBrowser(&*browser_)) {
+        browser_view->SetFocusToLocationBar(false);
+      }
+    }
+  }
+
+ private:
+  const raw_ref<BrowserWindowInterface> browser_;
+  raw_ptr<views::WebView> web_view_ = nullptr;
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
+  views::ViewTracker previously_focused_view_;
 };
 
 }  // namespace

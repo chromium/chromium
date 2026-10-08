@@ -57,6 +57,7 @@ export class OrganizerPanelAppElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
     ColorChangeUpdater.forDocument().start();
+    window.addEventListener('focus', this.onWindowFocused_.bind(this));
   }
 
   private getSectionDelegates_(): Array<OrganizerListSectionDelegate<unknown>> {
@@ -73,6 +74,11 @@ export class OrganizerPanelAppElement extends CrLitElement {
     return delegates;
   }
 
+  private onWindowFocused_() {
+    // Autofocus only works when the window is initially shown; for subsequent
+    // focus events, focus the search field.
+    this.$.searchField.showAndFocus();
+  }
 
   protected onSearchChanged_(e: CustomEvent<string>) {
     this.searchQuery_ = e.detail;
