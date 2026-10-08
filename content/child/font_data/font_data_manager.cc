@@ -539,13 +539,13 @@ sk_sp<SkTypeface> FontDataManager::CreateTypefaceFromMatchResult(
             mapped_regions_.find(font_data_memory_region.GetGUID());
 
         if (iter != mapped_regions_.end()) {
-          mapped_memory = iter->second.memory();
+          mapped_memory = iter->second.data();
           mapped_size = iter->second.size();
         } else {
           base::ReadOnlySharedMemoryMapping mapping =
               font_data_memory_region.Map();
           if (mapping.IsValid()) {
-            mapped_memory = mapping.memory();
+            mapped_memory = mapping.data();
             mapped_size = mapping.size();
             mapped_regions_.emplace(font_data_memory_region.GetGUID(),
                                     std::move(mapping));

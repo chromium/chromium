@@ -119,7 +119,7 @@ class TestFontServiceApp : public font_data_service::mojom::FontDataService {
           base::ReadOnlySharedMemoryRegion::Create(asset->getLength());
       EXPECT_TRUE(memory_map_region_.IsValid());
 
-      size_t bytes_read = asset->read(memory_map_region_.mapping.memory(),
+      size_t bytes_read = asset->read(memory_map_region_.mapping.data(),
                                       memory_map_region_.mapping.size());
       EXPECT_EQ(bytes_read, asset->getLength());
       font_data_service::mojom::TypefaceDataPtr typeface_data =

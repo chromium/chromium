@@ -418,7 +418,7 @@ size_t FontDataServiceImpl::GetOrCreateAssetIndex(
     TRACE_EVENT("fonts",
                 "FontDataServiceImpl::GetOrCreateAssetIndex - memory copy",
                 "size", asset_length);
-    size_t bytes_read = asset->read(shared_memory_region.mapping.memory(),
+    size_t bytes_read = asset->read(shared_memory_region.mapping.data(),
                                     shared_memory_region.mapping.size());
     CHECK_EQ(bytes_read, asset_length);
   }
