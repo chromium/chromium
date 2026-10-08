@@ -190,8 +190,19 @@ export class CdpTargetManager {
 
     const detach = async () => {
       // Detaches and resumes the target suppressing errors.
-      await targetCdpClient
-        .sendCommand('Runtime.runIfWaitingForDebugger')
+      await Promise.allSettled([
+        targetCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
+        // `tab` targets are left paused to be resumed by their child target
+        // (`CdpTarget.#unblock`). When a `tab`'s child is detached instead
+        // (e.g. a non-DevTools `other` target), resume the parent `tab` too.
+        ...(parentSessionCdpClient === this.#browserCdpClient
+          ? []
+          : [
+              parentSessionCdpClient.sendCommand(
+                'Runtime.runIfWaitingForDebugger',
+              ),
+            ]),
+      ])
         .then(() =>
           parentSessionCdpClient.sendCommand('Target.detachFromTarget', params),
         )
@@ -247,7 +258,18 @@ export class CdpTargetManager {
         return;
       }
       case 'page':
-      case 'iframe': {
+      case 'iframe':
+      case 'other': {
+        // DevTools windows are exposed in CDP with type `other` and a `devtools://` URL.
+        // Ignore all other `other` targets.
+        if (
+          targetInfo.type === 'other' &&
+          !targetInfo.url.startsWith('devtools://')
+        ) {
+          void detach();
+          return;
+        }
+
         const cdpTarget = this.#createCdpTarget(
           targetCdpClient,
           parentSessionCdpClient,
@@ -336,8 +358,7 @@ export class CdpTargetManager {
       }
     }
 
-    // DevTools or some other not supported by BiDi target. Just release
-    // debugger and ignore them.
+    // Target not supported by BiDi. Just release debugger and ignore it.
     void detach();
   }
 
@@ -369,8 +390,7 @@ export class CdpTargetManager {
     userContext: Browser.UserContext,
   ) {
     this.#setEventListeners(targetCdpClient);
-    const isFrameTarget =
-      targetInfo.type === 'page' || targetInfo.type === 'iframe';
+    const isFrameTarget = CdpTarget.isFrameTarget(targetInfo.type);
     if (isFrameTarget) {
       // Preload scripts only apply to window realms.
       this.#preloadScriptStorage.onCdpTargetCreated(

@@ -165,14 +165,25 @@ export class CdpTarget {
     this.#logger = logger;
   }
 
-  /** Top-level page target; excludes OOPIFs and workers. */
-  get #isPageTarget(): boolean {
-    return this.#targetType === 'page';
+  /**
+   * Top-level page target (`page` or DevTools `other`); excludes OOPIFs and workers.
+   */
+  static isPageTarget(targetType: Protocol.Target.TargetInfo['type']): boolean {
+    // The only `other` target kept attached is DevTools.
+    return targetType === 'page' || targetType === 'other';
   }
 
-  /** Document frame target (`page` or `iframe`); excludes workers. */
-  get #isFrameTarget(): boolean {
-    return this.#targetType === 'page' || this.#targetType === 'iframe';
+  /**
+   * Document frame target (`page`, DevTools `other`, or `iframe`); excludes workers.
+   */
+  static isFrameTarget(
+    targetType: Protocol.Target.TargetInfo['type'],
+  ): boolean {
+    return CdpTarget.isPageTarget(targetType) || targetType === 'iframe';
+  }
+
+  get #isPageTarget(): boolean {
+    return CdpTarget.isPageTarget(this.#targetType);
   }
 
   /** Dedicated workers do not expose the CDP Fetch domain. */
@@ -230,7 +241,7 @@ export class CdpTarget {
 
     const promises: Promise<unknown>[] = [];
 
-    if (this.#isFrameTarget) {
+    if (CdpTarget.isFrameTarget(this.#targetType)) {
       // Page domain is only supported on frame targets.
       promises.push(
         this.#cdpClient.sendCommand('Page.enable', {
@@ -452,7 +463,7 @@ export class CdpTarget {
   }
 
   async toggleDeviceAccessIfNeeded(): Promise<void> {
-    if (!this.#isFrameTarget) {
+    if (!CdpTarget.isFrameTarget(this.#targetType)) {
       // DeviceAccess domain is only supported on frame targets.
       return;
     }
@@ -478,7 +489,7 @@ export class CdpTarget {
   }
 
   async togglePreloadIfNeeded(): Promise<void> {
-    if (!this.#isFrameTarget) {
+    if (!CdpTarget.isFrameTarget(this.#targetType)) {
       // Preload domain is only supported on frame targets.
       return;
     }
@@ -627,7 +638,7 @@ export class CdpTarget {
   }
 
   async #updateWindowId() {
-    if (!this.#isFrameTarget) {
+    if (!CdpTarget.isFrameTarget(this.#targetType)) {
       // Only frame targets belong to a browser window.
       return;
     }
@@ -640,7 +651,7 @@ export class CdpTarget {
 
   /** Loads all top-level preload scripts. */
   async #initAndEvaluatePreloadScripts() {
-    if (!this.#isFrameTarget) {
+    if (!CdpTarget.isFrameTarget(this.#targetType)) {
       // Preload scripts are only supported on frame targets.
       return;
     }
@@ -759,7 +770,7 @@ export class CdpTarget {
       }
     }
 
-    if (this.#isFrameTarget) {
+    if (CdpTarget.isFrameTarget(this.#targetType)) {
       // Geolocation, script execution, certificate errors, touch, and media emulation
       // are only supported on frame targets.
       if (config.geolocation !== undefined && config.geolocation !== null) {
@@ -855,7 +866,7 @@ export class CdpTarget {
       | Emulation.GeolocationPositionError
       | null,
   ): Promise<void> {
-    if (!this.#isFrameTarget) {
+    if (!CdpTarget.isFrameTarget(this.#targetType)) {
       // Geolocation override is only supported on frame targets.
       return;
     }
@@ -890,7 +901,7 @@ export class CdpTarget {
   }
 
   async setTouchOverride(maxTouchPoints: number | null): Promise<void> {
-    if (!this.#isFrameTarget) {
+    if (!CdpTarget.isFrameTarget(this.#targetType)) {
       // Touch emulation is only supported on frame targets.
       return;
     }
@@ -989,7 +1000,7 @@ export class CdpTarget {
   }
 
   async setScriptingEnabled(scriptingEnabled: false | null): Promise<void> {
-    if (!this.#isFrameTarget) {
+    if (!CdpTarget.isFrameTarget(this.#targetType)) {
       // Disabling script execution is only supported on frame targets.
       return;
     }
@@ -1087,7 +1098,7 @@ export class CdpTarget {
   async setMediaFeaturesOverride(
     mediaFeatures: Emulation.MediaFeatures | null,
   ): Promise<void> {
-    if (!this.#isFrameTarget) {
+    if (!CdpTarget.isFrameTarget(this.#targetType)) {
       // Media emulation is only supported on frame targets.
       return;
     }

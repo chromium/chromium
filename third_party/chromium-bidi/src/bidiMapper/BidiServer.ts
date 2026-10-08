@@ -175,11 +175,19 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
           autoAttach: true,
           waitForDebuggerOnStart: true,
           flatten: true,
-          // Browser session should attach to tab instead of the page, so that
-          // prerendering is not blocked.
           filter: [
+            // Browser session should attach to `tab` targets instead of `page`
+            // targets, so that prerendering is not blocked. `page` targets will
+            // be auto-attached via their `tab` target.
             {
               type: 'page',
+              exclude: true,
+            },
+            // `other` targets (such as DevTools windows) also have a `tab`
+            // target and will be auto-attached via their `tab` target once
+            // their initial `devtools://` URL is loaded.
+            {
+              type: 'other',
               exclude: true,
             },
             {},
