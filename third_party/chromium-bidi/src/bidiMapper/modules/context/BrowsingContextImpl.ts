@@ -1881,9 +1881,6 @@ export class BrowsingContextImpl {
       throw new InvalidArgumentException('Start nodes are not supported');
     }
     const contextId = locator.value.context;
-    if (!contextId) {
-      throw new InvalidSelectorException('Invalid context');
-    }
     const context = this.#browsingContextStorage.getContext(contextId);
     const parent = context.parent;
     if (!parent) {

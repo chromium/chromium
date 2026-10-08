@@ -134,6 +134,47 @@ async def test_locate_nodes_locator_invalid(websocket, context_id, html, locator
         )
 
 
+async def assert_context_locator_unknown_context(
+    websocket, context_id, locator_context
+):
+    with pytest.raises(
+        Exception,
+        match=re.escape(
+            str(
+                {
+                    "error": "no such frame",
+                    "message": f"Context {locator_context} not found",
+                }
+            )
+        ),
+    ):
+        await execute_command(
+            websocket,
+            {
+                "method": "browsingContext.locateNodes",
+                "params": {
+                    "context": context_id,
+                    "locator": {
+                        "type": "context",
+                        "value": {"context": locator_context},
+                    },
+                },
+            },
+        )
+
+
+@pytest.mark.asyncio
+async def test_locate_nodes_context_locator_empty(websocket, context_id):
+    await assert_context_locator_unknown_context(websocket, context_id, "")
+
+
+@pytest.mark.asyncio
+async def test_locate_nodes_context_locator_unknown(websocket, context_id):
+    await assert_context_locator_unknown_context(
+        websocket, context_id, "non_existing_context"
+    )
+
+
 @pytest.mark.parametrize(
     "locator",
     [
