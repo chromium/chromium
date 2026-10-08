@@ -6,8 +6,8 @@
 #define IOS_CHROME_BROWSER_HTTPS_UPGRADES_MODEL_HTTPS_UPGRADE_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "ios/chrome/browser/https_upgrades/model/https_upgrade_service_impl.h"
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+#include "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 
 class ProfileIOS;
 

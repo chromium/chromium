@@ -9,6 +9,7 @@
 #import <vector>
 
 #import "base/no_destructor.h"
+#import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace syncer {

@@ -8,6 +8,7 @@
 #import <memory>
 
 #import "base/no_destructor.h"
+#import "ios/chrome/browser/sessions/model/session_restoration_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;

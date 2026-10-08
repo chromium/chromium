@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOFILL_LOG_ROUTER_FACTORY_H_
 
 #import "base/no_destructor.h"
+#import "components/autofill/core/browser/logging/log_router.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;

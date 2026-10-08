@@ -8,6 +8,7 @@
 #import <memory>
 
 #import "base/no_destructor.h"
+#import "components/sync_tab_context/tab_context_sync_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;

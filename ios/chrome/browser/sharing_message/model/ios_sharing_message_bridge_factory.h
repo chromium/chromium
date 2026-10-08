@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SHARING_MESSAGE_MODEL_IOS_SHARING_MESSAGE_BRIDGE_FACTORY_H_
 
 #import "base/no_destructor.h"
+#import "components/sharing_message/sharing_message_bridge.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class SharingMessageBridge;

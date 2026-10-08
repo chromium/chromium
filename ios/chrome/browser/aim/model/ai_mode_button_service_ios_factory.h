@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_AIM_MODEL_AI_MODE_BUTTON_SERVICE_IOS_FACTORY_H_
 
 #import "base/no_destructor.h"
+#import "ios/chrome/browser/aim/model/ai_mode_button_service_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class AIModeButtonServiceIOS;

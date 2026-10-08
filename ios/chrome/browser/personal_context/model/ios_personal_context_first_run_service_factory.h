@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_PERSONAL_CONTEXT_MODEL_IOS_PERSONAL_CONTEXT_FIRST_RUN_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
+#import "components/personal_context/first_run/personal_context_first_run_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;

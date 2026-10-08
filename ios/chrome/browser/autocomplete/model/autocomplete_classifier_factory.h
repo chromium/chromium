@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/no_destructor.h"
+#include "components/omnibox/browser/autocomplete_classifier.h"
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class AutocompleteClassifier;

@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_APP_STORE_BUNDLE_MODEL_APP_STORE_BUNDLE_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
+#import "ios/chrome/browser/app_store_bundle/model/app_store_bundle_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class AppStoreBundleService;

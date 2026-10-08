@@ -8,6 +8,7 @@
 #import <memory>
 
 #import "base/no_destructor.h"
+#import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;

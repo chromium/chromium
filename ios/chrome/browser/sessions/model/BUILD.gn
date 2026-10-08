@@ -183,6 +183,7 @@ source_set("session_restoration_service_factory") {
     "session_restoration_service_factory.mm",
   ]
   deps = [
+    ":session_restoration_service",
     ":session_restoration_service_impl",
     "//base",
     "//ios/chrome/browser/shared/model/profile",

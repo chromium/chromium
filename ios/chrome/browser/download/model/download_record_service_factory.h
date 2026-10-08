@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_DOWNLOAD_MODEL_DOWNLOAD_RECORD_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
+#import "ios/chrome/browser/download/model/download_record_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class DownloadRecordService;

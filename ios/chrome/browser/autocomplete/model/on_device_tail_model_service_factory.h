@@ -8,6 +8,7 @@
 #import <memory>
 
 #import "base/no_destructor.h"
+#include "components/omnibox/browser/on_device_tail_model_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class KeyedService;

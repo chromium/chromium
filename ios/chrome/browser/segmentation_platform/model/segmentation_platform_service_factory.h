@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SEGMENTATION_PLATFORM_MODEL_SEGMENTATION_PLATFORM_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
+#import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;

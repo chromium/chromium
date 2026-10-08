@@ -34,11 +34,11 @@ source_set("factories") {
     "ios_chrome_actor_login_permission_service_factory.h",
     "ios_chrome_actor_login_permission_service_factory.mm",
   ]
-
   deps = [
     "//base",
     "//components/keyed_service/core",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/actor_login:common",
     "//components/password_manager/core/browser/actor_login/internal:permission_cleaner",
     "//components/password_manager/core/browser/actor_login/internal:permission_service_impl",
     "//ios/chrome/browser/passwords/model:store_factory",

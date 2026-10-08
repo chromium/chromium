@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_PERSONAL_CONTEXT_MODEL_IOS_PERSONAL_CONTEXT_ELIGIBILITY_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
+#import "components/personal_context/core/personal_context_eligibility_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;

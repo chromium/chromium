@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_ENTERPRISE_CLOUD_CONTENT_SCANNING_MODEL_IOS_CLOUD_BINARY_UPLOAD_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
+#import "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace enterprise_connectors {

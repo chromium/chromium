@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_ACCOUNT_SETTINGS_MODEL_IOS_ACCOUNT_SETTING_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
+#import "components/account_settings/account_setting_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;

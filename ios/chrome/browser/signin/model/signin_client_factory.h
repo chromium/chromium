@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/no_destructor.h"
+#include "components/signin/public/base/signin_client.h"
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class SigninClient;

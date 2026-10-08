@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_PASSWORD_MANAGER_SETTINGS_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
+#import "components/password_manager/core/browser/password_manager_settings_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace password_manager {

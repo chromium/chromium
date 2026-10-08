@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_ACTOR_LOGIN_IOS_CHROME_ACTOR_LOGIN_PERMISSION_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_permission_service.h"
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;

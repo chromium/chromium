@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_FAVICON_MODEL_IOS_CHROME_LARGE_ICON_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
+#import "components/favicon/core/large_icon_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class KeyedService;

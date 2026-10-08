@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
 
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_impl.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static

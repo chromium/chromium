@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SYNC_MODEL_DATA_TYPE_STORE_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
+#include "components/sync/model/data_type_store_service.h"
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;

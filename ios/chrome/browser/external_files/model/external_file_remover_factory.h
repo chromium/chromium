@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_EXTERNAL_FILES_MODEL_EXTERNAL_FILE_REMOVER_FACTORY_H_
 
 #import "base/no_destructor.h"
+#import "ios/chrome/browser/external_files/model/external_file_remover.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ExternalFileRemover;

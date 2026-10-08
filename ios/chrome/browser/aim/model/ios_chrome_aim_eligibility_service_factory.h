@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_AIM_MODEL_IOS_CHROME_AIM_ELIGIBILITY_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;

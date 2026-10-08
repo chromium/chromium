@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_CONSENT_AUDITOR_MODEL_CONSENT_AUDITOR_FACTORY_H_
 
 #import "base/no_destructor.h"
+#import "components/consent_auditor/consent_auditor.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace consent_auditor {

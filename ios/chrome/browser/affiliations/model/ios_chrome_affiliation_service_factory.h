@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_AFFILIATIONS_MODEL_IOS_CHROME_AFFILIATION_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace affiliations {

@@ -8,6 +8,7 @@
 #import <memory>
 
 #import "base/no_destructor.h"
+#import "components/reading_list/core/reading_list_model.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ReadingListModel;
