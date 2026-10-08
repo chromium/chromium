@@ -94,6 +94,7 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.download.DownloadFeatures;
 import org.chromium.chrome.browser.download.DownloadToolbarButtonController;
+import org.chromium.chrome.browser.download.DownloadToolbarButtonState;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -451,8 +452,9 @@ public class ToolbarManager
     private @Nullable ExtensionsToolbarCoordinator mExtensionsToolbarCoordinator;
 
     private @Nullable DownloadToolbarButtonController mDownloadToolbarButtonController;
-    private final Callback<Boolean> mDownloadButtonShouldShowObserver =
-            mDownloadButtonShouldShowSupplier::set;
+    // Only visibility is bridged until the toolbar button renders progress and colour.
+    private final Callback<DownloadToolbarButtonState> mDownloadButtonStateObserver =
+            state -> mDownloadButtonShouldShowSupplier.set(state.shouldShow);
 
     private final BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     private int mFullscreenFocusToken = TokenHolder.INVALID_TOKEN;
@@ -2933,8 +2935,8 @@ public class ToolbarManager
             mDownloadToolbarButtonController =
                     new DownloadToolbarButtonController(OfflineContentAggregatorFactory.get());
             mDownloadToolbarButtonController
-                    .getShouldShowSupplier()
-                    .addSyncObserverAndCall(mDownloadButtonShouldShowObserver);
+                    .getStateSupplier()
+                    .addSyncObserverAndCall(mDownloadButtonStateObserver);
         }
 
         TraceEvent.end("ToolbarManager.initializeWithNative");
@@ -3144,8 +3146,8 @@ public class ToolbarManager
 
         if (mDownloadToolbarButtonController != null) {
             mDownloadToolbarButtonController
-                    .getShouldShowSupplier()
-                    .removeObserver(mDownloadButtonShouldShowObserver);
+                    .getStateSupplier()
+                    .removeObserver(mDownloadButtonStateObserver);
             mDownloadToolbarButtonController.destroy();
             mDownloadToolbarButtonController = null;
         }

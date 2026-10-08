@@ -36,6 +36,18 @@ android_library("features_java") {
   ]
 }
 
+# Minimal Java library holding the state published to the download toolbar
+# button. Kept separate from ":java" so that the toolbar can consume it without
+# depending on the full download UI, and ":java" can publish it without
+# depending on the toolbar.
+android_library("toolbar_button_state_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/download/DownloadToolbarButtonState.java" ]
+  deps = [
+    "//build/android:build_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/download/DangerousDownloadDialogBridge.java",
@@ -87,6 +99,7 @@ android_library("java") {
   deps = [
     ":file_provider_java",
     ":java_resources",
+    ":toolbar_button_state_java",
     "//base:base_java",
     "//base:content_uri_utils_java",
     "//build/android:build_java",
@@ -192,6 +205,7 @@ robolectric_library("junit_tests") {
     ":file_provider_java",
     ":java",
     ":java_resources",
+    ":toolbar_button_state_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
