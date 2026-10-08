@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -78,6 +79,33 @@ LayoutUnit ComputeInset(const Length& inset, LayoutUnit viewport_size) {
   return MinimumValueForLength(inset, viewport_size);
 }
 
+bool ShouldRejectInsetValue(const CSSValue* value) {
+  if (const auto* identifier = DynamicTo<CSSIdentifierValue>(value)) {
+    return identifier->GetValueID() != CSSValueID::kAuto;
+  }
+  const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
+  if (!primitive_value) {
+    return true;
+  }
+  if (primitive_value->IsElementDependent()) {
+    return RuntimeEnabledFeatures::AnimationRangeRejectRelativeLengthsEnabled();
+  }
+  if (primitive_value->IsPercentage()) {
+    return false;
+  }
+
+  CSSPrimitiveValue::LengthTypeFlags unit_types;
+  primitive_value->AccumulateLengthUnitTypes(unit_types);
+  if (!unit_types.any()) {
+    return true;
+  }
+
+  unit_types.reset(CSSPrimitiveValue::kUnitTypePixels);
+  unit_types.reset(CSSPrimitiveValue::kUnitTypePercentage);
+  return unit_types.any() &&
+         RuntimeEnabledFeatures::AnimationRangeRejectRelativeLengthsEnabled();
+}
+
 const CSSValue* ParseInset(const InsetValueSequence& array,
                            wtf_size_t index,
                            ExceptionState& exception_state) {
@@ -86,8 +114,10 @@ const CSSValue* ParseInset(const InsetValueSequence& array,
 
   V8UnionCSSNumericValueOrString* value = array[index];
   if (value->IsString()) {
-    if (value->GetAsString() != "auto")
+    if (value->GetAsString() != "auto") {
       exception_state.ThrowTypeError("inset must be CSSNumericValue or auto");
+      return nullptr;
+    }
 
     return CSSIdentifierValue::Create(Length(Length::Type::kAuto));
   }
@@ -95,7 +125,7 @@ const CSSValue* ParseInset(const InsetValueSequence& array,
   CSSNumericValue* numeric_value = value->GetAsCSSNumericValue();
   const CSSPrimitiveValue* css_value =
       DynamicTo<CSSPrimitiveValue>(numeric_value->ToCSSValue());
-  if (!css_value || (!css_value->IsLength() && !css_value->IsPercentage())) {
+  if (ShouldRejectInsetValue(css_value)) {
     exception_state.ThrowTypeError("Invalid inset");
     return nullptr;
   }
@@ -112,7 +142,13 @@ const CSSValuePair* ParseInsetPair(Document& document, const String str_value) {
   if (!value_list || value_list->length() != 1)
     return nullptr;
 
-  return &To<CSSValuePair>(value_list->Item(0));
+  const auto& pair = To<CSSValuePair>(value_list->Item(0));
+  if (ShouldRejectInsetValue(&pair.First()) ||
+      ShouldRejectInsetValue(&pair.Second())) {
+    return nullptr;
+  }
+
+  return &pair;
 }
 
 bool IsStyleDependent(const CSSValue* value) {
@@ -260,6 +296,9 @@ ViewTimeline* ViewTimeline::Create(Document& document,
 
     start_inset_value = ParseInset(inset_array, 0, exception_state);
     end_inset_value = ParseInset(inset_array, 1, exception_state);
+    if (exception_state.HadException()) {
+      return nullptr;
+    }
   } else if (v8_inset && v8_inset->IsString()) {
     const CSSValuePair* value_pair =
         ParseInsetPair(document, v8_inset->GetAsString());
