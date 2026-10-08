@@ -51,8 +51,7 @@ public class PasswordStoreCredential {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof PasswordStoreCredential)) return false;
-        PasswordStoreCredential that = (PasswordStoreCredential) o;
+        if (!(o instanceof PasswordStoreCredential that)) return false;
         return mUrl.equals(that.mUrl)
                 && mUsername.equals(that.mUsername)
                 && mPassword.equals(that.mPassword);

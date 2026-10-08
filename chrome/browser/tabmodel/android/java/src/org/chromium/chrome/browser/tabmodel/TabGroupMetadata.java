@@ -144,8 +144,7 @@ public class TabGroupMetadata {
     @Override
     public boolean equals(Object other) {
         if (this == other) return true;
-        if (!(other instanceof TabGroupMetadata)) return false;
-        TabGroupMetadata that = (TabGroupMetadata) other;
+        if (!(other instanceof TabGroupMetadata that)) return false;
         return selectedTabId == that.selectedTabId
                 && sourceWindowId == that.sourceWindowId
                 && tabGroupColor == that.tabGroupColor

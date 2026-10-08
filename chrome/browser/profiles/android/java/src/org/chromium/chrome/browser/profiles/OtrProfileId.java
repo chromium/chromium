@@ -184,8 +184,7 @@ public class OtrProfileId {
 
     @Override
     public boolean equals(@Nullable Object obj) {
-        if (!(obj instanceof OtrProfileId)) return false;
-        OtrProfileId other = (OtrProfileId) obj;
+        if (!(obj instanceof OtrProfileId other)) return false;
         return mProfileId.equals(other.mProfileId);
     }
 

@@ -145,8 +145,7 @@ public class LanguageItem {
     /** Two LanguageItems are equal if their language codes are equal. */
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof LanguageItem)) return false;
-        LanguageItem other = (LanguageItem) obj;
+        if (!(obj instanceof LanguageItem other)) return false;
         return TextUtils.equals(mCode, other.mCode);
     }
 

@@ -131,8 +131,7 @@ public class BookmarkUiState {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof BookmarkUiState)) return false;
-        BookmarkUiState other = (BookmarkUiState) obj;
+        if (!(obj instanceof BookmarkUiState other)) return false;
         return mUiMode == other.mUiMode
                 && TextUtils.equals(mUrl, other.mUrl)
                 && Objects.equals(mSearchText, other.mSearchText);
