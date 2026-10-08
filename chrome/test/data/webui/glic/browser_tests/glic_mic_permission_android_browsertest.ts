@@ -45,6 +45,14 @@ class GlicMicPermissionAndroidApiTest extends ApiTestFixtureBase {
   async testMicDeniedAfterOsPromptDenied() {
     await expectMicDenied();
   }
+
+  async testMicAllowedAfterDialogWhenSettingDisabled() {
+    await expectMicAllowed();
+  }
+
+  async testMicDeniedAfterDialogDeclinedWhenSettingDisabled() {
+    await expectMicDenied();
+  }
 }
 
 testMain([

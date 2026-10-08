@@ -14,6 +14,10 @@
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/glic/android/glic_helper_android.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -33,11 +37,11 @@ class GlicPermissionEnforcementBrowserTest
                                                              fake_longitude_);
     if (IsNoWebview()) {
       scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kGlicNoWebview},
+          /*enabled_features=*/{features::kGlicNoWebview, features::kGlicVoice},
           /*disabled_features=*/{});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{},
+          /*enabled_features=*/{features::kGlicVoice},
           /*disabled_features=*/{features::kGlicNoWebview});
     }
   }
@@ -51,10 +55,17 @@ class GlicPermissionEnforcementBrowserTest
 #if BUILDFLAG(IS_ANDROID)
   void SetUpOnMainThread() override {
     GlicApiBrowserTest::SetUpOnMainThread();
-    // Report the Android mic permission as granted, so that no real Android
-    // dialogs are shown.
+    // Report the Android mic permission as granted, and decline Chrome's mic
+    // dialog if shown (e.g. when the Glic microphone setting is off), so that
+    // no real Android dialogs are shown.
     class GrantedMicPermissionUi : public MicPermissionUi {
      public:
+      void ShowMicPermissionDialog(
+          ui::WindowAndroid* window_android,
+          base::OnceCallback<void(bool)> callback) override {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), false));
+      }
       bool HasMicOsPermission(ui::WindowAndroid* window_android) override {
         return true;
       }
@@ -75,9 +86,15 @@ class GlicPermissionEnforcementBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 // TODO(b/568819844): Enable once the microphone setting gates mic access.
+#define MAYBE_testMicrophonePermissionTestDeny \
+  DISABLED_testMicrophonePermissionTestDeny
+#else
+#define MAYBE_testMicrophonePermissionTestDeny testMicrophonePermissionTestDeny
+#endif
 IN_PROC_BROWSER_TEST_P(GlicPermissionEnforcementBrowserTest,
-                       DISABLED_testMicrophonePermissionTestDeny) {
+                       MAYBE_testMicrophonePermissionTestDeny) {
   GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicMicrophoneEnabled, false);
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();

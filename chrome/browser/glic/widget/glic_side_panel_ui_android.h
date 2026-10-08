@@ -144,6 +144,10 @@ class GlicSidePanelUi
     return panel_visibility_dependent_hotkey_manager_.get();
   }
 
+  void SetMicPermissionUiForTesting(MicPermissionUi* mic_permission_ui) {
+    mic_permission_ui_for_testing_ = mic_permission_ui;
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(GlicSidePanelUiAndroidTest,
                            MicPermissionDialogDenied);
@@ -151,8 +155,17 @@ class GlicSidePanelUi
                            MicPermissionDialogAcceptedWithDeadWebContents);
   FRIEND_TEST_ALL_PREFIXES(GlicSidePanelUiAndroidTest,
                            MicPermissionDialogAcceptedAndSystemGranted);
+  FRIEND_TEST_ALL_PREFIXES(
+      GlicSidePanelUiAndroidTest,
+      MicPermissionDialogAcceptedWhenMicSettingDisabledSkipsOsPrompt);
+  FRIEND_TEST_ALL_PREFIXES(
+      GlicSidePanelUiAndroidTest,
+      MicPermissionDialogAcceptedAndSystemGrantedUpdatesMicPref);
   FRIEND_TEST_ALL_PREFIXES(GlicSidePanelUiAndroidTest,
                            MicPermissionDialogAcceptedButSystemDenied);
+  FRIEND_TEST_ALL_PREFIXES(
+      GlicSidePanelUiAndroidTest,
+      MicPermissionDialogAcceptedButSystemDeniedDoesNotUpdateMicPref);
   FRIEND_TEST_ALL_PREFIXES(
       GlicSidePanelUiAndroidTest,
       WindowDeactivatedDuringPermissionRequestIsSuppressed);
@@ -189,6 +202,10 @@ class GlicSidePanelUi
   // is no service.
   MicPermissionUi* GetMicPermissionUi();
 
+  // Returns true when GlicVoice is disabled or the Glic microphone setting is
+  // on.
+  bool IsMicSettingEnabled() const;
+
   // Forwards `request` to MediaCaptureDevicesDispatcher. For the mic, the OS
   // permission is requested beforehand (see OnMicPermissionDialogResult()).
   void RequestSystemMediaAccessPermission(
@@ -196,8 +213,8 @@ class GlicSidePanelUi
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback);
 
-  // Handles the outcome of the OS permission flow, showing a snackbar if
-  // microphone access ended up denied.
+  // Handles the outcome of the OS permission flow, updating the Glic microphone
+  // pref if granted or showing a snackbar if microphone access ended up denied.
   void OnMediaAccessPermissionResult(
       base::WeakPtr<content::WebContents> web_contents,
       blink::mojom::MediaStreamType audio_type,
@@ -226,6 +243,7 @@ class GlicSidePanelUi
   std::unique_ptr<PanelFocusDependentHotkeyManager>
       panel_focus_dependent_hotkey_manager_;
   raw_ptr<Profile> profile_;
+  raw_ptr<MicPermissionUi> mic_permission_ui_for_testing_ = nullptr;
 
   // True while a microphone/camera permission prompt is in front of the
   // window. Deactivation notifications are suppressed during this time so the

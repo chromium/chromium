@@ -11,11 +11,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/android/glic_helper_android.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_api_test.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -80,8 +82,15 @@ class GlicMicPermissionAndroidBrowserTest
   GlicMicPermissionAndroidBrowserTest()
       : GlicApiBrowserTest(
             GlicTestJsPath("./glic_mic_permission_android_browsertest.js")) {
-    scoped_feature_list_.InitWithFeatureState(features::kGlicNoWebview,
-                                              GetParam());
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kGlicNoWebview, features::kGlicVoice},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kGlicVoice},
+          /*disabled_features=*/{features::kGlicNoWebview});
+    }
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -92,6 +101,7 @@ class GlicMicPermissionAndroidBrowserTest
 
   void SetUpOnMainThread() override {
     GlicApiBrowserTest::SetUpOnMainThread();
+    GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicMicrophoneEnabled, true);
     auto mic_permission_ui = std::make_unique<FakeMicPermissionUi>();
     mic_permission_ui_ = mic_permission_ui.get();
     GlicKeyedServiceFactory::GetGlicKeyedService(GetProfile())
@@ -156,6 +166,36 @@ IN_PROC_BROWSER_TEST_P(GlicMicPermissionAndroidBrowserTest,
   EXPECT_EQ(1, mic_permission_ui().dialog_count());
   EXPECT_EQ(1, mic_permission_ui().os_prompt_count());
   EXPECT_EQ(1, mic_permission_ui().snackbar_count());
+}
+
+// Glic microphone setting off, Android permission granted: Chrome's dialog is
+// shown, the Android prompt is skipped, and the setting is turned on.
+IN_PROC_BROWSER_TEST_P(GlicMicPermissionAndroidBrowserTest,
+                       testMicAllowedAfterDialogWhenSettingDisabled) {
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicMicrophoneEnabled, false);
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+
+  EXPECT_EQ(1, mic_permission_ui().dialog_count());
+  EXPECT_EQ(0, mic_permission_ui().os_prompt_count());
+  EXPECT_EQ(0, mic_permission_ui().snackbar_count());
+  EXPECT_TRUE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kGlicMicrophoneEnabled));
+}
+
+// Glic microphone setting off: declining Chrome's dialog fails the request and
+// leaves the setting off.
+IN_PROC_BROWSER_TEST_P(GlicMicPermissionAndroidBrowserTest,
+                       testMicDeniedAfterDialogDeclinedWhenSettingDisabled) {
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicMicrophoneEnabled, false);
+  mic_permission_ui().set_dialog_result(false);
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+
+  EXPECT_EQ(1, mic_permission_ui().dialog_count());
+  EXPECT_EQ(0, mic_permission_ui().os_prompt_count());
+  EXPECT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kGlicMicrophoneEnabled));
 }
 
 INSTANTIATE_TEST_SUITE_P(,

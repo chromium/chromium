@@ -936,6 +936,7 @@ source_set("unit_tests") {
     ]
 
     deps += [
+      "//chrome/browser/glic/android",
       "//chrome/browser/glic/common",
       "//chrome/browser/ui/android/tab_model",
       "//chrome/browser/ui/android/tab_model:test_support",
