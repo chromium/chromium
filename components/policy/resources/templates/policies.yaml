@@ -1494,6 +1494,7 @@ policies:
   1493: ExtensionForceInstallWithSearchOrNewTabOverridesEnabled
   1494: ManagedClientCertificateForBrowserConfig
   1495: ManagedClientCertificateForUserConfig
+  1496: GeminiEnterpriseUrl
 
 atomic_groups:
   1: Homepage

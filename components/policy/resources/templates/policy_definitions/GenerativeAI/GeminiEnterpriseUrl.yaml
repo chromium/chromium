@@ -1,0 +1,36 @@
+owners:
+- alexwchen@google.com
+- austinzzr@google.com
+- landry@google.com
+- file://components/policy/OWNERS
+
+caption: Configure the <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> web application URL (BETA)
+
+desc: |-
+  Configures the <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> web application URL that <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> connects to.
+
+  The value must be a valid URL that uses the https scheme, points to a <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> domain, and doesn't include a username or password. If it doesn't meet these requirements, the policy is ignored and <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> is left unconfigured.
+
+  If this policy is set, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> will be configured for users signed in with a managed account or managed browser.
+
+  If this policy is unset, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> will not be configured.
+
+  Note that this policy does not control the general <ph name="GOOGLE_GEMINI_PRODUCT_NAME">Gemini</ph> integration, which can be controlled by the <ph name="GEMINI_SETTINGS_POLICY_NAME">GeminiSettings</ph> policy.
+
+example_value: https://vertexaisearch.cloud.google.com/home/cid/12345678-1234-1234-1234-123456789abc
+
+future_on:
+- chrome.*
+- chrome_os
+
+features:
+  dynamic_refresh: false
+  per_profile: true
+
+type: string
+
+schema:
+  type: string
+
+tags:
+- google-sharing

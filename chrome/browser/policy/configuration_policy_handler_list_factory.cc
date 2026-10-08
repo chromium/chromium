@@ -38,6 +38,7 @@
 #include "chrome/browser/policy/drive_file_sync_available_policy_handler.h"
 #include "chrome/browser/policy/file_selection_dialogs_policy_handler.h"
 #include "chrome/browser/policy/gemini_enterprise_settings_policy_handler.h"
+#include "chrome/browser/policy/gemini_enterprise_url_policy_handler.h"
 #include "chrome/browser/policy/homepage_location_policy_handler.h"
 #include "chrome/browser/policy/isolate_origins_policy_handler.h"
 #include "chrome/browser/policy/javascript_policy_handler.h"
@@ -3750,6 +3751,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
     BUILDFLAG(IS_CHROMEOS)
   handlers->AddHandler(
       std::make_unique<GeminiEnterpriseSettingsPolicyHandler>(chrome_schema));
+  handlers->AddHandler(std::make_unique<GeminiEnterpriseUrlPolicyHandler>());
 #endif
 
   handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyChecker>(

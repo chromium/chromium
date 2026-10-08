@@ -9,13 +9,9 @@ caption: Configure <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</
 desc: |-
   Configures the connection settings for <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 
-  To configure <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph>, administrators must provide either:
-  * The <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> web application URL (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE">url</ph>), OR
-  * All three legacy parameters together: <ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE">project_id</ph>, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE">app_id</ph>, and <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE">location</ph>. Specifying only a partial subset of these three parameters without a URL leaves <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> unconfigured.
+  This policy is being replaced by the <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME">GeminiEnterpriseUrl</ph> policy. If both are set, <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME">GeminiEnterpriseUrl</ph> takes precedence.
 
-  The <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE">url</ph> parameter must be a valid URL that uses the https scheme, points to a <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> domain, and doesn't include a username or password. If it doesn't meet these requirements, the policy is ignored and <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> is left unconfigured.
-
-  If both the <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE">url</ph> parameter and the legacy parameters are configured, the <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE">url</ph> parameter takes precedence.
+  The policy configures the <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> web application URL via <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE">url</ph>, which must be a valid URL that uses the https scheme, points to a <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> domain, and doesn't include a username or password. If it doesn't meet these requirements, the policy is ignored and <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> is left unconfigured.
 
   If this policy is set, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> will be configured for users signed in with a managed account or managed browser.
 
@@ -25,9 +21,6 @@ desc: |-
 
 example_value:
   url: "https://vertexaisearch.cloud.google.com/home/cid/12345678-1234-1234-1234-123456789abc"
-  project_id: "acme-project"
-  app_id: "acme-corp-v1"
-  location: "global"
 
 future_on:
 - chrome.*
@@ -45,18 +38,6 @@ schema:
     url:
       type: string
       description: The web application URL of the <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> instance for this organization. Must be a valid https URL.
-    project_id:
-      type: string
-      pattern: '^[a-z0-9-]{1,30}$'
-      description: The ID or number of the <ph name="GOOGLE_CLOUD_PRODUCT_NAME">Google Cloud</ph> project corresponding to the <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> instance to be enabled. Learn more about project IDs at https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects.
-    app_id:
-      type: string
-      pattern: '^[a-z0-9][a-z0-9-_]{0,62}$'
-      description: The unique identifier of the <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> engine. The format must be 1-63 characters matching the pattern [a-z0-9][a-z0-9-_]*. Learn more at https://docs.cloud.google.com/gemini/enterprise/docs/reference/rest/v1/projects.locations.collections.engines#Engine.
-    location:
-      type: string
-      pattern: '^[a-z]([a-z0-9-]{0,48}[a-z0-9])?$'
-      description: The multi-region or location of the <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> app. Learn more about <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> location at https://docs.cloud.google.com/gemini/enterprise/docs/locations.
 
 tags:
 - google-sharing

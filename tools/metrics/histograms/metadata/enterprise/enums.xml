@@ -2596,6 +2596,7 @@ chromium-metrics-reviews@google.com.
       label="ExtensionForceInstallWithSearchOrNewTabOverridesEnabled"/>
   <int value="1494" label="ManagedClientCertificateForBrowserConfig"/>
   <int value="1495" label="ManagedClientCertificateForUserConfig"/>
+  <int value="1496" label="GeminiEnterpriseUrl"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

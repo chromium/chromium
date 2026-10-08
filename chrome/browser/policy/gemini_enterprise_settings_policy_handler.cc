@@ -7,48 +7,18 @@
 #include <string>
 
 #include "base/values.h"
-#include "chrome/browser/glic/gemini_enterprise/geic_url_allowlist.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/policy/gemini_enterprise_url_policy_handler.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
-#include "components/strings/grit/components_strings.h"
-#include "url/gurl.h"
-#include "url/url_constants.h"
 
 namespace policy {
 
 namespace {
 
 constexpr char kUrlField[] = "url";
-
-// Checks `url` against the requirements the runtime imposes on the Gemini
-// Enterprise web application URL, adding the matching error on failure.
-bool CheckUrl(const std::string& policy_name,
-              const std::string& url,
-              PolicyErrorMap* errors) {
-  const GURL gurl(url);
-  // Embedded credentials are rejected because the URL is loaded in a
-  // privileged WebContents.
-  if (!gurl.is_valid() || gurl.has_username() || gurl.has_password()) {
-    errors->AddError(policy_name, IDS_POLICY_INVALID_URL_ERROR,
-                     PolicyErrorPath{kUrlField});
-    return false;
-  }
-  if (!gurl.SchemeIs(url::kHttpsScheme)) {
-    errors->AddError(policy_name, IDS_POLICY_URL_NOT_HTTPS_ERROR,
-                     PolicyErrorPath{kUrlField});
-    return false;
-  }
-  if (!geic::IsAllowedGeminiEnterpriseHost(gurl)) {
-    errors->AddError(policy_name,
-                     IDS_POLICY_GEMINI_ENTERPRISE_URL_HOST_NOT_ALLOWED_ERROR,
-                     PolicyErrorPath{kUrlField});
-    return false;
-  }
-  return true;
-}
 
 }  // namespace
 
@@ -81,10 +51,11 @@ bool GeminiEnterpriseSettingsPolicyHandler::CheckPolicySettings(
     return true;
   }
 
-  // An absent or empty `url` leaves the legacy parameters in effect, matching
-  // how the value is read back.
+  // An absent or empty `url` leaves nothing to validate.
   const std::string* url = value->GetDict().FindString(kUrlField);
-  return !url || url->empty() || CheckUrl(policy_name(), *url, errors);
+  return !url || url->empty() ||
+         GeminiEnterpriseUrlPolicyHandler::CheckUrl(policy_name(), *url, errors,
+                                                    PolicyErrorPath{kUrlField});
 }
 
 }  // namespace policy

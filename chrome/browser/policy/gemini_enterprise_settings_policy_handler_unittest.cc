@@ -101,20 +101,8 @@ TEST_F(GeminiEnterpriseSettingsPolicyHandlerTest, ValidUrlRecommendedLevel) {
   ExpectAppliedPref(policy_dict);
 }
 
-TEST_F(GeminiEnterpriseSettingsPolicyHandlerTest, ValidLegacyParameters) {
-  base::DictValue policy_dict;
-  policy_dict.Set("project_id", "my-project");
-  policy_dict.Set("app_id", "my-app");
-  policy_dict.Set("location", "global");
-  SetPolicy(policy_dict);
-
-  EXPECT_TRUE(handler_.CheckPolicySettings(policies_, &errors_));
-  EXPECT_TRUE(errors_.empty());
-
-  ExpectAppliedPref(policy_dict);
-}
-
-TEST_F(GeminiEnterpriseSettingsPolicyHandlerTest, ValidUrlAndLegacyParameters) {
+TEST_F(GeminiEnterpriseSettingsPolicyHandlerTest,
+       ValidUrlWithLeftoverLegacyParameters) {
   base::DictValue policy_dict;
   policy_dict.Set("url", "https://business.gemini.google/");
   policy_dict.Set("project_id", "my-project");
@@ -123,18 +111,14 @@ TEST_F(GeminiEnterpriseSettingsPolicyHandlerTest, ValidUrlAndLegacyParameters) {
   SetPolicy(policy_dict);
 
   EXPECT_TRUE(handler_.CheckPolicySettings(policies_, &errors_));
-  EXPECT_TRUE(errors_.empty());
+  EXPECT_FALSE(errors_.HasFatalError(key::kGeminiEnterpriseSettings));
 
   ExpectAppliedPref(policy_dict);
 }
 
-TEST_F(GeminiEnterpriseSettingsPolicyHandlerTest,
-       EmptyUrlLeavesLegacyParametersInEffect) {
+TEST_F(GeminiEnterpriseSettingsPolicyHandlerTest, EmptyUrl) {
   base::DictValue policy_dict;
   policy_dict.Set("url", "");
-  policy_dict.Set("project_id", "my-project");
-  policy_dict.Set("app_id", "my-app");
-  policy_dict.Set("location", "global");
   SetPolicy(policy_dict);
 
   EXPECT_TRUE(handler_.CheckPolicySettings(policies_, &errors_));
@@ -232,34 +216,6 @@ TEST_F(GeminiEnterpriseSettingsPolicyHandlerTest, LocalhostNotAllowed) {
 
   EXPECT_FALSE(handler_.CheckPolicySettings(policies_, &errors_));
   ExpectSingleError(IDS_POLICY_GEMINI_ENTERPRISE_URL_HOST_NOT_ALLOWED_ERROR);
-}
-
-TEST_F(GeminiEnterpriseSettingsPolicyHandlerTest,
-       DisallowedHostDiscardsLegacyParameters) {
-  base::DictValue policy_dict;
-  policy_dict.Set("url", "https://example.com/");
-  policy_dict.Set("project_id", "my-project");
-  policy_dict.Set("app_id", "my-app");
-  policy_dict.Set("location", "global");
-  SetPolicy(policy_dict);
-
-  EXPECT_FALSE(handler_.CheckPolicySettings(policies_, &errors_));
-  ExpectSingleError(IDS_POLICY_GEMINI_ENTERPRISE_URL_HOST_NOT_ALLOWED_ERROR);
-}
-
-// A rejected `url` discards the whole policy, including otherwise valid legacy
-// parameters, because the handler list skips ApplyPolicySettings entirely.
-TEST_F(GeminiEnterpriseSettingsPolicyHandlerTest,
-       InvalidUrlDiscardsLegacyParameters) {
-  base::DictValue policy_dict;
-  policy_dict.Set("url", "not-a-valid-url");
-  policy_dict.Set("project_id", "my-project");
-  policy_dict.Set("app_id", "my-app");
-  policy_dict.Set("location", "global");
-  SetPolicy(policy_dict);
-
-  EXPECT_FALSE(handler_.CheckPolicySettings(policies_, &errors_));
-  ExpectSingleError(IDS_POLICY_INVALID_URL_ERROR);
 }
 
 TEST_F(GeminiEnterpriseSettingsPolicyHandlerTest, EmptyPolicy) {
