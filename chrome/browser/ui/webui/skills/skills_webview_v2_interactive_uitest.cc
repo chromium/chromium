@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -19,8 +20,10 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/skills/skills_service_factory.h"
+#include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
@@ -32,6 +35,8 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/skills/features.h"
 #include "components/skills/internal/skills_service_impl.h"
+#include "components/skills/public/skill.h"
+#include "components/skills/public/skill.mojom.h"
 #include "components/skills/public/skills_provider.h"
 #include "components/skills/public/skills_service.h"
 #include "components/sync/model/data_type_store_service.h"
@@ -43,6 +48,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "ui/base/interaction/interactive_test.h"
+#include "ui/views/controls/webview/webview.h"
 #include "url/gurl.h"
 
 namespace {
@@ -368,4 +374,37 @@ IN_PROC_BROWSER_TEST_F(SkillsWebViewV2InteractiveUITest,
           "() => "
           "(document.getElementById('providedSkillPrompt')?.value || '')."
           "includes('Review this enterprise CL') === true"));
+}
+
+// Tests that opening the dialog loads the test client in dialog mode with a
+// non-empty web view.
+IN_PROC_BROWSER_TEST_F(SkillsWebViewV2InteractiveUITest,
+                       DialogLaunchesTestClientInDialogMode) {
+  skills::Skill test_skill("sample_id", "Sample Skill", "🎨", "Sample prompt");
+
+  RunTestSequence(
+      Do([&]() {
+        auto* active_tab = browser()->tab_strip_model()->GetActiveTab();
+        ASSERT_TRUE(active_tab);
+        auto* tab_controller =
+            skills::SkillsUiTabControllerInterface::From(active_tab);
+        ASSERT_TRUE(tab_controller);
+        tab_controller->ShowDialog(
+            std::move(test_skill),
+            skills::SkillsDialogEntryPoint::kManagementPageBlank,
+            skills::mojom::SkillsDialogType::kEdit, nullptr);
+      }),
+      WaitForShow(skills::SkillsDialogView::kSkillsDialogElementId),
+      InstrumentNonTabWebView(kSkillsHostTabId,
+                              skills::SkillsDialogView::kSkillsDialogElementId),
+      InstrumentInnerWebContents(kSkillsGuestId, kSkillsHostTabId, 0),
+      WaitForJsResult(kSkillsGuestId,
+                      "() => window.client?.getConnected() === true"),
+      WaitForJsResult(
+          kSkillsGuestId,
+          "() => document.body.classList.contains('dialog-mode') === true"),
+      CheckView(skills::SkillsDialogView::kSkillsDialogElementId,
+                [](views::WebView* web_view) {
+                  return !web_view->size().IsEmpty();
+                }));
 }

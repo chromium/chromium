@@ -5,6 +5,10 @@
 import {client, logMessage} from './client.js';
 import {$} from './page_element_types.js';
 
+function isDialogPath(path: string): boolean {
+  return path.includes('/dialog');
+}
+
 function updateUrlDisplay() {
   const path = window.location.pathname;
   const search = window.location.search;
@@ -12,6 +16,19 @@ function updateUrlDisplay() {
 
   if ($.currentPath) {
     $.currentPath.textContent = path;
+  }
+
+  const isDialog = isDialogPath(path);
+  document.body.classList.toggle('dialog-mode', isDialog);
+  if ($.dialogModeBadge) {
+    $.dialogModeBadge.textContent =
+        isDialog ? 'Dialog Mode (400px)' : 'Full Page Mode';
+    $.dialogModeBadge.className =
+        isDialog ? 'pill not-draggable dialog-active' : 'pill not-draggable';
+  }
+
+  if ($.dialogFormSection) {
+    $.dialogFormSection.style.display = isDialog ? 'block' : 'none';
   }
 
   if ($.queryParamsDisplay) {
@@ -35,6 +52,20 @@ function updateUrlDisplay() {
     if ($.invokeSkillIdInput) {
       $.invokeSkillIdInput.value = skillId;
     }
+    if ($.dialogSkillNameInput) {
+      $.dialogSkillNameInput.value = `Skill ${skillId}`;
+    }
+    if ($.dialogFormTitle) {
+      $.dialogFormTitle.textContent = 'Edit skill';
+    }
+  } else if (params.get('isSavingGeminiPrompt') === 'true') {
+    if ($.dialogFormTitle) {
+      $.dialogFormTitle.textContent = 'Save Gemini Prompt';
+    }
+  } else {
+    if ($.dialogFormTitle) {
+      $.dialogFormTitle.textContent = 'Add skill';
+    }
   }
 
   logMessage(`Loaded page at path: "${path}", query: "${search}"`);
@@ -47,6 +78,119 @@ function navigateTo(pathWithQuery: string) {
 }
 
 function initEventListeners() {
+  // Dialog Form Controls
+  let isReviewMode = false;
+  const setReviewMode = (review: boolean) => {
+    isReviewMode = review;
+    if ($.dialogStandardView) {
+      $.dialogStandardView.style.display = isReviewMode ? 'none' : 'block';
+    }
+    if ($.dialogReviewView) {
+      $.dialogReviewView.style.display = isReviewMode ? 'block' : 'none';
+    }
+    if ($.dialogFormTitle) {
+      $.dialogFormTitle.textContent =
+          isReviewMode ? 'Review before saving' : 'Add skill';
+    }
+    if ($.toggleReviewModeBtn) {
+      $.toggleReviewModeBtn.textContent =
+          isReviewMode ? 'Show Edit View' : 'Toggle "Review before saving"';
+    }
+    logMessage(`Switched dialog view to: ${
+        isReviewMode ? 'Review before saving (compact)' :
+                       'Standard Add/Edit'}`);
+  };
+
+  $.toggleReviewModeBtn?.addEventListener('click', () => {
+    setReviewMode(!isReviewMode);
+  });
+
+  $.dialogReviewInstructionsBtn?.addEventListener('click', () => {
+    setReviewMode(false);
+  });
+
+  $.dialogSaveBtn?.addEventListener('click', () => {
+    client.showSaveToast();
+  });
+
+  $.dialogReviewSaveBtn?.addEventListener('click', () => {
+    client.showSaveToast();
+  });
+
+  $.dialogCancelBtn?.addEventListener('click', () => {
+    client.closeDialog();
+  });
+
+  $.dialogOpenFullPageBtn?.addEventListener('click', () => {
+    const name = $.dialogSkillNameInput?.value || 'untitled-skill';
+    const description = $.dialogSkillDescInput?.value || '';
+    const instructions = $.dialogSkillInstructionsInput?.value || '';
+    client.openFullPageEditor({
+      url: '/chromeskills/editor',
+      name,
+      description,
+      instructions,
+      icon: '😊',
+    });
+  });
+
+  // Width Presets
+  const setBodyWidth = (width: string) => {
+    document.body.style.width = width;
+    document.body.style.maxWidth = width;
+    if ($.pageHeader) {
+      $.pageHeader.style.width = width;
+      $.pageHeader.style.maxWidth = width;
+    }
+    const contentEl = document.getElementById('content');
+    if (contentEl) {
+      contentEl.style.width = width;
+      contentEl.style.maxWidth = width;
+    }
+    logMessage(`Set client width to: ${width}`);
+  };
+
+  $.dialogWidth400Btn?.addEventListener('click', () => {
+    setBodyWidth('400px');
+  });
+
+  $.dialogWidth380Btn?.addEventListener('click', () => {
+    setBodyWidth('380px');
+  });
+
+  $.dialogWidth512Btn?.addEventListener('click', () => {
+    setBodyWidth('512px');
+  });
+
+  $.dialogWidthFullBtn?.addEventListener('click', () => {
+    document.body.style.width = '';
+    document.body.style.maxWidth = '';
+    if ($.pageHeader) {
+      $.pageHeader.style.width = '';
+      $.pageHeader.style.maxWidth = '';
+    }
+    const contentEl = document.getElementById('content');
+    if (contentEl) {
+      contentEl.style.width = '';
+      contentEl.style.maxWidth = '';
+    }
+    logMessage('Reset client width to 100% full width.');
+  });
+
+  $.toggleDialogModeBtn?.addEventListener('click', () => {
+    const active = document.body.classList.toggle('dialog-mode');
+    if ($.dialogModeBadge) {
+      $.dialogModeBadge.textContent =
+          active ? 'Dialog Mode (400px)' : 'Full Page Mode';
+      $.dialogModeBadge.className =
+          active ? 'pill not-draggable dialog-active' : 'pill not-draggable';
+    }
+    if ($.dialogFormSection) {
+      $.dialogFormSection.style.display = active ? 'block' : 'none';
+    }
+    logMessage(`Toggled dialog-mode: ${active}`);
+  });
+
   // Header / Status
   $.refreshBtn?.addEventListener('click', () => {
     location.reload();
@@ -231,11 +375,81 @@ function initEventListeners() {
   });
 }
 
+function updateViewportMetrics() {
+  const winW = window.innerWidth;
+  const winH = window.innerHeight;
+  const dpr = window.devicePixelRatio;
+  const doc = document.documentElement;
+  const body = document.body;
+
+  const wEl = document.getElementById('metricWindowSize');
+  if (wEl) {
+    wEl.textContent = `${winW} × ${winH} (outer: ${window.outerWidth} × ${
+        window.outerHeight})`;
+  }
+
+  const dprEl = document.getElementById('metricDPR');
+  if (dprEl) {
+    dprEl.textContent = `${dpr}`;
+  }
+
+  const hcEl = document.getElementById('metricHtmlClient');
+  if (hcEl && doc) {
+    hcEl.textContent = `${doc.clientWidth} × ${doc.clientHeight}`;
+  }
+
+  const hsEl = document.getElementById('metricHtmlScroll');
+  if (hsEl && doc) {
+    hsEl.textContent = `${doc.scrollWidth} × ${doc.scrollHeight}`;
+  }
+
+  const hoEl = document.getElementById('metricHtmlOffset');
+  if (hoEl && doc) {
+    hoEl.textContent = `${doc.offsetWidth} × ${doc.offsetHeight}`;
+  }
+
+  const bcEl = document.getElementById('metricBodyClient');
+  if (bcEl && body) {
+    bcEl.textContent = `${body.clientWidth} × ${body.clientHeight}`;
+  }
+
+  const bsEl = document.getElementById('metricBodyScroll');
+  if (bsEl && body) {
+    bsEl.textContent = `${body.scrollWidth} × ${body.scrollHeight}`;
+  }
+
+  const boEl = document.getElementById('metricBodyOffset');
+  if (boEl && body) {
+    boEl.textContent = `${body.offsetWidth} × ${body.offsetHeight}`;
+  }
+
+  const scEl = document.getElementById('metricScreenSize');
+  if (scEl) {
+    scEl.textContent = `${screen.width} × ${screen.height} (avail: ${
+        screen.availWidth} × ${screen.availHeight})`;
+  }
+
+  const vvEl = document.getElementById('metricVisualViewport');
+  if (vvEl && window.visualViewport) {
+    vvEl.textContent = `${Math.round(window.visualViewport.width)} × ${
+        Math.round(window.visualViewport.height)}`;
+  }
+}
+
 // Initialize test client
 function init() {
   client.init();
   initEventListeners();
   updateUrlDisplay();
+  updateViewportMetrics();
+
+  window.addEventListener('resize', updateViewportMetrics);
+  window.addEventListener('scroll', updateViewportMetrics);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', updateViewportMetrics);
+    window.visualViewport.addEventListener('scroll', updateViewportMetrics);
+  }
+  setInterval(updateViewportMetrics, 500);
 }
 
 if (document.readyState === 'loading') {

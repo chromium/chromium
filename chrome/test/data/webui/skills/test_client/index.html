@@ -172,6 +172,86 @@ found in the LICENSE file.
       font-size: 11px;
       color: gray;
     }
+
+    /* Dialog Mode styles: narrows test client to 400px width in dialog mode */
+    html {
+      box-sizing: border-box;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    html:has(body.dialog-mode),
+    body.dialog-mode {
+      width: 400px;
+      max-width: 400px;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      overflow-x: hidden;
+      background: #e8f5e9 !important; /* Mint Green: Guest Page background */
+      outline: 3px dashed #9c27b0 !important; /* Purple dashed: Guest Page DOM boundary */
+    }
+
+    body.dialog-mode #pageHeader {
+      width: 100%;
+      max-width: 400px;
+      flex-wrap: wrap;
+      box-sizing: border-box;
+      padding: 4px 8px;
+    }
+
+    body.dialog-mode #pageHeader h1 {
+      flex-wrap: wrap;
+      font-size: 12px;
+      gap: 4px;
+    }
+
+    body.dialog-mode #pageHeader span {
+      white-space: normal;
+      word-break: break-word;
+    }
+
+    body.dialog-mode #content {
+      width: 100%;
+      max-width: 400px;
+      box-sizing: border-box;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 8px;
+    }
+
+    body.dialog-mode .form-grid {
+      grid-template-columns: 1fr;
+    }
+
+    body.dialog-mode input[type="text"],
+    body.dialog-mode input[type="number"],
+    body.dialog-mode textarea,
+    body.dialog-mode select {
+      max-width: 100% !important;
+      box-sizing: border-box;
+    }
+
+    body.dialog-mode .form-row.inline {
+      flex-wrap: wrap;
+    }
+
+    /* In dialog mode, hide non-dialog test panels by default to accurately simulate the dialog */
+    body.dialog-mode:not(.show-all-panels) .section:not(.dialog-card) {
+      display: none;
+    }
+
+    .dialog-active {
+      background: #c2e7ff !important;
+      color: #001d35 !important;
+      font-weight: bold;
+    }
+
+    .dialog-card {
+      border: 1px solid #1a73e8;
+      background: #fafafa;
+    }
   </style>
 </head>
 <body>
@@ -179,6 +259,7 @@ found in the LICENSE file.
     <h1>
       <span>Skills Test Client (V2)</span>
       <span id="connectionStatus" class="status-badge not-draggable">Waiting for Handshake...</span>
+      <span id="dialogModeBadge" class="pill not-draggable">Full Page Mode</span>
     </h1>
     <div class="header-controls not-draggable">
       <button id="refreshBtn" class="small secondary" title="Reload page">🔄 Reload</button>
@@ -187,6 +268,60 @@ found in the LICENSE file.
   </div>
 
   <div id="content">
+    <!-- Dialog Mode Form (Add / Edit / Review) -->
+    <div id="dialogFormSection" class="section dialog-card">
+      <h2 id="dialogFormHeading">
+        <span id="dialogFormTitle">Add skill</span>
+        <button id="toggleReviewModeBtn" class="secondary small">Toggle "Review before saving"</button>
+      </h2>
+      <!-- Live Viewport & DOM Metrics Display -->
+      <div id="viewportMetricsBox" style="background: #263238; color: #80cbc4; padding: 6px 8px; font-family: monospace; font-size: 11px; margin-bottom: 8px; border-radius: 4px; line-height: 1.4;">
+        <div><strong>Window:</strong> <span id="metricWindowSize">...</span> | DPR: <span id="metricDPR">...</span></div>
+        <div><strong>HTML:</strong> client=<span id="metricHtmlClient">...</span> scroll=<span id="metricHtmlScroll">...</span> offset=<span id="metricHtmlOffset">...</span></div>
+        <div><strong>Body:</strong> client=<span id="metricBodyClient">...</span> scroll=<span id="metricBodyScroll">...</span> offset=<span id="metricBodyOffset">...</span></div>
+        <div><strong>Screen:</strong> <span id="metricScreenSize">...</span> | Viewport: <span id="metricVisualViewport">...</span></div>
+      </div>
+      <div id="dialogStandardView">
+        <div id="dialogSubtitle" style="color: #444; margin-bottom: 8px; font-size: 12px;">
+          Create custom, reusable instructions for repeating tasks. Gemini in Chrome uses relevant skills automatically, or you can apply them by typing /.
+        </div>
+        <div class="form-row">
+          <label for="dialogSkillNameInput">Name:</label>
+          <div class="form-row inline">
+            <span style="font-size: 16px;">😊</span>
+            <input type="text" id="dialogSkillNameInput" value="untitled-skill" />
+          </div>
+        </div>
+        <div class="form-row">
+          <label for="dialogSkillDescInput">Description:</label>
+          <input type="text" id="dialogSkillDescInput" value="Takes complex information and rephrases it" />
+        </div>
+        <div class="form-row">
+          <label for="dialogSkillInstructionsInput">Instructions:</label>
+          <textarea id="dialogSkillInstructionsInput" style="min-height: 80px;">Example: Simplify this concept for a child who is 8 years old. Use simple language and an analogy they would understand. Keep the total explanation concise, under 150 words.</textarea>
+        </div>
+        <div class="button-row" style="justify-content: space-between; margin-top: 8px;">
+          <button id="dialogOpenFullPageBtn" class="secondary">🔗 Open full page</button>
+          <div style="display: flex; gap: 6px;">
+            <button id="dialogCancelBtn" class="secondary">Cancel</button>
+            <button id="dialogSaveBtn" style="background: #0b57d0; color: white; font-weight: bold;">Save</button>
+          </div>
+        </div>
+      </div>
+      <div id="dialogReviewView" style="display: none;">
+        <div style="color: #444; margin-bottom: 12px; font-size: 12px;">
+          This skill has instructions that may tell Gemini to access your data, external sites, or take actions for you. Only add skills from creators you trust.
+        </div>
+        <div class="button-row" style="justify-content: flex-end; gap: 8px; margin-bottom: 12px;">
+          <button id="dialogReviewInstructionsBtn" class="secondary" style="border-radius: 16px; padding: 6px 12px;">View full instructions</button>
+          <button id="dialogReviewSaveBtn" style="background: #0b57d0; color: white; border-radius: 16px; padding: 6px 16px; font-weight: bold;">Save</button>
+        </div>
+        <div style="border-top: 1px solid #e0e0e0; padding-top: 8px; font-size: 11px; color: #555;">
+          Your skills get saved to your Google Account, <strong>testuser@example.com</strong>
+        </div>
+      </div>
+    </div>
+
     <!-- Page & Route Info -->
     <div class="section">
       <h2>Page & Route Status</h2>
@@ -200,6 +335,16 @@ found in the LICENSE file.
         <button id="navAddDialogBtn" class="secondary small">Add Dialog (/chromeskills/dialog)</button>
         <button id="navEditDialogBtn" class="secondary small">Edit Dialog</button>
         <button id="navEditorBtn" class="secondary small">Full Page Editor (/chromeskills/editor)</button>
+      </div>
+      <div class="form-row" style="margin-top: 8px;">
+        <label>Dialog Width Controls:</label>
+        <div class="button-row">
+          <button id="dialogWidth400Btn" class="secondary small">400px (Default Dialog)</button>
+          <button id="dialogWidth380Btn" class="secondary small">380px (Narrow)</button>
+          <button id="dialogWidth512Btn" class="secondary small">512px (Full Dialog Width)</button>
+          <button id="dialogWidthFullBtn" class="secondary small">100% (Full Page Width)</button>
+          <button id="toggleDialogModeBtn" class="secondary small">Toggle Dialog Mode</button>
+        </div>
       </div>
       <div class="form-row inline" style="margin-top: 8px;">
         <input type="text" id="customNavPathInput" placeholder="/chromeskills/yourSkills?hl=en" style="max-width: 300px;" />

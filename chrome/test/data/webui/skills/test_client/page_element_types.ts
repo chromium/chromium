@@ -6,10 +6,32 @@ export interface PageElementTypes {
   // Header / Status
   pageHeader: HTMLElement;
   connectionStatus: HTMLElement;
+  dialogModeBadge: HTMLSpanElement;
   currentPath: HTMLSpanElement;
   queryParamsDisplay: HTMLSpanElement;
   refreshBtn: HTMLButtonElement;
   closeDialogHeaderBtn: HTMLButtonElement;
+
+  // Dialog Form & Controls
+  dialogFormSection: HTMLDivElement;
+  dialogFormTitle: HTMLSpanElement;
+  toggleReviewModeBtn: HTMLButtonElement;
+  dialogStandardView: HTMLDivElement;
+  dialogSubtitle: HTMLDivElement;
+  dialogSkillNameInput: HTMLInputElement;
+  dialogSkillDescInput: HTMLInputElement;
+  dialogSkillInstructionsInput: HTMLTextAreaElement;
+  dialogOpenFullPageBtn: HTMLButtonElement;
+  dialogCancelBtn: HTMLButtonElement;
+  dialogSaveBtn: HTMLButtonElement;
+  dialogReviewView: HTMLDivElement;
+  dialogReviewInstructionsBtn: HTMLButtonElement;
+  dialogReviewSaveBtn: HTMLButtonElement;
+  dialogWidth400Btn: HTMLButtonElement;
+  dialogWidth380Btn: HTMLButtonElement;
+  dialogWidth512Btn: HTMLButtonElement;
+  dialogWidthFullBtn: HTMLButtonElement;
+  toggleDialogModeBtn: HTMLButtonElement;
 
   // Received From Host
   geminiPromptReceived: HTMLTextAreaElement;
