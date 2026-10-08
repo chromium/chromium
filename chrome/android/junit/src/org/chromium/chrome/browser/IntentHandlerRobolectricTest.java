@@ -974,16 +974,29 @@ public class IntentHandlerRobolectricTest {
 
     @Test
     public void testIsActorNotificationIntent() {
+        Context context = ContextUtils.getApplicationContext();
+
         assertFalse(IntentHandler.isActorNotificationIntent(null));
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         assertFalse(IntentHandler.isActorNotificationIntent(intent));
 
+        // Untrusted intents with Actor extras should be rejected.
         intent.putExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, true);
+        assertFalse(IntentHandler.isActorNotificationIntent(intent));
+        intent.setPackage(context.getPackageName());
+        assertFalse(IntentHandler.isActorNotificationIntent(intent));
+
+        IntentUtils.addTrustedIntentExtras(intent);
         assertTrue(IntentHandler.isActorNotificationIntent(intent));
 
         intent = new Intent(Intent.ACTION_VIEW);
         intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, 123);
+        assertFalse(IntentHandler.isActorNotificationIntent(intent));
+        intent.setPackage(context.getPackageName());
+        assertFalse(IntentHandler.isActorNotificationIntent(intent));
+
+        IntentUtils.addTrustedIntentExtras(intent);
         assertTrue(IntentHandler.isActorNotificationIntent(intent));
     }
 
