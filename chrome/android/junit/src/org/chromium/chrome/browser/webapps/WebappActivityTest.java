@@ -182,7 +182,6 @@ public class WebappActivityTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
     @Features.DisableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
     public void shouldDrawEdgeToEdgeOnCreateWithShortEdgesDisabled() {
         TestWebappActivity activity = new TestWebappActivity();
@@ -193,7 +192,6 @@ public class WebappActivityTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
     @Features.DisableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
     public void activityTokenWithoutWebappInsetsConsumerUsesManifestNavigationBarColor() {
         TestWebappActivity activity = new TestWebappActivity();
@@ -234,10 +232,7 @@ public class WebappActivityTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE,
-        ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE
-    })
+    @Features.EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
     public void standaloneWithParamOffDrawsEdgeToEdgeOnCreate() {
         TestWebappActivity activity = new TestWebappActivity();
         BrowserServicesIntentDataProvider provider = mock(BrowserServicesIntentDataProvider.class);
@@ -252,10 +247,7 @@ public class WebappActivityTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE,
-        ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE
-    })
+    @Features.EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
     public void standaloneOptInUsesShortEdges() {
         ChromeFeatureList.sWebAppShortEdgesCutoutModeStandalone.setForTesting(true);
         TestWebappActivity activity = new TestWebappActivity();
@@ -269,10 +261,7 @@ public class WebappActivityTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE,
-        ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE
-    })
+    @Features.EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
     public void minimalUiKeepsLegacyActivityTokenWithStandaloneOptIn() {
         ChromeFeatureList.sWebAppShortEdgesCutoutModeStandalone.setForTesting(true);
         TestWebappActivity activity = new TestWebappActivity();
@@ -288,10 +277,7 @@ public class WebappActivityTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE,
-        ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE
-    })
+    @Features.EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
     public void standaloneStartupBeforeIntentProviderExistsDoesNotAcquireActivityToken() {
         ChromeFeatureList.sWebAppShortEdgesCutoutModeStandalone.setForTesting(true);
         TestWebappActivity activity = new TestWebappActivity();
@@ -304,10 +290,7 @@ public class WebappActivityTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE,
-        ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE
-    })
+    @Features.EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
     public void standaloneStartupWithParamOffKeepsLegacyActivityToken() {
         TestWebappActivity activity = new TestWebappActivity();
         BrowserServicesIntentDataProvider provider = mock(BrowserServicesIntentDataProvider.class);
@@ -319,10 +302,7 @@ public class WebappActivityTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE,
-        ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE
-    })
+    @Features.EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
     public void fullscreenStartupBeforeIntentProviderExistsDoesNotAcquireActivityToken() {
         TestWebappActivity activity = new TestWebappActivity();
         BrowserServicesIntentDataProvider provider = mock(BrowserServicesIntentDataProvider.class);
@@ -334,10 +314,7 @@ public class WebappActivityTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE,
-        ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE
-    })
+    @Features.EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
     public void startupProviderIsReusedDuringPreInflation() {
         TestWebappActivity activity = new TestWebappActivity();
         BrowserServicesIntentDataProvider provider = mock(BrowserServicesIntentDataProvider.class);
@@ -350,10 +327,7 @@ public class WebappActivityTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE,
-        ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE
-    })
+    @Features.EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
     public void startupProviderIsNotReusedForADifferentIntent() {
         TestWebappActivity activity = new TestWebappActivity();
         activity.setIntent(createWebappIntent("https://startup.example/"));
@@ -375,10 +349,7 @@ public class WebappActivityTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE,
-        ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE
-    })
+    @Features.EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
     public void startupParseIsNotRepeatedWhenIntentHasNoWebappData() {
         TestWebappActivity activity = new TestWebappActivity();
         // A raw VIEW intent has neither a WebAPK package name nor a webapp id, so parsing it
@@ -395,10 +366,7 @@ public class WebappActivityTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE,
-        ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE
-    })
+    @Features.EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
     public void fullscreenStillUsesShortEdgesByDefault() {
         TestWebappActivity activity = new TestWebappActivity();
         BrowserServicesIntentDataProvider provider = mock(BrowserServicesIntentDataProvider.class);
@@ -411,9 +379,9 @@ public class WebappActivityTest {
     }
 
     @Test
+    @Config(sdk = 29)
     @Features.EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
-    @Features.DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
-    public void shortEdgesCanColorStatusBarWithoutDelegate() {
+    public void shortEdgesCanColorStatusBarWithoutDelegate_Legacy() {
         TestWebappActivity activity = new TestWebappActivity();
         BrowserServicesIntentDataProvider provider = mock(BrowserServicesIntentDataProvider.class);
         when(provider.getResolvedDisplayMode()).thenReturn(DisplayMode.FULLSCREEN);
