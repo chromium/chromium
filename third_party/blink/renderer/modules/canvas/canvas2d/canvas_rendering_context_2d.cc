@@ -865,8 +865,7 @@ void CanvasRenderingContext2D::PageVisibilityChanged() {
   SetAggressivelyFreeSharedGpuContextResourcesIfPossible(!page_is_visible);
 
   if (features::IsCanvas2DHibernationEnabled() && !page_is_visible &&
-      !IsHibernating() && GetSharedImageProvider() &&
-      GetSharedImageProvider()->IsAccelerated()) {
+      !IsHibernating() && IsBackingAccelerated()) {
     // Assuming 8-bit RGBA or similar, this means that we don't bother
     // hibernating canvas elements smaller than 64kiB. Hibernation has a cost,
     // and a lot of pages have very small canvas elements, according to metrics.
@@ -1292,9 +1291,7 @@ void CanvasRenderingContext2D::WakeUpFromHibernation() {
         CanvasHibernationHandler::HibernationEvent::
             kHibernationEndedWithSwitchToBackgroundRendering);
   } else {
-    bool is_accelerated =
-        GetSharedImageProvider() && GetSharedImageProvider()->IsAccelerated();
-    if (is_accelerated) {
+    if (IsBackingAccelerated()) {
       CanvasHibernationHandler::ReportHibernationEvent(
           CanvasHibernationHandler::HibernationEvent::
               kHibernationEndedNormally);
