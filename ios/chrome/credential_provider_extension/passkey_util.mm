@@ -162,8 +162,10 @@ DecryptCredentialSecrets(id<Credential> credential,
 
   for (const webauthn::SharedKey& trusted_vault_key : trusted_vault_keys) {
     sync_pb::WebauthnCredentialSpecifics_Encrypted credential_secrets;
+    // TODO(crbug.com/405036154): Pass the device authorization key.
     if (webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
-            trusted_vault_key, credential_specifics, &credential_secrets)) {
+            trusted_vault_key, /*device_authorization_key=*/{},
+            credential_specifics, &credential_secrets)) {
       return credential_secrets;
     }
   }

@@ -241,7 +241,8 @@ TEST_F(CredentialImporterTest, ImportsPasskeyWithHmacSecret) {
   sync_pb::WebauthnCredentialSpecifics_Encrypted decrypted;
   EXPECT_TRUE(
       webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
-          TestTrustedVaultKey(), passkeys[0], &decrypted));
+          TestTrustedVaultKey(), /*device_authorization_key=*/{}, passkeys[0],
+          &decrypted));
   EXPECT_EQ(decrypted.hmac_secret(), "01234567890123456789012345678901");
 }
 
@@ -269,7 +270,8 @@ TEST_F(CredentialImporterTest, ImportsPasskeyWithLargeBlob) {
   sync_pb::WebauthnCredentialSpecifics_Encrypted decrypted;
   EXPECT_TRUE(
       webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
-          TestTrustedVaultKey(), passkeys[0], &decrypted));
+          TestTrustedVaultKey(), /*device_authorization_key=*/{}, passkeys[0],
+          &decrypted));
   EXPECT_EQ(decrypted.large_blob(), "large_blob");
   EXPECT_EQ(decrypted.large_blob_uncompressed_size(), 100u);
 }
@@ -298,7 +300,8 @@ TEST_F(CredentialImporterTest, ImportsPasskeyWithEmptyLargeBlob) {
   sync_pb::WebauthnCredentialSpecifics_Encrypted decrypted;
   EXPECT_TRUE(
       webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
-          TestTrustedVaultKey(), passkeys[0], &decrypted));
+          TestTrustedVaultKey(), /*device_authorization_key=*/{}, passkeys[0],
+          &decrypted));
   EXPECT_TRUE(decrypted.has_large_blob());
   EXPECT_EQ(decrypted.large_blob(), "");
   EXPECT_TRUE(decrypted.has_large_blob_uncompressed_size());
@@ -637,7 +640,8 @@ TEST_F(CredentialImporterFidoExtensionsDisabledTest,
   sync_pb::WebauthnCredentialSpecifics_Encrypted decrypted;
   EXPECT_TRUE(
       webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
-          TestTrustedVaultKey(), passkeys[0], &decrypted));
+          TestTrustedVaultKey(), /*device_authorization_key=*/{}, passkeys[0],
+          &decrypted));
   EXPECT_FALSE(decrypted.has_hmac_secret());
   EXPECT_FALSE(decrypted.has_large_blob());
   EXPECT_FALSE(decrypted.has_large_blob_uncompressed_size());

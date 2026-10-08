@@ -121,8 +121,10 @@ std::optional<PasskeyJavaScriptFeature::AssertionData> CreateAssertionObject(
     bool did_complete_uv) {
   // Fetch secrets from passkey if possible.
   sync_pb::WebauthnCredentialSpecifics_Encrypted credential_secrets;
+  // TODO(crbug.com/405036154): Pass the device authorization key.
   if (!passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
-          trusted_vault_key, passkey, &credential_secrets)) {
+          trusted_vault_key, /*device_authorization_key=*/{}, passkey,
+          &credential_secrets)) {
     return std::nullopt;
   }
 

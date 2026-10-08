@@ -65,6 +65,7 @@ source_set("passkey_model") {
     "//components/cbor",
     "//components/keyed_service/core",
     "//components/sync/protocol",
+    "//components/webauthn/core/browser/device_authorization:features",
     "//crypto",
     "//device/fido",
   ]
@@ -161,6 +162,7 @@ source_set("unit_tests") {
       ":signal_api_utils",
       ":test_support",
       "//components/sync/protocol",
+      "//components/webauthn/core/browser/device_authorization:features",
       "//crypto",
       "//testing/gmock",
       "//testing/gtest",

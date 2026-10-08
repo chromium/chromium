@@ -278,7 +278,8 @@ TEST_F(PasskeyImporterTest, ImportsPasskeyWithHmacSecret) {
   ASSERT_THAT(passkeys, SizeIs(1));
   sync_pb::WebauthnCredentialSpecifics_Encrypted decrypted;
   EXPECT_TRUE(passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
-      TestTrustedVaultKey(), passkeys[0], &decrypted));
+      TestTrustedVaultKey(), /*device_authorization_key=*/{}, passkeys[0],
+      &decrypted));
   EXPECT_EQ(decrypted.hmac_secret(),
             std::string(passkey_model_utils::kHmacSecretSize, 'a'));
 }
@@ -296,7 +297,8 @@ TEST_F(PasskeyImporterTest, ImportsPasskeyWithLargeBlob) {
   ASSERT_THAT(passkeys, SizeIs(1));
   sync_pb::WebauthnCredentialSpecifics_Encrypted decrypted;
   EXPECT_TRUE(passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
-      TestTrustedVaultKey(), passkeys[0], &decrypted));
+      TestTrustedVaultKey(), /*device_authorization_key=*/{}, passkeys[0],
+      &decrypted));
   EXPECT_EQ(decrypted.large_blob(), "large_blob");
   EXPECT_EQ(decrypted.large_blob_uncompressed_size(), 100u);
 }
@@ -316,7 +318,8 @@ TEST_F(PasskeyImporterTest, ImportsPasskeyWithEmptyLargeBlob) {
   ASSERT_THAT(passkeys, SizeIs(1));
   sync_pb::WebauthnCredentialSpecifics_Encrypted decrypted;
   EXPECT_TRUE(passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
-      TestTrustedVaultKey(), passkeys[0], &decrypted));
+      TestTrustedVaultKey(), /*device_authorization_key=*/{}, passkeys[0],
+      &decrypted));
   EXPECT_TRUE(decrypted.has_large_blob());
   EXPECT_EQ(decrypted.large_blob(), "");
   EXPECT_TRUE(decrypted.has_large_blob_uncompressed_size());
@@ -592,7 +595,8 @@ TEST_F(PasskeyImporterTest, PreservesAllCandidateFieldsInStoredSpecifics) {
 
   sync_pb::WebauthnCredentialSpecifics_Encrypted decrypted;
   EXPECT_TRUE(passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
-      TestTrustedVaultKey(), stored, &decrypted));
+      TestTrustedVaultKey(), /*device_authorization_key=*/{}, stored,
+      &decrypted));
   EXPECT_EQ(base::as_byte_span(decrypted.private_key()), candidate.private_key);
 }
 

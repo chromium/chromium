@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_WEBAUTHN_CORE_BROWSER_PASSKEY_MODEL_UTILS_H_
 #define COMPONENTS_WEBAUTHN_CORE_BROWSER_PASSKEY_MODEL_UTILS_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -161,9 +163,14 @@ GeneratePasskeyAndEncryptSecrets(std::string_view rp_id,
 // Attempts to decrypt data from the `encrypted_data` field of `in` and
 // deserialize it into `out`. The return value indicates whether decryption and
 // message parsing succeeded. `trusted_vault_key` must be the security domain
-// secret of the `hw_protected` domain.
+// secret of the `hw_protected` domain. `device_authorization_key` is only used
+// for passkeys stored in the `security_domain_encrypted` format, and must be
+// the key whose version is `in.device_authorization_key_version()`.
+// TODO(crbug.com/570578262): Pass `device_authorization_key` using
+// `crypto::ProcessBound`.
 bool DecryptWebauthnCredentialSpecificsData(
     base::span<const uint8_t> trusted_vault_key,
+    base::span<const uint8_t> device_authorization_key,
     const sync_pb::WebauthnCredentialSpecifics& in,
     sync_pb::WebauthnCredentialSpecifics_Encrypted* out);
 

@@ -21,6 +21,10 @@ inline constexpr base::FeatureParam<int> kDeviceAuthorizationKeyCacheVersion{
 // Controls whether device authorization keys are fetched silently on startup.
 BASE_DECLARE_FEATURE(kDeviceAuthorizationStartupSilentFetch);
 
+// Controls whether decrypting passkeys with the device authorization key scheme
+// is enabled.
+BASE_DECLARE_FEATURE(kDeviceAuthorizationPasskeyDecryption);
+
 }  // namespace webauthn::features
 
 #endif  // COMPONENTS_WEBAUTHN_CORE_BROWSER_DEVICE_AUTHORIZATION_DEVICE_AUTHORIZATION_FEATURES_H_

@@ -18,6 +18,7 @@ namespace webauthn {
 // Requests are made for the primary account at the time of the call. If the
 // primary account changes before a request completes, its callback is run with
 // an error.
+// TODO(crbug.com/570578262): Use `crypto::ProcessBound` where applicable.
 class DeviceAuthorizationService : public KeyedService {
  public:
   ~DeviceAuthorizationService() override = default;

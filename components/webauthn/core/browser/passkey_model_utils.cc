@@ -5,15 +5,20 @@
 #include "components/webauthn/core/browser/passkey_model_utils.h"
 
 #include <algorithm>
+#include <array>
+#include <cstddef>
+#include <cstdint>
 #include <iterator>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
@@ -21,6 +26,7 @@
 #include "base/time/time.h"
 #include "components/cbor/writer.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#include "components/webauthn/core/browser/device_authorization/device_authorization_features.h"
 #include "crypto/aead.h"
 #include "crypto/hash.h"
 #include "crypto/kdf.h"
@@ -39,8 +45,8 @@ namespace webauthn::passkey_model_utils {
 namespace {
 
 // The length of the nonce prefix used for AES-256-GCM encryption of
-// `WebAuthnCredentialSpecifics.encrypted_data` (both `private_key` and
-// `encrypted` oneof cases).
+// `WebAuthnCredentialSpecifics.encrypted_data` (all oneof cases) and of
+// `SecurityDomainEncrypted.device_authorization_encrypted`.
 constexpr size_t kWebAuthnCredentialSpecificsEncryptedDataNonceLength = 12;
 
 // The AAD parameter for the AES-256 encryption of
@@ -51,6 +57,20 @@ constexpr std::string_view kAadWebauthnCredentialSpecificsEncrypted =
 // The AAD parameter for the AES-256 encryption of
 // `WebAuthnCredentialSpecifics.private_key` (empty).
 constexpr std::string_view kAadWebauthnCredentialSpecificsPrivateKey = "";
+
+// The AAD parameter for the AES-256 encryption of
+// `WebAuthnCredentialSpecifics.security_domain_encrypted` with the trusted
+// vault key.
+constexpr std::string_view
+    kAadWebauthnCredentialSpecificsSecurityDomainEncrypted =
+        "WebauthnCredentialSpecifics.SecurityDomainEncrypted";
+
+// The AAD parameter for the AES-256 encryption of
+// `SecurityDomainEncrypted.device_authorization_encrypted` with the device
+// authorization key.
+constexpr std::string_view
+    kAadWebauthnCredentialSpecificsDeviceAuthorizationEncrypted =
+        "WebauthnCredentialSpecifics.DeviceAuthorizationEncrypted";
 
 // Signature counter, as defined in the w3c spec here:
 // https://www.w3.org/TR/webauthn-2/#signature-counter
@@ -85,6 +105,38 @@ std::array<uint8_t, kHmacSecretSize> DeriveHmacSecretFromPrivateKey(
       crypto::hash::kSha256, private_key,
       /*salt=*/base::span<const uint8_t>(),
       base::as_bytes(base::span(kHkdfInfo)));
+}
+
+std::array<uint8_t, kEncryptionSecretSize>
+DeriveDeviceAuthorizationEncryptionSecret(
+    base::span<const uint8_t> device_authorization_key) {
+  constexpr std::string_view kHkdfInfo =
+      "DeviceAuthorizationKey:WebauthnCredentialSpecifics";
+  return crypto::kdf::Hkdf<kEncryptionSecretSize>(
+      crypto::hash::kSha256, device_authorization_key,
+      /*salt=*/base::span<const uint8_t>(),
+      base::as_bytes(base::span(kHkdfInfo)));
+}
+
+// Decrypts `encrypted`, which is an AES-256-GCM nonce followed by the
+// ciphertext. `field_name` identifies `encrypted` in log messages.
+std::optional<std::vector<uint8_t>> DecryptAesGcm(base::span<const uint8_t> key,
+                                                  std::string_view encrypted,
+                                                  std::string_view aad,
+                                                  std::string_view field_name) {
+  if (encrypted.size() < kWebAuthnCredentialSpecificsEncryptedDataNonceLength) {
+    DVLOG(1) << field_name << " has invalid length";
+    return std::nullopt;
+  }
+  const auto [nonce, ciphertext] = base::as_byte_span(encrypted).split_at(
+      kWebAuthnCredentialSpecificsEncryptedDataNonceLength);
+  std::optional<std::vector<uint8_t>> decrypted =
+      crypto::aead::Open(crypto::aead::AES_256_GCM, key, ciphertext, nonce,
+                         base::as_byte_span(aad));
+  if (!decrypted) {
+    DVLOG(1) << "Decrypting " << field_name << " failed";
+  }
+  return decrypted;
 }
 
 }  // namespace
@@ -226,24 +278,16 @@ GeneratePasskeyAndEncryptSecrets(std::string_view rp_id,
 
 bool DecryptWebauthnCredentialSpecificsData(
     base::span<const uint8_t> trusted_vault_key,
+    base::span<const uint8_t> device_authorization_key,
     const sync_pb::WebauthnCredentialSpecifics& in,
     sync_pb::WebauthnCredentialSpecifics_Encrypted* out) {
   switch (in.encrypted_data_case()) {
     case sync_pb::WebauthnCredentialSpecifics::kEncrypted: {
-      if (in.encrypted().size() <
-          kWebAuthnCredentialSpecificsEncryptedDataNonceLength) {
-        DVLOG(1) << "WebauthnCredentialSpecifics.encrypted has invalid length";
-        return false;
-      }
-      const auto [nonce, ciphertext] =
-          base::as_byte_span(in.encrypted())
-              .split_at(kWebAuthnCredentialSpecificsEncryptedDataNonceLength);
-      auto decrypted = crypto::aead::Open(
-          crypto::aead::AES_256_GCM,
-          DerivePasskeyEncryptionSecret(trusted_vault_key), ciphertext, nonce,
-          base::as_byte_span(kAadWebauthnCredentialSpecificsEncrypted));
+      std::optional<std::vector<uint8_t>> decrypted = DecryptAesGcm(
+          DerivePasskeyEncryptionSecret(trusted_vault_key), in.encrypted(),
+          kAadWebauthnCredentialSpecificsEncrypted,
+          "WebauthnCredentialSpecifics.encrypted");
       if (!decrypted) {
-        DVLOG(1) << "Decrypting WebauthnCredentialSpecifics.encrypted failed";
         return false;
       }
       sync_pb::WebauthnCredentialSpecifics_Encrypted msg;
@@ -255,21 +299,11 @@ bool DecryptWebauthnCredentialSpecificsData(
       return true;
     }
     case sync_pb::WebauthnCredentialSpecifics::kPrivateKey: {
-      if (in.private_key().size() <
-          kWebAuthnCredentialSpecificsEncryptedDataNonceLength) {
-        DVLOG(1)
-            << "WebauthnCredentialSpecifics.private_key has invalid length";
-        return false;
-      }
-      const auto [nonce, ciphertext] =
-          base::as_byte_span(in.private_key())
-              .split_at(kWebAuthnCredentialSpecificsEncryptedDataNonceLength);
-      auto decrypted = crypto::aead::Open(
-          crypto::aead::AES_256_GCM,
-          DerivePasskeyEncryptionSecret(trusted_vault_key), ciphertext, nonce,
-          base::as_byte_span(kAadWebauthnCredentialSpecificsPrivateKey));
+      std::optional<std::vector<uint8_t>> decrypted = DecryptAesGcm(
+          DerivePasskeyEncryptionSecret(trusted_vault_key), in.private_key(),
+          kAadWebauthnCredentialSpecificsPrivateKey,
+          "WebauthnCredentialSpecifics.private_key");
       if (!decrypted) {
-        DVLOG(1) << "Decrypting WebauthnCredentialSpecifics.private_key failed";
         return false;
       }
       *out = sync_pb::WebauthnCredentialSpecifics_Encrypted();
@@ -277,10 +311,53 @@ bool DecryptWebauthnCredentialSpecificsData(
       return true;
     }
     case sync_pb::WebauthnCredentialSpecifics::kSecurityDomainEncrypted: {
-      // TODO(crbug.com/405036010): Implement handling of the new encryption
-      // scheme.
-      NOTIMPLEMENTED();
-      return false;
+      // TODO(crbug.com/405036154): Add metrics / crash dumps before rollout.
+      if (!base::FeatureList::IsEnabled(
+              features::kDeviceAuthorizationPasskeyDecryption)) {
+        DVLOG(1) << "Decrypting "
+                    "WebauthnCredentialSpecifics.security_domain_encrypted is "
+                    "disabled";
+        return false;
+      }
+      if (device_authorization_key.empty()) {
+        DVLOG(1) << "Missing device authorization key";
+        return false;
+      }
+      std::optional<std::vector<uint8_t>> security_domain_decrypted =
+          DecryptAesGcm(
+              DerivePasskeyEncryptionSecret(trusted_vault_key),
+              in.security_domain_encrypted(),
+              kAadWebauthnCredentialSpecificsSecurityDomainEncrypted,
+              "WebauthnCredentialSpecifics.security_domain_encrypted");
+      if (!security_domain_decrypted) {
+        return false;
+      }
+      sync_pb::WebauthnCredentialSpecifics_SecurityDomainEncrypted
+          security_domain_msg;
+      if (!security_domain_msg.ParseFromString(
+              base::as_string_view(*security_domain_decrypted))) {
+        DVLOG(1) << "Parsing "
+                    "WebauthnCredentialSpecifics.security_domain_encrypted "
+                    "failed";
+        return false;
+      }
+      std::optional<std::vector<uint8_t>> decrypted = DecryptAesGcm(
+          DeriveDeviceAuthorizationEncryptionSecret(device_authorization_key),
+          security_domain_msg.device_authorization_encrypted(),
+          kAadWebauthnCredentialSpecificsDeviceAuthorizationEncrypted,
+          "SecurityDomainEncrypted.device_authorization_encrypted");
+      if (!decrypted) {
+        return false;
+      }
+      sync_pb::WebauthnCredentialSpecifics_Encrypted msg;
+      if (!msg.ParseFromString(base::as_string_view(*decrypted))) {
+        DVLOG(1)
+            << "Parsing SecurityDomainEncrypted.device_authorization_encrypted "
+               "failed";
+        return false;
+      }
+      *out = std::move(msg);
+      return true;
     }
     case sync_pb::WebauthnCredentialSpecifics::ENCRYPTED_DATA_NOT_SET:
       DVLOG(1) << "WebauthnCredentialSpecifics.encrypted_data not set";

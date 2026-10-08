@@ -93,7 +93,8 @@ bool PublicKeyForPasskeyEquals(
     base::span<const uint8_t> expected_spki) {
   sync_pb::WebauthnCredentialSpecifics_Encrypted encrypted_data;
   CHECK(webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
-      trusted_vault_key, passkey, &encrypted_data));
+      trusted_vault_key, /*device_authorization_key=*/{}, passkey,
+      &encrypted_data));
   auto ec_key = crypto::keypair::PrivateKey::FromPrivateKeyInfo(
       base::as_byte_span(encrypted_data.private_key()));
   std::vector<uint8_t> ec_key_pub = ec_key->ToSubjectPublicKeyInfo();

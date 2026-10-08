@@ -25,8 +25,11 @@ bool ContainsValidKey(const webauthn::SharedKeyList& keys,
                       id<Credential> credential) {
   for (const webauthn::SharedKey& key : keys) {
     sync_pb::WebauthnCredentialSpecifics_Encrypted decrypted;
+    // TODO(crbug.com/405036154): Validate only the trusted vault key for
+    // passkeys in the `security_domain_encrypted` format.
     if (webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
-            key, PasskeyFromCredential(credential), &decrypted)) {
+            key, /*device_authorization_key=*/{},
+            PasskeyFromCredential(credential), &decrypted)) {
       return true;
     }
   }
