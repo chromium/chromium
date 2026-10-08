@@ -54,8 +54,33 @@
 namespace contextual_tasks {
 
 namespace {
-constexpr SkColor kDarkModeBackgroundColor = SkColorSetRGB(16, 18, 23);
+constexpr SkColor kDarkModeBackgroundColor = SkColorSetRGB(34, 36, 43);
 }  // namespace
+
+// static
+void ContextualTasksWebView::ConfigureWebContentsBackground(
+    content::WebContents* wc,
+    Profile* profile) {
+  if (!wc || !profile) {
+    return;
+  }
+  // Use a transparent base background on the WebContents so that
+  // ContextualTasksWebView's solid background color (rgb(34, 36, 43) in dark
+  // mode, white in light mode) shows through before the page's styles finish
+  // loading. Passing an opaque base background color in dark mode causes
+  // Blink's StyleEngine::UpdateColorSchemeBackground to substitute the default
+  // dark color-adjust canvas (#121212) via
+  // LocalFrameView::ShouldUseColorAdjustBackground().
+  views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
+      wc, SK_ColorTRANSPARENT);
+  wc->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
+  const bool is_dark_mode = contextual_tasks::ShouldUseDarkMode(profile);
+  blink::web_pref::WebPreferences prefs = wc->GetOrCreateWebPreferences();
+  prefs.preferred_color_scheme =
+      is_dark_mode ? blink::mojom::PreferredColorScheme::kDark
+                   : blink::mojom::PreferredColorScheme::kLight;
+  wc->SetWebPreferences(prefs);
+}
 
 ContextualTasksWebView::ContextualTasksWebView(
     BrowserWindowInterface* browser_window,
@@ -81,18 +106,13 @@ ContextualTasksWebView::ContextualTasksWebView(
     toolbar_web_view_ = AddChildView(
         std::make_unique<views::WebView>(browser_window->GetProfile()));
     if (toolbar_web_contents) {
+      ConfigureWebContentsBackground(toolbar_web_contents,
+                                     browser_window->GetProfile());
       toolbar_web_view_->SetWebContents(toolbar_web_contents);
+    } else {
+      ConfigureWebContentsBackground(toolbar_web_view_->GetWebContents(),
+                                     browser_window->GetProfile());
     }
-    views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
-        toolbar_web_view_->GetWebContents(), SK_ColorTRANSPARENT);
-    toolbar_web_view_->GetWebContents()->SetPageBaseBackgroundColor(
-        SK_ColorTRANSPARENT);
-    blink::web_pref::WebPreferences prefs =
-        toolbar_web_view_->GetWebContents()->GetOrCreateWebPreferences();
-    prefs.preferred_color_scheme =
-        is_dark_mode ? blink::mojom::PreferredColorScheme::kDark
-                     : blink::mojom::PreferredColorScheme::kLight;
-    toolbar_web_view_->GetWebContents()->SetWebPreferences(prefs);
 
     toolbar_web_view_->SetPreferredSize(gfx::Size(0, 46));
     webui::SetBrowserWindowInterface(toolbar_web_view_->GetWebContents(),
@@ -110,14 +130,15 @@ ContextualTasksWebView::ContextualTasksWebView(
     content_web_view_ = content_container->AddChildView(
         std::make_unique<views::WebView>(browser_window->GetProfile()));
 
+    if (ghost_loader_web_contents) {
+      ConfigureWebContentsBackground(ghost_loader_web_contents,
+                                     browser_window->GetProfile());
+    }
     ghost_loader_view_ = content_container->AddChildView(
         std::make_unique<ContextualTasksGhostLoaderView>(
             browser_window->GetProfile(), ghost_loader_web_contents));
-    views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
-        ghost_loader_view_->GetWebContents(), background_color);
-    ghost_loader_view_->GetWebContents()->SetPageBaseBackgroundColor(
-        background_color);
-    ghost_loader_view_->GetWebContents()->SetWebPreferences(prefs);
+    ConfigureWebContentsBackground(ghost_loader_view_->GetWebContents(),
+                                   browser_window->GetProfile());
     ghost_loader_view_->SetVisible(false);
     webui::SetBrowserWindowInterface(ghost_loader_view_->GetWebContents(),
                                      browser_window);
@@ -170,6 +191,10 @@ void ContextualTasksWebView::SetWebContents(content::WebContents* wc) {
   DetachWebContentsModalDialogManager(content_web_view_->web_contents());
 
   AttachWebContentsModalDialogManager(wc);
+  if (IsContextualTasksSidePanelRearchitectureEnabled() && wc &&
+      browser_window_ && browser_window_->GetProfile()) {
+    ConfigureWebContentsBackground(wc, browser_window_->GetProfile());
+  }
   content_web_view_->SetWebContents(wc);
 
   if (IsContextualTasksSidePanelRearchitectureEnabled()) {
@@ -179,14 +204,6 @@ void ContextualTasksWebView::SetWebContents(content::WebContents* wc) {
     if (wc) {
       bool should_show_ghost_loader = false;
       if (browser_window_ && browser_window_->GetProfile()) {
-        const SkColor background_color =
-            contextual_tasks::ShouldUseDarkMode(browser_window_->GetProfile())
-                ? kDarkModeBackgroundColor
-                : SK_ColorWHITE;
-        views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
-            wc, background_color);
-        wc->SetPageBaseBackgroundColor(background_color);
-
         auto* ui_service =
             ContextualTasksUiServiceFactory::GetForBrowserContext(
                 browser_window_->GetProfile());

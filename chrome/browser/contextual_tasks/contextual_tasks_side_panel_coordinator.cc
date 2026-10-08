@@ -34,7 +34,6 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -46,6 +45,7 @@
 #include "components/sessions/core/session_id.h"
 #include "extensions/buildflags/buildflags.h"
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
@@ -160,6 +160,13 @@ std::unique_ptr<content::WebContents> CreateWebContents(
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(create_params);
   webui::SetBrowserWindowInterface(web_contents.get(), browser_window);
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled()) {
+    contextual_tasks::ContextualTasksWebView::ConfigureWebContentsBackground(
+        web_contents.get(), browser_window->GetProfile());
+  }
+#endif
 
   // Create PermissionRequestManager and PermissionRecoverySuccessRateTracker
   // explicitly for this WebContents. The permission bubble will anchor to

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_WEB_VIEW_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_WEB_VIEW_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -12,6 +14,7 @@
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
@@ -30,6 +33,7 @@ struct OpenURLParams;
 }  // namespace content
 
 class BrowserWindowInterface;
+class Profile;
 
 namespace input {
 struct NativeWebKeyboardEvent;
@@ -52,6 +56,14 @@ class ContextualTasksWebView
   METADATA_HEADER(ContextualTasksWebView, views::View)
 
  public:
+  // Configures a transparent base background and the theme-appropriate
+  // preferred color scheme on `wc` for hosting in the Contextual Tasks side
+  // panel, allowing the side panel's solid background to show through before
+  // page styles load without triggering Blink's #121212 dark color-adjust
+  // fallback.
+  static void ConfigureWebContentsBackground(content::WebContents* wc,
+                                             Profile* profile);
+
   explicit ContextualTasksWebView(
       BrowserWindowInterface* browser_window,
       content::WebContents* toolbar_web_contents = nullptr,

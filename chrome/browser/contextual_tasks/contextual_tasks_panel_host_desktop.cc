@@ -270,6 +270,8 @@ void ContextualTasksPanelHostDesktop::EnsureWebUiWebContentsCreated() {
     toolbar_web_contents_ = content::WebContents::Create(toolbar_params);
     webui::SetBrowserWindowInterface(toolbar_web_contents_.get(),
                                      browser_window_);
+    ContextualTasksWebView::ConfigureWebContentsBackground(
+        toolbar_web_contents_.get(), browser_window_->GetProfile());
     toolbar_web_contents_->GetController().LoadURL(
         GURL(chrome::kChromeUIContextualTasksToolbarURL), content::Referrer(),
         ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
@@ -281,6 +283,8 @@ void ContextualTasksPanelHostDesktop::EnsureWebUiWebContentsCreated() {
         content::WebContents::Create(ghost_loader_params);
     webui::SetBrowserWindowInterface(ghost_loader_web_contents_.get(),
                                      browser_window_);
+    ContextualTasksWebView::ConfigureWebContentsBackground(
+        ghost_loader_web_contents_.get(), browser_window_->GetProfile());
     ghost_loader_web_contents_->GetController().LoadURL(
         GURL(chrome::kChromeUIContextualTasksGhostLoaderURL),
         content::Referrer(), ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());

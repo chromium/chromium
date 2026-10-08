@@ -48,10 +48,12 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
+#include "ui/views/background.h"
 
 using testing::_;
 using testing::NiceMock;
@@ -937,6 +939,51 @@ TEST_F(ContextualTasksWebViewTest,
   redirect_sim->CommitErrorPage();
   EXPECT_FALSE(toolbar_ui->IsAiPage());
   EXPECT_EQ(toolbar_ui->GetThreadTitle(), std::nullopt);
+}
+
+TEST_F(ContextualTasksWebViewTest,
+       ConfiguresBackgroundColorAndColorSchemeForLightAndDarkMode) {
+  web_view_ = std::make_unique<ContextualTasksWebView>(browser_window_.get());
+  std::unique_ptr<content::WebContents> light_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  web_view_->SetWebContents(light_web_contents.get());
+  content::RenderFrameHostTester::For(light_web_contents->GetPrimaryMainFrame())
+      ->InitializeRenderFrameIfNeeded();
+
+  ASSERT_NE(web_view_->GetBackground(), nullptr);
+  EXPECT_EQ(web_view_->GetBackground()->color(),
+            ui::ColorVariant(SK_ColorWHITE));
+  ASSERT_NE(light_web_contents->GetRenderWidgetHostView(), nullptr);
+  EXPECT_EQ(light_web_contents->GetRenderWidgetHostView()->GetBackgroundColor(),
+            SK_ColorTRANSPARENT);
+  EXPECT_EQ(
+      light_web_contents->GetOrCreateWebPreferences().preferred_color_scheme,
+      blink::mojom::PreferredColorScheme::kLight);
+
+  // Switch the browser window to an OTR (dark mode) profile and verify that
+  // Stratus dark mode background color (rgb(34, 36, 43)), transparent
+  // WebContents base background, and kDark color scheme are applied.
+  Profile* otr_profile =
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ON_CALL(*browser_window_, GetProfile()).WillByDefault(Return(otr_profile));
+
+  auto dark_web_view =
+      std::make_unique<ContextualTasksWebView>(browser_window_.get());
+  std::unique_ptr<content::WebContents> dark_web_contents =
+      content::WebContentsTester::CreateTestWebContents(otr_profile, nullptr);
+  dark_web_view->SetWebContents(dark_web_contents.get());
+  content::RenderFrameHostTester::For(dark_web_contents->GetPrimaryMainFrame())
+      ->InitializeRenderFrameIfNeeded();
+
+  ASSERT_NE(dark_web_view->GetBackground(), nullptr);
+  EXPECT_EQ(dark_web_view->GetBackground()->color(),
+            ui::ColorVariant(SkColorSetRGB(34, 36, 43)));
+  ASSERT_NE(dark_web_contents->GetRenderWidgetHostView(), nullptr);
+  EXPECT_EQ(dark_web_contents->GetRenderWidgetHostView()->GetBackgroundColor(),
+            SK_ColorTRANSPARENT);
+  EXPECT_EQ(
+      dark_web_contents->GetOrCreateWebPreferences().preferred_color_scheme,
+      blink::mojom::PreferredColorScheme::kDark);
 }
 
 }  // namespace
