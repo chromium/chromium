@@ -1,102 +1,10 @@
-    <style include="cr-hidden-style cr-icons cr-nav-menu-item-style">
-      :host {
-        box-sizing: border-box;
-        display: block;
-        padding-bottom: 5px; /* Prevents focus outlines from being cropped. */
-        padding-top: 8px;
-      }
-
-      :host-context([settings-refresh-2026]) .cr-nav-menu-item {
-        --cr-nav-menu-item-content-height: 20px;
-        border-radius: 100px;
-        line-height: var(--cr-nav-menu-item-content-height);
-        padding-block: 14px;
-        padding-inline-end: 24px;
-        padding-inline-start: 16px;
-
-        /* Colors */
-        --cr-nav-menu-item-background-color-selected: var(--color-settings-nav-menu-item-background);
-        --cr-nav-menu-item-color: var(--color-settings-nav-menu-item-foreground);
-        --cr-nav-menu-item-color-selected: var(--color-settings-nav-menu-item-foreground-selected);
-        --cr-nav-menu-item-icon-color: var(--color-settings-nav-menu-item-icon);
-        --cr-nav-menu-item-icon-color-selected: var(--color-settings-nav-menu-item-foreground-selected);
-      }
-
-      :host-context([settings-refresh-2026]) .cr-nav-menu-item:focus {
-        border-radius: 100px;
-      }
-
-      :host-context([settings-refresh-2026]) .cr-nav-menu-item:focus:not(:focus-visible) {
-        outline: none;
-      }
-
-      :host-context([settings-refresh-2026]) .cr-nav-menu-item cr-icon {
-        height: var(--cr-nav-menu-item-content-height);
-        width: var(--cr-nav-menu-item-content-height);
-        margin-inline-end: 16px;
-      }
-
-      :host * {
-        -webkit-tap-highlight-color: transparent;
-      }
-
-      #menu {
-        color: var(--google-grey-700);
-        display: flex;
-        flex-direction: column;
-        min-width: fit-content;
-      }
-
-      :host-context([settings-refresh-2026]) #menu {
-        min-width: initial;
-      }
-
-      #extensionsLink > .cr-icon {
-        height: var(--cr-icon-size);
-        margin-inline-end: 14px;  /* 16px - 2px from margin for outline. */
-        width: var(--cr-icon-size);
-      }
-
-      .menu-separator {
-        /* Per bettes@, this is different from the other separator lines. */
-        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-        margin-bottom: 8px;
-        margin-top: 8px;
-      }
-
-      @media (prefers-color-scheme: dark) {
-        #menu {
-          color: var(--cr-primary-text-color);
-        }
-
-        .menu-separator {
-          border-bottom: var(--cr-separator-line);  /* override */
-        }
-      }
-
-      .menu-label {
-        pointer-events: none;
-      }
-
-      :host-context([settings-refresh-2026]) .menu-label {
-        opacity: 1;
-        transition: opacity var(--settings-menu-label-fade-collapse-time) ease
-            var(--settings-menu-width-collapse-time);
-        white-space: nowrap;
-        will-change: opacity;
-      }
-
-      :host-context([settings-refresh-2026]):host([collapsed]) .menu-label {
-        transition-delay: 0ms;
-        opacity: 0;
-      }
-    </style>
     <div role="navigation">
       <cr-menu-selector id="menu" selectable="a:not(#extensionsLink)"
-          attr-for-selected="href" on-iron-activate="onSelectorActivate_"
-          on-click="onLinkClick_" selected-attribute="selected">
+          attr-for-selected="href" @iron-activate="${this.onIronActivate_}"
+          @click="${this.onLinkClick_}" selected-attribute="selected">
         <a role="menuitem"
-            id="people" href="/people" hidden="[[!pageVisibility_.people]]"
+            id="people" href="/people"
+            ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.people)}"
             class="cr-nav-menu-item">
 <if expr="not _google_chrome">
           <cr-icon icon="settings:person"></cr-icon>
@@ -108,15 +16,15 @@
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="autofill" href="/autofill"
-            on-click="onAutofillClick_"
+            @click="${this.onAutofillClick_}"
             class="cr-nav-menu-item"
-            hidden="[[!pageVisibility_.yourSavedInfo]]">
+            ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.yourSavedInfo)}">
           <cr-icon icon="settings:password-manager"></cr-icon>
           <span class="menu-label">$i18n{autofillPageTitle}</span>
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="privacy" href="/privacy"
-            hidden="[[!pageVisibility_.privacy]]"
+            ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.privacy)}"
             class="cr-nav-menu-item">
           <cr-icon icon="settings:security"></cr-icon>
           <span class="menu-label">$i18n{privacyPageTitle}</span>
@@ -124,20 +32,20 @@
         </a>
         <a role="menuitem" id="performance" href="/performance"
             class="cr-nav-menu-item"
-            hidden="[[!pageVisibility_.performance]]">
+            ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.performance)}">
           <cr-icon icon="settings:speed"></cr-icon>
           <span class="menu-label">$i18n{performancePageTitle}</span>
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="ai" href="/ai"
-            hidden="[[!showAiPageMenuItem_(showAiPage_, pageVisibility_.ai)]]"
+            ?hidden="${!this.showAiPageMenuItem_()}"
             class="cr-nav-menu-item">
           <cr-icon icon="settings20:button-magic"></cr-icon>
           <span class="menu-label">$i18n{aiPageTitle}</span>
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="appearance" href="/appearance"
-            hidden="[[!pageVisibility_.appearance]]"
+            ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.appearance)}"
             class="cr-nav-menu-item">
           <cr-icon icon="settings:palette"></cr-icon>
           <span class="menu-label">$i18n{appearancePageTitle}</span>
@@ -151,7 +59,7 @@
 <if expr="not is_chromeos">
         <a role="menuitem" id="defaultBrowser" class="cr-nav-menu-item"
           href="/defaultBrowser"
-          hidden="[[!pageVisibility_.defaultBrowser]]">
+          ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.defaultBrowser)}">
           <cr-icon icon="settings:web-asset"></cr-icon>
           <span class="menu-label">$i18n{defaultBrowser}</span>
           <cr-ripple></cr-ripple>
@@ -159,7 +67,7 @@
 </if>
         <a role="menuitem" id="onStartup" href="/onStartup"
             class="cr-nav-menu-item"
-            hidden="[[!pageVisibility_.onStartup]]">
+            ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.onStartup)}">
           <cr-icon icon="settings:power-settings-new"></cr-icon>
           <span class="menu-label">$i18n{onStartup}</span>
           <cr-ripple></cr-ripple>
@@ -167,45 +75,46 @@
         <div class="menu-separator"></div>
         <a role="menuitem" id="languages" href="/languages"
             class="cr-nav-menu-item"
-            hidden="[[!pageVisibility_.languages]]">
+            ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.languages)}">
           <cr-icon icon="settings:translate"></cr-icon>
           <span class="menu-label">$i18n{languagesPageTitle}</span>
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="downloads" href="/downloads"
             class="cr-nav-menu-item"
-            hidden="[[!pageVisibility_.downloads]]">
+            ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.downloads)}">
           <cr-icon icon="settings:download"></cr-icon>
           <span class="menu-label">$i18n{downloadsPageTitle}</span>
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="accessibility" href="/accessibility"
             class="cr-nav-menu-item"
-            hidden="[[!pageVisibility_.a11y]]">
+            ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.a11y)}">
           <cr-icon icon="settings:accessibility"></cr-icon>
           <span class="menu-label">$i18n{a11yPageTitle}</span>
           <cr-ripple></cr-ripple>
         </a>
 <if expr="not is_chromeos">
         <a role="menuitem" id="system" href="/system" class="cr-nav-menu-item"
-            hidden="[[!pageVisibility_.system]]">
+            ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.system)}">
           <cr-icon icon="settings:build"></cr-icon>
           <span class="menu-label">$i18n{systemPageTitle}</span>
           <cr-ripple></cr-ripple>
         </a>
 </if>
         <a role="menuitem" id="reset" href="/reset"
-            hidden="[[!pageVisibility_.reset]]" class="cr-nav-menu-item">
+            ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.reset)}"
+            class="cr-nav-menu-item">
           <cr-icon icon="settings:restart-alt"></cr-icon>
           <span class="menu-label">$i18n{resetPageTitle}</span>
           <cr-ripple></cr-ripple>
         </a>
-        <div hidden="[[hideBottomMenuSeparator_(pageVisibility_)]]"
+        <div ?hidden="${this.hideBottomMenuSeparator_()}"
             class="menu-separator"></div>
         <a role="menuitem" id="extensionsLink" class="cr-nav-menu-item"
             href="chrome://extensions" target="_blank"
-            hidden="[[!pageVisibility_.extensions]]"
-            on-click="onExtensionsLinkClick_"
+            ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.extensions)}"
+            @click="${this.onExtensionsLinkClick_}"
             title="$i18n{extensionsLinkTooltip}">
           <cr-icon icon="settings:chrome-extension"></cr-icon>
           <span class="menu-label">$i18n{extensionsPageTitle}</span>
@@ -220,3 +129,4 @@
         </a>
       </cr-menu-selector>
     </div>
+

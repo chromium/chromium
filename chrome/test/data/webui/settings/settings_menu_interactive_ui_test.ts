@@ -23,7 +23,7 @@ suite('SettingsMenuInteractiveUITest', () => {
 
     createMenu();
     settingsMenu.focusFirstItem();
-    assertEquals(settingsMenu.$.people, settingsMenu.shadowRoot!.activeElement);
+    assertEquals(settingsMenu.$.people, settingsMenu.shadowRoot.activeElement);
 
     resetPageVisibilityForTesting({
       people: false,
@@ -33,6 +33,6 @@ suite('SettingsMenuInteractiveUITest', () => {
     createMenu();
     settingsMenu.focusFirstItem();
     assertEquals(
-        settingsMenu.$.autofill, settingsMenu.shadowRoot!.activeElement);
+        settingsMenu.$.autofill, settingsMenu.shadowRoot.activeElement);
   });
 });

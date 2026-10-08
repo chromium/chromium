@@ -1,0 +1,105 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_nav_menu_item_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=../settings_vars.css.js
+ * #include=cr-hidden-style-lit cr-icons-lit cr-nav-menu-item-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  box-sizing: border-box;
+  display: block;
+  padding-bottom: 5px; /* Prevents focus outlines from being cropped. */
+  padding-top: 8px;
+}
+
+:host-context([settings-refresh-2026]) .cr-nav-menu-item {
+  --cr-nav-menu-item-content-height: 20px;
+  border-radius: 100px;
+  line-height: var(--cr-nav-menu-item-content-height);
+  padding-block: 14px;
+  padding-inline-end: 24px;
+  padding-inline-start: 16px;
+
+  /* Colors */
+  --cr-nav-menu-item-background-color-selected: var(--color-settings-nav-menu-item-background);
+  --cr-nav-menu-item-color: var(--color-settings-nav-menu-item-foreground);
+  --cr-nav-menu-item-color-selected: var(--color-settings-nav-menu-item-foreground-selected);
+  --cr-nav-menu-item-icon-color: var(--color-settings-nav-menu-item-icon);
+  --cr-nav-menu-item-icon-color-selected: var(--color-settings-nav-menu-item-foreground-selected);
+}
+
+:host-context([settings-refresh-2026]) .cr-nav-menu-item:focus {
+  border-radius: 100px;
+}
+
+:host-context([settings-refresh-2026]) .cr-nav-menu-item:focus:not(:focus-visible) {
+  outline: none;
+}
+
+:host-context([settings-refresh-2026]) .cr-nav-menu-item cr-icon {
+  height: var(--cr-nav-menu-item-content-height);
+  width: var(--cr-nav-menu-item-content-height);
+  margin-inline-end: 16px;
+}
+
+:host * {
+  -webkit-tap-highlight-color: transparent;
+}
+
+#menu {
+  color: var(--google-grey-700);
+  display: flex;
+  flex-direction: column;
+  min-width: fit-content;
+}
+
+:host-context([settings-refresh-2026]) #menu {
+  min-width: initial;
+}
+
+#extensionsLink > .cr-icon {
+  height: var(--cr-icon-size);
+  margin-inline-end: 14px;  /* 16px - 2px from margin for outline. */
+  width: var(--cr-icon-size);
+}
+
+.menu-separator {
+  /* Per bettes@, this is different from the other separator lines. */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  margin-bottom: 8px;
+  margin-top: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  #menu {
+    color: var(--cr-primary-text-color);
+  }
+
+  .menu-separator {
+    border-bottom: var(--cr-separator-line);  /* override */
+  }
+}
+
+.menu-label {
+  pointer-events: none;
+}
+
+:host-context([settings-refresh-2026]) .menu-label {
+  opacity: 1;
+  transition: opacity var(--settings-menu-label-fade-collapse-time) ease
+      var(--settings-menu-width-collapse-time);
+  white-space: nowrap;
+  will-change: opacity;
+}
+
+:host-context([settings-refresh-2026]):host([collapsed]) .menu-label {
+  transition-delay: 0ms;
+  opacity: 0;
+}

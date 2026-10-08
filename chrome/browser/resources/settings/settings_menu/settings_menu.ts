@@ -6,15 +6,10 @@
  * @fileoverview
  * 'settings-menu' shows a menu with a hardcoded set of pages and subpages.
  */
-import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
-import 'chrome://resources/cr_elements/cr_nav_menu_item_style.css.js';
 import 'chrome://resources/cr_elements/cr_ripple/cr_ripple.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import '../settings_vars.css.js';
 import '../icons.html.js';
 // <if expr="_google_chrome">
 import '../internal/icons.html.js';
@@ -23,7 +18,7 @@ import '../internal/icons.html.js';
 
 import type {CrMenuSelectorElement} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
@@ -31,16 +26,16 @@ import {AutofillSettingsReferrer, MetricsBrowserProxyImpl} from '../metrics_brow
 import {pageVisibility} from '../page_visibility.js';
 import type {PageVisibility} from '../page_visibility.js';
 import type {Route} from '../router.js';
-import {RouteObserverMixin, Router} from '../router.js';
+import {RouteObserverMixinLit, Router} from '../router.js';
 
-import {getTemplate} from './settings_menu.html.js';
+import {getCss} from './settings_menu.css.js';
+import {getHtml} from './settings_menu.html.js';
 
 export interface SettingsMenuElement {
   $: {
     autofill: HTMLLinkElement,
     menu: CrMenuSelectorElement,
     people: HTMLLinkElement,
-    yourSavedInfo: HTMLLinkElement,
   };
 }
 
@@ -62,54 +57,56 @@ const pathToActionMap: Map<string, string> = new Map([
   ['/help', 'SettingsMenu_AboutClicked'],
 ]);
 
-const SettingsMenuElementBase = RouteObserverMixin(PolymerElement);
+const SettingsMenuElementBase = RouteObserverMixinLit(CrLitElement);
 
 export class SettingsMenuElement extends SettingsMenuElementBase {
   static get is() {
     return 'settings-menu';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       collapsed: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       /**
        * Dictionary defining page visibility.
        */
-      pageVisibility_: {
-        type: Object,
-        value: () => pageVisibility,
-      },
+      pageVisibility_: {type: Object},
 
-      showAiPage_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showAiPage'),
-      },
+      showAiPage_: {type: Boolean},
     };
   }
 
-  declare collapsed: boolean;
-  declare private pageVisibility_?: PageVisibility;
-  declare private showAiPage_: boolean;
+  accessor collapsed: boolean = false;
+  protected accessor pageVisibility_: PageVisibility|undefined = pageVisibility;
+  private accessor showAiPage_: boolean = loadTimeData.getBoolean('showAiPage');
+
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
-  private showAiPageMenuItem_(): boolean {
+  protected shouldHideMenuItem_(visibility: boolean|object|undefined): boolean {
+    return visibility === false;
+  }
+
+  protected showAiPageMenuItem_(): boolean {
     return this.showAiPage_ &&
         (!this.pageVisibility_ || this.pageVisibility_.ai !== false);
   }
 
   override currentRouteChanged(newRoute: Route) {
     // Focus the initially selected path.
-    const anchors = this.shadowRoot!.querySelectorAll('a');
+    const anchors = this.shadowRoot.querySelectorAll('a');
     for (let i = 0; i < anchors.length; ++i) {
       // Purposefully grabbing the 'href' attribute and not the property.
       const pathname = anchors[i].getAttribute('href')!;
@@ -124,7 +121,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   focusFirstItem() {
-    const firstFocusableItem = this.shadowRoot!.querySelector<HTMLElement>(
+    const firstFocusableItem = this.shadowRoot.querySelector<HTMLElement>(
         '[role=menuitem]:not([hidden])');
     if (firstFocusableItem) {
       firstFocusableItem.focus();
@@ -135,7 +132,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
    * Prevent clicks on sidebar items from navigating. These are only links for
    * accessibility purposes, taps are handled separately.
    */
-  private onLinkClick_(event: Event) {
+  protected onLinkClick_(event: Event) {
     if ((event.target as HTMLElement).matches('a:not(#extensionsLink)')) {
       event.preventDefault();
     }
@@ -150,7 +147,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     this.$.menu.selected = path;
   }
 
-  private onSelectorActivate_(event: CustomEvent<{selected: string}>) {
+  protected onIronActivate_(event: CustomEvent<{selected: string}>) {
     const path = event.detail.selected;
     this.setSelectedPath_(path);
     this.metricsBrowserProxy_.recordSettingsNavCategoryClicked();
@@ -166,18 +163,18 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
         route, /* dynamicParams */ undefined, /* removeSearch */ true);
   }
 
-  private onExtensionsLinkClick_() {
+  protected onExtensionsLinkClick_() {
     chrome.metricsPrivate.recordUserAction(
         'SettingsMenu_ExtensionsLinkClicked');
   }
 
-  private onAutofillClick_() {
+  protected onAutofillClick_() {
     this.metricsBrowserProxy_.recordAutofillSettingsReferrer(
         'Autofill.YourSavedInfoSettingsPage.VisitReferrer',
         AutofillSettingsReferrer.SETTINGS_MENU);
   }
 
-  private hideBottomMenuSeparator_(): boolean {
+  protected hideBottomMenuSeparator_(): boolean {
     if (!this.pageVisibility_) {
       return false;
     }

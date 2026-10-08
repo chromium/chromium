@@ -5,13 +5,10 @@
 /** @fileoverview Runs tests for the settings menu. */
 
 // clang-format off
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsMenuElement, SettingsRoutes} from 'chrome://settings/settings.js';
 import {AutofillSettingsReferrer, resetRouterForTesting, loadTimeData, MetricsBrowserProxyImpl, resetPageVisibilityForTesting, Router} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
@@ -27,7 +24,6 @@ suite('SettingsMenu', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     settingsMenu = document.createElement('settings-menu');
     document.body.appendChild(settingsMenu);
-    flush();
   }
 
   setup(function() {
@@ -100,7 +96,7 @@ suite('SettingsMenu', function() {
     createSettingsMenu();
     await microtasksFinished();
 
-    const entry = settingsMenu.shadowRoot!.querySelector('a[href=\'/ai\']');
+    const entry = settingsMenu.shadowRoot.querySelector('a[href=\'/ai\']');
     assertTrue(!!entry);
     assertFalse(isVisible(entry));
   });
@@ -116,7 +112,7 @@ suite('SettingsMenu', function() {
     Router.getInstance().navigateTo(routes.AI);
     const event = await whenIronSelect;
 
-    const entry = settingsMenu.shadowRoot!.querySelector('a[href=\'/ai\']');
+    const entry = settingsMenu.shadowRoot.querySelector('a[href=\'/ai\']');
     assertTrue(!!entry);
     assertTrue(isVisible(entry));
 
@@ -141,8 +137,8 @@ suite('SettingsMenu', function() {
       for (const id of ids) {
         assertEquals(
             expectedHidden,
-            settingsMenu.shadowRoot!.querySelector<HTMLElement>(
-                                        `#${id}`)!.hidden);
+            settingsMenu.shadowRoot.querySelector<HTMLElement>(
+                                       `#${id}`)!.hidden);
       }
     }
 
@@ -177,7 +173,7 @@ suite('SettingsMenu', function() {
     await microtasksFinished();
 
     const entry =
-        settingsMenu.shadowRoot!.querySelector<HTMLElement>('a[href=\'/ai\']');
+        settingsMenu.shadowRoot.querySelector<HTMLElement>('a[href=\'/ai\']');
     assertTrue(!!entry);
     assertTrue(isVisible(entry));
 
@@ -202,7 +198,7 @@ suite('SettingsMenu', function() {
     const selector = settingsMenu.$.menu;
     const whenIronSelect = eventToPromise<CustomEvent<{item: HTMLElement}>>(
         'iron-select', selector);
-    const entry = settingsMenu.shadowRoot!.querySelector<HTMLElement>(
+    const entry = settingsMenu.shadowRoot.querySelector<HTMLElement>(
         'a[href=\'/autofill\']');
     assertTrue(!!entry);
     assertTrue(isVisible(entry));
@@ -313,8 +309,8 @@ suite('SettingsMenu', function() {
       metricsBrowserProxy.resetResolver('recordAction');
       metricsBrowserProxy.resetResolver('recordSettingsNavCategoryClicked');
 
-      const navItem = settingsMenu.shadowRoot!.querySelector<HTMLElement>(
-          testCase.selector);
+      const navItem =
+          settingsMenu.shadowRoot.querySelector<HTMLElement>(testCase.selector);
       assertTrue(!!navItem);
       navItem.click();
 
@@ -335,15 +331,14 @@ suite('SettingsMenuAutofill', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     settingsMenu = document.createElement('settings-menu');
     document.body.appendChild(settingsMenu);
-    flush();
   }
 
   test('Update yourSavedInfo visibility', async () => {
     resetRouterForTesting();
     createSettingsMenu();
-    await flushTasks();
+    await microtasksFinished();
 
-    const autofillEntry = settingsMenu.shadowRoot!.querySelector<HTMLElement>(
+    const autofillEntry = settingsMenu.shadowRoot.querySelector<HTMLElement>(
         'a[href=\'/autofill\']');
     assertTrue(!!autofillEntry);
     assertTrue(isVisible(autofillEntry));
@@ -353,9 +348,8 @@ suite('SettingsMenuAutofill', () => {
       yourSavedInfo: false,
     });
     createSettingsMenu();
-    const newAutofillEntry =
-        settingsMenu.shadowRoot!.querySelector<HTMLElement>(
-            'a[href=\'/autofill\']');
+    const newAutofillEntry = settingsMenu.shadowRoot.querySelector<HTMLElement>(
+        'a[href=\'/autofill\']');
     assertTrue(!!newAutofillEntry);
     assertFalse(isVisible(newAutofillEntry));
   });
