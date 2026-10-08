@@ -110,8 +110,7 @@ void HotModeSpellCheckRequester::CheckSpellingAt(const Position& position) {
     return;
   processed_root_editables_.push_back(root_editable);
 
-  if (!root_editable->IsSpellCheckingEnabled() &&
-      !SpellChecker::IsSpellCheckingEnabledAt(position)) {
+  if (!SpellChecker::IsSpellCheckingEnabledAt(position)) {
     return;
   }
 

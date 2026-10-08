@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SPELLCHECK_HOT_MODE_SPELL_CHECK_REQUESTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SPELLCHECK_HOT_MODE_SPELL_CHECK_REQUESTER_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -17,7 +18,7 @@ class SpellCheckRequester;
 // This class is only supposed to be used by IdleSpellCheckController in hot
 // mode invocation. Not to be confused with SpellCheckRequester.
 // See design doc for details: https://goo.gl/zONC3v
-class HotModeSpellCheckRequester {
+class CORE_EXPORT HotModeSpellCheckRequester {
   STACK_ALLOCATED();
 
  public:

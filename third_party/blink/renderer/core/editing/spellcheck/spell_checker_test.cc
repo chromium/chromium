@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/editing/markers/spell_check_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/suggestion_marker_properties.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
+#include "third_party/blink/renderer/core/editing/spellcheck/hot_mode_spell_check_requester.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_requester.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_requester_helper.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_test_base.h"
@@ -710,6 +711,44 @@ TEST_P(SpellCheckerTest, GetSpellingMarkers) {
 
   EXPECT_EQ(0u, request->GetSpellingMarkers().size());
 #endif
+}
+
+TEST_P(SpellCheckerTest, HotModeNestedSpellcheckFalse) {
+  SetBodyContent(
+      "<div contenteditable='true' spellcheck='true'>"
+      "hello <span id='nocheck' spellcheck='false'>world</span>"
+      "</div>");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* span = QuerySelector("#nocheck");
+  HotModeSpellCheckRequester requester(
+      GetSpellChecker().GetSpellCheckRequester());
+  int sequence_before =
+      GetSpellChecker().GetSpellCheckRequester().LastRequestSequence();
+
+  requester.CheckSpellingAt(Position(span->firstChild(), 0));
+
+  EXPECT_EQ(sequence_before,
+            GetSpellChecker().GetSpellCheckRequester().LastRequestSequence());
+}
+
+TEST_P(SpellCheckerTest, HotModeNestedSpellcheckTrue) {
+  SetBodyContent(
+      "<div contenteditable='true' spellcheck='false'>"
+      "hello <span id='check' spellcheck='true'>world</span>"
+      "</div>");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* span = QuerySelector("#check");
+  HotModeSpellCheckRequester requester(
+      GetSpellChecker().GetSpellCheckRequester());
+  int sequence_before =
+      GetSpellChecker().GetSpellCheckRequester().LastRequestSequence();
+
+  requester.CheckSpellingAt(Position(span->firstChild(), 0));
+
+  EXPECT_GT(GetSpellChecker().GetSpellCheckRequester().LastRequestSequence(),
+            sequence_before);
 }
 
 }  // namespace blink
