@@ -44,6 +44,11 @@ void ActionAppMenuMetrics::OnWillShowSubMenu(int command_id) {
         base::StrCat({kTimeToActionPrefix, "ShowSavedTabGroups"}),
         menu_opened_timer_.Elapsed());
     LogMenuActionHistogram(MENU_ACTION_SHOW_SAVED_TAB_GROUPS);
+  } else if (command_id == kActionSkillsAndExtensionsSubmenu) {
+    base::UmaHistogramMediumTimes(
+        base::StrCat({kTimeToActionPrefix, "ShowSkillsAndExtensions"}),
+        menu_opened_timer_.Elapsed());
+    LogMenuActionHistogram(MENU_ACTION_SHOW_SKILLS_AND_EXTENSIONS);
   }
 }
 
@@ -512,9 +517,8 @@ void ActionAppMenuMetrics::LogMenuActionWithId(actions::ActionId action_id) {
       RecordAction(MENU_ACTION_NAME_WINDOW, "NameWindow");
       break;
 
-    case kActionBrowseSkills:
     case kActionManageSkills:
-      RecordTimeToAction();
+      RecordAction(MENU_ACTION_MANAGE_SKILLS, "ManageSkills");
       break;
 
     default:

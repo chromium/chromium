@@ -1428,6 +1428,13 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_MANAGE_EXTENSIONS);
       break;
+    case IDC_MANAGE_SKILLS:
+      if (!uma_action_recorded_) {
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.ManageSkills",
+                                      delta);
+      }
+      LogMenuAction(MENU_ACTION_MANAGE_SKILLS);
+      break;
     case IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE:
       if (!uma_action_recorded_) {
         base::UmaHistogramMediumTimes(

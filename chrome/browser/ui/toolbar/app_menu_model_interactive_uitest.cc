@@ -408,6 +408,7 @@ class AppMenuModelSkillsAndExtensionsInteractiveTest
 
 IN_PROC_BROWSER_TEST_F(AppMenuModelSkillsAndExtensionsInteractiveTest,
                        ManageSkills) {
+  base::HistogramTester histogram_tester;
   RunTestSequence(
       InstrumentTab(kPrimaryTabPageElementId),
       PressButton(kToolbarAppMenuButtonElementId),
@@ -417,10 +418,19 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelSkillsAndExtensionsInteractiveTest,
           kPrimaryTabPageElementId,
           GURL(chrome::kChromeUISkillsURL)
               .Resolve(chrome::kChromeUISkillsYourSkillsPath)));
+
+  histogram_tester.ExpectTotalCount(
+      "WrenchMenu.TimeToAction.ShowSkillsAndExtensions", 1);
+  histogram_tester.ExpectBucketCount("WrenchMenu.MenuAction",
+                                     MENU_ACTION_SHOW_SKILLS_AND_EXTENSIONS, 1);
+  histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction.ManageSkills", 1);
+  histogram_tester.ExpectBucketCount("WrenchMenu.MenuAction",
+                                     MENU_ACTION_MANAGE_SKILLS, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AppMenuModelSkillsAndExtensionsInteractiveTest,
                        ManageExtensions) {
+  base::HistogramTester histogram_tester;
   RunTestSequence(
       InstrumentTab(kPrimaryTabPageElementId),
       PressButton(kToolbarAppMenuButtonElementId),
@@ -428,6 +438,15 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelSkillsAndExtensionsInteractiveTest,
       SelectMenuItem(ExtensionsMenuModel::kManageExtensionsMenuItem),
       WaitForWebContentsNavigation(kPrimaryTabPageElementId,
                                    GURL(chrome::kChromeUIExtensionsURL)));
+
+  histogram_tester.ExpectTotalCount(
+      "WrenchMenu.TimeToAction.ShowSkillsAndExtensions", 1);
+  histogram_tester.ExpectBucketCount("WrenchMenu.MenuAction",
+                                     MENU_ACTION_SHOW_SKILLS_AND_EXTENSIONS, 1);
+  histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction.ManageExtensions",
+                                    1);
+  histogram_tester.ExpectBucketCount("WrenchMenu.MenuAction",
+                                     MENU_ACTION_MANAGE_EXTENSIONS, 1);
 }
 
 class PasswordManagerMenuItemInteractiveTest

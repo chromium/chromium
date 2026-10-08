@@ -155,7 +155,6 @@ void ActionAppMenuTestBase::SetUp() {
   add_action(kActionFindExtensions, u"Find Extensions");
   add_action(kActionSkillsAndExtensionsSubmenu, u"Extensions and Skills");
   add_action(kActionManageSkills, u"Your skills");
-  add_action(kActionBrowseSkills, u"Browse skills");
   add_action(kActionClearBrowsingData, u"Clear Browsing Data");
   add_action(kActionSavedTabGroupsSubmenu, u"Tab Groups");
   add_action(kActionCreateNewTabGroup, u"New Tab Group");

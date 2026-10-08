@@ -1407,6 +1407,14 @@ void AppMenu::WillShowMenu(MenuItemView* menu) {
           tab_groups::STGEverythingMenu::MenuContext::kAppMenu);
       stg_everything_menu_->PopulateMenu(menu);
     }
+  } else if (menu->GetCommand() ==
+             AppMenuModel::kSkillsAndExtensionsMenuPlaceholder) {
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+        "WrenchMenu.TimeToAction.ShowSkillsAndExtensions",
+        menu_opened_timer_.Elapsed());
+    UMA_HISTOGRAM_ENUMERATION("WrenchMenu.MenuAction",
+                              MENU_ACTION_SHOW_SKILLS_AND_EXTENSIONS,
+                              LIMIT_MENU_ACTION);
   } else if (IsTabGroupsCommand(menu->GetCommand())) {
     stg_everything_menu_->PopulateTabGroupSubMenu(menu);
   } else if (menu == bookmark_menu_) {

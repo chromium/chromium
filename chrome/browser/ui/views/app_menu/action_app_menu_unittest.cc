@@ -2709,6 +2709,47 @@ TEST_F(ActionAppMenuTest, MenuOpenAndCommandExecutionMetrics) {
   menu.CloseMenu();
 }
 
+TEST_F(ActionAppMenuTest, ManageSkillsMetrics) {
+  actions::ActionItem* skills_and_extensions_action =
+      actions::ActionManager::Get().FindAction(
+          kActionSkillsAndExtensionsSubmenu,
+          browser_actions_->root_action_item());
+  ASSERT_NE(skills_and_extensions_action, nullptr);
+  skills_and_extensions_action->SetVisible(true);
+
+  base::HistogramTester histogram_tester;
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* skills_and_extensions_item =
+      root->GetMenuItemByID(kActionSkillsAndExtensionsSubmenu);
+  ASSERT_TRUE(skills_and_extensions_item);
+  menu.WillShowMenu(skills_and_extensions_item);
+
+  histogram_tester.ExpectBucketCount("WrenchMenu.MenuAction",
+                                     MENU_ACTION_SHOW_SKILLS_AND_EXTENSIONS, 1);
+  histogram_tester.ExpectTotalCount(
+      "WrenchMenu.TimeToAction.ShowSkillsAndExtensions", 1);
+
+  EXPECT_CALL(mock_action_invoked_,
+              Call(kActionManageSkills, testing::_, testing::_))
+      .Times(1);
+  menu.ExecuteCommand(kActionManageSkills, /*mouse_event_flags=*/0);
+
+  histogram_tester.ExpectBucketCount("WrenchMenu.MenuAction",
+                                     MENU_ACTION_MANAGE_SKILLS, 1);
+  histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction.ManageSkills", 1);
+  histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction", 1);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
 TEST_F(ActionAppMenuTest, ZoomAndBlockButtonMetrics) {
   base::HistogramTester histogram_tester;
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
