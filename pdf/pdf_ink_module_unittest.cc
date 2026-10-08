@@ -129,16 +129,15 @@ constexpr gfx::PointF kTwoPageVerticalLayoutVertLinePoint1Canonical(5.0f,
                                                                     15.0f);
 
 // The inputs for a stroke that starts in first page, leaves the bounds of that
-// page, but then moves back into the page results in one stroke with two
-// segments.
+// page, but then moves back into the page results in two strokes.
 constexpr gfx::PointF kTwoPageVerticalLayoutPageExitAndReentryPoints[] = {
     gfx::PointF(10.0f, 5.0f), gfx::PointF(10.0f, 0.0f),
     gfx::PointF(15.0f, 0.0f), gfx::PointF(15.0f, 5.0f),
     gfx::PointF(15.0f, 10.0f)};
-// The two segments created by the inputs above.
-constexpr gfx::PointF kTwoPageVerticalLayoutPageExitAndReentrySegment1[] = {
+// The two strokes created by the inputs above.
+constexpr gfx::PointF kTwoPageVerticalLayoutPageExitAndReentryStroke1[] = {
     gfx::PointF(5.0f, 5.0f), gfx::PointF(5.0f, 0.0f)};
-constexpr gfx::PointF kTwoPageVerticalLayoutPageExitAndReentrySegment2[] = {
+constexpr gfx::PointF kTwoPageVerticalLayoutPageExitAndReentryStroke2[] = {
     gfx::PointF(10.0f, 0.0f), gfx::PointF(10.0f, 5.0f),
     gfx::PointF(15.0f, 10.0f)};
 
@@ -3451,10 +3450,10 @@ TEST_P(PdfInkModuleStrokeTest, StrokePageExitAndReentry) {
       StrokeInputPositions(),
       ElementsAre(Pair(
           0,
-          ElementsAre(ElementsAreArray(
-                          kTwoPageVerticalLayoutPageExitAndReentrySegment1),
-                      ElementsAreArray(
-                          kTwoPageVerticalLayoutPageExitAndReentrySegment2)))));
+          ElementsAre(
+              ElementsAreArray(kTwoPageVerticalLayoutPageExitAndReentryStroke1),
+              ElementsAreArray(
+                  kTwoPageVerticalLayoutPageExitAndReentryStroke2)))));
 }
 
 TEST_P(PdfInkModuleStrokeTest, StrokePageExitAndReentryWithQuickMoves) {
@@ -3478,7 +3477,7 @@ TEST_P(PdfInkModuleStrokeTest, StrokePageExitAndReentryWithQuickMoves) {
       StrokeInputPositions(),
       ElementsAre(Pair(
           0, ElementsAre(ElementsAreArray(
-                             kTwoPageVerticalLayoutPageExitAndReentrySegment1),
+                             kTwoPageVerticalLayoutPageExitAndReentryStroke1),
                          ElementsAreArray({gfx::PointF(6.666667f, 0.0f),
                                            gfx::PointF(10.0f, 10.0f)})))));
 }
@@ -3686,10 +3685,10 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokePageExitAndReentry) {
       StrokeInputPositions(),
       ElementsAre(Pair(
           0,
-          ElementsAre(ElementsAreArray(
-                          kTwoPageVerticalLayoutPageExitAndReentrySegment1),
-                      ElementsAreArray(
-                          kTwoPageVerticalLayoutPageExitAndReentrySegment2)))));
+          ElementsAre(
+              ElementsAreArray(kTwoPageVerticalLayoutPageExitAndReentryStroke1),
+              ElementsAreArray(
+                  kTwoPageVerticalLayoutPageExitAndReentryStroke2)))));
   ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
                      /*unmodified_finished=*/0);
   EXPECT_THAT(updated_thumbnail_page_indices(), ElementsAre(0));
@@ -3706,10 +3705,10 @@ TEST_P(PdfInkModuleStrokeTest, EraseStrokePageExitAndReentry) {
       StrokeInputPositions(),
       ElementsAre(Pair(
           0,
-          ElementsAre(ElementsAreArray(
-                          kTwoPageVerticalLayoutPageExitAndReentrySegment1),
-                      ElementsAreArray(
-                          kTwoPageVerticalLayoutPageExitAndReentrySegment2)))));
+          ElementsAre(
+              ElementsAreArray(kTwoPageVerticalLayoutPageExitAndReentryStroke1),
+              ElementsAreArray(
+                  kTwoPageVerticalLayoutPageExitAndReentryStroke2)))));
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Erasing increments the modified stroke count.
   ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
@@ -4343,17 +4342,33 @@ TEST_P(PdfInkModuleStrokeTest, EventWithPastTimeStamp) {
   blink::WebMouseEvent mouse_move_event =
       CreateLeftClickWebMouseMoveEventAtPosition(kMouseMovePoint);
   // Simulate a condition from https://crbug.com/421120183 where the event time
-  // stamp goes backwards in time. This should not crash.
-  mouse_move_event.SetTimeStamp(mouse_move_event.TimeStamp() -
+  // stamp goes backwards in time before the stroke start time. This should not
+  // crash.
+  mouse_move_event.SetTimeStamp(mouse_down_event.TimeStamp() -
+                                base::Milliseconds(10));
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
+
+  mouse_move_event.SetPositionInWidget(kMouseDownPoint);
+  mouse_move_event.SetTimeStamp(mouse_down_event.TimeStamp() +
+                                base::Milliseconds(20));
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
+
+  // Simulate another move event whose timestamp is after the stroke start time,
+  // but before the previous move event's timestamp.
+  mouse_move_event.SetPositionInWidget(kMouseMovePoint);
+  mouse_move_event.SetTimeStamp(mouse_down_event.TimeStamp() +
                                 base::Milliseconds(10));
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
 
   blink::WebMouseEvent mouse_up_event =
       CreateLeftClickWebMouseUpEventAtPosition(kMouseUpPoint);
+  mouse_up_event.SetTimeStamp(mouse_down_event.TimeStamp() +
+                              base::Milliseconds(30));
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 
-  EXPECT_EQ(2, GetInputOfTypeCountForPage(
+  EXPECT_EQ(3, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
+  EXPECT_THAT(client().invalidations(), SizeIs(4));
 }
 
 class PdfInkModuleUndoRedoTest : public PdfInkModuleStrokeTest {

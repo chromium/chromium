@@ -30,7 +30,6 @@
 #include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
 #include "third_party/ink/src/ink/strokes/in_progress_stroke.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input.h"
-#include "third_party/ink/src/ink/strokes/input/stroke_input_batch.h"
 #include "third_party/ink/src/ink/strokes/stroke.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -65,12 +64,12 @@ class PdfInkModule {
   // prevent modifying the clipboard content.
   bool ShouldBlockTextSelectionChanged();
 
-  // Determines if there are any in-progress inputs to be drawn.
+  // Determines if there are any in-progress strokes to be drawn.
   bool HasInputsToDraw() const;
 
-  // Draws any in-progress inputs into `canvas`.  Must either be in text
+  // Draws any in-progress strokes into `canvas`.  Must either be in text
   // highlighting state or in drawing stroke state with non-empty
-  // `drawing_stroke_state().inputs`.
+  // `drawing_stroke_state().in_progress_strokes`.
   void Draw(SkCanvas& canvas);
 
   // Returns whether the event was handled or not.
@@ -182,12 +181,12 @@ class PdfInkModule {
     // PdfInkModule finally sees input events again.
     std::optional<EventDetails> input_last_event;
 
-    // The points that make up the current stroke, divided into segments.
-    // A new segment will be necessary each time the input leaves the page
-    // during collection and then returns back into the original starting page.
-    // The coordinates added into each segment are stored in a canonical format
-    // specified in pdf_ink_transform.h.
-    std::vector<ink::StrokeInputBatch> inputs;
+    // The in-progress strokes for the current stroking action. A new stroke
+    // will be necessary each time the input leaves the page during collection
+    // and then returns back into the original starting page. The coordinates
+    // added into each stroke are stored in a canonical format specified in
+    // pdf_ink_transform.h.
+    std::vector<ink::InProgressStroke> in_progress_strokes;
   };
 
   // Generates globally unique, monotonically increasing IDs for all user-added
@@ -428,13 +427,6 @@ class PdfInkModule {
 
   // Returns the brush with type `brush_type`.
   const PdfInkBrush& GetBrush(PdfInkBrush::Type brush_type) const;
-
-  // Converts `current_tool_state_` into segments of `ink::InProgressStroke`.
-  // Requires `current_tool_state_` to hold a `DrawingStrokeState`. If there is
-  // no `DrawingStrokeState`, or the state currently has no inputs, then the
-  // segments will be empty.
-  std::vector<ink::InProgressStroke> CreateInProgressStrokeSegmentsFromInputs()
-      const;
 
   // Wrapper around GetEventToCanonicalTransform(). `page_index` is the page
   // that the to-be-transformed position is on. The page must be visible.

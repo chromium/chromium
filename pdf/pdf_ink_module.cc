@@ -268,7 +268,7 @@ bool PdfInkModule::HasInputsToDraw() const {
   }
 
   CHECK(is_drawing_stroke());
-  return !drawing_stroke_state().inputs.empty();
+  return !drawing_stroke_state().in_progress_strokes.empty();
 }
 
 void PdfInkModule::Draw(SkCanvas& canvas) {
@@ -292,15 +292,15 @@ void PdfInkModule::Draw(SkCanvas& canvas) {
 
   CHECK(is_drawing_stroke());
 
-  auto in_progress_stroke = CreateInProgressStrokeSegmentsFromInputs();
-  CHECK(!in_progress_stroke.empty());
+  const DrawingStrokeState& state = drawing_stroke_state();
+  CHECK(!state.in_progress_strokes.empty());
 
   SkAutoCanvasRestore save_restore(&canvas, /*doSave=*/true);
-  const auto [transform, clip_rect] =
-      GetTransformAndClipRect(drawing_stroke_state().page_index);
+  const auto [transform, clip_rect] = GetTransformAndClipRect(state.page_index);
   canvas.clipRect(clip_rect);
-  for (const auto& segment : in_progress_stroke) {
-    auto status = skia_renderer.Draw(nullptr, segment, transform, canvas);
+  for (const auto& in_progress_stroke : state.in_progress_strokes) {
+    auto status =
+        skia_renderer.Draw(nullptr, in_progress_stroke, transform, canvas);
     CHECK(status.ok());
   }
 }
@@ -797,20 +797,13 @@ bool PdfInkModule::StartStroke(const gfx::PointF& position,
   CHECK(is_drawing_stroke());
   DrawingStrokeState& state = drawing_stroke_state();
 
-  gfx::PointF page_position =
-      GetEventToCanonicalTransformForPage(page_index).MapPoint(position);
-
   CHECK(!state.start_time.has_value());
   state.start_time = timestamp;
   state.page_index = page_index;
 
-  // Start of the first segment of a stroke.
-  ink::StrokeInputBatch segment;
-  auto result = segment.Append(CreateInkStrokeInputWithProperties(
-      tool_type, page_position, /*elapsed_time=*/base::TimeDelta(),
-      properties));
-  CHECK(result.ok());
-  state.inputs.push_back(std::move(segment));
+  // Start of the first in-progress stroke.
+  CHECK(state.in_progress_strokes.empty());
+  CHECK(RecordStrokePosition(position, timestamp, tool_type, properties));
 
   // Invalidate area around this one point.
   client_->Invalidate(GetDrawingBrush().GetInvalidateArea(position, position));
@@ -879,6 +872,14 @@ bool PdfInkModule::ContinueStroke(
       }
     }
 
+    CHECK(!state.in_progress_strokes.empty());
+    ink::InProgressStroke& stroke = state.in_progress_strokes.back();
+    if (!stroke.InputsAreFinished()) {
+      stroke.FinishInputs();
+      auto update_results = stroke.UpdateShape(ink::Duration32());
+      CHECK(update_results.ok());
+    }
+
     // Remember `position` and `timestamp` for use in the next event and treat
     // event as handled.
     state.input_last_event = EventDetails{position, timestamp, tool_type};
@@ -887,10 +888,9 @@ bool PdfInkModule::ContinueStroke(
 
   gfx::PointF invalidation_position = last_position;
   if (last_page_index != state.page_index) {
-    // If the stroke left the page and is now re-entering, then start a new
-    // segment.
-    CHECK(!state.inputs.back().IsEmpty());
-    state.inputs.push_back(ink::StrokeInputBatch());
+    // The stroke left the page and is now re-entering.
+    CHECK(!state.in_progress_strokes.empty());
+    CHECK(state.in_progress_strokes.back().InputsAreFinished());
     const gfx::PointF boundary_position = CalculatePageBoundaryIntersectPoint(
         client_->GetPageContentsRect(state.page_index), position,
         last_position);
@@ -928,25 +928,31 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position,
 
   CHECK(is_drawing_stroke());
   DrawingStrokeState& state = drawing_stroke_state();
-  auto in_progress_stroke_segments = CreateInProgressStrokeSegmentsFromInputs();
-  if (!in_progress_stroke_segments.empty()) {
-    CHECK_GE(state.page_index, 0);
-    ink::Envelope invalidate_envelope;
-    for (const auto& segment : in_progress_stroke_segments) {
-      InkStrokeId id = id_generator_.GetStrokeIdAndAdvance();
-      ink::Stroke stroke = segment.CopyToStroke();
-      client_->StrokeAdded(state.page_index, id, stroke);
-      invalidate_envelope.Add(stroke.GetShape().Bounds());
-      strokes_[state.page_index].push_back(
-          FinishedStrokeState(std::move(stroke), id));
-      bool undo_redo_success = undo_redo_model_.Add(id);
-      CHECK(undo_redo_success);
-    }
-
-    client_->Invalidate(CanonicalInkEnvelopeToInvalidationScreenRect(
-        invalidate_envelope,
-        GetCanonicalToEventTransformForPage(state.page_index)));
+  CHECK(!state.in_progress_strokes.empty());
+  CHECK_GE(state.page_index, 0);
+  if (!state.in_progress_strokes.back().InputsAreFinished()) {
+    state.in_progress_strokes.back().FinishInputs();
+    auto update_results =
+        state.in_progress_strokes.back().UpdateShape(ink::Duration32());
+    CHECK(update_results.ok());
   }
+
+  ink::Envelope invalidate_envelope;
+  for (const auto& in_progress_stroke : state.in_progress_strokes) {
+    CHECK(in_progress_stroke.InputsAreFinished());
+    InkStrokeId id = id_generator_.GetStrokeIdAndAdvance();
+    ink::Stroke stroke = in_progress_stroke.CopyToStroke();
+    client_->StrokeAdded(state.page_index, id, stroke);
+    invalidate_envelope.Add(stroke.GetShape().Bounds());
+    strokes_[state.page_index].push_back(
+        FinishedStrokeState(std::move(stroke), id));
+    bool undo_redo_success = undo_redo_model_.Add(id);
+    CHECK(undo_redo_success);
+  }
+
+  client_->Invalidate(CanonicalInkEnvelopeToInvalidationScreenRect(
+      invalidate_envelope,
+      GetCanonicalToEventTransformForPage(state.page_index)));
 
   client_->StrokeFinished(/*modified=*/true);
   RequestThumbnailUpdates({state.page_index});
@@ -957,7 +963,7 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position,
   ReportDrawStroke(state.brush_type, GetDrawingBrush().ink_brush(), tool_type);
 
   // Reset `state` now that the stroke operation is done.
-  state.inputs.clear();
+  state.in_progress_strokes.clear();
   state.start_time = std::nullopt;
   state.page_index = -1;
   state.input_last_event.reset();
@@ -1782,39 +1788,6 @@ const PdfInkBrush& PdfInkModule::GetBrush(PdfInkBrush::Type brush_type) const {
   NOTREACHED();
 }
 
-std::vector<ink::InProgressStroke>
-PdfInkModule::CreateInProgressStrokeSegmentsFromInputs() const {
-  if (!is_drawing_stroke()) {
-    return {};
-  }
-
-  const DrawingStrokeState& state = drawing_stroke_state();
-  const ink::Brush& brush = GetDrawingBrush().ink_brush();
-  CHECK(PdfInkBrush::IsToolSizeInRange(brush.GetSize()));
-  std::vector<ink::InProgressStroke> stroke_segments;
-  stroke_segments.reserve(state.inputs.size());
-  for (size_t segment_number = 0; const auto& segment : state.inputs) {
-    ++segment_number;
-    if (segment.IsEmpty()) {
-      // Only the last segment can possibly be empty, if the stroke left the
-      // page but never returned back in.
-      CHECK_EQ(segment_number, state.inputs.size());
-      break;
-    }
-
-    ink::InProgressStroke stroke;
-    stroke.Start(brush);
-    auto enqueue_results =
-        stroke.EnqueueInputs(segment, /*predicted_inputs=*/{});
-    CHECK(enqueue_results.ok());
-    stroke.FinishInputs();
-    auto update_results = stroke.UpdateShape(ink::Duration32());
-    CHECK(update_results.ok());
-    stroke_segments.push_back(std::move(stroke));
-  }
-  return stroke_segments;
-}
-
 gfx::Transform PdfInkModule::GetEventToCanonicalTransformForPage(
     int page_index) {
   // If the page is visible, then its screen rect must not be empty.
@@ -1839,10 +1812,33 @@ bool PdfInkModule::RecordStrokePosition(
   gfx::PointF canonical_position =
       GetEventToCanonicalTransformForPage(state.page_index).MapPoint(position);
   base::TimeDelta time_diff = timestamp - state.start_time.value();
-
-  auto result = state.inputs.back().Append(CreateInkStrokeInputWithProperties(
+  ink::StrokeInputBatch batch;
+  auto result = batch.Append(CreateInkStrokeInputWithProperties(
       tool_type, canonical_position, time_diff, properties));
-  return result.ok();
+  if (!result.ok()) {
+    return false;
+  }
+
+  if (state.in_progress_strokes.empty() ||
+      state.in_progress_strokes.back().InputsAreFinished()) {
+    // Start the first in-progress stroke, or start a new one if the stroke
+    // left the page and is now re-entering.
+    const ink::Brush& brush = GetDrawingBrush().ink_brush();
+    CHECK(PdfInkBrush::IsToolSizeInRange(brush.GetSize()));
+    state.in_progress_strokes.emplace_back();
+    state.in_progress_strokes.back().Start(brush);
+  }
+
+  ink::InProgressStroke& stroke = state.in_progress_strokes.back();
+  const int input_count = stroke.InputCount();
+  auto enqueue_results = stroke.EnqueueInputs(batch, /*predicted_inputs=*/{});
+  CHECK(enqueue_results.ok());
+  auto update_results = stroke.UpdateShape(ink::Duration32());
+  CHECK(update_results.ok());
+
+  // `EnqueueInputs()` succeeds and silently skips inputs with invalid position
+  // or time relative to previous inputs in `stroke`.
+  return stroke.InputCount() > input_count;
 }
 
 void PdfInkModule::ApplyUndoRedoCommands(
