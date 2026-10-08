@@ -13,7 +13,6 @@
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/autofill/authentication/test/authentication_egtest_util.h"
 #import "ios/chrome/browser/autofill/manual_fill/test/manual_fill_matchers.h"
 #import "ios/chrome/browser/autofill/model/features.h"
@@ -23,6 +22,7 @@
 #import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
+#import "ios/chrome/browser/shared/ui/bottom_sheet/bottom_sheet_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -162,10 +162,9 @@ id<GREYMatcher> NicknameTextField() {
 }
 
 id<GREYMatcher> SubtitleString(const GURL& url) {
-  return grey_text(l10n_util::GetNSStringF(
-      IDS_IOS_PAYMENT_BOTTOM_SHEET_SUBTITLE,
-      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-          url)));
+  return grey_text(
+      l10n_util::GetNSStringF(IDS_IOS_PAYMENT_BOTTOM_SHEET_SUBTITLE,
+                              FormatUrlForBottomSheetDisplay(url)));
 }
 
 id<GREYMatcher> ExpirationDateLabel() {

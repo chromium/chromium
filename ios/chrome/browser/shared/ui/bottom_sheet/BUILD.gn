@@ -2,6 +2,29 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("bottom_sheet_util") {
+  sources = [
+    "bottom_sheet_util.h",
+    "bottom_sheet_util.mm",
+  ]
+  deps = [
+    "//base:i18n",
+    "//components/url_formatter",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "bottom_sheet_util_unittest.mm" ]
+  deps = [
+    ":bottom_sheet_util",
+    "//base:i18n",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
 source_set("bottom_sheet_view_controller") {
   sources = [
     "bottom_sheet_view_controller.h",

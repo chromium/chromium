@@ -13,7 +13,6 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/features.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/url_formatter/elide_url.h"
 #import "components/webauthn/ios/features.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/autofill/manual_fill/public/manual_fill_constants.h"
@@ -30,6 +29,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
+#import "ios/chrome/browser/shared/ui/bottom_sheet/bottom_sheet_util.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/webauthn/test/ios_chrome_passkey_client_app_interface.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
@@ -73,23 +73,20 @@ id<GREYMatcher> ContinueButton() {
 }
 
 id<GREYMatcher> SubtitleString(const GURL& url) {
+  const std::u16string formatted_url = FormatUrlForBottomSheetDisplay(url);
   return grey_anyOf(
       grey_text(l10n_util::GetNSStringF(
-          IDS_IOS_CREDENTIAL_BOTTOM_SHEET_SUBTITLE,
-          url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-              url))),
+          IDS_IOS_CREDENTIAL_BOTTOM_SHEET_SUBTITLE, formatted_url)),
       grey_text(l10n_util::GetNSStringF(
           IDS_IOS_CREDENTIAL_BOTTOM_SHEET_SUBTITLE_WITH_PASSKEYS,
-          url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-              url))),
+          formatted_url)),
       nil);
 }
 
 id<GREYMatcher> SubtitleWithPasskeysString(const GURL& url) {
   return grey_text(l10n_util::GetNSStringF(
       IDS_IOS_CREDENTIAL_BOTTOM_SHEET_SUBTITLE_WITH_PASSKEYS,
-      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-          url)));
+      FormatUrlForBottomSheetDisplay(url)));
 }
 
 // Returns the matcher for the use password button.
