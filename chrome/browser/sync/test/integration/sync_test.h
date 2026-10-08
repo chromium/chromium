@@ -431,6 +431,13 @@ class SyncTest : public PlatformBrowserTest,
 
   syncer::DataTypeSet excluded_types_from_check_for_data_type_failures_;
 
+  // Disable DSE Prewarm to avoid spawning background prerender processes on
+  // every tab load in sync integration tests (https://crbug.com/423465927).
+  // Wrapped to avoid introducing `namespace test` in this header, which
+  // conflicts with `using sync_datatype_helper::test` in sync test helpers.
+  class ScopedPrewarmDisabler;
+  std::unique_ptr<ScopedPrewarmDisabler> prewarm_disabler_;
+
 #if !BUILDFLAG(IS_ANDROID)
   // Disable extension install verification.
   extensions::ScopedInstallVerifierBypassForTest ignore_install_verification_;
