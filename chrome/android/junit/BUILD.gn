@@ -1720,6 +1720,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/actor/ActorForegroundServiceControllerImplTest.java",
       "src/org/chromium/chrome/browser/actor/ActorForegroundServiceImplTest.java",
       "src/org/chromium/chrome/browser/actor/LiveBackgroundTabTest.java",
+      "src/org/chromium/chrome/browser/actor/TestAsyncInitializationActivity.java",
       "src/org/chromium/chrome/browser/automotive/AutomotiveUtilsUnitTest.java",
       "src/org/chromium/chrome/browser/automotivetoolbar/AutomotiveBackButtonToolbarCoordinatorUnitTest.java",
       "src/org/chromium/chrome/browser/automotivetoolbar/EdgeSwipeGestureDetectorUnitTest.java",

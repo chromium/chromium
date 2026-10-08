@@ -29,6 +29,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.Promise;
@@ -63,8 +64,17 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for the error message helper bridge. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PasswordManagerErrorMessageHelperBridgeTest {
+    /** Overrides getActivityResultTracker() so the test can verify interactions with it. */
+    private static class TestActivity extends ChromeBaseAppCompatActivity {
+        private final ActivityResultTracker mTracker = mock(ActivityResultTracker.class);
+
+        @Override
+        public ActivityResultTracker getActivityResultTracker() {
+            return mTracker;
+        }
+    }
+
     private final FakeAccountManagerFacade mFakeAccountManagerFacade =
             spy(new FakeAccountManagerFacade());
 
@@ -177,7 +187,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
 
     @Test
     public void testUpdateCredentialsCallsAccountManager() {
-        final Activity activity = mock(Activity.class);
+        final Activity activity = Robolectric.buildActivity(Activity.class).get();
         when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
 
         PasswordManagerErrorMessageHelperBridge.startUpdateAccountCredentialsFlow(
@@ -222,9 +232,8 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
 
     @Test
     public void testStartTrustedVaultKeyRetrievalFlow_WithActivityResultTracker_Success() {
-        final ChromeBaseAppCompatActivity activity = mock(ChromeBaseAppCompatActivity.class);
-        final ActivityResultTracker tracker = mock(ActivityResultTracker.class);
-        when(activity.getActivityResultTracker()).thenReturn(tracker);
+        final TestActivity activity = Robolectric.buildActivity(TestActivity.class).get();
+        final ActivityResultTracker tracker = activity.getActivityResultTracker();
         when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
         when(mSyncService.getAccountInfo()).thenReturn(TestAccounts.ACCOUNT1);
 
@@ -268,9 +277,8 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
 
     @Test
     public void testStartTrustedVaultKeyRetrievalFlow_TrackerStartActivityThrows() {
-        final ChromeBaseAppCompatActivity activity = mock(ChromeBaseAppCompatActivity.class);
-        final ActivityResultTracker tracker = mock(ActivityResultTracker.class);
-        when(activity.getActivityResultTracker()).thenReturn(tracker);
+        final TestActivity activity = Robolectric.buildActivity(TestActivity.class).get();
+        final ActivityResultTracker tracker = activity.getActivityResultTracker();
         when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
         when(mSyncService.getAccountInfo()).thenReturn(TestAccounts.ACCOUNT1);
 
@@ -296,7 +304,8 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
 
     @Test
     public void testStartTrustedVaultKeyRetrievalFlow_IntentPromiseFails() {
-        final ChromeBaseAppCompatActivity activity = mock(ChromeBaseAppCompatActivity.class);
+        final Activity activity =
+                Robolectric.buildActivity(ChromeBaseAppCompatActivity.class).get();
         when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
         when(mSyncService.getAccountInfo()).thenReturn(TestAccounts.ACCOUNT1);
 

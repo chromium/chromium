@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -240,17 +241,16 @@ public class ActorForegroundServiceImplTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_TRIGGERING)
-    @SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
     public void testOnStartCommand_ActivityVisible_ReusesNtpTab() {
         IntentUtils.setForceIsTrustedIntentForTesting(true);
         when(mMockController.isTabbedActivityVisible()).thenReturn(true);
         MultiWindowUtils.setLastAccessedWindowIdForTesting(42);
 
-        AsyncInitializationActivity mockActivity = mock(AsyncInitializationActivity.class);
-        MultiWindowUtils.setActivityByWindowIdForTesting(42, mockActivity);
-        org.chromium.ui.base.ActivityWindowAndroid mockWindow =
-                mock(org.chromium.ui.base.ActivityWindowAndroid.class);
-        when(mockActivity.getWindowAndroid()).thenReturn(mockWindow);
+        // Not created: production only checks the type and reads getWindowAndroid(), which is
+        // irrelevant since TabModelSelectorSupplier is overridden below.
+        AsyncInitializationActivity activity =
+                Robolectric.buildActivity(TestAsyncInitializationActivity.class).get();
+        MultiWindowUtils.setActivityByWindowIdForTesting(42, activity);
 
         TabModelSelector mockSelector = mock(TabModelSelector.class);
         TabModelSelectorSupplier.setInstanceForTesting(mockSelector);
