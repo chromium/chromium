@@ -599,7 +599,6 @@ virtual/threaded/external/wpt/css/css-backgrounds/table-cell-background-local-00
 virtual/threaded/external/wpt/css/css-view-transitions/*
 virtual/threaded-composited-iframes/external/wpt/is-input-pending/tentative/*
 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/range-bounding-client-rect-with-display-contents.html
-virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/scrollLeft-of-scroller-with-wider-scrollbar.html
 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/scrollTop-display-change.html
 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/smooth-scroll-nonstop.html
 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/delay-load-event.html
