@@ -1,0 +1,56 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("contextual_cue") {
+  sources = [
+    "contextual_cue_infobar_banner_overlay_mediator.h",
+    "contextual_cue_infobar_banner_overlay_mediator.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/infobars/core",
+    "//ios/chrome/browser/infobars/ui_bundled/banners",
+    "//ios/chrome/browser/intelligence/contextual_cueing",
+    "//ios/chrome/browser/overlays/model/public/default",
+    "//ios/chrome/browser/overlays/ui_bundled:coordinators",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner:mediators",
+    "//ios/chrome/browser/shared/public/commands",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "contextual_cue_infobar_banner_overlay_mediator_unittest.mm" ]
+
+  deps = [
+    ":contextual_cue",
+    "//base",
+    "//base/test:test_support",
+    "//components/feature_engagement/test:test_support",
+    "//components/infobars/core",
+    "//components/sync:test_support",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/infobars/model/test",
+    "//ios/chrome/browser/infobars/ui_bundled/banners/test",
+    "//ios/chrome/browser/intelligence/bwg/model:gemini_service_factory",
+    "//ios/chrome/browser/intelligence/bwg/model:test_support",
+    "//ios/chrome/browser/intelligence/contextual_cueing",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/default",
+    "//ios/chrome/browser/overlays/model/test",
+    "//ios/chrome/browser/overlays/ui_bundled/test",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

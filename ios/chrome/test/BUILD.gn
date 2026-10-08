@@ -494,6 +494,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner:unit_tests",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/autofill_address_profile:unit_tests",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/confirm:unit_tests",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/contextual_cue:unit_tests",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/passwords:unit_tests",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/permissions:unit_tests",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/save_card:unit_tests",
