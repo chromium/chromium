@@ -409,16 +409,9 @@ void CanvasHibernationHandler::Hibernate(
   DCHECK(!IsHibernating());
   CHECK(delegate_);
 
-  Canvas2DResourceProvider* provider = delegate_->GetSharedImageProvider();
-  if (!provider) {
-    if (delegate_->HasBacking()) {
-      ReportHibernationEvent(
-          HibernationEvent::
-              kHibernationAbortedDueToSwitchToUnacceleratedRendering);
-    } else {
-      ReportHibernationEvent(
-          HibernationEvent::kHibernationAbortedBecauseNoSurface);
-    }
+  if (!delegate_->HasBacking()) {
+    ReportHibernationEvent(
+        HibernationEvent::kHibernationAbortedBecauseNoSurface);
     return;
   }
 
@@ -434,7 +427,8 @@ void CanvasHibernationHandler::Hibernate(
     return;
   }
 
-  if (!provider->IsAccelerated()) {
+  Canvas2DResourceProvider* provider = delegate_->GetSharedImageProvider();
+  if (!provider || !provider->IsAccelerated()) {
     ReportHibernationEvent(
         HibernationEvent::
             kHibernationAbortedDueToSwitchToUnacceleratedRendering);
