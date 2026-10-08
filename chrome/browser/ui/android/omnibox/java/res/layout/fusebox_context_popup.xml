@@ -32,8 +32,6 @@ found in the LICENSE file.
         <include
             layout="@layout/fusebox_list_item"
             android:id="@+id/fusebox_add_current_tab_top"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:visibility="gone" />
 
         <View
@@ -80,8 +78,6 @@ found in the LICENSE file.
         <include
             layout="@layout/fusebox_list_item"
             android:id="@+id/fusebox_add_current_tab_pinned"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:visibility="gone" />
 
         <LinearLayout
@@ -110,15 +106,11 @@ found in the LICENSE file.
             <include
                 layout="@layout/fusebox_list_item"
                 android:id="@+id/fusebox_pick_file_button_accordion"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:visibility="gone"/>
 
             <include
                 layout="@layout/fusebox_list_item"
                 android:id="@+id/fusebox_pick_drive_button_accordion"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:visibility="gone"/>
 
             <View
