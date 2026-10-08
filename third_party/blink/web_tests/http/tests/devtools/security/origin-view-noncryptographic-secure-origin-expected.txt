@@ -45,7 +45,7 @@ View requests in Network panel
             </DEVTOOLS-BUTTON>
         </DIV>
     </DIV>
-    <DIV class=origin-view-section >
+    <DIV class=origin-view-section security-state-section >
         <DIV class=origin-view-section-title role=heading aria-level=2 >
 Secure
         </DIV>
