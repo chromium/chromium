@@ -4051,7 +4051,6 @@ const FeatureEntry::FeatureParam kAndroidBottomBarKeepAppMenuInToolbarParam[] =
     {{"keep_app_menu_in_toolbar", "true"},
      {"show_glic_setting_toggle", "true"}};
 const FeatureEntry::FeatureParam kAndroidBottomBarShowDomainOnlyParam[] = {
-    {"show_bottom_bar_on_gts", "true"},
     {"show_glic_setting_toggle", "true"},
     {"show_domain_only", "true"}};
 const FeatureEntry::FeatureVariation kAndroidBottomBarVariations[] = {
