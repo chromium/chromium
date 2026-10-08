@@ -4179,6 +4179,21 @@ TEST_F(AXPlatformNodeWinTest, UIAAriaPropertiesForBrailleAttributes) {
       L"hasactions=false");
 }
 
+TEST_F(AXPlatformNodeWinTest, UIAAriaPropertiesForHasInterestFor) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kButton;
+  root.AddState(ax::mojom::State::kHasInterestFor);
+  Init(root);
+
+  ComPtr<IRawElementProviderSimple> root_node =
+      GetRootIRawElementProviderSimple();
+  EXPECT_UIA_BSTR_EQ(
+      root_node, UIA_AriaPropertiesPropertyId,
+      L"readonly=true;expanded=false;multiline=false;multiselectable=false;"
+      L"required=false;hasactions=false;hasinterestfor=true");
+}
+
 TEST_F(AXPlatformNodeWinTest, UIAControlContentPropertyForTableElements) {
   AXNodeData root;
   root.id = 1;

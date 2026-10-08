@@ -5183,6 +5183,19 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
         }
       }
     }
+  } else if (attr_name == html_names::kInterestforAttr) {
+    // The role of the old and new targets may change. See
+    // AXObject::HasRichHintMinimumRole().
+    if (relation_cache_) {
+      relation_cache_->MarkPopoverTextRelationTargetsDirty(*element);
+      relation_cache_->UpdateReverseTextRelations(*element, attr_name);
+    }
+    // The name, description and states of the invoker may change.
+    TextChanged(element);
+    if (Element* target = element->InterestForElement(
+            Element::InterestForType::kExplicitOnly)) {
+      MarkElementDirty(target);
+    }
   } else if (attr_name == html_names::kIdAttr) {
     DeferTreeUpdate(TreeUpdateReason::kIdChanged, element);
   } else if (attr_name == html_names::kClassAttr) {

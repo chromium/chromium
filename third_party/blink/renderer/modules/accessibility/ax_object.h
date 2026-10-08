@@ -986,10 +986,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // on an invoking element, if a details relationship should be set up.
   AXObject* GetCommandForElementForDetailsRelation() const;
 
-  // Heuristic to get the target element for an element with the `interestfor`
-  // attribute. Returns null if the `interestfor` can be exposed as a
-  // description instead (even if there is a valid target element).
-  AXObject* GetInterestForTargetPopover() const;
+  // Returns the target of this element's `interestfor`, if that target is a
+  // rich hint: a popover whose contents are not plain (see IsPlainContent()).
+  // Returns null otherwise, including when the target is a plain hint, which
+  // is exposed as a name or description instead.
+  AXObject* GetRichHintTargetPopover() const;
 
   // Elements can be positioned relative to other elements with CSS anchor
   // positioning. This function returns the positioned element that should be
@@ -1730,6 +1731,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // details relation should be set up, and null otherwise.
   AXObject* GetPopoverForDetailsRelation(const HTMLElement& popover,
                                          bool exclude_plain_content) const;
+
+  // Returns true if this is a popover with no explicit or implicit role, that
+  // is the rich hint of an interest invoker (see GetRichHintTargetPopover()).
+  // Such a popover gets a minimum role of tooltip instead of group.
+  bool HasRichHintMinimumRole() const;
 
   // Whether this is an AXNodeObject.
   bool is_node_object_ : 1 = false;

@@ -3547,6 +3547,17 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
     }
   }
 
+  // An interest invoker is expanded while its rich hint is open. As with
+  // popovertarget, this is not exposed when the invoker is inside the popover.
+  // See
+  // https://open-ui.org/components/interest-invokers.explainer/#rich-hints-aka-hovercards-or-other
+  if (AXObject* rich_hint = GetRichHintTargetPopover()) {
+    auto* popover = To<HTMLElement>(rich_hint->GetElement());
+    if (!element->IsDescendantOrShadowDescendantOf(popover)) {
+      return popover->popoverOpen() ? kExpandedExpanded : kExpandedCollapsed;
+    }
+  }
+
   if (IsA<HTMLSummaryElement>(*element)) {
     if (element->parentNode() &&
         IsA<HTMLDetailsElement>(element->parentNode())) {
@@ -7132,10 +7143,11 @@ String AXNodeObject::TextAlternativeFromTooltip(
     return title_text;
   }
 
-  // First try for interestfor, then for hint popover.
+  // First try for {explicit} interestfor relationships, then for hint popover.
   // TODO(accessibility) Consider only using interest for.
   AXObject* popover_ax_object =
-      AXObjectCache().Get(GetElement()->InterestForElement());
+      AXObjectCache().Get(GetElement()->InterestForElement(
+          Element::InterestForType::kExplicitOnly));
   if (popover_ax_object) {
     name_from = ax::mojom::blink::NameFrom::kInterestFor;
   } else {

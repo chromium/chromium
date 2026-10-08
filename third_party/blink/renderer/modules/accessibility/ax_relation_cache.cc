@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
@@ -101,7 +102,7 @@ void AXRelationCache::CacheRelations(Element& element) {
     all_previously_seen_label_target_ids_.insert(for_id);
   }
 
-  // Register aria-labelledby, aria-describedby relations.
+  // Register aria-labelledby, aria-describedby and interestfor relations.
   UpdateReverseTextRelations(element);
 
   // Register aria-activedescendant.
@@ -152,7 +153,7 @@ void AXRelationCache::CheckRelationsCached(Element& element) {
     }
   }
 
-  // Check aria-labelledby, aria-describedby.
+  // Check aria-labelledby, aria-describedby and interestfor.
   for (const auto& [attribute, filter] : GetTextRelationAttributes()) {
     Vector<AtomicString> text_relation_ids;
     HeapVector<Member<Element>> text_relation_elements;
@@ -475,9 +476,15 @@ void AXRelationCache::UpdateReverseElementAttributeRelations(
 
 base::span<std::pair<QualifiedName, Element::TinyBloomFilter>>
 AXRelationCache::GetTextRelationAttributes() {
+  // The interestfor target is included because, when it is a plain hint, it
+  // supplies the name or description of the invoker. As with aria-describedby,
+  // being a relation target keeps the subtree of a hidden target in the tree.
+  // This is also needed to tell whether a hidden popover is a plain or a rich
+  // hint. See AXNodeObject::TextAlternativeFromTooltip() and
+  // AXObject::GetRichHintTargetPopover().
   // Avoid issues with commas within the type name in DEFINE_STATIC_LOCAL().
   using QualifiedNameArray =
-      std::array<std::pair<QualifiedName, Element::TinyBloomFilter>, 3>;
+      std::array<std::pair<QualifiedName, Element::TinyBloomFilter>, 4>;
   DEFINE_STATIC_LOCAL(
       QualifiedNameArray, text_attributes,
       ({{html_names::kAriaLabelledbyAttr,
@@ -485,7 +492,9 @@ AXRelationCache::GetTextRelationAttributes() {
         {html_names::kAriaLabeledbyAttr,
          Element::FilterForAttribute(html_names::kAriaLabeledbyAttr)},
         {html_names::kAriaDescribedbyAttr,
-         Element::FilterForAttribute(html_names::kAriaDescribedbyAttr)}}));
+         Element::FilterForAttribute(html_names::kAriaDescribedbyAttr)},
+        {html_names::kInterestforAttr,
+         Element::FilterForAttribute(html_names::kInterestforAttr)}}));
   return text_attributes;
 }
 
@@ -1127,13 +1136,14 @@ bool AXRelationCache::MayHaveHTMLLabelViaForAttribute(
 
 bool AXRelationCache::IsARIALabelOrDescription(Element& element) {
   // Labels and descriptions set by ariaLabelledByElements,
-  // ariaDescribedByElements.
+  // ariaDescribedByElements, interestForElement.
   if (aria_text_relations_node_map_.find(element.GetDomNodeId()) !=
       aria_text_relations_node_map_.end()) {
     return true;
   }
 
-  // Labels and descriptions set by aria-labelledby, aria-describedby.
+  // Labels and descriptions set by aria-labelledby, aria-describedby,
+  // interestfor.
   const AtomicString& id_value = element.GetIdAttribute();
   if (id_value.IsNull()) {
     return false;
@@ -1142,6 +1152,68 @@ bool AXRelationCache::IsARIALabelOrDescription(Element& element) {
   bool found_in_id_mapping = aria_text_relations_id_map_.find(id_value) !=
                              aria_text_relations_id_map_.end();
   return found_in_id_mapping;
+}
+
+bool AXRelationCache::HasInterestInvoker(const Element& target) {
+  // The reverse text relation maps are unvalidated, and also contain the
+  // sources of aria-labelledby and aria-describedby, so check each candidate.
+  Vector<DOMNodeId> candidates;
+  const AtomicString& id_value = target.GetIdAttribute();
+  if (!id_value.IsNull()) {
+    auto it = aria_text_relations_id_map_.find(id_value);
+    if (it != aria_text_relations_id_map_.end()) {
+      candidates.append_range(it->value);
+    }
+  }
+  if (DOMNodeId target_node_id = DOMNodeIds::ExistingIdForNode(&target)) {
+    auto it = aria_text_relations_node_map_.find(target_node_id);
+    if (it != aria_text_relations_node_map_.end()) {
+      candidates.append_range(it->value);
+    }
+  }
+
+  for (DOMNodeId candidate : candidates) {
+    auto* source = DynamicTo<Element>(DOMNodeIds::NodeForId(candidate));
+    if (source && source->InterestForElement(
+                      Element::InterestForType::kExplicitOnly) == &target) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void AXRelationCache::MarkPopoverTextRelationTargetsDirty(
+    const Element& source) {
+  DOMNodeId source_id = DOMNodeIds::ExistingIdForNode(&source);
+  if (!source_id) {
+    return;
+  }
+
+  // Entries are never removed from the reverse text relation maps, so they
+  // include targets that `source` no longer points to.
+  HeapVector<Member<Element>> targets;
+  TreeScope& scope = source.GetTreeScope();
+  for (const auto& entry : aria_text_relations_id_map_) {
+    if (entry.value.Contains(source_id)) {
+      if (Element* target = scope.getElementById(entry.key)) {
+        targets.push_back(target);
+      }
+    }
+  }
+  for (const auto& entry : aria_text_relations_node_map_) {
+    if (entry.value.Contains(source_id)) {
+      if (auto* target = DynamicTo<Element>(DOMNodeIds::NodeForId(entry.key))) {
+        targets.push_back(target);
+      }
+    }
+  }
+
+  for (Element* target : targets) {
+    if (auto* popover = DynamicTo<HTMLElement>(target);
+        popover && popover->IsPopover()) {
+      object_cache_->MarkElementDirty(popover);
+    }
+  }
 }
 
 // Fill source_objects with AXObjects for relations pointing to target.
@@ -1278,7 +1350,7 @@ void AXRelationCache::UpdateRelatedTreeAfterChange(Element& element) {
     }
   }
 
-  // aria-labelledby and aria-describedby.
+  // aria-labelledby, aria-describedby and interestfor.
   // Additional processing occurs in UpdateRelatedTree() when any node within
   // the label or description subtree changes.
   MarkOldAndNewRelationSourcesDirty(element, aria_text_relations_id_map_,
@@ -1325,7 +1397,8 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
       // Can occur in the CSS column case.
       continue;
     }
-    // Reverse relations via aria-labelledby, aria-describedby, aria-owns.
+    // Reverse relations via aria-labelledby, aria-describedby, interestfor,
+    // aria-owns.
     HeapVector<Member<AXObject>> related_sources;
     GetRelationSourcesById(ancestor_element->GetIdAttribute(),
                            aria_text_relations_id_map_, related_sources);
@@ -1337,6 +1410,14 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
           !related->NeedsToUpdateChildren()) {
         object_cache_->MarkAXObjectDirtyWithCleanLayout(related);
       }
+    }
+
+    // The role of an interestfor target popover depends on whether its
+    // contents are plain. See AXObject::HasRichHintMinimumRole().
+    if (auto* popover = DynamicTo<HTMLElement>(ancestor_element);
+        popover && popover->IsPopover() && !obj->NeedsToUpdateChildren() &&
+        HasInterestInvoker(*popover)) {
+      object_cache_->MarkAXObjectDirtyWithCleanLayout(obj);
     }
 
     // Ancestors that may derive their accessible name from descendant content

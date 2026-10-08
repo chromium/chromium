@@ -2584,6 +2584,14 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
 
 void AXObject::SerializeComputedDetailsRelation(
     ui::AXNodeData* node_data) const {
+  // An interest invoker exposes that it has a rich hint, even while the hint is
+  // hidden, and regardless of whether a details relation is set below. See
+  // https://open-ui.org/components/interest-invokers.explainer/#rich-hints-aka-hovercards-or-other
+  AXObject* rich_hint = GetRichHintTargetPopover();
+  if (rich_hint) {
+    node_data->AddState(ax::mojom::blink::State::kHasInterestFor);
+  }
+
   // aria-details was used -- it may have set a relation, unless the attribute
   // value did not point to valid elements (e.g aria-details=""). Whether it
   // actually set the relation or not, the author's intent in using the
@@ -2598,16 +2606,18 @@ void AXObject::SerializeComputedDetailsRelation(
     return;
   }
 
-  // Add aria-details for a interest for.
-  if (AXObject* interest_popover = GetInterestForTargetPopover()) {
-    // Add state even if the target is hidden.
-    node_data->AddState(ax::mojom::blink::State::kHasInterestFor);
-    if (interest_popover->IsVisible()) {
-      node_data->AddIntListAttribute(
-          ax::mojom::blink::IntListAttribute::kDetailsIds,
-          {static_cast<int32_t>(interest_popover->AXObjectID())});
-      node_data->SetDetailsFrom(ax::mojom::blink::DetailsFrom::kInterestFor);
-      return;
+  // Add aria-details for an interest invoker while its rich hint is open.
+  if (rich_hint) {
+    auto* popover = To<HTMLElement>(rich_hint->GetElement());
+    if (popover->popoverOpen()) {
+      if (AXObject* details = GetPopoverForDetailsRelation(
+              *popover, /*exclude_plain_content=*/false)) {
+        node_data->AddIntListAttribute(
+            ax::mojom::blink::IntListAttribute::kDetailsIds,
+            {static_cast<int32_t>(details->AXObjectID())});
+        node_data->SetDetailsFrom(ax::mojom::blink::DetailsFrom::kInterestFor);
+        return;
+      }
     }
   }
 
@@ -2737,26 +2747,56 @@ AXObject* AXObject::GetCommandForElementForDetailsRelation() const {
   return GetPopoverForDetailsRelation(*command_for, exclude_plain_content);
 }
 
-// Interest for invoking elements (with the `interestfor` attribute) should
-// have details relationships with their target, when that interest target is
-// a) a popover, b) visible, c) is "rich", and d) not the next element in the
-// DOM (depth first search order).
-AXObject* AXObject::GetInterestForTargetPopover() const {
+// The target of an interest invoker is a rich hint if it is a popover whose
+// contents are not plain. A plain hint is used for the name or description of
+// the invoker instead. See the TextAlternativeFromTooltip function, and
+// https://open-ui.org/components/interest-invokers.explainer/#rich-hints-aka-hovercards-or-other
+AXObject* AXObject::GetRichHintTargetPopover() const {
   if (!GetElement()) {
     return nullptr;
   }
 
-  // Only return if the target is a popover.
+  // A <menuitem> that implicitly invokes its submenu is exposed as a menu item
+  // with a popup instead, so only an explicit interestfor target is used.
   HTMLElement* popover =
-      DynamicTo<HTMLElement>(GetElement()->InterestForElement());
+      DynamicTo<HTMLElement>(GetElement()->InterestForElement(
+          Element::InterestForType::kExplicitOnly));
   if (!popover || !popover->IsPopover()) {
     return nullptr;
   }
 
-  // Interest targets act as tooltips regardless of popover type.
-  // See the TextAlternativeFromTooltip function.
-  return GetPopoverForDetailsRelation(*popover,
-                                      /*exclude_plain_content=*/true);
+  // The popover may be absent from the accessibility tree, e.g. when it is
+  // display-locked and its subtree has been pruned.
+  AXObject* ax_popover = AXObjectCache().Get(popover);
+  if (!ax_popover || ax_popover->IsPlainContent()) {
+    return nullptr;
+  }
+
+  return ax_popover;
+}
+
+bool AXObject::HasRichHintMinimumRole() const {
+  auto* popover = DynamicTo<HTMLElement>(GetElement());
+  if (!popover || !popover->IsPopover()) {
+    return false;
+  }
+
+  // Only a popover with no explicit or implicit role gets a minimum role.
+  // These elements have an implicit group role, which can't be distinguished
+  // from the group minimum role of a popover by role_ alone.
+  if (HasAriaAttribute(html_names::kRoleAttr) || IsFieldset() ||
+      IsA<HTMLOptGroupElement>(popover) ||
+      popover->HasTagName(html_names::kAddressTag) ||
+      popover->HasTagName(html_names::kHgroupTag)) {
+    return false;
+  }
+
+  AXRelationCache* relation_cache = AXObjectCache().RelationCache();
+  if (!relation_cache || !relation_cache->HasInterestInvoker(*popover)) {
+    return false;
+  }
+
+  return !IsPlainContent();
 }
 
 AXObject* AXObject::GetScrollMarkerTarget() const {
@@ -3207,6 +3247,14 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
         }
       }
     }
+  }
+
+  // A popover that is the rich hint of an interest invoker gets a minimum role
+  // of tooltip, instead of the minimum role of group used for other popovers.
+  // See
+  // https://open-ui.org/components/interest-invokers.explainer/#rich-hints-aka-hovercards-or-other
+  if (role_ == ax::mojom::blink::Role::kGroup && HasRichHintMinimumRole()) {
+    return ax::mojom::blink::Role::kTooltip;
   }
 
   // TODO(accessibility): Consider moving the image vs. image map role logic
@@ -5167,7 +5215,7 @@ bool AXObject::IsUsedForLabelOrDescription() {
 bool AXObject::ComputeIsUsedForLabelOrDescription() {
   if (GetElement()) {
     // Return true if a <label> or the target of a naming/description
-    // relation (<aria-labelledby or aria-describedby).
+    // relation (aria-labelledby, aria-describedby or interestfor).
     if (AXObjectCache().IsLabelOrDescription(*GetElement())) {
       return true;
     }

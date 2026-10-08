@@ -61,8 +61,17 @@ class AXRelationCache {
   // Return true if any label ever pointed to the element via the for attribute.
   bool MayHaveHTMLLabelViaForAttribute(const HTMLElement&);
 
-  // True if any aria-describedy or aria-labelledby ever pointed to the element.
+  // True if any aria-describedby, aria-labelledby or interestfor ever pointed
+  // to the element.
   bool IsARIALabelOrDescription(Element&);
+
+  // True if any element currently has an interestfor relation to `target`.
+  bool HasInterestInvoker(const Element& target);
+
+  // Mark dirty each popover that is, or ever was, the target of a text relation
+  // from `source`. Used when interestfor changes, because the role of a former
+  // target may change. See AXObject::HasRichHintMinimumRole().
+  void MarkPopoverTextRelationTargetsDirty(const Element& source);
 
   // Process an element in the DOM tree that was either just added or whose id
   // just changed:
@@ -288,7 +297,8 @@ class AXRelationCache {
       bool force);
 
   // If any object is related to this object via <label for>, aria-owns,
-  // aria-describedby or aria-labeledby, update the text for the related object.
+  // aria-describedby, aria-labeledby or interestfor, update the text for the
+  // related object.
   void UpdateRelatedText(Node*);
 
   static base::span<std::pair<QualifiedName, Element::TinyBloomFilter>>

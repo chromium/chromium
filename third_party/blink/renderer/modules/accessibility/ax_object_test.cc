@@ -2955,5 +2955,350 @@ TEST_F(AccessibilityTest, AriaActionsEmptyListAndMissingAttribute) {
   }
 }
 
+TEST_F(AccessibilityTest, InterestForRichHint) {
+  SetBodyInnerHTML(R"HTML(
+      <button id="richButton" interestfor="richPopover">Rich</button>
+      <div>separator</div>
+      <div id="richPopover" popover="manual"><a href="#">Link</a> text</div>
+      <button id="plainButton" interestfor="plainPopover"></button>
+      <div>separator</div>
+      <div id="plainPopover" popover="manual">Plain text</div>
+      )HTML");
+
+  auto serialize = [&](const char* id) {
+    ui::AXNodeData node_data;
+    AXObject* ax_object = GetAXObjectByElementId(id);
+    if (!ax_object) {
+      ADD_FAILURE() << "No AXObject for " << id;
+      return node_data;
+    }
+    ScopedFreezeAXCache freeze(GetAXObjectCache());
+    ax_object->Serialize(&node_data, ui::kAXModeComplete);
+    return node_data;
+  };
+
+  // While the rich hint is hidden, the invoker has the has-interest-for state
+  // and is collapsed, but has no details relation.
+  ui::AXNodeData rich_button = serialize("richButton");
+  EXPECT_TRUE(rich_button.HasState(ax::mojom::blink::State::kHasInterestFor));
+  EXPECT_TRUE(rich_button.HasState(ax::mojom::blink::State::kCollapsed));
+  EXPECT_FALSE(rich_button.HasState(ax::mojom::blink::State::kExpanded));
+  EXPECT_FALSE(rich_button.HasIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kDetailsIds));
+
+  // A plain hint provides the name of the invoker, even while hidden, and none
+  // of the rich hint mappings apply.
+  ui::AXNodeData plain_button = serialize("plainButton");
+  EXPECT_EQ("Plain text", plain_button.GetStringAttribute(
+                              ax::mojom::blink::StringAttribute::kName));
+  EXPECT_FALSE(plain_button.HasState(ax::mojom::blink::State::kHasInterestFor));
+  EXPECT_FALSE(plain_button.HasState(ax::mojom::blink::State::kCollapsed));
+  EXPECT_FALSE(plain_button.HasState(ax::mojom::blink::State::kExpanded));
+
+  To<HTMLElement>(GetElementById("richPopover"))
+      ->showPopover(ASSERT_NO_EXCEPTION);
+  To<HTMLElement>(GetElementById("plainPopover"))
+      ->showPopover(ASSERT_NO_EXCEPTION);
+  GetAXObjectCache().UpdateAXForAllDocuments();
+
+  // The open rich hint has a minimum role of tooltip, and its invoker is
+  // expanded and has a details relation to it.
+  const AXObject* rich_popover = GetAXObjectByElementId("richPopover");
+  ASSERT_NE(nullptr, rich_popover);
+  EXPECT_EQ(ax::mojom::blink::Role::kTooltip,
+            rich_popover->ComputeFinalRoleForSerialization());
+  rich_button = serialize("richButton");
+  EXPECT_TRUE(rich_button.HasState(ax::mojom::blink::State::kHasInterestFor));
+  EXPECT_TRUE(rich_button.HasState(ax::mojom::blink::State::kExpanded));
+  EXPECT_FALSE(rich_button.HasState(ax::mojom::blink::State::kCollapsed));
+  const std::vector<int32_t> rich_popover_ids = {
+      static_cast<int32_t>(rich_popover->AXObjectID())};
+  EXPECT_EQ(rich_popover_ids,
+            rich_button.GetIntListAttribute(
+                ax::mojom::blink::IntListAttribute::kDetailsIds));
+  EXPECT_EQ(ax::mojom::blink::DetailsFrom::kInterestFor,
+            rich_button.GetDetailsFrom());
+
+  // The open plain hint keeps the minimum role of group.
+  const AXObject* plain_popover = GetAXObjectByElementId("plainPopover");
+  ASSERT_NE(nullptr, plain_popover);
+  EXPECT_EQ(ax::mojom::blink::Role::kGroup,
+            plain_popover->ComputeFinalRoleForSerialization());
+  plain_button = serialize("plainButton");
+  EXPECT_FALSE(plain_button.HasState(ax::mojom::blink::State::kHasInterestFor));
+  EXPECT_FALSE(plain_button.HasState(ax::mojom::blink::State::kExpanded));
+  EXPECT_FALSE(plain_button.HasIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kDetailsIds));
+}
+
+TEST_F(AccessibilityTest, InterestForRichHintRenderedButClosed) {
+  SetBodyInnerHTML(R"HTML(
+      <style>#popover { display: block; }</style>
+      <button id="button" interestfor="popover">Button</button>
+      <div>separator</div>
+      <div id="popover" popover="manual"><a href="#">Link</a></div>
+      )HTML");
+
+  // The popover is rendered but not open. It has the minimum role of tooltip,
+  // but, as with popovertarget and commandfor, its invoker is collapsed and has
+  // no details relation.
+  const AXObject* popover = GetAXObjectByElementId("popover");
+  ASSERT_NE(nullptr, popover);
+  EXPECT_EQ(ax::mojom::blink::Role::kTooltip,
+            popover->ComputeFinalRoleForSerialization());
+
+  AXObject* button = GetAXObjectByElementId("button");
+  ASSERT_NE(nullptr, button);
+  ui::AXNodeData node_data;
+  {
+    ScopedFreezeAXCache freeze(GetAXObjectCache());
+    button->Serialize(&node_data, ui::kAXModeComplete);
+  }
+  EXPECT_TRUE(node_data.HasState(ax::mojom::blink::State::kHasInterestFor));
+  EXPECT_TRUE(node_data.HasState(ax::mojom::blink::State::kCollapsed));
+  EXPECT_FALSE(node_data.HasState(ax::mojom::blink::State::kExpanded));
+  EXPECT_FALSE(node_data.HasIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kDetailsIds));
+}
+
+TEST_F(AccessibilityTest, InterestForRichHintDetailsExclusions) {
+  SetBodyInnerHTML(R"HTML(
+      <button id="nextButton" interestfor="nextPopover">Next</button>
+      <div id="nextPopover" popover="manual"><a href="#">Link</a></div>
+      <div id="outerPopover" popover="manual">
+        <button id="innerButton" interestfor="outerPopover">Inner</button>
+      </div>
+      <button id="ariaDetailsButton" interestfor="ariaDetailsPopover"
+              aria-details="otherDetails">Aria details</button>
+      <div id="otherDetails">Other details</div>
+      <div id="ariaDetailsPopover" popover="manual"><a href="#">Link</a></div>
+      )HTML");
+  for (const char* id : {"nextPopover", "outerPopover", "ariaDetailsPopover"}) {
+    To<HTMLElement>(GetElementById(id))->showPopover(ASSERT_NO_EXCEPTION);
+  }
+  GetAXObjectCache().UpdateAXForAllDocuments();
+
+  auto serialize = [&](const char* id) {
+    ui::AXNodeData node_data;
+    AXObject* ax_object = GetAXObjectByElementId(id);
+    if (!ax_object) {
+      ADD_FAILURE() << "No AXObject for " << id;
+      return node_data;
+    }
+    ScopedFreezeAXCache freeze(GetAXObjectCache());
+    ax_object->Serialize(&node_data, ui::kAXModeComplete);
+    return node_data;
+  };
+
+  // The popover is the next element: there is no details relation, but the
+  // other mappings apply.
+  ui::AXNodeData next_button = serialize("nextButton");
+  EXPECT_TRUE(next_button.HasState(ax::mojom::blink::State::kHasInterestFor));
+  EXPECT_TRUE(next_button.HasState(ax::mojom::blink::State::kExpanded));
+  EXPECT_FALSE(next_button.HasIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kDetailsIds));
+
+  // The invoker is inside the popover: there is no details relation, and no
+  // expanded state.
+  ui::AXNodeData inner_button = serialize("innerButton");
+  EXPECT_TRUE(inner_button.HasState(ax::mojom::blink::State::kHasInterestFor));
+  EXPECT_FALSE(inner_button.HasState(ax::mojom::blink::State::kExpanded));
+  EXPECT_FALSE(inner_button.HasState(ax::mojom::blink::State::kCollapsed));
+  EXPECT_FALSE(inner_button.HasIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kDetailsIds));
+
+  // An explicit aria-details is used instead of the details relation to the
+  // popover.
+  const AXObject* other_details = GetAXObjectByElementId("otherDetails");
+  ASSERT_NE(nullptr, other_details);
+  ui::AXNodeData aria_details_button = serialize("ariaDetailsButton");
+  EXPECT_TRUE(
+      aria_details_button.HasState(ax::mojom::blink::State::kHasInterestFor));
+  EXPECT_TRUE(aria_details_button.HasState(ax::mojom::blink::State::kExpanded));
+  const std::vector<int32_t> other_details_ids = {
+      static_cast<int32_t>(other_details->AXObjectID())};
+  EXPECT_EQ(other_details_ids,
+            aria_details_button.GetIntListAttribute(
+                ax::mojom::blink::IntListAttribute::kDetailsIds));
+  EXPECT_EQ(ax::mojom::blink::DetailsFrom::kAriaDetails,
+            aria_details_button.GetDetailsFrom());
+}
+
+TEST_F(AccessibilityTest, InterestForRichHintNotForImplicitMenuItem) {
+  SetBodyInnerHTML(R"HTML(
+      <menubar>
+        <submenu>
+          <menuitem id="menuitem">File</menuitem>
+          <menulist id="menulist">
+            <menuitem>Open</menuitem>
+          </menulist>
+        </submenu>
+      </menubar>
+      )HTML");
+  auto* menulist = To<HTMLElement>(GetElementById("menulist"));
+  // The menuitem is an implicit interest invoker for its submenu.
+  ASSERT_EQ(menulist, GetElementById("menuitem")->InterestForElement());
+  menulist->showPopover(ASSERT_NO_EXCEPTION);
+  GetAXObjectCache().UpdateAXForAllDocuments();
+
+  // The menuitem is exposed as an expanded menu item with a popup, and not as
+  // a rich hint invoker.
+  AXObject* menuitem = GetAXObjectByElementId("menuitem");
+  ASSERT_NE(nullptr, menuitem);
+  ui::AXNodeData node_data;
+  {
+    ScopedFreezeAXCache freeze(GetAXObjectCache());
+    menuitem->Serialize(&node_data, ui::kAXModeComplete);
+  }
+  EXPECT_EQ(ax::mojom::blink::HasPopup::kMenu, node_data.GetHasPopup());
+  EXPECT_TRUE(node_data.HasState(ax::mojom::blink::State::kExpanded));
+  EXPECT_FALSE(node_data.HasState(ax::mojom::blink::State::kHasInterestFor));
+}
+
+TEST_F(AccessibilityTest, InterestForRichHintMinimumRole) {
+  SetBodyInnerHTML(R"HTML(
+      <button interestfor="noRole">A</button>
+      <div id="noRole" popover="manual"><a href="#">Link</a></div>
+      <button interestfor="explicitRole">B</button>
+      <div id="explicitRole" role="dialog" popover="manual">
+        <a href="#">Link</a>
+      </div>
+      <button interestfor="fieldsetPopover">C</button>
+      <fieldset id="fieldsetPopover" popover="manual">
+        <a href="#">Link</a>
+      </fieldset>
+      <div id="noInvoker" popover="manual"><a href="#">Link</a></div>
+      )HTML");
+  for (const char* id :
+       {"noRole", "explicitRole", "fieldsetPopover", "noInvoker"}) {
+    To<HTMLElement>(GetElementById(id))->showPopover(ASSERT_NO_EXCEPTION);
+  }
+  GetAXObjectCache().UpdateAXForAllDocuments();
+
+  auto final_role = [&](const char* id) {
+    const AXObject* ax_object = GetAXObjectByElementId(id);
+    if (!ax_object) {
+      ADD_FAILURE() << "No AXObject for " << id;
+      return ax::mojom::blink::Role::kUnknown;
+    }
+    return ax_object->ComputeFinalRoleForSerialization();
+  };
+
+  // The minimum role only applies to a rich hint with no explicit or implicit
+  // role.
+  EXPECT_EQ(ax::mojom::blink::Role::kTooltip, final_role("noRole"));
+  EXPECT_EQ(ax::mojom::blink::Role::kDialog, final_role("explicitRole"));
+  EXPECT_EQ(ax::mojom::blink::Role::kGroup, final_role("fieldsetPopover"));
+  EXPECT_EQ(ax::mojom::blink::Role::kGroup, final_role("noInvoker"));
+}
+
+TEST_F(AccessibilityTest, InterestForRichHintIncrementalUpdates) {
+  SetBodyInnerHTML(R"HTML(
+      <button id="button">Button</button>
+      <div>separator</div>
+      <div id="popover" popover="manual"><a href="#">Link</a></div>
+      <div id="otherPopover" popover="manual"><a href="#">Link</a></div>
+      )HTML");
+
+  AXObjectCacheImpl& cache = GetAXObjectCache();
+  cache.SetAXMode(ui::kAXModeComplete);
+  std::vector<ui::AXTreeUpdate> updates;
+  // Replaces `updates` with the objects marked dirty since the last call. If
+  // `serialize_root` is true, the root is queued for serialization, so that a
+  // serializer exists and later calls only serialize objects marked dirty.
+  auto serialize_pending_updates = [&](bool serialize_root = false) {
+    UpdateAllLifecyclePhasesForTest();
+    cache.CommitAXUpdates(GetDocument(), /*force=*/true);
+    if (serialize_root) {
+      cache.AddDirtyObjectToSerializationQueue(cache.Root());
+    }
+    updates.clear();
+    if (cache.HasObjectsPendingSerialization()) {
+      std::vector<ui::AXEvent> events;
+      bool had_end_of_test_event = false;
+      bool had_load_complete_messages = false;
+      ScopedFreezeAXCache freeze(cache);
+      cache.GetUpdatesAndEventsForSerialization(
+          updates, events, had_end_of_test_event, had_load_complete_messages);
+    }
+    cache.ClearObjectsPendingSerializationForTesting();
+    cache.ResetLifecycleForTesting();
+  };
+  // Returns the data for the element with `id` in `updates`, or null if it was
+  // not reserialized.
+  auto find_update = [&](const char* id) -> const ui::AXNodeData* {
+    const AXObject* ax_object = GetAXObjectByElementId(id);
+    if (!ax_object) {
+      ADD_FAILURE() << "No AXObject for " << id;
+      return nullptr;
+    }
+    const ui::AXNodeData* result = nullptr;
+    for (const ui::AXTreeUpdate& update : updates) {
+      for (const ui::AXNodeData& node_data : update.nodes) {
+        if (node_data.id == static_cast<int32_t>(ax_object->AXObjectID())) {
+          result = &node_data;
+        }
+      }
+    }
+    return result;
+  };
+
+  serialize_pending_updates(/*serialize_root=*/true);
+
+  // Adding interestfor reserializes the invoker, which now has a rich hint.
+  GetElementById("button")->setAttribute(html_names::kInterestforAttr,
+                                         AtomicString("popover"));
+  serialize_pending_updates();
+  const ui::AXNodeData* button = find_update("button");
+  ASSERT_NE(nullptr, button);
+  EXPECT_TRUE(button->HasState(ax::mojom::blink::State::kHasInterestFor));
+  EXPECT_TRUE(button->HasState(ax::mojom::blink::State::kCollapsed));
+
+  // Showing the rich hint reserializes the invoker and the popover.
+  auto* popover = To<HTMLElement>(GetElementById("popover"));
+  popover->showPopover(ASSERT_NO_EXCEPTION);
+  serialize_pending_updates();
+  button = find_update("button");
+  ASSERT_NE(nullptr, button);
+  EXPECT_TRUE(button->HasState(ax::mojom::blink::State::kExpanded));
+  EXPECT_EQ(ax::mojom::blink::DetailsFrom::kInterestFor,
+            button->GetDetailsFrom());
+  const ui::AXNodeData* ax_popover = find_update("popover");
+  ASSERT_NE(nullptr, ax_popover);
+  EXPECT_EQ(ax::mojom::blink::Role::kTooltip, ax_popover->role);
+
+  // Hiding the rich hint reserializes the invoker.
+  popover->hidePopover(ASSERT_NO_EXCEPTION);
+  serialize_pending_updates();
+  button = find_update("button");
+  ASSERT_NE(nullptr, button);
+  EXPECT_TRUE(button->HasState(ax::mojom::blink::State::kCollapsed));
+  EXPECT_FALSE(button->HasIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kDetailsIds));
+
+  // Changing interestfor to another target reserializes the former target,
+  // whose role reverts to the group minimum role of a popover.
+  popover->showPopover(ASSERT_NO_EXCEPTION);
+  auto* other_popover = To<HTMLElement>(GetElementById("otherPopover"));
+  other_popover->showPopover(ASSERT_NO_EXCEPTION);
+  serialize_pending_updates();
+  GetElementById("button")->setAttribute(html_names::kInterestforAttr,
+                                         AtomicString("otherPopover"));
+  serialize_pending_updates();
+  ax_popover = find_update("popover");
+  ASSERT_NE(nullptr, ax_popover);
+  EXPECT_EQ(ax::mojom::blink::Role::kGroup, ax_popover->role);
+  const ui::AXNodeData* ax_other_popover = find_update("otherPopover");
+  ASSERT_NE(nullptr, ax_other_popover);
+  EXPECT_EQ(ax::mojom::blink::Role::kTooltip, ax_other_popover->role);
+
+  // Removing interestfor reserializes the former target.
+  GetElementById("button")->removeAttribute(html_names::kInterestforAttr);
+  serialize_pending_updates();
+  ax_other_popover = find_update("otherPopover");
+  ASSERT_NE(nullptr, ax_other_popover);
+  EXPECT_EQ(ax::mojom::blink::Role::kGroup, ax_other_popover->role);
+}
+
 }  // namespace test
 }  // namespace blink

@@ -1,23 +1,23 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++group ispopup=auto
+++++++tooltip ispopup=manual
 ++++++++textField
 ++++++++++genericContainer
-++++++button hasInterestFor name='Button' detailsFrom=interestFor detailsIds=group
+++++++button expanded hasInterestFor name='Button' detailsFrom=interestFor detailsIds=tooltip
 ++++++++staticText name='Button'
 ++++++++++inlineTextBox name='Button'
-++++++button name='Button'
+++++++button expanded hasInterestFor name='Button'
 ++++++++staticText name='Button'
 ++++++++++inlineTextBox name='Button'
-++++++group ispopup=auto
+++++++tooltip ispopup=manual
 ++++++++textField
 ++++++++++genericContainer
-++++++group ispopup=auto
+++++++group ispopup=manual
 ++++++++staticText name='Plain #3'
 ++++++++++inlineTextBox name='Plain #3'
 ++++++button name='Plain #3'
-++++++group ispopup=auto
+++++++group ispopup=manual
 ++++++++staticText name='Plain #4'
 ++++++++++inlineTextBox name='Plain #4'
 ++++++button description='Plain #4' name='Button' descriptionFrom=interestFor describedbyIds=group
@@ -27,3 +27,9 @@ rootWebArea
 ++++++++staticText name='Plain #5'
 ++++++++++inlineTextBox name='Plain #5'
 ++++++button name='Plain #5'
+++++++genericContainer ignored invisible
+++++++++textField ignored invisible
+++++++++++genericContainer ignored invisible
+++++++button collapsed hasInterestFor name='Button'
+++++++++staticText name='Button'
+++++++++++inlineTextBox name='Button'

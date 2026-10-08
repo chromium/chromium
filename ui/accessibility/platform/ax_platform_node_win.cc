@@ -7612,6 +7612,10 @@ std::wstring AXPlatformNodeWin::ComputeUIAProperties() {
                                 "setsize");
   StateToUIAAriaProperty(properties, ax::mojom::State::kHasActions,
                          "hasactions");
+  // Like the has-interest-for object attribute, this is only exposed when true.
+  if (HasState(ax::mojom::State::kHasInterestFor)) {
+    properties.push_back(L"hasinterestfor=true");
+  }
 
   int32_t sort_direction;
   if (IsTableHeader(GetRole()) &&

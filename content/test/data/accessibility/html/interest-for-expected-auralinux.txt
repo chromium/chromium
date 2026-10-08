@@ -1,9 +1,9 @@
 [document web]
-++[panel] details-for=[push button]
+++[tool tip] details-for=[push button]
 ++++[entry] selectable-text
-++[push button] name='Button' details=[panel] details-from:interest-for details-roles:popover has-interest-for:true
-++[push button] name='Button'
-++[panel]
+++[push button] name='Button' expandable expanded details=[tool tip] details-from:interest-for details-roles:popover has-interest-for:true
+++[push button] name='Button' expandable expanded has-interest-for:true
+++[tool tip]
 ++++[entry] selectable-text
 ++[panel] label-for=[push button]
 ++++[static] name='Plain #3'
@@ -14,3 +14,4 @@
 ++[section] label-for=[push button]
 ++++[static] name='Plain #5'
 ++[push button] name='Plain #5' labelled-by=[section]
+++[push button] name='Button' expandable has-interest-for:true
