@@ -140,6 +140,9 @@ public final class EventConstants {
     /** Fusebox attachment popup was toggled open by the user. */
     public static final String FUSEBOX_ATTACHMENT_POPUP_USED = "fusebox_attachment_popup_used";
 
+    /** A tab was attached from the Fusebox Tab Picker. */
+    public static final String FUSEBOX_TAB_PICKER_TAB_ATTACHED = "fusebox_tab_picker_tab_attached";
+
     /** Glic on Android used by the user. */
     public static final String GLIC_ANDROID_USED = "glic_android_used";
 
