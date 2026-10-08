@@ -98,6 +98,11 @@ BASE_DECLARE_FEATURE(kPerformanceInterventionNotificationStringImprovements);
 // The version string that is used on the performance detection dialog.
 BASE_DECLARE_FEATURE_PARAM(int, kNotificationStringVersion);
 
+// When enabled, activates a MemoryCoordinatorPolicy while Memory Saver Mode is
+// active that scales down stateful MemoryConsumer limits based on the
+// configured MemorySaverModeAggressiveness level.
+BASE_DECLARE_FEATURE(kMemorySaverMemoryCoordinatorPolicy);
+
 #endif
 
 // When enabled, LevelDBSiteDataStore uses BEST_EFFORT priority for its task

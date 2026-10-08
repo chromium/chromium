@@ -4,6 +4,7 @@
 
 #include "content/browser/memory_coordinator/browser_memory_coordinator_impl.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/check_op.h"
@@ -24,6 +25,12 @@ BrowserMemoryCoordinatorImpl* g_instance = nullptr;
 // static
 BrowserMemoryCoordinator& BrowserMemoryCoordinator::Get() {
   return BrowserMemoryCoordinatorImpl::Get();
+}
+
+// static
+std::unique_ptr<BrowserMemoryCoordinator>
+BrowserMemoryCoordinator::CreateForTesting() {
+  return std::make_unique<BrowserMemoryCoordinatorImpl>();
 }
 
 // static

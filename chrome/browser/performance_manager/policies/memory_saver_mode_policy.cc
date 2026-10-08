@@ -4,12 +4,14 @@
 
 #include "chrome/browser/performance_manager/policies/memory_saver_mode_policy.h"
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "components/performance_manager/public/decorators/tab_page_decorator.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/performance_manager/public/user_tuning/tab_revisit_tracker.h"
+#include "content/public/browser/browser_memory_coordinator.h"
 
 namespace performance_manager::policies {
 
@@ -72,9 +74,18 @@ void MemorySaverModePolicy::OnBeforeTabRemoved(
 void MemorySaverModePolicy::OnPassedToGraph(Graph* graph) {
   graph->AddPageNodeObserver(this);
   graph->GetRegisteredObjectAs<TabPageDecorator>()->AddObserver(this);
+
+  if (base::FeatureList::IsEnabled(
+          features::kMemorySaverMemoryCoordinatorPolicy)) {
+    memory_coordinator_policy_.emplace(
+        content::BrowserMemoryCoordinator::Get().policy_manager());
+    memory_coordinator_policy_->UpdateState(memory_saver_mode_enabled_, mode_);
+  }
 }
 
 void MemorySaverModePolicy::OnTakenFromGraph(Graph* graph) {
+  memory_coordinator_policy_.reset();
+
   // The logic in this class depends on being notified of pages being removed,
   // otherwise there's no guarantee PageNode pointers are still valid when
   // timers fire. To avoid possibly having callbacks manipulate invalid PageNode
@@ -99,6 +110,10 @@ void MemorySaverModePolicy::OnMemorySaverModeChanged(bool enabled) {
   } else {
     active_discard_timers_.clear();
   }
+
+  if (memory_coordinator_policy_) {
+    memory_coordinator_policy_->UpdateState(memory_saver_mode_enabled_, mode_);
+  }
 }
 
 base::TimeDelta MemorySaverModePolicy::GetTimeBeforeDiscardForTesting() const {
@@ -110,6 +125,10 @@ void MemorySaverModePolicy::SetMode(MemorySaverModeAggressiveness mode) {
   if (memory_saver_mode_enabled_) {
     active_discard_timers_.clear();
     StartAllDiscardTimers();
+  }
+
+  if (memory_coordinator_policy_) {
+    memory_coordinator_policy_->UpdateState(memory_saver_mode_enabled_, mode_);
   }
 }
 

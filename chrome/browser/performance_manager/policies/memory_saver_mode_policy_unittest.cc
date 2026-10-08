@@ -4,6 +4,8 @@
 
 #include "chrome/browser/performance_manager/policies/memory_saver_mode_policy.h"
 
+#include "base/memory_coordinator/mock_memory_consumer.h"
+#include "base/memory_coordinator/traits.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -13,6 +15,7 @@
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/performance_manager/public/user_tuning/tab_revisit_tracker.h"
 #include "components/prefs/testing_pref_service.h"
+#include "content/public/browser/browser_memory_coordinator.h"
 
 namespace performance_manager::policies {
 
@@ -339,6 +342,130 @@ TEST_F(MemorySaverModeTest, DontDiscardIfAboveMaxNumRevisits) {
   // too many times.
   task_env().FastForwardBy(policy()->GetTimeBeforeDiscardForTesting());
   ::testing::Mock::VerifyAndClearExpectations(discarder());
+}
+
+namespace {
+
+constexpr base::MemoryConsumerTraits kStatefulTraits(
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+    base::MemoryConsumerTraits::SupportsMemoryLimit::kYes,
+    base::MemoryConsumerTraits::IsStateful::kYes);
+
+constexpr base::MemoryConsumerTraits kStatelessTraits(
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+    base::MemoryConsumerTraits::SupportsMemoryLimit::kYes,
+    base::MemoryConsumerTraits::IsStateful::kNo);
+
+}  // namespace
+
+class MemorySaverModeMemoryCoordinatorDisabledTest
+    : public MemorySaverModeTest {
+ public:
+  void SetUp() override {
+    memory_coordinator_ = content::BrowserMemoryCoordinator::CreateForTesting();
+    MemorySaverModeTest::SetUp();
+  }
+
+  void TearDown() override {
+    MemorySaverModeTest::TearDown();
+    memory_coordinator_.reset();
+  }
+
+ private:
+  std::unique_ptr<content::BrowserMemoryCoordinator> memory_coordinator_;
+};
+
+class MemorySaverModeMemoryCoordinatorTest
+    : public MemorySaverModeMemoryCoordinatorDisabledTest {
+ public:
+  MemorySaverModeMemoryCoordinatorTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kMemorySaverMemoryCoordinatorPolicy);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(MemorySaverModeMemoryCoordinatorDisabledTest,
+       MemoryCoordinatorPolicyDisabledByDefault) {
+  ::testing::StrictMock<base::RegisteredMockMemoryConsumer> consumer(
+      "StatefulConsumer", kStatefulTraits);
+  EXPECT_CALL(consumer, OnUpdateMemoryLimit()).Times(0);
+  EXPECT_CALL(consumer, OnReleaseMemory()).Times(0);
+
+  policy()->OnMemorySaverModeChanged(true);
+  policy()->SetMode(
+      user_tuning::prefs::MemorySaverModeAggressiveness::kAggressive);
+  policy()->OnMemorySaverModeChanged(false);
+  EXPECT_EQ(consumer.memory_limit(), base::MemoryLimit::Default());
+}
+
+TEST_F(MemorySaverModeMemoryCoordinatorTest,
+       AppliesMultipliersBasedOnMemorySaverLevel) {
+  using user_tuning::prefs::MemorySaverModeAggressiveness;
+
+  ::testing::StrictMock<base::RegisteredMockMemoryConsumer> stateful_consumer(
+      "StatefulConsumer", kStatefulTraits);
+  ::testing::StrictMock<base::RegisteredMockMemoryConsumer> stateless_consumer(
+      "StatelessConsumer", kStatelessTraits);
+
+  // Stateless consumers should never be capped by the Memory Saver policy.
+  EXPECT_CALL(stateless_consumer, OnUpdateMemoryLimit()).Times(0);
+  EXPECT_CALL(stateless_consumer, OnReleaseMemory()).Times(0);
+
+  // Enabling Memory Saver Mode in the default (kMedium) level caps stateful
+  // consumers at 50% and immediately releases memory.
+  EXPECT_CALL(stateful_consumer, OnUpdateMemoryLimit());
+  EXPECT_CALL(stateful_consumer, OnReleaseMemory());
+  policy()->OnMemorySaverModeChanged(true);
+  EXPECT_EQ(stateful_consumer.memory_limit(),
+            base::MemoryLimit::FromPercent(50));
+  ::testing::Mock::VerifyAndClearExpectations(&stateful_consumer);
+
+  // Switching to kAggressive tightens the cap to 25% and triggers a release.
+  EXPECT_CALL(stateful_consumer, OnUpdateMemoryLimit());
+  EXPECT_CALL(stateful_consumer, OnReleaseMemory());
+  policy()->SetMode(MemorySaverModeAggressiveness::kAggressive);
+  EXPECT_EQ(stateful_consumer.memory_limit(),
+            base::MemoryLimit::FromPercent(25));
+  ::testing::Mock::VerifyAndClearExpectations(&stateful_consumer);
+
+  // Switching to kConservative relaxes the cap to 75% without triggering an
+  // immediate release.
+  EXPECT_CALL(stateful_consumer, OnUpdateMemoryLimit());
+  EXPECT_CALL(stateful_consumer, OnReleaseMemory()).Times(0);
+  policy()->SetMode(MemorySaverModeAggressiveness::kConservative);
+  EXPECT_EQ(stateful_consumer.memory_limit(),
+            base::MemoryLimit::FromPercent(75));
+  ::testing::Mock::VerifyAndClearExpectations(&stateful_consumer);
+
+  // Disabling Memory Saver Mode restores the 100% default limit without
+  // triggering a release.
+  EXPECT_CALL(stateful_consumer, OnUpdateMemoryLimit());
+  EXPECT_CALL(stateful_consumer, OnReleaseMemory()).Times(0);
+  policy()->OnMemorySaverModeChanged(false);
+  EXPECT_EQ(stateful_consumer.memory_limit(), base::MemoryLimit::Default());
+  ::testing::Mock::VerifyAndClearExpectations(&stateful_consumer);
+}
+
+TEST_F(MemorySaverModeMemoryCoordinatorTest,
+       LateRegisteredConsumerReceivesActiveLimit) {
+  using user_tuning::prefs::MemorySaverModeAggressiveness;
+
+  policy()->SetMode(MemorySaverModeAggressiveness::kAggressive);
+  policy()->OnMemorySaverModeChanged(true);
+
+  ::testing::NiceMock<base::RegisteredMockMemoryConsumer>
+      late_stateful_consumer("LateStatefulConsumer", kStatefulTraits);
+  EXPECT_EQ(late_stateful_consumer.memory_limit(),
+            base::MemoryLimit::FromPercent(25));
 }
 
 }  // namespace performance_manager::policies

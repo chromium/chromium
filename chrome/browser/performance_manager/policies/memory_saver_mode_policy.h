@@ -7,12 +7,15 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/timer/timer.h"
+#include "chrome/browser/performance_manager/policies/memory_saver_memory_coordinator_policy.h"
 #include "components/performance_manager/public/decorators/tab_page_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
+#include "content/public/common/memory_coordinator/memory_coordinator_policy.h"
 
 namespace performance_manager::policies {
 
@@ -65,6 +68,8 @@ class MemorySaverModePolicy : public GraphOwned,
       active_discard_timers_;
   user_tuning::prefs::MemorySaverModeAggressiveness mode_ =
       user_tuning::prefs::MemorySaverModeAggressiveness::kMedium;
+
+  std::optional<MemorySaverMemoryCoordinatorPolicy> memory_coordinator_policy_;
 };
 
 }  // namespace performance_manager::policies

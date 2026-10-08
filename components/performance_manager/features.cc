@@ -137,6 +137,9 @@ BASE_FEATURE_PARAM(int,
                    "string_version",
                    1);
 
+BASE_FEATURE(kMemorySaverMemoryCoordinatorPolicy,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kUnthrottledTabProcessReporting, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
