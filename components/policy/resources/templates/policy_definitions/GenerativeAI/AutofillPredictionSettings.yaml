@@ -1,6 +1,8 @@
 caption: Settings for enhanced autofill
-
+deprecated: true
 desc: |-
+  This policy is deprecated in M157, please use <ph name="AUTOFILL_GEN_AI_SETTINGS_POLICY_NAME">AutofillGenAiSettings</ph> instead.
+
   Specifies whether users can let <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> use Generative AI to better understand forms and help them fill more fields.
 
   0 = Has the same effect as 1. Before M153, the setting allowed Google to use relevant data to improve its AI models. Relevant data may include prompts, inputs, outputs, source materials, and written feedback, depending on the feature. 0 is the default value, except when noted below.
