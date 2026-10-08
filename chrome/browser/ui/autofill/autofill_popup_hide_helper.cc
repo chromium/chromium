@@ -5,10 +5,8 @@
 #include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
 
 #include "base/check_deref.h"
-#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -66,9 +64,7 @@ void AutofillPopupHideHelper::PrimaryMainFrameWasResized(bool width_changed) {
   // events where the WebContents size is unchanged.
   const gfx::Size current_size =
       web_contents() ? web_contents()->GetSize() : gfx::Size();
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillIgnoreUnchangedFrameResizes) &&
-      current_size == last_web_contents_size_) {
+  if (current_size == last_web_contents_size_) {
     return;
   }
   last_web_contents_size_ = current_size;

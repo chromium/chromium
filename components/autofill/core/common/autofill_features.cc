@@ -859,12 +859,6 @@ BASE_FEATURE(kAutofillGreekRegexes, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillHideSuggestionsOnFocusChange,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether `AutofillPopupHideHelper` ignores frame resize events
-// when the `WebContents` size is unchanged.
-// TODO(crbug.com/545556982): Remove after confirming there is no regression.
-BASE_FEATURE(kAutofillIgnoreUnchangedFrameResizes,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, corrects missclassification of NAME_LAST as NAME_LAST_SECOND in
 // an absence of NAME_LAST_FIRST.
 // TODO(crbug.com/400995432): Clean-up when launched.
