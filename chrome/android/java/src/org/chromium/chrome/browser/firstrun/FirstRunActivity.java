@@ -512,8 +512,6 @@ public class FirstRunActivity extends FirstRunActivityBase
                 "MobileFre.FromLaunch.TriggerLayoutInflation",
                 SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
 
-        setFinishOnTouchOutside(true);
-
         setContentView(createContentView());
 
         // SigninFirstRunFragment doesn't use getProperties() and can be shown right away, without
