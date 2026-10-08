@@ -36,7 +36,6 @@
 #include "third_party/blink/public/web/web_frame_serializer.h"
 #include "third_party/blink/public/web/web_frame_serializer_client.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
-#include "third_party/blink/renderer/platform/text/web_entities.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -87,10 +86,6 @@ class WebFrameSerializerImpl {
   StringBuilder data_buffer_;
   // Whether frame url should be shown in MOTW in the serialized html.
   bool save_with_empty_url_;
-
-  // Web entities conversion maps.
-  WebEntities html_entities_;
-  WebEntities xml_entities_;
 
   class SerializeDomParam {
     STACK_ALLOCATED();

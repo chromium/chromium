@@ -236,50 +236,24 @@ host6.attachShadow({mode: 'open'}).innerHTML = '<div>hello world</div>';
 }
 
 TEST_F(WebFrameSerializerTest, EntitiesInAttributeHtml) {
-  String expected_off(
-      u"<body "
-      u"title=\"&quot;&amp;&lt;&gt;&#39;\u00A9\u00A0\t\n\r\">\n\n</body></"
-      u"html>");
-  String expected_on(
+  String expected(
       u"<body "
       u"title=\"&quot;&amp;&lt;&gt;'\u00A9&nbsp;\t\n\r\">\n\n</body></html>");
 
-  {
-    ScopedFrameSerializerNoWebEntitiesForTest disable_flag(false);
-    String actual =
-        SerializeFile("http://www.test.com", "entities.html", false);
-    EXPECT_TRUE(actual.ends_with(expected_off));
-  }
-  {
-    ScopedFrameSerializerNoWebEntitiesForTest enable_flag(true);
-    String actual =
-        SerializeFile("http://www.test.com/2", "entities.html", false);
-    EXPECT_TRUE(actual.ends_with(expected_on));
-  }
+  String actual =
+      SerializeFile("http://www.test.com/2", "entities.html", false);
+  EXPECT_TRUE(actual.ends_with(expected));
 }
 
 TEST_F(WebFrameSerializerTest, EntitiesInAttributeXml) {
-  String expected_off(
-      u"<body "
-      u"title=\"&quot;&amp;&lt;&gt;&apos;\u00C2\u00A9\u00C2\u00A0\t\n\r\" "
-      u"/>\n</html>");
-  String expected_on(
+  String expected(
       u"<body "
       u"title=\"&quot;&amp;&lt;&gt;'\u00C2\u00A9\u00C2\u00A0&#9;&#10;&#13;\" "
       u"/>\n</html>");
 
-  {
-    ScopedFrameSerializerNoWebEntitiesForTest disable_flag(false);
-    String actual = SerializeFile("http://www.test.com", "entities.xml", false,
-                                  "application/xhtml+xml");
-    EXPECT_TRUE(actual.ends_with(expected_off));
-  }
-  {
-    ScopedFrameSerializerNoWebEntitiesForTest enable_flag(true);
-    String actual = SerializeFile("http://www.test.com/2", "entities.xml",
-                                  false, "application/xhtml+xml");
-    EXPECT_TRUE(actual.ends_with(expected_on));
-  }
+  String actual = SerializeFile("http://www.test.com/2", "entities.xml", false,
+                                "application/xhtml+xml");
+  EXPECT_TRUE(actual.ends_with(expected));
 }
 
 }  // namespace blink

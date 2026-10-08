@@ -295,21 +295,10 @@ void WebFrameSerializerImpl::AppendAttribute(StringBuilder& result,
                                              bool is_html_document,
                                              const QualifiedName& attr_name,
                                              const String& attr_value) {
-  if (RuntimeEnabledFeatures::FrameSerializerNoWebEntitiesEnabled()) {
-    MarkupFormatter::AppendAttribute(
-        attr_name.Prefix(), attr_name.LocalName(), attr_value,
-        is_html_document ? SerializationType::kHtml : SerializationType::kXml,
-        result);
-    return;
-  }
-  result.Append(' ');
-  result.Append(attr_name.ToString());
-  result.Append("=\"");
-  if (is_html_document)
-    result.Append(html_entities_.ConvertEntitiesInString(attr_value));
-  else
-    result.Append(xml_entities_.ConvertEntitiesInString(attr_value));
-  result.Append('\"');
+  MarkupFormatter::AppendAttribute(
+      attr_name.Prefix(), attr_name.LocalName(), attr_value,
+      is_html_document ? SerializationType::kHtml : SerializationType::kXml,
+      result);
 }
 
 void WebFrameSerializerImpl::OpenTagToString(Element* element,
@@ -502,9 +491,7 @@ WebFrameSerializerImpl::WebFrameSerializerImpl(
     bool save_with_empty_url)
     : client_(client),
       delegate_(delegate),
-      save_with_empty_url_(save_with_empty_url),
-      html_entities_(false),
-      xml_entities_(true) {
+      save_with_empty_url_(save_with_empty_url) {
   // Must specify available webframe.
   DCHECK(frame);
   specified_web_local_frame_impl_ = To<WebLocalFrameImpl>(frame);

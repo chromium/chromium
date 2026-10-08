@@ -1620,8 +1620,6 @@ component("platform") {
     "text/unicode_bidi.h",
     "text/unicode_utilities.cc",
     "text/unicode_utilities.h",
-    "text/web_entities.cc",
-    "text/web_entities.h",
     "text/writing_direction_mode.cc",
     "text/writing_direction_mode.h",
     "text/writing_mode.cc",
