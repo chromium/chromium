@@ -124,6 +124,36 @@ TEST_F(TemplateURLTest, TestValidWithComplete) {
   EXPECT_TRUE(url.url_ref().IsValid(search_terms_data_));
 }
 
+// The cached IsTrustedGoogleEngine() result must be invalidated when the
+// engine's data is replaced, e.g. by TemplateURLService::Update().
+TEST_F(TemplateURLTest, IsTrustedGoogleEngineInvalidatedByCopyFrom) {
+  TemplateURLData google_data;
+  google_data.SetURL("https://www.google.com/search?q={searchTerms}");
+  google_data.suggestions_url =
+      "https://www.google.com/complete/search?q={searchTerms}";
+  TemplateURL turl(google_data);
+  EXPECT_TRUE(turl.IsTrustedGoogleEngine(search_terms_data_));
+
+  TemplateURLData spoofed_data(google_data);
+  spoofed_data.suggestions_url =
+      "https://attacker.com/complete/search?q={searchTerms}";
+  turl.CopyFrom(TemplateURL(spoofed_data));
+  EXPECT_FALSE(turl.IsTrustedGoogleEngine(search_terms_data_));
+
+  turl.CopyFrom(TemplateURL(google_data));
+  EXPECT_TRUE(turl.IsTrustedGoogleEngine(search_terms_data_));
+}
+
+TEST_F(TemplateURLTest, IsTrustedGoogleEngineInvalidatedBySetURL) {
+  TemplateURLData data;
+  data.SetURL("https://www.google.com/search?q={searchTerms}");
+  TemplateURL turl(data);
+  EXPECT_TRUE(turl.IsTrustedGoogleEngine(search_terms_data_));
+
+  turl.SetURL("http://www.google.com/search?q={searchTerms}");
+  EXPECT_FALSE(turl.IsTrustedGoogleEngine(search_terms_data_));
+}
+
 TEST_F(TemplateURLTest, URLRefTestSearchTerms) {
   struct SearchTermsCase {
     const char* url;

@@ -968,6 +968,15 @@ class TemplateURL {
   SearchEngineType GetEngineType(
       const SearchTermsData& search_terms_data) const;
 
+  // Returns true if this engine can be trusted to be Google, i.e. its search
+  // URL resolves to Google and, if set, its suggestions URL does too. Both URLs
+  // must use a cryptographic scheme (or point to localhost, for tests). This
+  // prevents engines that pair a Google search URL with a third-party
+  // suggestions URL (e.g. registered via OpenSearch) from being trusted with
+  // Google-only suggest features. The result is cached until
+  // InvalidateCachedValues() is called.
+  bool IsTrustedGoogleEngine(const SearchTermsData& search_terms_data) const;
+
   // Returns the type of this search engine, i.e. whether the engine is a
   // prepopulated engine, starter pack engine, or not built-in.
   BuiltinEngineType GetBuiltinEngineType() const;
@@ -1148,6 +1157,9 @@ class TemplateURL {
 
   // Caches the computed engine type across successive calls to GetEngineType().
   mutable SearchEngineType engine_type_;
+
+  // Caches the result of IsTrustedGoogleEngine().
+  mutable std::optional<bool> is_trusted_google_engine_;
 
   // Caches the computed base resource ID across successive calls to
   // `GetBaseBuiltinResourceId()`.

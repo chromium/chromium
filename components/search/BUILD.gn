@@ -14,7 +14,6 @@ static_library("search") {
     "//base",
     "//build:android_buildflags",
     "//components/search_engines",
-    "//net",
   ]
 }
 

@@ -300,6 +300,40 @@ std::string TruncateEncodedQuery(std::string_view encoded_query,
   return truncated;
 }
 
+bool IsCryptographicOrLocalhost(const GURL& url) {
+  return url.is_valid() &&
+         (url.SchemeIsCryptographic() || net::IsLocalhost(url));
+}
+
+// Computes the result for TemplateURL::IsTrustedGoogleEngine().
+bool ComputeIsTrustedGoogleEngine(const TemplateURL& template_url,
+                                  const SearchTermsData& search_terms_data) {
+  if (template_url.GetEngineType(search_terms_data) != SEARCH_ENGINE_GOOGLE) {
+    return false;
+  }
+
+  // Prepopulated engines are built into Chromium and cannot be hijacked or
+  // spoofed by OpenSearch auto-discovery.
+  if (template_url.prepopulate_id() != 0) {
+    return true;
+  }
+
+  if (!IsCryptographicOrLocalhost(
+          template_url.GenerateSearchURL(search_terms_data))) {
+    return false;
+  }
+
+  if (template_url.suggestions_url().empty()) {
+    return true;
+  }
+
+  const GURL suggest_url =
+      template_url.GenerateSuggestionURL(search_terms_data);
+  return IsCryptographicOrLocalhost(suggest_url) &&
+         search_engine_utils::GetEngineType(suggest_url) ==
+             SEARCH_ENGINE_GOOGLE;
+}
+
 }  // namespace
 
 // TemplateURLRef::SearchTermsArgs --------------------------------------------
@@ -2145,6 +2179,15 @@ SearchEngineType TemplateURL::GetEngineType(
   return engine_type_;
 }
 
+bool TemplateURL::IsTrustedGoogleEngine(
+    const SearchTermsData& search_terms_data) const {
+  if (!is_trusted_google_engine_.has_value()) {
+    is_trusted_google_engine_ =
+        ComputeIsTrustedGoogleEngine(*this, search_terms_data);
+  }
+  return *is_trusted_google_engine_;
+}
+
 BuiltinEngineType TemplateURL::GetBuiltinEngineType() const {
   if (data().prepopulate_id != 0) {
     return KEYWORD_MODE_PREPOPULATED_ENGINE;
@@ -2394,6 +2437,7 @@ void TemplateURL::SetURL(const std::string& url) {
   active_data().SetURL(url);
 
   engine_type_ = SEARCH_ENGINE_UNKNOWN;
+  is_trusted_google_engine_.reset();
   url_ref().InvalidateCachedValues();
 }
 
@@ -2424,6 +2468,7 @@ void TemplateURL::ResetKeywordIfNecessary(
 
 void TemplateURL::InvalidateCachedValues() const {
   engine_type_ = SEARCH_ENGINE_UNKNOWN;
+  is_trusted_google_engine_.reset();
   for (const TemplateURLRef& ref : url_refs_) {
     ref.InvalidateCachedValues();
   }
