@@ -1,7 +1,6 @@
 monorail: {
-  component: "UI>Browser>ReadLater"
+  component: "UI>Browser>TopChrome>BookmarksBar>ReadingList"
 }
-os: ANDROID
 buganizer_public: {
-  component_id: 1455753
+  component_id: 1457166
 }
