@@ -19,6 +19,9 @@
 #include "chrome/browser/ash/accessibility/live_caption/system_live_caption_service_factory.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/boca/boca_manager_factory.h"
+#include "chrome/browser/ash/borealis/borealis_disk_cleanup_manager.h"
+#include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/calendar/calendar_keyed_service_factory.h"
 #include "chrome/browser/ash/camera_mic/vm_camera_mic_manager.h"
 #include "chrome/browser/ash/child_accounts/child_status_reporting_service_factory.h"
@@ -322,6 +325,11 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
     eche_app::EcheAppManagerFactory::GetForProfile(profile);
 
     VmCameraMicManager::Get()->OnPrimaryUserSessionStarted();
+
+    if (auto* borealis_service =
+            borealis::BorealisServiceFactory::GetForProfile(profile)) {
+      borealis_service->DiskCleanupManager().CheckDiskSpace();
+    }
 
     // Pciguard can only be set by non-guest, primary users. By default,
     // Pciguard is turned on.

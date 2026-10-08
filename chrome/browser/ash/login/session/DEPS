@@ -21,6 +21,7 @@ include_rules = [
   "+chrome/browser/ash/base",
   "+chrome/browser/ash/boca/boca_manager_factory.h",
   "+chrome/browser/ash/boot_times_recorder",
+  "+chrome/browser/ash/borealis",
   "+chrome/browser/ash/calendar",
   "+chrome/browser/ash/camera_mic",
   "+chrome/browser/ash/child_accounts",

@@ -56,6 +56,7 @@ static_library("session") {
     "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/boca",
     "//chrome/browser/ash/boot_times_recorder",
+    "//chrome/browser/ash/borealis",
     "//chrome/browser/ash/calendar",
     "//chrome/browser/ash/child_accounts",
     "//chrome/browser/ash/crostini",

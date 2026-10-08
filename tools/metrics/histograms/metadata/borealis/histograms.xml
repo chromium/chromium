@@ -154,6 +154,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Borealis.HasAllocatedDisk" enum="Boolean"
+    expires_after="2027-03-01">
+  <owner>oshima@chromium.org</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    Recorded once per primary user session login for devices where a Borealis VM
+    exists. True if the Borealis disk image has size &gt; 0 bytes, false if 0
+    bytes are allocated.
+  </summary>
+</histogram>
+
 <histogram name="Borealis.Install.NumAttempts" enum="BooleanAttempted"
     expires_after="2026-02-01">
   <owner>philpearson@google.com</owner>

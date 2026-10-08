@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/borealis/borealis_app_launcher_impl.h"
 #include "chrome/browser/ash/borealis/borealis_app_uninstaller.h"
+#include "chrome/browser/ash/borealis/borealis_disk_cleanup_manager.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_installer_impl.h"
 #include "chrome/browser/ash/borealis/borealis_launch_options.h"
@@ -27,6 +28,7 @@ class BorealisServiceImpl : public BorealisService {
   // BorealisService overrides.
   BorealisAppLauncher& AppLauncher() override;
   BorealisAppUninstaller& AppUninstaller() override;
+  BorealisDiskCleanupManager& DiskCleanupManager() override;
   BorealisFeatures& Features() override;
   BorealisInstaller& Installer() override;
   BorealisLaunchOptions& LaunchOptions() override;
@@ -37,6 +39,7 @@ class BorealisServiceImpl : public BorealisService {
 
   BorealisAppLauncherImpl app_launcher_;
   BorealisAppUninstaller app_uninstaller_;
+  BorealisDiskCleanupManager disk_cleanup_manager_;
   BorealisFeatures features_;
   BorealisInstallerImpl installer_;
   BorealisLaunchOptions launch_options_;

@@ -26,6 +26,7 @@ class BorealisServiceFake : public BorealisService {
 
   BorealisAppLauncher& AppLauncher() override;
   BorealisAppUninstaller& AppUninstaller() override;
+  BorealisDiskCleanupManager& DiskCleanupManager() override;
   BorealisFeatures& Features() override;
   BorealisInstaller& Installer() override;
   BorealisLaunchOptions& LaunchOptions() override;
@@ -34,6 +35,8 @@ class BorealisServiceFake : public BorealisService {
 
   void SetAppLauncherForTesting(BorealisAppLauncher* app_launcher);
   void SetAppUninstallerForTesting(BorealisAppUninstaller* app_uninstaller);
+  void SetDiskCleanupManagerForTesting(
+      BorealisDiskCleanupManager* disk_cleanup_manager);
   void SetFeaturesForTesting(BorealisFeatures* features);
   void SetInstallerForTesting(BorealisInstaller* installer);
   void SetLaunchOptionsForTesting(BorealisLaunchOptions* launch_options);
@@ -43,6 +46,7 @@ class BorealisServiceFake : public BorealisService {
  private:
   raw_ptr<BorealisAppLauncher> app_launcher_ = nullptr;
   raw_ptr<BorealisAppUninstaller> app_uninstaller_ = nullptr;
+  raw_ptr<BorealisDiskCleanupManager> disk_cleanup_manager_ = nullptr;
   raw_ptr<BorealisFeatures, DanglingUntriaged> features_ = nullptr;
   raw_ptr<BorealisInstaller> installer_ = nullptr;
   raw_ptr<BorealisLaunchOptions> launch_options_ = nullptr;

@@ -33,6 +33,11 @@ BorealisAppUninstaller& BorealisServiceFake::AppUninstaller() {
   return *app_uninstaller_;
 }
 
+BorealisDiskCleanupManager& BorealisServiceFake::DiskCleanupManager() {
+  CHECK(disk_cleanup_manager_);
+  return *disk_cleanup_manager_;
+}
+
 BorealisFeatures& BorealisServiceFake::Features() {
   CHECK(features_);
   return *features_;
@@ -66,6 +71,11 @@ void BorealisServiceFake::SetAppLauncherForTesting(
 void BorealisServiceFake::SetAppUninstallerForTesting(
     BorealisAppUninstaller* app_uninstaller) {
   app_uninstaller_ = app_uninstaller;
+}
+
+void BorealisServiceFake::SetDiskCleanupManagerForTesting(
+    BorealisDiskCleanupManager* disk_cleanup_manager) {
+  disk_cleanup_manager_ = disk_cleanup_manager;
 }
 
 void BorealisServiceFake::SetFeaturesForTesting(BorealisFeatures* features) {

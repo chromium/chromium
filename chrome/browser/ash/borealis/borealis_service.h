@@ -11,6 +11,7 @@ namespace borealis {
 
 class BorealisAppLauncher;
 class BorealisAppUninstaller;
+class BorealisDiskCleanupManager;
 class BorealisFeatures;
 class BorealisInstaller;
 class BorealisLaunchOptions;
@@ -24,6 +25,7 @@ class BorealisService : public KeyedService {
 
   virtual BorealisAppLauncher& AppLauncher() = 0;
   virtual BorealisAppUninstaller& AppUninstaller() = 0;
+  virtual BorealisDiskCleanupManager& DiskCleanupManager() = 0;
   virtual BorealisFeatures& Features() = 0;
   virtual BorealisInstaller& Installer() = 0;
   virtual BorealisLaunchOptions& LaunchOptions() = 0;
