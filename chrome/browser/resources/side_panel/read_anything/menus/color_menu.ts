@@ -10,10 +10,8 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {VisualBrowserProxy} from '../app/visual_browser_proxy.js';
 import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
-import {DEFAULT_SETTINGS, ToolbarEvent} from '../content/read_anything_types.js';
-import type {SettingsPrefs, ShowAtConfigPrefs} from '../content/read_anything_types.js';
-import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
-import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
+import {ToolbarEvent} from '../content/read_anything_types.js';
+import type {ShowAtConfigPrefs} from '../content/read_anything_types.js';
 
 import {getHtml} from './color_menu.html.js';
 import type {MenuStateItem, ToolbarMenu} from './menu_util.js';
@@ -41,13 +39,13 @@ export class ColorMenuElement extends ColorMenuElementBase implements
 
   static override get properties() {
     return {
-      settingsPrefs: {type: Object},
+      theme: {type: Number},
       nonModal: {type: Boolean},
       options_: {type: Array},
     };
   }
 
-  accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
+  accessor theme: number = 0;
   accessor nonModal: boolean = false;
 
   private visualBrowserProxy_: VisualBrowserProxy =
@@ -95,7 +93,6 @@ export class ColorMenuElement extends ColorMenuElementBase implements
       data: this.visualBrowserProxy_.getLowContrastDarkTheme(),
     },
   ];
-  private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 
   open(anchor: HTMLElement, showAtConfig?: ShowAtConfigPrefs) {
     this.$.menu.open(anchor, showAtConfig);
@@ -106,12 +103,10 @@ export class ColorMenuElement extends ColorMenuElementBase implements
   }
 
   protected restoredThemeIndex_(): number {
-    return getIndexOfSetting(this.options_, this.settingsPrefs['theme']);
+    return getIndexOfSetting(this.options_, this.theme);
   }
 
-  protected onThemeChange_(event: CustomEvent<{data: number}>) {
-    this.visualBrowserProxy_.onThemeChange(event.detail.data);
-    this.logger_.logTextSettingsChange(ReadAnythingSettingsChange.THEME_CHANGE);
+  protected onThemeChange_() {
     this.fire(ToolbarEvent.CLOSE_ALL_MENUS);
   }
 }

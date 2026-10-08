@@ -151,7 +151,6 @@ export async function setupAppTestEnvironment(flags?: AppTestFlags):
 export const TEST_RANDOM_VALUE_SETTINGS: SettingsPrefs = {
   letterSpacing: 101,
   lineSpacing: 102,
-  theme: 103,
   speechRate: 104,
   font: 'font',
   highlightGranularity: 105,

@@ -198,7 +198,6 @@ export enum SettingsOption {
 export interface SettingsPrefs {
   letterSpacing: number;
   lineSpacing: number;
-  theme: number;
   speechRate: number;
   font: string;
   highlightGranularity: number;
@@ -208,7 +207,6 @@ export interface SettingsPrefs {
 export const DEFAULT_SETTINGS: SettingsPrefs = {
   letterSpacing: 0,
   lineSpacing: 0,
-  theme: 0,
   speechRate: 0,
   font: '',
   highlightGranularity: 0,

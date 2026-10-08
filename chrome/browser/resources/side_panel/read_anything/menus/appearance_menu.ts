@@ -13,10 +13,8 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {VisualBrowserProxy} from '../app/visual_browser_proxy.js';
 import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
-import {DEFAULT_SETTINGS, ToolbarEvent} from '../content/read_anything_types.js';
-import type {SettingsPrefs, ShowAtConfigPrefs} from '../content/read_anything_types.js';
-import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
-import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
+import {ToolbarEvent} from '../content/read_anything_types.js';
+import type {ShowAtConfigPrefs} from '../content/read_anything_types.js';
 
 import {getHtml} from './appearance_menu.html.js';
 import type {GroupedActionMenuElement} from './grouped_action_menu.js';
@@ -43,14 +41,14 @@ export class AppearanceMenuElement extends AppearanceMenuElementBase implements
 
   static override get properties() {
     return {
-      settingsPrefs: {type: Object},
+      theme: {type: Number},
       nonModal: {type: Boolean},
       presentationState: {type: Number},
       groups_: {type: Array},
     };
   }
 
-  accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
+  accessor theme: number = 0;
   accessor nonModal: boolean = false;
   accessor presentationState: number = 0;
 
@@ -131,18 +129,16 @@ export class AppearanceMenuElement extends AppearanceMenuElementBase implements
 
   protected accessor groups_: Array<MenuGroup<number>> = this.computeGroups_();
 
-  private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
-
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-    if (changedProperties.has('settingsPrefs')) {
+    if (changedProperties.has('theme')) {
       this.updateOptionsForTheme_();
     }
     if (changedProperties.has('presentationState')) {
       this.updateOptionsForPresentation_();
     }
-    if (changedProperties.has('settingsPrefs') ||
+    if (changedProperties.has('theme') ||
         changedProperties.has('presentationState')) {
       this.groups_ = this.computeGroups_();
     }
@@ -167,16 +163,6 @@ export class AppearanceMenuElement extends AppearanceMenuElementBase implements
     this.$.menu.close();
   }
 
-  protected onThemeChange_(e: CustomEvent<{data: number}>) {
-    const newTheme = e.detail.data;
-    this.visualBrowserProxy_.onThemeChange(newTheme);
-    this.logger_.logTextSettingsChange(ReadAnythingSettingsChange.THEME_CHANGE);
-    this.settingsPrefs = {
-      ...this.settingsPrefs,
-      theme: newTheme,
-    };
-  }
-
   protected onPresentationChange_(e: CustomEvent<{data: number}>) {
     const newPresentationState = e.detail.data;
     if (newPresentationState !== this.presentationState) {
@@ -185,9 +171,8 @@ export class AppearanceMenuElement extends AppearanceMenuElementBase implements
   }
 
   private updateOptionsForTheme_() {
-    const currentTheme = this.settingsPrefs.theme;
     this.colorOptions_.forEach(option => {
-      option.selected = option.data === currentTheme;
+      option.selected = option.data === this.theme;
     });
   }
 

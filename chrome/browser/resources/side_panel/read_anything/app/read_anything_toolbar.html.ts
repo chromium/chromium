@@ -112,8 +112,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
       @close-all-menus="${this.onCloseAllMenus_}">
   </highlight-menu>
   <color-menu id="colorMenu" class="settings-submenu" .nonModal="${true}"
-      .settingsPrefs="${this.settingsPrefs}"
-      @close-all-menus="${this.onCloseAllMenus_}">
+      .theme="${this.theme}" @close-all-menus="${this.onCloseAllMenus_}">
   </color-menu>
   <line-spacing-menu id="lineSpacingMenu" class="settings-submenu"
       .nonModal="${true}" .settingsPrefs="${this.settingsPrefs}"
@@ -137,8 +136,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
       @close-all-menus="${this.onCloseAllMenus_}">
   </line-focus-menu>
   <appearance-menu id="appearanceMenu" class="settings-submenu" non-modal
-      .settingsPrefs="${this.settingsPrefs}"
-      .presentationState="${this.presentationState}"
+      .theme="${this.theme}" .presentationState="${this.presentationState}"
       @close-all-menus="${this.onCloseAllMenus_}">
   </appearance-menu>
   <audio-menu id="audioMenu" class="settings-submenu" non-modal
