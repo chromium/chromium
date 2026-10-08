@@ -126,8 +126,7 @@ public class ContainmentViewStyler {
 
         boolean innerContentPaddingNeutralized = false;
         // Find the inner RelativeLayout and neutralize its vertical padding.
-        if (view instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) view;
+        if (view instanceof ViewGroup viewGroup) {
             for (int i = 0; i < viewGroup.getChildCount(); i++) {
                 View child = viewGroup.getChildAt(i);
                 if (child instanceof RelativeLayout) {

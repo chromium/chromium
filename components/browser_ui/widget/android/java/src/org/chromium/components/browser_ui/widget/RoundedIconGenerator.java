@@ -218,7 +218,7 @@ public class RoundedIconGenerator {
                 return uri.getHost();
             }
         } catch (Exception e) {
-            Log.w(TAG, "Unable to parse the URL for generating an icon: " + url);
+            Log.w(TAG, "Unable to parse the URL for generating an icon: %s", url);
         }
 
         return url;

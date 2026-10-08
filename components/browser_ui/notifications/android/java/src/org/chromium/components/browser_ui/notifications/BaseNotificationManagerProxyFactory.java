@@ -33,9 +33,10 @@ public class BaseNotificationManagerProxyFactory {
                 (Runnable)
                         () -> {
                             sProxyForTest = proxy;
-                            if (proxy instanceof NotificationManagerProxy) {
+                            if (proxy
+                                    instanceof NotificationManagerProxy notificationManagerProxy) {
                                 NotificationManagerProxyImpl.setInstanceForTesting(
-                                        (NotificationManagerProxy) proxy);
+                                        notificationManagerProxy);
                             }
                         });
         ResettersForTesting.register(() -> sProxyForTest = null);

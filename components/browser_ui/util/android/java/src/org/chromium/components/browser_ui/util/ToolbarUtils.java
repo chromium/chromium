@@ -65,8 +65,8 @@ public class ToolbarUtils {
         int i = toolbar.getChildCount();
         ActionMenuView menuView = null;
         while (i-- > 0) {
-            if (toolbar.getChildAt(i) instanceof ActionMenuView) {
-                menuView = (ActionMenuView) toolbar.getChildAt(i);
+            if (toolbar.getChildAt(i) instanceof ActionMenuView actionMenuView) {
+                menuView = actionMenuView;
                 break;
             }
         }

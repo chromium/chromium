@@ -199,7 +199,7 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
 
         public DateViewHolder(View view) {
             super(view);
-            if (view instanceof TextView) mTextView = (TextView) view;
+            if (view instanceof TextView textView) mTextView = textView;
         }
 
         /**
@@ -867,10 +867,10 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
         if (groupPair == null) {
             Log.e(
                     TAG,
-                    "Failed to find group for item during remove. Item position: "
-                            + item.getPosition()
-                            + ", total size: "
-                            + mSize);
+                    "Failed to find group for item during remove. Item position: %d, total"
+                            + " size: %d",
+                    item.getPosition(),
+                    mSize);
             return;
         }
 

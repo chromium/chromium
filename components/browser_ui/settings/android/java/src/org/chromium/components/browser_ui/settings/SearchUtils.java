@@ -216,7 +216,7 @@ public class SearchUtils {
             boolean isClearButton) {
         if (isClearButton) {
             ImageView clearButton = findSearchClearButton(searchView);
-            clearButton.setVisibility(query == null || query.equals("") ? View.GONE : View.VISIBLE);
+            clearButton.setVisibility(query == null || query.isEmpty() ? View.GONE : View.VISIBLE);
         }
         int otherButtonsVisibility = query != null ? View.GONE : View.VISIBLE;
         if (activity != null) {

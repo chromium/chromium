@@ -502,8 +502,7 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
 
     private static @Px int getMarginsPx(View view, boolean excludeBottomMargin) {
         LayoutParams params = view.getLayoutParams();
-        if (params instanceof MarginLayoutParams) {
-            MarginLayoutParams marginParams = (MarginLayoutParams) params;
+        if (params instanceof MarginLayoutParams marginParams) {
             return marginParams.topMargin + (excludeBottomMargin ? 0 : marginParams.bottomMargin);
         }
         return 0;

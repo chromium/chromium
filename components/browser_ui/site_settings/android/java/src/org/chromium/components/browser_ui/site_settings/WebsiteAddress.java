@@ -155,8 +155,7 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof WebsiteAddress) {
-            WebsiteAddress other = (WebsiteAddress) obj;
+        if (obj instanceof WebsiteAddress other) {
             return Objects.equals(mOrigin, other.mOrigin)
                     && Objects.equals(mScheme, other.mScheme)
                     && Objects.equals(mHost, other.mHost);

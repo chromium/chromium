@@ -283,16 +283,16 @@ public class SettingsIndexData {
                 String key = keys.next();
                 try {
                     Object value = json.get(key);
-                    if (value instanceof Integer) {
-                        bundle.putInt(key, (Integer) value);
-                    } else if (value instanceof Long) {
-                        bundle.putLong(key, (Long) value);
-                    } else if (value instanceof Double) {
-                        bundle.putDouble(key, (Double) value);
-                    } else if (value instanceof Boolean) {
-                        bundle.putBoolean(key, (Boolean) value);
-                    } else if (value instanceof String) {
-                        bundle.putString(key, (String) value);
+                    if (value instanceof Integer intVal) {
+                        bundle.putInt(key, intVal);
+                    } else if (value instanceof Long longVal) {
+                        bundle.putLong(key, longVal);
+                    } else if (value instanceof Double doubleVal) {
+                        bundle.putDouble(key, doubleVal);
+                    } else if (value instanceof Boolean boolVal) {
+                        bundle.putBoolean(key, boolVal);
+                    } else if (value instanceof String strVal) {
+                        bundle.putString(key, strVal);
                     } else {
                         // Complex types are not expected in the Bundle object used for extras.
                         // Report the exception if it actually occurs.

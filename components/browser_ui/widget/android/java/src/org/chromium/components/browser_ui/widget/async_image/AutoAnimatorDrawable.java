@@ -86,11 +86,10 @@ public class AutoAnimatorDrawable extends DrawableWrapperCompat {
         AutoAnimatorDrawable.animatedDrawableHelper(
                 drawable,
                 animatable -> {
-                    if (animatable instanceof Animatable2Compat) {
-                        ((Animatable2Compat) animatable)
-                                .registerAnimationCallback(LazyHolderCompat.INSTANCE);
-                    } else if (animatable instanceof Animatable2) {
-                        ((Animatable2) animatable).registerAnimationCallback(LazyHolder.INSTANCE);
+                    if (animatable instanceof Animatable2Compat compat) {
+                        compat.registerAnimationCallback(LazyHolderCompat.INSTANCE);
+                    } else if (animatable instanceof Animatable2 animatable2) {
+                        animatable2.registerAnimationCallback(LazyHolder.INSTANCE);
                     }
                 });
     }
@@ -99,8 +98,8 @@ public class AutoAnimatorDrawable extends DrawableWrapperCompat {
             @Nullable Drawable drawable, org.chromium.base.Callback<Animatable> consumer) {
         if (drawable == null) return;
 
-        if (drawable instanceof Animatable) {
-            consumer.onResult((Animatable) drawable);
+        if (drawable instanceof Animatable animatable) {
+            consumer.onResult(animatable);
 
             // Assume Animatable drawables can handle animating their own internals/sub drawables.
             return;
@@ -112,33 +111,27 @@ public class AutoAnimatorDrawable extends DrawableWrapperCompat {
             AutoAnimatorDrawable.animatedDrawableHelper(drawable.getCurrent(), consumer);
         }
 
-        if (drawable instanceof DrawableWrapper) {
+        if (drawable instanceof DrawableWrapper wrapper) {
             // Support all modern versions of drawables that wrap other ones.  This won't cover old
             // versions of Android (see below for other if/else blocks).
-            AutoAnimatorDrawable.animatedDrawableHelper(
-                    ((DrawableWrapper) drawable).getDrawable(), consumer);
-        } else if (drawable instanceof DrawableWrapperCompat) {
+            AutoAnimatorDrawable.animatedDrawableHelper(wrapper.getDrawable(), consumer);
+        } else if (drawable instanceof DrawableWrapperCompat wrapperCompat) {
             // Support the AppCompat DrawableWrapperCompat.
-            AutoAnimatorDrawable.animatedDrawableHelper(
-                    ((DrawableWrapperCompat) drawable).getDrawable(), consumer);
-        } else if (drawable instanceof LayerDrawable) {
+            AutoAnimatorDrawable.animatedDrawableHelper(wrapperCompat.getDrawable(), consumer);
+        } else if (drawable instanceof LayerDrawable layerDrawable) {
             // Support a LayerDrawable and try to animate all layers.
-            LayerDrawable layerDrawable = (LayerDrawable) drawable;
             for (int i = 0; i < layerDrawable.getNumberOfLayers(); i++) {
                 AutoAnimatorDrawable.animatedDrawableHelper(layerDrawable.getDrawable(i), consumer);
             }
-        } else if (drawable instanceof InsetDrawable) {
+        } else if (drawable instanceof InsetDrawable insetDrawable) {
             // Support legacy versions of InsetDrawable.
-            AutoAnimatorDrawable.animatedDrawableHelper(
-                    ((InsetDrawable) drawable).getDrawable(), consumer);
-        } else if (drawable instanceof RotateDrawable) {
+            AutoAnimatorDrawable.animatedDrawableHelper(insetDrawable.getDrawable(), consumer);
+        } else if (drawable instanceof RotateDrawable rotateDrawable) {
             // Support legacy versions of RotateDrawable.
-            AutoAnimatorDrawable.animatedDrawableHelper(
-                    ((RotateDrawable) drawable).getDrawable(), consumer);
-        } else if (drawable instanceof ScaleDrawable) {
+            AutoAnimatorDrawable.animatedDrawableHelper(rotateDrawable.getDrawable(), consumer);
+        } else if (drawable instanceof ScaleDrawable scaleDrawable) {
             // Support legacy versions of ScaleDrawable.
-            AutoAnimatorDrawable.animatedDrawableHelper(
-                    ((ScaleDrawable) drawable).getDrawable(), consumer);
+            AutoAnimatorDrawable.animatedDrawableHelper(scaleDrawable.getDrawable(), consumer);
         }
     }
 

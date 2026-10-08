@@ -430,9 +430,9 @@ public class RadioButtonWithDescription extends RelativeLayout
 
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
-        if (state instanceof Bundle) {
-            super.onRestoreInstanceState(((Bundle) state).getParcelable(SUPER_STATE_KEY));
-            setChecked(((Bundle) state).getBoolean(CHECKED_KEY));
+        if (state instanceof Bundle bundle) {
+            super.onRestoreInstanceState(bundle.getParcelable(SUPER_STATE_KEY));
+            setChecked(bundle.getBoolean(CHECKED_KEY));
         } else {
             super.onRestoreInstanceState(state);
         }

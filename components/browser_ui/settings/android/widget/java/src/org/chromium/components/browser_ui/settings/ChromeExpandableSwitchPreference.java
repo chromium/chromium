@@ -232,8 +232,8 @@ public class ChromeExpandableSwitchPreference extends ChromeSwitchPreference {
         }
         Rect rect = new Rect();
         view.getDrawingRect(rect);
-        if (root instanceof ViewGroup) {
-            ((ViewGroup) root).offsetDescendantRectToMyCoords(view, rect);
+        if (root instanceof ViewGroup viewGroup) {
+            viewGroup.offsetDescendantRectToMyCoords(view, rect);
         }
         return rect.contains((int) event.getX(), (int) event.getY());
     }

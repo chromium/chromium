@@ -181,14 +181,11 @@ class FileEnumWorkerTask extends AsyncTask<@Nullable List<PickerBitmap>> {
 
         Log.i(
                 TAG,
-                "Found "
-                        + imageCursor.getCount()
-                        + " media files, when requesting columns: "
-                        + Arrays.toString(selectColumns)
-                        + ", with WHERE "
-                        + whereClause
-                        + ", params: "
-                        + Arrays.toString(whereArgs));
+                "Found %d media files, when requesting columns: %s, with WHERE %s, params: %s",
+                imageCursor.getCount(),
+                Arrays.toString(selectColumns),
+                whereClause,
+                Arrays.toString(whereArgs));
 
         while (imageCursor.moveToNext()) {
             int mimeTypeIndex = imageCursor.getColumnIndex(MediaStore.Files.FileColumns.MIME_TYPE);

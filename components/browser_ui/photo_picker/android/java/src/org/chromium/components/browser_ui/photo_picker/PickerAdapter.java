@@ -44,8 +44,7 @@ public class PickerAdapter extends Adapter<ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        if (holder instanceof PickerBitmapViewHolder) {
-            PickerBitmapViewHolder myHolder = (PickerBitmapViewHolder) holder;
+        if (holder instanceof PickerBitmapViewHolder myHolder) {
             myHolder.displayItem(mCategoryView, position);
         }
     }
