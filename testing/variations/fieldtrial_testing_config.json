@@ -10676,6 +10676,7 @@
                         "IPH_SendTabToSelfTutorial",
                         "SendTabToSelfDynamicShortcuts",
                         "SendTabToSelfEnhancedDesktopUIv2",
+                        "SendTabToSelfMultiTabShare",
                         "SendTabToSelfOpenNativeApp",
                         "SendTabToSelfSupportAutoOpenInTabGrid",
                         "SyncDisambiguateDeviceNamesWithChannel"
