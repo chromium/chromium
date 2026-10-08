@@ -8,10 +8,10 @@
 /// follow and for how the lists below are registered.
 
 extension CommonMojoStrings {
-    static let mojoBaseMojomBigBuffer = "mojoBase.mojom.BigBuffer"
-    static let mojoBaseMojomBigBufferBytes = "mojoBase.mojom.BigBuffer.bytes"
-    static let mojoBaseMojomBigBufferSharedMemory = "mojoBase.mojom.BigBuffer.sharedMemory"
-    static let mojoBaseMojomBigBufferInvalidBuffer = "mojoBase.mojom.BigBuffer.invalidBuffer"
+    static let mojoBaseMojomBigBufferUnion = "mojoBase.mojom.BigBuffer"
+    static let mojoBaseMojomBigBufferUnionBytes = "mojoBase.mojom.BigBuffer.bytes"
+    static let mojoBaseMojomBigBufferUnionSharedMemory = "mojoBase.mojom.BigBuffer.sharedMemory"
+    static let mojoBaseMojomBigBufferUnionInvalidBuffer = "mojoBase.mojom.BigBuffer.invalidBuffer"
     static let mojoBaseMojomBigBufferSharedMemoryRegion =
         "mojoBase.mojom.BigBufferSharedMemoryRegion"
     static let mojoBaseMojomBigString16 = "mojoBase.mojom.BigString16"
@@ -22,11 +22,12 @@ extension CommonMojoStrings {
 
 public let mojoBaseMojomBuiltins: [String: ILType] = [
     CommonMojoStrings.mojoBaseMojomString16: .jsMojoBaseMojomString16Constructor,
-    CommonMojoStrings.mojoBaseMojomBigBufferBytes: .jsMojoBaseMojomBigBufferBytesConstructor,
-    CommonMojoStrings.mojoBaseMojomBigBufferSharedMemory:
-        .jsMojoBaseMojomBigBufferSharedMemoryConstructor,
-    CommonMojoStrings.mojoBaseMojomBigBufferInvalidBuffer:
-        .jsMojoBaseMojomBigBufferInvalidBufferConstructor,
+    CommonMojoStrings.mojoBaseMojomBigBufferUnionBytes:
+        .jsMojoBaseMojomBigBufferUnionBytesConstructor,
+    CommonMojoStrings.mojoBaseMojomBigBufferUnionSharedMemory:
+        .jsMojoBaseMojomBigBufferUnionSharedMemoryConstructor,
+    CommonMojoStrings.mojoBaseMojomBigBufferUnionInvalidBuffer:
+        .jsMojoBaseMojomBigBufferUnionInvalidBufferConstructor,
     CommonMojoStrings.mojoBaseMojomBigBufferSharedMemoryRegion:
         .jsMojoBaseMojomBigBufferSharedMemoryRegionConstructor,
     CommonMojoStrings.mojoBaseMojomBigString16: .jsMojoBaseMojomBigString16Constructor,
@@ -34,13 +35,13 @@ public let mojoBaseMojomBuiltins: [String: ILType] = [
 ]
 
 public let mojoBaseMojomCodeGenerators: [(CodeGenerator, Int)] = [
-    (MojoMojoBaseMojomBigBufferBytesGenerator, 1),
+    (MojoMojoBaseMojomBigBufferUnionBytesGenerator, 1),
     (MojoMojoBaseMojomBigBufferSharedMemoryRegionGenerator, 1),
     (MojoMojoBaseMojomString16Generator, 1),
 ]
 
 public let mojoBaseMojomObjectGroups: [ObjectGroup] = [
-    .mojoBaseMojomBigBuffer,
+    .mojoBaseMojomBigBufferUnion,
     .mojoBaseMojomBigBufferSharedMemoryRegion,
     .mojoBaseMojomBigString16,
     .mojoBaseMojomString16,
@@ -48,14 +49,14 @@ public let mojoBaseMojomObjectGroups: [ObjectGroup] = [
 ]
 
 extension ILType {
-    public static let jsMojoBaseMojomBigBuffer: ILType = .object(
-        ofGroup: CommonMojoStrings.mojoBaseMojomBigBuffer)
-    public static let jsMojoBaseMojomBigBufferBytesConstructor: ILType = .constructor(
-        [.plain(.createJsArrayType(ofElementType: .jsUint8))] => .jsMojoBaseMojomBigBuffer)
-    public static let jsMojoBaseMojomBigBufferSharedMemoryConstructor: ILType = .constructor(
-        [.plain(.jsMojoBaseMojomBigBufferSharedMemoryRegion)] => .jsMojoBaseMojomBigBuffer)
-    public static let jsMojoBaseMojomBigBufferInvalidBufferConstructor: ILType = .constructor(
-        [.plain(.boolean)] => .jsMojoBaseMojomBigBuffer)
+    public static let jsMojoBaseMojomBigBufferUnion: ILType = .object(
+        ofGroup: CommonMojoStrings.mojoBaseMojomBigBufferUnion)
+    public static let jsMojoBaseMojomBigBufferUnionBytesConstructor: ILType = .constructor(
+        [.plain(.createJsArrayType(ofElementType: .jsUint8))] => .jsMojoBaseMojomBigBufferUnion)
+    public static let jsMojoBaseMojomBigBufferUnionSharedMemoryConstructor: ILType = .constructor(
+        [.plain(.jsMojoBaseMojomBigBufferSharedMemoryRegion)] => .jsMojoBaseMojomBigBufferUnion)
+    public static let jsMojoBaseMojomBigBufferUnionInvalidBufferConstructor: ILType = .constructor(
+        [.plain(.boolean)] => .jsMojoBaseMojomBigBufferUnion)
 
     public static let jsMojoBaseMojomBigBufferSharedMemoryRegion: ILType = .object(
         ofGroup: CommonMojoStrings.mojoBaseMojomBigBufferSharedMemoryRegion,
@@ -66,12 +67,12 @@ extension ILType {
     public static let jsMojoBaseMojomBigString16: ILType = .object(
         ofGroup: CommonMojoStrings.mojoBaseMojomBigString16, withProperties: ["data"])
     public static let jsMojoBaseMojomBigString16Constructor: ILType = .constructor(
-        [.plain(.jsMojoBaseMojomBigBuffer)] => .jsMojoBaseMojomBigString16
+        [.plain(.jsMojoBaseMojomBigBufferUnion)] => .jsMojoBaseMojomBigString16
     )
     public static let jsMojoBaseMojomBigString: ILType = .object(
         ofGroup: CommonMojoStrings.mojoBaseMojomBigString, withProperties: ["data"])
     public static let jsMojoBaseMojomBigStringConstructor: ILType = .constructor(
-        [.plain(.jsMojoBaseMojomBigBuffer)] => .jsMojoBaseMojomBigString)
+        [.plain(.jsMojoBaseMojomBigBufferUnion)] => .jsMojoBaseMojomBigString)
     public static let jsMojoBaseMojomString16: ILType = .object(
         ofGroup: CommonMojoStrings.mojoBaseMojomString16, withProperties: ["data"])
     public static let jsMojoBaseMojomString16Constructor: ILType = .constructor(
@@ -82,9 +83,9 @@ extension ILType {
 }
 
 extension ObjectGroup {
-    public static let mojoBaseMojomBigBuffer = ObjectGroup(
-        name: CommonMojoStrings.mojoBaseMojomBigBuffer,
-        instanceType: .jsMojoBaseMojomBigBuffer,
+    public static let mojoBaseMojomBigBufferUnion = ObjectGroup(
+        name: CommonMojoStrings.mojoBaseMojomBigBufferUnion,
+        instanceType: .jsMojoBaseMojomBigBufferUnion,
         properties: [:],
         methods: [:]
     )
@@ -101,7 +102,7 @@ extension ObjectGroup {
         name: CommonMojoStrings.mojoBaseMojomBigString,
         instanceType: .jsMojoBaseMojomBigString,
         properties: [
-            "data": .jsMojoBaseMojomBigBuffer
+            "data": .jsMojoBaseMojomBigBufferUnion
         ],
         methods: [:]
     )
@@ -109,7 +110,7 @@ extension ObjectGroup {
         name: CommonMojoStrings.mojoBaseMojomBigString16,
         instanceType: .jsMojoBaseMojomBigString16,
         properties: [
-            "data": .jsMojoBaseMojomBigBuffer
+            "data": .jsMojoBaseMojomBigBufferUnion
         ],
         methods: [:]
     )
@@ -132,8 +133,8 @@ extension ObjectGroup {
     )
 }
 
-public let MojoMojoBaseMojomBigBufferBytesGenerator = CodeGenerator(
-    "MojoMojoBaseMojomBigBufferBytesGenerator",
+public let MojoMojoBaseMojomBigBufferUnionBytesGenerator = CodeGenerator(
+    "MojoMojoBaseMojomBigBufferUnionBytesGenerator",
     inputs: .one,
     produces: [.createJsArrayType(ofElementType: .jsUint8)]
 ) { b, _ in

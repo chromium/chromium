@@ -118,7 +118,7 @@ extension ILType {
             "varyOnKeyOrder",
         ])
     fileprivate static let jsNetworkMojomNoVarySearchConstructor: ILType = .constructor([
-        .plain(.jsNetworkMojomSearchParamsVariance),
+        .plain(.jsNetworkMojomSearchParamsVarianceUnion),
         .plain(.boolean),
     ] => .jsNetworkMojomNoVarySearch)
 }
@@ -154,7 +154,7 @@ extension ObjectGroup {
         name: "network.mojom.NoVarySearch",
         instanceType: .jsNetworkMojomNoVarySearch,
         properties: [
-            "searchVariance": .jsNetworkMojomSearchParamsVariance,
+            "searchVariance": .jsNetworkMojomSearchParamsVarianceUnion,
             "varyOnKeyOrder": .boolean,
         ],
         methods: [:]
@@ -229,18 +229,18 @@ extension ILType {
 /// Unions
 ///
 extension ILType {
-    fileprivate static let jsNetworkMojomSearchParamsVariance: ILType = .object(
+    fileprivate static let jsNetworkMojomSearchParamsVarianceUnion: ILType = .object(
         ofGroup: "network.mojom.SearchParamsVariance")
-    fileprivate static let jsNetworkMojomSearchParamsVarianceNoVaryParamsConstructor: ILType = .constructor(
-        [.plain(.jsStringMojoArray)] => .jsNetworkMojomSearchParamsVariance)
-    fileprivate static let jsNetworkMojomSearchParamsVarianceVaryParamsConstructor: ILType = .constructor(
-        [.plain(.jsStringMojoArray)] => .jsNetworkMojomSearchParamsVariance)
+    fileprivate static let jsNetworkMojomSearchParamsVarianceUnionNoVaryParamsConstructor: ILType = .constructor(
+        [.plain(.jsStringMojoArray)] => .jsNetworkMojomSearchParamsVarianceUnion)
+    fileprivate static let jsNetworkMojomSearchParamsVarianceUnionVaryParamsConstructor: ILType = .constructor(
+        [.plain(.jsStringMojoArray)] => .jsNetworkMojomSearchParamsVarianceUnion)
 }
 
 extension ObjectGroup {
-    fileprivate static let networkMojomSearchParamsVariance = ObjectGroup(
+    fileprivate static let networkMojomSearchParamsVarianceUnion = ObjectGroup(
         name: "network.mojom.SearchParamsVariance",
-        instanceType: .jsNetworkMojomSearchParamsVariance,
+        instanceType: .jsNetworkMojomSearchParamsVarianceUnion,
         properties: [:],
         methods: [:]
     )
@@ -305,8 +305,8 @@ private let mojoBuiltins: [String: ILType] = [
     "blink.mojom.SpeculationCandidate": .jsBlinkMojomSpeculationCandidateConstructor,
     "blink.mojom.Referrer": .jsBlinkMojomReferrerConstructor,
     "network.mojom.NoVarySearch": .jsNetworkMojomNoVarySearchConstructor,
-    "network.mojom.SearchParamsVariance.noVaryParams": .jsNetworkMojomSearchParamsVarianceNoVaryParamsConstructor,
-    "network.mojom.SearchParamsVariance.varyParams": .jsNetworkMojomSearchParamsVarianceVaryParamsConstructor,
+    "network.mojom.SearchParamsVariance.noVaryParams": .jsNetworkMojomSearchParamsVarianceUnionNoVaryParamsConstructor,
+    "network.mojom.SearchParamsVariance.varyParams": .jsNetworkMojomSearchParamsVarianceUnionVaryParamsConstructor,
 ]
 
 private let keepGenerators = [
@@ -369,7 +369,7 @@ let mojoSpeculationHostProfile = Profile(
         .blinkMojomSpeculationCandidate,
         .blinkMojomReferrer,
         .networkMojomNoVarySearch,
-        .networkMojomSearchParamsVariance,
+        .networkMojomSearchParamsVarianceUnion,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [
         .jsBlinkMojomSpeculationAction,
