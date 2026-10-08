@@ -3,6 +3,8 @@ TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBT
 === END INITIAL PAGE LOAD ===
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [rowheader1] class_name=android.view.View
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SORT_DIRECTION] on [rowheader1] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [columnheader1] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SORT_DIRECTION] on [columnheader1] class_name=android.view.View
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [columnheader2] class_name=android.view.View
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SORT_DIRECTION] on [columnheader2] class_name=android.view.View
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [columnheader3] class_name=android.view.View

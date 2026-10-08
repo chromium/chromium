@@ -16,7 +16,7 @@
       // Set aria-sort from 'descending'->'ascending'; should fire an event.
       document.getElementById('ch0').setAttribute('aria-sort', 'ascending');
 
-      // Set aria-sort from default 'none'->'none'; should not fire an event.
+      // Set aria-sort from default 'none'->'none' (explicit); should fire an event.
       document.getElementById('ch1').setAttribute('aria-sort', 'none');
 
       // Set aria-sort from default 'none'->'ascending'; should fire an event.

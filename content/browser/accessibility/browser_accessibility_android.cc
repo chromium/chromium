@@ -2323,8 +2323,9 @@ BrowserAccessibilityAndroid::GetSortDirection() const {
       return ANDROID_SORT_DIRECTION_DESCENDING;
     case ax::mojom::SortDirection::kOther:
       return ANDROID_SORT_DIRECTION_OTHER;
-    case ax::mojom::SortDirection::kNone:
     case ax::mojom::SortDirection::kUnsorted:
+      return ANDROID_SORT_DIRECTION_NONE;
+    case ax::mojom::SortDirection::kNone:
       NOTREACHED();
   }
   return ANDROID_SORT_DIRECTION_NONE;

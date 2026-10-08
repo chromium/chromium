@@ -1890,7 +1890,7 @@ ax::mojom::blink::SortDirection AXNodeObject::GetSortDirection() const {
   if (const AtomicString& aria_sort =
           AriaTokenAttribute(html_names::kAriaSortAttr)) {
     if (EqualIgnoringAsciiCase(aria_sort, "none")) {
-      return ax::mojom::blink::SortDirection::kNone;
+      return ax::mojom::blink::SortDirection::kUnsorted;
     }
     if (EqualIgnoringAsciiCase(aria_sort, "ascending")) {
       return ax::mojom::blink::SortDirection::kAscending;
