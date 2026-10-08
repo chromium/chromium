@@ -908,9 +908,17 @@ export class GlicAppController implements WebviewDelegate {
 
   // Called before the WebUI is shown. If we're in an error state, automatically
   // try to reload.
+  //
+  // The browser withdraws the failure this page last reported when it asks to
+  // show (see GlicPageHandler::NotifyWindowIntentToShow()), on the assumption
+  // that the page is about to retry. A failure state that is not retried on
+  // open has to be reported again, or the browser would wait on a load that is
+  // not coming.
   intentToShow() {
     if (this.stateDescriptor()?.reloadOnOpen) {
       this.reload();
+    } else if (this.clientLoadFailed) {
+      this.browserProxy.pageHandler.onClientLoadFailed(true);
     }
   }
 

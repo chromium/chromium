@@ -85,6 +85,12 @@ enum GuestPageType {
 // Functions provided by the WebUI page.
 interface Page {
   // Called before the page is shown.
+  //
+  // Sending this withdraws whatever the page last reported through
+  // `OnClientLoadFailed()`: the page retries most failures when it is shown,
+  // and the browser must not act on a verdict that the page is about to
+  // reconsider. A page that does not retry its current failure must report it
+  // again, through `OnClientLoadFailed(true)`, in response to this call.
   IntentToShow();
 
   // TODO(crbug.com/454120908): Remove this method after WebContents warming is

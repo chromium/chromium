@@ -137,7 +137,6 @@ GlicKeyedService* GlicPageHandler::GetGlicService() {
   return GlicKeyedServiceFactory::GetGlicKeyedService(browser_context_);
 }
 
-
 void GlicPageHandler::PrepareForClient(
     base::OnceCallback<void(mojom::PrepareForClientResult)> callback) {
   TRACE_EVENT_INSTANT("glic", "GlicPageHandler::PrepareForClient - Request",
@@ -200,6 +199,14 @@ void GlicPageHandler::OnZoomLevelChange(double zoom_factor) {
 }
 
 void GlicPageHandler::NotifyWindowIntentToShow() {
+  // The page retries most failures when it is shown (see `intentToShow()` in
+  // glic_app_controller.ts), so a failure it reported before this point
+  // describes a load that is about to be replaced. Withdraw it now rather than
+  // when the page gets around to reloading: `Host::client_load_state()` is read
+  // synchronously by invocations in the same call stack as the show, which
+  // would otherwise fail on the stale verdict and never see the retry. A page
+  // that does not retry reasserts its failure in response to `IntentToShow()`.
+  host().SetClientLoadFailed(this, false);
   page_->IntentToShow();
 }
 

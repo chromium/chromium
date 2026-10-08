@@ -115,9 +115,6 @@ BASE_FEATURE(kGlicRemoveBlankInstancesOnClose,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicAlwaysBindOnPin, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicAvoidReactivatingActiveEmbedder,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kGlicUnpinOnUnbindIfUnused, base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr size_t kMaxRecentConversationsForPanel = 3;
@@ -128,7 +125,6 @@ BASE_FEATURE(kGlicSuppressAnimationsOnDetach, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicRemoveDaisyChainingWhenFreShowing,
              base::FEATURE_ENABLED_BY_DEFAULT);
-
 
 namespace {
 
@@ -488,8 +484,17 @@ void GlicInstanceImpl::Show(ShowOptions options) {
   GlicUiEmbedder* embedder_to_show = nullptr;
 
   if (IsActiveEmbedder(new_key)) {
-    if (base::FeatureList::IsEnabled(kGlicAvoidReactivatingActiveEmbedder) &&
-        !options.reinitialize_if_already_active) {
+    if (!options.reinitialize_if_already_active) {
+      // The panel is already up, so there is nothing to re-show. Unless this
+      // is an automatic reshow (such as OnBrowserActivated() when focusing a
+      // window whose panel is already open), the page still gets told: a show
+      // is also what makes it retry a client that failed to load, and someone
+      // invoking Glic again at a failed panel should get that retry rather than
+      // the stale failure. This is a no-op for a page whose client is up.
+      if (options.invocation_source !=
+          mojom::InvocationSource::kReshowInactive) {
+        host_.NotifyWindowIntentToShow();
+      }
       return;
     } else {
       embedder_to_show = GetActiveEmbedder();
