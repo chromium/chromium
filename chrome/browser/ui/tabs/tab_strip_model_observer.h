@@ -553,6 +553,9 @@ class TabStripModelObserver {
   // Invoked when the pinned state of a tab changes.
   virtual void OnTabPinnedStateChanged(tabs::TabInterface* tab, int index);
 
+  // Invoked when the blocked state of a tab changes.
+  virtual void OnTabBlockedStateChanged(tabs::TabInterface* tab);
+
   // Called when the tab at `index` is added to the group with id `new_group` or
   // removed from a group with id `old_group`.
   virtual void TabGroupedStateChanged(

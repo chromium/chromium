@@ -86,9 +86,6 @@ tabs_api::mojom::TabFieldMaskPtr BuildTabFieldMask(TabChangeType type) {
     case TabChangeType::kAttentionOnly:
       // AttentionOnly affects "needs_attention" which is not yet exposed.
       break;
-    case TabChangeType::kBlockedOnly:
-      mask->is_blocked = true;
-      break;
     case TabChangeType::kResourceUsageOnly:
       break;
   }

@@ -122,6 +122,7 @@ class MockTabStripModelObserver : public TabStripModelObserver {
     MOVE,
     CHANGE,
     PINNED,
+    BLOCKED,
     REPLACED,
     CLOSE_ALL,
     CLOSE_ALL_CANCELED,
@@ -394,6 +395,10 @@ class MockTabStripModelObserver : public TabStripModelObserver {
     states_.emplace_back(tab->GetContents(), index, PINNED);
   }
 
+  void OnTabBlockedStateChanged(tabs::TabInterface* tab) override {
+    states_.emplace_back(tab->GetContents(), std::nullopt, BLOCKED);
+  }
+
   void WillCloseAllTabs(TabStripModel* tab_strip_model) override {
     states_.emplace_back(nullptr, std::nullopt, CLOSE_ALL);
   }
@@ -427,6 +432,7 @@ class MockTabStripModelObserver : public TabStripModelObserver {
             {MOVE, "MOVE"},
             {CHANGE, "CHANGE"},
             {PINNED, "PINNED"},
+            {BLOCKED, "BLOCKED"},
             {REPLACED, "REPLACED"},
             {CLOSE_ALL, "CLOSE_ALL"},
             {CLOSE_ALL_CANCELED, "CLOSE_ALL_CANCELED"},

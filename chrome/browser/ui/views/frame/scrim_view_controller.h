@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
 class BrowserView;
-enum class TabChangeType;
 
 // Controller that manages the visibility of scrims attached to the
 // ContentsContainerViews.
@@ -24,8 +23,7 @@ class ScrimViewController : public TabStripModelObserver {
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-  void OnTabChangedAt(tabs::TabInterface* tab,
-                      TabChangeType change_type) override;
+  void OnTabBlockedStateChanged(tabs::TabInterface* tab) override;
   void OnSplitTabChanged(const SplitTabChange& change) override;
 
   void UpdateScrimViews();

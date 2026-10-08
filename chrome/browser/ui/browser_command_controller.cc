@@ -87,7 +87,6 @@
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
-#include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
@@ -1705,14 +1704,12 @@ void BrowserCommandController::TabGroupedStateChanged(
   UpdateCommandsForTabStripStateChanged();
 }
 
-void BrowserCommandController::OnTabChangedAt(tabs::TabInterface* tab,
-                                              TabChangeType change_type) {
-  if (change_type == TabChangeType::kBlockedOnly) {
-    PrintingStateChanged();
-    FullscreenStateChanged();
-    UpdateCommandsForFind();
-    UpdateCommandsForMediaRouter();
-  }
+void BrowserCommandController::OnTabBlockedStateChanged(
+    tabs::TabInterface* tab) {
+  PrintingStateChanged();
+  FullscreenStateChanged();
+  UpdateCommandsForFind();
+  UpdateCommandsForMediaRouter();
 }
 
 void BrowserCommandController::OnTabPinnedStateChanged(tabs::TabInterface* tab,

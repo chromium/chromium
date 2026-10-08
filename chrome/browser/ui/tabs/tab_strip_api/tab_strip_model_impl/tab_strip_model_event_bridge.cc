@@ -121,6 +121,11 @@ void TabStripModelEventBridge::OnTabChangedAt(tabs::TabInterface* tab,
   Notify(events::ToEvent(*tab_strip_model_adapter_, tab, change_type));
 }
 
+void TabStripModelEventBridge::OnTabBlockedStateChanged(
+    tabs::TabInterface* tab) {
+  Notify(events::ToBlockedStateChangedEvent(*tab_strip_model_adapter_, tab));
+}
+
 void TabStripModelEventBridge::OnTabGroupChanged(const TabGroupChange& change) {
   if (change.type == TabGroupChange::Type::kEditorOpened) {
     NOTIMPLEMENTED();

@@ -43,6 +43,10 @@ mojom::OnDataChangedEventPtr ToEvent(
     tabs::TabInterface* tab,
     TabChangeType change_type);
 
+mojom::OnDataChangedEventPtr ToBlockedStateChangedEvent(
+    const tabs_api::TabStripModelAdapter& adapter,
+    tabs::TabInterface* tab);
+
 mojom::OnDataChangedEventPtr ToEvent(
     const TabGroupChange& tab_group_change,
     const tabs_api::TabStripModelAdapter& adapter);

@@ -1414,7 +1414,9 @@ void TabStripModel::SetTabBlocked(int index, bool blocked) {
     return;
   }
   tab_model->SetBlocked(blocked);
-  NotifyTabChanged(tab_model, TabChangeType::kBlockedOnly);
+  for (auto& observer : observers_) {
+    observer.OnTabBlockedStateChanged(tab_model);
+  }
 }
 
 int TabStripModel::SetTabPinned(int index, bool pinned) {

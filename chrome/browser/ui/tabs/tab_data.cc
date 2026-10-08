@@ -180,7 +180,7 @@ void TabDataObserver::OnBlockedStateChanged(tabs::TabInterface* tab_interface,
                                             bool new_blocked_state) {
   if (tab_data_.blocked != new_blocked_state) {
     tab_data_.blocked = new_blocked_state;
-    NotifyTabDataChanged(TabChangeType::kBlockedOnly);
+    NotifyTabDataChanged(TabChangeType::kAll);
   }
 }
 

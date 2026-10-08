@@ -16,9 +16,6 @@ enum class TabChangeType {
   // Only the attention state changed.
   kAttentionOnly,
 
-  // Only the blocked status changed.
-  kBlockedOnly,
-
   // Only the resource usage changed.
   kResourceUsageOnly,
 };
