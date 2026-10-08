@@ -453,6 +453,15 @@ void PrefetchStreamingURLLoader::ServiceWorkerInterceptorLoaderCallback(
     // PrePrefetch request is also an initial request), but we don't explicitly
     // care about redirects, because currently redirects are not allowed for
     // ServiceWorker-controlled prefetch.
+    //
+    // Even in this case, the final `PrefetchServiceWorkerState` should be
+    // determined (as `kControlled`, because a controlling ServiceWorker is
+    // found) before failing the prefetch, because `PrefetchMatchResolver` may
+    // already be waiting for this prefetch while it is `kAllowed`, and expects
+    // that the `PrefetchServiceWorkerState` is no longer `kAllowed` in
+    // `OnDeterminedHead()`, which is triggered by `OnComplete()` below.
+    std::move(on_service_worker_state_determined_callback_)
+        .Run(PrefetchServiceWorkerState::kControlled);
     OnComplete(network::URLLoaderCompletionStatus(net::ERR_ABORTED));
     return;
   }

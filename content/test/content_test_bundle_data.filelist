@@ -9308,6 +9308,7 @@ data/service_worker/file_upload_worker.js.mock-http-headers
 data/service_worker/form.html
 data/service_worker/hello-from-sw.txt
 data/service_worker/hello.js
+data/service_worker/hold_activation_worker.js
 data/service_worker/http_cache.html
 data/service_worker/http_cache.html.mock-http-headers
 data/service_worker/imports_bust_memcache.html
