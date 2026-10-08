@@ -365,7 +365,9 @@ bool BtmDatabase::Write(const std::string& site,
       "last_web_authn_assertion_time"
     ") VALUES(?,?,?,?,?,?,?)";
   // clang-format on
-  CHECK(db_->IsSQLValid(kWriteSql), base::NotFatalUntil::M158);
+  // TODO(crbug.com/570577047): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(db_->IsSQLValid(kWriteSql));
 
   SCOPED_UMA_HISTOGRAM_TIMER("Privacy.DIPS.Database.Operation.WriteTime");
 
