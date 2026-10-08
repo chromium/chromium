@@ -1897,6 +1897,58 @@ TEST_F(SendTabToSelfBridgeTest, SendTabToSelfEntryActivated_QueueUnknownGuid) {
       "Sharing.SendTabToSelf.ActivatedEntryPoint", entry_point, 1);
 }
 
+// Tests that repeated opens of an entry that is not yet in the model keep the
+// first opened time, matching the behavior for entries already in the model.
+TEST_F(SendTabToSelfBridgeTest,
+       SendTabToSelfEntryOpened_QueueUnknownGuidKeepsFirstOpenedTime) {
+  InitializeBridge();
+  SetLocalDeviceCacheGuid("Device1");
+
+  base::HistogramTester histogram_tester;
+
+  // T=0: the entry is shared.
+  SendTabToSelfEntry entry1("guid1", GURL("http://www.example.com/"), "title",
+                            AdvanceAndGetTime(), "device", "Device1",
+                            PageContext(), NavigationHistory());
+
+  // T=5: the entry is opened before it is delivered via sync (queued).
+  const base::Time first_opened_time = AdvanceAndGetTime(base::Seconds(5));
+  bridge()->MarkEntryOpened("guid1");
+
+  // T=15: the entry is activated (queued).
+  AdvanceAndGetTime(base::Seconds(10));
+  const ShareActivatedEntryPoint entry_point =
+      ShareActivatedEntryPoint::kTabStrip;
+  bridge()->MarkEntryActivated("guid1", entry_point);
+
+  // T=20: the entry is opened again, which should be ignored.
+  AdvanceAndGetTime(base::Seconds(5));
+  bridge()->MarkEntryOpened("guid1");
+
+  // Now deliver the entry via sync.
+  syncer::EntityChangeList remote_input;
+  remote_input.push_back(
+      syncer::EntityChange::CreateAdd("guid1", MakeEntityData(entry1)));
+
+  EXPECT_CALL(*processor(), Put("guid1", _, _)).Times(1);
+
+  bridge()->MergeFullSyncData(
+      std::make_unique<syncer::InMemoryMetadataChangeList>(),
+      std::move(remote_input));
+
+  const SendTabToSelfEntry* local_entry = bridge()->GetEntryByGUID("guid1");
+  ASSERT_THAT(local_entry, NotNull());
+  EXPECT_EQ(first_opened_time, local_entry->GetOpenedTime());
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "Sharing.SendTabToSelf.TimeSentToOpened", base::Seconds(5), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Sharing.SendTabToSelf.TimeOpenedToActivated", base::Seconds(10), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Sharing.SendTabToSelf.TimeSentToActivated", base::Seconds(15), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.ActivatedEntryPoint", entry_point, 1);
+}
 
 // Tests that queued unknown opened and activated entries are cleared when sync
 // is disabled, preventing them from being applied in a later sync session.
