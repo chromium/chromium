@@ -986,6 +986,10 @@ void HomeBackgroundCustomizationService::CleanupEphemeralThemeData() {
 }
 
 void HomeBackgroundCustomizationService::MaybeFetchEphemeralThemeData() {
+  if (IsCustomizationDisabledOrColorManagedByPolicy()) {
+    return;
+  }
+
   if (!IsNTPEphemeralThemeEnabled()) {
     CleanupEphemeralThemeData();
     return;
