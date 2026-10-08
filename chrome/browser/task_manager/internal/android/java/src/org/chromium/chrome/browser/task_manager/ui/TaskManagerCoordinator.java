@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.task_manager.ui;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -24,8 +27,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,7 +39,9 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.Category;
 import org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.SortDescriptor;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.DialogListItemDecoration;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.listmenu.BasicListMenu;
@@ -107,6 +114,10 @@ class TaskManagerCoordinator {
         mRecyclerView.setLayoutManager(
                 new LinearLayoutManager(
                         mRecyclerView.getContext(), LinearLayoutManager.VERTICAL, false));
+        @Px
+        int itemSpacing =
+                mRecyclerView.getResources().getDimensionPixelSize(R.dimen.task_item_margin_bottom);
+        mRecyclerView.addItemDecoration(new DialogListItemDecoration(itemSpacing));
         mRecyclerView.addOnItemTouchListener(
                 new RecyclerView.SimpleOnItemTouchListener() {
                     @Override
@@ -136,11 +147,13 @@ class TaskManagerCoordinator {
                     @Override
                     public void onItemRangeInserted(ListObservable source, int index, int count) {
                         updateEmptyView();
+                        mRecyclerView.invalidateItemDecorations();
                     }
 
                     @Override
                     public void onItemRangeRemoved(ListObservable source, int index, int count) {
                         updateEmptyView();
+                        mRecyclerView.invalidateItemDecorations();
                     }
                 };
         mTasksModel.addObserver(mTasksModelObserver);
@@ -284,7 +297,6 @@ class TaskManagerCoordinator {
         return listItems;
     }
 
-    @VisibleForTesting
     @Nullable AnchoredPopupWindow getContextMenuPopupForTesting() {
         return mContextMenuPopup;
     }
@@ -312,24 +324,16 @@ class TaskManagerCoordinator {
         }
     }
 
-    private static void bindTask(PropertyModel model, View view, PropertyKey key) {
+    private void bindTask(PropertyModel model, View view, PropertyKey key) {
         if (key == TaskManagerProperties.IS_SELECTED) {
             view.setSelected(model.get(TaskManagerProperties.IS_SELECTED));
+            updateTaskIcon(model, view);
+            if (!mRecyclerView.isComputingLayout()) {
+                mRecyclerView.invalidateItemDecorations();
+            }
             return;
         } else if (key == TaskManagerProperties.TASK_ICON) {
-            Bitmap bitmap = model.get(TaskManagerProperties.TASK_ICON);
-            TextView textView =
-                    view.findViewById(getTaskItemViewId(TaskManagerProperties.TASK_NAME));
-            if (bitmap != null) {
-                int size = view.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
-                Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, size, size, true);
-                textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                        new BitmapDrawable(view.getResources(), scaledBitmap), null, null, null);
-                textView.setCompoundDrawablePadding(20);
-            } else {
-                textView.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
-                textView.setCompoundDrawablePadding(0);
-            }
+            updateTaskIcon(model, view);
             return;
         }
 
@@ -362,6 +366,35 @@ class TaskManagerCoordinator {
         } else {
             throw new IllegalArgumentException("column key " + key + " not supported");
         }
+    }
+
+    private static void updateTaskIcon(PropertyModel model, View view) {
+        Context context = view.getContext();
+        Resources res = view.getResources();
+        TextView textView = view.findViewById(getTaskItemViewId(TaskManagerProperties.TASK_NAME));
+        boolean isSelected = model.get(TaskManagerProperties.IS_SELECTED);
+        @Nullable Bitmap bitmap = model.get(TaskManagerProperties.TASK_ICON);
+        @Nullable Drawable drawable;
+        if (isSelected) {
+            drawable = AppCompatResources.getDrawable(context, R.drawable.checkmark_circle_24dp);
+        } else if (bitmap != null) {
+            drawable = new BitmapDrawable(res, bitmap);
+        } else {
+            drawable = AppCompatResources.getDrawable(context, R.drawable.oval_shape);
+            if (drawable != null) {
+                drawable = drawable.mutate();
+                drawable.setTint(SemanticColorUtils.getColorOutlineVariant(context));
+            }
+        }
+
+        if (drawable != null) {
+            int size = res.getDimensionPixelSize(R.dimen.default_favicon_size);
+            drawable = drawable.mutate();
+            drawable.setBounds(0, 0, size, size);
+        }
+        textView.setCompoundDrawablesRelative(
+                drawable, /* top= */ null, /* end= */ null, /* bottom= */ null);
+        textView.setCompoundDrawablePadding(20);
     }
 
     private static void bindHeaderModelAndTaskView(

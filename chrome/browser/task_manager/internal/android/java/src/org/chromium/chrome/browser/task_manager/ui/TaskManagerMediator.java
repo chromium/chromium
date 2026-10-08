@@ -121,20 +121,9 @@ class TaskManagerMediator {
         }
     }
 
-    /**
-     * Toggle the selection of the task. If the task is selected, clear the selection of other
-     * tasks.
-     */
+    /** Toggle the selection of the task (Support multi-selection). */
     void toggleSelection(PropertyModel taskModel) {
-        boolean select = !taskModel.get(IS_SELECTED);
-        taskModel.set(IS_SELECTED, select);
-        if (select) {
-            for (ListItem task : mTasks) {
-                if (task.model != taskModel && task.model.get(IS_SELECTED)) {
-                    task.model.set(IS_SELECTED, false);
-                }
-            }
-        }
+        taskModel.set(IS_SELECTED, !taskModel.get(IS_SELECTED));
         checkAndNotifyIfHasKillableSelectedTaskChanged();
     }
 

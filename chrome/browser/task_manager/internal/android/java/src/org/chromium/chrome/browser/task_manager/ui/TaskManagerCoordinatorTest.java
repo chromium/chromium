@@ -23,11 +23,13 @@ import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.PROCESS_ID;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.SELECTED_CATEGORY;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.SORT_DESCRIPTOR;
+import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.TASK_ICON;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.TASK_ID;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.TASK_NAME;
 
 import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
@@ -108,7 +110,8 @@ public class TaskManagerCoordinatorTest {
         PropertyKey[] columnKeys =
                 new PropertyKey[] {TASK_NAME, MEMORY_FOOTPRINT, CPU, NETWORK_USAGE, PROCESS_ID};
         mTaskModelKeys =
-                PropertyModel.concatKeys(columnKeys, new PropertyKey[] {TASK_ID, IS_SELECTED});
+                PropertyModel.concatKeys(
+                        columnKeys, new PropertyKey[] {TASK_ID, IS_SELECTED, TASK_ICON});
 
         mHeaderModel.set(COLUMNS, columnKeys);
     }
@@ -164,8 +167,11 @@ public class TaskManagerCoordinatorTest {
         mRecyclerView.layout(0, 0, 1024, 640);
 
         View itemView = mRecyclerView.findViewHolderForAdapterPosition(0).itemView;
+        TextView taskName = itemView.findViewById(R.id.task_name);
         assertNotNull(itemView.getBackground());
         assertFalse(itemView.isSelected());
+        Drawable unselectedIcon = taskName.getCompoundDrawablesRelative()[0];
+        assertNotNull(unselectedIcon);
 
         ColorDrawable unselectedDrawable = (ColorDrawable) itemView.getBackground().getCurrent();
         assertEquals(
@@ -175,6 +181,9 @@ public class TaskManagerCoordinatorTest {
         mTasksModel.get(0).model.set(IS_SELECTED, true);
 
         assertTrue(itemView.isSelected());
+        Drawable selectedIcon = taskName.getCompoundDrawablesRelative()[0];
+        assertNotNull(selectedIcon);
+        assertNotEquals(unselectedIcon, selectedIcon);
         ColorDrawable selectedDrawable = (ColorDrawable) itemView.getBackground().getCurrent();
         assertEquals(
                 SemanticColorUtils.getColorSecondaryContainer(mActivity),
