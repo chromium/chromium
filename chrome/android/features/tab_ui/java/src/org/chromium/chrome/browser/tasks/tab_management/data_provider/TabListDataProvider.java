@@ -115,6 +115,17 @@ public abstract class TabListDataProvider {
         mTabModelSupplier.addSyncObserver(mOnTabModelChanged);
     }
 
+    /**
+     * Dispatches {@code callback} to all registered {@link TabListDataObserver}s.
+     *
+     * @param callback The callback to invoke on each observer.
+     */
+    protected void notifyObservers(Callback<TabListDataObserver> callback) {
+        for (TabListDataObserver obs : mObservers) {
+            callback.onResult(obs);
+        }
+    }
+
     /** Returns the current {@link TabModel} if tab state is initialized, or null otherwise. */
     protected @Nullable TabModel getTabModelIfTabStateInitialized() {
         return mAttachedTabModel != null && mAttachedTabModel.isTabStateInitialized()
@@ -340,17 +351,6 @@ public abstract class TabListDataProvider {
 
     private static boolean isTabItem(TabListItem item, @TabId int tabId) {
         return item instanceof TabItem tabItem && tabItem.getTabId() == tabId;
-    }
-
-    /**
-     * Dispatches {@code callback} to all registered {@link TabListDataObserver}s.
-     *
-     * @param callback The callback to invoke on each observer.
-     */
-    private void notifyObservers(Callback<TabListDataObserver> callback) {
-        for (TabListDataObserver obs : mObservers) {
-            callback.onResult(obs);
-        }
     }
 
     private void onTabModelChanged(@Nullable TabModel newModel) {
