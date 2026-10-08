@@ -98,6 +98,10 @@ class SelectionOverlayController
       mojo::PendingRemote<mojom::CaptureRegionObserver> observer,
       mojom::TabContextOptionsPtr options);
 
+  // Returns whether a new overlay session can start on the current tab,
+  // applying to every entry point.
+  bool CanStartSession();
+
   void Show(mojom::TabContextOptionsPtr options);
   // Shows the overlay with a region pre-selected around `selection_bounds`,
   // which is in screen coordinates.
@@ -223,6 +227,8 @@ class SelectionOverlayController
       uint32_t start_offset,
       uint32_t end_offset);
   void GetSuggestedActionsImpl(SuggestedActionsCallback callback);
+  // Callers must check `CanStartSession()` before staging any session state.
+  void ShowImpl(mojom::TabContextOptionsPtr options);
   // Replaces any existing selected regions with a single region created from
   // `selection_bounds`, in screen coordinates. If `selected_frame` is live,
   // also requests the text surrounding its selection.

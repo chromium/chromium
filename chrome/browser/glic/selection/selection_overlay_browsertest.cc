@@ -31,6 +31,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -468,6 +469,61 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
+                       ShowWithSelectionIgnoredWhileShowing) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+
+  gfx::Rect view_bounds = web_contents->GetViewBounds();
+  gfx::Rect selection_bounds(view_bounds.x() + 10, view_bounds.y() + 10, 100,
+                             50);
+  controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
+                                selection_bounds,
+                                selection::InteractionOptions::New());
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+  static_cast<selection::SelectionOverlayPageHandler*>(controller)
+      ->AdjustRegion(selection::SelectedRegion::New(
+                         base::UnguessableToken::Create(),
+                         selection::RegionShape::NewRect(
+                             gfx::RectF(0.5f, 0.5f, 0.2f, 0.2f))),
+                     /*is_using_keyboard=*/false);
+  ASSERT_EQ(controller->GetSelectedRegionCount(), 2u);
+
+  EXPECT_FALSE(controller->CanStartSession());
+  controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
+                                selection_bounds,
+                                selection::InteractionOptions::New());
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 2u);
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
+                       ShowWithSelectionIgnoredOnBackgroundTab) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+  gfx::Rect view_bounds = web_contents->GetViewBounds();
+  gfx::Rect selection_bounds(view_bounds.x() + 10, view_bounds.y() + 10, 100,
+                             50);
+
+  CreateAndActivateTab(GetSimpleTestUrl());
+  ASSERT_FALSE(tab->IsActivated());
+
+  EXPECT_FALSE(controller->CanStartSession());
+  controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
+                                selection_bounds,
+                                selection::InteractionOptions::New());
+  EXPECT_EQ(controller->state(), SelectionOverlayController::State::kOff);
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
                        SubmitPromptWithSelectedRegion) {
   tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
   ASSERT_TRUE(OpenGlicForActiveTab().has_value());
@@ -630,6 +686,29 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayTextSelectionBrowserTest,
   EXPECT_EQ(controller->GetSelectedRegionCount(), 0u);
 
   controller->Close();
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayTextSelectionBrowserTest,
+                       CaptureRegionIgnoredWhileTabModalShowing) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+  auto* selection_observer = GlicSelectionObserver::From(tab);
+  ASSERT_TRUE(selection_observer);
+
+  ASSERT_TRUE(SelectAllAndWaitForBounds(web_contents));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return selection_observer->GetCurrentSelectionBounds().has_value();
+  }));
+  ASSERT_TRUE(OpenGlicForActiveTab().has_value());
+
+  std::unique_ptr<tabs::ScopedTabModalUI> modal_ui = tab->ShowModalUI();
+  StartCaptureRegion(tab);
+
+  EXPECT_EQ(controller->state(), SelectionOverlayController::State::kOff);
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,

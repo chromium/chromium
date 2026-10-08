@@ -404,8 +404,7 @@ void SelectionOverlayController::CaptureRegion(
                << web_contents->GetURL();
     return;
   }
-  if (selection_overlay_controller->state() !=
-      OverlayBaseController::State::kOff) {
+  if (selection_overlay_controller->state() != State::kOff) {
     mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
     remote->OnUpdate(mojom::CaptureRegionResultPtr(),
                      mojom::CaptureRegionErrorReason::kUnknown);
@@ -429,13 +428,10 @@ void SelectionOverlayController::CaptureRegion(
     LOG(ERROR) << "Cannot share tab context for " << web_contents->GetURL();
     return;
   }
-  auto* actor_service =
-      actor::ActorKeyedService::Get(web_contents->GetBrowserContext());
-  if (actor_service && actor_service->IsActiveOnTab(*tab)) {
+  if (!selection_overlay_controller->CanStartSession()) {
     mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
     remote->OnUpdate(mojom::CaptureRegionResultPtr(),
                      mojom::CaptureRegionErrorReason::kUnknown);
-    LOG(ERROR) << "Tab has active actuation task: " << web_contents->GetURL();
     return;
   }
   // When the small chip is enabled, pre-select the tab's current text
@@ -456,10 +452,38 @@ void SelectionOverlayController::CaptureRegion(
     }
   }
   selection_overlay_controller->BindCaptureRegionObserver(std::move(observer));
-  selection_overlay_controller->Show(std::move(options));
+  selection_overlay_controller->ShowImpl(std::move(options));
+}
+
+bool SelectionOverlayController::CanStartSession() {
+  content::WebContents* web_contents = tab_->GetContents();
+  if (state() != State::kOff) {
+    LOG(ERROR) << "Overlay is still showing for " << web_contents->GetURL();
+    return false;
+  }
+  auto* actor_service =
+      actor::ActorKeyedService::Get(web_contents->GetBrowserContext());
+  if (actor_service && actor_service->IsActiveOnTab(*tab_)) {
+    LOG(ERROR) << "Tab has active actuation task: " << web_contents->GetURL();
+    return false;
+  }
+  // `ShowModalUI()` silently returns when this fails, which would leave the
+  // state staged by the caller behind while the controller is still `kOff`.
+  if (!CanShowModalUI()) {
+    LOG(ERROR) << "Cannot show modal UI for " << web_contents->GetURL();
+    return false;
+  }
+  return true;
 }
 
 void SelectionOverlayController::Show(mojom::TabContextOptionsPtr options) {
+  if (!CanStartSession()) {
+    return;
+  }
+  ShowImpl(std::move(options));
+}
+
+void SelectionOverlayController::ShowImpl(mojom::TabContextOptionsPtr options) {
   options_ = std::move(options);
   ObserveActiveTabChanges();
   ShowModalUI();
@@ -469,9 +493,12 @@ void SelectionOverlayController::ShowWithSelection(
     content::RenderFrameHost* selected_frame,
     const gfx::Rect& selection_bounds,
     selection::InteractionOptionsPtr interaction_options) {
+  if (!CanStartSession()) {
+    return;
+  }
   interaction_options_ = std::move(interaction_options);
   SetRegionFromBounds(selected_frame, selection_bounds);
-  Show(/*options=*/nullptr);
+  ShowImpl(/*options=*/nullptr);
 }
 
 void SelectionOverlayController::SetRegionFromBounds(
