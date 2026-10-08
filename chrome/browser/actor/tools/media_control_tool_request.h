@@ -18,9 +18,15 @@ class ToolRequestVisitorFunctor;
 class PlayMediaToolRequest : public TabToolRequest {
  public:
   static constexpr char kName[] = "PlayMedia";
+  // Canonical model-facing name exposed in LLM prompt schemas and indexed by
+  // `ToolRegistry` for lookup and routing via `GetToolDefinition()`.
+  static constexpr std::string_view kModelFacingName = "play_video";
 
   explicit PlayMediaToolRequest(tabs::TabHandle tab_handle);
   ~PlayMediaToolRequest() override;
+
+  // Returns the `ToolId::kPlayVideo` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   // TabToolRequest:
   CreateToolResult CreateTool(TaskId task_id,

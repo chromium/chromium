@@ -27,6 +27,9 @@ namespace actor {
 
 namespace {
 
+// Default description for the `play_video` tool.
+constexpr std::string_view kPlayMediaToolDescription = "Resume video playback.";
+
 // Default description for the `pause_video` tool.
 constexpr std::string_view kPauseMediaToolDescription = "Pause video playback.";
 
@@ -62,6 +65,13 @@ PlayMediaToolRequest::PlayMediaToolRequest(tabs::TabHandle tab_handle)
     : TabToolRequest(tab_handle) {}
 
 PlayMediaToolRequest::~PlayMediaToolRequest() = default;
+
+// static
+std::optional<ToolDefinition> PlayMediaToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kPlayVideo, kModelFacingName,
+                               kPlayMediaToolDescription)
+      .Build();
+}
 
 ToolRequest::CreateToolResult PlayMediaToolRequest::CreateTool(
     TaskId task_id,
