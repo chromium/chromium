@@ -111,7 +111,7 @@ class CORE_EXPORT CanvasRenderingContextHost
   bool IsPaintable() const;
 
   virtual bool LowLatencyEnabled() const { return false; }
-
+  virtual bool IsPrinting() const { return false; }
 
   // Required by template functions in WebGLRenderingContextBase
   int width() const { return Size().width(); }

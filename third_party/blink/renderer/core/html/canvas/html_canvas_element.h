@@ -257,9 +257,9 @@ class CORE_EXPORT HTMLCanvasElement final
 
   // CanvasResourceProviderDelegate implementation
   void NotifyGpuContextLost() override;
-  bool IsPrinting() const override;
 
   // CanvasRenderingContextHost implementation
+  bool IsPrinting() const override;
   bool ShouldAccelerate2dContext() const override;
   bool LowLatencyEnabled() const override;
   UkmParameters GetUkmParameters() override;
