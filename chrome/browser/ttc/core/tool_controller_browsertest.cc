@@ -941,6 +941,80 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SetTextMissingText) {
             actor::mojom::ActionResultCode::kArgumentsInvalid);
 }
 
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SelectOption) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL(
+                     "example.com", "/actor/select_tool.html")));
+  ASSERT_EQ("alpha", content::EvalJs(web_contents(),
+                                     "document.getElementById('plainSelect')"
+                                     ".value"));
+
+  std::optional<int> select_id = content::GetDOMNodeId(
+      *web_contents()->GetPrimaryMainFrame(), "select#plainSelect");
+  ASSERT_TRUE(select_id);
+  std::string document_id =
+      optimization_guide::DocumentIdentifierUserData::
+          GetOrCreateForCurrentDocument(web_contents()->GetPrimaryMainFrame())
+              ->serialized_token();
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "select_option";
+  tool_request.arguments.Set("node_id", base::DictValue()
+                                            .Set("document_id", document_id)
+                                            .Set("dom_node_id", *select_id));
+  tool_request.arguments.Set("value", "last");
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  EXPECT_TRUE(future.Take().Ok());
+  EXPECT_EQ("last", content::EvalJs(web_contents(),
+                                    "document.getElementById('plainSelect')"
+                                    ".value"));
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SelectOptionMissingNodeId) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "select_option";
+  tool_request.arguments.Set("value", "last");
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  ASSERT_FALSE(response.Ok());
+  EXPECT_EQ(response.error().code,
+            actor::mojom::ActionResultCode::kArgumentsInvalid);
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SelectOptionMissingValue) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "select_option";
+  tool_request.arguments.Set(
+      "node_id",
+      base::DictValue().Set("document_id", "token").Set("dom_node_id", 1));
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  ASSERT_FALSE(response.Ok());
+  EXPECT_EQ(response.error().code,
+            actor::mojom::ActionResultCode::kArgumentsInvalid);
+}
+
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, UnsupportedTool) {
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
@@ -966,7 +1040,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   ASSERT_TRUE(session_controller);
 
   std::vector<ToolDefinition> tools = session_controller->GetToolDefinitions();
-  ASSERT_EQ(tools.size(), 16u);
+  ASSERT_EQ(tools.size(), 17u);
 
   const ToolDefinition& open_url = tools[0];
   EXPECT_EQ(open_url.name, "open_url");
@@ -1254,6 +1328,33 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   ASSERT_TRUE(set_text_required);
   EXPECT_EQ(*set_text_required,
             base::ListValue().Append("node_id").Append("text"));
+
+  const ToolDefinition& select_option = tools[16];
+  EXPECT_EQ(select_option.name, "select_option");
+  EXPECT_FALSE(select_option.description.empty());
+  EXPECT_EQ(select_option.behavior, ToolDefinition::Behavior::kBlocking);
+  EXPECT_EQ(select_option.verbalization,
+            ToolDefinition::Verbalization::kSilentAction);
+
+  const base::DictValue& select_schema = select_option.parameters_json_schema;
+  const std::string* select_schema_type = select_schema.FindString("type");
+  ASSERT_TRUE(select_schema_type);
+  EXPECT_EQ(*select_schema_type, "object");
+
+  const std::string* select_node_id_type =
+      select_schema.FindStringByDottedPath("properties.node_id.type");
+  ASSERT_TRUE(select_node_id_type);
+  EXPECT_EQ(*select_node_id_type, "integer");
+
+  const std::string* select_value_type =
+      select_schema.FindStringByDottedPath("properties.value.type");
+  ASSERT_TRUE(select_value_type);
+  EXPECT_EQ(*select_value_type, "string");
+
+  const base::ListValue* select_required = select_schema.FindList("required");
+  ASSERT_TRUE(select_required);
+  EXPECT_EQ(*select_required,
+            base::ListValue().Append("node_id").Append("value"));
 }
 
 // The session's actor task is started with the session and stopped when it

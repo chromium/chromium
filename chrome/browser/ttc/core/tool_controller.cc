@@ -27,6 +27,7 @@
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/perform_search_tool_request.h"
+#include "chrome/browser/actor/tools/select_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/translate_page_tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
@@ -218,6 +219,11 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
 
   if (tool_request.name == "set_text") {
     SetText(tool_request.arguments, std::move(callback));
+    return;
+  }
+
+  if (tool_request.name == "select_option") {
+    SelectOption(tool_request.arguments, std::move(callback));
     return;
   }
 #endif
@@ -498,6 +504,33 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   set_text.behavior = ToolDefinition::Behavior::kBlocking;
   set_text.verbalization = ToolDefinition::Verbalization::kSilentAction;
   tools.push_back(std::move(set_text));
+
+  ToolDefinition select_option;
+  select_option.name = "select_option";
+  select_option.description =
+      "Select an option from a dropdown (<select>) element on the active "
+      "webpage.";
+  select_option.parameters_json_schema =
+      base::DictValue()
+          .Set("type", "object")
+          .Set(
+              "properties",
+              base::DictValue()
+                  .Set("node_id",
+                       base::DictValue()
+                           .Set("type", "integer")
+                           .Set("description",
+                                "The numeric node ID of the target dropdown "
+                                "element (e.g. 101)."))
+                  .Set("value", base::DictValue()
+                                    .Set("type", "string")
+                                    .Set("description",
+                                         "The value of the <option> element to "
+                                         "select.")))
+          .Set("required", base::ListValue().Append("node_id").Append("value"));
+  select_option.behavior = ToolDefinition::Behavior::kBlocking;
+  select_option.verbalization = ToolDefinition::Verbalization::kSilentAction;
+  tools.push_back(std::move(select_option));
 #endif
 
   return tools;
@@ -790,6 +823,34 @@ void ToolController::SetText(const base::DictValue& arguments,
         return std::make_unique<actor::TypeToolRequest>(
             tab_handle, *page_target, *text,
             /*follow_by_enter=*/false, actor::TypeToolRequest::Mode::kReplace);
+      },
+      std::move(callback));
+}
+
+void ToolController::SelectOption(const base::DictValue& arguments,
+                                  ToolResponseCallback callback) {
+  base::expected<actor::PageTarget, std::string> page_target =
+      ParseNodeIdArgument(arguments);
+  if (!page_target.has_value()) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            page_target.error()));
+    return;
+  }
+
+  const std::string* value = arguments.FindString("value");
+  if (!value) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing value argument"));
+    return;
+  }
+
+  PerformActionOnTrackedContents(
+      [&page_target, &value](
+          tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::SelectToolRequest>(tab_handle,
+                                                          *page_target, *value);
       },
       std::move(callback));
 }
