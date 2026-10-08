@@ -1523,6 +1523,7 @@ features through Chrome Labs. -->
     <variant name=".BookmarkBarOnlyOnNtp"/>
     <variant name=".BookmarkPage"/>
     <variant name=".Cast"/>
+    <variant name=".ChromeEnterpriseReleaseNotes"/>
     <variant name=".ChromeOSRestart"/>
     <variant name=".ChromeTips"/>
     <variant name=".ChromeWhatsNew"/>

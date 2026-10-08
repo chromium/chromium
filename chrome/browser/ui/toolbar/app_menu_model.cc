@@ -1978,6 +1978,13 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
             is_vertical, tabs::VerticalTabStripEntryPoint::kAppMenu);
       }
       break;
+    case IDC_CHROME_ENTERPRISE_RELEASE_NOTES:
+      if (!uma_action_recorded_) {
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.ChromeEnterpriseReleaseNotes", delta);
+      }
+      LogMenuAction(MENU_ACTION_CHROME_ENTERPRISE_RELEASE_NOTES);
+      break;
     default: {
       if (IsOtherProfileCommand(command_id)) {
         if (!uma_action_recorded_) {

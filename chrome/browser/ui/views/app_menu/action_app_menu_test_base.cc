@@ -72,29 +72,30 @@ void ActionAppMenuTestBase::SetUp() {
 
   // Create test ActionItems as children of a root ActionItem.
   auto root = actions::ActionItem::Builder().Build();
-  auto add_action = [&root, this](actions::ActionId action_id,
-                                  std::u16string text,
-                                  std::optional<std::u16string> short_title =
-                                      std::nullopt) {
-    auto item = actions::ActionItem::Builder(
-                    base::BindRepeating(&MockActionCallback::Call,
-                                        base::Unretained(&mock_action_invoked_),
-                                        action_id))
-                    .SetActionId(action_id)
-                    .SetText(text)
-                    .SetTooltipText(text)
-                    .SetAccessibleName(text)
-                    .SetEnabled(true)
-                    .SetVisible(action_id != kActionUpgradeDialog &&
-                                action_id != kActionGlobalError &&
-                                action_id != kActionSetBrowserAsDefault &&
-                                action_id != kActionSkillsAndExtensionsSubmenu)
-                    .Build();
-    if (short_title.has_value()) {
-      item->SetProperty(actions::kShortTitleTextKey, *short_title);
-    }
-    root->AddChild(std::move(item));
-  };
+  auto add_action =
+      [&root, this](actions::ActionId action_id, std::u16string text,
+                    std::optional<std::u16string> short_title = std::nullopt) {
+        auto item =
+            actions::ActionItem::Builder(
+                base::BindRepeating(&MockActionCallback::Call,
+                                    base::Unretained(&mock_action_invoked_),
+                                    action_id))
+                .SetActionId(action_id)
+                .SetText(text)
+                .SetTooltipText(text)
+                .SetAccessibleName(text)
+                .SetEnabled(true)
+                .SetVisible(action_id != kActionUpgradeDialog &&
+                            action_id != kActionGlobalError &&
+                            action_id != kActionSetBrowserAsDefault &&
+                            action_id != kActionSkillsAndExtensionsSubmenu &&
+                            action_id != kActionChromeEnterpriseReleaseNotes)
+                .Build();
+        if (short_title.has_value()) {
+          item->SetProperty(actions::kShortTitleTextKey, *short_title);
+        }
+        root->AddChild(std::move(item));
+      };
 
   add_action(kActionNewTab, u"New Tab");
   add_action(kActionNewWindow, u"New Window");
@@ -207,6 +208,8 @@ void ActionAppMenuTestBase::SetUp() {
   add_action(kActionReportUnsafeSite, u"Report Unsafe Site");
   add_action(kActionExit, u"Exit");
   add_action(kActionShowManagementPage, u"Managed by your organization");
+  add_action(kActionChromeEnterpriseReleaseNotes,
+             u"Chrome Enterprise release notes");
   add_action(kActionZoomSubmenu, u"Zoom");
   add_action(kActionZoomMinus, u"Zoom Out");
   add_action(kActionZoomNormal, u"100%");

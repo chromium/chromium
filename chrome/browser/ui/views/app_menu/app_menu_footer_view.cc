@@ -40,6 +40,7 @@ enum class FooterContainer {
 FooterContainer GetFooterContainerForAction(actions::ActionId action_id) {
   switch (action_id) {
     case kActionShowManagementPage:
+    case kActionChromeEnterpriseReleaseNotes:
       return FooterContainer::kBottom;
 #if BUILDFLAG(IS_MAC)
     case kActionOptions:
@@ -116,6 +117,9 @@ AppMenuFooterView::AppMenuFooterView(
   for (const auto& footer_child :
        footer_action_item->GetChildren().children()) {
     actions::ActionItem* footer_child_ptr = footer_child->GetActionItem();
+    if (!footer_child_ptr->GetVisible()) {
+      continue;
+    }
     std::optional<actions::ActionId> action_id =
         footer_child_ptr->GetActionId();
     CHECK(action_id.has_value());

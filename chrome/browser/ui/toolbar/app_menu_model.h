@@ -142,6 +142,7 @@ enum AppMenuAction {
   MENU_ACTION_TOGGLE_VERTICAL_TABS = 120,
   MENU_ACTION_NAME_WINDOW = 121,
   MENU_ACTION_ASK_GOOGLE_ABOUT_THIS_PAGE = 122,
+  MENU_ACTION_CHROME_ENTERPRISE_RELEASE_NOTES = 123,
   LIMIT_MENU_ACTION
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ui/enums.xml:WrenchMenuAction)

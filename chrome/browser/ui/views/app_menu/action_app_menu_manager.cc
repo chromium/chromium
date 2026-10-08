@@ -1163,6 +1163,8 @@ void ActionAppMenuManager::AddFooterActions(actions::ActionItem* root) {
                .text_override = GetManagedUiMenuItemLabel(profile),
                .icon_override =
                    ui::ImageModel::FromVectorIcon(GetManagedUiIcon(profile))});
+          section.AddAction(kActionChromeEnterpriseReleaseNotes,
+                            {.display_type = DisplayType::kRow});
         }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
       });

@@ -258,6 +258,7 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #endif
@@ -4817,21 +4818,26 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                                                 : kSecurityOldIcon,
               ui::kColorMenuIconOnEmphasizedBackground))
           .Build());
-  if (base::FeatureList::IsEnabled(features::kEnterpriseReleaseNotes)) {
-    root_action_item_->AddChild(
-        ChromeMenuAction(
-            base::BindRepeating(
-                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                   actions::ActionInvocationContext context) {
-                  chrome::ShowChromeEnterpriseReleaseNotes(bwi);
-                },
-                bwi),
-            kActionChromeEnterpriseReleaseNotes,
-            IDS_CHROME_ENTERPRISE_RELEASE_NOTES,
-            IDS_CHROME_ENTERPRISE_RELEASE_NOTES, omnibox::kChromeProductIcon,
-            /*is_pinnable=*/false)
-            .Build());
-  }
+  root_action_item_->AddChild(
+      ChromeMenuAction(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::ShowChromeEnterpriseReleaseNotes(bwi);
+              },
+              bwi),
+          kActionChromeEnterpriseReleaseNotes,
+          IDS_CHROME_ENTERPRISE_RELEASE_NOTES,
+          IDS_CHROME_ENTERPRISE_RELEASE_NOTES, omnibox::kChromeProductIcon,
+          /*is_pinnable=*/false)
+#if BUILDFLAG(IS_LINUX)
+          .SetVisible(
+              enterprise_util::IsBrowserManaged(profile) &&
+              base::FeatureList::IsEnabled(features::kEnterpriseReleaseNotes))
+#else
+          .SetVisible(false)
+#endif
+          .Build());
 
   root_action_item_->AddChild(
       actions::ActionItem::Builder(

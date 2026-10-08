@@ -486,6 +486,10 @@ void ActionAppMenuMetrics::LogMenuActionWithId(actions::ActionId action_id) {
     case kActionShowManagementPage:
       RecordAction(MENU_ACTION_SHOW_MANAGEMENT_PAGE, "ShowManagementPage");
       break;
+    case kActionChromeEnterpriseReleaseNotes:
+      RecordAction(MENU_ACTION_CHROME_ENTERPRISE_RELEASE_NOTES,
+                   "ChromeEnterpriseReleaseNotes");
+      break;
     case kActionReportUnsafeSite:
       RecordAction(MENU_ACTION_REPORT_UNSAFE_SITE, "ReportUnsafeSite");
       break;
