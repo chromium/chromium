@@ -9,7 +9,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/test/scoped_feature_list.h"
 #include "cc/animation/animation_host.h"
+#include "cc/base/features.h"
 #include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/solid_color_layer.h"
@@ -171,6 +173,56 @@ TEST_F(SolidColorLayerImplTest, VerifyEliminateTransparentOpacity) {
   layer->AppendQuads(AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false},
                      render_pass.get(), &data);
   EXPECT_EQ(render_pass->quad_list.size(), 0U);
+}
+
+TEST_F(SolidColorLayerImplTest, VerifyEliminateTransparentAlphaWithBlendModes) {
+  gfx::Size layer_size = gfx::Size(100, 100);
+  auto* layer = AddLayerInActiveTree<SolidColorLayerImpl>();
+  layer->SetBounds(layer_size);
+  layer->SetDrawsContent(true);
+  layer->SetBackgroundColor(SkColors::kTransparent);
+  CopyProperties(root_layer(), layer);
+  auto& effect_node = CreateEffectNode(layer);
+  effect_node.render_surface_reason = RenderSurfaceReason::kTest;
+
+  auto should_keep_transparent_quad = [](SkBlendMode mode) {
+    switch (mode) {
+      case SkBlendMode::kClear:
+      case SkBlendMode::kSrc:
+      case SkBlendMode::kSrcIn:
+      case SkBlendMode::kDstIn:
+      case SkBlendMode::kSrcOut:
+      case SkBlendMode::kDstATop:
+      case SkBlendMode::kModulate:
+        return true;
+      default:
+        return false;
+    }
+  };
+
+  for (int i = 0; i <= static_cast<int>(SkBlendMode::kLastMode); ++i) {
+    SkBlendMode mode = static_cast<SkBlendMode>(i);
+    SCOPED_TRACE(SkBlendMode_Name(mode));
+    effect_node.blend_mode = mode;
+    UpdateActiveTreeDrawProperties();
+
+    auto render_pass = viz::CompositorRenderPass::Create();
+    AppendQuadsData data;
+    layer->AppendQuads(AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false},
+                       render_pass.get(), &data);
+    EXPECT_EQ(render_pass->quad_list.size(),
+              should_keep_transparent_quad(mode) ? 1u : 0u);
+
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        features::kOmitTransparentSolidQuadsForNoopBlendModes);
+    auto legacy_render_pass = viz::CompositorRenderPass::Create();
+    AppendQuadsData legacy_data;
+    layer->AppendQuads(AppendQuadsContext{DRAW_MODE_HARDWARE, {}, false},
+                       legacy_render_pass.get(), &legacy_data);
+    EXPECT_EQ(legacy_render_pass->quad_list.size(),
+              mode == SkBlendMode::kSrcOver ? 0u : 1u);
+  }
 }
 
 TEST_F(SolidColorLayerImplTest, VerifyNeedsBlending) {

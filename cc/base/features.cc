@@ -335,4 +335,8 @@ BASE_FEATURE(kBrowserControlsExtraHideGestures,
 BASE_FEATURE(kDeferMainFrameBeforeCommitWithPendingTree,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill switch for https://crbug.com/569098933.
+BASE_FEATURE(kOmitTransparentSolidQuadsForNoopBlendModes,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features

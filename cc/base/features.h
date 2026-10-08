@@ -342,6 +342,12 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kBrowserControlsExtraHideGestures);
 // unactivated pending tree. Killswitch for crbug.com/467678916.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDeferMainFrameBeforeCommitWithPendingTree);
 
+// When enabled, SolidColorLayerImpl::AppendSolidQuads omits transparent solid
+// quads for all blend modes where a transparent source does not modify the
+// destination, not only kSrcOver.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kOmitTransparentSolidQuadsForNoopBlendModes);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_
