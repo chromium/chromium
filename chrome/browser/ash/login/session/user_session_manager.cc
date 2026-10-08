@@ -825,7 +825,7 @@ void UserSessionManager::CompleteGuestSessionLogin(const GURL& start_url) {
           user_manager::GuestAccountId()),
       /*feature_flags=*/{}, /*origin_list_flags=*/{});
 
-  RestartChrome(command_line, RestartChromeReason::kGuest);
+  RestartChrome(local_state_.get(), command_line, RestartChromeReason::kGuest);
 }
 
 scoped_refptr<Authenticator> UserSessionManager::CreateAuthenticator(

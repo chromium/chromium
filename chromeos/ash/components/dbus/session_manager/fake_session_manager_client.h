@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
@@ -197,6 +198,21 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
     return restart_job_reason_;
   }
 
+  // Returns how many times RestartJob() was called.
+  int restart_job_call_count() const { return restart_job_call_count_; }
+
+  // If set to true, RestartJob() holds its reply until
+  // SendDeferredRestartJobReplies() is called, instead of replying
+  // immediately. Note that on success the real session_manager kills Chrome
+  // before replying. Must not be called while any reply is held.
+  void set_defer_restart_job_reply(bool defer_restart_job_reply) {
+    CHECK(deferred_restart_job_replies_.empty());
+    defer_restart_job_reply_ = defer_restart_job_reply;
+  }
+
+  // Replies with `result` to the RestartJob() calls whose replies are held.
+  void SendDeferredRestartJobReplies(bool result);
+
   void set_stop_session_callback(base::OnceClosure callback) {
     stop_session_callback_ = std::move(callback);
   }
@@ -381,6 +397,14 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   // If restart job was requested, and the client supports restart job, the
   // requested restart reason.
   std::optional<RestartJobReason> restart_job_reason_;
+
+  int restart_job_call_count_ = 0;
+
+  // If set to true, RestartJob() replies are held in
+  // `deferred_restart_job_replies_` until SendDeferredRestartJobReplies() is
+  // called.
+  bool defer_restart_job_reply_ = false;
+  std::vector<chromeos::VoidDBusMethodCallback> deferred_restart_job_replies_;
 
   // Callback that will be run, if set, when StopSession() is called.
   base::OnceClosure stop_session_callback_;

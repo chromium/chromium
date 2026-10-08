@@ -569,6 +569,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "chrome_restart_request_unittest.cc",
     "enterprise_user_session_metrics_unittest.cc",
     "error_screens_histogram_helper_unittest.cc",
     "existing_user_controller_auto_login_unittest.cc",

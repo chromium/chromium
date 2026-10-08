@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ash/login/chrome_restart_request.h"
 #include "chrome/browser/ash/shimless_rma/diagnostics_app_profile_helper.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
@@ -53,7 +55,9 @@ void ChromeShimlessRmaDelegate::ExitRmaThenRestartChrome() {
   command_line.AppendSwitch(::ash::switches::kRmaNotAllowed);
   // Remove any attempts to launch RMA.
   command_line.RemoveSwitch(::ash::switches::kLaunchRma);
-  ash::RestartChrome(command_line, ash::RestartChromeReason::kUserless);
+  // TODO(crbug.com/404133274): Avoid using g_browser_process.
+  ash::RestartChrome(CHECK_DEREF(g_browser_process->local_state()),
+                     command_line, ash::RestartChromeReason::kUserless);
 }
 
 void ChromeShimlessRmaDelegate::ShowDiagnosticsDialog() {

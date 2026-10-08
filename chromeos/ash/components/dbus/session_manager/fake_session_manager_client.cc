@@ -323,13 +323,24 @@ void FakeSessionManagerClient::RestartJob(
     chromeos::VoidDBusMethodCallback callback) {
   DCHECK(supports_browser_restart_);
 
+  ++restart_job_call_count_;
   restart_job_argv_ = argv;
   restart_job_reason_ = reason;
   if (restart_job_callback_)
     std::move(restart_job_callback_).Run();
 
+  if (defer_restart_job_reply_) {
+    deferred_restart_job_replies_.push_back(std::move(callback));
+    return;
+  }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
+}
+
+void FakeSessionManagerClient::SendDeferredRestartJobReplies(bool result) {
+  for (auto& callback : std::exchange(deferred_restart_job_replies_, {})) {
+    std::move(callback).Run(result);
+  }
 }
 
 void FakeSessionManagerClient::SaveLoginPassword(const std::string& password) {

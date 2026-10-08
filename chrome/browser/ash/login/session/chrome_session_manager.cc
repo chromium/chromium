@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/session/chrome_session_manager.h"
 
+#include <functional>
 #include <memory>
 
 #include "ash/constants/ash_features.h"
@@ -330,7 +331,7 @@ void LaunchShimlessRma() {
 }
 
 // The callback invoked when RmadClient determines that RMA is required.
-void OnRmaIsRequiredResponse() {
+void OnRmaIsRequiredResponse(PrefService& local_state) {
   VLOG(1) << "ChromeSessionManager::OnRmaIsRequiredResponse";
   switch (session_manager::SessionManager::Get()->session_state()) {
     case session_manager::SessionState::UNKNOWN:
@@ -359,7 +360,8 @@ void OnRmaIsRequiredResponse() {
             *base::CommandLine::ForCurrentProcess();
         base::CommandLine command_line(browser_command_line);
         command_line.AppendSwitch(switches::kLaunchRma);
-        RestartChrome(command_line, RestartChromeReason::kUserless);
+        RestartChrome(local_state, command_line,
+                      RestartChromeReason::kUserless);
         break;
       }
     }
@@ -470,7 +472,7 @@ void ChromeSessionManager::Initialize(
     // If the RMA state is detected later, OnRmaIsRequiredResponse() is invoked
     // to append the kLaunchRma switch and restart Chrome in RMA mode.
     RmadClient::Get()->SetRmaRequiredCallbackForSessionManager(
-        base::BindOnce(&OnRmaIsRequiredResponse));
+        base::BindOnce(&OnRmaIsRequiredResponse, std::ref(local_state_.get())));
   } else {
     VLOG(1) << "ChromeSessionManager::Initialize Shimless RMA is not allowed";
   }

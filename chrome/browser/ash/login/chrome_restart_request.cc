@@ -74,6 +74,9 @@ using ::content::BrowserThread;
 // Increase logging level for Guest mode to avoid INFO messages in logs.
 const char kGuestModeLoggingLevel[] = "1";
 
+// Whether RestartChrome() has been called.
+bool g_restart_requested = false;
+
 bool IsRunningTest() {
   const base::CommandLine* current_command_line =
       base::CommandLine::ForCurrentProcess();
@@ -299,8 +302,10 @@ class ChromeRestartRequest {
 
   ~ChromeRestartRequest();
 
-  // Starts the request.
-  void Start();
+  // Starts the request. The request is sent once the pending writes of
+  // `local_state` are committed, or after a timeout. `local_state` is only
+  // used during this call.
+  void Start(PrefService& local_state);
 
  private:
   // Fires job restart request to session manager.
@@ -323,7 +328,7 @@ ChromeRestartRequest::ChromeRestartRequest(const std::vector<std::string>& argv,
 
 ChromeRestartRequest::~ChromeRestartRequest() = default;
 
-void ChromeRestartRequest::Start() {
+void ChromeRestartRequest::Start(PrefService& local_state) {
   VLOG(1) << "Requesting a restart with command line: "
           << base::JoinString(argv_, " ");
 
@@ -333,7 +338,7 @@ void ChromeRestartRequest::Start() {
 
   // XXX: normally this call must not be needed, however RestartJob
   // just kills us so settings may be lost. See http://crosbug.com/13102
-  g_browser_process->local_state()->CommitPendingWrite(base::BindOnce(
+  local_state.CommitPendingWrite(base::BindOnce(
       &ChromeRestartRequest::RestartJob, weak_ptr_factory_.GetWeakPtr()));
   timer_.Start(FROM_HERE, base::Seconds(3), this,
                &ChromeRestartRequest::RestartJob);
@@ -342,6 +347,11 @@ void ChromeRestartRequest::Start() {
 void ChromeRestartRequest::RestartJob() {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   VLOG(1) << "ChromeRestartRequest::RestartJob";
+
+  // Called on either the local state commit or the timeout, whichever comes
+  // first. Cancel the other one so that the restart request is sent only once.
+  timer_.Stop();
+  weak_ptr_factory_.InvalidateWeakPtrs();
 
   // The session manager requires a RestartJob caller to open a socket pair and
   // pass one end over D-Bus while holding the local end open for the duration
@@ -400,16 +410,16 @@ void GetOffTheRecordCommandLine(const GURL& start_url,
   DeriveFeatures(command_line);
 }
 
-void RestartChrome(const base::CommandLine& command_line,
+void RestartChrome(PrefService& local_state,
+                   const base::CommandLine& command_line,
                    RestartChromeReason reason) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   BootTimesRecorder::Get()->set_restart_requested();
 
-  static bool restart_requested = false;
-  if (restart_requested) {
+  if (g_restart_requested) {
     NOTREACHED() << "Request chrome restart for more than once.";
   }
-  restart_requested = true;
+  g_restart_requested = true;
 
   if (!SessionManagerClient::Get()->SupportsBrowserRestart()) {
     // Do nothing when running as test on bots or a dev box.
@@ -424,7 +434,11 @@ void RestartChrome(const base::CommandLine& command_line,
   }
 
   // ChromeRestartRequest deletes itself after request sent to session manager.
-  (new ChromeRestartRequest(command_line.argv(), reason))->Start();
+  (new ChromeRestartRequest(command_line.argv(), reason))->Start(local_state);
+}
+
+void ResetRestartRequestedForTesting() {
+  g_restart_requested = false;
 }
 
 }  // namespace ash
