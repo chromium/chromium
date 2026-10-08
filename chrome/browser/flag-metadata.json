@@ -9194,6 +9194,14 @@
     "expiry_milestone": 160
   },
   {
+    "name": "snapshot-background-decode",
+    "owners": [
+      "junov@chromium.org",
+      "bling-fundamentals@google.com"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "snapshot-compressed-jpeg-quality",
     "owners": [ "asamidoi@chromium.org", "justincohen@chromium.org" ],
     "expiry_milestone": 160

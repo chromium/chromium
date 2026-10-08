@@ -1818,6 +1818,11 @@ inline constexpr char kSmoothScrollingUseDelegateDescription[] =
     "When enabled, the SmoothScrollingDefault experiment uses the regular "
     "UIScrollViewDelegate instead of KVO and broadcasting.";
 
+inline constexpr char kSnapshotBackgroundDecodeName[] =
+    "Snapshot Background Decode";
+inline constexpr char kSnapshotBackgroundDecodeDescription[] =
+    "Enables decoding tab snapshot images on the background thread pool.";
+
 inline constexpr char kSnapshotCompressedJPEGQualityName[] =
     "Snapshot Compressed JPEG Quality";
 inline constexpr char kSnapshotCompressedJPEGQualityDescription[] =

@@ -33,4 +33,9 @@
   block();
 }
 
+- (UIImage*)decode:(UIImage*(NS_NOESCAPE ^)(void))block {
+  TRACE_EVENT("ui", "ImageFileManager.readImage:decode");
+  return block();
+}
+
 @end

@@ -18,3 +18,9 @@ BASE_FEATURE(kSnapshotDownsampleImage, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsSnapshotDownsampleImageEnabled() {
   return base::FeatureList::IsEnabled(kSnapshotDownsampleImage);
 }
+
+BASE_FEATURE(kSnapshotBackgroundDecode, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsSnapshotBackgroundDecodeEnabled() {
+  return base::FeatureList::IsEnabled(kSnapshotBackgroundDecode);
+}

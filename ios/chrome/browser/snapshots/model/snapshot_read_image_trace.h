@@ -23,6 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
 // Wraps `block` inside the completion handler perfetto slice.
 - (void)completion:(void(NS_NOESCAPE ^)(void))block;
 
+// Wraps `block` inside the decode slice and returns the result.
+- (UIImage*)decode:(UIImage*(NS_NOESCAPE ^)(void))block;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -89,7 +89,14 @@ extension SnapshotReadImageTrace: @unchecked Sendable {}
     backgroundTaskQueue.async(group: backgroundTaskGroup) { [weak self] in
       guard let self = self else { return }
       trace.backgroundTask {
-        let image = UIImage(contentsOfFile: imagePath.path)
+        var image = UIImage(contentsOfFile: imagePath.path)
+        if let ensuredImage = image,
+          IsSnapshotBackgroundDecodeEnabled()
+        {
+          image = trace.decode {
+            ensuredImage.preparingForDisplay() ?? ensuredImage
+          }
+        }
         // Call the callback on the main thread.
         self.mainTaskGroup.enter()
         DispatchQueue.main.async { [weak self, image] in

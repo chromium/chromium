@@ -20,6 +20,9 @@ BASE_DECLARE_FEATURE(kSnapshotCompressedJPEGQuality);
 // at their original captured resolution.
 BASE_DECLARE_FEATURE(kSnapshotDownsampleImage);
 
+// Feature flag to enable background decoding of tab grid images.
+BASE_DECLARE_FEATURE(kSnapshotBackgroundDecode);
+
 extern "C" {
 #endif  // __cplusplus
 
@@ -28,6 +31,9 @@ bool IsSnapshotCompressedJPEGQualityEnabled(void);
 
 // Returns true if the kSnapshotDownsampleImage feature flag is enabled.
 bool IsSnapshotDownsampleImageEnabled(void);
+
+// Returns true if the kSnapshotBackgroundDecode feature flag is enabled.
+bool IsSnapshotBackgroundDecodeEnabled(void);
 
 #ifdef __cplusplus
 }  // extern "C"
