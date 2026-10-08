@@ -16,7 +16,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -90,8 +89,23 @@ import java.io.IOException;
 
 /** Tests for some parts of {@link CustomTabsConnection}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CustomTabsConnectionUnitTest {
+    // getIntentDataProvider() is otherwise only populated during native initialization.
+    private static class TestCustomTabActivity extends CustomTabActivity {
+        private BrowserServicesIntentDataProvider mIntentDataProvider;
+        private int mFinishAndRemoveTaskCount;
+
+        @Override
+        public BrowserServicesIntentDataProvider getIntentDataProvider() {
+            return mIntentDataProvider;
+        }
+
+        @Override
+        public void finishAndRemoveTask() {
+            mFinishAndRemoveTaskCount++;
+            super.finishAndRemoveTask();
+        }
+    }
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public final TemporaryFolder mTemporaryFolder = new TemporaryFolder();
@@ -409,26 +423,30 @@ public class CustomTabsConnectionUnitTest {
 
     // TODO(https://crrev.com/c/4118209) Add more tests for Feature enabling/disabling.
 
-    private BaseCustomTabActivity createMockCustomTabActivity(
+    private TestCustomTabActivity createCustomTabActivity(
             boolean hasTargetNetwork, SessionHolder session, boolean finishing) {
-        BaseCustomTabActivity activity = mock(BaseCustomTabActivity.class);
+        TestCustomTabActivity activity =
+                Robolectric.buildActivity(TestCustomTabActivity.class).get();
         BrowserServicesIntentDataProvider provider = mock(BrowserServicesIntentDataProvider.class);
-        when(activity.getIntentDataProvider()).thenReturn(provider);
+        activity.mIntentDataProvider = provider;
         when(provider.hasTargetNetwork()).thenReturn(hasTargetNetwork);
         doReturn(session).when(provider).getSession();
-        when(activity.isFinishing()).thenReturn(finishing);
+        if (finishing) {
+            activity.finish();
+        }
         return activity;
     }
 
     @Test
     public void testCleanUpSession_matchingSessionWithTargetNetwork_finishesAndRemovesTask() {
-        BaseCustomTabActivity activity =
-                createMockCustomTabActivity(
+        TestCustomTabActivity activity =
+                createCustomTabActivity(
                         /* hasTargetNetwork= */ true, mSessionHolder, /* finishing= */ false);
         ApplicationStatus.onStateChangeForTesting(activity, ActivityState.CREATED);
         try {
             mConnection.cleanUpSession(mSession);
-            verify(activity).finishAndRemoveTask();
+            assertEquals(1, activity.mFinishAndRemoveTaskCount);
+            assertTrue(activity.isFinishing());
         } finally {
             ApplicationStatus.onStateChangeForTesting(activity, ActivityState.DESTROYED);
         }
@@ -436,13 +454,14 @@ public class CustomTabsConnectionUnitTest {
 
     @Test
     public void testCleanUpSession_withoutTargetNetwork_doesNotFinish() {
-        BaseCustomTabActivity activity =
-                createMockCustomTabActivity(
+        TestCustomTabActivity activity =
+                createCustomTabActivity(
                         /* hasTargetNetwork= */ false, mSessionHolder, /* finishing= */ false);
         ApplicationStatus.onStateChangeForTesting(activity, ActivityState.CREATED);
         try {
             mConnection.cleanUpSession(mSession);
-            verify(activity, never()).finishAndRemoveTask();
+            assertEquals(0, activity.mFinishAndRemoveTaskCount);
+            assertFalse(activity.isFinishing());
         } finally {
             ApplicationStatus.onStateChangeForTesting(activity, ActivityState.DESTROYED);
         }
@@ -452,13 +471,14 @@ public class CustomTabsConnectionUnitTest {
     public void testCleanUpSession_differentSession_doesNotFinish() {
         SessionHolder otherSession =
                 SessionHolder.of(CustomTabsSessionToken.createMockSessionTokenForTesting());
-        BaseCustomTabActivity activity =
-                createMockCustomTabActivity(
+        TestCustomTabActivity activity =
+                createCustomTabActivity(
                         /* hasTargetNetwork= */ true, otherSession, /* finishing= */ false);
         ApplicationStatus.onStateChangeForTesting(activity, ActivityState.CREATED);
         try {
             mConnection.cleanUpSession(mSession);
-            verify(activity, never()).finishAndRemoveTask();
+            assertEquals(0, activity.mFinishAndRemoveTaskCount);
+            assertFalse(activity.isFinishing());
         } finally {
             ApplicationStatus.onStateChangeForTesting(activity, ActivityState.DESTROYED);
         }
@@ -466,13 +486,13 @@ public class CustomTabsConnectionUnitTest {
 
     @Test
     public void testCleanUpSession_alreadyFinishing_doesNotFinishAgain() {
-        BaseCustomTabActivity activity =
-                createMockCustomTabActivity(
+        TestCustomTabActivity activity =
+                createCustomTabActivity(
                         /* hasTargetNetwork= */ true, mSessionHolder, /* finishing= */ true);
         ApplicationStatus.onStateChangeForTesting(activity, ActivityState.CREATED);
         try {
             mConnection.cleanUpSession(mSession);
-            verify(activity, never()).finishAndRemoveTask();
+            assertEquals(0, activity.mFinishAndRemoveTaskCount);
         } finally {
             ApplicationStatus.onStateChangeForTesting(activity, ActivityState.DESTROYED);
         }

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.customtabs.content;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -15,7 +16,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
+import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
@@ -62,8 +63,18 @@ import org.chromium.url.GURL;
  * classes in {@link CustomTabActivityUrlLoadingTest}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CustomTabActivityNavigationControllerTest {
+    // onNewIntent() otherwise runs startup / native initialization logic.
+    private static class TestChromeTabbedActivity extends ChromeTabbedActivity {
+        private Intent mLastNewIntent;
+
+        @Override
+        @SuppressWarnings("MissingSuperCall")
+        public void onNewIntent(Intent intent) {
+            mLastNewIntent = intent;
+        }
+    }
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -75,7 +86,6 @@ public class CustomTabActivityNavigationControllerTest {
     @Mock CustomTabActivityTabController mTabController;
     @Mock FinishHandler mFinishHandler;
     @Mock OnBackInvokedDispatcher mDispatcher;
-    @Mock private ChromeTabbedActivity mAdjacentActivity;
 
     @Before
     public void setUp() {
@@ -262,16 +272,18 @@ public class CustomTabActivityNavigationControllerTest {
 
     @Test
     public void finishes_whenDoneReparentingToAdjacentActivity() {
+        TestChromeTabbedActivity adjacentActivity =
+                Robolectric.buildActivity(TestChromeTabbedActivity.class).get();
         ExternalNavigationDelegateImpl.setWillChromeHandleIntentHookForTesting(intent -> true);
-        MultiWindowUtils.setActivitySupplierForTesting(() -> mAdjacentActivity);
+        MultiWindowUtils.setActivitySupplierForTesting(() -> adjacentActivity);
         TabWindowManager tabWindowManager = mock(TabWindowManager.class);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
-        when(tabWindowManager.getIdForWindow(mAdjacentActivity)).thenReturn(1);
-        MultiWindowUtils.setActivityByWindowIdForTesting(1, mAdjacentActivity);
+        when(tabWindowManager.getIdForWindow(adjacentActivity)).thenReturn(1);
+        MultiWindowUtils.setActivityByWindowIdForTesting(1, adjacentActivity);
 
         mNavigationController.openCurrentUrlInBrowser();
 
-        verify(mAdjacentActivity, times(1)).onNewIntent(any());
+        assertNotNull(adjacentActivity.mLastNewIntent);
         verify(mFinishHandler).onFinish(FinishReason.REPARENTING, false);
     }
 
