@@ -28,6 +28,7 @@ using testing::_;
 using testing::AllOf;
 using testing::Each;
 using testing::ElementsAre;
+using testing::ElementsAreArray;
 using testing::Field;
 using testing::Gt;
 using testing::IsEmpty;
@@ -173,6 +174,36 @@ TEST_F(JourneysDatabaseTest, AddAndGetJourneysBatch) {
               Optional(MatchesJourney(journey1)));
   EXPECT_THAT(journeys_db()->GetJourney("journey_2"),
               Optional(MatchesJourney(journey2)));
+}
+
+// History entries are read in visit time order and continuation queries in
+// insertion order, from both getters.
+TEST_F(JourneysDatabaseTest, ChildRowsAreReadInOrder) {
+  const base::Time time1 =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000));
+  const base::Time time2 =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(2000));
+  const base::Time time3 =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(3000));
+  JourneyRow journey = CreateTestJourney("journey_1", "Trip to Paris",
+                                         /*creation_time_micros=*/5000);
+  journey.history_entries = {JourneyHistoryEntry(time3),
+                             JourneyHistoryEntry(time1),
+                             JourneyHistoryEntry(time2)};
+  journey.continuation_queries = {
+      JourneyContinuationQuery("Museums", "Find museums"),
+      JourneyContinuationQuery("Hotels", "Find hotels"),
+      JourneyContinuationQuery("Restaurants", "Find restaurants")};
+  ASSERT_TRUE(journeys_db()->AddOrUpdateJourneys({journey}));
+
+  const auto in_order = AllOf(
+      Field("history_entries", &JourneyRow::history_entries,
+            ElementsAre(JourneyHistoryEntry(time1), JourneyHistoryEntry(time2),
+                        JourneyHistoryEntry(time3))),
+      Field("continuation_queries", &JourneyRow::continuation_queries,
+            ElementsAreArray(journey.continuation_queries)));
+  EXPECT_THAT(journeys_db()->GetJourney("journey_1"), Optional(in_order));
+  EXPECT_THAT(journeys_db()->GetAllJourneys(), ElementsAre(in_order));
 }
 
 // Each journey gets only its own child rows, from both getters.

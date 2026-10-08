@@ -287,13 +287,13 @@ std::optional<JourneyRow> JourneysDatabase::GetJourney(
   sql::Statement s_entries(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
       "SELECT journey_id, visit_timestamp_micros FROM journey_history_entries "
-      "WHERE journey_id = ?"));
+      "WHERE journey_id = ? ORDER BY visit_timestamp_micros"));
   s_entries.BindString(0, journey_id);
 
   sql::Statement s_queries(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
       "SELECT journey_id, title, prompt FROM journey_continuation_queries "
-      "WHERE journey_id = ?"));
+      "WHERE journey_id = ? ORDER BY id"));
   s_queries.BindString(0, journey_id);
 
   std::vector<JourneyRow> journeys =
@@ -316,11 +316,12 @@ std::vector<JourneyRow> JourneysDatabase::GetAllJourneys() {
   sql::Statement s_entries(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
       "SELECT journey_id, visit_timestamp_micros FROM "
-      "journey_history_entries"));
+      "journey_history_entries ORDER BY journey_id, visit_timestamp_micros"));
 
   sql::Statement s_queries(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
-      "SELECT journey_id, title, prompt FROM journey_continuation_queries"));
+      "SELECT journey_id, title, prompt FROM journey_continuation_queries "
+      "ORDER BY id"));
 
   return ReadJourneys(s_journeys, s_entries, s_queries);
 }
