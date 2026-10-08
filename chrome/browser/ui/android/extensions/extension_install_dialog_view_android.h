@@ -16,9 +16,16 @@ class WebContents;
 
 namespace extensions {
 
-// Android implementation of the extension install dialog.
+// Android implementation of the extension install dialog. Owned by its Java
+// peer (ExtensionInstallDialogBridge.java), which deletes it when the dialog
+// is dismissed.
 class ExtensionInstallDialogViewAndroid {
  public:
+  static void Show(content::WebContents* web_contents,
+                   std::unique_ptr<InstallPromptData> prompt,
+                   ExtensionInstallPrompt::DoneCallback done_callback,
+                   ui::WindowAndroid* window_android);
+
   ExtensionInstallDialogViewAndroid(
       content::WebContents* web_contents,
       std::unique_ptr<InstallPromptData> prompt,
@@ -29,14 +36,11 @@ class ExtensionInstallDialogViewAndroid {
       const ExtensionInstallDialogViewAndroid&) = delete;
   ~ExtensionInstallDialogViewAndroid();
 
-  void ShowDialog(ui::WindowAndroid* window_android);
-
   // JNI methods.
   void OnDialogAccepted(const std::string& justification_text,
                         bool with_withheld_permissions);
   void OnDialogCanceled();
   void OnDialogDismissed();
-  void Destroy();
   void OnStoreLinkClicked(const std::string& url);
 
  private:

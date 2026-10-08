@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.ui.extensions;
 
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -22,6 +24,7 @@ import androidx.test.core.app.ApplicationProvider;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -61,10 +64,13 @@ public class ExtensionInstallDialogBridgeTest {
     private static final String SITE_ACCESS_HEADING = "Allow site access";
     private static final String SITE_ACCESS_ON_CLICK = "When you click the extension";
     private static final String SITE_ACCESS_ALWAYS_ALL_SITES = "Always on all sites";
-    private static final long NATIVE_INSTALL_EXTENSION_DIALOG_VIEW = 100L;
     private static final Bitmap ICON = Bitmap.createBitmap(24, 24, Bitmap.Config.ARGB_8888);
 
     @Mock private Natives mNativeMock;
+
+    @Mock
+    private JniUniquePtr<ExtensionInstallDialogBridge.NativeExtensionInstallDialogViewAndroid>
+            mNativePtr;
 
     private FakeModalDialogManager mModalDialogManager;
     private Resources mResources;
@@ -81,8 +87,7 @@ public class ExtensionInstallDialogBridgeTest {
         ExtensionInstallDialogBridgeJni.setInstanceForTesting(mNativeMock);
 
         mExtensionInstallDialogBridge =
-                new ExtensionInstallDialogBridge(
-                        NATIVE_INSTALL_EXTENSION_DIALOG_VIEW, mActivity, mModalDialogManager);
+                new ExtensionInstallDialogBridge(mNativePtr, mActivity, mModalDialogManager);
     }
 
     /** Helper method to build and show the dialog with standard test data. */
@@ -248,9 +253,8 @@ public class ExtensionInstallDialogBridgeTest {
 
         // Verify the native method was called with the input text.
         verify(mNativeMock, times(1))
-                .onDialogAccepted(
-                        NATIVE_INSTALL_EXTENSION_DIALOG_VIEW, JUSTIFICATION_TEXT_INPUT, false);
-        verify(mNativeMock, times(1)).destroy(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW);
+                .onDialogAccepted(same(mNativePtr), eq(JUSTIFICATION_TEXT_INPUT), eq(false));
+        verify(mNativePtr, times(1)).destroy();
     }
 
     /**
@@ -323,31 +327,30 @@ public class ExtensionInstallDialogBridgeTest {
 
         // 1. Click when active: this should call native.
         storeLink.performClick();
-        verify(mNativeMock, times(1))
-                .onStoreLinkClicked(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW, storeUrl);
+        verify(mNativeMock, times(1)).onStoreLinkClicked(same(mNativePtr), eq(storeUrl));
 
-        // Reset mock for the next check.
+        // 2. Dismiss, which destroys and clears the pointer, then click again: this should NOT
+        // call native.
+        mExtensionInstallDialogBridge.onDismiss(null, DialogDismissalCause.DISMISSED_BY_NATIVE);
         reset(mNativeMock);
-
-        // 2. Clear pointer and click again: this should NOT call native.
-        mExtensionInstallDialogBridge.clearNativePtr();
         storeLink.performClick();
-        verify(mNativeMock, times(0))
-                .onStoreLinkClicked(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW, storeUrl);
+        verify(mNativeMock, times(0)).onStoreLinkClicked(any(), any());
     }
 
     /** Tests that onDismiss does not call native methods after the native pointer is cleared. */
     @Test
     public void testOnDismissAfterPointerCleared() {
-        // 1. Clear the pointer manually.
-        mExtensionInstallDialogBridge.clearNativePtr();
+        // 1. Dismiss once, which destroys and clears the pointer.
+        mExtensionInstallDialogBridge.onDismiss(null, DialogDismissalCause.DISMISSED_BY_NATIVE);
+        reset(mNativeMock);
 
-        // 2. Trigger onDismiss.
+        // 2. Trigger onDismiss again.
         mExtensionInstallDialogBridge.onDismiss(null, DialogDismissalCause.DISMISSED_BY_NATIVE);
 
         // 3. Verify no JNI calls were made to onDialogDismissed or onDialogCanceled.
-        verify(mNativeMock, times(0)).onDialogDismissed(anyLong());
-        verify(mNativeMock, times(0)).onDialogCanceled(anyLong());
+        verify(mNativeMock, times(0)).onDialogDismissed(any());
+        verify(mNativeMock, times(0)).onDialogCanceled(any());
+        verify(mNativePtr, times(1)).destroy();
     }
 
     /** Tests that tapjacking protections are correctly applied to the dialog model. */
@@ -378,8 +381,8 @@ public class ExtensionInstallDialogBridgeTest {
 
         String justification = "";
         verify(mNativeMock, times(1))
-                .onDialogAccepted(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW, justification, false);
-        verify(mNativeMock, times(1)).destroy(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW);
+                .onDialogAccepted(same(mNativePtr), eq(justification), eq(false));
+        verify(mNativePtr, times(1)).destroy();
     }
 
     /**
@@ -392,8 +395,8 @@ public class ExtensionInstallDialogBridgeTest {
 
         mModalDialogManager.clickNegativeButton();
 
-        verify(mNativeMock, times(1)).onDialogCanceled(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW);
-        verify(mNativeMock, times(1)).destroy(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW);
+        verify(mNativeMock, times(1)).onDialogCanceled(same(mNativePtr));
+        verify(mNativePtr, times(1)).destroy();
     }
 
     /**
@@ -409,8 +412,8 @@ public class ExtensionInstallDialogBridgeTest {
         mModalDialogManager.dismissDialog(model, DialogDismissalCause.UNKNOWN);
 
         Assert.assertNull(mModalDialogManager.getShownDialogModel());
-        verify(mNativeMock, times(1)).onDialogDismissed(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW);
-        verify(mNativeMock, times(1)).destroy(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW);
+        verify(mNativeMock, times(1)).onDialogDismissed(same(mNativePtr));
+        verify(mNativePtr, times(1)).destroy();
     }
 
     /** Tests that the dialog displays the site access options correctly. */
@@ -460,9 +463,8 @@ public class ExtensionInstallDialogBridgeTest {
 
         mModalDialogManager.clickPositiveButton();
 
-        verify(mNativeMock, times(1))
-                .onDialogAccepted(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW, "", true);
-        verify(mNativeMock, times(1)).destroy(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW);
+        verify(mNativeMock, times(1)).onDialogAccepted(same(mNativePtr), eq(""), eq(true));
+        verify(mNativePtr, times(1)).destroy();
     }
 
     /**
@@ -483,9 +485,8 @@ public class ExtensionInstallDialogBridgeTest {
 
         mModalDialogManager.clickPositiveButton();
 
-        verify(mNativeMock, times(1))
-                .onDialogAccepted(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW, "", false);
-        verify(mNativeMock, times(1)).destroy(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW);
+        verify(mNativeMock, times(1)).onDialogAccepted(same(mNativePtr), eq(""), eq(false));
+        verify(mNativePtr, times(1)).destroy();
     }
 
     /**
@@ -509,8 +510,7 @@ public class ExtensionInstallDialogBridgeTest {
         mModalDialogManager.clickPositiveButton();
 
         verify(mNativeMock, times(1))
-                .onDialogAccepted(
-                        NATIVE_INSTALL_EXTENSION_DIALOG_VIEW, JUSTIFICATION_TEXT_INPUT, true);
-        verify(mNativeMock, times(1)).destroy(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW);
+                .onDialogAccepted(same(mNativePtr), eq(JUSTIFICATION_TEXT_INPUT), eq(true));
+        verify(mNativePtr, times(1)).destroy();
     }
 }

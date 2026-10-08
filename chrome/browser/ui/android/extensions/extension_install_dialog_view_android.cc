@@ -20,6 +20,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/modal_dialog_manager_bridge.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -55,16 +56,32 @@ void ShowExtensionInstallDialogAndroid(
 
   // WebContents is optional (e.g. for permission prompts requested from a
   // background context) and is only used if the user clicks a Web Store link.
-  content::WebContents* web_contents = show_params->GetParentWebContents();
-  auto* dialog_view = new extensions::ExtensionInstallDialogViewAndroid(
-      web_contents, std::move(prompt), std::move(done_callback));
-  dialog_view->ShowDialog(window_android);
-  // `dialog_view` will delete itself when dialog is dismissed.
+  extensions::ExtensionInstallDialogViewAndroid::Show(
+      show_params->GetParentWebContents(), std::move(prompt),
+      std::move(done_callback), window_android);
 }
 
 }  // namespace
 
 namespace extensions {
+
+// static
+void ExtensionInstallDialogViewAndroid::Show(
+    content::WebContents* web_contents,
+    std::unique_ptr<InstallPromptData> prompt,
+    ExtensionInstallPrompt::DoneCallback done_callback,
+    ui::WindowAndroid* window_android) {
+  auto dialog = jni_zero::MakeUnique<ExtensionInstallDialogViewAndroid>(
+      web_contents, std::move(prompt), std::move(done_callback));
+  // Java only destroys the object when the dialog is dismissed.
+  ExtensionInstallDialogViewAndroid* self = dialog.get();
+  JNIEnv* env = base::android::AttachCurrentThread();
+  self->java_object_.Reset(Java_ExtensionInstallDialogBridge_create(
+      env, std::move(dialog), window_android));
+
+  self->BuildPropertyModel();
+  Java_ExtensionInstallDialogBridge_showDialog(env, self->java_object_);
+}
 
 ExtensionInstallDialogViewAndroid::ExtensionInstallDialogViewAndroid(
     content::WebContents* web_contents,
@@ -75,9 +92,6 @@ ExtensionInstallDialogViewAndroid::ExtensionInstallDialogViewAndroid(
       done_callback_(std::move(done_callback)) {}
 
 ExtensionInstallDialogViewAndroid::~ExtensionInstallDialogViewAndroid() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ExtensionInstallDialogBridge_clearNativePtr(env, java_object_);
-
   if (!done_callback_) {
     return;
   }
@@ -86,16 +100,6 @@ ExtensionInstallDialogViewAndroid::~ExtensionInstallDialogViewAndroid() {
   std::move(done_callback_)
       .Run(ExtensionInstallPrompt::DoneCallbackPayload(
           ExtensionInstallPrompt::Result::USER_CANCELED));
-}
-
-void ExtensionInstallDialogViewAndroid::ShowDialog(
-    ui::WindowAndroid* window_android) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  java_object_.Reset(Java_ExtensionInstallDialogBridge_create(
-      env, reinterpret_cast<intptr_t>(this), window_android));
-
-  BuildPropertyModel();
-  Java_ExtensionInstallDialogBridge_showDialog(env, java_object_);
 }
 
 void ExtensionInstallDialogViewAndroid::OnDialogAccepted(
@@ -120,10 +124,6 @@ void ExtensionInstallDialogViewAndroid::OnDialogDismissed() {
   std::move(done_callback_)
       .Run(ExtensionInstallPrompt::DoneCallbackPayload(
           ExtensionInstallPrompt::Result::USER_CANCELED));
-}
-
-void ExtensionInstallDialogViewAndroid::Destroy() {
-  delete this;
 }
 
 void ExtensionInstallDialogViewAndroid::OnStoreLinkClicked(
