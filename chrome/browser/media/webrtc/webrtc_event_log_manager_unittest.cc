@@ -139,11 +139,13 @@ constexpr int kLid = 478;
 constexpr size_t kWebAppId = 42;
 constexpr int kFrameId = 57;
 
-PeerConnectionKey GetPeerConnectionKey(RenderProcessHost* rph, int lid) {
+PeerConnectionKey GetPeerConnectionKey(RenderProcessHost* rph,
+                                       int lid,
+                                       int frame_id = kFrameId) {
   const BrowserContext* browser_context = rph->GetBrowserContext();
   const auto browser_context_id = GetBrowserContextId(browser_context);
   return PeerConnectionKey(rph->GetID().value(), lid, browser_context_id,
-                           kFrameId);
+                           frame_id);
 }
 
 bool CreateRemoteBoundLogFile(const base::FilePath& dir,
@@ -1474,6 +1476,15 @@ TEST_F(WebRtcEventLogManagerTest,
   ASSERT_TRUE(OnPeerConnectionAdded(key));
   ASSERT_TRUE(OnPeerConnectionRemoved(key));
   EXPECT_FALSE(OnPeerConnectionRemoved(key));
+}
+
+TEST_F(WebRtcEventLogManagerTest,
+       OnPeerConnectionRemovedWithDifferentFrameIdDoesNotRemoveOtherFramePc) {
+  const auto key1 = GetPeerConnectionKey(rph_.get(), kLid, kFrameId);
+  const auto key2 = GetPeerConnectionKey(rph_.get(), kLid, kFrameId + 1);
+  ASSERT_TRUE(OnPeerConnectionAdded(key1));
+  EXPECT_FALSE(OnPeerConnectionRemoved(key2));
+  EXPECT_TRUE(OnPeerConnectionRemoved(key1));
 }
 
 TEST_F(WebRtcEventLogManagerTest, OnPeerConnectionSessionIdSetReturnsTrue) {
