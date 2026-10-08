@@ -509,7 +509,7 @@ void ConfirmChangeProfileWithCompletion(SaveToPhotosCoordinator* coordinator,
   _alertController = nil;
 }
 
-- (void)handleSigninResult:(SigninCoordinatorResultOrIdentity)result {
+- (void)handleSigninResult:(const SigninCoordinatorResultOrIdentity&)result {
   [_signinCoordinator stop];
   _signinCoordinator = nil;
   if (result.has_value()) {
