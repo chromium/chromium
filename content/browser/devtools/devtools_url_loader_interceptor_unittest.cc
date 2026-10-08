@@ -24,6 +24,7 @@
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_partition_key_collection.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -32,6 +33,7 @@
 #include "services/network/test/test_network_context.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -71,6 +73,17 @@ class FakeNetworkContext : public network::TestNetworkContext {
 
  private:
   FakeCookieManager cookie_manager_;
+};
+
+class TestContinueRequestCallback
+    : public DevToolsURLLoaderInterceptor::ContinueInterceptedRequestCallback {
+ public:
+  void sendSuccess() override {}
+  void sendFailure(const protocol::Response& response) override {
+    ADD_FAILURE() << "ContinueInterceptedRequest failed: "
+                  << response.Message();
+  }
+  void fallThrough() override {}
 };
 
 }  // namespace
@@ -127,18 +140,70 @@ class DevToolsURLLoaderInterceptorTest : public testing::Test {
       network::mojom::URLLoaderFactory* factory,
       int32_t request_id,
       const GURL& url) {
-    StartedLoader result;
-    result.client = std::make_unique<network::TestURLLoaderClient>();
     network::ResourceRequest request;
     request.url = url;
     request.method = "GET";
+    return StartAndExpectInterception(
+        factory, request_id, network::mojom::kURLLoadOptionNone, request);
+  }
+
+  // Starts a CORS preflight the way the network service's PreflightController
+  // does: an OPTIONS request that reuses the request ID of the request it
+  // precedes.
+  StartedLoader StartPreflightAndExpectInterception(
+      network::mojom::URLLoaderFactory* factory,
+      int32_t request_id,
+      const GURL& url) {
+    network::ResourceRequest request;
+    request.url = url;
+    request.method = "OPTIONS";
+    return StartAndExpectInterception(
+        factory, request_id, network::mojom::kURLLoadOptionAsCorsPreflight,
+        request);
+  }
+
+  // Starts a GET request, continues it past interception, and delivers a 302
+  // redirect to `redirect_url`. The returned request waits for
+  // FollowRedirect(), which is when the network service sends the redirect's
+  // CORS preflight.
+  StartedLoader StartRequestAndReceiveRedirect(
+      network::mojom::URLLoaderFactory* factory,
+      int32_t request_id,
+      const GURL& url,
+      const GURL& redirect_url) {
+    StartedLoader result =
+        StartRequestAndExpectInterception(factory, request_id, url);
+    interceptor_->ContinueInterceptedRequest(
+        result.interception_id,
+        std::make_unique<DevToolsURLLoaderInterceptor::Modifications>(),
+        std::make_unique<TestContinueRequestCallback>());
+    target_factory_.WaitForRequest(url);
+    CHECK_EQ(1, target_factory_.NumPending());
+
+    net::RedirectInfo redirect_info;
+    redirect_info.status_code = net::HTTP_FOUND;
+    redirect_info.new_method = "GET";
+    redirect_info.new_url = redirect_url;
+    target_factory_.GetPendingRequest(0)->client->OnReceiveRedirect(
+        redirect_info, network::CreateURLResponseHead(net::HTTP_FOUND));
+    result.client->RunUntilRedirectReceived();
+    return result;
+  }
+
+ private:
+  StartedLoader StartAndExpectInterception(
+      network::mojom::URLLoaderFactory* factory,
+      int32_t request_id,
+      uint32_t options,
+      const network::ResourceRequest& request) {
+    StartedLoader result;
+    result.client = std::make_unique<network::TestURLLoaderClient>();
 
     base::RunLoop run_loop;
     on_intercepted_ = run_loop.QuitClosure();
     factory->CreateLoaderAndStart(
-        result.loader.BindNewPipeAndPassReceiver(), request_id,
-        network::mojom::kURLLoadOptionNone, request,
-        result.client->CreateRemote(),
+        result.loader.BindNewPipeAndPassReceiver(), request_id, options,
+        request, result.client->CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
     run_loop.Run();
 
@@ -155,17 +220,6 @@ class DevToolsURLLoaderInterceptorTest : public testing::Test {
   std::string last_interception_id_;
   std::unique_ptr<InterceptedRequestInfo> last_intercepted_info_;
   base::OnceClosure on_intercepted_;
-};
-
-class TestContinueRequestCallback
-    : public DevToolsURLLoaderInterceptor::ContinueInterceptedRequestCallback {
- public:
-  void sendSuccess() override {}
-  void sendFailure(const protocol::Response& response) override {
-    ADD_FAILURE() << "ContinueInterceptedRequest failed: "
-                  << response.Message();
-  }
-  void fallThrough() override {}
 };
 
 // Verifies that a browser-initiated request using a renderer process ID
@@ -451,6 +505,160 @@ TEST_F(DevToolsURLLoaderInterceptorTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(bad_message_observer.got_bad_message());
   EXPECT_EQ(1, target_factory_.NumPending());
+}
+
+// Verifies that a CORS preflight sharing the request ID of an in-flight request
+// does not abort that request. With kAvoidCorsURLLoaderRestartOnRedirect, the
+// network service's CorsURLLoader keeps the original loader alive across a
+// redirect and sends the preflight for the redirect target through the DevTools
+// factory override with the same request ID, so both loaders are legitimately
+// in flight at the same time (crbug.com/570354835).
+TEST_F(DevToolsURLLoaderInterceptorTest,
+       CorsPreflightForRedirectDoesNotAbortInFlightRequest) {
+  constexpr int kRendererProcessId = 42;
+  constexpr int32_t kRequestId = 1;
+  const GURL kOriginalUrl("http://cross-origin.test/manifest.json?x=1");
+  const GURL kRedirectUrl("http://cross-origin.test/manifest.json");
+  mojo::Remote<network::mojom::URLLoaderFactory> factory =
+      CreateFactoryForProcess(kRendererProcessId);
+
+  StartedLoader main_request = StartRequestAndReceiveRedirect(
+      factory.get(), kRequestId, kOriginalUrl, kRedirectUrl);
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  StartedLoader preflight = StartPreflightAndExpectInterception(
+      factory.get(), kRequestId, kRedirectUrl);
+  EXPECT_NE(main_request.interception_id, preflight.interception_id);
+
+  // The main request must survive the preflight. If it is aborted,
+  // FollowRedirect() below waits forever for an interception.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+  EXPECT_FALSE(main_request.client->has_received_completion());
+  ASSERT_FALSE(main_request.client->has_received_disconnect());
+
+  // The preflight completes.
+  interceptor_->ContinueInterceptedRequest(
+      preflight.interception_id,
+      std::make_unique<DevToolsURLLoaderInterceptor::Modifications>(),
+      std::make_unique<TestContinueRequestCallback>());
+  target_factory_.WaitForRequest(kRedirectUrl);
+  ASSERT_TRUE(target_factory_.SimulateResponseForPendingRequest(
+      kRedirectUrl.spec(), "", net::HTTP_NO_CONTENT));
+  preflight.client->RunUntilComplete();
+  EXPECT_EQ(net::OK, preflight.client->completion_status().error_code);
+
+  // The main request then follows the redirect and is intercepted again as the
+  // next hop of the same request.
+  base::RunLoop redirect_intercepted;
+  on_intercepted_ = redirect_intercepted.QuitClosure();
+  main_request.loader->FollowRedirect({}, std::nullopt);
+  redirect_intercepted.Run();
+  ASSERT_TRUE(last_intercepted_info_);
+  ASSERT_TRUE(last_intercepted_info_->redirected_request_id);
+  EXPECT_EQ(main_request.interception_id,
+            *last_intercepted_info_->redirected_request_id);
+}
+
+// Verifies that when a CORS preflight sharing the request ID of an in-flight
+// request shuts down, the in-flight request stays indexed by its
+// GlobalRequestID. A later non-preflight request with the same ID must still
+// collide with, and shut down, the in-flight request.
+TEST_F(DevToolsURLLoaderInterceptorTest,
+       CompletedCorsPreflightKeepsInFlightRequestIndexed) {
+  constexpr int kRendererProcessId = 42;
+  constexpr int32_t kRequestId = 1;
+  const GURL kOriginalUrl("http://cross-origin.test/manifest.json?x=1");
+  const GURL kRedirectUrl("http://cross-origin.test/manifest.json");
+  mojo::Remote<network::mojom::URLLoaderFactory> factory =
+      CreateFactoryForProcess(kRendererProcessId);
+
+  StartedLoader main_request = StartRequestAndReceiveRedirect(
+      factory.get(), kRequestId, kOriginalUrl, kRedirectUrl);
+
+  // The preflight completes and its job shuts down, which calls RemoveJob()
+  // with the shared GlobalRequestID.
+  StartedLoader preflight = StartPreflightAndExpectInterception(
+      factory.get(), kRequestId, kRedirectUrl);
+  interceptor_->ContinueInterceptedRequest(
+      preflight.interception_id,
+      std::make_unique<DevToolsURLLoaderInterceptor::Modifications>(),
+      std::make_unique<TestContinueRequestCallback>());
+  target_factory_.WaitForRequest(kRedirectUrl);
+  ASSERT_TRUE(target_factory_.SimulateResponseForPendingRequest(
+      kRedirectUrl.spec(), "", net::HTTP_NO_CONTENT));
+  preflight.client->RunUntilComplete();
+  preflight.loader.reset();
+  preflight.client->RunUntilDisconnect();
+
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(main_request.client->has_received_disconnect());
+
+  // A non-preflight request reusing the ID collides with the main request.
+  StartedLoader colliding = StartRequestAndExpectInterception(
+      factory.get(), kRequestId, GURL("http://cross-origin.test/other"));
+  main_request.client->RunUntilDisconnect();
+  EXPECT_FALSE(colliding.client->has_received_disconnect());
+}
+
+// Verifies that an auth challenge for a request ID shared by an in-flight
+// request and its CORS preflight is never routed to the preflight job.
+// Preflights omit credentials, so a challenge for the shared ID must not be
+// answered by the preflight's interception.
+TEST_F(DevToolsURLLoaderInterceptorTest,
+       AuthChallengeNotRoutedToCorsPreflightJob) {
+  constexpr int kRendererProcessId = 42;
+  constexpr int32_t kRequestId = 1;
+  const GURL kOriginalUrl("http://cross-origin.test/manifest.json?x=1");
+  const GURL kRedirectUrl("http://cross-origin.test/manifest.json");
+
+  std::vector<DevToolsURLLoaderInterceptor::Pattern> patterns;
+  patterns.emplace_back("*", base::flat_set<blink::mojom::ResourceType>(),
+                        DevToolsURLLoaderInterceptor::kRequest);
+  interceptor_->SetPatterns(std::move(patterns), /*handle_auth=*/true);
+
+  mojo::Remote<network::mojom::URLLoaderFactory> factory =
+      CreateFactoryForProcess(kRendererProcessId);
+
+  // The main request waits for FollowRedirect(), so it cannot handle auth.
+  StartedLoader main_request = StartRequestAndReceiveRedirect(
+      factory.get(), kRequestId, kOriginalUrl, kRedirectUrl);
+
+  // The preflight is sent to the network, which is the state in which a job
+  // handles auth challenges.
+  StartedLoader preflight = StartPreflightAndExpectInterception(
+      factory.get(), kRequestId, kRedirectUrl);
+  interceptor_->ContinueInterceptedRequest(
+      preflight.interception_id,
+      std::make_unique<DevToolsURLLoaderInterceptor::Modifications>(),
+      std::make_unique<TestContinueRequestCallback>());
+  target_factory_.WaitForRequest(kRedirectUrl);
+
+  net::AuthChallengeInfo challenge;
+  challenge.scheme = "basic";
+  challenge.realm = "realm";
+
+  bool handle_auth_completed = false;
+  bool fallback_result = false;
+  std::optional<net::AuthCredentials> creds_result;
+  DevToolsURLLoaderInterceptor::HandleAuthRequest(
+      GlobalRequestID(ToOriginatingProcessIdUnsafe(kRendererProcessId),
+                      kRequestId),
+      challenge,
+      base::BindLambdaForTesting(
+          [&](bool use_fallback,
+              const std::optional<net::AuthCredentials>& creds) {
+            handle_auth_completed = true;
+            fallback_result = use_fallback;
+            creds_result = creds;
+          }));
+
+  // No job can handle the challenge, so it falls back to default handling
+  // synchronously.
+  EXPECT_TRUE(handle_auth_completed);
+  EXPECT_TRUE(fallback_result);
+  EXPECT_FALSE(creds_result.has_value());
+  EXPECT_FALSE(main_request.client->has_received_disconnect());
 }
 
 // Verifies that in a daisy-chained interceptor setup, an auth challenge is
