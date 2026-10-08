@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/views/native_widget_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "ui/accessibility/ax_node_data.h"

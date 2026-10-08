@@ -16,7 +16,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_client.h"
@@ -24,6 +23,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/test/views/chrome_test_views_delegate.h"
@@ -55,6 +55,7 @@ class GaiaId;
 
 namespace content {
 class NavigationController;
+class WebContents;
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

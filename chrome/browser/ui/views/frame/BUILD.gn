@@ -2363,7 +2363,6 @@ source_set("browser_tests") {
     "//chrome/browser/ui/views/tabs:test_support",
     "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_frame_toolbar_view",
     "//chrome/browser/ui/window_metadata",
-    "//chrome/test/base:test_browser_window",
     "//components/enterprise/data_controls/core/browser:test_support",
     "//components/safe_browsing/core/browser/realtime:test_support",
     "//ui/accessibility:test_support",

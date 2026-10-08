@@ -12,7 +12,6 @@
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/actor_constants.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"

@@ -6,7 +6,6 @@
 
 #include "base/strings/strcat.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/signin/public/identity_manager/test_identity_manager_observer.h"
 #include "google_apis/gaia/gaia_switches.h"
