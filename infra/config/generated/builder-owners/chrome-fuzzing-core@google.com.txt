@@ -44,6 +44,7 @@ try/linux-x64-libfuzzer-ubsan-rel-tests
 try/linux-x86-libfuzzer-asan-rel-tests
 try/mac-arm64-centipede-asan-rel
 try/mac-arm64-centipede-asan-rel-tests
+try/mac-arm64-libfuzzer-asan-rel
 try/mac-arm64-libfuzzer-asan-rel-tests
 try/mac-libfuzzer-asan-rel
 try/win-libfuzzer-asan-rel

@@ -784,6 +784,7 @@
     "mac-arm64-asan-rel": "try/mac-arm64-asan-rel/gn-args.json",
     "mac-arm64-centipede-asan-rel": "try/mac-arm64-centipede-asan-rel/gn-args.json",
     "mac-arm64-centipede-asan-rel-tests": "try/mac-arm64-centipede-asan-rel-tests/gn-args.json",
+    "mac-arm64-libfuzzer-asan-rel": "try/mac-arm64-libfuzzer-asan-rel/gn-args.json",
     "mac-arm64-libfuzzer-asan-rel-tests": "try/mac-arm64-libfuzzer-asan-rel-tests/gn-args.json",
     "mac-asan-media-rel": "try/mac-asan-media-rel/gn-args.json",
     "mac-asan-rel": "try/mac-asan-rel/gn-args.json",

@@ -130,6 +130,14 @@ _mirror_builder(name = "android-desktop-x64-asan-rel")
 _mirror_builder(name = "android-arm64-libfuzzer-hwasan", executable = "recipe:chromium/fuzz")
 
 _mirror_builder(
+    name = "mac-arm64-libfuzzer-asan-rel",
+    executable = "recipe:chromium/fuzz",
+    cores = None,
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+)
+
+_mirror_builder(
     name = "mac-arm64-centipede-asan-rel",
     cores = None,
     os = os.MAC_DEFAULT,
