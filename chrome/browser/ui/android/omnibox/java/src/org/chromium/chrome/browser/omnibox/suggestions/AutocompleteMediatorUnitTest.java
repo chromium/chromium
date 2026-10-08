@@ -2777,6 +2777,26 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
+    public void testUnsyncedAnimation_showsKeyboardInStandbyStateWithCompactFuseboxOnWideWindow() {
+        doReturn(true).when(mEmbedder).isWideWindow();
+        mFuseboxStateSupplier.set(FuseboxState.COMPACT);
+        FuseboxSessionState session = createSession(AutocompleteRequestType.SEARCH);
+        mMediator.beginInput(session);
+        assertTrue(mMediator.shouldAnimateFuseboxPopover());
+
+        session.getAutocompleteInput()
+                .setAutocompleteState(AutocompleteInput.AutocompleteState.STANDBY);
+        assertFalse(mMediator.shouldAnimateFuseboxPopover());
+
+        clearInvocations(mAutocompleteDelegate);
+        OmniboxAnimator animator = mMediator.setupSuggestionsListShowAnimation();
+        animator.start();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mAutocompleteDelegate).setKeyboardVisibility(true);
+    }
+
+    @Test
     public void onTopResumedActivityChanged_managesObservers() {
         var session = createEmptySession();
         mMediator.beginInput(session);

@@ -1510,7 +1510,8 @@ class AutocompleteMediator
     boolean shouldAnimateFuseboxPopover() {
         return mFuseboxCoordinator.getFuseboxStateSupplier().get() != FuseboxState.DISABLED
                 && mEmbedder.isWideWindow()
-                && !OmniboxCapabilities.isDesktopPlatform();
+                && !OmniboxCapabilities.isDesktopPlatform()
+                && (mAutocompleteInput == null || !mAutocompleteInput.isStandby());
     }
 
     private @FuseboxLayoutMode int getFuseboxLayoutMode() {
