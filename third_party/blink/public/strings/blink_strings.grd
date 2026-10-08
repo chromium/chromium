@@ -607,6 +607,9 @@ below:
       <message name="IDS_XSLT_DEPRECATION_BANNER_CAP_ALERT_TEXT" desc="Text of a banner shown at the top of a CAP (Common Alerting Protocol) alert, such as a weather or emergency alert, that was generated using XSLT, a technology that is being removed from the browser. The two placeholders are the texts of links: the first points to documentation about the removal, and the second points to browser extensions that restore the functionality.">
         This CAP alert uses technology called XSLT; that functionality is being <ph name="REMOVAL_LINK">$1<ex>removed from this browser</ex></ph>. When that happens, this alert will be shown as raw XML data. You might be able to <ph name="EXTENSION_LINK">$2<ex>install a browser extension</ex></ph> that allows you to continue viewing it.
       </message>
+      <message name="IDS_XSLT_DEPRECATION_BANNER_CAP_ALERT_HUB_TEXT" desc="Sentence appended to the end of the XSLT deprecation banner shown on a CAP (Common Alerting Protocol) alert. The placeholder is the text of a link to the alert-hub website, which has more details about the removal of XSLT. The link text is the name of the website and is not translated.">
+        See <ph name="ALERT_HUB_LINK">$1<ex>alert-hub</ex></ph> for more details.
+      </message>
       <message name="IDS_XSLT_DEPRECATION_BANNER_CAP_ALERT_REMOVAL_LINK" desc="Text of a link, within the XSLT deprecation banner shown on a CAP (Common Alerting Protocol) alert, pointing to documentation about the removal of XSLT from the browser.">
         removed from this browser
       </message>

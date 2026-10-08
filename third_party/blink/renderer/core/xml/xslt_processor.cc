@@ -22,7 +22,10 @@
 
 #include "third_party/blink/renderer/core/xml/xslt_processor.h"
 
+#include <array>
+
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/switches.h"
@@ -283,21 +286,28 @@ struct BannerLink {
   String text;
 };
 
-// Appends `message` to `banner`, replacing its "$1" and "$2" placeholders with
-// links to `link1` and `link2` respectively. The placeholders are expanded into
-// elements rather than substituted as text, so the message is split here rather
-// than by Locale::QueryString(). A translation may place the placeholders in
-// any order, or leave one out.
+// Appends `message` to `banner`, replacing its "$1", "$2", ... placeholders
+// with links to the corresponding entries of `links`. The placeholders are
+// expanded into elements rather than substituted as text, so the message is
+// split here rather than by Locale::QueryString(). A translation may place the
+// placeholders in any order, or leave some out.
 static void AppendLocalizedBannerText(Document& document,
                                       ContainerNode* banner_container,
                                       const String& message,
-                                      const BannerLink& link1,
-                                      const BannerLink& link2) {
+                                      base::span<const BannerLink> links) {
+  static constexpr std::array<const char*, 2> kPlaceholders = {"$1", "$2"};
+  CHECK_LE(links.size(), kPlaceholders.size());
   wtf_size_t text_start = 0;
-  for (int i = 0; i < 2; ++i) {
-    wtf_size_t position1 = message.find("$1", text_start);
-    wtf_size_t position2 = message.find("$2", text_start);
-    wtf_size_t position = std::min(position1, position2);
+  while (true) {
+    wtf_size_t position = String::npos;
+    size_t link_index = 0;
+    for (size_t i = 0; i < links.size(); ++i) {
+      wtf_size_t found = message.find(kPlaceholders[i], text_start);
+      if (found < position) {
+        position = found;
+        link_index = i;
+      }
+    }
     if (position == String::npos) {
       break;
     }
@@ -305,7 +315,7 @@ static void AppendLocalizedBannerText(Document& document,
       banner_container->appendChild(document.createTextNode(
           message.substr(text_start, position - text_start)));
     }
-    const BannerLink& link = position == position1 ? link1 : link2;
+    const BannerLink& link = links[link_index];
     banner_container->appendChild(
         CreateBannerLink(document, link.href, link.text));
     text_start = position + 2;
@@ -503,23 +513,36 @@ static void InjectXSLTWarningBanner(bool is_cap_alert_xslt,
       "https://chromewebstore.google.com/search/XSLT%20Polyfill",
       locale.QueryString(IDS_XSLT_DEPRECATION_BANNER_EXTENSION_LINK)};
   if (is_cap_alert_xslt) {
-    const BannerLink removal_link = {
-        "https://chromestatus.com/feature/4709671889534976",
-        locale.QueryString(IDS_XSLT_DEPRECATION_BANNER_CAP_ALERT_REMOVAL_LINK)};
+    const std::array<BannerLink, 2> links = {{
+        {"https://chromestatus.com/feature/4709671889534976",
+         locale.QueryString(
+             IDS_XSLT_DEPRECATION_BANNER_CAP_ALERT_REMOVAL_LINK)},
+        extension_link,
+    }};
+    // "alert-hub" is the name of the site, so it is not translated.
+    const std::array<BannerLink, 1> alert_hub_links = {{
+        {"https://www.alert-hub.org/chrome-xsl-deprecation",
+         String("alert-hub")},
+    }};
     String message =
         locale.QueryString(IDS_XSLT_DEPRECATION_BANNER_CAP_ALERT_TEXT);
+    String alert_hub_message =
+        locale.QueryString(IDS_XSLT_DEPRECATION_BANNER_CAP_ALERT_HUB_TEXT);
     CreateAndAppendBanner(document, [&](ContainerNode* banner) {
-      AppendLocalizedBannerText(document, banner, message, removal_link,
-                                extension_link);
+      AppendLocalizedBannerText(document, banner, message, links);
+      banner->appendChild(document.createTextNode(" "));
+      AppendLocalizedBannerText(document, banner, alert_hub_message,
+                                alert_hub_links);
     });
   } else {
-    const BannerLink removal_link = {
-        "https://chromestatus.com/feature/4709671889534976",
-        locale.QueryString(IDS_XSLT_DEPRECATION_BANNER_REMOVAL_LINK)};
+    const std::array<BannerLink, 2> links = {{
+        {"https://chromestatus.com/feature/4709671889534976",
+         locale.QueryString(IDS_XSLT_DEPRECATION_BANNER_REMOVAL_LINK)},
+        extension_link,
+    }};
     String message = locale.QueryString(IDS_XSLT_DEPRECATION_BANNER_TEXT);
     CreateAndAppendBanner(document, [&](ContainerNode* banner) {
-      AppendLocalizedBannerText(document, banner, message, removal_link,
-                                extension_link);
+      AppendLocalizedBannerText(document, banner, message, links);
     });
   }
 }

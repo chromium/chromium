@@ -50,6 +50,12 @@ promise_test(async () => {
       "CAP Alert transformed page should contain the CAP deprecation warning banner");
   assert_false(capBanner.shadowRoot.textContent.includes("This site uses XSLT"),
       "CAP Alert page should not contain the general deprecation warning message");
+  const alertHubSelector = 'a[href="https://www.alert-hub.org/chrome-xsl-deprecation"]';
+  const alertHubLink = capBanner.shadowRoot.querySelector(alertHubSelector);
+  assert_not_equals(alertHubLink, null, "CAP banner should contain the alert-hub link");
+  assert_equals(alertHubLink.textContent, "alert-hub");
+  assert_equals(nonCapBanner.shadowRoot.querySelector(alertHubSelector), null,
+      "General banner should not contain the alert-hub link");
 }, "XSLT deprecation warning banner on declarative XML stylesheets");
 
 test(() => {
