@@ -1320,8 +1320,6 @@ bool LcppDataMap::LearnLcpp(const std::optional<url::Origin>& initiator_origin,
   if (lcpp_stat) {
     if (!IsValidLcppStat(*lcpp_stat)) {
       lcpp_stat->Clear();
-      base::UmaHistogramBoolean("LoadingPredictor.LcppStatCorruptedAtLearnTime",
-                                true);
     }
     data_updated |= UpdateLcppStatWithLcppDataInputs(inputs, *lcpp_stat);
     if (IsLCPPFontPrefetchExcludedHost(url) &&
