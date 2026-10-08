@@ -174,16 +174,18 @@ class OnTaskLockedSessionWindowTrackerBrowserTest
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
+  // Spawns a child tab from the active tab with `url` and waits for `url` to
+  // finish loading.
   void SpawnChildTabWithURL(const BrowserWindowInterface* browser,
                             const GURL& url) {
     content::WebContents* const active_web_contents =
         browser->GetTabStripModel()->GetActiveWebContents();
-    content::TestNavigationObserver navigation_observer(active_web_contents);
+    content::TestNavigationObserver navigation_observer(url);
     navigation_observer.StartWatchingNewWebContents();
     ASSERT_TRUE(
         content::ExecJs(active_web_contents,
                         content::JsReplace("window.open($1, '_blank');", url)));
-    navigation_observer.WaitForNavigationFinished();
+    navigation_observer.Wait();
   }
 };
 
