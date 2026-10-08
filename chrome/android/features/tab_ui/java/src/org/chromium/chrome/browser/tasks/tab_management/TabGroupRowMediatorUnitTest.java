@@ -132,6 +132,7 @@ public class TabGroupRowMediatorUnitTest {
     private Context mContext;
     private SavedTabGroup mSyncGroup;
     private int mFirstTabId = Tab.INVALID_TAB_ID;
+    private boolean mIsArchived;
 
     @Before
     public void setUp() {
@@ -153,6 +154,8 @@ public class TabGroupRowMediatorUnitTest {
         when(mDataSharingService.getUiDelegate()).thenReturn(mDataSharingUiDelegate);
         when(mPaneManager.getPaneForId(PaneId.TAB_SWITCHER)).thenReturn(mTabSwitcherPaneBase);
         when(mTabSwitcherPaneBase.requestOpenTabGroupDialog(any())).thenReturn(true);
+        when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_CURRENT);
+        mIsArchived = false;
     }
 
     private PropertyModel buildTestModel(GURL... urls) {
@@ -160,10 +163,12 @@ public class TabGroupRowMediatorUnitTest {
     }
 
     private PropertyModel buildTestModel(boolean isShared, GURL... urls) {
+        Long archivalTime = mSyncGroup != null ? mSyncGroup.archivalTimeMs : null;
         mSyncGroup = mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID1, GROUP_ID1);
         mSyncGroup.collaborationId = isShared ? COLLABORATION_ID1 : null;
         mSyncGroup.title = TITLE;
         mSyncGroup.savedTabs = SyncedGroupTestHelper.tabsFromUrls(urls);
+        mSyncGroup.archivalTimeMs = archivalTime;
 
         mFirstTabId =
                 mSyncGroup.savedTabs.isEmpty()
@@ -178,10 +183,25 @@ public class TabGroupRowMediatorUnitTest {
         }
         when(mTabModel.getTabsInGroup(GROUP_ID1)).thenReturn(tabList);
 
+        Token localId = GROUP_ID1;
+        List<GURL> urlList = TabGroupFaviconCluster.buildUrlListFromSyncGroup(mSyncGroup);
+        GroupWindowInfo groupInfo =
+                new GroupWindowInfo(
+                        localId,
+                        SYNC_GROUP_ID1,
+                        TITLE,
+                        mSyncGroup.color,
+                        mSyncGroup.savedTabs.size(),
+                        urlList,
+                        GroupWindowState.IN_CURRENT,
+                        mSyncGroup.updateTimeMs,
+                        mSyncGroup.collaborationId,
+                        mIsArchived || mSyncGroup.archivalTimeMs != null);
+
         TabGroupRowMediator mediator =
                 new TabGroupRowMediator(
                         mContext,
-                        mSyncGroup,
+                        groupInfo,
                         mTabModel,
                         mTabGroupSyncService,
                         mDataSharingService,
@@ -388,6 +408,7 @@ public class TabGroupRowMediatorUnitTest {
                 .when(mTabGroupUiActionHandler)
                 .openTabGroup(SYNC_GROUP_ID1);
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.HIDDEN);
+        mIsArchived = true;
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
         UserActionTester userActionTester = new UserActionTester();
         HistogramWatcher histograms =
@@ -520,7 +541,6 @@ public class TabGroupRowMediatorUnitTest {
         when(mCollaborationService.getGroupData(eq(COLLABORATION_ID1))).thenReturn(shareGroup);
         when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
                 .thenReturn(MemberRole.OWNER);
-        when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_CURRENT);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
 
         assertNotNull(propertyModel.get(DELETE_RUNNABLE));
@@ -541,7 +561,6 @@ public class TabGroupRowMediatorUnitTest {
         when(mCollaborationService.getGroupData(eq(COLLABORATION_ID1))).thenReturn(shareGroup);
         when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
                 .thenReturn(MemberRole.MEMBER);
-        when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_CURRENT);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1, mUrl2);
 
         assertNull(propertyModel.get(DELETE_RUNNABLE));
