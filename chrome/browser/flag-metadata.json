@@ -7686,11 +7686,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "omnibox-mia-zps",
-    "owners": [ "niharm@google.com", "mahmadi@chromium.org", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone" : 148
-  },
-  {
     "name": "omnibox-ml-log-url-scoring-signals",
     "owners": [ "junzou@chromium.org", "yoangela@chromium.org", "manukh@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 150

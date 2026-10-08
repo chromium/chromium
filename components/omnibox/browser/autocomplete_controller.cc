@@ -1622,7 +1622,6 @@ void AutocompleteController::UpdateResult(UpdateType update_type,
   const bool can_show_contextual_suggestions = CanShowContextualSuggestions(
       autocomplete_provider_client()->IsPagePaywalled());
   const bool mia_enabled =
-      omnibox_feature_configs::MiaZPS::Get().enabled &&
       AimEligibilityService::IsAimAllowedByPolicy(provider_client_->GetPrefs());
   const bool is_incognito = provider_client_->IsOffTheRecord();
 

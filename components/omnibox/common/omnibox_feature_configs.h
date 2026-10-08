@@ -289,22 +289,6 @@ struct ContextualSearch : Config<ContextualSearch> {
   int loading_suggestions_opacity_animation_duration;
 };
 
-// If enabled, allows MIA zero-prefix suggestions in NTP omnibox and realbox.
-struct MiaZPS : Config<MiaZPS> {
-  DECLARE_FEATURE(kOmniboxMiaZPS);
-
-  MiaZPS();
-  MiaZPS(const MiaZPS&);
-  MiaZPS(MiaZPS&&);
-  MiaZPS& operator=(const MiaZPS&);
-  MiaZPS& operator=(MiaZPS&&);
-  ~MiaZPS();
-  bool enabled;
-  // Whether to use non-normalized text for local history zp suggestions.
-  bool local_history_non_normalized_contents;
-  bool suppress_psuggest_backfill_with_mia;
-};
-
 BASE_DECLARE_FEATURE(kEmbeddedPermissionEnabled);
 
 // A config struct for the omnibox toolbelt.

@@ -30,7 +30,6 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
-#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
@@ -515,11 +514,6 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Deletion) {
 // Tests that local history uses the suggestion's term instead of the
 // normalized term.
 TEST_F(LocalHistoryZeroSuggestProviderTest, SuggestionTermUsed) {
-  omnibox_feature_configs::ScopedConfigForTesting<
-      omnibox_feature_configs::MiaZPS>
-      scoped_config;
-  scoped_config.Get().enabled = true;
-  scoped_config.Get().local_history_non_normalized_contents = true;
   LoadURLs({
       {default_search_provider(), "hELLo wORlD", "foo=bar4", 4},
       {default_search_provider(), "awesome", "foo=bar5", 5},
@@ -536,12 +530,6 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, SuggestionTermUsed) {
 // the non-normalized suggestion term.
 TEST_F(LocalHistoryZeroSuggestProviderTest, DeletionWithNonNormalizedTerms) {
   base::HistogramTester histogram_tester;
-
-  omnibox_feature_configs::ScopedConfigForTesting<
-      omnibox_feature_configs::MiaZPS>
-      scoped_config;
-  scoped_config.Get().enabled = true;
-  scoped_config.Get().local_history_non_normalized_contents = true;
 
   auto* template_url_service = client_->GetTemplateURLService();
   auto* other_search_provider = template_url_service->Add(

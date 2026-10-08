@@ -473,7 +473,7 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNTPZpsSectionWithMIA) {
         });
   }
   {
-    SCOPED_TRACE("MIA is not added if feature is disabled.");
+    SCOPED_TRACE("MIA is not added when mia_enabled is false.");
     test(
         {
             // remote `GROUP_PERSONALIZED_ZERO_SUGGEST` should all be added.
@@ -508,7 +508,7 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNTPZpsSectionWithMIA) {
 
 TEST(AutocompleteGrouperSectionsTest, AndroidNTPZpsSectionWithMIA) {
   auto test = [](std::vector<std::pair<int, omnibox::GroupId>> input,
-                 bool mia_enabled, bool suppress_psuggest_backfill_with_mia,
+                 bool mia_enabled,
                  std::vector<std::pair<int, omnibox::GroupId>> output) {
     ACMatches in_matches;
     for (const auto& [relevance, group_id] : input) {
@@ -517,69 +517,12 @@ TEST(AutocompleteGrouperSectionsTest, AndroidNTPZpsSectionWithMIA) {
     PSections sections;
     omnibox::GroupConfigMap group_configs;
 
-    // Cache the fieldtrial state from the singleton instance: we will be
-    // overriding the state for the purpose of the test, and should revert the
-    // default value right after.
-    auto& mia_zps = const_cast<omnibox_feature_configs::MiaZPS&>(
-        omnibox_feature_configs::MiaZPS::Get());
-    bool default_suppress_psuggest_backfill_with_mia =
-        mia_zps.suppress_psuggest_backfill_with_mia;
-    mia_zps.suppress_psuggest_backfill_with_mia =
-        suppress_psuggest_backfill_with_mia;
-
     sections.push_back(
         std::make_unique<AndroidNTPZpsSection>(group_configs, mia_enabled));
     auto out_matches = Section::GroupMatches(std::move(sections), in_matches);
 
-    // Restore the backfill state as we can't reset the singleton.
-    mia_zps.suppress_psuggest_backfill_with_mia =
-        default_suppress_psuggest_backfill_with_mia;
-
     VerifyMatches(out_matches, output);
   };
-
-  {
-    SCOPED_TRACE(
-        "MIA above pSuggest - local history zps takes precedence over Trends.");
-    test(
-        {
-            {90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
-            {89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
-            {88, omnibox::GROUP_MIA_RECOMMENDATIONS},
-            {87, omnibox::GROUP_MIA_RECOMMENDATIONS},
-            {86, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-            {85, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-            {84, omnibox::GROUP_TRENDS},
-            {83, omnibox::GROUP_TRENDS},
-            {82, omnibox::GROUP_TRENDS},
-            {81, omnibox::GROUP_TRENDS},
-            {50, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-            {49, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-            {48, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-            {47, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-        },
-        /*mia_enabled=*/true,
-        /*supppress_psuggest_backfill_with_mia=*/false,
-        {
-            // First: MIA
-            {90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
-            {89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
-            {88, omnibox::GROUP_MIA_RECOMMENDATIONS},
-            {87, omnibox::GROUP_MIA_RECOMMENDATIONS},
-            // Next: backfill
-            {86, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-            {85, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-            {50, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-            {49, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-            {48, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-            {47, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-            // Lastly: Inspire Me
-            {84, omnibox::GROUP_TRENDS},
-            {83, omnibox::GROUP_TRENDS},
-            {82, omnibox::GROUP_TRENDS},
-            {81, omnibox::GROUP_TRENDS},
-        });
-  }
 
   {
     SCOPED_TRACE("MIA above pSuggest - local history suppressed.");
@@ -601,7 +544,6 @@ TEST(AutocompleteGrouperSectionsTest, AndroidNTPZpsSectionWithMIA) {
             {47, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
         },
         /*mia_enabled=*/true,
-        /*supppress_psuggest_backfill_with_mia=*/true,
         {
             // First: MIA
             {90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
@@ -633,7 +575,6 @@ TEST(AutocompleteGrouperSectionsTest, AndroidNTPZpsSectionWithMIA) {
             {47, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
         },
         /*mia_enabled=*/true,
-        /*supppress_psuggest_backfill_with_mia=*/true,
         {
             // Show backfill
             {86, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
@@ -653,7 +594,7 @@ TEST(AutocompleteGrouperSectionsTest, AndroidNTPZpsSectionWithMIA) {
 
 TEST(AutocompleteGrouperSectionsTest, IosNTPZpsSectionWithMIA) {
   auto test = [](std::vector<std::pair<int, omnibox::GroupId>> input,
-                 bool mia_enabled, bool suppress_psuggest_backfill_with_mia,
+                 bool mia_enabled,
                  std::vector<std::pair<int, omnibox::GroupId>> output) {
     ACMatches in_matches;
     for (const auto& [relevance, group_id] : input) {
@@ -662,69 +603,12 @@ TEST(AutocompleteGrouperSectionsTest, IosNTPZpsSectionWithMIA) {
     PSections sections;
     omnibox::GroupConfigMap group_configs;
 
-    // Cache the fieldtrial state from the singleton instance: we will be
-    // overriding the state for the purpose of the test, and should revert the
-    // default value right after.
-    auto& mia_zps = const_cast<omnibox_feature_configs::MiaZPS&>(
-        omnibox_feature_configs::MiaZPS::Get());
-    bool default_suppress_psuggest_backfill_with_mia =
-        mia_zps.suppress_psuggest_backfill_with_mia;
-    mia_zps.suppress_psuggest_backfill_with_mia =
-        suppress_psuggest_backfill_with_mia;
-
     sections.push_back(
         std::make_unique<IOSNTPZpsSection>(group_configs, mia_enabled));
     auto out_matches = Section::GroupMatches(std::move(sections), in_matches);
 
-    // Restore the backfill state as we can't reset the singleton.
-    mia_zps.suppress_psuggest_backfill_with_mia =
-        default_suppress_psuggest_backfill_with_mia;
-
     VerifyMatches(out_matches, output);
   };
-
-  {
-    SCOPED_TRACE(
-        "MIA above pSuggest - local history zps takes precedence over Trends.");
-    test(
-        {
-            {90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
-            {89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
-            {88, omnibox::GROUP_MIA_RECOMMENDATIONS},
-            {87, omnibox::GROUP_MIA_RECOMMENDATIONS},
-            {86, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-            {85, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-            {84, omnibox::GROUP_TRENDS},
-            {83, omnibox::GROUP_TRENDS},
-            {82, omnibox::GROUP_TRENDS},
-            {81, omnibox::GROUP_TRENDS},
-            {50, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-            {49, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-            {48, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-            {47, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-        },
-        /*mia_enabled=*/true,
-        /*suppress_psuggest_backfill_with_mia=*/false,
-        {
-            // First: MIA
-            {90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
-            {89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
-            {88, omnibox::GROUP_MIA_RECOMMENDATIONS},
-            {87, omnibox::GROUP_MIA_RECOMMENDATIONS},
-            // Next: backfill
-            {86, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-            {85, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-            {50, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-            {49, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-            {48, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-            {47, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-            // Lastly: Inspire Me
-            {84, omnibox::GROUP_TRENDS},
-            {83, omnibox::GROUP_TRENDS},
-            {82, omnibox::GROUP_TRENDS},
-            {81, omnibox::GROUP_TRENDS},
-        });
-  }
 
   {
     SCOPED_TRACE("MIA above pSuggest - local history suppressed.");
@@ -746,7 +630,6 @@ TEST(AutocompleteGrouperSectionsTest, IosNTPZpsSectionWithMIA) {
             {47, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
         },
         /*mia_enabled=*/true,
-        /*suppress_psuggest_backfill_with_mia=*/true,
         {
             // First: MIA
             {90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
@@ -778,7 +661,6 @@ TEST(AutocompleteGrouperSectionsTest, IosNTPZpsSectionWithMIA) {
             {47, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
         },
         /*mia_enabled=*/true,
-        /*suppress_psuggest_backfill_with_mia=*/true,
         {
             // Show backfill
             {86, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},

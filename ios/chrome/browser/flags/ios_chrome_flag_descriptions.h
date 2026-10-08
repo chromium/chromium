@@ -1520,10 +1520,6 @@ inline constexpr char kOmniboxMaxURLMatchesDescription[] =
     "still display more than MaxURLMatches if there are no non-URL suggestions "
     "to replace them.";
 
-inline constexpr char kOmniboxMiaZpsName[] = "Omnibox Mia ZPS on NTP";
-inline constexpr char kOmniboxMiaZpsDescription[] =
-    "Enables Mia ZPS suggestions in NTP omnibox";
-
 inline constexpr char kOmniboxMlLogUrlScoringSignalsName[] =
     "Log Omnibox URL Scoring Signals";
 inline constexpr char kOmniboxMlLogUrlScoringSignalsDescription[] =

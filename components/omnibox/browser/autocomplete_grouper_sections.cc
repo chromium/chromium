@@ -12,11 +12,11 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_grouper_groups.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
-#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 
 namespace {
@@ -314,9 +314,7 @@ void AndroidNTPZpsSection::InitFromMatches(ACMatches& matches) {
                omnibox::GROUP_MIA_RECOMMENDATIONS;
       });
 
-  if (omnibox_feature_configs::MiaZPS::Get()
-          .suppress_psuggest_backfill_with_mia &&
-      mia_suggestions_detected) {
+  if (mia_suggestions_detected) {
     // Hacky and delicate, but follows a pattern found in other sections of this
     // file.
     const_cast<Group::LimitAndCount&>(
@@ -854,9 +852,7 @@ void IOSNTPZpsSection::InitFromMatches(ACMatches& matches) {
                omnibox::GROUP_MIA_RECOMMENDATIONS;
       });
 
-  if (omnibox_feature_configs::MiaZPS::Get()
-          .suppress_psuggest_backfill_with_mia &&
-      mia_suggestions_detected) {
+  if (mia_suggestions_detected) {
     // Hacky and delicate, but follows a pattern found in other sections of this
     // file.
     const_cast<Group::LimitAndCount&>(

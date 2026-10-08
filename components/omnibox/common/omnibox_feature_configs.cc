@@ -241,30 +241,6 @@ bool ContextualSearch::IsEnabledWithPrefetch() const {
   return IsContextualSearchEnabled() && zero_suggest_synchronous_matches_only;
 }
 
-BASE_FEATURE(MiaZPS::kOmniboxMiaZPS,
-             "OmniboxMiaZPS",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-MiaZPS::MiaZPS() {
-  enabled = base::FeatureList::IsEnabled(kOmniboxMiaZPS);
-  local_history_non_normalized_contents =
-      base::FeatureParam<bool>(&kOmniboxMiaZPS,
-                               "LocalHistoryNonNormalizedContents", true)
-          .Get();
-
-  suppress_psuggest_backfill_with_mia =
-      base::FeatureParam<bool>(&kOmniboxMiaZPS,
-                               "SuppressPsuggestBackfillWithMIA",
-                               enable_if(IS_ANDROID || IS_IOS))
-          .Get();
-}
-
-MiaZPS::MiaZPS(const MiaZPS&) = default;
-MiaZPS::MiaZPS(MiaZPS&&) = default;
-MiaZPS& MiaZPS::operator=(const MiaZPS&) = default;
-MiaZPS& MiaZPS::operator=(MiaZPS&&) = default;
-MiaZPS::~MiaZPS() = default;
-
 BASE_FEATURE(Toolbelt::kOmniboxToolbelt,
              "OmniboxToolbelt",
              base::FEATURE_DISABLED_BY_DEFAULT);
