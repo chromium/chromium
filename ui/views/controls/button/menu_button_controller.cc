@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -18,6 +19,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/button_controller_delegate.h"
 #include "ui/views/controls/button/menu_button.h"
+#include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/mouse_constants.h"
 #include "ui/views/style/platform_style.h"
@@ -260,6 +262,20 @@ bool MenuButtonController::Activate(const ui::Event* event) {
 
     // Allow for the button callback to delete this.
     auto ref = weak_factory_.GetWeakPtr();
+
+#if BUILDFLAG(IS_MAC)
+    // If a menu is currently playing its dismiss animation when a MenuButton is
+    // activated again, finish canceling it before invoking `callback_` (as
+    // callers like BrowserAppMenuButton check `IsMenuShowing()` before calling
+    // `MenuRunner::RunMenuAt()`).
+    if (MenuController* active_controller = MenuController::GetActiveInstance();
+        active_controller && active_controller->IsDismissAnimationRunning()) {
+      active_controller->Cancel(MenuController::ExitType::kAll);
+      if (!ref) {
+        return false;
+      }
+    }
+#endif
 
     // TODO(pbos): Make sure we always propagate an event. This requires changes
     // to ShowAppMenu which now provides none.

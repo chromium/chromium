@@ -132,9 +132,13 @@ void MenuRunnerImpl::RunMenuAt(
     std::optional<std::string> show_menu_host_duration_histogram) {
   closing_event_time_ = base::TimeTicks();
   if (running_) {
-    // Ignore requests to show the menu while it's already showing. MenuItemView
-    // doesn't handle this very well (meaning it crashes).
-    return;
+    if (controller_ && controller_->IsDismissAnimationRunning()) {
+      controller_->Cancel(MenuController::ExitType::kAll);
+    } else {
+      // Ignore requests to show the menu while it's already showing.
+      // MenuItemView doesn't handle this very well (meaning it crashes).
+      return;
+    }
   }
 
   MenuController* controller = nullptr;
@@ -151,14 +155,18 @@ void MenuRunnerImpl::RunMenuAt(
       controller->AddNestedDelegate(this);
     }
   } else if (MenuController::GetActiveInstance()) {
+    const bool was_dismiss_animation_running =
+        MenuController::GetActiveInstance()->IsDismissAnimationRunning();
     // There's some other menu open and we're not nested. Cancel the menu.
     MenuController::CancelAllActive();
-    if ((run_types & MenuRunner::FOR_DROP) == 0) {
+    if ((run_types & MenuRunner::FOR_DROP) == 0 &&
+        !was_dismiss_animation_running) {
       // Avoid opening another non-drop menu while another active menu is
-      // being canceled.
+      // being canceled, unless it was already playing its dismiss animation.
       return;
     }
-    // Drop menus are allowed to create a new MenuController immediately.
+    // Drop menus (or menus replacing a fading-out menu) are allowed to create a
+    // new MenuController immediately.
     controller = nullptr;
   }
 

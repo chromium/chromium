@@ -314,6 +314,7 @@ void MenuHost::SetMenuHostOwnedWindowAnchor(
 
 void MenuHost::ReleaseMenuHostCapture() {
   if (native_widget_private()->HasCapture()) {
+    base::AutoReset<bool> reseter(&ignore_capture_lost_, true);
     native_widget_private()->ReleaseCapture();
   }
 }

@@ -3741,6 +3741,19 @@ void MenuController::RepostEventAndCancel(SubmenuView* source,
     }
   }
 #if BUILDFLAG(IS_MAC)
+  if (exit_type == ExitType::kAll) {
+    // Release capture and the button's pressed lock before starting the 200ms
+    // closure animation so the 100ms post-close debounce starts immediately
+    // in parallel with the fade-out, and subsequent clicks can reach the
+    // underlying window.
+    if (state_.item) {
+      state_.item->GetRootMenuItem()->GetSubmenu()->ReleaseCapture();
+    }
+    pressed_lock_.reset();
+    for (auto& nested_menu : menu_stack_) {
+      nested_menu.second.reset();
+    }
+  }
   // When doing a menu closure animation, target the deepest submenu - that way
   // MenuClosureAnimationMac will fade out all the menus in sync, rather than
   // the shallowest menu only.
@@ -4230,10 +4243,14 @@ bool MenuController::MaybeForwardToAnnotation(SubmenuView* source,
 }
 
 bool MenuController::CanProcessInputEvents() const {
+  return !IsDismissAnimationRunning();
+}
+
+bool MenuController::IsDismissAnimationRunning() const {
 #if BUILDFLAG(IS_MAC)
-  return !menu_closure_animation_;
+  return menu_closure_animation_ != nullptr;
 #else
-  return true;
+  return false;
 #endif
 }
 

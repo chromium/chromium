@@ -25,6 +25,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/drag_controller.h"
+#include "ui/views/mouse_constants.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget_utils.h"
@@ -77,7 +78,8 @@ class TestMenuButton : public MenuButton {
 
 class MenuButtonTest : public ViewsTestBase {
  public:
-  MenuButtonTest() = default;
+  MenuButtonTest()
+      : ViewsTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   MenuButtonTest(const MenuButtonTest&) = delete;
   MenuButtonTest& operator=(const MenuButtonTest&) = delete;
   ~MenuButtonTest() override = default;
@@ -708,6 +710,27 @@ TEST_F(MenuButtonTest, AccessibleDefaultActionVerb) {
   button()->SetEnabled(true);
   button()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kOpen);
+}
+
+// Tests that clicks on MenuButton within kMinimumTimeBetweenButtonClicks of the
+// menu closing are ignored, and clicks after that threshold activate the
+// button.
+TEST_F(MenuButtonTest, ClicksIgnoredWithinSuppressionThresholdAfterClose) {
+  ConfigureMenuButton(std::make_unique<TestMenuButton>());
+  auto pressed_lock = button()->button_controller()->TakeLock();
+  // Simulate menu closing when the lock is released.
+  pressed_lock.reset();
+
+  // A click immediately following menu closure is suppressed.
+  generator()->MoveMouseTo(button()->GetBoundsInScreen().CenterPoint());
+  generator()->ClickLeftButton();
+  EXPECT_FALSE(button()->clicked());
+
+  // A click after kMinimumTimeBetweenButtonClicks triggers activation.
+  task_environment()->FastForwardBy(kMinimumTimeBetweenButtonClicks +
+                                    base::Milliseconds(1));
+  generator()->ClickLeftButton();
+  EXPECT_TRUE(button()->clicked());
 }
 
 }  // namespace views

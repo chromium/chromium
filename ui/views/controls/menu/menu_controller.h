@@ -296,6 +296,9 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   // can return false while running animations.
   bool CanProcessInputEvents() const;
 
+  // Returns whether the menu is currently running its dismissal animation.
+  bool IsDismissAnimationRunning() const;
+
   // Gets the animation used for menu item alerts. The returned pointer lives as
   // long as the MenuController.
   const gfx::Animation* GetAlertAnimation() const { return &alert_animation_; }

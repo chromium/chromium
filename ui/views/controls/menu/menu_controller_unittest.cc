@@ -49,6 +49,8 @@
 #include "ui/views/accessibility/ax_update_observer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/menu_button.h"
+#include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/menu/menu_controller_delegate.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 #include "ui/views/controls/menu/menu_host.h"
@@ -2182,6 +2184,51 @@ TEST_F(MenuControllerTest, AsynchronousRepostEvent) {
   EXPECT_EQ(internal::MenuControllerDelegate::NOTIFY_DELEGATE,
             nested_delegate->on_menu_closed_notify_type());
   EXPECT_EQ(MenuController::ExitType::kAll, menu_controller()->exit_type());
+}
+
+// Tests that clicking outside the menu (including on the owning MenuButton)
+// releases the button's pressed lock immediately while the Mac closure
+// animation runs, and that activating the MenuButton again interrupts any
+// in-progress closure animation so the menu can reopen.
+TEST_F(MenuControllerTest, RepostEventReleasesPressedLockAndAllowsReopen) {
+  CreateMenu();
+  views::test::DisableMenuClosureAnimations();
+
+  bool reopened_while_not_showing = false;
+  auto* button = owner()->SetContentsView(
+      std::make_unique<MenuButton>(base::BindLambdaForTesting([&]() {
+                                     reopened_while_not_showing = !showing();
+                                   }),
+                                   u"Menu Button"));
+  button->SetBoundsRect(gfx::Rect(200, 0, 50, 50));
+
+  menu_controller()->Run(owner(), button->button_controller(), menu_item(),
+                         button->GetBoundsInScreen(),
+                         MenuAnchorPosition::kTopLeft);
+  EXPECT_EQ(Button::STATE_PRESSED, button->GetState());
+
+  ShowSubmenu();
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+  const gfx::Point button_loc = View::ConvertPointFromScreen(
+      submenu, button->GetBoundsInScreen().CenterPoint());
+
+  SetSelectionOnPointerDown(
+      submenu,
+      ui::MouseEvent(ui::EventType::kMousePressed, button_loc, button_loc,
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+
+  // The button's pressed lock should be released immediately (without waiting
+  // for MenuClosureAnimationMac) so the 100ms post-close debounce starts right
+  // away.
+  EXPECT_NE(Button::STATE_PRESSED, button->GetState());
+
+  // Activating the button while the closure animation may still be in flight
+  // should finish canceling the closing menu before running the button
+  // callback.
+  button->button_controller()->Activate(nullptr);
+  EXPECT_TRUE(reopened_while_not_showing);
+  EXPECT_FALSE(showing());
+  EXPECT_EQ(1, menu_controller_delegate()->on_menu_closed_called());
 }
 
 // Tests that an asynchronous menu reposts touch events that occur outside of
