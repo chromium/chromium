@@ -151,8 +151,8 @@ class WebUIPinnedToolbarActions::WebUIDownloadButton : public DownloadButton {
   }
 
   void SetElementIdentifier(ui::ElementIdentifier element_id) override {
-    // TODO(https://crbug.com/474063115): The WebUI downloads button has a fixed
-    // element identifier, so IPH anchored to `element_id` won't find it.
+    CHECK_EQ(element_id,
+             webui_toolbar::ActionIdToElementIdentifier(kActionShowDownloads));
   }
 
   ActionItemProgressRingStatus GetProgressRingStatusForTesting() override {

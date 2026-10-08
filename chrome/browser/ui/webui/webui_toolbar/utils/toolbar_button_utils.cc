@@ -30,7 +30,6 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kToolbarPrintElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kToolbarQrCodeGeneratorElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kToolbarRouteMediaElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kToolbarShowAddressesBubbleOrPageElementId);
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kToolbarShowDownloadsElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kToolbarShowPasswordsBubbleOrPageElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kToolbarShowPaymentsBubbleOrPageElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kToolbarShowTranslateElementId);
@@ -55,7 +54,6 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kToolbarPrintElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kToolbarQrCodeGeneratorElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kToolbarRouteMediaElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kToolbarShowAddressesBubbleOrPageElementId);
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kToolbarShowDownloadsElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kToolbarShowPasswordsBubbleOrPageElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kToolbarShowPaymentsBubbleOrPageElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kToolbarShowTranslateElementId);
@@ -82,7 +80,7 @@ base::span<const ui::ElementIdentifier> GetPinnedToolbarActionElementIds() {
           webui_toolbar::kToolbarQrCodeGeneratorElementId,
           webui_toolbar::kToolbarRouteMediaElementId,
           webui_toolbar::kToolbarShowAddressesBubbleOrPageElementId,
-          webui_toolbar::kToolbarShowDownloadsElementId,
+          kToolbarDownloadButtonElementId,
           webui_toolbar::kToolbarShowPasswordsBubbleOrPageElementId,
           webui_toolbar::kToolbarShowPaymentsBubbleOrPageElementId,
           webui_toolbar::kToolbarShowTranslateElementId,
@@ -119,7 +117,7 @@ ui::ElementIdentifier ActionIdToElementIdentifier(actions::ActionId action) {
     case kActionSidePanelShowHistoryCluster:
       return kToolbarSidePanelShowHistoryClusterElementId;
     case kActionShowDownloads:
-      return kToolbarShowDownloadsElementId;
+      return kToolbarDownloadButtonElementId;
     case kActionClearBrowsingData:
       return kToolbarClearBrowsingDataElementId;
     case kActionPrint:
