@@ -122,7 +122,8 @@ class TestRendererStartupHelper : public RendererStartupHelper,
       bool update_origin_allowlist) override {}
   void WatchPages(const std::vector<std::string>& css_selectors) override {}
 
-  std::set<content::RenderProcessHost*> updated_processes_;
+  std::set<raw_ptr<content::RenderProcessHost, DanglingUntriaged>>
+      updated_processes_;
   mojo::AssociatedReceiverSet<mojom::Renderer, content::RenderProcessHost*>
       renderer_receivers_;
 };
