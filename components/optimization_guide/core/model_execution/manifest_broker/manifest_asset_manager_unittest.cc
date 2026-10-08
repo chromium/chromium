@@ -284,6 +284,44 @@ TEST_F(ManifestAssetManagerTest, DownloadProgressObserverIsUseCaseSpecific) {
   compose_observer.ExpectReceivedNormalizedUpdate(50, 100);
 }
 
+TEST_F(ManifestAssetManagerTest,
+       DownloadProgressObserverUpdatesWhenManifestChangesUseCaseAsset) {
+  DummyAsset asset_v1 = DummyAsset::For("compose");
+  DummyAsset asset_v2 = DummyAsset::For("compose")
+                            .WithAssetId("asset_compose_v2")
+                            .WithPublicKey(DummyAsset::For("v2").public_key);
+  usage_tracker_.RaisePriority(asset_v1.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+  UpdateManifest(DummyManifest().Add(asset_v1));
+  Startup();
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset_v1.ToInstallTarget()));
+
+  MockDownloadProgressObserver observer_v1;
+  model_broker_client_->AddModelDownloadProgressObserver(
+      asset_v1.use_case, observer_v1.BindNewPipeAndPassRemote());
+  EXPECT_TRUE(component_state_.WaitForDownloadObserver());
+
+  component_state_.UpdateDownloadProgress(asset_v1.public_key, 0, 100);
+  observer_v1.ExpectReceivedNormalizedUpdate(0, 100);
+
+  // Update the manifest so that "compose" now requires asset_v2 with a new
+  // public key.
+  UpdateManifest(DummyManifest().Add(asset_v2));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset_v2.ToInstallTarget()));
+
+  MockDownloadProgressObserver observer_v2;
+  model_broker_client_->AddModelDownloadProgressObserver(
+      asset_v2.use_case, observer_v2.BindNewPipeAndPassRemote());
+  EXPECT_TRUE(component_state_.WaitForDownloadObserver());
+
+  component_state_.UpdateDownloadProgress(asset_v2.public_key, 0, 200);
+  observer_v2.ExpectReceivedNormalizedUpdate(0, 200);
+
+  task_environment_.FastForwardBy(base::Milliseconds(51));
+  component_state_.UpdateDownloadProgress(asset_v2.public_key, 100, 200);
+  observer_v2.ExpectReceivedNormalizedUpdate(100, 200);
+}
+
 TEST_F(ManifestAssetManagerTest, AddAssetDownloadObserverReceivesUpdates) {
   DummyAsset asset = DummyAsset::For("compose");
   DummyAsset invalid_key_asset =

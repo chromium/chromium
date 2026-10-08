@@ -420,35 +420,46 @@ std::optional<std::string> ManifestAssetManager::GetCrxIdForAsset(
   return GetCrxIdFromPublicKeyHex(it->second.public_key());
 }
 
-void ManifestAssetManager::AddDownloadProgressObserver(
-    const std::string& use_case,
-    mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer) {
+std::optional<base::flat_set<std::string>>
+ManifestAssetManager::GetRequiredComponentIdsForUseCase(
+    const std::string& use_case) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!factory_) {
-    return;
+    return std::nullopt;
   }
 
   std::optional<absl::flat_hash_set<Manifest::AssetId>> required_assets =
       factory_->manifest().GetRequiredAssets(use_case);
-
   if (!required_assets) {
-    return;
+    return std::nullopt;
   }
 
   base::flat_set<std::string> component_ids;
   for (const auto& asset_id : *required_assets) {
-    auto crx_id = GetCrxIdForAsset(asset_id);
-    if (crx_id) {
+    if (std::optional<std::string> crx_id = GetCrxIdForAsset(asset_id)) {
       component_ids.insert(*crx_id);
     }
   }
+  return component_ids;
+}
 
-  auto& progress_manager = progress_managers_[use_case];
-  if (!progress_manager) {
-    progress_manager = std::make_unique<OnDeviceModelDownloadProgressManager>(
-        component_update_service_, std::move(component_ids));
+void ManifestAssetManager::AddDownloadProgressObserver(
+    const std::string& use_case,
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::optional<base::flat_set<std::string>> component_ids =
+      GetRequiredComponentIdsForUseCase(use_case);
+  if (!component_ids) {
+    return;
   }
-  progress_manager->AddObserver(std::move(observer));
+
+  auto& entry = progress_managers_[use_case];
+  if (!entry.manager) {
+    entry.component_ids = *component_ids;
+    entry.manager = std::make_unique<OnDeviceModelDownloadProgressManager>(
+        component_update_service_, std::move(*component_ids));
+  }
+  entry.manager->AddObserver(std::move(observer));
 }
 
 void ManifestAssetManager::AddAssetDownloadObserver(
@@ -481,6 +492,10 @@ void ManifestAssetManager::UpdateSolutionFactory(
   // TODO(holte): Potentially defer stopping the old factory from providing new
   // solutions until we actually download assets for the new factory.
   factory_ = std::move(factory);
+  std::erase_if(progress_managers_, [&](const auto& item) {
+    const auto& [use_case, entry] = item;
+    return GetRequiredComponentIdsForUseCase(use_case) != entry.component_ids;
+  });
   if (std::optional<base::ByteSize> free_space =
           disk_space_status_.free_space()) {
     factory_->UpdateFreeDiskSpace(free_space);

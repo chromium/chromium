@@ -13,6 +13,7 @@
 
 #include "base/byte_size.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -250,6 +251,11 @@ class ManifestAssetManager : public UsageTracker::Observer,
     base::flat_map<std::string, ComponentContext> component_contexts_;
   };
 
+  struct UseCaseProgressManager {
+    base::flat_set<std::string> component_ids;
+    std::unique_ptr<OnDeviceModelDownloadProgressManager> manager;
+  };
+
   // UsageTracker::Observer:
   void OnPriorityIncrease(const std::string& use_case_name,
                           UsageTracker::Priority previous_priority) override;
@@ -263,6 +269,11 @@ class ManifestAssetManager : public UsageTracker::Observer,
   // Helper to resolve an asset name to its CRX ID.
   std::optional<std::string> GetCrxIdForAsset(
       const std::string& asset_name) const;
+
+  // Resolves the set of CRX component IDs required by `use_case` in the current
+  // manifest, or returns `std::nullopt` if `use_case` is unknown.
+  std::optional<base::flat_set<std::string>> GetRequiredComponentIdsForUseCase(
+      const std::string& use_case) const;
 
   // Get disk space, and call `UpdateRegistration` when done.
   void OnDiskSpaceEvaluated(std::optional<base::ByteSize> free_space);
@@ -307,9 +318,8 @@ class ManifestAssetManager : public UsageTracker::Observer,
   // manifest and persisted contexts.
   AssetLedger ledger_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  std::unordered_map<std::string,
-                     std::unique_ptr<OnDeviceModelDownloadProgressManager>>
-      progress_managers_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unordered_map<std::string, UseCaseProgressManager> progress_managers_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::map<std::string, std::unique_ptr<ComponentDownloadObserver>>
       asset_download_observers_ GUARDED_BY_CONTEXT(sequence_checker_);
