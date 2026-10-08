@@ -6,12 +6,13 @@
 # Output a C++ compatible multi-line string of flags. Paste this into
 # chrome/browser/about_flags.cc and let clang-format take care of the rest.
 
-# Split into lines on ",", sort them then add quotes around each line.
+# Split into lines on ",", sort them then add a trailing "," and quotes around
+# each line.
 $(dirname "$0")/enabled.sh | \
-    perl -lpe 's/,/,\n/g' | \
+    perl -lpe 's/,/\n/g' | \
     sort | \
-    perl -lpe 's/(^|$)/"/g'
+    perl -lpe 's/^(.*)$/"$1,"/'
 
 # When enabled via chrome://flags, we want to enable the whole toolbar. It's OK
 # that the flags above enable individual pieces.
-echo '"WebUIToolar";'
+echo '"WebUIToolbar";'
