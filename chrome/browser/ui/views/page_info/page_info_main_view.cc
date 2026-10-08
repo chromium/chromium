@@ -282,6 +282,7 @@ void PageInfoMainView::SetCookieInfo(const CookiesInfo& cookie_info) {
 }
 
 void PageInfoMainView::OnSeeExtensionsClicked() {
+  presenter_->RecordPageInfoAction(page_info::PAGE_INFO_EXTENSIONS_MENU_OPENED);
   base::RepeatingClosure callback = open_extensions_menu_callback_;
   if (callback) {
     callback.Run();

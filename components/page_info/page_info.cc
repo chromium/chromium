@@ -642,6 +642,10 @@ void PageInfo::RecordPageInfoAction(page_info::PageInfoAction action) {
       base::RecordAction(base::UserMetricsAction(
           "PageInfo.CookiesSubpage.SyncSettingsLinkClicked"));
       break;
+    case page_info::PAGE_INFO_EXTENSIONS_MENU_OPENED:
+      base::RecordAction(
+          base::UserMetricsAction("PageInfo.ExtensionsMenu.Opened"));
+      break;
   }
 }
 

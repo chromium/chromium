@@ -3095,6 +3095,21 @@ TEST_F(PageInfoTest, ContextualTasksSurfaceActionHistogram) {
                                page_info::PAGE_INFO_COOKIES_PAGE_OPENED, 1);
 }
 
+TEST_F(PageInfoTest, ExtensionsMenuAction) {
+  base::HistogramTester histograms;
+  base::UserActionTester user_actions;
+  SetURL("https://example.test");
+  NavigateAndCommit(url());
+  ResetMockUI();
+  SetDefaultUIExpectations(mock_ui());
+
+  page_info()->RecordPageInfoAction(
+      page_info::PAGE_INFO_EXTENSIONS_MENU_OPENED);
+  histograms.ExpectBucketCount("WebsiteSettings.Action",
+                               page_info::PAGE_INFO_EXTENSIONS_MENU_OPENED, 1);
+  EXPECT_EQ(1, user_actions.GetActionCount("PageInfo.ExtensionsMenu.Opened"));
+}
+
 TEST_F(PageInfoTest, ContextualTasksSurfacePermissionChangeHistogram) {
   base::HistogramTester histograms;
   SetURL("https://example.test");
