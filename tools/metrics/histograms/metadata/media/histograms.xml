@@ -483,6 +483,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="CastStreaming.Sender.Video.AverageEncoderUtilization.{EncoderType}"
+    units="%" expires_after="2027-08-01">
+  <owner>jophba@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records the average utilization of the {EncoderType} video encoder over a
+    Cast Streaming mirroring session, as a percentage. 100 means the encoder is
+    fully saturated; values above 100 (up to 200) mean it could not keep up with
+    the target frame rate. Recorded once when the video sender is destroyed, if
+    at least one frame was encoded. Only encoded frames are included; frames
+    dropped before encoding have no utilization value and are reported by
+    CastStreaming.Sender.Video.PercentDroppedFrames.
+
+    Per-frame utilization is computed as follows, then smoothed with an
+    exponential moving average (weight 0.1) to dampen key frame spikes and
+    clamped to between 0 and 200:
+
+    Hardware: the larger of the backlog and latency utilizations. Backlog
+    utilization is the number of frames submitted to the encoder but not yet
+    output, divided by 4 (a pipeline depth of 3 frames, plus one). Latency
+    utilization is the time from submitting a frame to receiving its encoded
+    output, divided by 3 target frame durations (the time the pipeline should
+    take to process a frame).
+
+    Software: the time from submitting a frame to receiving its encoded output,
+    divided by the target frame duration.
+
+    See crbug.com/321259270.
+  </summary>
+  <token key="EncoderType">
+    <variant name="Hardware" summary="hardware"/>
+    <variant name="Software" summary="software"/>
+  </token>
+</histogram>
+
 <histogram name="CastStreaming.Sender.Video.Bitrate" units="kbps"
     expires_after="2027-08-01">
   <owner>jophba@chromium.org</owner>
@@ -512,6 +548,28 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records which video codec was negotiated during a mirroring session.
   </summary>
+</histogram>
+
+<histogram
+    name="CastStreaming.Sender.Video.PercentFramesEncoderOverutilized.{EncoderType}"
+    units="%" expires_after="2027-08-01">
+  <owner>jophba@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records the percentage of video frames encoded by the {EncoderType} encoder
+    during a Cast Streaming mirroring session whose encoder utilization was
+    above 100%, meaning the encoder was not keeping up with the target frame
+    rate. This captures sustained overload that a session average below 100%
+    (see CastStreaming.Sender.Video.AverageEncoderUtilization.{EncoderType})
+    would hide. Only encoded frames are counted; frames dropped before encoding
+    are reported by CastStreaming.Sender.Video.PercentDroppedFrames. Recorded
+    once when the video sender is destroyed, if at least one frame was encoded.
+    See crbug.com/321259270.
+  </summary>
+  <token key="EncoderType">
+    <variant name="Hardware" summary="hardware"/>
+    <variant name="Software" summary="software"/>
+  </token>
 </histogram>
 
 <histogram

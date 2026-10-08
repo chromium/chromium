@@ -1741,8 +1741,8 @@
   },
   {
     "name": "cast-mirroring-native-nv12",
-    "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
-    "expiry_milestone": 170
+    "owners": [ "jophba@chromium.org", "openscreen-eng@google.com" ],
+    "expiry_milestone": 180
   },
   {
     "name": "cast-mirroring-target-playout-delay",

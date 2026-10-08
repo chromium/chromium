@@ -23,6 +23,8 @@ BASE_DECLARE_FEATURE(kCastStreaming60fps);
 COMPONENT_EXPORT(MIRRORING_SERVICE)
 BASE_DECLARE_FEATURE(kCastStreamingOfferHardwareFirst);
 
+// Sends NV12 frames to the encoder without converting to I420 first.
+// Remove after M170. crbug.com/321259270
 COMPONENT_EXPORT(MIRRORING_SERVICE)
 BASE_DECLARE_FEATURE(kCastMirroringNativeNV12);
 

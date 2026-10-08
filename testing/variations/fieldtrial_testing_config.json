@@ -3336,6 +3336,24 @@
             ]
         }
     ],
+    "CastMirroringNativeNV12": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CastMirroringNativeNV12"
+                    ]
+                }
+            ]
+        }
+    ],
     "CastStreamingExponentialVideoBitrateAlgorithm": [
         {
             "platforms": [

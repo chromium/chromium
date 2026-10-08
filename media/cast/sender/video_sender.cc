@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_encoder_metrics_provider.h"
@@ -74,6 +75,24 @@ constexpr char kHistogramDroppedFrames[] =
 constexpr char kHistogramFrameDropped[] =
     "CastStreaming.Sender.Video.FrameDropped";
 
+// UMA histograms for the session-average encoder utilization, as a percentage.
+// Values above 100 indicate the encoder could not keep up.
+constexpr char kHistogramAverageEncoderUtilizationHardware[] =
+    "CastStreaming.Sender.Video.AverageEncoderUtilization.Hardware";
+constexpr char kHistogramAverageEncoderUtilizationSoftware[] =
+    "CastStreaming.Sender.Video.AverageEncoderUtilization.Software";
+
+// UMA histograms for the percentage of encoded frames whose encoder utilization
+// was above 100%, i.e. frames encoded while the encoder could not keep up. This
+// catches sustained overload that a session average below 100% would hide.
+constexpr char kHistogramPercentFramesEncoderOverutilizedHardware[] =
+    "CastStreaming.Sender.Video.PercentFramesEncoderOverutilized.Hardware";
+constexpr char kHistogramPercentFramesEncoderOverutilizedSoftware[] =
+    "CastStreaming.Sender.Video.PercentFramesEncoderOverutilized.Software";
+
+// Encoder utilization is clamped to [0.0, 2.0], i.e. [0, 200] percent.
+constexpr int kMaxEncoderUtilizationPercent = 200;
+
 // Extract capture begin/end timestamps from |video_frame|'s metadata and log
 // it.
 void LogVideoCaptureTimestamps(CastEnvironment* cast_environment,
@@ -128,7 +147,8 @@ VideoSender::VideoSender(
       min_playout_delay_(video_config.min_playout_delay),
       max_playout_delay_(video_config.max_playout_delay),
       playout_delay_change_cb_(std::move(playout_delay_change_cb)),
-      feedback_cb_(feedback_cb) {
+      feedback_cb_(feedback_cb),
+      is_hardware_encoder_(video_config.use_hardware_encoder) {
   CHECK(video_encoder_);
 }
 
@@ -137,6 +157,25 @@ VideoSender::~VideoSender() {
   base::UmaHistogramPercentage(kHistogramDroppedFrames,
                                (number_of_frames_dropped_ * 100) /
                                    std::max(1, number_of_frames_inserted_));
+
+  // Record the encoder utilization during this session. Only frames that were
+  // actually encoded have a utilization value, so frames dropped before
+  // encoding are not included here; they are covered by the dropped frame
+  // histograms above.
+  if (encoder_utilization_samples_ > 0) {
+    const int average_utilization_percent = base::ClampRound(
+        encoder_utilization_sum_ * 100 / encoder_utilization_samples_);
+    base::UmaHistogramExactLinear(
+        is_hardware_encoder_ ? kHistogramAverageEncoderUtilizationHardware
+                             : kHistogramAverageEncoderUtilizationSoftware,
+        std::min(average_utilization_percent, kMaxEncoderUtilizationPercent),
+        kMaxEncoderUtilizationPercent + 1);
+    base::UmaHistogramPercentage(
+        is_hardware_encoder_
+            ? kHistogramPercentFramesEncoderOverutilizedHardware
+            : kHistogramPercentFramesEncoderOverutilizedSoftware,
+        (encoder_overutilized_frames_ * 100) / encoder_utilization_samples_);
+  }
 }
 
 void VideoSender::InsertRawVideoFrame(
@@ -368,6 +407,14 @@ void VideoSender::OnEncodedVideoFrame(
 
   last_reported_encoder_utilization_ = encoded_frame->encoder_utilization;
   last_reported_lossiness_ = encoded_frame->lossiness;
+
+  if (last_reported_encoder_utilization_ >= 0.0) {
+    encoder_utilization_sum_ += last_reported_encoder_utilization_;
+    ++encoder_utilization_samples_;
+    if (last_reported_encoder_utilization_ > 1.0) {
+      ++encoder_overutilized_frames_;
+    }
+  }
 
   // Report the resource utilization for processing this frame.  Take the
   // greater of the two utilization values and attenuate them such that the

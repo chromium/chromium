@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -244,6 +245,15 @@ class VideoSenderTest : public ::testing::Test, public WithCastEnvironment {
     return *video_sender_;
   }
 
+  // Destroys the sender, which records end-of-session histograms.
+  void DestroySender() {
+    mock_encoder_ = nullptr;
+    video_sender_.reset();
+    RunTasksAndAdvanceClock();
+  }
+
+  void EncodeOneFrameAndDestroySender(double encoder_utilization);
+
  private:
   scoped_refptr<base::SingleThreadTaskRunner> accelerator_task_runner_;
 
@@ -440,6 +450,89 @@ TEST_F(VideoSenderTest, BuiltInEncoderWithNV12) {
   RunUntilQuit();
 
   EXPECT_EQ(video_sender().GetFramesInserted(), 1);
+}
+
+// Creates a sender with a mock encoder, sends one frame through it that reports
+// `encoder_utilization`, and then destroys the sender so that the
+// session-level histograms are recorded.
+void VideoSenderTest::EncodeOneFrameAndDestroySender(
+    double encoder_utilization) {
+  CreateSender(EncoderType::kMock);
+
+  VideoEncoder::FrameEncodedCallback callback;
+  EXPECT_CALL(mock_encoder(), GenerateKeyFrame());
+  EXPECT_CALL(mock_encoder(), SetBitRate(_));
+  EXPECT_CALL(mock_encoder(), EncodeVideoFrame(_, _, _))
+      .WillOnce([&callback](
+                    scoped_refptr<media::VideoFrame> video_frame,
+                    base::TimeTicks reference_time,
+                    VideoEncoder::FrameEncodedCallback frame_encoded_callback) {
+        callback = std::move(frame_encoded_callback);
+        return true;
+      });
+
+  video_sender().InsertRawVideoFrame(GetNewVideoFrame(), NowTicks());
+  SetVideoCaptureFeedbackClosure(task_environment().QuitClosure());
+
+  auto encoded_frame = std::make_unique<SenderEncodedFrame>();
+  encoded_frame->encoder_utilization = encoder_utilization;
+  encoded_frame->lossiness = 0.1f;
+  encoded_frame->encode_completion_time = NowTicks();
+  encoded_frame->is_key_frame = true;
+  encoded_frame->frame_id = FrameId::first();
+  encoded_frame->referenced_frame_id = FrameId::first();
+  encoded_frame->rtp_timestamp = RtpTimeTicks(12345);
+  encoded_frame->reference_time = NowTicks();
+  encoded_frame->data = base::HeapArray<uint8_t>::WithSize(1024);
+  std::move(callback).Run(std::move(encoded_frame));
+  RunUntilQuit();
+
+  DestroySender();
+}
+
+TEST_F(VideoSenderTest, RecordsAverageEncoderUtilization) {
+  base::HistogramTester histogram_tester;
+  EncodeOneFrameAndDestroySender(0.3);
+
+  // The mock encoder path is configured as a software encoder.
+  histogram_tester.ExpectUniqueSample(
+      "CastStreaming.Sender.Video.AverageEncoderUtilization.Software", 30, 1);
+  histogram_tester.ExpectUniqueSample(
+      "CastStreaming.Sender.Video.PercentFramesEncoderOverutilized.Software", 0,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "CastStreaming.Sender.Video.AverageEncoderUtilization.Hardware", 0);
+  histogram_tester.ExpectTotalCount(
+      "CastStreaming.Sender.Video.PercentFramesEncoderOverutilized.Hardware",
+      0);
+}
+
+TEST_F(VideoSenderTest, RecordsOverutilizedEncoderFrames) {
+  base::HistogramTester histogram_tester;
+  EncodeOneFrameAndDestroySender(1.5);
+
+  histogram_tester.ExpectUniqueSample(
+      "CastStreaming.Sender.Video.AverageEncoderUtilization.Software", 150, 1);
+  histogram_tester.ExpectUniqueSample(
+      "CastStreaming.Sender.Video.PercentFramesEncoderOverutilized.Software",
+      100, 1);
+}
+
+TEST_F(VideoSenderTest, DoesNotRecordEncoderUtilizationWithoutFrames) {
+  base::HistogramTester histogram_tester;
+  CreateSender(EncoderType::kSoftware);
+  DestroySender();
+
+  histogram_tester.ExpectTotalCount(
+      "CastStreaming.Sender.Video.AverageEncoderUtilization.Software", 0);
+  histogram_tester.ExpectTotalCount(
+      "CastStreaming.Sender.Video.AverageEncoderUtilization.Hardware", 0);
+  histogram_tester.ExpectTotalCount(
+      "CastStreaming.Sender.Video.PercentFramesEncoderOverutilized.Software",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "CastStreaming.Sender.Video.PercentFramesEncoderOverutilized.Hardware",
+      0);
 }
 
 }  // namespace media::cast

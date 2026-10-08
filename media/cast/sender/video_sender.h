@@ -140,6 +140,14 @@ class VideoSender : public FrameSender::Client {
   int number_of_frames_inserted_ = 0;
   int number_of_frames_dropped_ = 0;
 
+  // Used to report the session-average encoder utilization and the percentage
+  // of encoded frames with utilization above 100%. Hardware and software
+  // utilization are modeled differently, so they are reported separately.
+  bool is_hardware_encoder_ = false;
+  double encoder_utilization_sum_ = 0.0;
+  int encoder_utilization_samples_ = 0;
+  int encoder_overutilized_frames_ = 0;
+
   // Used to throttle metrics reporting of the bitrate.
   int frames_since_bitrate_reported_ = 0;
 
