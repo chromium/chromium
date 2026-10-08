@@ -1576,16 +1576,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.CertVerifier.AndroidTrustStoreInit" units="ms"
-    expires_after="2024-04-28">
-  <owner>hchao@chromium.org</owner>
-  <owner>mattm@chromium.org</owner>
-  <summary>
-    Time needed to initialize the Android platform Trust store when using the
-    builtin certificate verifier on Android.
-  </summary>
-</histogram>
-
 <histogram name="Net.CertVerifier.CTRequirementStatus"
     enum="CTRequirementStatus" expires_after="2027-03-21">
   <owner>mattm@chromium.org</owner>

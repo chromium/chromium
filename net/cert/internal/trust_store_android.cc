@@ -5,7 +5,6 @@
 #include "net/cert/internal/trust_store_android.h"
 
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -113,7 +112,6 @@ TrustStoreAndroid::MaybeInitializeAndGetImpl() {
   // OnTrustStoreChanged() calls in rapid succession.
   int current_generation = generation_.load();
   if (!impl_ || impl_->generation() != current_generation) {
-    SCOPED_UMA_HISTOGRAM_LONG_TIMER("Net.CertVerifier.AndroidTrustStoreInit");
     impl_ = base::MakeRefCounted<TrustStoreAndroid::Impl>(current_generation);
   }
 
