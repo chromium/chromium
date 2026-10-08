@@ -15,7 +15,6 @@ import os
 import platform
 import shutil
 import subprocess
-import sys
 import tempfile
 import time
 import urllib.request
@@ -103,6 +102,8 @@ class Sender(abc.ABC):
     TMP_DIR = '/tmp'
     # Maps detected arch to Chrome for Testing platform name.
     CFT_PLATFORMS = {}
+    # Chrome executable or app bundle inside the unzipped CfT directory.
+    CHROME_APP = 'chrome'
     TERMINATE_CHROMEDRIVER_CMD = ''
     CHROMEDRIVER_CHECK_CMD = ''
     STATUS_CMD = ''
@@ -111,6 +112,8 @@ class Sender(abc.ABC):
 
     def __init__(self, transport):
         self.transport = transport
+        # Set by install_chrome() to the installed chromedriver.
+        self.driver_path = None
 
     @abc.abstractmethod
     def _detect_arch(self, probes):
@@ -139,6 +142,27 @@ class Sender(abc.ABC):
     def run(self, command):
         """Runs `command` on the sender and returns the CompletedProcess."""
         return self.transport.run(command)
+
+    def _run_checked(self, command, action):
+        """Runs `command` and raises if it fails.
+
+        Raises:
+            SenderUnreachableError: ssh itself failed.
+            RuntimeError: The command exited non-zero.
+        """
+        result = self.run(command)
+        self.transport.raise_if_disconnected(result, action)
+        if result.returncode != 0:
+            raise RuntimeError(
+                f"Failed {action} on sender '{self.transport.host}' "
+                f"(rc={result.returncode}): "
+                f"{(result.stderr or result.stdout or '').strip()}"
+            )
+        return result
+
+    def _remove_file_command(self, path):
+        """Returns the command that deletes `path` if it exists."""
+        return f'rm -f {path}'
 
     def copy_from(
         self,
@@ -318,16 +342,20 @@ class Sender(abc.ABC):
         logging.info("Finished chromedriver setup attempt.")
         return app_path, actual_version
 
+    def chrome_binary_path(self, app_path):
+        """Returns the Chrome executable to launch for `app_path`.
+
+        This is what ChromeOptions.binary_location should be set to.
+        """
+        return app_path
+
     def _install_locally(self, chrome_url, driver_url):
         """Installs Chrome and starts chromedriver on this machine."""
         tmp_dir = '/tmp'
         chrome_zip, chrome_dir = _zip_name_and_dir(chrome_url)
         driver_zip, driver_dir = _zip_name_and_dir(driver_url)
-        if sys.platform == 'linux':
-            app_path = f"{tmp_dir}/{chrome_dir}/chrome"
-        else:
-            app_path = f"{tmp_dir}/{chrome_dir}/Google Chrome for Testing.app"
-        driver_path = f"{tmp_dir}/{driver_dir}/chromedriver"
+        app_path = f"{tmp_dir}/{chrome_dir}/{self.CHROME_APP}"
+        driver_path = self.driver_path = f"{tmp_dir}/{driver_dir}/chromedriver"
 
         if os.path.exists(app_path) and os.path.exists(driver_path):
             logging.info(
@@ -336,8 +364,8 @@ class Sender(abc.ABC):
             )
         else:
             subprocess.run(
-                f"curl -L {chrome_url} -o {tmp_dir}/{chrome_zip} && "
-                f"curl -L {driver_url} -o {tmp_dir}/{driver_zip} && "
+                f"curl -fL {chrome_url} -o {tmp_dir}/{chrome_zip} && "
+                f"curl -fL {driver_url} -o {tmp_dir}/{driver_zip} && "
                 f"unzip -o {tmp_dir}/{chrome_zip} -d {tmp_dir} && "
                 f"unzip -o {tmp_dir}/{driver_zip} -d {tmp_dir}",
                 shell=True,
@@ -422,16 +450,17 @@ class Sender(abc.ABC):
         """Stops monitoring and copies its output to `csv_local_path`."""
         logging.info("Stopping Glances/Power monitoring...")
         if monitor_proc:
+            monitor_proc.terminate()
             try:
-                monitor_proc.terminate()
                 monitor_proc.wait(timeout=5)
-            except Exception:  # pylint: disable=broad-exception-caught
-                pass
+            except subprocess.TimeoutExpired:
+                logging.warning("Monitoring process did not exit; killing it.")
+                monitor_proc.kill()
 
         # Also kill it on the sender in case terminating ssh did not.
         self.run(self.GLANCES_KILL_CMD)
         self.copy_from(csv_remote_path, csv_local_path)
-        self.run(f"rm -f {csv_remote_path}")
+        self.run(self._remove_file_command(csv_remote_path))
 
 
 def _remove_local_chrome_dirs():
@@ -444,8 +473,8 @@ def _remove_local_chrome_dirs():
                     shutil.rmtree(path, ignore_errors=True)
                 else:
                     os.remove(path)
-            except OSError:
-                pass
+            except OSError as e:
+                logging.warning("Failed to remove %s: %s", path, e)
     logging.info("Cleaned up local Chrome/Chromedriver directories.")
 
 
@@ -453,7 +482,6 @@ class PosixSender(Sender):
     """Shared behavior for macOS, Linux, and ChromeOS senders."""
 
     UNAME = 'uname'
-    CHROME_APP = 'chrome'
     CHROMEDRIVER_CHECK_CMD = 'pgrep chromedriver'
     TERMINATE_CHROMEDRIVER_CMD = (
         'pkill -f chromedriver || true; pkill -f chrome || true'
@@ -480,22 +508,31 @@ class PosixSender(Sender):
         chrome_zip, chrome_dir = _zip_name_and_dir(chrome_url)
         driver_zip, driver_dir = _zip_name_and_dir(driver_url)
         app_path = f"{tmp}/{chrome_dir}/{self.CHROME_APP}"
-        driver_path = f"{tmp}/{driver_dir}/chromedriver"
-
-        check = self.run(
+        driver_path = self.driver_path = f"{tmp}/{driver_dir}/chromedriver"
+        check_cmd = (
             f"{self._installed_test(app_path, driver_path)} && "
             "echo 'EXISTS' || echo 'MISSING'"
         )
+
+        check = self.run(check_cmd)
         if check.stdout.strip() == 'EXISTS':
             logging.info(self._already_installed_message())
         else:
-            self.run(
-                f"curl -L {chrome_url} -o {tmp}/{chrome_zip} && "
-                f"curl -L {driver_url} -o {tmp}/{driver_zip} && "
+            # -f makes curl fail on HTTP errors instead of saving the error
+            # page as the zip.
+            self._run_checked(
+                f"curl -fL {chrome_url} -o {tmp}/{chrome_zip} && "
+                f"curl -fL {driver_url} -o {tmp}/{driver_zip} && "
                 f"unzip -o {tmp}/{chrome_zip} -d {tmp} && "
-                f"unzip -o {tmp}/{driver_zip} -d {tmp}"
+                f"unzip -o {tmp}/{driver_zip} -d {tmp}",
+                'downloading and unzipping Chrome',
             )
             self._after_extract(f'{tmp}/{chrome_dir}', f'{tmp}/{driver_dir}')
+            if self.run(check_cmd).stdout.strip() != 'EXISTS':
+                raise RuntimeError(
+                    f"Chrome is missing on sender '{self.transport.host}' "
+                    f"after install: expected {app_path}"
+                )
 
         self._start_chromedriver(driver_path)
         return app_path
@@ -513,7 +550,9 @@ class PosixSender(Sender):
         """Hook for OS-specific fixups after unzipping."""
 
     def _start_chromedriver(self, driver_path):
-        self.run(f'chmod +x {driver_path}')
+        self._run_checked(
+            f'chmod +x {driver_path}', 'making chromedriver executable'
+        )
         self.transport.spawn(
             f'nohup {driver_path} {_CHROMEDRIVER_FLAGS} '
             f'> /tmp/chromedriver_console.log 2>&1 &'
@@ -538,13 +577,19 @@ class MacSender(PosixSender):
     def _detect_os_version(self, probes):
         return self._probe('/usr/bin/sw_vers -productVersion', probes)
 
+    def chrome_binary_path(self, app_path):
+        return f'{app_path}/Contents/MacOS/Google Chrome for Testing'
+
     def _installed_test(self, app_path, driver_path):
         # The Chrome app is a bundle directory on macOS.
         return f"[ -d '{app_path}' ] && [ -f '{driver_path}' ]"
 
     def _after_extract(self, chrome_dir, driver_dir):
         # Clear quarantine attributes so Gatekeeper does not block launch.
-        self.run(f"xattr -cr {chrome_dir} && xattr -cr {driver_dir}")
+        self._run_checked(
+            f"xattr -cr {chrome_dir} && xattr -cr {driver_dir}",
+            'clearing quarantine attributes',
+        )
 
 
 class LinuxSender(PosixSender):
@@ -616,6 +661,7 @@ class WindowsSender(Sender):
     OS_NAME = 'win'
     DISPLAY_NAME = 'Windows'
     TMP_DIR = WIN_REMOTE_TMP_DIR
+    CHROME_APP = 'chrome.exe'
     CFT_PLATFORMS = {'x64': 'win64', 'x86': 'win32'}
     CHROMEDRIVER_CHECK_CMD = (
         'powershell -Command "Get-Process -Name chromedriver -ErrorAction '
@@ -634,8 +680,10 @@ class WindowsSender(Sender):
         'ForEach-Object { Stop-Process $_.ProcessId -Force }"'
     )
 
-    # Win32_Processor.Architecture codes.
-    _CIM_ARCH = {'0': 'x86', '9': 'x64', '12': 'x64'}  # ARM64 runs x64.
+    # Win32_Processor.Architecture enum values: 0 = x86, 9 = x64, 12 = ARM64.
+    # Chrome for Testing only publishes win32 and win64 builds, so ARM64 runs
+    # the x64 build under emulation.
+    _CIM_ARCH = {'0': 'x86', '9': 'x64', '12': 'x64'}
     _ENV_ARCH = {'AMD64': 'x64', 'ARM64': 'x64', 'x86': 'x86'}
 
     def _console_log_command(self):
@@ -687,28 +735,31 @@ class WindowsSender(Sender):
 
     def _install(self, chrome_url, driver_url):
         tmp = self.TMP_DIR
-        self.run(
-            f'powershell -Command "if (!(Test-Path \'{tmp}\')) '
-            f'{{ New-Item -ItemType Directory -Path \'{tmp}\' '
-            '-Force }}"'
+        self._run_checked(
+            f"powershell -Command \"if (!(Test-Path '{tmp}')) "
+            f"{{ New-Item -ItemType Directory -Path '{tmp}' -Force }}\"",
+            f'creating {tmp}',
         )
 
         chrome_zip, chrome_dir = _zip_name_and_dir(chrome_url)
         driver_zip, driver_dir = _zip_name_and_dir(driver_url)
         chrome_zip_path = f"{tmp}/{chrome_zip}"
         driver_zip_path = f"{tmp}/{driver_zip}"
-        app_path = f'{tmp}/{chrome_dir}/chrome.exe'
-        driver_path = f'{tmp}/{driver_dir}/chromedriver.exe'
-
-        check = self.run(
+        app_path = f'{tmp}/{chrome_dir}/{self.CHROME_APP}'
+        driver_path = self.driver_path = f'{tmp}/{driver_dir}/chromedriver.exe'
+        check_cmd = (
             f"powershell -Command \"if ((Test-Path '{app_path}') -and "
             f"(Test-Path '{driver_path}')) "
             f"{{ Write-Output 'EXISTS' }} else {{ Write-Output 'MISSING' }}\""
         )
+
+        check = self.run(check_cmd)
         if check.stdout.strip() == 'EXISTS':
             logging.info(self._already_installed_message())
         else:
             logging.info("Downloading and unzipping Chrome/Chromedriver...")
+            # ErrorActionPreference does not apply to native commands like
+            # curl.exe and tar.exe, so the result is verified below.
             result = self.run(
                 f"powershell -Command \"Set-Variable -Name "
                 f"ErrorActionPreference -Value Stop; Set-Variable -Name "
@@ -718,8 +769,8 @@ class WindowsSender(Sender):
                 f"Remove-Item -Path '{tmp}/chrome*',"
                 f"'{tmp}/chromedriver*' -Recurse -Force "
                 f"-ErrorAction SilentlyContinue; "
-                f"curl.exe -L '{chrome_url}' -o '{chrome_zip_path}'; "
-                f"curl.exe -L '{driver_url}' -o '{driver_zip_path}'; "
+                f"curl.exe -fL '{chrome_url}' -o '{chrome_zip_path}'; "
+                f"curl.exe -fL '{driver_url}' -o '{driver_zip_path}'; "
                 f"if (Test-Path '{WIN_SYSTEM32_TAR}') {{ "
                 f"Set-Location '{tmp}'; "
                 f"& '{WIN_SYSTEM32_TAR}' -xf '{chrome_zip}'; "
@@ -730,10 +781,14 @@ class WindowsSender(Sender):
                 f"Expand-Archive -Path '{driver_zip_path}' "
                 f"-DestinationPath '{tmp}' -Force }}\""
             )
-            if result.returncode != 0:
+            self.transport.raise_if_disconnected(result, 'installing Chrome')
+            if (
+                result.returncode != 0
+                or self.run(check_cmd).stdout.strip() != 'EXISTS'
+            ):
                 raise RuntimeError(
-                    f"Failed to setup Chrome/Chromedriver on "
-                    f"Windows: {result.stderr}"
+                    f"Failed to setup Chrome/Chromedriver on Windows "
+                    f"(rc={result.returncode}): {result.stderr}"
                 )
 
         self._start_chromedriver(f'{tmp}/{driver_dir}')
@@ -743,6 +798,12 @@ class WindowsSender(Sender):
         return (
             "Chrome and Chromedriver already installed on Windows. "
             "Skipping download/extract."
+        )
+
+    def _remove_file_command(self, path):
+        return (
+            f"powershell -Command \"Remove-Item -Path '{path}' -Force "
+            "-ErrorAction SilentlyContinue\""
         )
 
     def _start_chromedriver(self, driver_dir):
@@ -764,24 +825,28 @@ class WindowsSender(Sender):
             '2>&1\n'
         )
         batch_path = f'{self.TMP_DIR}/start_chromedriver.bat'
-        self.run(
+        self._run_checked(
             f"powershell -Command \"'{batch_script}' | "
-            f"Out-File -FilePath '{batch_path}' -Encoding ascii\""
+            f"Out-File -FilePath '{batch_path}' -Encoding ascii\"",
+            'writing the chromedriver launch script',
         )
 
         # Wrapped in PowerShell so this works whether sshd's shell is cmd,
-        # PowerShell, or bash.
+        # PowerShell, or bash. Deleting fails if the task does not exist yet,
+        # which is fine.
         self.run(
             'powershell -Command '
             '"schtasks /delete /tn StartChromeDriverTask /f"'
         )
-        self.run(
+        self._run_checked(
             'powershell -Command '
             '"schtasks /create /tn StartChromeDriverTask /tr '
-            f'\'{batch_path}\' /sc ONCE /st 23:59 /IT /f"'
+            f'\'{batch_path}\' /sc ONCE /st 23:59 /IT /f"',
+            'scheduling chromedriver',
         )
-        self.run(
-            'powershell -Command "schtasks /run /tn StartChromeDriverTask"'
+        self._run_checked(
+            'powershell -Command "schtasks /run /tn StartChromeDriverTask"',
+            'starting chromedriver',
         )
 
 

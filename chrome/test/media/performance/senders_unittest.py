@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 """Unit tests for senders.py."""
 
+import subprocess
 import unittest
 from unittest import mock
 
@@ -32,6 +33,43 @@ _MAC_RM_BINARIES = 'rm -rf /tmp/chrome* /tmp/chromedriver*'
 _CFT_BASE = 'https://storage.example/120.0.1.2'
 _CHROME_URL = f'{_CFT_BASE}/mac-arm64/chrome-mac-arm64.zip'
 _DRIVER_URL = f'{_CFT_BASE}/mac-arm64/chromedriver-mac-arm64.zip'
+_MAC_APP = '/tmp/chrome-mac-arm64/Google Chrome for Testing.app'
+_MAC_DRIVER = '/tmp/chromedriver-mac-arm64/chromedriver'
+_MAC_INSTALLED_CHECK = (
+    f"[ -d '{_MAC_APP}' ] && [ -f '{_MAC_DRIVER}' ] && "
+    "echo 'EXISTS' || echo 'MISSING'"
+)
+_MAC_XATTR = (
+    'xattr -cr /tmp/chrome-mac-arm64 && xattr -cr /tmp/chromedriver-mac-arm64'
+)
+_MAC_CHMOD = f'chmod +x {_MAC_DRIVER}'
+
+_WIN_CHROME_URL = f'{_CFT_BASE}/win64/chrome-win64.zip'
+_WIN_DRIVER_URL = f'{_CFT_BASE}/win64/chromedriver-win64.zip'
+_WIN_APP = 'C:/cft_temp/chrome-win64/chrome.exe'
+_WIN_DRIVER = 'C:/cft_temp/chromedriver-win64/chromedriver.exe'
+_WIN_MKDIR = (
+    "powershell -Command \"if (!(Test-Path 'C:/cft_temp')) "
+    "{ New-Item -ItemType Directory -Path 'C:/cft_temp' -Force }\""
+)
+_WIN_INSTALLED_CHECK = (
+    f"powershell -Command \"if ((Test-Path '{_WIN_APP}') -and "
+    f"(Test-Path '{_WIN_DRIVER}')) "
+    "{ Write-Output 'EXISTS' } else { Write-Output 'MISSING' }\""
+)
+_WIN_SETUP_PREFIX = 'powershell -Command "Set-Variable -Name ErrorAction'
+_WIN_TASK_DELETE = (
+    'powershell -Command "schtasks /delete /tn StartChromeDriverTask /f"'
+)
+_WIN_TASK_CREATE = (
+    'powershell -Command "schtasks /create /tn '
+    "StartChromeDriverTask /tr "
+    "'C:/cft_temp/start_chromedriver.bat' /sc ONCE /st 23:59 "
+    '/IT /f"'
+)
+_WIN_TASK_RUN = 'powershell -Command "schtasks /run /tn StartChromeDriverTask"'
+_MISSING = completed(stdout='MISSING\n')
+_EXISTS = completed(stdout='EXISTS\n')
 
 
 def _mac(**kwargs):
@@ -256,80 +294,203 @@ class InstallChromeTest(fakes.SenderTestCase):
         self.download.assert_not_called()
 
     def test_mac_downloads_when_missing_and_starts_chromedriver(self):
-        self.ssh.default = completed(stdout='MISSING')
-        app_path, version = _mac().install_chrome('120')
+        self.ssh.responses[_MAC_INSTALLED_CHECK] = [_MISSING, _EXISTS]
+        sender = _mac()
+        app_path, version = sender.install_chrome('120')
 
         self.download.assert_called_once_with('mac-arm64', '120')
         self.assertEqual(version, '120.0.1.2')
-        self.assertEqual(
-            app_path, '/tmp/chrome-mac-arm64/Google Chrome for Testing.app'
-        )
-        commands = self.ssh.remote_commands
-        self.assertTrue(any(c.startswith('curl -L') for c in commands))
-        self.assertIn(
-            'xattr -cr /tmp/chrome-mac-arm64 && '
-            'xattr -cr /tmp/chromedriver-mac-arm64',
-            commands,
-        )
-        self.assertIn(
-            'chmod +x /tmp/chromedriver-mac-arm64/chromedriver', commands
-        )
+        self.assertEqual(app_path, _MAC_APP)
+        self.assertEqual(sender.driver_path, _MAC_DRIVER)
+        self.assertTrue(self.ssh.ran_prefix(f'curl -fL {_CHROME_URL} '))
+        self.assertTrue(self.ssh.ran(_MAC_XATTR))
+        self.assertTrue(self.ssh.ran(_MAC_CHMOD))
         spawned = self.popen.call_args[0][0][-1]
-        self.assertTrue(
-            spawned.startswith(
-                'nohup /tmp/chromedriver-mac-arm64/chromedriver --port='
-            )
-        )
+        self.assertTrue(spawned.startswith(f'nohup {_MAC_DRIVER} --port='))
         self.assertIn('--allowed-origins="*"', spawned)
 
     def test_mac_skips_download_when_installed(self):
-        self.ssh.default = completed(stdout='EXISTS')
-        _mac().install_chrome('120')
-        self.assertFalse(
-            any(c.startswith('curl -L') for c in self.ssh.remote_commands)
-        )
+        self.ssh.responses[_MAC_INSTALLED_CHECK] = _EXISTS
+        sender = _mac()
+        sender.install_chrome('120')
+        self.assertFalse(self.ssh.ran_prefix('curl'))
+        self.assertEqual(sender.driver_path, _MAC_DRIVER)
         self.popen.assert_called_once()
+
+    def test_mac_download_failure_raises_with_stderr(self):
+        self.ssh.responses[_MAC_INSTALLED_CHECK] = _MISSING
+        self.ssh.default = completed(
+            22, stderr='curl: (22) The requested URL returned error: 404'
+        )
+        with self.assertRaises(RuntimeError) as ctx:
+            _mac().install_chrome('120')
+        msg = str(ctx.exception)
+        self.assertIn('downloading and unzipping Chrome', msg)
+        self.assertIn('rc=22', msg)
+        self.assertIn('error: 404', msg)
+        self.assertFalse(self.ssh.ran(_MAC_XATTR))
+        self.popen.assert_not_called()
+
+    def test_mac_ssh_drop_during_download_is_infra_failure(self):
+        self.ssh.responses[_MAC_INSTALLED_CHECK] = _MISSING
+        self.ssh.default = completed(255, stderr=NO_ROUTE)
+        with self.assertLogs(level='ERROR'):
+            with self.assertRaises(SenderUnreachableError):
+                _mac().install_chrome('120')
+
+    def test_mac_missing_after_install_raises(self):
+        self.ssh.responses[_MAC_INSTALLED_CHECK] = _MISSING
+        with self.assertRaises(RuntimeError) as ctx:
+            _mac().install_chrome('120')
+        self.assertIn('missing', str(ctx.exception))
+        self.assertIn(_MAC_APP, str(ctx.exception))
+        self.popen.assert_not_called()
+
+    def test_mac_xattr_failure_raises(self):
+        self.ssh.responses[_MAC_INSTALLED_CHECK] = [_MISSING, _EXISTS]
+        self.ssh.responses[_MAC_XATTR] = completed(1, stderr='xattr: denied')
+        with self.assertRaises(RuntimeError) as ctx:
+            _mac().install_chrome('120')
+        self.assertIn('xattr: denied', str(ctx.exception))
+        self.popen.assert_not_called()
+
+    def test_chmod_failure_raises_before_spawning(self):
+        self.ssh.responses[_MAC_INSTALLED_CHECK] = _EXISTS
+        self.ssh.responses[_MAC_CHMOD] = completed(1, stderr='read-only')
+        with self.assertRaises(RuntimeError) as ctx:
+            _mac().install_chrome('120')
+        self.assertIn('read-only', str(ctx.exception))
+        self.popen.assert_not_called()
 
     def test_cros_does_not_start_chromedriver(self):
         self.ssh.responses['/usr/bin/uname -m'] = completed(stdout='x86_64\n')
-        self.ssh.default = completed(stdout='EXISTS')
-        app_path, _ = _mac(sender_os='cros').install_chrome('120')
+        self.ssh.default = _EXISTS
+        sender = _mac(sender_os='cros')
+        app_path, _ = sender.install_chrome('120')
         self.assertTrue(app_path.startswith('/usr/local/tmp/'))
+        self.assertEqual(
+            sender.driver_path,
+            '/usr/local/tmp/chromedriver-mac-arm64/chromedriver',
+        )
         self.download.assert_called_once_with('linux64', '120')
         self.popen.assert_not_called()
 
-    def test_windows_downloads_when_missing_and_starts_chromedriver(self):
-        win_chrome_url = f'{_CFT_BASE}/win64/chrome-win64.zip'
-        win_driver_url = f'{_CFT_BASE}/win64/chromedriver-win64.zip'
-        self.download.return_value = (
-            '120.0.1.2',
-            win_chrome_url,
-            win_driver_url,
+
+class InstallChromeWindowsTest(fakes.SenderTestCase):
+    def setUp(self):
+        super().setUp()
+        self.download = self._patch(
+            'senders.download_cft_urls',
+            return_value=('120.0.1.2', _WIN_CHROME_URL, _WIN_DRIVER_URL),
         )
         self.ssh.responses[_WIN_CIM_CMD] = completed(stdout='9')
         self.ssh.responses[_WIN_VER_CMD] = completed(stdout='10.0\n')
-        self.ssh.default = completed(stdout='MISSING')
-        app_path, version = _win().install_chrome('120')
+        self.ssh.responses[_WIN_INSTALLED_CHECK] = [_MISSING, _EXISTS]
+
+    def test_installs_and_schedules_chromedriver(self):
+        sender = _win()
+        app_path, _ = sender.install_chrome('120')
 
         self.download.assert_called_once_with('win64', '120')
-        self.assertEqual(version, '120.0.1.2')
-        self.assertEqual(app_path, 'C:/cft_temp/chrome-win64/chrome.exe')
-        commands = self.ssh.remote_commands
-        self.assertTrue(
-            any(
-                "New-Item -ItemType Directory -Path 'C:/cft_temp'" in c
-                for c in commands
-            )
-        )
+        self.assertEqual(app_path, _WIN_APP)
+        self.assertEqual(sender.driver_path, _WIN_DRIVER)
+        self.assertTrue(self.ssh.ran(_WIN_MKDIR))
+        setup = [
+            c
+            for c in self.ssh.remote_commands
+            if c.startswith(_WIN_SETUP_PREFIX)
+        ]
+        self.assertEqual(len(setup), 1)
+        self.assertIn(f"curl.exe -fL '{_WIN_CHROME_URL}'", setup[0])
+        for command in (_WIN_TASK_DELETE, _WIN_TASK_CREATE, _WIN_TASK_RUN):
+            self.assertTrue(self.ssh.ran(command), command)
 
-    def test_windows_setup_failure_raises(self):
-        self.ssh.responses[_WIN_CIM_CMD] = completed(stdout='9')
-        self.ssh.responses[_WIN_VER_CMD] = completed(stdout='10.0\n')
-        self.ssh.default = completed(1, stdout='MISSING', stderr='bad zip')
+    def test_mkdir_command_is_valid_powershell(self):
+        # Regression test: the command used to be a plain string with
+        # doubled braces and a literal "{tmp}".
+        _win().install_chrome('120')
+        self.assertTrue(self.ssh.ran(_WIN_MKDIR))
+        for command in self.ssh.remote_commands:
+            self.assertNotIn('{{', command)
+            self.assertNotIn('{tmp}', command)
+
+    def test_mkdir_failure_raises(self):
+        self.ssh.responses[_WIN_MKDIR] = completed(1, stderr='access denied')
+        with self.assertRaises(RuntimeError) as ctx:
+            _win().install_chrome('120')
+        self.assertIn('creating C:/cft_temp', str(ctx.exception))
+        self.assertFalse(self.ssh.ran_prefix(_WIN_SETUP_PREFIX))
+
+    def test_setup_failure_raises(self):
+        self.ssh.default = completed(1, stderr='bad zip')
+        self.ssh.responses[_WIN_MKDIR] = completed()
         with self.assertRaises(RuntimeError) as ctx:
             _win().install_chrome('120')
         self.assertIn('bad zip', str(ctx.exception))
-        self.download.assert_called_once_with('win64', '120')
+        self.assertFalse(self.ssh.ran(_WIN_TASK_CREATE))
+
+    def test_missing_after_setup_raises_even_if_rc_0(self):
+        # curl.exe/tar.exe failures do not set PowerShell's exit code.
+        self.ssh.responses[_WIN_INSTALLED_CHECK] = _MISSING
+        with self.assertRaises(RuntimeError):
+            _win().install_chrome('120')
+        self.assertFalse(self.ssh.ran(_WIN_TASK_CREATE))
+
+    def test_schtasks_create_failure_raises(self):
+        self.ssh.responses[_WIN_TASK_CREATE] = completed(
+            1, stderr='ERROR: Access is denied.'
+        )
+        with self.assertRaises(RuntimeError) as ctx:
+            _win().install_chrome('120')
+        self.assertIn('scheduling chromedriver', str(ctx.exception))
+        self.assertIn('Access is denied', str(ctx.exception))
+        self.assertFalse(self.ssh.ran(_WIN_TASK_RUN))
+
+    def test_schtasks_delete_failure_is_tolerated(self):
+        self.ssh.responses[_WIN_TASK_DELETE] = completed(
+            1, stderr='ERROR: The system cannot find the file specified.'
+        )
+        _win().install_chrome('120')
+        self.assertTrue(self.ssh.ran(_WIN_TASK_RUN))
+
+
+class ChromeBinaryPathTest(unittest.TestCase):
+    def test_per_os(self):
+        cases = {
+            'mac': (
+                '/tmp/c/Google Chrome for Testing.app',
+                '/tmp/c/Google Chrome for Testing.app/Contents/MacOS/'
+                'Google Chrome for Testing',
+            ),
+            'linux': ('/tmp/c/chrome', '/tmp/c/chrome'),
+            'win': (_WIN_APP, _WIN_APP),
+        }
+        for sender_os, (app_path, binary) in cases.items():
+            with self.subTest(sender_os=sender_os):
+                sender = senders.make_sender(make_args(sender_os=sender_os))
+                self.assertEqual(sender.chrome_binary_path(app_path), binary)
+
+
+class LocalInstallTest(fakes.SenderTestCase):
+    def test_app_path_follows_sender_os(self):
+        self.run.side_effect = None
+        self.run.return_value = completed()
+        self._patch('os.path.exists', return_value=True)
+        cases = {
+            'mac': '/tmp/chrome-mac-arm64/Google Chrome for Testing.app',
+            'linux': '/tmp/chrome-mac-arm64/chrome',
+            'win': '/tmp/chrome-mac-arm64/chrome.exe',
+        }
+        for sender_os, expected in cases.items():
+            with self.subTest(sender_os=sender_os):
+                sender = senders.make_sender(
+                    make_args(sender='localhost', sender_os=sender_os)
+                )
+                with self.assertLogs(level='INFO'):
+                    # pylint: disable-next=protected-access
+                    app_path = sender._install_locally(_CHROME_URL, _DRIVER_URL)
+                self.assertEqual(app_path, expected)
+                self.assertEqual(sender.driver_path, _MAC_DRIVER)
 
 
 class CleanupTest(fakes.SenderTestCase):
@@ -437,6 +598,23 @@ class MonitoringTest(fakes.SenderTestCase):
         sender.stop_monitoring(None, '/tmp/g.csv', '/out/g.csv')
         self.assertIn('rm -f /tmp/cros_power.txt', self.ssh.remote_commands)
         self.assertEqual(self.ssh.copies[0][-1], '/out/g.csv')
+
+    def test_windows_removes_csv_with_powershell(self):
+        _win().stop_monitoring(None, 'C:/cft_temp/g.csv', '/out/g.csv')
+        self.assertEqual(
+            self.ssh.remote_commands[-1],
+            "powershell -Command \"Remove-Item -Path 'C:/cft_temp/g.csv' "
+            "-Force -ErrorAction SilentlyContinue\"",
+        )
+        self.assertFalse(self.ssh.ran_prefix('rm '))
+
+    def test_kills_monitor_that_ignores_terminate(self):
+        proc = mock.MagicMock()
+        proc.wait.side_effect = subprocess.TimeoutExpired('ssh', 5)
+        with self.assertLogs(level='WARNING'):
+            _mac().stop_monitoring(proc, '/tmp/g.csv', '/out/g.csv')
+        proc.terminate.assert_called_once()
+        proc.kill.assert_called_once()
 
 
 if __name__ == '__main__':

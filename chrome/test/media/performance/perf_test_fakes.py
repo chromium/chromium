@@ -43,7 +43,8 @@ def no_route():
 class FakeSsh:
     """Stands in for subprocess.run and answers ssh commands by remote cmd.
 
-    scp calls are recorded in `copies` and succeed.
+    A response may be a list, which is returned in order; its last entry
+    repeats. scp calls are recorded in `copies` and succeed.
     """
 
     def __init__(self):
@@ -60,10 +61,16 @@ class FakeSsh:
         assert argv[0] == 'ssh', argv
         command = argv[-1]
         self.remote_commands.append(command)
-        return self.responses.get(command, self.default)
+        response = self.responses.get(command, self.default)
+        if isinstance(response, list):
+            return response.pop(0) if len(response) > 1 else response[0]
+        return response
 
     def ran(self, command):
         return command in self.remote_commands
+
+    def ran_prefix(self, prefix):
+        return any(c.startswith(prefix) for c in self.remote_commands)
 
 
 class SenderTestCase(unittest.TestCase):
@@ -92,6 +99,10 @@ class SenderTestCase(unittest.TestCase):
         self.ssh = FakeSsh()
         self.run = self._patch('subprocess.run', side_effect=self.ssh)
         self.popen = self._patch('subprocess.Popen')
+        # Spawned processes keep running, so open_tunnel sees the tunnel up.
+        self.popen.return_value.wait.side_effect = subprocess.TimeoutExpired(
+            'ssh', remote_transport.TUNNEL_STARTUP_CHECK_SECS
+        )
         self.sleep = self._patch('time.sleep')
 
     def _patch(self, target, **kwargs):

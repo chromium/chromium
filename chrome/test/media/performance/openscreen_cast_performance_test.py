@@ -204,21 +204,8 @@ def setup_test_environment(
     log_file_path = f'{sender.TMP_DIR}/chrome_debug_{video_key}.log'
     chrome_options.add_argument(f'--log-file={log_file_path}')
 
-    binary_path = None
-    if args.sender_os == 'mac':
-        binary_path = (
-            f'{remote_app_path}/Contents/MacOS/Google Chrome for Testing'
-        )
-        logging.info(
-            "Mac OS detected. Setting binary_location to: %s", binary_path
-        )
-    elif args.sender_os == 'win':
-        logging.info(
-            "Windows OS detected. Setting binary_location to: %s",
-            remote_app_path,
-        )
-        binary_path = remote_app_path
-
+    binary_path = sender.chrome_binary_path(remote_app_path)
+    logging.info("Setting binary_location to: %s", binary_path)
     chrome_options.binary_location = binary_path
     driver = connect_to_remote_driver(chrome_options, binary_path)
 

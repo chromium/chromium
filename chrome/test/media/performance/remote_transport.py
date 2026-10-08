@@ -35,6 +35,7 @@ SSH_BASE_OPTS = [
 SSH_CONNECT_ERROR = 255
 COMMAND_TIMEOUT_SECS = 120
 COPY_TIMEOUT_SECS = 30
+TUNNEL_STARTUP_CHECK_SECS = 2
 
 PREFLIGHT_TCP_TIMEOUT_SECS = 5
 PREFLIGHT_MAX_ATTEMPTS = 3
@@ -235,6 +236,7 @@ class SshTransport(Transport):
         self.verify_connectivity()
         tunnel_argv = [
             'ssh',
+            *SSH_BASE_OPTS,
             '-i',
             SSH_KEY_PATH,
             # Optimization for tunnel throughput. Disable compression as video
@@ -256,10 +258,28 @@ class SshTransport(Transport):
             self._destination,
             '-N',
         ]
+        # stderr is inherited rather than piped: the tunnel lives for the
+        # whole run, and a full pipe would block ssh. Its errors show up in
+        # the log directly.
         # pylint: disable-next=consider-using-with
         tunnel = subprocess.Popen(tunnel_argv)
-        logging.info("Started tunnel.")
-        return tunnel
+        # With ExitOnForwardFailure, ssh exits within a moment if it cannot
+        # connect or a port is already in use. A tunnel that is still
+        # running after this wait is treated as up.
+        try:
+            tunnel.wait(timeout=TUNNEL_STARTUP_CHECK_SECS)
+        except subprocess.TimeoutExpired:
+            logging.info("Started tunnel.")
+            return tunnel
+
+        raise SenderSshError(
+            f"SSH tunnel to {self._destination} exited immediately "
+            f"(rc={tunnel.returncode}) while forwarding ports {local_port} "
+            f"and {remote_port}. See the ssh output above; check for stale "
+            f"tunnels or chromedriver processes holding these ports. "
+            f"{INFRA_FAILURE_NOTE}",
+            f"tunnel exited (rc={tunnel.returncode})",
+        )
 
     # --- Connectivity ---
 

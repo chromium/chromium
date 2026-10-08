@@ -257,11 +257,30 @@ class SshTransportTest(fakes.SenderTestCase):
         self.popen.assert_not_called()
 
     def test_open_tunnel_forwards_both_ports(self):
-        _ssh().open_tunnel(49573, 8000)
+        with self.assertLogs(level='INFO'):
+            tunnel = _ssh().open_tunnel(49573, 8000)
+        self.assertIs(tunnel, self.popen.return_value)
         argv = self.popen.call_args[0][0]
         self.assertIn('49573:127.0.0.1:49573', argv)
         self.assertIn('8000:127.0.0.1:8000', argv)
+        self.assertIn('BatchMode=yes', argv)
+        self.assertIn('ConnectTimeout=10', argv)
+        self.assertIn('ExitOnForwardFailure=yes', argv)
         self.assertEqual(argv[-2:], [f'{USER}@{MAC_HOST}', '-N'])
+        self.popen.return_value.wait.assert_called_once_with(
+            timeout=remote_transport.TUNNEL_STARTUP_CHECK_SECS
+        )
+
+    def test_open_tunnel_raises_if_ssh_exits_during_startup(self):
+        tunnel = self.popen.return_value
+        tunnel.wait.side_effect = None
+        tunnel.returncode = 255
+        with self.assertRaises(SenderSshError) as ctx:
+            _ssh().open_tunnel(49573, 8000)
+        msg = str(ctx.exception)
+        self.assertIn('exited immediately (rc=255)', msg)
+        self.assertIn('49573', msg)
+        self.assertIn(INFRA_FAILURE_NOTE, msg)
 
 
 class LocalTransportTest(fakes.SenderTestCase):

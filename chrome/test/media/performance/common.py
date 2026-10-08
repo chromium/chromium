@@ -175,8 +175,8 @@ def teardown_test_environment(driver, tunnel_proc, args):
             try:
                 tunnel_proc.ports.stop_reverse_forward(SERVER_PORT)
                 logging.info("Stopped Crossbench port forwarding.")
-            except Exception:  # pylint: disable=broad-exception-caught
-                pass
+            except Exception as e:  # pylint: disable=broad-exception-caught
+                logging.warning("Failed to stop Crossbench forwarding: %s", e)
 
     sender = _sender_for_cleanup(args)
     if sender:

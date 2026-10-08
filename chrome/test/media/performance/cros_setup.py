@@ -105,24 +105,20 @@ def _install_chromedriver(sender, milestone):
     """Installs a chromedriver matching `milestone` on the DUT.
 
     Crossbench's SSH platform expects the driver to be on the remote device.
+    Install failures propagate: without a matching chromedriver the run
+    cannot produce valid results.
 
     Returns:
-        The remote chromedriver path, or None if the install failed.
+        The remote chromedriver path.
     """
-    try:
-        if not milestone:
-            logging.warning(
-                "Milestone is None. download_cft_urls will fall "
-                "back to the latest version, which may cause a "
-                "mismatch."
-            )
-        _, _, driver_url = senders.download_cft_urls('linux64', milestone)
-        sender.install_chrome(milestone)
-        driver_dir = driver_url.split('/')[-1].replace('.zip', '')
-        return f"{sender.TMP_DIR}/{driver_dir}/chromedriver"
-    except Exception as e:  # pylint: disable=broad-exception-caught
-        logging.warning("Failed to install matching ChromeDriver: %s", e)
-        return None
+    if not milestone:
+        logging.warning(
+            "Milestone is None. download_cft_urls will fall "
+            "back to the latest version, which may cause a "
+            "mismatch."
+        )
+    sender.install_chrome(milestone)
+    return sender.driver_path
 
 
 def _crossbench_flags(chrome_options_list):
@@ -201,15 +197,19 @@ def setup_cros_environment(args, chrome_version, chrome_options_list):
     browser.UNSUPPORTED_FLAGS += ("--user-data-dir",)
 
     def _safe_setup_window():
+        # Window handles can be briefly unavailable while autologin runs.
         for _ in range(20):
             try:
                 handles = browser._private_driver.window_handles
                 if handles:
                     browser._private_driver.switch_to.window(handles[0])
                     return
-            except Exception:  # pylint: disable=broad-exception-caught
-                pass
+            except Exception as e:  # pylint: disable=broad-exception-caught
+                logging.debug("Window not ready yet: %s", e)
             time.sleep(0.5)
+        logging.warning(
+            "No browser window found; continuing without switching windows."
+        )
 
     browser._setup_window = _safe_setup_window
 
@@ -229,9 +229,10 @@ def setup_cros_environment(args, chrome_version, chrome_options_list):
             "Setting up reverse port forwarding for port %d...", server_port
         )
         try:
+            # Clears a forward left over from an earlier run, if any.
             cb_platform.ports.stop_reverse_forward(server_port)
-        except Exception:  # pylint: disable=broad-exception-caught
-            pass
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logging.debug("No stale reverse forward to stop: %s", e)
         cb_platform.ports.reverse_forward(server_port, server_port)
         logging.info("Final ChromeOS flags: %s", chrome_os_flags)
         try:

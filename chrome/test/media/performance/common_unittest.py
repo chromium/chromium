@@ -11,6 +11,7 @@ from unittest import mock
 import perf_test_fakes as fakes
 from perf_test_fakes import NO_ROUTE, completed, make_args
 import common
+import cros_setup
 
 
 class ReexportTest(unittest.TestCase):
@@ -174,6 +175,22 @@ class DumpRemoteLogsTest(fakes.SenderTestCase):
                         make_args(sender_os=sender_os), '120', 'vp8'
                     )
                 self.assertTrue(any('log line' in l for l in logs.output))
+
+
+class CrosInstallChromedriverTest(unittest.TestCase):
+    def test_returns_sender_driver_path(self):
+        sender = mock.MagicMock(driver_path='/usr/local/tmp/cd/chromedriver')
+        # pylint: disable-next=protected-access
+        path = cros_setup._install_chromedriver(sender, '120')
+        sender.install_chrome.assert_called_once_with('120')
+        self.assertEqual(path, '/usr/local/tmp/cd/chromedriver')
+
+    def test_install_failure_propagates(self):
+        sender = mock.MagicMock()
+        sender.install_chrome.side_effect = RuntimeError('curl failed')
+        with self.assertRaisesRegex(RuntimeError, 'curl failed'):
+            # pylint: disable-next=protected-access
+            cros_setup._install_chromedriver(sender, '120')
 
 
 if __name__ == '__main__':
