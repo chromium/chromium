@@ -4008,52 +4008,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Glanceables.Api.Tasks.ProcessedTasksCount" units="tasks"
-    expires_after="2025-12-31">
-  <owner>amitrokhin@google.com</owner>
-  <owner>chromeos-launcher@google.com</owner>
-  <summary>
-    Recorded whenever glanceables UI fetches data from Google Tasks API. The
-    recorded value indicates the number of tasks in a task list after processing
-    (only not completed root tasks).
-  </summary>
-</histogram>
-
-<histogram name="Ash.Glanceables.Api.Tasks.RawTasksCount" units="tasks"
-    expires_after="2025-12-31">
-  <owner>amitrokhin@google.com</owner>
-  <owner>chromeos-launcher@google.com</owner>
-  <summary>
-    Recorded whenever glanceables UI fetches data from Google Tasks API. The
-    recorded value indicates the number of fetched raw tasks in a task list. Raw
-    - means all individual tasks before processing, including all subtasks,
-    since the API returns them as a flat array.
-  </summary>
-</histogram>
-
-<histogram
-    name="Ash.Glanceables.Api.Tasks.SimultaneousMarkAsCompletedRequestsCount"
-    units="requests" expires_after="2025-12-31">
-  <owner>amitrokhin@google.com</owner>
-  <owner>chromeos-launcher@google.com</owner>
-  <summary>
-    Recorded whenever glanceables UI submits changes to Google Tasks API after
-    closing the bubble. The recorded value indicates the number of completed
-    tasks that require individiual requests to update their status.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Glanceables.Api.Tasks.TaskListsCount" units="task lists"
-    expires_after="2025-12-31">
-  <owner>amitrokhin@google.com</owner>
-  <owner>chromeos-launcher@google.com</owner>
-  <summary>
-    Recorded whenever glanceables UI fetches data from Google Tasks API. The
-    recorded value indicates the number of task lists fetched for the current
-    user.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Glanceables.Api.{Method}.Latency" units="ms"
     expires_after="2026-05-03">
   <owner>amitrokhin@google.com</owner>

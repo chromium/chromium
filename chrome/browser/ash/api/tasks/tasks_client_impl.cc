@@ -358,11 +358,6 @@ void TasksClientImpl::OnGlanceablesBubbleClosed(base::OnceClosure callback) {
   base::RepeatingClosure barrier_closure =
       base::BarrierClosure(num_tasks_completed, std::move(callback));
 
-  // TODO(b/323975767): Generalize this histogram to the Tasks API.
-  base::UmaHistogramCounts100(
-      "Ash.Glanceables.Api.Tasks.SimultaneousMarkAsCompletedRequestsCount",
-      num_tasks_completed);
-
   for (const auto& [task_list_id, task_ids] : pending_completed_tasks_) {
     for (const auto& task_id : task_ids) {
       auto* const request_sender = GetRequestSender();
@@ -422,11 +417,9 @@ void TasksClientImpl::OnTaskListsPageFetched(
       std::make_move_iterator(result.value()->mutable_items()->end()));
 
   if (result.value()->next_page_token().empty()) {
-    // TODO(b/323975767): Generalize these histograms to the Tasks API.
+    // TODO(b/323975767): Generalize this histogram to the Tasks API.
     base::UmaHistogramCounts100(
         "Ash.Glanceables.Api.Tasks.GetTaskLists.PagesCount", page_number);
-    base::UmaHistogramCounts100("Ash.Glanceables.Api.Tasks.TaskListsCount",
-                                accumulated_raw_task_lists.size());
     // Get the fresh data from the Google Task API request successfully.
     RunGetTaskListsCallbacks(FetchStatus::kFresh, ApiErrorCode::HTTP_SUCCESS,
                              std::move(accumulated_raw_task_lists));
@@ -482,11 +475,9 @@ void TasksClientImpl::OnTasksPageFetched(
       std::make_move_iterator(result.value()->mutable_items()->end()));
 
   if (result.value()->next_page_token().empty()) {
-    // TODO(b/323975767): Generalize these histograms to the Tasks API.
+    // TODO(b/323975767): Generalize this histogram to the Tasks API.
     base::UmaHistogramCounts100("Ash.Glanceables.Api.Tasks.GetTasks.PagesCount",
                                 page_number);
-    base::UmaHistogramCounts100("Ash.Glanceables.Api.Tasks.RawTasksCount",
-                                accumulated_raw_tasks.size());
     // Get the fresh data from the Google Task API request successfully.
     RunGetTasksCallbacks(task_list_id, FetchStatus::kFresh,
                          ApiErrorCode::HTTP_SUCCESS,
@@ -560,9 +551,6 @@ void TasksClientImpl::RunGetTasksCallbacks(
       iter->second.Add(std::move(item));
     }
 
-    // TODO(b/323975767): Generalize this histogram to the Tasks API.
-    base::UmaHistogramCounts100("Ash.Glanceables.Api.Tasks.ProcessedTasksCount",
-                                iter->second.item_count());
     fetch_state->last_updated_time = base::Time::Now();
   }
 
