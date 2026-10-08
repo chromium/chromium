@@ -504,6 +504,7 @@ void ContextualTasksExtensionHandler::AddTabContext(
       if (selected_tab.tab_id == session_id.id()) {
         user_data->ClearTabContextSnapshotIfMatching(
             selected_tab.context_token);
+        user_data->OnTabContextRemoved(selected_tab.context_token);
         DeleteTabToken(session_handle, selected_tab.context_token);
       }
     }
@@ -534,6 +535,7 @@ void ContextualTasksExtensionHandler::AddTabContext(
     // Associate the tab with the task as soon as it is attached as context so
     // the task knows which tabs are part of it.
     user_data->AssociateTabWithTask(session_id);
+    user_data->OnTabContextUploadStarted(*result);
     user_data->UpdateContextLibraryInputState();
   }
 
