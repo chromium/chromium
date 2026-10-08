@@ -764,15 +764,19 @@ float DefaultFocusRingCornerRadius(const ComputedStyle& style) {
 FloatRoundedRect::Radii GetFocusRingCornerRadii(
     const ComputedStyle& style,
     const PhysicalRect& reference_border_rect,
-    const LayoutObject::OutlineInfo& info) {
+    int offset) {
   if (style.HasBorderRadius() &&
       ((style.HasEffectiveAppearance() && style.HasBaseEffectiveAppearance()) ||
        style.HasAuthorBorderRadius())) {
-    auto radii = ComputeCornerRadii(style, reference_border_rect, info.offset);
+    auto radii = ComputeCornerRadii(style, reference_border_rect, offset);
     radii.SetMinimumRadius(DefaultFocusRingCornerRadius(style));
     return radii;
   }
 
+  // TODO(crbug.com/556790355): If the `border-radius` of `appearance: auto`
+  // elements ends up being specified in `layout/layout_theme.cc`,
+  // as was done for |AppearanceValue::kRadio| in (crbug.com/40877887),
+  // this part could be removed:
   if (!style.HasAuthorBorder() && style.HasEffectiveAppearance()) {
     // For the elements that have not been styled and that have an appearance,
     // the focus ring should use the same border radius as the one used for
@@ -817,6 +821,7 @@ void PaintSingleFocusRing(
     float width,
     int offset,
     const FloatRoundedRect::Radii& corner_radii,
+    const FloatRoundedRect::Radii& origin_corner_radii,
     const ContouredRect::CornerCurvature& corner_curvature,
     const Color& color,
     const AutoDarkMode& auto_dark_mode) {
@@ -827,19 +832,18 @@ void PaintSingleFocusRing(
 
   SkRect rect;
   if (path.isRect(&rect)) {
+    const auto target_rect =
+        FloatRoundedRect(gfx::SkRectToRectF(rect), corner_radii);
+
     if (corner_curvature.IsRound()) {
-      context.DrawFocusRingRect(
-          SkRRect(FloatRoundedRect(gfx::SkRectToRectF(rect), corner_radii)),
-          color, width, auto_dark_mode);
+      context.DrawFocusRingRect(SkRRect(target_rect), color, width,
+                                auto_dark_mode);
     } else {
-      ContouredRect border_rect(
-          FloatRoundedRect(gfx::SkRectToRectF(rect), corner_radii),
-          corner_curvature);
-      ContouredRect contour(border_rect);
-      const auto outset = AdjustedOutlineOffset(rects[0], offset);
-      contour.OutsetWithCornerCorrection(gfx::OutsetsF::TLBR(
-          outset.top(), outset.left(), outset.bottom(), outset.right()));
-      contour.SetOriginRect(border_rect.AsRoundedRect());
+      ContouredRect contour(target_rect, corner_curvature);
+      auto origin_rect = target_rect;
+      origin_rect.Inset(offset);
+      origin_rect.SetRadii(origin_corner_radii);
+      contour.SetOriginRect(origin_rect);
       context.DrawFocusRingPath(contour.GetPath().GetSkPath(), color, width, 0,
                                 auto_dark_mode);
     }
@@ -874,7 +878,6 @@ Color FocusRingInnerColor(const ComputedStyle& style) {
 void PaintFocusRing(GraphicsContext& context,
                     const Vector<gfx::Rect>& rects,
                     const ComputedStyle& style,
-                    const FloatRoundedRect::Radii& corner_radii,
                     const LayoutObject::OutlineInfo& info,
                     const LayoutObject* layout_object,
                     const PhysicalRect& border_rect) {
@@ -913,6 +916,17 @@ void PaintFocusRing(GraphicsContext& context,
     return;
   }
 
+  const FloatRoundedRect::Radii corner_radii =
+      GetFocusRingCornerRadii(style, border_rect, info.offset);
+
+  // TODO(crbug.com/556790355): The corner radii of elements with
+  // 'appearance: auto' are currently not offset-adjusted
+  // and are not floored to the minimum radius.
+  // Once this is fixed, we could call |GetFocusRingCornerRadii()| once and
+  // call |Outset()| and |SetMinimumRadius()| on its result.
+  const FloatRoundedRect::Radii origin_corner_radii =
+      GetFocusRingCornerRadii(style, border_rect, 0);
+
   const ContouredRect::CornerCurvature corner_curvature(
       corner_radii.TopLeft().IsEmpty() ? ContouredRect::CornerCurvature::kRound
                                        : style.CornerTopLeftShape().Exponent(),
@@ -928,13 +942,15 @@ void PaintFocusRing(GraphicsContext& context,
 
   PaintSingleFocusRing(context, rects, outer_ring_width,
                        offset + std::ceil(inner_ring_width), corner_radii,
-                       corner_curvature, outer_color, AutoDarkMode::Disabled());
+                       origin_corner_radii, corner_curvature, outer_color,
+                       AutoDarkMode::Disabled());
   // Draw the inner ring using |outer_ring_width| (which should be wider than
   // the additional offset of the outer ring) over the outer ring to ensure no
   // gaps or AA artifacts.
   DCHECK_GE(outer_ring_width, std::ceil(inner_ring_width));
   PaintSingleFocusRing(context, rects, outer_ring_width, offset, corner_radii,
-                       corner_curvature, inner_color, AutoDarkMode::Disabled());
+                       origin_corner_radii, corner_curvature, inner_color,
+                       AutoDarkMode::Disabled());
 }
 }  // anonymous namespace
 
@@ -1018,9 +1034,8 @@ void OutlinePainter::PaintOutlineRects(
   }
 
   if (style.OutlineStyleIsAuto()) {
-    auto corner_radii = GetFocusRingCornerRadii(style, outline_rects[0], info);
-    PaintFocusRing(paint_info.context, pixel_snapped_outline_rects, style,
-                   corner_radii, info, layout_object, outline_rects[0]);
+    PaintFocusRing(paint_info.context, pixel_snapped_outline_rects, style, info,
+                   layout_object, outline_rects[0]);
     return;
   }
 
