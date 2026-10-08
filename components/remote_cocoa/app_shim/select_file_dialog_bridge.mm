@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "components/remote_cocoa/app_shim/features.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
@@ -175,7 +176,16 @@ NSSavePanel* __weak g_last_created_panel_for_testing = nil;
 @interface SelectFileDialogDelegate : NSObject <NSOpenSavePanelDelegate>
 @end
 
-@implementation SelectFileDialogDelegate
+@implementation SelectFileDialogDelegate {
+  base::TimeTicks _shownTime;
+}
+
+- (instancetype)init {
+  if (self = [super init]) {
+    _shownTime = base::TimeTicks::Now();
+  }
+  return self;
+}
 
 - (BOOL)panel:(id)sender validateURL:(NSURL*)url error:(NSError**)outError {
   // Refuse to accept users closing the dialog with a key repeat, since the key
@@ -183,6 +193,19 @@ NSSavePanel* __weak g_last_created_panel_for_testing = nil;
   // See https://crbug.com/40085079 and https://crbug.com/514070501.
   auto currentEvent = NSApp.currentEvent;
   if (currentEvent.type == NSEventTypeKeyDown && currentEvent.ARepeat) {
+    return NO;
+  }
+
+  // Enforce a minimum display duration to prevent accidental immediate
+  // acceptances. `AutofillSuggestionController` uses a 500ms delay to prevent
+  // accidental interactions. That value is being reused here.
+  // LINT.IfChange(MinDisplayDuration)
+  constexpr base::TimeDelta kMinDisplayDuration = base::Milliseconds(500);
+  // LINT.ThenChange(
+  //     //chrome/browser/ui/autofill/autofill_suggestion_controller.h:IgnoreEarlyClicksDuration,
+  //     //ui/shell_dialogs/safe_accept_file_dialog_event_handler_win.cc:MinDisplayDuration
+  // )
+  if (base::TimeTicks::Now() - _shownTime < kMinDisplayDuration) {
     return NO;
   }
 
@@ -438,8 +461,9 @@ void SelectFileDialogBridge::Show(
     panel_.nameFieldStringValue = default_filename;
   }
 
-  // Ensure that key-repeat events do not trigger the dialog. See the class
-  // comment on |SelectFileDialogDelegate|.
+  // Assign a delegate to the panel in order to enforce a few security
+  // requirements. See the implementation of `SelectFileDialogDelegate` for more
+  // details.
   delegate_ = [[SelectFileDialogDelegate alloc] init];
   panel_.delegate = delegate_;
 

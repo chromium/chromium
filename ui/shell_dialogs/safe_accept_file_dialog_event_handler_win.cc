@@ -68,7 +68,12 @@ HRESULT SafeAcceptFileDialogEventHandler::OnFileOk(IFileDialog*) {
   // Enforce a minimum display duration to prevent accidental immediate
   // acceptances. `AutofillSuggestionController` uses a 500ms delay to prevent
   // accidental interactions. That value is being reused here.
+  // LINT.IfChange(MinDisplayDuration)
   constexpr base::TimeDelta kMinDisplayDuration = base::Milliseconds(500);
+  // LINT.ThenChange(
+  //     //chrome/browser/ui/autofill/autofill_suggestion_controller.h:IgnoreEarlyClicksDuration,
+  //     //components/remote_cocoa/app_shim/select_file_dialog_bridge.mm:MinDisplayDuration
+  // )
   if (base::TimeTicks::Now() - shown_time_ < kMinDisplayDuration) {
     return S_FALSE;
   }
