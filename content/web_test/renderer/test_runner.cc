@@ -3350,6 +3350,30 @@ void TestRunner::DidFinishLoadForPrinting(WebFrameTestProxy& source) {
 }
 
 void TestRunner::AddMainFrame(WebFrameTestProxy& frame) {
+  auto is_active_main_window_frame = [this](WebFrameTestProxy& f) {
+    return IsFrameInMainWindow(f.GetWebFrame()) &&
+           !f.GetWebFrame()->GetDocument().IsPrerendering();
+  };
+
+  // The main window has a single active main frame. When a new one commits (or
+  // is restored from the back/forward cache) while the outgoing one lives in
+  // this same process, e.g. after a same-site proactive BrowsingInstance swap,
+  // the browser's OnDeactivated() for the outgoing frame only arrives after
+  // the commit has round-tripped through the browser. If the new page finishes
+  // the test before then, FindInProcessMainWindowMainFrame() could pick the
+  // outgoing frame, so deactivate it now. The later OnDeactivated() is a no-op.
+  if (test_is_running_ && is_active_main_window_frame(frame)) {
+    // Copy first, since OnFrameDeactivated() mutates `main_frames_`.
+    std::vector<WebFrameTestProxy*> outgoing_frames;
+    for (WebFrameTestProxy* other : main_frames_) {
+      if (other != &frame && is_active_main_window_frame(*other)) {
+        outgoing_frames.push_back(other);
+      }
+    }
+    for (WebFrameTestProxy* outgoing_frame : outgoing_frames) {
+      OnFrameDeactivated(*outgoing_frame);
+    }
+  }
   main_frames_.insert(&frame);
 }
 
