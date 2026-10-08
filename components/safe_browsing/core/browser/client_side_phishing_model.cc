@@ -22,6 +22,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -46,7 +47,7 @@ void ReturnModelOverrideFailure(
                                 std::make_pair(std::string(), base::File())));
 }
 
-void ReadOverridenModel(
+void ReadOverriddenModel(
     base::FilePath path,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     base::OnceCallback<void(std::pair<std::string, base::File>)> callback) {
@@ -184,6 +185,72 @@ void CloseModelFile(base::File model_file) {
   model_file.Close();
 }
 
+// Posts a task to close `model_file` on `background_task_runner` so file
+// handles are not closed on the UI thread.
+void CloseModelFileOnBackgroundThread(
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+    base::File model_file) {
+  if (!model_file.IsValid()) {
+    return;
+  }
+  background_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(&CloseModelFile, std::move(model_file)));
+}
+
+// Reply adapter for `LoadModelAndVisualTfLiteFile`.
+// `PostTaskAndReplyWithResult` cannot bind `OnModelAndVisualTfLiteFileLoaded`
+// directly to a `WeakPtr` because if `weak_model` is invalidated while loading
+// is in flight, the canceled reply would destroy the returned `base::File`
+// triggering a blocking `base::File::Close` on the UI thread.
+void OnModelAndVisualTfLiteFileLoadedReply(
+    base::WeakPtr<ClientSidePhishingModel> weak_model,
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+    std::optional<optimization_guide::proto::Any> model_metadata,
+    std::pair<std::string, base::File> model_and_tflite) {
+  if (!weak_model) {
+    CloseModelFileOnBackgroundThread(std::move(background_task_runner),
+                                     std::move(model_and_tflite.second));
+    return;
+  }
+  weak_model->OnModelAndVisualTfLiteFileLoaded(std::move(model_metadata),
+                                               std::move(model_and_tflite));
+}
+
+// Reply adapter for `LoadImageEmbeddingModelFileAndEmbeddingList`. Ensures the
+// loaded `base::File` is closed on `background_task_runner` if `weak_model` is
+// invalidated before the reply runs. This ensures that blocking I/O triggered
+// by `base::File::~File` doesn't happen on the UI thread.
+void OnImageEmbeddingModelFileAndEmbeddingListLoadedReply(
+    base::WeakPtr<ClientSidePhishingModel> weak_model,
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+    std::optional<optimization_guide::proto::Any> model_metadata,
+    std::pair<base::File, std::optional<EmbeddingList>> model_and_list) {
+  if (!weak_model) {
+    CloseModelFileOnBackgroundThread(std::move(background_task_runner),
+                                     std::move(model_and_list.first));
+    return;
+  }
+  weak_model->OnImageEmbeddingModelFileAndEmbeddingListLoaded(
+      std::move(model_metadata), std::move(model_and_list));
+}
+
+// Reply adapter for `ReadOverriddenModel`. Ensures the loaded `base::File` is
+// closed on `background_task_runner` if `weak_model` is invalidated before the
+// reply runs. This ensures that blocking I/O triggered by `base::File::~File`
+// doesn't happen on the UI thread.
+void OnGetOverriddenModelDataReply(
+    base::WeakPtr<ClientSidePhishingModel> weak_model,
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+    CSDModelType model_type,
+    std::pair<std::string, base::File> model_and_tflite) {
+  if (!weak_model) {
+    CloseModelFileOnBackgroundThread(std::move(background_task_runner),
+                                     std::move(model_and_tflite.second));
+    return;
+  }
+  weak_model->OnGetOverriddenModelData(model_type, std::move(model_and_tflite));
+}
+
 void RecordImageEmbeddingModelUpdateSuccess(bool success) {
   base::UmaHistogramBoolean(
       "SBClientPhishing.ModelDynamicUpdateSuccess.ImageEmbedding", success);
@@ -237,9 +304,9 @@ void ClientSidePhishingModel::OnModelUpdated(
       trigger_model_opt_guide_metadata_image_embedding_version_.reset();
       mapped_region_ = base::MappedReadOnlyRegion();
       if (visual_tflite_model_) {
-        background_task_runner_->PostTask(
-            FROM_HERE,
-            base::BindOnce(&CloseModelFile, std::move(*visual_tflite_model_)));
+        CloseModelFileOnBackgroundThread(background_task_runner_,
+                                         std::move(*visual_tflite_model_));
+        visual_tflite_model_.reset();
       }
       // Run callback to remove models from the renderer process. When a
       // callback is called and there are no models in this class while the
@@ -256,9 +323,9 @@ void ClientSidePhishingModel::OnModelUpdated(
         base::BindOnce(&LoadModelAndVisualTfLiteFile,
                        model_info->model_file_path,
                        model_info->additional_files),
-        base::BindOnce(
-            &ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded,
-            weak_ptr_factory_.GetWeakPtr(), model_info->model_metadata));
+        base::BindOnce(&OnModelAndVisualTfLiteFileLoadedReply,
+                       weak_ptr_factory_.GetWeakPtr(), background_task_runner_,
+                       model_info->model_metadata));
   } else if (optimization_target ==
              optimization_guide::proto::
                  OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING_IMAGE_EMBEDDER) {
@@ -268,9 +335,9 @@ void ClientSidePhishingModel::OnModelUpdated(
     if (!model_info.has_value()) {
       embedding_model_opt_guide_metadata_image_embedding_version_.reset();
       if (image_embedding_model_) {
-        background_task_runner_->PostTask(
-            FROM_HERE, base::BindOnce(&CloseModelFile,
-                                      std::move(*image_embedding_model_)));
+        CloseModelFileOnBackgroundThread(background_task_runner_,
+                                         std::move(*image_embedding_model_));
+        image_embedding_model_.reset();
       }
       ui_task_runner_->PostTask(
           FROM_HERE,
@@ -284,9 +351,8 @@ void ClientSidePhishingModel::OnModelUpdated(
         base::BindOnce(&LoadImageEmbeddingModelFileAndEmbeddingList,
                        model_info->model_file_path,
                        model_info->additional_files),
-        base::BindOnce(&ClientSidePhishingModel::
-                           OnImageEmbeddingModelFileAndEmbeddingListLoaded,
-                       weak_ptr_factory_.GetWeakPtr(),
+        base::BindOnce(&OnImageEmbeddingModelFileAndEmbeddingListLoadedReply,
+                       weak_ptr_factory_.GetWeakPtr(), background_task_runner_,
                        model_info->model_metadata));
   }
 }
@@ -321,9 +387,9 @@ void ClientSidePhishingModel::UnsubscribeToImageEmbedderOptimizationGuide() {
         this);
     embedding_model_opt_guide_metadata_image_embedding_version_.reset();
     if (image_embedding_model_) {
-      background_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&CloseModelFile, std::move(*image_embedding_model_)));
+      CloseModelFileOnBackgroundThread(background_task_runner_,
+                                       std::move(*image_embedding_model_));
+      image_embedding_model_.reset();
 
       // We will only notify if there was an image embedding model available, so
       // the renderer can remove it.
@@ -343,9 +409,9 @@ void ClientSidePhishingModel::UnsubscribeToImageClassifierOptimizationGuide() {
         optimization_guide::proto::OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING,
         this);
     if (visual_tflite_model_) {
-      background_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&CloseModelFile, std::move(*visual_tflite_model_)));
+      CloseModelFileOnBackgroundThread(background_task_runner_,
+                                       std::move(*visual_tflite_model_));
+      visual_tflite_model_.reset();
       // Run callback to remove models from the renderer process. When a
       // callback is called and there are no models in this class while the
       // model type is set, it's expected that it's asked to remove the models.
@@ -375,9 +441,9 @@ void ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded(
   if (visual_tflite_model_) {
     // If the visual tf lite file is already loaded, it should be closed on a
     // background thread.
-    background_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&CloseModelFile, std::move(*visual_tflite_model_)));
+    CloseModelFileOnBackgroundThread(background_task_runner_,
+                                     std::move(*visual_tflite_model_));
+    visual_tflite_model_.reset();
   }
 
   std::string model_str = std::move(model_and_tflite.first);
@@ -506,9 +572,8 @@ void ClientSidePhishingModel::OnImageEmbeddingModelFileAndEmbeddingListLoaded(
   if (image_embedding_model_) {
     // If the image embedding model file is already loaded, it should be closed
     // on a background thread.
-    background_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&CloseModelFile, std::move(*image_embedding_model_)));
+    CloseModelFileOnBackgroundThread(background_task_runner_,
+                                     std::move(*image_embedding_model_));
   }
 
   image_embedding_model_ = std::move(image_embedding_model);
@@ -647,15 +712,13 @@ ClientSidePhishingModel::~ClientSidePhishingModel() {
   }
 
   if (visual_tflite_model_) {
-    background_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&CloseModelFile, std::move(*visual_tflite_model_)));
+    CloseModelFileOnBackgroundThread(background_task_runner_,
+                                     std::move(*visual_tflite_model_));
   }
 
   if (image_embedding_model_) {
-    background_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&CloseModelFile, std::move(*image_embedding_model_)));
+    CloseModelFileOnBackgroundThread(background_task_runner_,
+                                     std::move(*image_embedding_model_));
   }
 
   opt_guide_ = nullptr;
@@ -754,7 +817,7 @@ void ClientSidePhishingModel::SetModelStringForTesting(
                               model_valid);
 
     if (tflite_valid) {
-      visual_tflite_model_ = std::move(visual_tflite_model);
+      ReplaceVisualTfLiteModel(std::move(visual_tflite_model));
     }
   }
 
@@ -773,6 +836,15 @@ void ClientSidePhishingModel::NotifyCallbacksOnUI() {
 
 void ClientSidePhishingModel::SetVisualTfLiteModelForTesting(base::File file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ReplaceVisualTfLiteModel(std::move(file));
+}
+
+void ClientSidePhishingModel::ReplaceVisualTfLiteModel(base::File file) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (visual_tflite_model_ && visual_tflite_model_->IsValid()) {
+    CloseModelFileOnBackgroundThread(background_task_runner_,
+                                     std::move(*visual_tflite_model_));
+  }
   visual_tflite_model_ = std::move(file);
 }
 
@@ -797,28 +869,30 @@ ClientSidePhishingModel::GetFlatBufferMemorySpanForTesting() {
 void ClientSidePhishingModel::MaybeOverrideModel() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kOverrideCsdModelFlag)) {
-    base::FilePath overriden_model_directory =
+    base::FilePath overridden_model_directory =
         base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
             switches::kOverrideCsdModelFlag);
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(
-            &ReadOverridenModel, overriden_model_directory, ui_task_runner_,
-            base::BindOnce(&ClientSidePhishingModel::OnGetOverridenModelData,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           CSDModelType::kFlatbuffer)));
+            &ReadOverriddenModel, overridden_model_directory, ui_task_runner_,
+            base::BindOnce(
+                &OnGetOverriddenModelDataReply, weak_ptr_factory_.GetWeakPtr(),
+                background_task_runner_, CSDModelType::kFlatbuffer)));
   }
 }
 
 // This function is used for testing in client_side_phishing_model_unittest
-void ClientSidePhishingModel::OnGetOverridenModelData(
+void ClientSidePhishingModel::OnGetOverriddenModelData(
     CSDModelType model_type,
     std::pair<std::string, base::File> model_and_tflite) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const std::string& model_data = model_and_tflite.first;
   base::File tflite_model = std::move(model_and_tflite.second);
   if (model_data.empty()) {
-    VLOG(2) << "Overriden model data is empty";
+    VLOG(2) << "Overridden model data is empty";
+    CloseModelFileOnBackgroundThread(background_task_runner_,
+                                     std::move(tflite_model));
     return;
   }
 
@@ -828,14 +902,18 @@ void ClientSidePhishingModel::OnGetOverridenModelData(
           reinterpret_cast<const uint8_t*>(model_data.data()),
           model_data.length());
       if (!flat::VerifyClientSideModelBuffer(verifier)) {
-        VLOG(2)
-            << "Overriden model data is not a valid ClientSideModel flatbuffer";
+        VLOG(2) << "Overridden model data is not a valid ClientSideModel "
+                   "flatbuffer";
+        CloseModelFileOnBackgroundThread(background_task_runner_,
+                                         std::move(tflite_model));
         return;
       }
       mapped_region_ =
           base::ReadOnlySharedMemoryRegion::Create(model_data.length());
       if (!mapped_region_.IsValid()) {
         VLOG(2) << "Could not create shared memory region for flatbuffer";
+        CloseModelFileOnBackgroundThread(background_task_runner_,
+                                         std::move(tflite_model));
         return;
       }
       mapped_region_.mapping.GetMemoryAsSpan<char>().copy_prefix_from(
@@ -848,7 +926,7 @@ void ClientSidePhishingModel::OnGetOverridenModelData(
   }
 
   if (tflite_model.IsValid()) {
-    visual_tflite_model_ = std::move(tflite_model);
+    ReplaceVisualTfLiteModel(std::move(tflite_model));
   }
 
   VLOG(0) << "Model overridden successfully";
@@ -867,8 +945,9 @@ void ClientSidePhishingModel::SetModelAndVisualTfLiteForTesting(
       FROM_HERE,
       base::BindOnce(&LoadModelAndVisualTfLiteFile, model_file_path,
                      std::vector<base::FilePath>{visual_tf_lite_model_path}),
-      base::BindOnce(&ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded,
-                     weak_ptr_factory_.GetWeakPtr(), std::nullopt));
+      base::BindOnce(&OnModelAndVisualTfLiteFileLoadedReply,
+                     weak_ptr_factory_.GetWeakPtr(), background_task_runner_,
+                     /*model_metadata=*/std::nullopt));
 }
 
 void ClientSidePhishingModel::SetModelDoneCallbackForTesting(  // IN-TEST

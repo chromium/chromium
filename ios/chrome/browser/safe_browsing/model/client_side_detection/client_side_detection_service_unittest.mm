@@ -10,9 +10,9 @@
 #import "base/functional/bind.h"
 #import "base/observer_list.h"
 #import "base/path_service.h"
-#import "base/run_loop.h"
 #import "base/scoped_observation.h"
 #import "base/strings/strcat.h"
+#import "base/task/thread_pool/thread_pool_instance.h"
 #import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
@@ -227,6 +227,10 @@ class ClientSideDetectionServiceTest : public PlatformTest {
     service->OnScorerCreated(generation_id, std::move(scorer));
   }
 
+  void TriggerModelUpdatedForTesting(ClientSideDetectionService* service) {
+    service->OnModelUpdated();
+  }
+
   int GetCurrentModelGeneration(ClientSideDetectionService* service) {
     return service->current_model_generation_;
   }
@@ -237,10 +241,23 @@ class ClientSideDetectionServiceTest : public PlatformTest {
   }
 
   void FlushCurrentSequence() {
-    base::RunLoop run_loop;
+    base::test::TestFuture<void> future;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
+        FROM_HERE, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
+
+  // Flushes `ThreadPool` tasks and their UI-thread replies.
+  void FlushThreadPoolAndCurrentSequence() {
+    // Two passes are needed: the first waits for the initial background task
+    // and its UI-thread reply (which posts a background cleanup task), and the
+    // second waits for that background cleanup task to complete.
+    for (int i = 0; i < 2; ++i) {
+      base::test::TestFuture<void> future;
+      base::ThreadPoolInstance::Get()->FlushAsyncForTesting(
+          future.GetSequenceBoundCallback());
+      ASSERT_TRUE(future.Wait());
+    }
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -799,6 +816,46 @@ TEST_F(ClientSideDetectionServiceTest,
   // Disallow blocking on the UI thread during shutdown.
   base::ScopedDisallowBlocking disallow_blocking;
   csd_service_.reset();
+}
+
+// Test that when `ClientSideDetectionService` is destroyed before the UI-thread
+// reply for background model loading in `ClientSidePhishingModel` runs, loaded
+// model files are safely closed on the background task runner without
+// triggering `base::ScopedDisallowBlocking` assertion failures on the UI
+// thread.
+TEST_F(ClientSideDetectionServiceTest,
+       ModelFilesClosedOnBackgroundThreadWhenServiceDestroyedDuringModelLoad) {
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+  model_observer_tracker_->NotifyModelFileUpdate(GetModelFilePath(),
+                                                 {GetAdditionalFilesPath()});
+
+  // Destroy the service before the UI-thread model load reply can run.
+  csd_service_.reset();
+
+  // Draining remaining tasks must not trigger blocking calls on the UI thread.
+  base::ScopedDisallowBlocking disallow_blocking;
+  FlushThreadPoolAndCurrentSequence();
+}
+
+// Test that when `ClientSideDetectionService` is destroyed before the UI-thread
+// reply for background `Scorer` creation runs, the `Scorer` is destroyed on a
+// background thread without triggering `base::ScopedDisallowBlocking` assertion
+// failures on the UI thread.
+TEST_F(
+    ClientSideDetectionServiceTest,
+    ScorerDestroyedOnBackgroundThreadWhenServiceDestroyedDuringScorerCreation) {
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+  UpdateModel(model_observer_tracker_.get());
+  ASSERT_THAT(csd_service_->GetScorer(), testing::NotNull());
+
+  // Directly trigger `OnModelUpdated` so `CreateScorerOnBackgroundThread` is
+  // posted to the thread pool, then destroy the service before the UI-thread
+  // reply can run.
+  TriggerModelUpdatedForTesting(csd_service_.get());
+  csd_service_.reset();
+
+  base::ScopedDisallowBlocking disallow_blocking;
+  FlushThreadPoolAndCurrentSequence();
 }
 
 }  // namespace safe_browsing
