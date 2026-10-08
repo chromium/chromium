@@ -1187,6 +1187,19 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </token>
 </histogram>
 
+<histogram name="Search.EngineCountInSettings.{Surface}" units="count"
+    expires_after="2027-10-01">
+  <owner>tju@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    Records the number of search engines displayed to the user on the {Surface}.
+    Logged when the list of search engines is generated for display.
+  </summary>
+  <token key="Surface">
+    <variant name="FullList" summary="search settings, once per page load"/>
+  </token>
+</histogram>
+
 <histogram name="Search.Image.Camera.Open" enum="CameraOpenEntryPoint"
     expires_after="2027-02-07">
   <owner>juanmojica@google.com</owner>

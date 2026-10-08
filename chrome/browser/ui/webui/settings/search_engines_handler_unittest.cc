@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -727,6 +728,44 @@ TEST_F(SearchEnginesHandlerTest, GetDefaultSearchEnginePickerData) {
   EXPECT_TRUE(found_bing);
   EXPECT_TRUE(found_default_custom);
   EXPECT_FALSE(found_non_default_custom);
+}
+
+TEST_F(SearchEnginesHandlerTest,
+       EmitsSettingsPageLoadMetricsForGetCategorizedTemplateUrls) {
+  ConfigureTestWithRegularProfile();
+
+  TemplateURLServiceFactory::GetForProfile(profile())->Load();
+  base::RunLoop().RunUntilIdle();
+
+  base::HistogramTester histogram_tester;
+  // Simulate the WebUI calling the handler to get the search engines list
+  base::ListValue args;
+  args.Append("callback-id");
+
+  web_ui()->HandleReceivedMessage("getCategorizedTemplateUrls", args);
+  // Verify the metric was recorded by the DataProvider
+  histogram_tester.ExpectUniqueSample("Search.EngineCountInSettings.FullList",
+                                      /*sample=*/1,
+                                      /*expected_bucket_count=*/1);
+}
+
+TEST_F(SearchEnginesHandlerTest,
+       EmitsSettingsPageLoadMetricsForGetSearchEnginesList) {
+  ConfigureTestWithRegularProfile();
+
+  TemplateURLServiceFactory::GetForProfile(profile())->Load();
+  base::RunLoop().RunUntilIdle();
+
+  base::HistogramTester histogram_tester;
+  // Simulate the WebUI calling the handler to get the search engines list
+  base::ListValue args;
+  args.Append("callback-id");
+
+  web_ui()->HandleReceivedMessage("getSearchEnginesList", args);
+  // Verify the metric was recorded by the DataProvider
+  histogram_tester.ExpectUniqueSample("Search.EngineCountInSettings.FullList",
+                                      /*sample=*/1,
+                                      /*expected_bucket_count=*/1);
 }
 
 class SearchEnginesHandlerWithMoreEnginesTest

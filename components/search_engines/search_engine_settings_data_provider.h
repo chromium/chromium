@@ -225,8 +225,6 @@ class SearchEngineSettingsDataProvider {
 #endif  // BUILDFLAG(IS_ANDROID)
 
  private:
-  bool CanRecordSettingsPageLoadMetrics() const;
-
   const raw_ref<TemplateURLService> template_url_service_;
   const raw_ref<const TemplateURLPrepopulateData::Resolver>
       prepopulate_data_resolver_;

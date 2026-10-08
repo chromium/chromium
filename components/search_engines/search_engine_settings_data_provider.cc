@@ -6,7 +6,9 @@
 
 #include <algorithm>
 
+#include "base/metrics/histogram_functions.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_split_metrics.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_prepopulate_data_resolver.h"
@@ -256,28 +258,32 @@ SearchEngineSettingsDataProvider::GetTemplateUrlsByCategory(
   return result;
 }
 
-bool SearchEngineSettingsDataProvider::CanRecordSettingsPageLoadMetrics()
-    const {
-  return !has_recorded_metrics_ &&
-         regional_capabilities_service_->IsSearchEngineSplitRegion();
-}
-
 void SearchEngineSettingsDataProvider::MaybeRecordSettingsPageLoadMetrics(
     TemplateURL::TemplateURLVectorSpan displayed_engines) {
-  if (!CanRecordSettingsPageLoadMetrics()) {
+  if (has_recorded_metrics_) {
     return;
   }
   has_recorded_metrics_ = true;
 
-  RecordSearchEngineSplitSettingsPageLoadMetrics(
-      displayed_engines, template_url_service_->GetDefaultSearchProvider(),
-      template_url_service_->search_terms_data(), *profile_metrics_service_);
+  int count_prepopulated = std::ranges::count_if(
+      displayed_engines,
+      [](const TemplateURL* engine) { return engine->prepopulate_id() != 0; });
+
+  base::UmaHistogramExactLinear(
+      search_engines::kSearchEngineCountInSettingsFullListHistogram,
+      count_prepopulated, 50);
+
+  if (regional_capabilities_service_->IsSearchEngineSplitRegion()) {
+    RecordSearchEngineSplitSettingsPageLoadMetrics(
+        displayed_engines, template_url_service_->GetDefaultSearchProvider(),
+        template_url_service_->search_terms_data(), *profile_metrics_service_);
+  }
 }
 
 void SearchEngineSettingsDataProvider::MaybeRecordSettingsPageLoadMetrics(
     std::initializer_list<TemplateURL::TemplateURLVectorSpan>
         displayed_engine_lists) {
-  if (!CanRecordSettingsPageLoadMetrics()) {
+  if (has_recorded_metrics_) {
     return;
   }
 
@@ -359,7 +365,7 @@ SearchEngineSettingsDataProvider::GetTemplateUrlsByCategory(
 void SearchEngineSettingsDataProvider::MaybeRecordSettingsPageLoadMetrics(
     JNIEnv* env,
     const base::android::JavaRef<jlongArray>& j_engine_ids) {
-  if (!CanRecordSettingsPageLoadMetrics()) {
+  if (has_recorded_metrics_) {
     return;
   }
 
