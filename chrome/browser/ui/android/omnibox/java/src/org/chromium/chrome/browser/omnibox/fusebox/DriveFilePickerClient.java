@@ -65,22 +65,6 @@ public class DriveFilePickerClient {
             Profile profile,
             @Nullable List<String> mimeTypes,
             boolean allowMultiSelect) {
-        // Compatibility shim: fall back to the legacy single-item method for downstream.
-        Promise<List<DriveAttachmentMetadata>> promise = new Promise<>();
-        launchPicker(windowAndroid, profile, mimeTypes)
-                .then(
-                        item -> promise.fulfill(item == null ? List.of() : List.of(item)),
-                        promise::reject);
-        return promise;
-    }
-
-    /**
-     * @deprecated Use {@link #launchPicker(WindowAndroid, Profile, List, boolean)} instead. Kept as
-     *     a temporary compatibility shim for downstream //clank.
-     */
-    @Deprecated
-    public Promise<@Nullable DriveAttachmentMetadata> launchPicker(
-            WindowAndroid windowAndroid, Profile profile, @Nullable List<String> mimeTypes) {
-        return Promise.<@Nullable DriveAttachmentMetadata>fulfilled(null);
+        return Promise.fulfilled(List.of());
     }
 }
