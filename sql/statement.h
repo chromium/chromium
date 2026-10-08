@@ -215,24 +215,17 @@ class COMPONENT_EXPORT(SQL) Statement {
   // NULL should call `GetColumnType()` before calling `ColumnStringView()`.
   std::string_view ColumnStringView(int column_index);
 
-  // Conforms with base::Time serialization recommendations.
-  //
-  // This is equivalent to the following snippets, which should be replaced.
-  // * base::Time::FromInternalValue(ColumnInt64(col))
-  // * base::Time::FromDeltaSinceWindowsEpoch(
-  //       base::Microseconds(ColumnInt64(col)))
-  //
-  // TODO(crbug.com/40176243): Migrate all time serialization to this method,
-  // and then remove the migration details above.
+  // Deserializes a `base::Time` in full fidelity (the number of microseconds
+  // since the Windows epoch in UTC). This form of retrieval is preferred over
+  // `base::Time::FromInternalValue(ColumnInt64(column_index))` or
+  // `base::Time::FromDeltaSinceWindowsEpoch(
+  //     base::Microseconds(ColumnInt64(column_index)))`.
   base::Time ColumnTime(int column_index);
 
-  // Conforms with base::TimeDelta deserialization recommendations.
-  //
-  // This is equivalent to the following snippets, which should be replaced.
-  // * base::TimeDelta::FromInternalValue(ColumnInt64(column_index))
-  //
-  // TODO(crbug.com/40251269): Migrate all TimeDelta serialization to this
-  // method and remove the migration details above.
+  // Deserializes a `base::TimeDelta` in full fidelity (a number of
+  // microseconds). This form of retrieval is preferred over
+  // `base::TimeDelta::FromInternalValue(ColumnInt64(column_index))` or
+  // `base::Microseconds(ColumnInt64(column_index))`.
   base::TimeDelta ColumnTimeDelta(int column_index);
 
   // Returns a span pointing to a buffer containing the blob data.
