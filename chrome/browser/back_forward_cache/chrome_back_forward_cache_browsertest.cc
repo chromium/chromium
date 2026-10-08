@@ -932,18 +932,8 @@ IN_PROC_BROWSER_TEST_P(
   ExpectNotRestoredReason(FROM_HERE);
 }
 
-// Flaky: crbug.com/40935990
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_WIN)
-#define MAYBE_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded \
-  DISABLED_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded
-#else
-#define MAYBE_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded \
-  DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded
-#endif
-IN_PROC_BROWSER_TEST_P(
-    ChromeBackForwardCacheBrowserWithEmbedPdfTest,
-    MAYBE_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded) {
+IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedPdfTest,
+                       DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded) {
   const auto tag = html_tag();
 
   // Navigate to A.
@@ -967,15 +957,21 @@ IN_PROC_BROWSER_TEST_P(
     // Wait for the PDF to fully load.
     ASSERT_TRUE(GetTestMimeHandlerStreamManager(web_contents())
                     ->WaitUntilPdfLoadedInFirstChild());
+  } else {
+    pdf_extension_test_util::EnsurePDFHasLoadedOptions options{
+        .pdf_element = std::string(tag)};
+    ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoadedWithOptions(
+        web_contents(), options));
   }
 
+  bool will_change_rfh =
+      rfh_a->ShouldChangeRenderFrameHostOnSameSiteNavigation();
   // Navigate to B.
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(), embedded_test_server()->GetURL("a.com", "/title2.html")));
 
   // Verify A is NOT stored in the BackForwardCache.
-  if (content::WillSameSiteNavigationChangeRenderFrameHosts(
-          /*is_main_frame=*/true)) {
+  if (will_change_rfh) {
     EXPECT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
   } else {
     EXPECT_NE(rfh_a->GetLifecycleState(),
@@ -1011,16 +1007,8 @@ IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedTest,
 }
 
 #if BUILDFLAG(ENABLE_PDF)
-// Flaky: crbug.com/40935990
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf \
-  DISABLED_DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf
-#else
-#define MAYBE_DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf \
-  DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf
-#endif
 IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedPdfTest,
-                       MAYBE_DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf) {
+                       DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf) {
   const auto tag = html_tag();
   const auto page_with_html =
       base::StrCat({"/back_forward_cache/page_with_", tag, "_html.html"});
@@ -1045,6 +1033,11 @@ IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedPdfTest,
     // Wait for the PDF to fully load.
     ASSERT_TRUE(GetTestMimeHandlerStreamManager(web_contents())
                     ->WaitUntilPdfLoadedInFirstChild());
+  } else {
+    pdf_extension_test_util::EnsurePDFHasLoadedOptions options{
+        .pdf_element = std::string(tag)};
+    ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoadedWithOptions(
+        web_contents(), options));
   }
 
   bool will_change_rfh =
