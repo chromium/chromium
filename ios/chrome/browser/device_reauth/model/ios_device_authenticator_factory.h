@@ -7,13 +7,10 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
 #import "components/device_reauth/device_authenticator_common.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
-class DeviceAuthenticatorProxy;
 class IOSDeviceAuthenticator;
-class ProfileIOS;
 
 namespace device_reauth {
 class DeviceAuthAvailabilityChecker;
@@ -24,17 +21,13 @@ class DeviceAuthParams;
 
 // Singleton that owns all DeviceAuthenticatorProxy and associates them with
 // profiles.
-class DeviceAuthenticatorProxyFactory : public ProfileKeyedServiceFactoryIOS {
+class DeviceAuthenticatorProxyFactory
+    : public TypedProfileKeyedServiceFactoryIOS<DeviceAuthenticatorProxyFactory,
+                                                DeviceAuthenticatorProxy> {
  public:
-  static DeviceAuthenticatorProxy* GetForProfile(ProfileIOS* profile);
-  static DeviceAuthenticatorProxyFactory* GetInstance();
+  DeviceAuthenticatorProxyFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<DeviceAuthenticatorProxyFactory>;
-
-  DeviceAuthenticatorProxyFactory();
-  ~DeviceAuthenticatorProxyFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

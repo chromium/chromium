@@ -8,25 +8,11 @@
 #import "ios/chrome/browser/device_reauth/model/ios_device_authenticator.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-// static
-DeviceAuthenticatorProxyFactory*
-DeviceAuthenticatorProxyFactory::GetInstance() {
-  static base::NoDestructor<DeviceAuthenticatorProxyFactory> instance;
-  return instance.get();
-}
-
-// static
-DeviceAuthenticatorProxy* DeviceAuthenticatorProxyFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<DeviceAuthenticatorProxy>(
-      profile, /*create=*/true);
-}
-
-DeviceAuthenticatorProxyFactory::DeviceAuthenticatorProxyFactory()
-    : ProfileKeyedServiceFactoryIOS("DeviceAuthenticatorProxy",
-                                    ProfileSelection::kRedirectedInIncognito) {}
-
-DeviceAuthenticatorProxyFactory::~DeviceAuthenticatorProxyFactory() = default;
+DeviceAuthenticatorProxyFactory::DeviceAuthenticatorProxyFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "DeviceAuthenticatorProxy",
+          ProfileSelection::kRedirectedInIncognito) {}
 
 std::unique_ptr<KeyedService>
 DeviceAuthenticatorProxyFactory::BuildServiceInstanceFor(
