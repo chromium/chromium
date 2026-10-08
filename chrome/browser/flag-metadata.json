@@ -6636,11 +6636,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "jupiter-screensaver",
-    "owners": [ "cowmoo@google.com", "cros-p13n-eng@google.com" ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "launcher-local-image-search",
     "owners": ["chenjih@google.com", "nbowe@chromium.org"],
     "expiry_milestone": 150

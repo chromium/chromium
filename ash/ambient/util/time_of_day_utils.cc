@@ -97,7 +97,8 @@ AmbientVideo GetDefaultAmbientVideo() {
 }
 
 bool ShouldShowJupiterVideo() {
-  return features::IsJupiterScreensaverEnabled() || IsJupiterCustomizationId();
+  return features::IsTimeOfDayScreenSaverEnabled() ||
+         IsJupiterCustomizationId();
 }
 
 const base::FilePath::CharType kTimeOfDayCloudsVideo[] =

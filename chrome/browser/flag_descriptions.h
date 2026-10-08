@@ -7986,10 +7986,6 @@ inline constexpr char kImeSystemEmojiPickerVariantGroupingDescription[] =
     "Emoji picker global variant grouping syncs skin tone and gender "
     "preferences across emojis in each group.";
 
-inline constexpr char kJupiterScreensaverName[] = "Jupiter screensaver";
-inline constexpr char kJupiterScreensaverDescription[] =
-    "Enable Jupiter screensaver on more device types.";
-
 inline constexpr char kCrosComponentsName[] = "Cros Components";
 inline constexpr char kCrosComponentsDescription[] =
     "Enable cros-component UI elements, replacing other elements.";

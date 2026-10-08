@@ -1064,8 +1064,6 @@ BASE_FEATURE(kIppFirstSetupForUsbPrinters, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables Romaji/Kana mode switch for Japanese VK.
 BASE_FEATURE(kJapaneseInputModeSwitchInVK, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kJupiterScreensaver, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables automatic downloading and installing fonts via language packs, based
 // on the user's preferences.
 BASE_FEATURE(kLanguagePacksFonts, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2566,11 +2564,6 @@ bool IsInternalServerSideSpeechRecognitionEnabledByFinch() {
 #else
   return false;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-}
-
-bool IsJupiterScreensaverEnabled() {
-  return base::FeatureList::IsEnabled(kJupiterScreensaver) &&
-         IsTimeOfDayScreenSaverEnabled();
 }
 
 bool IsLobsterEnabled() {
