@@ -148,6 +148,10 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     private final SparseIntArray mYOffsetOfLayers = new SparseIntArray(STACK_ORDER.length);
     private final SparseBooleanArray mLayerVisibilities =
             new SparseBooleanArray(STACK_ORDER.length);
+    // Whether the set of visible layers changed since the last #repositionLayers. Used to push
+    // fresh offsets to layers whose visibility flipped without changing the bottom controls
+    // heights, since the sizer does not notify observers in that case.
+    private boolean mVisibilityChangedSinceReposition;
 
     // The heights of each layer at their fully shown positions.
     private final SparseIntArray mLayerRestingOffsets = new SparseIntArray(STACK_ORDER.length);
@@ -306,6 +310,11 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
      */
     public void requestLayerUpdate(boolean animate) {
         updateLayerVisibilitiesAndSizes();
+        // BrowserControlsSizer#setBottomControlsHeight is a no-op when the heights are unchanged,
+        // so #onBottomControlsHeightChanged (and the reposition it triggers) will not run.
+        boolean heightsUnchanged =
+                mBrowserControlsSizer.getBottomControlsHeight() == mTotalHeight
+                        && mBrowserControlsSizer.getBottomControlsMinHeight() == mTotalMinHeight;
         updateBrowserControlsHeight(animate);
         updateBackgroundColorFromLayers();
         if (mBrowserControlsSizer.offsetOverridden()) {
@@ -315,6 +324,17 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
                     mBrowserControlsSizer.getBottomControlOffset(),
                     mBrowserControlsSizer.getBottomControlsMinHeightOffset(),
                     animate,
+                    isVisibilityForced());
+        } else if (heightsUnchanged && mVisibilityChangedSinceReposition) {
+            // A layer flipped visibility without changing the heights (e.g. a zero-height layer
+            // shown while the controls are already pinned by another non-scrollable layer), so
+            // neither the sizer nor a subsequent offset frame will reposition the layers. Push the
+            // current offsets now so the newly visible layer does not keep the stale value from its
+            // last hidden dispatch. No height transition is in flight, so this is not animated.
+            repositionLayers(
+                    mBrowserControlsSizer.getBottomControlOffset(),
+                    mBrowserControlsSizer.getBottomControlsMinHeightOffset(),
+                    /* animated= */ false,
                     isVisibilityForced());
         }
     }
@@ -478,6 +498,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             boolean animated,
             boolean offsetsAppliedByBrowser) {
         // STEP 0: Initialize the offset for each layer.
+        mVisibilityChangedSinceReposition = false;
         mYOffsetOfLayers.clear();
         int height = 0;
         int totalMinHeight = 0;
@@ -806,7 +827,6 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
      * layers may depend on the visibility of others.
      */
     private void updateLayerVisibilities() {
-        mLayerVisibilities.clear();
         mNumberOfVisibleLayers = 0;
         boolean atLeastOneVisibleLayer = false;
         for (int type : STACK_ORDER) {
@@ -821,15 +841,24 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         }
         for (int type : STACK_ORDER) {
             BottomControlsLayer layer = mLayers.get(type);
-            if (layer == null) continue;
-
-            @LayerVisibility int layerVisibility = layer.getLayerVisibility();
-            boolean isLayerVisible =
-                    layerVisibility == LayerVisibility.VISIBLE
-                            || layer.getLayerVisibility() == LayerVisibility.SHOWING
-                            || (atLeastOneVisibleLayer
-                                    && layerVisibility
-                                            == LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE);
+            boolean isLayerVisible = false;
+            if (layer != null) {
+                @LayerVisibility int layerVisibility = layer.getLayerVisibility();
+                isLayerVisible =
+                        layerVisibility == LayerVisibility.VISIBLE
+                                || layerVisibility == LayerVisibility.SHOWING
+                                || (atLeastOneVisibleLayer
+                                        && layerVisibility
+                                                == LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE);
+            }
+            // Absent keys read as false, so a removed or never-added layer counts as not visible.
+            if (mLayerVisibilities.get(type) != isLayerVisible) {
+                mVisibilityChangedSinceReposition = true;
+            }
+            if (layer == null) {
+                mLayerVisibilities.delete(type);
+                continue;
+            }
             mLayerVisibilities.put(type, isLayerVisible);
             if (isLayerVisible) ++mNumberOfVisibleLayers;
         }
