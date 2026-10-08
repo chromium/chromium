@@ -2710,6 +2710,40 @@ TEST_F(WebTransportTest, CreateSendStream) {
   EXPECT_TRUE(writable);
 }
 
+TEST_F(WebTransportTest, TransferReceiveStreamFallsBackToReadableStream) {
+  ScopedWebTransportReceiveStreamForTest scoped_feature(true);
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+  auto producer = DoAcceptUnidirectionalStream();
+  auto* stream = ReadReceiveStream(scope, web_transport);
+  ASSERT_TRUE(DynamicTo<WebTransportReceiveStream>(stream));
+  auto wrapper =
+      ToV8Traits<ReadableStream>::ToV8(scope.GetScriptState(), stream);
+  HeapVector<ScriptObject> transfer_list = {
+      ScriptObject(scope.GetIsolate(), wrapper)};
+  Transferables transferables;
+  ASSERT_TRUE(SerializedScriptValue::ExtractTransferables(
+      scope.GetIsolate(), transfer_list, transferables, ASSERT_NO_EXCEPTION));
+  V8ScriptValueSerializer::Options options;
+  options.transferables = &transferables;
+  auto serialized =
+      V8ScriptValueSerializerForModules(scope.GetScriptState(), options)
+          .Serialize(wrapper, ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(serialized);
+  EXPECT_TRUE(stream->IsLocked());
+
+  V8TestingScope destination_scope;
+  auto* script_state = destination_scope.GetScriptState();
+  auto result = V8ScriptValueDeserializerForModules(script_state, serialized)
+                    .Deserialize();
+  auto* transferred =
+      V8ReadableStream::ToWrappable(destination_scope.GetIsolate(), result);
+  ASSERT_TRUE(transferred);
+  EXPECT_EQ(transferred->GetWrapperTypeInfo(),
+            ReadableStream::GetStaticWrapperTypeInfo());
+}
+
 TEST_F(WebTransportTest, TransferSendStreamFallsBackToWritableStream) {
   ScopedWebTransportSendGroupForTest scoped_feature(true);
   V8TestingScope scope;

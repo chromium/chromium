@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_attachment.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_transfer_list.h"
+#include "third_party/blink/renderer/modules/webtransport/web_transport_receive_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_send_stream.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -193,6 +194,11 @@ bool V8ScriptValueSerializerForModules::WriteDOMObject(
     return false;
 
   ScriptWrappable::TypeDispatcher dispatcher(wrappable);
+  if (auto* stream = dispatcher.ToMostDerived<WebTransportReceiveStream>()) {
+    // Preserve legacy transfer behavior until subclass transfer is supported.
+    // The destination receives a plain ReadableStream.
+    return WriteReadableStream(stream, exception_state);
+  }
   if (auto* stream = dispatcher.ToMostDerived<WebTransportSendStream>()) {
     // Preserve legacy transfer behavior until subclass transfer is supported.
     // The destination receives a plain WritableStream.

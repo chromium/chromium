@@ -21,6 +21,7 @@
 namespace blink {
 
 class File;
+class ReadableStream;
 class Transferables;
 class ScriptState;
 class WritableStream;
@@ -62,6 +63,7 @@ class CORE_EXPORT V8ScriptValueSerializer
   // DataCloneError message will be used.
   virtual bool WriteDOMObject(ScriptWrappable*, ExceptionState&);
 
+  bool WriteReadableStream(ReadableStream*, ExceptionState&);
   bool WriteWritableStream(WritableStream*, ExceptionState&);
 
   ScriptState* GetScriptState() const { return script_state_; }
