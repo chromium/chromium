@@ -6,7 +6,8 @@
 
 #include <algorithm>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 
@@ -60,8 +61,7 @@ void HidConnectionImpl::OnInputReport(
   DCHECK_GE(size, 1u);
   std::vector<uint8_t> data;
   if (size > 1) {
-    data = std::vector<uint8_t>(UNSAFE_TODO(buffer->data() + 1),
-                                UNSAFE_TODO(buffer->data() + size));
+    data = base::ToVector(base::span(*buffer).first(size).subspan(1u));
   }
   client_->OnInputReport(/*report_id=*/buffer->data()[0], data);
 }
@@ -83,8 +83,8 @@ void HidConnectionImpl::OnRead(ReadCallback callback,
   }
   DCHECK(buffer);
 
-  std::vector<uint8_t> data(UNSAFE_TODO(buffer->data() + 1),
-                            UNSAFE_TODO(buffer->data() + size));
+  std::vector<uint8_t> data =
+      base::ToVector(base::span(*buffer).first(size).subspan(1u));
   std::move(callback).Run(true, buffer->data()[0], data);
 }
 
@@ -127,7 +127,7 @@ void HidConnectionImpl::OnGetFeatureReport(
   }
   DCHECK(buffer);
 
-  std::vector<uint8_t> data(buffer->data(), UNSAFE_TODO(buffer->data() + size));
+  std::vector<uint8_t> data = base::ToVector(base::span(*buffer).first(size));
   std::move(callback).Run(true, data);
 }
 
