@@ -71,22 +71,6 @@ static void FillWithSquarePulseTrain(size_t half_pulse_width,
   }
 }
 
-static void FillWithSquarePulseTrain(size_t half_pulse_width,
-                                     size_t offset,
-                                     size_t num_samples,
-                                     float* data) {
-  FillWithSquarePulseTrain(half_pulse_width, offset,
-                           UNSAFE_TODO(base::span<float>(data, num_samples)));
-}
-
-static void FillWithSquarePulseTrain(size_t half_pulse_width,
-                                     size_t offset,
-                                     int channel,
-                                     AudioBus* audio_bus) {
-  FillWithSquarePulseTrain(half_pulse_width, offset,
-                           audio_bus->channel(channel));
-}
-
 class AudioRendererAlgorithmTest : public testing::Test {
  public:
   AudioRendererAlgorithmTest() : algorithm_(&media_log_) {}
@@ -389,21 +373,11 @@ class AudioRendererAlgorithmTest : public testing::Test {
                                   kSampleRateHz,
                                   kPulseWidthSamples);
 
-    const std::vector<raw_ptr<uint8_t>>& channel_pointers =
-        input->channel_data();
-    std::vector<base::span<float>> input_data(channels_);
-    for (int i = 0; i < channels_; ++i) {
-      // TODO(crbug.com/373960632): spanify AudioBuffer.
-      UNSAFE_TODO(input_data[i] = base::span(
-                      reinterpret_cast<float*>(channel_pointers[i].get()),
-                      static_cast<size_t>(input->frame_count())));
-    }
-
-    // Fill |input| channels.
-    FillWithSquarePulseTrain(kHalfPulseWidthSamples, 0, kPulseWidthSamples,
-                             input_data[0].data());
+    // Fill `input` channels.
+    FillWithSquarePulseTrain(kHalfPulseWidthSamples, 0,
+                             input->planar_channel_cast<float>(0));
     FillWithSquarePulseTrain(kHalfPulseWidthSamples, kHalfPulseWidthSamples,
-                             kPulseWidthSamples, input_data[1].data());
+                             input->planar_channel_cast<float>(1));
 
     // A buffer for the output until a complete pulse is created. Then
     // reference pulse is compared with this buffer.
@@ -433,7 +407,7 @@ class AudioRendererAlgorithmTest : public testing::Test {
       if (n > 3) {
          for (int m = 0; m < channels_; ++m) {
            auto pulse_ch = pulse_buffer->channel(m);
-           auto input_ch = input_data[m];
+           auto input_ch = input->planar_channel_cast<float>(m);
 
            // Because of overlap-and-add we might have round off error.
            for (int k = 0; k < kPulseWidthSamples; ++k) {
@@ -685,13 +659,13 @@ TEST_F(AudioRendererAlgorithmTest, DotProduct) {
 
   auto dot_prod = base::HeapArray<float>::Uninit(kChannels);
 
-  FillWithSquarePulseTrain(kHalfPulseWidth, 0, 0, a.get());
-  FillWithSquarePulseTrain(kHalfPulseWidth, 1, 1, a.get());
-  FillWithSquarePulseTrain(kHalfPulseWidth, 2, 2, a.get());
+  FillWithSquarePulseTrain(kHalfPulseWidth, 0, a->channel(0));
+  FillWithSquarePulseTrain(kHalfPulseWidth, 1, a->channel(1));
+  FillWithSquarePulseTrain(kHalfPulseWidth, 2, a->channel(2));
 
-  FillWithSquarePulseTrain(kHalfPulseWidth, 0, 0, b.get());
-  FillWithSquarePulseTrain(kHalfPulseWidth, 0, 1, b.get());
-  FillWithSquarePulseTrain(kHalfPulseWidth, 0, 2, b.get());
+  FillWithSquarePulseTrain(kHalfPulseWidth, 0, b->channel(0));
+  FillWithSquarePulseTrain(kHalfPulseWidth, 0, b->channel(1));
+  FillWithSquarePulseTrain(kHalfPulseWidth, 0, b->channel(2));
 
   internal::MultiChannelDotProduct(a.get(), 0, b.get(), 0, kFrames, dot_prod);
 
