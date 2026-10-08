@@ -428,8 +428,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ExtractFormsAndNotifyPasswordAutofillAgent"/>
   <variant name="FocusedElementChanged"/>
   <variant name="FormWithEmailVerificationTokenSubmitted"/>
-  <variant name="GetFormDataFromUnownedInputElements"/>
-  <variant name="GetFormDataFromWebForm"/>
+  <variant name="GetFormData"/>
   <variant name="GetSubmittedForm"/>
   <variant name="HandleCaretMovedInFormField"/>
   <variant name="JavaScriptSetValue"/>

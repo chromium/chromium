@@ -215,12 +215,8 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // JavaScript.
   void UserGestureObserved();
 
-  std::optional<FormData> GetFormDataFromWebForm(
-      const blink::WebFormElement& web_form,
-      const SynchronousFormCache& form_cache);
-
-  std::optional<FormData> GetFormDataFromUnownedInputElements(
-      const SynchronousFormCache& form_cache);
+  std::optional<FormData> GetFormData(FormRendererId form_id,
+                                      const SynchronousFormCache& form_cache);
 
   // Notification that form element was cleared by HTMLFormElement::reset()
   // method. This can be used as a signal of a successful submission for change

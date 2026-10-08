@@ -18,8 +18,8 @@
 #include "url/gurl.h"
 
 namespace blink {
+class WebDocument;
 class WebFormElement;
-class WebLocalFrame;
 }
 
 namespace re2 {
@@ -39,30 +39,16 @@ bool IsGaiaReauthenticationForm(const blink::WebFormElement& form);
 // Tests whether the given form is a GAIA form with a skip password argument.
 bool IsGaiaWithSkipSavePasswordForm(const blink::WebFormElement& form);
 
-// Given `form_data` which is assumed to be extracted via
-// `form_util::ExtractFormData`, populates the additional states that are
-// useful for the password manager.
-void ProcessFormDataAfterCreation(
-    FormData& form_data,
-    blink::WebFormElement web_form,
-    UsernameDetectorCache* username_detector_cache);
-
-std::optional<FormData> CreateFormDataFromWebForm(
-    const blink::WebFormElement& web_form,
+// Extracts `FormData` for the form with `form_id` (or the unowned form if
+// `form_id.is_null()`) in `document`, and populates the additional states that
+// are useful for the password manager.
+std::optional<FormData> CreateFormData(
+    const blink::WebDocument& document,
+    FormRendererId form_id,
     const FieldDataManager& field_data_manager,
     UsernameDetectorCache* username_detector_cache,
     form_util::ButtonTitlesCache* button_titles_cache,
     const CallTimerState& timer_state,
-    const SynchronousFormCache& form_cache);
-
-// Same as CreateFormDataFromWebForm() but for input elements that are
-// not owned by a <form> element.
-std::optional<FormData> CreateFormDataFromUnownedInputElements(
-    const blink::WebLocalFrame& frame,
-    const FieldDataManager& field_data_manager,
-    UsernameDetectorCache* username_detector_cache,
-    const CallTimerState& timer_state,
-    form_util::ButtonTitlesCache* button_titles_cache,
     const SynchronousFormCache& form_cache);
 
 // The "Realm" for the sign-on. This is scheme, host, port.

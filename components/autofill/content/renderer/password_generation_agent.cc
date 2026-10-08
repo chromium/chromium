@@ -451,12 +451,12 @@ std::optional<FormData> PasswordGenerationAgent::CreateFormDataToPresave(
     WebInputElement generation_element,
     const SynchronousFormCache& form_cache) {
   CHECK(!generation_element.IsNull());
-  // Since the form for presaving should match a form in the browser, create it
+  // Since the form for pre-saving should match a form in the browser, create it
   // with the same algorithm (to match html attributes, action, etc.).
-  WebFormElement form = generation_element.GetOwningFormForAutofill();
-  return form
-             ? password_agent_->GetFormDataFromWebForm(form, form_cache)
-             : password_agent_->GetFormDataFromUnownedInputElements(form_cache);
+  return password_agent_->GetFormData(
+      form_util::GetFormRendererId(
+          generation_element.GetOwningFormForAutofill()),
+      form_cache);
 }
 
 void PasswordGenerationAgent::FoundFormEligibleForGeneration(
@@ -868,11 +868,10 @@ void PasswordGenerationAgent::MaybeCreateCurrentGenerationItem(
       return;
     }
 
-    WebFormElement form_element = generation_element.GetOwningFormForAutofill();
-    form_data =
-        form_element
-            ? password_agent_->GetFormDataFromWebForm(form_element, form_cache)
-            : password_agent_->GetFormDataFromUnownedInputElements(form_cache);
+    form_data = password_agent_->GetFormData(
+        form_util::GetFormRendererId(
+            generation_element.GetOwningFormForAutofill()),
+        form_cache);
 
     if (!form_data) {
       return;
