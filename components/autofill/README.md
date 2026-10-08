@@ -459,11 +459,12 @@ In case `observed_submission == false`, the votes are not directly passed to
 the `AutofillCrowdsourcingManager`. Instead they are cached until the cache is
 flushed. This enables us to override previous votes in case the user focuses
 and removes focus from a form multiple times while editing the fields' values.
-The cache is flushed on form submission.
+The cache is flushed on form submission or when the frame resets, becomes
+inactive, or is deleted.
 
 As the votes generation is asynchronous, it is not guaranteed that the results
 are available by the time the upload cache is flushed. In this case, votes are
-only uploaded on the next navigation.
+only uploaded on the next flush.
 
 <!-- TODO:
 ## How are addresses compared, updated or added?
