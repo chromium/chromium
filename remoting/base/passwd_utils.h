@@ -25,6 +25,8 @@ struct PasswdUserInfo {
   base::FilePath home_dir;
 #if BUILDFLAG(IS_LINUX)
   std::vector<gid_t> supplementary_gids;
+  // The login shell. May be empty.
+  base::FilePath shell;
 #endif
 };
 

@@ -33,6 +33,7 @@
 #include "remoting/host/ipc_constants.h"
 #include "remoting/host/linux/linux_process_launcher_delegate.h"
 #include "remoting/host/linux/login_session_manager.h"
+#include "remoting/host/linux/user_session_eligibility.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/pam_utils.h"
 #include "remoting/host/worker_process_launcher.h"
@@ -113,11 +114,9 @@ void DesktopSessionLinux::SetSessionInfo(
     return;
   }
 
-  // Root (UID 0) is unconditionally forbidden. System accounts (UID < 1000 or
-  // nobody: 65534) are not allowed for user sessions.
-  if (user_info.uid == 0 ||
-      (session_info.session_class != "greeter" &&
-       (user_info.uid < 1000 || user_info.uid == 65534))) {
+  if (!IsUidAllowedForDesktopSession(
+          user_info.uid,
+          /*is_greeter=*/session_info.session_class == "greeter")) {
     TerminateSession(
         ErrorCode::SESSION_REJECTED,
         base::StringPrintf(

@@ -22,6 +22,7 @@
 #include "remoting/host/linux/dbus_interfaces/org_freedesktop_DBus_ObjectManager.h"
 #include "remoting/host/linux/dbus_interfaces/org_freedesktop_DBus_Properties.h"
 #include "remoting/host/linux/dbus_interfaces/org_gnome_DisplayManager.h"
+#include "remoting/host/linux/gdm_dbus_constants.h"
 #include "remoting/host/linux/gvariant_dict_builder.h"
 #include "remoting/host/linux/gvariant_ref.h"
 
@@ -31,14 +32,6 @@ namespace {
 
 using gvariant::GVariantRef;
 using gvariant::ObjectPath;
-using gvariant::ObjectPathCStr;
-
-constexpr char kGdmBusName[] = "org.gnome.DisplayManager";
-constexpr ObjectPathCStr kGdmManagerPath = "/org/gnome/DisplayManager/Manager";
-constexpr ObjectPathCStr kGdmDisplaysPath =
-    "/org/gnome/DisplayManager/Displays";
-constexpr ObjectPathCStr kGdmRemoteDisplayFactoryPath =
-    "/org/gnome/DisplayManager/RemoteDisplayFactory";
 
 }  // namespace
 

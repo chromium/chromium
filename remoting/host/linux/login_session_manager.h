@@ -73,6 +73,9 @@ class LoginSessionManager {
       base::expected<std::vector<SessionInfo>, Loggable>)>;
   using TerminateSessionCallback =
       base::OnceCallback<void(base::expected<void, Loggable>)>;
+  using SessionNewCallback =
+      base::RepeatingCallback<void(std::string session_id,
+                                   gvariant::ObjectPath object_path)>;
   using SessionRemovedCallback =
       base::RepeatingCallback<void(std::string session_id,
                                    gvariant::ObjectPath object_path)>;
@@ -92,6 +95,10 @@ class LoginSessionManager {
                         ListSessionsCallback callback);
   void TerminateSession(const gvariant::ObjectPath& session_object_path,
                         TerminateSessionCallback callback);
+
+  // Subscribes to `org.freedesktop.login1.Manager.SessionNew` signals.
+  std::unique_ptr<GDBusConnectionRef::SignalSubscription> SubscribeSessionNew(
+      SessionNewCallback callback);
 
   // Subscribes to `org.freedesktop.login1.Manager.SessionRemoved` signals.
   std::unique_ptr<GDBusConnectionRef::SignalSubscription>

@@ -48,6 +48,30 @@ struct CreateRemoteDisplay_PreGnome50 {
   static constexpr gvariant::Type kOutType{"()"};
 };
 
+// method (GDM 50+)
+struct CreateUserDisplay {
+  static constexpr char kInterfaceName[] =
+      "org.gnome.DisplayManager.RemoteDisplayFactory";
+  static constexpr char kMethodName[] = "CreateUserDisplay";
+  static constexpr gvariant::Type kInType{
+      "("
+      "s"  // user
+      ")"};
+  static constexpr gvariant::Type kOutType{"()"};
+};
+
+// method (GDM 50+)
+struct DestroyUserDisplay {
+  static constexpr char kInterfaceName[] =
+      "org.gnome.DisplayManager.RemoteDisplayFactory";
+  static constexpr char kMethodName[] = "DestroyUserDisplay";
+  static constexpr gvariant::Type kInType{
+      "("
+      "s"  // user
+      ")"};
+  static constexpr gvariant::Type kOutType{"()"};
+};
+
 }  // namespace remoting::org_gnome_DisplayManager_RemoteDisplayFactory
 
 namespace remoting::org_gnome_DisplayManager_RemoteDisplay {

@@ -71,6 +71,9 @@ base::expected<PasswdUserInfo, Loggable> GetPasswdUserInfo(
     groups.resize(ngroups);
   }
   user_info.supplementary_gids = std::move(groups);
+  if (result->pw_shell) {
+    user_info.shell = base::FilePath(result->pw_shell);
+  }
 #endif
   return user_info;
 }

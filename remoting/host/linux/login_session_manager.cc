@@ -107,6 +107,22 @@ void LoginSessionManager::ListUserSessions(std::string_view username,
 }
 
 std::unique_ptr<GDBusConnectionRef::SignalSubscription>
+LoginSessionManager::SubscribeSessionNew(SessionNewCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return connection_
+      .SignalSubscribe<org_freedesktop_login1_Manager::SessionNew>(
+          kDbusName, kDbusPath,
+          base::BindRepeating(
+              [](const SessionNewCallback& callback,
+                 std::tuple<std::string, gvariant::ObjectPath> signal_args) {
+                auto [session_id, object_path] = std::move(signal_args);
+                callback.Run(std::move(session_id), std::move(object_path));
+              },
+              std::move(callback)));
+}
+
+std::unique_ptr<GDBusConnectionRef::SignalSubscription>
 LoginSessionManager::SubscribeSessionRemoved(SessionRemovedCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
