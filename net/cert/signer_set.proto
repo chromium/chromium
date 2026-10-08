@@ -49,6 +49,13 @@ enum SignatureAlgorithm {
   SIGNATURE_ALGORITHM_ML_DSA87 = 3;
 }
 
+// Version of the draft-ietf-plants-merkle-tree-certs specification.
+enum SpecVersion {
+  SPEC_VERSION_UNSET = 0;
+  SPEC_VERSION_DRAFT05 = 1;
+  SPEC_VERSION_DRAFT07 = 2;
+}
+
 message OperatorChange {
   string name = 1;
   // Timestamp at which this operator started operating this signer.
@@ -109,6 +116,10 @@ message Signer {
 
   // The signature algorithm that the signer uses.
   SignatureAlgorithm signature_algorithm = 14;
+
+  // The version of the draft-ietf-plants-merkle-tree-certs specification that
+  // this signer implements.
+  SpecVersion spec_version = 15;
 }
 
 message SignerSet {
