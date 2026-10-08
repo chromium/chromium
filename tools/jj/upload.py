@@ -139,7 +139,7 @@ def main(args, unknown_args):
   if not args.bypass_hooks:
     # Find the commits that `git cl presubmit` will actually run on
     got_presubmits = jj_log(
-      revisions=f'mutable()::@',
+      revisions='mutable()::@',
       templates={'empty': 'empty', 'immutable_parents': IMMUTABLE_PARENTS},
       ignore_working_copy=snapshot_taken,
     )

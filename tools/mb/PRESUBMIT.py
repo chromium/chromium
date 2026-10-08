@@ -20,27 +20,6 @@ def CheckTests(input_api, output_api):
   )
 
 
-def CheckPylint(input_api, output_api):
-  if not input_api.HasAffectedFiles(extensions='.py'):
-    return []
-  disabled_warnings = [
-    'bad-indentation',
-    'consider-using-with',
-    'line-too-long',
-    'missing-module-docstring',
-    'singleton-comparison',
-    'unspecified-encoding',
-    'unused-import',
-  ]
-  return input_api.canned_checks.RunPylint(
-    input_api,
-    output_api,
-    version='3.2',
-    files_to_skip=['PRESUBMIT_test.py'],
-    disabled_warnings=disabled_warnings,
-  )
-
-
 def CheckMbValidate(input_api, output_api):
   if not input_api.HasAffectedFiles(
     path=['mb_config.pyl', 'mb.py', 'mb_config_expectations']

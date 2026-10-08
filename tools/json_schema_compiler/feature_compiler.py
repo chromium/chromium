@@ -358,7 +358,7 @@ def IsFeatureCrossReference(
 # Verifies that a feature with an allowlist is not available to hosted apps,
 # returning true on success.
 def DoesNotHaveAllowlistForHostedApps(value):
-  if not 'allowlist' in value:
+  if 'allowlist' not in value:
     return True
 
   # Hack Alert: |value| here has the code for the generated C++ feature. Since
@@ -375,7 +375,7 @@ def DoesNotHaveAllowlistForHostedApps(value):
   # The feature did not specify extension types; this is fine for e.g.
   # API features (which would typically rely on a permission feature, which
   # is required to specify types).
-  if not 'extension_types' in value:
+  if 'extension_types' not in value:
     return True
 
   types = value['extension_types']

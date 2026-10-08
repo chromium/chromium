@@ -27,7 +27,7 @@ def GetAllConfigs(builder_groups):
 def CheckAllConfigsAndMixinsReferenced(errs, all_configs, configs, mixins):
   """Check that every actual config is actually referenced."""
   for config in configs:
-    if not config in all_configs:
+    if config not in all_configs:
       errs.append('Unused config "%s".' % config)
 
   # Figure out the whole list of mixins, and check that every mixin
@@ -35,7 +35,7 @@ def CheckAllConfigsAndMixinsReferenced(errs, all_configs, configs, mixins):
   referenced_mixins = set()
   for config, mixin_names in configs.items():
     for mixin in mixin_names:
-      if not mixin in mixins:
+      if mixin not in mixins:
         errs.append(
           'Unknown mixin "%s" referenced by config "%s".' % (mixin, config)
         )
@@ -43,7 +43,7 @@ def CheckAllConfigsAndMixinsReferenced(errs, all_configs, configs, mixins):
 
   for mixin in mixins:
     for sub_mixin in mixins[mixin].get('mixins', []):
-      if not sub_mixin in mixins:
+      if sub_mixin not in mixins:
         errs.append(
           'Unknown mixin "%s" referenced by mixin "%s".' % (sub_mixin, mixin)
         )
@@ -51,7 +51,7 @@ def CheckAllConfigsAndMixinsReferenced(errs, all_configs, configs, mixins):
 
   # Check that every mixin defined is actually referenced somewhere.
   for mixin in mixins:
-    if not mixin in referenced_mixins:
+    if mixin not in referenced_mixins:
       errs.append('Unreferenced mixin "%s".' % mixin)
 
   return errs

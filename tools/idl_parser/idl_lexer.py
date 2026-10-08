@@ -115,13 +115,11 @@ class IDLLexer(object):
   # definitions come from WebIDL.
   #
   # These need to be methods for lexer construction, despite not using self.
-  # pylint: disable=R0201
   def t_ELLIPSIS(self, t):
     r'\.\.\.'
     return t
 
   # Regex needs to be in the docstring
-  # pylint: disable=C0301
   def t_float(self, t):
     r'-?(([0-9]+\.[0-9]*|[0-9]*\.[0-9]+)([Ee][+-]?[0-9]+)?|[0-9]+[Ee][+-]?[0-9]+)'
     return t

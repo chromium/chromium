@@ -149,7 +149,7 @@ class _Generator(object):
           and schema_util.GetNamespace(prop.ref_type) == self._namespace.name
         ):
           ExpandType(path + [type_], self._namespace.types[prop.ref_type])
-      if not type_ in dependency_order:
+      if type_ not in dependency_order:
         dependency_order.append(type_)
 
     for type_ in self._namespace.types.values():

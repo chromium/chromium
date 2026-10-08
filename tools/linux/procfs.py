@@ -386,7 +386,7 @@ class ProcMaps:
   def parse_line(line):
     matched = ProcMaps.MAPS_PATTERN.match(line)
     if matched:
-      return ProcMapsEntry(  # pylint: disable=W0212
+      return ProcMapsEntry(
         int(matched.group(1), 16),  # begin
         int(matched.group(2), 16),  # end
         matched.group(3),  # readable

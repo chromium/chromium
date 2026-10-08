@@ -14,7 +14,6 @@ import unittest
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
-# pylint: disable-msg=C6204
 from grit.tool import buildinfo
 
 

@@ -274,14 +274,14 @@ def main():
         f"Warning: internal not found at {internal_src}. Skipping internal fork."
       )
 
-  print(f"\nSUCCESS! Your Chromium worktree is ready at:")
+  print("\nSUCCESS! Your Chromium worktree is ready at:")
   print(f"{variant_src}")
 
-  print(f"\nShell Integration Tips:")
+  print("\nShell Integration Tips:")
   alias_name = variant_name.replace(f"{parent_dir.name}_", "")
-  print(f"Add this to your ~/.zshrc for quick jumping:")
+  print("Add this to your ~/.zshrc for quick jumping:")
   print(f"  function {alias_name}() {{ cd {variant_src} }}")
-  print(f"\nYou can now cd into it and start working.")
+  print("\nYou can now cd into it and start working.")
 
   if not has_cache_dir:
     print("\n💡 Pro Tip: Speed up `gclient sync` for worktrees!")

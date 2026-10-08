@@ -54,7 +54,7 @@ def PlotSuperPageData(data: dict, output_filename: str):
         value = BLACK
       elif partition_page['type'] == 'guard':
         value = GRAY
-      elif partition_page['all_zeros'] and not 'is_active' in partition_page:
+      elif partition_page['all_zeros'] and 'is_active' not in partition_page:
         # Otherwise it may be the subsequent partition page of a decommitted
         # slot span.
         if partition_page['page_index_in_span'] == 0:

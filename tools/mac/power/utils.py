@@ -22,7 +22,7 @@ def TerminateProcess(process: subprocess.Popen):
         process.terminate()
         process.wait(2.0)
     except (psutil.TimeoutExpired, psutil.AccessDenied, PermissionError) as e:
-        logging.info(f"Terminate failed, moving on to kill.")
+        logging.info("Terminate failed, moving on to kill.")
     except psutil.NoSuchProcess:
         return
     else:

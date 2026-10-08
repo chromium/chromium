@@ -252,7 +252,6 @@ class ResizeDialog(interface.Tool):
     # If this fails then we're not on Windows (or you don't have the required
     # win32all Python libraries installed), so what are you doing mucking
     # about with RC files anyway? :)
-    # pylint: disable=import-error
     import pythoncom
 
     # Create the .vcproj file

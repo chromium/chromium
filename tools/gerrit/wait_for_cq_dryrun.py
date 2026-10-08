@@ -317,7 +317,7 @@ class CqDryRunWaiter:
                 f"({self.issue_url}) Failed: {out}"
             )
         else:
-            print(f"      ✅ Success")
+            print("      ✅ Success")
 
     def get_cq_label(self):
         with tempfile.NamedTemporaryFile(delete=False) as f:

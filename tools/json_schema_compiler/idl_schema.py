@@ -508,7 +508,7 @@ class Namespace(object):
           # Properties are given as key-value pairs, but IDL will parse
           # it as a list. Convert back to key-value pairs.
           prop_name = prop.pop('name')
-          assert not prop_name in self.properties, (
+          assert prop_name not in self.properties, (
             'Property "%s" cannot be specified more than once.' % prop_name
           )
           self.properties[prop_name] = prop

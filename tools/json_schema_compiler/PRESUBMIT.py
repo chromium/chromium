@@ -12,48 +12,6 @@ import sys
 
 PRESUBMIT_VERSION = '2.0.0'
 TEST_FILE_PATTERN = [r'.+_test.py$']
-# TODO(crbug.com/359623676): Fix the lint errors in these files and remove them
-# from the list.
-PYLINT_FILES_TO_SKIP = [
-  'code_util.py',
-  'compiler.py',
-  'cpp_generator.py',
-  'cpp_namespace_environment.py',
-  'cpp_bundle_generator.py',
-  'cpp_type_generator.py',
-  'cpp_type_generator_test.py',
-  'cc_generator.py',
-  'highlighters/hilite_me_highlighter.py',
-  'highlighters/none_highlighter.py',
-  'highlighters/pygments_highlighter.py',
-  'generate_all_externs.py',
-  'feature_compiler.py',
-  'h_generator.py',
-  'js_externs_generator.py',
-  'idl_schema.py',
-  'json_schema.py',
-  'js_interface_generator.py',
-  'js_util.py',
-  'namespace_resolver.py',
-  'schema_loader.py',
-  'model.py',
-  'util_cc_helper.py',
-  'idl_schema_test.py',
-  'ts_definition_generator.py',
-  'preview.py',
-  'ppapi/generators/idl_ast.py',
-  'ppapi/generators/idl_log.py',
-  'ppapi/generators/idl_lint.py',
-  'ppapi/generators/idl_namespace.py',
-  'ppapi/generators/idl_option.py',
-  'ppapi/generators/idl_lexer.py',
-  'ppapi/generators/idl_node.py',
-  'ppapi/generators/idl_outfile.py',
-  'ppapi/generators/idl_visitor.py',
-  'ppapi/generators/idl_propertynode.py',
-  'ppapi/generators/idl_release.py',
-  'ppapi/generators/idl_parser.py',
-]
 
 
 def CheckExterns(input_api, output_api):
@@ -63,36 +21,11 @@ def CheckExterns(input_api, output_api):
   original_sys_path = sys.path
   try:
     sys.path.insert(0, input_api.PresubmitLocalPath())
-    # pylint: disable=import-outside-toplevel
     from generate_all_externs import Generate
-    # pylint: enable=import-outside-toplevel
   finally:
     sys.path = original_sys_path
 
   return Generate(input_api, output_api, dryrun=True)
-
-
-def CheckPylint(input_api, output_api):
-  if not input_api.HasAffectedFiles(extensions='.py'):
-    return []
-  disabled_warnings = [
-    'bad-indentation',
-    'consider-using-dict-items',
-    'duplicate-code',
-    'function-redefined',
-    'missing-module-docstring',
-    'protected-access',
-    'superfluous-parens',
-    'unspecified-encoding',
-    'unused-import',
-  ]
-  return input_api.canned_checks.RunPylint(
-    input_api,
-    output_api,
-    disabled_warnings=disabled_warnings,
-    version='3.2',
-    files_to_skip=PYLINT_FILES_TO_SKIP,
-  )
 
 
 def CheckTests(input_api, output_api):

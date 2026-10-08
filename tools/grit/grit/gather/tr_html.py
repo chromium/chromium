@@ -351,7 +351,7 @@ class HtmlChunks:
       # break apart messages.
       text = _MESSAGE_BREAK_COMMENT.sub('', text)
 
-    if translateable and not self.last_element_ in _PREFORMATTED_TAGS:
+    if translateable and self.last_element_ not in _PREFORMATTED_TAGS:
       if self.fold_whitespace_:
         # Fold whitespace sequences if appropriate.  This is optional because it
         # alters the output strings.
@@ -649,7 +649,7 @@ def HtmlToMessage(html, include_block_tags=False, description=''):
     m = _ELEMENT.match(html[current:])
     if m:
       element_name = m.group('element').lower()
-      if not include_block_tags and not element_name in _INLINE_TAGS:
+      if not include_block_tags and element_name not in _INLINE_TAGS:
         if last_nobreak:
           last_nobreak = False
         else:

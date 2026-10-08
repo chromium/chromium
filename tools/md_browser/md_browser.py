@@ -16,7 +16,9 @@ import socket
 import sys
 import threading
 import time
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 import webbrowser
 from xml.etree import ElementTree
 

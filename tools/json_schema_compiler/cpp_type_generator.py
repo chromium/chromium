@@ -208,14 +208,11 @@ class CppTypeGenerator(object):
     return cpp_type
 
   def IsCopyable(self, type_):
-    return not (
-      self.FollowRef(type_).property_type
-      in (
-        PropertyType.ANY,
-        PropertyType.ARRAY,
-        PropertyType.OBJECT,
-        PropertyType.CHOICES,
-      )
+    return self.FollowRef(type_).property_type not in (
+      PropertyType.ANY,
+      PropertyType.ARRAY,
+      PropertyType.OBJECT,
+      PropertyType.CHOICES,
     )
 
   def GenerateForwardDeclarations(self):

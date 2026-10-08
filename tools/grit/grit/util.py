@@ -367,7 +367,7 @@ def FixupNamedParam(function, param_name, param_value):
   '''
 
   def FixupClosure(*args, **kw):
-    if not param_name in kw:
+    if param_name not in kw:
       kw[param_name] = param_value
     return function(*args, **kw)
 

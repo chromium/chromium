@@ -52,7 +52,7 @@ def _PrefixSchemaWithNamespace(schema):
   namespace = schema['namespace']
 
   def prefix(obj, key, mandatory):
-    if not key in obj:
+    if key not in obj:
       assert not mandatory, 'Required key "%s" is not present in object.' % key
       return
     assert type(obj[key]) is str

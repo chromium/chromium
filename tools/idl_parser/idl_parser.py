@@ -26,8 +26,6 @@
 # Disable check for line length and Member as Function due to how grammar rules
 # are defined with PLY
 #
-# pylint: disable=R0201
-# pylint: disable=C0301
 
 import os.path
 import sys
@@ -1332,7 +1330,6 @@ class IDLParser(object):
 
   def GetErrors(self):
     # Access lexer errors, despite being private
-    # pylint: disable=W0212
     return self._parse_errors + self.lexer._lex_errors
 
   #

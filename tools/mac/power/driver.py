@@ -239,8 +239,8 @@ class DriverContext:
 
             power_sampler_args = [
                 self._power_sample_path,
-                f"--sample-on-notification",
-                f"--initial-sample",
+                "--sample-on-notification",
+                "--initial-sample",
                 "--samplers=battery,smc,user_idle_level,main_display",
                 f"--timeout={int(scenario_driver.duration.total_seconds())}",
                 f"--json-output-file={power_sampler_output}",
@@ -367,7 +367,7 @@ class DriverContext:
         finally:
             scenario_driver.TearDown()
 
-        logging.debug(f"Waiting for dtrace to exit")
+        logging.debug("Waiting for dtrace to exit")
 
     def Trace(self, scenario_driver: scenarios.ScenarioOSADriver):
         self.WriteScenarioSummary(scenario_driver)

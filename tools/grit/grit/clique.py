@@ -508,7 +508,7 @@ class MessageClique:
         'Msg ID %s, transl ID %s' % (self.GetId(), translation.GetId())
       )
 
-    assert not (language, gender) in self.clique
+    assert (language, gender) not in self.clique
 
     # Because two messages can differ in the original content of their
     # placeholders yet share the same ID (because they are otherwise the

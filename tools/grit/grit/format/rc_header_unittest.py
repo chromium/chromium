@@ -6,7 +6,6 @@
 '''Unit tests for the rc_header formatter'''
 
 # GRD samples exceed the 80 character limit.
-# pylint: disable-msg=C6310
 
 import os
 import sys

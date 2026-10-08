@@ -130,7 +130,7 @@ _TOOLS = [
 def PrintUsage():
   tool_list = ''
   for tool, info in _TOOLS:
-    if not _HIDDEN in info:
+    if _HIDDEN not in info:
       tool_list += '    %-12s %s\n' % (
         tool,
         info[_FACTORY]().ShortDescription(),

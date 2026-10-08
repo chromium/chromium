@@ -24,7 +24,6 @@ from mb import mb
 
 
 # Call has argument input to match subprocess.run
-# pylint: disable=redefined-builtin
 class FakeMBW(mb.MetaBuildWrapper):
   def __init__(self, win32=False):
     super().__init__()

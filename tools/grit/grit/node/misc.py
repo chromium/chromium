@@ -242,7 +242,7 @@ def _ComputeIds(root, predetermined_tids):
       reason = "%s (%s)" % (tid, reason)
       # Don't fail when 'offset' is specified, as the base and the 0th
       # offset will have the same ID.
-      if id in id_reasons and not 'offset' in item.attrs:
+      if id in id_reasons and 'offset' not in item.attrs:
         raise exception.IdRangeOverlap(
           'ID %d was assigned to both %s and %s.' % (id, id_reasons[id], reason)
         )
@@ -525,7 +525,6 @@ class GritNode(base.Node):
     """Returns the list of files that are read to produce the output."""
 
     # Importing this here avoids a circular dependency in the imports.
-    # pylint: disable-msg=C6204
     from grit.node import include
     from grit.node import misc
     from grit.node import structure

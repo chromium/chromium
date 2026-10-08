@@ -243,7 +243,7 @@ class Node:
 
     # Add default attributes if not specified in input file.
     for defattr in self.DefaultAttributes():
-      if not defattr in self.attrs:
+      if defattr not in self.attrs:
         self.attrs[defattr] = self.DefaultAttributes()[defattr]
 
     # Check that |file| does not point to a TypeScript (.ts) file, as those
@@ -444,7 +444,7 @@ class Node:
     '''Returns false if the node has contents that should not be translated,
     otherwise returns false (even if the node has no contents).
     '''
-    if not 'translateable' in self.attrs:
+    if 'translateable' not in self.attrs:
       return True
     else:
       return self.attrs['translateable'] == 'true'
@@ -453,7 +453,7 @@ class Node:
     '''Returns true if the node is marked as an accessibility label and the
     message isn't shown in the UI. Otherwise returns false. This label is
     used to determine if the text requires screenshots.'''
-    if not 'is_accessibility_with_no_ui' in self.attrs:
+    if 'is_accessibility_with_no_ui' not in self.attrs:
       return False
     else:
       return self.attrs['is_accessibility_with_no_ui'] == 'true'

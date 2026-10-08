@@ -555,7 +555,7 @@ class _Generator(object):
 
     c = Code()
     (
-      c.Append(f'// static').Append(
+      c.Append('// static').Append(
         '{return_type} '
         '{classname}::FromValue(const {param_type}& value) {{'.format(
           return_type=return_type,
