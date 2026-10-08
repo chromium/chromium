@@ -1657,10 +1657,10 @@ public class BottomControlsStackerUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("Android.BottomControlsStacker.NumberOfVisibleLayers", 2)
                         .expectIntRecord(
-                                "Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMaxHeight",
-                                150 / 800)
+                                "Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMaxHeight2",
+                                19)
                         .expectIntRecord(
-                                "Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMinHeight",
+                                "Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMinHeight2",
                                 0)
                         .build();
 
@@ -1680,11 +1680,11 @@ public class BottomControlsStackerUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("Android.BottomControlsStacker.NumberOfVisibleLayers", 3)
                         .expectIntRecord(
-                                "Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMaxHeight",
-                                160 / 800)
+                                "Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMaxHeight2",
+                                20)
                         .expectIntRecord(
-                                "Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMinHeight",
-                                60 / 800)
+                                "Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMinHeight2",
+                                8)
                         .build();
 
         mBottomControlsStacker.notifyDidFinishNavigationInPrimaryMainFrame();

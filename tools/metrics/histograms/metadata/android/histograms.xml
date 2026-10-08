@@ -1332,7 +1332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMaxHeight"
+    name="Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMaxHeight2"
     units="%" expires_after="2027-10-01">
   <owner>pnoland@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
@@ -1342,11 +1342,14 @@ chromium-metrics-reviews@google.com.
     controls stack at full height. This is the maximum % the window is obscured
     by the bottom controls, which can ordinarily be scrolled off. Recorded when
     a navigation finishes in the main frame of the active tab.
+
+    Note: Version 2 fixes an integer division bug present in the original
+    histogram.
   </summary>
 </histogram>
 
 <histogram
-    name="Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMinHeight"
+    name="Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMinHeight2"
     units="%" expires_after="2027-10-01">
   <owner>pnoland@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
@@ -1356,6 +1359,9 @@ chromium-metrics-reviews@google.com.
     controls stack at its minimum height. This is the minimum % the window is
     obscured by the bottom controls, which cannot ordinarily be scrolled off.
     Recorded when a navigation finishes in the main frame of the active tab.
+
+    Note: Version 2 fixes an integer division bug present in the original
+    histogram.
   </summary>
 </histogram>
 

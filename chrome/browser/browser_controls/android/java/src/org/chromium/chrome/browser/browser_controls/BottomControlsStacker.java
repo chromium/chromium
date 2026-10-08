@@ -777,15 +777,16 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
                 DisplayUtil.dpToPx(
                         mWindowAndroid.getDisplay(),
                         mContext.getResources().getConfiguration().screenHeightDp);
-        if (windowHeight == 0) return;
-        int percentageOfScreenUsedByBottomControlsMaxHeight = (mTotalHeight / windowHeight) * 100;
+        if (windowHeight <= 0 || mTotalHeight < 0 || mTotalMinHeight < 0) return;
+        int percentageOfScreenUsedByBottomControlsMaxHeight =
+                Math.min(100, Math.round(100.f * mTotalHeight / windowHeight));
         int percentageOfScreenUsedByBottomControlsMinHeight =
-                (mTotalMinHeight / windowHeight) * 100;
+                Math.min(100, Math.round(100.f * mTotalMinHeight / windowHeight));
         RecordHistogram.recordPercentageHistogram(
-                "Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMaxHeight",
+                "Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMaxHeight2",
                 percentageOfScreenUsedByBottomControlsMaxHeight);
         RecordHistogram.recordPercentageHistogram(
-                "Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMinHeight",
+                "Android.BottomControlsStacker.PercentageOfWindowUsedByBottomControlsAtMinHeight2",
                 percentageOfScreenUsedByBottomControlsMinHeight);
     }
 
