@@ -4,6 +4,7 @@
 
 #include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
@@ -20,11 +21,19 @@
 #include "components/permissions/request_type.h"
 #include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/permissions/test/permission_request_observer.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/media_switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
+#include "url/origin.h"
 
 class OneTimePermissionsBrowserTestBase : public InProcessBrowserTest {
  public:
@@ -38,7 +47,7 @@ class OneTimePermissionsBrowserTestBase : public InProcessBrowserTest {
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-    https_server_->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    https_server_->AddDefaultHandlers(GetChromeTestDataDir());
     ASSERT_TRUE(https_server_->Start());
     manager_ = permissions::PermissionRequestManager::FromWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
@@ -81,6 +90,8 @@ class OneTimePermissionsBrowserTestBase : public InProcessBrowserTest {
   GURL GetTestURL() {
     return https_server_->GetURL("a.test", "/permissions/requests.html");
   }
+
+  net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
@@ -291,3 +302,75 @@ INSTANTIATE_TEST_SUITE_P(
                   ? "_withApproximateLocation"
                   : "");
     });
+
+using OneTimePermissionsPopupBrowserTest = OneTimePermissionsBrowserTestBase;
+
+// A one-time grant issued to a popup that never commits a navigation (and thus
+// stays on its initial empty document, which inherits the opener's origin)
+// must be revoked once the last page of that origin goes away.
+IN_PROC_BROWSER_TEST_F(OneTimePermissionsPopupBrowserTest,
+                       GrantFromUncommittedPopupRevokedOnClose) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
+  content::WebContents* opener =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  const url::Origin origin = url::Origin::Create(GetTestURL());
+
+  // Open a popup whose navigation is answered with HTTP 204 and hence never
+  // commits.
+  const GURL no_content_url = https_server()->GetURL("a.test", "/nocontent");
+  content::WebContentsAddedObserver popup_observer;
+  ASSERT_TRUE(content::ExecJs(
+      opener, content::JsReplace("window.open($1);", no_content_url)));
+  content::WebContents* popup = popup_observer.GetWebContents();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !popup->IsLoading() &&
+           !popup->HasUncommittedNavigationInPrimaryMainFrame();
+  }));
+  ASSERT_TRUE(popup->GetController().GetLastCommittedEntry()->IsInitialEntry());
+  ASSERT_EQ(popup->GetPrimaryMainFrame()->GetLastCommittedOrigin(), origin);
+
+  // Navigate the opener away, so that the popup is the only page of `origin`.
+  ASSERT_TRUE(content::NavigateToURL(
+      opener, https_server()->GetURL("b.test", "/title1.html")));
+
+  // Request geolocation from the popup and accept it for this time only.
+  ASSERT_EQ(browser()->tab_strip_model()->GetActiveWebContents(), popup);
+  permissions::PermissionRequestObserver request_observer(popup);
+  ASSERT_TRUE(content::ExecJs(
+      popup, "navigator.geolocation.getCurrentPosition(() => {}, () => {});"));
+  request_observer.Wait();
+  ASSERT_TRUE(request_observer.request_shown());
+  PromptOptions prompt_options =
+      base::FeatureList::IsEnabled(
+          content_settings::features::kApproximateGeolocationPermission)
+          ? PromptOptions(GeolocationPromptOptions{
+                .selected_accuracy = GeolocationAccuracy::kPrecise})
+          : std::monostate();
+  permissions::PermissionRequestManager::FromWebContents(popup)->AcceptThisTime(
+      prompt_options);
+
+  auto get_status = [&]() {
+    return browser()
+        ->GetProfile()
+        ->GetPermissionController()
+        ->GetPermissionResultForOriginWithoutContext(
+            content::PermissionDescriptorUtil::
+                CreatePermissionDescriptorForPermissionType(
+                    blink::PermissionType::GEOLOCATION),
+            origin)
+        .status;
+  };
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return get_status() == blink::mojom::PermissionStatus::GRANTED;
+  }));
+
+  // Closing the popup closes the last page of `origin`, which must revoke the
+  // one-time grant.
+  content::WebContentsDestroyedWatcher destroyed_watcher(popup);
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      browser()->tab_strip_model()->GetIndexOfWebContents(popup),
+      TabCloseTypes::CLOSE_NONE);
+  destroyed_watcher.Wait();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return get_status() == blink::mojom::PermissionStatus::ASK; }));
+}

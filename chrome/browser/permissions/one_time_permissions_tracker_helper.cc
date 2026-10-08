@@ -208,6 +208,12 @@ OneTimePermissionsTrackerHelper::OneTimePermissionsTrackerHelper(
   MediaCaptureDevicesDispatcher::GetInstance()
       ->GetMediaStreamCaptureIndicator()
       ->AddObserver(this);
+  // The current primary page became primary before this helper was attached,
+  // so PrimaryPageChanged() was never observed for it. This matters e.g. for
+  // the initial empty document of a renderer-created popup, which inherits
+  // its opener's origin and may never commit a navigation.
+  OneTimePermissionsPageTracker::MaybeCreateForPage(
+      web_contents->GetPrimaryPage());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(OneTimePermissionsTrackerHelper);

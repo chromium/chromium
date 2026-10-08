@@ -313,6 +313,33 @@ TEST_F(OneTimePermissionsTrackerTest, PageTrackerSameOriginNavigation) {
   factory_tracker->RemoveObserver(&observer);
 }
 
+// The helper must also track the primary page that already exists when it is
+// attached (e.g. the initial empty document of a renderer-created popup), since
+// PrimaryPageChanged() for that page fired before the helper existed.
+TEST_F(OneTimePermissionsTrackerTest, PageTrackerCreatedForExistingPage) {
+  const GURL origin_url("https://example.com");
+  const url::Origin origin = url::Origin::Create(origin_url);
+
+  OneTimePermissionsTrackerObserverForTesting observer;
+  auto* factory_tracker =
+      OneTimePermissionsTrackerFactory::GetForBrowserContext(profile());
+  factory_tracker->AddObserver(&observer);
+
+  // Commit a page before the helper is attached.
+  NavigateAndCommit(origin_url);
+  OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents());
+  EXPECT_EQ(observer.NotifiedCountLastPageClosed(), 0u);
+
+  // Navigating to a different origin should deactivate the existing page and
+  // fire OnLastPageFromOriginClosed for example.com.
+  NavigateAndCommit(GURL("https://other.com"));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return observer.NotifiedCountLastPageClosed() == 1u; }));
+  EXPECT_EQ(observer.LastNotifiedOrigin(), origin);
+
+  factory_tracker->RemoveObserver(&observer);
+}
+
 TEST_F(OneTimePermissionsTrackerTest, PageTrackerDiscard) {
   OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents());
 
