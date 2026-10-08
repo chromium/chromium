@@ -269,8 +269,8 @@ source_set("unit_tests") {
 mojom("internals_mojo_bindings") {
   sources = [ "indexed_db_internals.mojom" ]
   public_deps = [
-    "//components/services/storage/privileged/mojom",
-    "//components/services/storage/public/mojom",
+    "//components/services/storage/privileged/mojom:mojom_webui",
+    "//components/services/storage/public/mojom/buckets",
     "//mojo/public/mojom/base",
   ]
   webui_module_path = "/"
