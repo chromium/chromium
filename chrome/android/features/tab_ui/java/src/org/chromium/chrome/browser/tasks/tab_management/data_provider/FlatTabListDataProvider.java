@@ -10,7 +10,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -79,8 +81,11 @@ public class FlatTabListDataProvider extends TabListDataProvider {
                         requestDataReset();
                     }
 
-                    // TODO(crbug.com/562590772): Add incremental TabModelObserver callbacks for
-                    // tab selection.
+                    @Override
+                    public void didSelectTab(
+                            Tab tab, @TabSelectionType int type, @TabId int lastId) {
+                        selectTab(tab, /* prevSelectedTabId= */ lastId);
+                    }
                 };
 
         TabGroupObserver tabGroupObserver =

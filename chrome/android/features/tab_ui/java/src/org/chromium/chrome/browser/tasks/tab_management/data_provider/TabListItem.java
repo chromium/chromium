@@ -12,5 +12,6 @@ public interface TabListItem {
     /** Returns whether this item is currently selected. */
     boolean isSelected();
 
-    // TODO(crbug.com/562590772): Add withSelected(boolean) for granular selection updates.
+    /** Returns a copy of this item with the specified selection state. */
+    TabListItem withSelected(boolean isSelected);
 }

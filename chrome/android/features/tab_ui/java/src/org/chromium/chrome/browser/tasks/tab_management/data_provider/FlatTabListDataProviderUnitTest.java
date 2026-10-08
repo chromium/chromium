@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.tasks.tab_management.data_provider;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -23,6 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -36,10 +39,12 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataObserver.PayloadType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -126,6 +131,11 @@ public class FlatTabListDataProviderUnitTest {
         assertNotEquals(base, selectedItem);
         assertNotEquals(base, pinnedItem);
         assertNotEquals(base, multiSelectedItem);
+
+        TabItem updatedSelected = base.withSelected(/* isSelected= */ true);
+        assertTrue(updatedSelected.isSelected());
+        assertEquals(selectedItem, updatedSelected);
+        assertSame(base, base.withSelected(/* isSelected= */ false));
     }
 
     // ============================================================================================
@@ -452,6 +462,95 @@ public class FlatTabListDataProviderUnitTest {
     }
 
     // ============================================================================================
+    // TabModelObserver: didSelectTab
+    // ============================================================================================
+
+    @Test
+    public void testDidSelectTab_SelectsNewTab_DeselectsPreviousTab() {
+        mSelectedTab = mTab1;
+        setUpProviderWithTabs(/* filter= */ null, mTab1, mTab2);
+        assertItems(selected(TAB1_ID), item(TAB2_ID));
+
+        selectTab(mTab2, TAB1_ID);
+
+        // Intentional two-step dispatch: deselected tab first, newly selected tab second.
+        InOrder inOrder = inOrder(mObserver);
+        inOrder.verify(mObserver).onItemUpdated(item(TAB1_ID), PayloadType.SELECTION);
+        inOrder.verify(mObserver).onItemUpdated(selected(TAB2_ID), PayloadType.SELECTION);
+        assertItems(item(TAB1_ID), selected(TAB2_ID));
+    }
+
+    @Test
+    public void testDidSelectTab_PreviousInvalidTabId_DeselectsCurrentlySelectedTab() {
+        mSelectedTab = mTab1;
+        setUpProviderWithTabs(/* filter= */ null, mTab1, mTab2);
+        assertItems(selected(TAB1_ID), item(TAB2_ID));
+
+        // When a new tab is created, TabModel passes Tab.INVALID_TAB_ID as prevSelectedTabId.
+        selectTab(mTab2, Tab.INVALID_TAB_ID);
+
+        InOrder inOrder = inOrder(mObserver);
+        inOrder.verify(mObserver).onItemUpdated(item(TAB1_ID), PayloadType.SELECTION);
+        inOrder.verify(mObserver).onItemUpdated(selected(TAB2_ID), PayloadType.SELECTION);
+        assertItems(item(TAB1_ID), selected(TAB2_ID));
+    }
+
+    @Test
+    public void testDidSelectTab_SelectingUnprojectedTab_DeselectsPreviousProjectedTab() {
+        mSelectedTab = mTab1;
+        groupTabs(TAB_GROUP_ID, mTab1);
+        setUpProviderWithTabs(mInCurrentGroupFilter, mTab1, mTab2);
+        assertItems(selected(TAB1_ID));
+
+        // Selecting unprojected mTab2 deselects mTab1 without emitting selection for mTab2.
+        selectTab(mTab2, TAB1_ID);
+
+        verify(mObserver).onItemUpdated(item(TAB1_ID), PayloadType.SELECTION);
+        verify(mObserver, never()).onItemUpdated(selected(TAB2_ID), PayloadType.SELECTION);
+        assertItems(item(TAB1_ID));
+    }
+
+    @Test
+    public void testDidSelectTab_SelectingProjectedTab_PreviousUnprojected_OnlySelectsNewTab() {
+        mSelectedTab = mTab2;
+        groupTabs(TAB_GROUP_ID, mTab1);
+        setUpProviderWithTabs(mInCurrentGroupFilter, mTab1, mTab2);
+        assertItems(item(TAB1_ID));
+
+        // Selecting projected mTab1 when previous was unprojected only updates mTab1.
+        selectTab(mTab1, TAB2_ID);
+
+        verify(mObserver).onItemUpdated(selected(TAB1_ID), PayloadType.SELECTION);
+        verify(mObserver, times(1)).onItemUpdated(any(), anyInt());
+        assertItems(selected(TAB1_ID));
+    }
+
+    @Test
+    public void testDidSelectTab_SameTab_NoOps() {
+        mSelectedTab = mTab1;
+        setUpProviderWithTabs(/* filter= */ null, mTab1, mTab2);
+        assertItems(selected(TAB1_ID), item(TAB2_ID));
+
+        selectTab(mTab1, TAB1_ID);
+
+        verifyNoInteractions(mObserver);
+        assertItems(selected(TAB1_ID), item(TAB2_ID));
+    }
+
+    @Test
+    public void testDidSelectTab_BothUnprojected_NoOps() {
+        groupTabs(TAB_GROUP_ID, mTab1);
+        setUpProviderWithTabs(mInCurrentGroupFilter, mTab1, mTab2, mTab3);
+        assertItems(item(TAB1_ID));
+
+        // Selecting between two unprojected tabs emits no events and does not alter items.
+        selectTab(mTab3, TAB2_ID);
+
+        verifyNoInteractions(mObserver);
+        assertItems(item(TAB1_ID));
+    }
+
+    // ============================================================================================
     // TabGroupObserver: didMergeTabToGroup
     // ============================================================================================
 
@@ -647,6 +746,11 @@ public class FlatTabListDataProviderUnitTest {
     private void closeTab(Tab tab) {
         mModelTabs.remove(tab);
         mTabModelObserver.didRemoveTabForClosure(tab);
+    }
+
+    private void selectTab(Tab tab, @TabId int prevSelectedTabId) {
+        mSelectedTab = tab;
+        mTabModelObserver.didSelectTab(tab, TabSelectionType.FROM_USER, prevSelectedTabId);
     }
 
     private static void groupTabs(@Nullable Token groupId, Tab... tabs) {
