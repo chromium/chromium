@@ -27,16 +27,35 @@ class MockActorLoginDelegate : public ActorLoginDelegate {
                scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger,
                CredentialsOrErrorReply callback),
               (override));
+  void AttemptLogin(
+      const Credential& credential,
+      bool should_store_permission,
+      scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger,
+      base::TimeTicks attempt_login_tool_start_time,
+      FrameFillingStartedCallback frame_filling_started_cb,
+      LoginStatusResultOrErrorReply done_callback,
+      base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate) override;
+
+  // Workaround for an LLVM x86 32-bit backend miscompilation (with PGO) where
+  // SelectionDAG's MergeConsecutiveStores merges the 8-byte `base::TimeTicks`
+  // and two 4-byte `base::OnceCallback` `byval` stack arguments into a single
+  // 16-byte load (`s128`) whose MachineMemOperand only references the first
+  // `byval` argument, causing MachineScheduler to reorder the `OnceCallback`
+  // move-constructor zero-stores ahead of the 16-byte load. Placing
+  // `action_sequence_delegate` (which has an out-of-line move constructor)
+  // before the callbacks and passing `attempt_login_tool_start_time` by const
+  // reference prevents the 16-byte load merge.
+  // TODO(https://crbug.com/571177792): Remove this when PGO LLVM issue is fixed
+  // by reverting crrev.com/c/8532034.
   MOCK_METHOD(void,
               AttemptLogin,
               (const Credential& credential,
                bool should_store_permission,
                scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger,
-               base::TimeTicks attempt_login_tool_start_time,
+               base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate,
                FrameFillingStartedCallback frame_filling_started_cb,
                LoginStatusResultOrErrorReply done_callback,
-               base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate),
-              (override));
+               const base::TimeTicks& attempt_login_tool_start_time));
 };
 
 }  // namespace actor_login
