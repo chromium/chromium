@@ -68,3 +68,23 @@ component("webview") {
     }
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "unhandled_keyboard_event_handler_unittest.cc",
+    "web_dialog_view_unittest.cc",
+    "webview_unittest.cc",
+  ]
+  deps = [
+    ":webview",
+    "//base",
+    "//base/test:test_support",
+    "//components/input",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base:test_support",
+    "//ui/views:test_support",
+    "//ui/web_dialogs:test_support",
+  ]
+}

@@ -4559,13 +4559,8 @@ test("unit_tests") {
       "//components/web_modal:test_support",
       "//content/test:test_support",
       "//ui/views:test_support",
+      "//ui/views/controls/webview:unit_tests",
       "//ui/web_dialogs:test_support",
-    ]
-
-    sources += [
-      "../../ui/views/controls/webview/unhandled_keyboard_event_handler_unittest.cc",
-      "../../ui/views/controls/webview/web_dialog_view_unittest.cc",
-      "../../ui/views/controls/webview/webview_unittest.cc",
     ]
 
     deps += [
