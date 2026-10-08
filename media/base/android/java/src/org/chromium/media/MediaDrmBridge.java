@@ -429,15 +429,18 @@ public class MediaDrmBridge {
                 return MediaDrm.isCryptoSchemeSupported(cryptoScheme);
             }
             if (securityLevel != MediaDrm.SECURITY_LEVEL_UNKNOWN) {
-                return MediaDrm.isCryptoSchemeSupported(
-                        cryptoScheme, containerMimeType, securityLevel);
+                try {
+                    return MediaDrm.isCryptoSchemeSupported(
+                            cryptoScheme, containerMimeType, securityLevel);
+                } catch (UnsupportedOperationException e) {
+                    // DRM HAL < 1.2 does not support querying with a security level; fall back
+                    // to the container-only check and validate the level in setSecurityLevel().
+                }
             }
             return MediaDrm.isCryptoSchemeSupported(cryptoScheme, containerMimeType);
-        } catch (IllegalArgumentException | UnsupportedOperationException e) {
+        } catch (IllegalArgumentException e) {
             // A few devices have broken DRM HAL configs and throw an exception here regardless of
             // the arguments; just assume this means the scheme is not supported.
-            // In addition, MediaDrm.isCryptoSchemeSupported throws UnsupportedOperationException if
-            // the DRM HAL cannot handle the requested security level.
             Log.e(TAG, "Exception in isCryptoSchemeSupported", e);
             return false;
         }
@@ -523,6 +526,13 @@ public class MediaDrmBridge {
             return null;
         }
 
+        if (mediaDrmBridge.isWidevine() && !mediaDrmBridge.setSecurityLevel(securityLevel)) {
+            MediaDrmBridgeJni.get()
+                    .onCreateError(nativeMediaDrmBridge, MediaDrmCreateError.FAILED_SECURITY_LEVEL);
+            mediaDrmBridge.release();
+            return null;
+        }
+
         if (!securityOrigin.isEmpty() && !mediaDrmBridge.setOrigin(securityOrigin)) {
             MediaDrmBridgeJni.get()
                     .onCreateError(
@@ -558,6 +568,29 @@ public class MediaDrmBridge {
         }
 
         return true;
+    }
+
+    private boolean setSecurityLevel(int securityLevel) {
+        if (securityLevel == MediaDrm.SECURITY_LEVEL_UNKNOWN) {
+            return true;
+        }
+        String level = (securityLevel == MediaDrm.SECURITY_LEVEL_SW_SECURE_CRYPTO) ? "L3" : "L1";
+        String currentLevel = getPropertyString("securityLevel");
+        if (currentLevel.isEmpty()) {
+            return false;
+        }
+        if (level.equals(currentLevel)) {
+            // Setting the same securityLevel again throws in Widevine MediaDrm.
+            return true;
+        }
+        assert mMediaDrm != null;
+        try {
+            mMediaDrm.setPropertyString("securityLevel", level);
+            return true;
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            Log.e(TAG, "Failed to set security level %s", level, e);
+            return false;
+        }
     }
 
     /**
