@@ -5129,10 +5129,7 @@ if (!is_android && !is_chromeos_device) {
   test("interactive_ui_tests") {
     use_xvfb = use_xvfb_in_this_config
 
-    sources = [
-      "//ui/base/clipboard/clipboard_unittest.cc",
-      "base/interactive_ui_tests_main.cc",
-    ]
+    sources = [ "base/interactive_ui_tests_main.cc" ]
 
     configs += [ "//build/config:precompiled_headers" ]
     if ((is_linux || is_chromeos) && !is_component_build) {
@@ -5294,9 +5291,11 @@ if (!is_android && !is_chromeos_device) {
       "//net:test_support",
       "//ui/base:base_interactive_ui_tests",
       "//ui/base:test_support",
+      "//ui/base/clipboard:clipboard_interactive_ui_tests",
       "//ui/base/clipboard:clipboard_test_support",
       "//ui/base/interaction:test_support",
       "//ui/compositor:test_support",
+      "//ui/display:display_interactive_ui_tests",
       "//ui/display:test_support",
       "//ui/events:events_interactive_ui_tests",
       "//ui/events:test_support",
@@ -5546,11 +5545,6 @@ if (!is_android && !is_chromeos_device) {
     deps += [ "//chrome/browser/signin:interactive_ui_tests" ]
 
     if (is_win) {
-      sources += [
-        "//ui/base/clipboard/clipboard_win_unittest.cc",
-        "//ui/display/win/test/virtual_display_util_win_interactive_uitest.cc",
-      ]
-
       deps += [
         "//chrome/browser/os_crypt:browser_tests",
         "//chrome/browser/os_crypt:test_support",
@@ -5569,10 +5563,6 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (is_mac) {
-      sources += [
-        "//ui/display/mac/test/virtual_display_util_mac_interactive_uitest.mm",
-      ]
-
       data_deps += [
         "//chrome",
         "//chrome:chrome_framework",
@@ -5595,12 +5585,6 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/metrics/desktop_session_duration:interactive_ui_tests",
         "//chrome/browser/ui/views/frame:browser_view_header",
       ]
-    }
-
-    if (is_linux) {
-      if (ozone_platform_x11 && enable_remoting) {
-        sources += [ "//ui/display/linux/test/virtual_display_util_linux_interactive_uitest.cc" ]
-      }
     }
 
     if (is_win || is_mac || is_linux) {

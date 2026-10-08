@@ -339,6 +339,35 @@ source_set("clipboard_test") {
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
+# Clipboard tests that use the real system clipboard. They run in
+# interactive_ui_tests because they can't run in parallel with other tests.
+source_set("clipboard_interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "clipboard_test_template.h",
+    "clipboard_unittest.cc",
+  ]
+  deps = [
+    ":clipboard",
+    ":clipboard_test_support",
+    "//base",
+    "//base/test:test_support",
+    "//build:chromecast_buildflags",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/base:features",
+    "//ui/gfx",
+    "//ui/gfx:test_support",
+    "//url",
+  ]
+  if (is_win) {
+    sources += [ "clipboard_win_unittest.cc" ]
+  }
+}
+
 fuzzer_test("url_file_parser_fuzzer") {
   sources = [ "url_file_parser_fuzzer.cc" ]
   deps = [

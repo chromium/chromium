@@ -297,6 +297,32 @@ static_library("test_support") {
   }
 }
 
+# Virtual display tests, which change the system display configuration.
+source_set("display_interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = []
+  deps = [
+    ":display",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//ui/display/types",
+  ]
+  if (is_win) {
+    sources += [ "win/test/virtual_display_util_win_interactive_uitest.cc" ]
+  }
+  if (is_mac) {
+    sources += [ "mac/test/virtual_display_util_mac_interactive_uitest.mm" ]
+    deps += [ "//ui/gfx/geometry" ]
+  }
+  if (is_linux && ozone_platform_x11 && enable_remoting) {
+    sources += [ "linux/test/virtual_display_util_linux_interactive_uitest.cc" ]
+    deps += [ "//ui/aura" ]
+  }
+}
+
 # This test covers all testable components in display.
 test("display_unittests") {
   sources = [
