@@ -22,7 +22,6 @@
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/content/payment_request_state.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/controls/throbber.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -223,7 +222,6 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
 
   void OnDialogOpened();
   void ShowInitialPaymentSheet();
-  void SetupSpinnerOverlay();
   void RemoveLoadingView();
   void OnDialogClosed();
   void ResizeDialogWindow();
@@ -247,8 +245,7 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
 
   // A full dialog overlay that shows a spinner and the "processing" label. It's
   // hidden until ShowProcessingSpinner is called.
-  raw_ptr<views::View> throbber_overlay_;
-  raw_ptr<views::Throbber> throbber_;
+  raw_ptr<views::View> throbber_overlay_ = nullptr;
 
   // A full dialog overlay that shows a loading view for a payment app. It's
   // hidden until ShowLoadingView is called.

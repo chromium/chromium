@@ -43,6 +43,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSheetControllerTest,
   EXPECT_EQ(1U, GetPaymentRequests().size());
   EXPECT_TRUE(test_api(dialog_view()).view_stack()->GetVisible());
   EXPECT_EQ(nullptr, test_api(dialog_view()).loading_view_overlay());
+  EXPECT_EQ(nullptr, test_api(dialog_view()).throbber_overlay());
 
   ResetEventWaiter(DialogEvent::PROCESSING_SPINNER_SHOWN);
   dialog_view()->ShowProcessingSpinner();
@@ -50,6 +51,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSheetControllerTest,
   ASSERT_TRUE(WaitForObservedEvent());
 
   EXPECT_FALSE(test_api(dialog_view()).view_stack()->GetVisible());
+  ASSERT_NE(nullptr, test_api(dialog_view()).throbber_overlay());
   EXPECT_TRUE(test_api(dialog_view()).throbber_overlay()->GetVisible());
   EXPECT_FALSE(test_api(dialog_view())
                    .throbber_overlay()
@@ -64,15 +66,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSheetControllerTest,
   dialog_view()->HideProcessingSpinner();
   ASSERT_TRUE(WaitForObservedEvent());
   EXPECT_TRUE(test_api(dialog_view()).view_stack()->GetVisible());
-  EXPECT_FALSE(test_api(dialog_view()).throbber_overlay()->GetVisible());
-  EXPECT_TRUE(test_api(dialog_view())
-                  .throbber_overlay()
-                  ->GetViewAccessibility()
-                  .GetIsIgnored());
-  EXPECT_TRUE(test_api(dialog_view())
-                  .throbber_overlay()
-                  ->GetViewAccessibility()
-                  .IsLeaf());
+  EXPECT_EQ(nullptr, test_api(dialog_view()).throbber_overlay());
 }
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestSheetControllerTest,

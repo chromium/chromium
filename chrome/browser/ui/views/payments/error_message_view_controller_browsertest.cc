@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestErrorMessageTest, CompleteFail) {
                          payment_method_name)));
   ASSERT_TRUE(WaitForObservedEvent());
 
-  EXPECT_FALSE(test_api(dialog_view()).throbber_overlay()->GetVisible());
+  EXPECT_EQ(nullptr, test_api(dialog_view()).throbber_overlay());
 
   // The user can only close the dialog at this point.
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
