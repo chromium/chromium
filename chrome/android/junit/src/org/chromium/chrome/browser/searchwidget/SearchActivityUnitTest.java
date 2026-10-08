@@ -10,15 +10,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -65,11 +62,14 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.omnibox.LocationBarBackgroundDrawable;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
+import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -100,8 +100,16 @@ import java.util.Set;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES})
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SearchActivityUnitTest {
+    private static class TestSearchActivity extends SearchActivity {
+        private boolean mFinishedDeferredInitialization;
+
+        @Override
+        void finishDeferredInitialization() {
+            mFinishedDeferredInitialization = true;
+        }
+    }
+
     private static final String TEST_URL = "https://abc.xyz/";
     private static final String TEST_REFERRER = "com.package.name";
     private static final OmniboxLoadUrlParams LOAD_URL_PARAMS_SIMPLE =
@@ -120,7 +128,8 @@ public class SearchActivityUnitTest {
     private @Mock WebContents mWebContents;
     private @Mock Tab mTab;
     private @Mock SearchActivity.SearchActivityDelegate mDelegate;
-    private @Mock SearchActivityLocationBarLayout mLocationBar;
+    private @Mock AutocompleteCoordinator mAutocompleteCoordinator;
+    private @Mock TopResumedActivityChangedObserver mTopResumedObserver;
     private @Mock UmaActivityObserver mUmaObserver;
     private @Mock Callback<@Nullable String> mSetCustomTabSearchClient;
     private @Mock LocationBarBackgroundDrawable mSearchBoxBackground;
@@ -131,18 +140,20 @@ public class SearchActivityUnitTest {
     private MonotonicObservableSupplier<Profile> mProfileSupplier;
     private OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
 
-    private ActivityController<SearchActivity> mController;
-    private SearchActivity mActivity;
+    private ActivityController<TestSearchActivity> mController;
+    private TestSearchActivity mActivity;
     private ShadowActivity mShadowActivity;
     private SearchBoxDataProvider mDataProvider;
+    private SearchActivityLocationBarLayout mLocationBar;
+    private UrlBar mUrlBar;
     private View mAnchorView;
     private View mControlContainer;
 
     @Before
     public void setUp() {
         FirstRunStatus.setFirstRunFlowComplete(true);
-        mController = Robolectric.buildActivity(SearchActivity.class);
-        mActivity = spy(mController.get());
+        mController = Robolectric.buildActivity(TestSearchActivity.class);
+        mActivity = mController.get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mShadowActivity = shadowOf(mActivity);
         mDataProvider = mActivity.getSearchBoxDataProviderForTesting();
@@ -159,7 +170,21 @@ public class SearchActivityUnitTest {
         mProfileSupplier = mActivity.getProfileSupplierForTesting();
 
         SearchActivity.setDelegateForTests(mDelegate);
+        mLocationBar = new SearchActivityLocationBarLayout(mActivity, /* attrs= */ null);
+        mLocationBar.initialize(
+                mAutocompleteCoordinator,
+                mUrlCoordinator,
+                mStatusCoordinator,
+                mDataProvider,
+                /* windowAndroid= */ null);
+        mLocationBar.setBackground(mSearchBoxBackground);
+        mLocationBar.setFocusable(true);
+        mLocationBar.setFocusableInTouchMode(true);
+        mUrlBar = mLocationBar.findViewById(R.id.url_bar);
+        mUrlBar.setFocusable(true);
+        mUrlBar.setFocusableInTouchMode(true);
         mActivity.setLocationBarLayoutForTesting(mLocationBar);
+        mActivity.getLifecycleDispatcher().register(mTopResumedObserver);
         mProfileProviderSupplier = mActivity.createProfileProvider();
 
         mAnchorView = new View(mActivity);
@@ -170,12 +195,10 @@ public class SearchActivityUnitTest {
         mActivity.setAnchorViewForTesting(mAnchorView);
 
         mControlContainer = new View(mActivity);
-        doReturn(mControlContainer).when(mActivity).findViewById(R.id.control_container);
         mActivity.setControlContainerForTesting(mControlContainer);
 
         mActivity.setLocationBarCoordinatorForTesting(mLocationBarCoordinator);
 
-        lenient().when(mLocationBar.getBackground()).thenReturn(mSearchBoxBackground);
         lenient()
                 .when(mLocationBarCoordinator.getStatusCoordinator())
                 .thenReturn(mStatusCoordinator);
@@ -410,7 +433,7 @@ public class SearchActivityUnitTest {
 
     @Test
     public void exitSearchViaCustomBackArrow_HubSearch() {
-        View view = mock(View.class);
+        View view = new View(mActivity);
 
         ArgumentCaptor<OnClickListener> captor = ArgumentCaptor.forClass(OnClickListener.class);
         var histograms =
@@ -733,7 +756,6 @@ public class SearchActivityUnitTest {
     @Test
     public void finishNativeInitialization_stopActivityWhenSearchEnginePromoCanceled() {
         mActivity.handleNewIntent(new Intent(), false);
-        doNothing().when(mActivity).finishDeferredInitialization();
 
         setProfile(mProfile);
         mActivity.finishNativeInitialization();
@@ -745,14 +767,13 @@ public class SearchActivityUnitTest {
         captor.getValue().onResult(false);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
-        verify(mActivity, never()).finishDeferredInitialization();
+        assertFalse(mActivity.mFinishedDeferredInitialization);
         assertTrue(mActivity.isFinishing());
     }
 
     @Test
     public void finishNativeInitialization_stopActivityWhenSearchEnginePromoFailed() {
         mActivity.handleNewIntent(new Intent(), false);
-        doNothing().when(mActivity).finishDeferredInitialization();
 
         setProfile(mProfile);
         mActivity.finishNativeInitialization();
@@ -764,13 +785,12 @@ public class SearchActivityUnitTest {
         captor.getValue().onResult(null);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
-        verify(mActivity, never()).finishDeferredInitialization();
+        assertFalse(mActivity.mFinishedDeferredInitialization);
         assertTrue(mActivity.isFinishing());
     }
 
     @Test
     public void finishNativeInitialization_resumeActivityAfterSearchEnginePromoCleared() {
-        doNothing().when(mActivity).finishDeferredInitialization();
         mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.UNKNOWN), false);
 
         setProfile(mProfile);
@@ -783,7 +803,7 @@ public class SearchActivityUnitTest {
         captor.getValue().onResult(true);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
-        verify(mActivity).finishDeferredInitialization();
+        assertTrue(mActivity.mFinishedDeferredInitialization);
         assertFalse(mActivity.isFinishing());
     }
 
@@ -802,7 +822,6 @@ public class SearchActivityUnitTest {
     @Test
     public void finishNativeInitialization_abortIfActivityTerminated() {
         mActivity.handleNewIntent(new Intent(), false);
-        doNothing().when(mActivity).finishDeferredInitialization();
 
         setProfile(mProfile);
         mActivity.finishNativeInitialization();
@@ -815,7 +834,7 @@ public class SearchActivityUnitTest {
         captor.getValue().onResult(true);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
-        verify(mActivity, never()).finishDeferredInitialization();
+        assertFalse(mActivity.mFinishedDeferredInitialization);
     }
 
     @Test
@@ -878,34 +897,35 @@ public class SearchActivityUnitTest {
 
         var intent = buildTestWidgetIntent(IntentOrigin.SEARCH_WIDGET);
         intent.putExtra(SearchManager.QUERY, "query1");
+        mUrlBar.setHint(null);
         mActivity.onNewIntent(intent);
-        verify(mLocationBar).beginQuery(eq(IntentOrigin.SEARCH_WIDGET), eq(SearchType.TEXT), any());
+        assertEquals("Search or type URL", mUrlBar.getHint());
         verify(mLocationBarCoordinator).setUrlBarFocus(captor.capture());
         assertEquals("query1", captor.getValue().getUserText());
-        clearInvocations(mLocationBar, mLocationBarCoordinator);
+        clearInvocations(mLocationBarCoordinator);
 
         intent = buildTestWidgetIntent(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET);
         intent.putExtra(SearchManager.QUERY, "query2");
+        mUrlBar.setHint(null);
         mActivity.onNewIntent(intent);
-        verify(mLocationBar)
-                .beginQuery(
-                        eq(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET), eq(SearchType.TEXT), any());
+        assertEquals("Search or type URL", mUrlBar.getHint());
         verify(mLocationBarCoordinator).setUrlBarFocus(captor.capture());
         assertEquals("query2", captor.getValue().getUserText());
-        clearInvocations(mLocationBar, mLocationBarCoordinator);
+        clearInvocations(mLocationBarCoordinator);
 
         intent = buildTestWidgetIntent(IntentOrigin.SEARCH_WIDGET);
         intent.putExtra(SearchManager.QUERY, "");
+        mUrlBar.setHint(null);
         mActivity.onNewIntent(intent);
-        verify(mLocationBar).beginQuery(eq(IntentOrigin.SEARCH_WIDGET), eq(SearchType.TEXT), any());
+        assertEquals("Search or type URL", mUrlBar.getHint());
         verify(mLocationBarCoordinator).setUrlBarFocus(captor.capture());
         assertEquals("", captor.getValue().getUserText());
-        clearInvocations(mLocationBar, mLocationBarCoordinator);
+        clearInvocations(mLocationBarCoordinator);
 
         intent = buildTestServiceIntent(IntentOrigin.CUSTOM_TAB);
         intent.removeExtra(SearchManager.QUERY);
         mActivity.onNewIntent(intent);
-        verify(mLocationBar).beginQuery(eq(IntentOrigin.CUSTOM_TAB), eq(SearchType.TEXT), any());
+        assertEquals("Search the web in Chrome", mUrlBar.getHint());
         verify(mLocationBarCoordinator).setUrlBarFocus(captor.capture());
         assertEquals("", captor.getValue().getUserText());
     }
@@ -1068,25 +1088,26 @@ public class SearchActivityUnitTest {
 
     @Test
     public void onTopResumedActivityChanged_clearOmniboxFocusIfNotActive() {
-        doNothing().when(mActivity).super_onTopResumedActivityChanged(anyBoolean());
         mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.SEARCH_WIDGET), false);
+        mLocationBar.requestOmniboxFocus();
+        assertTrue(mUrlBar.hasFocus());
         mActivity.onTopResumedActivityChanged(false);
-        verify(mLocationBar).clearOmniboxFocus();
-        verify(mActivity).super_onTopResumedActivityChanged(false);
+        assertFalse(mUrlBar.hasFocus());
+        verify(mTopResumedObserver).onTopResumedActivityChanged(false);
     }
 
     @Test
     public void onTopResumedActivityChanged_requestOmniboxFocusIfActive() {
-        doNothing().when(mActivity).super_onTopResumedActivityChanged(anyBoolean());
         mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.SEARCH_WIDGET), false);
+        mLocationBar.clearOmniboxFocus();
+        assertFalse(mUrlBar.hasFocus());
         mActivity.onTopResumedActivityChanged(true);
-        verify(mLocationBar).requestOmniboxFocus();
-        verify(mActivity).super_onTopResumedActivityChanged(true);
+        assertTrue(mUrlBar.hasFocus());
+        verify(mTopResumedObserver).onTopResumedActivityChanged(true);
     }
 
     @Test
     public void onTopResumedActivityChanged_finishActivityFocusLostHubSearch() {
-        doNothing().when(mActivity).super_onTopResumedActivityChanged(anyBoolean());
         var histograms =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
