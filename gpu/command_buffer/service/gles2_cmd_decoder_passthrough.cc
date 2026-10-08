@@ -1050,6 +1050,19 @@ GLES2Decoder::Error GLES2DecoderPassthroughImpl::DoCommandsImpl(
       result = DoCommonCommand(command, arg_count, cmd_data);
     }
 
+    // A command must not leave a different GL context or surface current. If
+    // one did, subsequent commands would operate on the wrong context or
+    // surface, so treat it as a lost context. This only checks Chromium's
+    // bookkeeping, which is cheap enough to do per command.
+    if (result == error::kNoError && !context_lost_ &&
+        (gl::GLContext::GetCurrent() != context_.get() ||
+         gl::GLSurface::GetCurrent() != surface_.get())) {
+      LOG(ERROR) << "GLES2DecoderPassthroughImpl: context or surface is no "
+                    "longer current after command "
+                 << GetCommandName(command);
+      MarkContextLost(error::kMakeCurrentFailed);
+    }
+
     if (result == error::kNoError && context_lost_) {
       result = error::kLostContext;
     }

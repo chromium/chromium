@@ -29,6 +29,11 @@
 #include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
+#include "ui/gfx/skia_span_util.h"
+#include "ui/gl/gl_context.h"
+#include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_utils.h"
+#include "ui/gl/init/gl_factory.h"
 
 namespace gpu {
 namespace {
@@ -230,6 +235,56 @@ TEST_P(WrappedSkImageBackingFactoryTest, UploadAndReadback) {
                                   cc::ExactPixelComparator()))
         << "plane=" << plane;
   }
+}
+
+// Verify that creating and destroying a backing leaves whichever GL context and
+// surface were current beforehand still current.
+TEST_P(WrappedSkImageBackingFactoryTest, RestoresPreviouslyCurrentGLContext) {
+  if (GetGrContextType() != GrContextType::kGL) {
+    GTEST_SKIP() << "Only relevant when Skia uses GL";
+  }
+
+  auto format = GetFormat();
+  gfx::Size size(100, 100);
+  SharedImageInfo si_info(format, size, kColorSpace, kSurfaceOrigin,
+                          GetAlphaType(format), kUsage, "TestLabel");
+
+  // Use a different context and surface from the SharedContextState's.
+  scoped_refptr<gl::GLSurface> other_surface =
+      gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplayEGL(),
+                                         gfx::Size(4, 4));
+  ASSERT_TRUE(other_surface);
+  scoped_refptr<gl::GLContext> other_context = gl::init::CreateGLContext(
+      nullptr, other_surface.get(), gl::GLContextAttribs());
+  ASSERT_TRUE(other_context);
+  ASSERT_TRUE(other_context->MakeCurrent(other_surface.get()));
+
+  auto backing = backing_factory_->CreateSharedImage(
+      Mailbox::Generate(), si_info, gpu::kNullSurfaceHandle,
+      /*is_thread_safe=*/false);
+  ASSERT_TRUE(backing);
+  EXPECT_EQ(gl::GLContext::GetCurrent(), other_context.get());
+  EXPECT_EQ(gl::GLSurface::GetCurrent(), other_surface.get());
+
+  backing.reset();
+  EXPECT_EQ(gl::GLContext::GetCurrent(), other_context.get());
+  EXPECT_EQ(gl::GLSurface::GetCurrent(), other_surface.get());
+
+  if (format.is_single_plane()) {
+    std::vector<SkBitmap> bitmaps = AllocateRedBitmaps(format, size);
+    auto pixels = gfx::SkPixmapToSpan(bitmaps[0].pixmap());
+    backing = backing_factory_->CreateSharedImage(
+        Mailbox::Generate(), si_info, /*is_thread_safe=*/false, pixels);
+    ASSERT_TRUE(backing);
+    EXPECT_EQ(gl::GLContext::GetCurrent(), other_context.get());
+    EXPECT_EQ(gl::GLSurface::GetCurrent(), other_surface.get());
+
+    backing.reset();
+    EXPECT_EQ(gl::GLContext::GetCurrent(), other_context.get());
+    EXPECT_EQ(gl::GLSurface::GetCurrent(), other_surface.get());
+  }
+
+  ASSERT_TRUE(gl_context_->MakeCurrent(gl_surface_.get()));
 }
 
 std::string TestParamToString(

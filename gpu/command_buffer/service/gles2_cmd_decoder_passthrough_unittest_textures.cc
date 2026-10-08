@@ -17,6 +17,8 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_surface_egl.h"
+#include "ui/gl/gl_utils.h"
+#include "ui/gl/init/gl_factory.h"
 #include "ui/gl/scoped_gl_framebuffer.h"
 
 namespace gpu {
@@ -522,6 +524,129 @@ TEST_F(GLES2DecoderPassthroughTest, ContextLostWhenSharedContextRestoreFails) {
   failable_surface->set_fail_make_current(false);
   ASSERT_TRUE(decoder_context->MakeCurrent(decoder_surface.get()));
   dst_shared_image.reset();
+}
+
+namespace {
+
+// A TestImageBacking that makes the given GL context and surface current
+// while producing a GLTexturePassthrough representation.
+class ContextSwitchingTestImageBacking : public TestImageBacking {
+ public:
+  ContextSwitchingTestImageBacking(const Mailbox& mailbox,
+                                   const SharedImageInfo& si_info,
+                                   GLuint texture_id,
+                                   scoped_refptr<gl::GLContext> context,
+                                   scoped_refptr<gl::GLSurface> surface)
+      : TestImageBacking(mailbox, si_info, /*estimated_size=*/0, texture_id),
+        context_(std::move(context)),
+        surface_(std::move(surface)) {}
+
+ protected:
+  std::unique_ptr<GLTexturePassthroughImageRepresentation>
+  ProduceGLTexturePassthrough(SharedImageManager* manager,
+                              MemoryTypeTracker* tracker) override {
+    auto representation =
+        TestImageBacking::ProduceGLTexturePassthrough(manager, tracker);
+    EXPECT_TRUE(context_->MakeCurrent(surface_.get()));
+    return representation;
+  }
+
+ private:
+  scoped_refptr<gl::GLContext> context_;
+  scoped_refptr<gl::GLSurface> surface_;
+};
+
+}  // namespace
+
+// If a command leaves a GL context other than the decoder's current, the
+// decoder must lose its context rather than continue on the wrong context.
+TEST_F(GLES2DecoderPassthroughTest,
+       ContextLostWhenCommandLeavesOtherContextCurrent) {
+  scoped_refptr<gl::GLContext> decoder_context = gl::GLContext::GetCurrent();
+  scoped_refptr<gl::GLSurface> decoder_surface = gl::GLSurface::GetCurrent();
+  ASSERT_TRUE(decoder_context);
+  ASSERT_TRUE(decoder_surface);
+
+  scoped_refptr<gl::GLContext> other_context = gl::init::CreateGLContext(
+      nullptr, decoder_surface.get(), gl::GLContextAttribs());
+  ASSERT_TRUE(other_context);
+
+  MemoryTypeTracker memory_tracker(nullptr);
+  Mailbox mailbox = Mailbox::Generate();
+  auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  gfx::Size size(10, 10);
+  GLuint service_id;
+  glGenTextures(1, &service_id);
+  glBindTexture(GL_TEXTURE_2D, service_id);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.width(), size.height(), 0,
+               GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+  auto backing = std::make_unique<ContextSwitchingTestImageBacking>(
+      mailbox,
+      SharedImageInfo(
+          format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
+          kPremul_SkAlphaType,
+          {SHARED_IMAGE_USAGE_GLES2_READ, SHARED_IMAGE_USAGE_GLES2_WRITE},
+          "TestLabel"),
+      service_id, other_context, decoder_surface);
+  std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
+      GetSharedImageManager()->Register(std::move(backing), &memory_tracker);
+
+  auto& cmd = *GetImmediateAs<
+      cmds::CreateAndTexStorage2DSharedImageINTERNALImmediate>();
+  cmd.Init(kNewClientId, mailbox.name);
+  EXPECT_EQ(error::kLostContext,
+            ExecuteImmediateCmd(cmd, sizeof(mailbox.name)));
+  EXPECT_TRUE(GetDecoder()->WasContextLost());
+
+  // Restore the decoder's context for teardown.
+  ASSERT_TRUE(decoder_context->MakeCurrent(decoder_surface.get()));
+  shared_image.reset();
+}
+
+// If a command leaves the decoder's context current but with a different
+// surface, the decoder must lose its context.
+TEST_F(GLES2DecoderPassthroughTest,
+       ContextLostWhenCommandLeavesOtherSurfaceCurrent) {
+  scoped_refptr<gl::GLContext> decoder_context = gl::GLContext::GetCurrent();
+  scoped_refptr<gl::GLSurface> decoder_surface = gl::GLSurface::GetCurrent();
+  ASSERT_TRUE(decoder_context);
+  ASSERT_TRUE(decoder_surface);
+
+  scoped_refptr<gl::GLSurface> other_surface =
+      gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplayEGL(),
+                                         gfx::Size(4, 4));
+  ASSERT_TRUE(other_surface);
+
+  MemoryTypeTracker memory_tracker(nullptr);
+  Mailbox mailbox = Mailbox::Generate();
+  auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  gfx::Size size(10, 10);
+  GLuint service_id;
+  glGenTextures(1, &service_id);
+  glBindTexture(GL_TEXTURE_2D, service_id);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.width(), size.height(), 0,
+               GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+  auto backing = std::make_unique<ContextSwitchingTestImageBacking>(
+      mailbox,
+      SharedImageInfo(
+          format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
+          kPremul_SkAlphaType,
+          {SHARED_IMAGE_USAGE_GLES2_READ, SHARED_IMAGE_USAGE_GLES2_WRITE},
+          "TestLabel"),
+      service_id, decoder_context, other_surface);
+  std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
+      GetSharedImageManager()->Register(std::move(backing), &memory_tracker);
+
+  auto& cmd = *GetImmediateAs<
+      cmds::CreateAndTexStorage2DSharedImageINTERNALImmediate>();
+  cmd.Init(kNewClientId, mailbox.name);
+  EXPECT_EQ(error::kLostContext,
+            ExecuteImmediateCmd(cmd, sizeof(mailbox.name)));
+  EXPECT_TRUE(GetDecoder()->WasContextLost());
+
+  // Restore the decoder's surface for teardown.
+  ASSERT_TRUE(decoder_context->MakeCurrent(decoder_surface.get()));
+  shared_image.reset();
 }
 
 }  // namespace gles2
