@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -259,7 +260,13 @@ public class LogoContainerViewBinderUnitTest {
         mLogoContainerView.findViewById(R.id.search_provider_logo).performClick();
         assertEquals(
                 1, RecordHistogram.getHistogramValueCountForTesting("NewTabPage.LogoClick", 1));
-        verify(mImageFetcher, times(1)).fetchGif(any(), any());
+        verify(mImageFetcher, times(1))
+                .fetchGif(
+                        eq(
+                                ImageFetcher.Params.createFromTrustedSource(
+                                        ANIMATED_LOGO_URL,
+                                        ImageFetcher.NTP_ANIMATED_LOGO_UMA_CLIENT_NAME)),
+                        any());
     }
 
     @Test

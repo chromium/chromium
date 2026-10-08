@@ -23,6 +23,8 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/image_fetcher/jni_headers/ImageFetcherBridge_jni.h"
@@ -96,6 +98,7 @@ void ImageFetcherBridge::FetchImageData(
     const JavaRef<jstring>& j_url,
     const JavaRef<jstring>& j_client_name,
     const int32_t j_expiration_interval_mins,
+    const bool j_is_trusted_source,
     const JavaRef<jobject>& j_callback) {
   ScopedJavaGlobalRef<jobject> callback(j_callback);
   ImageFetcherConfig config =
@@ -111,9 +114,12 @@ void ImageFetcherBridge::FetchImageData(
   }
   params.set_data_decoder(GetDataDecoder());
 
-  // We can skip transcoding here because this method is used in java as
-  // ImageFetcher.fetchGif, which decodes the data in a Java-only library.
-  params.set_skip_transcoding(true);
+  GURL gurl(url);
+  // GIF parsing is not safe in the browser process unless loading from a
+  // trusted source.
+  if (j_is_trusted_source && gurl.SchemeIs(url::kHttpsScheme)) {
+    params.set_skip_transcoding(true);
+  }
   SimpleFactoryKey* key =
       simple_factory_key::SimpleFactoryKeyFromJavaHandle(j_simple_factory_key);
   if (!key) {
@@ -124,7 +130,7 @@ void ImageFetcherBridge::FetchImageData(
   image_fetcher::GetImageFetcherService(key)
       ->GetImageFetcher(config)
       ->FetchImageData(
-          GURL(url),
+          gurl,
           base::BindOnce(&ImageFetcherBridge::OnImageDataFetched, callback),
           std::move(params));
 }
@@ -224,10 +230,11 @@ static void JNI_ImageFetcherBridge_FetchImageData(
     const JavaRef<jstring>& j_url,
     const JavaRef<jstring>& j_client_name,
     const int32_t j_expiration_interval_mins,
+    const jboolean j_is_trusted_source,
     const JavaRef<jobject>& j_callback) {
   ImageFetcherBridge::FetchImageData(
       j_env, j_simple_factory_key, j_image_fetcher_config, j_url, j_client_name,
-      j_expiration_interval_mins, j_callback);
+      j_expiration_interval_mins, j_is_trusted_source, j_callback);
 }
 
 // static

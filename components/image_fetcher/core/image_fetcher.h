@@ -130,10 +130,8 @@ class ImageFetcherParams {
   gfx::Size desired_frame_size_;
   std::string uma_client_name_;
   // When true, the image fetcher will skip transcoding whenever possible. Only
-  // use this if you've considered the security implications. For instance, in
-  // some java clients we decode GIFs entirely in Java which is safe to do
-  // in-process without transcoding.
-  bool skip_transcoding_;
+  // use this if you have considered the security implications.
+  bool skip_transcoding_ = false;
   // True if the disk cache should be skipped because it was already checked in
   // java.
   bool skip_disk_cache_read_;

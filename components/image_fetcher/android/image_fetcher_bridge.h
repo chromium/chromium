@@ -39,6 +39,7 @@ class ImageFetcherBridge {
                              const JavaRef<jstring>& j_url,
                              const JavaRef<jstring>& j_client_name,
                              const int32_t j_expiration_interval_mins,
+                             const bool j_is_trusted_source,
                              const JavaRef<jobject>& j_callback);
 
   static void FetchImage(JNIEnv* j_env,

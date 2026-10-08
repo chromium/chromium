@@ -79,6 +79,7 @@ public class ImageFetcherBridge {
                         params.url,
                         params.clientName,
                         params.expirationIntervalMinutes,
+                        params.isTrustedSource,
                         (ImageDataFetchResult dataFetchResult) -> {
                             callback.onResult(dataFetchResult);
                         });
@@ -219,6 +220,7 @@ public class ImageFetcherBridge {
                 String url,
                 String clientName,
                 int expirationIntervalMinutes,
+                boolean isTrustedSource,
                 Callback<ImageDataFetchResult> callback);
 
         void fetchImage(

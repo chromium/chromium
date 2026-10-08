@@ -54,6 +54,7 @@ source_set("android") {
     "//components/image_fetcher/core:metrics",
     "//services/data_decoder/public/cpp",
     "//ui/gfx",
+    "//url",
   ]
 }
 

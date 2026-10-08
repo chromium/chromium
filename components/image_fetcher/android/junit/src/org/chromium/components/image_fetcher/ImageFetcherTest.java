@@ -125,6 +125,17 @@ public class ImageFetcherTest {
         assertEquals(0, params.height);
         assertFalse(params.shouldResize);
         assertEquals(0, params.expirationIntervalMinutes);
+        assertFalse(params.isTrustedSource);
+
+        // Verifies params with trusted source specified.
+        params = ImageFetcher.Params.createFromTrustedSource(URL, CLIENT_NAME);
+        assertEquals(URL.getSpec(), params.url);
+        assertEquals(CLIENT_NAME, params.clientName);
+        assertEquals(0, params.width);
+        assertEquals(0, params.height);
+        assertFalse(params.shouldResize);
+        assertEquals(0, params.expirationIntervalMinutes);
+        assertTrue(params.isTrustedSource);
 
         // Verifies params with size.
         params = ImageFetcher.Params.create(URL, CLIENT_NAME, WIDTH_PX, HEIGHT_PX);
@@ -134,6 +145,7 @@ public class ImageFetcherTest {
         assertEquals(HEIGHT_PX, params.height);
         assertTrue(params.shouldResize);
         assertEquals(0, params.expirationIntervalMinutes);
+        assertFalse(params.isTrustedSource);
     }
 
     @Test
@@ -148,6 +160,7 @@ public class ImageFetcherTest {
         assertEquals(HEIGHT_PX, params.height);
         assertTrue(params.shouldResize);
         assertEquals(EXPIRATION_INTERVAL, params.expirationIntervalMinutes);
+        assertFalse(params.isTrustedSource);
     }
 
     @Test
@@ -160,6 +173,7 @@ public class ImageFetcherTest {
         assertEquals(HEIGHT_PX, params.height);
         assertFalse(params.shouldResize);
         assertEquals(0, params.expirationIntervalMinutes);
+        assertFalse(params.isTrustedSource);
 
         params = ImageFetcher.Params.createNoResizing(URL, CLIENT_NAME, 0, 0);
         assertEquals(URL.getSpec(), params.url);
@@ -168,6 +182,7 @@ public class ImageFetcherTest {
         assertEquals(0, params.height);
         assertFalse(params.shouldResize);
         assertEquals(0, params.expirationIntervalMinutes);
+        assertFalse(params.isTrustedSource);
     }
 
     @Test
@@ -203,6 +218,13 @@ public class ImageFetcherTest {
         assertTrue(params1.equals(params2));
         assertTrue(params2.equals(params1));
         assertEquals(params1.hashCode(), params2.hashCode());
+
+        // Difference in isTrustedSource.
+        params1 = ImageFetcher.Params.create(URL, CLIENT_NAME);
+        params2 = ImageFetcher.Params.createFromTrustedSource(URL, CLIENT_NAME);
+        assertFalse(params1.equals(params2));
+        assertFalse(params2.equals(params1));
+        assertNotEquals(params1.hashCode(), params2.hashCode());
 
         // Edge cases.
         assertFalse(params1.equals(null));

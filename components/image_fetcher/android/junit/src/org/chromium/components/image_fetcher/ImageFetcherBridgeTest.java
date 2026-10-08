@@ -316,9 +316,10 @@ public class ImageFetcherBridgeTest {
                         anyString(),
                         anyString(),
                         eq(0),
+                        /* isTrustedSource= */ eq(true),
                         callbackCaptor.capture());
 
-        mBridge.fetchGif(-1, ImageFetcher.Params.create("", ""), mGifCallback);
+        mBridge.fetchGif(-1, ImageFetcher.Params.createFromTrustedSource("", ""), mGifCallback);
         ArgumentCaptor<ImageDataFetchResult> gifCaptor =
                 ArgumentCaptor.forClass(ImageDataFetchResult.class);
         verify(mGifCallback).onResult(gifCaptor.capture());
@@ -349,6 +350,7 @@ public class ImageFetcherBridgeTest {
                         anyString(),
                         anyString(),
                         eq(0),
+                        /* isTrustedSource= */ eq(false),
                         callbackCaptor.capture());
 
         mBridge.fetchGif(-1, ImageFetcher.Params.create("", ""), mGifCallback);

@@ -51,7 +51,7 @@ public abstract class ImageFetcher {
         /**
          * Creates image fetcher parameters. The image will not be resized.
          *
-         * @see {@link #Params(String, String, int, int, boolean, int)}.
+         * @see {@link #Params(String, String, int, int, boolean, int, boolean)}.
          */
         public static Params create(final GURL url, String clientName) {
             return create(url.getSpec(), clientName);
@@ -60,18 +60,52 @@ public abstract class ImageFetcher {
         /**
          * Creates image fetcher parameters. The image will not be resized.
          *
-         * @see {@link #Params(String, String, int, int, boolean, int)}.
+         * @see {@link #Params(String, String, int, int, boolean, int, boolean)}.
          */
         @Deprecated
         public static Params create(final String url, String clientName) {
             return new Params(
-                    url, clientName, 0, 0, /* shouldResize= */ false, INVALID_EXPIRATION_INTERVAL);
+                    url,
+                    clientName,
+                    /* width= */ 0,
+                    /* height= */ 0,
+                    /* shouldResize= */ false,
+                    INVALID_EXPIRATION_INTERVAL,
+                    /* isTrustedSource= */ false);
+        }
+
+        /**
+         * Creates image fetcher parameters for an image loaded from a trusted source. The image
+         * will not be resized.
+         *
+         * @see {@link #Params(String, String, int, int, boolean, int, boolean)}.
+         */
+        public static Params createFromTrustedSource(final GURL url, String clientName) {
+            return createFromTrustedSource(url.getSpec(), clientName);
+        }
+
+        /**
+         * Creates image fetcher parameters for an image loaded from a trusted source. The image
+         * will not be resized.
+         *
+         * @see {@link #Params(String, String, int, int, boolean, int, boolean)}.
+         */
+        @Deprecated
+        public static Params createFromTrustedSource(final String url, String clientName) {
+            return new Params(
+                    url,
+                    clientName,
+                    /* width= */ 0,
+                    /* height= */ 0,
+                    /* shouldResize= */ false,
+                    INVALID_EXPIRATION_INTERVAL,
+                    /* isTrustedSource= */ true);
         }
 
         /**
          * Creates image fetcher parameters with image size specified.
          *
-         * @see {@link #Params(String, String, int, int, boolean, int)}.
+         * @see {@link #Params(String, String, int, int, boolean, int, boolean)}.
          */
         public static Params create(final GURL url, String clientName, int width, int height) {
             return create(url.getSpec(), clientName, width, height);
@@ -80,19 +114,25 @@ public abstract class ImageFetcher {
         /**
          * Creates image fetcher parameters with image size specified.
          *
-         * @see {@link #Params(String, String, int, int, boolean, int)}.
+         * @see {@link #Params(String, String, int, int, boolean, int, boolean)}.
          */
         @Deprecated
         public static Params create(final String url, String clientName, int width, int height) {
             boolean shouldResize = (width > 0 && height > 0);
             return new Params(
-                    url, clientName, width, height, shouldResize, INVALID_EXPIRATION_INTERVAL);
+                    url,
+                    clientName,
+                    width,
+                    height,
+                    shouldResize,
+                    INVALID_EXPIRATION_INTERVAL,
+                    /* isTrustedSource= */ false);
         }
 
         /**
          * Creates image fetcher parameters with image size specified.
          *
-         * @see {@link #Params(String, String, int, int, boolean, int)}.
+         * @see {@link #Params(String, String, int, int, boolean, int, boolean)}.
          */
         public static Params createNoResizing(
                 final GURL url, String clientName, int width, int height) {
@@ -102,14 +142,15 @@ public abstract class ImageFetcher {
                     width,
                     height,
                     /* shouldResize= */ false,
-                    INVALID_EXPIRATION_INTERVAL);
+                    INVALID_EXPIRATION_INTERVAL,
+                    /* isTrustedSource= */ false);
         }
 
         /**
          * Only used in rare cases. Creates image fetcher parameters that keeps the cache file for a
          * certain period of time.
          *
-         * @see {@link #Params(String, String, int, int, boolean, int)}.
+         * @see {@link #Params(String, String, int, int, boolean, int, boolean)}.
          */
         public static Params createWithExpirationInterval(
                 final GURL url,
@@ -126,7 +167,8 @@ public abstract class ImageFetcher {
                     width,
                     height,
                     shouldResize,
-                    expirationIntervalMinutes);
+                    expirationIntervalMinutes,
+                    /* isTrustedSource= */ false);
         }
 
         /**
@@ -142,6 +184,7 @@ public abstract class ImageFetcher {
          *         `height`.
          * @param expirationIntervalMinutes Specified in rare cases. The length of time in minutes
          *         to keep the cache file on disk. Any value <= 0 will be ignored.
+         * @param isTrustedSource Whether the image is being loaded from a trusted source.
          */
         private Params(
                 String url,
@@ -149,7 +192,8 @@ public abstract class ImageFetcher {
                 int width,
                 int height,
                 boolean shouldResize,
-                int expirationIntervalMinutes) {
+                int expirationIntervalMinutes,
+                boolean isTrustedSource) {
             assert expirationIntervalMinutes >= INVALID_EXPIRATION_INTERVAL
                     : "Expiration interval should be non negative.";
 
@@ -159,6 +203,7 @@ public abstract class ImageFetcher {
             this.height = height;
             this.shouldResize = shouldResize;
             this.expirationIntervalMinutes = expirationIntervalMinutes;
+            this.isTrustedSource = isTrustedSource;
         }
 
         @Override
@@ -172,7 +217,8 @@ public abstract class ImageFetcher {
                     && width == otherParams.width
                     && height == otherParams.height
                     && shouldResize == otherParams.shouldResize
-                    && expirationIntervalMinutes == otherParams.expirationIntervalMinutes;
+                    && expirationIntervalMinutes == otherParams.expirationIntervalMinutes
+                    && isTrustedSource == otherParams.isTrustedSource;
         }
 
         @Override
@@ -183,6 +229,7 @@ public abstract class ImageFetcher {
             result = 31 * result + height;
             result = 2 * result + (shouldResize ? 1 : 0);
             result = 31 * result + expirationIntervalMinutes;
+            result = 2 * result + (isTrustedSource ? 1 : 0);
             return result;
         }
 
@@ -222,6 +269,9 @@ public abstract class ImageFetcher {
          * Measured in minutes. Any value <= 0 will be ignored.
          */
         public final int expirationIntervalMinutes;
+
+        /** Whether the image is being loaded from a trusted source. */
+        public final boolean isTrustedSource;
     }
 
     /** Base class that can be used for testing. */
@@ -292,9 +342,9 @@ public abstract class ImageFetcher {
      * Fetch the gif for the given url.
      *
      * @param params The parameters to specify image fetching details. If using CachedImageFetcher
-     *     to fetch images and gifs, use separate {@link Params#clientName} for them.
+     *         to fetch images and gifs, use separate {@link Params#clientName} for them.
      * @param callback The function which will be called when the image is ready; will be called
-     *     with null result if fetching fails.
+     *         with null result if fetching fails.
      */
     public abstract void fetchGif(
             ImageFetcher.Params params, Callback<ImageDataFetchResult> callback);

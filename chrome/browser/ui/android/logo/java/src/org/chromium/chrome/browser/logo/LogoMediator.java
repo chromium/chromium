@@ -401,7 +401,7 @@ public class LogoMediator implements TemplateUrlServiceObserver {
         }
 
         mImageFetcher.fetchGif(
-                ImageFetcher.Params.create(
+                ImageFetcher.Params.createFromTrustedSource(
                         mAnimatedLogoUrl, ImageFetcher.NTP_ANIMATED_LOGO_UMA_CLIENT_NAME),
                 (ImageDataFetchResult animatedLogoImageFetchResult) -> {
                     if (mLogoBridge == null || animatedLogoImageFetchResult.imageData == null) {
