@@ -348,9 +348,28 @@ class VerticalTabDragTest
 
   auto MoveMouseOutOfTabstrip() {
     return MoveMouseTo(base::BindLambdaForTesting([this]() {
-      return GetBrowserView().GetBoundsInScreen().top_right() +
-             gfx::Vector2d(150, 150);
+      return GetBrowserView().GetBoundsInScreen().CenterPoint();
     }));
+  }
+
+  // TODO(crbug.com/40249472): Replace with synchronous `MoveMouseTo` once
+  // `ui_controls` (`InputDispatcher` on Windows) handles pre-existing
+  // `WM_MOUSEMOVE` messages while a native `SC_MOVE` move loop is active
+  // without entering a nested `RunUntilIdle()` flush loop that steals the
+  // reattach `WM_MOUSEMOVE` from `SC_MOVE`.
+  auto MoveMouseToTabAsync(int tab_index, DragPosition position) {
+    const char kTabToMoveMouseTo[] = "Tab to move mouse to";
+    int offset = 5 * (position == DragPosition::kAbove ? -1 : 1);
+    return Steps(NameTabViewAt(kTabToMoveMouseTo, tab_index),
+                 WithView(kTabToMoveMouseTo,
+                          base::BindOnce(
+                              [](int offset, views::View* view) {
+                                const gfx::Point point =
+                                    view->GetBoundsInScreen().CenterPoint();
+                                ASSERT_TRUE(ui_controls::SendMouseMove(
+                                    point.x(), point.y() + offset));
+                              },
+                              offset)));
   }
 
   auto CollapseGroup(int group_index) {
@@ -689,8 +708,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, MAYBE_DragMultipleTabs) {
       ReleaseMouse());
 }
 
-// TODO(crbug.com/40249472): Fails on ChromeOS and Windows.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+// TODO(crbug.com/40249472): Fails on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DragMultipleTabsInGroup DISABLED_DragMultipleTabsInGroup
 #else
 #define MAYBE_DragMultipleTabsInGroup DragMultipleTabsInGroup
@@ -1159,7 +1178,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragToScroll) {
       ReleaseMouse());
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragToDetachIntoNewWindow) {
   RunTestSequence(
       AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
@@ -1249,12 +1268,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragToDetachThenReattach) {
       NameTabViewAt("Tab to drag", 2), MoveMouseTo("Tab to drag"),
       ClickMouse(ui_controls::MouseButton::LEFT, /*release=*/false),
       MoveMouseOutOfTabstrip(), WaitForState(kBrowserCountPoller, 2u),
-      WaitForDetachedWindowVisible(), NameTabViewAt("Target tab", 1),
-      MoveMouseTo("Target tab",
-                  base::BindLambdaForTesting([this](ui::TrackedElement* el) {
-                    return AsView(el)->GetBoundsInScreen().CenterPoint() +
-                           gfx::Vector2d(0, -5);
-                  })),
+      WaitForDetachedWindowVisible(),
+      MoveMouseToTabAsync(1, DragPosition::kAbove),
       WaitForState(kBrowserCountPoller, 1u), ReleaseMouse(),
       WaitForState(kDragStatePoller, false),
       CheckResult([this]() { return browser()->GetTabStripModel()->count(); },
@@ -1348,9 +1363,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DetachTabPreservesActiveTab) {
       CheckResult([this]() { return browser()->GetTabStripModel()->count(); },
                   2));
 }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
-#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 // TODO(crbug.com/40249472): Remove the VerticalTabDragDetachTest fixture and
 // associated tests once other platforms are migrated to the robust Kombucha
 // verbs and verified.
@@ -1382,21 +1397,6 @@ class VerticalTabDragDetachTest : public VerticalTabDragTest {
       ASSERT_TRUE(ui_controls::SendMouseEvents(
           ui_controls::MouseButton::LEFT, ui_controls::MouseButtonState::UP));
     });
-  }
-
-  auto MoveMouseToTabAsync(int tab_index, DragPosition position) {
-    const char kTabToMoveMouseTo[] = "Tab to move mouse to";
-    int offset = 5 * (position == DragPosition::kAbove ? -1 : 1);
-    return Steps(NameTabViewAt(kTabToMoveMouseTo, tab_index),
-                 WithView(kTabToMoveMouseTo,
-                          base::BindOnce(
-                              [](int offset, views::View* view) {
-                                const gfx::Point point =
-                                    view->GetBoundsInScreen().CenterPoint();
-                                ASSERT_TRUE(ui_controls::SendMouseMove(
-                                    point.x(), point.y() + offset));
-                              },
-                              offset)));
   }
 };
 
@@ -1576,7 +1576,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest, DetachTabPreservesActiveTab) {
         EXPECT_EQ(2, browser()->GetTabStripModel()->count());
       }));
 }
-#endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_MAC)
+#endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 
 // TODO(crbug.com/490650365): Add regression test once detach tests are working.
 
