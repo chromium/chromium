@@ -365,6 +365,29 @@ TEST_F(JourneysDatabaseTest, GetAllJourneysSorted) {
                           MatchesJourney(journey1)));
 }
 
+// A child statement that fails while stepping makes both getters return no
+// journeys instead of journeys with missing child rows.
+TEST_F(JourneysDatabaseTest, ReadErrorReturnsNoJourneys) {
+  ASSERT_TRUE(journeys_db()->AddOrUpdateJourneys({CreateTestJourney(
+      "journey_1", "Trip 1", /*creation_time_micros=*/5000)}));
+  // Replace `prompt` with a generated column whose expression overflows, so
+  // reading a continuation query fails while stepping.
+  ASSERT_TRUE(
+      GetDB().Execute("ALTER TABLE journey_continuation_queries "
+                      "RENAME COLUMN prompt TO stored_prompt"));
+  ASSERT_TRUE(GetDB().Execute(
+      "ALTER TABLE journey_continuation_queries ADD COLUMN prompt "
+      "GENERATED ALWAYS AS (abs(-9223372036854775807 - 1)) VIRTUAL"));
+
+  {
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(sql::SqliteResultCode::kError);
+    EXPECT_THAT(journeys_db()->GetAllJourneys(), IsEmpty());
+    EXPECT_FALSE(journeys_db()->GetJourney("journey_1").has_value());
+    EXPECT_TRUE(expecter.SawExpectedErrors());
+  }
+}
+
 TEST_F(JourneysDatabaseTest, DuplicateHistoryEntriesHandledGracefully) {
   JourneyRow journey = CreateTestJourney("journey_1", "Trip with Duplicates",
                                          /*creation_time_micros=*/5000);

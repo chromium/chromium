@@ -53,7 +53,8 @@ bool RunForJourney(sql::Statement& statement, const std::string& journey_id) {
 // `journeys_statement` returns the columns ParseJourneyRow() reads; each
 // child statement returns journey_id first. Child rows of journeys that
 // `journeys_statement` did not return are ignored. Journeys are returned in
-// the order `journeys_statement` returns them.
+// the order `journeys_statement` returns them. If any statement fails, no
+// journeys are returned, rather than journeys with missing child rows.
 std::vector<JourneyRow> ReadJourneys(sql::Statement& journeys_statement,
                                      sql::Statement& entries,
                                      sql::Statement& queries) {
@@ -65,6 +66,9 @@ std::vector<JourneyRow> ReadJourneys(sql::Statement& journeys_statement,
     JourneyRow journey = ParseJourneyRow(journeys_statement);
     journey_id_to_index[journey.journey_id] = journeys.size();
     journeys.push_back(std::move(journey));
+  }
+  if (!journeys_statement.Succeeded()) {
+    return {};
   }
 
   if (journeys.empty()) {
@@ -83,6 +87,9 @@ std::vector<JourneyRow> ReadJourneys(sql::Statement& journeys_statement,
       journey->history_entries.emplace_back(entries.ColumnTime(1));
     }
   }
+  if (!entries.Succeeded()) {
+    return {};
+  }
 
   // 3. Attach continuation queries.
   while (queries.Step()) {
@@ -90,6 +97,9 @@ std::vector<JourneyRow> ReadJourneys(sql::Statement& journeys_statement,
       journey->continuation_queries.emplace_back(queries.ColumnString(1),
                                                  queries.ColumnString(2));
     }
+  }
+  if (!queries.Succeeded()) {
+    return {};
   }
 
   return journeys;
