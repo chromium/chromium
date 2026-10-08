@@ -60,6 +60,7 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
@@ -751,8 +752,19 @@ public class TabBottomSheetCoordinatorUnitTest {
         BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
 
         observer.onContainerSizeChanged(CONTAINER_WIDTH, CONTAINER_HEIGHT);
-        // Resizing state is set to flexible height on the second call.
-        observer.onContainerSizeChanged(CONTAINER_WIDTH, CONTAINER_HEIGHT);
+
+        View expandedContent = mView.findViewById(R.id.expanded_content_group);
+        assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, expandedContent.getLayoutParams().height);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_RESIZE_WEBVIEW
+    })
+    public void testOnSheetContentShown_resizingEnabled_setsFlexibleHeight() {
+        simulateShowSuccessAndGetObserver();
+        ShadowLooper.idleMainLooper();
 
         View expandedContent = mView.findViewById(R.id.expanded_content_group);
         assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, expandedContent.getLayoutParams().height);
@@ -760,73 +772,65 @@ public class TabBottomSheetCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET)
-    public void testOnContainerSizeChanged_resizingDisabled() {
-        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+    @DisableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET_RESIZE_WEBVIEW)
+    public void testOnSheetContentShown_resizingDisabled_setsDesiredFixedHeight() {
+        simulateShowSuccessAndGetObserver();
+        ShadowLooper.idleMainLooper();
 
+        View expandedContent = mView.findViewById(R.id.expanded_content_group);
+        int expectedFixedHeight = (int) (MAX_OFFSET * FULL_HEIGHT_RATIO);
+        assertEquals(expectedFixedHeight, expandedContent.getLayoutParams().height);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET)
+    @DisableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET_RESIZE_WEBVIEW)
+    public void testOnContainerSizeChanged_resizingDisabled_alwaysSetsDesiredFixedHeight() {
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+        int expectedFixedHeight = (int) (MAX_OFFSET * FULL_HEIGHT_RATIO);
+
+        // First call with matching height
+        when(mMockBottomSheetController.getContainerHeight()).thenReturn(expectedFixedHeight);
+        observer.onContainerSizeChanged(CONTAINER_WIDTH, expectedFixedHeight);
+        View expandedContent = mView.findViewById(R.id.expanded_content_group);
+        assertEquals(expectedFixedHeight, expandedContent.getLayoutParams().height);
+
+        // Subsequent call even when container height differs from desired fixed height:
+        // does NOT fall back to flexible height (MATCH_PARENT) when resizing is disabled.
+        when(mMockBottomSheetController.getContainerHeight()).thenReturn(expectedFixedHeight - 50);
+        observer.onContainerSizeChanged(CONTAINER_WIDTH, expectedFixedHeight - 50);
+        assertEquals(expectedFixedHeight, expandedContent.getLayoutParams().height);
+
+        // Multiple calls continue to maintain fixed height
         observer.onContainerSizeChanged(CONTAINER_WIDTH, CONTAINER_HEIGHT);
-
-        View expandedContent = mView.findViewById(R.id.expanded_content_group);
-        int expectedFixedHeight = (int) (MAX_OFFSET * FULL_HEIGHT_RATIO);
         assertEquals(expectedFixedHeight, expandedContent.getLayoutParams().height);
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.TAB_BOTTOM_SHEET,
-        ChromeFeatureList.TAB_BOTTOM_SHEET_RESIZE_WEBVIEW
-    })
-    public void testOnContainerSizeChanged_StartWithFixedHeight() {
+    @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET)
+    @DisableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET_RESIZE_WEBVIEW)
+    public void testOnContainerBottomMarginChanged_resizingDisabled_updatesDesiredFixedHeight() {
+        int initialBottomMargin = 400;
+        when(mMockBottomSheetController.isAnchoredToBottomControls()).thenReturn(true);
+        when(mMockBottomSheetController.getContainerBottomMargin()).thenReturn(initialBottomMargin);
+
         BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
-
-        int expectedFixedHeight = (int) (MAX_OFFSET * FULL_HEIGHT_RATIO);
-        when(mMockBottomSheetController.getContainerHeight()).thenReturn(expectedFixedHeight);
-
-        observer.onContainerSizeChanged(CONTAINER_WIDTH, expectedFixedHeight);
+        ShadowLooper.idleMainLooper();
 
         View expandedContent = mView.findViewById(R.id.expanded_content_group);
+        // viewportHeight - initialBottomMargin = 1000 - 400 = 600
+        assertEquals(600, expandedContent.getLayoutParams().height);
 
-        assertEquals(expectedFixedHeight, expandedContent.getLayoutParams().height);
+        int newMargin = 500;
+        when(mMockBottomSheetController.getContainerBottomMargin()).thenReturn(newMargin);
+        observer.onContainerBottomMarginChanged(newMargin);
+
+        // viewportHeight - newMargin = 1000 - 500 = 500
+        assertEquals(500, expandedContent.getLayoutParams().height);
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.TAB_BOTTOM_SHEET,
-        ChromeFeatureList.TAB_BOTTOM_SHEET_RESIZE_WEBVIEW
-    })
-    public void testOnContainerSizeChanged_FallbackToFlexible() {
-        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
-
-        int desiredFixedHeight = (int) (MAX_OFFSET * FULL_HEIGHT_RATIO);
-        when(mMockBottomSheetController.getContainerHeight()).thenReturn(desiredFixedHeight - 1);
-
-        observer.onContainerSizeChanged(CONTAINER_WIDTH, desiredFixedHeight);
-
-        View expandedContent = mView.findViewById(R.id.expanded_content_group);
-        assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, expandedContent.getLayoutParams().height);
-    }
-
-    @Test
-    @EnableFeatures({
-        ChromeFeatureList.TAB_BOTTOM_SHEET,
-        ChromeFeatureList.TAB_BOTTOM_SHEET_RESIZE_WEBVIEW
-    })
-    public void testOnContainerSizeChanged_MultipleCalls() {
-        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
-        int expectedFixedHeight = (int) (MAX_OFFSET * FULL_HEIGHT_RATIO);
-        when(mMockBottomSheetController.getContainerHeight()).thenReturn(expectedFixedHeight);
-
-        observer.onContainerSizeChanged(CONTAINER_WIDTH, expectedFixedHeight);
-        observer.onContainerSizeChanged(CONTAINER_WIDTH, expectedFixedHeight);
-
-        View expandedContent = mView.findViewById(R.id.expanded_content_group);
-        assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, expandedContent.getLayoutParams().height);
-    }
-
-    @Test
-    @EnableFeatures({
-        ChromeFeatureList.TAB_BOTTOM_SHEET,
-        ChromeFeatureList.TAB_BOTTOM_SHEET_RESIZE_WEBVIEW
-    })
+    @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET)
     public void testFixedHeightCalculation_UsesLandscapeRatio() {
         Configuration landscapeConfig = new Configuration();
         landscapeConfig.orientation = Configuration.ORIENTATION_LANDSCAPE;
