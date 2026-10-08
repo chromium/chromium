@@ -195,7 +195,9 @@ public class ImmersiveVideoPlaybackCoordinator
 
     /** Shows the playback control panel and restarts the auto-hide timer. */
     public void showControlPanel() {
-        if (mProjectionType != ImmersiveProjectionType.QUAD) {
+        // In sphere mode, we need to update the anchor pose every time the control panel is
+        // shown, so it always appears in front of the user.
+        if (mProjectionType == ImmersiveProjectionType.SPHERE) {
             mPoseManager.setAnchorPose(mSessionManager.getHeadPoseInActivitySpace());
         }
         mControlCoordinator.show(getControlPanelParent());

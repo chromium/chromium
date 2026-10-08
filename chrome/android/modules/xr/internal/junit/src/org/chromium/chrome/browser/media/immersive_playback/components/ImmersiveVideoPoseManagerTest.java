@@ -262,7 +262,7 @@ public class ImmersiveVideoPoseManagerTest {
     }
 
     @Test
-    public void testHemisphereMode_AnchorPoseYawPreservation() {
+    public void testHemisphereMode_ControlPanelFollowsPlayerRotationAndAnchorUpdates() {
         mManager = new ImmersiveVideoPoseManager(mDelegate);
         // Initial anchor pose sets initial yaw.
         mManager.setAnchorPose(ANCHOR_POSE);
@@ -289,23 +289,14 @@ public class ImmersiveVideoPoseManagerTest {
                 mManager.getControlPanelPose().getRotation().getYaw(),
                 EPSILON);
 
-        // Subsequent anchor pose update (e.g. head movement / recenter) updates translation but
-        // preserves the user's yaw rotation.
-        XrPose secondAnchor =
-                XrPose.create(
-                        XrVector3.create(2f, 2f, 2f),
-                        XrQuaternion.fromYaw(0f));
+        // Subsequent anchor pose update (e.g. startup stabilization) updates both translation and
+        // yaw for the hemisphere and control panel.
+        XrPose secondAnchor = XrPose.create(XrVector3.create(2f, 2f, 2f), XrQuaternion.fromYaw(0f));
         mManager.setAnchorPose(secondAnchor);
 
         assertEquals(secondAnchor.getTranslation(), mManager.getPlayerPanelPose().getTranslation());
-        assertEquals(
-                (float) Math.toRadians(120f),
-                mManager.getPlayerPanelPose().getRotation().getYaw(),
-                EPSILON);
-        assertEquals(
-                (float) Math.toRadians(120f),
-                mManager.getControlPanelPose().getRotation().getYaw(),
-                EPSILON);
+        assertEquals(0f, mManager.getPlayerPanelPose().getRotation().getYaw(), EPSILON);
+        assertEquals(0f, mManager.getControlPanelPose().getRotation().getYaw(), EPSILON);
     }
 
     @Test

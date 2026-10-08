@@ -665,13 +665,12 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
         assertEquals(ANCHOR_POSE.getTranslation(), playerPoseCaptor.getValue().getTranslation());
     }
 
-    /** Tests that reshowing control panel in curved mode fetches head pose to update anchor. */
+    /** Tests that reshowing control panel in sphere mode fetches head pose to update anchor. */
     @Test
     @UiThreadTest
-    public void testShowControlPanel_UpdatesAnchorPoseInNonQuadMode() {
-        // Switch to Hemisphere mode
-        mCoordinator.onFormatSelected(
-                ImmersiveStereoMode.MONO, ImmersiveProjectionType.HEMISPHERE);
+    public void testShowControlPanel_UpdatesAnchorPoseInSphereMode() {
+        // Switch to Sphere mode
+        mCoordinator.onFormatSelected(ImmersiveStereoMode.MONO, ImmersiveProjectionType.SPHERE);
         ShadowLooper.idleMainLooper();
 
         // Dismiss the control panel first
@@ -689,6 +688,33 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
 
         verify(mXrSceneCoreSessionManager).getHeadPoseInActivitySpace();
         verify(mControlPanelHolder).setEntityPose(any(XrPose.class), eq(XrSpace.PARENT));
+    }
+
+    /**
+     * Tests that reshowing control panel in hemisphere mode does not re-fetch head pose to update
+     * anchor, preserving the hemisphere's current yaw.
+     */
+    @Test
+    @UiThreadTest
+    public void testShowControlPanel_DoesNotUpdateAnchorPoseInHemisphereMode() {
+        // Switch to Hemisphere mode
+        mCoordinator.onFormatSelected(ImmersiveStereoMode.MONO, ImmersiveProjectionType.HEMISPHERE);
+        ShadowLooper.idleMainLooper();
+
+        // Dismiss the control panel first
+        mCoordinator.onPlayerPanelClicked();
+        ShadowLooper.idleMainLooper();
+
+        clearInvocations(mXrSceneCoreSessionManager);
+        clearInvocations(mControlPanelHolder);
+
+        // Re-show control panel by clicking player panel
+        mCoordinator.onPlayerPanelClicked();
+        ShadowLooper.idleMainLooper();
+
+        verify(mXrSceneCoreSessionManager, never()).getHeadPoseInActivitySpace();
+        verify(mControlPanelHolder).setEntityEnabled(true);
+        verify(mControlPanelHolder, never()).setEntityPose(any(XrPose.class), eq(XrSpace.PARENT));
     }
 
     /** Test subclass that allows injecting mocked dependencies by overriding protected methods. */
