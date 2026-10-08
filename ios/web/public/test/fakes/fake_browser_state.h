@@ -25,7 +25,7 @@ class FakeBrowserState final : public BrowserState {
   // browser state to reduce the risk of flaky tests due to shared underlying
   // WebKit storage. Otherwise, a fixed uuid is used to use WebKit's default
   // data store. NOTE: This will only silo data when running on iOS 17 or later.
-  explicit FakeBrowserState(bool use_unique_storage_uuid = false);
+  explicit FakeBrowserState(bool use_unique_storage_uuid = true);
   ~FakeBrowserState() override;
 
   // BrowserState:
