@@ -13,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/values.h"
-#include "chrome/browser/sessions/session_service.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -24,6 +23,7 @@
 
 namespace sessions {
 struct SessionTab;
+struct SessionWindow;
 }
 
 namespace content {
@@ -33,6 +33,8 @@ class WebContents;
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
+
+class Profile;
 
 namespace browser_sync {
 

@@ -27,6 +27,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/webui/resources/cr_components/history/foreign_sessions.mojom.h"
 #include "ui/webui/resources/cr_components/history/history.mojom.h"
 #include "ui/webui/resources/cr_components/history/history_cross_device_signin_promo.mojom.h"
@@ -92,7 +93,7 @@ class FakeForeignSessionPage : public history::mojom::ForeignSessionPage {
   mojo::Receiver<history::mojom::ForeignSessionPage> receiver_{this};
 };
 
-TEST_F(HistoryUITest, AndroidForeignSessionHandlerReturnsEmpty) {
+TEST_F(HistoryUITest, ForeignSessionHandlerLifecycleAndOperations) {
   auto history_ui = std::make_unique<HistoryUI>(web_ui());
   mojo::Remote<history::mojom::ForeignSessionPageHandlerFactory> factory_remote;
   history_ui->BindInterface(factory_remote.BindNewPipeAndPassReceiver());
@@ -105,6 +106,14 @@ TEST_F(HistoryUITest, AndroidForeignSessionHandlerReturnsEmpty) {
   base::test::TestFuture<std::vector<history::mojom::ForeignSessionPtr>> future;
   handler_remote->GetForeignSessions(future.GetCallback());
   EXPECT_TRUE(future.Get().empty());
+
+  handler_remote->OpenForeignSessionAllTabs("test_session");
+  handler_remote->OpenForeignSessionTab("test_session", 1,
+                                        ui::mojom::ClickModifiers::New());
+  handler_remote->SetForeignSessionCollapsed("test_session", true);
+  handler_remote->DeleteForeignSession("test_session");
+  handler_remote.FlushForTesting();
+  EXPECT_TRUE(handler_remote.is_connected());
 }
 
 TEST_F(HistoryUITest, AndroidSigninPromoCardReturnsFalse) {

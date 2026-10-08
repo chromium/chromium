@@ -10,6 +10,7 @@ assert(enable_webui_history)
 source_set("history") {
   sources = [
     "browsing_history_handler.cc",
+    "foreign_session_handler.cc",
     "history_identity_state_watcher.cc",
     "history_login_handler.cc",
     "history_ui.cc",
@@ -99,10 +100,7 @@ source_set("history") {
   }
 
   if (!is_android) {
-    sources += [
-      "foreign_session_handler.cc",
-      "history_ui_platform_handlers_desktop.cc",
-    ]
+    sources += [ "history_ui_platform_handlers_desktop.cc" ]
     public += [ "foreign_session_handler.h" ]
     deps += [
       "//chrome/browser/glic",

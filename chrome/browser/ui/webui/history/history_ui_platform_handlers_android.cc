@@ -9,52 +9,29 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/webui/cr_components/history_clusters/history_clusters_util.h"
+#include "chrome/browser/ui/webui/history/foreign_session_handler.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/url_constants.h"
+#include "components/sessions/core/session_types.h"
 #include "components/user_education/webui/user_education.mojom.h"
 #include "content/public/browser/url_data_source.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "ui/webui/resources/cr_components/history/foreign_sessions.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/webui/resources/cr_components/history/history_cross_device_signin_promo.mojom.h"
 
 namespace history {
 
 namespace {
-
-// TODO(crbug.com/563034568): Enable foreign sessions on Android once
-// ForeignSessionHandler is decoupled from desktop side-panel dependencies.
-class AndroidForeignSessionHandler
-    : public history::mojom::ForeignSessionPageHandler {
- public:
-  AndroidForeignSessionHandler(
-      mojo::PendingRemote<history::mojom::ForeignSessionPage> page,
-      mojo::PendingReceiver<history::mojom::ForeignSessionPageHandler> receiver)
-      : page_(std::move(page)), receiver_(this, std::move(receiver)) {}
-  ~AndroidForeignSessionHandler() override = default;
-
-  void GetForeignSessions(GetForeignSessionsCallback callback) override {
-    std::move(callback).Run({});
-  }
-  void OpenForeignSessionAllTabs(const std::string& session_tag) override {}
-  void OpenForeignSessionTab(const std::string& session_tag,
-                             int32_t tab_id,
-                             ui::mojom::ClickModifiersPtr modifiers) override {}
-  void DeleteForeignSession(const std::string& session_tag) override {}
-  void SetForeignSessionCollapsed(const std::string& session_tag,
-                                  bool collapsed) override {}
-
- private:
-  // Retained to prevent premature client-side disconnect callbacks.
-  mojo::Remote<history::mojom::ForeignSessionPage> page_;
-  mojo::Receiver<history::mojom::ForeignSessionPageHandler> receiver_;
-};
 
 // User education is a desktop-only concept that is not supported on Android.
 class AndroidUserEducationMixedTrustHandler
@@ -164,8 +141,31 @@ CreateForeignSessionPageHandler(
     mojo::PendingRemote<history::mojom::ForeignSessionPage> page,
     mojo::PendingReceiver<history::mojom::ForeignSessionPageHandler> receiver,
     content::WebUI* web_ui) {
-  return std::make_unique<AndroidForeignSessionHandler>(std::move(page),
-                                                        std::move(receiver));
+  Profile* profile = Profile::FromWebUI(web_ui);
+  return std::make_unique<browser_sync::ForeignSessionHandler>(
+      std::move(receiver), std::move(page), profile, web_ui->GetWebContents(),
+      base::BindRepeating([](content::WebContents* source_web_contents,
+                             const ::sessions::SessionTab& tab,
+                             WindowOpenDisposition disposition) {
+        SessionRestore::RestoreForeignSessionTab(source_web_contents, tab,
+                                                 disposition);
+      }),
+      base::BindRepeating(
+          [](base::WeakPtr<content::WebContents> web_contents,
+             Profile* /*profile*/,
+             const std::vector<const ::sessions::SessionWindow*>& windows) {
+            if (!web_contents) {
+              return;
+            }
+            for (const auto* window : windows) {
+              for (const auto& tab : window->tabs) {
+                SessionRestore::RestoreForeignSessionTab(
+                    web_contents.get(), *tab,
+                    WindowOpenDisposition::NEW_BACKGROUND_TAB);
+              }
+            }
+          },
+          web_ui->GetWebContents()->GetWeakPtr()));
 }
 
 std::unique_ptr<user_education::mojom::UserEducationMixedTrustHandler>
