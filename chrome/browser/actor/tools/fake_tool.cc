@@ -45,8 +45,4 @@ std::unique_ptr<ObservationDelayController> FakeTool::GetObservationDelayer(
   return nullptr;
 }
 
-tabs::TabHandle FakeTool::GetTargetTab() const {
-  return tabs::TabHandle::Null();
-}
-
 }  // namespace actor

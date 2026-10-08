@@ -9,10 +9,11 @@
 #include <string_view>
 #include <vector>
 
-#include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
+#include "chrome/browser/actor/actor_surface.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/media_control_tool.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
@@ -45,17 +46,16 @@ constexpr std::string_view kSeekMediaTimecodeParamDescription =
 ToolRequest::CreateToolResult CreateMediaControlTool(
     TaskId task_id,
     ToolDelegate& tool_delegate,
-    tabs::TabHandle tab_handle,
+    ActorSurfaceHandle actor_surface_handle,
     MediaControlTool::MediaControl media_control) {
-  tabs::TabInterface* tab = tab_handle.Get();
-  if (!tab) {
+  ActorSurface* actor_surface = actor_surface_handle.Get();
+  if (!actor_surface) {
     return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
                                          /*requires_page_stabilization=*/false,
                                          "The tab is no longer present.")};
   }
-  CHECK(tab->GetContents());
-  return {std::make_unique<MediaControlTool>(task_id, tool_delegate, *tab,
-                                             media_control),
+  return {std::make_unique<MediaControlTool>(task_id, tool_delegate,
+                                             *actor_surface, media_control),
           MakeOkResult()};
 }
 
@@ -76,7 +76,7 @@ std::optional<ToolDefinition> PlayMediaToolRequest::GetToolDefinition() {
 ToolRequest::CreateToolResult PlayMediaToolRequest::CreateTool(
     TaskId task_id,
     ToolDelegate& tool_delegate) const {
-  return CreateMediaControlTool(task_id, tool_delegate, GetTabHandle(),
+  return CreateMediaControlTool(task_id, tool_delegate, GetActorSurfaceHandle(),
                                 MediaControlTool::PlayMedia());
 }
 
@@ -103,7 +103,7 @@ std::optional<ToolDefinition> PauseMediaToolRequest::GetToolDefinition() {
 ToolRequest::CreateToolResult PauseMediaToolRequest::CreateTool(
     TaskId task_id,
     ToolDelegate& tool_delegate) const {
-  return CreateMediaControlTool(task_id, tool_delegate, GetTabHandle(),
+  return CreateMediaControlTool(task_id, tool_delegate, GetActorSurfaceHandle(),
                                 MediaControlTool::PauseMedia());
 }
 
@@ -163,7 +163,7 @@ ToolRequest::CreateToolResult SeekMediaToolRequest::CreateTool(
     TaskId task_id,
     ToolDelegate& tool_delegate) const {
   return CreateMediaControlTool(
-      task_id, tool_delegate, GetTabHandle(),
+      task_id, tool_delegate, GetActorSurfaceHandle(),
       MediaControlTool::SeekMedia{.seek_time = seek_time_});
 }
 

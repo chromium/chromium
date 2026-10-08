@@ -7,6 +7,7 @@
 #include <ostream>
 #include <utility>
 
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/tools/file_upload_tool.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor/action_result.h"
@@ -45,8 +46,8 @@ void FileUploadToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
 ToolRequest::CreateToolResult FileUploadToolRequest::CreateTool(
     TaskId task_id,
     ToolDelegate& tool_delegate) const {
-  tabs::TabInterface* const tab = GetTabHandle().Get();
-  if (!tab) {
+  ActorSurface* const actor_surface = GetActorSurfaceHandle().Get();
+  if (!actor_surface) {
     return CreateToolResult(
         nullptr,
         MakeResult(mojom::ActionResultCode::kTabWentAway,
@@ -77,9 +78,10 @@ ToolRequest::CreateToolResult FileUploadToolRequest::CreateTool(
     }
   }
 
-  return CreateToolResult(std::make_unique<FileUploadTool>(
-                              task_id, tool_delegate, *tab, target_, files_),
-                          MakeOkResult(/*requires_page_stabilization=*/false));
+  return CreateToolResult(
+      std::make_unique<FileUploadTool>(task_id, tool_delegate, *actor_surface,
+                                       target_, files_),
+      MakeOkResult(/*requires_page_stabilization=*/false));
 }
 
 std::ostream& operator<<(std::ostream& out,

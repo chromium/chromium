@@ -13,6 +13,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/actor_login_flow_verifier.h"
 #include "chrome/browser/actor/tools/attempt_otp_filling_tool_request.h"
 #include "chrome/browser/actor/tools/tool.h"
@@ -28,6 +29,8 @@
 
 namespace actor {
 
+class ActorSurface;
+
 // A tool that attempts to retrieve a one-time password (OTP) and fill it into
 // the specified fields on the page. (One field or many smaller ones.)
 // If this is part of a sign-in flow, set `for_signin` to true.
@@ -36,7 +39,7 @@ class AttemptOtpFillingTool : public Tool {
   AttemptOtpFillingTool(
       TaskId task_id,
       ToolDelegate& tool_delegate,
-      tabs::TabHandle tab_handle,
+      ActorSurface& actor_surface,
       std::vector<PageTarget> trigger_fields,
       bool for_signin,
       AttemptOtpFillingToolRequest::OtpType predicted_otp_type,
@@ -58,7 +61,7 @@ class AttemptOtpFillingTool : public Tool {
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
       ObservationDelayController::PageStabilityConfig page_stability_config)
       override;
-  tabs::TabHandle GetTargetTab() const override;
+  ActorSurfaceHandle GetTargetActorSurface() const override;
 
  private:
   void OnUserDataProcessingConsentFetched(
@@ -84,7 +87,7 @@ class AttemptOtpFillingTool : public Tool {
   void LogJournalEvent(std::string_view event_name,
                        std::vector<mojom::JournalDetailsPtr> journal_details);
 
-  tabs::TabHandle tab_handle_;
+  ActorSurfaceHandle actor_surface_handle_;
   std::vector<PageTarget> trigger_fields_;
   std::vector<autofill::FieldGlobalId> trigger_field_ids_;
   bool for_signin_;

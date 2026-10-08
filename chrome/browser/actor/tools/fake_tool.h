@@ -30,7 +30,6 @@ class FakeTool : public Tool {
       ObservationDelayController::PageStabilityConfig page_stability_config)
       override;
 
-  tabs::TabHandle GetTargetTab() const override;
 
  private:
   base::OnceCallback<void(ToolCallback)> on_invoke_;

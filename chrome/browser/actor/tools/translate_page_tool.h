@@ -9,13 +9,15 @@
 #include <string_view>
 
 #include "base/scoped_observation.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
-#include "components/tabs/public/tab_interface.h"
 #include "components/translate/content/browser/content_translate_driver.h"
 #include "components/translate/core/common/translate_errors.h"
 
 namespace actor {
+
+class ActorSurface;
 
 // A tool that initiates translation on the active document of a tab.
 class TranslatePageTool
@@ -24,7 +26,7 @@ class TranslatePageTool
  public:
   TranslatePageTool(TaskId task_id,
                     ToolDelegate& tool_delegate,
-                    tabs::TabInterface& tab,
+                    ActorSurface& actor_surface,
                     std::string_view target_language);
   ~TranslatePageTool() override;
 
@@ -42,7 +44,7 @@ class TranslatePageTool
       override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
                               ToolCallback callback) const override;
-  tabs::TabHandle GetTargetTab() const override;
+  ActorSurfaceHandle GetTargetActorSurface() const override;
 
   // translate::ContentTranslateDriver::TranslationObserver:
   void OnPageTranslated(std::string_view source_lang,
@@ -50,7 +52,7 @@ class TranslatePageTool
                         translate::TranslateErrors error_type) override;
 
  private:
-  tabs::TabHandle tab_handle_;
+  ActorSurfaceHandle actor_surface_handle_;
   std::string target_language_;
   ToolCallback invoke_callback_;
   base::ScopedObservation<

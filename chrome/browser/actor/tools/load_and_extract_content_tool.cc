@@ -637,9 +637,4 @@ LoadAndExtractContentTool::GetObservationDelayer(
   return nullptr;
 }
 
-tabs::TabHandle LoadAndExtractContentTool::GetTargetTab() const {
-  // This tool can operate on multiple tabs, so there's no single target.
-  return tabs::TabHandle::Null();
-}
-
 }  // namespace actor

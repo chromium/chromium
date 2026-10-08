@@ -8,11 +8,11 @@
 #include <optional>
 #include <string_view>
 
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "components/actor/core/shared_types.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#include "components/tabs/public/tab_interface.h"
 
 namespace content {
 class RenderFrameHost;
@@ -24,9 +24,11 @@ class AnnotatedPageContent;
 
 namespace actor {
 
-// Returns the `RenderFrameHost` for a `PageTarget`.
-content::RenderFrameHost* FindTargetLocalRootFrame(tabs::TabHandle tab_handle,
-                                                   PageTarget target);
+// Returns the `RenderFrameHost` for a `PageTarget` associated with
+// `actor_surface_handle`.
+content::RenderFrameHost* FindTargetLocalRootFrame(
+    ActorSurfaceHandle actor_surface_handle,
+    PageTarget target);
 
 // Return `TargetNodeInfo` from hit test against the last observed APC. Returns
 // std::nullopt if Target does not hit any node.
@@ -37,15 +39,15 @@ std::optional<optimization_guide::TargetNodeInfo>
 FindLastObservedNodeForActionTarget(
     const optimization_guide::proto::AnnotatedPageContent* apc,
     const PageTarget& target,
-    tabs::TabInterface* tab);
+    ActorSurfaceHandle actor_surface_handle);
 
 // Returns the `autofill::FieldGlobalId` for a `PageTarget` given the last
-// observed APC and the tab.
+// observed APC and `actor_surface_handle`.
 //
 // IMPORTANT: `target` must be provided in view-relative DIPs.
 autofill::FieldGlobalId GetFieldIdFromPageTarget(
     const optimization_guide::proto::AnnotatedPageContent* last_observation,
-    tabs::TabInterface* tab,
+    ActorSurfaceHandle actor_surface_handle,
     const PageTarget& target);
 
 }  // namespace actor

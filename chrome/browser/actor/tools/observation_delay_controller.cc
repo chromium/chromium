@@ -18,6 +18,7 @@
 #include "base/state_transitions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/aggregated_journal_render_frame_binder.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/observation_delay_metrics.h"
@@ -189,6 +190,16 @@ ObservationDelayController::~ObservationDelayController() = default;
 
 void ObservationDelayController::Wait(tabs::TabInterface& target_tab,
                                       ReadyCallback callback) {
+  WaitOnWebContents(target_tab.GetContents(), std::move(callback));
+}
+
+void ObservationDelayController::Wait(ActorSurface& target_actor_surface,
+                                      ReadyCallback callback) {
+  WaitOnWebContents(target_actor_surface.GetWebContents(), std::move(callback));
+}
+
+void ObservationDelayController::WaitOnWebContents(WebContents* web_contents,
+                                                   ReadyCallback callback) {
   CHECK_EQ(state_, State::kInitial);
   CHECK(callback);
 
@@ -198,7 +209,6 @@ void ObservationDelayController::Wait(tabs::TabInterface& target_tab,
   metrics_ = std::make_unique<ObservationDelayMetrics>();
   metrics_->Start();
 
-  WebContents* web_contents = target_tab.GetContents();
   WebContentsObserver::Observe(web_contents);
 
   wait_journal_entry_ = journal_->CreatePendingAsyncEntry(

@@ -21,6 +21,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/actor_login_flow_verifier.h"
 #include "chrome/browser/actor/tools/attempt_otp_filling_metrics.h"
@@ -39,7 +40,9 @@
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace actor {
@@ -83,13 +86,14 @@ const char* ConsentStateToString(one_time_tokens::ConsentState state) {
 
 // Returns the `RenderFrameHost` containing the OTP fields.
 content::RenderFrameHost* GetOtpFrame(
-    tabs::TabHandle tab_handle,
+    ActorSurfaceHandle actor_surface_handle,
     base::span<const autofill::FieldGlobalId> trigger_field_ids) {
   if (trigger_field_ids.empty()) {
     return nullptr;
   }
-  tabs::TabInterface* tab = tab_handle.Get();
-  content::WebContents* web_contents = tab ? tab->GetContents() : nullptr;
+  ActorSurface* actor_surface = actor_surface_handle.Get();
+  content::WebContents* web_contents =
+      actor_surface ? actor_surface->GetWebContents() : nullptr;
   if (!web_contents) {
     return nullptr;
   }
@@ -132,13 +136,13 @@ AttemptOtpFillingToolEvent GetMetricsEventFromFormFillingStatus(
 AttemptOtpFillingTool::AttemptOtpFillingTool(
     TaskId task_id,
     ToolDelegate& tool_delegate,
-    tabs::TabHandle tab_handle,
+    ActorSurface& actor_surface,
     std::vector<PageTarget> trigger_fields,
     bool for_signin,
     AttemptOtpFillingToolRequest::OtpType predicted_otp_type,
     std::unique_ptr<ActorLoginFlowVerifier> actor_login_flow_verifier)
     : Tool(task_id, tool_delegate),
-      tab_handle_(tab_handle),
+      actor_surface_handle_(actor_surface.GetHandle()),
       trigger_fields_(std::move(trigger_fields)),
       for_signin_(for_signin),
       predicted_otp_type_(predicted_otp_type),
@@ -324,16 +328,16 @@ void AttemptOtpFillingTool::OnGmailOtpOptInResponse(
 
 mojom::ActionResultPtr AttemptOtpFillingTool::TimeOfUseValidation(
     const optimization_guide::proto::AnnotatedPageContent* last_observation) {
-  tabs::TabInterface* tab = GetTargetTab().Get();
+  ActorSurface* actor_surface = actor_surface_handle_.Get();
 
   LogJournalEvent("AttemptOtpFillingTool::TimeOfUseValidation",
                   JournalDetailsBuilder()
-                      .Add("tab", !!tab)
+                      .Add("actor_surface", !!actor_surface)
                       .Add("last_observation", !!last_observation)
                       .Add("trigger_fields_count", trigger_fields_.size())
                       .Build());
 
-  if (!tab) {
+  if (!actor_surface) {
     RecordAttemptOtpFillingEvent(
         AttemptOtpFillingToolEvent::kTabWentAwayBeforeInvocation);
     return MakeResult(mojom::ActionResultCode::kTabWentAway,
@@ -352,8 +356,8 @@ mojom::ActionResultPtr AttemptOtpFillingTool::TimeOfUseValidation(
   trigger_field_ids_.clear();
   trigger_field_ids_.reserve(trigger_fields_.size());
   for (const auto& trigger_field : trigger_fields_) {
-    autofill::FieldGlobalId field_id =
-        GetFieldIdFromPageTarget(last_observation, tab, trigger_field);
+    autofill::FieldGlobalId field_id = GetFieldIdFromPageTarget(
+        last_observation, actor_surface_handle_, trigger_field);
     if (!field_id) {
       RecordAttemptOtpFillingEvent(
           AttemptOtpFillingToolEvent::kTriggerFieldNotFound);
@@ -367,7 +371,8 @@ mojom::ActionResultPtr AttemptOtpFillingTool::TimeOfUseValidation(
   autofill::FormFillingContextStatus status =
       tool_delegate()
           .GetActorOneTimeTokenFillingService()
-          .ValidateFormFillingContext(GetTargetTab(), trigger_field_ids_);
+          .ValidateFormFillingContext(actor_surface_handle_.GetTabHandle(),
+                                      trigger_field_ids_);
   LogJournalEvent("AttemptOtpFillingTool::Validate",
                   JournalDetailsBuilder()
                       .Add("form filling context status", status)
@@ -391,15 +396,15 @@ void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
           .Build());
 
   ukm::SourceId source_id = ukm::kInvalidSourceId;
-  if (tabs::TabInterface* tab = GetTargetTab().Get()) {
-    if (content::WebContents* web_contents = tab->GetContents()) {
+  if (ActorSurface* actor_surface = actor_surface_handle_.Get()) {
+    if (content::WebContents* web_contents = actor_surface->GetWebContents()) {
       source_id = web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
     }
   }
   RecordPredictedOtpTypeMetrics(predicted_otp_type_, source_id);
 
   content::RenderFrameHost* otp_frame =
-      GetOtpFrame(GetTargetTab(), trigger_field_ids_);
+      GetOtpFrame(GetTargetActorSurface(), trigger_field_ids_);
   if (!otp_frame) {
     RecordAttemptOtpFillingEvent(
         AttemptOtpFillingToolEvent::kNoTargetFrameWithOtpFound);
@@ -426,7 +431,8 @@ void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
             .Add("status", "Using mock OTP")
             .Build());
     tool_delegate().GetActorOneTimeTokenFillingService().FillOtp(
-        GetTargetTab(), trigger_field_ids_, std::move(mock_otp),
+        actor_surface_handle_.GetTabHandle(), trigger_field_ids_,
+        std::move(mock_otp),
         base::BindOnce(&AttemptOtpFillingTool::OnOtpFilled,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
     return;
@@ -441,8 +447,9 @@ void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
           .GetActorOneTimeTokenFillingService()
           .GetLoginContextShouldUseStrongMatching();
 
-  tabs::TabInterface* tab = GetTargetTab().Get();
-  content::WebContents* web_contents = tab ? tab->GetContents() : nullptr;
+  ActorSurface* actor_surface = actor_surface_handle_.Get();
+  content::WebContents* web_contents =
+      actor_surface ? actor_surface->GetWebContents() : nullptr;
   url::Origin main_frame_origin =
       web_contents
           ? web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin()
@@ -494,7 +501,7 @@ void AttemptOtpFillingTool::OnActorLoginFlowChecked(
   }
 
   content::RenderFrameHost* otp_frame =
-      GetOtpFrame(GetTargetTab(), trigger_field_ids_);
+      GetOtpFrame(GetTargetActorSurface(), trigger_field_ids_);
   if (!otp_frame) {
     RecordAttemptOtpFillingEvent(
         AttemptOtpFillingToolEvent::kNoTargetFrameWithOtpFound);
@@ -509,8 +516,8 @@ void AttemptOtpFillingTool::OnActorLoginFlowChecked(
       "AttemptOtpFillingTool::OnActorLoginFlowChecked",
       JournalDetailsBuilder().Add("status", "Calling RetrieveOtp").Build());
   tool_delegate().GetActorOneTimeTokenFillingService().RetrieveOtp(
-      GetTargetTab(), otp_frame->GetLastCommittedOrigin(), trigger_field_ids_,
-      is_actor_login,
+      actor_surface_handle_.GetTabHandle(), otp_frame->GetLastCommittedOrigin(),
+      trigger_field_ids_, is_actor_login,
       base::BindOnce(&AttemptOtpFillingTool::OnOtpRetrieved,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -581,7 +588,8 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
   mojom::ActionResultPtr validation_result = GetResultFromFormFillingStatus(
       tool_delegate()
           .GetActorOneTimeTokenFillingService()
-          .ValidateFormFillingContext(GetTargetTab(), trigger_field_ids_));
+          .ValidateFormFillingContext(actor_surface_handle_.GetTabHandle(),
+                                      trigger_field_ids_));
   if (!IsOk(*validation_result)) {
     LogJournalEvent("AttemptOtpFillingTool::OnOtpRetrieved",
                     JournalDetailsBuilder()
@@ -617,7 +625,8 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
                "Calling FillOtp without showing the confirmation dialog")
           .Build());
   tool_delegate().GetActorOneTimeTokenFillingService().FillOtp(
-      GetTargetTab(), trigger_field_ids_, std::move(retrieved_otp),
+      actor_surface_handle_.GetTabHandle(), trigger_field_ids_,
+      std::move(retrieved_otp),
       base::BindOnce(&AttemptOtpFillingTool::OnOtpFilled,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -648,8 +657,8 @@ void AttemptOtpFillingTool::LogJournalEvent(
 void AttemptOtpFillingTool::UpdateTaskBeforeInvoke(
     ActorTask& task,
     ToolCallback callback) const {
-  task.AddTab(GetTargetTab(), /*stop_task_on_detach=*/true,
-              std::move(callback));
+  task.AddActorSurface(actor_surface_handle_, /*stop_task_on_detach=*/true,
+                       std::move(callback));
 }
 
 std::string AttemptOtpFillingTool::DebugString() const {
@@ -664,12 +673,13 @@ std::string AttemptOtpFillingTool::JournalEvent() const {
 std::unique_ptr<ObservationDelayController>
 AttemptOtpFillingTool::GetObservationDelayer(
     ObservationDelayController::PageStabilityConfig page_stability_config) {
-  tabs::TabInterface* tab = GetTargetTab().Get();
-  if (!tab || !tab->GetContents()) {
+  ActorSurface* actor_surface = actor_surface_handle_.Get();
+  if (!actor_surface || !actor_surface->GetWebContents()) {
     return nullptr;
   }
 
-  content::RenderFrameHost* rfh = tab->GetContents()->GetPrimaryMainFrame();
+  content::RenderFrameHost* rfh =
+      actor_surface->GetWebContents()->GetPrimaryMainFrame();
   if (!rfh) {
     return nullptr;
   }
@@ -678,8 +688,8 @@ AttemptOtpFillingTool::GetObservationDelayer(
       *rfh, task_id(), journal(), std::move(page_stability_config));
 }
 
-tabs::TabHandle AttemptOtpFillingTool::GetTargetTab() const {
-  return tab_handle_;
+ActorSurfaceHandle AttemptOtpFillingTool::GetTargetActorSurface() const {
+  return actor_surface_handle_;
 }
 
 void AttemptOtpFillingTool::OnGmailOtpConfirmationResponse(
@@ -759,7 +769,8 @@ void AttemptOtpFillingTool::OnGmailOtpConfirmationResponse(
   mojom::ActionResultPtr validation_result = GetResultFromFormFillingStatus(
       tool_delegate()
           .GetActorOneTimeTokenFillingService()
-          .ValidateFormFillingContext(GetTargetTab(), trigger_field_ids_));
+          .ValidateFormFillingContext(actor_surface_handle_.GetTabHandle(),
+                                      trigger_field_ids_));
   if (!IsOk(*validation_result)) {
     LogJournalEvent("AttemptOtpFillingTool::OnGmailOtpConfirmationResponse",
                     JournalDetailsBuilder()
@@ -776,7 +787,7 @@ void AttemptOtpFillingTool::OnGmailOtpConfirmationResponse(
                       .Add("status", "Calling FillOtp after confirmation")
                       .Build());
   tool_delegate().GetActorOneTimeTokenFillingService().FillOtp(
-      GetTargetTab(), trigger_field_ids_, std::move(otp),
+      actor_surface_handle_.GetTabHandle(), trigger_field_ids_, std::move(otp),
       base::BindOnce(&AttemptOtpFillingTool::OnOtpFilled,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

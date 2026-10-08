@@ -11,6 +11,7 @@
 #include <variant>
 
 #include "base/check.h"
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
@@ -42,18 +43,14 @@ std::string_view MediaControlName(
   return std::visit(MediaControlNameVisitor{}, media_control);
 }
 
-content::RenderFrameHost& GetPrimaryMainFrameOfTab(tabs::TabHandle tab_handle) {
-  return *tab_handle.Get()->GetContents()->GetPrimaryMainFrame();
-}
-
 }  // namespace
 
 MediaControlTool::MediaControlTool(TaskId task_id,
                                    ToolDelegate& tool_delegate,
-                                   tabs::TabInterface& tab,
+                                   ActorSurface& actor_surface,
                                    MediaControl media_control)
     : Tool(task_id, tool_delegate),
-      tab_handle_(tab.GetHandle()),
+      actor_surface_handle_(actor_surface.GetHandle()),
       media_control_(media_control) {}
 
 MediaControlTool::~MediaControlTool() = default;
@@ -63,17 +60,17 @@ void MediaControlTool::Validate(ToolCallback callback) {
 }
 
 void MediaControlTool::Invoke(ToolCallback callback) {
-  tabs::TabInterface* tab = tab_handle_.Get();
-  if (!tab) {
+  ActorSurface* actor_surface = actor_surface_handle_.Get();
+  if (!actor_surface) {
     PostResponseTask(std::move(callback),
                      MakeResult(mojom::ActionResultCode::kTabWentAway));
     return;
   }
 
-  // Get the media session associated with the tab's web contents.
-  CHECK(tab->GetContents());
+  // Get the media session associated with the surface's web contents.
+  CHECK(actor_surface->GetWebContents());
   content::MediaSession* media_session =
-      content::MediaSession::GetIfExists(tab->GetContents());
+      content::MediaSession::GetIfExists(actor_surface->GetWebContents());
   if (!media_session) {
     PostResponseTask(std::move(callback),
                      MakeResult(mojom::ActionResultCode::kMediaControlNoMedia));
@@ -117,21 +114,23 @@ std::string MediaControlTool::JournalEvent() const {
 std::unique_ptr<ObservationDelayController>
 MediaControlTool::GetObservationDelayer(
     ObservationDelayController::PageStabilityConfig page_stability_config) {
-  if (!tab_handle_.Get()) {
+  ActorSurface* actor_surface = actor_surface_handle_.Get();
+  if (!actor_surface) {
     return nullptr;
   }
   return std::make_unique<ObservationDelayController>(
-      GetPrimaryMainFrameOfTab(tab_handle_), task_id(), journal(),
-      page_stability_config);
+      *actor_surface->GetWebContents()->GetPrimaryMainFrame(), task_id(),
+      journal(), page_stability_config);
 }
 
 void MediaControlTool::UpdateTaskBeforeInvoke(ActorTask& task,
                                               ToolCallback callback) const {
-  task.AddTab(tab_handle_, /*stop_task_on_detach=*/true, std::move(callback));
+  task.AddActorSurface(actor_surface_handle_, /*stop_task_on_detach=*/true,
+                       std::move(callback));
 }
 
-tabs::TabHandle MediaControlTool::GetTargetTab() const {
-  return tab_handle_;
+ActorSurfaceHandle MediaControlTool::GetTargetActorSurface() const {
+  return actor_surface_handle_;
 }
 
 }  // namespace actor

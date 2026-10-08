@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
+#include "chrome/browser/actor/actor_surface_impl.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
@@ -506,6 +507,7 @@ struct TestTabState {
   WillDetachCallbackList will_detach_callback_list_;
 
   tabs::MockTabInterface tab;
+  std::unique_ptr<ActorSurfaceImpl> actor_surface;
   ::ui::UnownedUserDataHost user_data_host;
   std::unique_ptr<ActorTabData> tab_data;
 };

@@ -10,6 +10,7 @@
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -54,7 +55,7 @@ class PageTool : public Tool {
       override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
                               ToolCallback callback) const override;
-  tabs::TabHandle GetTargetTab() const override;
+  ActorSurfaceHandle GetTargetActorSurface() const override;
 
  private:
   // Callback for navigation.
@@ -81,6 +82,7 @@ class PageTool : public Tool {
 
   ToolCallback invoke_callback_;
   std::unique_ptr<PageToolRequest> request_;
+  ActorSurfaceHandle actor_surface_handle_;
 
   std::unique_ptr<RenderFrameChangeObserver> frame_change_observer_;
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame_;

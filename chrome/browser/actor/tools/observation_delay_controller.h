@@ -24,10 +24,12 @@
 
 namespace content {
 class RenderFrameHost;
+class WebContents;
 }  // namespace content
 
 namespace actor {
 
+class ActorSurface;
 class ObservationDelayMetrics;
 class PageSettledMonitorDelegate;
 
@@ -71,6 +73,7 @@ class ObservationDelayController : public content::WebContentsObserver {
   // observed by this controller, overwriting any previously observed
   // WebContents.
   void Wait(tabs::TabInterface& target_tab, ReadyCallback callback);
+  void Wait(ActorSurface& target_actor_surface, ReadyCallback callback);
 
   // content::WebContentsObserver:
   void DidStartNavigation(
@@ -118,6 +121,8 @@ class ObservationDelayController : public content::WebContentsObserver {
 
   friend class PageSettledMonitorDelegate;
 
+  void WaitOnWebContents(content::WebContents* web_contents,
+                         ReadyCallback callback);
   void OnFederatedLoginRequestComplete(base::OnceClosure resume_callback);
   void OnAutofillPredictionsFinished(base::OnceClosure resume_callback);
   void DCheckStateTransition(State old_state, State new_state);

@@ -9,10 +9,10 @@
 #include <string>
 #include <vector>
 
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/file_upload_tool_request.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "components/actor/core/shared_types.h"
-#include "components/tabs/public/tab_interface.h"
 
 namespace optimization_guide::proto {
 class AnnotatedPageContent;
@@ -20,13 +20,15 @@ class AnnotatedPageContent;
 
 namespace actor {
 
+class ActorSurface;
+
 // Tool responsible for intercepting file chooser dialogs and injecting
 // authorized files into page file inputs during actor task execution.
 class FileUploadTool : public Tool {
  public:
   FileUploadTool(TaskId task_id,
                  ToolDelegate& tool_delegate,
-                 tabs::TabInterface& tab,
+                 ActorSurface& actor_surface,
                  PageTarget target,
                  std::vector<FileUploadSource> files);
   ~FileUploadTool() override;
@@ -43,10 +45,10 @@ class FileUploadTool : public Tool {
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
       ObservationDelayController::PageStabilityConfig page_stability_config)
       override;
-  tabs::TabHandle GetTargetTab() const override;
+  ActorSurfaceHandle GetTargetActorSurface() const override;
 
  private:
-  tabs::TabHandle tab_handle_;
+  ActorSurfaceHandle actor_surface_handle_;
   PageTarget target_;
   std::vector<FileUploadSource> files_;
 };

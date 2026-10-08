@@ -51,7 +51,6 @@ class LoadAndExtractContentTool : public Tool {
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
       ObservationDelayController::PageStabilityConfig page_stability_config)
       override;
-  tabs::TabHandle GetTargetTab() const override;
 
  private:
   struct PerTabState;

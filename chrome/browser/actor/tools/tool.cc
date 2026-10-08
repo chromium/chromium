@@ -30,6 +30,16 @@ GURL Tool::JournalURL() const {
   return GURL::EmptyGURL();
 }
 
+tabs::TabHandle Tool::GetTargetTab() const {
+  return tabs::TabHandle::Null();
+}
+
+ActorSurfaceHandle Tool::GetTargetActorSurface() const {
+  // TODO(b/567721071): Remove this tab-derived default once all tools target
+  // surfaces directly.
+  return ActorSurfaceHandle::From(GetTargetTab());
+}
+
 void Tool::UpdateTaskBeforeInvoke(ActorTask& task,
                                   ToolCallback callback) const {
   // Do nothing by default, just trigger the callback.

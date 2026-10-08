@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/notimplemented.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/page_tool.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
@@ -52,7 +53,7 @@ PageToolRequest::PageToolRequest(const PageToolRequest& other) = default;
 ToolRequest::CreateToolResult PageToolRequest::CreateTool(
     TaskId task_id,
     ToolDelegate& tool_delegate) const {
-  if (!GetTabHandle().Get()) {
+  if (!GetActorSurfaceHandle().Get()) {
     return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
                                          /*requires_page_stabilization=*/false,
                                          "The tab is no longer present.")};

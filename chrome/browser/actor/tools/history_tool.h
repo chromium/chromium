@@ -11,11 +11,11 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/common/actor.mojom-forward.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -25,6 +25,8 @@ class NavigationHandle;
 }  // namespace content
 
 namespace actor {
+
+class ActorSurface;
 
 // Performs a history navigation in a WebContents.
 class HistoryTool : public Tool, content::WebContentsObserver {
@@ -38,7 +40,7 @@ class HistoryTool : public Tool, content::WebContentsObserver {
 
   HistoryTool(TaskId task_id,
               ToolDelegate& tool_delegate,
-              tabs::TabInterface& tab,
+              ActorSurface& actor_surface,
               Direction direction);
   ~HistoryTool() override;
 
@@ -55,7 +57,7 @@ class HistoryTool : public Tool, content::WebContentsObserver {
       override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
                               ToolCallback callback) const override;
-  tabs::TabHandle GetTargetTab() const override;
+  ActorSurfaceHandle GetTargetActorSurface() const override;
 
   // content::WebContentsObserver
   void DidStartNavigation(
@@ -91,7 +93,7 @@ class HistoryTool : public Tool, content::WebContentsObserver {
   // The unique ID of the navigation entry at the time of validation.
   int validated_entry_id_ = 0;
 
-  tabs::TabHandle tab_handle_;
+  ActorSurfaceHandle actor_surface_handle_;
 
   base::WeakPtrFactory<HistoryTool> weak_ptr_factory_{this};
 };

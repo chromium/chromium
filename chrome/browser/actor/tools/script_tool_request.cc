@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/script_tool_host.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
@@ -50,7 +51,8 @@ ToolRequest::CreateToolResult ScriptToolRequest::CreateTool(
                        "WebMCP is not enabled.")};
   }
 
-  if (!GetTabHandle().Get()) {
+  ActorSurfaceHandle actor_surface_handle = GetActorSurfaceHandle();
+  if (!actor_surface_handle.Get()) {
     return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
                                          /*requires_page_stabilization=*/false,
                                          "The tab is no longer present.")};
@@ -58,7 +60,7 @@ ToolRequest::CreateToolResult ScriptToolRequest::CreateTool(
 
   auto script = mojom::ScriptToolAction::New(name_, input_arguments_);
   return {std::make_unique<ScriptToolHost>(
-              task_id, tool_delegate, GetTabHandle(), target_document_id_,
+              task_id, tool_delegate, actor_surface_handle, target_document_id_,
               mojom::ToolAction::NewScriptTool(std::move(script))),
           MakeOkResult()};
 }

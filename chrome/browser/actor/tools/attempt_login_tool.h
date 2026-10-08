@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/common/actor_webui.mojom-forward.h"
@@ -39,6 +40,8 @@ class Image;
 
 namespace actor {
 
+class ActorSurface;
+
 class AttemptLoginTool : public Tool
 #if BUILDFLAG(IS_ANDROID)
     ,
@@ -48,7 +51,7 @@ class AttemptLoginTool : public Tool
  public:
   AttemptLoginTool(TaskId task_id,
                    ToolDelegate& tool_delegate,
-                   tabs::TabInterface& tab,
+                   ActorSurface& actor_surface,
                    std::optional<PageTarget> password_button,
                    std::optional<PageTarget> sign_in_with_google_button,
                    bool requires_opening_web_contents);
@@ -64,7 +67,7 @@ class AttemptLoginTool : public Tool
       override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
                               ToolCallback callback) const override;
-  tabs::TabHandle GetTargetTab() const override;
+  ActorSurfaceHandle GetTargetActorSurface() const override;
 
 #if BUILDFLAG(IS_ANDROID)
   // BrowserCollectionObserver:
@@ -105,7 +108,6 @@ class AttemptLoginTool : public Tool
 
   actor_login::ActorLoginService& GetActorLoginService();
   actor_login::FrameFillingStartedCallback GetFrameFillingStartedCallback(
-      tabs::TabInterface* tab,
       const actor_login::Credential& credential);
 
   // Holds the credentials after they are returned from the login service. The
@@ -135,7 +137,7 @@ class AttemptLoginTool : public Tool
 
   std::vector<base::CancelableTaskTracker> favicon_requests_tracker_;
 
-  tabs::TabHandle tab_handle_;
+  ActorSurfaceHandle actor_surface_handle_;
 
   // Identifies a button to submit (or advance) a password form.
   std::optional<PageTarget> password_button_;

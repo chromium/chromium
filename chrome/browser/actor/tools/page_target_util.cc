@@ -6,6 +6,7 @@
 
 #include <variant>
 
+#include "chrome/browser/actor/actor_surface.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "content/public/browser/render_frame_host.h"
@@ -106,7 +107,8 @@ std::optional<TargetNodeInfo> FindLastObservedNodeForActionTargetPoint(
 std::optional<TargetNodeInfo> FindLastObservedNodeForActionTarget(
     const AnnotatedPageContent* apc,
     const PageTarget& target,
-    tabs::TabInterface* tab) {
+    ActorSurfaceHandle actor_surface_handle) {
+  ActorSurface* actor_surface = actor_surface_handle.Get();
   return std::visit(
       absl::Overload{
           [&](const DomNode& node) {
@@ -114,7 +116,8 @@ std::optional<TargetNodeInfo> FindLastObservedNodeForActionTarget(
           },
           [&](const gfx::Point& point_dip) {
             float dsf = 1.0f;
-            content::WebContents* contents = tab ? tab->GetContents() : nullptr;
+            content::WebContents* contents =
+                actor_surface ? actor_surface->GetWebContents() : nullptr;
             content::RenderWidgetHostView* view =
                 contents ? contents->GetRenderWidgetHostView() : nullptr;
             if (view) {
@@ -130,10 +133,12 @@ std::optional<TargetNodeInfo> FindLastObservedNodeForActionTarget(
       target);
 }
 
-RenderFrameHost* FindTargetLocalRootFrame(tabs::TabHandle tab_handle,
-                                          PageTarget target) {
-  tabs::TabInterface* tab = tab_handle.Get();
-  content::WebContents* contents = tab ? tab->GetContents() : nullptr;
+RenderFrameHost* FindTargetLocalRootFrame(
+    ActorSurfaceHandle actor_surface_handle,
+    PageTarget target) {
+  ActorSurface* actor_surface = actor_surface_handle.Get();
+  content::WebContents* contents =
+      actor_surface ? actor_surface->GetWebContents() : nullptr;
   if (!contents) {
     return nullptr;
   }
@@ -159,14 +164,16 @@ RenderFrameHost* FindTargetLocalRootFrame(tabs::TabHandle tab_handle,
 
 autofill::FieldGlobalId GetFieldIdFromPageTarget(
     const AnnotatedPageContent* last_observation,
-    tabs::TabInterface* tab,
+    ActorSurfaceHandle actor_surface_handle,
     const PageTarget& target) {
-  if (!tab) {
+  ActorSurface* actor_surface = actor_surface_handle.Get();
+  if (!actor_surface) {
     return {};
   }
   if (std::optional<TargetNodeInfo> node_info =
-          FindLastObservedNodeForActionTarget(last_observation, target, tab)) {
-    if (content::WebContents* web_contents = tab->GetContents()) {
+          FindLastObservedNodeForActionTarget(last_observation, target,
+                                              actor_surface_handle)) {
+    if (content::WebContents* web_contents = actor_surface->GetWebContents()) {
       if (RenderFrameHost* rfh =
               optimization_guide::GetRenderFrameForDocumentIdentifier(
                   *web_contents,

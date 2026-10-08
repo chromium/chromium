@@ -39,6 +39,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/site_policy.h"
@@ -1407,14 +1408,9 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
   next_action_index_ = 0;
   observation_strategy_ = TabObservationStrategy();
 
-  absl::flat_hash_set<int32_t> acting_tab_handles;
-
   action_sequence_ = std::move(actions);
   for (const std::unique_ptr<ToolRequest>& action : action_sequence_) {
     CHECK(action);
-    if (action->GetTabHandle() != tabs::TabHandle::Null()) {
-      acting_tab_handles.insert(action->GetTabHandle().raw_value());
-    }
     if (IsNavigationGatingEnabled() &&
         kGlicAllowImplicitToolOriginGrants.Get()) {
       if (std::optional<url::Origin> maybe_origin =
@@ -1443,17 +1439,19 @@ void ExecutionEngine::KickOffNextAction() {
 
   // TODO(b/467984847): ActorTask::AddTab isn't the best way to track a crashed
   // tab here. We should refactor this to be more explicit.
-  if (tabs::TabInterface* tab = GetNextAction().GetTabHandle().Get();
-      tab && base::FeatureList::IsEnabled(kActorReloadCrashedTabBeforeAct)) {
-    content::WebContents* contents = tab->GetContents();
+  if (ActorSurface* actor_surface =
+          GetNextAction().GetActorSurfaceHandle().Get();
+      actor_surface &&
+      base::FeatureList::IsEnabled(kActorReloadCrashedTabBeforeAct)) {
+    content::WebContents* contents = actor_surface->GetWebContents();
     CHECK(contents);
     if (contents->IsCrashed()) {
       GetJournal().Log(
           contents->GetLastCommittedURL(), task_->id(),
           "ExecutionEngine::KickOffNextAction",
           JournalDetailsBuilder().AddError("Renderer crashed").Build());
-      task_->AddTab(GetNextAction().GetTabHandle(),
-                    /*stop_task_on_detach=*/true, base::DoNothing());
+      task_->AddActorSurface(actor_surface->GetHandle(),
+                             /*stop_task_on_detach=*/true, base::DoNothing());
       CompleteActions(MakeResult(mojom::ActionResultCode::kRendererCrashed,
                                  /*requires_page_stabilization=*/false,
                                  "Renderer crashed."),
@@ -1471,9 +1469,10 @@ void ExecutionEngine::KickOffNextAction() {
 
 void ExecutionEngine::SafetyChecksForNextAction() {
   TRACE_EVENT0("actor", "ExecutionEngine::SafetyChecksForNextAction");
-  tabs::TabInterface* tab = GetNextAction().GetTabForValidation().Get();
+  ActorSurface* actor_surface =
+      GetNextAction().GetActorSurfaceForValidation().Get();
 
-  if (!tab) {
+  if (!actor_surface) {
     journal_->Log(GURL::EmptyGURL(), task_->id(), "Act Failed",
                   JournalDetailsBuilder()
                       .AddError("The tab is no longer present")
@@ -1486,7 +1485,7 @@ void ExecutionEngine::SafetyChecksForNextAction() {
   }
 
   // TODO(mcnee): Add UMA for the outcomes.
-  content::WebContents& web_contents = *(tab->GetContents());
+  content::WebContents& web_contents = *(actor_surface->GetWebContents());
   content::RenderFrameHost* main_frame = web_contents.GetPrimaryMainFrame();
   const GURL url = GetEffectiveUrlForGating(
       main_frame->GetLastCommittedURL(), main_frame->GetLastCommittedOrigin());
@@ -1516,8 +1515,9 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!action_sequence_.empty());
 
-  tabs::TabInterface* tab = GetNextAction().GetTabForValidation().Get();
-  if (!tab) {
+  ActorSurface* actor_surface =
+      GetNextAction().GetActorSurfaceForValidation().Get();
+  if (!actor_surface) {
     journal_->Log(GURL::EmptyGURL(), task_->id(), "Act Failed",
                   JournalDetailsBuilder()
                       .AddError("The tab is no longer present")
@@ -1531,7 +1531,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
   }
 
   TaskId task_id = task_->id();
-  if (!committed_origin.IsSameOriginWith(tab->GetContents()
+  if (!committed_origin.IsSameOriginWith(actor_surface->GetWebContents()
                                              ->GetPrimaryMainFrame()
                                              ->GetLastCommittedOrigin())) {
     // A cross-origin navigation occurred before we got permission. The result
@@ -1571,10 +1571,11 @@ void ExecutionEngine::FailedOnTabBeforeToolCreation() {
           .Add("tabId", GetNextAction().GetTabForValidation().raw_value())
           .AddError("Associating tab for failed action")
           .Build());
-  tabs::TabHandle actuation_tab = GetNextAction().GetTabHandle();
-  if (actuation_tab != tabs::TabHandle::Null()) {
-    task_->AddTab(actuation_tab, /*stop_task_on_detach=*/true,
-                  base::DoNothing());
+  ActorSurfaceHandle actuation_actor_surface_handle =
+      GetNextAction().GetActorSurfaceHandle();
+  if (!actuation_actor_surface_handle.is_null()) {
+    task_->AddActorSurface(actuation_actor_surface_handle,
+                           /*stop_task_on_detach=*/true, base::DoNothing());
   }
 }
 

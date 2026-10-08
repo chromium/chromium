@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/tools/history_tool.h"
 
 #include "base/time/time.h"
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
@@ -14,7 +15,6 @@
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -35,17 +35,15 @@ constexpr base::TimeDelta kPendingNavigationPollingInterval =
 
 using ::content::NavigationController;
 using ::content::NavigationHandle;
-using ::tabs::TabHandle;
-using ::tabs::TabInterface;
 
 HistoryTool::HistoryTool(TaskId task_id,
                          ToolDelegate& tool_delegate,
-                         TabInterface& tab,
+                         ActorSurface& actor_surface,
                          Direction direction)
     : Tool(task_id, tool_delegate),
-      WebContentsObserver(tab.GetContents()),
+      WebContentsObserver(actor_surface.GetWebContents()),
       direction_(direction),
-      tab_handle_(tab.GetHandle()) {}
+      actor_surface_handle_(actor_surface.GetHandle()) {}
 
 HistoryTool::~HistoryTool() = default;
 
@@ -183,11 +181,12 @@ std::unique_ptr<ObservationDelayController> HistoryTool::GetObservationDelayer(
 
 void HistoryTool::UpdateTaskBeforeInvoke(ActorTask& task,
                                          ToolCallback callback) const {
-  task.AddTab(tab_handle_, /*stop_task_on_detach=*/true, std::move(callback));
+  task.AddActorSurface(actor_surface_handle_, /*stop_task_on_detach=*/true,
+                       std::move(callback));
 }
 
-tabs::TabHandle HistoryTool::GetTargetTab() const {
-  return tab_handle_;
+ActorSurfaceHandle HistoryTool::GetTargetActorSurface() const {
+  return actor_surface_handle_;
 }
 
 void HistoryTool::DidStartNavigation(NavigationHandle* navigation_handle) {

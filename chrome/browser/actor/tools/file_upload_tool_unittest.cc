@@ -9,6 +9,8 @@
 
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
+#include "chrome/browser/actor/actor_surface_impl.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/common/actor.mojom.h"
@@ -33,16 +35,20 @@ class FileUploadToolTest : public testing::Test {
   ~FileUploadToolTest() override = default;
 
   MockToolDelegate& delegate() { return delegate_; }
-  tabs::MockTabInterface& mock_tab() { return mock_tab_; }
+  ActorSurface& actor_surface() { return actor_surface_; }
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   MockToolDelegate delegate_;
   tabs::MockTabInterface mock_tab_;
+  // Tab-backed surfaces reuse the tab handle's raw value.
+  ActorSurfaceImpl actor_surface_{
+      ActorSurfaceHandle(mock_tab_.GetHandle().raw_value()),
+      mock_tab_.GetHandle()};
 };
 
 TEST_F(FileUploadToolTest, Validate_Succeeds) {
-  FileUploadTool tool(TaskId(1), delegate(), mock_tab(),
+  FileUploadTool tool(TaskId(1), delegate(), actor_surface(),
                       DomNode{.node_id = 1, .document_identifier = "doc"},
                       {UrlSource()});
 
@@ -52,7 +58,7 @@ TEST_F(FileUploadToolTest, Validate_Succeeds) {
 }
 
 TEST_F(FileUploadToolTest, TimeOfUseValidation_Succeeds) {
-  FileUploadTool tool(TaskId(1), delegate(), mock_tab(),
+  FileUploadTool tool(TaskId(1), delegate(), actor_surface(),
                       DomNode{.node_id = 1, .document_identifier = "doc"},
                       {UrlSource()});
 
@@ -61,7 +67,7 @@ TEST_F(FileUploadToolTest, TimeOfUseValidation_Succeeds) {
 }
 
 TEST_F(FileUploadToolTest, Invoke_Succeeds) {
-  FileUploadTool tool(TaskId(1), delegate(), mock_tab(),
+  FileUploadTool tool(TaskId(1), delegate(), actor_surface(),
                       DomNode{.node_id = 1, .document_identifier = "doc"},
                       {UrlSource()});
 
@@ -72,7 +78,7 @@ TEST_F(FileUploadToolTest, Invoke_Succeeds) {
 
 TEST_F(FileUploadToolTest, DebugString_NoPiiLeakage) {
   FileUploadTool tool(
-      TaskId(1), delegate(), mock_tab(),
+      TaskId(1), delegate(), actor_surface(),
       DomNode{.node_id = 1, .document_identifier = "doc"},
       {FileUploadSource(GURL("https://example.com/secret/file.pdf"))});
 

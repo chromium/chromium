@@ -689,6 +689,13 @@ void ActorTask::HandleDiscardContents(tabs::TabInterface* tab,
   DidContentsEnterActorControl(state, new_contents);
 }
 
+void ActorTask::AddActorSurface(ActorSurfaceHandle actor_surface_handle,
+                                bool stop_task_on_detach,
+                                AddTabCallback callback) {
+  AddTab(actor_surface_handle.GetTabHandle(), stop_task_on_detach,
+         std::move(callback));
+}
+
 void ActorTask::RemoveTab(tabs::TabHandle tab_handle) {
   if (IsActingOnTab(tab_handle)) {
     // Record the tab visibility duration.

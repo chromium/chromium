@@ -10,6 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal_render_frame_binder.h"
@@ -62,7 +63,6 @@ using ::optimization_guide::DocumentIdentifierUserData;
 using optimization_guide::TargetNodeInfo;
 using optimization_guide::proto::AnnotatedPageContent;
 using ::tabs::TabHandle;
-using ::tabs::TabInterface;
 
 namespace {
 
@@ -241,7 +241,9 @@ class RenderFrameChangeObserver : public WebContentsObserver {
 PageTool::PageTool(TaskId task_id,
                    ToolDelegate& tool_delegate,
                    const PageToolRequest& request)
-    : Tool(task_id, tool_delegate), request_(request.Clone()) {}
+    : Tool(task_id, tool_delegate),
+      request_(request.Clone()),
+      actor_surface_handle_(request.GetActorSurfaceHandle()) {}
 
 PageTool::~PageTool() = default;
 
@@ -261,7 +263,7 @@ void PageTool::Validate(ToolCallback callback) {
   }
 
   RenderFrameHost* frame =
-      FindTargetLocalRootFrame(request_->GetTabHandle(), request_->GetTarget());
+      FindTargetLocalRootFrame(actor_surface_handle_, request_->GetTarget());
   if (!frame) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -270,10 +272,9 @@ void PageTool::Validate(ToolCallback callback) {
     return;
   }
 
-  TabInterface* tab = request_->GetTabHandle().Get();
   const optimization_guide::proto::AnnotatedPageContent* last_observation =
       nullptr;
-  if (auto* tab_data = ActorTabData::From(tab)) {
+  if (auto* tab_data = ActorTabData::From(actor_surface_handle_)) {
     last_observation = tab_data->GetLastObservedPageContent();
   }
 
@@ -400,8 +401,7 @@ void PageTool::OnInitializeToolComplete(ToolCallback callback,
   }
 
   std::optional<gfx::Point> success_point = result->get_success_point();
-  ActorTabData* actor_tab_data =
-      ActorTabData::From(request_->GetTabHandle().Get());
+  ActorTabData* actor_tab_data = ActorTabData::From(actor_surface_handle_);
   if (success_point.has_value() && (actor_tab_data != nullptr) &&
       frame->GetView()) {
     float dsf = frame->GetView()->GetDeviceScaleFactor();
@@ -422,18 +422,17 @@ void PageTool::OnInitializeToolComplete(ToolCallback callback,
 
 mojom::ActionResultPtr PageTool::TimeOfUseValidation(
     const AnnotatedPageContent* last_observation) {
-  TabInterface* tab = request_->GetTabHandle().Get();
-  if (!tab) {
+  if (!actor_surface_handle_.Get()) {
     return MakeResult(mojom::ActionResultCode::kTabWentAway);
   }
 
   journal().Log(JournalURL(), task_id(), "TimeOfUseValidation",
                 JournalDetailsBuilder()
-                    .Add("tab_handle", tab->GetHandle().raw_value())
+                    .Add("tab_handle", request_->GetTabHandle().raw_value())
                     .Build());
 
   RenderFrameHost* frame =
-      FindTargetLocalRootFrame(request_->GetTabHandle(), request_->GetTarget());
+      FindTargetLocalRootFrame(actor_surface_handle_, request_->GetTarget());
   if (!frame) {
     return MakeResult(mojom::ActionResultCode::kFrameWentAway);
   }
@@ -477,10 +476,11 @@ mojom::ActionResultPtr PageTool::TimeOfUseValidation(
 mojom::ActionResultPtr PageTool::ComputeObservedTargetAndValidateFrame(
     const AnnotatedPageContent* last_observation,
     content::RenderFrameHost* frame) {
-  TabInterface* tab = request_->GetTabHandle().Get();
-  if (!tab) {
+  ActorSurface* actor_surface = actor_surface_handle_.Get();
+  if (!actor_surface) {
     return MakeResult(mojom::ActionResultCode::kTabWentAway);
   }
+  WebContents* web_contents = actor_surface->GetWebContents();
 
   if (std::holds_alternative<gfx::Point>(request_->GetTarget())) {
     // Coordinate targets are provided in DIPs (view/widget logical pixels)
@@ -490,15 +490,15 @@ mojom::ActionResultPtr PageTool::ComputeObservedTargetAndValidateFrame(
     // is not 1.0. This bounds check compares against WebContents::GetSize(),
     // which is also in DIPs, so it must remain in DIP space.
     const gfx::Point& point = std::get<gfx::Point>(request_->GetTarget());
-    gfx::Size content_size = tab->GetContents()->GetSize();
+    gfx::Size content_size = web_contents->GetSize();
     if (!gfx::Rect(content_size).Contains(point)) {
       return MakeResult(mojom::ActionResultCode::kCoordinatesOutOfBounds);
     }
   }
 
   std::optional<TargetNodeInfo> observed_target_node_info =
-      FindLastObservedNodeForActionTarget(last_observation,
-                                          request_->GetTarget(), tab);
+      FindLastObservedNodeForActionTarget(
+          last_observation, request_->GetTarget(), actor_surface_handle_);
 
   if (!observed_target_node_info) {
     journal().Log(JournalURL(), task_id(), "ComputeObservedTarget",
@@ -508,7 +508,7 @@ mojom::ActionResultPtr PageTool::ComputeObservedTargetAndValidateFrame(
   }
 
   if (mojom::ActionResultPtr validation_result = ValidateTargetInLastApc(
-          *request_, *tab->GetContents(), observed_target_node_info)) {
+          *request_, *web_contents, observed_target_node_info)) {
     return validation_result;
   }
 
@@ -525,7 +525,7 @@ mojom::ActionResultPtr PageTool::ComputeObservedTargetAndValidateFrame(
           "No prior observation available for TOCTOU validation");
     } else if (last_observation &&
                !ValidateTargetFrameCandidate(request_->GetTarget(), frame,
-                                             *tab->GetContents(),
+                                             *web_contents,
                                              observed_target_node_info)) {
       return MakeResult(
           mojom::ActionResultCode::kFrameLocationChangedSinceObservation);
@@ -681,19 +681,19 @@ std::unique_ptr<ObservationDelayController> PageTool::GetObservationDelayer(
 
 void PageTool::UpdateTaskBeforeInvoke(ActorTask& task,
                                       ToolCallback callback) const {
-  task.AddTab(request_->GetTabHandle(), /*stop_task_on_detach=*/true,
-              std::move(callback));
+  task.AddActorSurface(actor_surface_handle_, /*stop_task_on_detach=*/true,
+                       std::move(callback));
 }
 
-tabs::TabHandle PageTool::GetTargetTab() const {
-  return request_->GetTabHandle();
+ActorSurfaceHandle PageTool::GetTargetActorSurface() const {
+  return actor_surface_handle_;
 }
 
 void PageTool::OnRenderFrameHostChanged() {
   // Return error if tab itself is closed or the WebContents hosted in the tab
   // is being destroyed.
   if (auto tab_error =
-          MaybeGetErrorCodeForTab(request_->GetTabHandle().Get())) {
+          MaybeGetErrorCodeForActorSurface(actor_surface_handle_.Get())) {
     FinishInvoke(MakeResult(*tab_error));
     return;
   }
@@ -705,10 +705,8 @@ void PageTool::OnRenderFrameHostChanged() {
 }
 
 void PageTool::OnRenderFrameGone() {
-  auto* tab_interface = request_->GetTabHandle().Get();
-
   mojom::ActionResultCode result_code =
-      MaybeGetErrorCodeForTab(tab_interface)
+      MaybeGetErrorCodeForActorSurface(actor_surface_handle_.Get())
           .value_or(mojom::ActionResultCode::kFrameWentAway);
   FinishInvoke(MakeResult(result_code));
 }

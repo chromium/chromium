@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -44,8 +45,9 @@ class PageTargetUtilSecurityTest : public ActorToolsTest {
     ASSERT_TRUE(embedded_https_test_server().Start());
   }
 
-  tabs::TabInterface* active_tab() {
-    return browser()->tab_strip_model()->GetActiveTab();
+  ActorSurfaceHandle active_actor_surface_handle() {
+    return ActorSurfaceHandle::From(
+        browser()->tab_strip_model()->GetActiveTab()->GetHandle());
   }
 
  private:
@@ -109,8 +111,8 @@ IN_PROC_BROWSER_TEST_F(PageTargetUtilSecurityTest,
 
   // GetFieldIdFromPageTarget should return empty because of the fix.
   // If vulnerable, it would return the attacker's field ID.
-  autofill::FieldGlobalId resolved_id =
-      GetFieldIdFromPageTarget(&apc, active_tab(), target_point);
+  autofill::FieldGlobalId resolved_id = GetFieldIdFromPageTarget(
+      &apc, active_actor_surface_handle(), target_point);
 
   EXPECT_FALSE(resolved_id);
 }
@@ -196,8 +198,8 @@ IN_PROC_BROWSER_TEST_F(PageTargetUtilSecurityHiDpiTest,
   box->set_height(20);
 
   // 4. Test GetFieldIdFromPageTarget.
-  autofill::FieldGlobalId resolved_id =
-      GetFieldIdFromPageTarget(&apc, active_tab(), target_point_dip);
+  autofill::FieldGlobalId resolved_id = GetFieldIdFromPageTarget(
+      &apc, active_actor_surface_handle(), target_point_dip);
 
   content::RenderWidgetHost* actual_rwh =
       web_contents()->FindWidgetAtPoint(gfx::PointF(target_point_dip));

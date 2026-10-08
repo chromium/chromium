@@ -38,6 +38,7 @@ inline const ToolDomain ToolDomain::kInstance<
 }  // namespace origin_gating
 
 namespace actor {
+class ActorSurface;
 class ActorTask;
 class ToolRequest;
 
@@ -187,8 +188,8 @@ CreateActorJournalFetchPageProgressListener(
 
 std::string ToBase64(const google::protobuf::MessageLite& proto);
 
-std::optional<mojom::ActionResultCode> MaybeGetErrorCodeForTab(
-    tabs::TabInterface* tab);
+std::optional<mojom::ActionResultCode> MaybeGetErrorCodeForActorSurface(
+    ActorSurface* actor_surface);
 
 }  // namespace actor
 

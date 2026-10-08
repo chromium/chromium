@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/tools/attempt_login_tool.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
@@ -36,15 +37,15 @@ AttemptLoginToolRequest& AttemptLoginToolRequest::operator=(
 ToolRequest::CreateToolResult AttemptLoginToolRequest::CreateTool(
     TaskId task_id,
     ToolDelegate& tool_delegate) const {
-  tabs::TabInterface* tab = GetTabHandle().Get();
-  if (!tab) {
+  ActorSurface* actor_surface = GetActorSurfaceHandle().Get();
+  if (!actor_surface) {
     return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
                                          /*requires_page_stabilization=*/false,
                                          "The tab is no longer present.")};
   }
 
   return {std::make_unique<AttemptLoginTool>(
-              task_id, tool_delegate, *tab, password_button_,
+              task_id, tool_delegate, *actor_surface, password_button_,
               sign_in_with_google_button_, RequiresOpeningWebContents()),
           MakeOkResult()};
 }

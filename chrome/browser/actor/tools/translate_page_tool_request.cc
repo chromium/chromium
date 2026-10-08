@@ -8,6 +8,7 @@
 #include <string_view>
 #include <utility>
 
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
 #include "chrome/browser/actor/tools/registry/tool_schema_builder.h"
@@ -53,14 +54,14 @@ std::optional<ToolDefinition> TranslatePageToolRequest::GetToolDefinition() {
 ToolRequest::CreateToolResult TranslatePageToolRequest::CreateTool(
     TaskId task_id,
     ToolDelegate& tool_delegate) const {
-  tabs::TabInterface* tab = GetTabHandle().Get();
-  if (!tab) {
+  ActorSurface* actor_surface = GetActorSurfaceHandle().Get();
+  if (!actor_surface) {
     return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
                                          /*requires_page_stabilization=*/false,
                                          "The tab is no longer present.")};
   }
-  return {std::make_unique<TranslatePageTool>(task_id, tool_delegate, *tab,
-                                              target_language_),
+  return {std::make_unique<TranslatePageTool>(task_id, tool_delegate,
+                                              *actor_surface, target_language_),
           MakeOkResult()};
 }
 

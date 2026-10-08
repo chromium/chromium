@@ -24,6 +24,7 @@
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_navigation_throttle.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -281,6 +282,14 @@ class ActorTask : public base::SupportsUserData {
               bool stop_task_on_detach,
               AddTabCallback callback);
   void RemoveTab(tabs::TabHandle tab);
+
+  // Surface version of AddTab(). If `stop_task_on_detach` is true, the task is
+  // stopped when the surface's tab is detached. Replies with kTabWentAway if
+  // the surface no longer exists or is not backed by a tab.
+  // TODO(b/567721071): Track surfaces natively instead of routing to AddTab().
+  void AddActorSurface(ActorSurfaceHandle actor_surface_handle,
+                       bool stop_task_on_detach,
+                       AddTabCallback callback);
 
   // Transient version of the above. The tab will enter the same
   // simulated-visible state but only until the next call to Act. Until then it

@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
@@ -108,8 +109,22 @@ class Tool {
                                      mojom::ActionResultPtr result,
                                      ToolCallback callback) const;
 
-  // Returns the tab handle for the tab that this tool targets, if any.
-  virtual tabs::TabHandle GetTargetTab() const = 0;
+  // Returns the tab handle for the tab that this tool targets, if any. Only
+  // overridden by tools that haven't been migrated to GetTargetActorSurface().
+  // Returns a null handle by default.
+  // TODO(b/567721071): Remove once all tools override GetTargetActorSurface().
+  virtual tabs::TabHandle GetTargetTab() const;
+
+  // Returns the handle of the surface that this tool targets, or a null handle
+  // if the tool doesn't target a surface. Tools should store the handle of the
+  // surface they were created for, so the handle stays non-null (and Get()
+  // returns null) once the surface goes away.
+  //
+  // The default implementation looks up the surface currently backing
+  // GetTargetTab(). It returns a null handle if that tab is gone, so callers
+  // must also check GetTargetTab() for unmigrated tools.
+  // TODO(b/567721071): Make pure virtual once all tools override it.
+  virtual ActorSurfaceHandle GetTargetActorSurface() const;
 
  protected:
   TaskId task_id() const { return task_id_; }

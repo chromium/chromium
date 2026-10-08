@@ -830,6 +830,35 @@ TEST_F(ActorTaskTest, AddTab_RejectsCrossProfileTabEvenWithNullContents) {
   EXPECT_FALSE(task_->GetTabs().contains(cross_profile_tab->GetHandle()));
 }
 
+TEST_F(ActorTaskTest, AddActorSurface_RejectsNonExistentSurface) {
+  base::test::TestFuture<mojom::ActionResultPtr> add_actor_surface_future;
+  task_->AddActorSurface(ActorSurfaceHandle(99999),
+                         /*stop_task_on_detach=*/true,
+                         add_actor_surface_future.GetCallback());
+  auto result = add_actor_surface_future.Take();
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->code, mojom::ActionResultCode::kTabWentAway);
+}
+
+TEST_F(ActorTaskTest, AddActorSurface_RoutesToAddTabForTabBackedSurface) {
+  std::unique_ptr<tabs::MockTabInterface> cross_profile_tab =
+      CreateCrossProfileMockTab();
+  ActorSurfaceImpl actor_surface(
+      ActorSurfaceHandle(cross_profile_tab->GetHandle().raw_value()),
+      cross_profile_tab->GetHandle());
+
+  // AddTab() rejects the cross-profile tab backing the surface, which shows
+  // AddActorSurface() resolved and forwarded the surface's tab.
+  base::test::TestFuture<mojom::ActionResultPtr> add_actor_surface_future;
+  task_->AddActorSurface(actor_surface.GetHandle(),
+                         /*stop_task_on_detach=*/true,
+                         add_actor_surface_future.GetCallback());
+  auto result = add_actor_surface_future.Take();
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->code, mojom::ActionResultCode::kActionTargetCrossProfile);
+  EXPECT_FALSE(task_->HasTab(cross_profile_tab->GetHandle()));
+}
+
 TEST_F(ActorTaskTest, ObserveTabOnce_RejectsNonExistentAndCrossProfileTab) {
   tabs::TabHandle non_existent_handle(99999);
   task_->ObserveTabOnce(non_existent_handle);

@@ -14,6 +14,8 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/actor/actor_surface.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/navigate_tool.h"
 #include "chrome/browser/actor/tools/page_search_utils.h"
@@ -203,12 +205,23 @@ void OpenKnownPageTool::OnHistoryMatches(
     return;
   }
 
+  ActorSurfaceHandle actor_surface_handle =
+      ActorSurfaceHandle::From(active_tab->GetHandle());
+  if (!actor_surface_handle.Get()) {
+    PostResponseTask(std::move(callback),
+                     MakeResult(mojom::ActionResultCode::kTabWentAway,
+                                /*requires_page_stabilization=*/false,
+                                "The active tab is no longer present."));
+    return;
+  }
+
   navigation_target_ =
       TabMatch{active_tab->GetHandle(), chosen_page->url, chosen_page->title};
   // TODO(b/565736154): Replace this delegation once composite tools are
   // supported (b/555808355).
-  navigate_tool_ = std::make_unique<NavigateTool>(
-      task_id(), tool_delegate(), *active_tab, chosen_page->url);
+  navigate_tool_ = std::make_unique<NavigateTool>(task_id(), tool_delegate(),
+                                                  *actor_surface_handle.Get(),
+                                                  chosen_page->url);
 
   ValidateDestinationUrl(chosen_page->url, std::move(callback));
 }
@@ -249,7 +262,10 @@ void OpenKnownPageTool::Invoke(ToolCallback callback) {
 
   CHECK(navigation_target_.has_value());
   tabs::TabInterface* tab = ResolveTabInWindow(*navigation_target_, browser);
-  if (!tab || !tab->GetContents()) {
+  ActorSurfaceHandle actor_surface_handle =
+      tab ? ActorSurfaceHandle::From(tab->GetHandle())
+          : ActorSurfaceHandle::Null();
+  if (!actor_surface_handle.Get()) {
     PostResponseTask(
         std::move(callback),
         MakeResult(mojom::ActionResultCode::kTabWentAway,
@@ -262,8 +278,9 @@ void OpenKnownPageTool::Invoke(ToolCallback callback) {
   // WebContents replacement or discard between Validate() and Invoke().
   // TODO(b/565736154): Replace this delegation once composite tools are
   // supported (b/555808355).
-  navigate_tool_ = std::make_unique<NavigateTool>(
-      task_id(), tool_delegate(), *tab, navigation_target_->url);
+  navigate_tool_ = std::make_unique<NavigateTool>(task_id(), tool_delegate(),
+                                                  *actor_surface_handle.Get(),
+                                                  navigation_target_->url);
   navigate_tool_->Invoke(std::move(callback));
 }
 
@@ -278,11 +295,8 @@ std::string OpenKnownPageTool::JournalEvent() const {
 std::unique_ptr<ObservationDelayController>
 OpenKnownPageTool::GetObservationDelayer(
     ObservationDelayController::PageStabilityConfig page_stability_config) {
-  if (navigate_tool_) {
-    tabs::TabInterface* tab = navigate_tool_->GetTargetTab().Get();
-    if (tab && tab->GetContents()) {
-      return navigate_tool_->GetObservationDelayer(page_stability_config);
-    }
+  if (navigate_tool_ && navigate_tool_->GetTargetActorSurface().Get()) {
+    return navigate_tool_->GetObservationDelayer(page_stability_config);
   }
   return nullptr;
 }

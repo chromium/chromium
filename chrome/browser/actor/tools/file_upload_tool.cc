@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
@@ -18,11 +19,11 @@ namespace actor {
 
 FileUploadTool::FileUploadTool(TaskId task_id,
                                ToolDelegate& tool_delegate,
-                               tabs::TabInterface& tab,
+                               ActorSurface& actor_surface,
                                PageTarget target,
                                std::vector<FileUploadSource> files)
     : Tool(task_id, tool_delegate),
-      tab_handle_(tab.GetHandle()),
+      actor_surface_handle_(actor_surface.GetHandle()),
       target_(std::move(target)),
       files_(std::move(files)) {}
 
@@ -60,12 +61,12 @@ std::string FileUploadTool::JournalEvent() const {
 std::unique_ptr<ObservationDelayController>
 FileUploadTool::GetObservationDelayer(
     ObservationDelayController::PageStabilityConfig page_stability_config) {
-  tabs::TabInterface* const tab = tab_handle_.Get();
-  if (!tab || !tab->GetContents()) {
+  ActorSurface* const actor_surface = actor_surface_handle_.Get();
+  if (!actor_surface || !actor_surface->GetWebContents()) {
     return nullptr;
   }
   content::RenderFrameHost* const rfh =
-      tab->GetContents()->GetPrimaryMainFrame();
+      actor_surface->GetWebContents()->GetPrimaryMainFrame();
   if (!rfh) {
     return nullptr;
   }
@@ -73,8 +74,8 @@ FileUploadTool::GetObservationDelayer(
       *rfh, task_id(), journal(), std::move(page_stability_config));
 }
 
-tabs::TabHandle FileUploadTool::GetTargetTab() const {
-  return tab_handle_;
+ActorSurfaceHandle FileUploadTool::GetTargetActorSurface() const {
+  return actor_surface_handle_;
 }
 
 }  // namespace actor

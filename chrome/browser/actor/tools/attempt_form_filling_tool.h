@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/autofill_selection_dialog_event_handler.h"
 #include "chrome/browser/actor/tools/attempt_form_filling_tool_request.h"
 #include "chrome/browser/actor/tools/tool.h"
@@ -19,7 +20,6 @@
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/tabs/public/tab_interface.h"
 
 namespace autofill {
 class AutofillClient;
@@ -27,13 +27,15 @@ class AutofillClient;
 
 namespace actor {
 
+class ActorSurface;
+
 class AttemptFormFillingTool : public Tool,
                                public AutofillSelectionDialogEventHandler {
  public:
   AttemptFormFillingTool(
       TaskId task_id,
       ToolDelegate& tool_delegate,
-      tabs::TabInterface& tab,
+      ActorSurface& actor_surface,
       std::vector<AttemptFormFillingToolRequest::FormFillingRequest> requests,
       bool enqueued_click);
   ~AttemptFormFillingTool() override;
@@ -48,7 +50,7 @@ class AttemptFormFillingTool : public Tool,
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
       ObservationDelayController::PageStabilityConfig page_stability_config)
       override;
-  tabs::TabHandle GetTargetTab() const override;
+  ActorSurfaceHandle GetTargetActorSurface() const override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
                               ToolCallback callback) const override;
 
@@ -80,7 +82,7 @@ class AttemptFormFillingTool : public Tool,
       ToolCallback invoke_callback,
       std::vector<autofill::ActorFormFillingRequest> requests);
   autofill::AutofillClient* GetAutofillClient();
-  tabs::TabHandle tab_handle_;
+  ActorSurfaceHandle actor_surface_handle_;
   std::vector<AttemptFormFillingToolRequest::FormFillingRequest>
       tool_fill_requests_;
   // Set to true if a click has already been enqueued for the target field of

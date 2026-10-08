@@ -8,7 +8,8 @@
 #include <optional>
 #include <string_view>
 
-#include "base/check.h"
+#include "chrome/browser/actor/actor_surface.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/history_tool.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
@@ -21,7 +22,6 @@
 namespace actor {
 
 using ::tabs::TabHandle;
-using ::tabs::TabInterface;
 
 namespace {
 
@@ -40,20 +40,19 @@ constexpr std::string_view kReloadPageToolDescription =
 ToolRequest::CreateToolResult CreateHistoryTool(
     TaskId task_id,
     ToolDelegate& tool_delegate,
-    TabHandle tab_handle,
+    ActorSurfaceHandle actor_surface_handle,
     HistoryTool::Direction direction) {
-  TabInterface* tab = tab_handle.Get();
+  ActorSurface* actor_surface = actor_surface_handle.Get();
 
-  if (!tab) {
+  if (!actor_surface) {
     return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
                                          /*requires_page_stabilization=*/false,
                                          "The tab is no longer present.")};
   }
 
-  CHECK(tab->GetContents());
-  return {
-      std::make_unique<HistoryTool>(task_id, tool_delegate, *tab, direction),
-      MakeOkResult()};
+  return {std::make_unique<HistoryTool>(task_id, tool_delegate, *actor_surface,
+                                        direction),
+          MakeOkResult()};
 }
 
 }  // namespace
@@ -72,7 +71,7 @@ std::optional<ToolDefinition> HistoryBackToolRequest::GetToolDefinition() {
 ToolRequest::CreateToolResult HistoryBackToolRequest::CreateTool(
     TaskId task_id,
     ToolDelegate& tool_delegate) const {
-  return CreateHistoryTool(task_id, tool_delegate, GetTabHandle(),
+  return CreateHistoryTool(task_id, tool_delegate, GetActorSurfaceHandle(),
                            HistoryTool::Direction::kBack);
 }
 
@@ -104,7 +103,7 @@ std::optional<ToolDefinition> HistoryForwardToolRequest::GetToolDefinition() {
 ToolRequest::CreateToolResult HistoryForwardToolRequest::CreateTool(
     TaskId task_id,
     ToolDelegate& tool_delegate) const {
-  return CreateHistoryTool(task_id, tool_delegate, GetTabHandle(),
+  return CreateHistoryTool(task_id, tool_delegate, GetActorSurfaceHandle(),
                            HistoryTool::Direction::kForward);
 }
 
@@ -137,7 +136,7 @@ std::optional<ToolDefinition> ReloadPageToolRequest::GetToolDefinition() {
 ToolRequest::CreateToolResult ReloadPageToolRequest::CreateTool(
     TaskId task_id,
     ToolDelegate& tool_delegate) const {
-  return CreateHistoryTool(task_id, tool_delegate, GetTabHandle(),
+  return CreateHistoryTool(task_id, tool_delegate, GetActorSurfaceHandle(),
                            bypass_cache_
                                ? HistoryTool::Direction::kReloadBypassingCache
                                : HistoryTool::Direction::kReload);

@@ -429,6 +429,7 @@ source_set("test_support") {
   deps = [ ":actor" ]
 
   public_deps = [
+    ":impl",
     "//base",
     "//chrome/browser/actor/ui:event_dispatcher",
     "//chrome/browser/actor/ui:test_support",

@@ -10,13 +10,13 @@
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tab_annotation_manager.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -25,10 +25,10 @@ namespace actor {
 
 FindAndHighlightTool::FindAndHighlightTool(TaskId task_id,
                                            ToolDelegate& tool_delegate,
-                                           tabs::TabHandle tab_handle,
+                                           ActorSurface& actor_surface,
                                            std::string query)
     : Tool(task_id, tool_delegate),
-      tab_handle_(tab_handle),
+      actor_surface_handle_(actor_surface.GetHandle()),
       query_(std::move(query)) {}
 
 FindAndHighlightTool::~FindAndHighlightTool() = default;
@@ -36,7 +36,7 @@ FindAndHighlightTool::~FindAndHighlightTool() = default;
 void FindAndHighlightTool::Validate(ToolCallback callback) {
   CHECK(!query_.empty());
 
-  if (!tab_handle_.Get()) {
+  if (!actor_surface_handle_.Get()) {
     PostResponseTask(std::move(callback),
                      MakeResult(mojom::ActionResultCode::kTabWentAway));
     return;
@@ -46,14 +46,14 @@ void FindAndHighlightTool::Validate(ToolCallback callback) {
 }
 
 void FindAndHighlightTool::Invoke(ToolCallback callback) {
-  tabs::TabInterface* tab = tab_handle_.Get();
-  if (!tab || !tab->GetContents()) {
+  ActorSurface* actor_surface = actor_surface_handle_.Get();
+  if (!actor_surface || !actor_surface->GetWebContents()) {
     PostResponseTask(std::move(callback),
                      MakeResult(mojom::ActionResultCode::kTabWentAway));
     return;
   }
 
-  content::WebContents* web_contents = tab->GetContents();
+  content::WebContents* web_contents = actor_surface->GetWebContents();
   auto* annotation_manager =
       TabAnnotationManager::GetOrCreateForWebContents(web_contents);
   CHECK(annotation_manager);
@@ -87,9 +87,9 @@ std::string FindAndHighlightTool::JournalEvent() const {
 }
 
 GURL FindAndHighlightTool::JournalURL() const {
-  tabs::TabInterface* tab = tab_handle_.Get();
-  if (tab && tab->GetContents()) {
-    return tab->GetContents()->GetLastCommittedURL();
+  ActorSurface* actor_surface = actor_surface_handle_.Get();
+  if (actor_surface && actor_surface->GetWebContents()) {
+    return actor_surface->GetWebContents()->GetLastCommittedURL();
   }
   return GURL();
 }
@@ -102,11 +102,12 @@ FindAndHighlightTool::GetObservationDelayer(
 
 void FindAndHighlightTool::UpdateTaskBeforeInvoke(ActorTask& task,
                                                   ToolCallback callback) const {
-  task.AddTab(tab_handle_, /*stop_task_on_detach=*/true, std::move(callback));
+  task.AddActorSurface(actor_surface_handle_, /*stop_task_on_detach=*/true,
+                       std::move(callback));
 }
 
-tabs::TabHandle FindAndHighlightTool::GetTargetTab() const {
-  return tab_handle_;
+ActorSurfaceHandle FindAndHighlightTool::GetTargetActorSurface() const {
+  return actor_surface_handle_;
 }
 
 }  // namespace actor

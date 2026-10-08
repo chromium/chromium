@@ -29,6 +29,7 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_metrics.h"
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tool_request_variant.h"
 #include "chrome/browser/actor/tools/attempt_form_filling_tool_request.h"
@@ -1920,12 +1921,13 @@ origin_gating::TaskPolicyConfig ConvertAgentContainerConfig(
           apc::RuleMetadata::CAPABILITY_NAVIGATE));
 }
 
-std::optional<mojom::ActionResultCode> MaybeGetErrorCodeForTab(
-    tabs::TabInterface* tab_interface) {
-  if (!tab_interface || !tab_interface->GetContents() ||
-      tab_interface->GetContents()->IsBeingDestroyed()) {
+std::optional<mojom::ActionResultCode> MaybeGetErrorCodeForActorSurface(
+    ActorSurface* actor_surface) {
+  content::WebContents* contents =
+      actor_surface ? actor_surface->GetWebContents() : nullptr;
+  if (!contents || contents->IsBeingDestroyed()) {
     return mojom::ActionResultCode::kTabWentAway;
-  } else if (tab_interface->GetContents()->IsCrashed()) {
+  } else if (contents->IsCrashed()) {
     return mojom::ActionResultCode::kRendererCrashed;
   }
   return std::nullopt;

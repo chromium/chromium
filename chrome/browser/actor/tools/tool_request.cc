@@ -57,6 +57,12 @@ tabs::TabHandle ToolRequest::GetTabHandle() const {
   return tabs::TabHandle();
 }
 
+ActorSurfaceHandle ToolRequest::GetActorSurfaceHandle() const {
+  // TODO(b/567721071): Have requests carry an ActorSurfaceHandle directly
+  // instead of looking it up from the tab.
+  return ActorSurfaceHandle::From(GetTabHandle());
+}
+
 std::string ToolRequest::JournalEvent() const {
   return std::string(Name());
 }
@@ -69,6 +75,11 @@ bool ToolRequest::RequiresUrlCheckInCurrentTab() const {
 
 tabs::TabHandle ToolRequest::GetTabForValidation() const {
   return GetTabHandle();
+}
+
+ActorSurfaceHandle ToolRequest::GetActorSurfaceForValidation() const {
+  // TODO(b/567721071): Stop looking the surface up from the tab.
+  return ActorSurfaceHandle::From(GetTabForValidation());
 }
 
 std::optional<url::Origin> ToolRequest::AssociatedOriginGrant() const {

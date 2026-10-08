@@ -7,6 +7,8 @@
 #include <optional>
 #include <string_view>
 
+#include "chrome/browser/actor/actor_surface.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/navigate_tool.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
@@ -31,7 +33,6 @@ constexpr std::string_view kUrlParamDescription =
 }  // namespace
 
 using ::tabs::TabHandle;
-using ::tabs::TabInterface;
 
 NavigateToolRequest::NavigateToolRequest(TabHandle tab_handle, GURL url)
     : TabToolRequest(tab_handle), url_(url) {}
@@ -49,14 +50,15 @@ std::optional<ToolDefinition> NavigateToolRequest::GetToolDefinition() {
 ToolRequest::CreateToolResult NavigateToolRequest::CreateTool(
     TaskId task_id,
     ToolDelegate& tool_delegate) const {
-  TabInterface* tab = GetTabHandle().Get();
-  if (!tab) {
+  ActorSurface* actor_surface = GetActorSurfaceHandle().Get();
+  if (!actor_surface) {
     return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
                                          /*requires_page_stabilization=*/false,
                                          "The tab is no longer present.")};
   }
 
-  return {std::make_unique<NavigateTool>(task_id, tool_delegate, *tab, url_),
+  return {std::make_unique<NavigateTool>(task_id, tool_delegate, *actor_surface,
+                                         url_),
           MakeOkResult()};
 }
 

@@ -10,11 +10,13 @@
 #include <variant>
 
 #include "base/time/time.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
-#include "components/tabs/public/tab_interface.h"
 
 namespace actor {
+
+class ActorSurface;
 
 class MediaControlTool : public Tool {
  public:
@@ -34,7 +36,7 @@ class MediaControlTool : public Tool {
 
   MediaControlTool(TaskId task_id,
                    ToolDelegate& tool_delegate,
-                   tabs::TabInterface& tab,
+                   ActorSurface& actor_surface,
                    MediaControl media_control);
   ~MediaControlTool() override;
 
@@ -48,10 +50,10 @@ class MediaControlTool : public Tool {
       override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
                               ToolCallback callback) const override;
-  tabs::TabHandle GetTargetTab() const override;
+  ActorSurfaceHandle GetTargetActorSurface() const override;
 
  private:
-  tabs::TabHandle tab_handle_;
+  ActorSurfaceHandle actor_surface_handle_;
   MediaControl media_control_;
 };
 

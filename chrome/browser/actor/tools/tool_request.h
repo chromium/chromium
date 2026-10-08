@@ -12,6 +12,7 @@
 
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/common/actor.mojom.h"
@@ -59,7 +60,14 @@ class ToolRequest {
 
   // Returns a handle to the tab being targeted by this request. The default
   // (non-tab, non-page scoped tool requests) returns a null handle.
+  // TODO(b/567721071): Remove once all callers use GetActorSurfaceHandle().
   virtual tabs::TabHandle GetTabHandle() const;
+
+  // Returns a handle to the surface being targeted by this request, or a null
+  // handle if the request doesn't target a surface. The default implementation
+  // looks up the surface currently backing GetTabHandle(), so it returns a
+  // null handle once that tab is gone.
+  virtual ActorSurfaceHandle GetActorSurfaceHandle() const;
 
   // Returns true if this tool takes action within the page of the current tab
   // and thus requires checking the current tab's URL for safety checks.
@@ -69,7 +77,14 @@ class ToolRequest {
 
   // Returns the tab handle that should be used for safety checks, if any.
   // By default, this is the target tab of the request (GetTabHandle()).
+  // TODO(b/567721071): Remove once all callers use
+  // GetActorSurfaceForValidation().
   virtual tabs::TabHandle GetTabForValidation() const;
+
+  // Returns the surface handle that should be used for safety checks, if any.
+  // The default implementation looks up the surface currently backing
+  // GetTabForValidation().
+  virtual ActorSurfaceHandle GetActorSurfaceForValidation() const;
 
   // Returns the name to use for the journal when recording entries for this
   // request. This should only be overridden if Name() isn't descriptive enough.

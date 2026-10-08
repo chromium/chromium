@@ -52,7 +52,6 @@ class WindowManagementTool : public Tool {
   void UpdateTaskAfterInvoke(ActorTask& task,
                              mojom::ActionResultPtr result,
                              ToolCallback callback) const override;
-  tabs::TabHandle GetTargetTab() const override;
 
  private:
   BrowserWindowInterface* GetTargetBrowser() const;

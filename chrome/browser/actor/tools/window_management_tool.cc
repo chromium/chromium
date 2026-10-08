@@ -234,10 +234,6 @@ void WindowManagementTool::UpdateTaskAfterInvoke(ActorTask& task,
   }
 }
 
-tabs::TabHandle WindowManagementTool::GetTargetTab() const {
-  return tabs::TabHandle::Null();
-}
-
 BrowserWindowInterface* WindowManagementTool::GetTargetBrowser() const {
   CHECK_NE(action_, Action::kCreate);
   CHECK(window_id_.has_value());

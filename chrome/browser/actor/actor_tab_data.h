@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -30,6 +31,7 @@ class ActorTabData {
 
   DECLARE_USER_DATA(ActorTabData);
   static ActorTabData* From(tabs::TabInterface* tab);
+  static ActorTabData* From(ActorSurfaceHandle actor_surface_handle);
 
   void DidObserveContent(
       const optimization_guide::proto::AnnotatedPageContent& content,

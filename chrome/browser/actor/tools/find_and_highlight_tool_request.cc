@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/tools/find_and_highlight_tool.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor/action_result.h"
@@ -35,14 +36,15 @@ ToolRequest::CreateToolResult FindAndHighlightToolRequest::CreateTool(
                        "Query cannot be empty.")};
   }
 
-  if (!GetTabHandle().Get()) {
+  ActorSurface* actor_surface = GetActorSurfaceHandle().Get();
+  if (!actor_surface) {
     return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
                                          /*requires_page_stabilization=*/false,
                                          "The tab is no longer present.")};
   }
 
   return {std::make_unique<FindAndHighlightTool>(task_id, tool_delegate,
-                                                 GetTabHandle(), query_),
+                                                 *actor_surface, query_),
           MakeOkResult()};
 }
 

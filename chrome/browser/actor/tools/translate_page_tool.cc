@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
@@ -21,20 +22,12 @@
 
 namespace actor {
 
-namespace {
-
-content::RenderFrameHost& GetPrimaryMainFrameOfTab(tabs::TabHandle tab_handle) {
-  return *tab_handle.Get()->GetContents()->GetPrimaryMainFrame();
-}
-
-}  // namespace
-
 TranslatePageTool::TranslatePageTool(TaskId task_id,
                                      ToolDelegate& tool_delegate,
-                                     tabs::TabInterface& tab,
+                                     ActorSurface& actor_surface,
                                      std::string_view target_language)
     : Tool(task_id, tool_delegate),
-      tab_handle_(tab.GetHandle()),
+      actor_surface_handle_(actor_surface.GetHandle()),
       target_language_(target_language) {}
 
 TranslatePageTool::~TranslatePageTool() = default;
@@ -45,12 +38,12 @@ void TranslatePageTool::Validate(ToolCallback callback) {
 
 mojom::ActionResultPtr TranslatePageTool::TimeOfUseValidation(
     const optimization_guide::proto::AnnotatedPageContent* last_observation) {
-  tabs::TabInterface* tab = tab_handle_.Get();
-  if (!tab) {
+  ActorSurface* actor_surface = actor_surface_handle_.Get();
+  if (!actor_surface) {
     return MakeResult(mojom::ActionResultCode::kTabWentAway);
   }
 
-  content::WebContents* contents = tab->GetContents();
+  content::WebContents* contents = actor_surface->GetWebContents();
   if (!contents) {
     return MakeResult(mojom::ActionResultCode::kTabWentAway);
   }
@@ -71,10 +64,10 @@ mojom::ActionResultPtr TranslatePageTool::TimeOfUseValidation(
 }
 
 void TranslatePageTool::Invoke(ToolCallback callback) {
-  tabs::TabInterface* tab = tab_handle_.Get();
-  CHECK(tab);
+  ActorSurface* actor_surface = actor_surface_handle_.Get();
+  CHECK(actor_surface);
 
-  content::WebContents* contents = tab->GetContents();
+  content::WebContents* contents = actor_surface->GetWebContents();
   CHECK(contents);
 
   ChromeTranslateClient* translate_client =
@@ -152,21 +145,23 @@ std::string TranslatePageTool::JournalEvent() const {
 std::unique_ptr<ObservationDelayController>
 TranslatePageTool::GetObservationDelayer(
     ObservationDelayController::PageStabilityConfig page_stability_config) {
-  if (!tab_handle_.Get() || !tab_handle_.Get()->GetContents()) {
+  ActorSurface* actor_surface = actor_surface_handle_.Get();
+  if (!actor_surface) {
     return nullptr;
   }
   return std::make_unique<ObservationDelayController>(
-      GetPrimaryMainFrameOfTab(tab_handle_), task_id(), journal(),
-      page_stability_config);
+      *actor_surface->GetWebContents()->GetPrimaryMainFrame(), task_id(),
+      journal(), page_stability_config);
 }
 
 void TranslatePageTool::UpdateTaskBeforeInvoke(ActorTask& task,
                                                ToolCallback callback) const {
-  task.AddTab(tab_handle_, /*stop_task_on_detach=*/true, std::move(callback));
+  task.AddActorSurface(actor_surface_handle_, /*stop_task_on_detach=*/true,
+                       std::move(callback));
 }
 
-tabs::TabHandle TranslatePageTool::GetTargetTab() const {
-  return tab_handle_;
+ActorSurfaceHandle TranslatePageTool::GetTargetActorSurface() const {
+  return actor_surface_handle_;
 }
 
 }  // namespace actor

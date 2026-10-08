@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/tools/navigate_tool.h"
 
 #include "base/feature_list.h"
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
@@ -16,7 +17,6 @@
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
@@ -29,18 +29,17 @@
 
 using content::NavigationHandle;
 using content::WebContents;
-using tabs::TabInterface;
 
 namespace actor {
 
 NavigateTool::NavigateTool(TaskId task_id,
                            ToolDelegate& tool_delegate,
-                           TabInterface& tab,
+                           ActorSurface& actor_surface,
                            const GURL& url)
     : Tool(task_id, tool_delegate),
-      WebContentsObserver(tab.GetContents()),
+      WebContentsObserver(actor_surface.GetWebContents()),
       url_(url),
-      tab_handle_(tab.GetHandle()) {}
+      actor_surface_handle_(actor_surface.GetHandle()) {}
 
 NavigateTool::~NavigateTool() = default;
 
@@ -115,11 +114,12 @@ std::unique_ptr<ObservationDelayController> NavigateTool::GetObservationDelayer(
 
 void NavigateTool::UpdateTaskBeforeInvoke(ActorTask& task,
                                           ToolCallback callback) const {
-  task.AddTab(tab_handle_, /*stop_task_on_detach=*/true, std::move(callback));
+  task.AddActorSurface(actor_surface_handle_, /*stop_task_on_detach=*/true,
+                       std::move(callback));
 }
 
-tabs::TabHandle NavigateTool::GetTargetTab() const {
-  return tab_handle_;
+ActorSurfaceHandle NavigateTool::GetTargetActorSurface() const {
+  return actor_surface_handle_;
 }
 
 void NavigateTool::DidFinishNavigation(NavigationHandle* navigation_handle) {

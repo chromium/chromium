@@ -8,9 +8,9 @@
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
 
@@ -20,12 +20,14 @@ class NavigationHandle;
 
 namespace actor {
 
+class ActorSurface;
+
 // Navigates a the primary main frame in a WebContents to the given URL.
 class NavigateTool : public Tool, content::WebContentsObserver {
  public:
   NavigateTool(TaskId task_id,
                ToolDelegate& tool_delegate,
-               tabs::TabInterface& tab,
+               ActorSurface& actor_surface,
                const GURL& url);
   ~NavigateTool() override;
 
@@ -39,7 +41,7 @@ class NavigateTool : public Tool, content::WebContentsObserver {
       override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
                               ToolCallback callback) const override;
-  tabs::TabHandle GetTargetTab() const override;
+  ActorSurfaceHandle GetTargetActorSurface() const override;
 
   // content::WebContentsObserver
   void DidFinishNavigation(
@@ -58,7 +60,7 @@ class NavigateTool : public Tool, content::WebContentsObserver {
   // WebContents until this handle completes and the above callback is invoked.
   std::optional<int64_t> pending_navigation_handle_id_;
 
-  tabs::TabHandle tab_handle_;
+  ActorSurfaceHandle actor_surface_handle_;
 
   base::WeakPtrFactory<NavigateTool> weak_ptr_factory_{this};
 };
