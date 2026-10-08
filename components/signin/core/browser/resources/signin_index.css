@@ -24,6 +24,10 @@ body {
   margin: 0;
 }
 
+#download-button {
+  margin: 10px;
+}
+
 cr-tab-box {
   width: auto;
 }

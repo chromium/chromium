@@ -347,8 +347,12 @@ function getClassFromValue(value: string): string {
   return '';
 }
 
+let latestSigninInfo: SigninInfo|null = null;
+let latestCookieAccountsInfo: CookieAccountsInfo|null = null;
+
 // Replace the displayed values with the latest fetched ones.
 function refreshSigninInfo(signinInfo: SigninInfo) {
+  latestSigninInfo = signinInfo;
   // Process templates even against an empty `signinInfo` to hide some sections.
   render(
       getSigninInfoHtml(signinInfo.signin_info),
@@ -372,12 +376,30 @@ function refreshSigninInfo(signinInfo: SigninInfo) {
 
 // Replace the cookie information with the fetched values.
 function updateCookieAccounts(info: CookieAccountsInfo) {
+  latestCookieAccountsInfo = info;
   render(getCookieInfoHtml(info), getRequiredElement('cookie-info'));
+}
+
+function downloadSigninInternals() {
+  const data = {
+    signinInfo: latestSigninInfo,
+    cookieAccountsInfo: latestCookieAccountsInfo,
+  };
+  const blob =
+      new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'signin-internals.json';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 // On load, do an initial refresh and register refreshSigninInfo to be invoked
 // whenever we get new signin information from SigninInternalsUI.
 function onLoad() {
+  getRequiredElement('download-button')
+      .addEventListener('click', downloadSigninInternals);
   addWebUiListener('signin-info-changed', refreshSigninInfo);
   addWebUiListener('update-cookie-accounts', updateCookieAccounts);
 
