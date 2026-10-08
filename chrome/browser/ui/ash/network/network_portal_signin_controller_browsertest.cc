@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/network/network_portal_signin_controller.h"
 
-#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/network/network_portal_signin_window.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -60,7 +59,6 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninControllerBrowserTest,
                        SigninDefault) {
   NetworkPortalSigninController::Get()->ShowSignin(
       NetworkPortalSigninController::SigninSource::kNotification);
-  base::RunLoop().RunUntilIdle();
 
   BrowserWindowInterface* browser =
       chromeos::NetworkPortalSigninWindow::Get()->GetBrowserForTesting();
