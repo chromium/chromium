@@ -126,7 +126,6 @@ build_webui_tests("build") {
     "safety_hub_notification_permissions_module_test.ts",
     "safety_hub_page_test.ts",
     "safety_hub_unused_site_permissions_module_test.ts",
-    "scrollable_mixin_test.ts",
     "search_engine_edit_dialog_test.ts",
     "search_engine_entry_test.ts",
     "search_engine_icon_test.ts",

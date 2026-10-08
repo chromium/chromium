@@ -401,7 +401,6 @@ build_webui("build") {
     "safety_hub/safety_hub_page.ts",
     "safety_hub/unused_site_permissions_module.html.ts",
     "safety_hub/unused_site_permissions_module.ts",
-    "scrollable_mixin.ts",
     "search_metrics_recorder.ts",
     "search_page/extension_controlled_message.html.ts",
     "search_page/extension_controlled_message.ts",
