@@ -199,11 +199,22 @@ class VerticalTabRailHoverController
     public void onDragEventDispatched(DragEvent event) {
         if (!isTrackingPointer()) return;
         // Hover events are not sent during a system drag and drop, so the rail cannot tell when the
-        // pointer leaves it. The position is unconfirmed for the duration of the drag.
+        // pointer leaves it from hover alone. The position is unconfirmed for the duration of the
+        // drag, unless the rail receives coordinate-bearing drag events (see below).
         switch (event.getAction()) {
             case DragEvent.ACTION_DRAG_STARTED:
                 if (mPointerState == PointerState.INSIDE) {
                     recordPointerState(PointerState.INSIDE_UNCONFIRMED);
+                }
+                break;
+            case DragEvent.ACTION_DRAG_LOCATION:
+            case DragEvent.ACTION_DROP:
+                // These are only dispatched into the rail when the pointer is over it and the rail
+                // accepts the drag, so they confirm the pointer position. A drag that then ends
+                // over the rail (a drop, or ESC) leaves it expanded under the pointer. Leaving the
+                // rail is reported separately through onDragExited().
+                if (mPointerState == PointerState.INSIDE_UNCONFIRMED) {
+                    recordPointerState(PointerState.INSIDE);
                 }
                 break;
             case DragEvent.ACTION_DRAG_ENDED:
@@ -214,6 +225,20 @@ class VerticalTabRailHoverController
             default:
                 break;
         }
+    }
+
+    /**
+     * Called when a drag pointer leaves the rail, i.e. on ACTION_DRAG_EXITED of the rail
+     * container's drag listener.
+     *
+     * <p>ACTION_DRAG_EXITED is delivered straight to the drag listener by {@code
+     * ViewRootImpl#setDragFocus}, never through {@code dispatchDragEvent()}, so {@link
+     * #onDragEventDispatched} cannot observe it. Crossing between the rail's margin and one of its
+     * lists is not an exit, since only the container listens for drags.
+     */
+    void onDragExited() {
+        if (!isTrackingPointer()) return;
+        applyPointerState(PointerState.OUTSIDE);
     }
 
     // WindowAndroid.ActivityStateObserver implementation.

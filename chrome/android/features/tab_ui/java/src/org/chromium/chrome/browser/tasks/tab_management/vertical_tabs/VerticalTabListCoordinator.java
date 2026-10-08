@@ -208,10 +208,10 @@ public class VerticalTabListCoordinator {
     /**
      * The per-{@link RecyclerView} drag machinery that the coordinator routes between.
      *
-     * <p>The handler is shared because the OS delivers a drag event to whichever view is under the
-     * pointer, and a handler bound to one list cannot answer for the other. The {@link
-     * ItemTouchHelper2} and its callback stay strictly one per list: they own that list's item
-     * positions, so driving one with the other's coordinates is crbug.com/509226293.
+     * <p>The drag handler is not part of a surface: a single listener on the rail container
+     * receives every drag event for both lists. The {@link ItemTouchHelper2} and its callback stay
+     * strictly one per list: they own that list's item positions, so driving one with the other's
+     * coordinates is crbug.com/509226293.
      */
     static class DragSurface {
         public final RecyclerView recyclerView;
@@ -245,7 +245,6 @@ public class VerticalTabListCoordinator {
             recyclerView.removeOnItemTouchListener(mBeforeTouchListener);
             recyclerView.removeOnItemTouchListener(mMouseDragDetector);
             recyclerView.removeOnItemTouchListener(mAfterTouchListener);
-            recyclerView.setOnDragListener(null);
             itemTouchHelper.attachToRecyclerView(null);
         }
     }
@@ -533,6 +532,11 @@ public class VerticalTabListCoordinator {
         mNonOriginatingDragHandlerDelegate =
                 createNonOriginatingDragHandlerDelegate(mTabSwitcherDragHandler);
         mTabSwitcherDragHandler.setDragHandlerDelegate(mNonOriginatingDragHandlerDelegate);
+        // The only drag listener on the rail. The container spans the header, both lists, the new
+        // tab button and the rail margin, so ACTION_DRAG_EXITED means the pointer left the rail. No
+        // descendant may claim drags: a droppable child wins over its parent in
+        // ViewGroup#findFrontmostDroppableChildAt and would take LOCATION and DROP away from here.
+        mContainerView.setOnDragListener(mTabSwitcherDragHandler);
 
         setupItemTouchHelper(activity, recyclerView, mModelList, tabModelSelector);
 
@@ -923,12 +927,8 @@ public class VerticalTabListCoordinator {
             mBackPressManager.removeHandler(BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG);
         }
         removeDragEndRelay();
-        mTabSwitcherDragHandler.destroy();
         mContainerView.setOnDragListener(null);
-        View newTabButton = mContainerView.findViewById(R.id.new_tab_button);
-        if (newTabButton != null) {
-            newTabButton.setOnDragListener(null);
-        }
+        mTabSwitcherDragHandler.destroy();
 
         mTabItemHoverController.destroy();
 
@@ -1236,14 +1236,7 @@ public class VerticalTabListCoordinator {
         touchHelperCallback.setOnDragStateChangedCallback(
                 mTabSwitcherDragHandler::onDragStateChanged);
 
-        recyclerView.setOnDragListener(mTabSwitcherDragHandler);
-        if (recyclerView == mRecyclerView) {
-            mContainerView.setOnDragListener(mTabSwitcherDragHandler);
-            View newTabButton = mContainerView.findViewById(R.id.new_tab_button);
-            if (newTabButton != null) {
-                newTabButton.setOnDragListener(mTabSwitcherDragHandler);
-            }
-        }
+        // No setOnDragListener on the list: the rail container's listener serves both lists.
 
         touchHelperCallback.setOnDragOutListener(
                 (viewHolder, dX, dY) -> {
@@ -1417,15 +1410,14 @@ public class VerticalTabListCoordinator {
 
     /**
      * Installs a relay on the window's decor view that forwards {@code ACTION_DRAG_ENDED} to {@code
-     * dragHandler} when no rail view is able to receive it.
+     * dragHandler} when the rail is unable to receive it.
      *
-     * <p>Every drag listener of the rail lives on a rail view: the two {@link RecyclerView}s, the
-     * rail container and the new tab button. All of them sit in the subtree that {@code
-     * SideUiCoordinatorImpl} removes from the anchor container ({@code
+     * <p>The rail's only drag listener lives on the rail container, which sits in the subtree that
+     * {@code SideUiCoordinatorImpl} removes from the anchor container ({@code
      * anchorContainer.removeView(sideUiContainerView)}) when the window is resized below the width
      * that shows vertical tabs. {@code ViewGroup#removeViewInternal()} drops the removed child from
      * {@code mChildrenInterestedInDrag} and {@code ViewGroup#dispatchDetachedFromWindow()} clears
-     * the detached subtree's own drag bookkeeping, so from then on no rail view is sent {@code
+     * the detached subtree's own drag bookkeeping, so from then on the container is not sent {@code
      * ACTION_DRAG_ENDED}: {@link TabSwitcherDragHandler} never reaches {@code finishDrag()}, the
      * process-wide {@link DragDropGlobalState} is never released, and the tabbed activity's drag
      * touch observer ({@code e -> DragDropGlobalState.hasValue()}) then swallows every touch in
@@ -1500,6 +1492,23 @@ public class VerticalTabListCoordinator {
         return null;
     }
 
+    /**
+     * Collapses a hover-expanded rail when a drag pointer leaves it.
+     *
+     * <p>Only called on ACTION_DRAG_EXITED of the rail container, never on ACTION_DRAG_ENDED. A
+     * drag that ends outside the rail has already exited it, and one that ends on the rail (a drop,
+     * or ESC) should leave the rail expanded under the pointer rather than collapse and re-expand
+     * on the next hover move. Crossing between the rail's margin and a list is not an exit, so the
+     * drop target never resizes mid-drag.
+     *
+     * <p>Routed through {@link VerticalTabRailHoverController}, which owns the hover state and is
+     * otherwise unable to observe ACTION_DRAG_EXITED. A rail the user actually expanded is left
+     * alone; {@link VerticalTabRailCollapseController} only acts on the hover-expanded state.
+     */
+    private void collapseRailOnDragLeave() {
+        mRailHoverController.onDragExited();
+    }
+
     private void clearDropIndicators() {
         mReorderStrategy.clear();
         mDropIndicatorDecoration.clear();
@@ -1565,6 +1574,8 @@ public class VerticalTabListCoordinator {
 
             @Override
             public boolean handleDragExit(View view) {
+                // Delivered on the rail container, so this is the pointer leaving the rail.
+                collapseRailOnDragLeave();
                 clearDropIndicators();
                 if (!dragHandler.isDragSourceInstance()) {
                     dragHandler.showDragShadow(view, /* show= */ true);
@@ -1907,6 +1918,8 @@ public class VerticalTabListCoordinator {
                 // ACTION_DRAG_LOCATION: when the pointer leaves the window there is no later
                 // location. It is taken on faith and forces the outside state.
                 mRegionTracker.onExitedContainer();
+                // Delivered on the rail container, so this is the pointer leaving the rail.
+                collapseRailOnDragLeave();
                 return true;
             }
 

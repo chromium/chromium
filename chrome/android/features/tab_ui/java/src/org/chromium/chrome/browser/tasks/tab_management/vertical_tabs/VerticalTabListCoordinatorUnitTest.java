@@ -160,6 +160,7 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.MimeTypeUtils;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.dragdrop.DragDropMetricUtils;
@@ -176,6 +177,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
@@ -2888,11 +2890,8 @@ public class VerticalTabListCoordinatorUnitTest {
         Token token = DragDropGlobalState.store(1, dropData, null);
         TabDragHandlerBase.setDragTokenForTesting(token);
 
-        View container = mCoordinator.getView();
-        TabListRecyclerView mainRecyclerView = container.findViewById(R.id.tab_list_recycler_view);
-        Object listenerInfo = ReflectionHelpers.getField(mainRecyclerView, "mListenerInfo");
-        View.OnDragListener dragListener =
-                ReflectionHelpers.getField(listenerInfo, "mOnDragListener");
+        View.OnDragListener dragListener = getOnDragListener(mCoordinator.getView());
+        assertNotNull(dragListener);
 
         ClipDescription clipDescription =
                 new ClipDescription("tab", new String[] {MimeTypeUtils.CHROME_MIMETYPE_TAB});
@@ -2901,7 +2900,7 @@ public class VerticalTabListCoordinatorUnitTest {
 
         assertFalse(
                 "Non-originating window must reject drag on incognito mismatch.",
-                dragListener.onDrag(mainRecyclerView, mDragEvent));
+                dragListener.onDrag(mCoordinator.getView(), mDragEvent));
 
         DragDropGlobalState.clear(token);
     }
@@ -2921,11 +2920,8 @@ public class VerticalTabListCoordinatorUnitTest {
         Token token = DragDropGlobalState.store(1, dropData, null);
         TabDragHandlerBase.setDragTokenForTesting(token);
 
-        View container = mCoordinator.getView();
-        TabListRecyclerView mainRecyclerView = container.findViewById(R.id.tab_list_recycler_view);
-        Object listenerInfo = ReflectionHelpers.getField(mainRecyclerView, "mListenerInfo");
-        View.OnDragListener dragListener =
-                ReflectionHelpers.getField(listenerInfo, "mOnDragListener");
+        View.OnDragListener dragListener = getOnDragListener(mCoordinator.getView());
+        assertNotNull(dragListener);
 
         ClipDescription clipDescription =
                 new ClipDescription("tab", new String[] {MimeTypeUtils.CHROME_MIMETYPE_TAB});
@@ -2936,7 +2932,7 @@ public class VerticalTabListCoordinatorUnitTest {
 
         assertTrue(
                 "Non-originating window must accept drag when incognito matches.",
-                dragListener.onDrag(mainRecyclerView, mDragEvent));
+                dragListener.onDrag(mCoordinator.getView(), mDragEvent));
 
         DragDropGlobalState.clear(token);
     }
@@ -3031,23 +3027,68 @@ public class VerticalTabListCoordinatorUnitTest {
     }
 
     @Test
-    public void testDragHandlerConsolidation_RegisteredOnEveryRailSurface() {
+    public void testDragListener_OnlyOnRailContainer() {
         createCoordinator();
 
         View container = mCoordinator.getView();
-        View mainRecyclerView = container.findViewById(R.id.tab_list_recycler_view);
-        View pinnedRecyclerView = container.findViewById(R.id.pinned_tabs_recycler_view);
-        View newTabButton = container.findViewById(R.id.new_tab_button);
-        assertNotNull(mainRecyclerView);
-        assertNotNull(pinnedRecyclerView);
-        assertNotNull(newTabButton);
-
-        // A drag event is delivered to whichever view is under the pointer, so every view that can
-        // be under it during a rail drag has to carry the same handler.
-        assertSame(mTabSwitcherDragHandler, getOnDragListener(mainRecyclerView));
-        assertSame(mTabSwitcherDragHandler, getOnDragListener(pinnedRecyclerView));
         assertSame(mTabSwitcherDragHandler, getOnDragListener(container));
-        assertSame(mTabSwitcherDragHandler, getOnDragListener(newTabButton));
+
+        // A descendant that claims the drag wins in ViewGroup#findFrontmostDroppableChildAt and
+        // takes ACTION_DRAG_LOCATION and ACTION_DROP away from the container.
+        List<View> descendants = new ArrayList<>();
+        ViewUtils.getAllDescendants(container, descendants, Set.of());
+        assertFalse(descendants.isEmpty());
+        for (View descendant : descendants) {
+            assertNull(
+                    "Rail descendant must not register a drag listener: " + descendant,
+                    getOnDragListener(descendant));
+        }
+    }
+
+    @Test
+    public void testDragListener_LocationOverList_ReachesHandlerOnContainer() {
+        createCoordinator();
+        View container = mCoordinator.getView();
+        mActivity.setContentView(container);
+        layOutLists(/* mainHeight= */ 300, /* pinnedHeight= */ 100);
+
+        List<Integer> actions = new ArrayList<>();
+        List<View> targets = new ArrayList<>();
+        doAnswer(
+                        invocation -> {
+                            targets.add(invocation.getArgument(0));
+                            actions.add(((DragEvent) invocation.getArgument(1)).getAction());
+                            return true;
+                        })
+                .when(mTabSwitcherDragHandler)
+                .onDrag(any(), any());
+
+        // Dispatch through the container's parent, as the framework does. The point is over the
+        // main list, which is laid out at y = [100, 400) in the container.
+        ViewGroup parent = (ViewGroup) container.getParent();
+        parent.dispatchDragEvent(createDragEvent(DragEvent.ACTION_DRAG_STARTED, 50f, 150f));
+        parent.dispatchDragEvent(createDragEvent(DragEvent.ACTION_DRAG_LOCATION, 50f, 150f));
+
+        assertEquals(
+                List.of(
+                        DragEvent.ACTION_DRAG_STARTED,
+                        DragEvent.ACTION_DRAG_ENTERED,
+                        DragEvent.ACTION_DRAG_LOCATION),
+                actions);
+        for (View target : targets) {
+            assertSame(container, target);
+        }
+    }
+
+    @Test
+    public void testDragListener_ClearedOnDestroy() {
+        createCoordinator();
+        View container = mCoordinator.getView();
+
+        mCoordinator.destroy();
+
+        assertNull(getOnDragListener(container));
+        verify(mTabSwitcherDragHandler).destroy();
     }
 
     @Test
@@ -4522,6 +4563,18 @@ public class VerticalTabListCoordinatorUnitTest {
         return ReflectionHelpers.getField(listenerInfo, "mOnDragListener");
     }
 
+    /**
+     * Builds a real {@link DragEvent}. ViewGroup#dispatchDragEvent reads its package-private fields
+     * directly, so a mock cannot be dispatched through a view hierarchy.
+     */
+    private static DragEvent createDragEvent(int action, float x, float y) {
+        DragEvent event = ReflectionHelpers.callConstructor(DragEvent.class);
+        ReflectionHelpers.setField(event, "mAction", action);
+        ReflectionHelpers.setField(event, "mX", x);
+        ReflectionHelpers.setField(event, "mY", y);
+        return event;
+    }
+
     /** Helper to retrieve the single non-originating delegate installed at startup. */
     private TabSwitcherDragHandler.DragHandlerDelegate captureNonOriginatingDelegate() {
         ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> captor =
@@ -5002,5 +5055,79 @@ public class VerticalTabListCoordinatorUnitTest {
         container.layout(0, 0, width, containerHeight);
         pinnedRecyclerView.layout(0, 0, width, pinnedHeight);
         mainRecyclerView.layout(0, pinnedHeight, width, pinnedHeight + mainHeight);
+    }
+
+    /** ACTION_DRAG_EXITED on the rail container means the pointer left the rail. */
+    @Test
+    public void testDragLeavesTheRail_CollapsesAHoverExpandedRail() {
+        createCoordinator();
+        hoverExpandRail();
+
+        captureNonOriginatingDelegate().handleDragExit(mCoordinator.getView());
+
+        verify(mMockRailStateChangeDelegate).handleUserRequestedStateChange();
+    }
+
+    /** A drop on the rail ends the drag with the pointer still over it, so it stays expanded. */
+    @Test
+    public void testDropOnRail_DoesNotCollapseAHoverExpandedRail() {
+        createCoordinator();
+        hoverExpandRail();
+        TabSwitcherDragHandler.DragHandlerDelegate delegate = captureNonOriginatingDelegate();
+
+        delegate.handleDrop(mCoordinator.getView(), /* xPx= */ 0f, /* yPx= */ 0f);
+        delegate.handleExternalDragEnd(
+                mCoordinator.getView(),
+                /* xPx= */ 0f,
+                /* yPx= */ 0f,
+                /* isOSNewWindowDrop= */ false);
+
+        verify(mMockRailStateChangeDelegate, never()).handleUserRequestedStateChange();
+    }
+
+    /** ESC over the rail ends the drag without an exit, so the rail stays expanded. */
+    @Test
+    public void testEscOverRail_DoesNotCollapseAHoverExpandedRail() {
+        createCoordinator();
+        hoverExpandRail();
+
+        captureNonOriginatingDelegate()
+                .handleExternalDragEnd(
+                        mCoordinator.getView(),
+                        /* xPx= */ 0f,
+                        /* yPx= */ 0f,
+                        /* isOSNewWindowDrop= */ false);
+
+        verify(mMockRailStateChangeDelegate, never()).handleUserRequestedStateChange();
+    }
+
+    /**
+     * Puts the rail in the only state {@link VerticalTabRailCollapseController} will collapse out
+     * of on hover: a rail the user collapsed, currently expanded because the pointer is over it.
+     *
+     * <p>The expansion is driven through a real mouse hover, so {@link
+     * VerticalTabRailHoverController} tracks the pointer as inside the rail.
+     */
+    private void hoverExpandRail() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
+        mCoordinator.getCollapseController().toggleCollapseState();
+        mCoordinator.setRailCollapseState(RailCollapseState.COLLAPSED);
+
+        View containerView = mCoordinator.getView();
+        containerView.layout(0, 0, 200, 500);
+        containerView.findViewById(R.id.collapse_button).layout(0, 0, 200, 60);
+        MotionEvent hoverEnter =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 50f, 300f, 0);
+        hoverEnter.setSource(InputDevice.SOURCE_MOUSE);
+        containerView.dispatchGenericMotionEvent(hoverEnter);
+        hoverEnter.recycle();
+        assertEquals(
+                RailCollapseState.EXPANDED_FOR_HOVERING,
+                mCoordinator.getCollapseController().getEffectiveRailCollapseState());
+
+        mCoordinator.setRailCollapseState(RailCollapseState.EXPANDED_FOR_HOVERING);
+        clearInvocations(mMockRailStateChangeDelegate);
     }
 }

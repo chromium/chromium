@@ -226,6 +226,62 @@ public class VerticalTabRailHoverControllerUnitTest {
     }
 
     @Test
+    public void testDrag_LocationOverRail_KeepsHoveringWhenDragEnds() {
+        hoverInsideRail();
+        mRailLayout.dispatchDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_STARTED));
+
+        // A drag location is only dispatched into the rail while the pointer is over it.
+        mHoverController.onDragEventDispatched(mockDragEvent(DragEvent.ACTION_DRAG_LOCATION));
+        assertEquals(PointerState.INSIDE, mHoverController.getPointerStateForTesting());
+
+        // E.g. ESC over the rail.
+        mRailLayout.dispatchDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_ENDED));
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+        assertEquals(PointerState.INSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testDrag_DropOnRail_KeepsHoveringWhenDragEnds() {
+        hoverInsideRail();
+        mRailLayout.dispatchDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_STARTED));
+
+        mHoverController.onDragEventDispatched(mockDragEvent(DragEvent.ACTION_DROP));
+        mRailLayout.dispatchDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_ENDED));
+
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+        assertEquals(PointerState.INSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testDrag_ExitedRail_StopsHoveringOnce() {
+        hoverInsideRail();
+        mRailLayout.dispatchDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_STARTED));
+        mHoverController.onDragEventDispatched(mockDragEvent(DragEvent.ACTION_DRAG_LOCATION));
+
+        mHoverController.onDragExited();
+        verify(mCollapseController).setHovering(false);
+        assertEquals(PointerState.OUTSIDE, mHoverController.getPointerStateForTesting());
+
+        mRailLayout.dispatchDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_ENDED));
+        verify(mCollapseController).setHovering(false);
+    }
+
+    @Test
+    public void testDrag_LocationAfterExit_DoesNotReconfirmPointer() {
+        hoverInsideRail();
+        mRailLayout.dispatchDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_STARTED));
+        mHoverController.onDragExited();
+        clearInvocations(mCollapseController);
+
+        // Re-entering the rail mid-drag does not re-expand it; hover events after the drag do.
+        mHoverController.onDragEventDispatched(mockDragEvent(DragEvent.ACTION_DRAG_LOCATION));
+        mRailLayout.dispatchDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_ENDED));
+
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+        assertEquals(PointerState.OUTSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
     public void testContextMenu_DismissedWhileCoveringPointer_StopsHoveringAfterTimeout() {
         hoverInsideRail();
         mIsContextMenuShowing = true;
