@@ -8,6 +8,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/actor/ActorBroadcastReceiver.java",
+    "java/src/org/chromium/chrome/browser/actor/ActorExternalTriggerSnackbarController.java",
     "java/src/org/chromium/chrome/browser/actor/ActorForegroundServiceController.java",
     "java/src/org/chromium/chrome/browser/actor/ActorForegroundServiceManager.java",
     "java/src/org/chromium/chrome/browser/actor/ActorKeyedService.java",
@@ -168,6 +169,7 @@ android_resources("java_resources") {
 
 robolectric_library("junit") {
   sources = [
+    "java/src/org/chromium/chrome/browser/actor/ActorExternalTriggerSnackbarControllerTest.java",
     "java/src/org/chromium/chrome/browser/actor/ActorForegroundServiceManagerTest.java",
     "java/src/org/chromium/chrome/browser/actor/ActorMetricsTest.java",
     "java/src/org/chromium/chrome/browser/actor/ActorNotificationFactoryTest.java",

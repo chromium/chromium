@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.ChromeInactivityTracker.InactivityObserver;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.accessibility.PageZoomIphController;
 import org.chromium.chrome.browser.actor.ActorMetrics;
@@ -1500,6 +1501,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mActivityLifecycleDispatcher,
                             getOmniboxFocusStateSupplier(),
                             mSideUiStateProviderSupplier.get());
+            if (IntentHandler.hasPendingActorTaskExtra(mActivity.getIntent())) {
+                mGlicUiCoordinator.onPendingActorTaskTrigger();
+            }
         }
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_DEVICE_SIGNALS_DISCLAIMER)) {
@@ -2885,6 +2889,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     public @Nullable GlicUiCoordinator getGlicUiCoordinatorForTesting() {
         return mGlicUiCoordinator;
+    }
+
+    /** Notifies the Glic UI that a pending actor task trigger was received. */
+    public void onPendingActorTaskTrigger() {
+        if (mGlicUiCoordinator != null) {
+            mGlicUiCoordinator.onPendingActorTaskTrigger();
+        }
     }
 
     public @Nullable TabBottomSheetManager getTabBottomSheetManagerForTesting() {

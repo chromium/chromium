@@ -13,6 +13,7 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.actor.ActorExternalTriggerSnackbarController;
 import org.chromium.chrome.browser.actor.ActorTaskHelper;
 import org.chromium.chrome.browser.actor.ui.ActorOverlayCoordinator;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
@@ -29,7 +30,8 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistr
 
 /**
  * Coordinator for Glic UI. It owns and manages Glic-related UI components, currently including
- * ActorControlCoordinator, ActorOverlayCoordinator, and ActorTaskHelper.
+ * ActorControlCoordinator, ActorOverlayCoordinator, ActorTaskHelper, and
+ * ActorExternalTriggerSnackbarController.
  */
 @NullMarked
 public class GlicUiCoordinator implements Destroyable {
@@ -37,6 +39,7 @@ public class GlicUiCoordinator implements Destroyable {
     private final Activity mActivity;
     private final ActorOverlayCoordinator mActorOverlayCoordinator;
     private final ActorTaskHelper mActorTaskHelper;
+    private final ActorExternalTriggerSnackbarController mExternalTriggerSnackbarController;
 
     /**
      * Constructs a new {@link GlicUiCoordinator}.
@@ -92,13 +95,23 @@ public class GlicUiCoordinator implements Destroyable {
                         profileSupplier,
                         tabModelSelectorSupplier,
                         activityLifecycleDispatcher);
+
+        mExternalTriggerSnackbarController =
+                new ActorExternalTriggerSnackbarController(
+                        mActivity, snackbarManager, profileSupplier, activityLifecycleDispatcher);
     }
 
     @Override
     public void destroy() {
+        mExternalTriggerSnackbarController.destroy();
         mActorOverlayCoordinator.destroy();
         mActorTaskHelper.onDestroy();
         mActorTaskHelper.destroy();
+    }
+
+    /** Notifies the snackbar controller that a pending actor task trigger was received. */
+    public void onPendingActorTaskTrigger() {
+        mExternalTriggerSnackbarController.onPendingActorTaskTrigger();
     }
 
     /** Exposes the {@link ActorOverlayCoordinator} for testing. */
