@@ -17,6 +17,7 @@
 #include "base/containers/extend.h"
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
@@ -30,6 +31,7 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/variations/service/google_groups_manager.h"
 #include "components/version_info/version_info.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/rect.h"
@@ -166,9 +168,11 @@ SuggestionService* SuggestionService::FromTabWebContents(
 
 SuggestionService::SuggestionService(
     tabs::TabInterface* tab,
-    optimization_guide::RemoteModelExecutor* remote_model_executor)
+    optimization_guide::RemoteModelExecutor* remote_model_executor,
+    const GoogleGroupsManager* google_groups_manager)
     : tab_(CHECK_DEREF(tab)),
       remote_model_executor_(remote_model_executor),
+      google_groups_manager_(google_groups_manager),
       scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {}
 
 SuggestionService::~SuggestionService() {
@@ -231,10 +235,17 @@ void SuggestionService::RequestSuggestions(const AreaOfInterest& processed_area,
   }
 }
 
+bool SuggestionService::IsFeatureGroupEnabled(
+    const base::Feature& feature) const {
+  return google_groups_manager_
+             ? google_groups_manager_->IsFeatureEnabledForProfile(feature)
+             : base::FeatureList::IsEnabled(feature);
+}
+
 void SuggestionService::RequestServerSuggestions(
     scoped_refptr<ActiveRequest> active_request) {
   if (!remote_model_executor_ ||
-      !base::FeatureList::IsEnabled(kSmartSelectionServerSuggestions)) {
+      !IsFeatureGroupEnabled(kSmartSelectionServerSuggestions)) {
     return;
   }
 

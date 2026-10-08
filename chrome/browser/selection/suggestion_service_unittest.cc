@@ -5,6 +5,7 @@
 #include "chrome/browser/selection/suggestion_service.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -25,7 +26,13 @@
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "components/variations/pref_names.h"
+#include "components/variations/service/google_groups_manager.h"
+#include "components/variations/variations_seed_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -34,6 +41,7 @@
 namespace selection {
 namespace {
 
+using ::base::test::RunOnceCallback;
 using ::base::test::TestFuture;
 using ::base::test::TestFutureMode;
 using ::testing::_;
@@ -127,7 +135,14 @@ class AsyncCustomTestTool : public SuggestionTool {
 
 class SuggestionServiceUnitTest : public testing::Test {
  public:
-  SuggestionServiceUnitTest() = default;
+  SuggestionServiceUnitTest() {
+    target_prefs_.registry()->RegisterDictionaryPref(
+        variations::prefs::kVariationsGoogleGroups);
+    GoogleGroupsManager::RegisterProfilePrefs(source_prefs_.registry());
+    google_groups_manager_.emplace(target_prefs_, "Default", source_prefs_);
+    service_.emplace(&mock_tab_, &mock_model_executor_,
+                     &google_groups_manager_.value());
+  }
   ~SuggestionServiceUnitTest() override = default;
 
  protected:
@@ -135,13 +150,16 @@ class SuggestionServiceUnitTest : public testing::Test {
   optimization_guide::MockRemoteModelExecutor& mock_model_executor() {
     return mock_model_executor_;
   }
-  SuggestionService& service() { return service_; }
+  SuggestionService& service() { return *service_; }
 
  private:
   base::test::TaskEnvironment task_environment_;
+  TestingPrefServiceSimple target_prefs_;
+  sync_preferences::TestingPrefServiceSyncable source_prefs_;
+  std::optional<GoogleGroupsManager> google_groups_manager_;
   tabs::MockTabInterface mock_tab_;
   optimization_guide::MockRemoteModelExecutor mock_model_executor_;
-  SuggestionService service_{&mock_tab_, &mock_model_executor_};
+  std::optional<SuggestionService> service_;
 };
 
 // Tests that registered tools provide suggestions and unregistering them works.
@@ -244,6 +262,81 @@ TEST_F(SuggestionServiceUnitTest, ServerSuggestionsDisabledByDefault) {
   EXPECT_THAT(batch, ElementsAre(SuggestionWithLabel(u"Static Action")));
 
   service().UnregisterTool(&static_tool);
+}
+
+// Tests that server suggestions are not requested when the feature is
+// group-controlled and the profile is not in the group.
+TEST_F(SuggestionServiceUnitTest,
+       ServerSuggestionsNotRequestedWhenNotInGoogleGroup) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kSmartSelectionServerSuggestions,
+      {{variations::internal::kGoogleGroupFeatureParamName, "1234"}});
+
+  CustomTestTool static_tool(u"Static Action");
+  service().RegisterTool(&static_tool);
+
+  EXPECT_CALL(mock_model_executor(), ExecuteModel).Times(0);
+
+  AreaOfInterest aoi;
+  TestFuture<std::vector<std::unique_ptr<Suggestion>>, bool> future{
+      TestFutureMode::kQueue};
+  service().RequestSuggestions(aoi, future.GetRepeatingCallback());
+
+  auto [batch, complete] = future.Take();
+  EXPECT_TRUE(complete);
+  EXPECT_THAT(batch, ElementsAre(SuggestionWithLabel(u"Static Action")));
+
+  service().UnregisterTool(&static_tool);
+}
+
+// Tests that server suggestions fall back to `base::FeatureList::IsEnabled`
+// when `GoogleGroupsManager` is null.
+TEST_F(SuggestionServiceUnitTest,
+       ServerSuggestionsFallbackWhenGoogleGroupsManagerIsNull) {
+  base::test::ScopedFeatureList feature_list{kSmartSelectionServerSuggestions};
+
+  tabs::MockTabInterface tab_without_groups;
+  SuggestionService service_without_groups(&tab_without_groups,
+                                           &mock_model_executor(),
+                                           /*google_groups_manager=*/nullptr);
+  CustomTestTool gemini_tool(
+      u"Static Action",
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service_without_groups.RegisterTool(&gemini_tool);
+
+  optimization_guide::proto::SmartSelectionSuggestionsResponse response;
+  optimization_guide::proto::SmartSelectionSuggestion* s1 =
+      response.add_suggestions();
+  s1->set_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  s1->set_label("Server Gemini Action");
+
+  EXPECT_CALL(mock_model_executor(),
+              ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
+                               kSmartSelectionSuggestions,
+                           _, _, _))
+      .WillOnce(RunOnceCallback<3>(
+          optimization_guide::OptimizationGuideModelExecutionResult(
+              base::ok(optimization_guide::AnyWrapProto(response)),
+              /*execution_info=*/nullptr),
+          /*log_entry=*/nullptr));
+
+  AreaOfInterest aoi;
+  TestFuture<std::vector<std::unique_ptr<Suggestion>>, bool> future{
+      TestFutureMode::kQueue};
+  service_without_groups.RequestSuggestions(aoi, future.GetRepeatingCallback());
+
+  auto [static_batch, static_complete] = future.Take();
+  EXPECT_FALSE(static_complete);
+  EXPECT_THAT(static_batch, ElementsAre(SuggestionWithLabel(u"Static Action")));
+
+  auto [server_batch, server_complete] = future.Take();
+  EXPECT_TRUE(server_complete);
+  EXPECT_THAT(server_batch,
+              ElementsAre(SuggestionWithLabel(u"Server Gemini Action")));
+
+  service_without_groups.UnregisterTool(&gemini_tool);
 }
 
 // Tests that server suggestions are not requested when no registered tool
@@ -393,7 +486,7 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsServerError) {
           Field(&optimization_guide::ModelExecutionOptions::execution_timeout,
                 base::Seconds(5)),
           _))
-      .WillOnce(base::test::RunOnceCallback<3>(
+      .WillOnce(RunOnceCallback<3>(
           optimization_guide::OptimizationGuideModelExecutionResult(
               base::unexpected(
                   optimization_guide::OptimizationGuideModelExecutionError::

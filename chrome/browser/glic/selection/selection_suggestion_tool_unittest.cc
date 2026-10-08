@@ -43,7 +43,8 @@ class SelectionSuggestionToolTest : public testing::Test {
   ui::UnownedUserDataHost user_data_host_;
   tabs::MockTabInterface mock_tab_;
   ::selection::SuggestionService service_{&mock_tab_,
-                                          /*remote_model_executor=*/nullptr};
+                                          /*remote_model_executor=*/nullptr,
+                                          /*google_groups_manager=*/nullptr};
   SelectionSuggestionTool tool_{mock_tab_};
 };
 
@@ -66,7 +67,8 @@ TEST_F(SelectionSuggestionToolTest, RegistersAndUnregistersWithService) {
   ON_CALL(other_tab, GetUnownedUserDataHost())
       .WillByDefault(ReturnRef(other_host));
   ::selection::SuggestionService other_service{
-      &other_tab, /*remote_model_executor=*/nullptr};
+      &other_tab, /*remote_model_executor=*/nullptr,
+      /*google_groups_manager=*/nullptr};
 
   {
     const SelectionSuggestionTool scoped_tool{other_tab};

@@ -51,6 +51,7 @@
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_observer.h"
 #include "chrome/browser/media/media_engagement_service.h"
+#include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/multistep_filter/chrome_filter_navigation_observer.h"
 #include "chrome/browser/multistep_filter/ui/filter_ui_controller.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_preconnect_client.h"
@@ -573,7 +574,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       selection_suggestion_service_ =
           GetUserDataFactory().CreateInstance<selection::SuggestionService>(
               tab, &tab,
-              OptimizationGuideKeyedServiceFactory::GetForProfile(profile));
+              OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+              GoogleGroupsManagerFactory::GetForBrowserContext(profile));
       if (base::FeatureList::IsEnabled(features::kGlicSelectionSuggestions)) {
         glic_selection_suggestion_tool_ =
             std::make_unique<glic::SelectionSuggestionTool>(tab);

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -18,6 +19,8 @@
 #include "chrome/browser/selection/suggestion.h"
 #include "chrome/browser/selection/suggestion_tool.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+class GoogleGroupsManager;
 
 namespace content {
 class WebContents;
@@ -46,7 +49,8 @@ class SuggestionService {
 
   SuggestionService(
       tabs::TabInterface* tab,
-      optimization_guide::RemoteModelExecutor* remote_model_executor);
+      optimization_guide::RemoteModelExecutor* remote_model_executor,
+      const GoogleGroupsManager* google_groups_manager);
   virtual ~SuggestionService();
 
   SuggestionService(const SuggestionService&) = delete;
@@ -74,6 +78,10 @@ class SuggestionService {
  private:
   struct ActiveRequest;
 
+  // Returns whether `feature` is enabled for the profile, falling back to
+  // `base::FeatureList::IsEnabled` if `google_groups_manager_` is null.
+  bool IsFeatureGroupEnabled(const base::Feature& feature) const;
+
   // Requests suggestions for `active_request` from MES.
   void RequestServerSuggestions(scoped_refptr<ActiveRequest> active_request);
 
@@ -98,6 +106,7 @@ class SuggestionService {
 
   const raw_ref<tabs::TabInterface> tab_;
   const raw_ptr<optimization_guide::RemoteModelExecutor> remote_model_executor_;
+  const raw_ptr<const GoogleGroupsManager> google_groups_manager_;
   base::flat_map<SuggestionTool::ToolId, raw_ptr<SuggestionTool>> tools_;
 
   ui::ScopedUnownedUserData<SuggestionService> scoped_unowned_user_data_;
