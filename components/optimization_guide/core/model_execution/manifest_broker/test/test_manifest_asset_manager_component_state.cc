@@ -195,7 +195,23 @@ TestManifestAssetManagerComponentState::Registration::operator=(
     const Registration&) = default;
 
 TestManifestAssetManagerComponentState::
-    TestManifestAssetManagerComponentState() = default;
+    TestManifestAssetManagerComponentState() {
+  ON_CALL(component_update_service_,
+          GetComponentDetails(testing::_, testing::_))
+      .WillByDefault(
+          [this](const std::string& id, update_client::CrxUpdateItem* item) {
+            auto it = fake_components_.find(id);
+            if (it == fake_components_.end()) {
+              return false;
+            }
+            *item = it->second.CreateUpdateItem(
+                it->second.downloaded_bytes() == it->second.total_bytes()
+                    ? update_client::ComponentState::kUpdated
+                    : update_client::ComponentState::kDownloading,
+                it->second.downloaded_bytes());
+            return true;
+          });
+}
 
 TestManifestAssetManagerComponentState::
     ~TestManifestAssetManagerComponentState() = default;
@@ -460,12 +476,10 @@ void TestManifestAssetManagerComponentState::UpdateDownloadProgress(
     uint64_t downloaded_bytes,
     uint64_t total_bytes) {
   std::string crx_id = GetCrxIdForPublicKey(public_key);
-  FakeComponent comp(crx_id, total_bytes);
-  auto item = comp.CreateUpdateItem(
-      downloaded_bytes == total_bytes
-          ? update_client::ComponentState::kUpdated
-          : update_client::ComponentState::kDownloading,
-      downloaded_bytes);
+  auto [it, _] = fake_components_.insert_or_assign(
+      crx_id, FakeComponent(crx_id, total_bytes));
+  auto item = it->second.CreateUpdateItem(
+      update_client::ComponentState::kDownloading, downloaded_bytes);
   component_update_service_.SendUpdate(item);
 }
 

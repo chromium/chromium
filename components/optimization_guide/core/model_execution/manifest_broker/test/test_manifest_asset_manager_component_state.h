@@ -235,6 +235,7 @@ class TestManifestAssetManagerComponentState final {
   std::vector<std::unique_ptr<FakeSafetyModelAsset>> safety_model_assets_;
   std::vector<std::unique_ptr<FakeLanguageModelAsset>> language_model_assets_;
 
+  absl::flat_hash_map<std::string, FakeComponent> fake_components_;
   testing::NiceMock<FakeComponentUpdateService> component_update_service_;
   base::WeakPtrFactory<TestManifestAssetManagerComponentState>
       weak_ptr_factory_{this};
