@@ -364,7 +364,9 @@ void CacheStorageCacheEntryHandler::InvalidateDiskCacheBlobEntrys() {
 void CacheStorageCacheEntryHandler::EraseDiskCacheBlobEntry(
     DiskCacheBlobEntry* blob_entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_NE(blob_entries_.count(blob_entry), 0u, base::NotFatalUntil::M158);
+  // TODO(crbug.com/570546905): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_NE(blob_entries_.count(blob_entry), 0u);
   blob_entries_.erase(blob_entry);
 }
 
