@@ -299,8 +299,7 @@ class AimEligibilityService
     kRefreshTokenRemoved = 7,
     kRefreshTokenError = 8,
     kOAuthFallbackCookieChange = 9,
-    kLocaleChange = 10,
-    kMaxValue = kLocaleChange,
+    kMaxValue = kOAuthFallbackCookieChange,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/histograms.xml:AimEligibilityRequestSource)
 

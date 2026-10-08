@@ -24,7 +24,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
@@ -33,7 +32,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/scoped_browser_locale.h"
 #include "chrome/test/base/search_test_utils.h"
-#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
@@ -851,50 +849,6 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
   EXPECT_EQ(
       *full_version_list,
       embedder_support::GetUserAgentMetadata().SerializeBrandFullVersionList());
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
-                       RequestOnLocaleChange) {
-  base::HistogramTester histogram_tester;
-
-  omnibox::AimEligibilityResponse response;
-  response.set_is_eligible(true);
-  base::test::TestFuture<bool> request_handled_future;
-  auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
-      base::BindLambdaForTesting(
-          [&](content::URLLoaderInterceptor::RequestParams* params) {
-            return OnRequest(params, std::make_optional(response),
-                             request_handled_future.GetRepeatingCallback());
-          }));
-
-  // Given the service is initialized at startup.
-  auto* service = GetAimEligibilityService(GetProfile());
-  base::test::TestFuture<void> eligibility_changed_future;
-  auto eligibility_subscription = service->RegisterEligibilityChangedCallback(
-      eligibility_changed_future.GetRepeatingCallback());
-  EXPECT_TRUE(request_handled_future.Take());
-  EXPECT_TRUE(eligibility_changed_future.Wait());
-  request_handled_future.Clear();
-  eligibility_changed_future.Clear();
-
-  // Change response so eligibility changed observer fires on next request.
-  response.set_is_eligible(false);
-
-  // When the application locale changes.
-  g_browser_process->GetFeatures()->application_locale_storage()->Set("fr-FR");
-
-  // Then an eligibility request with kLocaleChange should be sent.
-  EXPECT_TRUE(request_handled_future.Take());
-  EXPECT_TRUE(eligibility_changed_future.Wait());
-
-  histogram_tester.ExpectTotalCount(
-      "Omnibox.AimEligibility.EligibilityRequestStatus.LocaleChange", 2);
-  histogram_tester.ExpectBucketCount(
-      "Omnibox.AimEligibility.EligibilityRequestStatus.LocaleChange",
-      AimEligibilityServiceFriend::EligibilityRequestStatus::kSent, 1);
-  histogram_tester.ExpectBucketCount(
-      "Omnibox.AimEligibility.EligibilityRequestStatus.LocaleChange",
-      AimEligibilityServiceFriend::EligibilityRequestStatus::kSuccess, 1);
 }
 
 // TODO(crbug.com/473787329): Flaky on multiple platforms. Re-enable once
