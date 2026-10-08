@@ -11,13 +11,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
-#include "chrome/browser/ash/system/procfs_util.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "dbus/dbus_result.h"
 #include "third_party/cros_system_api/dbus/resource_manager/dbus-constants.h"
@@ -28,31 +25,6 @@ namespace {
 
 constexpr base::TimeDelta kRetryServiceMonitorInterval = base::Seconds(10);
 
-DBusSchedQOSStateHandler::PidReuseResult GetPidReuseResult(bool is_pid_reused,
-                                                           bool success) {
-  if (success) {
-    return is_pid_reused
-               ? DBusSchedQOSStateHandler::PidReuseResult::kPidReuseOnSuccess
-               : DBusSchedQOSStateHandler::PidReuseResult::
-                     kNotPidReuseOnSuccess;
-  }
-  return is_pid_reused
-             ? DBusSchedQOSStateHandler::PidReuseResult::kPidReuseOnFail
-             : DBusSchedQOSStateHandler::PidReuseResult::kNotPidReuseOnFail;
-}
-
-bool IsPidReused(system::ProcStatFile stat_file,
-                 base::ProcessId pid,
-                 bool success) {
-  if (success && !stat_file.IsValid()) {
-    // If the stat file does not exist before sending the request but the
-    // request succeeds, it means the process/thread is dead and it applies
-    // request to another process/thread with the same pid.
-    return true;
-  }
-
-  return (!stat_file.IsPidAlive() && system::ProcStatFile(pid).IsValid());
-}
 }  // namespace
 
 DBusSchedQOSStateHandler::ProcessState::ProcessState(
@@ -218,8 +190,6 @@ void DBusSchedQOSStateHandler::CheckResourcedDisconnected(
 
 void DBusSchedQOSStateHandler::OnServiceConnected(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::UmaHistogramBoolean("Scheduling.DBusSchedQoS.ServiceConnectionSuccess",
-                            success);
   if (!success) {
     LOG_IF(ERROR, !is_dbus_down_) << "resourced service is not available";
     is_dbus_down_ = true;
@@ -293,36 +263,19 @@ void DBusSchedQOSStateHandler::SetProcessPriorityOnThread(
       state = resource_manager::ProcessState::kNormal;
       break;
   }
-  base::ElapsedTimer elapsed_timer;
   ash::ResourcedClient::Get()->SetProcessState(
       process_id, state,
       base::BindOnce(&DBusSchedQOSStateHandler::OnSetProcessPriorityFinish,
-                     weak_ptr_factory_.GetWeakPtr(), process_id, priority,
-                     std::move(elapsed_timer),
-                     system::ProcStatFile(process_id)));
+                     weak_ptr_factory_.GetWeakPtr(), process_id, priority));
 }
 
 void DBusSchedQOSStateHandler::OnSetProcessPriorityFinish(
     base::ProcessId process_id,
     base::Process::Priority priority,
-    base::ElapsedTimer elapsed_timer,
-    system::ProcStatFile stat_file,
     dbus::DBusResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const bool success = result == dbus::DBusResult::kSuccess;
-  const bool is_pid_reused =
-      IsPidReused(std::move(stat_file), process_id, success);
-  LOG_IF(ERROR, is_pid_reused) << "PID reuse detected for pid " << process_id;
-  base::UmaHistogramEnumeration(
-      "Scheduling.DBusSchedQoS.PidReusedOnSetProcessState",
-      GetPidReuseResult(is_pid_reused, success));
-
-  if (success) {
-    base::UmaHistogramMicrosecondsTimes(
-        "Scheduling.DBusSchedQoS.SetProcessStateLatency",
-        elapsed_timer.Elapsed());
-  } else {
+  if (result != dbus::DBusResult::kSuccess) {
     LOG(ERROR) << "set process state via resourced failed for pid "
                << process_id << " to " << static_cast<int>(priority)
                << " : DBusResult: " << static_cast<int>(result);
@@ -372,38 +325,21 @@ void DBusSchedQOSStateHandler::SetThreadTypeOnThread(
       state = resource_manager::ThreadState::kUrgentBursty;
       break;
   }
-  base::ElapsedTimer elapsed_timer;
   ash::ResourcedClient::Get()->SetThreadState(
       process_id, thread_id, state,
       base::BindOnce(&DBusSchedQOSStateHandler::OnSetThreadTypeFinish,
                      weak_ptr_factory_.GetWeakPtr(), process_id, thread_id,
-                     thread_type, std::move(elapsed_timer),
-                     system::ProcStatFile(thread_id.raw())));
+                     thread_type));
 }
 
 void DBusSchedQOSStateHandler::OnSetThreadTypeFinish(
     base::ProcessId process_id,
     base::PlatformThreadId thread_id,
     base::ThreadType thread_type,
-    base::ElapsedTimer elapsed_timer,
-    system::ProcStatFile stat_file,
     dbus::DBusResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const bool success = result == dbus::DBusResult::kSuccess;
-  const bool is_pid_reused =
-      IsPidReused(std::move(stat_file), thread_id.raw(), success);
-  LOG_IF(ERROR, is_pid_reused)
-      << "PID reuse detected for thread id " << thread_id;
-  base::UmaHistogramEnumeration(
-      "Scheduling.DBusSchedQoS.PidReusedOnSetThreadState",
-      GetPidReuseResult(is_pid_reused, success));
-
-  if (result == dbus::DBusResult::kSuccess) {
-    base::UmaHistogramMicrosecondsTimes(
-        "Scheduling.DBusSchedQoS.SetThreadStateLatency",
-        elapsed_timer.Elapsed());
-  } else {
+  if (result != dbus::DBusResult::kSuccess) {
     LOG(ERROR) << "set thread state via resourced failed for tid " << thread_id
                << " to " << static_cast<int>(thread_type)
                << " : DBusResult: " << static_cast<int>(result);

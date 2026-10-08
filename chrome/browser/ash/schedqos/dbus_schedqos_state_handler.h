@@ -17,8 +17,6 @@
 #include "base/threading/cross_process_platform_thread_delegate.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_type_delegate.h"
-#include "base/timer/elapsed_timer.h"
-#include "chrome/browser/ash/system/procfs_util.h"
 #include "dbus/dbus_result.h"
 
 namespace ash {
@@ -44,16 +42,6 @@ class DBusSchedQOSStateHandler
   DBusSchedQOSStateHandler& operator=(const DBusSchedQOSStateHandler&) = delete;
 
   ~DBusSchedQOSStateHandler() override;
-
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class PidReuseResult {
-    kNotPidReuseOnFail = 0,
-    kPidReuseOnFail = 1,
-    kNotPidReuseOnSuccess = 2,
-    kPidReuseOnSuccess = 3,
-    kMaxValue = kPidReuseOnSuccess,
-  };
 
   // Creates a SandboxedProcessThreadTypeHandler instance and stores it to
   // g_instance. Make sure the g_instance doesn't exist before creation.
@@ -107,8 +95,6 @@ class DBusSchedQOSStateHandler
 
   void OnSetProcessPriorityFinish(base::ProcessId process_id,
                                   base::Process::Priority priority,
-                                  base::ElapsedTimer elapsed_timer,
-                                  system::ProcStatFile stat_file,
                                   dbus::DBusResult result);
 
   void MarkProcessToRetry(base::ProcessId process_id);
@@ -120,8 +106,6 @@ class DBusSchedQOSStateHandler
   void OnSetThreadTypeFinish(base::ProcessId process_id,
                              base::PlatformThreadId thread_id,
                              base::ThreadType thread_type,
-                             base::ElapsedTimer elapsed_timer,
-                             system::ProcStatFile stat_file,
                              dbus::DBusResult result);
 
   void AddThreadRetryEntry(base::ProcessId process_id,

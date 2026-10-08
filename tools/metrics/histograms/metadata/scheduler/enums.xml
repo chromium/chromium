@@ -33,13 +33,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="True Negative"/>
 </enum>
 
-<enum name="PidReuseResult">
-  <int value="0" label="Pid not reused (request fail)"/>
-  <int value="1" label="Pid reused (request fail)"/>
-  <int value="2" label="Pid not reused (request success)"/>
-  <int value="3" label="Pid reused (request success)"/>
-</enum>
-
 <enum name="QoSErrorType">
   <int value="0" label="ProcessForbidden"/>
   <int value="1" label="ProcessNotFound"/>
