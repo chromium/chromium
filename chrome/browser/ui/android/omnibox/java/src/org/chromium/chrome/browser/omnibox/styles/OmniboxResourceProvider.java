@@ -764,7 +764,7 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
     /**
      * Resolves the text appearance for the attachments header in the popup.
      *
-     * @param useLarge Whether to use large headline text (carousel) or medium header text.
+     * @param useLarge Whether to use thick headline2 text (carousel) or medium header text.
      */
     public @StyleRes int getPopupAttachmentsHeaderTextRes(boolean useLarge) {
         boolean isIncognito =
@@ -772,7 +772,7 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         if (!useLarge) {
             return IncognitoColors.getTextMediumThickSecondary(isIncognito);
         }
-        return IncognitoColors.getHeadlinePrimary(isIncognito);
+        return IncognitoColors.getHeadline2ThickPrimary(isIncognito);
     }
 
     /**

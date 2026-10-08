@@ -730,7 +730,7 @@ public class OmniboxResourceProviderUnitTest {
                 IncognitoColors.getTextMediumThickSecondary(/* isIncognito= */ false),
                 mProvider.getPopupAttachmentsHeaderTextRes(/* useLarge= */ false));
         assertEquals(
-                IncognitoColors.getHeadlinePrimary(/* isIncognito= */ false),
+                IncognitoColors.getHeadline2ThickPrimary(/* isIncognito= */ false),
                 mProvider.getPopupAttachmentsHeaderTextRes(/* useLarge= */ true));
 
         OmniboxResourceProvider incognitoProvider =
@@ -739,7 +739,7 @@ public class OmniboxResourceProviderUnitTest {
                 IncognitoColors.getTextMediumThickSecondary(/* isIncognito= */ true),
                 incognitoProvider.getPopupAttachmentsHeaderTextRes(/* useLarge= */ false));
         assertEquals(
-                IncognitoColors.getHeadlinePrimary(/* isIncognito= */ true),
+                IncognitoColors.getHeadline2ThickPrimary(/* isIncognito= */ true),
                 incognitoProvider.getPopupAttachmentsHeaderTextRes(/* useLarge= */ true));
     }
 }
