@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -29,23 +26,25 @@ class WebViewInteractiveUiTest : public InProcessBrowserTest {
   }
 };
 
-// TODO(crbug.com/517764196, crbug.com/562393492): Fails on Windows and Mac.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/562393492): Fails on Mac.
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_MouseMoveEventDelivered DISABLED_MouseMoveEventDelivered
 #else
 #define MAYBE_MouseMoveEventDelivered MouseMoveEventDelivered
 #endif
 IN_PROC_BROWSER_TEST_F(WebViewInteractiveUiTest,
                        MAYBE_MouseMoveEventDelivered) {
+  Profile* profile = ProfileManager::GetLastUsedProfile();
+  ASSERT_TRUE(profile);
+
   // Create a widget with a WebView.
-  TestingProfile testing_profile;
   auto widget = std::make_unique<Widget>();
   Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET);
   params.bounds = gfx::Rect(0, 0, 400, 300);
   widget->Init(std::move(params));
 
-  auto* web_view = widget->SetClientContentsView(
-      std::make_unique<WebView>(&testing_profile));
+  auto* web_view =
+      widget->SetClientContentsView(std::make_unique<WebView>(profile));
 
   // Load a simple page with a mousemove listener.
   GURL url(
@@ -109,6 +108,8 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveUiTest,
     })
   )",
                                                     expected_x, expected_y)));
+
+  widget->CloseNow();
 }
 
 }  // namespace views
