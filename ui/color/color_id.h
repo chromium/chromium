@@ -153,6 +153,12 @@
   E_CPONLY(kColorSysSurface4) \
   E_CPONLY(kColorSysSurface5) \
   E_CPONLY(kColorSysSurfaceNumberedForeground) \
+  /* Material 3 surface container roles, ordered Lowest to Highest. */ \
+  E_CPONLY(kColorSysSurfaceContainerLowest) \
+  E_CPONLY(kColorSysSurfaceContainerLow) \
+  E_CPONLY(kColorSysSurfaceContainer) \
+  E_CPONLY(kColorSysSurfaceContainerHigh) \
+  E_CPONLY(kColorSysSurfaceContainerHighest) \
   /* General. */ \
   E_CPONLY(kColorSysOnSurfaceSecondary) \
   E_CPONLY(kColorSysOnSurfaceSubtle) \

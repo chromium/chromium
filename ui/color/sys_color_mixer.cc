@@ -204,6 +204,17 @@ void AddSysColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
                                           {kColorSysSurface}, 0x23);
   }
 
+  mixer[kColorSysSurfaceContainerLowest] = {dark_mode ? kColorRefNeutral4
+                                                      : kColorRefNeutral100};
+  mixer[kColorSysSurfaceContainerLow] = {dark_mode ? kColorRefNeutral10
+                                                   : kColorRefNeutral96};
+  mixer[kColorSysSurfaceContainer] = {dark_mode ? kColorRefNeutral12
+                                                : kColorRefNeutral94};
+  mixer[kColorSysSurfaceContainerHigh] = {dark_mode ? kColorRefNeutral17
+                                                    : kColorRefNeutral92};
+  mixer[kColorSysSurfaceContainerHighest] = {dark_mode ? kColorRefNeutral22
+                                                       : kColorRefNeutral90};
+
   // General.
   mixer[kColorSysOnSurfaceSecondary] = {dark_mode ? kColorRefNeutral80
                                                   : kColorRefNeutral30};
