@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "storage/browser/file_system/mount_points.h"
 #include "storage/common/file_system/file_system_types.h"
 
@@ -201,20 +202,22 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) IsolatedContext : public MountPoints {
   // MountPoints overrides.
   FileSystemURL CrackFileSystemURL(const FileSystemURL& url) const override;
 
-  // Unregisters a file system of given |filesystem_id|. Must be called with
-  // lock_ held.  Returns true if the file system is unregistered.
-  bool UnregisterFileSystem(const std::string& filesystem_id);
+  // Unregisters a file system of given |filesystem_id|. Returns true if the
+  // file system is unregistered.
+  bool UnregisterFileSystem(const std::string& filesystem_id)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // Returns a new filesystem_id.  Called with lock.
-  std::string GetNewFileSystemId() const;
+  // Returns a new filesystem_id.
+  std::string GetNewFileSystemId() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // This lock needs to be obtained when accessing the instance_map_.
   mutable base::Lock lock_;
 
-  std::map<std::string, std::unique_ptr<Instance>> instance_map_;
+  std::map<std::string, std::unique_ptr<Instance>> instance_map_
+      GUARDED_BY(lock_);
 
   // Reverse map from registered path to IDs.
-  std::map<base::FilePath, std::set<std::string>> path_to_id_map_;
+  std::map<base::FilePath, std::set<std::string>> path_to_id_map_
+      GUARDED_BY(lock_);
 };
 
 }  // namespace storage
