@@ -53,6 +53,7 @@ class ActionAppMenuManager {
   void SetTimerForTesting(base::ElapsedTimer timer);
 
  private:
+  void AddBrowserActions(actions::ActionItem* root);
   void AddNotificationActions(actions::ActionItem* root);
   void AddSearchBarAction(actions::ActionItem* root);
   void AddBlockHeaderActions(actions::ActionItem* root);

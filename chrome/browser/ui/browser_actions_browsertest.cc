@@ -110,7 +110,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, DidCreateBrowserActions) {
       kActionQrCodeGenerator,    kActionShowAddressesBubbleOrPage,
       kActionFederation,         kActionCycleToNextTab,
       kActionCycleToPrevTab,     kActionShowReadingModeSidePanel,
-      kActionBookmarksSubmenu};
+      kActionBookmarksSubmenu,   kActionOpenInChrome,
+      kActionWebAppMenuAppInfo,  kActionUninstallWebApp};
 
   ASSERT_NE(browser_actions->root_action_item(), nullptr);
 

@@ -110,6 +110,7 @@
 #define IDC_WEB_APP_SETTINGS            34073
 #define IDC_WEB_APP_MENU_APP_INFO       34074
 #define IDC_WEB_APP_UPGRADE_DIALOG      34075
+#define IDC_UNINSTALL_WEB_APP           34076
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Move window to other user commands

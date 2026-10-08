@@ -239,9 +239,11 @@
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/vector_icons/vector_icons.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "printing/buildflags/buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/actions/actions.h"
+#include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/text_utils.h"
@@ -1734,6 +1736,14 @@ void BrowserActions::InitializeChromeMenuActions() {
               },
               bwi))
           .SetActionId(kActionWebAppMenuAppInfo)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_APP_CONTEXT_MENU_SHOW_INFO)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_APP_CONTEXT_MENU_SHOW_INFO)))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled()
+                  ? omnibox::kPageInfoCustomIcon
+                  : omnibox::kSecurePageInfoChromeRefreshOldIcon))
           .Build());
 
   root_action_item_->AddChild(
@@ -4451,14 +4461,46 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .Build());
 
   root_action_item_->AddChild(
-      actions::ActionItem::Builder(
+      ChromeMenuAction(
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 chrome::OpenInChrome(bwi);
               },
+              bwi),
+          kActionOpenInChrome, IDS_OPEN_IN_CHROME, IDS_OPEN_IN_CHROME,
+          features::IsRoundedIconsEnabled() ? kChromeProductIcon
+                                            : kBrowserLogoOldIcon,
+          /*is_pinnable=*/false)
+          .Build());
+
+  auto* app_controller = web_app::AppBrowserController::From(bwi);
+  const std::u16string uninstall_text =
+      app_controller ? BrowserActions::GetCleanTitleAndTooltipText(
+                           l10n_util::GetStringFUTF16(
+                               IDS_UNINSTALL_FROM_OS_LAUNCH_SURFACE,
+                               ui::EscapeMenuLabelAmpersands(
+                                   app_controller->GetAppShortName())))
+                     : std::u16string();
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                auto* controller = web_app::AppBrowserController::From(bwi);
+                if (controller) {
+                  controller->Uninstall(
+                      webapps::WebappUninstallSource::kAppMenu);
+                }
+              },
               bwi))
-          .SetActionId(kActionOpenInChrome)
+          .SetActionId(kActionUninstallWebApp)
+          .SetText(uninstall_text)
+          .SetTooltipText(uninstall_text)
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kDeleteIcon
+                                                : kTrashCanRefreshOldIcon,
+              ui::kColorIcon))
           .Build());
 
 #if !BUILDFLAG(IS_CHROMEOS)

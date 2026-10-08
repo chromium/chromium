@@ -91,7 +91,8 @@ bool ShouldShowNewBadge(BrowserWindowInterface* browser_window_interface,
 bool ShouldRoundBottomCorners(size_t index,
                               const actions::ActionListVector& items) {
   // An item rounds its bottom corners if it is the last non-divider item in
-  // its list, if it is a notification item, OR if it is the zoom submenu.
+  // its list, if it is a notification item, OR if it is or precedes the zoom
+  // submenu.
   actions::BaseAction* const base_item = items[index].get();
   if (base_item->GetActionItem()->GetActionId() == kActionZoomSubmenu ||
       base_item->GetProperty(AppMenuActionItem::kDisplayTypeKey) ==
@@ -106,7 +107,7 @@ bool ShouldRoundBottomCorners(size_t index,
         items[i]->GetProperty(AppMenuActionItem::kDisplayTypeKey);
     if (display_type != AppMenuActionItem::DisplayType::kDivider &&
         display_type != AppMenuActionItem::DisplayType::kHeader) {
-      return false;
+      return items[i]->GetActionItem()->GetActionId() == kActionZoomSubmenu;
     }
   }
   return true;

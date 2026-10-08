@@ -63,6 +63,7 @@
   E(kActionOpenInChrome, IDC_OPEN_IN_CHROME) \
   E(kActionWebAppSettings, IDC_WEB_APP_SETTINGS) \
   E(kActionWebAppMenuAppInfo, IDC_WEB_APP_MENU_APP_INFO) \
+  E(kActionUninstallWebApp, IDC_UNINSTALL_WEB_APP) \
   /* Page-related commands */ \
   E(kActionBookmarkThisTab, IDC_BOOKMARK_THIS_TAB) \
   E(kActionBookmarkAllTabs, IDC_BOOKMARK_ALL_TABS) \

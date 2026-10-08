@@ -444,12 +444,7 @@ void ActionAppMenuManager::CreateMenuHierarchy() {
     promo_handle_ = std::move(highlight_info->promo_handle);
   }
 
-  AddNotificationActions(root);
-  AddSearchBarAction(root);
-  AddBlockHeaderActions(root);
-  AddYourChromeActions(root);
-  AddToolsAndActionsActions(root);
-  AddFooterActions(root);
+  AddBrowserActions(root);
 }
 
 void ActionAppMenuManager::OnMenuClosed() {
@@ -465,6 +460,15 @@ void ActionAppMenuManager::OnMenuClosed() {
 
 void ActionAppMenuManager::SetTimerForTesting(base::ElapsedTimer timer) {
   app_menu_timer_ = std::move(timer);
+}
+
+void ActionAppMenuManager::AddBrowserActions(actions::ActionItem* root) {
+  AddNotificationActions(root);
+  AddSearchBarAction(root);
+  AddBlockHeaderActions(root);
+  AddYourChromeActions(root);
+  AddToolsAndActionsActions(root);
+  AddFooterActions(root);
 }
 
 void ActionAppMenuManager::AddNotificationActions(actions::ActionItem* root) {

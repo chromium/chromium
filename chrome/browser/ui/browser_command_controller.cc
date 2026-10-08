@@ -1509,6 +1509,13 @@ void BrowserCommandController::HandleCommandWithDisposition(
       }
       break;
     }
+    case IDC_UNINSTALL_WEB_APP:
+#if !BUILDFLAG(IS_CHROMEOS)
+      CHECK(web_app::AppBrowserController::From(browser_));
+      web_app::AppBrowserController::From(browser_)->Uninstall(
+          webapps::WebappUninstallSource::kAppMenu);
+#endif
+      break;
 
     // UI debug commands
     case IDC_DEBUG_TOGGLE_TABLET_MODE:
@@ -2011,6 +2018,10 @@ void BrowserCommandController::InitCommandState() {
                                          is_web_app_or_custom_tab);
   command_updater_->UpdateCommandEnabled(IDC_WEB_APP_MENU_APP_INFO,
                                          is_web_app_or_custom_tab);
+  command_updater_->UpdateCommandEnabled(
+      IDC_UNINSTALL_WEB_APP,
+      is_web_app_or_custom_tab &&
+          web_app::AppBrowserController::From(browser_)->CanUserUninstall());
 
   // Tab management commands
   const bool supports_tabs =
