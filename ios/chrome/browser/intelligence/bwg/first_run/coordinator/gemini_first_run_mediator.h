@@ -34,8 +34,6 @@ class IdentityManager;
 @property(nonatomic, weak) id<GeminiFirstRunMediatorDelegate> delegate;
 // The handler for sending scene commands.
 @property(nonatomic, weak) id<SceneCommands> sceneHandler;
-// Returns YES if the Gemini promo should be shown.
-@property(nonatomic, readonly) BOOL shouldShowPromo;
 // Returns YES if the AI Hub IPH should be shown.
 @property(nonatomic, readonly) BOOL shouldShowAIHubIPH;
 // Returns YES if the UI must enforce strict legal consent requirements.

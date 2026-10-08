@@ -118,14 +118,6 @@ const CGFloat kPromoMaxImpressionCount = 3;
   _authService = nullptr;
 }
 
-- (BOOL)shouldShowPromo {
-  BOOL promoImpressionsExhausted =
-      _prefService->GetInteger(prefs::kIOSBWGPromoImpressionCount) >=
-      kPromoMaxImpressionCount;
-
-  return ShouldForceBWGPromo() || !promoImpressionsExhausted;
-}
-
 - (GeminiConsentConfiguration*)consentConfigurationForFirstRunType:
     (GeminiFirstRunType)firstRunType {
   variations::VariationsService* variationsService =
@@ -146,7 +138,15 @@ const CGFloat kPromoMaxImpressionCount = 3;
 }
 
 - (BOOL)shouldShowPromoForFirstRunType:(GeminiFirstRunType)firstRunType {
-  return self.shouldShowPromo && (firstRunType != GeminiFirstRunType::kLive);
+  if (firstRunType == GeminiFirstRunType::kLive) {
+    return NO;
+  }
+
+  BOOL promoImpressionsExhausted =
+      _prefService->GetInteger(prefs::kIOSBWGPromoImpressionCount) >=
+      kPromoMaxImpressionCount;
+
+  return ShouldForceBWGPromo() || !promoImpressionsExhausted;
 }
 
 - (BOOL)shouldShowBrandingHeaderForFirstRunType:
@@ -179,13 +179,6 @@ const CGFloat kPromoMaxImpressionCount = 3;
 #pragma mark - Private
 
 - (void)logPromoShown {
-  if (IsGeminiNavigationPromoEnabled() &&
-      _entryPoint == gemini::EntryPoint::Promo) {
-    _tracker->NotifyEvent(
-        feature_engagement::events::kIOSFullscreenPromosGroupTrigger);
-    _tracker->NotifyEvent(
-        feature_engagement::events::kIOSGeminiFullscreenPromoTriggered);
-  }
   int impressionCount =
       _prefService->GetInteger(prefs::kIOSBWGPromoImpressionCount) + 1;
   _prefService->SetInteger(prefs::kIOSBWGPromoImpressionCount, impressionCount);
@@ -210,7 +203,8 @@ const CGFloat kPromoMaxImpressionCount = 3;
   BOOL wouldTriggerIPH =
       _tracker->WouldTriggerHelpUI(feature_engagement::kIPHIOSPageActionMenu);
 
-  return _entryPoint != gemini::EntryPoint::AIHub && [self shouldShowPromo] &&
+  return _entryPoint != gemini::EntryPoint::AIHub &&
+         [self shouldShowPromoForFirstRunType:GeminiFirstRunType::kNewUser] &&
          wouldTriggerIPH;
 }
 
@@ -245,9 +239,6 @@ const CGFloat kPromoMaxImpressionCount = 3;
 // Did consent to Gemini.
 - (void)didConsentGemini {
   gemini::UpdateUserConsentPrefs(YES, _prefService);
-  if (IsGeminiNavigationPromoEnabled()) {
-    _tracker->NotifyEvent(feature_engagement::events::kIOSGeminiConsentGiven);
-  }
   [self handleFRECompletion:YES];
 }
 
@@ -282,11 +273,6 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
 // Promo was shown.
 - (void)didShowGeminiPromo {
-  if (_entryPoint != gemini::EntryPoint::Promo) {
-    _tracker->NotifyEvent(
-        feature_engagement::events::kIOSGeminiFlowStartedNonPromo);
-  }
-
   [self logPromoShown];
 }
 

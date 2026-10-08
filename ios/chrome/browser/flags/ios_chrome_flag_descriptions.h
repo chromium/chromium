@@ -976,10 +976,6 @@ inline constexpr char kGeminiMultiTabContextName[] = "Gemini Multi Tab Context";
 inline constexpr char kGeminiMultiTabContextDescription[] =
     "Enables attaching multiple tabs in Gemini.";
 
-inline constexpr char kGeminiNavigationPromoName[] = "GeminiNavigationPromo";
-inline constexpr char kGeminiNavigationPromoDescription[] =
-    "Enables the automatic promo for Gemini on navigation.";
-
 inline constexpr char kGeminiPreciseLocationName[] = "BWG Precise Location";
 inline constexpr char kGeminiPreciseLocationDescription[] =
     "When enabled, the precise location row is shown in BWG settings.";

@@ -569,14 +569,16 @@ TEST_F(GeminiBrowserAgentTest, TestGeminiBrowserAgentStartGeminiFlow) {
   web_state_->WasShown();
 
   gemini_browser_agent_->StartGeminiFlow(
-      base_view_controller, [[GeminiStartupState alloc]
-                                initWithEntryPoint:gemini::EntryPoint::Promo]);
+      base_view_controller,
+      [[GeminiStartupState alloc]
+          initWithEntryPoint:gemini::EntryPoint::OverflowMenu]);
 
   // Wait for the snapshot method to be called.
   ASSERT_TRUE(
       base::test::RunUntil([snapshot_called]() { return *snapshot_called; }));
 
-  EXPECT_EQ(gemini_browser_agent_->GetEntryPoint(), gemini::EntryPoint::Promo);
+  EXPECT_EQ(gemini_browser_agent_->GetEntryPoint(),
+            gemini::EntryPoint::OverflowMenu);
 }
 
 // Tests that switching active web states handles observations correctly.
@@ -1047,8 +1049,8 @@ TEST_F(GeminiBrowserAgentTest, TestGeminiLiveIPHAndNewBadgeFET) {
 
   // Start Gemini, which should trigger the IPHs.
   UIViewController* base_view_controller = [[UIViewController alloc] init];
-  GeminiStartupState* startup_state =
-      [[GeminiStartupState alloc] initWithEntryPoint:gemini::EntryPoint::Promo];
+  GeminiStartupState* startup_state = [[GeminiStartupState alloc]
+      initWithEntryPoint:gemini::EntryPoint::OverflowMenu];
   gemini_browser_agent_->StartGeminiFlow(base_view_controller, startup_state);
 
   // Setup mock tracker expectations for dismissal
@@ -2333,8 +2335,9 @@ TEST_F(GeminiBrowserAgentTest,
 
   // A flow that does not auto-submit presents immediately.
   gemini_browser_agent_->StartGeminiFlow(
-      base_view_controller, [[GeminiStartupState alloc]
-                                initWithEntryPoint:gemini::EntryPoint::Promo]);
+      base_view_controller,
+      [[GeminiStartupState alloc]
+          initWithEntryPoint:gemini::EntryPoint::OverflowMenu]);
   EXPECT_TRUE(IsFloatyInvoked());
   EXPECT_FALSE(HasPendingPresentation());
   GeminiConfiguration* config =
@@ -2567,7 +2570,7 @@ TEST_F(GeminiBrowserAgentTest,
   gemini_browser_agent_->StartGeminiFlow(
       [[UIViewController alloc] init],
       [[GeminiStartupState alloc]
-          initWithEntryPoint:gemini::EntryPoint::Promo]);
+          initWithEntryPoint:gemini::EntryPoint::OverflowMenu]);
   EXPECT_TRUE(IsFloatyInvoked());
 
   id mediator = OCMPartialMock(GetGeminiContainerMediator());

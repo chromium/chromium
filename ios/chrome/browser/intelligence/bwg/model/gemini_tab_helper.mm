@@ -51,7 +51,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
-#import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
@@ -681,25 +680,6 @@ void GeminiTabHelper::OnCanApplyContextualCueingDecision(
 
   if (!web_state_ || !web_state_->IsVisible() ||
       !latest_load_contextual_cueing_metadata_) {
-    return;
-  }
-
-  ProfileIOS* profile =
-      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
-
-  // TODO(crbug.com/461595639): Remove pref checks to fully migrate logic to
-  // FET.
-  bool floaty_shown = profile->GetPrefs()->GetBoolean(prefs::kIOSBwgConsent);
-  bool should_wait_for_new_user =
-      !ShouldSkipBWGPromoNewUserDelay() && IsFirstRunRecent(base::Days(1));
-
-  // Show promo if eligible.
-  if (IsGeminiNavigationPromoEnabled() && !should_wait_for_new_user &&
-      !floaty_shown && !gemini::DidUserSeeGeminiPromo(profile->GetPrefs()) &&
-      feature_engagement::TrackerFactory::GetForProfile(profile)
-          ->WouldTriggerHelpUI(
-              feature_engagement::kIPHiOSGeminiFullscreenPromoFeature)) {
-    [gemini_handler_ showGeminiPromoIfPageIsEligible];
     return;
   }
 

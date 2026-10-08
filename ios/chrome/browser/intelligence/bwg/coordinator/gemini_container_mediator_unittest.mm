@@ -313,7 +313,7 @@ class GeminiContainerMediatorTest : public PlatformTest {
         OCMProtocolMock(@protocol(AssistantContainerCommands));
 
     startup_state_ = [[GeminiStartupState alloc]
-        initWithEntryPoint:gemini::EntryPoint::Promo];
+        initWithEntryPoint:gemini::EntryPoint::OverflowMenu];
 
     mediator_ = [[GeminiContainerMediator alloc]
               initWithBrowser:browser_.get()
@@ -573,7 +573,7 @@ TEST_F(GeminiContainerMediatorTest,
       shouldShowSuggestionChipsForEntryPoint:gemini::EntryPoint::
                                                   AppSwitcherAISummarization]);
   EXPECT_TRUE([mediator_
-      shouldShowSuggestionChipsForEntryPoint:gemini::EntryPoint::Promo]);
+      shouldShowSuggestionChipsForEntryPoint:gemini::EntryPoint::OverflowMenu]);
 }
 
 // Tests that shouldShowSuggestionChipsForEntryPoint returns false for
@@ -592,7 +592,7 @@ TEST_F(GeminiContainerMediatorTest,
   EXPECT_FALSE([mediator_ shouldShowSuggestionChipsForEntryPoint:
                               gemini::EntryPoint::AtMemorySearch]);
   EXPECT_TRUE([mediator_
-      shouldShowSuggestionChipsForEntryPoint:gemini::EntryPoint::Promo]);
+      shouldShowSuggestionChipsForEntryPoint:gemini::EntryPoint::OverflowMenu]);
 }
 
 // Tests that the mediator correctly notifies the delegate when the view state
@@ -819,11 +819,11 @@ TEST_F(GeminiContainerMediatorTest,
 
   AppendActiveWebState();
 
-  GeminiStartupState* promo_startup_state =
-      [[GeminiStartupState alloc] initWithEntryPoint:gemini::EntryPoint::Promo];
+  GeminiStartupState* overflow_startup_state = [[GeminiStartupState alloc]
+      initWithEntryPoint:gemini::EntryPoint::OverflowMenu];
 
   GeminiConfiguration* config = [mediator_
-      createGeminiConfigurationForActiveWebState:promo_startup_state];
+      createGeminiConfigurationForActiveWebState:overflow_startup_state];
   EXPECT_FALSE(config.blockQuerySubmissionWhileLoading);
   EXPECT_FALSE(config.showPageLoadingSnackbarOnOpeningInvocation);
   histogram_tester.ExpectUniqueSample(
@@ -843,7 +843,7 @@ TEST_F(GeminiContainerMediatorTest,
   EXPECT_TRUE([mediator_ shouldBlockQuerySubmissionWhileLoadingForEntryPoint:
                              gemini::EntryPoint::AppSwitcherAISummarization]);
   EXPECT_FALSE([mediator_ shouldBlockQuerySubmissionWhileLoadingForEntryPoint:
-                              gemini::EntryPoint::Promo]);
+                              gemini::EntryPoint::OverflowMenu]);
 }
 
 // Tests that shouldShowPageLoadingSnackbarOnOpeningInvocationForEntryPoint
@@ -860,7 +860,7 @@ TEST_F(GeminiContainerMediatorTest,
                      gemini::EntryPoint::AppSwitcherAISummarization]);
   EXPECT_FALSE(
       [mediator_ shouldShowPageLoadingSnackbarOnOpeningInvocationForEntryPoint:
-                     gemini::EntryPoint::Promo]);
+                     gemini::EntryPoint::OverflowMenu]);
 }
 
 // Tests that changing detent to minimized when container is in zero state and
@@ -1022,7 +1022,7 @@ TEST_F(GeminiContainerMediatorTest,
   [mediator_ geminiZeroStateViewController:nil didSelectSuggestion:suggestion];
 
   EXPECT_THAT(ios::provider::GetLastUpdatePromptActionEntryPoint(),
-              testing::Optional(gemini::EntryPoint::Promo));
+              testing::Optional(gemini::EntryPoint::OverflowMenu));
   EXPECT_NSEQ(@"What is this page about?",
               ios::provider::GetLastUpdatePromptActionPrompt());
   EXPECT_TRUE(ios::provider::GetLastUpdatePromptActionShouldAutoSubmit());

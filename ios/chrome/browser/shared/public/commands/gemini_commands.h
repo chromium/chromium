@@ -29,10 +29,6 @@ class GURL;
 // Dismiss the Gemini flow with a completion block.
 - (void)dismissGeminiFlowWithCompletion:(ProceduralBlock)completion;
 
-// Attempts to display the automatic Gemini promo depending on whether the
-// active web state is eligible. If the page is ineligible, does nothing.
-- (void)showGeminiPromoIfPageIsEligible;
-
 // Handles hiding the Gemini floaty from an update `source`. When in a hidden
 // state, the floaty still persists in memory and needs to be properly cleaned
 // up.

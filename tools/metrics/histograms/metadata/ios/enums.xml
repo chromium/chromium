@@ -935,7 +935,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(IOSGeminiEntryPoint) -->
 
 <enum name="IOSGeminiEntryPoint">
-  <int value="0" label="Promo"/>
+  <int value="0" label="Promo (Deprecated)"/>
   <int value="1" label="Overflow Menu"/>
   <int value="2" label="AI Hub"/>
   <int value="3" label="Omnibox Chip (Skipped AI Hub)"/>

@@ -159,12 +159,6 @@ BASE_DECLARE_FEATURE(kCleanupPersistedTabContexts);
 // Returns true if persisted tab contexts cleanup is enabled.
 bool IsCleanupPersistedTabContextsEnabled();
 
-// Feature flag for the automatic Gemini promo shown on navigation.
-BASE_DECLARE_FEATURE(kGeminiNavigationPromo);
-
-// Returns true if the Gemini navigation promo is enabled.
-bool IsGeminiNavigationPromoEnabled();
-
 // Feature flag to enable zero-state suggestions.
 BASE_DECLARE_FEATURE(kZeroStateSuggestions);
 

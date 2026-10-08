@@ -2732,21 +2732,6 @@ inline LayoutStateScenePassKey PassKey() {
   geminiBrowserAgent->UpdateForTraitCollection(traitCollection);
 }
 
-- (void)showGeminiPromoIfPageIsEligible {
-  if (!_regularBrowser) {
-    return;
-  }
-  web::WebState* activeWebState =
-      _regularBrowser->GetWebStateList()->GetActiveWebState();
-  if (gemini::IsGeminiAvailable(gemini::EntryPoint::Promo, self.profile,
-                                activeWebState)
-          .enabled) {
-    [self startGeminiFlowWithStartupState:
-              [[GeminiStartupState alloc]
-                  initWithEntryPoint:gemini::EntryPoint::Promo]];
-  }
-}
-
 - (void)startGeminiLiveFirstRunWithBaseViewController:
             (UIViewController*)baseViewController
                                            completion:(void (^)(BOOL success))

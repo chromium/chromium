@@ -302,18 +302,6 @@ base::TimeDelta GetPersistedContextEffectiveTTL(PrefService* prefs) {
   return std::min(persist_ttl, inactive_tabs_ttl);
 }
 
-BASE_FEATURE(kGeminiNavigationPromo, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsGeminiNavigationPromoEnabled() {
-  if (!IsPageActionMenuEnabled() ||
-      !base::FeatureList::IsEnabled(
-          feature_engagement::kIPHiOSGeminiFullscreenPromoFeature)) {
-    return false;
-  }
-
-  return base::FeatureList::IsEnabled(kGeminiNavigationPromo);
-}
-
 BASE_FEATURE(kZeroStateSuggestions, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsZeroStateSuggestionsEnabled() {

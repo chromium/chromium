@@ -77,10 +77,11 @@ class GeminiFirstRunMediatorTest : public PlatformTest {
     mock_delegate_ = OCMProtocolMock(@protocol(GeminiFirstRunMediatorDelegate));
     mock_scene_handler_ = OCMProtocolMock(@protocol(SceneCommands));
 
-    mediator_ = CreateMediator(gemini::EntryPoint::Promo, ^(BOOL success) {
-      completion_called_ = YES;
-      completion_success_ = success;
-    });
+    mediator_ =
+        CreateMediator(gemini::EntryPoint::OverflowMenu, ^(BOOL success) {
+          completion_called_ = YES;
+          completion_success_ = success;
+        });
   }
 
   void TearDown() override {
@@ -241,20 +242,8 @@ TEST_F(GeminiFirstRunMediatorTest, TestShouldShowAIHubIPH_ChromeNextIaEnabled) {
   EXPECT_FALSE([mediator_ shouldShowAIHubIPH]);
 }
 
-// Tests didConsentGemini sets consent pref, notifies tracker when
-// kGeminiNavigationPromo is enabled, and calls completion with YES.
+// Tests didConsentGemini sets consent pref and calls completion with YES.
 TEST_F(GeminiFirstRunMediatorTest, TestDidConsentGemini) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {feature_engagement::kIPHiOSGeminiFullscreenPromoFeature,
-       kGeminiNavigationPromo, kPageActionMenu},
-      {});
-
-  auto* tracker = static_cast<feature_engagement::test::MockTracker*>(
-      feature_engagement::TrackerFactory::GetForProfile(profile_.get()));
-  EXPECT_CALL(*tracker,
-              NotifyEvent(feature_engagement::events::kIOSGeminiConsentGiven));
-
   [mediator_ didConsentGemini];
 
   EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(prefs::kIOSBwgConsent));

@@ -52,7 +52,6 @@
 #import "third_party/ocmock/gtest_support.h"
 
 namespace {
-const CGFloat kPromoMaxImpressionCount = 3;
 
 const std::string kFirstProfileName = "FirstProfile";
 
@@ -155,84 +154,11 @@ TEST_F(GeminiFirstRunCoordinatorTest, FullscreenNotExitedOnAIHubEntryPoint) {
   EXPECT_CALL(
       *tracker,
       NotifyEvent(feature_engagement::events::kIOSGeminiPromoFirstCompletion));
-  EXPECT_CALL(
-      *tracker,
-      NotifyEvent(feature_engagement::events::kIOSGeminiFlowStartedNonPromo));
 
   StartCoordinatorWithEntryPoint(gemini::EntryPoint::AIHub);
 
   // Check that fullscreen mode is still active.
   EXPECT_EQ(0.0, controller->GetProgress());
-}
-
-// Tests fullscreen mode exiting when promo shows from the promo entry point.
-TEST_F(GeminiFirstRunCoordinatorTest, FullscreenExitedOnPromoEntryPoint) {
-  feature_list_.InitWithFeatures(
-      {feature_engagement::kIPHiOSGeminiFullscreenPromoFeature,
-       kGeminiNavigationPromo, kPageActionMenu},
-      {});
-  auto* tracker = static_cast<feature_engagement::test::MockTracker*>(
-      feature_engagement::TrackerFactory::GetForProfile(
-          profile_manager_.GetProfileWithName(kFirstProfileName)));
-  EXPECT_CALL(*tracker, WouldTriggerHelpUI(testing::Ref(
-                            feature_engagement::kIPHIOSPageActionMenu)))
-      .WillRepeatedly(testing::Return(true));
-
-  TestFullscreenController* controller =
-      TestFullscreenController::FromBrowser(browser_.get());
-  controller->EnterFullscreen();
-  ASSERT_EQ(0.0, controller->GetProgress());
-  EXPECT_CALL(
-      *tracker,
-      NotifyEvent(feature_engagement::events::kIOSGeminiPromoFirstCompletion));
-  EXPECT_CALL(
-      *tracker,
-      NotifyEvent(
-          feature_engagement::events::kIOSGeminiFullscreenPromoTriggered));
-
-  EXPECT_CALL(
-      *tracker,
-      NotifyEvent(
-          feature_engagement::events::kIOSFullscreenPromosGroupTrigger));
-
-  StartCoordinatorWithEntryPoint(gemini::EntryPoint::Promo);
-
-  // Check that fullscreen mode is deactivated.
-  EXPECT_EQ(1.0, controller->GetProgress());
-}
-
-// Tests that the promo doesn't show after the maximum impression count.
-TEST_F(GeminiFirstRunCoordinatorTest, GeminiPromoNotShown) {
-  ProfileIOS* profile = profile_manager_.GetProfileWithName(kFirstProfileName);
-  PrefService* prefs = profile->GetPrefs();
-  prefs->SetInteger(prefs::kIOSBWGPromoImpressionCount,
-                    kPromoMaxImpressionCount);
-
-  auto* tracker = static_cast<feature_engagement::test::MockTracker*>(
-      feature_engagement::TrackerFactory::GetForProfile(profile));
-
-  // `kIOSGeminiPromoFirstCompletion` should not be notified if the promo is not
-  // shown.
-  EXPECT_CALL(
-      *tracker,
-      NotifyEvent(feature_engagement::events::kIOSGeminiPromoFirstCompletion))
-      .Times(0);
-  EXPECT_CALL(
-      *tracker,
-      NotifyEvent(
-          feature_engagement::events::kIOSGeminiFullscreenPromoTriggered))
-      .Times(0);
-  EXPECT_CALL(
-      *tracker,
-      NotifyEvent(feature_engagement::events::kIOSFullscreenPromosGroupTrigger))
-      .Times(0);
-
-  StartCoordinatorWithEntryPoint(gemini::EntryPoint::Promo);
-
-  // Checks that a promo didn't start and the impression count didn't
-  // increase.
-  EXPECT_EQ(kPromoMaxImpressionCount,
-            prefs->GetInteger(prefs::kIOSBWGPromoImpressionCount));
 }
 
 // Tests AI Hub IPH starts when the user is shown the promo from initially
@@ -241,7 +167,7 @@ TEST_F(GeminiFirstRunCoordinatorTest, AIHubIPHWasTriggered) {
   OCMExpect([mock_help_command_handler_
       presentInProductHelpWithType:InProductHelpType::kPageActionMenu]);
 
-  StartCoordinatorWithEntryPoint(gemini::EntryPoint::Promo);
+  StartCoordinatorWithEntryPoint(gemini::EntryPoint::OverflowMenu);
   [coordinator_ stop];
 
   EXPECT_OCMOCK_VERIFY(mock_help_command_handler_);
@@ -445,7 +371,7 @@ TEST_F(GeminiFirstRunCoordinatorTest, TestChromeNextIaSkipsIPH) {
   OCMReject([mock_help_command_handler_
       presentInProductHelpWithType:InProductHelpType::kPageActionMenu]);
 
-  StartCoordinatorWithEntryPoint(gemini::EntryPoint::Promo);
+  StartCoordinatorWithEntryPoint(gemini::EntryPoint::OverflowMenu);
   [coordinator_ stop];
 
   EXPECT_OCMOCK_VERIFY(mock_help_command_handler_);
