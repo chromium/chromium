@@ -256,6 +256,14 @@ public class VerticalTabsSideUiCoordinator
     }
 
     @Override
+    public boolean shouldDrawAnchorContainerBackground() {
+        // The rail draws its own background. While expanded for hovering, the anchor container is
+        // laid out at the expanded width over the web contents, so its fill would show around the
+        // rail's rounded corners instead of the web contents.
+        return false;
+    }
+
+    @Override
     public void onUiUpdateCompleted(
             @Px int oldReservedWidth,
             @Px int newReservedWidth,

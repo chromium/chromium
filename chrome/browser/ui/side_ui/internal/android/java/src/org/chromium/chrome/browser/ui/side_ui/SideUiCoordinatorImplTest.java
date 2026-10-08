@@ -212,6 +212,34 @@ public class SideUiCoordinatorImplTest {
     }
 
     @Test
+    public void testAnchorContainerBackground_ContainerOptsOut_NoBackground() {
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator,
+                        mSideUiContainerView,
+                        SideUiId.VERTICAL_TABS,
+                        AnchorSide.LEFT);
+        sideUiContainer.mShouldDrawAnchorContainerBackground = false;
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+
+        // Attaching the container clears its anchor container's background.
+        mCoordinator.updateUi(
+                new UiUpdateRequest(
+                        sideUiContainer.getSideUiId(),
+                        /* suppressAnimations= */ true,
+                        UpdateReason.SIDE_UI_REQUEST));
+        assertEquals(mLeftAnchorContainer, mSideUiContainerView.getParent());
+        assertNull(mLeftAnchorContainer.getBackground());
+
+        // An incognito change keeps it clear, and only fills the other anchor container.
+        mCoordinator.onIncognitoStateChanged(/* isIncognito= */ true);
+        assertNull(mLeftAnchorContainer.getBackground());
+        assertEquals(
+                ChromeColors.getDefaultBgColor(mTestActivity, true),
+                ((ColorDrawable) mRightAnchorContainer.getBackground()).getColor());
+    }
+
+    @Test
     public void testCommitNewSideUiSpecs_SidePanelPositiveTopMarginCheck() {
         doReturn(0)
                 .when(mTopControlsStacker)

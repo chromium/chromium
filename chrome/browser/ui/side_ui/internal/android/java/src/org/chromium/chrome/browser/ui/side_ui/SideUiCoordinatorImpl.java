@@ -88,6 +88,9 @@ final class SideUiCoordinatorImpl
     /** Maps {@link AnchorSide} to {@link ViewGroup} where {@link SideUiContainer} is attached. */
     private final Map<@AnchorSide Integer, ViewGroup> mAnchorContainers = new ArrayMap<>();
 
+    /** The default background color of the anchor containers, which depends on incognito. */
+    private @ColorInt int mAnchorContainerBackgroundColor;
+
     /**
      * The {@link SideUiSpecs} that were last committed, i.e. the specs the browser UI is currently
      * laid out with.
@@ -172,6 +175,9 @@ final class SideUiCoordinatorImpl
         mAnchorContainerParent = anchorContainerParent;
         mIncognitoStateProvider = incognitoStateProvider;
         mTabModelSelector = tabModelSelector;
+        // Matches the anchor container layout; updated by onIncognitoStateChanged().
+        mAnchorContainerBackgroundColor =
+                ChromeColors.getDefaultBgColor(parentActivity, /* isIncognito= */ false);
 
         mBrowserControlsVisibilityDelegate =
                 browserControlVisibilityManager.getBrowserVisibilityDelegate();
@@ -432,10 +438,25 @@ final class SideUiCoordinatorImpl
     public void onIncognitoStateChanged(boolean isIncognito) {
         ThreadUtils.assertOnUiThread();
 
-        @ColorInt
-        int backgroundColor = ChromeColors.getDefaultBgColor(mParentActivity, isIncognito);
-        for (ViewGroup anchorContainer : mAnchorContainers.values()) {
-            anchorContainer.setBackgroundColor(backgroundColor);
+        mAnchorContainerBackgroundColor =
+                ChromeColors.getDefaultBgColor(mParentActivity, isIncognito);
+        for (@AnchorSide int anchorSide : mAnchorContainers.keySet()) {
+            updateAnchorContainerBackground(anchorSide);
+        }
+    }
+
+    /**
+     * Fills the anchor container on {@code anchorSide} with the default background color, unless
+     * the {@link SideUiContainer} anchored there opts out, see {@link
+     * SideUiContainer#shouldDrawAnchorContainerBackground()}.
+     */
+    private void updateAnchorContainerBackground(@AnchorSide int anchorSide) {
+        ViewGroup anchorContainer = assumeNonNull(mAnchorContainers.get(anchorSide));
+        SideUiContainer sideUiContainer = getSideUiContainerBySide(anchorSide);
+        if (sideUiContainer != null && !sideUiContainer.shouldDrawAnchorContainerBackground()) {
+            anchorContainer.setBackground(null);
+        } else {
+            anchorContainer.setBackgroundColor(mAnchorContainerBackgroundColor);
         }
     }
 
@@ -1015,6 +1036,7 @@ final class SideUiCoordinatorImpl
         ViewGroup anchorContainer = mAnchorContainers.get(anchorSide);
         assert anchorContainer != null : "AnchorContainer is not available on the request side.";
         attachSideUiContainerView(sideUiContainer, anchorContainer);
+        updateAnchorContainerBackground(anchorSide);
     }
 
     /**

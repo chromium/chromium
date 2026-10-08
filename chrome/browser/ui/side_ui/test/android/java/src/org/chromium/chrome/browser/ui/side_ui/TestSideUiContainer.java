@@ -45,6 +45,14 @@ public final class TestSideUiContainer implements SideUiContainer {
      */
     public boolean mShouldLockTopControls = true;
 
+    /**
+     * Whether the anchor container holding this container should be filled with the default
+     * background color.
+     *
+     * <p>This will be returned by {@link #shouldDrawAnchorContainerBackground()}.
+     */
+    public boolean mShouldDrawAnchorContainerBackground = true;
+
     /** The last {@code availableWidth} received by {@link #determineShowableSize}. */
     public @Nullable @Px Integer mLastAvailableWidth;
 
@@ -194,6 +202,11 @@ public final class TestSideUiContainer implements SideUiContainer {
     @Override
     public boolean shouldLockTopControls() {
         return mShouldLockTopControls;
+    }
+
+    @Override
+    public boolean shouldDrawAnchorContainerBackground() {
+        return mShouldDrawAnchorContainerBackground;
     }
 
     @Override

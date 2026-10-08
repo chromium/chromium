@@ -25,6 +25,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.TooltipCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
@@ -87,6 +88,7 @@ public class VerticalTabRailLayout extends ConstraintLayout {
     private @Px int mFooterButtonCollapsedWidthPx;
     private @Px int mFooterButtonCollapsedHeightPx;
     private @Px int mHoverOverlayCornerRadiusPx;
+    private @Px int mCollapsedRailWidthPx;
     private @RailCollapseState int mCollapseState = RailCollapseState.EXPANDED;
     // Cache for the last applied collapse state to prevent redundant header layout updates.
     private @RailCollapseState int mLastAppliedCollapseState = RailCollapseState.UNKNOWN;
@@ -177,20 +179,18 @@ public class VerticalTabRailLayout extends ConstraintLayout {
                                 : R.dimen.vertical_tabs_header_button_size);
         mHoverOverlayCornerRadiusPx =
                 res.getDimensionPixelSize(R.dimen.vertical_tabs_hover_overlay_corner_radius);
-        // While expanded for hovering, the rail overlays the web contents with rounded right
-        // corners. The outline is shifted left by the radius so its left corners fall outside the
-        // view bounds and only the right corners are rounded. It is only clipped to while hover
-        // expanded, see updateHeaderLayout().
+        mCollapsedRailWidthPx =
+                ViewUtils.dpToPx(
+                        getContext(), VerticalTabUtils.SIDE_UI_CONTAINER_COLLAPSED_WIDTH_DP);
+        // Rounds the right corners of the hover overlay; the left corners are shifted out of
+        // bounds. The radius follows the rail width, see getHoverOverlayCornerRadius(). Only
+        // clipped to while hover expanded, see updateHeaderLayout().
         setOutlineProvider(
                 new ViewOutlineProvider() {
                     @Override
                     public void getOutline(View view, Outline outline) {
-                        outline.setRoundRect(
-                                -mHoverOverlayCornerRadiusPx,
-                                0,
-                                view.getWidth(),
-                                view.getHeight(),
-                                mHoverOverlayCornerRadiusPx);
+                        @Px int radius = getHoverOverlayCornerRadius(view.getWidth());
+                        outline.setRoundRect(-radius, 0, view.getWidth(), view.getHeight(), radius);
                     }
                 });
         updateHeaderLayout();
@@ -448,8 +448,11 @@ public class VerticalTabRailLayout extends ConstraintLayout {
         mSearchButton.setLayoutParams(searchParams);
         mSearchIcon.setLayoutParams(searchIconParams);
         mSearchLabel.setLayoutParams(searchLabelParams);
-        // Round the right corners of the hover overlay.
-        setClipToOutline(isExpandedForHovering);
+        // Clip on hover expand, and keep it while collapsing back so the corners shrink with the
+        // width. Off after a manual expand, which moves the web contents edge with the rail.
+        setClipToOutline(
+                isExpandedForHovering
+                        || (mCollapseState == RailCollapseState.COLLAPSED && getClipToOutline()));
         updatePinnedTabsSeparatorLayout();
         updateFooterLayout();
     }
@@ -479,6 +482,15 @@ public class VerticalTabRailLayout extends ConstraintLayout {
                         : 0);
         params.horizontalBias = useCollapsedPositioning ? 0f : 0.5f;
         mPinnedTabsSeparatorView.setLayoutParams(params);
+    }
+
+    /**
+     * Returns the hover overlay corner radius for the given rail width: the width past the
+     * collapsed rail width, capped at the full radius. 0 while the rail abuts the web contents.
+     */
+    @Px
+    int getHoverOverlayCornerRadius(@Px int railWidthPx) {
+        return MathUtils.clamp(railWidthPx - mCollapsedRailWidthPx, 0, mHoverOverlayCornerRadiusPx);
     }
 
     /**

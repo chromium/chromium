@@ -316,18 +316,53 @@ public class VerticalTabRailLayoutUnitTest {
         assertEquals(new Rect(-radius, 0, 200, 800), rect);
         assertEquals(radius, outline.getRadius(), 0f);
 
-        // Only the hover overlay is clipped to the outline.
+        // The clip turns on when expanded for hovering.
         mRailLayout.setCollapseState(RailCollapseState.EXPANDED_FOR_HOVERING);
         assertTrue(mRailLayout.getClipToOutline());
+
+        // It stays on while the rail collapses back from hovering, so the corners shrink with the
+        // width instead of snapping square.
+        mRailLayout.setCollapseState(RailCollapseState.COLLAPSED);
+        assertTrue(mRailLayout.getClipToOutline());
+
+        mRailLayout.setCollapseState(RailCollapseState.EXPANDED_FOR_HOVERING);
+        assertTrue(mRailLayout.getClipToOutline());
+
+        // A manual expand turns it off, and a later manual collapse keeps it off.
+        mRailLayout.setCollapseState(RailCollapseState.EXPANDED);
+        assertFalse(mRailLayout.getClipToOutline());
 
         mRailLayout.setCollapseState(RailCollapseState.COLLAPSED);
         assertFalse(mRailLayout.getClipToOutline());
+    }
 
-        mRailLayout.setCollapseState(RailCollapseState.EXPANDED_FOR_HOVERING);
-        assertTrue(mRailLayout.getClipToOutline());
+    @Test
+    public void testHoverOverlayCornerRadius_FollowsWidthPastCollapsedWidth() {
+        int radius =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tabs_hover_overlay_corner_radius);
+        int collapsedWidth =
+                ViewUtils.dpToPx(mActivity, VerticalTabUtils.SIDE_UI_CONTAINER_COLLAPSED_WIDTH_DP);
 
-        mRailLayout.setCollapseState(RailCollapseState.EXPANDED);
-        assertFalse(mRailLayout.getClipToOutline());
+        // Square while the rail is at (or below) its collapsed width, i.e. when it still abuts the
+        // web contents, e.g. at the start of the expand-on-hover animation.
+        assertEquals(0, mRailLayout.getHoverOverlayCornerRadius(collapsedWidth - 1));
+        assertEquals(0, mRailLayout.getHoverOverlayCornerRadius(collapsedWidth));
+        // Grows with the width the rail extends over the web contents.
+        assertEquals(1, mRailLayout.getHoverOverlayCornerRadius(collapsedWidth + 1));
+        // Capped at the full radius.
+        assertEquals(radius, mRailLayout.getHoverOverlayCornerRadius(collapsedWidth + radius));
+        assertEquals(radius, mRailLayout.getHoverOverlayCornerRadius(collapsedWidth + radius * 4));
+
+        // The outline uses the same radius.
+        mRailLayout.layout(0, 0, collapsedWidth, 800);
+        Outline outline = new Outline();
+        mRailLayout.getOutlineProvider().getOutline(mRailLayout, outline);
+        Rect rect = new Rect();
+        assertTrue(outline.getRect(rect));
+        assertEquals(new Rect(0, 0, collapsedWidth, 800), rect);
+        assertEquals(0f, outline.getRadius(), 0f);
     }
 
     @Test

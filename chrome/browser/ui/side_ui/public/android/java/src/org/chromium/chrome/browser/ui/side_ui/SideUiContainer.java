@@ -113,6 +113,19 @@ public interface SideUiContainer {
     boolean shouldLockTopControls();
 
     /**
+     * Returns whether {@link SideUiCoordinator} should fill the anchor container holding this
+     * container's view with the default background color.
+     *
+     * <p>Return false if the container draws its own background and needs the area it does not draw
+     * to stay transparent, e.g. a container that overlays the web contents with rounded corners:
+     * the anchor container is laid out at the rendered width, so its fill would show around those
+     * corners instead of the web contents.
+     */
+    default boolean shouldDrawAnchorContainerBackground() {
+        return true;
+    }
+
+    /**
      * Called after {@link SideUiCoordinator} starts a UI update that will change this {@link
      * SideUiContainer}. This is after {@link SideUiCoordinator} computes the upcoming {@link
      * SideUiUpdateSpecs}, but before these specs have been committed or used to update view state.
