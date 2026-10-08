@@ -504,7 +504,7 @@ chrome_internal_verifier(
     bucket = "try.security",
     builder = "vuln-scan-dispatcher",
     cq_settings = try_.cq_settings(
-        experiment_percentage = 10,
+        experiment_percentage = 25,
         on_default_cq = True,
     ),
     owner_whitelist = ["googlers"],
