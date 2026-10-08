@@ -64,6 +64,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyNTPUiTest, Reloads) {
     EXPECT_EQ(1, content::EvalJs(tab1, "history.length"));
   }
   // Verify that the omnibox got focused.
+  ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true);
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 
