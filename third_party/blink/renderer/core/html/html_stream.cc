@@ -151,14 +151,27 @@ WritableStream* HTMLStream::Create(ScriptState* script_state,
   auto* root_insertion_point =
       MakeGarbageCollected<ParserRootInsertionPoint>(*target, ref_node);
 
-  Element* context_element = DynamicTo<Element>(target);
-  if (ShadowRoot* shadow = DynamicTo<ShadowRoot>(target)) {
+  // The target was validated above to be exactly one of: an Element, a
+  // ShadowRoot, or a <template>'s content DocumentFragment. Each needs a
+  // context element for fragment parsing and a custom element registry for
+  // constructing top-level custom elements.
+  Element* context_element = nullptr;
+  CustomElementRegistry* registry = nullptr;
+  if (auto* element = DynamicTo<Element>(target)) {
+    context_element = element;
+    registry = element->customElementRegistry();
+  } else if (auto* shadow = DynamicTo<ShadowRoot>(target)) {
+    // A shadow root may have its own scoped registry, distinct from its host's.
     context_element = &shadow->host();
-  } else if (is_template_content) {
+    registry = shadow->customElementRegistry();
+  } else {
+    CHECK(is_template_content);
+    // Template contents live in the inert template document, where custom
+    // elements are never constructed. Parse with the <template> element as
+    // context, but deliberately leave `registry` null.
     context_element =
         static_cast<TemplateContentDocumentFragment*>(target)->Host();
   }
-
   CHECK(context_element);
 
   auto* sanitizer = options.sanitizer_init()
@@ -172,8 +185,7 @@ WritableStream* HTMLStream::Create(ScriptState* script_state,
   DocumentParser* parser = MakeGarbageCollected<HTMLDocumentParser>(
       target->GetDocument().createDocumentFragment(), context_element,
       parser_content_policy, ParserPrefetchPolicy::kDisallowPrefetching,
-      context_element->customElementRegistry(), sanitizer,
-      root_insertion_point);
+      registry, sanitizer, root_insertion_point);
 
   return WritableStream::CreateWithCountQueueingStrategy(
       script_state,
