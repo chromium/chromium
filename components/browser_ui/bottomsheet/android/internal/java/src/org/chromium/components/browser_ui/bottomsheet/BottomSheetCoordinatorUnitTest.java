@@ -72,6 +72,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetView.ShadowLaye
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetView.SheetLayoutMode;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.util.ColorUtils;
 
@@ -214,6 +215,24 @@ public class BottomSheetCoordinatorUnitTest {
         installSharedTestViews(sheet);
         initSheet(sheet, isLargeFormFactor);
         return sheet;
+    }
+
+    /**
+     * Builds a sheet backed by the real inflated views whose container has been measured and laid
+     * out to the given dimensions before {@link BottomSheetCoordinator#init} runs.
+     */
+    private BottomSheetCoordinator buildSheetWithRealViews(int initialWidth, int initialHeight) {
+        BottomSheetCoordinator sheet = inflateAndAttachSheet(/* isLargeFormFactor= */ false);
+        measureAndLayoutContainer(initialWidth, initialHeight);
+        initSheet(sheet, /* isLargeFormFactor= */ false);
+        return sheet;
+    }
+
+    private void measureAndLayoutContainer(int width, int height) {
+        mSheetContainer.measure(
+                View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
+        mSheetContainer.layout(0, 0, width, height);
     }
 
     /**
@@ -2721,5 +2740,115 @@ public class BottomSheetCoordinatorUnitTest {
         mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, 1000);
         assertEquals(1000 - desktopBottomMargin, bgView.getLayoutParams().height);
         assertEquals(1000 - desktopBottomMargin, lffContentContainer.getLayoutParams().height);
+    }
+
+    /**
+     * Verifies that when `mSheetContainer` resizes across
+     * `R.dimen.bottom_sheet_narrow_width_threshold` in either direction (wide to narrow or narrow
+     * to wide), `onContainerLayoutChange` synchronously remeasures and lays out `mSheetContainer`
+     * within the same layout pass so `BottomSheetView`, its content view, and its horizontal
+     * centering update immediately.
+     */
+    @Test
+    public void testContainerLayoutChange_UpdatesSheetWidthAndTranslation() {
+        int narrowSheetWidth =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.bottom_sheet_narrow_width);
+        int wideContainerWidth =
+                mActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.bottom_sheet_narrow_width_threshold)
+                        + 400;
+        int narrowContainerWidth = narrowSheetWidth - 100;
+        int containerHeight = 800;
+
+        BottomSheetCoordinator sheet = buildSheetWithRealViews(wideContainerWidth, containerHeight);
+        FrameLayout contentView = new FrameLayout(mActivity);
+        contentView.setLayoutParams(
+                new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        View childButton = new View(mActivity);
+        childButton.setLayoutParams(
+                new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 48));
+        contentView.addView(childButton);
+
+        BottomSheetContent content = buildContent(/* supportsLargeFormFactor= */ false, 0.5f, 1.0f);
+        when(content.getContentView()).thenReturn(contentView);
+        sheet.showContent(content);
+        sheet.setSheetState(SheetState.HALF, false);
+
+        measureAndLayoutContainer(wideContainerWidth, containerHeight);
+
+        assertEquals(narrowSheetWidth, sheet.getView().getWidth());
+        assertEquals(narrowSheetWidth, contentView.getWidth());
+        assertEquals(narrowSheetWidth, childButton.getWidth());
+        assertEquals(
+                (wideContainerWidth - narrowSheetWidth) / 2f,
+                sheet.getView().getTranslationX(),
+                MathUtils.EPSILON);
+
+        // 1. Shrink from wide container to narrow container. `onContainerLayoutChange()`
+        // synchronously remeasures and lays out `mSheetContainer`, updating `mView` and its
+        // children to `narrowContainerWidth` within the same layout pass.
+        measureAndLayoutContainer(narrowContainerWidth, containerHeight);
+
+        assertFalse(mSheetContainer.isLayoutRequested());
+        assertFalse(sheet.getView().isLayoutRequested());
+        assertEquals(narrowContainerWidth, sheet.getView().getWidth());
+        assertEquals(narrowContainerWidth, contentView.getWidth());
+        assertEquals(narrowContainerWidth, childButton.getWidth());
+        assertEquals(0f, sheet.getView().getTranslationX(), MathUtils.EPSILON);
+
+        // 2. Expand back from narrow container to wide container. `BottomSheetView` and its
+        // children clamp back to `narrowSheetWidth` and center horizontally.
+        measureAndLayoutContainer(wideContainerWidth, containerHeight);
+
+        assertFalse(mSheetContainer.isLayoutRequested());
+        assertFalse(sheet.getView().isLayoutRequested());
+        assertEquals(narrowSheetWidth, sheet.getView().getWidth());
+        assertEquals(narrowSheetWidth, contentView.getWidth());
+        assertEquals(narrowSheetWidth, childButton.getWidth());
+        assertEquals(
+                (wideContainerWidth - narrowSheetWidth) / 2f,
+                sheet.getView().getTranslationX(),
+                MathUtils.EPSILON);
+    }
+
+    /**
+     * Verifies that `onContainerLayoutChange` does not trigger a nested relayout on
+     * `mSheetContainer` when `mView` is detached or has no pending layout request.
+     */
+    @Test
+    public void testContainerLayoutChange_NoRedundantRelayout() {
+        int containerWidth = 500;
+        int containerHeight = 800;
+        BottomSheetCoordinator sheet = buildSheetWithRealViews(containerWidth, containerHeight);
+
+        int[] containerLayoutCount = new int[1];
+        mSheetContainer.addOnLayoutChangeListener(
+                (v, l, t, r, b, ol, ot, or, ob) -> containerLayoutCount[0]++);
+
+        // 1. When no content is shown, `mView` is detached from `mSheetContainer` while still
+        // having a pending layout request. Resizing `mSheetContainer` must not trigger a nested
+        // relayout (listener dispatches once).
+        assertNull(sheet.getView().getParent());
+        assertTrue(sheet.getView().isLayoutRequested());
+        containerLayoutCount[0] = 0;
+        measureAndLayoutContainer(containerWidth + 100, containerHeight);
+        assertEquals(1, containerLayoutCount[0]);
+
+        // 2. When content is shown and already laid out at the current container size, a forced
+        // layout pass with unchanged dimensions must not trigger a nested relayout.
+        BottomSheetContent content = buildContent(/* supportsLargeFormFactor= */ false, 0.5f, 1.0f);
+        sheet.showContent(content);
+        sheet.setSheetState(SheetState.HALF, false);
+        measureAndLayoutContainer(containerWidth + 100, containerHeight);
+        assertFalse(sheet.getView().isLayoutRequested());
+
+        containerLayoutCount[0] = 0;
+        ViewUtils.requestLayout(
+                mSheetContainer,
+                "BottomSheetCoordinatorUnitTest.testContainerLayoutChange_NoRedundantRelayout");
+        measureAndLayoutContainer(containerWidth + 100, containerHeight);
+        assertEquals(1, containerLayoutCount[0]);
     }
 }

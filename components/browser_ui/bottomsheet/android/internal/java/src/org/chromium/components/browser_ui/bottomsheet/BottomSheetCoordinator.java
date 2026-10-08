@@ -185,6 +185,7 @@ class BottomSheetCoordinator
     private @Px int mRequestedBottomMargin;
     private @Px int mBottomMargin;
     private @ColorInt int mSheetBgColor;
+    private boolean mIsRelayingOutContainer;
 
     @Override
     public boolean shouldGestureMoveSheet(MotionEvent initialEvent, MotionEvent currentEvent) {
@@ -386,6 +387,8 @@ class BottomSheetCoordinator
 
     private void onContainerLayoutChange(
             int left, int top, int right, int bottom, KeyboardVisibilityDelegate keyboardDelegate) {
+        if (mIsRelayingOutContainer) return;
+
         // Compute the new height taking the keyboard into account.
         // TODO(mdjones): Share this logic with LocationBarLayout: crbug.com/725725.
         int previousWidth = mContainerWidth;
@@ -402,6 +405,22 @@ class BottomSheetCoordinator
         }
 
         updateContentContainerHeight();
+
+        // Any layout request triggered on `mView` (or its descendants) during
+        // `onContainerLayoutChange()` is dropped when `mSheetContainer.layout()` clears
+        // `PFLAG_FORCE_LAYOUT` right after `OnLayoutChangeListener`s run. Measure and lay out
+        // `mSheetContainer` again within the same layout pass so the stale layout is never drawn.
+        if (mView.getParent() == mSheetContainer && mView.isLayoutRequested()) {
+            mIsRelayingOutContainer = true;
+            try {
+                mSheetContainer.measure(
+                        MeasureSpec.makeMeasureSpec(mContainerWidth, MeasureSpec.EXACTLY),
+                        MeasureSpec.makeMeasureSpec(mContainerHeight, MeasureSpec.EXACTLY));
+                mSheetContainer.layout(left, top, right, bottom);
+            } finally {
+                mIsRelayingOutContainer = false;
+            }
+        }
     }
 
     private void onContainerSizeChanged() {
