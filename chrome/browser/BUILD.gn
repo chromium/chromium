@@ -1135,7 +1135,6 @@ source_set("core") {
     "//chrome/browser/first_run",
     "//chrome/browser/gcm",
     "//chrome/browser/glic",
-    "//chrome/browser/glic:impl",
     "//chrome/browser/glic/public:features",
     "//chrome/browser/google",
     "//chrome/browser/gpu",

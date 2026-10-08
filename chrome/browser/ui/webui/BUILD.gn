@@ -30,21 +30,17 @@ generate_allowlist_from_histograms_file("webui_hosts") {
 }
 
 source_set("configs") {
+  check_includes_strict = true
+  public = [
+    "chrome_untrusted_web_ui_configs.h",
+    "chrome_web_ui_configs.h",
+  ]
   sources = [
     "chrome_untrusted_web_ui_configs.cc",
-    "chrome_untrusted_web_ui_configs.h",
     "chrome_web_ui_configs.cc",
-    "chrome_web_ui_configs.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-  if (!is_android) {
-    public_deps = [
-      "//chrome/browser/ui/tabs/tab_group_home",
-      "//chrome/browser/ui/webui/drive_picker_host",
-    ]
-  }
 
   deps = [
     ":gcm_internals_ui",
@@ -56,7 +52,6 @@ source_set("configs") {
     "//chrome/browser/browser_actuator/internals",
     "//chrome/browser/contextual_tasks:ui",
     "//chrome/browser/glic",
-    "//chrome/browser/glic:impl",
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/about",
     "//chrome/browser/ui/webui/accessibility",
@@ -112,11 +107,15 @@ source_set("configs") {
   if (!is_android) {
     deps += [
       "//chrome/browser/actor/ui:actor_overlay_web_view",
+      "//chrome/browser/glic/selection",
+      "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/tabs/tab_group_home",
       "//chrome/browser/ui/webui/access_code_cast",
       "//chrome/browser/ui/webui/app_service_internals",
       "//chrome/browser/ui/webui/autofill_ml_internals",
       "//chrome/browser/ui/webui/color_pipeline_internals",
       "//chrome/browser/ui/webui/critical_actions",
+      "//chrome/browser/ui/webui/drive_picker_host",
       "//chrome/browser/ui/webui/infobar_internals",
       "//chrome/browser/ui/webui/inspect",
       "//chrome/browser/ui/webui/iwa_dev",
@@ -557,10 +556,13 @@ source_set("metrics_handler") {
 }
 
 source_set("chrome_web_ui_controller_factory") {
+  check_includes_strict = true
   sources = [ "chrome_web_ui_controller_factory.cc" ]
   public = [ "chrome_web_ui_controller_factory.h" ]
   public_deps = [
     "//base",
+    "//components/favicon_base",
+    "//content/public/browser",
     "//ui/base",
   ]
   deps = [
