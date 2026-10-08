@@ -46,6 +46,7 @@ class GlicWebUIContentsManager : public content::WebContentsObserver,
       WebContentsChangedCallback callback) override;
   GlicWebClientManager& web_client_manager() override;
   bool ShouldReloadOnShow() const override;
+  bool IsCrashed() const override;
 
  private:
   // content::WebContentsObserver:

@@ -1358,9 +1358,10 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Deleted on Chrome Closed"/>
   <int value="3" label="Crashed"/>
   <int value="4" label="Deleted on Memory Pressure"/>
+  <int value="5" label="Failed to load or timed out"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/glic/host/glic_web_contents_warming_pool.cc:GlicWarmedContainerFate) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic_web_contents_warming_pool.h:GlicWarmedContainerFate) -->
 
 <!-- LINT.IfChange(GlicWarmingPoolStatus) -->
 
@@ -1377,6 +1378,9 @@ chromium-metrics-reviews@google.com.
   <int value="5"
       label="Pending Backfill: Container was not pre-warmed because a
              backfill preload was scheduled on the delay timer."/>
+  <int value="6"
+      label="Load Error: Container was pre-warmed but failed to load or timed
+             out before use."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic_web_contents_warming_pool.h:GlicWarmingPoolStatus) -->

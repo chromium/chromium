@@ -41,8 +41,11 @@ class FakeWebContentsManager : public GlicWebContentsManager {
       WebContentsChangedCallback callback) override;
   GlicWebClientManager& web_client_manager() override;
   bool ShouldReloadOnShow() const override;
+  bool IsCrashed() const override;
+  void SetErrorCallback(base::RepeatingClosure callback) override;
 
   // Test helpers:
+  void TriggerErrorCallback();
   void set_web_contents(content::WebContents* web_contents) {
     web_contents_ = web_contents;
   }
@@ -62,6 +65,7 @@ class FakeWebContentsManager : public GlicWebContentsManager {
   bool is_actuating_ = false;
   bool has_visible_task_tabs_ = false;
   bool should_reload_on_show_ = false;
+  base::RepeatingClosure error_callback_;
   base::RepeatingCallbackList<void(content::WebContents*)>
       web_contents_changed_callbacks_;
 };

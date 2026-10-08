@@ -46,7 +46,7 @@ class GlicNudgeControllerInteractiveUiTest : public test::InteractiveGlicTest {
   }
 
   void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
+    test::InteractiveGlicTest::SetUpOnMainThread();
     scoped_glic_bypass_.emplace();
     browser()->GetProfile()->GetPrefs()->SetBoolean(
         prefs::kGlicPinnedToTabstrip, true);
@@ -56,7 +56,7 @@ class GlicNudgeControllerInteractiveUiTest : public test::InteractiveGlicTest {
 
   void TearDownOnMainThread() override {
     scoped_glic_bypass_.reset();
-    InteractiveBrowserTest::TearDownOnMainThread();
+    test::InteractiveGlicTest::TearDownOnMainThread();
   }
 
   GlicNudgeController* nudge_controller() {

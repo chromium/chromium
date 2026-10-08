@@ -56,4 +56,18 @@ bool FakeWebContentsManager::ShouldReloadOnShow() const {
          (web_contents_ ? web_contents_->IsCrashed() : false);
 }
 
+bool FakeWebContentsManager::IsCrashed() const {
+  return web_contents_ ? web_contents_->IsCrashed() : false;
+}
+
+void FakeWebContentsManager::SetErrorCallback(base::RepeatingClosure callback) {
+  error_callback_ = std::move(callback);
+}
+
+void FakeWebContentsManager::TriggerErrorCallback() {
+  if (error_callback_) {
+    error_callback_.Run();
+  }
+}
+
 }  // namespace glic

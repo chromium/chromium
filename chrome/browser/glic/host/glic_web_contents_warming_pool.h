@@ -82,7 +82,8 @@ class GlicWebContentsWarmingPool : public ProfileObserver {
     kCrashed = 3,
     kMemoryPressure = 4,
     kPendingBackfill = 5,
-    kMaxValue = kPendingBackfill,
+    kLoadError = 6,
+    kMaxValue = kLoadError,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWarmingPoolStatus)
 
@@ -102,7 +103,8 @@ class GlicWebContentsWarmingPool : public ProfileObserver {
     kDeletedOnChromeClosed = 2,
     kCrashed = 3,
     kDeletedOnMemoryPressure = 4,
-    kMaxValue = kDeletedOnMemoryPressure,
+    kLoadError = 5,
+    kMaxValue = kLoadError,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWarmedContainerFate)
 
@@ -136,6 +138,8 @@ class GlicWebContentsWarmingPool : public ProfileObserver {
     kShutdown,
     kMemoryPressure,
     kExpired,
+    kCrashed,
+    kLoadError,
   };
 
   // Clears the current warmed container instance and stops any pending or
@@ -146,8 +150,11 @@ class GlicWebContentsWarmingPool : public ProfileObserver {
   virtual std::unique_ptr<GlicWebContentsManager> CreateContainer();
 
   void OnContainerExpired();
+  // Discards the warmed container immediately if it fails to load or crashes.
+  void OnWarmedContainerError();
+  void DiscardFailedContainer();
   // Unconditionally ensures that a GlicWebContentsManager is preloaded. If the
-  // existing one is crashed, it will be replaced.
+  // existing one is crashed or failed, it will be replaced.
   void EnsurePreload(ContainerCreationReason reason);
   // Starts a timer or PM scenario observer to preload a WebContents after a
   // delay or when idle.
@@ -184,6 +191,8 @@ class GlicWebContentsWarmingPool : public ProfileObserver {
   // When memory pressure drops below CRITICAL, this flag ensures the pool only
   // refills if it was previously active.
   bool should_warm_when_memory_allows_ = false;
+
+  base::WeakPtrFactory<GlicWebContentsWarmingPool> weak_ptr_factory_{this};
 };
 
 }  // namespace glic

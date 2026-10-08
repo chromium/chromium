@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/glic/host/glic_no_webview_contents_manager.h"
@@ -73,12 +74,8 @@ class GlicWebContentsWarmingPool::Metrics {
       bool has_pending_backfill) {
     WarmingPoolStatus status = WarmingPoolStatus::kCold;
     if (warmed_container) {
-      status = warmed_container->ShouldReloadOnShow()
-                   ? WarmingPoolStatus::kCrashed
-                   : WarmingPoolStatus::kHit;
-      if (status == WarmingPoolStatus::kHit) {
-        RecordWarmedContainerFate(WarmedContainerFate::kUsed);
-      }
+      status = WarmingPoolStatus::kHit;
+      RecordWarmedContainerFate(WarmedContainerFate::kUsed);
     } else if (has_pending_backfill) {
       status = WarmingPoolStatus::kPendingBackfill;
     } else {
@@ -95,24 +92,32 @@ class GlicWebContentsWarmingPool::Metrics {
   void RecordClear(ClearReason reason,
                    bool had_container,
                    bool had_pending_backfill) {
-    if (had_container) {
-      const WarmedContainerFate fate = [reason]() {
-        switch (reason) {
-          case ClearReason::kShutdown:
-            return WarmedContainerFate::kDeletedOnChromeClosed;
-          case ClearReason::kMemoryPressure:
-            return WarmedContainerFate::kDeletedOnMemoryPressure;
-          case ClearReason::kExpired:
-            return WarmedContainerFate::kExpired;
+    WarmedContainerFate fate;
+    switch (reason) {
+      case ClearReason::kShutdown:
+        fate = WarmedContainerFate::kDeletedOnChromeClosed;
+        break;
+      case ClearReason::kMemoryPressure:
+        fate = WarmedContainerFate::kDeletedOnMemoryPressure;
+        if (had_container || had_pending_backfill) {
+          miss_status_ = WarmingPoolStatus::kMemoryPressure;
         }
-      }();
-      RecordWarmedContainerFate(fate);
+        break;
+      case ClearReason::kExpired:
+        fate = WarmedContainerFate::kExpired;
+        miss_status_ = WarmingPoolStatus::kExpired;
+        break;
+      case ClearReason::kCrashed:
+        fate = WarmedContainerFate::kCrashed;
+        miss_status_ = WarmingPoolStatus::kCrashed;
+        break;
+      case ClearReason::kLoadError:
+        fate = WarmedContainerFate::kLoadError;
+        miss_status_ = WarmingPoolStatus::kLoadError;
+        break;
     }
-    if (reason == ClearReason::kMemoryPressure &&
-        (had_container || had_pending_backfill)) {
-      miss_status_ = WarmingPoolStatus::kMemoryPressure;
-    } else if (reason == ClearReason::kExpired) {
-      miss_status_ = WarmingPoolStatus::kExpired;
+    if (had_container) {
+      RecordWarmedContainerFate(fate);
     }
   }
 
@@ -166,6 +171,7 @@ GlicWebContentsWarmingPool::~GlicWebContentsWarmingPool() {
 
 std::unique_ptr<GlicWebContentsManager>
 GlicWebContentsWarmingPool::TakeContainer() {
+  DiscardFailedContainer();
   metrics_->RecordTakeContainerStatus(
       warmed_container_,
       /*has_pending_backfill=*/backfill_scheduler_.IsScheduled());
@@ -176,6 +182,9 @@ GlicWebContentsWarmingPool::TakeContainer() {
   std::unique_ptr<GlicWebContentsManager> result = std::move(warmed_container_);
   warmed_container_ = nullptr;
   expiry_timer_.Stop();
+  if (result) {
+    result->SetErrorCallback({});
+  }
 
   EnsurePreloadDelayed(ContainerCreationReason::kRefill);
   return result;
@@ -225,6 +234,28 @@ void GlicWebContentsWarmingPool::Clear(ClearReason reason) {
   expiry_timer_.Stop();
 }
 
+void GlicWebContentsWarmingPool::OnWarmedContainerError() {
+  if (!warmed_container_ || !warmed_container_->ShouldReloadOnShow()) {
+    return;
+  }
+  // Post a task to discard the container asynchronously to ensure that any
+  // active notifications or timers on the container complete before it is
+  // destroyed.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GlicWebContentsWarmingPool::DiscardFailedContainer,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void GlicWebContentsWarmingPool::DiscardFailedContainer() {
+  if (!warmed_container_ || !warmed_container_->ShouldReloadOnShow()) {
+    return;
+  }
+  should_warm_when_memory_allows_ = false;
+  Clear(warmed_container_->IsCrashed() ? ClearReason::kCrashed
+                                       : ClearReason::kLoadError);
+}
+
 void GlicWebContentsWarmingPool::OnContainerExpired() {
   CHECK(warmed_container_);
   TRACE_EVENT_INSTANT("glic", "GlicWebContentsWarmingPool::OnContainerExpired");
@@ -262,13 +293,14 @@ void GlicWebContentsWarmingPool::EnsurePreload(ContainerCreationReason reason) {
   CHECK(!IsUnderMemoryPressure() ||
         reason == ContainerCreationReason::kUserTriggeredColdStart);
   backfill_scheduler_.Cancel();
-  if (warmed_container_ && warmed_container_->ShouldReloadOnShow()) {
-    metrics_->RecordWarmedContainerFate(Metrics::WarmedContainerFate::kCrashed);
-    warmed_container_ = nullptr;
-  }
+  DiscardFailedContainer();
 
   if (!warmed_container_) {
+    should_warm_when_memory_allows_ = true;
     warmed_container_ = CreateContainer();
+    warmed_container_->SetErrorCallback(
+        base::BindRepeating(&GlicWebContentsWarmingPool::OnWarmedContainerError,
+                            weak_ptr_factory_.GetWeakPtr()));
     expiry_timer_.Start(
         FROM_HERE, expiry_delay_,
         base::BindOnce(&GlicWebContentsWarmingPool::OnContainerExpired,

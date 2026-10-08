@@ -170,7 +170,9 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
       WebContentsChangedCallback callback) override;
   GlicWebClientManager& web_client_manager() override;
   bool ShouldReloadOnShow() const override;
+  bool IsCrashed() const override;
   void Zoom(mojom::ZoomAction zoom_action, ZoomSource source) override;
+  void SetErrorCallback(base::RepeatingClosure callback) override;
 
   // GlicWebClientManager::Delegate implementation:
   void OnGuestNavigationStarted() override;
@@ -369,6 +371,7 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
 
   base::OneShotTimer overlay_deletion_timer_;
   base::OneShotTimer loading_timer_;
+  base::RepeatingClosure error_callback_;
 
   base::WeakPtrFactory<GlicNoWebviewContentsManager> weak_ptr_factory_{this};
 };

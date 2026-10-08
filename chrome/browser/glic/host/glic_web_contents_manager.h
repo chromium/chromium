@@ -85,9 +85,21 @@ class GlicWebContentsManager {
   // to the user rather than reloaded.
   virtual bool ShouldReloadOnShow() const = 0;
 
+  // Returns true if the manager or any of its managed WebContents has crashed
+  // (e.g. its renderer process terminated abnormally).
+  virtual bool IsCrashed() const = 0;
+
   // Performs a zoom action (ZoomIn, ZoomOut, Reset) on the managed guest
   // contents.
   virtual void Zoom(mojom::ZoomAction zoom_action, ZoomSource source) {}
+
+  // Registers a callback invoked if the manager encounters an error requiring
+  // reload (i.e. ShouldReloadOnShow() becomes true). Used by the warming pool
+  // to discard failed background containers immediately.
+  //
+  // If ShouldReloadOnShow() is already true when this method is called, the
+  // callback is scheduled asynchronously via PostTask to avoid reentrancy.
+  virtual void SetErrorCallback(base::RepeatingClosure callback) {}
 };
 
 }  // namespace glic

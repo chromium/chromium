@@ -265,4 +265,8 @@ bool GlicWebUIContentsManager::ShouldReloadOnShow() const {
   return web_contents_ ? web_contents_->IsCrashed() : false;
 }
 
+bool GlicWebUIContentsManager::IsCrashed() const {
+  return web_contents_ ? web_contents_->IsCrashed() : false;
+}
+
 }  // namespace glic

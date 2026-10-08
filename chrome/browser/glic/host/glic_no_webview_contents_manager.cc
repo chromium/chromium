@@ -742,9 +742,23 @@ bool GlicNoWebviewContentsManager::ShouldReloadOnShow() const {
   return overlay_manager_.ShouldReloadOnShow();
 }
 
+bool GlicNoWebviewContentsManager::IsCrashed() const {
+  return (guest_contents() && guest_contents()->IsCrashed()) ||
+         overlay_manager_.IsCrashed();
+}
+
 void GlicNoWebviewContentsManager::Zoom(mojom::ZoomAction zoom_action,
                                         ZoomSource source) {
   zoom_controller_.Zoom(zoom_action, source);
+}
+
+void GlicNoWebviewContentsManager::SetErrorCallback(
+    base::RepeatingClosure callback) {
+  error_callback_ = std::move(callback);
+  if (ShouldReloadOnShow()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                             error_callback_);
+  }
 }
 
 void GlicNoWebviewContentsManager::OnZoomLevelChange() {
@@ -784,6 +798,9 @@ void GlicNoWebviewContentsManager::ShowGuestDirectly(GuestState state) {
     ApplySizeToGuest();
   }
   UpdateDisplayState();
+  if (error_callback_ && ShouldReloadOnShow()) {
+    error_callback_.Run();
+  }
 }
 
 GlicNoWebviewContentsManager::DisplayState
@@ -1030,6 +1047,9 @@ void GlicNoWebviewContentsManager::SetErrorState(
   // An error occurred; transition to overlay if visible, or record for when
   // shown.
   UpdateDisplayState();
+  if (error_callback_ && ShouldReloadOnShow()) {
+    error_callback_.Run();
+  }
 }
 
 void GlicNoWebviewContentsManager::ClearErrorState() {
