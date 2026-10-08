@@ -127,14 +127,12 @@ class BrowserNativeWidgetMac : public views::NativeWidgetMac,
 
   std::optional<SkColor> last_theme_color_;
   std::optional<bool> last_is_vertical_tabs_;
-  bool has_multiple_profiles_open_ = false;
   bool last_is_glass_eligible_ = false;
   bool is_window_live_resizing_ = false;
   base::CallbackListSubscription vertical_tab_subscription_;
   base::CallbackListSubscription vertical_tab_collapse_subscription_;
   base::CallbackListSubscription vertical_tab_resizing_subscription_;
-  base::CallbackListSubscription glass_eligibility_subscription_;
-  base::CallbackListSubscription multiple_open_profiles_subscription_;
+  base::CallbackListSubscription glass_frame_service_subscription_;
   base::CallbackListSubscription paint_as_active_subscription_;
 
   base::WeakPtrFactory<BrowserNativeWidgetMac> weak_ptr_factory_{this};

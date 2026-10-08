@@ -16,8 +16,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/themes/theme_helper.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -583,76 +581,6 @@ IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest, DailyMetric) {
   histogram_tester.ExpectBucketCount("Browser.GlassFrame.IsDefault.Daily",
                                      false, 1);
   histogram_tester.ExpectTotalCount("Browser.GlassFrame.IsDefault.Daily", 2);
-}
-
-IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest,
-                       HasMultipleOpenProfiles) {
-  if (!features::IsGlassFrameEnabled()) {
-    GTEST_SKIP();
-  }
-
-  GlassFrameService* const glass_frame_service =
-      GlassFrameService::GetInstance();
-  ASSERT_TRUE(glass_frame_service);
-
-  int multiple_profiles_notifications = 0;
-  base::CallbackListSubscription sub =
-      glass_frame_service->RegisterMultipleOpenProfilesChangedCallback(
-          base::BindRepeating([](int* count) { (*count)++; },
-                              &multiple_profiles_notifications));
-
-  // Initially only a single profile is loaded.
-  EXPECT_FALSE(glass_frame_service->HasMultipleOpenProfiles());
-
-  // Opening another normal window with the same profile should not count as
-  // multiple profiles or notify the callback.
-  BrowserWindowInterface* const same_profile_browser =
-      CreateBrowser(browser()->GetProfile());
-  EXPECT_FALSE(glass_frame_service->HasMultipleOpenProfiles());
-  EXPECT_EQ(multiple_profiles_notifications, 0);
-  CloseBrowserSynchronously(same_profile_browser);
-  EXPECT_EQ(multiple_profiles_notifications, 0);
-
-  // Opening a popup window should not notify the callback.
-  Profile* const otr_profile =
-      browser()->GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  BrowserWindowInterface* const popup_browser =
-      CreateBrowserForPopup(otr_profile);
-  EXPECT_FALSE(glass_frame_service->HasMultipleOpenProfiles());
-  EXPECT_EQ(multiple_profiles_notifications, 0);
-  CloseBrowserSynchronously(popup_browser);
-  EXPECT_EQ(multiple_profiles_notifications, 0);
-
-  // Creating a second profile and opening a normal browser window should report
-  // multiple open profiles and notify once.
-  ProfileManager* const profile_manager = g_browser_process->profile_manager();
-  const base::FilePath new_path =
-      profile_manager->GenerateNextProfileDirectoryPath();
-  Profile& second_profile =
-      profiles::testing::CreateProfileSync(profile_manager, new_path);
-  BrowserWindowInterface* const second_profile_browser_1 =
-      CreateBrowser(&second_profile);
-  EXPECT_TRUE(glass_frame_service->HasMultipleOpenProfiles());
-  EXPECT_EQ(multiple_profiles_notifications, 1);
-
-  // Opening a second window in the second profile should keep multiple open
-  // profiles true without notifying again.
-  BrowserWindowInterface* const second_profile_browser_2 =
-      CreateBrowser(&second_profile);
-  EXPECT_TRUE(glass_frame_service->HasMultipleOpenProfiles());
-  EXPECT_EQ(multiple_profiles_notifications, 1);
-
-  // Closing one of the second profile windows keeps multiple open profiles true
-  // without notifying.
-  CloseBrowserSynchronously(second_profile_browser_2);
-  EXPECT_TRUE(glass_frame_service->HasMultipleOpenProfiles());
-  EXPECT_EQ(multiple_profiles_notifications, 1);
-
-  // Closing the remaining second profile window returns to a single open
-  // profile and notifies once more.
-  CloseBrowserSynchronously(second_profile_browser_1);
-  EXPECT_FALSE(glass_frame_service->HasMultipleOpenProfiles());
-  EXPECT_EQ(multiple_profiles_notifications, 2);
 }
 
 #if BUILDFLAG(IS_MAC)

@@ -22,13 +22,11 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
@@ -148,7 +146,6 @@ GlassFrameService::GlassFrameService(BrowserProcess& process)
         return true;
       },
       BrowserCollection::Order::kActivation);
-  UpdateHasMultipleOpenProfiles();
 
   metrics_reporter_ = std::make_unique<GlassFrameMetricsReporter>(
       g_browser_process->local_state());
@@ -165,30 +162,13 @@ GlassFrameService::RegisterGlassFrameEligibilityChangedCallback(
   return window_callbacks_[browser_window_interface].Add(std::move(callback));
 }
 
-base::CallbackListSubscription
-GlassFrameService::RegisterMultipleOpenProfilesChangedCallback(
-    base::RepeatingClosure callback) {
-  return multiple_open_profiles_callbacks_.Add(std::move(callback));
-}
-
 bool GlassFrameService::IsBrowserWindowEligible(
     BrowserWindowInterface* browser) {
   return eligible_browsers_.contains(browser);
 }
 
-bool GlassFrameService::HasMultipleOpenProfiles() const {
-  return has_multiple_open_profiles_;
-}
-
 bool GlassFrameService::IsGlassFrameAllowed() {
   return is_glass_frame_enabled_ && !is_battery_saver_mode_active_;
-}
-
-void GlassFrameService::OnBrowserCreated(BrowserWindowInterface* browser) {
-  if (browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
-    return;
-  }
-  UpdateHasMultipleOpenProfiles();
 }
 
 void GlassFrameService::OnBrowserActivated(BrowserWindowInterface* browser) {
@@ -203,10 +183,6 @@ void GlassFrameService::OnBrowserActivated(BrowserWindowInterface* browser) {
 
 void GlassFrameService::OnBrowserClosed(BrowserWindowInterface* browser) {
   StopTrackingBrowser(browser);
-  if (browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
-    return;
-  }
-  UpdateHasMultipleOpenProfiles();
   if (eligible_browsers_.erase(browser)) {
     OnEligibleStateChanged();
   }
@@ -310,7 +286,8 @@ void GlassFrameService::OnEligibleStateChanged() {
 }
 
 void GlassFrameService::MaybeShowPromo(BrowserWindowInterface* browser) {
-  if (has_attempted_startup_promo_ || is_battery_saver_mode_active_) {
+  if (has_attempted_startup_promo_ || is_battery_saver_mode_active_ ||
+      !IsBrowserEligibleForGlass(browser)) {
     return;
   }
 
@@ -334,36 +311,6 @@ void GlassFrameService::MaybeShowPromo(BrowserWindowInterface* browser) {
           BrowserUserEducationInterface::From(browser)) {
     has_attempted_startup_promo_ = true;
     user_education->MaybeShowStartupFeaturePromo(promo_feature);
-  }
-}
-
-void GlassFrameService::UpdateHasMultipleOpenProfiles() {
-  bool has_multiple_open_profiles = false;
-  if (ProfileManager* const profile_manager =
-          g_browser_process->profile_manager()) {
-    size_t open_profile_count = 0;
-    // Check `ProfileBrowserCollection` because a `Profile` remains loaded in
-    // `ProfileManager` while `OnBrowserClosed()` is running (before the
-    // `Browser` is destroyed) or if kept alive in the background.
-    // `ProfileBrowserCollection::IsEmpty()` excludes browsers scheduled for
-    // deletion, so it accurately reflects whether the profile still has open
-    // windows.
-    for (Profile* profile : profile_manager->GetLoadedProfiles()) {
-      if (auto* const collection =
-              ProfileBrowserCollection::GetForProfile(profile);
-          collection && !collection->IsEmpty()) {
-        open_profile_count++;
-        if (open_profile_count > 1) {
-          has_multiple_open_profiles = true;
-          break;
-        }
-      }
-    }
-  }
-
-  if (has_multiple_open_profiles_ != has_multiple_open_profiles) {
-    has_multiple_open_profiles_ = has_multiple_open_profiles;
-    multiple_open_profiles_callbacks_.Notify();
   }
 }
 
