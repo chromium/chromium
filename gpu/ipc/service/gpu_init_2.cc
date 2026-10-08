@@ -60,6 +60,7 @@
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "gpu/command_buffer/service/drm_modifiers_filter_vulkan.h"
 #endif
+#include "gpu/ipc/service/gpu_init_ozone.h"
 #include "ui/ozone/public/drm_modifiers_filter.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/ozone_switches.h"
@@ -523,17 +524,9 @@ bool GpuInit2::InitializeAndStartSandbox(
   StartWatchdogAndMaybeSandboxEarly(state);
 
 #if BUILDFLAG(IS_OZONE)
-  // Initialize Ozone GPU after the watchdog in case it hangs. The sandbox
-  // may also have started at this point.
-  ui::OzonePlatform::InitParams params;
-  params.single_process = false;
-  params.enable_native_gpu_memory_buffers =
-      gpu_preferences_.enable_native_gpu_memory_buffers;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  params.allow_sync_and_real_buffer_page_flip_testing = true;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  ui::OzonePlatform::InitializeForGPU(params);
+  gpu_init_internal::InitializePlatformForGpu(
+      gpu_preferences_.enable_native_gpu_memory_buffers,
+      /*single_process=*/false);
 #endif  // BUILDFLAG(IS_OZONE)
 
   if (!InitializeGLBindingsAndDisplay(state)) {
@@ -698,13 +691,7 @@ bool GpuInit2::InitializeAndStartSandbox(
 
 #if BUILDFLAG(USE_WEBGPU_ON_VULKAN_VIA_GL_INTEROP)
 #if BUILDFLAG(IS_OZONE)
-  if (!ui::OzonePlatform::GetInstance()
-           ->GetPlatformProperties()
-           .webgpu_on_vulkan_via_gl_interop) {
-    gpu_feature_info_
-        .status_values[GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP] =
-        kGpuFeatureStatusDisabled;
-  }
+  gpu_init_internal::MaybeDisableWebGPUOnVulkanViaGLInterop(gpu_feature_info_);
 #endif  // BUILDFLAG(IS_OZONE)
 
   if (gpu_feature_info_
@@ -803,20 +790,7 @@ bool GpuInit2::InitializeAndStartSandbox(
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_OZONE)
-  // We need to get supported formats before sandboxing to avoid an known
-  // issue which breaks the camera preview. (b/166850715)
-  {
-    TRACE_EVENT("gpu,startup", "ui::ozone::CanImportNativePixmap");
-    auto* surface_factory =
-        ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
-    auto* gl_ozone = surface_factory->GetCurrentGLOzone();
-    if (gl_ozone) {
-      gpu_feature_info_.supports_nv12_gl_native_pixmap =
-          gl_ozone->CanImportNativePixmap(viz::MultiPlaneFormat::kNV12);
-      gpu_feature_info_.supports_p010_gl_native_pixmap =
-          gl_ozone->CanImportNativePixmap(viz::MultiPlaneFormat::kP010);
-    }
-  }
+  gpu_init_internal::QueryNativePixmapSupport(gpu_feature_info_);
 #endif  // BUILDFLAG(IS_OZONE)
 
   if (gl_use_swiftshader_) {
@@ -952,32 +926,15 @@ bool GpuInit2::InitializeAndStartSandbox(
   init_successful_ = true;
   SetSkiaBackendType();
 #if BUILDFLAG(IS_OZONE)
-  ui::OzonePlatform::GetInstance()->AfterSandboxEntry();
-  [[maybe_unused]] auto* factory =
-      ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
-  bool filter_set = false;
+  gpu_init_internal::SetDrmModifiersFilterParams params;
 #if BUILDFLAG(ENABLE_VULKAN)
-  if (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] ==
-          kGpuFeatureStatusEnabled &&
-      factory->SupportsDrmModifiersFilter()) {
-    CHECK(!filter_set);
-    DCHECK(vulkan_implementation_ &&
-           vulkan_implementation_->GetVulkanInstance() &&
-           vulkan_implementation_->GetVulkanInstance()->vk_instance() !=
-               VK_NULL_HANDLE);
-    factory->SetDrmModifiersFilter(std::make_unique<DrmModifiersFilterVulkan>(
-        vulkan_implementation_.get()));
-    filter_set = true;
-  }
+  params.vulkan_implementation = vulkan_implementation();
 #endif  // BUILDFLAG(ENABLE_VULKAN)
-#if BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_CHROMEOS)
-  if (dawn_context_provider_ && factory->SupportsDrmModifiersFilter()) {
-    CHECK(!filter_set);
-    factory->SetDrmModifiersFilter(std::make_unique<DrmModifiersFilterDawn>(
-        dawn_context_provider_->GetDevice().GetAdapter()));
-    filter_set = true;
-  }
-#endif  // BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(SKIA_USE_DAWN)
+  params.dawn_context_provider = dawn_context_provider_.get();
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
+  gpu_init_internal::AfterSandboxEntryAndSetDrmModifiersFilter(
+      gpu_feature_info_, params);
 #endif  // BUILDFLAG(IS_OZONE)
 
   RecordUMA();
@@ -1055,13 +1012,9 @@ void GpuInit2::InitializeInProcess(base::CommandLine* command_line,
       gl::init::CreateOffscreenGLSurface(gl_display, gfx::Size());
 #else  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_OZONE)
-  ui::OzonePlatform::InitParams params;
-  params.single_process = true;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  params.allow_sync_and_real_buffer_page_flip_testing = true;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  ui::OzonePlatform::InitializeForGPU(params);
+  gpu_init_internal::InitializePlatformForGpu(
+      /*enable_native_gpu_memory_buffers=*/false,
+      /*single_process=*/true);
 #endif  // BUILDFLAG(IS_OZONE)
 
   bool needs_more_info = true;
@@ -1189,15 +1142,7 @@ void GpuInit2::InitializeInProcess(base::CommandLine* command_line,
   }
 
 #if BUILDFLAG(IS_OZONE)
-  auto* surface_factory =
-      ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
-  auto* gl_ozone = surface_factory->GetCurrentGLOzone();
-  if (gl_ozone) {
-    gpu_feature_info_.supports_nv12_gl_native_pixmap =
-        gl_ozone->CanImportNativePixmap(viz::MultiPlaneFormat::kNV12);
-    gpu_feature_info_.supports_p010_gl_native_pixmap =
-        gl_ozone->CanImportNativePixmap(viz::MultiPlaneFormat::kP010);
-  }
+  gpu_init_internal::QueryNativePixmapSupport(gpu_feature_info_);
 #endif  // BUILDFLAG(IS_OZONE)
 
   // We try to fall back to a valid GrContextType after GpuFeatureInfo is

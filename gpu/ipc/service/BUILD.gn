@@ -155,6 +155,10 @@ component("service") {
   }
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
+    sources += [
+      "gpu_init_ozone.cc",
+      "gpu_init_ozone.h",
+    ]
   }
   if (is_fuchsia) {
     sources += [ "image_transport_surface_fuchsia.cc" ]
