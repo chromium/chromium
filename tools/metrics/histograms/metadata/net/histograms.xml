@@ -177,6 +177,11 @@ chromium-metrics-reviews@google.com.
       summary="Triggered by server preferred address available."/>
   <variant name="OnWriteError" summary="Triggered by a socket write error."/>
   <variant name="Unknown" summary="Triggered by unknown cause."/>
+  <variant name="WaitForNewNetworkPostNetworkDisconnected"
+      summary="Triggered by waiting for a new network post network
+               disconnected."/>
+  <variant name="WaitForNewNetworkPostWriteError"
+      summary="Triggered by waiting for a new network post write error."/>
 </variants>
 
 <!-- LINT.ThenChange(//net/quic/quic_migration_attempt_context.h:QuicMigrationAttemptCause) -->

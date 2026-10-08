@@ -3208,6 +3208,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="New network connected post path degrading (probing)"/>
   <int value="8" label="On server preferred address available (probing)"/>
   <int value="9" label="Multi-port path"/>
+  <int value="10"
+      label="Wait for new network post network disconnected (direct)"/>
+  <int value="11" label="Wait for new network post write error (direct)"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/quic/quic_migration_attempt_context.h:QuicMigrationAttemptCause) -->

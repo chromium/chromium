@@ -38,6 +38,10 @@ std::string_view QuicMigrationAttemptCauseToString(
       return "OnServerPreferredAddressAvailable";
     case QuicMigrationAttemptCause::kMultiPortPath:
       return "MultiPortPath";
+    case QuicMigrationAttemptCause::kWaitForNewNetworkPostNetworkDisconnected:
+      return "WaitForNewNetworkPostNetworkDisconnected";
+    case QuicMigrationAttemptCause::kWaitForNewNetworkPostWriteError:
+      return "WaitForNewNetworkPostWriteError";
   }
 }
 

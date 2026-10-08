@@ -151,6 +151,12 @@ TEST_F(QuicMigrationAttemptContextTest, SetIneligibleAndRecordIneligible) {
   QuicMigrationAttemptContext::RecordIneligible(
       QuicMigrationAttemptCause::kChangePortOnPathDegrading,
       QuicMigrationAttemptIneligibleReason::kTooManyPacketReaders);
+  QuicMigrationAttemptContext::RecordIneligible(
+      QuicMigrationAttemptCause::kWaitForNewNetworkPostNetworkDisconnected,
+      QuicMigrationAttemptIneligibleReason::kOnlyNonMigratableStreams);
+  QuicMigrationAttemptContext::RecordIneligible(
+      QuicMigrationAttemptCause::kWaitForNewNetworkPostWriteError,
+      QuicMigrationAttemptIneligibleReason::kDisabledByServer);
 
   histogram_tester.ExpectBucketCount(
       "Net.Quic.Migration.Attempt.Ineligible",
@@ -161,9 +167,13 @@ TEST_F(QuicMigrationAttemptContextTest, SetIneligibleAndRecordIneligible) {
       QuicMigrationAttemptIneligibleReason::kSessionBecameIdleDuringProbing, 1);
   histogram_tester.ExpectBucketCount(
       "Net.Quic.Migration.Attempt.Ineligible",
-      QuicMigrationAttemptIneligibleReason::kDisabledByServer, 1);
+      QuicMigrationAttemptIneligibleReason::kDisabledByServer, 2);
   histogram_tester.ExpectBucketCount(
       "Net.Quic.Migration.Attempt.Ineligible.ByTrigger.OnWriteError",
+      QuicMigrationAttemptIneligibleReason::kDisabledByServer, 1);
+  histogram_tester.ExpectBucketCount(
+      "Net.Quic.Migration.Attempt.Ineligible.ByTrigger."
+      "WaitForNewNetworkPostWriteError",
       QuicMigrationAttemptIneligibleReason::kDisabledByServer, 1);
   histogram_tester.ExpectBucketCount(
       "Net.Quic.Migration.Attempt.Ineligible",
@@ -174,9 +184,13 @@ TEST_F(QuicMigrationAttemptContextTest, SetIneligibleAndRecordIneligible) {
       QuicMigrationAttemptIneligibleReason::kDisabledByClient, 1);
   histogram_tester.ExpectBucketCount(
       "Net.Quic.Migration.Attempt.Ineligible",
-      QuicMigrationAttemptIneligibleReason::kOnlyNonMigratableStreams, 1);
+      QuicMigrationAttemptIneligibleReason::kOnlyNonMigratableStreams, 2);
   histogram_tester.ExpectBucketCount(
       "Net.Quic.Migration.Attempt.Ineligible.ByTrigger.OnNetworkDisconnected",
+      QuicMigrationAttemptIneligibleReason::kOnlyNonMigratableStreams, 1);
+  histogram_tester.ExpectBucketCount(
+      "Net.Quic.Migration.Attempt.Ineligible.ByTrigger."
+      "WaitForNewNetworkPostNetworkDisconnected",
       QuicMigrationAttemptIneligibleReason::kOnlyNonMigratableStreams, 1);
   histogram_tester.ExpectBucketCount(
       "Net.Quic.Migration.Attempt.Ineligible",
@@ -197,7 +211,7 @@ TEST_F(QuicMigrationAttemptContextTest, SetIneligibleAndRecordIneligible) {
       "Net.Quic.Migration.Attempt.Ineligible.ByTrigger."
       "ChangePortOnPathDegrading",
       QuicMigrationAttemptIneligibleReason::kTooManyPacketReaders, 1);
-  histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Ineligible", 7);
+  histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Ineligible", 9);
   histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Eligible", 0);
   histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.FailureReason",
                                     0);
@@ -426,6 +440,31 @@ TEST_F(QuicMigrationAttemptContextTest, SetSocketConfigFailure) {
       "Net.Quic.Migration.Attempt.SpuriousOutcome", 0);
   histogram_tester.ExpectTotalCount(
       "Net.Quic.Migration.Attempt.UnclassifiedOutcome", 0);
+}
+
+TEST_F(QuicMigrationAttemptContextTest, DeferredMigrationCauses) {
+  base::HistogramTester histogram_tester;
+  {
+    auto context = CreateAttemptContext(
+        QuicMigrationAttemptCause::kWaitForNewNetworkPostNetworkDisconnected);
+    context->SetSuccess();
+  }
+  {
+    auto context = CreateAttemptContext(
+        QuicMigrationAttemptCause::kWaitForNewNetworkPostWriteError);
+    context->SetSuccess();
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Eligible.ByTrigger."
+      "WaitForNewNetworkPostNetworkDisconnected",
+      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Eligible.ByTrigger."
+      "WaitForNewNetworkPostWriteError",
+      true, 1);
+  histogram_tester.ExpectUniqueSample("Net.Quic.Migration.Attempt.Eligible",
+                                      true, 2);
 }
 
 #if GTEST_HAS_DEATH_TEST

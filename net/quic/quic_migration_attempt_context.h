@@ -38,7 +38,9 @@ enum class QuicMigrationAttemptCause {
   kNewNetworkConnectedPostPathDegrading = 7,
   kOnServerPreferredAddressAvailable = 8,
   kMultiPortPath = 9,
-  kMaxValue = kMultiPortPath,
+  kWaitForNewNetworkPostNetworkDisconnected = 10,
+  kWaitForNewNetworkPostWriteError = 11,
+  kMaxValue = kWaitForNewNetworkPostWriteError,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:QuicMigrationAttemptCause,//tools/metrics/histograms/metadata/net/histograms.xml:QuicMigrationAttemptCause)
 

@@ -4360,6 +4360,16 @@ TEST_P(QuicChromiumClientSessionTest, SupersededReasonMapping) {
         cause);
   }
 
+  EXPECT_EQ(
+      QuicChromiumClientSession::ChromiumMigrationCauseToQuicheFailureReason(
+          QuicMigrationAttemptCause::kWaitForNewNetworkPostNetworkDisconnected),
+      quic::PathValidationFailure::Reason::
+          kNewerValidationOnNetworkDisconnected);
+  EXPECT_EQ(
+      QuicChromiumClientSession::ChromiumMigrationCauseToQuicheFailureReason(
+          QuicMigrationAttemptCause::kWaitForNewNetworkPostWriteError),
+      quic::PathValidationFailure::Reason::kNewerValidationOnWriteError);
+
   // Non-superseded reasons should return kUnknown.
   EXPECT_EQ(
       QuicChromiumClientSession::QuicheFailureReasonToChromiumMigrationCause(

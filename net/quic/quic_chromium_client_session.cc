@@ -417,13 +417,31 @@ base::DictValue NetLogQuicClientSessionParams(
 // TODO(crbug.com/557126867): Remove this when we drop the old connection
 // migration histograms.
 std::string_view MigrationCauseToString(QuicMigrationAttemptCause cause) {
-  // This is the only name that differs between the old and new histogram names.
-  if (cause == QuicMigrationAttemptCause::kChangeNetworkOnPathDegrading) {
-    return "OnPathDegrading";
+  switch (cause) {
+    // This differs between the old and new histogram names.
+    case QuicMigrationAttemptCause::kChangeNetworkOnPathDegrading:
+      return "OnPathDegrading";
+    // This new enum value is not handled in the old histogram names, so
+    // piggyback on the old enum value.
+    case QuicMigrationAttemptCause::kWaitForNewNetworkPostNetworkDisconnected:
+      return "OnNetworkDisconnected";
+    // This new enum value is not handled in the old histogram names, so
+    // piggyback on the old enum value.
+    case QuicMigrationAttemptCause::kWaitForNewNetworkPostWriteError:
+      return "OnWriteError";
+    // For everything else, rely on the non-deprecated
+    // QuicMigrationAttemptCauseToString.
+    case QuicMigrationAttemptCause::kUnknown:
+    case QuicMigrationAttemptCause::kOnNetworkDisconnected:
+    case QuicMigrationAttemptCause::kOnWriteError:
+    case QuicMigrationAttemptCause::kOnNetworkMadeDefault:
+    case QuicMigrationAttemptCause::kOnMigrateBackToDefaultNetwork:
+    case QuicMigrationAttemptCause::kChangePortOnPathDegrading:
+    case QuicMigrationAttemptCause::kNewNetworkConnectedPostPathDegrading:
+    case QuicMigrationAttemptCause::kOnServerPreferredAddressAvailable:
+    case QuicMigrationAttemptCause::kMultiPortPath:
+      return QuicMigrationAttemptCauseToString(cause);
   }
-  // For everything else, we can rely on the non-deprecated
-  // QuicMigrationAttemptCauseToString.
-  return QuicMigrationAttemptCauseToString(cause);
 }
 
 // TODO(fayang): Remove this when necessary data is collected.
@@ -512,6 +530,9 @@ QuicChromiumClientSession::ChromiumMigrationCauseToQuicheFailureReason(
     case QuicMigrationAttemptCause::kNewNetworkConnectedPostPathDegrading:
       return kNewerValidationOnNewNetworkConnectedPostPathDegrading;
     case QuicMigrationAttemptCause::kOnNetworkDisconnected:
+    // TODO(crbug.com/557126867): Update QUICHE to have a specific failure
+    // reason for this case.
+    case QuicMigrationAttemptCause::kWaitForNewNetworkPostNetworkDisconnected:
       return kNewerValidationOnNetworkDisconnected;
     case QuicMigrationAttemptCause::kOnNetworkMadeDefault:
       return kNewerValidationOnNetworkMadeDefault;
@@ -520,6 +541,9 @@ QuicChromiumClientSession::ChromiumMigrationCauseToQuicheFailureReason(
     case QuicMigrationAttemptCause::kUnknown:
       return kNewerValidation;
     case QuicMigrationAttemptCause::kOnWriteError:
+    // TODO(crbug.com/557126867): Update QUICHE to have a specific failure
+    // reason for this case.
+    case QuicMigrationAttemptCause::kWaitForNewNetworkPostWriteError:
       return kNewerValidationOnWriteError;
   }
 }
@@ -2498,7 +2522,7 @@ void QuicChromiumClientSession::MigrateSessionOnWriteError(
     HistogramAndLogMigrationFailure(MIGRATION_STATUS_NO_ALTERNATE_NETWORK,
                                     connection_id(),
                                     "No alternate network found");
-    OnNoNewNetwork(QuicMigrationAttemptCause::kOnWriteError);
+    OnNoNewNetwork(QuicMigrationAttemptCause::kWaitForNewNetworkPostWriteError);
     return;
   }
 
@@ -2592,6 +2616,11 @@ void QuicChromiumClientSession::OnMigrationTimeout(
     size_t num_sockets,
     QuicMigrationAttemptCause migration_cause) {
   // If number of sockets has changed, this migration task is stale.
+  // TODO(crbug.com/570465677): Stop approximating whether a migration has
+  // happened via `num_sockets`. Instead, control whether OnMigrationTimeout has
+  // become stale by checking `wait_for_new_network_cause_`. This requires
+  // clearing `wait_for_new_network_cause_` whenever we decide to abandon the
+  // "waiting for new network" state.
   if (num_sockets != packet_readers_.size()) {
     return;
   }
@@ -2599,10 +2628,15 @@ void QuicChromiumClientSession::OnMigrationTimeout(
   net_log_.AddEvent(
       NetLogEventType::QUIC_CONNECTION_MIGRATION_FAILURE_WAITING_FOR_NETWORK);
 
-  int net_error =
-      migration_cause == QuicMigrationAttemptCause::kOnNetworkDisconnected
-          ? ERR_INTERNET_DISCONNECTED
-          : ERR_NETWORK_CHANGED;
+  QuicMigrationAttemptContext::RecordIneligible(
+      migration_cause,
+      QuicMigrationAttemptIneligibleReason::kNoAlternateNetwork);
+
+  int net_error = migration_cause ==
+                          QuicMigrationAttemptCause::
+                              kWaitForNewNetworkPostNetworkDisconnected
+                      ? ERR_INTERNET_DISCONNECTED
+                      : ERR_NETWORK_CHANGED;
 
   // |current_migration_cause_| will be reset after logging.
   LogMigrationResultToHistogram(MIGRATION_STATUS_TIMEOUT);
@@ -2886,7 +2920,8 @@ void QuicChromiumClientSession::OnNetworkConnected(
     net_log_.AddEventWithInt64Params(
         NetLogEventType::QUIC_CONNECTION_MIGRATION_SUCCESS_WAITING_FOR_NETWORK,
         "network", network);
-    if (migration_cause == QuicMigrationAttemptCause::kOnWriteError) {
+    if (migration_cause ==
+        QuicMigrationAttemptCause::kWaitForNewNetworkPostWriteError) {
       current_migrations_to_non_default_network_on_write_error_++;
     }
     // `wait_for_new_network_cause_` was set, there was no working network
@@ -2963,7 +2998,8 @@ void QuicChromiumClientSession::OnNetworkDisconnectedV2(
     QuicMigrationAttemptContext::RecordIneligible(
         QuicMigrationAttemptCause::kOnNetworkDisconnected,
         QuicMigrationAttemptIneligibleReason::kNoAlternateNetwork);
-    OnNoNewNetwork(QuicMigrationAttemptCause::kOnNetworkDisconnected);
+    OnNoNewNetwork(
+        QuicMigrationAttemptCause::kWaitForNewNetworkPostNetworkDisconnected);
     return;
   }
 

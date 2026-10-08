@@ -4157,6 +4157,8 @@ TEST_P(QuicSessionPoolTest, MigrationTimeoutWithNoNewNetwork) {
   EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), session));
   EXPECT_TRUE(HasActiveSession(kDefaultDestination));
 
+  base::HistogramTester histogram_tester;
+
   // Trigger connection migration. Since there are no networks
   // to migrate to, this should cause the session to wait for a new network.
   scoped_mock_network_change_notifier_->mock_network_change_notifier()
@@ -4180,6 +4182,17 @@ TEST_P(QuicSessionPoolTest, MigrationTimeoutWithNoNewNetwork) {
 
   socket_data.ExpectAllReadDataConsumed();
   socket_data.ExpectAllWriteDataConsumed();
+
+  histogram_tester.ExpectBucketCount(
+      "Net.Quic.Migration.Attempt.Ineligible",
+      QuicMigrationAttemptIneligibleReason::kNoAlternateNetwork, 2);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Ineligible.ByTrigger.OnNetworkDisconnected",
+      QuicMigrationAttemptIneligibleReason::kNoAlternateNetwork, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Ineligible.ByTrigger."
+      "WaitForNewNetworkPostNetworkDisconnected",
+      QuicMigrationAttemptIneligibleReason::kNoAlternateNetwork, 1);
 }
 
 // This test verifies that connectivity probes will be sent even if there is
@@ -8870,11 +8883,14 @@ TEST_P(QuicSessionPoolTest,
   socket_data2.ExpectAllWriteDataConsumed();
 
   histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Ineligible.ByTrigger.OnNetworkDisconnected",
+      QuicMigrationAttemptIneligibleReason::kNoAlternateNetwork, 2);
+  histogram_tester.ExpectUniqueSample(
       "Net.Quic.Migration.Attempt.SocketConfigError.Step",
       QuicSocketConfigStep::kConnect, 2);
   histogram_tester.ExpectUniqueSample(
       "Net.Quic.Migration.Attempt.SocketConfigError.Step.ByTrigger."
-      "OnNetworkDisconnected",
+      "WaitForNewNetworkPostNetworkDisconnected",
       QuicSocketConfigStep::kConnect, 2);
   histogram_tester.ExpectUniqueSample(
       "Net.Quic.Migration.Attempt.SocketConfigError.NetError",
@@ -8884,7 +8900,7 @@ TEST_P(QuicSessionPoolTest,
       -ERR_INTERNET_DISCONNECTED, 2);
   histogram_tester.ExpectUniqueSample(
       "Net.Quic.Migration.Attempt.SocketConfigError.NetError.ByTrigger."
-      "OnNetworkDisconnected",
+      "WaitForNewNetworkPostNetworkDisconnected",
       -ERR_INTERNET_DISCONNECTED, 2);
 }
 
@@ -10157,6 +10173,8 @@ void QuicSessionPoolTest::TestMigrationOnWriteErrorNoNewNetwork(
   EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), session));
   EXPECT_TRUE(HasActiveSession(kDefaultDestination));
 
+  base::HistogramTester histogram_tester;
+
   // Send GET request on stream. This causes a write error, which triggers
   // a connection migration attempt. Since there are no networks
   // to migrate to, this causes the session to wait for a new network.
@@ -10204,6 +10222,17 @@ void QuicSessionPoolTest::TestMigrationOnWriteErrorNoNewNetwork(
 
   socket_data.ExpectAllReadDataConsumed();
   socket_data.ExpectAllWriteDataConsumed();
+
+  histogram_tester.ExpectBucketCount(
+      "Net.Quic.Migration.Attempt.Ineligible",
+      QuicMigrationAttemptIneligibleReason::kNoAlternateNetwork, 2);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Ineligible.ByTrigger.OnWriteError",
+      QuicMigrationAttemptIneligibleReason::kNoAlternateNetwork, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Ineligible.ByTrigger."
+      "WaitForNewNetworkPostWriteError",
+      QuicMigrationAttemptIneligibleReason::kNoAlternateNetwork, 1);
 }
 
 TEST_P(QuicSessionPoolTest, MigrateSessionOnWriteErrorNoNewNetworkSynchronous) {
@@ -11341,6 +11370,7 @@ TEST_P(QuicSessionPoolTest,
 // - new network is made default.
 void QuicSessionPoolTest::TestMigrationOnWriteErrorPauseBeforeConnected(
     IoMode write_error_mode) {
+  base::HistogramTester histogram_tester;
   InitializeConnectionMigrationV2Test({kDefaultNetworkForTests});
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
@@ -11467,6 +11497,14 @@ void QuicSessionPoolTest::TestMigrationOnWriteErrorPauseBeforeConnected(
   socket_data.ExpectAllWriteDataConsumed();
   socket_data1.ExpectAllReadDataConsumed();
   socket_data1.ExpectAllWriteDataConsumed();
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Ineligible.ByTrigger.OnNetworkDisconnected",
+      QuicMigrationAttemptIneligibleReason::kNoAlternateNetwork, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Eligible.ByTrigger."
+      "WaitForNewNetworkPostNetworkDisconnected",
+      true, 1);
 }
 
 TEST_P(QuicSessionPoolTest,
@@ -12834,6 +12872,7 @@ TEST_P(QuicSessionPoolTest,
 void QuicSessionPoolTest::TestMigrationOnWriteErrorWithMultipleNotifications(
     IoMode write_error_mode,
     bool disconnect_before_connect) {
+  base::HistogramTester histogram_tester;
   InitializeConnectionMigrationV2Test({kDefaultNetworkForTests});
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
@@ -12973,6 +13012,25 @@ void QuicSessionPoolTest::TestMigrationOnWriteErrorWithMultipleNotifications(
   socket_data.ExpectAllWriteDataConsumed();
   socket_data1.ExpectAllReadDataConsumed();
   socket_data1.ExpectAllWriteDataConsumed();
+
+  histogram_tester.ExpectBucketCount(
+      "Net.Quic.Migration.Attempt.Ineligible.ByTrigger.OnWriteError",
+      QuicMigrationAttemptIneligibleReason::kNoAlternateNetwork, 1);
+  if (disconnect_before_connect) {
+    // Since `kNewNetworkForTests` was already added to the connected networks
+    // list prior to `NotifyNetworkDisconnected`, an alternate network was
+    // immediately available, triggering an immediate migration under
+    // `kOnNetworkDisconnected` rather than a deferred migration
+    // (`kWaitForNewNetworkPostNetworkDisconnected`).
+    histogram_tester.ExpectUniqueSample(
+        "Net.Quic.Migration.Attempt.Eligible.ByTrigger.OnNetworkDisconnected",
+        true, 1);
+  } else {
+    histogram_tester.ExpectUniqueSample(
+        "Net.Quic.Migration.Attempt.Eligible.ByTrigger."
+        "WaitForNewNetworkPostWriteError",
+        true, 1);
+  }
 }
 
 // This test verifies after session migrates off the default network, it keeps
