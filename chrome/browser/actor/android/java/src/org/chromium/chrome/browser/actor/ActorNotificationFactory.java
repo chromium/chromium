@@ -113,6 +113,10 @@ public class ActorNotificationFactory {
                 extras.putCharSequence(EXTRA_SHORT_CRITICAL_TEXT, chipText);
             }
             builder.addExtras(extras);
+        } else {
+            // A non-live notification replaces a notification that was already shown, so it must
+            // not alert again.
+            builder.setOnlyAlertOnce(true);
         }
 
         if (isWarning) {
