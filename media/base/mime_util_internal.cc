@@ -5,9 +5,9 @@
 #include "media/base/mime_util_internal.h"
 
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -33,81 +33,75 @@
 namespace media::internal {
 
 // A map from codec string to MimeUtil::Codec.
-using StringToCodecMap = base::flat_map<std::string, MimeUtil::Codec>;
-
-// Wrapped to avoid static initializer startup cost.
-const StringToCodecMap& GetStringToCodecMap() {
-  static const base::NoDestructor<StringToCodecMap> kStringToCodecMap({
-      // We only allow this for WAV so it isn't ambiguous.
-      {"1", MimeUtil::PCM},
-      // avc1/avc3.XXXXXX may be unambiguous; handled by
-      // ParseAVCCodecId(). hev1/hvc1.XXXXXX may be unambiguous;
-      // handled by ParseHEVCCodecID(). vp9, vp9.0,
-      // vp09.xx.xx.xx.xx.xx.xx.xx may be unambiguous; handled by
-      // ParseVp9CodecID().
-      {"mp3", MimeUtil::MP3},
-      // Following is the list of RFC 6381 compliant audio codec
-      // strings:
-      //   mp4a.66     - MPEG-2 AAC MAIN
-      //   mp4a.67     - MPEG-2 AAC LC
-      //   mp4a.68     - MPEG-2 AAC SSR
-      //   mp4a.69     - MPEG-2 extension to MPEG-1 (MP3)
-      //   mp4a.6B     - MPEG-1 audio (MP3)
-      //   mp4a.40.2   - MPEG-4 AAC LC
-      //   mp4a.40.02  - MPEG-4 AAC LC (leading 0 in aud-oti for
-      //                 compatibility)
-      //   mp4a.40.5   - MPEG-4 HE-AAC v1 (AAC LC + SBR)
-      //   mp4a.40.05  - MPEG-4 HE-AAC v1 (AAC LC + SBR) (leading 0
-      //                 in aud-oti for compatibility)
-      //   mp4a.40.29  - MPEG-4 HE-AAC v2 (AAC LC + SBR + PS)
-      {"mp4a.66", MimeUtil::MPEG2_AAC},
-      {"mp4a.67", MimeUtil::MPEG2_AAC},
-      {"mp4a.68", MimeUtil::MPEG2_AAC},
-      {"mp4a.69", MimeUtil::MP3},
-      {"mp4a.6B", MimeUtil::MP3},
-      {"mp4a.40.2", MimeUtil::MPEG4_AAC},
-      {"mp4a.40.02", MimeUtil::MPEG4_AAC},
-      {"mp4a.40.5", MimeUtil::MPEG4_AAC},
-      {"mp4a.40.05", MimeUtil::MPEG4_AAC},
-      {"mp4a.40.29", MimeUtil::MPEG4_AAC},
-      {"mp4a.40.42", MimeUtil::MPEG4_XHE_AAC},
-      // TODO(servolk): Strictly speaking only mp4a.A5 and mp4a.A6
-      // codec ids are valid according to RFC 6381 section 3.3, 3.4.
-      // Lower-case oti (mp4a.a5 and mp4a.a6) should be rejected. But
-      // we used to allow those in older versions of Chromecast
-      // firmware and some apps (notably MPL) depend on those codec
-      // types being supported, so they should be allowed for now
-      // (crbug.com/564960).
-      {"ac-3", MimeUtil::AC3},
-      {"mp4a.a5", MimeUtil::AC3},
-      {"mp4a.A5", MimeUtil::AC3},
-      {"ec-3", MimeUtil::EAC3},
-      {"mp4a.a6", MimeUtil::EAC3},
-      {"mp4a.A6", MimeUtil::EAC3},
-      {"vorbis", MimeUtil::VORBIS},
-      {"opus", MimeUtil::OPUS},
-      {"Opus", MimeUtil::OPUS},
-      {"flac", MimeUtil::FLAC},
-      {"fLaC", MimeUtil::FLAC},
-      {"vp8", MimeUtil::VP8},
-      {"vp8.0", MimeUtil::VP8},
-      {"theora", MimeUtil::THEORA},
-      {"dtsc", MimeUtil::DTS},
-      {"mp4a.a9", MimeUtil::DTS},
-      {"mp4a.A9", MimeUtil::DTS},
-      {"dtse", MimeUtil::DTSE},
-      {"mp4a.ac", MimeUtil::DTSE},
-      {"mp4a.AC", MimeUtil::DTSE},
-      {"dtsx", MimeUtil::DTSXP2},
-      {"mp4a.b2", MimeUtil::DTSXP2},
-      {"mp4a.B2", MimeUtil::DTSXP2},
-      {"ac-4", MimeUtil::AC4},
-      {"mp4a.ae", MimeUtil::AC4},
-      {"mp4a.AE", MimeUtil::AC4},
-  });
-
-  return *kStringToCodecMap;
-}
+constexpr auto kStringToCodecMap =
+    base::MakeFixedFlatMap<std::string_view, MimeUtil::Codec>({
+        // We only allow this for WAV so it isn't ambiguous.
+        {"1", MimeUtil::PCM},
+        // avc1/avc3.XXXXXX may be unambiguous; handled by
+        // ParseAVCCodecId(). hev1/hvc1.XXXXXX may be unambiguous;
+        // handled by ParseHEVCCodecID(). vp9, vp9.0,
+        // vp09.xx.xx.xx.xx.xx.xx.xx may be unambiguous; handled by
+        // ParseVp9CodecID().
+        {"mp3", MimeUtil::MP3},
+        // Following is the list of RFC 6381 compliant audio codec
+        // strings:
+        //   mp4a.66     - MPEG-2 AAC MAIN
+        //   mp4a.67     - MPEG-2 AAC LC
+        //   mp4a.68     - MPEG-2 AAC SSR
+        //   mp4a.69     - MPEG-2 extension to MPEG-1 (MP3)
+        //   mp4a.6B     - MPEG-1 audio (MP3)
+        //   mp4a.40.2   - MPEG-4 AAC LC
+        //   mp4a.40.02  - MPEG-4 AAC LC (leading 0 in aud-oti for
+        //                 compatibility)
+        //   mp4a.40.5   - MPEG-4 HE-AAC v1 (AAC LC + SBR)
+        //   mp4a.40.05  - MPEG-4 HE-AAC v1 (AAC LC + SBR) (leading 0
+        //                 in aud-oti for compatibility)
+        //   mp4a.40.29  - MPEG-4 HE-AAC v2 (AAC LC + SBR + PS)
+        {"mp4a.66", MimeUtil::MPEG2_AAC},
+        {"mp4a.67", MimeUtil::MPEG2_AAC},
+        {"mp4a.68", MimeUtil::MPEG2_AAC},
+        {"mp4a.69", MimeUtil::MP3},
+        {"mp4a.6B", MimeUtil::MP3},
+        {"mp4a.40.2", MimeUtil::MPEG4_AAC},
+        {"mp4a.40.02", MimeUtil::MPEG4_AAC},
+        {"mp4a.40.5", MimeUtil::MPEG4_AAC},
+        {"mp4a.40.05", MimeUtil::MPEG4_AAC},
+        {"mp4a.40.29", MimeUtil::MPEG4_AAC},
+        {"mp4a.40.42", MimeUtil::MPEG4_XHE_AAC},
+        // TODO(servolk): Strictly speaking only mp4a.A5 and mp4a.A6
+        // codec ids are valid according to RFC 6381 section 3.3, 3.4.
+        // Lower-case oti (mp4a.a5 and mp4a.a6) should be rejected. But
+        // we used to allow those in older versions of Chromecast
+        // firmware and some apps (notably MPL) depend on those codec
+        // types being supported, so they should be allowed for now
+        // (crbug.com/564960).
+        {"ac-3", MimeUtil::AC3},
+        {"mp4a.a5", MimeUtil::AC3},
+        {"mp4a.A5", MimeUtil::AC3},
+        {"ec-3", MimeUtil::EAC3},
+        {"mp4a.a6", MimeUtil::EAC3},
+        {"mp4a.A6", MimeUtil::EAC3},
+        {"vorbis", MimeUtil::VORBIS},
+        {"opus", MimeUtil::OPUS},
+        {"Opus", MimeUtil::OPUS},
+        {"flac", MimeUtil::FLAC},
+        {"fLaC", MimeUtil::FLAC},
+        {"vp8", MimeUtil::VP8},
+        {"vp8.0", MimeUtil::VP8},
+        {"theora", MimeUtil::THEORA},
+        {"dtsc", MimeUtil::DTS},
+        {"mp4a.a9", MimeUtil::DTS},
+        {"mp4a.A9", MimeUtil::DTS},
+        {"dtse", MimeUtil::DTSE},
+        {"mp4a.ac", MimeUtil::DTSE},
+        {"mp4a.AC", MimeUtil::DTSE},
+        {"dtsx", MimeUtil::DTSXP2},
+        {"mp4a.b2", MimeUtil::DTSXP2},
+        {"mp4a.B2", MimeUtil::DTSXP2},
+        {"ac-4", MimeUtil::AC4},
+        {"mp4a.ae", MimeUtil::AC4},
+        {"mp4a.AE", MimeUtil::AC4},
+    });
 
 static std::optional<VideoType> ParseVp9CodecID(
     std::string_view mime_type_lower_case,
@@ -769,8 +763,8 @@ bool MimeUtil::ParseCodecHelper(std::string_view mime_type_lower_case,
   const auto kDefaultColorSpace = VideoColorSpace::REC709();
 
   // Simple codecs can be found in the codec map.
-  auto itr = GetStringToCodecMap().find(codec_id);
-  if (itr != GetStringToCodecMap().end()) {
+  auto itr = kStringToCodecMap.find(codec_id);
+  if (itr != kStringToCodecMap.end()) {
     out_result->codec = itr->second;
 
     // Even "simple" video codecs should have an associated profile.
