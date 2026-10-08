@@ -19,12 +19,15 @@ import java.util.List;
 @NullMarked
 public interface TabListDataObserver {
     /** Types of property updates for granular viewholder payload invalidation. */
-    @IntDef({PayloadType.SELECTION})
+    @IntDef({PayloadType.PIN_STATE, PayloadType.SELECTION})
     @Retention(RetentionPolicy.SOURCE)
     @Target(ElementType.TYPE_USE)
     @interface PayloadType {
+        /** Updates only pinned state. */
+        int PIN_STATE = 0;
+
         /** Updates only selection state. */
-        int SELECTION = 0;
+        int SELECTION = 1;
     }
 
     /**

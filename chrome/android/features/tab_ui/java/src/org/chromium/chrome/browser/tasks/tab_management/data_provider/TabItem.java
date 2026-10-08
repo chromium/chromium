@@ -66,8 +66,14 @@ public final class TabItem implements TabListItem {
         return new TabItem(mTabId, isSelected, mIsPinned, mIsMultiSelected);
     }
 
-    // TODO(crbug.com/562590772): Add withPinned(boolean) and withMultiSelected(boolean) copy
-    // helpers for granular item updates.
+    /** Returns a copy of this item with the specified pinned state. */
+    public TabItem withPinned(boolean isPinned) {
+        if (mIsPinned == isPinned) return this;
+        return new TabItem(mTabId, mIsSelected, isPinned, mIsMultiSelected);
+    }
+
+    // TODO(crbug.com/562590772): Add withMultiSelected(boolean) copy helper for granular item
+    // updates.
 
     @Override
     public boolean equals(@Nullable Object obj) {

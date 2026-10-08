@@ -86,6 +86,11 @@ public class FlatTabListDataProvider extends TabListDataProvider {
                             Tab tab, @TabSelectionType int type, @TabId int lastId) {
                         selectTab(tab, /* prevSelectedTabId= */ lastId);
                     }
+
+                    @Override
+                    public void didChangePinState(Tab tab) {
+                        updatePinState(tab);
+                    }
                 };
 
         TabGroupObserver tabGroupObserver =

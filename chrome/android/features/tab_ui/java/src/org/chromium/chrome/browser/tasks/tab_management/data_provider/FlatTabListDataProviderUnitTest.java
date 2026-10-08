@@ -551,6 +551,89 @@ public class FlatTabListDataProviderUnitTest {
     }
 
     // ============================================================================================
+    // TabModelObserver: didChangePinState
+    // ============================================================================================
+
+    @Test
+    public void testDidChangePinState_UpdatesPinProperty() {
+        setUpProviderWithTabs(/* filter= */ null, mTab1, mTab2);
+        assertItems(item(TAB1_ID), item(TAB2_ID));
+
+        when(mTab2.getIsPinned()).thenReturn(true);
+        mTabModelObserver.didChangePinState(mTab2);
+
+        verify(mObserver).onItemUpdated(pinned(TAB2_ID), PayloadType.PIN_STATE);
+        assertItems(item(TAB1_ID), pinned(TAB2_ID));
+    }
+
+    @Test
+    public void testDidChangePinState_Unpinned_UpdatesPinProperty() {
+        when(mTab2.getIsPinned()).thenReturn(true);
+        setUpProviderWithTabs(/* filter= */ null, mTab1, mTab2);
+        assertItems(item(TAB1_ID), pinned(TAB2_ID));
+
+        when(mTab2.getIsPinned()).thenReturn(false);
+        mTabModelObserver.didChangePinState(mTab2);
+
+        verify(mObserver).onItemUpdated(item(TAB2_ID), PayloadType.PIN_STATE);
+        assertItems(item(TAB1_ID), item(TAB2_ID));
+    }
+
+    @Test
+    public void testDidChangePinState_FilteredOut_RemovesTab() {
+        // Filter that only shows unpinned tabs.
+        setUpProviderWithTabs(tab -> !tab.getIsPinned(), mTab1, mTab2);
+        assertItems(item(TAB1_ID), item(TAB2_ID));
+
+        when(mTab1.getIsPinned()).thenReturn(true);
+        mTabModelObserver.didChangePinState(mTab1);
+
+        verify(mObserver).onItemsRemoved(List.of(item(TAB1_ID)));
+        assertItems(item(TAB2_ID));
+    }
+
+    @Test
+    public void testDidChangePinState_Unpinned_FilteredOut_RemovesTab() {
+        // Filter that only shows pinned tabs.
+        when(mTab1.getIsPinned()).thenReturn(true);
+        setUpProviderWithTabs(Tab::getIsPinned, mTab1, mTab2);
+        assertItems(pinned(TAB1_ID));
+
+        when(mTab1.getIsPinned()).thenReturn(false);
+        mTabModelObserver.didChangePinState(mTab1);
+
+        verify(mObserver).onItemsRemoved(List.of(pinned(TAB1_ID)));
+        assertItems();
+    }
+
+    @Test
+    public void testDidChangePinState_FilterBecameMatching_AddsTab() {
+        // Filter that only shows pinned tabs.
+        setUpProviderWithTabs(Tab::getIsPinned, mTab1);
+        assertItems();
+
+        when(mTab1.getIsPinned()).thenReturn(true);
+        mTabModelObserver.didChangePinState(mTab1);
+
+        verify(mObserver).onItemsInserted(List.of(pinned(TAB1_ID)), /* after= */ null);
+        assertItems(pinned(TAB1_ID));
+    }
+
+    @Test
+    public void testDidChangePinState_UnprojectedTab_NoOps() {
+        groupTabs(TAB_GROUP_ID, mTab1);
+        setUpProviderWithTabs(mInCurrentGroupFilter, mTab1, mTab2);
+        assertItems(item(TAB1_ID));
+
+        // Pin state change on unprojected mTab2 does nothing.
+        when(mTab2.getIsPinned()).thenReturn(true);
+        mTabModelObserver.didChangePinState(mTab2);
+
+        verifyNoInteractions(mObserver);
+        assertItems(item(TAB1_ID));
+    }
+
+    // ============================================================================================
     // TabGroupObserver: didMergeTabToGroup
     // ============================================================================================
 

@@ -260,6 +260,39 @@ public abstract class TabListDataProvider {
         }
     }
 
+    /**
+     * Updates the pinned state of {@code tab} in {@link #mItems} when its pin state changes in
+     * {@link TabModel}.
+     *
+     * @param tab The {@link Tab} whose pin state changed.
+     */
+    protected void updatePinState(Tab tab) {
+        if (getTabModelIfTabStateInitialized() == null) return;
+
+        // Remove if the pin change filtered the tab out.
+        if (!shouldShowTab(tab)) {
+            removeTabItem(tab.getId());
+            return;
+        }
+
+        @TabId int tabId = tab.getId();
+        int index = indexOfTabId(tabId);
+        // Insert if the pin change made the tab visible under the filter.
+        if (index == TabList.INVALID_TAB_INDEX) {
+            addTabItem(tab);
+            return;
+        }
+
+        if (mItems.get(index) instanceof TabItem tabItem) {
+            boolean isPinned = tab.getIsPinned();
+            if (tabItem.isPinned() != isPinned) {
+                TabItem updatedItem = tabItem.withPinned(isPinned);
+                mItems.set(index, updatedItem);
+                notifyObservers(obs -> obs.onItemUpdated(updatedItem, PayloadType.PIN_STATE));
+            }
+        }
+    }
+
     private void updateSelection(int index, boolean isSelected) {
         TabListItem currentItem = mItems.get(index);
         if (currentItem.isSelected() == isSelected) return;
