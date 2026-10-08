@@ -6,6 +6,7 @@
 #define COMPONENTS_TRUSTED_VAULT_LEGACY_STANDALONE_TRUSTED_VAULT_STORAGE_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -164,6 +165,19 @@ class LegacyStandaloneTrustedVaultStorage
   // Create with non-default FileAccess. Only used for testing.
   static std::unique_ptr<LegacyStandaloneTrustedVaultStorage> CreateForTesting(
       std::unique_ptr<FileAccess> file_access);
+
+  // Returns the file path used to store data for `security_domain_id` inside
+  // `base_dir`. Used for data migration.
+  static base::FilePath GetBackendFilePath(const base::FilePath& base_dir,
+                                           SecurityDomainId security_domain_id);
+
+  // Reads and returns the legacy `LocalTrustedVault` proto from disk inside
+  // `base_dir` for `security_domain_id`, applying all version migration steps
+  // (v0..v4). Returns `std::nullopt` if the file does not exist or could not
+  // be read or parsed. Used for data migration.
+  static std::optional<trusted_vault_pb::LocalTrustedVault>
+  ReadDataForMigration(const base::FilePath& base_dir,
+                       SecurityDomainId security_domain_id);
 
   LegacyStandaloneTrustedVaultStorage(const base::FilePath& base_dir,
                                       SecurityDomainId security_domain_id);

@@ -14,6 +14,7 @@
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "components/trusted_vault/legacy_standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/local_recovery_factor.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/standalone_trusted_vault_server_constants.h"
@@ -64,11 +65,13 @@ bool WriteLocalDomainsDataToDiskImpl(
 }
 
 // Default file access implementation for `LocalDomainsStorage`.
-// Responsible for reading/writing `local_domains_data.pb`.
+// Responsible for reading/writing `local_domains_data.pb` and migrating legacy
+// `trusted_vault.pb` data when `local_domains_data.pb` does not yet exist.
 class DefaultStorageFileAccess : public LocalDomainsStorage::StorageFileAccess {
  public:
   explicit DefaultStorageFileAccess(const base::FilePath& base_dir)
-      : local_domains_file_path_(base_dir.Append(kLocalDomainsFileName)) {}
+      : base_dir_(base_dir),
+        local_domains_file_path_(base_dir.Append(kLocalDomainsFileName)) {}
   DefaultStorageFileAccess(const DefaultStorageFileAccess&) = delete;
   DefaultStorageFileAccess& operator=(const DefaultStorageFileAccess&) = delete;
   ~DefaultStorageFileAccess() override = default;
@@ -77,9 +80,7 @@ class DefaultStorageFileAccess : public LocalDomainsStorage::StorageFileAccess {
     if (!base::PathExists(local_domains_file_path_)) {
       RecordTrustedVaultFileReadStatus(
           TrustedVaultFileReadStatusForUMA::kNotFound);
-      trusted_vault_pb::LocalDomainsData data;
-      data.set_data_version(kCurrentLocalDomainsDataVersion);
-      return data;
+      return MigrateLegacyDataIfNeeded();
     }
 
     auto [data, read_status] =
@@ -97,6 +98,103 @@ class DefaultStorageFileAccess : public LocalDomainsStorage::StorageFileAccess {
   }
 
  private:
+  // Attempts to migrate legacy trusted vault data to the new format.
+  // Note: Only data for `kChromeSync` was ever written in production, so that's
+  // the only supported legacy data.
+  trusted_vault_pb::LocalDomainsData MigrateLegacyDataIfNeeded() {
+    trusted_vault_pb::LocalDomainsData migrated_data;
+    migrated_data.set_data_version(kCurrentLocalDomainsDataVersion);
+
+    if (!base::PathExists(
+            LegacyStandaloneTrustedVaultStorage::GetBackendFilePath(
+                base_dir_, SecurityDomainId::kChromeSync))) {
+      WriteLocalDomainsDataToDiskImpl(migrated_data, local_domains_file_path_);
+      return migrated_data;
+    }
+
+    std::optional<trusted_vault_pb::LocalTrustedVault> legacy_data =
+        LegacyStandaloneTrustedVaultStorage::ReadDataForMigration(
+            base_dir_, SecurityDomainId::kChromeSync);
+    if (!legacy_data.has_value()) {
+      WriteLocalDomainsDataToDiskImpl(migrated_data, local_domains_file_path_);
+      return migrated_data;
+    }
+
+    if (legacy_data->user_size() == 0) {
+      WriteLocalDomainsDataToDiskImpl(migrated_data, local_domains_file_path_);
+      return migrated_data;
+    }
+
+    for (const trusted_vault_pb::LocalTrustedVaultPerUser& legacy_user :
+         legacy_data->user()) {
+      trusted_vault_pb::UserDomainData* new_user = migrated_data.add_user();
+      new_user->set_gaia_id(legacy_user.gaia_id());
+      new_user->set_should_delete_keys_when_non_primary(
+          legacy_user.should_delete_keys_when_non_primary());
+
+      if (legacy_user.has_local_device_registration_info()) {
+        const auto& legacy_device =
+            legacy_user.local_device_registration_info();
+        if (legacy_device.has_private_key_material()) {
+          new_user->mutable_physical_device_data()->set_private_key_material(
+              legacy_device.private_key_material());
+        }
+      }
+
+      // ChromeSync DomainData:
+      trusted_vault_pb::DomainData* sync_domain = new_user->add_domain_data();
+      sync_domain->set_domain_id(
+          static_cast<int32_t>(SecurityDomainId::kChromeSync));
+      sync_domain->set_last_vault_key_version(
+          legacy_user.last_vault_key_version());
+      sync_domain->set_keys_marked_as_stale_by_consumer(
+          legacy_user.keys_marked_as_stale_by_consumer());
+      if (legacy_user.has_last_failed_request_millis_since_unix_epoch()) {
+        sync_domain->set_last_failed_request_millis_since_unix_epoch(
+            legacy_user.last_failed_request_millis_since_unix_epoch());
+      }
+      if (legacy_user.has_degraded_recoverability_state()) {
+        *sync_domain->mutable_degraded_recoverability_state() =
+            legacy_user.degraded_recoverability_state();
+      }
+      for (const trusted_vault_pb::LocalTrustedVaultKey& key :
+           legacy_user.vault_key()) {
+        *sync_domain->add_vault_key() = key;
+      }
+
+      if (legacy_user.has_last_registration_returned_local_data_obsolete()) {
+        sync_domain->set_last_registration_returned_local_data_obsolete(
+            legacy_user.last_registration_returned_local_data_obsolete());
+      }
+
+      if (legacy_user.has_local_device_registration_info()) {
+        const auto& legacy_device =
+            legacy_user.local_device_registration_info();
+        trusted_vault_pb::RecoveryFactorRegistrationInfo* factor_info =
+            sync_domain->add_recovery_factor_registration_info();
+        factor_info->set_factor_type(
+            static_cast<int32_t>(LocalRecoveryFactorType::kPhysicalDevice));
+        factor_info->set_registered(legacy_device.device_registered());
+      }
+
+#if BUILDFLAG(IS_MAC)
+      if (legacy_user.has_icloud_keychain_registration_info()) {
+        const auto& legacy_icloud =
+            legacy_user.icloud_keychain_registration_info();
+        trusted_vault_pb::RecoveryFactorRegistrationInfo* factor_info =
+            sync_domain->add_recovery_factor_registration_info();
+        factor_info->set_factor_type(
+            static_cast<int32_t>(LocalRecoveryFactorType::kICloudKeychain));
+        factor_info->set_registered(legacy_icloud.registered());
+      }
+#endif
+    }
+
+    WriteLocalDomainsDataToDiskImpl(migrated_data, local_domains_file_path_);
+    return migrated_data;
+  }
+
+  const base::FilePath base_dir_;
   const base::FilePath local_domains_file_path_;
 };
 

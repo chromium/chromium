@@ -35,7 +35,8 @@ class LocalDomainsStorage : public StandaloneTrustedVaultStorage {
     virtual ~StorageFileAccess() = default;
 
     // Reads and returns the local domains data from disk. If no file exists on
-    // disk, returns an empty `LocalDomainsData`.
+    // disk, migrates data from the legacy storage file if present; otherwise
+    // returns an empty `LocalDomainsData`.
     virtual trusted_vault_pb::LocalDomainsData ReadFromDisk() = 0;
 
     // Writes `data` to disk.

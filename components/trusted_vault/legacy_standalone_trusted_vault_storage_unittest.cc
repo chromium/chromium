@@ -528,6 +528,51 @@ TEST_F(LegacyStandaloneTrustedVaultStorageDisableSHA256Test, DisablingSHA256) {
       /*expected_bucket_count=*/1);
 }
 
+TEST_F(LegacyStandaloneTrustedVaultStorageTest, ReadDataForMigration) {
+  // Missing file should return std::nullopt.
+  EXPECT_FALSE(LegacyStandaloneTrustedVaultStorage::ReadDataForMigration(
+                   base_path(), security_domain_id())
+                   .has_value());
+
+  // Corrupted file should return std::nullopt.
+  ASSERT_TRUE(base::WriteFile(file_path(), "corrupted_proto"));
+  EXPECT_FALSE(LegacyStandaloneTrustedVaultStorage::ReadDataForMigration(
+                   base_path(), security_domain_id())
+                   .has_value());
+
+  // Valid v0 file should be read and upgraded to v4.
+  trusted_vault_pb::LocalTrustedVault v0_data;
+  v0_data.set_data_version(0);
+  UserVault* user = v0_data.add_user();
+  user->set_gaia_id("user1");
+  const std::vector<uint8_t> kNonConstantKey = {1, 2, 3, 4};
+  AssignBytesToProtoString(kNonConstantKey,
+                           user->add_vault_key()->mutable_key_material());
+  user->set_keys_marked_as_stale_by_consumer(true);
+  user->mutable_local_device_registration_info()->set_device_registered(true);
+  user->mutable_local_device_registration_info()->set_device_registered_version(
+      0);
+  user->mutable_local_device_registration_info()
+      ->set_deprecated_last_registration_returned_local_data_obsolete(true);
+  ASSERT_TRUE(WriteLocalTrustedVaultFile(v0_data, file_path()));
+
+  std::optional<trusted_vault_pb::LocalTrustedVault> migrated_data =
+      LegacyStandaloneTrustedVaultStorage::ReadDataForMigration(
+          base_path(), security_domain_id());
+  ASSERT_TRUE(migrated_data.has_value());
+  EXPECT_EQ(migrated_data->data_version(), 4);
+  ASSERT_EQ(migrated_data->user_size(), 1);
+  EXPECT_THAT(migrated_data->user(0).vault_key(),
+              ElementsAre(KeyMaterialEq(GetConstantTrustedVaultKey()),
+                          KeyMaterialEq(kNonConstantKey)));
+  EXPECT_FALSE(migrated_data->user(0).keys_marked_as_stale_by_consumer());
+  EXPECT_FALSE(migrated_data->user(0)
+                   .local_device_registration_info()
+                   .device_registered());
+  EXPECT_TRUE(
+      migrated_data->user(0).last_registration_returned_local_data_obsolete());
+}
+
 }  // namespace
 
 }  // namespace trusted_vault

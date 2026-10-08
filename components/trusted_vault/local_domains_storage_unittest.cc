@@ -10,19 +10,45 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "components/trusted_vault/features.h"
 #include "components/trusted_vault/local_recovery_factor.h"
 #include "components/trusted_vault/proto/local_domains_data.pb.h"
+#include "components/trusted_vault/proto/local_trusted_vault.pb.h"
+#include "components/trusted_vault/proto_string_bytes_conversion.h"
+#include "components/trusted_vault/standalone_trusted_vault_server_constants.h"
 #include "components/trusted_vault/test/fake_local_domains_storage_file_access.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
+#include "crypto/hash.h"
+#include "crypto/obsolete/md5.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace trusted_vault {
 
 namespace {
+
+using testing::ElementsAre;
+
+bool WriteLegacyTrustedVaultFile(
+    const trusted_vault_pb::LocalTrustedVault& proto,
+    const base::FilePath& path) {
+  trusted_vault_pb::LocalTrustedVaultFileContent file_proto;
+  file_proto.set_serialized_local_trusted_vault(proto.SerializeAsString());
+  file_proto.set_md5_digest_hex_string(
+      MD5StringForTrustedVault(file_proto.serialized_local_trusted_vault()));
+  if (base::FeatureList::IsEnabled(kEnableTrustedVaultSHA256)) {
+    file_proto.set_sha256_digest_hex_string(
+        base::Base64Encode(crypto::hash::Sha256(
+            base::as_byte_span(file_proto.serialized_local_trusted_vault()))));
+  }
+  return base::WriteFile(path, file_proto.SerializeAsString());
+}
 
 class LocalDomainsStorageTest : public testing::Test {
  public:
@@ -189,10 +215,25 @@ class LocalDomainsStorageDiskTest : public testing::Test {
   base::FilePath local_domains_file_path() const {
     return base_dir().Append(FILE_PATH_LITERAL("local_domains_data.pb"));
   }
+  base::FilePath legacy_file_path() const {
+    return base_dir().Append(FILE_PATH_LITERAL("trusted_vault.pb"));
+  }
 
  private:
   base::ScopedTempDir temp_dir_;
 };
+
+TEST_F(LocalDomainsStorageDiskTest,
+       ShouldRecordNotFoundAndWriteEmptyFileWhenNoLegacyFile) {
+  auto storage = LocalDomainsStorage::Create(base_dir());
+  base::HistogramTester histogram_tester;
+  storage->ReadDataFromDisk();
+
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.FileReadStatus",
+      TrustedVaultFileReadStatusForUMA::kNotFound, 1);
+  EXPECT_TRUE(base::PathExists(local_domains_file_path()));
+}
 
 TEST_F(LocalDomainsStorageDiskTest,
        ShouldRecordDataProtoDeserializationFailedWhenReadingFile) {
@@ -268,6 +309,100 @@ TEST_F(LocalDomainsStorageDiskTest, ShouldClearDataOnVersionMismatch) {
       storage->GetVaultKeys(kGaiaId, SecurityDomainId::kChromeSync).empty());
   EXPECT_EQ(storage->GetLastKeyVersion(kGaiaId, SecurityDomainId::kChromeSync),
             0);
+}
+
+TEST_F(LocalDomainsStorageDiskTest, ShouldMigrateLegacyTrustedVaultData) {
+  trusted_vault_pb::LocalTrustedVault legacy_data;
+  legacy_data.set_data_version(4);
+  auto* user = legacy_data.add_user();
+  user->set_gaia_id("migrated_user");
+  user->set_last_vault_key_version(10);
+  user->set_last_failed_request_millis_since_unix_epoch(1122334455);
+  user->mutable_local_device_registration_info()->set_private_key_material(
+      "migrated_private_key");
+  user->mutable_local_device_registration_info()->set_device_registered(true);
+  user->mutable_local_device_registration_info()->set_device_registered_version(
+      1);
+
+  ASSERT_TRUE(WriteLegacyTrustedVaultFile(legacy_data, legacy_file_path()));
+
+  auto storage = LocalDomainsStorage::Create(base_dir());
+  base::HistogramTester histogram_tester;
+  storage->ReadDataFromDisk();
+
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.FileReadStatus",
+      TrustedVaultFileReadStatusForUMA::kNotFound, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.FileReadStatus.ChromeSync",
+      TrustedVaultFileReadStatusForUMA::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample("TrustedVault.FileWriteSuccess", true, 1);
+  EXPECT_TRUE(base::PathExists(local_domains_file_path()));
+
+  GaiaId gaia_id("migrated_user");
+  EXPECT_EQ(storage->GetLastKeyVersion(gaia_id, SecurityDomainId::kChromeSync),
+            10);
+  EXPECT_EQ(storage->GetLastFailedRequestMillis(gaia_id,
+                                                SecurityDomainId::kChromeSync),
+            1122334455);
+
+  const PhysicalDeviceRecoveryFactorData factor_data =
+      storage->GetPhysicalDeviceRecoveryFactorData(gaia_id);
+  EXPECT_EQ(factor_data.private_key_material(), "migrated_private_key");
+  EXPECT_TRUE(storage->IsRecoveryFactorRegistered(
+      gaia_id, SecurityDomainId::kChromeSync,
+      LocalRecoveryFactorType::kPhysicalDevice));
+
+  // Verify subsequent reads load from `local_domains_data.pb` without
+  // re-migrating.
+  auto reloaded_storage = LocalDomainsStorage::Create(base_dir());
+  base::HistogramTester reload_histogram_tester;
+  reloaded_storage->ReadDataFromDisk();
+  reload_histogram_tester.ExpectUniqueSample(
+      "TrustedVault.FileReadStatus", TrustedVaultFileReadStatusForUMA::kSuccess,
+      1);
+}
+
+TEST_F(LocalDomainsStorageDiskTest,
+       ShouldApplyLegacyVersionUpgradesDuringMigration) {
+  // Create a version 0 legacy file with a single non-constant key, stale keys
+  // set to true, device_registered_version = 0, and deprecated obsolete flag.
+  trusted_vault_pb::LocalTrustedVault legacy_data;
+  legacy_data.set_data_version(0);
+  auto* user = legacy_data.add_user();
+  user->set_gaia_id("legacy_v0_user");
+  const std::vector<uint8_t> kNonConstantKey = {9, 8, 7};
+  AssignBytesToProtoString(kNonConstantKey,
+                           user->add_vault_key()->mutable_key_material());
+  user->set_keys_marked_as_stale_by_consumer(true);
+  user->mutable_local_device_registration_info()->set_device_registered(true);
+  user->mutable_local_device_registration_info()->set_device_registered_version(
+      0);
+  user->mutable_local_device_registration_info()
+      ->set_deprecated_last_registration_returned_local_data_obsolete(true);
+
+  ASSERT_TRUE(WriteLegacyTrustedVaultFile(legacy_data, legacy_file_path()));
+
+  auto storage = LocalDomainsStorage::Create(base_dir());
+  storage->ReadDataFromDisk();
+
+  const GaiaId gaia_id("legacy_v0_user");
+  // UpgradeToVersion1 injects the constant key before the single non-constant
+  // key.
+  EXPECT_THAT(storage->GetVaultKeys(gaia_id, SecurityDomainId::kChromeSync),
+              ElementsAre(GetConstantTrustedVaultKey(), kNonConstantKey));
+  // UpgradeToVersion2 resets keys_marked_as_stale_by_consumer to false.
+  EXPECT_FALSE(storage->GetKeysMarkedAsStaleByConsumer(
+      gaia_id, SecurityDomainId::kChromeSync));
+  // UpgradeToVersion3 resets device_registered to false when
+  // device_registered_version == 0.
+  EXPECT_FALSE(storage->IsRecoveryFactorRegistered(
+      gaia_id, SecurityDomainId::kChromeSync,
+      LocalRecoveryFactorType::kPhysicalDevice));
+  // UpgradeToVersion4 migrates
+  // deprecated_last_registration_returned_local_data_obsolete.
+  EXPECT_TRUE(storage->GetLastRegistrationReturnedLocalDataObsolete(
+      gaia_id, SecurityDomainId::kChromeSync));
 }
 
 }  // namespace

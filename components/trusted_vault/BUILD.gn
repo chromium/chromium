@@ -107,6 +107,7 @@ if (!is_android && !is_ios) {
       "download_keys_response_handler_unittest.cc",
       "legacy_standalone_trusted_vault_storage_adapter_unittest.cc",
       "legacy_standalone_trusted_vault_storage_unittest.cc",
+      "local_domains_storage_migration_unittest.cc",
       "local_domains_storage_unittest.cc",
       "physical_device_recovery_factor_unittest.cc",
       "proto_string_bytes_conversion_unittest.cc",
@@ -139,6 +140,7 @@ if (!is_android && !is_ios) {
       "//services/network:test_support",
       "//testing/gmock",
       "//testing/gtest",
+      "//third_party/fuzztest",
     ]
 
     if (is_mac) {

@@ -5,6 +5,7 @@
 #include "components/trusted_vault/legacy_standalone_trusted_vault_storage.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/base64.h"
 #include "base/files/file_util.h"
@@ -38,39 +39,27 @@ constexpr base::FilePath::CharType kPasskeysTrustedVaultFilename[] =
 
 constexpr int kCurrentLocalTrustedVaultVersion = 4;
 
-base::FilePath GetBackendFilePath(const base::FilePath& base_dir,
-                                  SecurityDomainId security_domain) {
-  switch (security_domain) {
-    case SecurityDomainId::kChromeSync:
-      return base_dir.Append(kChromeSyncTrustedVaultFilename);
-    case SecurityDomainId::kPasskeys:
-      return base_dir.Append(kPasskeysTrustedVaultFilename);
-  }
-  NOTREACHED();
-}
-
-trusted_vault_pb::LocalTrustedVault ReadDataFromDiskImpl(
+std::optional<trusted_vault_pb::LocalTrustedVault> ReadDataFromDiskImpl(
     const base::FilePath& file_path,
     SecurityDomainId security_domain_id) {
-  std::string file_content;
-
-  trusted_vault_pb::LocalTrustedVault data_proto;
   if (!base::PathExists(file_path)) {
     RecordTrustedVaultFileReadStatusForSecurityDomain(
         security_domain_id, TrustedVaultFileReadStatusForUMA::kNotFound);
-    return data_proto;
+    return std::nullopt;
   }
+
+  std::string file_content;
   if (!base::ReadFileToString(file_path, &file_content)) {
     RecordTrustedVaultFileReadStatusForSecurityDomain(
         security_domain_id, TrustedVaultFileReadStatusForUMA::kFileReadFailed);
-    return data_proto;
+    return std::nullopt;
   }
   trusted_vault_pb::LocalTrustedVaultFileContent file_proto;
   if (!file_proto.ParseFromString(file_content)) {
     RecordTrustedVaultFileReadStatusForSecurityDomain(
         security_domain_id,
         TrustedVaultFileReadStatusForUMA::kFileProtoDeserializationFailed);
-    return data_proto;
+    return std::nullopt;
   }
 
   if (MD5StringForTrustedVault(file_proto.serialized_local_trusted_vault()) !=
@@ -78,7 +67,7 @@ trusted_vault_pb::LocalTrustedVault ReadDataFromDiskImpl(
     RecordTrustedVaultFileReadStatusForSecurityDomain(
         security_domain_id,
         TrustedVaultFileReadStatusForUMA::kMD5DigestMismatch);
-    return data_proto;
+    return std::nullopt;
   }
 
   if (base::FeatureList::IsEnabled(kEnableTrustedVaultSHA256)) {
@@ -89,16 +78,17 @@ trusted_vault_pb::LocalTrustedVault ReadDataFromDiskImpl(
       RecordTrustedVaultFileReadStatusForSecurityDomain(
           security_domain_id,
           TrustedVaultFileReadStatusForUMA::kSHA256DigestMismatch);
-      return data_proto;
+      return std::nullopt;
     }
   }
 
+  trusted_vault_pb::LocalTrustedVault data_proto;
   if (!data_proto.ParseFromString(
           file_proto.serialized_local_trusted_vault())) {
     RecordTrustedVaultFileReadStatusForSecurityDomain(
         security_domain_id,
         TrustedVaultFileReadStatusForUMA::kDataProtoDeserializationFailed);
-    return data_proto;
+    return std::nullopt;
   }
   RecordTrustedVaultFileReadStatusForSecurityDomain(
       security_domain_id, TrustedVaultFileReadStatusForUMA::kSuccess);
@@ -183,6 +173,41 @@ void UpgradeToVersion4(
   local_trusted_vault->set_data_version(4);
 }
 
+// Applies any pending version upgrades to `data`. Returns true if at least one
+// upgrade step was applied.
+bool UpgradeDataIfNeeded(trusted_vault_pb::LocalTrustedVault* data) {
+  CHECK(data);
+  if (data->user_size() == 0) {
+    // No data, nothing to upgrade.
+    data->set_data_version(kCurrentLocalTrustedVaultVersion);
+    return false;
+  }
+
+  bool upgraded = false;
+  if (data->data_version() == 0) {
+    UpgradeToVersion1(data);
+    upgraded = true;
+  }
+
+  if (data->data_version() == 1) {
+    UpgradeToVersion2(data);
+    upgraded = true;
+  }
+
+  if (data->data_version() == 2) {
+    UpgradeToVersion3(data);
+    upgraded = true;
+  }
+
+  if (data->data_version() == 3) {
+    UpgradeToVersion4(data);
+    upgraded = true;
+  }
+
+  CHECK_EQ(data->data_version(), kCurrentLocalTrustedVaultVersion);
+  return upgraded;
+}
+
 void WriteDataToDiskImpl(const trusted_vault_pb::LocalTrustedVault& data,
                          const base::FilePath& file_path,
                          SecurityDomainId security_domain_id) {
@@ -212,41 +237,23 @@ class DefaultFileAccess
  public:
   DefaultFileAccess(const base::FilePath& base_dir,
                     SecurityDomainId security_domain_id)
-      : file_path_(GetBackendFilePath(base_dir, security_domain_id)),
+      : file_path_(LegacyStandaloneTrustedVaultStorage::GetBackendFilePath(
+            base_dir,
+            security_domain_id)),
         security_domain_id_(security_domain_id) {}
   DefaultFileAccess(const DefaultFileAccess& other) = delete;
   DefaultFileAccess& operator=(const DefaultFileAccess& other) = delete;
   ~DefaultFileAccess() override = default;
 
   trusted_vault_pb::LocalTrustedVault ReadFromDisk() override {
-    auto data = ReadDataFromDiskImpl(file_path_, security_domain_id_);
+    trusted_vault_pb::LocalTrustedVault data =
+        ReadDataFromDiskImpl(file_path_, security_domain_id_)
+            .value_or(trusted_vault_pb::LocalTrustedVault());
 
-    if (data.user_size() == 0) {
-      // No data, set the current version and omit writing the file.
-      data.set_data_version(kCurrentLocalTrustedVaultVersion);
-    }
-
-    if (data.data_version() == 0) {
-      UpgradeToVersion1(&data);
+    if (UpgradeDataIfNeeded(&data)) {
+      // Only write the file if an upgrade was performed.
       WriteToDisk(data);
     }
-
-    if (data.data_version() == 1) {
-      UpgradeToVersion2(&data);
-      WriteToDisk(data);
-    }
-
-    if (data.data_version() == 2) {
-      UpgradeToVersion3(&data);
-      WriteToDisk(data);
-    }
-
-    if (data.data_version() == 3) {
-      UpgradeToVersion4(&data);
-      WriteToDisk(data);
-    }
-
-    CHECK_EQ(data.data_version(), kCurrentLocalTrustedVaultVersion);
 
     return data;
   }
@@ -262,11 +269,40 @@ class DefaultFileAccess
 
 }  // namespace
 
+// static
 std::unique_ptr<LegacyStandaloneTrustedVaultStorage>
 LegacyStandaloneTrustedVaultStorage::CreateForTesting(
     std::unique_ptr<FileAccess> file_access) {
   return base::WrapUnique(
       new LegacyStandaloneTrustedVaultStorage(std::move(file_access)));
+}
+
+// static
+base::FilePath LegacyStandaloneTrustedVaultStorage::GetBackendFilePath(
+    const base::FilePath& base_dir,
+    SecurityDomainId security_domain_id) {
+  switch (security_domain_id) {
+    case SecurityDomainId::kChromeSync:
+      return base_dir.Append(kChromeSyncTrustedVaultFilename);
+    case SecurityDomainId::kPasskeys:
+      return base_dir.Append(kPasskeysTrustedVaultFilename);
+  }
+  NOTREACHED();
+}
+
+// static
+std::optional<trusted_vault_pb::LocalTrustedVault>
+LegacyStandaloneTrustedVaultStorage::ReadDataForMigration(
+    const base::FilePath& base_dir,
+    SecurityDomainId security_domain_id) {
+  std::optional<trusted_vault_pb::LocalTrustedVault> data =
+      ReadDataFromDiskImpl(GetBackendFilePath(base_dir, security_domain_id),
+                           security_domain_id);
+  if (!data.has_value()) {
+    return std::nullopt;
+  }
+  UpgradeDataIfNeeded(&data.value());
+  return data;
 }
 
 LegacyStandaloneTrustedVaultStorage::LegacyStandaloneTrustedVaultStorage(

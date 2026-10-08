@@ -13,3 +13,9 @@ include_rules = [
   "+third_party/boringssl",
   "+third_party/libxml/chromium",
 ]
+
+specific_include_rules = {
+  ".*_unittest\\.cc": [
+    "+third_party/fuzztest/src/fuzztest/fuzztest.h",
+  ],
+}
