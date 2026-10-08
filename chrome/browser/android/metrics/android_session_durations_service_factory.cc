@@ -67,10 +67,11 @@ void AndroidSessionDurationsServiceFactory::OnAppEnterBackground(
 AndroidSessionDurationsServiceFactory::AndroidSessionDurationsServiceFactory()
     : ProfileKeyedServiceFactory(
           "AndroidSessionDurationsService",
-          // Lifetime metric is not recorded for non-incognito off the record
-          // profiles.
+          // Lifetime metric is only recorded for Regular, Incognito, and
+          // Isolated profiles.
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
+              .WithIsolatedMode(ProfileSelection::kOwnInstance)
               .WithGuest(ProfileSelection::kOriginalOnly)
               .WithSystem(ProfileSelection::kOriginalOnly)
               .Build()) {
@@ -86,13 +87,23 @@ std::unique_ptr<KeyedService>
 AndroidSessionDurationsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  if (profile->IsOffTheRecord() && !profile->IsIncognitoProfile())
+  if (profile->IsOffTheRecord() &&
+      !profile->IsPrimaryOTRProfileWithRegularParent()) {
     return nullptr;
+  }
 
   std::unique_ptr<AndroidSessionDurationsService> service =
       std::make_unique<AndroidSessionDurationsService>();
-  if (profile->IsIncognitoProfile()) {
-    service->InitializeForIncognitoProfile();
+  if (profile->IsPrimaryOTRProfileWithRegularParent()) {
+    AndroidSessionDurationsService::OffTheRecordProfileType
+        off_the_record_profile_type =
+            profile->IsEnterpriseIsolatedModeProfile()
+                ? AndroidSessionDurationsService::OffTheRecordProfileType::
+                      kIsolated
+                : AndroidSessionDurationsService::OffTheRecordProfileType::
+                      kIncognito;
+    service->InitializeForIncognitoAndIsolatedProfile(
+        off_the_record_profile_type);
   } else {
     service->InitializeForRegularProfile(
         profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile),

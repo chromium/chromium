@@ -37,11 +37,11 @@ class ProfileMetricsService;
 // is defined as the time spent with the application in foreground (the time
 // duration between the application enters foreground until the application
 // enters background).
-// For Incognito profiles, the session is defined as the time between the
-// Incognito profile is created and when it is closed by the user or Chrome is
-// closed. In cases that an Incognito profile exists and the application dies in
-// the background, the time between the last time it went to background and the
-// dying time is not covered.
+// For Incognito and Isolated profiles, the session is defined as the time
+// between the profile is created and when it is closed by the user or Chrome
+// is closed. In cases that the profile exists and the application dies
+// in the background, the time between the last time it went to background and
+// the dying time is not covered.
 class AndroidSessionDurationsService : public KeyedService {
  public:
   AndroidSessionDurationsService();
@@ -54,7 +54,10 @@ class AndroidSessionDurationsService : public KeyedService {
       signin::IdentityManager* identity_manager,
       metrics::ProfileMetricsService* profile_metrics_service);
 
-  void InitializeForIncognitoProfile();
+  enum class OffTheRecordProfileType { kIncognito, kIsolated };
+
+  void InitializeForIncognitoAndIsolatedProfile(
+      OffTheRecordProfileType off_the_record_profile_type);
 
   AndroidSessionDurationsService(const AndroidSessionDurationsService&) =
       delete;

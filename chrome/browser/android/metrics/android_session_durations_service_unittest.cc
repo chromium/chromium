@@ -9,14 +9,22 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-const char resume_metric_name[] =
+constexpr char kResumeMetricName[] =
     "Profile.Incognito.ResumedAfterReportedDuration";
-const char background_metric_name[] =
+constexpr char kBackgroundMetricName[] =
     "Profile.Incognito.MovedToBackgroundAfterDuration";
+constexpr char kIsolatedResumeMetricName[] =
+    "Profile.Isolated.ResumedAfterReportedDuration";
+constexpr char kIsolatedBackgroundMetricName[] =
+    "Profile.Isolated.MovedToBackgroundAfterDuration";
+
+using OffTheRecordProfileType =
+    AndroidSessionDurationsService::OffTheRecordProfileType;
 
 }  // namespace
 
-class AndroidIncognitoSessionDurationsServiceTest : public testing::Test {
+class AndroidIncognitoSessionDurationsServiceTest
+    : public testing::TestWithParam<OffTheRecordProfileType> {
  public:
   AndroidIncognitoSessionDurationsServiceTest() = default;
 
@@ -26,85 +34,122 @@ class AndroidIncognitoSessionDurationsServiceTest : public testing::Test {
       const AndroidIncognitoSessionDurationsServiceTest&) = delete;
 
   ~AndroidIncognitoSessionDurationsServiceTest() override = default;
+
+  const char* GetResumeMetricName() const {
+    return GetParam() == OffTheRecordProfileType::kIsolated
+               ? kIsolatedResumeMetricName
+               : kResumeMetricName;
+  }
+
+  const char* GetBackgroundMetricName() const {
+    return GetParam() == OffTheRecordProfileType::kIsolated
+               ? kIsolatedBackgroundMetricName
+               : kBackgroundMetricName;
+  }
+
+  const char* GetOtherResumeMetricName() const {
+    return GetParam() == OffTheRecordProfileType::kIsolated
+               ? kResumeMetricName
+               : kIsolatedResumeMetricName;
+  }
+
+  const char* GetOtherBackgroundMetricName() const {
+    return GetParam() == OffTheRecordProfileType::kIsolated
+               ? kBackgroundMetricName
+               : kIsolatedBackgroundMetricName;
+  }
 };
 
-TEST_F(AndroidIncognitoSessionDurationsServiceTest, RegularIncognitoClose) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         AndroidIncognitoSessionDurationsServiceTest,
+                         testing::Values(OffTheRecordProfileType::kIncognito,
+                                         OffTheRecordProfileType::kIsolated));
+
+TEST_P(AndroidIncognitoSessionDurationsServiceTest, RegularIncognitoClose) {
   base::HistogramTester histograms;
 
   {
     // Start service.
     auto service = std::make_unique<AndroidSessionDurationsService>();
-    service->InitializeForIncognitoProfile();
+    service->InitializeForIncognitoAndIsolatedProfile(GetParam());
 
-    histograms.ExpectTotalCount(resume_metric_name, 0);
-    histograms.ExpectTotalCount(background_metric_name, 0);
+    histograms.ExpectTotalCount(GetResumeMetricName(), 0);
+    histograms.ExpectTotalCount(GetBackgroundMetricName(), 0);
 
     // Close service (happens when Incognito profile is properly closed).
     service->Shutdown();
   }
 
   // Check after service shutdown and destruction.
-  histograms.ExpectTotalCount(resume_metric_name, 0);
-  histograms.ExpectBucketCount(background_metric_name, 0, 1);
+  histograms.ExpectTotalCount(GetResumeMetricName(), 0);
+  histograms.ExpectBucketCount(GetBackgroundMetricName(), 0, 1);
+  histograms.ExpectTotalCount(GetOtherResumeMetricName(), 0);
+  histograms.ExpectTotalCount(GetOtherBackgroundMetricName(), 0);
 }
 
-TEST_F(AndroidIncognitoSessionDurationsServiceTest, DieInBackground) {
+TEST_P(AndroidIncognitoSessionDurationsServiceTest, DieInBackground) {
   base::HistogramTester histograms;
 
   {
     // Start service.
     auto service = std::make_unique<AndroidSessionDurationsService>();
-    service->InitializeForIncognitoProfile();
+    service->InitializeForIncognitoAndIsolatedProfile(GetParam());
 
-    histograms.ExpectTotalCount(resume_metric_name, 0);
-    histograms.ExpectTotalCount(background_metric_name, 0);
+    histograms.ExpectTotalCount(GetResumeMetricName(), 0);
+    histograms.ExpectTotalCount(GetBackgroundMetricName(), 0);
 
     // Go background.
     service->OnAppEnterBackground(base::TimeDelta());
-    histograms.ExpectTotalCount(resume_metric_name, 0);
-    histograms.ExpectBucketCount(background_metric_name, 0, 1);
+    histograms.ExpectTotalCount(GetResumeMetricName(), 0);
+    histograms.ExpectBucketCount(GetBackgroundMetricName(), 0, 1);
   }
 
   // Check again after service destruction.
-  histograms.ExpectTotalCount(resume_metric_name, 0);
-  histograms.ExpectTotalCount(background_metric_name, 1);
+  histograms.ExpectTotalCount(GetResumeMetricName(), 0);
+  histograms.ExpectTotalCount(GetBackgroundMetricName(), 1);
+  histograms.ExpectTotalCount(GetOtherResumeMetricName(), 0);
+  histograms.ExpectTotalCount(GetOtherBackgroundMetricName(), 0);
 }
 
-TEST_F(AndroidIncognitoSessionDurationsServiceTest, DoubleForeground) {
+TEST_P(AndroidIncognitoSessionDurationsServiceTest, DoubleForeground) {
   base::HistogramTester histograms;
 
   // Start service and move to foreground and expect no recording.
   auto service = std::make_unique<AndroidSessionDurationsService>();
-  service->InitializeForIncognitoProfile();
+  service->InitializeForIncognitoAndIsolatedProfile(GetParam());
 
   service->OnAppEnterForeground(base::TimeTicks());
-  histograms.ExpectTotalCount(resume_metric_name, 0);
-  histograms.ExpectTotalCount(background_metric_name, 0);
+  histograms.ExpectTotalCount(GetResumeMetricName(), 0);
+  histograms.ExpectTotalCount(GetBackgroundMetricName(), 0);
+  histograms.ExpectTotalCount(GetOtherResumeMetricName(), 0);
+  histograms.ExpectTotalCount(GetOtherBackgroundMetricName(), 0);
 }
 
-TEST_F(AndroidIncognitoSessionDurationsServiceTest, MultipleStateChange) {
+TEST_P(AndroidIncognitoSessionDurationsServiceTest, MultipleStateChange) {
   base::HistogramTester histograms;
 
   auto service = std::make_unique<AndroidSessionDurationsService>();
-  service->InitializeForIncognitoProfile();
+  service->InitializeForIncognitoAndIsolatedProfile(GetParam());
 
   // Go background.
   service->OnAppEnterBackground(base::TimeDelta());
-  histograms.ExpectTotalCount(resume_metric_name, 0);
-  histograms.ExpectBucketCount(background_metric_name, 0, 1);
+  histograms.ExpectTotalCount(GetResumeMetricName(), 0);
+  histograms.ExpectBucketCount(GetBackgroundMetricName(), 0, 1);
 
   // Go foreground.
   service->OnAppEnterForeground(base::TimeTicks());
-  histograms.ExpectBucketCount(resume_metric_name, 0, 1);
+  histograms.ExpectBucketCount(GetResumeMetricName(), 0, 1);
 
   // Assume session start was 1 hour ago and go background.
-  service->SetSessionStartTimeForTesting(base::Time::Now() -
-                                         base::Seconds(60) * 60);
+  service->SetSessionStartTimeForTesting(base::Time::Now() - base::Hours(1));
   service->OnAppEnterBackground(base::TimeDelta());
-  histograms.ExpectBucketCount(background_metric_name, 60, 1);
+  histograms.ExpectBucketCount(GetBackgroundMetricName(), 60, 1);
 
   // Go foreground.
   service->OnAppEnterForeground(base::TimeTicks());
-  histograms.ExpectBucketCount(resume_metric_name, 60, 1);
-  histograms.ExpectTotalCount(background_metric_name, 2);
+  histograms.ExpectBucketCount(GetResumeMetricName(), 60, 1);
+  histograms.ExpectTotalCount(GetBackgroundMetricName(), 2);
+
+  histograms.ExpectTotalCount(GetOtherResumeMetricName(), 0);
+  histograms.ExpectTotalCount(GetOtherBackgroundMetricName(), 0);
 }

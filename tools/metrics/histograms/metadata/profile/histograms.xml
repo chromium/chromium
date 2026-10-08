@@ -291,6 +291,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Profile.Isolated.MovedToBackgroundAfterDuration"
+    units="minutes" expires_after="2027-03-21">
+  <owner>szpotekagata@google.com</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    This histogram records the duration of an Isolated session on Android, when
+    it goes to background or is closed by the user. The session duration is
+    considered from when the Isolated profile is created.
+  </summary>
+</histogram>
+
+<histogram name="Profile.Isolated.ResumedAfterReportedDuration" units="minutes"
+    expires_after="2027-03-21">
+  <owner>szpotekagata@google.com</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    When Chrome comes back to foreground on Android and it already has an
+    Isolated session, this histogram records the last duration time reported by
+    'Profile.Isolated.MovedToBackgroundAfterDuration' metric. The subtraction of
+    these two histograms can give a histogram of Isolated session duration.
+  </summary>
+</histogram>
+
 <histogram name="Profile.KeepAliveLeakAtShutdown" enum="ProfileKeepAliveOrigin"
     expires_after="2027-03-14">
   <owner>nicolaso@chromium.org</owner>
