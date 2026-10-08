@@ -88,6 +88,7 @@ source_set("coordinator") {
     "//base",
     "//components/browser_sync",
     "//components/history/core/browser",
+    "//components/sync_device_info",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/history/ui_bundled/public",
@@ -102,6 +103,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/sharing/ui_bundled",
     "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
     "//ios/chrome/common/ui/favicon:favicon_constants",
   ]
   frameworks = [

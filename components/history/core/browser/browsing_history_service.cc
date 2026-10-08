@@ -12,6 +12,8 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -29,7 +31,11 @@
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/protocol/history_delete_directive_specifics.pb.h"
+#include "components/sync/service/sync_user_settings.h"
+#include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/device_name_util.h"
 
 namespace history {
 
@@ -160,21 +166,25 @@ BrowsingHistoryService::QueryResultsInfo::~QueryResultsInfo() = default;
 BrowsingHistoryService::BrowsingHistoryService(
     BrowsingHistoryDriver* driver,
     HistoryService* local_history,
-    syncer::SyncService* sync_service)
+    syncer::SyncService* sync_service,
+    syncer::DeviceInfoTracker* device_info_tracker)
     : BrowsingHistoryService(driver,
                              local_history,
                              sync_service,
-                             std::make_unique<base::OneShotTimer>()) {}
+                             std::make_unique<base::OneShotTimer>(),
+                             device_info_tracker) {}
 
 BrowsingHistoryService::BrowsingHistoryService(
     BrowsingHistoryDriver* driver,
     HistoryService* local_history,
     syncer::SyncService* sync_service,
-    std::unique_ptr<base::OneShotTimer> web_history_timer)
+    std::unique_ptr<base::OneShotTimer> web_history_timer,
+    syncer::DeviceInfoTracker* device_info_tracker)
     : web_history_timer_(std::move(web_history_timer)),
       driver_(driver),
       local_history_(local_history),
       sync_service_(sync_service),
+      device_info_tracker_(device_info_tracker),
       clock_(new base::DefaultClock()) {
   DCHECK(driver_);
 
@@ -220,6 +230,7 @@ void BrowsingHistoryService::OnStateChanged(syncer::SyncService* sync) {
 
 void BrowsingHistoryService::OnSyncShutdown(syncer::SyncService* sync) {
   sync_service_observation_.Reset();
+  device_info_tracker_ = nullptr;
 }
 
 void BrowsingHistoryService::WebHistoryTimeout(
@@ -1066,6 +1077,7 @@ void BrowsingHistoryService::HistoryServiceBeingDeleted(
   // not dangle.
   history_service_observation_.Reset();
   local_history_ = nullptr;
+  device_info_tracker_ = nullptr;
 }
 
 void BrowsingHistoryService::OnWebHistoryDeleted() {
@@ -1074,6 +1086,38 @@ void BrowsingHistoryService::OnWebHistoryDeleted() {
   if (!has_pending_delete_request_) {
     driver_->HistoryDeleted();
   }
+}
+
+std::vector<BrowsingHistoryService::ClientGroup>
+BrowsingHistoryService::GetAllSyncedClientsGroupedByName() const {
+  if (!base::FeatureList::IsEnabled(history::kBrowsingHistoryFilterByDevice)) {
+    return {};
+  }
+
+  if (!device_info_tracker_) {
+    return {};
+  }
+
+  if (!sync_service_ ||
+      !(sync_service_->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kHistory))) {
+    return {};
+  }
+
+  std::vector<const syncer::DeviceInfo*> synced_devices =
+      device_info_tracker_->GetAllChromeDeviceInfo();
+
+  base::flat_map<std::string, std::vector<std::string>> uniquely_named_groups;
+
+  for (const syncer::DeviceInfo* device_info : synced_devices) {
+    uniquely_named_groups[syncer::GetDeviceDisplayName(device_info)].push_back(
+        device_info->guid());
+  }
+
+  return base::ToVector(uniquely_named_groups, [](auto& pair) {
+    return ClientGroup{.name = std::move(pair.first),
+                       .client_ids = std::move(pair.second)};
+  });
 }
 
 }  // namespace history

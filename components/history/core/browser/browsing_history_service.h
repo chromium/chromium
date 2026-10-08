@@ -30,6 +30,7 @@
 #include "components/history/core/browser/web_history_service_observer.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
+#include "components/sync_device_info/device_info_tracker.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/gurl.h"
 
@@ -145,9 +146,16 @@ class BrowsingHistoryService : public HistoryServiceObserver,
     bool sync_timed_out = false;
   };
 
+  // Used to group sync IDs of clients that share a name.
+  struct ClientGroup {
+    std::string name;
+    std::vector<std::string> client_ids;
+  };
+
   BrowsingHistoryService(BrowsingHistoryDriver* driver,
                          HistoryService* local_history,
-                         syncer::SyncService* sync_service);
+                         syncer::SyncService* sync_service,
+                         syncer::DeviceInfoTracker* device_info_tracker);
 
   BrowsingHistoryService(const BrowsingHistoryService&) = delete;
   BrowsingHistoryService& operator=(const BrowsingHistoryService&) = delete;
@@ -179,6 +187,10 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   // the actual implementation.
   void RemoveVisits(const std::vector<HistoryEntry>& items);
 
+  // Returns synced clients deduplicated by name (mapping each name to its list
+  // of sync IDs).
+  virtual std::vector<ClientGroup> GetAllSyncedClientsGroupedByName() const;
+
   // SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
   void OnSyncShutdown(syncer::SyncService* sync) override;
@@ -188,7 +200,8 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   BrowsingHistoryService(BrowsingHistoryDriver* driver,
                          HistoryService* local_history,
                          syncer::SyncService* sync_service,
-                         std::unique_ptr<base::OneShotTimer> web_history_timer);
+                         std::unique_ptr<base::OneShotTimer> web_history_timer,
+                         syncer::DeviceInfoTracker* device_info_tracker);
   // Should be used only for tests when mocking the service.
   BrowsingHistoryService();
 
@@ -341,6 +354,8 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   raw_ptr<HistoryService, DanglingUntriaged> local_history_;
 
   raw_ptr<syncer::SyncService, DanglingUntriaged> sync_service_;
+
+  raw_ptr<syncer::DeviceInfoTracker> device_info_tracker_ = nullptr;
 
   // The clock used to vend times.
   std::unique_ptr<base::Clock> clock_;

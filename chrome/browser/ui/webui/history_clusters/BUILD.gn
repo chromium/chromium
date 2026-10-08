@@ -32,6 +32,7 @@ source_set("history_clusters") {
       "//components/history/core/common",
       "//components/history_clusters/core",
       "//components/page_image_service",
+      "//components/sync_device_info",
       "//mojo/public/cpp/bindings",
       "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
     ]

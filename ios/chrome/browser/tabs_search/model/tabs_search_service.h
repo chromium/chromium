@@ -44,6 +44,7 @@ class SyncedSessions;
 }  // namespace synced_sessions
 
 namespace syncer {
+class DeviceInfoTracker;
 class SyncService;
 }  // namespace syncer
 
@@ -66,7 +67,8 @@ class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
                     sessions::TabRestoreService* restore_service,
                     sync_sessions::SessionSyncService* session_sync_service,
                     history::HistoryService* history_service,
-                    WebHistoryServiceGetter web_history_service_getter);
+                    WebHistoryServiceGetter web_history_service_getter,
+                    syncer::DeviceInfoTracker* device_info_tracker);
   ~TabsSearchService() override;
 
   // A container to store matched WebStates and TabGroups with a reference to
@@ -161,6 +163,7 @@ class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
   raw_ptr<sync_sessions::SessionSyncService> session_sync_service_;
   raw_ptr<history::HistoryService> history_service_;
   WebHistoryServiceGetter web_history_service_getter_;
+  raw_ptr<syncer::DeviceInfoTracker> device_info_tracker_;
 
   // The most recent search history term.
   std::u16string ongoing_history_search_term_;

@@ -36,7 +36,8 @@ TabsSearchService::TabsSearchService(
     sessions::TabRestoreService* restore_service,
     sync_sessions::SessionSyncService* session_sync_service,
     history::HistoryService* history_service,
-    WebHistoryServiceGetter web_history_service_getter)
+    WebHistoryServiceGetter web_history_service_getter,
+    syncer::DeviceInfoTracker* device_info_tracker)
     : is_off_the_record_(is_off_the_record),
       browser_list_(browser_list),
       identity_manager_(identity_manager),
@@ -44,7 +45,8 @@ TabsSearchService::TabsSearchService(
       restore_service_(restore_service),
       session_sync_service_(session_sync_service),
       history_service_(history_service),
-      web_history_service_getter_(web_history_service_getter) {
+      web_history_service_getter_(web_history_service_getter),
+      device_info_tracker_(device_info_tracker) {
   DCHECK(browser_list_);
 
   // Those services are only used if not off-the-record, so allow them to
@@ -172,7 +174,8 @@ void TabsSearchService::SearchHistory(
 
     browsing_history_service_ =
         std::make_unique<history::BrowsingHistoryService>(
-            history_driver_.get(), history_service_.get(), sync_service_.get());
+            history_driver_.get(), history_service_.get(), sync_service_.get(),
+            device_info_tracker_.get());
   }
 
   ongoing_history_search_term_ = term;

@@ -7,6 +7,7 @@
 #import "components/history/core/browser/browsing_history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/sync/service/sync_service.h"
+#import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/history/model/web_history_service_factory.h"
 #import "ios/chrome/browser/history/ui_bundled/base_history_coordinator+subclassing.h"
@@ -24,6 +25,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
+#import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
 namespace {
@@ -79,11 +81,15 @@ history::WebHistoryService* WebHistoryServiceGetter(
   _browsingHistoryDriver = std::make_unique<IOSBrowsingHistoryDriver>(
       base::BindRepeating(&WebHistoryServiceGetter, self.profile->AsWeakPtr()),
       _browsingHistoryDriverDelegate.get());
+  auto* device_info_service =
+      DeviceInfoSyncServiceFactory::GetForProfile(self.profile);
   _browsingHistoryService = std::make_unique<history::BrowsingHistoryService>(
       _browsingHistoryDriver.get(),
       ios::HistoryServiceFactory::GetForProfile(
           self.profile, ServiceAccessType::EXPLICIT_ACCESS),
-      SyncServiceFactory::GetForProfile(self.profile));
+      SyncServiceFactory::GetForProfile(self.profile),
+      device_info_service ? device_info_service->GetDeviceInfoTracker()
+                          : nullptr);
   self.viewController.historyService = _browsingHistoryService.get();
 
   self.viewController.presentationDelegate = self.presentationDelegate;

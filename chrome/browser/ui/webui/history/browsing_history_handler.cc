@@ -531,8 +531,12 @@ void BrowsingHistoryHandler::StartQueryHistory() {
       profile_, ServiceAccessType::EXPLICIT_ACCESS);
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_);
+  auto* device_info_service =
+      DeviceInfoSyncServiceFactory::GetForProfile(profile_);
   browsing_history_service_ = std::make_unique<BrowsingHistoryService>(
-      this, local_history, sync_service);
+      this, local_history, sync_service,
+      device_info_service ? device_info_service->GetDeviceInfoTracker()
+                          : nullptr);
 
   // 150 = RESULTS_PER_PAGE from chrome/browser/resources/history/constants.js
   SendHistoryQuery(150, std::string(), std::nullopt, true, true);
