@@ -179,32 +179,33 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     @VisibleForTesting static final int INVALID_TASK_ID = -1;
 
     /**
-     * Data record ("recipe") for rebuilding an active Undo or Redo {@link Snackbar} if the hosting
-     * {@link Activity} is destroyed and recreated while the snackbar is on screen.
+     * Data record ("recipe") for rebuilding an active Apply, Undo, or Redo {@link Snackbar} if the
+     * hosting {@link Activity} is destroyed and recreated while the snackbar is on screen.
      *
      * <p>Why this data type is needed:
      *
      * <ul>
-     *   <li>Applying or undoing an NTP theme calls {@link Activity#recreate()} (via {@link
-     *       NtpThemeStateProvider#notifyApplyThemeChanges()}) immediately after the Undo/Redo
-     *       snackbar is shown, which destroys the current {@link Activity}, its {@link
-     *       SnackbarManager}, and the live {@link Snackbar} UI view.
+     *   <li>Applying or undoing an NTP theme, or an incoming same-platform synced NTP background
+     *       completing its download, calls {@link Activity#recreate()} (via {@link
+     *       NtpThemeStateProvider#notifyApplyThemeChanges()}), which destroys the current {@link
+     *       Activity}, its {@link SnackbarManager}, and the live {@link Snackbar} UI view.
      *   <li>We cannot simply keep the live {@link Snackbar} instance across {@link
      *       Activity#recreate()} because its {@link SnackbarManager.SnackbarController} closure
      *       captures the destroyed {@link Activity}'s {@link Context} and {@link
      *       CrossDeviceSettingImporter} instance.
      *   <li>We also cannot rely on the new {@link Activity} re-running the import from scratch,
-     *       because {@link #applySettings} has already marked {@code CROSS_DEVICE_IMPORTED_*} as
-     *       {@code true} in {@link SharedPreferencesManager} and overwritten the user's prior
-     *       preferences/theme (`previousSettings`).
+     *       because {@link #showSnackbarAfterDialogs} has already marked {@code
+     *       CROSS_DEVICE_IMPORTED_*} as {@code true} in {@link SharedPreferencesManager} (and for
+     *       Undo/Redo, {@link #applySettings} has already overwritten the user's prior
+     *       preferences/theme).
      * </ul>
      *
      * <p>Lifecycle:
      *
      * <ul>
      *   <li>Stored on the current instance in {@link #mActivePendingSnackbar} alongside the live
-     *       {@link Snackbar} when {@link #showActionSnackbarAfterDialogs} shows an Undo or Redo
-     *       snackbar.
+     *       {@link Snackbar} when {@link #showActionSnackbarAfterDialogs} shows an Apply, Undo, or
+     *       Redo snackbar.
      *   <li>If the snackbar finishes normally on the current {@link Activity} (user clicks the
      *       action button or the timeout expires without an activity recreate), {@link
      *       #mActivePendingSnackbar} is discarded.
@@ -226,8 +227,11 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         public final int taskId;
 
         /**
-         * @param isRedo If true, this is a redo snackbar; otherwise, an undo snackbar.
-         * @param previousSettings The settings before the import was applied, or null if redo.
+         * @param isRedo If true, this is a redo snackbar; otherwise, an undo snackbar (when {@code
+         *     previousSettings != null}) or an apply snackbar (when {@code previousSettings ==
+         *     null}).
+         * @param previousSettings The settings before the import was applied, or null if apply or
+         *     redo.
          * @param settingsToApply The settings that will be applied.
          * @param hadThemeChange Whether the imported settings included a theme change.
          * @param nonNtp Whether only settings that affect non-NTP pages should be considered.
@@ -463,6 +467,8 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             settingsToApply = maybeUpdateSettingsWithDownloadedTheme(settingsToApply);
             showOfferUndoSnackbarAfterDialogs(
                     profile, previousSettings, settingsToApply, pending.nonNtp);
+        } else {
+            showOfferApplySnackbarAfterDialogs(profile, settingsToApply, pending.nonNtp);
         }
         return true;
     }
@@ -858,9 +864,8 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
      * @param onAction Callback invoked when the user clicks the snackbar action button.
      * @param nonNtp Whether this snackbar is scoped to non-NTP settings.
      * @param pendingSnackbar Backup state recipe for rebuilding this snackbar if the {@link
-     *     Activity} is recreated while it is showing, or {@code null} (used for the "Apply"
-     *     snackbar, which does not need a backup recipe because settings have not yet been marked
-     *     imported in {@link SharedPreferencesManager}).
+     *     Activity} is recreated while it is showing, or {@code null} if no valid task ID is
+     *     available.
      */
     private void showActionSnackbarAfterDialogs(
             @StringRes int messageResId,
@@ -916,8 +921,21 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         }
     }
 
-    private void showOfferApplySnackbarAfterDialogs(
+    @VisibleForTesting
+    void showOfferApplySnackbarAfterDialogs(
             Profile profile, SyncedSetupSettings settingsToApply, boolean nonNtp) {
+        int taskId = getTaskId();
+        Context contextToRebind = getContextForPendingSnackbar();
+        @Nullable PendingSnackbar pendingSnackbar =
+                taskId != INVALID_TASK_ID
+                        ? new PendingSnackbar(
+                                /* isRedo= */ false,
+                                /* previousSettings= */ null,
+                                settingsToApply.rebindContext(contextToRebind),
+                                /* hadThemeChange= */ false,
+                                nonNtp,
+                                taskId)
+                        : null;
         showActionSnackbarAfterDialogs(
                 R.string.synced_set_up_snackbar_ask_to_apply,
                 R.string.apply,
@@ -927,7 +945,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                     applyAndNotifySettingImport(profile, settingsToApply, nonNtp);
                 },
                 nonNtp,
-                /* pendingSnackbar= */ null);
+                pendingSnackbar);
     }
 
     @VisibleForTesting

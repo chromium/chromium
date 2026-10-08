@@ -472,6 +472,69 @@ public class CrossDeviceSettingImporterUnitTest {
     }
 
     @Test
+    public void testPendingSnackbar_recreateSurvival_applySnackbar() {
+        ActivityController<Activity> activityController =
+                Robolectric.buildActivity(Activity.class).setup();
+        Activity activity1 = activityController.get();
+        CrossDeviceSettingImporter importer1 =
+                new CrossDeviceSettingImporter(
+                        mActivityLifecycleDispatcher,
+                        mActivityTabSupplier,
+                        activity1,
+                        mModalDialogManagerSupplier,
+                        mSnackbarManagerSupplier);
+        when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION)).thenReturn(false);
+        SyncedSetupSettings toApply =
+                new SyncedSetupSettings(Map.of(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true));
+
+        importer1.askToApplySettingImportIfNeeded(mProfile, toApply, /* nonNtp= */ false);
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar initialSnackbar = mSnackbarCaptor.getValue();
+        assertEquals(
+                mActivity.getString(R.string.synced_set_up_snackbar_ask_to_apply),
+                initialSnackbar.getTextForTesting());
+
+        // Simulate Activity recreate (e.g. incoming Android-synced NTP background completing its
+        // download while the "Apply settings?" snackbar is showing).
+        activityController.recreate();
+        initialSnackbar.getController().onDismissNoAction(null);
+        importer1.destroy();
+
+        PendingSnackbar pending = CrossDeviceSettingImporter.getPendingSnackbarForTesting();
+        assertNotNull("Pending apply snackbar should be stored across recreate", pending);
+        assertFalse(pending.isRedo);
+        assertNull(pending.previousSettings);
+        assertEquals(toApply, pending.settingsToApply);
+        assertTrue(CrossDeviceSettingImporter.shouldCreateImporter());
+
+        Activity activity2 = activityController.get();
+        CrossDeviceSettingImporter importer2 =
+                new CrossDeviceSettingImporter(
+                        mActivityLifecycleDispatcher,
+                        mActivityTabSupplier,
+                        activity2,
+                        mModalDialogManagerSupplier,
+                        mSnackbarManagerSupplier);
+
+        importer2.onTabChangeOrGainFocus(mTab);
+
+        verify(mSnackbarManager, times(2)).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar restoredSnackbar = mSnackbarCaptor.getValue();
+        assertEquals(
+                mActivity.getString(R.string.synced_set_up_snackbar_ask_to_apply),
+                restoredSnackbar.getTextForTesting());
+        assertEquals(mActivity.getString(R.string.apply), restoredSnackbar.getActionText());
+
+        // Clicking Apply on the restored snackbar applies settings and shows the Undo snackbar.
+        restoredSnackbar.getController().onAction(null);
+        verify(mLocalPrefService).setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true);
+        verify(mSnackbarManager, times(3)).showSnackbar(mSnackbarCaptor.capture());
+        assertEquals(
+                mActivity.getString(R.string.undo), mSnackbarCaptor.getValue().getActionText());
+        importer2.destroy();
+    }
+
+    @Test
     public void testPendingSnackbar_differentTaskId_ignored() {
         when(mPrefService.isDefaultValuePreference(any())).thenReturn(true);
         CrossDeviceSettingImporter importer = initializeCrossDeviceSettingImporter();
