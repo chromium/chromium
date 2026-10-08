@@ -710,6 +710,33 @@ enum PinnedToolbarAction {
  kDivider, // A divider; not a clickable action.
 };
 
+// The status of the progress ring drawn around a pinned toolbar action
+// button's icon. Currently only the downloads button draws a progress ring.
+// Mirrors ActionItemProgressRingStatus in
+// //chrome/browser/ui/views/toolbar/download_button.h
+// (kIdle is omitted because idle is represented by a null
+// DownloadProgressRingState).
+enum DownloadProgressRingStatus {
+  // A static, solid ring is drawn. Used while the button is dormant, so that
+  // the ring doesn't have to be animated in browser windows the user isn't
+  // looking at.
+  kDormant,
+  // An indeterminate, continuously spinning ring is drawn.
+  kScanning,
+  // A determinate ring, filled according to `progress_percentage`, is drawn.
+  kDownloading,
+};
+
+// Describes the progress ring drawn around a pinned toolbar action button's
+// icon.
+struct DownloadProgressRingState {
+  DownloadProgressRingStatus status;
+
+  // How much of the ring to fill, in percent within [0, 100]. Only meaningful
+  // when `status` is kDownloading.
+  uint8? progress_percentage;
+};
+
 // The state of a pinned toolbar action button that should be displayed.
 struct PinnedToolbarActionState {
   // The action to invoke upon click of this button.
@@ -735,6 +762,10 @@ struct PinnedToolbarActionState {
 
   // The icon to display.
   IconHandle icon;
+
+  // The progress ring to draw around the icon, if any. Null if this action
+  // never draws a progress ring.
+  DownloadProgressRingState? progress_ring;
 };
 
 struct LocationBarState {

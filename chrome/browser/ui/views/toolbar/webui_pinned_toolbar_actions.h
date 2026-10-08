@@ -93,7 +93,11 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions,
   void RetryPostOrQueueAction(base::OnceClosure action,
                               BubbleAnchorResult result);
 
+  // Returns whether the downloads button is currently displayed.
+  bool IsDownloadButtonShowing();
+
   struct PendingAnchorRequest;
+  class WebUIDownloadButton;
 
   // Parent toolbar.
   const raw_ptr<WebUIToolbarControlDelegate> delegate_;
@@ -116,6 +120,8 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions,
   std::optional<actions::ActionId> active_context_menu_action_;
   // Pending requests for bubble anchors.
   std::list<std::unique_ptr<PendingAnchorRequest>> pending_anchor_requests_;
+  // Implements DownloadButton for the downloads button, when it's displayed.
+  const std::unique_ptr<WebUIDownloadButton> download_button_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_PINNED_TOOLBAR_ACTIONS_H_

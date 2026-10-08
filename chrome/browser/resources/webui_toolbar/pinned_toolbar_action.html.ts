@@ -22,6 +22,17 @@ export function getHtml(this: PinnedToolbarActionElement) {
     @pointerdown="${this.highlightTracker.onPointerdown}"
     @contextmenu="${this.onContextmenu_}">
 </cr-icon-button>
+${this.getProgressRingStatus_() ? html`
+  <svg class="progress-ring" aria-hidden="true"
+      status="${this.getProgressRingStatus_()}"
+      ?disabled="${!this.state.enabled}"
+      ?is-activated="${this.state.activated}">
+    <circle class="track" pathLength="100"></circle>
+    <circle class="fill" pathLength="100"
+        style="${this.getProgressRingFillStyle_() ?? nothing}">
+    </circle>
+  </svg>
+` : nothing}
 <div class="status-indicator" ?hidden="${!this.state.activated}"></div>
 <!--_html_template_end_-->`;
 }

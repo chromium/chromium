@@ -7,6 +7,7 @@ import 'chrome://webui-toolbar.top-chrome/app.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {BrowserProxyImpl, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {DownloadProgressRingStatus} from 'chrome://webui-toolbar.top-chrome/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
 suite('PinnedToolbarAction', function() {
   let action: any;
@@ -118,6 +119,62 @@ suite('PinnedToolbarAction', function() {
     };
     await microtasksFinished();
     assertEquals('false', button.getAttribute('draggable'));
+  });
+
+  test('Renders the progress ring', async () => {
+    // `action` is untyped, so hold the shadow root in a typed local to be able
+    // to use querySelector()'s type parameter.
+    const shadowRoot: ShadowRoot = action.shadowRoot;
+    const getRing = () =>
+        shadowRoot.querySelector<SVGElement>('.progress-ring');
+    const getFillDashArray = () =>
+        getRing()!.querySelector<SVGElement>('.fill')!.style.strokeDasharray;
+
+    // No ring is rendered unless the state asks for one.
+    assertEquals(null, getRing());
+
+    // DownloadProgressRingStatus.kDownloading
+    action.state = {
+      ...action.state,
+      progressRing: {
+        status: DownloadProgressRingStatus.kDownloading,
+        progressPercentage: 40,
+      },
+    };
+    await microtasksFinished();
+    assertEquals('downloading', getRing()!.getAttribute('status'));
+    assertEquals(40, parseFloat(getFillDashArray()));
+
+    // DownloadProgressRingStatus.kScanning. The percentage doesn't apply to
+    // indeterminate rings, so the dash pattern comes from the stylesheet.
+    action.state = {
+      ...action.state,
+      progressRing: {
+        status: DownloadProgressRingStatus.kScanning,
+        progressPercentage: null,
+      },
+    };
+    await microtasksFinished();
+    assertEquals('scanning', getRing()!.getAttribute('status'));
+    assertEquals('', getFillDashArray());
+
+    // DownloadProgressRingStatus.kDormant
+    action.state = {
+      ...action.state,
+      progressRing: {
+        status: DownloadProgressRingStatus.kDormant,
+        progressPercentage: null,
+      },
+    };
+    await microtasksFinished();
+    assertEquals('dormant', getRing()!.getAttribute('status'));
+
+    action.state = {
+      ...action.state,
+      progressRing: null,
+    };
+    await microtasksFinished();
+    assertEquals(null, getRing());
   });
 
   test('Sets draggable attribute based on poppedOut state', async () => {

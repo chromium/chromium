@@ -5,10 +5,13 @@
 #include "chrome/browser/ui/views/toolbar/webui_pinned_toolbar_actions.h"
 
 #include <algorithm>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ref.h"
 #include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -17,6 +20,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_ids.h"
+#include "chrome/browser/ui/views/toolbar/download_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
@@ -27,8 +31,29 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_provider.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_runner.h"
+
+namespace {
+
+toolbar_ui_api::mojom::DownloadProgressRingStatus ToMojoProgressRingStatus(
+    ActionItemProgressRingStatus status) {
+  switch (status) {
+    case ActionItemProgressRingStatus::kIdle:
+      NOTREACHED();
+    case ActionItemProgressRingStatus::kDormant:
+      return toolbar_ui_api::mojom::DownloadProgressRingStatus::kDormant;
+    case ActionItemProgressRingStatus::kScanning:
+      return toolbar_ui_api::mojom::DownloadProgressRingStatus::kScanning;
+    case ActionItemProgressRingStatus::kDownloading:
+      return toolbar_ui_api::mojom::DownloadProgressRingStatus::kDownloading;
+  }
+  NOTREACHED();
+}
+
+}  // namespace
 
 struct WebUIPinnedToolbarActions::PendingAnchorRequest {
   PendingAnchorRequest(actions::ActionId id,
@@ -49,11 +74,106 @@ WebUIPinnedToolbarActions::PendingAnchorRequest::PendingAnchorRequest(
 WebUIPinnedToolbarActions::PendingAnchorRequest::~PendingAnchorRequest() =
     default;
 
+// WebUI implementation of DownloadButton. The downloads button itself lives in
+// the renderer, so state changes are forwarded to it via OnActionsChanged().
+class WebUIPinnedToolbarActions::WebUIDownloadButton : public DownloadButton {
+ public:
+  explicit WebUIDownloadButton(WebUIPinnedToolbarActions& owner)
+      : owner_(owner) {}
+  WebUIDownloadButton(const WebUIDownloadButton&) = delete;
+  WebUIDownloadButton& operator=(const WebUIDownloadButton&) = delete;
+  ~WebUIDownloadButton() override = default;
+
+  // Returns the progress ring state to send to the renderer, or null if no
+  // ring should be drawn.
+  toolbar_ui_api::mojom::DownloadProgressRingStatePtr GetProgressRingState()
+      const {
+    if (ring_status_ == ActionItemProgressRingStatus::kIdle) {
+      return nullptr;
+    }
+    std::optional<uint8_t> progress_percentage;
+    if (ring_status_ == ActionItemProgressRingStatus::kDownloading) {
+      progress_percentage = static_cast<uint8_t>(progress_percentage_);
+    }
+    return toolbar_ui_api::mojom::DownloadProgressRingState::New(
+        ToMojoProgressRingStatus(ring_status_), progress_percentage);
+  }
+
+  // Clears the progress ring without notifying the renderer. Called when the
+  // downloads button stops being displayed so that a stale ring isn't drawn if
+  // it's displayed again, matching the Views toolbar, where a re-created
+  // button starts without a ring.
+  void ResetProgressRing() {
+    ring_status_ = ActionItemProgressRingStatus::kIdle;
+    progress_percentage_ = 0;
+  }
+
+  // DownloadButton:
+  bool IsShowing() const override { return owner_->IsDownloadButtonShowing(); }
+
+  SkColor GetColor(ui::ColorId color_id) const override {
+    return owner_->delegate_->GetView()->GetColorProvider()->GetColor(color_id);
+  }
+
+  void AnnounceAccessibleAlert(const std::u16string& text) override {
+    owner_->delegate_->GetView()->GetViewAccessibility().AnnounceText(text);
+  }
+
+  void UpdateProgressRing(ActionItemProgressRingStatus status,
+                          int progress_percentage) override {
+    // The percentage only matters for determinate rings. Ignore it otherwise
+    // to avoid needlessly updating the renderer.
+    if (status != ActionItemProgressRingStatus::kDownloading) {
+      progress_percentage = 0;
+    }
+    if (status == ring_status_ && progress_percentage == progress_percentage_) {
+      return;
+    }
+    ring_status_ = status;
+    progress_percentage_ = progress_percentage;
+    owner_->OnActionsChanged();
+  }
+
+  void UpdateBadge(bool is_active,
+                   int progress_download_count,
+                   SkColor text_color,
+                   SkColor background_color) override {
+    // TODO(https://crbug.com/474063115): Implement the badge for the WebUI
+    // toolbar.
+  }
+
+  gfx::Rect GetBoundsInScreen() const override {
+    ui::TrackedElement* element =
+        BrowserElements::From(owner_->delegate_->GetBrowser())
+            ->GetElement(webui_toolbar::ActionIdToElementIdentifier(
+                kActionShowDownloads));
+    return element ? element->GetScreenBounds() : gfx::Rect();
+  }
+
+  void SetElementIdentifier(ui::ElementIdentifier element_id) override {
+    // TODO(https://crbug.com/474063115): The WebUI downloads button has a fixed
+    // element identifier, so IPH anchored to `element_id` won't find it.
+  }
+
+  ActionItemProgressRingStatus GetProgressRingStatusForTesting() override {
+    return ring_status_;
+  }
+
+  views::ImageView* GetImageBadgeForTesting() override { return nullptr; }
+
+ private:
+  const raw_ref<WebUIPinnedToolbarActions> owner_;
+  ActionItemProgressRingStatus ring_status_ =
+      ActionItemProgressRingStatus::kIdle;
+  int progress_percentage_ = 0;
+};
+
 WebUIPinnedToolbarActions::WebUIPinnedToolbarActions(
     WebUIToolbarControlDelegate* delegate)
     : delegate_(delegate),
       model_(PinnedToolbarActionsModel::Get(
-          delegate_->GetBrowser()->GetProfile())) {}
+          delegate_->GetBrowser()->GetProfile())),
+      download_button_(std::make_unique<WebUIDownloadButton>(*this)) {}
 
 WebUIPinnedToolbarActions::~WebUIPinnedToolbarActions() = default;
 
@@ -107,6 +227,9 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
     if (auto element_id = webui_toolbar::ActionIdToElementIdentifier(id)) {
       state->element_id = element_id.GetName();
     }
+    if (id == kActionShowDownloads) {
+      state->progress_ring = download_button_->GetProgressRingState();
+    }
 
     ui::ImageModel image_model;
     if (actions::IsActionClass<actions::StatefulImageActionItem>(item)) {
@@ -145,6 +268,10 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
 
   for (actions::ActionId id : active_actions_) {
     add_state(id, /*highlighted=*/true);
+  }
+
+  if (!processed_actions.contains(kActionShowDownloads)) {
+    download_button_->ResetProgressRing();
   }
 
   int old_width = GetWidth();
@@ -279,9 +406,12 @@ void WebUIPinnedToolbarActions::RetryPostOrQueueAction(
 }
 
 DownloadButton* WebUIPinnedToolbarActions::GetDownloadButton() {
-  // TODO(https://crbug.com/474063115): Implement this.
-  NOTIMPLEMENTED();
-  return nullptr;
+  return IsDownloadButtonShowing() ? download_button_.get() : nullptr;
+}
+
+bool WebUIPinnedToolbarActions::IsDownloadButtonShowing() {
+  return IsActionPinnedOrPoppedOut(kActionShowDownloads) &&
+         ShouldDisplayAction(GetActionItemFor(kActionShowDownloads));
 }
 
 views::BubbleAnchor WebUIPinnedToolbarActions::GetBubbleAnchor(

@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/toolbar/download_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_pinned_toolbar_actions_test_base.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
@@ -561,6 +562,69 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
                   BrowserActions::From(browser())->root_action_item())
       ->SetProperty(kActionItemUnderlineIndicatorKey, false);
   verify_activated(false);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
+                       ProgressRingRendering) {
+  actions::ActionId action_id = kActionShowDownloads;
+  toolbar_ui_api::mojom::PinnedToolbarAction mojom_action =
+      toolbar_ui_api::mojom::PinnedToolbarAction::kShowDownloads;
+
+  PinAction(action_id, mojom_action);
+
+  DownloadButton* download_button = GetWebUIToolbarWebView(browser())
+                                        ->GetPinnedToolbarActions()
+                                        ->GetDownloadButton();
+  ASSERT_TRUE(download_button);
+
+  // Describes the rendered ring as "<status>:<percent filled in>", or "none"
+  // if no ring is rendered at all.
+  auto verify_ring = [&](std::string_view expected) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return EvalJsOnPinnedAction(
+                 mojom_action,
+                 "const ring = "
+                 "    actionEl.shadowRoot.querySelector('.progress-ring'); "
+                 "if (!ring) { return 'none'; } "
+                 "const fill = ring.querySelector('.fill'); "
+                 "return ring.getAttribute('status') + ':' + "
+                 "    (parseFloat(fill.style.strokeDasharray) || 0);")
+                 .ExtractString() == expected;
+    }));
+  };
+
+  // No ring is rendered while idle.
+  verify_ring("none");
+
+  download_button->UpdateProgressRing(
+      ActionItemProgressRingStatus::kDownloading, 40);
+  verify_ring("downloading:40");
+
+  // The percentage doesn't apply to indeterminate rings.
+  download_button->UpdateProgressRing(ActionItemProgressRingStatus::kScanning,
+                                      40);
+  verify_ring("scanning:0");
+
+  download_button->UpdateProgressRing(ActionItemProgressRingStatus::kDormant,
+                                      40);
+  verify_ring("dormant:0");
+
+  // Going back to idle removes the ring.
+  download_button->UpdateProgressRing(ActionItemProgressRingStatus::kIdle, 0);
+  verify_ring("none");
+
+  // Unpinning the downloads button also resets the progress ring.
+  download_button->UpdateProgressRing(
+      ActionItemProgressRingStatus::kDownloading, 40);
+  verify_ring("downloading:40");
+  UnpinAction(action_id, mojom_action);
+  PinAction(action_id, mojom_action);
+  verify_ring("none");
+  EXPECT_EQ(GetWebUIToolbarWebView(browser())
+                ->GetPinnedToolbarActions()
+                ->GetDownloadButton()
+                ->GetProgressRingStatusForTesting(),
+            ActionItemProgressRingStatus::kIdle);
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, StateAccessors) {

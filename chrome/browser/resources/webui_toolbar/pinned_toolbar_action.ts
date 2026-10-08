@@ -16,16 +16,16 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {IconTable} from '/shared/icon_table.js';
 import {getContextMenuPosition, getContextMenuSourceType} from '/shared/toolbar_button.js';
 import type {OverflowMenuItem} from '/shared/toolbar_ui_api.mojom-webui.js';
-import {PinnedToolbarAction} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
+import {DownloadProgressRingStatus, PinnedToolbarAction} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {PinnedToolbarActionState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {ContextMenuType} from './browser_proxy.js';
 import {OverflowableToolbarActionMixin} from './overflowable_toolbar_action_mixin.js';
+import {getCss} from './pinned_toolbar_action.css.js';
 import {getHtml} from './pinned_toolbar_action.html.js';
 import {ToolbarActionMixin} from './toolbar_action_mixin.js';
-import {getCss} from './toolbar_button.css.js';
 
 const initialState: PinnedToolbarActionState = {
   action: PinnedToolbarAction.kUnspecified,
@@ -36,6 +36,7 @@ const initialState: PinnedToolbarActionState = {
   accessibilityText: '',
   elementId: null,
   icon: {handleId: 0n},
+  progressRing: null,
 };
 
 const PinnedToolbarActionElementBase = OverflowableToolbarActionMixin(
@@ -122,6 +123,42 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase {
       this.browserProxy_.toolbarUIHandler.invokePinnedToolbarAction(
           this.state.action);
     }
+  }
+
+  /**
+   * Returns the value of the progress ring's `status` attribute, or undefined
+   * if no ring should be drawn.
+   */
+  protected getProgressRingStatus_(): string|undefined {
+    switch (this.state.progressRing?.status) {
+      case DownloadProgressRingStatus.kDormant:
+        return 'dormant';
+      case DownloadProgressRingStatus.kScanning:
+        return 'scanning';
+      case DownloadProgressRingStatus.kDownloading:
+        return 'downloading';
+      default:
+        return undefined;
+    }
+  }
+
+  /**
+   * Returns the portion of the ring to fill in. The ring's circles declare
+   * `pathLength="100"`, so the dash lengths are in percent. Only applies to
+   * determinate (downloading) rings; the scanning and dormant dash patterns
+   * are set in CSS.
+   */
+  protected getProgressRingFillStyle_(): string|undefined {
+    const progressRing = this.state.progressRing;
+    if (!progressRing ||
+        progressRing.status !== DownloadProgressRingStatus.kDownloading ||
+        progressRing.progressPercentage === null ||
+        progressRing.progressPercentage === undefined) {
+      return undefined;
+    }
+    const percentage =
+        Math.max(0, Math.min(100, progressRing.progressPercentage));
+    return `stroke-dasharray: ${percentage} 100;`;
   }
 
   private getContextMenuType_(): ContextMenuType {

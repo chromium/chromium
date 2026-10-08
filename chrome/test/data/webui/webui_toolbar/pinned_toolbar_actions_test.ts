@@ -95,6 +95,7 @@ suite('PinnedToolbarActions', function() {
         accessibilityText: '',
         elementId: 'action-1',
         icon: {handleId: 1n},
+        progressRing: null,
       },
       {
         action: 2,  // kShowPasswordsBubbleOrPage
@@ -105,6 +106,7 @@ suite('PinnedToolbarActions', function() {
         accessibilityText: '',
         elementId: 'action-2',
         icon: {handleId: 2n},
+        progressRing: null,
       },
       {
         action: PinnedToolbarAction.kDivider,
@@ -115,6 +117,7 @@ suite('PinnedToolbarActions', function() {
         accessibilityText: '',
         elementId: '',
         icon: {handleId: 0n},
+        progressRing: null,
       },
     ];
     await microtasksFinished();
@@ -131,6 +134,7 @@ suite('PinnedToolbarActions', function() {
         accessibilityText: '',
         elementId: 'action-1',
         icon: {handleId: 1n},
+        progressRing: null,
       },
       {
         action: PinnedToolbarAction.kDivider,
@@ -141,6 +145,7 @@ suite('PinnedToolbarActions', function() {
         accessibilityText: '',
         elementId: '',
         icon: {handleId: 0n},
+        progressRing: null,
       },
       {
         action: 3,
@@ -151,6 +156,7 @@ suite('PinnedToolbarActions', function() {
         accessibilityText: '',
         elementId: 'action-3',
         icon: {handleId: 3n},
+        progressRing: null,
       },
     ];
     await microtasksFinished();
@@ -227,6 +233,7 @@ suite('PinnedToolbarActions', function() {
         accessibilityText: '',
         elementId: 'action-1',
         icon: {handleId: 1n},
+        progressRing: null,
       },
       {
         action: 2,
@@ -237,6 +244,7 @@ suite('PinnedToolbarActions', function() {
         accessibilityText: '',
         elementId: 'action-2',
         icon: {handleId: 2n},
+        progressRing: null,
       },
     ];
     await microtasksFinished();
@@ -293,6 +301,7 @@ suite('PinnedToolbarActions', function() {
         accessibilityText: '',
         elementId: 'action-1',
         icon: {handleId: 1n},
+        progressRing: null,
       },
       {
         action: PinnedToolbarAction.kDivider,
@@ -303,6 +312,7 @@ suite('PinnedToolbarActions', function() {
         accessibilityText: '',
         elementId: '',
         icon: {handleId: 0n},
+        progressRing: null,
       },
       {
         action: 3,
@@ -313,6 +323,7 @@ suite('PinnedToolbarActions', function() {
         accessibilityText: '',
         elementId: 'action-3',
         icon: {handleId: 3n},
+        progressRing: null,
       },
     ];
     await microtasksFinished();
@@ -396,6 +407,7 @@ suite('PinnedToolbarActions', function() {
         accessibilityText: '',
         elementId: 'action-2',
         icon: {handleId: 2n},
+        progressRing: null,
       },
       {
         action: 1,
@@ -406,6 +418,7 @@ suite('PinnedToolbarActions', function() {
         accessibilityText: '',
         elementId: 'action-1',
         icon: {handleId: 1n},
+        progressRing: null,
       },
       {
         action: PinnedToolbarAction.kDivider,
@@ -416,6 +429,7 @@ suite('PinnedToolbarActions', function() {
         accessibilityText: '',
         elementId: '',
         icon: {handleId: 0n},
+        progressRing: null,
       },
     ];
     await microtasksFinished();

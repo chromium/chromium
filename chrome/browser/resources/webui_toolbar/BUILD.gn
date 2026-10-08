@@ -99,6 +99,7 @@ build_webui("build") {
     "location_bar.css",
     "location_icon.css",
     "performance_intervention_button.css",
+    "pinned_toolbar_action.css",
     "readonly_omnibox.css",
     "reload_button.css",
     "selected_keyword.css",

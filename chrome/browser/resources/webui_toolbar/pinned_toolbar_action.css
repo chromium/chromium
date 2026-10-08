@@ -1,0 +1,94 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=./toolbar_button.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit toolbar-button
+ * #css_wrapper_metadata_end */
+
+/* The progress ring drawn around the button's icon. This mirrors the ring the
+ * Views toolbar paints; see DownloadProgressRing in
+ * //chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.cc.
+ */
+.progress-ring {
+  height: 100%;
+  inset: 0;
+  /* Allows clicks to pass through to the button. */
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+
+  /* Matches kProgressRingRadius and kProgressRingRadiusTouchMode. */
+  --progress-ring-radius: calc(9px + 3px * var(--touch-mode, 0));
+  --progress-ring-track-color:
+      var(--color-download-toolbar-button-ring-background);
+  --progress-ring-fill-color:
+      var(--color-download-toolbar-button-inactive);
+}
+
+.progress-ring[is-activated] {
+  --progress-ring-fill-color: var(--color-download-toolbar-button-active);
+}
+
+/* Dormant buttons, like disabled ones, draw the ring in the inactive color. */
+.progress-ring[disabled],
+.progress-ring[status='dormant'] {
+  --progress-ring-track-color: var(--color-toolbar-button-icon-inactive);
+  --progress-ring-fill-color: var(--color-toolbar-button-icon-inactive);
+}
+
+.progress-ring circle {
+  cx: 50%;
+  cy: 50%;
+  fill: none;
+  r: var(--progress-ring-radius);
+  /* Matches kProgressRingStrokeWidth. */
+  stroke-width: 2px;
+}
+
+.progress-ring .track {
+  stroke: var(--progress-ring-track-color);
+}
+
+.progress-ring .fill {
+  /* Rotate about the ring's own center rather than the SVG origin. */
+  transform-box: fill-box;
+  transform-origin: center;
+  /* Fill starting from the top of the ring, as the Views ring does. */
+  rotate: -90deg;
+  stroke: var(--progress-ring-fill-color);
+}
+
+/* A dormant ring is solid: nothing is filled in on top of the track. */
+.progress-ring[status='dormant'] .fill {
+  display: none;
+}
+
+/* An indeterminate ring of three equally sized 60 degree arcs, matching
+ * views::DrawSpinningRing(). The circles declare pathLength="100", which
+ * normalizes their circumference to 100 units, so each arc is 100 / 6 units
+ * long. */
+.progress-ring[status='scanning'] .fill {
+  animation: progress-ring-spin 2500ms linear infinite;
+  stroke-dasharray: 16.6667;
+}
+
+@keyframes progress-ring-spin {
+  from {
+    rotate: 0deg;
+  }
+
+  to {
+    rotate: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-ring[status='scanning'] .fill {
+    animation: none;
+  }
+}

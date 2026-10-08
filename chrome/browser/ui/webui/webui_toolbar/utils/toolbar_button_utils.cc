@@ -214,9 +214,14 @@ ActionItemToPinnedToolbarAction(actions::ActionItem* item) {
       return toolbar_ui_api::mojom::PinnedToolbarAction::
           kSidePanelShowHistoryCluster;
     case kActionShowDownloads:
-      CHECK_EQ(icon, &(features::IsRoundedIconsEnabled()
-                           ? kDownloadIcon
-                           : kDownloadToolbarButtonChromeRefreshOldIcon));
+      // DownloadToolbarUIController::UpdateIcon() switches between these
+      // depending on download progress and touch mode.
+      CHECK(features::IsRoundedIconsEnabled()
+                ? (icon == &kDownloadIcon || icon == &kArrowDownwardAltIcon)
+                : (icon == &kDownloadToolbarButtonChromeRefreshOldIcon ||
+                   icon == &kDownloadInProgressChromeRefreshOldIcon ||
+                   icon == &kDownloadToolbarButtonTouchOldIcon ||
+                   icon == &kDownloadInProgressTouchOldIcon));
       return toolbar_ui_api::mojom::PinnedToolbarAction::kShowDownloads;
     case kActionClearBrowsingData:
       CHECK_EQ(icon,
