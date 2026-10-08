@@ -182,38 +182,44 @@ HatsSurveyStringData CollectPersonalizationAndTrustFillingData(
     }
   }
 
-  return {{"All field types", FieldTypeSetToString(all_field_types)},
-          {"Total number of fields in form",
-           base::NumberToString(submitted_form.field_count())},
-          {"Number of correctly filled fields",
-           base::NumberToString(num_correctly_filled)},
-          {"Number of fields that were submitted empty without filling",
-           base::NumberToString(num_submitted_empty)},
-          {"Number of fields that were modified after filling",
-           base::NumberToString(num_modified_after_filling)},
-          {"Number of fields that were cleared after filling",
-           base::NumberToString(num_cleared_after_filling)},
-          {"Number of fields that were manually filled without filling",
-           base::NumberToString(num_manually_filled)},
-          {"Filling products used",
-           base::JoinString(
-               base::ToVector(filling_products_used, &FillingProductToString),
-               ", ")},
-          {"AutofillAi entity record types used",
-           ListToString(autofill_ai_record_types_used,
-                        &EntityRecordTypeToMetricsString)},
-          {"AutofillAi entity types used",
-           ListToString(autofill_ai_entity_types_used,
-                        &EntityType::name_as_string)},
-          {"BNPL used", is_bnpl_used ? "true" : "false"},
-          {"Time since last Autofill use",
-           submitted_form.last_filling_timestamp()
-               .transform([](base::TimeTicks time) {
+  // Prevent identification of the visited website by recording (potentially
+  // unique) high field counts as "20+".
+  constexpr int kMaxRecordedFieldCount = 20;
+  return {
+      {"All field types", FieldTypeSetToString(all_field_types)},
+      {"Total number of fields in form",
+       FormatCountForHats(submitted_form.field_count(),
+                          kMaxRecordedFieldCount)},
+      {"Number of correctly filled fields",
+       FormatCountForHats(num_correctly_filled, kMaxRecordedFieldCount)},
+      {"Number of fields that were submitted empty without filling",
+       FormatCountForHats(num_submitted_empty, kMaxRecordedFieldCount)},
+      {"Number of fields that were modified after filling",
+       FormatCountForHats(num_modified_after_filling, kMaxRecordedFieldCount)},
+      {"Number of fields that were cleared after filling",
+       FormatCountForHats(num_cleared_after_filling, kMaxRecordedFieldCount)},
+      {"Number of fields that were manually filled without filling",
+       FormatCountForHats(num_manually_filled, kMaxRecordedFieldCount)},
+      {"Filling products used",
+       base::JoinString(
+           base::ToVector(filling_products_used, &FillingProductToString),
+           ", ")},
+      {"AutofillAi entity record types used",
+       ListToString(autofill_ai_record_types_used,
+                    &EntityRecordTypeToMetricsString)},
+      {"AutofillAi entity types used",
+       ListToString(autofill_ai_entity_types_used,
+                    &EntityType::name_as_string)},
+      {"BNPL used", is_bnpl_used ? "true" : "false"},
+      {"Time since last Autofill use",
+       submitted_form.last_filling_timestamp()
+           .transform(
+               [](base::TimeTicks time) {
                  return base::NumberToString(
                      std::max(base::TimeDelta(), base::TimeTicks::Now() - time)
                          .InSeconds());
                })
-               .value_or("")}};
+           .value_or("")}};
 }
 
 }  // namespace

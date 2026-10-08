@@ -789,6 +789,8 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
               // The types are sent in canonical order with duplicates removed.
               "All field types",
 
+              // Due to privacy constraints, these counts are only accurately
+              // recorded until 20. For higher values, "20+" is stored instead.
               "Total number of fields in form",
               "Number of correctly filled fields",
               "Number of fields that were submitted empty without filling",
