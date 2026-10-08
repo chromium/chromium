@@ -287,8 +287,16 @@ TEST_F(WindowActivationInputProtectionPolicyTest,
       mock_protector));
 }
 
+#if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64) && !defined(NDEBUG)
+// TODO(crbug.com/464455929): Crash in llvm on Fuchsia arm64 in debug.
+#define MAYBE_ParentHideWhileChildInactive_TriggersProtection \
+  DISABLED_ParentHideWhileChildInactive_TriggersProtection
+#else
+#define MAYBE_ParentHideWhileChildInactive_TriggersProtection \
+  ParentHideWhileChildInactive_TriggersProtection
+#endif
 TEST_F(WindowActivationInputProtectionPolicyTest,
-       ParentHideWhileChildInactive_TriggersProtection) {
+       MAYBE_ParentHideWhileChildInactive_TriggersProtection) {
   // Create parent widget.
   auto parent_widget = CreateWidgetWithZOrder();
   parent_widget->SetBounds(gfx::Rect(0, 0, 400, 400));
