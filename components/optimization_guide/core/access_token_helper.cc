@@ -6,7 +6,9 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
@@ -52,20 +54,23 @@ void HandleTokenRequestFlow(bool require_token,
                             signin::OAuthConsumerId oauth_consumer_id,
                             AccessTokenReceivedCallback callback) {
   if (!require_token) {
-    std::move(callback).Run(std::string());
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::string()));
     return;
   }
 
   if (!identity_manager) {
     RecordAccessTokenResultHistogram(
         OptimizationGuideAccessTokenResult::kUserNotSignedIn);
-    std::move(callback).Run(std::string());
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::string()));
     return;
   }
   if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     RecordAccessTokenResultHistogram(
         OptimizationGuideAccessTokenResult::kUserNotSignedIn);
-    std::move(callback).Run(std::string());
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::string()));
     return;
   }
   auto access_token_fetcher =

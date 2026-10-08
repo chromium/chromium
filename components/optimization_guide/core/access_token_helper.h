@@ -39,9 +39,10 @@ enum class OptimizationGuideAccessTokenResult {
 using AccessTokenReceivedCallback =
     base::OnceCallback<void(const std::string&)>;
 
-// Handles the token request flow and invoke `callback` on completion.
+// Handles the token request flow and invokes `callback` asynchronously on
+// completion.
 // `require_token` indicates if token should be requested. When token is not
-// needed `callback` is invoked immediately.
+// needed `callback` is posted immediately with an empty token.
 // Access token is requested from `identity_manager` for the `oauth_scopes`,
 // and when access token is obtained successfully or failed, `callback` is
 // invoked.

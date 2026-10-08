@@ -5,6 +5,9 @@
 #include "chrome/browser/optimization_guide/chrome_hints_manager.h"
 
 #include "base/command_line.h"
+#include "base/location.h"
+#include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -160,6 +163,7 @@ class ChromeHintsManagerFetchingTest
         OptimizationGuideWebContentsObserver::FromWebContents(web_contents);
     observer->FetchHintsUsingManager(
         hints_manager(), web_contents->GetPrimaryPage().GetWeakPtr());
+    WaitForAccessTokenCallbacks();
   }
 
   ChromeHintsManager* hints_manager() const { return hints_manager_.get(); }
@@ -173,6 +177,13 @@ class ChromeHintsManagerFetchingTest
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+
+  void WaitForAccessTokenCallbacks() {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
 
  private:
   content::BrowserTaskEnvironment task_environment_{

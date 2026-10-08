@@ -512,6 +512,13 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
+  void WaitForAccessTokenCallbacks() {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
  protected:
   OptimizationGuideLogger optimization_guide_logger_;
   std::unique_ptr<HintsManager> hints_manager_;
@@ -2255,6 +2262,7 @@ TEST_F(HintsManagerFetchingTest, CanApplyOptimizationCalledMidFetch) {
   auto navigation_data =
       CreateTestNavigationData(url_without_hints(), {proto::DEFER_ALL_SCRIPT});
   CallOnNavigationStartOrRedirect(navigation_data.get(), base::DoNothing());
+  WaitForAccessTokenCallbacks();
   OptimizationTypeDecision optimization_type_decision =
       hints_manager()->CanApplyOptimization(navigation_data->navigation_url(),
                                             proto::DEFER_ALL_SCRIPT,
@@ -2441,6 +2449,7 @@ TEST_F(HintsManagerFetchingTest,
       BuildTestHintsFetcherFactory(
           {HintsFetcherEndState::kFetchSuccessWithHostHints}));
   CallOnNavigationStartOrRedirect(navigation_data.get(), base::DoNothing());
+  WaitForAccessTokenCallbacks();
   OptimizationMetadata optimization_metadata;
   OptimizationTypeDecision optimization_type_decision =
       hints_manager()->CanApplyOptimization(navigation_data->navigation_url(),
@@ -2465,10 +2474,8 @@ TEST_F(HintsManagerFetchingTest,
       CreateTestNavigationData(url_without_hints(), {proto::RESOURCE_LOADING});
   {
     base::HistogramTester histogram_tester;
-    hints_manager()->SetHintsFetcherFactoryForTesting(
-        BuildTestHintsFetcherFactory(
-            {HintsFetcherEndState::kFetchSuccessWithHostHints}));
     CallOnNavigationStartOrRedirect(navigation_data.get(), base::DoNothing());
+    WaitForAccessTokenCallbacks();
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus",
         RaceNavigationFetchAttemptStatus::kRaceNavigationFetchHostAndURL, 1);
@@ -2478,10 +2485,8 @@ TEST_F(HintsManagerFetchingTest,
 
   {
     base::HistogramTester histogram_tester;
-    hints_manager()->SetHintsFetcherFactoryForTesting(
-        BuildTestHintsFetcherFactory(
-            {HintsFetcherEndState::kFetchSuccessWithHostHints}));
     CallOnNavigationStartOrRedirect(navigation_data.get(), base::DoNothing());
+    WaitForAccessTokenCallbacks();
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus",
         RaceNavigationFetchAttemptStatus::kRaceNavigationFetchAlreadyInProgress,
@@ -2518,6 +2523,7 @@ TEST_F(HintsManagerFetchingTest,
   {
     base::HistogramTester histogram_tester;
     CallOnNavigationStartOrRedirect(navigation_data.get(), base::DoNothing());
+    WaitForAccessTokenCallbacks();
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus",
         RaceNavigationFetchAttemptStatus::kRaceNavigationFetchHostAndURL, 1);
@@ -2531,6 +2537,7 @@ TEST_F(HintsManagerFetchingTest,
   {
     base::HistogramTester histogram_tester;
     CallOnNavigationStartOrRedirect(navigation_data.get(), base::DoNothing());
+    WaitForAccessTokenCallbacks();
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus",
         RaceNavigationFetchAttemptStatus::kRaceNavigationFetchHost, 1);
@@ -2567,6 +2574,7 @@ TEST_F(HintsManagerFetchingTest,
                                   base::DoNothing());
   CallOnNavigationStartOrRedirect(navigation_data_without_hints2.get(),
                                   base::DoNothing());
+  WaitForAccessTokenCallbacks();
 
   // The third one is over the max and should evict another one.
   histogram_tester.ExpectTotalCount(
@@ -2592,6 +2600,7 @@ TEST_F(HintsManagerFetchingTest,
   auto navigation_data = CreateTestNavigationData(
       url_with_url_keyed_hint(), {proto::COMPRESS_PUBLIC_IMAGES});
   CallOnNavigationStartOrRedirect(navigation_data.get(), base::DoNothing());
+  WaitForAccessTokenCallbacks();
   hints_manager()->CanApplyOptimization(
       url_with_url_keyed_hint(), proto::COMPRESS_PUBLIC_IMAGES,
       base::BindOnce([](OptimizationGuideDecision decision,
@@ -3089,6 +3098,7 @@ TEST_F(HintsManagerFetchingTest, NewOptTypeRegisteredClearsHintCache) {
                                   run_loop.QuitClosure());
 
   run_loop.Run();
+  WaitForAccessTokenCallbacks();
 
   optimization_type_decision = hints_manager()->CanApplyOptimization(
       navigation_data->navigation_url(), proto::DEFER_ALL_SCRIPT,
@@ -3157,6 +3167,7 @@ TEST_F(HintsManagerFetchingTest, BatchUpdateCalledMoreThanMaxConcurrent) {
                                  OptimizationGuideDecisionWithMetadata>&)>(),
         std::nullopt);
   }
+  WaitForAccessTokenCallbacks();
 
   // The last one is over the max and should evict another one.
   histogram_tester.ExpectTotalCount(
@@ -3416,6 +3427,7 @@ TEST_F(HintsManagerFetchingTest,
           },
           run_loop.get()),
       request_context_metadata);
+  WaitForAccessTokenCallbacks();
   HintsFetcher* it =
       hints_manager_->batch_update_hints_fetchers_.Peek(0)->second.get();
   TestHintsFetcher* it2 = static_cast<TestHintsFetcher*>(it);
@@ -3461,6 +3473,7 @@ TEST_F(
           },
           run_loop.get()),
       request_context_metadata);
+  WaitForAccessTokenCallbacks();
   HintsFetcher* it =
       hints_manager_->batch_update_hints_fetchers_.Peek(0)->second.get();
   TestHintsFetcher* it2 = static_cast<TestHintsFetcher*>(it);
@@ -3496,6 +3509,7 @@ TEST_F(HintsManagerFetchingTest,
           },
           run_loop.get()),
       std::nullopt);
+  WaitForAccessTokenCallbacks();
   HintsFetcher* it =
       hints_manager_->batch_update_hints_fetchers_.Peek(0)->second.get();
   TestHintsFetcher* it2 = static_cast<TestHintsFetcher*>(it);
