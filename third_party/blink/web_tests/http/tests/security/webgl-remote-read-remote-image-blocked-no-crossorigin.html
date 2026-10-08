@@ -62,6 +62,11 @@ testResource = function (resource, resourceType, continuation)
     canvas.width = 100;
     canvas.height = 100;
     var gl = canvas.getContext("webgl");
+    if (!gl) {
+        log("FAIL: Could not create a WebGL context.");
+        continuation();
+        return;
+    }
 
     // Control tests
     log("Untainted canvas:");
@@ -107,6 +112,10 @@ testImage = function ()
 {
     var image = new Image();
     image.onload = testResource.bind(null, image, "image", testVideo);
+    image.onerror = function () {
+        log("FAIL: The image failed to load.");
+        testVideo();
+    };
     // Notice that we forget to set the image.crossOrigin property!
     image.src = "http://localhost:8000/security/resources/abe-allow-star.php";
 }
@@ -115,15 +124,29 @@ testVideo = function ()
 {
     var video = document.createElement('video');
     video.preload = "auto";
-    video.oncanplay = testResource.bind(null, video, "video", finishUp);
+    video.oncanplay = function () {
+        // 'canplay' may fire more than once; only run the test once.
+        video.oncanplay = null;
+        testResource(video, "video", finishUp);
+    };
+    video.onerror = function () {
+        var error = video.error;
+        log("FAIL: The video failed to load" +
+            (error ? " (code " + error.code + "): " + error.message : "."));
+        finishUp();
+    };
     // No crossOrigin set here either.
     var name = "../../media/resources/test.ogv";
     var type = "video/ogg";
     video.src = "http://localhost:8000/security/resources/video-cross-origin-allow.php?name=" + name + "&type=" + type;
 }
 
+var finished = false;
 finishUp = function ()
 {
+    if (finished)
+        return;
+    finished = true;
     log("DONE");
     if (window.testRunner)
         testRunner.notifyDone();
