@@ -18,6 +18,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
+#include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/registry/tool_definition_test_util.h"
@@ -175,6 +176,17 @@ TEST(ToolRegistryTest, ReloadPageToolDefinition) {
                                              base::Value(base::DictValue())));
 }
 
+TEST(ToolRegistryTest, SeekMediaToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      SeekMediaToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kSeekToTimestamp);
+  EXPECT_EQ(definition->name, SeekMediaToolRequest::kModelFacingName);
+  EXPECT_THAT(*definition,
+              HasParamOfType(SeekMediaToolRequest::kTimecodeParam, "string"));
+  EXPECT_THAT(*definition, RequiresParam(SeekMediaToolRequest::kTimecodeParam));
+}
+
 TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -276,6 +288,18 @@ TEST(ToolRegistryTest, GetAllToolsContainsReloadPageTool) {
 
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kReloadPage, &ToolDefinition::id));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsSeekMediaTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kSeekToTimestamp,
+                                    &ToolDefinition::id));
 }
 
 TEST(ToolRegistryTest, ToolIdToNameReturnsEmptyForUnrecognizedId) {

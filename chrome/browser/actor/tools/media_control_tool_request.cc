@@ -14,6 +14,9 @@
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/tools/media_control_tool.h"
+#include "chrome/browser/actor/tools/registry/tool_definition.h"
+#include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
+#include "chrome/browser/actor/tools/registry/tool_schema_builder.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
@@ -23,6 +26,15 @@
 namespace actor {
 
 namespace {
+
+// Default description for the `seek_to_timestamp` tool.
+constexpr std::string_view kSeekMediaToolDescription =
+    "Jump the video to a specific timecode.";
+
+// Description for the `timecode` parameter of the `seek_to_timestamp` tool.
+constexpr std::string_view kSeekMediaTimecodeParamDescription =
+    "The timecode to seek to, from the video transcript. Format: \"1:45\", "
+    "\"0:30\", \"1:02:15\".";
 
 ToolRequest::CreateToolResult CreateMediaControlTool(
     TaskId task_id,
@@ -117,6 +129,15 @@ SeekMediaToolRequest::SeekMediaToolRequest(tabs::TabHandle tab_handle,
     : TabToolRequest(tab_handle), seek_time_(seek_time) {}
 
 SeekMediaToolRequest::~SeekMediaToolRequest() = default;
+
+// static
+std::optional<ToolDefinition> SeekMediaToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kSeekToTimestamp, kModelFacingName,
+                               kSeekMediaToolDescription)
+      .SetToolParameterSchema(ToolSchemaBuilder().AddStringProperty(
+          kTimecodeParam, kSeekMediaTimecodeParamDescription))
+      .Build();
+}
 
 ToolRequest::CreateToolResult SeekMediaToolRequest::CreateTool(
     TaskId task_id,

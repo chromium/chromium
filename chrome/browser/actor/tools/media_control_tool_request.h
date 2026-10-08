@@ -48,6 +48,11 @@ class PauseMediaToolRequest : public TabToolRequest {
 class SeekMediaToolRequest : public TabToolRequest {
  public:
   static constexpr char kName[] = "SeekMedia";
+  // Canonical model-facing name exposed in LLM prompt schemas and indexed by
+  // `ToolRegistry` for lookup and routing via `GetToolDefinition()`.
+  static constexpr std::string_view kModelFacingName = "seek_to_timestamp";
+  // JSON argument key for the target timecode parameter.
+  static constexpr std::string_view kTimecodeParam = "timecode";
 
   // Parses a timecode of the form "S", "M:SS" or "H:MM:SS" (e.g. "30", "1:45",
   // "1:02:15"). Returns std::nullopt if `timecode` is malformed.
@@ -55,6 +60,9 @@ class SeekMediaToolRequest : public TabToolRequest {
 
   SeekMediaToolRequest(tabs::TabHandle tab_handle, base::TimeDelta seek_time);
   ~SeekMediaToolRequest() override;
+
+  // Returns the `ToolId::kSeekToTimestamp` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   // TabToolRequest:
   CreateToolResult CreateTool(TaskId task_id,

@@ -37,7 +37,9 @@ enum class ToolId {
   kGoForward = 8,
   // Reloads the current page in the active tab.
   kReloadPage = 9,
-  kMaxValue = kReloadPage,
+  // Seeks to a specific timestamp in the media in the active tab.
+  kSeekToTimestamp = 10,
+  kMaxValue = kSeekToTimestamp,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer
