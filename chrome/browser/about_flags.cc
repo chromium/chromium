@@ -4180,6 +4180,9 @@ constexpr char kWebUIToolbarDisableFeatures[] =
     "SendGPUChannelEarly";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+constexpr char kTabsFromOtherDevicesEnhancementFeatures[] =
+    "DeviceTabVisibilitySettings";
+
 const FeatureEntry::FeatureParam kMobileNTPPromoOnDesktopGeneral[] = {
     {kMobileNTPPromoOnDesktopVariationParam, "0"}};
 const FeatureEntry::FeatureParam kMobileNTPPromoOnDesktopPasswords[] = {
@@ -14041,6 +14044,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kForceWebGpuAdapterDescription,
      kOsAndroid | kOsLinux | kOsWin,
      MULTI_VALUE_TYPE(kForceWebGpuAdapterChoices)},
+
+    {"tabs-from-other-devices-enhancement",
+     flag_descriptions::kTabsFromOtherDevicesEnhancementName,
+     flag_descriptions::kTabsFromOtherDevicesEnhancementDescription, kOsDesktop,
+     ENABLE_DISABLE_VALUE_TYPE_AND_VALUE(
+         switches::kEnableFeatures,
+         kTabsFromOtherDevicesEnhancementFeatures,
+         switches::kDisableFeatures,
+         kTabsFromOtherDevicesEnhancementFeatures)},
 
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

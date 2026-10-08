@@ -9592,6 +9592,15 @@
     "expiry_milestone": 160
   },
   {
+    "name": "tabs-from-other-devices-enhancement",
+    "owners": [
+      "mtatarski@google.com",
+      "ankushkush@google.com",
+      "chrome-sync-dev@google.com"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "taiyaki-all-surfaces",
     "owners": [
       "jlebel@google.com", "dgn@google.com", "chrome-regionalcapabilities@google.com"

@@ -1428,6 +1428,11 @@ inline constexpr char kAndroidVerticalTabsName[] = "Android Vertical Tabs";
 inline constexpr char kAndroidVerticalTabsDescription[] =
     "Enables the Vertical Tabs feature on Android.";
 
+inline constexpr char kTabsFromOtherDevicesEnhancementName[] =
+    "Tabs from other devices";
+inline constexpr char kTabsFromOtherDevicesEnhancementDescription[] =
+    "Enables updated cross-device tab sharing and visibility features.";
+
 inline constexpr char kCCTNavigationInfoScreenshotName[] =
     "Enable Custom Tabs screenshot capturing";
 inline constexpr char kCCTNavigationInfoScreenshotDescription[] =
