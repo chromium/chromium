@@ -25,15 +25,14 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/trusted_vault/features.h"
-#include "components/trusted_vault/legacy_standalone_trusted_vault_storage.h"
-#include "components/trusted_vault/legacy_standalone_trusted_vault_storage_adapter.h"
+#include "components/trusted_vault/local_domains_storage.h"
 #include "components/trusted_vault/local_recovery_factor.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/standalone_trusted_vault_server_constants.h"
 #include "components/trusted_vault/standalone_trusted_vault_storage.h"
-#include "components/trusted_vault/test/legacy_fake_file_access.h"
+#include "components/trusted_vault/test/fake_local_domains_storage_file_access.h"
 #include "components/trusted_vault/test/mock_trusted_vault_throttling_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_crypto.h"
@@ -411,20 +410,16 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
   void ResetBackend(
       std::unique_ptr<testing::NiceMock<MockTrustedVaultThrottlingConnection>>
           connection) {
-    auto file_access = std::make_unique<LegacyFakeFileAccess>();
+    auto file_access = std::make_unique<FakeLocalDomainsStorageFileAccess>();
     if (file_access_) {
       // We only want to reset the backend, not the underlying faked file.
-      file_access->SetStoredLocalTrustedVault(
-          file_access_->GetStoredLocalTrustedVault());
+      file_access->SetStoredLocalDomainsData(
+          file_access_->GetStoredLocalDomainsData());
     }
     file_access_ = file_access.get();
-    auto storage = LegacyStandaloneTrustedVaultStorage::CreateForTesting(
-        std::move(file_access));
+    auto storage =
+        LocalDomainsStorage::CreateForTesting(std::move(file_access));
     storage_ = storage.get();
-    // TODO(crbug.com/542895033): Use the new storage format in tests.
-    auto adapter = std::make_unique<LegacyStandaloneTrustedVaultStorageAdapter>(
-        std::move(storage));
-    adapter_ = adapter.get();
 
     auto delegate = std::make_unique<testing::NiceMock<MockDelegate>>();
 
@@ -435,7 +430,7 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
       // We only want to reset the backend, not the underlying faked recovery
       // factors incl. their state.
       local_recovery_factors_factory->SetRecoveryFactors(
-          adapter_, connection.get(),
+          storage_, connection.get(),
           local_recovery_factors_factory_->GetRecoveryFactors());
     }
     local_recovery_factors_factory_ = local_recovery_factors_factory.get();
@@ -443,7 +438,7 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
     connection_ = connection.get();
 
     backend_ = StandaloneTrustedVaultBackend::CreateForTesting(
-        std::move(adapter), std::move(delegate), std::move(connection),
+        std::move(storage), std::move(delegate), std::move(connection),
         std::move(local_recovery_factors_factory));
     backend_->ReadDataFromDisk();
   }
@@ -454,16 +449,16 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
     num_local_recovery_factors_ = num_local_recovery_factors;
   }
 
-  LegacyStandaloneTrustedVaultStorage* storage() { return storage_; }
+  LocalDomainsStorage* storage() { return storage_; }
 
-  LegacyFakeFileAccess* file_access() { return file_access_; }
+  FakeLocalDomainsStorageFileAccess* file_access() { return file_access_; }
 
   MockTrustedVaultThrottlingConnection* connection() { return connection_; }
 
   std::vector<FakeLocalRecoveryFactor*> GetOrCreateRecoveryFactors(
       const CoreAccountInfo& account) {
     return local_recovery_factors_factory_->GetOrCreateRecoveryFactors(
-        adapter_, connection_, account);
+        storage_, connection_, account);
   }
 
   // Shorthand to get/create the first recovery factor.
@@ -522,9 +517,8 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
  private:
   size_t num_local_recovery_factors_ = 1;
   std::unique_ptr<StandaloneTrustedVaultBackend> backend_;
-  raw_ptr<LegacyStandaloneTrustedVaultStorage> storage_ = nullptr;
-  raw_ptr<LegacyStandaloneTrustedVaultStorageAdapter> adapter_ = nullptr;
-  raw_ptr<LegacyFakeFileAccess> file_access_ = nullptr;
+  raw_ptr<LocalDomainsStorage> storage_ = nullptr;
+  raw_ptr<FakeLocalDomainsStorageFileAccess> file_access_ = nullptr;
   raw_ptr<testing::NiceMock<MockTrustedVaultThrottlingConnection>> connection_ =
       nullptr;
   raw_ptr<TestLocalRecoveryFactorsFactory> local_recovery_factors_factory_;
@@ -639,16 +633,20 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldReadAndFetchNonEmptyKeys) {
   const std::vector<uint8_t> kKey2 = {1, 2, 3, 4};
   const std::vector<uint8_t> kKey3 = {2, 3, 4};
 
-  trusted_vault_pb::LocalTrustedVault initial_data;
-  UserVault* user_data1 = initial_data.add_user();
-  UserVault* user_data2 = initial_data.add_user();
+  trusted_vault_pb::LocalDomainsData initial_data;
+  trusted_vault_pb::UserDomainData* user_data1 = initial_data.add_user();
+  trusted_vault_pb::UserDomainData* user_data2 = initial_data.add_user();
   user_data1->set_gaia_id(kAccountInfo1.gaia.ToString());
   user_data2->set_gaia_id(kAccountInfo2.gaia.ToString());
-  user_data1->add_vault_key()->set_key_material(kKey1.data(), kKey1.size());
-  user_data2->add_vault_key()->set_key_material(kKey2.data(), kKey2.size());
-  user_data2->add_vault_key()->set_key_material(kKey3.data(), kKey3.size());
+  trusted_vault_pb::DomainData* domain_data1 = user_data1->add_domain_data();
+  domain_data1->set_domain_id(static_cast<int32_t>(security_domain_id()));
+  domain_data1->add_vault_key()->set_key_material(kKey1.data(), kKey1.size());
+  trusted_vault_pb::DomainData* domain_data2 = user_data2->add_domain_data();
+  domain_data2->set_domain_id(static_cast<int32_t>(security_domain_id()));
+  domain_data2->add_vault_key()->set_key_material(kKey2.data(), kKey2.size());
+  domain_data2->add_vault_key()->set_key_material(kKey3.data(), kKey3.size());
 
-  file_access()->SetStoredLocalTrustedVault(initial_data);
+  file_access()->SetStoredLocalDomainsData(initial_data);
   backend()->ReadDataFromDisk();
 
   // Keys should be fetched immediately for both accounts.
@@ -666,14 +664,16 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFilterOutConstantKey) {
   const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user1");
   const std::vector<uint8_t> kKey = {1, 2, 3, 4};
 
-  trusted_vault_pb::LocalTrustedVault initial_data;
-  UserVault* user_data = initial_data.add_user();
+  trusted_vault_pb::LocalDomainsData initial_data;
+  trusted_vault_pb::UserDomainData* user_data = initial_data.add_user();
   user_data->set_gaia_id(kAccountInfo.gaia.ToString());
-  user_data->add_vault_key()->set_key_material(
+  trusted_vault_pb::DomainData* domain_data = user_data->add_domain_data();
+  domain_data->set_domain_id(static_cast<int32_t>(security_domain_id()));
+  domain_data->add_vault_key()->set_key_material(
       GetConstantTrustedVaultKey().data(), GetConstantTrustedVaultKey().size());
-  user_data->add_vault_key()->set_key_material(kKey.data(), kKey.size());
+  domain_data->add_vault_key()->set_key_material(kKey.data(), kKey.size());
 
-  file_access()->SetStoredLocalTrustedVault(initial_data);
+  file_access()->SetStoredLocalDomainsData(initial_data);
   backend()->ReadDataFromDisk();
 
   // Keys should be fetched immediately, constant key must be filtered out.
@@ -701,14 +701,17 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldStoreKeys) {
                        /*last_key_version=*/9);
 
   // Read the content from storage.
-  trusted_vault_pb::LocalTrustedVault proto =
-      file_access()->GetStoredLocalTrustedVault();
+  trusted_vault_pb::LocalDomainsData proto =
+      file_access()->GetStoredLocalDomainsData();
   ASSERT_THAT(proto.user_size(), Eq(2));
-  EXPECT_THAT(proto.user(0).vault_key(), ElementsAre(KeyMaterialEq(kKey1)));
-  EXPECT_THAT(proto.user(0).last_vault_key_version(), Eq(7));
-  EXPECT_THAT(proto.user(1).vault_key(),
-              ElementsAre(KeyMaterialEq(kKey3), KeyMaterialEq(kKey4)));
-  EXPECT_THAT(proto.user(1).last_vault_key_version(), Eq(9));
+  EXPECT_THAT(storage()->GetVaultKeys(kGaiaId1, security_domain_id()),
+              ElementsAre(kKey1));
+  EXPECT_THAT(storage()->GetLastKeyVersion(kGaiaId1, security_domain_id()),
+              Eq(7));
+  EXPECT_THAT(storage()->GetVaultKeys(kGaiaId2, security_domain_id()),
+              ElementsAre(kKey3, kKey4));
+  EXPECT_THAT(storage()->GetLastKeyVersion(kGaiaId2, security_domain_id()),
+              Eq(9));
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchPreviouslyStoredKeys) {
@@ -793,8 +796,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldDeleteNonPrimaryAccountKeys) {
                        fetch_keys_callback.Get());
 
   // Read the file from storage and verify that keys were removed.
-  trusted_vault_pb::LocalTrustedVault proto =
-      file_access()->GetStoredLocalTrustedVault();
+  trusted_vault_pb::LocalDomainsData proto =
+      file_access()->GetStoredLocalDomainsData();
   EXPECT_THAT(proto.user_size(), Eq(0));
 }
 
@@ -822,8 +825,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
                        fetch_keys_callback.Get());
 
   // Read the file from storage and verify that keys were removed.
-  trusted_vault_pb::LocalTrustedVault proto =
-      file_access()->GetStoredLocalTrustedVault();
+  trusted_vault_pb::LocalDomainsData proto =
+      file_access()->GetStoredLocalDomainsData();
   EXPECT_THAT(proto.user_size(), Eq(0));
 }
 
@@ -857,8 +860,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
                        fetch_keys_callback.Get());
 
   // Read the file from storage and verify that keys were removed.
-  trusted_vault_pb::LocalTrustedVault proto =
-      file_access()->GetStoredLocalTrustedVault();
+  trusted_vault_pb::LocalDomainsData proto =
+      file_access()->GetStoredLocalDomainsData();
   EXPECT_THAT(proto.user_size(), Eq(0));
 }
 
@@ -1081,9 +1084,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRecordLocalKeysAreStale) {
   backend()->StoreKeys(kAccountInfo.gaia, security_domain_id(), {kVaultKey},
                        kLastKeyVersion);
 
-  storage()->MutateUserVault(kAccountInfo.gaia, [](UserVault& user_vault) {
-    user_vault.set_last_registration_returned_local_data_obsolete(true);
-  });
+  storage()->SetLastRegistrationReturnedLocalDataObsolete(
+      kAccountInfo.gaia, security_domain_id(), true);
 
   base::HistogramTester histogram_tester;
   SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
