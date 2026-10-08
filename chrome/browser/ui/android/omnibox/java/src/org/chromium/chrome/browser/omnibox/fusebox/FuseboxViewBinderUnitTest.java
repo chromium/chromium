@@ -21,6 +21,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -276,6 +277,12 @@ public class FuseboxViewBinderUnitTest {
         Drawable startDrawable = mViewHolder.requestType.getCompoundDrawablesRelative()[0];
         assertNotNull(startDrawable);
         assertEquals(expectedResId, shadowOf(startDrawable).getCreatedFromResId());
+    }
+
+    private static void assertIconSize(View button, int expectedSizePx) {
+        ViewGroup.LayoutParams params = button.findViewById(R.id.start_icon).getLayoutParams();
+        assertEquals(expectedSizePx, params.width);
+        assertEquals(expectedSizePx, params.height);
     }
 
     @Test
@@ -1164,6 +1171,7 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
     public void popupIconSize_bottomSheetPreserves24dp() {
         PropertyModel model = createBottomSheetModel();
         FuseboxViewHolder viewHolder = createBottomSheetViewHolder();
@@ -1187,6 +1195,52 @@ public class FuseboxViewBinderUnitTest {
         ViewGroup.LayoutParams dynamicLayoutParams = dynamicIcon.getLayoutParams();
         assertEquals(expectedBottomSheetIconSize, dynamicLayoutParams.width);
         assertEquals(expectedBottomSheetIconSize, dynamicLayoutParams.height);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void popupIconSize_variationsEnabled_carouselTilesLargeListRowsUnchanged() {
+        FuseboxViewHolder viewHolder =
+                createViewHolder(
+                        /* isBottomSheet= */ true,
+                        /* useCarousel= */ true,
+                        /* useScrollableCarousel= */ false,
+                        CurrentTabPlacement.BELOW_ATTACHMENTS);
+        mBinder.bind(createBottomSheetModel(), viewHolder, FuseboxProperties.COLOR_SCHEME);
+        Resources res = mActivityController.get().getResources();
+        int tileSize = res.getDimensionPixelSize(R.dimen.fusebox_carousel_item_large_icon_size);
+        int rowSize = res.getDimensionPixelSize(R.dimen.fusebox_bottom_sheet_attachment_icon_size);
+        assertFalse(viewHolder.popup.mCarouselTiles.isEmpty());
+        assertFalse(viewHolder.popup.mListAttachmentButtons.isEmpty());
+
+        for (View tile : viewHolder.popup.mCarouselTiles) {
+            assertIconSize(tile, tileSize);
+        }
+        for (View row : viewHolder.popup.mListAttachmentButtons) {
+            assertIconSize(row, rowSize);
+        }
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void currentTabFavicon_variationsEnabled_inCarousel_scaledToCarouselSize() {
+        PropertyModel model = createBottomSheetModel();
+        FuseboxViewHolder viewHolder = createBottomSheetViewHolder();
+        assertTrue(viewHolder.popup.mCarouselTiles.contains(viewHolder.popup.mAddCurrentTab));
+
+        model.set(
+                FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON,
+                UiUtils.createBitmap(/* size= */ 1, Color.RED));
+        mBinder.bind(model, viewHolder, FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON);
+
+        ImageView icon = viewHolder.popup.mAddCurrentTab.findViewById(R.id.start_icon);
+        int expectedTileSize =
+                mActivityController
+                        .get()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.fusebox_carousel_item_large_icon_size);
+        assertEquals(
+                expectedTileSize, ((BitmapDrawable) icon.getDrawable()).getBitmap().getWidth());
     }
 
     @Test

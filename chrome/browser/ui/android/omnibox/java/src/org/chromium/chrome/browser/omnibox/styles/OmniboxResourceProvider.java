@@ -689,13 +689,26 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
 
     /**
      * Resolves the icon dimension for Fusebox popup items (24dp for bottom sheet, 20dp for plus
-     * menu).
+     * menu). Carousel tiles use {@link #getFuseboxCarouselIconSize()} instead.
      *
      * @param isBottomSheet Whether the popup is presented as a bottom sheet.
      * @return Icon size in pixels.
      */
     public @Px int getFuseboxPopupIconSize(boolean isBottomSheet) {
         return getFuseboxPopupIconSize(mContext, isBottomSheet);
+    }
+
+    /**
+     * Resolves the icon dimension for Fusebox popup carousel tiles (30dp when popup variations are
+     * enabled, 24dp otherwise).
+     *
+     * @return Icon size in pixels.
+     */
+    public @Px int getFuseboxCarouselIconSize() {
+        return mCache.getDimen(
+                OmniboxFeatures.sOmniboxFuseboxPopupVariations.isEnabled()
+                        ? R.dimen.fusebox_carousel_item_large_icon_size
+                        : R.dimen.fusebox_bottom_sheet_attachment_icon_size);
     }
 
     /**

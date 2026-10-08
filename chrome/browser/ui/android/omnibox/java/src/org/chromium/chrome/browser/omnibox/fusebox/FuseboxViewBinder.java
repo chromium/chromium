@@ -717,6 +717,7 @@ class FuseboxViewBinder {
 
         if (!popup.mCarouselTiles.isEmpty()) {
             @StyleRes int tileTextAppearance = mResourceProvider.getAttachmentButtonTextRes();
+            @Px int tileIconSize = mResourceProvider.getFuseboxCarouselIconSize();
             for (View tile : popup.mCarouselTiles) {
                 themeButton(
                         tile,
@@ -724,7 +725,7 @@ class FuseboxViewBinder {
                         smallTextAppearance,
                         iconTint,
                         iconBackgroundTint,
-                        iconSize);
+                        tileIconSize);
             }
         }
 
@@ -843,18 +844,18 @@ class FuseboxViewBinder {
         FuseboxMetrics.recordReanchorViewsDuration(startTime);
     }
 
-    private static void updateForCurrentTabFavicon(
-            PropertyModel model, FuseboxViewHolder viewHolder) {
+    private void updateForCurrentTabFavicon(PropertyModel model, FuseboxViewHolder viewHolder) {
         Context context = viewHolder.parentView.getContext();
         View addCurrentTabButton = viewHolder.popup.mAddCurrentTab;
         Bitmap favicon = model.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON);
 
-        Drawable drawable =
-                FuseboxTabUtils.getDrawableForTabFavicon(
-                        context,
-                        favicon,
-                        OmniboxResourceProvider.getFuseboxPopupIconSize(
-                                context, model.get(FuseboxProperties.POPUP_IS_BOTTOM_SHEET)));
+        @Px
+        int iconSize =
+                viewHolder.popup.mCarouselTiles.contains(addCurrentTabButton)
+                        ? mResourceProvider.getFuseboxCarouselIconSize()
+                        : mResourceProvider.getFuseboxPopupIconSize(
+                                model.get(FuseboxProperties.POPUP_IS_BOTTOM_SHEET));
+        Drawable drawable = FuseboxTabUtils.getDrawableForTabFavicon(context, favicon, iconSize);
         setCustomButtonDrawables(addCurrentTabButton, drawable, /* selected= */ false);
 
         getViewHolder(addCurrentTabButton).mHasColor = favicon != null;

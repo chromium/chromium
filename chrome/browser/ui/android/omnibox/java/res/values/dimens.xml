@@ -60,6 +60,7 @@ found in the LICENSE file.
     <!-- Combined with the items' horizontal margin to make exactly 16dp total edge spacing. -->
     <dimen name="fusebox_carousel_container_padding_horizontal">12dp</dimen>
     <dimen name="fusebox_carousel_item_icon_bg_padding">16dp</dimen>
+    <dimen name="fusebox_carousel_item_large_icon_size">30dp</dimen>
     <dimen name="fusebox_carousel_item_text_margin_top">4dp</dimen>
     <dimen name="fusebox_carousel_padding_bottom">16dp</dimen>
     <dimen name="fusebox_carousel_padding_horizontal">4dp</dimen>

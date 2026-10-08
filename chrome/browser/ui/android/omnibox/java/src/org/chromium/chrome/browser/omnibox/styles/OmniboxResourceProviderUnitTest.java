@@ -484,6 +484,24 @@ public class OmniboxResourceProviderUnitTest {
 
     @Test
     @DisableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void getFuseboxCarouselIconSize() {
+        assertEquals(
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.fusebox_bottom_sheet_attachment_icon_size),
+                mProvider.getFuseboxCarouselIconSize());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void getFuseboxCarouselIconSize_variationsEnabled() {
+        assertEquals(
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.fusebox_carousel_item_large_icon_size),
+                mProvider.getFuseboxCarouselIconSize());
+    }
+
+    @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
     public void getPopupItemTextRes_variationsDisabled() {
         int expected = IncognitoColors.getTextMediumPrimary(/* isIncognito= */ false);
 
