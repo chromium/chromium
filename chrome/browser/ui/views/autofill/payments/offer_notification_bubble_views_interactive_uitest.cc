@@ -206,9 +206,6 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(
     OfferNotificationBubbleViewsInteractiveUiTestNoTestingConfig,
     MAYBE_Navigation) {
-  GURL::Replacements replace_scheme;
-  replace_scheme.SetSchemeStr("http");
-
   const struct {
     GURL url_navigated_to;
     bool bubble_should_be_visible;
@@ -217,12 +214,8 @@ IN_PROC_BROWSER_TEST_P(
       {GetUrl("www.merchantsite1.test", "/second/"), true},
       // Different domain not in offer's list dismisses bubble.
       {GetUrl("www.about.test", "/"), false},
-      // Subdomain not in offer's list dismisses bubble.
-      {GetUrl("support.merchantsite1.test", "/first/"), false},
-      // http vs. https mismatch dismisses bubble.
-      {GetUrl("www.merchantsite1.test", "/first/")
-           .ReplaceComponents(replace_scheme),
-       false},
+      // Other subdomain of a domain in the offer's list keeps bubble.
+      {GetUrl("support.merchantsite1.test", "/first/"), true},
       // Different domain in the offer's list keeps bubble.
       {GetUrl("www.merchantsite2.test", "/first/"), true},
   };
@@ -248,13 +241,7 @@ IN_PROC_BROWSER_TEST_P(
     ASSERT_TRUE(GetOfferNotificationBubbleViews());
 
     auto navigate = [&]() {
-      // The test only spins up an HTTPS server, so there's no form to wait for
-      // if it's a HTTP address.
-      if (test_case.url_navigated_to.SchemeIs("https")) {
-        NavigateToAndWaitForForm(test_case.url_navigated_to);
-      } else {
-        NavigateTo(test_case.url_navigated_to);
-      }
+      NavigateToAndWaitForForm(test_case.url_navigated_to);
     };
 
     // Navigate to a different url, and verify bubble/icon visibility.

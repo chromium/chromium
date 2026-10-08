@@ -98,9 +98,15 @@ class AutofillOfferData {
   // result of first found difference.
   int Compare(const AutofillOfferData& other_offer_data) const;
 
-  // Returns true if the current offer is 1) not expired and 2) contains the
-  // given |origin| in the list of |merchant_origins|.
+  // Returns true if the current offer is 1) not expired and 2) eligible for the
+  // given `origin` (see `IsEligibleForOrigin()`).
   bool IsActiveAndEligibleForOrigin(const GURL& origin) const;
+
+  // Returns true if the given `origin` has the same eTLD+1 as one of the
+  // `merchant_origins`, e.g. a merchant origin of https://store.example.com/
+  // matches https://example.com/ and https://www.example.com/, but not
+  // https://notexample.com/. This is the same matching as for loyalty cards.
+  bool IsEligibleForOrigin(const GURL& origin) const;
 
   OfferType GetOfferType() const { return offer_type_; }
   const std::string& GetOfferId() const { return offer_id_; }

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "url/gurl.h"
 
@@ -176,8 +177,15 @@ int AutofillOfferData::Compare(
 }
 
 bool AutofillOfferData::IsActiveAndEligibleForOrigin(const GURL& origin) const {
-  return expiry_ > AutofillClock::Now() &&
-         std::ranges::count(merchant_origins_, origin) > 0;
+  return expiry_ > AutofillClock::Now() && IsEligibleForOrigin(origin);
+}
+
+bool AutofillOfferData::IsEligibleForOrigin(const GURL& origin) const {
+  return std::ranges::any_of(
+      merchant_origins_, [&origin](const GURL& merchant_origin) {
+        return affiliations::IsExtendedPublicSuffixDomainMatch(merchant_origin,
+                                                               origin, {});
+      });
 }
 
 AutofillOfferData::AutofillOfferData(

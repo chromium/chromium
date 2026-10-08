@@ -261,4 +261,47 @@ TEST_F(AutofillOfferManagerTest, GetOfferForUrl_ReturnsFirstMatchingOffer) {
   EXPECT_EQ(result->GetOfferId(), "first_match");
 }
 
+// Verify that a Wallet direct offer applies to any URL with the same eTLD+1 as
+// its merchant origin, but not to look-alike hosts.
+TEST_F(AutofillOfferManagerTest, WalletDirectOffer_MatchesSameDomain) {
+  payments_data_manager().AddAutofillOfferData(test::GetPromoCodeOfferData(
+      GURL("https://example.com/"), /*is_expired=*/false, "offer"));
+
+  for (const char* url :
+       {"https://example.com/", "https://example.com/shop?item=1#top",
+        "https://www.example.com/", "https://store.example.com/shop",
+        "https://a.b.example.com/"}) {
+    SCOPED_TRACE(url);
+    EXPECT_TRUE(autofill_offer_manager_->IsUrlEligible(GURL(url)));
+    const AutofillOfferData* offer =
+        autofill_offer_manager_->GetOfferForUrl(GURL(url));
+    ASSERT_TRUE(offer);
+    EXPECT_EQ(offer->GetOfferId(), "offer");
+  }
+
+  for (const char* url :
+       {"https://notexample.com/", "https://example.com.evil.com/",
+        "https://example.org/"}) {
+    SCOPED_TRACE(url);
+    EXPECT_FALSE(autofill_offer_manager_->IsUrlEligible(GURL(url)));
+    EXPECT_FALSE(autofill_offer_manager_->GetOfferForUrl(GURL(url)));
+  }
+}
+
+// Verify that a Wallet direct offer for a subdomain also applies to its parent
+// domain and to sibling subdomains.
+TEST_F(AutofillOfferManagerTest,
+       WalletDirectOffer_SubdomainMatchesParentAndSiblings) {
+  payments_data_manager().AddAutofillOfferData(test::GetPromoCodeOfferData(
+      GURL("https://store.example.com/"), /*is_expired=*/false, "offer"));
+
+  for (const char* url : {"https://store.example.com/shop",
+                          "https://example.com/", "https://www.example.com/"}) {
+    SCOPED_TRACE(url);
+    EXPECT_TRUE(autofill_offer_manager_->IsUrlEligible(GURL(url)));
+  }
+  EXPECT_FALSE(
+      autofill_offer_manager_->IsUrlEligible(GURL("https://notexample.com/")));
+}
+
 }  // namespace autofill
