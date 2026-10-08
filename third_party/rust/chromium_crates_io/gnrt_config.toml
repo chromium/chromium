@@ -1020,8 +1020,11 @@ allow_unsafe = false
 allow_unsafe = true
 multiversion_cleanup_bug = "https://crbug.com/540235303"
 
+# TODO: Remove multiple versions of the `synstructure` crate:
+# synstructure@0.13.2, synstructure@0.14.0
 [crate.synstructure.extra_kv]
 allow_unsafe = false
+multiversion_cleanup_bug = "https://crrev.com/c/8504609"
 
 [crate.temporal_capi.extra_kv]
 allow_unsafe = false

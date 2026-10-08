@@ -9,25 +9,23 @@
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
-  crate_name = "yoke_derive"
-  epoch = "0.8"
-  crate_type = "proc-macro"
-  crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/yoke-derive-v0_8/src/lib.rs"
+  crate_name = "synstructure"
+  epoch = "0.14"
+  crate_type = "rlib"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/synstructure-v0_14/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/yoke-derive-v0_8/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/yoke-derive-v0_8/src/lifetimes.rs",
-    "//third_party/rust/chromium_crates_io/vendor/yoke-derive-v0_8/src/visitor.rs",
+    "//third_party/rust/chromium_crates_io/vendor/synstructure-v0_14/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/synstructure-v0_14/src/macros.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
-  edition = "2021"
-  cargo_pkg_authors = "Manish Goregaokar <manishsmail@gmail.com>"
-  cargo_pkg_name = "yoke-derive"
-  cargo_pkg_description = "Custom derive for the yoke crate"
-  cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
-  cargo_pkg_version = "0.8.4"
+  edition = "2018"
+  cargo_pkg_authors = "Nika Layzell <nika@thelayzells.com>"
+  cargo_pkg_name = "synstructure"
+  cargo_pkg_description = "Helper methods and macros for custom derives"
+  cargo_pkg_repository = "https://github.com/mystor/synstructure"
+  cargo_pkg_version = "0.14.0"
 
   allow_unsafe = false
 
@@ -35,7 +33,10 @@ cargo_crate("lib") {
     "//third_party/rust/proc_macro2/v1:lib",
     "//third_party/rust/quote/v1:lib",
     "//third_party/rust/syn/v3:lib",
-    "//third_party/rust/synstructure/v0_14:lib",
+  ]
+  features = [
+    "default",
+    "proc-macro",
   ]
 
   # Only for usage from third-party crates. Add the crate to
