@@ -9,13 +9,14 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/platform/heap/heap_auto_reset.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-class LayoutObject;
 class LayoutText;
 
 // This is the helper class for constructing the DOM-to-TextContent offset
@@ -68,7 +69,7 @@ class CORE_EXPORT OffsetMappingBuilder {
 
    private:
     OffsetMappingBuilder* const builder_ = nullptr;
-    base::AutoReset<const LayoutObject*> layout_object_auto_reset_;
+    HeapAutoReset<const LayoutObject> layout_object_auto_reset_;
     base::AutoReset<unsigned> appended_length_auto_reset_;
   };
 

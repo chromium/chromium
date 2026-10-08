@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/css/style_recalc_context.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
+#include "third_party/blink/renderer/platform/heap/heap_auto_reset.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -249,7 +250,7 @@ class CORE_EXPORT ElementRuleCollector {
         : tree_scope_(&collector.current_rule_tree_scope_, &rule_tree_scope) {}
 
    private:
-    base::AutoReset<const TreeScope*> tree_scope_;
+    HeapAutoReset<const TreeScope> tree_scope_;
   };
 
  private:

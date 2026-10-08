@@ -101,6 +101,7 @@
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/heap_auto_reset.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
@@ -867,7 +868,7 @@ TEST_P(AnimationCompositorAnimationsTest,
 
   NiceMock<MockCSSPaintImageGenerator>* mock_generator =
       MakeGarbageCollected<NiceMock<MockCSSPaintImageGenerator>>();
-  base::AutoReset<MockCSSPaintImageGenerator*> scoped_override_generator(
+  HeapAutoReset<MockCSSPaintImageGenerator> scoped_override_generator(
       &g_override_generator, mock_generator);
   base::AutoReset<CSSPaintImageGenerator::CSSPaintImageGeneratorCreateFunction>
       scoped_create_function(
