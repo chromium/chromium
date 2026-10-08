@@ -5643,16 +5643,8 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (enterprise_data_controls) {
-      sources += [ "//chrome/browser/enterprise/data_protection/clipboard_interactive_uitest.cc" ]
-
-      deps += [ "//chrome/browser/enterprise/data_controls:test_support" ]
-
-      if (enable_print_preview) {
-        deps += [
-          "//chrome/browser/printing:test_support",
-          "//printing:test_support",
-        ]
-      }
+      deps +=
+          [ "//chrome/browser/enterprise/data_protection:interactive_ui_tests" ]
     }
 
     if (enable_compose) {

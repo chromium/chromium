@@ -4,6 +4,7 @@
 
 import("//components/enterprise/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//ui/base/ui_features.gni")
 
 # This library wraps //ui/views and can only be built where views is available.
@@ -88,6 +89,31 @@ source_set("unit_tests") {
     if (toolkit_views) {
       sources += [ "data_protection_overlay_view_unittest.cc" ]
       deps += [ ":data_protection_view_lib" ]
+    }
+  }
+}
+
+if (enterprise_data_controls && !is_android) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "clipboard_interactive_uitest.cc" ]
+    deps = [
+      "//base",
+      "//chrome/browser/enterprise/data_controls:test_support",
+      "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/enterprise/data_controls/core/browser:features",
+      "//components/enterprise/data_controls/core/browser:test_support",
+      "//ui/base/clipboard",
+      "//ui/base/clipboard:clipboard_test_support",
+    ]
+    if (enable_print_preview) {
+      deps += [
+        "//chrome/browser/printing:test_support",
+        "//printing:test_support",
+      ]
     }
   }
 }
