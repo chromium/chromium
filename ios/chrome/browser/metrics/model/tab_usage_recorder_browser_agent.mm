@@ -10,6 +10,7 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/timer/elapsed_timer.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
@@ -318,11 +319,12 @@ void TabUsageRecorderBrowserAgent::RecordFirstStartupMetric(
       startup_information.isLaunchedInBackground) {
     return;
   }
-  base::TimeTicks launch_time = [startup_information appLaunchTime];
-  if (launch_time.is_null()) {
+  std::optional<base::TimeDelta> duration =
+      [startup_information appLaunchTimer].Elapsed();
+  if (!duration.has_value()) {
+    // System was suspended during launch, discard the metric
     return;
   }
-  base::TimeDelta duration = base::TimeTicks::Now() - launch_time;
   bool web_extensions_were_loaded_at_startup = false;
   if (browser_->GetProfile()) {
     ExtensionService* extension_service =
@@ -332,13 +334,13 @@ void TabUsageRecorderBrowserAgent::RecordFirstStartupMetric(
           extension_service->WebExtensionsWereLoadedAtStartup();
     }
   }
-  base::UmaHistogramMediumTimes(base_histogram_name, duration);
+  base::UmaHistogramMediumTimes(base_histogram_name, *duration);
   if (web_extensions_were_loaded_at_startup) {
     base::UmaHistogramMediumTimes(base_histogram_name + ".WithWebExtensions",
-                                  duration);
+                                  *duration);
   } else {
     base::UmaHistogramMediumTimes(base_histogram_name + ".WithoutWebExtensions",
-                                  duration);
+                                  *duration);
   }
 }
 

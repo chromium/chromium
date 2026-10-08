@@ -8,6 +8,8 @@
 
 #import "base/check_op.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/time/time.h"
+#import "base/timer/elapsed_timer.h"
 #import "ios/chrome/app/application_delegate/fake_tab_opener.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/url_opener_params.h"
@@ -34,7 +36,7 @@
 @synthesize isFirstRun = _isFirstRun;
 @synthesize isColdStart = _isColdStart;
 @synthesize launchReason = _launchReason;
-@synthesize appLaunchTime = _appLaunchTime;
+@synthesize appLaunchTimer = _appLaunchTimer;
 @synthesize preMainDuration = _preMainDuration;
 @synthesize didFinishLaunchingTime = _didFinishLaunchingTime;
 @synthesize firstSceneConnectionTime = _firstSceneConnectionTime;

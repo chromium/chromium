@@ -22,6 +22,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/time/time.h"
+#import "base/timer/elapsed_timer.h"
 #import "build/branding_buildflags.h"
 #import "components/crash/core/common/crash_keys.h"
 #import "components/metrics/metrics_pref_names.h"
@@ -170,11 +171,11 @@ void DumpEnvironment(id<StartupInformation> startup_information) {
   NSString* file_name = [formatter stringFromDate:now_date];
 
   NSDictionary* environment = [[NSProcessInfo processInfo] environment];
-  base::TimeTicks now = base::TimeTicks::Now();
+  base::LiveTicks now;
   const base::TimeDelta processStartToNowTime =
       TimeDeltaSinceAppLaunchFromProcess();
-  const base::TimeDelta mainToNowTime =
-      now - [startup_information appLaunchTime];
+  const std::optional<base::TimeDelta> mainToNowTime =
+      [startup_information appLaunchTimer].Elapsed(&now);
   const base::TimeDelta didFinishLaunchingToNowTime =
       now - [startup_information didFinishLaunchingTime];
   const base::TimeDelta sceneConnectionToNowTime =
@@ -184,7 +185,9 @@ void DumpEnvironment(id<StartupInformation> startup_information) {
     @"environment" : environment,
     @"now" : file_name,
     @"processStartToNowTime" : @(processStartToNowTime.InMilliseconds()),
-    @"mainToNowTime" : @(mainToNowTime.InMilliseconds()),
+    @"mainToNowTime" : mainToNowTime.has_value()
+        ? (id) @(mainToNowTime->InMilliseconds())
+        : @"Measurement discarded due to system suspension",
     @"didFinishLaunchingToNowTime" :
         @(didFinishLaunchingToNowTime.InMilliseconds()),
     @"sceneConnectionToNowTime" : @(sceneConnectionToNowTime.InMilliseconds()),
@@ -485,6 +488,31 @@ BOOL _credentialExtensionWasUsed = NO;
 //   `Startup.TimeFromMainToSceneConnection` are omitted, preventing long
 //   suspension durations (minutes to days) or anomalous launches from
 //   contaminating the metrics.
+// - System Sleep During Pre-Warming: If the system sleeps while the process is
+//   pre-warming or suspended before entering `main()`, `appLaunchTimer` has not
+//   yet started. When the user subsequently launches the app, `appLaunchTimer`
+//   begins at `main()`, accurately measuring duration from user intent to
+//   initial UI. Because no sleep occurred during the measured interval
+//   (`main()` to first paint), `Startup.ColdStartFromMain` is recorded under
+//   `.ActivePrewarm` (while `Startup.ColdStartPreMain` is omitted as usual for
+//   pre-warmed launches).
+// - System Sleep After Main, Before UIScene Connection: If the system sleeps
+//   after `main()` but before UIScene connection, `appLaunchTimer` detects the
+//   suspension (`Elapsed()` returns `std::nullopt`). For foreground launches,
+//   `launchReason` is classified as
+//   `IOSLaunchReason::kForegroundWithSystemSuspension`. Because a sleep
+//   occurred during the measured interval, `Startup.ColdStartFromMain` and all
+//   other `main()`-relative metrics are discarded to avoid contaminating
+//   metrics.
+// - System Sleep After UIScene Connection and First Paint: At the time of first
+//   paint, `+logStartupDuration:` has already executed and recorded all cold
+//   start metrics. A subsequent system sleep has no impact on cold startup
+//   metrics. When the app is later backgrounded or suspended, `isColdStart` is
+//   reset to `NO`, ensuring metrics are not re-recorded when resumed.
+// - System Sleep Between UIScene Connection and First Paint: If a sleep occurs
+//   after UIScene connection but before first paint, `appLaunchTimer` detects
+//   the suspension for foreground launches, causing `Startup.ColdStartFromMain`
+//   and `main()`-relative metrics to be discarded.
 // - Interrupted Launch Before UI: If the user backgrounds the app before the
 //   first scene finishes connecting and rendering,
 //   `-applicationWillResignActive:` resets `isColdStart` to `NO`, causing this
@@ -504,19 +532,26 @@ BOOL _credentialExtensionWasUsed = NO;
   }
 
   [MetricKitSubscriber endExtendedLaunchTask];
-  base::TimeTicks now = base::TimeTicks::Now();
-  const base::TimeDelta mainToNowTime =
-      now - [startupInformation appLaunchTime];
+  base::LiveTicks now;
+  const std::optional<base::TimeDelta> mainToNowTime =
+      [startupInformation appLaunchTimer].Elapsed(&now);
   const base::TimeDelta didFinishLaunchingToNowTime =
       now - [startupInformation didFinishLaunchingTime];
   const base::TimeDelta sceneConnectionToNowTime =
       now - [startupInformation firstSceneConnectionTime];
 
   if (![startupInformation isLaunchedInBackground]) {
-    if (mainToNowTime > kLaunchReasonTimeout) {
+    if (!mainToNowTime.has_value()) {
+      [startupInformation maybeSetLaunchReason:
+                              IOSLaunchReason::kForegroundWithSystemSuspension];
+    } else if (*mainToNowTime > kLaunchReasonTimeout) {
       // If main-to-now time is too long, it is likely that the app process was
       // suspended during startup for an unknown reason, making launch reason
       // classification unreliable. Treat these as suspicious launches.
+      // Note: The iOS watchdog normally kills apps that don't start within 20
+      // seconds. So if this code is reached, we're likely dealing with an
+      // unexpected startup scenario, possibly an unhandled background launch
+      // use case.
       [startupInformation maybeSetLaunchReason:IOSLaunchReason::kSuspicious];
     } else if (base::ios::IsApplicationPreWarmed()) {
       [startupInformation maybeSetLaunchReason:IOSLaunchReason::kPreWarming];
@@ -536,19 +571,23 @@ BOOL _credentialExtensionWasUsed = NO;
   [defaults removeObjectForKey:kAppDidFinishLaunchingConsecutiveCallsKey];
 
   if (![startupInformation isLaunchedInBackground] &&
-      [startupInformation launchReason] != IOSLaunchReason::kSuspicious) {
+      [startupInformation launchReason] != IOSLaunchReason::kSuspicious &&
+      [startupInformation launchReason] !=
+          IOSLaunchReason::kForegroundWithSystemSuspension &&
+      mainToNowTime.has_value()) {
     const IOSStartupTemperature temperature =
         GetStartupTemperature(startupInformation);
     const ColdStartType coldStartType = GetColdStartType(startupInformation);
     base::UmaHistogramEnumeration(
         "Startup.IOSColdStartType.ForegroundLaunchesOnly", coldStartType);
-    startupInformation.coldStartFromMainDuration = mainToNowTime;
-    LogStartupDurationWithTemperatureAndType(
-        "Startup.ColdStartFromMain", mainToNowTime, temperature, coldStartType);
+    startupInformation.coldStartFromMainDuration = *mainToNowTime;
+    LogStartupDurationWithTemperatureAndType("Startup.ColdStartFromMain",
+                                             *mainToNowTime, temperature,
+                                             coldStartType);
     base::UmaHistogramTimes("Startup.TimeFromMainToDidFinishLaunchingCall",
-                            mainToNowTime - didFinishLaunchingToNowTime);
+                            *mainToNowTime - didFinishLaunchingToNowTime);
     base::UmaHistogramTimes("Startup.TimeFromMainToSceneConnection",
-                            mainToNowTime - sceneConnectionToNowTime);
+                            *mainToNowTime - sceneConnectionToNowTime);
 
     if (temperature == IOSStartupTemperature::kNotPrewarmed &&
         [startupInformation preMainDuration].is_positive() &&

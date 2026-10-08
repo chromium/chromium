@@ -13,6 +13,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "components/download/public/background_service/background_download_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -98,7 +99,7 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
       [UNUserNotificationCenter currentNotificationCenter];
   center.delegate = _pushNotificationDelegate;
 
-  _appState.startupInformation.didFinishLaunchingTime = base::TimeTicks::Now();
+  _appState.startupInformation.didFinishLaunchingTime = base::LiveTicks::Now();
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   [defaults
       setInteger:[defaults integerForKey:

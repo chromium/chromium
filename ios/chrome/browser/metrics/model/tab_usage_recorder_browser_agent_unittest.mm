@@ -14,6 +14,7 @@
 #import "base/run_loop.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
+#import "base/timer/elapsed_timer.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
@@ -64,7 +65,7 @@ class TabUsageRecorderBrowserAgentTest : public PlatformTest {
             }));
     profile_ = std::move(test_profile_builder).Build();
     fake_startup_information_ = [[FakeStartupInformation alloc] init];
-    fake_startup_information_.appLaunchTime = base::TimeTicks::Now();
+    fake_startup_information_.appLaunchTimer = base::ElapsedNoSleepTimer();
     app_state_ =
         [[AppState alloc] initWithStartupInformation:fake_startup_information_];
     profile_state_ = [[ProfileState alloc] initWithAppState:app_state_];
@@ -130,7 +131,8 @@ class TabUsageRecorderBrowserAgentTest : public PlatformTest {
     tab_usage_recorder_->termination_timestamps_.push_back(time);
   }
 
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      web::WebTaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestProfileIOS> profile_;
   AppState* app_state_ = nil;
   ProfileState* profile_state_ = nil;
@@ -654,6 +656,37 @@ TEST_F(TabUsageRecorderBrowserAgentTest,
        TimeFromMainToFirstStartupMetricsLaunchedInBackground) {
   web::FakeWebState* mock_tab = InsertFakeWebState(kURL, IN_MEMORY);
   fake_startup_information_.launchReason = IOSLaunchReason::kBackgroundRefresh;
+
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL(kURL));
+  context.SetWebState(mock_tab);
+  context.SetPageTransition(ui::PAGE_TRANSITION_LINK);
+  mock_tab->OnNavigationStarted(&context);
+  mock_tab->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+
+  histogram_tester_.ExpectTotalCount("Startup.TimeFromMainToFirstNavigation",
+                                     0);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstNavigation.WithWebExtensions", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstNavigation.WithoutWebExtensions", 0);
+  histogram_tester_.ExpectTotalCount("Startup.TimeFromMainToFirstPageLoaded",
+                                     0);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstPageLoaded.WithWebExtensions", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstPageLoaded.WithoutWebExtensions", 0);
+}
+
+// Tests that Startup.TimeFromMainToFirstNavigation and
+// Startup.TimeFromMainToFirstPageLoaded metrics are not recorded when
+// system suspension occurred during startup.
+TEST_F(TabUsageRecorderBrowserAgentTest,
+       TimeFromMainToFirstStartupMetricsDiscardedOnSuspension) {
+  task_environment_.SuspendedAdvanceClock(base::Seconds(5));
+
+  web::FakeWebState* mock_tab = InsertFakeWebState(kURL, IN_MEMORY);
+  fake_extension_service_->SetWebExtensionsWereLoadedAtStartup(false);
 
   web::FakeNavigationContext context;
   context.SetUrl(GURL(kURL));

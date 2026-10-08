@@ -12,6 +12,7 @@
 #import "base/process/process.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
+#import "base/timer/elapsed_timer.h"
 #import "base/types/fixed_array.h"
 #import "ios/web/public/init/web_main.h"
 
@@ -25,7 +26,7 @@ namespace {
 // timer starts at fork(), so it will include pre-main duration
 constexpr base::TimeDelta kMaxPreMainDuration = base::Seconds(30);
 
-base::TimeTicks* g_start_time = nullptr;
+base::ElapsedNoSleepTimer* g_start_timer = nullptr;
 base::TimeDelta* g_pre_main_duration = nullptr;
 }  // namespace
 
@@ -49,8 +50,8 @@ IOSChromeMain::~IOSChromeMain() {}
 
 // static
 void IOSChromeMain::InitStartTime() {
-  DCHECK(!g_start_time);
-  g_start_time = new base::TimeTicks(base::TimeTicks::Now());
+  DCHECK(!g_start_timer);
+  g_start_timer = new base::ElapsedNoSleepTimer();
 
   const base::Time creation_time = base::Process::Current().CreationTime();
   if (!creation_time.is_null()) {
@@ -62,9 +63,9 @@ void IOSChromeMain::InitStartTime() {
 }
 
 // static
-base::TimeTicks IOSChromeMain::StartTime() {
-  CHECK(g_start_time);
-  return *g_start_time;
+base::ElapsedNoSleepTimer IOSChromeMain::StartTimer() {
+  CHECK(g_start_timer);
+  return *g_start_timer;
 }
 
 // static

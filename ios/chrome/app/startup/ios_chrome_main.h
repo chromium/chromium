@@ -10,8 +10,8 @@
 #include "ios/chrome/app/startup/ios_chrome_main_delegate.h"
 
 namespace base {
+class ElapsedNoSleepTimer;
 class TimeDelta;
-class TimeTicks;
 }
 
 namespace web {
@@ -30,9 +30,9 @@ class IOSChromeMain {
   // The time main() starts.  Only call from main().
   static void InitStartTime();
 
-  // Returns the time that main() started.  Used for performance tests.
-  // InitStartTime() must has been called before.
-  static base::TimeTicks StartTime();
+  // Returns a timer that started when main() started.
+  // InitStartTime() must have been called before.
+  static base::ElapsedNoSleepTimer StartTimer();
 
   // Returns the duration between process creation and the call to main().
   // Returns a zero TimeDelta if process creation time is unavailable or

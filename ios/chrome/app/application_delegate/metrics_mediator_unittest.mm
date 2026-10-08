@@ -15,6 +15,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "base/timer/elapsed_timer.h"
 #import "components/metrics/metrics_service.h"
 #import "components/password_manager/core/common/browser_assisted_login_type.h"
 #import "components/previous_session_info/previous_session_info.h"
@@ -364,6 +365,9 @@ class MetricsMediatorNoFixtureTest : public PlatformTest {
   }
 
  protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
   // Creates and returns a FakeStartupInformation configured for a standard cold
   // start.
   FakeStartupInformation* CreateDefaultStartupInformation() {
@@ -372,12 +376,12 @@ class MetricsMediatorNoFixtureTest : public PlatformTest {
     startup_information.isColdStart = YES;
     startup_information.isFirstRun = NO;
     startup_information.launchReason = std::nullopt;
-    startup_information.appLaunchTime =
-        base::TimeTicks::Now() - base::Seconds(1);
+    startup_information.appLaunchTimer = base::ElapsedNoSleepTimer();
+    task_environment_.AdvanceClock(base::Seconds(1));
     startup_information.didFinishLaunchingTime =
-        startup_information.appLaunchTime;
+        task_environment_.NowLiveTicks() - base::Seconds(1);
     startup_information.firstSceneConnectionTime =
-        startup_information.appLaunchTime;
+        task_environment_.NowLiveTicks() - base::Seconds(1);
     startup_information.preMainDuration = base::Milliseconds(200);
     return startup_information;
   }
@@ -477,6 +481,8 @@ struct StartupTemperatureTestCase {
   bool is_pre_warmed = false;
   std::optional<IOSLaunchReason> initial_launch_reason = std::nullopt;
   base::TimeDelta app_launch_delay = base::Seconds(1);
+  base::TimeDelta sleep_duration = base::TimeDelta();
+  bool sleep_during_prewarm = false;
   IOSLaunchReason expected_launch_reason = IOSLaunchReason::kForeground;
   std::string expected_temperature;
   int expected_cold_start_from_main_count = 1;
@@ -499,12 +505,19 @@ TEST_P(MetricsMediatorStartupTemperatureTest, LogStartupDuration) {
   FakeStartupInformation* startup_information =
       CreateDefaultStartupInformation();
   startup_information.launchReason = test_case.initial_launch_reason;
-  startup_information.appLaunchTime =
-      base::TimeTicks::Now() - test_case.app_launch_delay;
-  startup_information.didFinishLaunchingTime =
-      startup_information.appLaunchTime;
+  if (test_case.sleep_during_prewarm &&
+      test_case.sleep_duration.is_positive()) {
+    task_environment_.SuspendedAdvanceClock(test_case.sleep_duration);
+  }
+  startup_information.appLaunchTimer = base::ElapsedNoSleepTimer();
+  if (!test_case.sleep_during_prewarm &&
+      test_case.sleep_duration.is_positive()) {
+    task_environment_.SuspendedAdvanceClock(test_case.sleep_duration);
+  }
+  startup_information.didFinishLaunchingTime = task_environment_.NowLiveTicks();
   startup_information.firstSceneConnectionTime =
-      startup_information.appLaunchTime;
+      task_environment_.NowLiveTicks();
+  task_environment_.AdvanceClock(test_case.app_launch_delay);
 
   [MetricsMediator logStartupDuration:startup_information];
 
@@ -611,6 +624,56 @@ INSTANTIATE_TEST_SUITE_P(
             .app_launch_delay = base::Seconds(31),
             .expected_launch_reason = IOSLaunchReason::kSuspicious,
             .expected_temperature = "ActivePrewarm",
+            .expected_cold_start_from_main_count = 0,
+            .expected_cold_start_pre_main_count = 0,
+        },
+        StartupTemperatureTestCase{
+            .test_name = "SuspendedDuringStartup",
+            .is_pre_warmed = false,
+            .initial_launch_reason = std::nullopt,
+            .app_launch_delay = base::Seconds(1),
+            .sleep_duration = base::Seconds(5),
+            .sleep_during_prewarm = false,
+            .expected_launch_reason =
+                IOSLaunchReason::kForegroundWithSystemSuspension,
+            .expected_temperature = "NotPrewarmed",
+            .expected_cold_start_from_main_count = 0,
+            .expected_cold_start_pre_main_count = 0,
+        },
+        StartupTemperatureTestCase{
+            .test_name = "SuspendedAfterMainPrewarmed",
+            .is_pre_warmed = true,
+            .initial_launch_reason = std::nullopt,
+            .app_launch_delay = base::Seconds(1),
+            .sleep_duration = base::Seconds(5),
+            .sleep_during_prewarm = false,
+            .expected_launch_reason =
+                IOSLaunchReason::kForegroundWithSystemSuspension,
+            .expected_temperature = "ActivePrewarm",
+            .expected_cold_start_from_main_count = 0,
+            .expected_cold_start_pre_main_count = 0,
+        },
+        StartupTemperatureTestCase{
+            .test_name = "SuspendedDuringPrewarm",
+            .is_pre_warmed = true,
+            .initial_launch_reason = std::nullopt,
+            .app_launch_delay = base::Seconds(1),
+            .sleep_duration = base::Seconds(5),
+            .sleep_during_prewarm = true,
+            .expected_launch_reason = IOSLaunchReason::kPreWarming,
+            .expected_temperature = "ActivePrewarm",
+            .expected_cold_start_from_main_count = 1,
+            .expected_cold_start_pre_main_count = 0,
+        },
+        StartupTemperatureTestCase{
+            .test_name = "SuspendedDuringBackgroundLaunch",
+            .is_pre_warmed = false,
+            .initial_launch_reason = IOSLaunchReason::kBackgroundRefresh,
+            .app_launch_delay = base::Seconds(1),
+            .sleep_duration = base::Seconds(5),
+            .sleep_during_prewarm = false,
+            .expected_launch_reason = IOSLaunchReason::kBackgroundRefresh,
+            .expected_temperature = "NotPrewarmed",
             .expected_cold_start_from_main_count = 0,
             .expected_cold_start_pre_main_count = 0,
         }),
@@ -773,6 +836,33 @@ TEST_F(MetricsMediatorNoFixtureTest,
 
   histogram_tester.ExpectTotalCount("Startup.ColdStartPreMain", 0);
   histogram_tester.ExpectTotalCount("Startup.ColdStartPreMain.Regular", 0);
+}
+
+// Tests that a system sleep occurring between UIScene connection and first
+// paint causes Startup.ColdStartFromMain to be discarded for foreground
+// launches.
+TEST_F(MetricsMediatorNoFixtureTest,
+       LogStartupDurationSystemSleepBetweenSceneConnectionAndFirstPaint) {
+  base::HistogramTester histogram_tester;
+  FakeStartupInformation* startup_information =
+      CreateDefaultStartupInformation();
+  startup_information.appLaunchTimer = base::ElapsedNoSleepTimer();
+  task_environment_.AdvanceClock(base::Seconds(1));
+  startup_information.didFinishLaunchingTime = task_environment_.NowLiveTicks();
+  startup_information.firstSceneConnectionTime =
+      task_environment_.NowLiveTicks();
+
+  // System sleep occurs between UIScene connection and first paint.
+  task_environment_.SuspendedAdvanceClock(base::Seconds(5));
+  task_environment_.AdvanceClock(base::Seconds(1));
+
+  [MetricsMediator logStartupDuration:startup_information];
+
+  ASSERT_TRUE(startup_information.launchReason.has_value());
+  EXPECT_EQ(*startup_information.launchReason,
+            IOSLaunchReason::kForegroundWithSystemSuspension);
+  histogram_tester.ExpectTotalCount("Startup.ColdStartFromMain", 0);
+  histogram_tester.ExpectTotalCount("Startup.ColdStartPreMain", 0);
 }
 
 // Tests that +logStartupDuration: does not call

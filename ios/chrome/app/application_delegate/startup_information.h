@@ -10,8 +10,9 @@
 class FirstUserActionRecorder;
 
 namespace base {
+class ElapsedNoSleepTimer;
+class LiveTicks;
 class TimeDelta;
-class TimeTicks;
 }
 
 // LINT.IfChange(IOSLaunchReason)
@@ -33,7 +34,9 @@ enum class IOSLaunchReason {
   // unusually slow launches or a background launch use case that is not being
   // properly detected by our startup metrics.
   kSuspicious = 5,
-  kMaxValue = kSuspicious,
+  // System suspension was detected during launch.
+  kForegroundWithSystemSuspension = 6,
+  kMaxValue = kForegroundWithSystemSuspension,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/startup/enums.xml:IOSLaunchReason)
 
@@ -47,6 +50,7 @@ inline constexpr bool IsBackgroundLaunchReason(IOSLaunchReason reason) {
     case IOSLaunchReason::kPreWarming:
     case IOSLaunchReason::kForeground:
     case IOSLaunchReason::kSuspicious:
+    case IOSLaunchReason::kForegroundWithSystemSuspension:
       return false;
   }
 }
@@ -69,15 +73,15 @@ inline constexpr bool IsBackgroundLaunchReason(IOSLaunchReason reason) {
 // YES if the application is getting terminated.
 @property(nonatomic, readonly) BOOL isTerminating;
 // Start of the application, used for UMA.
-@property(nonatomic, assign) base::TimeTicks appLaunchTime;
+@property(nonatomic, assign) base::ElapsedNoSleepTimer appLaunchTimer;
 // The duration between process creation and the call to main, used for UMA.
 @property(nonatomic, readonly) base::TimeDelta preMainDuration;
 // An object to record metrics related to the user's first action.
 @property(nonatomic, readonly) FirstUserActionRecorder* firstUserActionRecorder;
 // Tick of the call to didFinishLaunching, used for UMA.
-@property(nonatomic, assign) base::TimeTicks didFinishLaunchingTime;
+@property(nonatomic, assign) base::LiveTicks didFinishLaunchingTime;
 // Tick of the first scene connection, used for UMA.
-@property(nonatomic, assign) base::TimeTicks firstSceneConnectionTime;
+@property(nonatomic, assign) base::LiveTicks firstSceneConnectionTime;
 // Duration from main() entry to initial UI foreground readiness, matching
 // Startup.ColdStartFromMain. Stays zero for background and suspicious launches,
 // which UMA also skips.

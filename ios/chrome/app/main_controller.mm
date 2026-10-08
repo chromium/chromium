@@ -26,6 +26,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/time/time.h"
+#import "base/timer/elapsed_timer.h"
 #import "base/timer/timer.h"
 #import "base/values.h"
 #import "components/application_locale_storage/application_locale_storage.h"
@@ -507,7 +509,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 // Defined by public protocols.
 // - StartupInformation
 @synthesize isColdStart = _isColdStart;
-@synthesize appLaunchTime = _appLaunchTime;
+@synthesize appLaunchTimer = _appLaunchTimer;
 @synthesize preMainDuration = _preMainDuration;
 @synthesize isFirstRun = _isFirstRun;
 @synthesize isTerminating = _isTerminating;
@@ -531,7 +533,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 }
 
 - (void)startUpBrowserBasicInitialization {
-  _appLaunchTime = IOSChromeMain::StartTime();
+  _appLaunchTimer = IOSChromeMain::StartTimer();
   _preMainDuration = IOSChromeMain::PreMainDuration();
   _isColdStart = YES;
   UMA_HISTOGRAM_BOOLEAN("IOS.Process.ActivePrewarm",

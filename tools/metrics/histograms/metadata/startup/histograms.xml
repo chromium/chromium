@@ -989,7 +989,8 @@ chromium-metrics-reviews@google.com.
     background or when the launch is classified as suspicious, because the
     process may have been suspended for an extended duration before the user
     brought it to the foreground, making the resulting measurement not
-    representative of a cold start.
+    representative of a cold start. Starting in M157, samples are also omitted
+    when system suspension is detected during launch.
 
     The total counts in this histogram can be compared with the number of emits
     to the user action MobileWillEnterForeground. The former reports the number
@@ -1021,7 +1022,8 @@ chromium-metrics-reviews@google.com.
     background or when the launch is classified as suspicious, because the
     process may have been suspended for an extended duration before the user
     brought it to the foreground, making the resulting measurement not
-    representative of a cold start.
+    representative of a cold start. Starting in M157, samples are also omitted
+    when system suspension is detected during launch.
 
     The total counts in this histogram can be compared with the number of emits
     to the user action MobileWillEnterForeground. The former reports the number
@@ -1427,9 +1429,10 @@ chromium-metrics-reviews@google.com.
     not have been pre-warmed by iOS.
 
     Samples are omitted from this metric when the app was launched into the
-    background or when the launch is classified as suspicious (where the process
-    was likely suspended during startup). Note: See Startup.IOSColdStartType to
-    include background and suspicious launches.
+    background or when the launch is classified as suspicious. Note: See
+    Startup.IOSColdStartType to include background and suspicious launches.
+    Starting in M157, samples are also omitted when system suspension is
+    detected during launch.
   </summary>
 </histogram>
 
@@ -1440,8 +1443,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the reason why the Chrome process was started on iOS, e.g.
     pre-warming, foreground, background refresh, background URL session,
-    background silent notification, or suspicious if no launch reason could be
-    reliably determined.
+    background silent notification, foreground with system suspension (added in
+    M157), or suspicious if no launch reason could be reliably determined.
 
     If a launch was pre-warmed and then used to perform a background task, the
     reported launch reason is the background launch reason. However, if a launch
@@ -1458,8 +1461,12 @@ chromium-metrics-reviews@google.com.
 
     Foreground: The process was never suspended during app initialization.
 
-    Suspicious: Process suspension during initialization is likely, but the
-    exact reason cannot be reliably determined.
+    Suspicious: Process suspension during initialization is likely (e.g. launch
+    timed out), but the exact reason cannot be reliably determined.
+
+    Foreground with system suspension (M157+): System suspension was detected
+    during startup. If the app was launched in the background, the background
+    launch reason has priority.
   </summary>
 </histogram>
 
@@ -1705,7 +1712,8 @@ chromium-metrics-reviews@google.com.
     Samples are omitted from this metric when the app was launched into the
     background or when the launch is classified as suspicious, because the
     process may have been suspended for an extended duration during the measured
-    interval.
+    interval. Starting in M157, samples are also omitted when system suspension
+    is detected during startup.
   </summary>
 </histogram>
 
@@ -1720,7 +1728,8 @@ chromium-metrics-reviews@google.com.
     {StartupWebExtensionState}.
 
     Samples are omitted from this metric when the app was launched into the
-    background or during first run.
+    background or during first run, or if a system suspension was detected
+    during startup.
   </summary>
   <token key="StartupWebExtensionState" variants="StartupWebExtensionState"/>
 </histogram>
@@ -1736,7 +1745,8 @@ chromium-metrics-reviews@google.com.
     {StartupWebExtensionState}.
 
     Samples are omitted from this metric when the app was launched into the
-    background or during first run.
+    background or during first run, or if a system suspension was detected
+    during startup.
   </summary>
   <token key="StartupWebExtensionState" variants="StartupWebExtensionState"/>
 </histogram>
@@ -1753,7 +1763,8 @@ chromium-metrics-reviews@google.com.
     Samples are omitted from this metric when the app was launched into the
     background or when the launch is classified as suspicious, because the
     process may have been suspended for an extended duration during the measured
-    interval.
+    interval. Starting in M157, samples are also omitted when system suspension
+    is detected during startup.
   </summary>
 </histogram>
 
