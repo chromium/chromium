@@ -990,7 +990,7 @@ bool IsAssistantSidePanelEnabled() {
          IsChromeNextIaEnabled() && IsFullscreenRefactoringEnabled();
 }
 
-BASE_FEATURE(kYourSavedInfoSettingsPageIos, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kYourSavedInfoSettingsPageIos, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsYourSavedInfoSettingsPageIosEnabled() {
   return base::FeatureList::IsEnabled(kYourSavedInfoSettingsPageIos);

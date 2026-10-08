@@ -144,7 +144,7 @@ class AutofillProfileTableViewControllerTest
     feature_list_.InitWithFeatures(
         {autofill::features::kAutofillAiWithDataSchema,
          autofill::features::kAutofillAiReauthRequired},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{kYourSavedInfoSettingsPageIos});
   }
 
   void TearDown() override {
@@ -408,6 +408,14 @@ class AutofillProfileTableViewControllerTitleTest
  public:
   AutofillProfileTableViewControllerTitleTest()
       : base::test::WithFeatureOverride(kYourSavedInfoSettingsPageIos) {}
+
+  void SetUp() override {
+    LegacyChromeTableViewControllerTest::SetUp();
+    feature_list_.InitWithFeatures(
+        {autofill::features::kAutofillAiWithDataSchema,
+         autofill::features::kAutofillAiReauthRequired},
+        /*disabled_features=*/{});
+  }
 };
 
 // Tests the title of the view controller when the feature is enabled/disabled.
