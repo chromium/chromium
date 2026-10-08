@@ -25,6 +25,8 @@ enum class TableViewAccountDetailImage {
   kError,
   // The account is managed.
   kManaged,
+  // The AI tier ring is displayed around the avatar.
+  kAITierRing,
 };
 
 // Item for account avatar, used everywhere an account cell is shown.

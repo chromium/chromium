@@ -40,6 +40,8 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/subscription_eligibility/objc/subscription_eligibility_observer_bridge.h"
+#import "components/subscription_eligibility/subscription_eligibility_service.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_constants.h"
@@ -159,6 +161,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/subscription_eligibility/model/subscription_eligibility_service_factory.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -282,6 +285,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
     SafetyCheckCoordinatorDelegate,
     SearchEngineObserving,
     SiteSettingsCoordinatorDelegate,
+    SubscriptionEligibilityServiceObserving,
     SyncObserverModelBridge,
     TabsSettingsCoordinatorDelegate> {
   // The browser where the settings are being displayed.
@@ -314,6 +318,11 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
   raw_ptr<AuthenticationService> _authService;
   std::unique_ptr<AuthenticationServiceObserverBridge>
       _authServiceObserverBridge;
+  raw_ptr<subscription_eligibility::SubscriptionEligibilityService>
+      _subscriptionEligibilityService;
+  std::unique_ptr<
+      subscription_eligibility::SubscriptionEligibilityObserverBridge>
+      _subscriptionEligibilityObserverBridge;
 
   // Gemini settings coordinator.
   GeminiSettingsCoordinator* _geminiSettingsCoordinator;
@@ -484,6 +493,12 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
     _authServiceObserverBridge =
         std::make_unique<AuthenticationServiceObserverBridge>(_authService,
                                                               self);
+    _subscriptionEligibilityService =
+        SubscriptionEligibilityServiceFactory::GetForProfile(_profile);
+    CHECK(_subscriptionEligibilityService, base::NotFatalUntil::M156);
+    _subscriptionEligibilityObserverBridge = std::make_unique<
+        subscription_eligibility::SubscriptionEligibilityObserverBridge>(
+        _subscriptionEligibilityService, self);
     _bottomOmniboxEnabled = [[PrefBackedBoolean alloc]
         initWithPrefService:localState
                    prefName:omnibox::kIsOmniboxInBottomPosition];
@@ -2115,6 +2130,12 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
   CHECK(syncService);
   if (GetAccountErrorUIInfo(syncService) != nil) {
     identityAccountItem.detailImage = TableViewAccountDetailImage::kError;
+  } else if (_subscriptionEligibilityService &&
+             _subscriptionEligibilityService->GetAiSubscriptionTier() > 0 &&
+             IsAiSubscriptionAvatarRingFollowupIOSEnabled()) {
+    identityAccountItem.detailImage = TableViewAccountDetailImage::kAITierRing;
+  } else {
+    identityAccountItem.detailImage = TableViewAccountDetailImage::kNone;
   }
 }
 
@@ -2880,6 +2901,8 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
   _identityObserverBridge.reset();
   _authServiceObserverBridge.reset();
   _authService = nil;
+  _subscriptionEligibilityObserverBridge.reset();
+  _subscriptionEligibilityService = nullptr;
 
   // Remove PrefObserverDelegates.
   _notificationsObserver.delegate = nil;
@@ -3322,6 +3345,12 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 - (void)onServiceStatusChanged {
   [self updateSigninSection];
   [self.tableView reloadData];
+}
+
+#pragma mark - SubscriptionEligibilityServiceObserving
+
+- (void)aiSubscriptionTierDidUpdate:(int32_t)newSubscriptionTier {
+  [self reloadAccountCell];
 }
 
 @end

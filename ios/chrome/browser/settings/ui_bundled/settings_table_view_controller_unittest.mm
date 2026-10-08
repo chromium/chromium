@@ -23,6 +23,7 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "components/subscription_eligibility/subscription_eligibility_prefs.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/sync/test/test_sync_user_settings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
@@ -817,4 +818,73 @@ TEST_F(SettingsTableViewControllerTest,
 
   TableViewItem* item3 = static_cast<TableViewItem*>(basics_items[2]);
   EXPECT_EQ(SettingsItemTypeAutofillProfile, item3.type);
+}
+
+// Test that the account item displays the AI tier ring when the user is
+// eligible and has no authentication error, and updates when the tier changes.
+TEST_F(SettingsTableViewControllerTest, ShowsAITierRingWhenEligibleAndNoError) {
+  base::test::ScopedFeatureList feature_list{
+      kAiSubscriptionAvatarRingFollowupIOS};
+  profile_->GetPrefs()->SetInteger(
+      subscription_eligibility::prefs::kAiSubscriptionTier, 1);
+
+  CreateController();
+  CheckController();
+
+  NSArray* account_items = [controller().tableViewModel
+      itemsInSectionWithIdentifier:SettingsSectionIdentifier::
+                                       SettingsSectionIdentifierAccount];
+  ASSERT_NE(0U, account_items.count);
+
+  TableViewAccountItem* identity_account_item =
+      base::apple::ObjCCast<TableViewAccountItem>(account_items[0]);
+  ASSERT_TRUE(identity_account_item != nil);
+  EXPECT_EQ(TableViewAccountDetailImage::kAITierRing,
+            identity_account_item.detailImage);
+
+  // Updating the AI subscription tier to 0 should remove the ring.
+  profile_->GetPrefs()->SetInteger(
+      subscription_eligibility::prefs::kAiSubscriptionTier, 0);
+  EXPECT_EQ(TableViewAccountDetailImage::kNone,
+            identity_account_item.detailImage);
+}
+
+// Test that the account item hides the AI tier ring when an account error
+// exists and shows it once the error is resolved.
+TEST_F(SettingsTableViewControllerTest, HidesAITierRingWhenAccountErrorExists) {
+  base::test::ScopedFeatureList feature_list{
+      kAiSubscriptionAvatarRingFollowupIOS};
+  profile_->GetPrefs()->SetInteger(
+      subscription_eligibility::prefs::kAiSubscriptionTier, 1);
+
+  const char kSyncPassphrase[] = "passphrase";
+  sync_service_->GetUserSettings()->SetPassphraseRequired(kSyncPassphrase);
+
+  CreateController();
+  CheckController();
+
+  NSArray* account_items = [controller().tableViewModel
+      itemsInSectionWithIdentifier:SettingsSectionIdentifier::
+                                       SettingsSectionIdentifierAccount];
+  ASSERT_NE(0U, account_items.count);
+
+  TableViewAccountItem* identity_account_item =
+      base::apple::ObjCCast<TableViewAccountItem>(account_items[0]);
+  ASSERT_TRUE(identity_account_item != nil);
+  EXPECT_EQ(TableViewAccountDetailImage::kError,
+            identity_account_item.detailImage);
+
+  // Resolve the account error and fire a sync state change.
+  sync_service_->GetUserSettings()->SetDecryptionPassphrase(kSyncPassphrase);
+  sync_service_->FireStateChanged();
+
+  account_items = [controller().tableViewModel
+      itemsInSectionWithIdentifier:SettingsSectionIdentifier::
+                                       SettingsSectionIdentifierAccount];
+  ASSERT_NE(0U, account_items.count);
+  identity_account_item =
+      base::apple::ObjCCast<TableViewAccountItem>(account_items[0]);
+  ASSERT_TRUE(identity_account_item != nil);
+  EXPECT_EQ(TableViewAccountDetailImage::kAITierRing,
+            identity_account_item.detailImage);
 }

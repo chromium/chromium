@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-// Protocol to speciliaze UIContentView to Chrome needs.
+// Protocol to specialize UIContentView to Chrome needs.
 @protocol ChromeContentView <UIContentView>
 
 // Returns whether this view has a custom accessibility activation point that

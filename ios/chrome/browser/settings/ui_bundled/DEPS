@@ -1,6 +1,7 @@
 include_rules = [
   # keep-sorted start
   "+components/data_sharing/public/features.h",
+  "+components/subscription_eligibility",
   "+ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_identity_item_configurator.h",
   "+ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h",
   "+ios/chrome/browser/alert_view/ui_bundled",
@@ -57,6 +58,7 @@ include_rules = [
   "+ios/chrome/browser/settings/autofill/payments/coordinator",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h",
+  "+ios/chrome/browser/subscription_eligibility/model",
   "+ios/chrome/browser/supervised_user/model",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/tabs/model/inactive_tabs",
