@@ -124,6 +124,33 @@ bool SubtreeHasLayer(const View* view) {
   return std::ranges::any_of(view->children(), &SubtreeHasLayer);
 }
 
+// Recursively collects direct child layers of `parent_layer` in Z-order.
+// Recurses through layerless views to find layer-owning descendants. Once a
+// view with a layer is reached, its layers are collected and recursion stops
+// because any deeper layers are parented to that view's layer.
+void CollectChildLayers(View* view,
+                        ui::Layer* parent_layer,
+                        std::vector<ui::Layer*>& layers) {
+  if (view->layer() && view->layer() != parent_layer) {
+    // TODO(crbug.com/565603740): Revert back to DCHECK_EQ and remove
+    // DUMP_WILL_BE_CHECK_EQ / early returns once confirmed no parent mismatch
+    // occurs.
+    DUMP_WILL_BE_CHECK_EQ(parent_layer, view->layer()->parent());
+    if (view->layer()->parent() == parent_layer) {
+      for (ui::Layer* l : view->GetLayersInOrder()) {
+        DUMP_WILL_BE_CHECK_EQ(parent_layer, l->parent());
+        if (l->parent() == parent_layer) {
+          layers.push_back(l);
+        }
+      }
+    }
+    return;
+  }
+  for (View* child : view->GetChildrenInZOrder()) {
+    CollectChildLayers(child, parent_layer, layers);
+  }
+}
+
 #if BUILDFLAG(IS_WIN)
 constexpr bool kContextMenuOnMousePress = false;
 #else
@@ -2767,6 +2794,28 @@ void View::SetLayerParent(ui::Layer* parent_layer) {
   }
 }
 
+void View::ReorderChildLayers(ui::Layer* parent_layer) {
+  std::vector<ui::Layer*> expected_layers;
+  CollectChildLayers(this, parent_layer, expected_layers);
+
+  // CollectChildLayers() only collects layers whose parent is `parent_layer`,
+  // so there cannot be more expected layers than actual children.
+  const auto& current_children = parent_layer->children();
+  DUMP_WILL_BE_CHECK_LE(expected_layers.size(), current_children.size());
+
+  // StackChildrenAtBottom() moves `expected_layers`, in order, to the front of
+  // `parent_layer`'s children. If they already form that prefix, the call
+  // would be a no-op, so skip it.
+  // TODO(crbug.com/565603740): Remove the size check once the above is a
+  // CHECK.
+  if (expected_layers.size() <= current_children.size() &&
+      std::equal(expected_layers.begin(), expected_layers.end(),
+                 current_children.begin())) {
+    return;
+  }
+
+  parent_layer->StackChildrenAtBottom(expected_layers);
+}
 bool View::GetNeedsNotificationWhenVisibleBoundsChangeImpl() const {
   return clip_layer_to_visible_bounds_ ||
          notify_observers_on_visible_bounds_change_ ||
@@ -2813,40 +2862,6 @@ void View::UpdateLayerClipForVisibleBounds(bool remove_layer_clip) {
 
   for (ui::Layer* layer : GetLayersInOrder(ViewLayer::kExclude)) {
     apply_clip_bounds(layer, clip_bounds);
-  }
-}
-
-void View::ReorderChildLayers(ui::Layer* parent_layer) {
-  if (layer() && layer() != parent_layer) {
-    // TODO(crbug.com/565603740): Revert back to DCHECK_EQ and remove
-    // DUMP_WILL_BE_CHECK_EQ / early returns once confirmed no parent mismatch
-    // occurs.
-    DUMP_WILL_BE_CHECK_EQ(parent_layer, layer()->parent());
-    if (layer()->parent() != parent_layer) {
-      return;
-    }
-    for (ui::Layer* layer_above : layers_above_) {
-      DUMP_WILL_BE_CHECK_EQ(parent_layer, layer_above->parent());
-      if (layer_above->parent() == parent_layer) {
-        parent_layer->StackAtBottom(layer_above);
-      }
-    }
-    parent_layer->StackAtBottom(layer());
-    for (ui::Layer* layer_below : layers_below_) {
-      DUMP_WILL_BE_CHECK_EQ(parent_layer, layer_below->parent());
-      if (layer_below->parent() == parent_layer) {
-        parent_layer->StackAtBottom(layer_below);
-      }
-    }
-  } else {
-    // Iterate backwards through the children so that a child with a layer
-    // which is further to the back is stacked above one which is further to
-    // the front.
-    View::Views children = GetChildrenInZOrder();
-    DCHECK_EQ(children_.size(), children.size());
-    for (views::View* child : std::views::reverse(children)) {
-      child->ReorderChildLayers(parent_layer);
-    }
   }
 }
 

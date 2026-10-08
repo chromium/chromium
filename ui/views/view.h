@@ -1988,14 +1988,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // order of the view tree.
   void ReorderLayers();
 
-  // This reorders the immediate children of |*parent_layer| to match the
-  // order of the view tree. Child layers which are owned by a view are
-  // reordered so that they are below any child layers not owned by a view.
-  // Widget::ReorderNativeViews() should be called to reorder any child layers
-  // with an associated view. Widget::ReorderNativeViews() may reorder layers
-  // below layers owned by a view.
-  virtual void ReorderChildLayers(ui::Layer* parent_layer);
-
   // Notifies parents about a layer being created or destroyed in a child. An
   // example where a subclass may override this method is when it wants to clip
   // the child by adding its own layer.
@@ -2335,6 +2327,18 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // parent_layer. This will also ensure the layers are added to the given
   // parent in the correct order.
   void SetLayerParent(ui::Layer* parent_layer);
+
+  // This reorders the immediate children of |*parent_layer| to match the
+  // order of the view tree. Child layers which are owned by a view are
+  // reordered so that they are below any child layers not owned by a view.
+  // Widget::ReorderNativeViews() should be called to reorder any child layers
+  // with an associated view. Widget::ReorderNativeViews() may reorder layers
+  // below layers owned by a view.
+  //
+  // This is an implementation detail of ReorderLayers() and is deliberately
+  // not virtual: subclasses that need extra layers stacked relative to their
+  // own should use AddLayerToRegion() or a child view that paints to a layer.
+  void ReorderChildLayers(ui::Layer* parent_layer);
 
   // Returns true if this view is interested in VisibleBoundsChange event.
   bool GetNeedsNotificationWhenVisibleBoundsChangeImpl() const;

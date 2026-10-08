@@ -6106,6 +6106,105 @@ TEST_F(ViewLayerTest, ReorderUnderWidget) {
   EXPECT_EQ(c2->layer(), parent_layer->children()[0]);
 }
 
+TEST_F(ViewLayerTest, ReorderChildLayers) {
+  View* content = widget()->SetContentsView(std::make_unique<View>());
+  View* c1 = content->AddChildView(std::make_unique<View>());
+  View* c2 = content->AddChildView(std::make_unique<View>());
+  View* c3 = content->AddChildView(std::make_unique<View>());
+  c1->SetPaintToLayer();
+  c2->SetPaintToLayer();
+  c3->SetPaintToLayer();
+
+  ui::Layer* parent_layer = widget()->GetLayer();
+  ASSERT_EQ(3u, parent_layer->children().size());
+  EXPECT_EQ(c1->layer(), parent_layer->children()[0]);
+  EXPECT_EQ(c2->layer(), parent_layer->children()[1]);
+  EXPECT_EQ(c3->layer(), parent_layer->children()[2]);
+
+  // Move c3 to the back (index 0).
+  content->ReorderChildView(c3, 0);
+  EXPECT_EQ(c3->layer(), parent_layer->children()[0]);
+  EXPECT_EQ(c1->layer(), parent_layer->children()[1]);
+  EXPECT_EQ(c2->layer(), parent_layer->children()[2]);
+
+  // Move c1 to the front (end).
+  content->ReorderChildView(c1, content->children().size());
+  EXPECT_EQ(c3->layer(), parent_layer->children()[0]);
+  EXPECT_EQ(c2->layer(), parent_layer->children()[1]);
+  EXPECT_EQ(c1->layer(), parent_layer->children()[2]);
+
+  // Add child without layer between c3 and c2. Layer order should not change.
+  View* c4 = content->AddChildViewAt(std::make_unique<View>(), 1);
+  EXPECT_EQ(c3->layer(), parent_layer->children()[0]);
+  EXPECT_EQ(c2->layer(), parent_layer->children()[1]);
+  EXPECT_EQ(c1->layer(), parent_layer->children()[2]);
+
+  // Reorder c4 without layer. Layer order should not change.
+  content->ReorderChildView(c4, 0);
+  EXPECT_EQ(c3->layer(), parent_layer->children()[0]);
+  EXPECT_EQ(c2->layer(), parent_layer->children()[1]);
+  EXPECT_EQ(c1->layer(), parent_layer->children()[2]);
+}
+
+TEST_F(ViewLayerTest, ReorderChildLayersWithMultipleRegionLayers) {
+  View* content = widget()->SetContentsView(std::make_unique<View>());
+  View* v1 = content->AddChildView(std::make_unique<View>());
+  View* v2 = content->AddChildView(std::make_unique<View>());
+  v1->SetPaintToLayer();
+  v2->SetPaintToLayer();
+
+  auto b1 = std::make_unique<ui::LayerTextured>();
+  auto b2 = std::make_unique<ui::LayerTextured>();
+  auto a1 = std::make_unique<ui::LayerTextured>();
+  auto a2 = std::make_unique<ui::LayerTextured>();
+
+  v1->AddLayerToRegion(b1.get(), LayerRegion::kBelow);
+  v1->AddLayerToRegion(b2.get(), LayerRegion::kBelow);
+  v1->AddLayerToRegion(a1.get(), LayerRegion::kAbove);
+  v1->AddLayerToRegion(a2.get(), LayerRegion::kAbove);
+
+  ui::Layer* parent_layer = widget()->GetLayer();
+  // Under parent_layer, the bottom-to-top order must preserve insertion order
+  // within each region: b1, b2, v1->layer(), a1, a2, v2->layer().
+  EXPECT_THAT(parent_layer->children(),
+              testing::ElementsAre(b1.get(), b2.get(), v1->layer(), a1.get(),
+                                   a2.get(), v2->layer()));
+
+  // Reorder v2 to the bottom (index 0).
+  content->ReorderChildView(v2, 0);
+  EXPECT_THAT(parent_layer->children(),
+              testing::ElementsAre(v2->layer(), b1.get(), b2.get(), v1->layer(),
+                                   a1.get(), a2.get()));
+
+  // Move v2 back to the front (end).
+  content->ReorderChildView(v2, content->children().size());
+  EXPECT_THAT(parent_layer->children(),
+              testing::ElementsAre(b1.get(), b2.get(), v1->layer(), a1.get(),
+                                   a2.get(), v2->layer()));
+
+  v1->RemoveLayerFromRegions(b1.get());
+  v1->RemoveLayerFromRegions(b2.get());
+  v1->RemoveLayerFromRegions(a1.get());
+  v1->RemoveLayerFromRegions(a2.get());
+}
+
+TEST_F(ViewLayerTest, ReorderChildLayersWithMaskLayer) {
+  View* content = widget()->SetContentsView(std::make_unique<View>());
+  content->SetPaintToLayer();
+  content->SetClipPath(SkPath::Rect(SkRect::MakeWH(100, 100)));
+  ASSERT_TRUE(content->layer()->layer_mask_layer());
+
+  View* c1 = content->AddChildView(std::make_unique<View>());
+  View* c2 = content->AddChildView(std::make_unique<View>());
+  c1->SetPaintToLayer();
+  c2->SetPaintToLayer();
+
+  // Reordering child views under a view with a mask layer should not crash.
+  content->ReorderChildView(c2, 0);
+  EXPECT_EQ(c2->layer(), content->layer()->children()[0]);
+  EXPECT_EQ(c1->layer(), content->layer()->children()[1]);
+}
+
 // Verifies that the layer of a view can be acquired properly.
 TEST_F(ViewLayerTest, AcquireLayer) {
   View* content = widget()->SetContentsView(std::make_unique<View>());
