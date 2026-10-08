@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/predictors/loading_test_util.h"
 #include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/predictors/predictors_switches.h"
@@ -32,6 +33,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/expectation_handler.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -594,8 +596,9 @@ TEST_P(PrefetchManagerTest, Throttles) {
       content::SetBrowserClientForTesting(&content_browser_client);
 
   net::test_server::EmbeddedTestServer test_server;
-  net::test_server::ControllableHttpResponse response(&test_server,
-                                                      "/prefetch");
+  net::test_server::ExpectationHandler handler(&test_server);
+  base::test::TestFuture<net::test_server::HttpRequest> request_future;
+  handler.OnRequest("/prefetch").RespondWith().SetValue(request_future);
 
   // Start the server.
   auto test_server_handle = test_server.StartAndReturnHandle();
@@ -607,10 +610,9 @@ TEST_P(PrefetchManagerTest, Throttles) {
 
   prefetch_manager_->Start(main_frame_url, {request});
 
-  response.WaitForRequest();
-  const net::test_server::HttpRequest* actual_request = response.http_request();
-  auto iter = actual_request->headers.find("x-injected");
-  ASSERT_TRUE(iter != actual_request->headers.end());
+  const net::test_server::HttpRequest& actual_request = request_future.Get();
+  auto iter = actual_request.headers.find("x-injected");
+  ASSERT_TRUE(iter != actual_request.headers.end());
   EXPECT_EQ(iter->second, "injected value");
 
   content::SetBrowserClientForTesting(old_content_browser_client);
