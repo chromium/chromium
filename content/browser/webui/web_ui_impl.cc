@@ -450,7 +450,9 @@ WebUIImpl::GetHandlersForTesting() {
 
 void WebUIImpl::AddMessageHandler(
     std::unique_ptr<WebUIMessageHandler> handler) {
-  CHECK(!handler->web_ui(), base::NotFatalUntil::M158);
+  // TODO(crbug.com/569126413): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!handler->web_ui());
   handler->set_web_ui(this);
   handler->RegisterMessages();
   handlers_.push_back(std::move(handler));
