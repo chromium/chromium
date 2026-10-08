@@ -118,11 +118,11 @@ void GraphicsDelegateAndroid::PostRender() {
   glFlush();
 }
 
-gfx::GpuMemoryBufferHandle GraphicsDelegateAndroid::GetTexture() {
+scoped_refptr<gpu::ClientSharedImage> GraphicsDelegateAndroid::GetTexture() {
   if (!shared_buffer_) {
-    return gfx::GpuMemoryBufferHandle();
+    return nullptr;
   }
-  return gfx::GpuMemoryBufferHandle(shared_buffer_->scoped_ahb_handle.Clone());
+  return shared_buffer_->shared_image;
 }
 
 gpu::SyncToken GraphicsDelegateAndroid::GetSyncToken() {

@@ -43,7 +43,7 @@ class D3D11TextureHelper {
                         const gpu::SyncToken& sync_token,
                         gfx::RectF left,
                         gfx::RectF right);
-  bool SetOverlayTexture(base::win::ScopedHandle texture_handle,
+  bool SetOverlayTexture(scoped_refptr<gpu::ClientSharedImage> shared_image,
                          const gpu::SyncToken& sync_token,
                          gfx::RectF left,
                          gfx::RectF right);

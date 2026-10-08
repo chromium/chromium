@@ -214,13 +214,13 @@ TEST_F(OpenXrGraphicsBindingVulkanTest, SetOverlayTextureReturnsTrue) {
   ASSERT_TRUE(CreateXrInstanceAndSystem());
   ASSERT_TRUE(InitializeBinding());
 
-  gfx::GpuMemoryBufferHandle handle;
+  scoped_refptr<gpu::ClientSharedImage> shared_image;
   gpu::SyncToken sync_token;
   gfx::RectF left(0, 0, 0.5f, 1.0f);
   gfx::RectF right(0.5f, 0, 0.5f, 1.0f);
 
-  EXPECT_TRUE(
-      binding_->SetOverlayTexture(std::move(handle), sync_token, left, right));
+  EXPECT_TRUE(binding_->SetOverlayTexture(std::move(shared_image), sync_token,
+                                          left, right));
 }
 
 TEST_F(OpenXrGraphicsBindingVulkanTest, CanCreateSession) {

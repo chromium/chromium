@@ -517,16 +517,20 @@ void OpenXrGraphicsBindingOpenGLES::OnSwapchainImageReady(
 }
 
 bool OpenXrGraphicsBindingOpenGLES::SetOverlayTexture(
-    gfx::GpuMemoryBufferHandle texture,
+    scoped_refptr<gpu::ClientSharedImage> texture,
     const gpu::SyncToken& sync_token,
     const gfx::RectF& left,
     const gfx::RectF& right) {
-  if (texture.is_null()) {
+  if (!texture) {
+    return false;
+  }
+  gfx::GpuMemoryBufferHandle handle = texture->CloneGpuMemoryBufferHandle();
+  if (handle.is_null()) {
     return false;
   }
 
-  CHECK(texture.type == gfx::ANDROID_HARDWARE_BUFFER);
-  overlay_handle_ = std::move(texture);
+  CHECK(handle.type == gfx::ANDROID_HARDWARE_BUFFER);
+  overlay_handle_ = std::move(handle);
   return true;
 }
 

@@ -7,6 +7,7 @@ module device.mojom;
 import "device/vr/public/mojom/vr_service.mojom";
 import "device/vr/public/mojom/xr_device.mojom";
 import "device/vr/public/mojom/xr_session.mojom";
+import "gpu/ipc/common/exported_shared_image.mojom";
 [EnableIf=is_win]
 import "gpu/ipc/common/luid.mojom";
 import "gpu/ipc/common/sync_token.mojom";
@@ -126,8 +127,14 @@ interface ImmersiveOverlay {
 
   // Submit a frame to show in the headset.  Only can be called when an overlay
   // is visible.  The frame will be composited on top of WebXR content.
-  // |texture| should only be used after |sync_token| has passed.
-  SubmitOverlayTexture(int16 frame_id, gfx.mojom.GpuMemoryBufferHandle texture,
+  // |shared_image| should only be used after the |sync_token| (when
+  // UseAutomaticSyncTokenManagement is disabled) or the SyncTokens managed
+  // inside |shared_image| (when UseAutomaticSyncTokenManagement is enabled)
+  // have passed.
+  // TODO(crbug.com/40286368): Remove |sync_token| once
+  // UseAutomaticSyncTokenManagement is fully launched.
+  SubmitOverlayTexture(int16 frame_id,
+      gpu.mojom.ExportedSharedImage shared_image,
       gpu.mojom.SyncToken sync_token, gfx.mojom.RectF left_bounds,
       gfx.mojom.RectF right_bounds) => (bool success);
 

@@ -356,7 +356,7 @@ gfx::Size OpenXrGraphicsBindingVulkan::GetMaxTextureSize() {
 }
 
 bool OpenXrGraphicsBindingVulkan::SetOverlayTexture(
-    gfx::GpuMemoryBufferHandle texture,
+    scoped_refptr<gpu::ClientSharedImage> texture,
     const gpu::SyncToken& sync_token,
     const gfx::RectF& left,
     const gfx::RectF& right) {

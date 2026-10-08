@@ -44,7 +44,7 @@ class OpenXrGraphicsBindingD3D11 : public OpenXrGraphicsBinding {
                        const gpu::SyncToken& sync_token,
                        const gfx::RectF& left,
                        const gfx::RectF& right) override;
-  bool SetOverlayTexture(gfx::GpuMemoryBufferHandle texture,
+  bool SetOverlayTexture(scoped_refptr<gpu::ClientSharedImage> texture,
                          const gpu::SyncToken& sync_token,
                          const gfx::RectF& left,
                          const gfx::RectF& right) override;

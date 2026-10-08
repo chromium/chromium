@@ -113,12 +113,8 @@ void GraphicsDelegateWin::PostRender() {
   ClearContext();
 }
 
-gfx::GpuMemoryBufferHandle GraphicsDelegateWin::GetTexture() {
-  if (!client_shared_image_) {
-    return gfx::GpuMemoryBufferHandle();
-  }
-
-  return client_shared_image_->CloneGpuMemoryBufferHandle();
+scoped_refptr<gpu::ClientSharedImage> GraphicsDelegateWin::GetTexture() {
+  return client_shared_image_;
 }
 
 gpu::SyncToken GraphicsDelegateWin::GetSyncToken() {

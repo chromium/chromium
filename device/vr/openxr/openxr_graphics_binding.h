@@ -120,7 +120,7 @@ class OpenXrGraphicsBinding {
   // with the texture, but it's not tied to a swapchain info the same way that
   // the page's textures are, so we provide this additional method and simply
   // overwrite the overlay whenever we receive it.
-  virtual bool SetOverlayTexture(gfx::GpuMemoryBufferHandle texture,
+  virtual bool SetOverlayTexture(scoped_refptr<gpu::ClientSharedImage> texture,
                                  const gpu::SyncToken& sync_token,
                                  const gfx::RectF& left,
                                  const gfx::RectF& right) = 0;

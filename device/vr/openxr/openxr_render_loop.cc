@@ -607,7 +607,7 @@ void OpenXrRenderLoop::UpdateLayerBounds(int16_t frame_id,
 
 void OpenXrRenderLoop::SubmitOverlayTexture(
     int16_t frame_id,
-    gfx::GpuMemoryBufferHandle texture,
+    gpu::ExportedSharedImage exported_shared_image,
     const gpu::SyncToken& sync_token,
     const gfx::RectF& left_bounds,
     const gfx::RectF& right_bounds,
@@ -626,8 +626,9 @@ void OpenXrRenderLoop::SubmitOverlayTexture(
 
   pending_frame_->waiting_for_overlay_ = false;
 
-  graphics_binding_->SetOverlayTexture(std::move(texture), sync_token,
-                                       left_bounds, right_bounds);
+  graphics_binding_->SetOverlayTexture(
+      gpu::ClientSharedImage::ImportUnowned(std::move(exported_shared_image)),
+      sync_token, left_bounds, right_bounds);
   pending_frame_->overlay_submitted_ = true;
 
   // Regardless of success - try to composite what we have.

@@ -34,7 +34,7 @@ class GraphicsDelegateWin : public GraphicsDelegate {
   void Initialize(base::OnceClosure on_initialized) override;
   bool PreRender() override;
   void PostRender() override;
-  gfx::GpuMemoryBufferHandle GetTexture() override;
+  scoped_refptr<gpu::ClientSharedImage> GetTexture() override;
   gpu::SyncToken GetSyncToken() override;
   void ResetMemoryBuffer() override;
   bool BindContext() override;

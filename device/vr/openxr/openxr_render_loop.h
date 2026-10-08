@@ -170,7 +170,7 @@ class OpenXrRenderLoop : public XRThread,
 
   // ImmersiveOverlay:
   void SubmitOverlayTexture(int16_t frame_id,
-                            gfx::GpuMemoryBufferHandle texture,
+                            gpu::ExportedSharedImage exported_shared_image,
                             const gpu::SyncToken& sync_token,
                             const gfx::RectF& left_bounds,
                             const gfx::RectF& right_bounds,

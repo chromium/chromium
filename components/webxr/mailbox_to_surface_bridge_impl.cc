@@ -169,6 +169,7 @@ MailboxToSurfaceBridgeImpl::CreateSharedImage(
   auto client_shared_image = sii->CreateSharedImage(
       {format, size, color_space, surface_origin, kPremul_SkAlphaType, usage,
        "WebXrMailboxToSurfaceBridge"},
+      gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT,
       std::move(buffer_handle));
   CHECK(client_shared_image);
   sync_token = client_shared_image->creation_sync_token();

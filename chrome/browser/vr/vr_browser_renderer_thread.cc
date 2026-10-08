@@ -463,8 +463,8 @@ void VRBrowserRendererThread::SubmitFrame(int16_t frame_id) {
   graphics_->PostRender();
 
   overlay_->SubmitOverlayTexture(
-      frame_id, graphics_->GetTexture(), graphics_->GetSyncToken(),
-      graphics_->GetLeft(), graphics_->GetRight(),
+      frame_id, graphics_->GetTexture()->Export(/*with_buffer_handle=*/true),
+      graphics_->GetSyncToken(), graphics_->GetLeft(), graphics_->GetRight(),
       base::BindOnce(&VRBrowserRendererThread::SubmitResult,
                      base::Unretained(this)));
 }

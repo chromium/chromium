@@ -6,12 +6,13 @@
 #define CHROME_BROWSER_VR_GRAPHICS_DELEGATE_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/vr/fov_rectangle.h"
 #include "chrome/browser/vr/frame_type.h"
 #include "chrome/browser/vr/render_info.h"
 #include "chrome/browser/vr/vr_export.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
-#include "ui/gfx/gpu_memory_buffer_handle.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 
 namespace gfx {
 class Transform;
@@ -49,7 +50,7 @@ class VR_EXPORT GraphicsDelegate {
   virtual void Initialize(base::OnceClosure on_initialized) = 0;
   virtual bool PreRender() = 0;
   virtual void PostRender() = 0;
-  virtual gfx::GpuMemoryBufferHandle GetTexture() = 0;
+  virtual scoped_refptr<gpu::ClientSharedImage> GetTexture() = 0;
   virtual gpu::SyncToken GetSyncToken() = 0;
   virtual void ResetMemoryBuffer() = 0;
   virtual bool BindContext() = 0;

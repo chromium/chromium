@@ -363,17 +363,12 @@ void OpenXrGraphicsBindingD3D11::SetWebXrTexture(
 }
 
 bool OpenXrGraphicsBindingD3D11::SetOverlayTexture(
-    gfx::GpuMemoryBufferHandle texture,
+    scoped_refptr<gpu::ClientSharedImage> texture,
     const gpu::SyncToken& sync_token,
     const gfx::RectF& left,
     const gfx::RectF& right) {
-  if (texture.is_null()) {
-    return false;
-  }
-
-  return texture_helper_->SetOverlayTexture(
-      std::move(texture).dxgi_handle().TakeBufferHandle(), sync_token, left,
-      right);
+  return texture_helper_->SetOverlayTexture(std::move(texture), sync_token,
+                                            left, right);
 }
 
 gfx::Size OpenXrGraphicsBindingD3D11::GetMaxTextureSize() {
