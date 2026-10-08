@@ -5,7 +5,7 @@
 #include "chrome/browser/data_sharing/desktop/data_sharing_sdk_delegate_desktop.h"
 
 #include "base/functional/callback.h"
-#include "base/run_loop.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
@@ -48,15 +48,9 @@ IN_PROC_BROWSER_TEST_F(DataSharingSDKDelegateDesktopBrowserTest,
       static_cast<DataSharingSDKDelegateDesktop*>(service->GetSDKDelegate());
   ASSERT_EQ(delegate->web_contents_for_testing(), nullptr);
 
-  base::RunLoop run_loop;
-  service->ReadGroupDeprecated(
-      GroupId("group_id"),
-      base::BindOnce(
-          [](base::RunLoop* run_loop,
-             const DataSharingService::GroupDataOrFailureOutcome& result) {
-            run_loop->Quit();
-          },
-          &run_loop));
+  // Only the WebContents creation is under test, so ignore the result. The
+  // reply can arrive after the test body returns.
+  service->ReadGroupDeprecated(GroupId("group_id"), base::DoNothing());
 
   content::WebContents* web_contents = delegate->web_contents_for_testing();
   ASSERT_NE(web_contents, nullptr);
