@@ -11,7 +11,6 @@
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/trusted_vault/features.h"
@@ -57,18 +56,18 @@ trusted_vault_pb::LocalTrustedVault ReadDataFromDiskImpl(
 
   trusted_vault_pb::LocalTrustedVault data_proto;
   if (!base::PathExists(file_path)) {
-    RecordTrustedVaultFileReadStatus(
+    RecordTrustedVaultFileReadStatusForSecurityDomain(
         security_domain_id, TrustedVaultFileReadStatusForUMA::kNotFound);
     return data_proto;
   }
   if (!base::ReadFileToString(file_path, &file_content)) {
-    RecordTrustedVaultFileReadStatus(
+    RecordTrustedVaultFileReadStatusForSecurityDomain(
         security_domain_id, TrustedVaultFileReadStatusForUMA::kFileReadFailed);
     return data_proto;
   }
   trusted_vault_pb::LocalTrustedVaultFileContent file_proto;
   if (!file_proto.ParseFromString(file_content)) {
-    RecordTrustedVaultFileReadStatus(
+    RecordTrustedVaultFileReadStatusForSecurityDomain(
         security_domain_id,
         TrustedVaultFileReadStatusForUMA::kFileProtoDeserializationFailed);
     return data_proto;
@@ -76,7 +75,7 @@ trusted_vault_pb::LocalTrustedVault ReadDataFromDiskImpl(
 
   if (MD5StringForTrustedVault(file_proto.serialized_local_trusted_vault()) !=
       file_proto.md5_digest_hex_string()) {
-    RecordTrustedVaultFileReadStatus(
+    RecordTrustedVaultFileReadStatusForSecurityDomain(
         security_domain_id,
         TrustedVaultFileReadStatusForUMA::kMD5DigestMismatch);
     return data_proto;
@@ -87,7 +86,7 @@ trusted_vault_pb::LocalTrustedVault ReadDataFromDiskImpl(
         (base::Base64Encode(crypto::hash::Sha256(base::as_byte_span(
              file_proto.serialized_local_trusted_vault()))) !=
          file_proto.sha256_digest_hex_string())) {
-      RecordTrustedVaultFileReadStatus(
+      RecordTrustedVaultFileReadStatusForSecurityDomain(
           security_domain_id,
           TrustedVaultFileReadStatusForUMA::kSHA256DigestMismatch);
       return data_proto;
@@ -96,13 +95,13 @@ trusted_vault_pb::LocalTrustedVault ReadDataFromDiskImpl(
 
   if (!data_proto.ParseFromString(
           file_proto.serialized_local_trusted_vault())) {
-    RecordTrustedVaultFileReadStatus(
+    RecordTrustedVaultFileReadStatusForSecurityDomain(
         security_domain_id,
         TrustedVaultFileReadStatusForUMA::kDataProtoDeserializationFailed);
     return data_proto;
   }
-  RecordTrustedVaultFileReadStatus(security_domain_id,
-                                   TrustedVaultFileReadStatusForUMA::kSuccess);
+  RecordTrustedVaultFileReadStatusForSecurityDomain(
+      security_domain_id, TrustedVaultFileReadStatusForUMA::kSuccess);
   return data_proto;
 }
 
@@ -201,9 +200,8 @@ void WriteDataToDiskImpl(const trusted_vault_pb::LocalTrustedVault& data,
   if (!success) {
     DLOG(ERROR) << "Failed to write trusted vault file.";
   }
-  base::UmaHistogramBoolean("TrustedVault.FileWriteSuccess." +
-                                GetSecurityDomainNameForUma(security_domain_id),
-                            success);
+  RecordTrustedVaultFileWriteSuccessForSecurityDomain(security_domain_id,
+                                                      success);
 }
 
 // Default file access logic LegacyStandaloneTrustedVaultStorage.

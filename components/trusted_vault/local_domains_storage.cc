@@ -12,10 +12,12 @@
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "components/trusted_vault/local_recovery_factor.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/standalone_trusted_vault_server_constants.h"
+#include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
@@ -28,32 +30,37 @@ constexpr base::FilePath::CharType kLocalDomainsFileName[] =
 
 constexpr int kCurrentLocalDomainsDataVersion = 1;
 
-trusted_vault_pb::LocalDomainsData ReadLocalDomainsDataFromDiskImpl(
-    const base::FilePath& file_path) {
+std::pair<trusted_vault_pb::LocalDomainsData, TrustedVaultFileReadStatusForUMA>
+ReadLocalDomainsDataFromDiskImpl(const base::FilePath& file_path) {
   // TODO(crbug.com/542893243): Use OS Crypt to decrypt the file content.
   trusted_vault_pb::LocalDomainsData data_proto;
   std::string file_content;
   if (!base::ReadFileToString(file_path, &file_content)) {
-    return trusted_vault_pb::LocalDomainsData();
+    return {trusted_vault_pb::LocalDomainsData(),
+            TrustedVaultFileReadStatusForUMA::kFileReadFailed};
   }
 
   if (!data_proto.ParseFromString(file_content)) {
-    return trusted_vault_pb::LocalDomainsData();
+    return {trusted_vault_pb::LocalDomainsData(),
+            TrustedVaultFileReadStatusForUMA::kDataProtoDeserializationFailed};
   }
 
   if (data_proto.data_version() != kCurrentLocalDomainsDataVersion) {
-    return trusted_vault_pb::LocalDomainsData();
+    return {trusted_vault_pb::LocalDomainsData(),
+            TrustedVaultFileReadStatusForUMA::kUnsupportedVersion};
   }
 
-  return data_proto;
+  return {std::move(data_proto), TrustedVaultFileReadStatusForUMA::kSuccess};
 }
 
 bool WriteLocalDomainsDataToDiskImpl(
     const trusted_vault_pb::LocalDomainsData& data,
     const base::FilePath& file_path) {
   // TODO(crbug.com/542893243): Use OS Crypt to encrypt the file content.
-  return base::ImportantFileWriter::WriteFileAtomically(
+  const bool success = base::ImportantFileWriter::WriteFileAtomically(
       file_path, data.SerializeAsString(), "TrustedVault");
+  RecordTrustedVaultFileWriteSuccess(success);
+  return success;
 }
 
 // Default file access implementation for `LocalDomainsStorage`.
@@ -68,13 +75,16 @@ class DefaultStorageFileAccess : public LocalDomainsStorage::StorageFileAccess {
 
   trusted_vault_pb::LocalDomainsData ReadFromDisk() override {
     if (!base::PathExists(local_domains_file_path_)) {
+      RecordTrustedVaultFileReadStatus(
+          TrustedVaultFileReadStatusForUMA::kNotFound);
       trusted_vault_pb::LocalDomainsData data;
       data.set_data_version(kCurrentLocalDomainsDataVersion);
       return data;
     }
 
-    trusted_vault_pb::LocalDomainsData data =
+    auto [data, read_status] =
         ReadLocalDomainsDataFromDiskImpl(local_domains_file_path_);
+    RecordTrustedVaultFileReadStatus(read_status);
     if (data.data_version() != kCurrentLocalDomainsDataVersion) {
       data.Clear();
       data.set_data_version(kCurrentLocalDomainsDataVersion);

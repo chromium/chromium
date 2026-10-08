@@ -13,9 +13,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/trusted_vault/local_recovery_factor.h"
 #include "components/trusted_vault/proto/local_domains_data.pb.h"
 #include "components/trusted_vault/test/fake_local_domains_storage_file_access.h"
+#include "components/trusted_vault/trusted_vault_histograms.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace trusted_vault {
@@ -192,6 +194,20 @@ class LocalDomainsStorageDiskTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
+TEST_F(LocalDomainsStorageDiskTest,
+       ShouldRecordDataProtoDeserializationFailedWhenReadingFile) {
+  ASSERT_TRUE(
+      base::WriteFile(local_domains_file_path(), "corrupted_data_proto"));
+
+  auto storage = LocalDomainsStorage::Create(base_dir());
+  base::HistogramTester histogram_tester;
+  storage->ReadDataFromDisk();
+
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.FileReadStatus",
+      TrustedVaultFileReadStatusForUMA::kDataProtoDeserializationFailed, 1);
+}
+
 TEST_F(LocalDomainsStorageDiskTest, ShouldWriteAndReadLocalDomainsDataOnDisk) {
   const GaiaId kGaiaId("user1");
   const std::vector<std::vector<uint8_t>> kKeys = {{1, 2, 3}, {4, 5, 6}};
@@ -199,14 +215,23 @@ TEST_F(LocalDomainsStorageDiskTest, ShouldWriteAndReadLocalDomainsDataOnDisk) {
   {
     auto storage = LocalDomainsStorage::Create(base_dir());
     storage->ReadDataFromDisk();
+
+    base::HistogramTester write_histogram_tester;
     storage->SetVaultKeys(kGaiaId, SecurityDomainId::kPasskeys, kKeys,
                           /*last_key_version=*/5);
+    write_histogram_tester.ExpectUniqueSample("TrustedVault.FileWriteSuccess",
+                                              true, 1);
   }
 
   ASSERT_TRUE(base::PathExists(local_domains_file_path()));
 
   auto reloaded_storage = LocalDomainsStorage::Create(base_dir());
+  base::HistogramTester read_histogram_tester;
   reloaded_storage->ReadDataFromDisk();
+
+  read_histogram_tester.ExpectUniqueSample(
+      "TrustedVault.FileReadStatus", TrustedVaultFileReadStatusForUMA::kSuccess,
+      1);
 
   EXPECT_EQ(
       reloaded_storage->GetVaultKeys(kGaiaId, SecurityDomainId::kPasskeys),
@@ -233,8 +258,12 @@ TEST_F(LocalDomainsStorageDiskTest, ShouldClearDataOnVersionMismatch) {
                               future_data.SerializeAsString()));
 
   auto storage = LocalDomainsStorage::Create(base_dir());
+  base::HistogramTester histogram_tester;
   storage->ReadDataFromDisk();
 
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.FileReadStatus",
+      TrustedVaultFileReadStatusForUMA::kUnsupportedVersion, 1);
   EXPECT_TRUE(
       storage->GetVaultKeys(kGaiaId, SecurityDomainId::kChromeSync).empty());
   EXPECT_EQ(storage->GetLastKeyVersion(kGaiaId, SecurityDomainId::kChromeSync),

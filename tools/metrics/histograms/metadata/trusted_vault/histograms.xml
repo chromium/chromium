@@ -87,7 +87,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded when reading local trusted vault file for {SecurityDomainId}.
   </summary>
-  <token key="SecurityDomainId" variants="SecurityDomainId"/>
+  <token key="SecurityDomainId" variants="SecurityDomainId">
+    <variant name="" summary="Storage for all security domains"/>
+  </token>
 </histogram>
 
 <histogram name="TrustedVault.FileWriteSuccess{SecurityDomainId}"
@@ -98,7 +100,9 @@ chromium-metrics-reviews@google.com.
     Records whether writing local trusted vault file for {SecurityDomainId} was
     successful upon each write.
   </summary>
-  <token key="SecurityDomainId" variants="SecurityDomainId"/>
+  <token key="SecurityDomainId" variants="SecurityDomainId">
+    <variant name="" summary="Storage for all security domains"/>
+  </token>
 </histogram>
 
 <histogram
