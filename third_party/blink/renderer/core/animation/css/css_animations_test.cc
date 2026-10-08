@@ -3729,6 +3729,36 @@ TEST_P(AnimatedSourcePropertyTest, ImportantRuleWinsOverAnimation) {
   EXPECT_FALSE(SourceFor(target, GetParam()).animated_source.IsValid());
 }
 
+TEST_P(AnimatedSourcePropertyTest, InheritedSourcePropagatesIndependently) {
+  const CSSProperty& property = CSSProperty::Get(GetParam());
+  if (!property.IsIndependent()) {
+    GTEST_SKIP() << "Only applies to independent inherited properties";
+  }
+  SetBodyInnerHTML("<style>#declares { " + property.GetPropertyNameString() +
+                   ": " + Value() +
+                   " }</style>"
+                   "<div id=parent>"
+                   "  <div id=inherits></div>"
+                   "  <div id=declares></div>"
+                   "</div>");
+  Element* parent = GetElementById("parent");
+  Element* inherits = GetElementById("inherits");
+  Element* declares = GetElementById("declares");
+
+  unsigned count = GetStyleEngine().StyleForElementCount();
+  Animation* animation = Animate(parent, GetParam(), Value());
+  EXPECT_EQ(1u, GetStyleEngine().StyleForElementCount() - count);
+  EXPECT_TRUE(
+      SourceFor(inherits, GetParam()).animated_source.IsOwnedBy(*parent));
+  EXPECT_FALSE(SourceFor(declares, GetParam()).animated_source.IsValid());
+
+  count = GetStyleEngine().StyleForElementCount();
+  animation->cancel();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(1u, GetStyleEngine().StyleForElementCount() - count);
+  EXPECT_FALSE(SourceFor(inherits, GetParam()).animated_source.IsValid());
+}
+
 // Transition coverage uses fixed properties: starting a transition requires
 // two distinct computed values, which cannot be derived generically for an
 // arbitrary property. The transition handling under test does not branch per

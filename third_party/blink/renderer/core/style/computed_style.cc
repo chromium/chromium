@@ -666,7 +666,10 @@ bool ComputedStyle::InheritedEqual(const ComputedStyle& other) const {
 
 bool ComputedStyle::IndependentInheritedEqual(
     const ComputedStyle& other) const {
-  return ComputedStyleBase::IndependentInheritedEqual(other);
+  return ComputedStyleBase::IndependentInheritedEqual(other) &&
+         // custom_compare, so not part of the above.
+         IndependentInheritedAnimatedSources() ==
+             other.IndependentInheritedAnimatedSources();
 }
 
 bool ComputedStyle::NonIndependentInheritedEqual(
@@ -684,7 +687,10 @@ bool ComputedStyle::InheritedEqualIncludingInheritedVariables(
   // We use a by-value check that is a bit more expensive than
   // pointer comparison, but yields many more MPC hits,
   // so it generally makes up for it.
-  return ComputedStyleBase::InheritedEqualIncludingInheritedVariables(other);
+  return ComputedStyleBase::InheritedEqualIncludingInheritedVariables(other) &&
+         // custom_compare, so not part of the above.
+         IndependentInheritedAnimatedSources() ==
+             other.IndependentInheritedAnimatedSources();
 }
 
 ComputedStyle::InheritedPropertyHash
@@ -3029,9 +3035,11 @@ AnimatedSource ComputedStyle::GetAnimatedSource(CSSPropertyID property) const {
   if (!tracked) {
     return {};
   }
-  const StyleAnimatedSources& sources = CSSProperty::Get(property).IsInherited()
-                                            ? InheritedAnimatedSources()
-                                            : NonInheritedAnimatedSources();
+  const CSSProperty& css_property = CSSProperty::Get(property);
+  const StyleAnimatedSources& sources =
+      css_property.IsIndependent() ? IndependentInheritedAnimatedSources()
+      : css_property.IsInherited() ? InheritedAnimatedSources()
+                                   : NonInheritedAnimatedSources();
   return sources.Get(*tracked);
 }
 
@@ -3088,10 +3096,15 @@ void ComputedStyleBuilder::PropagateIndependentInheritedProperties(
 // Compares through the shared group first to avoid a copy-on-write when
 // unchanged.
 void ComputedStyleBuilder::UpdateAnimatedSource(AnimatedSourceProperty property,
-                                                bool is_inherited,
+                                                const CSSProperty& css_property,
                                                 AnimatedSource source) {
   DCHECK(source.IsValid());
-  if (is_inherited) {
+  if (css_property.IsIndependent()) {
+    if (IndependentInheritedAnimatedSources().Get(property) != source) {
+      MutableIndependentInheritedAnimatedSourcesInternal().Set(property,
+                                                               source);
+    }
+  } else if (css_property.IsInherited()) {
     if (InheritedAnimatedSources().Get(property) != source) {
       MutableInheritedAnimatedSourcesInternal().Set(property, source);
     }
@@ -3112,7 +3125,7 @@ void ComputedStyleBuilder::SetAnimatedSource(CSSPropertyID property,
   if (!tracked) {
     return;
   }
-  UpdateAnimatedSource(*tracked, CSSProperty::Get(property).IsInherited(),
+  UpdateAnimatedSource(*tracked, CSSProperty::Get(property),
                        AnimatedSource::ForElement(&animating_element));
 }
 
@@ -3135,8 +3148,7 @@ void ComputedStyleBuilder::CopyAnimatedSourceFrom(
   if (AnimatedSource source = parent_style->GetAnimatedSource(property);
       source.IsValid()) {
     source.has_untracked_dependencies = has_untracked_dependencies;
-    UpdateAnimatedSource(*tracked, CSSProperty::Get(property).IsInherited(),
-                         source);
+    UpdateAnimatedSource(*tracked, CSSProperty::Get(property), source);
   } else {
     ClearAnimatedSource(property);
   }
@@ -3153,7 +3165,12 @@ void ComputedStyleBuilder::ClearAnimatedSource(CSSPropertyID property) {
   }
   // Compares through the shared group first to avoid a copy-on-write when
   // already clear.
-  if (CSSProperty::Get(property).IsInherited()) {
+  const CSSProperty& css_property = CSSProperty::Get(property);
+  if (css_property.IsIndependent()) {
+    if (IndependentInheritedAnimatedSources().Get(*tracked).IsValid()) {
+      MutableIndependentInheritedAnimatedSourcesInternal().Clear(*tracked);
+    }
+  } else if (css_property.IsInherited()) {
     if (InheritedAnimatedSources().Get(*tracked).IsValid()) {
       MutableInheritedAnimatedSourcesInternal().Clear(*tracked);
     }

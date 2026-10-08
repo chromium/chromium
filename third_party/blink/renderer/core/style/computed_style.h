@@ -3754,7 +3754,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
 
  private:
   void UpdateAnimatedSource(AnimatedSourceProperty property,
-                            bool is_inherited,
+                            const CSSProperty& css_property,
                             AnimatedSource source);
 
   mutable bool has_own_animations_ = false;

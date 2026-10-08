@@ -1569,6 +1569,17 @@
       invalidate: ["layout", "paint"],
     },
     {
+      // Tracks animation sources for independent inherited properties.
+      name: "IndependentInheritedAnimatedSources",
+      inherited: true,
+      custom_compare: true,
+      field_group: "inherited->independent-inherited-animated-sources",
+      field_template: "external",
+      type_name: "StyleAnimatedSources",
+      include_paths: ["third_party/blink/renderer/core/style/style_animated_sources.h"],
+      default_value: "StyleAnimatedSources()",
+    },
+    {
       // Tracks animation sources for inherited properties.
       name: "InheritedAnimatedSources",
       inherited: true,

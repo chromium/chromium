@@ -24,7 +24,9 @@ namespace {
 bool HasSourceFromAnotherElement(const ComputedStyle& style,
                                  const Element& element) {
   auto is_other = [&](auto entry) { return !entry.value.IsOwnedBy(element); };
-  return std::ranges::any_of(style.InheritedAnimatedSources(), is_other) ||
+  return std::ranges::any_of(style.IndependentInheritedAnimatedSources(),
+                             is_other) ||
+         std::ranges::any_of(style.InheritedAnimatedSources(), is_other) ||
          std::ranges::any_of(style.NonInheritedAnimatedSources(), is_other);
 }
 
@@ -45,7 +47,9 @@ void InheritedAnimationTracker::StyleDidChange(LayoutObject& object,
     return;
   }
   const ComputedStyle& new_style = object.StyleRef();
-  if (old_style->InheritedAnimatedSources() ==
+  if (old_style->IndependentInheritedAnimatedSources() ==
+          new_style.IndependentInheritedAnimatedSources() &&
+      old_style->InheritedAnimatedSources() ==
           new_style.InheritedAnimatedSources() &&
       old_style->NonInheritedAnimatedSources() ==
           new_style.NonInheritedAnimatedSources()) {
@@ -97,6 +101,7 @@ void InheritedAnimationTracker::DowngradeForUnsupportedInheritance(
     }
   };
   const ComputedStyle& style = object.StyleRef();
+  record(style.IndependentInheritedAnimatedSources());
   record(style.InheritedAnimatedSources());
   record(style.NonInheritedAnimatedSources());
 }

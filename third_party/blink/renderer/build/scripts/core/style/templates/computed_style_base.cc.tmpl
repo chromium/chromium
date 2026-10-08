@@ -231,6 +231,12 @@ void ComputedStyleBuilderBase::PropagateIndependentInheritedProperties(
   {% for field in computed_style.all_fields if field.is_property and field.is_independent %}
   if ({{field.is_inherited_method_name}}()) {
     {{setter_method_name(field)}}(parent_style.{{getter_method_name(field)}}());
+    {% if field.property_if_main_field.tracks_animated_source %}
+    static_cast<ComputedStyleBuilder*>(this)->CopyAnimatedSourceFrom(
+        CSSPropertyID::{{field.property_if_main_field.enum_key}},
+        static_cast<const ComputedStyle*>(&parent_style),
+        /*has_untracked_dependencies=*/false);
+    {% endif %}
   }
   {% endfor %}
 }

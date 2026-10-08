@@ -91,6 +91,7 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   bool IsShorthand() const { return flags_ & kShorthand; }
   bool IsLonghand() const { return flags_ & kLonghand; }
   bool IsInherited() const { return flags_ & kInherited; }
+  bool IsIndependent() const { return flags_ & kIndependent; }
   bool IsVisited() const { return flags_ & kVisited; }
   bool IsInternal() const { return flags_ & kInternal; }
   bool IsAnimationProperty() const { return flags_ & kAnimation; }
@@ -296,6 +297,8 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     // When percentages_depend_on_used_value is explicitly set to false.
     // See percentages_depend_on_used_value in css_properties.json5
     kPercentagesDoNotDependOnUsedValue = 1ull << 39,
+    // See independent in css_properties.json5.
+    kIndependent = 1ull << 40,
   };
 
   constexpr CSSProperty(CSSPropertyID property_id,
@@ -320,10 +323,10 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   using ValueModeFlags = uint8_t;
 
  private:
-  static constexpr size_t kPropertyIdBits = 16;
+  static constexpr size_t kPropertyIdBits = 15;
   uint64_t property_id_ : kPropertyIdBits;
   uint64_t repetition_separator_ : 8;
-  uint64_t flags_ : 40;
+  uint64_t flags_ : 41;
 
   // Make sure we have room for all valid CSSPropertyIDs.
   // (Using bit fields here reduces CSSProperty size from 24 to 16
