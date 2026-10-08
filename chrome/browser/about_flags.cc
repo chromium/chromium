@@ -4024,21 +4024,6 @@ const FeatureEntry::FeatureParam kAndroidBottomBar1A56dpParam[] = {
 const FeatureEntry::FeatureParam kAndroidBottomBar1A60dpParam[] = {
     {"show_glic_setting_toggle", "true"},
     {"bottom_bar_height_dp", "60"}};
-const FeatureEntry::FeatureParam kAndroidBottomBar1AWithGtsParam[] = {
-    {"show_bottom_bar_on_gts", "true"},
-    {"show_glic_setting_toggle", "true"}};
-const FeatureEntry::FeatureParam kAndroidBottomBar1AWithGts48dpParam[] = {
-    {"show_bottom_bar_on_gts", "true"},
-    {"show_glic_setting_toggle", "true"},
-    {"bottom_bar_height_dp", "48"}};
-const FeatureEntry::FeatureParam kAndroidBottomBar1AWithGts56dpParam[] = {
-    {"show_bottom_bar_on_gts", "true"},
-    {"show_glic_setting_toggle", "true"},
-    {"bottom_bar_height_dp", "56"}};
-const FeatureEntry::FeatureParam kAndroidBottomBar1AWithGts60dpParam[] = {
-    {"show_bottom_bar_on_gts", "true"},
-    {"show_glic_setting_toggle", "true"},
-    {"bottom_bar_height_dp", "60"}};
 const FeatureEntry::FeatureParam kAndroidBottomBarKeepAppMenuInToolbarParam[] =
     {{"keep_app_menu_in_toolbar", "true"},
      {"show_glic_setting_toggle", "true"}};
@@ -4050,10 +4035,6 @@ const FeatureEntry::FeatureVariation kAndroidBottomBarVariations[] = {
     {"- 1A (48dp)", kAndroidBottomBar1A48dpParam, nullptr},
     {"- 1A (56dp)", kAndroidBottomBar1A56dpParam, nullptr},
     {"- 1A (60dp)", kAndroidBottomBar1A60dpParam, nullptr},
-    {"- 1A with GTS", kAndroidBottomBar1AWithGtsParam, nullptr},
-    {"- 1A with GTS (48dp)", kAndroidBottomBar1AWithGts48dpParam, nullptr},
-    {"- 1A with GTS (56dp)", kAndroidBottomBar1AWithGts56dpParam, nullptr},
-    {"- 1A with GTS (60dp)", kAndroidBottomBar1AWithGts60dpParam, nullptr},
     {"- 1A with show domain only", kAndroidBottomBarShowDomainOnlyParam,
      nullptr},
     {"- 1B", kAndroidBottomBarKeepAppMenuInToolbarParam, nullptr}};
