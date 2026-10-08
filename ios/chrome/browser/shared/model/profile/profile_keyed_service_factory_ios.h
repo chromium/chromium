@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_KEYED_SERVICE_FACTORY_IOS_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_KEYED_SERVICE_FACTORY_IOS_H_
 
+#include <concepts>
 #include <memory>
 
 #include "base/compiler_specific.h"
@@ -18,6 +19,8 @@ class ProfileIOS;
 class RefcountedProfileKeyedServiceFactoryIOS;
 class TestProfileIOS;
 
+// LINT.IfChange(ProfileKeyedServiceFactoryIOS)
+//
 // ProfileKeyedServiceFactoryIOS provides a ProfileIOS-specific interface for
 // KeyedServiceFactory under //ios/chrome/browser.
 //
@@ -48,8 +51,8 @@ class TestProfileIOS;
 //             TestingCreation::kNoServiceForTests) {}
 // };
 //
-// Any change to this class should also be reflected on
-// RefcountedProfileKeyedServiceFactoryIOS.
+// Prefer inheriting from TypedProfileKeyedServiceFactoryIOS instead
+// of directly inheriting from ProfileKeyedServiceFactoryIOS.
 class ProfileKeyedServiceFactoryIOS : public KeyedServiceFactory {
  public:
   // List of traits that are valid for the constructor.
@@ -137,5 +140,6 @@ class ProfileKeyedServiceFactoryIOS : public KeyedServiceFactory {
   const ServiceCreation service_creation_;
   const TestingCreation testing_creation_;
 };
+// LINT.ThenChange(//ios/chrome/browser/shared/model/profile/refcounted_profile_keyed_service_factory_ios.h:RefcountedProfileKeyedServiceFactoryIOS)
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_KEYED_SERVICE_FACTORY_IOS_H_

@@ -63,6 +63,8 @@ source_set("profile_keyed_service_factory") {
     "profile_keyed_service_utils.h",
     "refcounted_profile_keyed_service_factory_ios.cc",
     "refcounted_profile_keyed_service_factory_ios.h",
+    "typed_profile_keyed_service_factory_ios.h",
+    "typed_refcounted_profile_keyed_service_factory_ios.h",
   ]
 
   deps = [
