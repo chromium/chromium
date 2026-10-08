@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
@@ -131,12 +130,13 @@ void LargestContentfulPaintCalculator::OnFramePresented(
     LcpCandidates* candidates) {
   if (auto* candidate = candidates->Candidate<ImageRecord>();
       candidate &&
-      candidate->IsEffectiveSizeLargerThan(largest_painted_image_)) {
-    largest_painted_image_ = candidate;
+      candidate->IsEffectiveSizeLargerThan(largest_presented_image_)) {
+    largest_presented_image_ = candidate;
   }
   if (auto* candidate = candidates->Candidate<TextRecord>();
-      candidate && candidate->IsEffectiveSizeLargerThan(largest_text_)) {
-    largest_text_ = candidate;
+      candidate &&
+      candidate->IsEffectiveSizeLargerThan(largest_presented_text_)) {
+    largest_presented_text_ = candidate;
   }
   MaybeFlushCandidates();
 }
@@ -153,26 +153,21 @@ void LargestContentfulPaintCalculator::MaybeFlushCandidates() {
 
 void LargestContentfulPaintCalculator::
     UpdateWebExposedLargestContentfulPaintIfNeeded() {
-  // If UseLargestPaintedImageForLCPCandidate is enabled, use
-  // `largest_painted_image_` rather than `LargestPaintedOrPendingImage()` for
-  // the web-exposed entry, which matches the spec and ensures the entry is
-  // emitted if the `largest_pending_image_` gets removed.
-  ImageRecord* largest_image =
-      RuntimeEnabledFeatures::UseLargestPaintedImageForLCPCandidateEnabled()
-          ? largest_painted_image_.Get()
-          : LargestPaintedOrPendingImage();
-
-  uint64_t text_size =
-      largest_text_ ? largest_text_->EffectiveVisualSize() : 0u;
-  uint64_t image_size =
-      largest_image ? largest_image->EffectiveVisualSize() : 0u;
+  uint64_t text_size = largest_presented_text_
+                           ? largest_presented_text_->EffectiveVisualSize()
+                           : 0u;
+  uint64_t image_size = largest_presented_image_
+                            ? largest_presented_image_->EffectiveVisualSize()
+                            : 0u;
   if (image_size > text_size) {
-    if (image_size > largest_reported_size_ && largest_image->HasPaintTime()) {
-      UpdateWebExposedLargestContentfulImage(*largest_image);
+    if (image_size > largest_reported_size_) {
+      CHECK(largest_presented_image_->HasPaintTime());
+      UpdateWebExposedLargestContentfulImage(*largest_presented_image_);
     }
   } else {
-    if (text_size > largest_reported_size_ && largest_text_->HasPaintTime()) {
-      UpdateWebExposedLargestContentfulText(*largest_text_.Get());
+    if (text_size > largest_reported_size_) {
+      CHECK(largest_presented_text_->HasPaintTime());
+      UpdateWebExposedLargestContentfulText(*largest_presented_text_.Get());
     }
   }
 }
@@ -282,7 +277,7 @@ bool LargestContentfulPaintCalculator::HasLargestTextPaintChangedForMetrics(
 
 bool LargestContentfulPaintCalculator::
     UpdateMetricsIfLargestImagePaintChanged() {
-  ImageRecord* largest_image = LargestPaintedOrPendingImage();
+  ImageRecord* largest_image = LargestPresentedOrPendingImage();
   if (!largest_image) {
     return false;
   }
@@ -382,25 +377,17 @@ bool LargestContentfulPaintCalculator::
 
 bool LargestContentfulPaintCalculator::
     UpdateMetricsIfLargestTextPaintChanged() {
-  if (!largest_text_) {
-    return false;
-  }
-  // For hard navs, `largest_text_` is updated during the presentation callback,
-  // so we always have paint time. But soft navs updates this during paint, so
-  // we may not.
-  // TODO(crbug.com/449779010): Unify soft and hard nav behavior.
-  if (!largest_text_->HasPaintTime()) {
-    CHECK(!delegate_->IsHardNavigation());
+  if (!largest_presented_text_) {
     return false;
   }
 
-  const TextRecord& text_record = *largest_text_.Get();
+  const TextRecord& text_record = *largest_presented_text_.Get();
+  CHECK(text_record.HasPaintTime());
   if (!HasLargestTextPaintChangedForMetrics(
           text_record.PaintTime(), text_record.EffectiveVisualSize())) {
     return false;
   }
 
-  DCHECK(text_record.HasPaintTime());
   latest_lcp_details_.largest_text_paint_time = text_record.PaintTime();
   latest_lcp_details_.largest_text_paint_size =
       text_record.EffectiveVisualSize();
@@ -438,8 +425,8 @@ void LargestContentfulPaintCalculator::UpdateLatestLcpDetailsTypeIfNeeded() {
 void LargestContentfulPaintCalculator::Trace(Visitor* visitor) const {
   visitor->Trace(window_performance_);
   visitor->Trace(delegate_);
-  visitor->Trace(largest_text_);
-  visitor->Trace(largest_painted_image_);
+  visitor->Trace(largest_presented_text_);
+  visitor->Trace(largest_presented_image_);
   visitor->Trace(largest_pending_image_);
 }
 
@@ -558,7 +545,7 @@ void LargestContentfulPaintCalculator::OnImageRemoved(
     const LayoutObject& object,
     const MediaTiming* timing) {
   // TODO(crbug.com/457794552): This causes metrics to fall back to the
-  // `largest_painted_image_`, but there are a couple problems with this:
+  // `largest_presented_image_`, but there are a couple problems with this:
   //  - What if there's a larger pending image and the page unloads? We might
   //    want to iterate through the list of pending image records to get the
   //    next largest pending image.
@@ -574,15 +561,15 @@ void LargestContentfulPaintCalculator::OnImageRemoved(
   }
 }
 
-ImageRecord* LargestContentfulPaintCalculator::LargestPaintedOrPendingImage()
+ImageRecord* LargestContentfulPaintCalculator::LargestPresentedOrPendingImage()
     const {
-  if (!largest_painted_image_ ||
+  if (!largest_presented_image_ ||
       (largest_pending_image_ &&
-       (largest_painted_image_->EffectiveVisualSize() <
+       (largest_presented_image_->EffectiveVisualSize() <
         largest_pending_image_->EffectiveVisualSize()))) {
     return largest_pending_image_.Get();
   }
-  return largest_painted_image_.Get();
+  return largest_presented_image_.Get();
 }
 
 void LargestContentfulPaintCalculator::MaybeRecordRemovedCandidateUseCounter(
@@ -590,16 +577,16 @@ void LargestContentfulPaintCalculator::MaybeRecordRemovedCandidateUseCounter(
   if (record.IsTextRecord()) {
     // This might not end up affecting metrics, but it could, and it could be
     // emitted to performance timeline (depending on the largest image).
-    if (record.IsEffectiveSizeLargerThan(largest_text_)) {
+    if (record.IsEffectiveSizeLargerThan(largest_presented_text_)) {
       UseCounter::Count(window_performance_->DomWindow(),
                         WebFeature::kLcpCandidateRemovedWhilePaintTimePending);
     }
   } else {
-    // Use `LargestPaintedOrPendingImage()` instead of `largest_painted_image_`
-    // since it's what's used to determine the largest image candidate for
+    // Use `LargestPresentedOrPendingImage()` instead of
+    // `largest_presented_image_` since that determines the image candidate for
     // metrics. This might not end up affecting metrics, but it could, and it
     // could be emitted to performance timeline (depending on the largest text).
-    ImageRecord* largest_image = LargestPaintedOrPendingImage();
+    ImageRecord* largest_image = LargestPresentedOrPendingImage();
     if (record.IsEffectiveSizeLargerThan(largest_image)) {
       UseCounter::Count(window_performance_->DomWindow(),
                         WebFeature::kLcpCandidateRemovedWhilePaintTimePending);

@@ -158,13 +158,13 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   // Returns true iff the given `ImageRecord` is larger than the current
   // largest image candidate.
   bool IsNewLargestCandidate(const ImageRecord& record) const {
-    return record.IsEffectiveSizeLargerThan(largest_painted_image_);
+    return record.IsEffectiveSizeLargerThan(largest_presented_image_);
   }
 
-  // Returns true iff the given `TextRecord` is larger than the current
-  // largest text candidate.
+  // Returns true iff the given `TextRecord` is larger than the current largest
+  // text candidate.
   bool IsNewLargestCandidate(const TextRecord& record) const {
-    return record.IsEffectiveSizeLargerThan(largest_text_);
+    return record.IsEffectiveSizeLargerThan(largest_presented_text_);
   }
 
   // Called when an image is painted for the first time, regardless of whether
@@ -221,7 +221,7 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   // the frame they were presented in.
   void MaybeRecordRemovedCandidateUseCounter(const PaintTimingRecord&);
 
-  ImageRecord* LargestPaintedOrPendingImage() const;
+  ImageRecord* LargestPresentedOrPendingImage() const;
 
   Member<WindowPerformance> window_performance_;
 
@@ -237,18 +237,14 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
 
   Member<Delegate> delegate_;
 
-  // The current largest text. For hard navs, this is the largest presented
-  // text. For soft navs, it's the largest painted text.
-  //
-  // TODO(crbug.com/454082771): Soft nav behavior should match hard nav behavior
-  // for this and and `largest_painted_image_`.
-  Member<TextRecord> largest_text_;
+  // The current largest presented text, which represents the current LCP text
+  // candidate.
+  Member<TextRecord> largest_presented_text_;
 
-  // The current largest image "committed" candidate. For hard navs, this is the
-  // largest presented image, and it's the LCP image candidate if it's larger
-  // than the `largest_pending_image_`. For soft navs, this is the largest
-  // painted image, and it represents the current LCP image candidate.
-  Member<ImageRecord> largest_painted_image_;
+  // The current largest presented image. For soft navs, this is the current LCP
+  // image candidate; for hard navs, this is the current LCP image candidate if
+  // it's effective size is not less than `largest_pending_image_`.
+  Member<ImageRecord> largest_presented_image_;
 
   // The largest image that has been encountered, but not necessarily loaded,
   // painted, or presented yet. This is used to prevent recording LCP for pages
@@ -256,10 +252,6 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   //
   // TODO(crbug.com/449779010): This is currently only used for hard navs, but
   // soft navs should also have this behavior.
-  //
-  // TODO(crbug.com/454067883): This also affects which intermediate candidates
-  // are emitted to performance timeline, since this gets passed to
-  // `UpdateWebExposedLargestContentfulPaintIfNeeded().
   Member<ImageRecord> largest_pending_image_;
 };
 
