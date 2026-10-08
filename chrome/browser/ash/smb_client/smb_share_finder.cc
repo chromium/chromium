@@ -142,7 +142,9 @@ void SmbShareFinder::OnSharesFound(
     const std::string& host_name,
     smbprovider::ErrorType error,
     const smbprovider::DirectoryEntryListProto& entries) {
-  CHECK_GT(host_counter_, 0u, base::NotFatalUntil::M160);
+  // TODO(crbug.com/568684182): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_GT(host_counter_, 0u);
   --host_counter_;
 
   UMA_HISTOGRAM_ENUMERATION("NativeSmbFileShare.GetSharesResult",
