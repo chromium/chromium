@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -619,21 +620,35 @@ import java.util.function.Supplier;
         int targetState = shouldShowBottomSheetPopup ? PopupState.BOTTOM : PopupState.FLOATING;
         mModel.set(FuseboxProperties.POPUP_STATE, targetState);
         mPopupStateSupplier.set(targetState);
-        if (mScrimManager != null
-                && mModel.get(FuseboxProperties.POPUP_STATE) == PopupState.BOTTOM) {
+        if (mScrimManager != null) {
             if (mScrimModel != null) {
                 mScrimManager.hideScrim(mScrimModel, /* animate= */ false);
             }
-            mScrimModel =
-                    new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
-                            .with(ScrimProperties.ANCHOR_VIEW, mScrimAnchorViewSupplier.get())
-                            .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, true)
-                            .with(ScrimProperties.CLICK_DELEGATE, this::hidePopup)
-                            .with(ScrimProperties.AFFECTS_STATUS_BAR, true)
-                            .build();
+            mScrimModel = createScrimModel(/* isBottomSheet= */ shouldShowBottomSheetPopup);
             mScrimManager.showScrim(mScrimModel);
         }
         mBackPressStateSupplier.set(true);
+    }
+
+    /**
+     * Creates the scrim shown behind the popup. The scrim consumes touches outside the popup so
+     * they don't reach the views behind it. The floating popup uses a transparent scrim, while the
+     * bottom sheet popup uses the default dimmed scrim that also tints the status bar.
+     *
+     * @param isBottomSheet Whether the popup is presented as a bottom sheet.
+     */
+    private PropertyModel createScrimModel(boolean isBottomSheet) {
+        PropertyModel scrimModel =
+                new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
+                        .with(ScrimProperties.ANCHOR_VIEW, mScrimAnchorViewSupplier.get())
+                        .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, true)
+                        .with(ScrimProperties.CLICK_DELEGATE, this::hidePopup)
+                        .with(ScrimProperties.AFFECTS_STATUS_BAR, isBottomSheet)
+                        .build();
+        if (!isBottomSheet) {
+            scrimModel.set(ScrimProperties.BACKGROUND_COLOR, Color.TRANSPARENT);
+        }
+        return scrimModel;
     }
 
     /** Hides the popup if currently shown. */

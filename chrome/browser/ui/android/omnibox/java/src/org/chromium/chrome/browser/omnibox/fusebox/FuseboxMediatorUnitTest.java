@@ -34,6 +34,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -100,6 +101,7 @@ import org.chromium.components.browser_ui.util.ChromeItemPickerUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.contextual_search.ContextUploadErrorType;
 import org.chromium.components.contextual_search.ContextUploadStatus;
 import org.chromium.components.contextual_search.DisclaimerStatus;
@@ -285,6 +287,7 @@ public class FuseboxMediatorUnitTest {
 
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
     @Captor private ArgumentCaptor<WindowAndroid.IntentCallback> mIntentCallbackCaptor;
+    @Captor private ArgumentCaptor<PropertyModel> mScrimModelCaptor;
 
     private Context mContext;
     private Resources mResources;
@@ -971,11 +974,14 @@ public class FuseboxMediatorUnitTest {
 
         // Show popup.
         runnable.run();
-        verify(mScrimManager).showScrim(any());
+        verify(mScrimManager).showScrim(mScrimModelCaptor.capture());
+        PropertyModel scrimModel = mScrimModelCaptor.getValue();
+        assertNull(scrimModel.get(ScrimProperties.BACKGROUND_COLOR));
+        assertTrue(scrimModel.get(ScrimProperties.AFFECTS_STATUS_BAR));
 
         // Hide popup.
         runnable.run();
-        verify(mScrimManager).hideScrim(any(), eq(true));
+        verify(mScrimManager).hideScrim(scrimModel, /* animate= */ true);
     }
 
     @Test
@@ -1013,7 +1019,7 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void testPopupShowHide_floatingMode_doesNotTriggerScrim() {
+    public void testPopupShowHide_floatingMode_triggersTransparentScrim() {
         OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ false);
         recreateMediator();
         Runnable runnable = mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED);
@@ -1021,7 +1027,15 @@ public class FuseboxMediatorUnitTest {
 
         // Show popup.
         runnable.run();
-        verify(mScrimManager, never()).showScrim(any());
+        verify(mScrimManager).showScrim(mScrimModelCaptor.capture());
+        PropertyModel scrimModel = mScrimModelCaptor.getValue();
+        assertEquals(Color.TRANSPARENT, (int) scrimModel.get(ScrimProperties.BACKGROUND_COLOR));
+        assertFalse(scrimModel.get(ScrimProperties.AFFECTS_STATUS_BAR));
+        assertNotNull(scrimModel.get(ScrimProperties.CLICK_DELEGATE));
+
+        // Hide popup.
+        runnable.run();
+        verify(mScrimManager).hideScrim(scrimModel, /* animate= */ true);
     }
 
     @Test
