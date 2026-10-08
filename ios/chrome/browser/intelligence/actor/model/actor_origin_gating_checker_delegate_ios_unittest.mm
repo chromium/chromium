@@ -6,8 +6,9 @@
 
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
+#import "components/origin_gating/core/decision.h"
+#import "components/origin_gating/core/gateable_event.h"
 #import "components/origin_gating/core/origin_gating_checker.h"
-#import "components/origin_gating/core/types.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"

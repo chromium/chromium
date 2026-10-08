@@ -11,8 +11,12 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/origin_gating/core/concepts.h"
+#include "components/origin_gating/core/decision.h"
+#include "components/origin_gating/core/decision_attribution.h"
+#include "components/origin_gating/core/decision_source.h"
+#include "components/origin_gating/core/gateable_event.h"
+#include "components/origin_gating/core/gating_decision.h"
 #include "components/origin_gating/core/origin_gating_cache.h"
-#include "components/origin_gating/core/types.h"
 #include "url/gurl.h"
 
 namespace origin_gating {

@@ -11,8 +11,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/origin_gating/core/gateable_event.h"
+#include "components/origin_gating/core/gating_decision.h"
 #include "components/origin_gating/core/origin_gating_checker.h"
-#include "components/origin_gating/core/types.h"
 
 class DevToolsNavigationGatingRuleManager;
 class DevToolsNavigationGatingServiceFactory;

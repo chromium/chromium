@@ -7,7 +7,9 @@
 #import "base/check.h"
 #import "base/check_deref.h"
 #import "base/functional/callback.h"
-#import "components/origin_gating/core/types.h"
+#import "components/origin_gating/core/decision.h"
+#import "components/origin_gating/core/gateable_event.h"
+#import "components/origin_gating/core/gating_decision.h"
 #import "url/gurl.h"
 #import "url/origin.h"
 

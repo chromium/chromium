@@ -45,7 +45,6 @@
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/origin_gating/core/task_policy_config.h"
-#include "components/origin_gating/core/types.h"
 #include "components/password_manager/core/browser/actor_login/password_change_from_checkup_actor_login_service.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/mock_password_form_cache.h"

@@ -7,7 +7,8 @@
 #include <memory>
 #include <string_view>
 
-#include "components/origin_gating/core/types.h"
+#include "components/origin_gating/core/decision.h"
+#include "components/origin_gating/core/gateable_event.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 

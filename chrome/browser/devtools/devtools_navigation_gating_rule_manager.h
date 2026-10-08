@@ -10,7 +10,8 @@
 
 #include "base/no_destructor.h"
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
-#include "components/origin_gating/core/types.h"
+#include "components/origin_gating/core/decision.h"
+#include "components/origin_gating/core/gateable_event.h"
 
 // Manages configuration rules for DevTools navigation gating.
 // The configuration is loaded globally from command-line switches as a

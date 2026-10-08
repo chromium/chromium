@@ -10,7 +10,9 @@
 #include <vector>
 
 #include "base/check.h"
-#include "components/origin_gating/core/types.h"
+#include "components/origin_gating/core/decision_attribution.h"
+#include "components/origin_gating/core/decision_source.h"
+#include "components/origin_gating/core/gateable_event.h"
 
 namespace origin_gating {
 
