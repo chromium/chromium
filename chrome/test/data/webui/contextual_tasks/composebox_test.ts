@@ -3585,7 +3585,8 @@ function createVoiceResults(transcripts: string[]): SpeechRecognitionEvent {
                   assertTrue(submitButton.part.contains('voice-submit-button'));
                   assertEquals(
                       SubmitButtonIconType.UPWARD, submitButton.iconType);
-                  assertTrue(submitButton.disabled);
+                  // Active even before any speech has been recognized.
+                  assertFalse(submitButton.disabled);
                   assertEquals(
                       '0',
                       window.getComputedStyle(submitButton)

@@ -550,6 +550,12 @@ export class ComposeboxVoiceSearchElement extends
     e.preventDefault();
     e.stopPropagation();
 
+    if (!this.transcript_) {
+      // Nothing has been recognized yet, so there is nothing to submit. Exit
+      // voice search and return to the searchbox, the same as closing it.
+      this.onCloseClick_();
+      return;
+    }
     this.onFinalResult_(this.transcript_, /*forceSubmit=*/ true);
   }
 
