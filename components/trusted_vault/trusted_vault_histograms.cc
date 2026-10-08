@@ -225,6 +225,12 @@ void RecordTrustedVaultFileWriteSuccess(bool success) {
   base::UmaHistogramBoolean("TrustedVault.FileWriteSuccess", success);
 }
 
+void RecordTrustedVaultLocalDomainsMigrationStatus(
+    TrustedVaultLocalDomainsMigrationStatusForUMA status) {
+  base::UmaHistogramEnumeration("TrustedVault.LocalDomainsMigrationStatus",
+                                status);
+}
+
 void RecordTrustedVaultSetEncryptionKeysForSecurityDomain(
     std::optional<SecurityDomainId> security_domain,
     IsOffTheRecord is_off_the_record) {

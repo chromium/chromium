@@ -108,7 +108,9 @@ class DefaultStorageFileAccess : public LocalDomainsStorage::StorageFileAccess {
     if (!base::PathExists(
             LegacyStandaloneTrustedVaultStorage::GetBackendFilePath(
                 base_dir_, SecurityDomainId::kChromeSync))) {
-      WriteLocalDomainsDataToDiskImpl(migrated_data, local_domains_file_path_);
+      WriteMigratedData(
+          migrated_data,
+          TrustedVaultLocalDomainsMigrationStatusForUMA::kNoLegacyFile);
       return migrated_data;
     }
 
@@ -116,12 +118,16 @@ class DefaultStorageFileAccess : public LocalDomainsStorage::StorageFileAccess {
         LegacyStandaloneTrustedVaultStorage::ReadDataForMigration(
             base_dir_, SecurityDomainId::kChromeSync);
     if (!legacy_data.has_value()) {
-      WriteLocalDomainsDataToDiskImpl(migrated_data, local_domains_file_path_);
+      WriteMigratedData(
+          migrated_data,
+          TrustedVaultLocalDomainsMigrationStatusForUMA::kLegacyFileReadFailed);
       return migrated_data;
     }
 
     if (legacy_data->user_size() == 0) {
-      WriteLocalDomainsDataToDiskImpl(migrated_data, local_domains_file_path_);
+      WriteMigratedData(
+          migrated_data,
+          TrustedVaultLocalDomainsMigrationStatusForUMA::kLegacyFileEmpty);
       return migrated_data;
     }
 
@@ -190,8 +196,20 @@ class DefaultStorageFileAccess : public LocalDomainsStorage::StorageFileAccess {
 #endif
     }
 
-    WriteLocalDomainsDataToDiskImpl(migrated_data, local_domains_file_path_);
+    WriteMigratedData(migrated_data,
+                      TrustedVaultLocalDomainsMigrationStatusForUMA::kMigrated);
     return migrated_data;
+  }
+
+  void WriteMigratedData(
+      const trusted_vault_pb::LocalDomainsData& migrated_data,
+      TrustedVaultLocalDomainsMigrationStatusForUMA migration_status) {
+    const bool write_success = WriteLocalDomainsDataToDiskImpl(
+        migrated_data, local_domains_file_path_);
+    RecordTrustedVaultLocalDomainsMigrationStatus(
+        write_success ? migration_status
+                      : TrustedVaultLocalDomainsMigrationStatusForUMA::
+                            kNewFileWriteFailed);
   }
 
   const base::FilePath base_dir_;

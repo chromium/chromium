@@ -144,6 +144,18 @@ chromium-metrics-reviews@google.com.
   <token key="SecurityDomainId" variants="SecurityDomainId"/>
 </histogram>
 
+<histogram name="TrustedVault.LocalDomainsMigrationStatus"
+    enum="TrustedVaultLocalDomainsMigrationStatus" expires_after="2027-03-18">
+  <owner>thomasth@google.com</owner>
+  <owner>src/components/trusted_vault/OWNERS</owner>
+  <summary>
+    Recorded when attempting to migrate legacy local trusted vault data
+    (trusted_vault.pb) to the multi-domain storage format
+    (local_domains_data.pb) when local_domains_data.pb does not yet exist on
+    disk.
+  </summary>
+</histogram>
+
 <histogram name="TrustedVault.RecoverabilityStatusOnRequestCompletion"
     enum="TrustedVaultRecoverabilityStatus" expires_after="2027-09-11">
   <owner>mmrashad@google.com</owner>

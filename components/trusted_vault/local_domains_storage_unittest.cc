@@ -224,7 +224,7 @@ class LocalDomainsStorageDiskTest : public testing::Test {
 };
 
 TEST_F(LocalDomainsStorageDiskTest,
-       ShouldRecordNotFoundAndWriteEmptyFileWhenNoLegacyFile) {
+       ShouldRecordNotFoundAndNoLegacyFileAndWriteEmptyFile) {
   auto storage = LocalDomainsStorage::Create(base_dir());
   base::HistogramTester histogram_tester;
   storage->ReadDataFromDisk();
@@ -232,6 +232,9 @@ TEST_F(LocalDomainsStorageDiskTest,
   histogram_tester.ExpectUniqueSample(
       "TrustedVault.FileReadStatus",
       TrustedVaultFileReadStatusForUMA::kNotFound, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.LocalDomainsMigrationStatus",
+      TrustedVaultLocalDomainsMigrationStatusForUMA::kNoLegacyFile, 1);
   EXPECT_TRUE(base::PathExists(local_domains_file_path()));
 }
 
@@ -247,6 +250,8 @@ TEST_F(LocalDomainsStorageDiskTest,
   histogram_tester.ExpectUniqueSample(
       "TrustedVault.FileReadStatus",
       TrustedVaultFileReadStatusForUMA::kDataProtoDeserializationFailed, 1);
+  histogram_tester.ExpectTotalCount("TrustedVault.LocalDomainsMigrationStatus",
+                                    0);
 }
 
 TEST_F(LocalDomainsStorageDiskTest, ShouldWriteAndReadLocalDomainsDataOnDisk) {
@@ -273,6 +278,8 @@ TEST_F(LocalDomainsStorageDiskTest, ShouldWriteAndReadLocalDomainsDataOnDisk) {
   read_histogram_tester.ExpectUniqueSample(
       "TrustedVault.FileReadStatus", TrustedVaultFileReadStatusForUMA::kSuccess,
       1);
+  read_histogram_tester.ExpectTotalCount(
+      "TrustedVault.LocalDomainsMigrationStatus", 0);
 
   EXPECT_EQ(
       reloaded_storage->GetVaultKeys(kGaiaId, SecurityDomainId::kPasskeys),
@@ -305,6 +312,8 @@ TEST_F(LocalDomainsStorageDiskTest, ShouldClearDataOnVersionMismatch) {
   histogram_tester.ExpectUniqueSample(
       "TrustedVault.FileReadStatus",
       TrustedVaultFileReadStatusForUMA::kUnsupportedVersion, 1);
+  histogram_tester.ExpectTotalCount("TrustedVault.LocalDomainsMigrationStatus",
+                                    0);
   EXPECT_TRUE(
       storage->GetVaultKeys(kGaiaId, SecurityDomainId::kChromeSync).empty());
   EXPECT_EQ(storage->GetLastKeyVersion(kGaiaId, SecurityDomainId::kChromeSync),
@@ -336,6 +345,9 @@ TEST_F(LocalDomainsStorageDiskTest, ShouldMigrateLegacyTrustedVaultData) {
   histogram_tester.ExpectUniqueSample(
       "TrustedVault.FileReadStatus.ChromeSync",
       TrustedVaultFileReadStatusForUMA::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.LocalDomainsMigrationStatus",
+      TrustedVaultLocalDomainsMigrationStatusForUMA::kMigrated, 1);
   histogram_tester.ExpectUniqueSample("TrustedVault.FileWriteSuccess", true, 1);
   EXPECT_TRUE(base::PathExists(local_domains_file_path()));
 
@@ -361,6 +373,44 @@ TEST_F(LocalDomainsStorageDiskTest, ShouldMigrateLegacyTrustedVaultData) {
   reload_histogram_tester.ExpectUniqueSample(
       "TrustedVault.FileReadStatus", TrustedVaultFileReadStatusForUMA::kSuccess,
       1);
+  reload_histogram_tester.ExpectTotalCount(
+      "TrustedVault.LocalDomainsMigrationStatus", 0);
+}
+
+TEST_F(LocalDomainsStorageDiskTest,
+       ShouldRecordLegacyFileReadFailedWhenLegacyFileIsCorrupted) {
+  trusted_vault_pb::LocalTrustedVaultFileContent corrupted_legacy_file;
+  corrupted_legacy_file.set_md5_digest_hex_string("wrong_md5");
+  ASSERT_TRUE(base::WriteFile(legacy_file_path(),
+                              corrupted_legacy_file.SerializeAsString()));
+
+  auto storage = LocalDomainsStorage::Create(base_dir());
+  base::HistogramTester histogram_tester;
+  storage->ReadDataFromDisk();
+
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.FileReadStatus.ChromeSync",
+      TrustedVaultFileReadStatusForUMA::kMD5DigestMismatch, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.LocalDomainsMigrationStatus",
+      TrustedVaultLocalDomainsMigrationStatusForUMA::kLegacyFileReadFailed, 1);
+  EXPECT_TRUE(base::PathExists(local_domains_file_path()));
+}
+
+TEST_F(LocalDomainsStorageDiskTest,
+       ShouldRecordLegacyFileEmptyWhenLegacyFileHasNoUsers) {
+  trusted_vault_pb::LocalTrustedVault empty_legacy_data;
+  ASSERT_TRUE(
+      WriteLegacyTrustedVaultFile(empty_legacy_data, legacy_file_path()));
+
+  auto storage = LocalDomainsStorage::Create(base_dir());
+  base::HistogramTester histogram_tester;
+  storage->ReadDataFromDisk();
+
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.LocalDomainsMigrationStatus",
+      TrustedVaultLocalDomainsMigrationStatusForUMA::kLegacyFileEmpty, 1);
+  EXPECT_TRUE(base::PathExists(local_domains_file_path()));
 }
 
 TEST_F(LocalDomainsStorageDiskTest,

@@ -111,6 +111,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultListSecurityDomainMembersPinStatus) -->
 
+<!-- LINT.IfChange(TrustedVaultLocalDomainsMigrationStatus) -->
+
+<enum name="TrustedVaultLocalDomainsMigrationStatus">
+  <int value="0" label="Migrated successfully"/>
+  <int value="1" label="No legacy file found"/>
+  <int value="2" label="Legacy file was empty"/>
+  <int value="3" label="Failed to read legacy file"/>
+  <int value="4" label="Failed to write new file"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultLocalDomainsMigrationStatus) -->
+
 <!-- LINT.IfChange(TrustedVaultRecoverabilityStatus) -->
 
 <enum name="TrustedVaultRecoverabilityStatus">
