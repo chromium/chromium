@@ -2,34 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {                             //
-             AdditionalContext,           //
-             AdditionalContextPart,       //
-             AnnotatedPageData,           //
-             ClientErrorDialogType,       //
-             ConversationInfo,            //
-             CounterAbuseVerdict,         //
-             ErrorReasonTypes,            //
-             ErrorWithReason,             //
-             FocusedTabDataHasFocus,      //
-             FocusedTabDataHasNoFocus,    //
-             InvokeOptions,               //
-             MetricUserInputReactionType, //
-             MicrophoneStatus,            //
-             OnResponseStoppedDetails,    //
-             OpenPinnedTabPickerOptions,  //
-             PageMetadata,                //
-             PdfDocumentData,             //
-             PinTabsOptions,              //
-             PromptType,                  //
-             ResumeActorTaskResult,       //
-             TabContextOptions,           //
-             TabContextResult,            //
-             TabData,                     //
-             UnpinTabsOptions,            //
-             UserProfileInfo,             //
-             WebClientMode,               //
-             ZeroStateSuggestions,        //
+import type {                            //
+             AdditionalContext,          //
+             AdditionalContextPart,      //
+             AnnotatedPageData,          //
+             ClientErrorDialogType,      //
+             ConversationInfo,           //
+             CounterAbuseVerdict,        //
+             ErrorReasonTypes,           //
+             ErrorWithReason,            //
+             FocusedTabDataHasFocus,     //
+             FocusedTabDataHasNoFocus,   //
+             InvokeOptions,              //
+             MicrophoneStatus,           //
+             OpenPinnedTabPickerOptions, //
+             PageMetadata,               //
+             PdfDocumentData,            //
+             PinTabsOptions,             //
+             ResumeActorTaskResult,      //
+             TabContextOptions,          //
+             TabContextResult,           //
+             TabData,                    //
+             UnpinTabsOptions,           //
+             UserProfileInfo,            //
+             WebClientMode,              //
+             ZeroStateSuggestions,       //
 } from '../glic_api/glic_api.js';
 
 import type {InterfaceDef, InterfaceDefMethods} from './transport/messaging.js';
@@ -216,72 +213,7 @@ export const WebClientHostDef = defInterface({
       }>(),
       histogram: {id: 29},
     },
-    {
-      name: 'onUserInputSubmitted',
-      request: defMessage<{
-        mode: number,
-        promptType?: PromptType,
-      }>(),
-      histogram: {id: 38},
-    },
-    {
-      name: 'onReaction',
-      request: defMessage<{
-        reactionType: MetricUserInputReactionType,
-      }>(),
-      histogram: {id: 66},
-    },
-    {
-      name: 'onOptinImpression',
-      histogram: {id: 99},
-    },
-    {
-      name: 'onContextUploadStarted',
-      histogram: {id: 68},
-    },
-    {
-      name: 'onContextUploadCompleted',
-      histogram: {id: 67},
-    },
-    {
-      name: 'onResponseStarted',
-      histogram: {id: 40},
-    },
-    {
-      name: 'onResponseStopped',
-      request: defMessage<{details?: OnResponseStoppedDetails}>(),
-      histogram: {id: 41},
-    },
-    {
-      name: 'onSessionTerminated',
-      histogram: {id: 42},
-    },
-    {
-      name: 'onTurnCompleted',
-      request: defMessage<{
-        model: number,
-        duration: number,
-      }>(),
-      histogram: {id: 43},
-    },
-    {
-      name: 'onResponseRated',
-      request: defMessage<{
-        positive: boolean,
-      }>(),
-      histogram: {id: 39},
-    },
-    {
-      name: 'onClosedCaptionsShown',
-      histogram: {id: 59},
-    },
-    {
-      name: 'onActionSubmitted',
-      request: defMessage<{
-        isRetry?: boolean,
-      }>(),
-      histogram: {id: 93},
-    },
+
     {
       name: 'setSyntheticExperimentState',
       request: defMessage<{
@@ -382,14 +314,7 @@ export const WebClientHostDef = defInterface({
       }>(),
       histogram: {id: 90},
     },
-    {
-      name: 'recordHistogram',
-      request: defMessage<{
-        name: string,
-        sparseValue: number,
-        // Add other histogram types as needed.
-      }>(),
-    },
+
     {
       name: 'setErrorDialogState',
       request: defMessage<{
@@ -477,12 +402,12 @@ export const RECORDED_REQUEST_IDS = {
   // Do not reuse deleted request ID: 35,
   // Do not reuse deleted request ID: 36,
   // Do not reuse deleted request ID: 37,
-  OnUserInputSubmitted: 38,
-  OnResponseRated: 39,
-  OnResponseStarted: 40,
-  OnResponseStopped: 41,
-  OnSessionTerminated: 42,
-  OnTurnCompleted: 43,
+  // Do not reuse deleted request ID: 38,
+  // Do not reuse deleted request ID: 39,
+  // Do not reuse deleted request ID: 40,
+  // Do not reuse deleted request ID: 41,
+  // Do not reuse deleted request ID: 42,
+  // Do not reuse deleted request ID: 43,
   // Do not reuse deleted request ID: 44,
   // Do not reuse deleted request ID: 45,
   SetSyntheticExperimentState: 46,
@@ -498,16 +423,16 @@ export const RECORDED_REQUEST_IDS = {
   SetClosedCaptioningSetting: 56,
   // Do not reuse deleted request ID: 57,
   MaybeRefreshUserStatus: 58,
-  OnClosedCaptionsShown: 59,
+  // Do not reuse deleted request ID: 59,
   // Do not reuse deleted request ID: 60,
   // Do not reuse deleted request ID: 61,
   // Do not reuse deleted request ID: 62,
   SubscribeToPageMetadata: 63,
   SwitchConversation: 64,
   RegisterConversation: 65,
-  OnReaction: 66,
-  OnContextUploadCompleted: 67,
-  OnContextUploadStarted: 68,
+  // Do not reuse deleted request ID: 66,
+  // Do not reuse deleted request ID: 67,
+  // Do not reuse deleted request ID: 68,
   SetActuationOnWebSetting: 69,
   OnModeChange: 70,
   // Do not reuse deleted request ID: 71,
@@ -531,13 +456,13 @@ export const RECORDED_REQUEST_IDS = {
   OnMicrophoneStatusChange: 90,
   // Do not reuse deleted request ID: 91,
   DeleteCapturedRegion: 92,
-  OnActionSubmitted: 93,
+  // Do not reuse deleted request ID: 93,
   // Do not reuse deleted request ID: 94,
   // Do not reuse deleted request ID: 95,
   // Do not reuse deleted request ID: 96,
   // Do not reuse deleted request ID: 97,
   // Do not reuse deleted request ID: 98,
-  OnOptinImpression: 99,
+  // Do not reuse deleted request ID: 99,
   ProcessCounterAbuseVerdict: 100,
   GetImageBytesFromTab: 101,
   // Do not reuse deleted request ID: 102,

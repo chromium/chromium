@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReached} from '//resources/js/assert.js';
 import type {BitmapN32} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
 
 import type {PageMetadata as PageMetadataMojo} from '../../ai_page_content_metadata.mojom-webui.js';
@@ -10,6 +11,8 @@ import {enumFromClient, enumToClient} from '../../enum_conversions.js';
 import {                                       //
   CaptureRegionObserverReceiver,               //
   PinCandidatesObserverReceiver,               //
+  PromptType as PromptTypeMojo,                //
+  ResponseStopCause as ResponseStopCauseMojo,  //
   SettingsPageField as SettingsPageFieldMojo,  //
   TabDataHandlerReceiver,                      //
   TabFaviconHandlerReceiver,                   //
@@ -35,7 +38,12 @@ import type {                                                          //
              WebClientHandlerRemote,                                   //
              WebClientInterface,                                       //
 } from '../../glic.mojom-webui.js';
-import {CaptureRegionErrorReason, ClientCapabilities, HostCapability} from '../../glic_api/glic_api.js';
+import {                     //
+  CaptureRegionErrorReason,  //
+  ClientCapabilities,        //
+  HostCapability,            //
+  ResponseStopCause,         //
+} from '../../glic_api/glic_api.js';
 import type {                            //
              ActivateTabOptions,         //
              AdditionalContext,          //
@@ -264,7 +272,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     this.getTabByIdObservableSet = new TabDataObservableSet(this.handler);
     this.getTabFaviconByIdObservableSet =
         new TabFaviconObservableSet(this.handler);
-    this.metrics = new GlicBrowserHostMetricsImpl(this.clientRemote);
+    this.metrics = new GlicBrowserHostMetricsImpl(this.handler);
 
     const proxy = createDelegationProxy(this as GlicBrowserHostImpl, [
       this.actorClient,
@@ -1168,61 +1176,76 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
 }
 
 class GlicBrowserHostMetricsImpl implements GlicBrowserHostMetrics {
-  constructor(private sender: PostMessageRemote<WebClientHost>) {}
+  constructor(private handler: WebClientHandlerRemote) {}
 
   onOptinImpression(): void {
-    this.sender.requestNoResponse('onOptinImpression', undefined);
+    this.handler.onOptinImpression();
   }
 
   onUserInputSubmitted(mode: number, promptType?: PromptType): void {
-    this.sender.requestNoResponse('onUserInputSubmitted', {mode, promptType});
+    this.handler.onUserInputSubmitted(
+        webClientModeToMojo(mode),
+        enumFromClient(promptType) ?? PromptTypeMojo.kUnspecified);
   }
 
   onReaction(reactionType: number): void {
-    this.sender.requestNoResponse('onReaction', {reactionType});
+    this.handler.onReaction(reactionType);
   }
 
   onPerformActionResultSubmitted(isRetry?: boolean): void {
-    this.sender.requestNoResponse('onActionSubmitted', {isRetry});
+    this.handler.onActionSubmitted(isRetry ?? false);
   }
 
   onContextUploadStarted(): void {
-    this.sender.requestNoResponse('onContextUploadStarted', undefined);
+    this.handler.onContextUploadStarted();
   }
 
   onContextUploadCompleted(): void {
-    this.sender.requestNoResponse('onContextUploadCompleted', undefined);
+    this.handler.onContextUploadCompleted();
   }
 
   onResponseStarted(): void {
-    this.sender.requestNoResponse('onResponseStarted', undefined);
+    this.handler.onResponseStarted();
   }
 
   onResponseStopped(details?: OnResponseStoppedDetails): void {
-    this.sender.requestNoResponse('onResponseStopped', {details});
+    let cause: ResponseStopCauseMojo;
+    switch (details?.cause) {
+      case undefined:
+        cause = ResponseStopCauseMojo.kUnknown;
+        break;
+      case ResponseStopCause.USER:
+        cause = ResponseStopCauseMojo.kUser;
+        break;
+      case ResponseStopCause.OTHER:
+        cause = ResponseStopCauseMojo.kOther;
+        break;
+      default:
+        assertNotReached();
+    }
+    this.handler.onResponseStopped({cause});
   }
 
   onSessionTerminated(): void {
-    this.sender.requestNoResponse('onSessionTerminated', undefined);
+    this.handler.onSessionTerminated();
   }
 
   onResponseRated(positive: boolean): void {
-    this.sender.requestNoResponse('onResponseRated', {positive});
+    this.handler.onResponseRated(positive);
   }
 
-  onClosedCaptionsShown?(): void {
-    this.sender.requestNoResponse('onClosedCaptionsShown', undefined);
+  onClosedCaptionsShown(): void {
+    this.handler.onClosedCaptionsShown();
   }
 
-  onTurnCompleted?(model: number, duration: number): void {
-    this.sender.requestNoResponse('onTurnCompleted', {model, duration});
+  onTurnCompleted(model: number, duration: number): void {
+    this.handler.onTurnCompleted(model, timeDeltaFromClient(duration));
   }
 
-  onRecordUseCounter?(counter: number): void {
+  onRecordUseCounter(counter: number): void {
     // Since the frontend can contain a newer version than what Chrome is
     // built against, we use a sparse histogram.
-    this.sender.requestNoResponse(
-        'recordHistogram', {name: 'Glic.Api.UseCounter', sparseValue: counter});
+    this.handler.recordSparseValue('Glic.Api.UseCounter', counter);
   }
 }
 

@@ -5,21 +5,15 @@
 // This file handles messages from the client, usually passing them on
 // to the browser via mojo.
 
-import {assertNotReached} from '//resources/js/assert.js';
-
 import {enumFromClient} from '../../enum_conversions.js';
-import {PromptType as PromptTypeMojo, ResponseStopCause as ResponseStopCauseMojo} from '../../glic.mojom-webui.js';
 import type {WebClientHandlerInterface} from '../../glic.mojom-webui.js';
-import {ResponseStopCause} from '../../glic_api/glic_api.js';
 import type {                            //
              ClientErrorDialogType,      //
              ConversationInfo,           //
              CounterAbuseVerdict,        //
              MicrophoneStatus,           //
-             OnResponseStoppedDetails,   //
              OpenPinnedTabPickerOptions, //
              PinTabsOptions,             //
-             PromptType,                 //
              TabContextOptions,          //
              UnpinTabsOptions,           //
              WebClientMode,              //
@@ -262,74 +256,6 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
     this.handler.setAudioDucking(request.enabled);
   }
 
-  onOptinImpression(): void {
-    this.handler.onOptinImpression();
-  }
-
-  onUserInputSubmitted(request: {mode: number, promptType?: PromptType}): void {
-    this.handler.onUserInputSubmitted(
-        webClientModeToMojo(request.mode),
-        enumFromClient(request.promptType) ?? PromptTypeMojo.kUnspecified);
-  }
-
-  onContextUploadStarted(): void {
-    this.handler.onContextUploadStarted();
-  }
-
-  onContextUploadCompleted(): void {
-    this.handler.onContextUploadCompleted();
-  }
-
-  onReaction(request: {reactionType: number}): void {
-    this.handler.onReaction(request.reactionType);
-  }
-
-  onActionSubmitted(request: {isRetry?: boolean}): void {
-    this.handler.onActionSubmitted(request.isRetry ?? false);
-  }
-
-  onResponseStarted(): void {
-    this.handler.onResponseStarted();
-  }
-
-  onResponseStopped(request: {details?: OnResponseStoppedDetails}): void {
-    const cause = request.details?.cause;
-
-    let causeMojo = ResponseStopCauseMojo.kUnknown;
-    if (cause !== undefined) {
-      switch (cause) {
-        case ResponseStopCause.USER:
-          causeMojo = ResponseStopCauseMojo.kUser;
-          break;
-        case ResponseStopCause.OTHER:
-          causeMojo = ResponseStopCauseMojo.kOther;
-          break;
-        default:
-          assertNotReached();
-      }
-    }
-    this.handler.onResponseStopped({cause: causeMojo});
-  }
-
-  onSessionTerminated(): void {
-    this.handler.onSessionTerminated();
-  }
-
-  onTurnCompleted(request: {model: number, duration: number}): void {
-    this.handler.onTurnCompleted(
-        request.model, timeDeltaFromClient(request.duration));
-  }
-
-  recordHistogram(request: {name: string, sparseValue: number}): void {
-    this.handler.recordSparseValue(request.name, request.sparseValue);
-  }
-  onResponseRated(request: {positive: boolean}): void {
-    this.handler.onResponseRated(request.positive);
-  }
-
-  onClosedCaptionsShown(): void {
-    this.handler.onClosedCaptionsShown();
-  }
 
 
   setSyntheticExperimentState(request: {

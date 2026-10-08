@@ -1393,11 +1393,13 @@ class GlicWebClientHandler
   }
 
   void OnOptinImpression() override {
+    LogApiRequest(GlicHostApiRequestId::kOnOptinImpression);
     host().instance_metrics().OnOptinImpression();
   }
 
   void OnUserInputSubmitted(mojom::WebClientMode mode,
                             mojom::PromptType prompt_type) override {
+    LogApiRequest(GlicHostApiRequestId::kOnUserInputSubmitted);
     if (base::FeatureList::IsEnabled(
             features::kGlicFixTimeToFirstQueryKillSwitch)) {
       glic_service_->metrics()->OnUserInputSubmitted(mode, prompt_type);
@@ -1412,20 +1414,24 @@ class GlicWebClientHandler
   }
 
   void OnContextUploadStarted() override {
+    LogApiRequest(GlicHostApiRequestId::kOnContextUploadStarted);
     glic_service_->metrics()->OnContextUploadStarted();
   }
 
   void OnContextUploadCompleted() override {
+    LogApiRequest(GlicHostApiRequestId::kOnContextUploadCompleted);
     glic_service_->metrics()->OnContextUploadCompleted();
   }
 
   void OnReaction(mojom::MetricUserInputReactionType reaction_type) override {
+    LogApiRequest(GlicHostApiRequestId::kOnReaction);
     host().instance_metrics().OnReaction(reaction_type);
   }
 
   // TODO(crbug.com/450026474): Remove call to GlicMetrics once
   // non-profile-scoped metrics are logged entirely from GlicInstanceMetrics.
   void OnResponseStarted() override {
+    LogApiRequest(GlicHostApiRequestId::kOnResponseStarted);
     host().instance_metrics_backwards_compatibility().OnResponseStarted();
     host().instance_metrics().RecordAttachedContextTabCount(
         GetSharingManagerInternal().GetNumPinnedTabs());
@@ -1434,6 +1440,7 @@ class GlicWebClientHandler
   // TODO(crbug.com/450026474): Remove call to GlicMetrics once
   // non-profile-scoped metrics are logged entirely from GlicInstanceMetrics.
   void OnResponseStopped(mojom::OnResponseStoppedDetailsPtr details) override {
+    LogApiRequest(GlicHostApiRequestId::kOnResponseStopped);
     mojom::ResponseStopCause cause = mojom::ResponseStopCause::kUnknown;
     if (details) {
       cause = details->cause;
@@ -1442,23 +1449,28 @@ class GlicWebClientHandler
   }
 
   void OnSessionTerminated() override {
+    LogApiRequest(GlicHostApiRequestId::kOnSessionTerminated);
     glic_service_->metrics()->OnSessionTerminated();
   }
 
   void OnTurnCompleted(glic::mojom::WebClientModel model,
                        base::TimeDelta duration) override {
+    LogApiRequest(GlicHostApiRequestId::kOnTurnCompleted);
     host().instance_metrics().OnTurnCompleted(model, duration);
   }
 
   void OnResponseRated(bool positive) override {
+    LogApiRequest(GlicHostApiRequestId::kOnResponseRated);
     glic_service_->metrics()->OnResponseRated(positive);
   }
 
   void OnClosedCaptionsShown() override {
+    LogApiRequest(GlicHostApiRequestId::kOnClosedCaptionsShown);
     glic_service_->metrics()->LogClosedCaptionsShown();
   }
 
   void OnActionSubmitted(bool is_retry) override {
+    LogApiRequest(GlicHostApiRequestId::kOnActionSubmitted);
     host().instance_metrics().OnActionSubmitted(is_retry);
   }
 
