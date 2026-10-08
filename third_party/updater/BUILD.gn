@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
+import("//chrome/updater/branding.gni")
 
 if (is_win || is_mac || is_linux) {
   copy("old_updater") {
@@ -49,34 +50,30 @@ if (is_win || is_mac || is_linux) {
       }
 
       if (is_mac && !is_chrome_branded) {
-        sources += [
-          "chromium_mac_amd64" + arch_suffix + "/cipd/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Helpers/ksadmin",
-          "chromium_mac_amd64" + arch_suffix + "/cipd/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Helpers/ksinstall",
-          "chromium_mac_amd64" + arch_suffix + "/cipd/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Info.plist",
-          "chromium_mac_amd64" + arch_suffix + "/cipd/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/MacOS/ChromiumSoftwareUpdate",
-          "chromium_mac_amd64" + arch_suffix + "/cipd/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Resources/ChromiumSoftwareUpdateAgent.app/Contents/Info.plist",
-          "chromium_mac_amd64" + arch_suffix + "/cipd/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Resources/ChromiumSoftwareUpdateAgent.app/Contents/MacOS/ChromiumSoftwareUpdateAgent",
-          "chromium_mac_amd64" + arch_suffix +
-              "/cipd/ChromiumUpdater_test.app/Contents/Helpers/launcher",
-          "chromium_mac_amd64" + arch_suffix +
-              "/cipd/ChromiumUpdater_test.app/Contents/Info.plist",
-          "chromium_mac_amd64" + arch_suffix + "/cipd/ChromiumUpdater_test.app/Contents/MacOS/ChromiumUpdater_test",
-          "chromium_mac_amd64" + arch_suffix +
-              "/cipd/ChromiumUpdater_test.app/Contents/PkgInfo",
-          "chromium_mac_arm64" + arch_suffix + "/cipd/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Helpers/ksadmin",
-          "chromium_mac_arm64" + arch_suffix + "/cipd/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Helpers/ksinstall",
-          "chromium_mac_arm64" + arch_suffix + "/cipd/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Info.plist",
-          "chromium_mac_arm64" + arch_suffix + "/cipd/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/MacOS/ChromiumSoftwareUpdate",
-          "chromium_mac_arm64" + arch_suffix + "/cipd/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Resources/ChromiumSoftwareUpdateAgent.app/Contents/Info.plist",
-          "chromium_mac_arm64" + arch_suffix + "/cipd/ChromiumUpdater_test.app/Contents/Helpers/ChromiumSoftwareUpdate.bundle/Contents/Resources/ChromiumSoftwareUpdateAgent.app/Contents/MacOS/ChromiumSoftwareUpdateAgent",
-          "chromium_mac_arm64" + arch_suffix +
-              "/cipd/ChromiumUpdater_test.app/Contents/Helpers/launcher",
-          "chromium_mac_arm64" + arch_suffix +
-              "/cipd/ChromiumUpdater_test.app/Contents/Info.plist",
-          "chromium_mac_arm64" + arch_suffix + "/cipd/ChromiumUpdater_test.app/Contents/MacOS/ChromiumUpdater_test",
-          "chromium_mac_arm64" + arch_suffix +
-              "/cipd/ChromiumUpdater_test.app/Contents/PkgInfo",
-        ]
+        # Derive the bundle's names from the branding, like the tests do, so
+        # that open-source builds with their own branding can provide theirs.
+        _test_app = "${updater_product_full_name}_test.app"
+        _keystone = "$_test_app/Contents/Helpers/${keystone_app_name}.bundle"
+        _agent = "$_keystone/Contents/Resources/${keystone_app_name}Agent.app"
+        foreach(_cpu,
+                [
+                  "amd64",
+                  "arm64",
+                ]) {
+          _dir = "chromium_mac_${_cpu}$arch_suffix/cipd"
+          sources += [
+            "$_dir/$_agent/Contents/Info.plist",
+            "$_dir/$_agent/Contents/MacOS/${keystone_app_name}Agent",
+            "$_dir/$_keystone/Contents/Helpers/ksadmin",
+            "$_dir/$_keystone/Contents/Helpers/ksinstall",
+            "$_dir/$_keystone/Contents/Info.plist",
+            "$_dir/$_keystone/Contents/MacOS/$keystone_app_name",
+            "$_dir/$_test_app/Contents/Helpers/launcher",
+            "$_dir/$_test_app/Contents/Info.plist",
+            "$_dir/$_test_app/Contents/MacOS/${updater_product_full_name}_test",
+            "$_dir/$_test_app/Contents/PkgInfo",
+          ]
+        }
       }
 
       if (is_linux && is_chrome_branded) {
