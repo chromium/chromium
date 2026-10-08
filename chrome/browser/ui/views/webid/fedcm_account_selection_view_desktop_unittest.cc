@@ -7,23 +7,37 @@
 #include <memory>
 #include <string>
 #include <type_traits>
+#include <variant>
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
+#include "chrome/browser/ui/webauthn/ambient/ambient_login_permission_controller.h"
+#include "chrome/browser/ui/webauthn/ambient/ambient_login_permission_request.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/browser/ui/webid/identity_ui_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/permissions/permission_request_manager.h"
+#include "components/permissions/request_type.h"
+#include "components/permissions/switches.h"
+#include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -377,8 +391,10 @@ class StubAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
 
   void OnAccountSelected(
       const GURL&,
-      const std::string&,
-      const content::IdentityRequestAccount::LoginState&) override {}
+      const std::string& account_id,
+      const content::IdentityRequestAccount::LoginState&) override {
+    selected_account_id_ = account_id;
+  }
   void OnDismiss(DismissReason dismiss_reason) override {
     dismiss_reason_ = dismiss_reason;
     if (on_dismiss_) {
@@ -388,7 +404,7 @@ class StubAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
   void OnLoginToIdP(const GURL& idp_config_url,
                     const GURL& idp_login_url) override {}
   void OnMoreDetails() override {}
-  void OnAccountsDisplayed() override {}
+  void OnAccountsDisplayed() override { ++accounts_displayed_count_; }
   void OnNativeAppResult(const std::string& token) override {}
   void OnNativeAppError(
       const content::IdentityCredentialTokenError& error) override {}
@@ -402,6 +418,10 @@ class StubAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
         kDefault;
   }
   std::optional<DismissReason> GetDismissReason() { return dismiss_reason_; }
+  std::optional<std::string> GetSelectedAccountId() {
+    return selected_account_id_;
+  }
+  int GetAccountsDisplayedCount() const { return accounts_displayed_count_; }
 
   void SetOnDismissClosure(base::OnceClosure on_dismiss) {
     on_dismiss_ = std::move(on_dismiss);
@@ -410,6 +430,8 @@ class StubAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
  private:
   raw_ptr<content::WebContents> web_contents_;
   std::optional<DismissReason> dismiss_reason_;
+  std::optional<std::string> selected_account_id_;
+  int accounts_displayed_count_ = 0;
   base::OnceClosure on_dismiss_;
 };
 
@@ -2858,6 +2880,442 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, ClickProtectionAfterResize) {
 
   // Click after delay should be accepted.
   EXPECT_TRUE(controller->OnAccountSelected(accounts_[0], delayed_event));
+}
+
+// Tests for showing FedCM accounts in the ambient bubble, which is controlled
+// by the fedcm-ambient-bubble flag.
+class FedCmAccountSelectionViewAmbientBubbleTest
+    : public FedCmAccountSelectionViewDesktopTest {
+ public:
+  FedCmAccountSelectionViewAmbientBubbleTest() {
+    feature_list_.InitAndEnableFeature(features::kFedCmAmbientBubble);
+  }
+
+  void SetUp() override {
+    FedCmAccountSelectionViewDesktopTest::SetUp();
+
+    permissions::PermissionRequestManager::CreateForWebContents(
+        test_web_contents());
+    prompt_factory_ =
+        std::make_unique<permissions::MockPermissionPromptFactory>(
+            permission_request_manager());
+    content::WebContentsTester::For(test_web_contents())
+        ->NavigateAndCommit(GURL("https://rp.example"));
+
+    idp_data_->idp_for_display = "idp.example";
+    // Only accounts that do not require disclosure text, e.g. returning
+    // accounts, are shown in the ambient bubble.
+    accounts_ = {
+        CreateAccount(idp_data_, LoginState::kSignIn, LoginState::kSignIn)};
+  }
+
+  void TearDown() override {
+    prompt_factory_.reset();
+    FedCmAccountSelectionViewDesktopTest::TearDown();
+  }
+
+  permissions::PermissionRequestManager* permission_request_manager() {
+    return permissions::PermissionRequestManager::FromWebContents(
+        test_web_contents());
+  }
+
+  // Returns whether an ambient login request was added and has not finished.
+  bool HasAmbientRequest() {
+    auto* ambient_controller =
+        ambient_signin::AmbientLoginPermissionController::GetForPage(
+            test_web_contents()->GetPrimaryPage());
+    return ambient_controller &&
+           ambient_controller->state() !=
+               ambient_signin::AmbientLoginPermissionController::State::kIdle;
+  }
+
+  // Returns the ambient login request whose bubble is currently shown, or
+  // nullptr.
+  ambient_signin::AmbientLoginPermissionRequest* GetShownAmbientRequest() {
+    if (!prompt_factory_->is_visible() ||
+        !permission_request_manager()->IsRequestInProgress()) {
+      return nullptr;
+    }
+    permissions::PermissionRequest* request =
+        permission_request_manager()->Requests().front().get();
+    if (request->request_type() != permissions::RequestType::kAmbientLogin) {
+      return nullptr;
+    }
+    return static_cast<ambient_signin::AmbientLoginPermissionRequest*>(request);
+  }
+
+  // Waits until the ambient bubble is shown and returns its request.
+  ambient_signin::AmbientLoginPermissionRequest* WaitForAmbientBubble() {
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return GetShownAmbientRequest() != nullptr; }));
+    return GetShownAmbientRequest();
+  }
+
+  // Runs the tasks that have already been posted to the current sequence, such
+  // as the task that handles an ambient bubble decision.
+  void RunPostedTasks() {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<permissions::MockPermissionPromptFactory> prompt_factory_;
+};
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       ReturningAccountShowsAmbientBubble) {
+  accounts_[0]->display_name = "John Doe";
+  accounts_[0]->display_identifier = "user@example.com";
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+
+  // No FedCM widget is created; the account is shown in the ambient bubble.
+  EXPECT_FALSE(controller->GetDialogWidget());
+  EXPECT_FALSE(controller->account_selection_view());
+  EXPECT_EQ(delegate_->GetAccountsDisplayedCount(), 1);
+  // DevTools queries the dialog title and subtitle when the accounts are shown.
+  EXPECT_EQ(controller->GetTitle(), "");
+  EXPECT_FALSE(controller->GetSubtitle());
+
+  ambient_signin::AmbientLoginPermissionRequest* request =
+      WaitForAmbientBubble();
+  ASSERT_TRUE(request);
+  EXPECT_TRUE(request->credentials().empty());
+  ASSERT_EQ(request->federated_credentials().size(), 1u);
+  const ambient_signin::FederatedCredential& credential =
+      request->federated_credentials()[0];
+  EXPECT_EQ(credential.account_name, u"John Doe");
+  EXPECT_EQ(credential.email, u"user@example.com");
+  EXPECT_EQ(credential.idp_name, u"idp.example");
+  EXPECT_FALSE(credential.icon.IsEmpty());
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       AcceptingAmbientBubbleSelectsAccount) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+  ASSERT_TRUE(WaitForAmbientBubble());
+
+  permission_request_manager()->Accept(std::monostate());
+
+  // The decision is handled asynchronously.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return delegate_->GetSelectedAccountId().has_value(); }));
+  EXPECT_EQ(delegate_->GetSelectedAccountId(), kAccountId1);
+  EXPECT_FALSE(delegate_->GetDismissReason());
+  EXPECT_FALSE(controller->GetDialogWidget());
+  EXPECT_FALSE(HasAmbientRequest());
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       ErrorAfterAcceptingAmbientBubbleShowsErrorDialog) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+  ASSERT_TRUE(WaitForAmbientBubble());
+  permission_request_manager()->Accept(std::monostate());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return delegate_->GetSelectedAccountId().has_value(); }));
+
+  // Signing in with the account selected in the bubble fails, so the error is
+  // shown in the regular FedCM dialog.
+  controller->ShowErrorDialog(
+      GetRpData(), kIdpEtldPlusOne, blink::mojom::RpContext::kSignIn,
+      blink::mojom::RpMode::kPassive, content::IdentityProviderMetadata(),
+      /*error=*/std::nullopt);
+  EXPECT_EQ(controller->GetTestView()->sheet_type_,
+            TestAccountSelectionView::SheetType::kError);
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
+  EXPECT_FALSE(delegate_->GetDismissReason());
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       ClosingFedCmAfterAcceptingAmbientBubbleDismissesFedCm) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+  ASSERT_TRUE(WaitForAmbientBubble());
+  permission_request_manager()->Accept(std::monostate());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return delegate_->GetSelectedAccountId().has_value(); }));
+
+  // The FedCM UI is closed while signing in, e.g. because the user navigates
+  // away. There is no FedCM widget, so the delegate is notified directly.
+  controller->Close(/*notify_delegate=*/true, /*hide_widget=*/false);
+  EXPECT_EQ(delegate_->GetDismissReason(), DismissReason::kOther);
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       DismissingAmbientBubbleDismissesFedCm) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+  ASSERT_TRUE(WaitForAmbientBubble());
+
+  permission_request_manager()->Dismiss(std::monostate());
+
+  // The decision is handled asynchronously.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return delegate_->GetDismissReason().has_value(); }));
+  EXPECT_EQ(delegate_->GetDismissReason(), DismissReason::kOther);
+  EXPECT_FALSE(delegate_->GetSelectedAccountId());
+  EXPECT_FALSE(HasAmbientRequest());
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       ClosingFedCmCancelsAmbientBubble) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+  ASSERT_TRUE(WaitForAmbientBubble());
+
+  // There is no FedCM widget, so the delegate is notified directly.
+  controller->Close(/*notify_delegate=*/true, /*hide_widget=*/false);
+  EXPECT_EQ(delegate_->GetDismissReason(), DismissReason::kOther);
+  EXPECT_FALSE(GetShownAmbientRequest());
+  EXPECT_FALSE(HasAmbientRequest());
+
+  // The delegate is not notified again for the cancelled request.
+  delegate_->SetOnDismissClosure(
+      base::BindOnce([]() { ADD_FAILURE() << "Dismissed more than once"; }));
+  RunPostedTasks();
+  EXPECT_FALSE(delegate_->GetSelectedAccountId());
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       ClosingFedCmCancelsQueuedAmbientBubble) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+  // PermissionRequestManager shows the bubble asynchronously, so the request is
+  // still queued.
+  ASSERT_TRUE(permission_request_manager()->has_pending_requests());
+  ASSERT_FALSE(GetShownAmbientRequest());
+
+  controller->Close(/*notify_delegate=*/true, /*hide_widget=*/false);
+  EXPECT_EQ(delegate_->GetDismissReason(), DismissReason::kOther);
+  EXPECT_FALSE(permission_request_manager()->has_pending_requests());
+  EXPECT_FALSE(HasAmbientRequest());
+
+  // The bubble is never shown for the cancelled request.
+  RunPostedTasks();
+  EXPECT_FALSE(GetShownAmbientRequest());
+  EXPECT_EQ(prompt_factory_->show_count(), 0);
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       ClosingFedCmDropsUnhandledAmbientBubbleDecision) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+  ASSERT_TRUE(WaitForAmbientBubble());
+
+  // The FedCM UI is closed after the bubble is accepted, but before the
+  // decision, which is handled asynchronously, is handled.
+  permission_request_manager()->Accept(std::monostate());
+  controller->Close(/*notify_delegate=*/true, /*hide_widget=*/false);
+  EXPECT_EQ(delegate_->GetDismissReason(), DismissReason::kOther);
+
+  // The account is not selected after the FedCM UI was closed.
+  RunPostedTasks();
+  EXPECT_FALSE(delegate_->GetSelectedAccountId());
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       DestroyingFedCmCancelsAmbientBubble) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+  ASSERT_TRUE(WaitForAmbientBubble());
+
+  controller.reset();
+  EXPECT_FALSE(GetShownAmbientRequest());
+  EXPECT_FALSE(HasAmbientRequest());
+  EXPECT_FALSE(delegate_->GetDismissReason());
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       ShowingAnotherAccountReplacesAmbientBubble) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+  ASSERT_TRUE(WaitForAmbientBubble());
+
+  IdentityRequestAccountPtr new_account = CreateAccount(
+      idp_data_, LoginState::kSignIn, LoginState::kSignIn, kAccountId2);
+  new_account->display_name = "Jane Doe";
+  Show(*controller, {new_account}, blink::mojom::RpMode::kPassive);
+  EXPECT_FALSE(controller->GetDialogWidget());
+
+  // The bubble is shown again for the new account.
+  ambient_signin::AmbientLoginPermissionRequest* request =
+      WaitForAmbientBubble();
+  ASSERT_TRUE(request);
+  ASSERT_EQ(request->federated_credentials().size(), 1u);
+  EXPECT_EQ(request->federated_credentials()[0].account_name, u"Jane Doe");
+
+  permission_request_manager()->Accept(std::monostate());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return delegate_->GetSelectedAccountId().has_value(); }));
+  EXPECT_EQ(delegate_->GetSelectedAccountId(), kAccountId2);
+  EXPECT_FALSE(delegate_->GetDismissReason());
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       ShowingAccountPickerCancelsAmbientBubble) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+  ASSERT_TRUE(WaitForAmbientBubble());
+
+  // Multiple accounts are shown in the regular UI, which replaces the bubble.
+  Show(*controller,
+       CreateAccounts({{kAccountId1, LoginState::kSignIn},
+                       {kAccountId2, LoginState::kSignIn}},
+                      idp_data_),
+       blink::mojom::RpMode::kPassive);
+  EXPECT_TRUE(controller->GetDialogWidget());
+  EXPECT_FALSE(GetShownAmbientRequest());
+  EXPECT_FALSE(HasAmbientRequest());
+
+  // The decision on the cancelled request does not affect the regular UI.
+  RunPostedTasks();
+  EXPECT_TRUE(controller->GetDialogWidget());
+  EXPECT_FALSE(delegate_->GetDismissReason());
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       NewAccountDoesNotUseAmbientBubble) {
+  // A new account requires disclosure text, which the ambient bubble does not
+  // show.
+  accounts_ = {CreateAccount(idp_data_)};
+  ASSERT_FALSE(accounts_[0]->fields.empty());
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+
+  EXPECT_TRUE(controller->GetDialogWidget());
+  EXPECT_FALSE(HasAmbientRequest());
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       MultipleAccountsDoNotUseAmbientBubble) {
+  accounts_ = CreateAccounts(
+      {{kAccountId1, LoginState::kSignIn}, {kAccountId2, LoginState::kSignIn}},
+      idp_data_);
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+
+  EXPECT_TRUE(controller->GetDialogWidget());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_FALSE(HasAmbientRequest());
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       ActiveModeDoesNotUseAmbientBubble) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_, blink::mojom::RpMode::kActive);
+
+  EXPECT_TRUE(controller->GetDialogWidget());
+  EXPECT_FALSE(HasAmbientRequest());
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       FlagDisabledDoesNotUseAmbientBubble) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kFedCmAmbientBubble);
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+
+  EXPECT_TRUE(controller->GetDialogWidget());
+  EXPECT_FALSE(HasAmbientRequest());
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       CannotShowUiDoesNotUseAmbientBubble) {
+  auto controller = std::make_unique<TestFedCmAccountSelectionView>(
+      delegate_.get(), tab_interface_.get(), this);
+  // FedCM UI can't be shown, e.g. because an actor task is acting on the tab.
+  controller->SetCanShowUi(false);
+  Show(*controller, accounts_, blink::mojom::RpMode::kPassive);
+
+  // The regular UI is used, and stays hidden until FedCM UI can be shown.
+  EXPECT_FALSE(HasAmbientRequest());
+  ASSERT_TRUE(controller->GetDialogWidget());
+  EXPECT_FALSE(controller->IsDialogWidgetVisible());
+  EXPECT_EQ(delegate_->GetAccountsDisplayedCount(), 0);
+
+  controller->SetCanShowUi(true);
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
+  EXPECT_EQ(delegate_->GetAccountsDisplayedCount(), 1);
+  EXPECT_FALSE(HasAmbientRequest());
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       CannotShowUiReplacesAmbientBubble) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+  ASSERT_TRUE(WaitForAmbientBubble());
+  EXPECT_EQ(delegate_->GetAccountsDisplayedCount(), 1);
+
+  // FedCM UI can no longer be shown, e.g. because an actor task starts acting
+  // on the tab. The bubble is replaced by the regular UI, which stays hidden
+  // until FedCM UI can be shown again.
+  controller->SetCanShowUi(false);
+  EXPECT_FALSE(GetShownAmbientRequest());
+  EXPECT_FALSE(HasAmbientRequest());
+  ASSERT_TRUE(controller->GetDialogWidget());
+  EXPECT_FALSE(controller->IsDialogWidgetVisible());
+
+  // The decision on the cancelled request does not affect the regular UI.
+  RunPostedTasks();
+  EXPECT_TRUE(controller->GetDialogWidget());
+  EXPECT_FALSE(delegate_->GetDismissReason());
+
+  controller->SetCanShowUi(true);
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
+  EXPECT_EQ(controller->GetTestView()->sheet_type_,
+            TestAccountSelectionView::SheetType::kConfirmAccount);
+  // The delegate was notified when the bubble was shown, and is not notified
+  // again.
+  EXPECT_EQ(delegate_->GetAccountsDisplayedCount(), 1);
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       OutstandingAmbientRequestFallsBackToRegularUi) {
+  // Simulate another ambient login request on the page.
+  content::RenderFrameHost* main_frame =
+      test_web_contents()->GetPrimaryMainFrame();
+  ambient_signin::AmbientLoginPermissionController::GetOrCreateForPage(
+      main_frame->GetPage())
+      ->RequestPermission(
+          main_frame,
+          std::make_unique<ambient_signin::AmbientLoginPermissionRequest>(
+              GURL("https://rp.example"), GURL("https://rp.example"),
+              std::vector<ambient_signin::PasskeyOrPasswordCredential>(),
+              /*credential_selected_callback=*/base::DoNothing(),
+              /*permission_decided_callback=*/base::DoNothing()));
+  ASSERT_TRUE(WaitForAmbientBubble());
+
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+
+  // FedCM falls back to the regular UI rather than being dismissed.
+  EXPECT_TRUE(controller->GetDialogWidget());
+  EXPECT_FALSE(delegate_->GetDismissReason());
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       RejectedAmbientRequestFallsBackToRegularUi) {
+  // PermissionRequestManager rejects all requests with this switch.
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      permissions::switches::kDenyPermissionPrompts);
+
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+
+  // FedCM falls back to the regular UI rather than being dismissed.
+  EXPECT_TRUE(controller->GetDialogWidget());
+  // The decision posted for the rejected request is ignored.
+  RunPostedTasks();
+  EXPECT_TRUE(controller->GetDialogWidget());
+  EXPECT_FALSE(delegate_->GetDismissReason());
+  EXPECT_FALSE(HasAmbientRequest());
 }
 
 }  // namespace webid

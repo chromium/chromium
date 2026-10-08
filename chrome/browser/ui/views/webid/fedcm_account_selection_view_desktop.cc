@@ -6,6 +6,9 @@
 
 #include <memory>
 #include <optional>
+#include <tuple>
+#include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -13,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -31,10 +35,16 @@
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h"
 #include "chrome/browser/ui/views/webid/webid_utils.h"
+#include "chrome/browser/ui/webauthn/ambient/ambient_login_permission_controller.h"
+#include "chrome/browser/ui/webauthn/ambient/ambient_login_permission_request.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/browser/ui/webid/identity_ui_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/permissions/permission_decision.h"
+#include "components/permissions/permission_prompt_decision.h"
+#include "components/permissions/permission_request_data.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/common/content_features.h"
@@ -45,14 +55,19 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
+#include "url/origin.h"
 
 namespace {
+
+// Size of the account picture shown in the ambient bubble.
+constexpr int kAmbientBubbleAvatarSize = 20;
 
 // We could have a situation where the WebContents with an actor task opens a
 // popup which then triggers the dialog, so we need to check the opener.
@@ -285,6 +300,14 @@ bool FedCmAccountSelectionView::Show(
     // TODO(crbug.com/40252518): Decide what we should display if the IdPs use
     // different contexts here.
     rp_context = identity_provider->rp_context;
+  }
+
+  // The ambient bubble takes precedence over the page action (omnibox chip)
+  // ambient UI, which is controlled by a separate flag.
+  if (IsAmbientBubbleEnabled() && rp_mode == blink::mojom::RpMode::kPassive &&
+      ShowAmbientBubble(idp_list, accounts, new_accounts)) {
+    // `this` may have been deleted.
+    return true;
   }
 
   if (IsAmbientEnabled()) {
@@ -555,6 +578,17 @@ void FedCmAccountSelectionView::SetCanShowUi(bool can_show_ui) {
     return;
   }
   can_show_ui_ = can_show_ui;
+  if (!can_show_ui_ && ambient_bubble_request_pending_) {
+    // The ambient bubble cannot be hidden temporarily. Replace it with the
+    // regular UI, which stays hidden until FedCM UI can be shown again; Show()
+    // does not use the ambient bubble while FedCM UI can't be shown. The
+    // delegate was already notified when the bubble was shown, so do not notify
+    // it again when the regular UI is shown.
+    Show(*rp_data_, idp_list_, accounts_, blink::mojom::RpMode::kPassive,
+         new_accounts_);
+    accounts_widget_shown_callback_.Reset();
+    return;
+  }
   UpdateDialogVisibilityAndPosition();
 }
 
@@ -641,10 +675,24 @@ void FedCmAccountSelectionView::ShowUrl(LinkType link_type, const GURL& url) {
 }
 
 std::string FedCmAccountSelectionView::GetTitle() const {
+  // There is no FedCM dialog when the accounts are shown in the ambient bubble
+  // or the omnibox chip. This is still called in that case if DevTools' FedCm
+  // domain is enabled (e.g. by automation): FedCmHandler queries the title
+  // when Show() returns true for the bubble or chip, and when the domain is
+  // enabled while one of them is shown.
+  if (!account_selection_view_) {
+    return std::string();
+  }
   return account_selection_view_->GetDialogTitle();
 }
 
 std::optional<std::string> FedCmAccountSelectionView::GetSubtitle() const {
+  // As in GetTitle(), there is no FedCM dialog when the accounts are shown in
+  // the ambient bubble or the omnibox chip. FedCmHandler queries the subtitle
+  // along with the title in that case if DevTools' FedCm domain is enabled.
+  if (!account_selection_view_) {
+    return std::nullopt;
+  }
   return account_selection_view_->GetDialogSubtitle();
 }
 
@@ -1115,6 +1163,7 @@ SheetType FedCmAccountSelectionView::GetSheetType() {
 
 void FedCmAccountSelectionView::Close(bool notify_delegate, bool hide_widget) {
   scoped_user_data_.reset();
+  CancelAmbientBubble();
   if (IsAmbientEnabled() && tab_) {
     if (auto* features = tab_->GetTabFeatures()) {
       if (auto* controller = features->page_action_controller()) {
@@ -1127,10 +1176,13 @@ void FedCmAccountSelectionView::Close(bool notify_delegate, bool hide_widget) {
 
   if (!GetDialogWidget()) {
     CHECK(!account_selection_view_);
-    // When the UI is in the AMBIENT state (omnibox chip), there is no widget
-    // to trigger the standard destruction sequence. We must notify the delegate
-    // here to ensure the request is properly terminated.
-    if (dialog_type_ == DialogType::AMBIENT && notify_delegate) {
+    // When the UI is in the AMBIENT state (omnibox chip) or the AMBIENT_BUBBLE
+    // state, there is no widget to trigger the standard destruction sequence.
+    // We must notify the delegate here to ensure the request is properly
+    // terminated.
+    if ((dialog_type_ == DialogType::AMBIENT ||
+         dialog_type_ == DialogType::AMBIENT_BUBBLE) &&
+        notify_delegate) {
       delegate_->OnDismiss(DismissReason::kOther);
     }
     return;
@@ -1474,6 +1526,8 @@ void FedCmAccountSelectionView::UpdateDialogVisibilityAndPosition() {
 }
 
 void FedCmAccountSelectionView::ResetDialogWidgetStateOnAnyShow() {
+  // Any new UI replaces the ambient bubble.
+  CancelAmbientBubble();
   accounts_widget_shown_callback_.Reset();
   hide_dialog_widget_after_idp_login_popup_ = false;
   chip_impression_recorded_ = false;
@@ -1601,6 +1655,195 @@ bool FedCmAccountSelectionView::IsAmbientEnabled() const {
          (delegate_ && delegate_->GetPassiveDialogVolume() ==
                            content::IdentityRequestDialogController::
                                PassiveDialogVolume::kAmbient);
+}
+
+bool FedCmAccountSelectionView::IsAmbientBubbleEnabled() const {
+  return base::FeatureList::IsEnabled(features::kFedCmAmbientBubble);
+}
+
+bool FedCmAccountSelectionView::ShowAmbientBubble(
+    const std::vector<IdentityProviderDataPtr>& idp_list,
+    const std::vector<IdentityRequestAccountPtr>& accounts,
+    const std::vector<IdentityRequestAccountPtr>& new_accounts) {
+  // Only a single account that does not require disclosure text (e.g. a
+  // returning account) is supported for now.
+  // TODO(crbug.com/567563304): Support new accounts, multiple accounts,
+  // multiple IdPs, IdP login status mismatch and the "use other account" flow.
+  if (idp_list.size() != 1u || accounts.size() != 1u || !new_accounts.empty() ||
+      idp_list[0]->has_login_status_mismatch || accounts[0]->is_filtered_out ||
+      !accounts[0]->fields.empty()) {
+    return false;
+  }
+
+  // Keep using the existing FedCM UI, including a dialog that is temporarily
+  // hidden (parked), if there is one.
+  if (GetDialogWidget() || account_selection_view_) {
+    return false;
+  }
+
+  // While FedCM UI can't be shown, e.g. while an actor task is acting on the
+  // tab, use the regular UI, which stays hidden until it can be shown.
+  if (!can_show_ui_) {
+    return false;
+  }
+
+  content::WebContents* contents = web_contents();
+  if (!contents ||
+      !permissions::PermissionRequestManager::FromWebContents(contents)) {
+    return false;
+  }
+
+  content::RenderFrameHost* main_frame = contents->GetPrimaryMainFrame();
+  auto* controller =
+      ambient_signin::AmbientLoginPermissionController::GetOrCreateForPage(
+          main_frame->GetPage());
+  // Another ambient login request is outstanding, so the controller would
+  // reject this one. Fall back to the regular UI.
+  if (controller->state() !=
+      ambient_signin::AmbientLoginPermissionController::State::kIdle) {
+    return false;
+  }
+
+  const IdentityRequestAccountPtr& account = accounts[0];
+  ambient_signin::FederatedCredential federated_credential;
+  federated_credential.idp_name =
+      base::UTF8ToUTF16(account->identity_provider->idp_for_display);
+  // The bubble shows the account name (e.g. "John Doe") in the first row and
+  // falls back to the identifier, which may be an email address.
+  federated_credential.account_name = base::UTF8ToUTF16(account->display_name);
+  federated_credential.email = base::UTF8ToUTF16(account->display_identifier);
+  federated_credential.idp_origin =
+      url::Origin::Create(account->identity_provider->idp_metadata.config_url)
+          .GetURL();
+  federated_credential.icon =
+      ui::ImageModel::FromImageSkia(webid::ComputeAccountCircleCroppedPicture(
+          *account, kAmbientBubbleAvatarSize, /*idp_image=*/std::nullopt,
+          /*device_scale_factor=*/1.0f));
+  std::vector<ambient_signin::FederatedCredential> federated_credentials;
+  federated_credentials.push_back(std::move(federated_credential));
+
+  // TODO(crbug.com/567563304): Use the RP's frame as the requesting frame when
+  // FedCM is invoked from an iframe.
+  const GURL origin = main_frame->GetLastCommittedOrigin().GetURL();
+  // There is only one account, so the selected index is not needed; the
+  // decision is handled in OnAmbientBubbleDecided().
+  auto request =
+      std::make_unique<ambient_signin::AmbientLoginPermissionRequest>(
+          origin, origin,
+          std::vector<ambient_signin::PasskeyOrPasswordCredential>(),
+          /*credential_selected_callback=*/base::NullCallback(),
+          std::move(federated_credentials),
+          /*federated_selected_callback=*/base::NullCallback(),
+          base::BindRepeating(
+              &FedCmAccountSelectionView::OnAmbientBubbleDecided,
+              ambient_bubble_weak_ptr_factory_.GetWeakPtr()));
+
+  // Set before adding the request, since the decided callback runs
+  // synchronously if the request is rejected right away.
+  ambient_bubble_request_pending_ = true;
+  ambient_login_permission_controller_ = controller->GetWeakPtr();
+  controller->RequestPermission(main_frame, std::move(request));
+  if (!ambient_bubble_request_pending_) {
+    // The request was rejected right away, e.g. because permission prompts are
+    // disabled. Drop the decision posted for it and fall back to the regular
+    // UI.
+    ambient_bubble_weak_ptr_factory_.InvalidateWeakPtrs();
+    return false;
+  }
+  dialog_type_ = DialogType::AMBIENT_BUBBLE;
+  state_ = State::SINGLE_ACCOUNT_PICKER;
+
+  // TODO(crbug.com/567563304): Notify the delegate when the bubble is actually
+  // shown, since PermissionRequestManager may defer showing it.
+  if (accounts_widget_shown_callback_) {
+    // This may delete `this`.
+    std::move(accounts_widget_shown_callback_).Run();
+  }
+  return true;
+}
+
+void FedCmAccountSelectionView::OnAmbientBubbleDecided(
+    const permissions::PermissionPromptDecision& decision,
+    const permissions::PermissionRequestData& request_data) {
+  // Only handle the decision on the outstanding request.
+  if (!ambient_bubble_request_pending_) {
+    return;
+  }
+  ambient_bubble_request_pending_ = false;
+  ambient_login_permission_controller_.reset();
+
+  bool accepted = false;
+  switch (decision.overall_decision) {
+    case PermissionDecision::kAllow:
+    case PermissionDecision::kAllowThisTime:
+      accepted = true;
+      break;
+    case PermissionDecision::kDeny:
+    case PermissionDecision::kNone:
+      accepted = false;
+      break;
+  }
+
+  // This callback runs synchronously from within
+  // PermissionRequestManager::Accept()/Deny()/Dismiss(), which continues to
+  // use its internal state (and the prompt view) after the callback returns.
+  // Notifying the FedCM backend here can re-enter or tear down UI that the
+  // manager is still using, so defer the handling.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FedCmAccountSelectionView::HandleAmbientBubbleDecision,
+                     ambient_bubble_weak_ptr_factory_.GetWeakPtr(), accepted));
+}
+
+void FedCmAccountSelectionView::HandleAmbientBubbleDecision(bool accepted) {
+  // Bail out if the request was closed or replaced in the meantime.
+  if (!delegate_ || dialog_type_ != DialogType::AMBIENT_BUBBLE ||
+      state_ != State::SINGLE_ACCOUNT_PICKER ||
+      ambient_bubble_request_pending_ || accounts_.size() != 1u) {
+    return;
+  }
+
+  if (!accepted) {
+    // The bubble was dismissed, e.g. by the user closing it or by the tab
+    // navigating away.
+    // TODO(crbug.com/567563304): Distinguish between the user explicitly
+    // closing the bubble and other dismissals so that the appropriate
+    // DismissReason (and cooldown) can be used.
+    // `this` may be deleted after this call.
+    std::ignore =
+        NotifyDelegate([&]() { delegate_->OnDismiss(DismissReason::kOther); });
+    return;
+  }
+
+  IdentityRequestAccountPtr account = accounts_[0];
+  // Only accounts that do not require disclosure text are shown in the ambient
+  // bubble. See ShowAmbientBubble().
+  CHECK(account->fields.empty());
+  state_ = State::VERIFYING;
+  // `this` may be deleted after this call.
+  std::ignore = NotifyDelegate([&]() {
+    delegate_->OnAccountSelected(
+        account->identity_provider->idp_metadata.config_url, account->id,
+        account->idp_claimed_login_state.value_or(
+            account->browser_trusted_login_state));
+  });
+}
+
+void FedCmAccountSelectionView::CancelAmbientBubble() {
+  // Drop the callbacks of the request, including the decision reported when
+  // the request is cancelled below, and a decision that was already made but
+  // has not been handled yet.
+  ambient_bubble_weak_ptr_factory_.InvalidateWeakPtrs();
+  if (!ambient_bubble_request_pending_) {
+    return;
+  }
+  ambient_bubble_request_pending_ = false;
+  if (ambient_login_permission_controller_) {
+    // This cancels the request whether PermissionRequestManager is showing it
+    // or has queued it.
+    ambient_login_permission_controller_->Reset();
+  }
+  ambient_login_permission_controller_.reset();
 }
 
 void FedCmAccountSelectionView::RecordPageActionImpression(

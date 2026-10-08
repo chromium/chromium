@@ -29,6 +29,15 @@
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
+namespace ambient_signin {
+class AmbientLoginPermissionController;
+}  // namespace ambient_signin
+
+namespace permissions {
+struct PermissionPromptDecision;
+struct PermissionRequestData;
+}  // namespace permissions
+
 namespace tabs {
 class TabInterface;
 class ScopedAcceptMouseEventsWhileWindowInactive;
@@ -89,6 +98,11 @@ class FedCmAccountSelectionView : public AccountSelectionView,
     // FedCM is shown as a page action (omnibox chip) and does not have an
     // associated widget.
     AMBIENT,
+
+    // FedCM is shown in the ambient bubble (AmbientLoginPermissionBubbleView),
+    // which is owned by PermissionRequestManager rather than by this class.
+    // There is no associated widget owned by this class.
+    AMBIENT_BUBBLE,
   };
 
   FedCmAccountSelectionView(AccountSelectionView::Delegate* delegate,
@@ -428,6 +442,35 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Returns whether the ambient UI is enabled.
   bool IsAmbientEnabled() const;
 
+  // Returns whether the ambient bubble is enabled. This is controlled by the
+  // fedcm-ambient-bubble flag and is independent of `IsAmbientEnabled()`.
+  bool IsAmbientBubbleEnabled() const;
+
+  // Attempts to show the account in the ambient bubble. Returns false if the
+  // ambient bubble cannot be used for this request, in which case the caller
+  // should fall back to the regular UI. If this returns true, `this` may have
+  // been deleted.
+  bool ShowAmbientBubble(
+      const std::vector<IdentityProviderDataPtr>& idp_list,
+      const std::vector<IdentityRequestAccountPtr>& accounts,
+      const std::vector<IdentityRequestAccountPtr>& new_accounts);
+
+  // Called when the user makes a decision on the ambient bubble, or when the
+  // bubble is otherwise dismissed.
+  void OnAmbientBubbleDecided(
+      const permissions::PermissionPromptDecision& decision,
+      const permissions::PermissionRequestData& request_data);
+
+  // Handles the ambient bubble decision. Posted from `OnAmbientBubbleDecided()`
+  // so that it runs after PermissionRequestManager has finished processing the
+  // decision. `accepted` is true if the user clicked the "Sign in" button.
+  void HandleAmbientBubbleDecision(bool accepted);
+
+  // Cancels the outstanding ambient bubble request, if any, e.g. because the
+  // FedCM UI is closed or replaced. A decision on the bubble that has not been
+  // handled yet is dropped as well. The delegate is not notified.
+  void CancelAmbientBubble();
+
   // Shows the multi account picker and updates the internal state.
   void ShowMultiAccountPicker(
       const std::vector<IdentityRequestAccountPtr>& accounts,
@@ -671,6 +714,19 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   //    between the UI state and the request lifecycle.
   std::optional<ui::ScopedUnownedUserData<AccountSelectionView>>
       scoped_user_data_;
+
+  // Whether an ambient bubble request added by this class is outstanding, i.e.
+  // has not been decided or cancelled yet.
+  bool ambient_bubble_request_pending_{false};
+
+  // The controller that the outstanding ambient bubble request was added to.
+  base::WeakPtr<ambient_signin::AmbientLoginPermissionController>
+      ambient_login_permission_controller_;
+
+  // Used for the callbacks of the ambient bubble request, so that they can be
+  // dropped when the bubble is cancelled.
+  base::WeakPtrFactory<FedCmAccountSelectionView>
+      ambient_bubble_weak_ptr_factory_{this};
 
   base::WeakPtrFactory<FedCmAccountSelectionView> weak_ptr_factory_{this};
 };
