@@ -134,7 +134,8 @@ class ContextualTasksWebView
   // Returns the toolbar WebUI controller, or nullptr if unavailable.
   ContextualTasksUIBase* GetToolbarUI() const;
 
-  // Synchronizes the toolbar WebUI's AI page status and thread title with `wc`.
+  // Synchronizes the toolbar WebUI's AI page status, thread title, and profile
+  // indicator with `wc`.
   void UpdateToolbarStateFromWebContents(content::WebContents* wc,
                                          bool use_last_committed_url = false);
 

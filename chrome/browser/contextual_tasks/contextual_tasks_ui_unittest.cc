@@ -26,6 +26,10 @@
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_test_util.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -54,6 +58,8 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
@@ -62,11 +68,14 @@
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/base/url_util.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+#include "ui/gfx/image/image.h"
 #include "ui/webui/buildflags.h"
 #include "url/gurl.h"
 
@@ -239,6 +248,7 @@ class MockToolbarPage : public contextual_tasks_toolbar::mojom::Page {
   MOCK_METHOD(void, SetExpandButtonEnabled, (bool enabled), (override));
   MOCK_METHOD(void, SetThreadTitle, (const std::string&), (override));
   MOCK_METHOD(void, OnSidePanelStateChanged, (), (override));
+  MOCK_METHOD(void, SetProfileAvatarUrl, (const GURL& avatar_url), (override));
 
   mojo::PendingRemote<contextual_tasks_toolbar::mojom::Page>
   BindAndGetRemote() {
@@ -342,8 +352,20 @@ class ContextualTasksUiTest : public ChromeRenderViewHostTestHarness {
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(testing_profile_manager_->SetUp());
 
-    profile_ =
-        testing_profile_manager_->CreateTestingProfile(kTestingProfileName);
+    TestingProfile::TestingFactories factories;
+    factories.push_back(TestingProfile::TestingFactory{
+        ChromeSigninClientFactory::GetInstance(),
+        base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                            &test_url_loader_factory_)});
+    factories = IdentityTestEnvironmentProfileAdaptor::
+        GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+            std::move(factories));
+
+    profile_ = testing_profile_manager_->CreateTestingProfile(
+        kTestingProfileName, std::move(factories));
+    identity_test_env_profile_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
+    identity_test_env()->SetTestURLLoaderFactory(&test_url_loader_factory_);
 
     AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
         profile_,
@@ -408,10 +430,15 @@ class ContextualTasksUiTest : public ChromeRenderViewHostTestHarness {
       ContextualTasksServiceFactory::GetInstance()->SetTestingFactory(
           profile_, base::NullCallback());
     }
+    identity_test_env_profile_adaptor_.reset();
     profile_ = nullptr;
     testing_profile_manager_->DeleteTestingProfile(kTestingProfileName);
     testing_profile_manager_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return identity_test_env_profile_adaptor_->identity_test_env();
   }
 
  protected:
@@ -438,6 +465,9 @@ class ContextualTasksUiTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<content::WebContents> embedded_web_contents_;
   raw_ptr<TestingProfile> profile_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_profile_adaptor_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
 
   raw_ptr<contextual_tasks::MockContextualTasksUiService> service_for_nav_;
   raw_ptr<contextual_tasks::MockContextualTasksService>
@@ -3141,6 +3171,7 @@ TEST_F(ContextualTasksUiTest, OnSidePanelPinStateChanged_FeatureDisabled) {
   ASSERT_NE(ui, nullptr);
 
   testing::StrictMock<MockToolbarPage> mock_page;
+  EXPECT_CALL(mock_page, SetProfileAvatarUrl(_)).Times(testing::AnyNumber());
   mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler> handler_remote;
   ui->CreatePageHandler(mock_page.BindAndGetRemote(),
                         handler_remote.BindNewPipeAndPassReceiver());
@@ -3156,6 +3187,8 @@ TEST_F(ContextualTasksUiTest, OnSidePanelPinStateChanged_FeatureDisabled) {
   auto post_rearch_ui = std::make_unique<ContextualTasksUIPostRearchitecture>(
       &post_rearch_web_ui);
   testing::StrictMock<MockToolbarPage> post_rearch_mock_page;
+  EXPECT_CALL(post_rearch_mock_page, SetProfileAvatarUrl(_))
+      .Times(testing::AnyNumber());
   mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler>
       post_rearch_handler_remote;
   post_rearch_ui->CreatePageHandler(
@@ -3243,7 +3276,7 @@ TEST_F(ContextualTasksUiTest, OnAiPageStatusChanged) {
   web_ui.set_web_contents(embedded_web_contents_.get());
   auto contextual_tasks_ui = std::make_unique<ContextualTasksUI>(&web_ui);
 
-  MockToolbarPage toolbar_page;
+  testing::NiceMock<MockToolbarPage> toolbar_page;
   mojo::PendingRemote<contextual_tasks_toolbar::mojom::Page> remote =
       toolbar_page.BindAndGetRemote();
 
@@ -3516,7 +3549,7 @@ TEST_F(ContextualTasksUiTest, UpdateExpandButtonEnabled) {
   web_ui.set_web_contents(embedded_web_contents_.get());
   auto contextual_tasks_ui = std::make_unique<ContextualTasksUI>(&web_ui);
 
-  MockContextualTasksToolbarPage toolbar_page;
+  testing::NiceMock<MockContextualTasksToolbarPage> toolbar_page;
   mojo::Receiver<contextual_tasks_toolbar::mojom::Page> receiver{&toolbar_page};
   mojo::PendingRemote<contextual_tasks_toolbar::mojom::Page> remote =
       receiver.BindNewPipeAndPassRemote();
@@ -3592,7 +3625,7 @@ TEST_F(ContextualTasksUiTest, CreateNewThread_Success_WithTaskId) {
   controller.SetThreadTitle("Existing Thread Title");
   EXPECT_EQ(controller.GetThreadTitle(), "Existing Thread Title");
 
-  MockToolbarPage mock_toolbar_page;
+  testing::NiceMock<MockToolbarPage> mock_toolbar_page;
   mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler>
       page_handler_remote;
   EXPECT_CALL(mock_toolbar_page, SetThreadTitle("Existing Thread Title"))
@@ -3634,7 +3667,7 @@ TEST_F(ContextualTasksUiTest, CreateNewThread_Success_NoTaskId) {
   EXPECT_CALL(*service_for_nav_, GetDefaultAiPageUrl())
       .WillOnce(Return(raw_url));
 
-  MockToolbarPage mock_toolbar_page;
+  testing::NiceMock<MockToolbarPage> mock_toolbar_page;
   mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler>
       page_handler_remote;
   controller.CreatePageHandler(
@@ -3858,4 +3891,162 @@ TEST_F(ContextualTasksUiTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+TEST_F(ContextualTasksUiTest, ProfileIndicator_SignedOutInitially) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandlerFactory>
+      factory_remote;
+  controller.BindInterface(factory_remote.BindNewPipeAndPassReceiver());
+
+  testing::NiceMock<MockContextualTasksToolbarPage> mock_page;
+  base::test::TestFuture<GURL> future;
+  EXPECT_CALL(mock_page, SetProfileAvatarUrl(_))
+      .WillOnce(
+          [&future](const GURL& avatar_url) { future.SetValue(avatar_url); });
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler> page_handler;
+  factory_remote->CreatePageHandler(mock_page.BindAndGetRemote(),
+                                    page_handler.BindNewPipeAndPassReceiver());
+
+  GURL avatar_url = future.Take();
+  EXPECT_EQ(avatar_url, GURL(profiles::GetPlaceholderAvatarIconUrl()));
+}
+
+TEST_F(ContextualTasksUiTest, ProfileIndicator_WebSignedInWithExtendedInfo) {
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("user@example.com");
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  bitmap.eraseColor(SK_ColorBLUE);
+  signin::SimulateAccountImageFetch(
+      identity_test_env()->identity_manager(), account_info.GetAccountId(),
+      "https://example.com/avatar.png", gfx::Image::CreateFrom1xBitmap(bitmap));
+  identity_test_env()->SetCookieAccounts(
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandlerFactory>
+      factory_remote;
+  controller.BindInterface(factory_remote.BindNewPipeAndPassReceiver());
+
+  testing::NiceMock<MockContextualTasksToolbarPage> mock_page;
+  base::test::TestFuture<GURL> future;
+  EXPECT_CALL(mock_page, SetProfileAvatarUrl(_))
+      .WillOnce(
+          [&future](const GURL& avatar_url) { future.SetValue(avatar_url); });
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler> page_handler;
+  factory_remote->CreatePageHandler(mock_page.BindAndGetRemote(),
+                                    page_handler.BindNewPipeAndPassReceiver());
+
+  GURL avatar_url = future.Take();
+  EXPECT_TRUE(avatar_url.is_valid());
+  EXPECT_TRUE(avatar_url.spec().starts_with("data:image/png;base64,"));
+}
+
+TEST_F(ContextualTasksUiTest,
+       ProfileIndicator_UpdateProfileIndicatorPushesAvatarUrl) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandlerFactory>
+      factory_remote;
+  controller.BindInterface(factory_remote.BindNewPipeAndPassReceiver());
+
+  testing::NiceMock<MockContextualTasksToolbarPage> mock_page;
+  base::test::TestFuture<GURL> future;
+
+  EXPECT_CALL(mock_page, SetProfileAvatarUrl(_))
+      .WillRepeatedly(
+          [&future](const GURL& avatar_url) { future.SetValue(avatar_url); });
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler> page_handler;
+  factory_remote->CreatePageHandler(mock_page.BindAndGetRemote(),
+                                    page_handler.BindNewPipeAndPassReceiver());
+
+  GURL initial_avatar_url = future.Take();
+  EXPECT_EQ(initial_avatar_url, GURL(profiles::GetPlaceholderAvatarIconUrl()));
+
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("cookie_user@example.com");
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  bitmap.eraseColor(SK_ColorGREEN);
+  signin::SimulateAccountImageFetch(
+      identity_test_env()->identity_manager(), account_info.GetAccountId(),
+      "https://example.com/avatar.png", gfx::Image::CreateFrom1xBitmap(bitmap));
+  identity_test_env()->SetCookieAccounts(
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
+
+  controller.UpdateProfileIndicator(GURL("https://google.com/search"));
+
+  GURL updated_avatar_url = future.Take();
+  EXPECT_TRUE(updated_avatar_url.is_valid());
+  EXPECT_TRUE(updated_avatar_url.spec().starts_with("data:image/png;base64,"));
+
+  // Add a second signed-in account with a different avatar and verify
+  // authuser=1 selects the second account's avatar.
+  AccountInfo second_account =
+      identity_test_env()->MakeAccountAvailable("second_user@example.com");
+  SkBitmap second_bitmap;
+  second_bitmap.allocN32Pixels(16, 16);
+  second_bitmap.eraseColor(SK_ColorYELLOW);
+  signin::SimulateAccountImageFetch(
+      identity_test_env()->identity_manager(), second_account.GetAccountId(),
+      "https://example.com/avatar2.png",
+      gfx::Image::CreateFrom1xBitmap(second_bitmap));
+  identity_test_env()->SetCookieAccounts(
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId(),
+        /*signed_out=*/true},
+       {std::string(second_account.GetEmail()), second_account.GetGaiaId(),
+        /*signed_out=*/false}});
+
+  // Account 0 is signed_out=true, so index 0 falls back to the placeholder.
+  controller.UpdateProfileIndicator(
+      GURL("https://google.com/search?authuser=0"));
+  EXPECT_EQ(future.Take(), GURL(profiles::GetPlaceholderAvatarIconUrl()));
+
+  // Account 1 is signed in with its own avatar bitmap.
+  controller.UpdateProfileIndicator(
+      GURL("https://google.com/search?authuser=1"));
+  GURL second_avatar_url = future.Take();
+  EXPECT_TRUE(second_avatar_url.is_valid());
+  EXPECT_TRUE(second_avatar_url.spec().starts_with("data:image/png;base64,"));
+  EXPECT_NE(second_avatar_url, updated_avatar_url);
+}
+
+TEST_F(ContextualTasksUiTest, ProfileIndicator_LoadTimeDataPopulated) {
+  // Signed-out test.
+  base::DictValue signed_out_dict =
+      ContextualTasksUIBase::GetContextualTasksLoadTimeData(profile_);
+  const std::string* avatar_url =
+      signed_out_dict.FindString("profileAvatarUrl");
+  ASSERT_TRUE(avatar_url);
+  EXPECT_EQ(*avatar_url, profiles::GetPlaceholderAvatarIconUrl());
+
+  // Signed-in test.
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("user@example.com");
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  bitmap.eraseColor(SK_ColorRED);
+  signin::SimulateAccountImageFetch(
+      identity_test_env()->identity_manager(), account_info.GetAccountId(),
+      "https://example.com/avatar.png", gfx::Image::CreateFrom1xBitmap(bitmap));
+  identity_test_env()->SetCookieAccounts(
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
+
+  base::DictValue signed_in_dict =
+      ContextualTasksUIBase::GetContextualTasksLoadTimeData(profile_);
+  const std::string* signed_in_avatar_url =
+      signed_in_dict.FindString("profileAvatarUrl");
+  ASSERT_TRUE(signed_in_avatar_url);
+  EXPECT_TRUE(signed_in_avatar_url->starts_with("data:image/png;base64,"));
+}
 }  // namespace contextual_tasks

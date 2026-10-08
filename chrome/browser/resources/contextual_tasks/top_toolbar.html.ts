@@ -81,6 +81,13 @@ export function getHtml(this: TopToolbarElement) {
         ?disabled="${!this.enableOpenInNewTabButton}">
       </cr-icon-button>
     ` : ''}
+    ${this.isSidePanelRearchitectureEnabled_ ? html`
+      <div id="profileIndicator" class="profile-indicator">
+        <img class="profile-avatar-img"
+            src="${this.profileAvatarUrl}"
+            alt="">
+      </div>
+    ` : ''}
     <cr-icon-button id="overflowMenuButton" iron-icon="cr:more-vert"
       data-element-id="kContextualTasksWebUIOverflowMenuElementId"
       class="no-overlap ${this.overflowMenuOpen_ ? 'active' : ''}" title="$i18n{moreOptionsTooltip}"

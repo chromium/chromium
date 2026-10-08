@@ -1234,4 +1234,87 @@ suite('TopToolbarTest', () => {
         });
   });
   // </if>
+
+  suite('Profile indicator', () => {
+    setup(async () => {
+      loadTimeData.overrideValues({
+        contextualTasksSidePanelRearchitectureEnabled: true,
+      });
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      topToolbar = document.createElement('top-toolbar');
+      document.body.appendChild(topToolbar);
+      await microtasksFinished();
+    });
+
+    test(
+        'hides profile indicator when rearchitecture is disabled', async () => {
+          loadTimeData.overrideValues({
+            contextualTasksSidePanelRearchitectureEnabled: false,
+          });
+          document.body.innerHTML = window.trustedTypes!.emptyHTML;
+          topToolbar = document.createElement('top-toolbar');
+          topToolbar.profileAvatarUrl = 'data:image/png;base64,fakeImageData';
+          document.body.appendChild(topToolbar);
+          await microtasksFinished();
+
+          const profileIndicator =
+              topToolbar.shadowRoot.querySelector('#profileIndicator');
+          assertEquals(null, profileIndicator);
+        });
+
+    test(
+        'shows profile indicator with avatar image when avatar url is set',
+        async () => {
+          topToolbar.profileAvatarUrl = 'data:image/png;base64,fakeImageData';
+          await microtasksFinished();
+
+          const profileIndicator =
+              topToolbar.shadowRoot.querySelector<HTMLElement>(
+                  '#profileIndicator');
+          assertTrue(!!profileIndicator);
+
+          const avatarImg = profileIndicator.querySelector<HTMLImageElement>(
+              '.profile-avatar-img');
+          assertTrue(!!avatarImg);
+          assertEquals('data:image/png;base64,fakeImageData', avatarImg.src);
+        });
+
+    test(
+        'renders signed-out profile indicator with chrome placeholder avatar',
+        async () => {
+          topToolbar.profileAvatarUrl =
+              'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE';
+          await microtasksFinished();
+
+          const profileIndicator =
+              topToolbar.shadowRoot.querySelector<HTMLElement>(
+                  '#profileIndicator');
+          assertTrue(!!profileIndicator);
+
+          const avatarImg = profileIndicator.querySelector<HTMLImageElement>(
+              '.profile-avatar-img');
+          assertTrue(!!avatarImg);
+          assertEquals(
+              'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE',
+              avatarImg.src);
+        });
+
+    test('updates avatar url via mojo setProfileAvatarUrl', async () => {
+      topToolbar.profileAvatarUrl =
+          'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE';
+      await microtasksFinished();
+
+      toolbarProxy.callbackRouterRemote.setProfileAvatarUrl(
+          'data:image/png;base64,pushedAvatar');
+      await microtasksFinished();
+
+      const profileIndicator =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#profileIndicator');
+      assertTrue(!!profileIndicator);
+      const avatarImg = profileIndicator.querySelector<HTMLImageElement>(
+          '.profile-avatar-img');
+      assertTrue(!!avatarImg);
+      assertEquals('data:image/png;base64,pushedAvatar', avatarImg.src);
+    });
+  });
 });

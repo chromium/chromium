@@ -17,6 +17,8 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
@@ -27,10 +29,13 @@
 #include "chrome/grit/contextual_tasks_resources.h"
 #include "chrome/grit/contextual_tasks_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/contextual_tasks/public/account_utils.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/common/composebox_features.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
@@ -85,6 +90,23 @@ void OpenUrlWithDisposition(Profile* profile,
   params.disposition = disposition;
   params.browser = browser;
   Navigate(&params);
+}
+
+GURL GetProfileAvatarUrl(Profile* profile, const GURL& url) {
+  if (auto* identity_manager = IdentityManagerFactory::GetForProfile(profile)) {
+    std::optional<gaia::ListedAccount> account =
+        contextual_tasks::GetAccountFromCookieJar(identity_manager, url);
+    if (account.has_value() && !account->signed_out && account->valid) {
+      AccountInfo extended_info =
+          identity_manager->FindExtendedAccountInfoByGaiaId(account->gaia_id);
+      if (!extended_info.IsEmpty() &&
+          extended_info.GetAvatarImage().has_value()) {
+        return GURL(webui::GetBitmapDataUrl(
+            extended_info.GetAvatarImage()->AsBitmap()));
+      }
+    }
+  }
+  return GURL(profiles::GetPlaceholderAvatarIconUrl());
 }
 
 }  // namespace
@@ -270,6 +292,7 @@ base::DictValue ContextualTasksUIBase::GetContextualTasksLoadTimeData(
   dict.Set("isAiPage", false);
   dict.Set("isSignedIn", false);
   dict.Set("expandButtonEnabled", false);
+  dict.Set("profileAvatarUrl", GetProfileAvatarUrl(profile, GURL()).spec());
 
   return dict;
 }
@@ -302,6 +325,8 @@ void ContextualTasksUIBase::CreatePageHandler(
   if (GetThreadTitle().has_value() && toolbar_page_) {
     toolbar_page_->SetThreadTitle(*GetThreadTitle());
   }
+
+  UpdateProfileIndicator();
 }
 
 void ContextualTasksUIBase::PinSidePanel() {
@@ -661,6 +686,22 @@ void ContextualTasksUIBase::OnChipPointerExited(
 void ContextualTasksUIBase::NotifyAiPageStatusChanged(bool is_ai_page) {
   if (auto* toolbar_page = GetToolbarPageRemote()) {
     toolbar_page->OnAiPageStatusChanged(is_ai_page);
+  }
+}
+
+void ContextualTasksUIBase::UpdateProfileIndicator() {
+  GURL active_url;
+  if (auto* panel = GetPanelController()) {
+    if (auto* contents = panel->GetActiveWebContents()) {
+      active_url = contents->GetVisibleURL();
+    }
+  }
+  UpdateProfileIndicator(active_url);
+}
+
+void ContextualTasksUIBase::UpdateProfileIndicator(const GURL& url) {
+  if (auto* toolbar_page = GetToolbarPageRemote()) {
+    toolbar_page->SetProfileAvatarUrl(GetProfileAvatarUrl(GetProfile(), url));
   }
 }
 

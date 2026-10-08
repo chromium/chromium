@@ -137,6 +137,7 @@ permission-dashboard {
 }
 
 .top-toolbar-action-buttons {
+  align-items: center;
   flex: 0;
   display: flex;
   flex-direction: row;
@@ -167,4 +168,25 @@ cr-icon-button[hidden] {
 
 #overflowMenuButton.active {
   background-color: var(--cr-active-background-color);
+}
+
+.profile-indicator {
+  align-items: center;
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: flex;
+  flex-shrink: 0;
+  height: 32px;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  width: 32px;
+}
+
+.profile-avatar-img {
+  border-radius: 50%;
+  display: block;
+  height: 20px;
+  object-fit: cover;
+  width: 20px;
 }

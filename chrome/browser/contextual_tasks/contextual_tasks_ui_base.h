@@ -168,6 +168,11 @@ class ContextualTasksUIBase
   // Notifies the toolbar page that the AI page status has changed.
   void NotifyAiPageStatusChanged(bool is_ai_page);
 
+  // Updates the profile avatar URL displayed in the top toolbar using the
+  // active side panel WebContents URL (or `url` when specified).
+  void UpdateProfileIndicator();
+  void UpdateProfileIndicator(const GURL& url);
+
   // Whether the active side panel contents is currently displaying an AI page.
   //
   // Lifecycle:

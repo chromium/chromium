@@ -333,6 +333,7 @@ void ContextualTasksWebView::DidFinishNavigation(
     if (auto* toolbar_ui = GetToolbarUI()) {
       toolbar_ui->SetIsAiPage(false);
       toolbar_ui->SetThreadTitle(std::nullopt);
+      toolbar_ui->UpdateProfileIndicator(GURL());
     }
     if (IsTaskWaitingForUrl()) {
       return;
@@ -355,6 +356,7 @@ void ContextualTasksWebView::DidFinishNavigation(
   const GURL& url = navigation_handle->GetURL();
   const bool is_ai_url = ui_service && ui_service->IsAiUrl(url);
   toolbar_ui->SetIsAiPage(is_ai_url);
+  toolbar_ui->UpdateProfileIndicator(url);
 
   if (!is_ai_url || ContextualTasksUI::IsZeroState(url, ui_service)) {
     toolbar_ui->SetThreadTitle(std::nullopt);
@@ -605,6 +607,7 @@ void ContextualTasksWebView::UpdateToolbarStateFromWebContents(
   if (!wc || !browser_window_ || !browser_window_->GetProfile()) {
     toolbar_ui->SetIsAiPage(false);
     toolbar_ui->SetThreadTitle(std::nullopt);
+    toolbar_ui->UpdateProfileIndicator(GURL());
     return;
   }
 
@@ -614,6 +617,7 @@ void ContextualTasksWebView::UpdateToolbarStateFromWebContents(
       use_last_committed_url ? wc->GetLastCommittedURL() : wc->GetVisibleURL();
   const bool is_ai_url = ui_service && ui_service->IsAiUrl(url);
   toolbar_ui->SetIsAiPage(is_ai_url);
+  toolbar_ui->UpdateProfileIndicator(url);
 
   if (!is_ai_url || ContextualTasksUI::IsZeroState(url, ui_service)) {
     toolbar_ui->SetThreadTitle(std::nullopt);

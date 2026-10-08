@@ -137,6 +137,11 @@ interface Page {
 
   // Notifies the toolbar that the side panel state changed.
   OnSidePanelStateChanged();
+
+  // Updates the profile avatar URL displayed in the top toolbar (either a
+  // data: URL for the signed-in account's avatar or the chrome://theme
+  // placeholder avatar URL).
+  SetProfileAvatarUrl(url.mojom.Url avatar_url);
 };
 // Observer interface (page) implemented by WebUI to receive push
 // updates from browser process.

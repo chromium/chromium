@@ -119,6 +119,7 @@ class MockContextualTasksToolbarPage
   ~MockContextualTasksToolbarPage() override;
 
   mojo::PendingRemote<contextual_tasks_toolbar::mojom::Page> BindAndGetRemote();
+  void FlushForTesting() { receiver_.FlushForTesting(); }
 
   MOCK_METHOD(void, OnSidePanelPinStateChanged, (bool is_pinned), (override));
   MOCK_METHOD(void, OnAiPageStatusChanged, (bool is_ai_page), (override));
@@ -130,6 +131,7 @@ class MockContextualTasksToolbarPage
   MOCK_METHOD(void, SetExpandButtonEnabled, (bool enabled), (override));
   MOCK_METHOD(void, SetThreadTitle, (const std::string& title), (override));
   MOCK_METHOD(void, OnSidePanelStateChanged, (), (override));
+  MOCK_METHOD(void, SetProfileAvatarUrl, (const GURL& avatar_url), (override));
 
  private:
   mojo::Receiver<contextual_tasks_toolbar::mojom::Page> receiver_{this};
