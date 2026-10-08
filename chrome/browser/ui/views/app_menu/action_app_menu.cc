@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,12 +22,12 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_block_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_chip_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_footer_view.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_item_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_minor_text_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_controller.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_zoom_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/user_education/user_education_service.h"
 #include "ui/actions/actions.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -51,29 +52,6 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
-
-ui::ImageModel StandardizeMenuIconSize(const ui::ImageModel& icon,
-                                       int icon_size) {
-  if (icon.IsVectorIcon()) {
-    const ui::VectorIconModel& vector_model = icon.GetVectorIcon();
-    if (vector_model.icon_size() != icon_size) {
-      return ui::ImageModel::FromVectorIcon(*vector_model.vector_icon(),
-                                            vector_model.color(), icon_size,
-                                            vector_model.badge_icon());
-    }
-  }
-  return icon;
-}
-
-bool ShouldShowNewBadge(BrowserWindowInterface* browser_window_interface,
-                        const base::Feature& feature) {
-  if (auto* const user_education =
-          BrowserUserEducationInterface::From(browser_window_interface)) {
-    return user_education->MaybeShowNewBadgeFor(feature);
-  }
-  return UserEducationService::MaybeShowNewBadge(
-      browser_window_interface->GetProfile(), feature);
-}
 
 bool ShouldRoundBottomCorners(size_t index,
                               const actions::ActionListVector& items) {
@@ -676,17 +654,11 @@ views::MenuItemView* ActionAppMenu::AppendMenuItem(
     has_notification_header_ = true;
   }
 
-  const std::u16string label =
-      has_submenu ? std::u16string(action_item->GetText()) : std::u16string();
-  views::MenuItemView* menu_item =
-      index.has_value()
-          ? parent_menu_item->AddMenuItemAt(
-                *index, command_id, label, /*secondary_label=*/std::u16string(),
-                /*minor_text=*/std::u16string(),
-                /*minor_icon=*/ui::ImageModel(), /*icon=*/ui::ImageModel(),
-                menu_item_type, ui::NORMAL_SEPARATOR)
-          : parent_menu_item->AppendMenuItemImpl(
-                command_id, label, /*icon=*/ui::ImageModel(), menu_item_type);
+  views::MenuItemView* menu_item = parent_menu_item->AddMenuItemView(
+      std::make_unique<AppMenuItemView>(parent_menu_item, command_id,
+                                        menu_item_type, base_action_item,
+                                        browser_window_interface_),
+      index);
 
   action_view_controller_.CreateActionViewRelationship(
       menu_item, action_item->GetAsWeakPtr());
@@ -701,30 +673,6 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
                                       bool round_bottom_corners,
                                       bool add_top_padding,
                                       bool add_bottom_padding) {
-  actions::ActionItem* const action_item = child_base->GetActionItem();
-  CHECK(action_item);
-
-  if (std::u16string* text_override =
-          child_base->GetProperty(AppMenuActionItem::kTextOverrideKey)) {
-    menu_item->SetTitle(*text_override);
-  }
-
-  if (!action_item->GetAccessibleName().empty()) {
-    menu_item->GetViewAccessibility().SetName(
-        std::u16string(action_item->GetAccessibleName()));
-  }
-
-  if (std::u16string* secondary_text =
-          child_base->GetProperty(AppMenuActionItem::kSecondaryTextKey)) {
-    menu_item->SetSecondaryTitle(*secondary_text);
-  }
-
-  const ui::ElementIdentifier element_id =
-      child_base->GetProperty(views::kElementIdentifierKey);
-  if (element_id) {
-    menu_item->SetProperty(views::kElementIdentifierKey, element_id);
-  }
-
   const auto* provider = ChromeLayoutProvider::Get();
   const bool is_notification =
       child_base->GetProperty(AppMenuActionItem::kDisplayTypeKey) ==
@@ -732,28 +680,6 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
   const int default_icon_size = provider->GetDistanceMetric(
       is_notification ? DISTANCE_ACTION_APP_MENU_NOTIFICATION_ICON_SIZE
                       : DISTANCE_ACTION_APP_MENU_DEFAULT_ICON_SIZE);
-
-  if (ui::ImageModel* icon_override =
-          child_base->GetProperty(AppMenuActionItem::kIconOverrideKey)) {
-    menu_item->SetIcon(
-        action_item->GetActionId() == kActionProfileSubmenu
-            ? *icon_override
-            : StandardizeMenuIconSize(*icon_override, default_icon_size));
-  } else if (!action_item->GetImage().IsEmpty()) {
-    menu_item->SetIcon(
-        StandardizeMenuIconSize(action_item->GetImage(), default_icon_size));
-  }
-
-  if (ui::ImageModel* minor_icon =
-          child_base->GetProperty(AppMenuActionItem::kMinorIconKey)) {
-    menu_item->SetMinorIcon(*minor_icon);
-  }
-
-  // Display shortcut text if the ActionItem has one.
-  const ui::Accelerator& accel = action_item->GetAccelerator();
-  if (accel.key_code() != ui::VKEY_UNKNOWN) {
-    menu_item->SetMinorText(accel.GetShortcutText());
-  }
 
   if (const std::u16string* minor_text =
           child_base->GetProperty(AppMenuActionItem::kMinorTextKey);
@@ -764,19 +690,6 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
   if (std::u16string* chip_text =
           child_base->GetProperty(AppMenuActionItem::kChipTextKey)) {
     AppMenuChipView::AttachTo(menu_item, *chip_text);
-  }
-
-  if (const base::Feature* new_badge_feature =
-          child_base->GetProperty(AppMenuActionItem::kNewBadgeFeatureKey)) {
-    const bool show_new_badge =
-        ShouldShowNewBadge(browser_window_interface_, *new_badge_feature);
-    menu_item->set_new_badge_type(
-        show_new_badge ? std::make_optional(ui::NewBadgeType::kNew)
-                       : std::nullopt);
-  }
-
-  if (child_base->GetProperty(AppMenuActionItem::kIsAlertedKey)) {
-    menu_item->SetAlerted();
   }
 
   int target_item_height = 0;
