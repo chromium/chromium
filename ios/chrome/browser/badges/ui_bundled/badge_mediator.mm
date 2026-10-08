@@ -88,7 +88,6 @@ bool IsInfobarTypeSupportedInReaderMode(InfobarType infobarType,
   }
 }
 
-// TODO(crbug.com/458142962): Migrate to LocationBarBadgeType.
 // Helper method to convert a `BadgeType` to a `LocationBarBadgeType. Serves as
 // a strict switch case to ensure that there's parity between both types.
 LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
