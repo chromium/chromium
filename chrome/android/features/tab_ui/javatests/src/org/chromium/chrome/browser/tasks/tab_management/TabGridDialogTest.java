@@ -90,6 +90,7 @@ import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.Intents;
+import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitor;
@@ -148,6 +149,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerContainer;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
@@ -187,7 +189,6 @@ import java.util.concurrent.TimeoutException;
 })
 @Batch(Batch.PER_CLASS)
 @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/394671175
-@DisableIf.Build(sdk_equals = Build.VERSION_CODES.S, message = "https://crbug.com/568493482")
 public class TabGridDialogTest {
     private static final String CUSTOMIZED_TITLE1 = "wfh tips";
     private static final String CUSTOMIZED_TITLE2 = "wfh funs";
@@ -1259,8 +1260,7 @@ public class TabGridDialogTest {
     }
 
     @Test
-    @MediumTest
-    @DisableIf.Device(DeviceFormFactor.PHONE) // https://crbug.com/568493482
+    @LargeTest
     public void testTabGroupNaming() throws ExecutionException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -1281,13 +1281,14 @@ public class TabGridDialogTest {
 
         // Verify the title is updated in both tab switcher and dialog.
         clickScrimToExitDialog(cta);
-        waitForDialogHidingAnimation(cta);
+        waitForDialogHidingAnimationInTabSwitcher(cta);
         verifyFirstCardTitle(CUSTOMIZED_TITLE1);
         openDialogFromTabSwitcherAndVerify(cta, 2, CUSTOMIZED_TITLE1);
 
         if (isPhone()) {
             // Modify title in dialog from tab strip.
             clickFirstTabInDialog(cta);
+            waitForDialogHidingAnimation(cta);
             openDialogFromStripAndVerify(cta, 2, CUSTOMIZED_TITLE1);
             editDialogTitle(cta, CUSTOMIZED_TITLE2);
 
@@ -1299,9 +1300,8 @@ public class TabGridDialogTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @RequiresRestart("Group creation modal dialog is sometimes persistent when dismissing")
-    @DisableIf.Device(DeviceFormFactor.PHONE) // https://crbug.com/568493482
     public void testTabGroupNaming_KeyboardVisibility() throws ExecutionException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -1436,12 +1436,11 @@ public class TabGridDialogTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @Feature({"RenderTest"})
     @DisableFeatures({DATA_SHARING, DATA_SHARING_JOIN_ONLY}) // Needs new goldens post-launch.
     @RequiresRestart("Group creation modal dialog is sometimes persistent when dismissing")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    @DisableIf.Device(DeviceFormFactor.PHONE) // https://crbug.com/568493482
     public void testRenderDialog_3Tabs_Landscape_NewAspectRatio(boolean nightModeEnabled)
             throws Exception {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1981,6 +1980,11 @@ public class TabGridDialogTest {
 
     private void openDialogFromTabSwitcherAndVerify(
             ChromeTabbedActivity cta, int tabCount, String customizedTitle) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    RecyclerView recyclerView = getRecyclerView(cta);
+                    Criteria.checkThat(recyclerView.isAnimating(), Matchers.is(false));
+                });
         clickFirstCardFromTabSwitcher(cta);
         CriteriaHelper.pollUiThread(() -> isDialogFullyVisible(cta));
         verifyShowingDialog(cta, tabCount, customizedTitle);
@@ -2001,6 +2005,13 @@ public class TabGridDialogTest {
                                 withParent(withId(R.id.tab_grid_dialog_recycler_view_container))))
                 .check(matches(isDisplayed()))
                 .check(TabUiTestHelper.ChildrenCountAssertion.havingTabCount(tabCount));
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    View container = cta.findViewById(R.id.tab_grid_dialog_recycler_view_container);
+                    RecyclerView recyclerView = container.findViewById(R.id.tab_list_recycler_view);
+                    Criteria.checkThat(recyclerView.isAnimating(), Matchers.is(false));
+                });
 
         // Check contents within dialog.
         onView(allOf(isDescendantOfA(withId(R.id.main_content)), withId(R.id.title)))
@@ -2039,8 +2050,9 @@ public class TabGridDialogTest {
             return;
         }
 
-        if (cta.getEdgeToEdgeSupplier().get() != null
-                && cta.getEdgeToEdgeSupplier().get().isDrawingToEdge()) {
+        if ((cta.getEdgeToEdgeSupplier().get() != null
+                        && cta.getEdgeToEdgeSupplier().get().isDrawingToEdge())
+                || EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
             assertEquals(
                     "Expected navigation bar color to be transparent",
                     Color.TRANSPARENT,
@@ -2284,8 +2296,9 @@ public class TabGridDialogTest {
     }
 
     private void editDialogTitle(ChromeTabbedActivity cta, String title) {
+        clickTitleTextToFocus(cta);
+        verifyTitleTextFocus(cta, true);
         onView(allOf(isDescendantOfA(withId(R.id.main_content)), withId(R.id.title)))
-                .perform(click())
                 .check(
                         (v, e) -> {
                             // Verify all texts in the field are selected.
@@ -2296,10 +2309,7 @@ public class TabGridDialogTest {
                         })
                 .perform(replaceText(title))
                 .perform(pressImeActionButton());
-        // Wait until the keyboard is hidden to make sure the edit has taken effect.
-        KeyboardVisibilityDelegate delegate = cta.getWindowAndroid().getKeyboardDelegate();
-        CriteriaHelper.pollUiThread(
-                () -> !delegate.isKeyboardShowing(cta.getCompositorViewHolderForTesting()));
+        verifyTitleTextFocus(cta, false);
     }
 
     private void verifyFirstCardTitle(String title) {
@@ -2435,17 +2445,6 @@ public class TabGridDialogTest {
     }
 
     private void clickTitleTextToFocus(ChromeTabbedActivity cta) {
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    View toolbarView = cta.findViewById(R.id.tab_group_toolbar);
-                    Criteria.checkThat("Toolbar view is null", toolbarView, notNullValue());
-                    View titleTextView = toolbarView.findViewById(R.id.title);
-                    Criteria.checkThat("Title text view is null", titleTextView, notNullValue());
-                    Criteria.checkThat(
-                            "Title text view lacks window focus",
-                            titleTextView.hasWindowFocus(),
-                            Matchers.is(true));
-                });
         onViewWaiting(allOf(isDescendantOfA(withId(R.id.main_content)), withId(R.id.title)))
                 .perform(click());
     }
@@ -2495,7 +2494,9 @@ public class TabGridDialogTest {
                             "Keyboard visibility mismatch",
                             keyboardVisible,
                             Matchers.is(shouldFocus));
-                });
+                },
+                CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL_LONG,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     private @Nullable RecyclerView getRecyclerView(ChromeTabbedActivity cta) {

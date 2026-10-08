@@ -53,10 +53,11 @@ public class TabGridDialogToolbarView extends FrameLayout {
     private @MonotonicNonNull ButtonCompat mShareButton;
     private @Nullable FrameLayout mImageTilesContainer;
     private boolean mNeedsKeyboardShow;
+    private boolean mNeedsFocus;
 
     private final Runnable mShowKeyboardRunnable =
             () -> {
-                if (!mTitleTextView.isFocused()) return;
+                if (!mTitleTextView.isFocused() && !mNeedsFocus) return;
                 if (hasWindowFocus()) {
                     mNeedsKeyboardShow = false;
                     KeyboardVisibilityDelegate delegate = KeyboardVisibilityDelegate.getInstance();
@@ -136,6 +137,7 @@ public class TabGridDialogToolbarView extends FrameLayout {
     }
 
     void updateTitleTextFocus(boolean shouldFocus) {
+        mNeedsFocus = shouldFocus && !hasWindowFocus();
         if (mTitleTextView.isFocused() == shouldFocus) return;
         if (shouldFocus) {
             mTitleTextView.requestFocus();
@@ -147,10 +149,16 @@ public class TabGridDialogToolbarView extends FrameLayout {
     @Override
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
-        if (hasWindowFocus && mNeedsKeyboardShow) {
-            mNeedsKeyboardShow = false;
-            removeCallbacks(mShowKeyboardRunnable);
-            post(mShowKeyboardRunnable);
+        if (hasWindowFocus) {
+            if (mNeedsFocus) {
+                mNeedsFocus = false;
+                mTitleTextView.requestFocus();
+            }
+            if (mNeedsKeyboardShow) {
+                mNeedsKeyboardShow = false;
+                removeCallbacks(mShowKeyboardRunnable);
+                post(mShowKeyboardRunnable);
+            }
         }
     }
 
@@ -159,6 +167,7 @@ public class TabGridDialogToolbarView extends FrameLayout {
         super.onDetachedFromWindow();
         removeCallbacks(mShowKeyboardRunnable);
         mNeedsKeyboardShow = false;
+        mNeedsFocus = false;
     }
 
     void updateKeyboardVisibility(boolean shouldShow) {

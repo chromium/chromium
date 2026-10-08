@@ -13,6 +13,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -135,6 +138,17 @@ public class TabGridDialogMediator
     @VisibleForTesting static final String SHOW_SEND_FEEDBACK_PARAM = "show_send_feedback";
     @VisibleForTesting static final String SHARE_FEEDBACK_CATEGORY_SUFFIX = ".tab_group_share";
 
+    /**
+     * Window after the title gains focus during which a keyboard "hidden" notification is treated
+     * as transient rather than as a user dismissal. After we request title focus and show the IME,
+     * the client-side show on a retained IME control can finish (and report visible) before the IME
+     * process has actually drawn; the server then reports not-yet-visible, which arrives as a
+     * spurious hide while the IME is still starting. A genuine user dismissal cannot happen this
+     * soon after our own request, so the hidden handling is deferred until the end of this window
+     * and the keyboard state is re-checked before clearing title focus.
+     */
+    @VisibleForTesting static final long KEYBOARD_SHOW_SETTLE_MS = 1500;
+
     /** Defines an interface for a {@link TabGridDialogMediator} to control dialog. */
     interface DialogController extends BackPressHandler {
         /**
@@ -147,6 +161,7 @@ public class TabGridDialogMediator
 
         /**
          * Hide the TabGridDialog
+         *
          * @param showAnimation Whether to show an animation when hiding the dialog.
          */
         void hideDialog(boolean showAnimation);
@@ -252,6 +267,8 @@ public class TabGridDialogMediator
     private final Runnable mScrimClickRunnable;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final BottomSheetObserver mBottomSheetObserver;
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
+    private final Runnable mDeferredKeyboardHiddenRunnable = this::onDeferredKeyboardHidden;
 
     private @Nullable Token mCurrentTabGroupId;
     private TabGridDialogMenuCoordinator mTabGridDialogMenuCoordinator;
@@ -260,6 +277,7 @@ public class TabGridDialogMediator
     private boolean mTabListEditorSetup;
     private KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
     private boolean mIsUpdatingTitle;
+    private long mTitleFocusGainedTimeMs;
     private @Nullable String mCurrentGroupModifiedTitle;
     private @Nullable CollaborationActivityMessageCardViewModel mCollaborationActivityPropertyModel;
 
@@ -659,6 +677,7 @@ public class TabGridDialogMediator
 
         // Save the title first so that the animation has the correct title.
         saveCurrentGroupModifiedTitle();
+        mHandler.removeCallbacks(mDeferredKeyboardHiddenRunnable);
         mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, false);
 
         if (!showAnimation) {
@@ -746,6 +765,7 @@ public class TabGridDialogMediator
         mCurrentTabModelSupplier.removeObserver(mOnTabModelChanged);
         KeyboardVisibilityDelegate.getInstance()
                 .removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
+        mHandler.removeCallbacks(mDeferredKeyboardHiddenRunnable);
         if (mTransitiveSharedGroupObserver != null) {
             mTransitiveSharedGroupObserver
                     .getGroupSharedStateSupplier()
@@ -785,8 +805,7 @@ public class TabGridDialogMediator
 
     private void requestShowBottomSheet() {
         if (mTransitiveSharedGroupObserver != null) {
-            @Nullable
-            String collaborationId =
+            @Nullable String collaborationId =
                     mTransitiveSharedGroupObserver.getCollaborationIdSupplier().get();
             if (TabShareUtils.isCollaborationIdValid(collaborationId)) {
                 TabGroupShareNoticeBottomSheetCoordinator bottomSheetCoordinator =
@@ -958,10 +977,23 @@ public class TabGridDialogMediator
     private void setupToolbarEditText() {
         mKeyboardVisibilityListener =
                 isShowing -> {
-                    if (!isShowing) {
-                        mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, false);
-                        saveCurrentGroupModifiedTitle();
+                    if (isShowing) {
+                        mHandler.removeCallbacks(mDeferredKeyboardHiddenRunnable);
+                        return;
                     }
+                    long remainingMs =
+                            mTitleFocusGainedTimeMs
+                                    + KEYBOARD_SHOW_SETTLE_MS
+                                    - SystemClock.uptimeMillis();
+                    if (mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED)
+                            && remainingMs > 0) {
+                        // Likely a transient hide while the IME is still starting; re-check once
+                        // the settle window has elapsed. See KEYBOARD_SHOW_SETTLE_MS.
+                        mHandler.removeCallbacks(mDeferredKeyboardHiddenRunnable);
+                        mHandler.postDelayed(mDeferredKeyboardHiddenRunnable, remainingMs);
+                        return;
+                    }
+                    onKeyboardHidden();
                 };
         KeyboardVisibilityDelegate.getInstance()
                 .addKeyboardVisibilityListener(mKeyboardVisibilityListener);
@@ -978,12 +1010,35 @@ public class TabGridDialogMediator
 
         View.OnFocusChangeListener onFocusChangeListener =
                 (View _, boolean hasFocus) -> {
+                    if (hasFocus) {
+                        mTitleFocusGainedTimeMs = SystemClock.uptimeMillis();
+                    } else {
+                        mHandler.removeCallbacks(mDeferredKeyboardHiddenRunnable);
+                    }
                     mIsUpdatingTitle = hasFocus;
                     mModel.set(TabGridDialogProperties.IS_KEYBOARD_VISIBLE, hasFocus);
                     mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, hasFocus);
                     mModel.set(TabGridDialogProperties.TITLE_CURSOR_VISIBILITY, hasFocus);
                 };
         mModel.set(TabGridDialogProperties.TITLE_TEXT_ON_FOCUS_LISTENER, onFocusChangeListener);
+    }
+
+    /** Handles a keyboard hide that is treated as the user finishing the title edit. */
+    private void onKeyboardHidden() {
+        mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, false);
+        saveCurrentGroupModifiedTitle();
+    }
+
+    /**
+     * Runs once {@link #KEYBOARD_SHOW_SETTLE_MS} has elapsed after a keyboard hide that arrived
+     * shortly after the title gained focus. Only treats it as a real hide if the keyboard is still
+     * not showing and the title is still focused.
+     */
+    private void onDeferredKeyboardHidden() {
+        if (!mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED)) return;
+        View decorView = mActivity.getWindow().getDecorView();
+        if (KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(decorView)) return;
+        onKeyboardHidden();
     }
 
     private View.OnClickListener getCollapseButtonClickListener() {
@@ -1507,8 +1562,8 @@ public class TabGridDialogMediator
 
         assumeNonNull(mTransitiveSharedGroupObserver);
 
-        @Nullable
-        String collaborationId = mTransitiveSharedGroupObserver.getCollaborationIdSupplier().get();
+        @Nullable String collaborationId =
+                mTransitiveSharedGroupObserver.getCollaborationIdSupplier().get();
         if (!TabShareUtils.isCollaborationIdValid(collaborationId)) return MemberRole.UNKNOWN;
 
         return mCollaborationService.getCurrentUserRoleForGroup(collaborationId);

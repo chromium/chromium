@@ -66,6 +66,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureOverrides;
@@ -159,6 +160,7 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /** Tests for {@link TabGridDialogMediator}. */
@@ -219,6 +221,7 @@ public class TabGridDialogMediatorUnitTest {
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private TabGridContextMenuCoordinator mTabGridContextMenuCoordinator;
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
+    @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
 
     private final View mView = new View(ContextUtils.getApplicationContext());
     private final EditText mTitleTextView = new EditText(ContextUtils.getApplicationContext());
@@ -310,6 +313,7 @@ public class TabGridDialogMediatorUnitTest {
         when(mTabModel.getTabGroupTitle(any(Token.class))).thenReturn(UNSET_TAB_GROUP_TITLE);
 
         mActivity = Robolectric.buildActivity(TestActivity.class).get();
+        KeyboardVisibilityDelegate.setInstanceForTesting(mKeyboardVisibilityDelegate);
         mModel = spy(new PropertyModel(TabGridDialogProperties.ALL_KEYS));
         remakeMediator(
                 /* componentId= */ TabComponentId.TAB_GRID_DIALOG_IN_SWITCHER,
@@ -538,6 +542,8 @@ public class TabGridDialogMediatorUnitTest {
                 equalTo(CUSTOMIZED_DIALOG_TITLE));
 
         keyboardVisibilityListener.keyboardVisibilityChanged(false);
+        // The hide arrived within the settle window; it is confirmed once the window elapses.
+        idlePastKeyboardShowSettleWindow();
 
         verify(mTabModel).setTabGroupTitle(eq(TAB_GROUP_ID), eq(CUSTOMIZED_DIALOG_TITLE));
         assertThat(
@@ -566,6 +572,8 @@ public class TabGridDialogMediatorUnitTest {
                 equalTo(CUSTOMIZED_DIALOG_TITLE));
 
         keyboardVisibilityListener.keyboardVisibilityChanged(false);
+        // The hide arrived within the settle window; it is confirmed once the window elapses.
+        idlePastKeyboardShowSettleWindow();
 
         verify(mTabModel).setTabGroupTitle(eq(TAB_GROUP_ID), eq(CUSTOMIZED_DIALOG_TITLE));
         assertThat(
@@ -592,6 +600,95 @@ public class TabGridDialogMediatorUnitTest {
 
         verify(mTabModel, never()).setTabGroupTitle(any(), anyString());
         assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(TAB1_TITLE));
+    }
+
+    @Test
+    public void onKeyBoardVisibilityChanged_TransientHide_KeyboardShowsAgain_KeepsFocus() {
+        KeyboardVisibilityDelegate.KeyboardVisibilityListener keyboardVisibilityListener =
+                mMediator.getKeyboardVisibilityListenerForTesting();
+        focusTitleAndEditText();
+
+        // A spurious hide arrives while the IME is still starting, then the IME finishes showing
+        // before the settle window elapses.
+        keyboardVisibilityListener.keyboardVisibilityChanged(false);
+        assertTrue(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED));
+        keyboardVisibilityListener.keyboardVisibilityChanged(true);
+        idlePastKeyboardShowSettleWindow();
+
+        assertTrue(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED));
+        verify(mTabModel, never()).setTabGroupTitle(any(), anyString());
+    }
+
+    @Test
+    public void onKeyBoardVisibilityChanged_TransientHide_KeyboardShowingAtRecheck_KeepsFocus() {
+        KeyboardVisibilityDelegate.KeyboardVisibilityListener keyboardVisibilityListener =
+                mMediator.getKeyboardVisibilityListenerForTesting();
+        focusTitleAndEditText();
+
+        // A spurious hide arrives while the IME is still starting; by the time the settle window
+        // elapses the keyboard is actually showing.
+        keyboardVisibilityListener.keyboardVisibilityChanged(false);
+        assertTrue(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED));
+        when(mKeyboardVisibilityDelegate.isKeyboardShowing(any())).thenReturn(true);
+        idlePastKeyboardShowSettleWindow();
+
+        assertTrue(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED));
+        verify(mTabModel, never()).setTabGroupTitle(any(), anyString());
+    }
+
+    @Test
+    public void onKeyBoardVisibilityChanged_RealHideWithinSettleWindow_ClearsFocusAndSaves() {
+        KeyboardVisibilityDelegate.KeyboardVisibilityListener keyboardVisibilityListener =
+                mMediator.getKeyboardVisibilityListenerForTesting();
+        focusTitleAndEditText();
+
+        keyboardVisibilityListener.keyboardVisibilityChanged(false);
+        // Deferred until the settle window elapses.
+        assertTrue(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED));
+        verify(mTabModel, never()).setTabGroupTitle(any(), anyString());
+
+        when(mKeyboardVisibilityDelegate.isKeyboardShowing(any())).thenReturn(false);
+        idlePastKeyboardShowSettleWindow();
+
+        assertFalse(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED));
+        verify(mTabModel).setTabGroupTitle(eq(TAB_GROUP_ID), eq(CUSTOMIZED_DIALOG_TITLE));
+    }
+
+    @Test
+    public void onKeyBoardVisibilityChanged_HideOutsideSettleWindow_ClearsFocusImmediately() {
+        KeyboardVisibilityDelegate.KeyboardVisibilityListener keyboardVisibilityListener =
+                mMediator.getKeyboardVisibilityListenerForTesting();
+        focusTitleAndEditText();
+        idlePastKeyboardShowSettleWindow();
+        assertTrue(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED));
+
+        keyboardVisibilityListener.keyboardVisibilityChanged(false);
+
+        assertFalse(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED));
+        verify(mTabModel).setTabGroupTitle(eq(TAB_GROUP_ID), eq(CUSTOMIZED_DIALOG_TITLE));
+    }
+
+    /** Focuses the title for TAB_GROUP_ID and edits it to CUSTOMIZED_DIALOG_TITLE. */
+    private void focusTitleAndEditText() {
+        TextWatcher textWatcher = mModel.get(TabGridDialogProperties.TITLE_TEXT_WATCHER);
+        mMediator.setCurrentTabGroupIdForTesting(TAB_GROUP_ID);
+        mModel.set(TabGridDialogProperties.HEADER_TITLE, TAB1_TITLE);
+        createTabGroup(new ArrayList<>(Arrays.asList(mTab1, mTab2)), TAB_GROUP_ID);
+
+        View.OnFocusChangeListener onFocusChangeListener =
+                mModel.get(TabGridDialogProperties.TITLE_TEXT_ON_FOCUS_LISTENER);
+        onFocusChangeListener.onFocusChange(mTitleTextView, true);
+        mMediator.getKeyboardVisibilityListenerForTesting().keyboardVisibilityChanged(true);
+        textWatcher.afterTextChanged(mEditable);
+        assertThat(
+                mMediator.getCurrentGroupModifiedTitleForTesting(),
+                equalTo(CUSTOMIZED_DIALOG_TITLE));
+    }
+
+    /** Advances the main looper clock past the keyboard show settle window, running due tasks. */
+    private void idlePastKeyboardShowSettleWindow() {
+        ShadowLooper.idleMainLooper(
+                TabGridDialogMediator.KEYBOARD_SHOW_SETTLE_MS, TimeUnit.MILLISECONDS);
     }
 
     @Test
