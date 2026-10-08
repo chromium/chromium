@@ -962,6 +962,89 @@ TEST_F(AccessibilityDetailedViewTest, StickyKeysTopView) {
   EXPECT_FALSE(controller()->sticky_keys().enabled());
 }
 
+TEST_F(AccessibilityDetailedViewTest,
+       SpokenFeedbackUpdatesConflictingFeaturesInOpenMenu) {
+  SetFocusHighlightEnabled(true);
+  EnableStickyKeys(true);
+  CreateDetailedMenu();
+
+  HoverHighlightView* focus_highlight_item =
+      views::AsViewClass<HoverHighlightView>(highlight_keyboard_focus_view());
+  HoverHighlightView* sticky_keys_item =
+      views::AsViewClass<HoverHighlightView>(sticky_keys_view());
+  ASSERT_TRUE(focus_highlight_item);
+  ASSERT_TRUE(highlight_keyboard_focus_top_view());
+  ASSERT_TRUE(sticky_keys_item);
+  ASSERT_TRUE(sticky_keys_top_view());
+  EXPECT_TRUE(IsSwitchToggled(focus_highlight_item));
+  EXPECT_TRUE(focus_highlight_item->GetEnabled());
+  EXPECT_TRUE(IsSwitchToggled(highlight_keyboard_focus_top_view()));
+  EXPECT_TRUE(highlight_keyboard_focus_top_view()->GetEnabled());
+  EXPECT_TRUE(IsSwitchToggled(sticky_keys_item));
+  EXPECT_TRUE(sticky_keys_item->GetEnabled());
+  EXPECT_TRUE(IsSwitchToggled(sticky_keys_top_view()));
+  EXPECT_TRUE(sticky_keys_top_view()->GetEnabled());
+
+  // Enabling Spoken Feedback while the menu is already open should update the
+  // existing Focus Highlight and Sticky Keys rows to unchecked and disabled.
+  EnableSpokenFeedback(true);
+  EXPECT_FALSE(controller()->focus_highlight().enabled());
+  EXPECT_FALSE(controller()->sticky_keys().enabled());
+  EXPECT_FALSE(IsSwitchToggled(focus_highlight_item));
+  EXPECT_FALSE(IsCheckedForAccessibility(focus_highlight_item));
+  EXPECT_FALSE(focus_highlight_item->GetEnabled());
+  EXPECT_FALSE(IsSwitchToggled(highlight_keyboard_focus_top_view()));
+  EXPECT_FALSE(IsCheckedForAccessibility(highlight_keyboard_focus_top_view()));
+  EXPECT_FALSE(highlight_keyboard_focus_top_view()->GetEnabled());
+  EXPECT_FALSE(IsSwitchToggled(sticky_keys_item));
+  EXPECT_FALSE(IsCheckedForAccessibility(sticky_keys_item));
+  EXPECT_FALSE(sticky_keys_item->GetEnabled());
+  EXPECT_FALSE(IsSwitchToggled(sticky_keys_top_view()));
+  EXPECT_FALSE(IsCheckedForAccessibility(sticky_keys_top_view()));
+  EXPECT_FALSE(sticky_keys_top_view()->GetEnabled());
+
+  // Disabling Spoken Feedback restores Focus Highlight and Sticky Keys.
+  EnableSpokenFeedback(false);
+  EXPECT_TRUE(controller()->focus_highlight().enabled());
+  EXPECT_TRUE(controller()->sticky_keys().enabled());
+  EXPECT_TRUE(IsSwitchToggled(focus_highlight_item));
+  EXPECT_TRUE(IsCheckedForAccessibility(focus_highlight_item));
+  EXPECT_TRUE(focus_highlight_item->GetEnabled());
+  EXPECT_TRUE(IsSwitchToggled(highlight_keyboard_focus_top_view()));
+  EXPECT_TRUE(IsCheckedForAccessibility(highlight_keyboard_focus_top_view()));
+  EXPECT_TRUE(highlight_keyboard_focus_top_view()->GetEnabled());
+  EXPECT_TRUE(IsSwitchToggled(sticky_keys_item));
+  EXPECT_TRUE(IsCheckedForAccessibility(sticky_keys_item));
+  EXPECT_TRUE(sticky_keys_item->GetEnabled());
+  EXPECT_TRUE(IsSwitchToggled(sticky_keys_top_view()));
+  EXPECT_TRUE(IsCheckedForAccessibility(sticky_keys_top_view()));
+  EXPECT_TRUE(sticky_keys_top_view()->GetEnabled());
+
+  // Turn off Focus Highlight and Sticky Keys, then enable Spoken Feedback and
+  // verify that clicking the conflicting rows in the open menu is ignored.
+  SetFocusHighlightEnabled(false);
+  EnableStickyKeys(false);
+  EnableSpokenFeedback(true);
+  ClickView(focus_highlight_item);
+  ClickView(highlight_keyboard_focus_top_view());
+  ClickView(sticky_keys_item);
+  ClickView(sticky_keys_top_view());
+  EXPECT_FALSE(controller()->focus_highlight().enabled());
+  EXPECT_FALSE(controller()->sticky_keys().enabled());
+  EXPECT_FALSE(IsSwitchToggled(focus_highlight_item));
+  EXPECT_FALSE(IsSwitchToggled(sticky_keys_item));
+
+  // Reopen the menu while Spoken Feedback is active (so conflicting row
+  // pointers are nullptr) and verify disabling Spoken Feedback does not crash.
+  CloseDetailMenu();
+  CreateDetailedMenu();
+  EXPECT_FALSE(highlight_keyboard_focus_view());
+  EXPECT_FALSE(sticky_keys_view());
+  EnableSpokenFeedback(false);
+  EXPECT_FALSE(controller()->focus_highlight().enabled());
+  EXPECT_FALSE(controller()->sticky_keys().enabled());
+}
+
 TEST_F(AccessibilityDetailedViewTest, SwitchAccessTopView) {
   // Don't show the confirmation dialog when disabling switch access, so the
   // feature will be disabled immediately.

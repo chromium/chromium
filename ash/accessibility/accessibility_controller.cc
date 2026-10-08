@@ -3873,8 +3873,10 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
             false, /*session_id=*/0);
       }
 
-      // ChromeVox focus highlighting overrides the other focus highlighting.
+      // ChromeVox focus highlighting overrides the other focus highlighting,
+      // and ChromeVox conflicts with sticky keys.
       focus_highlight().UpdateFromPref();
+      sticky_keys().UpdateFromPref();
       break;
     case FeatureType::kReducedAnimations:
       // Handled in AccessibilityManager.

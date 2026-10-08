@@ -90,8 +90,8 @@ bool SodaFeatureHasUpdate(SodaFeature feature,
 }
 
 // Updates the toggle button state and accessibility state for `item` to
-// `toggled`.
-void UpdateToggleState(HoverHighlightView* item, bool toggled) {
+// `toggled` and `enabled`.
+void UpdateToggleState(HoverHighlightView* item, bool toggled, bool enabled) {
   if (!item) {
     return;
   }
@@ -102,6 +102,7 @@ void UpdateToggleState(HoverHighlightView* item, bool toggled) {
     Switch* button = static_cast<Switch*>(right_view);
     button->AnimateIsOn(toggled);
   }
+  item->SetEnabled(enabled);
 
   // The entire row is treated as one element for accessibility.
   item->SetAccessibilityState(
@@ -109,13 +110,22 @@ void UpdateToggleState(HoverHighlightView* item, bool toggled) {
               : HoverHighlightView::AccessibilityState::UNCHECKED_CHECKBOX);
 }
 
-// Updates the feature state in the UI to `enabled` on `view1` and `view2` if
-// the views exist.
-void UpdateFeatureState(bool enabled,
+// Updates the feature state in the UI to `toggled` and `enabled` on `view1` and
+// `view2` if the views exist.
+void UpdateFeatureState(bool toggled,
+                        bool enabled,
                         HoverHighlightView* view1,
                         HoverHighlightView* view2) {
-  UpdateToggleState(view1, enabled);
-  UpdateToggleState(view2, enabled);
+  UpdateToggleState(view1, toggled, enabled);
+  UpdateToggleState(view2, toggled, enabled);
+}
+
+// Updates the feature state in the UI to `toggled` on `view1` and
+// `view2` if the views exist, leaving the rows enabled.
+void UpdateFeatureState(bool toggled,
+                        HoverHighlightView* view1,
+                        HoverHighlightView* view2) {
+  UpdateFeatureState(toggled, /*enabled=*/true, view1, view2);
 }
 
 }  // namespace
@@ -248,16 +258,18 @@ void AccessibilityDetailedView::OnAccessibilityStatusChanged() {
                        highlight_mouse_cursor_top_view_);
   }
 
-  if (controller->IsFocusHighlightSettingVisibleInTray()) {
-    bool checked = controller->focus_highlight().enabled();
-    UpdateFeatureState(checked, highlight_keyboard_focus_view_,
-                       highlight_keyboard_focus_top_view_);
-  }
+  // Focus Highlight and Sticky Keys conflict with Spoken Feedback. Always
+  // update their toggle and enabled state even when Spoken Feedback becomes
+  // enabled while the menu is already open, so existing rows reflect the
+  // disabled state.
+  UpdateFeatureState(
+      controller->focus_highlight().enabled(),
+      /*enabled=*/controller->IsFocusHighlightSettingVisibleInTray(),
+      highlight_keyboard_focus_view_, highlight_keyboard_focus_top_view_);
 
-  if (controller->IsStickyKeysSettingVisibleInTray()) {
-    bool checked = controller->sticky_keys().enabled();
-    UpdateFeatureState(checked, sticky_keys_view_, sticky_keys_top_view_);
-  }
+  UpdateFeatureState(controller->sticky_keys().enabled(),
+                     /*enabled=*/controller->IsStickyKeysSettingVisibleInTray(),
+                     sticky_keys_view_, sticky_keys_top_view_);
 
   if (controller->IsReducedAnimationsSettingVisibleInTray()) {
     bool checked = controller->reduced_animations().enabled();
@@ -866,6 +878,7 @@ void AccessibilityDetailedView::HandleViewClicked(views::View* view) {
     controller->cursor_highlight().SetEnabled(new_state);
   } else if ((view == highlight_keyboard_focus_top_view_ ||
               view == highlight_keyboard_focus_view_) &&
+             controller->IsFocusHighlightSettingVisibleInTray() &&
              !controller->IsEnterpriseIconVisibleForFocusHighlight()) {
     bool new_state = !controller->focus_highlight().enabled();
     RecordAction(
@@ -876,6 +889,7 @@ void AccessibilityDetailedView::HandleViewClicked(views::View* view) {
                               new_state);
     controller->focus_highlight().SetEnabled(new_state);
   } else if ((view == sticky_keys_top_view_ || view == sticky_keys_view_) &&
+             controller->IsStickyKeysSettingVisibleInTray() &&
              !controller->IsEnterpriseIconVisibleForStickyKeys()) {
     bool new_state = !controller->sticky_keys().enabled();
     RecordAction(new_state
