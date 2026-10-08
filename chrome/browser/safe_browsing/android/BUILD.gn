@@ -150,6 +150,23 @@ android_library("java") {
   resources_package = "org.chromium.chrome.browser.safe_browsing.settings"
 }
 
+# Kept separate from ":java" because //chrome/browser/tips/android:java depends
+# on ":java" for the legacy promo handler, which would otherwise form a cycle.
+# TODO(crbug.com/559296862): Fold into ":java" once the legacy handler is
+# removed and the cycle no longer exists.
+android_library("tips_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/safe_browsing/tips/EnhancedSafeBrowsingTipsPromoHandler.java" ]
+  deps = [
+    ":java",
+    "//build/android:build_java",
+    "//chrome/browser/settings:factory_java",
+    "//chrome/browser/tips/android:java",
+    "//chrome/browser/tips/android:java_resources",
+    "//components/browser_ui/settings/android:java",
+  ]
+  resources_package = "org.chromium.chrome.browser.safe_browsing.tips"
+}
+
 android_library("javatests") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.safe_browsing.settings"
@@ -203,15 +220,21 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/safe_browsing/AdvancedProtectionMediatorTest.java",
     "java/src/org/chromium/chrome/browser/safe_browsing/AdvancedProtectionStatusManagerAndroidBridgeTest.java",
     "java/src/org/chromium/chrome/browser/safe_browsing/settings/SafeBrowsingSettingsFragmentUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/safe_browsing/tips/EnhancedSafeBrowsingTipsPromoHandlerUnitTest.java",
   ]
   deps = [
     ":java",
+    ":tips_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base:base_shared_preferences_java",
     "//base:unowned_user_data_java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:factory_java",
+    "//chrome/browser/tips/android:java",
+    "//chrome/browser/tips/android:java_resources",
+    "//components/browser_ui/settings/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/messages/android:factory_java",

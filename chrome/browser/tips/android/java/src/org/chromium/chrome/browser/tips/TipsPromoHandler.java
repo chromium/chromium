@@ -26,8 +26,13 @@ public interface TipsPromoHandler {
      */
     FeatureTipPromoData getPromoData(Context context);
 
-    /** Called when the user clicks the positive action button on the promo bottom sheet. */
-    void onPromoAccepted();
+    /**
+     * Called when the user clicks the positive action button on the promo bottom sheet.
+     *
+     * @param context The current Android {@link Context}, typically the hosting activity, which can
+     *     be used to launch the feature's UI (e.g. a settings page).
+     */
+    void onPromoAccepted(Context context);
 
     /**
      * Called when the promo bottom sheet is displayed. Handlers can use the provided {@link

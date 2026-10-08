@@ -38,7 +38,6 @@ import java.util.function.Supplier;
 @NullMarked
 class LegacyTipsPromoHandler implements TipsPromoHandler {
     private final @TipsNotificationsFeatureType int mFeatureType;
-    private final Context mContext;
     private final WindowAndroid mWindowAndroid;
     private final boolean mIsIncognito;
     private final boolean mIsUserSignedIn;
@@ -52,7 +51,6 @@ class LegacyTipsPromoHandler implements TipsPromoHandler {
      * Constructs a {@link LegacyTipsPromoHandler}.
      *
      * @param featureType The {@link TipsNotificationsFeatureType} for the promo.
-     * @param context The Android {@link Context}.
      * @param windowAndroid The {@link WindowAndroid} for UI actions.
      * @param isIncognito Whether the current tab model is incognito.
      * @param isUserSignedIn Whether the user is signed in to Chrome.
@@ -64,7 +62,6 @@ class LegacyTipsPromoHandler implements TipsPromoHandler {
      */
     LegacyTipsPromoHandler(
             @TipsNotificationsFeatureType int featureType,
-            Context context,
             WindowAndroid windowAndroid,
             boolean isIncognito,
             boolean isUserSignedIn,
@@ -74,7 +71,6 @@ class LegacyTipsPromoHandler implements TipsPromoHandler {
             Supplier<LayoutManager> layoutManagerSupplier,
             Supplier<LensController> lensControllerSupplier) {
         mFeatureType = featureType;
-        mContext = context;
         mWindowAndroid = windowAndroid;
         mIsIncognito = isIncognito;
         mIsUserSignedIn = isUserSignedIn;
@@ -91,17 +87,17 @@ class LegacyTipsPromoHandler implements TipsPromoHandler {
     }
 
     @Override
-    public void onPromoAccepted() {
+    public void onPromoAccepted(Context context) {
         switch (mFeatureType) {
             case TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING:
                 Intent intent =
                         SettingsNavigationFactory.createSettingsNavigation()
                                 .createSettingsIntent(
-                                        mContext,
+                                        context,
                                         SafeBrowsingSettingsFragment.class,
                                         SafeBrowsingSettingsFragment.createArguments(
                                                 SettingsAccessPoint.TIPS_NOTIFICATIONS_PROMO));
-                mContext.startActivity(intent);
+                context.startActivity(intent);
                 break;
             case TipsNotificationsFeatureType.QUICK_DELETE:
                 mQuickDeleteControllerCreator.get().showDialog();
@@ -119,7 +115,7 @@ class LegacyTipsPromoHandler implements TipsPromoHandler {
             case TipsNotificationsFeatureType.BOTTOM_OMNIBOX:
                 SettingsNavigationFactory.createSettingsNavigation()
                         .startSettings(
-                                mContext,
+                                context,
                                 AddressBarSettingsFragment.class,
                                 AddressBarSettingsFragment.createArguments(
                                         HighlightedOption.BOTTOM_TOOLBAR));
@@ -131,7 +127,7 @@ class LegacyTipsPromoHandler implements TipsPromoHandler {
                 // The user must be signed out in order to see this flow.
                 if (!mIsUserSignedIn) {
                     mSigninCoordinator.startSigninFlow(
-                            TipsUtils.getAccountPickerBottomSheetConfig(mContext));
+                            TipsUtils.getAccountPickerBottomSheetConfig(context));
                 }
                 break;
             case TipsNotificationsFeatureType.CREATE_TAB_GROUPS:

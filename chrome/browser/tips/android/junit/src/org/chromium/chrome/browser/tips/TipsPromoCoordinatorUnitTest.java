@@ -714,7 +714,7 @@ public class TipsPromoCoordinatorUnitTest {
         // Click the positive action button
         mPropertyModel.get(TipsPromoProperties.SETTINGS_BUTTON_CLICK_LISTENER).onClick(mView);
 
-        verify(mockHandler).onPromoAccepted();
+        verify(mockHandler).onPromoAccepted(mActivity);
     }
 
     @Test
@@ -736,7 +736,7 @@ public class TipsPromoCoordinatorUnitTest {
         // Click the positive action button
         mPropertyModel.get(TipsPromoProperties.SETTINGS_BUTTON_CLICK_LISTENER).onClick(mView);
 
-        verify(mockHandler, never()).onPromoAccepted();
+        verify(mockHandler, never()).onPromoAccepted(any());
         verify(mSettingsNavigation).createSettingsIntent(eq(mActivity), any(), any());
     }
 }

@@ -1585,6 +1585,16 @@ if (is_android) {
     ]
   }
 
+  robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.tips") {
+    sources = [ "src/org/chromium/chrome/browser/tips/TipsPromoHandlerRegistrarUnitTest.java" ]
+
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//chrome/browser/safe_browsing/android:tips_java",
+      "//chrome/browser/tips/android:java",
+    ]
+  }
+
   robolectric_library(
       "chrome_junit_tests_org.chromium.chrome.browser.toolbar") {
     sources = [

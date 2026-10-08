@@ -172,7 +172,6 @@ public class TipsPromoCoordinator {
                         ? promoHandler
                         : new LegacyTipsPromoHandler(
                                 featureType,
-                                context,
                                 windowAndroid,
                                 isIncognito,
                                 mIsUserSignedIn,
@@ -260,7 +259,7 @@ public class TipsPromoCoordinator {
     }
 
     private void performFeatureAction() {
-        mPromoHandler.onPromoAccepted();
+        mPromoHandler.onPromoAccepted(mContext);
     }
 
     private void onShowPromoForFeatureType(

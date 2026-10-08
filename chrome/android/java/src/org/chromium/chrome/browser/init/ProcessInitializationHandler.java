@@ -106,6 +106,7 @@ import org.chromium.chrome.browser.sync.SyncErrorNotifier;
 import org.chromium.chrome.browser.tab.state.PersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
+import org.chromium.chrome.browser.tips.TipsPromoHandlerRegistrar;
 import org.chromium.chrome.browser.ui.cars.DrivingRestrictionsManager;
 import org.chromium.chrome.browser.ui.color.ColorProviderBridgeImpl;
 import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerAckSyncer;
@@ -461,6 +462,10 @@ public class ProcessInitializationHandler {
         AppHooks.get().registerPolicyProviders(CombinedPolicyProvider.get());
         SpeechRecognition.initialize();
         TrampolineActivityTracker.getInstance().onNativeInitialized();
+
+        // Register feature-owned tips promo handlers before any activity can show a tips promo or
+        // schedule a tips notification.
+        TipsPromoHandlerRegistrar.registerAll();
 
         if (GlicEnabling.isEnabledByFlags()) {
             ActorForegroundServiceManager.initialize();
