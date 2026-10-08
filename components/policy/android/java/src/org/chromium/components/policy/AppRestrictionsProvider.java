@@ -17,8 +17,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-import java.util.Objects;
-
 /**
  * Concrete app restriction provider, that uses the default android mechanism to retrieve the
  * restrictions.
@@ -82,20 +80,27 @@ public class AppRestrictionsProvider extends AbstractAppRestrictionsProvider {
     protected Bundle getApplicationRestrictions(String packageName) {
         long startTime = SystemClock.elapsedRealtime();
         Bundle bundle;
+        boolean useRestrictionsManager =
+                PolicyFeatureMap.sUseRestrictionsManagerInAppRestrictionsProvider.isEnabled();
         try (TraceEvent te =
                 TraceEvent.scoped("AppRestrictionsProvider.getApplicationRestrictions")) {
-            if (PolicyFeatureMap.sUseRestrictionsManagerInAppRestrictionsProvider.isEnabled()) {
-                Objects.requireNonNull(
-                        mRestrictionsManager,
-                        "getSystemService(RESTRICTIONS_SERVICE) returned null");
+            if (!useRestrictionsManager) {
+                bundle = getApplicationRestrictionsFromUserManager(mUserManager, packageName);
+            } else if (mRestrictionsManager != null) {
                 bundle = getApplicationRestrictionsFromRestrictionsManager(mRestrictionsManager);
             } else {
+                Log.w(TAG, "RestrictionsManager unavailable, falling back to UserManager");
                 bundle = getApplicationRestrictionsFromUserManager(mUserManager, packageName);
             }
         }
         long durationMs = SystemClock.elapsedRealtime() - startTime;
         RecordHistogram.recordTimesHistogram(
                 "Enterprise.Policy.AppRestrictionsProviderFetchTime", durationMs);
+        if (useRestrictionsManager) {
+            RecordHistogram.recordBooleanHistogram(
+                    "Enterprise.Policy.AppRestrictionsProviderRestrictionsManagerAvailable",
+                    mRestrictionsManager != null);
+        }
         return bundle;
     }
 

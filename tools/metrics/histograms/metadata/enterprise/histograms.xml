@@ -4025,6 +4025,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Enterprise.Policy.AppRestrictionsProviderRestrictionsManagerAvailable"
+    enum="Boolean" expires_after="2027-09-01">
+  <owner>shadmehr@google.com</owner>
+  <owner>zmin@chromium.org</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    Whether RestrictionsManager's system service is available when
+    AppRestrictionsProvider was created on Android. Recorded each time
+    restrictions are fetched with the
+    UseRestrictionsManagerInAppRestrictionsProvider feature enabled, so a
+    browser process can record it several times. When it is not available,
+    restrictions are fetched from UserManager instead.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.Policy.AppRestrictionsRegisterReceiverTime"
     units="ms" expires_after="2027-04-01">
   <owner>zmin@chromium.org</owner>
