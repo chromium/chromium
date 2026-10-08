@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "services/network/public/cpp/resource_request.h"
 
@@ -112,6 +113,7 @@ class AwContentRestrictionManagerClient {
     struct PendingRequest {
       ContentClassificationCallback callback;
       std::unique_ptr<base::OneShotTimer> timer;
+      base::TimeTicks start_time;
     };
 
     // Internal timer callback invoked when the content classification request

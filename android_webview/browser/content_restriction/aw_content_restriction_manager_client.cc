@@ -81,7 +81,8 @@ void AwContentRestrictionManagerClient::ClassificationRequestTracker::
   base::OneShotTimer* const timer_ptr = timer.get();
   pending_requests_.insert_or_assign(
       navigation_id, PendingRequest{.callback = std::move(callback),
-                                    .timer = std::move(timer)});
+                                    .timer = std::move(timer),
+                                    .start_time = base::TimeTicks::Now()});
 
   timer_ptr->Start(
       FROM_HERE, timeout,
@@ -96,6 +97,11 @@ void AwContentRestrictionManagerClient::ClassificationRequestTracker::
     // Request already timed out.
     return;
   }
+
+  base::TimeDelta latency = base::TimeTicks::Now() - it->second.start_time;
+  base::UmaHistogramTimes(
+      "Android.WebView.ContentRestriction.ClassificationRequestLatencyMs",
+      latency);
 
   ContentClassificationCallback callback = std::move(it->second.callback);
   pending_requests_.erase(it);

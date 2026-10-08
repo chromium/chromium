@@ -38,6 +38,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 
 /** Unit tests for the AwContentRestrictionManagerBridge. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -75,7 +76,7 @@ public class AwContentRestrictionManagerBridgeTest {
         mContext = new ManifestMetadataMockApplicationContext(RuntimeEnvironment.application);
         mMetadataServiceName = new ComponentName(mContext, METADATA_HOLDER_SERVICE_NAME);
         ContextUtils.initApplicationContextForTests(mContext);
-        AconfigFlaggedApiDelegate.setInstanceForTesting(mFlaggedApiDelegate);
+        AwContentRestrictionManagerBridge.setDelegateForTesting(mFlaggedApiDelegate);
         setEnableContentRestrictionMetadata(true);
 
         // Stub out ParcelFileDescriptor.createPipe() to prevent crashes on detachFd().
@@ -139,7 +140,7 @@ public class AwContentRestrictionManagerBridgeTest {
     @Feature({"AndroidWebView"})
     @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
     public void testRequestContentClassification_delegateMissing() {
-        AconfigFlaggedApiDelegate.setInstanceForTesting(null);
+        AwContentRestrictionManagerBridge.setDelegateForTesting(null);
         mBridge.requestContentClassification(
                 TEST_NAVIGATION_ID, TEST_URL, TEST_MIME_TYPE, mMockCallback);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
@@ -257,7 +258,7 @@ public class AwContentRestrictionManagerBridgeTest {
     @Feature({"AndroidWebView"})
     @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
     public void testSendShowRestrictedContentIntent_delegateMissing() {
-        AconfigFlaggedApiDelegate.setInstanceForTesting(null);
+        AwContentRestrictionManagerBridge.setDelegateForTesting(null);
         Assert.assertFalse(mBridge.sendShowRestrictedContentIntent(TEST_URL));
         verifyNoInteractions(mFlaggedApiDelegate);
     }
@@ -283,4 +284,30 @@ public class AwContentRestrictionManagerBridgeTest {
         Assert.assertFalse(mBridge.sendShowRestrictedContentIntent(TEST_URL));
         verify(mFlaggedApiDelegate).sendShowRestrictedContentIntent(Mockito.eq(testUri));
     }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    public void testRecordAppOptIn() {
+        setEnableContentRestrictionMetadata(true);
+        when(mFlaggedApiDelegate.isContentRestrictionEnabled()).thenReturn(true);
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.WebView.ContentRestriction.AppOptIn", true)) {
+            mBridge.isContentRestrictionEnabled();
+        }
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    public void testRecordAppOptOut() {
+        setEnableContentRestrictionMetadata(false);
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.WebView.ContentRestriction.AppOptIn", false)) {
+            mBridge.isContentRestrictionEnabled();
+        }
+    }
+
 }
