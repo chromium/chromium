@@ -7,10 +7,10 @@
 #include <optional>
 #include <string_view>
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
-#include "base/notreached.h"
 #include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/regional_capabilities_country_id.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
@@ -91,16 +91,28 @@ Resolver::ComputeDatabaseUpdateRequirements(
                         current_metadata.prepopulated_engines_migration_state)
            .empty()) {
     // The keywords DB indicates that it was updated with some post-migration
-    // data, but the feature state checks indicates that the feature is not
-    // enabled.
-    // Per feature rollout planning, this should not happen, as there is no way
-    // to fully return to the previous state. The local keywords data is then
-    // going to be in an inconsistent state, where the user could be using a
-    // not-yet-listed prepopulated engine.
-    // This is a bad™ state, but not to the point where it is expected to cause
-    // crashes downstream, it it can be a non-fatal CHECK.
-    // TODO(crbug.com/446637115): Clean up once the rollout is done.
-    DUMP_WILL_BE_NOTREACHED();
+    // data, but the feature state checks indicate that the feature is not
+    // enabled. There is no way to fully return to the previous state, so the
+    // local keywords data might be inconsistent, where the user could be using
+    // a not-yet-listed prepopulated engine.
+    //
+    // The migration features are not rolled out to users yet, so this is only
+    // expected for profiles that got exposed to them through test configs,
+    // flags or non-official builds. Report it, then let the database catch up
+    // with the current feature state through the regular update below, so
+    // that each profile reports this at most once instead of on every startup.
+    // TODO(crbug.com/446637115): Once the migration features are rolled out to
+    //   users, block again on rollbacks: stop treating the migration state
+    //   rollback as a reason to update the database (see the last check
+    //   below), so that the post-migration data is preserved. Keep reporting
+    //   it, without crashing.
+    SCOPED_CRASH_KEY_NUMBER(
+        "KwdbRefresh", "db_migration_state",
+        keywords_metadata.prepopulated_engines_migration_state.ToEnumBitmask());
+    SCOPED_CRASH_KEY_NUMBER(
+        "KwdbRefresh", "current_migration_state",
+        current_metadata.prepopulated_engines_migration_state.ToEnumBitmask());
+    base::debug::DumpWithoutCrashing();
   }
 
   if (regional_capabilities::HasSearchEngineCountryListOverride()) {
@@ -129,12 +141,11 @@ Resolver::ComputeDatabaseUpdateRequirements(
     return current_metadata;
   }
 
-  // Upgrade check: if current has bits set that DB doesn't have.
-  if (!base::Difference(current_metadata.prepopulated_engines_migration_state,
-                        keywords_metadata.prepopulated_engines_migration_state)
-           .empty()) {
-    // Ensure that when we enable a new migration feature for this client, the
-    // database gets updated.
+  if (keywords_metadata.prepopulated_engines_migration_state !=
+      current_metadata.prepopulated_engines_migration_state) {
+    // The migration state changed, either because a new migration feature got
+    // enabled for this client, or because of a rollback (see above). Update the
+    // database so that it reflects the current state.
     return current_metadata;
   }
 

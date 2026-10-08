@@ -162,7 +162,6 @@
 #include "components/permissions/features.h"
 #include "components/policy/core/common/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/remote_cocoa/app_shim/features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
@@ -13437,10 +13436,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrefetchActivationBeaconName,
      flag_descriptions::kPrefetchActivationBeaconDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kPrefetchActivationBeacon)},
-    {"prepopulated-engines-shadow-variants",
-     flag_descriptions::kPrepopulatedEnginesShadowVariantsName,
-     flag_descriptions::kPrepopulatedEnginesShadowVariantsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(switches::kPrepopulatedEnginesShadowVariants)},
     {"prerender-activation-beacon",
      flag_descriptions::kPrerenderActivationBeaconName,
      flag_descriptions::kPrerenderActivationBeaconDescription, kOsAll,

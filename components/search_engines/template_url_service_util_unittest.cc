@@ -25,6 +25,7 @@
 #include "components/regional_capabilities/regional_capabilities_prefs.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
+#include "components/search_engines/keyword_table.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -423,6 +424,9 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
     // struct as input to set the database's initial state.
     size_t keyword_engines_count = 0;
 
+    // Prepopulated engines migration state stored in the database.
+    KeywordTable::PrepopulatedEngineMigrationSet migration_state;
+
     // Formatter method for Google Test.
     friend std::ostream& operator<<(std::ostream& out,
                                     const KeywordTestMetadata& m) {
@@ -432,13 +436,14 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
                                m.country->GetForTesting().Serialize())
                          : "<null>")
                  << ", keyword_engines_count=" << m.keyword_engines_count
-                 << "}";
+                 << ", migration_state=" << m.migration_state.ToString() << "}";
     }
 
     // Needed to be able to use EXPECT_EQ with this struct.
     bool operator==(const KeywordTestMetadata& rhs) const {
       return data_version == rhs.data_version && country == rhs.country &&
-             keyword_engines_count == rhs.keyword_engines_count;
+             keyword_engines_count == rhs.keyword_engines_count &&
+             migration_state == rhs.migration_state;
     }
   };
 
@@ -516,6 +521,8 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
     WDKeywordsResult::Metadata resource_metadata;
     resource_metadata.builtin_keyword_data_version = initial_state.data_version;
     resource_metadata.builtin_keyword_country = initial_state.country;
+    resource_metadata.prepopulated_engines_migration_state =
+        initial_state.migration_state;
     CallGetSearchProvidersUsingLoadedEngines(&template_urls, resource_metadata,
                                              os_crypt_.get());
     size_t keyword_engines_count =
@@ -526,6 +533,8 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
         .data_version = resource_metadata.builtin_keyword_data_version,
         .country = resource_metadata.builtin_keyword_country,
         .keyword_engines_count = keyword_engines_count,
+        .migration_state =
+            resource_metadata.prepopulated_engines_migration_state,
     };
   }
 
@@ -635,6 +644,46 @@ TEST_F(TemplateURLServiceUtilLoadTest,
   output = SimulateFromDatabaseState(
       {.data_version = kCurrentDataVersion + 1, .country = kOtherEeaCountryId});
   EXPECT_EQ(output, kNoUpdate);
+}
+
+TEST_F(TemplateURLServiceUtilLoadTest,
+       GetSearchProvidersUsingLoadedEngines_MigrationRollback) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{switches::kPrepopulatedEnginesMigration,
+                             switches::kPrepopulatedEnginesShadowVariants});
+  regional_capabilities_service().SetCacheForTesting(
+      kRawNonEeaCountryId, regional_capabilities::GetSettingsForProgram(
+                               regional_capabilities::Program::kDefault));
+
+  const KeywordTable::PrepopulatedEngineMigrationSet kMigrationApplied(
+      {KeywordTable::PrepopulatedEngineMigration::kMigration});
+
+  // The database claims that a migration was applied while the associated
+  // feature is disabled. The regular update runs, refreshing the engines and
+  // recording the metadata with the migration state cleared.
+  auto output =
+      SimulateFromDatabaseState({.data_version = kCurrentDataVersion,
+                                 .country = kNonEeaCountryId,
+                                 .migration_state = kMigrationApplied});
+  EXPECT_EQ(output, (KeywordTestMetadata{.data_version = kCurrentDataVersion,
+                                         .country = kNonEeaCountryId,
+                                         .keyword_engines_count = 5u}));
+
+  // Same when the engines needed to be refreshed anyway.
+  output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion - 1,
+                                      .country = kNonEeaCountryId,
+                                      .migration_state = kMigrationApplied});
+  EXPECT_EQ(output, (KeywordTestMetadata{.data_version = kCurrentDataVersion,
+                                         .country = kNonEeaCountryId,
+                                         .keyword_engines_count = 5u}));
+
+  // Data version downgrades are still suppressed, rollback or not.
+  output = SimulateFromDatabaseState({.data_version = kCurrentDataVersion + 1,
+                                      .country = kNonEeaCountryId,
+                                      .migration_state = kMigrationApplied});
+  EXPECT_EQ(output, KeywordTestMetadata{});
 }
 
 }  // namespace

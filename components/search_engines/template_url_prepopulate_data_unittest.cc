@@ -15,10 +15,10 @@
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/to_vector.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -1277,13 +1277,11 @@ struct UpdateRequirementsTestParams {
   bool is_engine_migration_enabled = false;
   bool is_shadow_variants_enabled = false;
 
-  // Indicates that the call should CHECK on most builds.
-  bool hits_dcheck = false;
+  // Indicates that the call should report a migration rollback through
+  // `base::debug::DumpWithoutCrashing()`.
+  bool expects_rollback_report = false;
 
   // Expected output of the call.
-  //
-  // Should be indicated even for params with `hits_dcheck`, as official builds
-  // can execute the code. Indicates what would be the output in that case.
   std::optional<BuiltinKeywordsMetadata> expected_output;
 };
 
@@ -1341,6 +1339,22 @@ class TemplateURLPrepopulateDataUpdateRequirementsTest
     disabled_features.push_back(switches::kIgnoreSearchProviderOverrides);
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+
+    // Rollbacks are reported through `DumpWithoutCrashing()`, which is
+    // throttled per call site. Reset it so that each test case can observe it.
+    dump_without_crashing_count_ = 0;
+    base::debug::ResetDumpWithoutCrashingThrottlingForTesting();
+    base::debug::SetDumpWithoutCrashingFunction(
+        []() { ++dump_without_crashing_count_; });
+  }
+
+  void TearDown() override {
+    base::debug::SetDumpWithoutCrashingFunction(nullptr);
+    TemplateURLPrepopulateDataTest::TearDown();
+  }
+
+  static int dump_without_crashing_count() {
+    return dump_without_crashing_count_;
   }
 
   static auto Cases() {
@@ -1433,8 +1447,10 @@ class TemplateURLPrepopulateDataUpdateRequirementsTest
             .db_migration_state = migration_only,
             .profile_country = "DE",
             .is_engine_migration_enabled = false,
-            .hits_dcheck = true,
-            .expected_output = std::nullopt,
+            .expects_rollback_report = true,
+            // The database gets updated to reflect the current state.
+            .expected_output = BuildMetadata(CountryId("DE"),
+                                             kCurrentDataVersion, no_migration),
         },
         UpdateRequirementsTestParams{
             .test_case_name = "DifferentCountryWithEngineMigrationDowngrade",
@@ -1443,9 +1459,20 @@ class TemplateURLPrepopulateDataUpdateRequirementsTest
             .db_migration_state = migration_only,
             .profile_country = "JP",
             .is_engine_migration_enabled = false,
-            .hits_dcheck = true,
+            .expects_rollback_report = true,
             .expected_output = BuildMetadata(CountryId("JP"),
                                              kCurrentDataVersion, no_migration),
+        },
+        UpdateRequirementsTestParams{
+            .test_case_name = "DbMoreRecentWithEngineMigrationDowngrade",
+            .db_country = "DE",
+            .db_version = kCurrentDataVersion + 1,
+            .db_migration_state = migration_only,
+            .profile_country = "DE",
+            .is_engine_migration_enabled = false,
+            .expects_rollback_report = true,
+            // Data version downgrades are never written.
+            .expected_output = std::nullopt,
         },
         UpdateRequirementsTestParams{
             .test_case_name = "UpToDateMetadataWithShadowVariants",
@@ -1475,8 +1502,10 @@ class TemplateURLPrepopulateDataUpdateRequirementsTest
             .db_migration_state = shadow_variants_only,
             .profile_country = "DE",
             .is_shadow_variants_enabled = false,
-            .hits_dcheck = true,
-            .expected_output = std::nullopt,
+            .expects_rollback_report = true,
+            // The database gets updated to reflect the current state.
+            .expected_output = BuildMetadata(CountryId("DE"),
+                                             kCurrentDataVersion, no_migration),
         },
         UpdateRequirementsTestParams{
             .test_case_name = "UpgradeToBoth",
@@ -1488,6 +1517,19 @@ class TemplateURLPrepopulateDataUpdateRequirementsTest
             .is_shadow_variants_enabled = true,
             .expected_output =
                 BuildMetadata(CountryId("DE"), kCurrentDataVersion, both),
+        },
+        UpdateRequirementsTestParams{
+            .test_case_name =
+                "EngineMigrationRollbackWithShadowVariantsUpgrade",
+            .db_country = "DE",
+            .db_version = kCurrentDataVersion,
+            .db_migration_state = migration_only,
+            .profile_country = "DE",
+            .is_engine_migration_enabled = false,
+            .is_shadow_variants_enabled = true,
+            .expects_rollback_report = true,
+            .expected_output = BuildMetadata(
+                CountryId("DE"), kCurrentDataVersion, shadow_variants_only),
         },
     });
   }
@@ -1509,6 +1551,9 @@ class TemplateURLPrepopulateDataUpdateRequirementsTest
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
+
+ private:
+  static inline int dump_without_crashing_count_ = 0;
 };
 
 TEST_P(TemplateURLPrepopulateDataUpdateRequirementsTest,
@@ -1523,20 +1568,13 @@ TEST_P(TemplateURLPrepopulateDataUpdateRequirementsTest,
           : std::optional(regional_capabilities::CountryIdHolder(
                 country_codes::CountryId(GetParam().db_country)));
 
-#if !defined(OFFICIAL_BUILD) || DCHECK_IS_ON()
-  if (GetParam().hits_dcheck) {
-    EXPECT_NOTREACHED_DEATH(
-        prepopulate_data_resolver().ComputeDatabaseUpdateRequirements(
-            database_metadata));
-  } else
-#endif
-  {
-    std::optional<BuiltinKeywordsMetadata> out =
-        prepopulate_data_resolver().ComputeDatabaseUpdateRequirements(
-            database_metadata);
+  std::optional<BuiltinKeywordsMetadata> out =
+      prepopulate_data_resolver().ComputeDatabaseUpdateRequirements(
+          database_metadata);
 
-    EXPECT_EQ(GetParam().expected_output, out);
-  }
+  EXPECT_EQ(GetParam().expected_output, out);
+  EXPECT_EQ(GetParam().expects_rollback_report ? 1 : 0,
+            dump_without_crashing_count());
 }
 
 INSTANTIATE_TEST_SUITE_P(

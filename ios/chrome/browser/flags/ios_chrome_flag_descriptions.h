@@ -1706,12 +1706,6 @@ inline constexpr char kPlusButtonMenuMoreOptionsSubmenuDescription[] =
     "When enabled, the full list of options in the plus menu is grouped in a "
     "submenu.";
 
-inline constexpr char kPrepopulatedEnginesShadowVariantsName[] =
-    "Prepopulated Engines Shadow Variants";
-inline constexpr char kPrepopulatedEnginesShadowVariantsDescription[] =
-    "Enables shadow variants for prepopulated engines resolution, allowing "
-    "alternative engines to be resolved in specific regions.";
-
 inline constexpr char kPriceTrackingPromoName[] =
     "Enables price tracking notification promo card";
 inline constexpr char kPriceTrackingPromoDescription[] =

@@ -80,8 +80,9 @@ class Resolver : public KeyedService {
   // Computes whether updates relative to prepopulated search engines need to be
   // made in the local search engines database.
   //
-  // Returns `std::nullopt` when no updates are needed, or a `Metadata`
-  // providing country and data version info about the data to be merged in.
+  // Returns `std::nullopt` when no updates are needed, or a
+  // `BuiltinKeywordsMetadata`when data needs to be merged in, that provides the
+  // relevant country, data version and migration state info for the new data.
   std::optional<BuiltinKeywordsMetadata> ComputeDatabaseUpdateRequirements(
       const WDKeywordsResult::Metadata& keywords_database_metadata) const;
 
