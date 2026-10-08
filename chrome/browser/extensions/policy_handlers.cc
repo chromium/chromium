@@ -314,9 +314,10 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
 
   // Check each entry, populating |invalid_keys| and |errors|.
   for (const auto [extension_ids, policy] : policy_value->GetDict()) {
-    CHECK(extension_ids == schema_constants::kWildcard ||
-              IsValidIdList(extension_ids),
-          base::NotFatalUntil::M161);
+    // TODO(crbug.com/570470353): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(extension_ids == schema_constants::kWildcard ||
+           IsValidIdList(extension_ids));
     CHECK(policy.is_dict(), base::NotFatalUntil::M161);
 
     // Extracts sub dictionary.
