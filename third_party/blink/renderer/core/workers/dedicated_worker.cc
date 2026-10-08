@@ -391,9 +391,6 @@ void DedicatedWorker::OnScriptLoadStarted(
   // Specify empty source code here because scripts will be fetched on the
   // worker thread.
   ContinueStart(script_request_url_, std::move(worker_main_script_load_params),
-                network::mojom::ReferrerPolicy::kDefault,
-                Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-                DocumentPolicy::DocumentPolicyBundle{},
                 std::move(back_forward_cache_controller_host),
                 std::move(policy_container), std::move(coep_reporting_observer),
                 std::move(dip_reporting_observer));
@@ -431,10 +428,6 @@ void DedicatedWorker::ContinueStart(
     const KURL& script_url,
     std::unique_ptr<WorkerMainScriptLoadParameters>
         worker_main_script_load_params,
-    network::mojom::ReferrerPolicy referrer_policy,
-    Vector<network::mojom::blink::ContentSecurityPolicyPtr>
-        response_content_security_policies,
-    DocumentPolicy::DocumentPolicyBundle response_document_policy,
     mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
         back_forward_cache_controller_host,
     std::unique_ptr<WebPolicyContainer> policy_container,
@@ -458,9 +451,6 @@ void DedicatedWorker::ContinueStart(
             BindOnce(&DedicatedWorker::ContinueStartInternal,
                      WrapWeakPersistent(this), script_url,
                      std::move(worker_main_script_load_params),
-                     std::move(referrer_policy),
-                     std::move(response_content_security_policies),
-                     std::move(response_document_policy),
                      std::move(back_forward_cache_controller_host),
                      std::move(policy_container),
                      std::move(coep_reporting_observer),
@@ -470,8 +460,6 @@ void DedicatedWorker::ContinueStart(
   }
   ContinueStartInternal(
       script_url, std::move(worker_main_script_load_params),
-      std::move(referrer_policy), std::move(response_content_security_policies),
-      std::move(response_document_policy),
       std::move(back_forward_cache_controller_host),
       std::move(policy_container), std::move(coep_reporting_observer),
       std::move(dip_reporting_observer));
@@ -481,10 +469,6 @@ void DedicatedWorker::ContinueStartInternal(
     const KURL& script_url,
     std::unique_ptr<WorkerMainScriptLoadParameters>
         worker_main_script_load_params,
-    network::mojom::ReferrerPolicy referrer_policy,
-    Vector<network::mojom::blink::ContentSecurityPolicyPtr>
-        response_content_security_policies,
-    DocumentPolicy::DocumentPolicyBundle document_policy,
     mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
         back_forward_cache_controller_host,
     std::unique_ptr<WebPolicyContainer> policy_container,
@@ -497,11 +481,9 @@ void DedicatedWorker::ContinueStartInternal(
     return;
   }
   context_proxy_->StartWorkerGlobalScope(
-      CreateGlobalScopeCreationParams(
-          script_url, referrer_policy,
-          std::move(response_content_security_policies),
-          std::move(document_policy), std::move(coep_reporting_observer),
-          std::move(dip_reporting_observer)),
+      CreateGlobalScopeCreationParams(script_url,
+                                      std::move(coep_reporting_observer),
+                                      std::move(dip_reporting_observer)),
       std::move(worker_main_script_load_params), options_, script_url,
       *outside_fetch_client_settings_object_, v8_stack_trace_id_, token_,
       std::move(pending_dedicated_worker_host_),
@@ -536,10 +518,6 @@ BeginFrameProviderParams CreateBeginFrameProviderParams(
 std::unique_ptr<GlobalScopeCreationParams>
 DedicatedWorker::CreateGlobalScopeCreationParams(
     const KURL& script_url,
-    network::mojom::ReferrerPolicy referrer_policy,
-    Vector<network::mojom::blink::ContentSecurityPolicyPtr>
-        response_content_security_policies,
-    DocumentPolicy::DocumentPolicyBundle document_policy,
     mojo::PendingReceiver<mojom::blink::ReportingObserver>
         coep_reporting_observer,
     mojo::PendingReceiver<mojom::blink::ReportingObserver>
@@ -588,8 +566,8 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
       execution_context->GetUserAgentMetadata(), CreateWebWorkerFetchContext(),
       mojo::Clone(
           execution_context->GetContentSecurityPolicy()->GetParsedPolicies()),
-      std::move(response_content_security_policies), referrer_policy,
-      std::move(document_policy), execution_context->GetSecurityOrigin(),
+      network::mojom::ReferrerPolicy::kDefault,
+      execution_context->GetSecurityOrigin(),
       execution_context->IsSecureContext(), execution_context->GetHttpsState(),
       MakeGarbageCollected<WorkerClients>(), CreateWebContentSettingsClient(),
       OriginTrialContext::GetInheritedTrialFeatures(execution_context).get(),

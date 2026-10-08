@@ -218,10 +218,7 @@ void WebEmbeddedWorkerImpl::StartWorkerThread(
       ToVector(worker_start_data->outside_fetch_client_settings_object
                    .policy_container_policies.content_security_policies,
                FromWebContentSecurityPolicy),
-      /*response_content_security_policies=*/
-      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-      network::mojom::ReferrerPolicy::kDefault,
-      DocumentPolicy::DocumentPolicyBundle{}, starter_origin.get(),
+      network::mojom::ReferrerPolicy::kDefault, starter_origin.get(),
       starter_secure_context, starter_https_state,
       /*worker_clients=*/nullptr, std::move(content_settings_proxy),
       /*inherited_trial_features=*/nullptr,

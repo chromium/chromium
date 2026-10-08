@@ -103,8 +103,6 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
     start_time = base::TimeTicks::Now();
   }
 
-  Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp =
-      std::move(creation_params->response_content_security_policies);
   // `Initialize()` is called after script fetch.
   return MakeGarbageCollected<DedicatedWorkerGlobalScope>(
       base::PassKey<DedicatedWorkerGlobalScope>(), std::move(creation_params),
