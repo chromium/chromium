@@ -26,6 +26,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -34,10 +37,16 @@ import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactoryJni;
 import org.chromium.chrome.browser.actor.ActorTask;
+import org.chromium.chrome.browser.actor.ui.ActorControlCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_bottom_sheet.CoBrowseComponentProvider.TabSelectionDelegate;
 import org.chromium.chrome.browser.tab_bottom_sheet.LegacyResizingPlaceholderCoordinator;
+import org.chromium.chrome.browser.tab_bottom_sheet.PeekViewManager;
 import org.chromium.chrome.browser.tab_bottom_sheet.ResizingPlaceholderCoordinator;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetContent;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetSkeletonCoordinator;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -56,6 +65,8 @@ public class GlicBottomSheetContentUnitTest {
     @Mock private ActorKeyedService mActorKeyedService;
     @Mock private BottomSheetContent mNextContent;
     @Mock private ActorKeyedServiceFactory.Natives mActorKeyedServiceFactoryJni;
+    @Mock private TabBottomSheetManager mTabBottomSheetManager;
+    @Mock private TabSelectionDelegate mTabSelectionDelegate;
 
     private Context mContext;
     private View mContentView;
@@ -203,5 +214,36 @@ public class GlicBottomSheetContentUnitTest {
                 mProvider.createResizingPlaceholderCoordinator(mContext, Color.WHITE, Color.LTGRAY);
         assertTrue(coordinator instanceof TabBottomSheetSkeletonCoordinator);
         coordinator.destroy();
+    }
+
+    @Test
+    public void testProvider_createContent() {
+        TabBottomSheetContent createdContent =
+                mProvider.createContent(
+                        mContentView,
+                        /* defaultHeightRatio= */ 0.7f,
+                        /* fullHeightRatio= */ 1.0f,
+                        Color.WHITE,
+                        /* peekViewHeight= */ 100,
+                        /* peekViewContainerId= */ 12345,
+                        () -> {});
+        assertTrue(createdContent instanceof GlicBottomSheetContent);
+    }
+
+    @Test
+    public void testProvider_createPeekViewManager() {
+        SettableMonotonicObservableSupplier<Profile> profileSupplier =
+                ObservableSuppliers.createMonotonic();
+        SettableNullableObservableSupplier<Tab> tabSupplier = ObservableSuppliers.createNullable();
+        PeekViewManager peekViewManager =
+                mProvider.createPeekViewManager(
+                        mTabBottomSheetManager,
+                        profileSupplier,
+                        tabSupplier,
+                        mTabSelectionDelegate);
+        assertTrue(peekViewManager instanceof ActorControlCoordinator);
+
+        peekViewManager.destroy();
+        mProvider.destroy();
     }
 }

@@ -278,6 +278,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/glic/GlicNavigationUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicPromoCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicSettingsUnitTest.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicSplitButtonDelegateBridgeUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicTabPickerBridgeUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicTaskMenuCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicToolbarButtonControllerTest.java",
