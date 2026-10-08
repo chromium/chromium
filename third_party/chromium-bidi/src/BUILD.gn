@@ -357,6 +357,7 @@ ts_library("unit_tests") {
     "bidiMapper/modules/session/SubscriptionManager.test.ts",
     "bidiMapper/modules/session/events.test.ts",
     "bidiMapper/modules/storage/StorageProcessor.test.ts",
+    "bidiMapper/modules/webExtension/WebExtensionProcessor.test.ts",
     "cdp/CdpClient.test.ts",
     "cdp/CdpConnection.test.ts",
     "protocol-parser/protocol-parser.test.ts",

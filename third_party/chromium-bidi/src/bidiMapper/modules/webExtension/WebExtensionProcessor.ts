@@ -23,6 +23,7 @@ import {
   type EmptyResult,
   NoSuchWebExtensionException,
 } from '../../../protocol/protocol.js';
+import {CdpErrorConstants} from '../../../utils/cdpErrorConstants.js';
 
 /**
  * Responsible for handling the `webModule` module.
@@ -57,8 +58,19 @@ export class WebExtensionProcessor {
         extension: response.id,
       };
     } catch (err) {
-      if ((err as Error).message.startsWith('invalid web extension')) {
-        throw new InvalidWebExtensionException((err as Error).message);
+      if (
+        (err as {code?: number})?.code === CdpErrorConstants.METHOD_NOT_FOUND
+      ) {
+        throw new UnsupportedOperationException(
+          'Installing web extensions is not supported',
+        );
+      }
+      const message = (err as {message?: unknown})?.message;
+      if (
+        typeof message === 'string' &&
+        message.startsWith('invalid web extension')
+      ) {
+        throw new InvalidWebExtensionException(message);
       }
       throw err;
     }

@@ -21,5 +21,6 @@ export const enum CdpErrorConstants {
   CONNECTION_CLOSED = -32001,
   DEVTOOLS_STUB = -32015,
   GENERIC_ERROR = -32000,
+  METHOD_NOT_FOUND = -32601,
   // keep-sorted end
 }

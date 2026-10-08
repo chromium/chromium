@@ -1,4 +1,8 @@
 This is a wdspec test.
+[FAIL] test_params_extension_data_path_invalid_value[path-]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Installing web extensions is not supported)
+[FAIL] test_params_extension_data_path_invalid_value[path-invalid path]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Installing web extensions is not supported)
 [FAIL] test_params_extension_data_path_invalid_value[archivePath-]
   webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Archived and Base64 extensions are not supported)
 [FAIL] test_params_extension_data_path_invalid_value[archivePath-invalid path]
@@ -6,7 +10,7 @@ This is a wdspec test.
 [FAIL] test_params_extension_data_archive_path_invalid_webextension
   webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Archived and Base64 extensions are not supported)
 [FAIL] test_params_extension_data_path_invalid_webextension
-  webdriver.bidi.error.UnknownErrorException: unknown error ('Extensions.loadUnpacked' wasn't found)
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Installing web extensions is not supported)
 [FAIL] test_params_extension_data_value_invalid_value
   webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Archived and Base64 extensions are not supported)
 [FAIL] test_params_extension_data_value_invalid_webextension[]
@@ -14,4 +18,3 @@ This is a wdspec test.
 [FAIL] test_params_extension_data_value_invalid_webextension[dGVzdA==]
   webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Archived and Base64 extensions are not supported)
 Harness: the test ran to completion.
-
