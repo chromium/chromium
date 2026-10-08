@@ -4,10 +4,9 @@
 
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service.h"
 
-#import "base/functional/bind.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/application_locale_storage/application_locale_storage.h"
+#import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -25,43 +24,24 @@ IOSChromeAimEligibilityService::IOSChromeAimEligibilityService(
                             url_loader_factory,
                             identity_manager,
                             GetLocaleImpl(),
-                            std::move(configuration)) {
-  if (GetApplicationContext() &&
-      GetApplicationContext()->GetApplicationLocaleStorage()) {
-    locale_change_subscription_ =
-        GetApplicationContext()
-            ->GetApplicationLocaleStorage()
-            ->RegisterOnLocaleChangedCallback(base::BindRepeating(
-                &IOSChromeAimEligibilityService::OnLocaleChanged,
-                weak_factory_.GetWeakPtr()));
-  }
-}
+                            std::move(configuration)) {}
 
 IOSChromeAimEligibilityService::~IOSChromeAimEligibilityService() = default;
 
 std::string IOSChromeAimEligibilityService::GetLocaleImpl() const {
+  std::string locale;
   if (experimental_flags::ShouldIgnoreDeviceLocaleConditions()) {
-    return "en-US";
-  }
-  std::string locale =
-      GetApplicationContext() &&
-              GetApplicationContext()->GetApplicationLocaleStorage()
-          ? std::string(GetApplicationContext()
-                            ->GetApplicationLocaleStorage()
-                            ->GetTag()
-                            .tag_string())
-          : "";
-  if (locale.empty()) {
-    NSString* locale_identifier = [NSLocale currentLocale].localeIdentifier;
-    if (locale_identifier) {
-      locale = base::SysNSStringToUTF8(locale_identifier);
-      base::ReplaceChars(locale, "_", "-", &locale);
-    }
-  }
-  if (locale.empty()) {
-    // Locale might be nil on simulator or uninitialized in test environments.
     locale = "en-US";
+  } else {
+    NSString* localeIdentifier = [NSLocale currentLocale].localeIdentifier;
+    if (!localeIdentifier) {
+      // Locale might be nil on simulator
+      localeIdentifier = @"en-US";
+    }
+
+    locale = base::SysNSStringToUTF8(localeIdentifier);
   }
+  base::ReplaceChars(locale, "_", "-", &locale);
   return locale;
 }
 
@@ -70,9 +50,4 @@ IOSChromeAimEligibilityService::GetVariationsService() const {
   return GetApplicationContext()
              ? GetApplicationContext()->GetVariationsService()
              : nullptr;
-}
-
-void IOSChromeAimEligibilityService::OnLocaleChanged(
-    const std::string& /*new_locale*/) {
-  FetchEligibility(RequestSource::kLocaleChange);
 }
