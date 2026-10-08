@@ -177,6 +177,10 @@ export type ResultData = WebDriverBidi.ResultData | Cdp.ResultData;
 
 export type GoogChannel = string | null;
 
+export type WithGoogParams<T> = T & {
+  'goog:params'?: Record<string, unknown>;
+};
+
 export type Message = (
   WebDriverBidi.Message | Cdp.Message | BluetoothEvent | SpeculationEvent
 ) & {

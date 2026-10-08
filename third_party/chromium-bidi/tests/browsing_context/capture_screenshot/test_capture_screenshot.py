@@ -375,3 +375,33 @@ async def test_screenshot_element_clip_scroll(
         assert_images_similar(
             resp["data"], base64.b64encode(image_file.read()).decode("utf-8")
         )
+
+
+@pytest.mark.asyncio
+async def test_capture_screenshot_with_goog_options(websocket, context_id):
+    await goto_url(websocket, context_id, "about:blank")
+    default_result = await execute_command(
+        websocket,
+        {
+            "method": "browsingContext.captureScreenshot",
+            "params": {
+                "context": context_id,
+            },
+        },
+    )
+    fast_result = await execute_command(
+        websocket,
+        {
+            "method": "browsingContext.captureScreenshot",
+            "params": {
+                "context": context_id,
+                "goog:optimizeForSpeed": True,
+            },
+        },
+    )
+    # When goog:optimizeForSpeed is forwarded as optimizeForSpeed=true to CDP
+    # Page.captureScreenshot, Chrome uses fast PNG encoding (zlib level 1) instead
+    # of the default PNG compression, producing an identical image with a larger
+    # encoded payload size.
+    assert_images_similar(fast_result["data"], default_result["data"])
+    assert len(fast_result["data"]) > len(default_result["data"])

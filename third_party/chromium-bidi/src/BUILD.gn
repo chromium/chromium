@@ -359,6 +359,7 @@ ts_library("unit_tests") {
     "bidiMapper/modules/storage/StorageProcessor.test.ts",
     "cdp/CdpClient.test.ts",
     "cdp/CdpConnection.test.ts",
+    "protocol-parser/protocol-parser.test.ts",
     "protocol/ErrorResponse.test.ts",
     "utils/Buffer.test.ts",
     "utils/DefaultMap.test.ts",

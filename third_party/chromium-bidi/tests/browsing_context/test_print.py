@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import base64
+
 import pytest
 from anys import ANY_STR
 from test_helpers import execute_command, goto_url
@@ -67,3 +69,37 @@ async def test_print_iframe(websocket, iframe_id, html):
                 },
             },
         )
+
+
+@pytest.mark.asyncio
+async def test_print_with_goog_options(websocket, context_id, html, test_headless_mode):
+    if test_headless_mode == "old":
+        pytest.xfail("PDF viewer not available in headless.")
+    await goto_url(websocket, context_id, html("<h1>Heading</h1>"))
+
+    default_result = await execute_command(
+        websocket,
+        {
+            "method": "browsingContext.print",
+            "params": {
+                "context": context_id,
+            },
+        },
+    )
+    # By default, CDP Page.printToPDF has generateDocumentOutline=false, so the
+    # generated PDF does not contain a document outline dictionary (/Outlines).
+    assert b"/Outlines" not in base64.b64decode(default_result["data"])
+
+    outline_result = await execute_command(
+        websocket,
+        {
+            "method": "browsingContext.print",
+            "params": {
+                "context": context_id,
+                "goog:generateDocumentOutline": True,
+            },
+        },
+    )
+    # When goog:generateDocumentOutline is forwarded as generateDocumentOutline=true
+    # to CDP Page.printToPDF, Chrome emits the /Outlines dictionary for headings.
+    assert b"/Outlines" in base64.b64decode(outline_result["data"])

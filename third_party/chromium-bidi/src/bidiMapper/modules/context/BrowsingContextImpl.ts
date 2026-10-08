@@ -1267,7 +1267,7 @@ export class BrowsingContextImpl {
   }
 
   async captureScreenshot(
-    params: BrowsingContext.CaptureScreenshotParameters,
+    params: ChromiumBidi.WithGoogParams<BrowsingContext.CaptureScreenshotParameters>,
   ): Promise<BrowsingContext.CaptureScreenshotResult> {
     if (!this.isTopLevelContext()) {
       throw new UnsupportedOperationException(
@@ -1334,15 +1334,17 @@ export class BrowsingContextImpl {
     return await this.#cdpTarget.cdpClient.sendCommand(
       'Page.captureScreenshot',
       {
+        // Standard BiDi options take precedence over `goog:` extensions.
+        ...params['goog:params'],
         clip: {...rect, scale: 1.0},
         ...formatParameters,
         captureBeyondViewport,
-      },
+      } as Protocol.Page.CaptureScreenshotRequest,
     );
   }
 
   async print(
-    params: BrowsingContext.PrintParameters,
+    params: ChromiumBidi.WithGoogParams<BrowsingContext.PrintParameters>,
   ): Promise<BrowsingContext.PrintResult> {
     if (!this.isTopLevelContext()) {
       throw new UnsupportedOperationException(
@@ -1350,7 +1352,10 @@ export class BrowsingContextImpl {
       );
     }
 
-    const cdpParams: Protocol.Page.PrintToPDFRequest = {};
+    // Standard BiDi options set below take precedence over `goog:` extensions.
+    const cdpParams: Protocol.Page.PrintToPDFRequest = {
+      ...params['goog:params'],
+    };
 
     if (params.background !== undefined) {
       cdpParams.printBackground = params.background;

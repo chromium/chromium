@@ -30,13 +30,26 @@ import * as WebDriverBidiUAClientHints from './generated/webdriver-bidi-ua-clien
 import * as WebDriverBidiDigitalCredentials from './generated/webdriver-bidi-digital-credentials.js';
 import * as WebDriverBidi from './generated/webdriver-bidi.js';
 
-export function parseObject<T extends ZodType>(
+export function parseObject<T extends ZodType<object>>(
   obj: unknown,
   schema: T,
-): z.infer<T> {
+): Protocol.ChromiumBidi.WithGoogParams<z.infer<T>> {
   const parseResult = schema.safeParse(obj);
   if (parseResult.success) {
-    return parseResult.data;
+    // Move `goog:`-prefixed extension attributes stripped by Zod into
+    // `goog:params` with the `goog:` prefix stripped.
+    const googParams =
+      typeof obj === 'object' && obj !== null
+        ? Object.fromEntries(
+            Object.entries(obj)
+              .filter(([key]) => key.startsWith('goog:'))
+              .map(([key, value]) => [key.slice('goog:'.length), value]),
+          )
+        : {};
+    return {
+      ...parseResult.data,
+      'goog:params': googParams,
+    };
   }
   const errorMessage = parseResult.error.issues
     .map(
