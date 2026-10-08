@@ -163,13 +163,16 @@ public class MiniOriginBarControllerTest {
                 mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_hairline_height);
         assertEquals(miniOriginBarHeight, mLayoutParamsCaptor.getValue().height);
         assertEquals(miniOriginBarHeight + hairlineHeight, mControlContainerLayoutParams.height);
+        verify(mControlContainer).doSynchronousLayout(false);
         assertEquals(MiniOriginState.SHOWING, mMiniOriginBarController.getCurrentStateForTesting());
 
+        clearInvocations(mControlContainer);
         mKeyboardVisibilityDelegate.setVisibilityForTests(false);
         verify(mLocationBar).setShowOriginOnly(false);
         verify(mLocationBar).setUrlBarUsesSmallText(false);
         verify(mLocationBar).setMiniOriginMode(false);
         assertEquals(LayoutParams.WRAP_CONTENT, mControlContainerLayoutParams.height);
+        verify(mControlContainer).doSynchronousLayout(false);
         assertEquals(Gravity.TOP, mLocationBarLayoutParams.gravity);
         assertEquals(MiniOriginState.READY, mMiniOriginBarController.getCurrentStateForTesting());
     }

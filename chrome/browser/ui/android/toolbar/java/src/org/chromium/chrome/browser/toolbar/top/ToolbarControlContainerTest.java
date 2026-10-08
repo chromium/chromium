@@ -1747,6 +1747,17 @@ public class ToolbarControlContainerTest {
         spyContainer.doSynchronousLayout(true);
         verify(mockAdapter).invalidate(null);
         verify(mockAdapter).triggerBitmapCapture();
+
+        // Test with explicit positive height (e.g. mini origin bar).
+        clearInvocations(spyContainer);
+        int explicitHeight = 50;
+        spyContainer.setLayoutParams(
+                new CoordinatorLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, explicitHeight));
+        int exactHeightSpec =
+                View.MeasureSpec.makeMeasureSpec(explicitHeight, View.MeasureSpec.EXACTLY);
+        spyContainer.doSynchronousLayout(false);
+        verify(spyContainer).measure(anyInt(), eq(exactHeightSpec));
     }
 
     @Test
