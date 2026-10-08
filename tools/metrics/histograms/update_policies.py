@@ -15,7 +15,8 @@ import os
 import sys
 from xml.dom import minidom
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 import chromium_src.third_party.pyyaml as pyyaml
 import chromium_src.tools.metrics.common.diff_util as diff_util

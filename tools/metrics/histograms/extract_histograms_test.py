@@ -6,8 +6,10 @@ import logging
 import unittest
 import xml.dom.minidom
 
-from parameterized import parameterized  # type: ignore # pylint: disable=import-error
-import setup_modules  # pylint: disable=unused-import
+from parameterized import parameterized  # type: ignore
+
+import setup_modules
+
 
 import chromium_src.tools.metrics.histograms.extract_histograms as extract_histograms
 import chromium_src.tools.metrics.histograms.histogram_configuration_model as histogram_configuration_model

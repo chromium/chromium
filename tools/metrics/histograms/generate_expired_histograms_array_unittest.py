@@ -7,7 +7,8 @@ import datetime
 import unittest
 import xml.dom.minidom
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 import chromium_src.tools.metrics.histograms.generate_expired_histograms_array as generate_expired_histograms_array
 

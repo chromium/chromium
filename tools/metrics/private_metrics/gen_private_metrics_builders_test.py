@@ -6,7 +6,8 @@
 import os
 import unittest
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 import chromium_src.tools.metrics.private_metrics.private_metrics_codegen as private_metrics_codegen
 import chromium_src.tools.metrics.private_metrics.dwa_builders_template as dwa_builders_template

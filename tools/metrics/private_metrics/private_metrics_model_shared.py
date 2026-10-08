@@ -3,7 +3,8 @@
 # found in the LICENSE file.
 """Shared model objects and utils for Private Metrics."""
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 import chromium_src.tools.metrics.common.models as models
 import chromium_src.tools.metrics.common.model_shared as model_shared

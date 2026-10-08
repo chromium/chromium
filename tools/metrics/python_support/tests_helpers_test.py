@@ -7,7 +7,8 @@ import pathlib
 import unittest
 import unittest.mock as mock
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 import chromium_src.tools.metrics.common.path_util as path_util
 import chromium_src.tools.metrics.python_support.script_checker as script_checker

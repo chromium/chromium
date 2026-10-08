@@ -6,7 +6,8 @@ import unittest
 import dataclasses
 import re
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 import chromium_src.tools.metrics.actions.action_utils as action_utils
 

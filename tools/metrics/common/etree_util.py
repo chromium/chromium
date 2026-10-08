@@ -57,7 +57,8 @@ class _CommentedXMLParser(ET.XMLParser):
     super(_CommentedXMLParser, self).__init__(*args, **kwargs)
     self._parser.CommentHandler = self.comment
 
-  def comment(self, data):  # pylint: disable=invalid-name
+  def comment(self, data):
+
     self._target.start(ET.Comment, {})
     self._target.data(data)
     self._target.end(ET.Comment)

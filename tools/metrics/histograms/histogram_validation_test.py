@@ -7,7 +7,8 @@ import unittest
 from unittest import mock
 import xml.etree.ElementTree as ET
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 import chromium_src.tools.metrics.common.path_util as path_util
 import chromium_src.tools.metrics.histograms.histogram_validation as histogram_validation

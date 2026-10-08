@@ -4,7 +4,8 @@
 
 import re
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 from chromium_src.tools.metrics.histograms import extract_histograms
 from chromium_src.tools.metrics.histograms import histogram_paths

@@ -11,7 +11,8 @@ import subprocess
 import typing
 
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 # Import the shared codegen library for its hashing function, which is the
 # same hashing function as used for flag names.

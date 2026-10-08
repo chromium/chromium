@@ -11,7 +11,8 @@ header and implementation file exposing validator function calls.
 import argparse
 import sys
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 import chromium_src.tools.metrics.structured.code_generator_cpp as code_generator_cpp
 from chromium_src.tools.metrics.structured.sync import model

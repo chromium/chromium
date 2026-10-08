@@ -15,7 +15,7 @@ import sys
 #                            test as recommended by presubmit docs:
 # https://www.chromium.org/developers/how-tos/depottools/presubmit-scripts/
 sys.path.append('.')
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
 
 sys.path.remove('.')
 

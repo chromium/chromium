@@ -4,7 +4,8 @@
 
 """Templates for generating builder classes for UKM entries."""
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 import chromium_src.tools.metrics.ukm.codegen as codegen
 

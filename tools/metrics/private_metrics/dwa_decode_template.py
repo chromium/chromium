@@ -3,7 +3,8 @@
 # found in the LICENSE file.
 """A template for generating hash decoding code."""
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 import chromium_src.tools.metrics.private_metrics.private_metrics_codegen as private_metrics_codegen
 

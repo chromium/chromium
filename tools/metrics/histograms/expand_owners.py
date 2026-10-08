@@ -9,7 +9,8 @@ import re
 import subprocess
 import sys
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 from chromium_src.tools.metrics.common import path_util
 import chromium_src.tools.metrics.common.xml_utils as xml_utils
@@ -221,7 +222,7 @@ class Memoize:
     self.memo = {}
 
   def __call__(self, *args):
-    if not args in self.memo:
+    if args not in self.memo:
       self.memo[args] = self.f(*args)
     return self.memo[args]
 

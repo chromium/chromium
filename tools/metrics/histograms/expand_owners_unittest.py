@@ -10,7 +10,8 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import mock  # type: ignore
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 from chromium_src.tools.metrics.common import path_util
 import chromium_src.tools.metrics.histograms.expand_owners as expand_owners

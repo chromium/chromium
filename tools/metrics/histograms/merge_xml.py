@@ -11,7 +11,8 @@ import os
 import xml.dom.minidom
 import xml.etree.ElementTree as ET
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 import chromium_src.tools.metrics.common.xml_utils as xml_utils
 import chromium_src.tools.metrics.histograms.expand_owners as expand_owners

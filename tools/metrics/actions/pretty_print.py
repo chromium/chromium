@@ -6,7 +6,8 @@
 import os
 import sys
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 import chromium_src.tools.metrics.common.presubmit_util as presubmit_util
 import chromium_src.tools.metrics.common.utf8_encoding as utf8_encoding

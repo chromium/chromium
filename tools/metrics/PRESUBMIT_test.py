@@ -7,7 +7,8 @@ import os
 import sys
 import unittest
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 import chromium_src.tools.metrics.PRESUBMIT as PRESUBMIT
 import chromium_src.PRESUBMIT_test_mocks as PRESUBMIT_test_mocks

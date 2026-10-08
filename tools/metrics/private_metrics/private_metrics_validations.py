@@ -4,7 +4,8 @@
 
 import xml.dom.minidom
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 import chromium_src.tools.metrics.ukm.xml_validations as xml_validations
 import chromium_src.tools.metrics.histograms.extract_histograms as extract_histograms

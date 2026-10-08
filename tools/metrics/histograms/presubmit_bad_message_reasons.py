@@ -7,7 +7,8 @@ updated. This can be called from a chromium PRESUBMIT.py to ensure updates to
 bad_message.h also include the generated changes to histograms.xml
 """
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 import chromium_src.tools.metrics.histograms.update_histogram_enum as update_histogram_enum
 

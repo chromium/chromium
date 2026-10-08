@@ -10,7 +10,8 @@ import re
 from typing import Callable, Iterable, List, Set
 import xml.etree.ElementTree as ET
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 import chromium_src.tools.metrics.common.xml_utils as xml_utils
 import chromium_src.tools.metrics.histograms.extract_histograms as extract_histograms

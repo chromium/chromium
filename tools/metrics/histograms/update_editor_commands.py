@@ -15,7 +15,8 @@ import re
 import sys
 from xml.dom import minidom
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 from chromium_src.tools.metrics.common.diff_util import PromptUserToAcceptDiff
 import chromium_src.tools.metrics.common.path_util as path_util

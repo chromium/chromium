@@ -6,7 +6,8 @@
 import logging
 import unittest
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 from chromium_src.tools.metrics.common import path_util
 import chromium_src.tools.metrics.histograms.validate_token as validate_token

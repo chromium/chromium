@@ -6,7 +6,8 @@ from parameterized import parameterized  # type: ignore
 import unittest
 import xml.dom.minidom
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 import chromium_src.tools.metrics.actions.actions_model as actions_model
 

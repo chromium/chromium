@@ -15,7 +15,8 @@ import re
 from typing import Any, Callable, Iterable, List, Set
 import xml.etree.ElementTree as ET
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 import chromium_src.tools.metrics.common.xml_utils as xml_utils
 

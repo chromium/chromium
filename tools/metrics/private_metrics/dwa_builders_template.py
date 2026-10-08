@@ -3,7 +3,8 @@
 # found in the LICENSE file.
 """Templates for generating builder classes for DWA entries."""
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 import chromium_src.tools.metrics.private_metrics.private_metrics_codegen as private_metrics_codegen
 

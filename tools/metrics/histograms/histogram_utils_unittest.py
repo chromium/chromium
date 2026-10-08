@@ -6,7 +6,8 @@ import unittest
 from unittest import mock
 import xml.etree.ElementTree as ET
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 import chromium_src.tools.metrics.histograms.histogram_utils as histogram_utils
 
@@ -120,7 +121,6 @@ class HistogramUtilsTest(unittest.TestCase):
       contents.splitlines(), variants_doc
     )
     self.assertEqual(names, {'Test.V1', 'Test.V2'})
-
 
   def testGetNamesUsingVariantsIgnoresInlineTokenKey(self):
     contents = """

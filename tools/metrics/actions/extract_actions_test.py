@@ -8,7 +8,8 @@ from typing import Any, List
 import unittest
 
 from parameterized import parameterized
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 import multiprocessing
 import os

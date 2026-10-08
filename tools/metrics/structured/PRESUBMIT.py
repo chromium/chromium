@@ -44,23 +44,6 @@ def CheckChange(input_api, output_api):
         )
       )
 
-  disabled_warnings = [
-    'bad-indentation',
-    'consider-using-from-import',
-    'consider-using-with',
-    'duplicate-code',
-    'line-too-long',
-    'missing-module-docstring',
-    'superfluous-parens',
-    'unspecified-encoding',
-    'unused-import',
-  ]
-  errors.extend(
-    input_api.canned_checks.RunPylint(
-      input_api, output_api, disabled_warnings=disabled_warnings, version='3.2'
-    )
-  )
-
   return errors
 
 

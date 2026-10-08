@@ -9,7 +9,8 @@ import os
 import sys
 import xml.dom.minidom
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 from chromium_src.tools.metrics.common import path_util
 import chromium_src.tools.metrics.common.xml_utils as xml_utils

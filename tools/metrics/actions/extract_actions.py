@@ -35,7 +35,8 @@ import sys
 from typing import Callable, Dict, List, Optional
 from xml.dom import minidom
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 import chromium_src.tools.metrics.actions.action_utils as action_utils
 import chromium_src.tools.metrics.actions.actions_model as actions_model
@@ -392,7 +393,7 @@ class WebUIActionsParser(parser.HTMLParser):
   def handle_starttag(self, tag, attrs):
     # We only care to examine tags that have a 'metric' attribute.
     attrs = dict(attrs)
-    if not 'metric' in attrs:
+    if 'metric' not in attrs:
       return
 
     # Boolean metrics have two corresponding actions.  All other metrics have

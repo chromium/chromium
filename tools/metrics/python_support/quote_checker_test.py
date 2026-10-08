@@ -6,7 +6,8 @@
 import pathlib
 import unittest
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 import chromium_src.tools.metrics.python_support.quote_checker as quote_checker
 

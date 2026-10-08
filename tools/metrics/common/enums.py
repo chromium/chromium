@@ -6,7 +6,8 @@ import logging
 import xml.etree.ElementTree as ET
 
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 import chromium_src.tools.metrics.common.path_util as path_util
 import chromium_src.tools.metrics.histograms.extract_histograms as extract_histograms

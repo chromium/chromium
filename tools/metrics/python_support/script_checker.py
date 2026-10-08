@@ -9,7 +9,8 @@ import tempfile
 import time
 import subprocess
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 from chromium_src.tools.metrics.python_support.tests_helpers import (
   TestableScript,

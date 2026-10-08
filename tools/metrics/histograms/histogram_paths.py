@@ -12,7 +12,8 @@ histograms.xml and enums.xml files that exist.
 import os
 from typing import Iterable, NamedTuple
 
-import setup_modules  # pylint: disable=unused-import
+import setup_modules
+
 
 import chromium_src.tools.metrics.common.path_util as path_util
 
