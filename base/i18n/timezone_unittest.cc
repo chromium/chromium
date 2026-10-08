@@ -6,10 +6,13 @@
 
 #include <memory>
 
+#include "base/features.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/test/scoped_icu_locale.h"
+#include "base/task/sequence_manager/thread_controller_power_monitor.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/locid.h"
@@ -18,6 +21,27 @@
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace base::i18n {
+
+namespace {
+
+class ScopedI18nOptimizationsFeature {
+ public:
+  explicit ScopedI18nOptimizationsFeature(bool enable) {
+    features_.InitWithFeatureState(features::kI18nOptimizations, enable);
+    features::Init();
+    sequence_manager::internal::ThreadControllerPowerMonitor::ResetForTesting();
+  }
+  ~ScopedI18nOptimizationsFeature() {
+    features_.Reset();
+    features::Init();
+    sequence_manager::internal::ThreadControllerPowerMonitor::ResetForTesting();
+  }
+
+ private:
+  test::ScopedFeatureList features_;
+};
+
+}  // namespace
 
 TEST(TimeZoneTest, Default) {
   ScopedDefaultIcuLocale restore_locale(GetKnownLanguageTag("en-US"));
@@ -36,13 +60,23 @@ TEST(TimeZoneTest, FromID) {
 }
 
 TEST(TimeZoneTest, GMT) {
-  TimeZone tz = TimeZone::GMT();
-  EXPECT_EQ(tz.GetID(), "GMT");
+  for (bool enable_feature : {false, true}) {
+    ScopedI18nOptimizationsFeature scoped_feature(enable_feature);
+    TimeZone tz = TimeZone::GMT();
+    EXPECT_EQ(tz.GetID(), "GMT");
+    EXPECT_EQ(tz, TimeZone::FromString("GMT"));
+    EXPECT_EQ(tz.GetRawOffset(), base::TimeDelta());
+    EXPECT_FALSE(tz.UseDaylightTime());
+  }
 }
 
 TEST(TimeZoneTest, Unknown) {
-  TimeZone tz = TimeZone::Unknown();
-  EXPECT_EQ(tz.GetID(), "Etc/Unknown");
+  for (bool enable_feature : {false, true}) {
+    ScopedI18nOptimizationsFeature scoped_feature(enable_feature);
+    TimeZone tz = TimeZone::Unknown();
+    EXPECT_EQ(tz.GetID(), "Etc/Unknown");
+    EXPECT_EQ(tz, TimeZone::FromString("Etc/Unknown"));
+  }
 }
 
 TEST(TimeZoneTest, CopyAndMove) {

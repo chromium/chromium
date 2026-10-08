@@ -5,14 +5,18 @@
 #include "base/i18n/time_formatting.h"
 
 #include <memory>
+#include <vector>
 
+#include "base/features.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/test/scoped_icu_locale.h"
 #include "base/i18n/timezone.h"
 #include "base/i18n/unicodestring.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequence_manager/thread_controller_power_monitor.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,6 +27,23 @@
 
 namespace base {
 namespace {
+
+class ScopedI18nOptimizationsFeature {
+ public:
+  explicit ScopedI18nOptimizationsFeature(bool enable) {
+    features_.InitWithFeatureState(features::kI18nOptimizations, enable);
+    features::Init();
+    sequence_manager::internal::ThreadControllerPowerMonitor::ResetForTesting();
+  }
+  ~ScopedI18nOptimizationsFeature() {
+    features_.Reset();
+    features::Init();
+    sequence_manager::internal::ThreadControllerPowerMonitor::ResetForTesting();
+  }
+
+ private:
+  test::ScopedFeatureList features_;
+};
 
 constexpr Time::Exploded kTestDateTimeExploded = {.year = 2011,
                                                   .month = 4,
@@ -272,9 +293,36 @@ TEST(TimeFormattingTest, TimeFormatDateGB) {
 }
 
 TEST(TimeFormattingTest, TimeFormatAsIso8601) {
-  Time time;
-  EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
-  EXPECT_EQ("2011-04-30T22:42:07.000Z", TimeFormatAsIso8601(time));
+  for (bool enable_feature : {false, true}) {
+    ScopedI18nOptimizationsFeature scoped_feature(enable_feature);
+
+    Time time;
+    EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
+    EXPECT_EQ("2011-04-30T22:42:07.000Z", TimeFormatAsIso8601(time));
+
+    constexpr Time::Exploded kTestDateTimeWithMillisExploded = {
+        .year = 2011,
+        .month = 4,
+        .day_of_week = 6,
+        .day_of_month = 30,
+        .hour = 22,
+        .minute = 42,
+        .second = 7,
+        .millisecond = 123};
+    EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeWithMillisExploded, &time));
+    EXPECT_EQ("2011-04-30T22:42:07.123Z", TimeFormatAsIso8601(time));
+
+    constexpr Time::Exploded kTestDateTimeSingleDigits = {.year = 2026,
+                                                          .month = 1,
+                                                          .day_of_week = 4,
+                                                          .day_of_month = 5,
+                                                          .hour = 3,
+                                                          .minute = 4,
+                                                          .second = 9,
+                                                          .millisecond = 5};
+    EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeSingleDigits, &time));
+    EXPECT_EQ("2026-01-05T03:04:09.005Z", TimeFormatAsIso8601(time));
+  }
 }
 
 TEST(TimeFormattingTest, TimeFormatAsIso8601WithTimeZone) {
@@ -318,6 +366,92 @@ TEST(TimeFormattingTest, TimeFormatAsIso8601Precision) {
             TimeFormatAsIso8601(time, i18n::TimeZone::GMT(),
                                 TimePrecision::kSubsecond_3,
                                 /*include_offset_suffix=*/true));
+}
+
+// Verifies that `TimeFormatAsIso8601` produces the same output with and without
+// the `kI18nOptimizations` feature enabled.
+TEST(TimeFormattingTest, TimeFormatAsIso8601WithAndWithoutI18nOptimizations) {
+  using TimePrecision = i18n::DateTimeFormatterOptions::TimePrecision;
+
+  Time test_time;
+  ASSERT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &test_time));
+
+  Time test_time_with_millis;
+  ASSERT_TRUE(Time::FromUTCExploded({.year = 2011,
+                                     .month = 4,
+                                     .day_of_week = 6,
+                                     .day_of_month = 30,
+                                     .hour = 22,
+                                     .minute = 42,
+                                     .second = 7,
+                                     .millisecond = 123},
+                                    &test_time_with_millis));
+
+  Time test_time_single_digits;
+  ASSERT_TRUE(Time::FromUTCExploded({.year = 2026,
+                                     .month = 1,
+                                     .day_of_week = 4,
+                                     .day_of_month = 5,
+                                     .hour = 3,
+                                     .minute = 4,
+                                     .second = 9,
+                                     .millisecond = 5},
+                                    &test_time_single_digits));
+
+  const Time kTimes[] = {
+      test_time,
+      test_time_with_millis,
+      test_time_single_digits,
+      Time::UnixEpoch(),
+      Time(),
+      // Negative year (~528 BCE).
+      Time::UnixEpoch() - Days(365 * 2500),
+      // Year > 9999 (~10964 CE).
+      Time::UnixEpoch() + Days(365 * 9000),
+      Time::Min(),
+      Time::Max(),
+  };
+
+  constexpr TimePrecision kPrecisions[] = {
+      TimePrecision::kHour,        TimePrecision::kMinute,
+      TimePrecision::kSecond,      TimePrecision::kSubsecond_2,
+      TimePrecision::kSubsecond_3, TimePrecision::kSubsecond_4,
+  };
+
+  auto capture_outputs = [&](bool enable_feature) {
+    ScopedI18nOptimizationsFeature scoped_feature(enable_feature);
+    std::vector<std::string> outputs;
+
+    const i18n::TimeZone time_zones[] = {
+        i18n::TimeZone::GMT(),
+        i18n::TimeZone::Unknown(),
+        i18n::TimeZone::FromString("America/Los_Angeles"),
+        i18n::TimeZone::FromString("Asia/Tokyo"),
+    };
+
+    for (Time t : kTimes) {
+      std::string one_arg = TimeFormatAsIso8601(t);
+      std::string four_arg_gmt = TimeFormatAsIso8601(
+          t, i18n::TimeZone::GMT(), TimePrecision::kSubsecond_3,
+          /*include_offset_suffix=*/true);
+      EXPECT_EQ(one_arg, four_arg_gmt);
+      outputs.push_back(std::move(one_arg));
+
+      for (const i18n::TimeZone& tz : time_zones) {
+        for (TimePrecision precision : kPrecisions) {
+          for (bool include_offset_suffix : {false, true}) {
+            outputs.push_back(
+                TimeFormatAsIso8601(t, tz, precision, include_offset_suffix));
+          }
+        }
+      }
+    }
+    return outputs;
+  };
+
+  std::vector<std::string> with_feature = capture_outputs(true);
+  std::vector<std::string> without_feature = capture_outputs(false);
+  EXPECT_EQ(with_feature, without_feature);
 }
 
 TEST(TimeFormattingTest, TimeFormatHTTP) {

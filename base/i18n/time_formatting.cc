@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/features.h"
 #include "base/i18n/icubridge/date_time_formatter.h"
 #include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/language_tag.h"
@@ -131,6 +132,13 @@ std::u16string TimeFormatFriendlyDate(Time time) {
 }
 
 std::string TimeFormatAsIso8601(Time time) {
+  if (features::IsI18nOptimizationsEnabled()) {
+    Time::Exploded exploded;
+    time.UTCExplode(&exploded);
+    return StringPrintf("%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", exploded.year,
+                        exploded.month, exploded.day_of_month, exploded.hour,
+                        exploded.minute, exploded.second, exploded.millisecond);
+  }
   return TimeFormatAsIso8601(
       time, i18n::TimeZone::GMT(),
       i18n::DateTimeFormatterOptions::TimePrecision::kSubsecond_3,
@@ -153,7 +161,10 @@ std::string TimeFormatAsIso8601(
 
   std::string offset_suffix;
   if (include_offset_suffix) {
-    if (time_zone == i18n::TimeZone::GMT()) {
+    const bool is_gmt = features::IsI18nOptimizationsEnabled()
+                            ? (time_zone.GetID() == "GMT")
+                            : (time_zone == i18n::TimeZone::GMT());
+    if (is_gmt) {
       offset_suffix = "Z";
     } else {
       int total_minutes = total_offset.InMinutes();

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/features.h"
 #include "base/i18n/icu4c_tag_converter.h"  // nogncheck
 #include "base/i18n/language_tag.h"
 #include "base/i18n/unicodestring.h"
@@ -98,11 +99,19 @@ TimeZone TimeZone::FromString(std::string_view id) {
 
 // static
 TimeZone TimeZone::GMT() {
+  if (features::IsI18nOptimizationsEnabled()) {
+    return TimeZone(std::make_unique<Impl>(
+        base::WrapUnique(icu::TimeZone::getGMT()->clone())));
+  }
   return FromString("GMT");
 }
 
 // static
 TimeZone TimeZone::Unknown() {
+  if (features::IsI18nOptimizationsEnabled()) {
+    return TimeZone(std::make_unique<Impl>(
+        base::WrapUnique(icu::TimeZone::getUnknown().clone())));
+  }
   return FromString("Etc/Unknown");
 }
 

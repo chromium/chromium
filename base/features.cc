@@ -43,6 +43,15 @@
 
 namespace base::features {
 
+namespace {
+
+// State of the `kI18nOptimizations` feature, to be updated after the feature
+// list is available. All operations use `std::memory_order_relaxed` because
+// there are no dependent memory accesses.
+std::atomic_bool g_i18n_optimizations{true};
+
+}  // namespace
+
 // Alphabetical:
 
 // Controls caching within BASE_FEATURE_PARAM(). This is feature-controlled
@@ -56,6 +65,10 @@ BASE_FEATURE(kFastFilePathIsParent, FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables residency tagging in the heap profiler.
 BASE_FEATURE(kHeapProfilerIncludeResidency, FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables optimizations in //base/i18n (e.g. fast-pathing TimeFormatAsIso8601
+// and avoiding ICU resource bundle lookups for TimeZone::GMT/Unknown).
+BASE_FEATURE(kI18nOptimizations, FEATURE_ENABLED_BY_DEFAULT);
 
 // Use non default low memory device threshold.
 // Value should be given via |LowMemoryDeviceThresholdMB|.
@@ -233,7 +246,13 @@ BASE_FEATURE_PARAM(int, kSpinCountArm, &kBaseLockTrySpin, "spin_count_arm", 0);
 #endif  // defined(ARCH_CPU_X86_FAMILY)
 #endif  // BUILDFLAG(IS_POSIX)
 
+bool IsI18nOptimizationsEnabled() {
+  return g_i18n_optimizations.load(std::memory_order_relaxed);
+}
+
 void Init() {
+  g_i18n_optimizations.store(FeatureList::IsEnabled(kI18nOptimizations),
+                             std::memory_order_relaxed);
   strings_internal::InitializeUtfStringConversionsFeatures();
 #if BUILDFLAG(IS_POSIX)
   base::Lock::InitializeFeatures();
