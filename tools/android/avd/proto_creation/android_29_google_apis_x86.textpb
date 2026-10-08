@@ -59,5 +59,5 @@ additional_apk {
 }
 
 avd_launch_settings {
-  gpu_mode: "swangle_indirect"
+  gpu_mode: "swiftshader_indirect"
 }
