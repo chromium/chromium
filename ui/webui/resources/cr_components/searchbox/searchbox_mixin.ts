@@ -725,11 +725,24 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
 
     private updateInputForSelection_(
         nextSelection: OmniboxPopupSelection, key: string) {
+      if (nextSelection.state === SelectionLineState.kFocusedButtonAim ||
+          nextSelection.line === -1) {
+        this.getInputElement().setSelectionA11yLabel('');
+        this.getInputElement().setInput({
+          text: this.lastQueriedInput ?? '',
+          inline: '',
+          moveCursorToEnd: true,
+        });
+        return;
+      }
+
       if (this.selectedMatch) {
         const newFill = this.computeMatchFillIntoEdit(this.selectedMatch);
         const isKeywordMode = this.keywordModeManager_.isInKeywordMode ||
             nextSelection.state === SelectionLineState.kKeywordMode;
-        const newInline = !isKeywordMode && nextSelection.line === 0 &&
+        const isNormal = nextSelection.state === SelectionLineState.kNormal;
+        const newInline = isNormal && !isKeywordMode &&
+                nextSelection.line === 0 &&
                 this.selectedMatch.allowedToBeDefaultMatch ?
             this.selectedMatch.inlineAutocompletion :
             '';
@@ -755,14 +768,6 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
               nextSelection.line, this.selectedMatch.destinationUrl,
               NavigationPredictor.kUpOrDownArrowButton);
         }
-      } else if (nextSelection.line === -1) {
-        this.getInputElement().setSelectionA11yLabel('');
-        this.getInputElement().setInput({
-          text: this.lastQueriedInput ?? '',
-          inline: '',
-          moveCursorToEnd: true,
-          isMatchPreview: false,
-        });
       }
     }
 
