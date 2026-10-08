@@ -91,7 +91,7 @@ extension ILType {
         .plain(.jsGoldenSimpleStruct),
         .either(.string, .undefined),
         .plain(.boolean),
-        .plain(.jsGoldenSimpleUnion),
+        .plain(.jsGoldenSimpleUnionUnion),
     ] => .jsGoldenLargeStruct)
     fileprivate static let jsGoldenSimpleStruct: ILType = .object(
         ofGroup: "golden.SimpleStruct",
@@ -123,7 +123,7 @@ extension ObjectGroup {
             "residence": .jsGoldenSimpleStruct,
             "optionalField": .string,
             "valid": .boolean,
-            "data": .jsGoldenSimpleUnion,
+            "data": .jsGoldenSimpleUnionUnion,
         ],
         methods: [:]
     )
@@ -186,20 +186,20 @@ private let MojoInt64MojoArrayGenerator = CodeGenerator(
 /// Unions
 ///
 extension ILType {
-    fileprivate static let jsGoldenSimpleUnion: ILType = .object(
+    fileprivate static let jsGoldenSimpleUnionUnion: ILType = .object(
         ofGroup: "golden.SimpleUnion")
-    fileprivate static let jsGoldenSimpleUnionArrConstructor: ILType = .constructor(
-        [.plain(.jsInt64MojoArray)] => .jsGoldenSimpleUnion)
-    fileprivate static let jsGoldenSimpleUnionValConstructor: ILType = .constructor(
-        [.plain(.jsInt16)] => .jsGoldenSimpleUnion)
-    fileprivate static let jsGoldenSimpleUnionFlagConstructor: ILType = .constructor(
-        [.plain(.boolean)] => .jsGoldenSimpleUnion)
+    fileprivate static let jsGoldenSimpleUnionUnionArrConstructor: ILType = .constructor(
+        [.plain(.jsInt64MojoArray)] => .jsGoldenSimpleUnionUnion)
+    fileprivate static let jsGoldenSimpleUnionUnionValConstructor: ILType = .constructor(
+        [.plain(.jsInt16)] => .jsGoldenSimpleUnionUnion)
+    fileprivate static let jsGoldenSimpleUnionUnionFlagConstructor: ILType = .constructor(
+        [.plain(.boolean)] => .jsGoldenSimpleUnionUnion)
 }
 
 extension ObjectGroup {
-    fileprivate static let goldenSimpleUnion = ObjectGroup(
+    fileprivate static let goldenSimpleUnionUnion = ObjectGroup(
         name: "golden.SimpleUnion",
-        instanceType: .jsGoldenSimpleUnion,
+        instanceType: .jsGoldenSimpleUnionUnion,
         properties: [:],
         methods: [:]
     )
@@ -263,9 +263,9 @@ private let mojoBuiltins: [String: ILType] = [
     "getOrCreatePrimaryRemote": .function([] => .jsGoldenPrimaryRemote),
     "golden.LargeStruct": .jsGoldenLargeStructConstructor,
     "golden.SimpleStruct": .jsGoldenSimpleStructConstructor,
-    "golden.SimpleUnion.arr": .jsGoldenSimpleUnionArrConstructor,
-    "golden.SimpleUnion.val": .jsGoldenSimpleUnionValConstructor,
-    "golden.SimpleUnion.flag": .jsGoldenSimpleUnionFlagConstructor,
+    "golden.SimpleUnion.arr": .jsGoldenSimpleUnionUnionArrConstructor,
+    "golden.SimpleUnion.val": .jsGoldenSimpleUnionUnionValConstructor,
+    "golden.SimpleUnion.flag": .jsGoldenSimpleUnionUnionFlagConstructor,
 ]
 
 private let keepGenerators = [
@@ -328,7 +328,7 @@ let mojoPrimaryProfile = Profile(
         .goldenSimpleStruct,
         .goldenPrimaryGetStructResponseParams,
         .goldenPrimarySyncGetStructResponseParams,
-        .goldenSimpleUnion,
+        .goldenSimpleUnionUnion,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [
     ] + commonMojoEnumerations,

@@ -286,11 +286,13 @@ class Generator(generator.Generator):
     ):
       return f"{prefix}{self._FlattenKind(kind.kind)}"
 
-    if (
-      mojom.IsStructKind(kind)
-      or mojom.IsEnumKind(kind)
-      or mojom.IsUnionKind(kind)
-    ):
+    if mojom.IsUnionKind(kind):
+      # Fuzzilli union constructors combine the union name with the field name,
+      # creating the potential for collisions with other constructors generated
+      # by Fuzzilli.
+      return f"{prefix}{self._FlattenKind(kind)}Union"
+
+    if mojom.IsStructKind(kind) or mojom.IsEnumKind(kind):
       return f"{prefix}{self._FlattenKind(kind)}"
 
     if mojom.IsInterfaceKind(kind):
