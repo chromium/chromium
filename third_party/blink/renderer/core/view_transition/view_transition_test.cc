@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/view_transition/dom_view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/scoped_view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_skip_reason.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_style_builder.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_test_utils.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_transition_element.h"
@@ -2052,6 +2053,20 @@ TEST_P(ViewTransitionTest, RunPostPrePaintStepsOnAbortedTransitionCrash) {
   vt->NotifyDOMCallbackFinished(true);
 
   EXPECT_EQ(GetState(transition), State::kAborted);
+}
+
+TEST_P(ViewTransitionTest, StyleBuilderKeyframesPrecision) {
+  ViewTransitionStyleBuilder::ContainerProperties source_properties(
+      PhysicalRect(LayoutUnit(), LayoutUnit(), LayoutUnit(100.1f),
+                   LayoutUnit(200.1f)),
+      gfx::Transform());
+
+  ViewTransitionStyleBuilder builder;
+  builder.AddAnimations(ViewTransitionStyleBuilder::AnimationType::kBoth, "tag",
+                        source_properties, {}, gfx::Transform());
+  String css = builder.Build();
+  EXPECT_NE(css.find("width: 100.094px;"), kNotFound) << css;
+  EXPECT_NE(css.find("height: 200.094px;"), kNotFound) << css;
 }
 
 }  // namespace blink

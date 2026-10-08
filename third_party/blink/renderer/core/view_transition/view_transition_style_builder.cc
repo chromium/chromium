@@ -152,7 +152,7 @@ String ViewTransitionStyleBuilder::AddKeyframes(
         from {{
           transform: {};
           width: {:.3f}px;
-          height: {:3f}px;
+          height: {:.3f}px;
       )CSS",
            GetTransformString(source_properties, parent_transform),
            source_properties.GroupSize().width.ToFloat(),

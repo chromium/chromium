@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_VIEW_TRANSITION_STYLE_BUILDER_H_
 
 #include "base/containers/flat_map.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_style_tracker.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
@@ -15,7 +16,7 @@
 
 namespace blink {
 
-class ViewTransitionStyleBuilder {
+class CORE_EXPORT ViewTransitionStyleBuilder {
  public:
   using ContainerProperties = ViewTransitionStyleTracker::ContainerProperties;
   using CapturedCssProperties = base::flat_map<CSSPropertyID, String>;
