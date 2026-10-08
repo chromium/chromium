@@ -17,7 +17,8 @@ from telemetry.internal.util import path
 from telemetry.internal.util import path_set
 
 try:
-  from modulegraph import modulegraph  # pylint: disable=import-error
+  from modulegraph import modulegraph
+
 except ImportError as err:
   modulegraph = None
   import_error = err
@@ -168,7 +169,7 @@ def FindExcludedFiles(files, options):
 
 def FindDependencies(target_paths, options):
   path_util.AddPyUtilsToPath()
-  from py_utils import GetWebPageReplayDir  # pylint: disable=import-outside-toplevel
+  from py_utils import GetWebPageReplayDir
 
   # Verify arguments.
   for target_path in target_paths:

@@ -18,7 +18,7 @@ def _IssueMarkerAndScroll(action_runner, scroll_forever):
 
 def _CreatePageClassWithSmoothInteractions(page_cls):
 
-  class DerivedSmoothPage(page_cls):  # pylint: disable=no-init
+  class DerivedSmoothPage(page_cls):
     def RunPageInteractions(self, action_runner):
       action_runner.Wait(1)
       _IssueMarkerAndScroll(action_runner, self.story_set.scroll_forever)

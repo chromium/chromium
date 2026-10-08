@@ -37,7 +37,7 @@ class SystemHealthStorySet(story.StorySet):
         return False
       if case and not story_class.NAME.startswith(case + ':'):
         return False
-      if tag and not tag in story_class.TAGS:
+      if tag and tag not in story_class.TAGS:
         return False
       return True
 

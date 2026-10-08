@@ -32,7 +32,6 @@ def main():
   # Add the directory to the path so we can get the parse_version script.
   asset_dir = args.asset_dir
   sys.path.append(asset_dir)
-  # pylint: disable=import-error,import-outside-toplevel
   import parse_version
 
   # Get the assets version.

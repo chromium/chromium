@@ -555,7 +555,6 @@ def get_crossbench_variations_browser_args(browser_args: List[str]):
     variations_dir = os.path.abspath(f'{_ROOT_DIR}/tools/variations')
     if variations_dir not in sys.path:
         sys.path.append(variations_dir)
-    # pylint: disable=import-outside-toplevel,import-error
     import fieldtrial_util
 
     config_path = os.path.abspath(

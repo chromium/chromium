@@ -4,7 +4,6 @@
 from contrib.cluster_telemetry import loading_base_ct
 
 
-# pylint: disable=protected-access
 class LoadingClusterTelemetry(loading_base_ct._LoadingBaseClusterTelemetry):
   @classmethod
   def Name(cls):

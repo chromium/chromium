@@ -6,7 +6,6 @@ from contrib.cluster_telemetry import loading_base_ct
 from telemetry.web_perf import timeline_based_measurement
 
 
-# pylint: disable=protected-access
 class V8LoadingClusterTelemetry(loading_base_ct._LoadingBaseClusterTelemetry):
   @classmethod
   def Name(cls):

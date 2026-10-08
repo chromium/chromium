@@ -4,7 +4,6 @@
 
 from __future__ import annotations
 
-# pylint: disable=too-many-lines
 
 import csv
 import os
@@ -63,7 +62,6 @@ class _PerfPlatform(object):
     self.crossbench = crossbench or frozenset()
     assert num_shards
     self._num_shards = num_shards
-    # pylint: disable=redefined-outer-name
     self._benchmark_configs: frozenset[TelemetryConfig] = frozenset(
       [
         b
@@ -71,7 +69,6 @@ class _PerfPlatform(object):
         if _IsPlatformSupported(b.benchmark, self._platform_os)
       ]
     )
-    # pylint: enable=redefined-outer-name
     benchmark_names = [config.name for config in self._benchmark_configs]
     assert len(set(benchmark_names)) == len(benchmark_names), (
       'Make sure that a benchmark does not appear twice.'
@@ -89,7 +86,6 @@ class _PerfPlatform(object):
   def __lt__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
-    # pylint: disable=protected-access
     return self._sort_key < other._sort_key
 
   @property
@@ -1290,9 +1286,7 @@ def LoadScheduleFile(
 ):
   name = file_path.stem
   factory = _BENCHMARKS_CONFIG_FACTORIES[name]
-  # pylint: disable=comparison-with-callable)
   is_telemetry = factory == _TelemetryConfig
-  # pylint: enable=comparison-with-callable)
   reader = ReadCSV(file_path)
   fieldnames = reader.fieldnames
   assert fieldnames, 'Missing field names'

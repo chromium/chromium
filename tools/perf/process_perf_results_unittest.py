@@ -21,7 +21,8 @@ from core import path_util
 
 path_util.AddBuildUtilToPath()
 
-from lib.common import google_storage_helper  # pylint: disable=import-error
+from lib.common import google_storage_helper
+
 
 path_util.AddTelemetryToPath()
 
@@ -44,7 +45,6 @@ class _FakeLogdogStream(object):
     return 'http://foobar.not.exit'
 
 
-# pylint: disable=protected-access
 class DataFormatParsingUnitTest(unittest.TestCase):
   def tearDown(self):
     ppr_module._data_format_cache = {}

@@ -6,7 +6,7 @@ from page_sets.system_health import platforms
 from page_sets.system_health import story_tags
 from page_sets.system_health import system_health_story
 
-from devil.android.sdk import keyevent  # pylint: disable=import-error
+from devil.android.sdk import keyevent
 
 
 class BlankAboutBlankStory(system_health_story.SystemHealthStory):

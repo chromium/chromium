@@ -20,7 +20,8 @@ from __future__ import print_function
 
 try:
   # In Python2, override input with raw_input for compatibility.
-  input = raw_input  # pylint: disable=redefined-builtin
+  input = raw_input
+
 except NameError:
   pass
 
@@ -199,12 +200,10 @@ def main():
   # Temporarily add the depot tools path to our system path, so that we can
   # import the appropriate modules, since its location is user-dependent.
   sys.path.insert(0, args.depot_tools_path)
-  # pylint: disable=import-outside-toplevel
   import upload_to_google_storage
   import download_from_google_storage
   import gclient_utils
 
-  # pylint: enable=import-outside-toplevel
   sys.path.remove(args.depot_tools_path)
 
   is_cog = gclient_utils.IsEnvCog()

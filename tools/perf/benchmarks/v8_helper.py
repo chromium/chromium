@@ -2,8 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from devil import base_error as devil_error  # pylint: disable=import-error
-from devil.android import device_utils  # pylint: disable=import-error
+from devil import base_error as devil_error
+
+from devil.android import device_utils
+
 from telemetry.web_perf import timeline_based_measurement
 from telemetry.timeline import chrome_trace_config
 

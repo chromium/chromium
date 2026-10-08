@@ -26,7 +26,8 @@ import urllib.parse
 import urllib.request
 
 # TODO(crbug.com/40641687): Figure out how to get httplib2 hermetically.
-import httplib2  # pylint: disable=import-error
+import httplib2
+
 
 from core import path_util
 
@@ -553,5 +554,5 @@ def _SendHistogramJson(url, histogramset_json, token_generator_callback):
       )
     else:
       logging.info('Upload completion token created. Token id: %s' % token)
-  except Exception as e:  # pylint: disable=broad-except
+  except Exception as e:
     logging.warning('Error fetching upload completion token: %s' % e)

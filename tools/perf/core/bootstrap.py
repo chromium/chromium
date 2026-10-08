@@ -25,7 +25,8 @@ def ListAllDepsPaths(deps_file):
     chrome_root = os.path.abspath(os.path.join(chrome_root, '..'))
 
   loaded = {}
-  exec(open(deps_file).read(), globals(), loaded)  # pylint: disable=exec-used
+  exec(open(deps_file).read(), globals(), loaded)
+
   deps = loaded.get('deps', {})
   deps_includes = loaded.get('deps_includes', {})
 

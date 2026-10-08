@@ -15,7 +15,7 @@ from telemetry.internal.util import path as path_module
 sys.path.append(
   os.path.join(os.path.dirname(__file__), '..', '..', 'variations')
 )
-import fieldtrial_util  # pylint: disable=import-error
+import fieldtrial_util
 
 
 # This function returns a list of two-tuples designed to extend

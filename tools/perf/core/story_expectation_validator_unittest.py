@@ -21,7 +21,8 @@ class FakePage(object):
 
 
 class FakeStorySetOne(story.StorySet):
-  def __init__(self):  # pylint: disable=super-init-not-called
+  def __init__(self):
+
     self._stories = [FakePage('One'), FakePage('Two')]
 
   @property

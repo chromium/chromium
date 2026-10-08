@@ -44,9 +44,7 @@ def _Mean(values):
 class BlinkPerfTest(legacy_page_test_case.LegacyPageTestCase):
   def setUp(self):
     super(BlinkPerfTest, self).setUp()
-    # pylint: disable=protected-access
     self.blink_page_test = blink_perf._BlinkPerfMeasurement()
-    # pylint: enable=protected-access
 
   def HasChromeTraces(self):
     return any(
@@ -61,7 +59,7 @@ class BlinkPerfTest(legacy_page_test_case.LegacyPageTestCase):
       serving_dirs=[_BLINK_PERF_TEST_DATA_DIR, _BLINK_PERF_RESOURCES_DIR],
     )
     assert url.startswith('file://'), 'Expected local URI, got %s' % url
-    blink_page = blink_perf._BlinkPerfPage(  # pylint: disable=protected-access
+    blink_page = blink_perf._BlinkPerfPage(
       url, story_set, base_dir=story_set.base_dir, name=url[len('file://') :]
     )
     story_set.AddStory(blink_page)
@@ -178,7 +176,6 @@ class BlinkPerfTest(legacy_page_test_case.LegacyPageTestCase):
     self.assertTrue(self.HasChromeTraces())
 
 
-# pylint: disable=protected-access
 # This is needed for testing _ComputeTraceEventsThreadTimeForBlinkPerf method.
 class ComputeTraceEventsMetricsForBlinkPerfTest(unittest.TestCase):
   def _AddAsyncSlice(self, renderer_thread, category, name, start, end):

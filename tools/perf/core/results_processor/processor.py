@@ -33,8 +33,10 @@ from core.tbmv3 import trace_processor
 from core import path_util
 
 path_util.AddAndroidDeviceInteractionToPath()
-from devil.android import device_utils  # pylint: disable=import-error
-from devil.android.sdk import adb_wrapper  # pylint: disable=import-error
+from devil.android import device_utils
+
+from devil.android.sdk import adb_wrapper
+
 
 path_util.AddTelemetryToPath()
 from telemetry.core import cros_interface

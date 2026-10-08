@@ -3,7 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# pylint: disable=too-many-lines
 # pylint: disable=line-too-long
 
 """Generates chromium.perf{,.fyi}.json from a set of condensed configs.
@@ -1679,7 +1678,7 @@ def get_scheduled_non_telemetry_benchmarks(perf_waterfall_file):
     # TODO(eyaich): Determine new way to generate ownership based
     # on the benchmark bot map instead of on the generated tests
     # for new perf recipe.
-    if not name in PERFORMANCE_TEST_SUITES:
+    if name not in PERFORMANCE_TEST_SUITES:
       test_names.add(name)
 
   for platform in bot_platforms.ALL_PLATFORMS:

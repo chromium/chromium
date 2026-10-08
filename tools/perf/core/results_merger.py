@@ -142,7 +142,6 @@ def _merge_json_test_result_format(shard_results_list, test_cross_device=False):
       )
 
     # Curry merge_values for this result_json.
-    # pylint: disable=cell-var-from-loop
     merge = lambda key, merge_func: merge_value(
       result_json, merged_results, key, merge_func
     )

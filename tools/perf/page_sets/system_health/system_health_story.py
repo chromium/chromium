@@ -71,7 +71,7 @@ class SystemHealthStory(page_module.Page, metaclass=_MetaSystemHealthStory):
     case, group, _ = self.NAME.split(':', 2)
     tags = []
     found_year_tag = False
-    for t in self.TAGS:  # pylint: disable=not-an-iterable
+    for t in self.TAGS:
       assert t in story_tags.ALL_TAGS
       tags.append(t.name)
       if t in story_tags.YEAR_TAGS:

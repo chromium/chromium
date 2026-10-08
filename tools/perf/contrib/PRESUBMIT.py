@@ -38,7 +38,7 @@ def _CheckContribDir(input_api, output_api):
     file_path = f.AbsoluteLocalPath()
     if input_api.os_path.dirname(
       file_path
-    ) == contrib_dir and not file_path in (init, readme, presubmit):
+    ) == contrib_dir and file_path not in (init, readme, presubmit):
       invalid_contrib_files.append(file_path)
 
   for f in input_api.os_listdir(contrib_dir):

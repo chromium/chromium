@@ -137,7 +137,6 @@ class OrderfileStorySet(story.StorySet):
     random.seed(self.SEED)
 
     for story_class in self.RunSetStories():
-      # pylint: disable=E1102
       self.AddStory(story_class(self, take_memory_measurement=True))
 
   def RunSetStories(self):
@@ -184,7 +183,6 @@ class _OrderfileBenchmark(system_health.MobileMemorySystemHealth):
     return OrderfileStorySet(run_set=self.STORY_RUN_SET)
 
 
-# pylint: disable=R0901
 @benchmark.Owner(emails=['mattcary@chromium.org'])
 class OrderfileTraining(_OrderfileBenchmark):
   STORY_RUN_SET = OrderfileStorySet.TRAINING
@@ -196,7 +194,6 @@ class OrderfileTraining(_OrderfileBenchmark):
     return 'orderfile_generation.training'
 
 
-# pylint: disable=R0901
 @benchmark.Owner(emails=['mattcary@chromium.org'])
 class OrderfileTesting(_OrderfileBenchmark):
   STORY_RUN_SET = OrderfileStorySet.TESTING
@@ -237,34 +234,29 @@ class _OrderfileVariation(system_health.MobileMemorySystemHealth):
     return None
 
 
-# pylint: disable=R0901
 @benchmark.Owner(emails=['mattcary@chromium.org'])
 class OrderfileVariationTraining(_OrderfileVariation):
   STORY_RUN_SET = OrderfileStorySet.TRAINING
 
 
-# pylint: disable=R0901
 @benchmark.Owner(emails=['mattcary@chromium.org'])
 class OrderfileVariationTesting0(_OrderfileVariation):
   STORY_RUN_SET = OrderfileStorySet.TESTING
   TEST_VARIATION = 0
 
 
-# pylint: disable=R0901
 @benchmark.Owner(emails=['mattcary@chromium.org'])
 class OrderfileVariationTesting1(_OrderfileVariation):
   STORY_RUN_SET = OrderfileStorySet.TESTING
   TEST_VARIATION = 1
 
 
-# pylint: disable=R0901
 @benchmark.Owner(emails=['mattcary@chromium.org'])
 class OrderfileVariationTesting2(_OrderfileVariation):
   STORY_RUN_SET = OrderfileStorySet.TESTING
   TEST_VARIATION = 2
 
 
-# pylint: disable=R0901
 @benchmark.Owner(emails=['mattcary@chromium.org'])
 class OrderfileDebugging(_OrderfileBenchmark):
   """A very short benchmark for debugging metrics collection."""

@@ -1,11 +1,13 @@
 line-length = 80
 indent-width = 2
 
-# tools/metrics enforces its own single-quote style and custom presubmit
-# validations (see tools/metrics/PRESUBMIT.py). Excluded from top-level Ruff
-# formatting.
+# Legacy Python 2 scripts and tools/metrics (which enforces its own single-quote
+# style and custom presubmit validations in tools/metrics/PRESUBMIT.py).
 exclude = [
+  "bisect_repackage",
+  "dromaeo_benchmark_runner",
   "metrics",
+  "site_compare",
 ]
 
 [format]
@@ -14,6 +16,7 @@ quote-style = "preserve"
 [lint]
 ignore = [
   "E402",  # module-import-not-at-top-of-file
+  "E701",  # multiple-statements-on-one-line-colon
   "E711",  # none-comparison
   "E712",  # true-false-comparison
   "E721",  # type-comparison
@@ -21,8 +24,11 @@ ignore = [
   "E731",  # lambda-assignment
   "E741",  # ambiguous-variable-name
   "F401",  # unused-import
+  "F402",  # import-shadowed-by-loop-var
+  "F403",  # undefined-local-with-import-star
+  "F405",  # undefined-local-with-import-star-usage
+  "F601",  # multi-value-repeated-key-literal
   "F811",  # redefined-while-unused
   "F821",  # undefined-name
   "F841",  # unused-variable
 ]
-

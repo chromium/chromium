@@ -20,7 +20,8 @@ from telemetry import story as story_module
 
 # The import error below is mysterious: it produces no detailed error message,
 # while appending a proper sys.path does not help.
-from devil.android.sdk import intent  # pylint: disable=import-error
+from devil.android.sdk import intent
+
 
 # Chrome Startup Benchmarks for mobile devices (running Android).
 #

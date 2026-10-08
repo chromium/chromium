@@ -8,7 +8,8 @@ from contrib.vr_benchmarks.vr_story_set import VrStorySet
 from core import path_util
 
 path_util.AddAndroidPylibToPath()
-from devil.android import device_errors  # pylint: disable=import-error
+from devil.android import device_errors
+
 
 import time
 

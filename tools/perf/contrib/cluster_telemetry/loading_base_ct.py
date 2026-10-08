@@ -10,7 +10,6 @@ from telemetry.page import cache_temperature as cache_temperature_module
 from telemetry.page import traffic_setting
 
 
-# pylint: disable=protected-access
 class _LoadingBaseClusterTelemetry(loading._LoadingBase):
   """A base class for cluster telemetry loading benchmarks."""
 

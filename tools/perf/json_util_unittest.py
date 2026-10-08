@@ -9,9 +9,8 @@ import datetime
 import unittest
 from unittest import mock
 import json_util
-from parameterized import parameterized  # pylint: disable=import-error
+from parameterized import parameterized
 
-# pylint: disable=too-many-lines
 
 # Mocked constants to avoid dependency on the actual json_constants file.
 MOCK_JSON_CONSTANTS = {
@@ -1301,7 +1300,6 @@ class JsonUtilTest(unittest.TestCase):
     ]
   )
   def test_get_improvement_direction(self, _, unit, expected):
-    # pylint: disable=protected-access
     got = json_util._get_improvement_direction(unit)
     self.assertEqual(got, expected)
 

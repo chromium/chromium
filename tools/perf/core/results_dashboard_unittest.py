@@ -245,7 +245,6 @@ class ResultsDashboardTest(unittest.TestCase):
           )
 
   def testMakeBuildStatusUrlEscapesPathParts(self):
-    # pylint: disable=protected-access
     url = results_dashboard._MakeBuildStatusUrl(
       'chrome project', 'try bucket', 'builder name', '123 456'
     )
@@ -257,7 +256,6 @@ class ResultsDashboardTest(unittest.TestCase):
 
   @mock.patch('urllib.request.urlopen')
   def testSendResultsJson(self, urlopen_mock):
-    # pylint: disable=protected-access
     results_dashboard._SendResultsJson(
       self.dashboard_url, '{"foo": "bar baz"}', self.dummy_token_generator
     )

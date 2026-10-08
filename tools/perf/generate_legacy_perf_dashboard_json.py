@@ -212,9 +212,7 @@ class LegacyResultsProcessor(object):
     return json.dumps(charts)
 
   # _CalculateStatistics needs to be a member function.
-  # pylint: disable=R0201
   # Unused argument value_list.
-  # pylint: disable=W0613
   def _CalculateStatistics(self, value_list, trace_name):
     """Returns a tuple with some statistics based on the given value list.
 

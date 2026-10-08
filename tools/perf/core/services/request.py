@@ -7,13 +7,14 @@ import logging
 import urllib.parse
 
 # TODO(crbug.com/40641687): Figure out how to get httplib2 hermetically.
-import httplib2  # pylint: disable=import-error
+import httplib2
+
 
 from core import path_util
 from core.services import luci_auth
 
 path_util.AddPyUtilsToPath()
-from py_utils import retry_util  # pylint: disable=import-error
+from py_utils import retry_util
 
 
 # Some services pad JSON responses with a security prefix to prevent against

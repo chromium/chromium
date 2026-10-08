@@ -161,7 +161,7 @@ def main(argv: List[str]):
 
   diags = select_random_diags(diags, opts.number)
   data = [convert_diag_to_cs(x) for x in diags]
-  print(f'** Sample of first-party lints: **')
+  print('** Sample of first-party lints: **')
   for x in data:
     print(x['path'])
     print(f'\tDiagnostic: {x["name"]}')

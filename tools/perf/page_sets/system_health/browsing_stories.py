@@ -6,7 +6,6 @@
 
 # The number of lines will be reduced after 2018 update is complete and
 # the old stories are removed: https://crbug.com/878390.
-# pylint: disable=too-many-lines
 
 import re
 

@@ -154,7 +154,7 @@ def Main():
   # Perform checks first so that the entire operation is atomic.
   for f in files:
     _, ext = os.path.splitext(f)
-    if not ext[1:] in EXTENSIONS_TO_COMMENTS:
+    if ext[1:] not in EXTENSIONS_TO_COMMENTS:
       print('Unknown file type for %s' % f, file=sys.stderr)
       return 2
 

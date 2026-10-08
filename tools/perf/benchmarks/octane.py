@@ -20,7 +20,7 @@ from benchmarks import press
   emails=['vahl@chromium.org', 'mlippautz@chromium.org'],
   component='Blink>JavaScript',
 )
-class Octane(press._PressBenchmark):  # pylint: disable=protected-access
+class Octane(press._PressBenchmark):
   """Google's Octane JavaScript benchmark.
 
   http://chromium.github.io/octane/index.html?auto=1

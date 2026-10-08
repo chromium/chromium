@@ -497,6 +497,7 @@ benchmarks/v8.py
 benchmarks/v8_browsing.py
 benchmarks/v8_helper.py
 benchmarks/v8_loading.py
+benchmarks/view_transitions.py
 benchmarks/wasmpspdfkit.py
 benchmarks/webrtc.py
 chrome_telemetry_build/__init__.py
@@ -714,6 +715,7 @@ page_sets/top_25_smooth.py
 page_sets/top_pages.py
 page_sets/trivial_sites.py
 page_sets/v8_top_25.py
+page_sets/view_transitions_story_set.py
 page_sets/wasmpspdfkit_pages.py
 page_sets/web_worker_stories.py
 page_sets/webgl_supported_shared_state.py

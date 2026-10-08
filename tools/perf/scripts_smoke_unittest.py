@@ -19,7 +19,7 @@ RUNNER_SCRIPTS_DIR = os.path.join(
   os.path.dirname(__file__), '..', '..', 'testing', 'scripts'
 )
 sys.path.append(RUNNER_SCRIPTS_DIR)
-import run_performance_tests  # pylint: disable=wrong-import-position,import-error
+import run_performance_tests
 
 
 class ScriptsSmokeTest(unittest.TestCase):
@@ -75,7 +75,8 @@ class ScriptsSmokeTest(unittest.TestCase):
       self.assertRegex(stdout, r'Available benchmarks .*? are:')
     else:
       # TODO: (crbug/1342770) clean up after python migration is done.
-      self.assertRegexpMatches(stdout, r'Available benchmarks .*? are:')  # pylint: disable=deprecated-method
+      self.assertRegexpMatches(stdout, r'Available benchmarks .*? are:')
+
     self.assertEqual(return_code, 0)
 
   def testRunBenchmarkRunListsOutBenchmarks(self):
@@ -317,9 +318,7 @@ class ScriptsSmokeTest(unittest.TestCase):
       try:
         with open(os.path.join(tempdir, benchmark, 'benchmark_log.txt')) as fh:
           print(fh.read())
-      # pylint: disable=bare-except
       except:
-        # pylint: enable=bare-except
         pass
       raise
     try:

@@ -41,7 +41,6 @@ class TabStackTraceTest(tab_test_case.TabTestCase):
   @decorators.Isolated
   @decorators.Enabled('linux')
   def testBadBreakpadFileIgnored(self):
-    # pylint: disable=protected-access
     executable_path = self._browser._browser_backend._executable
     executable = os.path.basename(executable_path)
     with tempfile.NamedTemporaryFile(

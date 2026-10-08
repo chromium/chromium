@@ -291,7 +291,6 @@ RBE Stats: down 0 B, up 0 B,
       # logging without it, so skip this test if it's not available.
       # TODO(crbug.com/40942322): Remove the disable after Chromium's on 3.11.
       return
-    # pylint: disable=no-member
     adapter = output_adapter.LegacyOutputAdapter()
     with self.assertLogs('default_logger', level=logging.DEBUG) as root_log:
       with self.assertNoLogs('single_line_logger'):

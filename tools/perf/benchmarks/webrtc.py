@@ -14,7 +14,7 @@ from benchmarks import press
   component='Blink>WebRTC',
   documentation_url='http://bit.ly/webrtc-benchmark',
 )
-class WebrtcPerfBenchmark(press._PressBenchmark):  # pylint: disable=protected-access
+class WebrtcPerfBenchmark(press._PressBenchmark):
   """Base class for WebRTC metrics for real-time communications tests."""
 
   page_set = page_sets.WebrtcPageSet

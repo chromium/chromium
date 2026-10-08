@@ -4,7 +4,6 @@
 
 import os
 
-# pylint: disable=wrong-import-position
 from core import path_util
 
 CLIENT_CONFIG_PATH = os.path.join(
@@ -14,7 +13,8 @@ CLIENT_CONFIG_PATH = os.path.join(
 with path_util.SysPath(path_util.GetTelemetryDir()):
   from telemetry import project_config
 with path_util.SysPath(path_util.GetVariationsDir()):
-  import fieldtrial_util  # pylint: disable=import-error
+  import fieldtrial_util
+
 with path_util.SysPath(path_util.GetAndroidPylibDir()):
   from pylib.constants import host_paths
 

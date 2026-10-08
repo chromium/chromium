@@ -184,7 +184,7 @@ def main():
         url = f'{platform_prefix}rust-toolchain-{version}.tar.xz'
         DownloadAndUnpack(url, output_dir)
     except urllib.error.HTTPError as e:
-        print(f'error: Failed to download Rust package')
+        print('error: Failed to download Rust package')
         return 1
 
     # Ensure the newly extracted package has the correct version.

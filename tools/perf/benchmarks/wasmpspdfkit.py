@@ -17,7 +17,7 @@ from benchmarks import press
   emails=['ahaas@chromium.org', 'vahl@chromium.org'],
   component='Blink>JavaScript>WebAssembly',
 )
-class WasmPsPdfKit(press._PressBenchmark):  # pylint: disable=protected-access
+class WasmPsPdfKit(press._PressBenchmark):
   @classmethod
   def Name(cls):
     return 'wasmpspdfkit'

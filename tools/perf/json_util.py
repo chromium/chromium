@@ -16,7 +16,8 @@ from core import path_util
 
 path_util.AddTracingToPath()
 path_util.AddDashboardToPath()
-from dashboard.common import histogram_helpers  # pylint: disable=import-error
+from dashboard.common import histogram_helpers
+
 
 import json_constants
 
@@ -678,9 +679,7 @@ class JsonUtil:
     ):
       if (
         'memory:' in test_name
-        # pylint: disable=protected-access
         and stat_name in histogram_helpers._STATS_BLACKLIST
-        # pylint: enable=protected-access
       ):
         return True
     if benchmark_name.startswith('memory.long_running'):
@@ -690,8 +689,6 @@ class JsonUtil:
       value_name = '%s_%s' % (test_name, stat_name)
       return not self._should_add_media_value(value_name)
     if benchmark_name.startswith('system_health'):
-      # pylint: disable=protected-access
       if stat_name in histogram_helpers._STATS_BLACKLIST:
-        # pylint: enable=protected-access
         return True
     return False

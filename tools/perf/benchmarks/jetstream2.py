@@ -27,7 +27,7 @@ import page_sets
 from benchmarks import press
 
 
-class _JetStream2Base(press._PressBenchmark):  # pylint:disable=protected-access
+class _JetStream2Base(press._PressBenchmark):
   """JetStream2, a combination of JavaScript and Web Assembly benchmarks.
 
   Run all the JetStream 2.x benchmarks by default.

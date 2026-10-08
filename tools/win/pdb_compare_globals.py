@@ -49,7 +49,7 @@ def LoadSymbols(pdb_name):
 def ShowExtras(symbols_A, symbols_B, name_A, name_B):
     print('Symbols that are in %s but not in %s' % (name_A, name_B))
     for key in symbols_A:
-        if not key in symbols_B:
+        if key not in symbols_B:
             # Print all the numerical data, followed by the symbol name,
             # separated by tabs.
             print('\t'.join(symbols_A[key] + [key]))

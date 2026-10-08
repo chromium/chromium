@@ -176,7 +176,7 @@ def TrackObj(cross_refs, cross_refed_symbols, obj_name):
     for i in range(100):
         new_targets = {}
         for target in targets:
-            if not target in tracked:
+            if target not in tracked:
                 tracked[target] = True
                 if target in cross_refs.keys():
                     symbol = cross_refed_symbols[target]

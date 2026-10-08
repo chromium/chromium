@@ -13,7 +13,7 @@ import sys
 import xml.etree.cElementTree as ElementTree
 
 if sys.version_info.major != 2:
-  basestring = str  # pylint: disable=redefined-builtin
+  basestring = str
 
 
 class GRDFile:

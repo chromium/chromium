@@ -169,7 +169,7 @@ def FetchBenchmarkRuntime(configurations, num_last_days):
     duration = item['duration']
     test_name = item['name']
     benchmark_name, _ = test_name.split('/', 1)
-    if not benchmark_name in benchmarks_data:
+    if benchmark_name not in benchmarks_data:
       benchmarks_data[benchmark_name] = {
         'num_stories': 0,
         'total_runtime_in_seconds': 0,

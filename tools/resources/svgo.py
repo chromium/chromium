@@ -16,7 +16,8 @@ def Run(os_path=None, args=None):
   sys.path.append(os_path.join(_SRC_PATH, 'third_party', 'node'))
 
   try:
-    import node, node_modules
+    import node
+    import node_modules
   finally:
     sys.path = old_sys_path
 

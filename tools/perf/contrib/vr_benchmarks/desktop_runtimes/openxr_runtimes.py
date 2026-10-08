@@ -7,7 +7,6 @@ import os
 from contrib.vr_benchmarks.desktop_runtimes import base_runtime
 
 
-# pylint: disable=abstract-method
 class _OpenXRRuntimeBase(base_runtime.DesktopRuntimeBase):
   """Base class for all OpenXR runtimes."""
 
@@ -24,9 +23,6 @@ class OpenXRRuntimeReal(_OpenXRRuntimeBase):
     * Implementations being available from multiple sources, which may all
       have different performance.
   """
-
-
-# pylint: enable=abstract-method
 
 
 class OpenXRRuntimeMock(_OpenXRRuntimeBase):

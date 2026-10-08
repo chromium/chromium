@@ -90,7 +90,7 @@ def CheckLocalGold() -> Optional[str]:
 def CheckPathNinja() -> Optional[str]:
   proc = subprocess.Popen(['which', 'ninja'], stdout=subprocess.PIPE)
   stdout = proc.communicate()[0].decode('utf-8')
-  if not 'depot_tools' in stdout:
+  if 'depot_tools' not in stdout:
     return (
       'The ninja binary in your path isn\'t from depot_tools:\n'
       + '    '

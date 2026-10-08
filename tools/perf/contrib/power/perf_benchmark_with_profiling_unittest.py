@@ -28,7 +28,6 @@ class PerfBenchmarkWithProfilingTest(unittest.TestCase):
   def setUp(self):
     self._finder_options = options_for_unittests.GetCopy()
     self._fake_platform = mock.Mock(spec=android_platform.AndroidPlatform)
-    # pylint: disable=protected-access
     self._fake_platform._platform_backend = mock.Mock(
       spec=android_platform_backend.AndroidPlatformBackend
     )

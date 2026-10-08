@@ -103,7 +103,6 @@ class DesktopRuntimeBase(object):
     )
     if import_dir not in sys.path:
       sys.path.append(import_dir)
-    # pylint: disable=import-error,wrong-import-position,import-outside-toplevel
     import run_xr_browser_tests
 
     run_xr_browser_tests.SetupWindowsACLs(directory)

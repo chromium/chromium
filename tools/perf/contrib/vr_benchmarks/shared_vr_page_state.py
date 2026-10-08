@@ -5,7 +5,8 @@
 from core import path_util
 
 path_util.AddAndroidPylibToPath()
-from devil.android.sdk import keyevent  # pylint: disable=import-error
+from devil.android.sdk import keyevent
+
 from telemetry.page import shared_page_state
 from contrib.vr_benchmarks.desktop_runtimes import openxr_runtimes
 

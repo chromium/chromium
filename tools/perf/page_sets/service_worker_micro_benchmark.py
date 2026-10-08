@@ -28,7 +28,6 @@ class ServiceWorkerMicroBenchmarkPageSet(story.StorySet):
     # https://github.com/amiq11/Service-Worker-Performance/tree/fix-flakyness
     # (rev: e6b3f604674209a30e4cf416a18cb8be3b991abd)
     # TODO(falken): House the code in GoogleChrome's GitHub repository.
-    # pylint: enable=C0301
     # Why: to measure performance of many concurrent fetches
     self.AddStory(
       ServiceWorkerBenchmarkPage(

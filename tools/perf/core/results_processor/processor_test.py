@@ -1,4 +1,3 @@
-# pylint: disable=too-many-lines
 # Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -41,11 +40,11 @@ SAMPLE_HISTOGRAM_UNIT = 'sizeInBytes_smallerIsBetter'
 
 
 class ResultsProcessorIntegrationTests(unittest.TestCase):
-
   def setUp(self):
     self.output_dir = tempfile.mkdtemp()
-    self.intermediate_dir = os.path.join(self.output_dir, 'artifacts',
-                                         'test_run')
+    self.intermediate_dir = os.path.join(
+      self.output_dir, 'artifacts', 'test_run'
+    )
     os.makedirs(self.intermediate_dir)
 
   def tearDown(self):
@@ -53,41 +52,43 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
 
   def SerializeIntermediateResults(self, *test_results):
     testing.SerializeIntermediateResults(
-        test_results, os.path.join(self.intermediate_dir,
-                                   processor.TEST_RESULTS))
+      test_results, os.path.join(self.intermediate_dir, processor.TEST_RESULTS)
+    )
 
   def CreateHtmlTraceArtifact(self):
     """Create an empty file as a fake html trace."""
-    with tempfile.NamedTemporaryFile(dir=self.intermediate_dir,
-                                     delete=False) as artifact_file:
+    with tempfile.NamedTemporaryFile(
+      dir=self.intermediate_dir, delete=False
+    ) as artifact_file:
       pass
     return (
-        compute_metrics.HTML_TRACE_NAME,
-        testing.Artifact(artifact_file.name),
+      compute_metrics.HTML_TRACE_NAME,
+      testing.Artifact(artifact_file.name),
     )
 
   def CreateProtoTraceArtifact(self):
     """Create an empty file as a fake proto trace."""
-    with tempfile.NamedTemporaryFile(dir=self.intermediate_dir,
-                                     delete=False) as artifact_file:
+    with tempfile.NamedTemporaryFile(
+      dir=self.intermediate_dir, delete=False
+    ) as artifact_file:
       pass
     return (
-        compute_metrics.CONCATENATED_PROTO_NAME,
-        testing.Artifact(artifact_file.name),
+      compute_metrics.CONCATENATED_PROTO_NAME,
+      testing.Artifact(artifact_file.name),
     )
 
   def CreateDiagnosticsArtifact(self, **diagnostics):
     """Create an artifact with diagnostics."""
-    with tempfile.NamedTemporaryFile(dir=self.intermediate_dir,
-                                     delete=False,
-                                     mode='w') as artifact_file:
+    with tempfile.NamedTemporaryFile(
+      dir=self.intermediate_dir, delete=False, mode='w'
+    ) as artifact_file:
       json.dump({'diagnostics': diagnostics}, artifact_file)
     return processor.DIAGNOSTICS_NAME, testing.Artifact(artifact_file.name)
 
   def CreateMeasurementsArtifact(self, measurements):
-    with tempfile.NamedTemporaryFile(dir=self.intermediate_dir,
-                                     delete=False,
-                                     mode='w') as artifact_file:
+    with tempfile.NamedTemporaryFile(
+      dir=self.intermediate_dir, delete=False, mode='w'
+    ) as artifact_file:
       json.dump({'measurements': measurements}, artifact_file)
     return processor.MEASUREMENTS_NAME, testing.Artifact(artifact_file.name)
 
@@ -96,24 +97,24 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
       # Filtering out rows with histograms other than SAMPLE_HISTOGRAM_NAME,
       # e.g. metrics_duration.
       return [
-          row for row in csv.DictReader(f)
-          if row['name'] == SAMPLE_HISTOGRAM_NAME
+        row for row in csv.DictReader(f) if row['name'] == SAMPLE_HISTOGRAM_NAME
       ]
 
   def testJson3Output(self):
     self.SerializeIntermediateResults(
-        testing.TestResult(
-            'benchmark/story',
-            run_duration='1.1s',
-            tags=['shard:7'],
-            start_time='2009-02-13T23:31:30.987000Z',
-        ),
-        testing.TestResult('benchmark/story',
-                           run_duration='1.2s',
-                           tags=['shard:7']),
+      testing.TestResult(
+        'benchmark/story',
+        run_duration='1.1s',
+        tags=['shard:7'],
+        start_time='2009-02-13T23:31:30.987000Z',
+      ),
+      testing.TestResult(
+        'benchmark/story', run_duration='1.2s', tags=['shard:7']
+      ),
     )
 
-    processor.main([
+    processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'json-test-results',
@@ -121,7 +122,8 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.output_dir,
         '--intermediate-dir',
         self.intermediate_dir,
-    ])
+      ]
+    )
 
     with open(os.path.join(self.output_dir, json3_output.OUTPUT_FILENAME)) as f:
       results = json.load(f)
@@ -147,18 +149,19 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
 
   def testJson3OutputWithArtifacts(self):
     self.SerializeIntermediateResults(
-        testing.TestResult(
-            'benchmark/story',
-            output_artifacts={
-                'logs':
-                testing.Artifact('/logs.txt', fetch_url='gs://logs.txt'),
-                'screenshot':
-                testing.Artifact(os.path.join(self.output_dir,
-                                              'screenshot.png')),
-            },
-        ), )
+      testing.TestResult(
+        'benchmark/story',
+        output_artifacts={
+          'logs': testing.Artifact('/logs.txt', fetch_url='gs://logs.txt'),
+          'screenshot': testing.Artifact(
+            os.path.join(self.output_dir, 'screenshot.png')
+          ),
+        },
+      ),
+    )
 
-    processor.main([
+    processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'json-test-results',
@@ -166,7 +169,8 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.output_dir,
         '--intermediate-dir',
         self.intermediate_dir,
-    ])
+      ]
+    )
 
     with open(os.path.join(self.output_dir, json3_output.OUTPUT_FILENAME)) as f:
       results = json.load(f)
@@ -184,26 +188,24 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
 
     def SomeMeasurements(num):
       return self.CreateMeasurementsArtifact(
-          {'n%d' % i: {
-              'unit': 'count',
-              'samples': [i]
-          }
-           for i in range(num)})
+        {'n%d' % i: {'unit': 'count', 'samples': [i]} for i in range(num)}
+      )
 
     self.SerializeIntermediateResults(
-        testing.TestResult(
-            'benchmark/story1',
-            status='PASS',
-            output_artifacts=[SomeMeasurements(3)],
-        ),
-        testing.TestResult(
-            'benchmark/story2',
-            status='PASS',
-            output_artifacts=[SomeMeasurements(7)],
-        ),
+      testing.TestResult(
+        'benchmark/story1',
+        status='PASS',
+        output_artifacts=[SomeMeasurements(3)],
+      ),
+      testing.TestResult(
+        'benchmark/story2',
+        status='PASS',
+        output_artifacts=[SomeMeasurements(7)],
+      ),
     )
 
-    exit_code = processor.main([
+    exit_code = processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'json-test-results',
@@ -215,7 +217,8 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.intermediate_dir,
         '--max-values-per-test-case',
         '5',
-    ])
+      ]
+    )
     self.assertEqual(exit_code, 1)
 
     with open(os.path.join(self.output_dir, json3_output.OUTPUT_FILENAME)) as f:
@@ -227,24 +230,27 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
 
   def testHistogramsOutput(self):
     self.SerializeIntermediateResults(
-        testing.TestResult(
-            'benchmark/story',
-            output_artifacts=[
-                self.CreateHtmlTraceArtifact(),
-                self.CreateDiagnosticsArtifact(
-                    benchmarks=['benchmark'],
-                    osNames=['linux'],
-                    documentationUrls=[['documentation', 'url']],
-                ),
-            ],
-            tags=['tbmv2:sampleMetric'],
-            start_time='2009-02-13T23:31:30.987000Z',
-        ), )
+      testing.TestResult(
+        'benchmark/story',
+        output_artifacts=[
+          self.CreateHtmlTraceArtifact(),
+          self.CreateDiagnosticsArtifact(
+            benchmarks=['benchmark'],
+            osNames=['linux'],
+            documentationUrls=[['documentation', 'url']],
+          ),
+        ],
+        tags=['tbmv2:sampleMetric'],
+        start_time='2009-02-13T23:31:30.987000Z',
+      ),
+    )
 
     with mock.patch('py_utils.cloud_storage.Upload') as cloud_patch:
       cloud_patch.return_value = processor.cloud_storage.CloudFilepath(
-          bucket='bucket', remote_path='trace.html')
-      processor.main([
+        bucket='bucket', remote_path='trace.html'
+      )
+      processor.main(
+        [
           '--is-unittest',
           '--output-format',
           'histograms',
@@ -255,10 +261,12 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
           '--results-label',
           'label',
           '--upload-results',
-      ])
+        ]
+      )
 
-    with open(os.path.join(self.output_dir,
-                           histograms_output.OUTPUT_FILENAME)) as f:
+    with open(
+      os.path.join(self.output_dir, histograms_output.OUTPUT_FILENAME)
+    ) as f:
       results = json.load(f)
 
     out_histograms = histogram_set.HistogramSet()
@@ -267,35 +275,42 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     hist = out_histograms.GetHistogramNamed(SAMPLE_HISTOGRAM_NAME)
     self.assertEqual(hist.unit, SAMPLE_HISTOGRAM_UNIT)
 
-    self.assertEqual(hist.diagnostics['benchmarks'],
-                     generic_set.GenericSet(['benchmark']))
-    self.assertEqual(hist.diagnostics['osNames'],
-                     generic_set.GenericSet(['linux']))
     self.assertEqual(
-        hist.diagnostics['documentationUrls'],
-        generic_set.GenericSet([['documentation', 'url']]),
+      hist.diagnostics['benchmarks'], generic_set.GenericSet(['benchmark'])
     )
-    self.assertEqual(hist.diagnostics['labels'],
-                     generic_set.GenericSet(['label']))
-    self.assertEqual(hist.diagnostics['benchmarkStart'],
-                     date_range.DateRange(1234567890987))
     self.assertEqual(
-        hist.diagnostics['traceUrls'],
-        generic_set.GenericSet(
-            ['https://storage.cloud.google.com/bucket/trace.html']),
+      hist.diagnostics['osNames'], generic_set.GenericSet(['linux'])
+    )
+    self.assertEqual(
+      hist.diagnostics['documentationUrls'],
+      generic_set.GenericSet([['documentation', 'url']]),
+    )
+    self.assertEqual(
+      hist.diagnostics['labels'], generic_set.GenericSet(['label'])
+    )
+    self.assertEqual(
+      hist.diagnostics['benchmarkStart'], date_range.DateRange(1234567890987)
+    )
+    self.assertEqual(
+      hist.diagnostics['traceUrls'],
+      generic_set.GenericSet(
+        ['https://storage.cloud.google.com/bucket/trace.html']
+      ),
     )
 
   def testHistogramsOutputResetResults(self):
     self.SerializeIntermediateResults(
-        testing.TestResult(
-            'benchmark/story',
-            output_artifacts=[
-                self.CreateHtmlTraceArtifact(),
-            ],
-            tags=['tbmv2:sampleMetric'],
-        ), )
+      testing.TestResult(
+        'benchmark/story',
+        output_artifacts=[
+          self.CreateHtmlTraceArtifact(),
+        ],
+        tags=['tbmv2:sampleMetric'],
+      ),
+    )
 
-    processor.main([
+    processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'histograms',
@@ -305,9 +320,11 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.intermediate_dir,
         '--results-label',
         'label1',
-    ])
+      ]
+    )
 
-    processor.main([
+    processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'histograms',
@@ -318,30 +335,35 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         '--results-label',
         'label2',
         '--reset-results',
-    ])
+      ]
+    )
 
-    with open(os.path.join(self.output_dir,
-                           histograms_output.OUTPUT_FILENAME)) as f:
+    with open(
+      os.path.join(self.output_dir, histograms_output.OUTPUT_FILENAME)
+    ) as f:
       results = json.load(f)
 
     out_histograms = histogram_set.HistogramSet()
     out_histograms.ImportDicts(results)
 
     hist = out_histograms.GetHistogramNamed(SAMPLE_HISTOGRAM_NAME)
-    self.assertEqual(hist.diagnostics['labels'],
-                     generic_set.GenericSet(['label2']))
+    self.assertEqual(
+      hist.diagnostics['labels'], generic_set.GenericSet(['label2'])
+    )
 
   def testHistogramsOutputAppendResults(self):
     self.SerializeIntermediateResults(
-        testing.TestResult(
-            'benchmark/story',
-            output_artifacts=[
-                self.CreateHtmlTraceArtifact(),
-            ],
-            tags=['tbmv2:sampleMetric'],
-        ), )
+      testing.TestResult(
+        'benchmark/story',
+        output_artifacts=[
+          self.CreateHtmlTraceArtifact(),
+        ],
+        tags=['tbmv2:sampleMetric'],
+      ),
+    )
 
-    processor.main([
+    processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'histograms',
@@ -351,9 +373,11 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.intermediate_dir,
         '--results-label',
         'label1',
-    ])
+      ]
+    )
 
-    processor.main([
+    processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'histograms',
@@ -363,10 +387,12 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.intermediate_dir,
         '--results-label',
         'label2',
-    ])
+      ]
+    )
 
-    with open(os.path.join(self.output_dir,
-                           histograms_output.OUTPUT_FILENAME)) as f:
+    with open(
+      os.path.join(self.output_dir, histograms_output.OUTPUT_FILENAME)
+    ) as f:
       results = json.load(f)
 
     out_histograms = histogram_set.HistogramSet()
@@ -376,8 +402,11 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     self.assertEqual(len(sample_histograms), 2)
 
     expected_labels = set(['label1', 'label2'])
-    observed_labels = set(label for hist in sample_histograms
-                          for label in hist.diagnostics['labels'])
+    observed_labels = set(
+      label
+      for hist in sample_histograms
+      for label in hist.diagnostics['labels']
+    )
     self.assertEqual(observed_labels, expected_labels)
 
   def testHistogramsOutputNoAggregatedTrace(self):
@@ -386,13 +415,15 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
       json.dump({'traceEvents': []}, f)
 
     self.SerializeIntermediateResults(
-        testing.TestResult(
-            'benchmark/story',
-            output_artifacts={'trace/trace.json': testing.Artifact(json_trace)},
-            tags=['tbmv2:sampleMetric'],
-        ), )
+      testing.TestResult(
+        'benchmark/story',
+        output_artifacts={'trace/trace.json': testing.Artifact(json_trace)},
+        tags=['tbmv2:sampleMetric'],
+      ),
+    )
 
-    processor.main([
+    processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'histograms',
@@ -400,10 +431,12 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.output_dir,
         '--intermediate-dir',
         self.intermediate_dir,
-    ])
+      ]
+    )
 
-    with open(os.path.join(self.output_dir,
-                           histograms_output.OUTPUT_FILENAME)) as f:
+    with open(
+      os.path.join(self.output_dir, histograms_output.OUTPUT_FILENAME)
+    ) as f:
       results = json.load(f)
 
     out_histograms = histogram_set.HistogramSet()
@@ -415,31 +448,25 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
 
   def testHistogramsOutputMeasurements(self):
     measurements = {
-        'a': {
-            'unit': 'ms',
-            'samples': [4, 6],
-            'description': 'desc_a'
-        },
-        'b': {
-            'unit': 'ms',
-            'samples': [5],
-            'description': 'desc_b'
-        },
+      'a': {'unit': 'ms', 'samples': [4, 6], 'description': 'desc_a'},
+      'b': {'unit': 'ms', 'samples': [5], 'description': 'desc_b'},
     }
     start_ts = 1500000000
     start_iso = datetime.datetime.utcfromtimestamp(start_ts).isoformat() + 'Z'
 
     self.SerializeIntermediateResults(
-        testing.TestResult(
-            'benchmark/story',
-            output_artifacts=[
-                self.CreateMeasurementsArtifact(measurements),
-            ],
-            tags=['story_tag:test'],
-            start_time=start_iso,
-        ), )
+      testing.TestResult(
+        'benchmark/story',
+        output_artifacts=[
+          self.CreateMeasurementsArtifact(measurements),
+        ],
+        tags=['story_tag:test'],
+        start_time=start_iso,
+      ),
+    )
 
-    processor.main([
+    processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'histograms',
@@ -447,10 +474,12 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.output_dir,
         '--intermediate-dir',
         self.intermediate_dir,
-    ])
+      ]
+    )
 
-    with open(os.path.join(self.output_dir,
-                           histograms_output.OUTPUT_FILENAME)) as f:
+    with open(
+      os.path.join(self.output_dir, histograms_output.OUTPUT_FILENAME)
+    ) as f:
       results = json.load(f)
 
     out_histograms = histogram_set.HistogramSet()
@@ -462,46 +491,56 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     self.assertEqual(hist.unit, 'ms_smallerIsBetter')
     self.assertEqual(hist.sample_values, [4, 6])
     self.assertEqual(hist.description, 'desc_a')
-    self.assertEqual(hist.diagnostics['benchmarks'],
-                     generic_set.GenericSet(['benchmark']))
-    self.assertEqual(hist.diagnostics['stories'],
-                     generic_set.GenericSet(['story']))
-    self.assertEqual(hist.diagnostics['storyTags'],
-                     generic_set.GenericSet(['test']))
-    self.assertEqual(hist.diagnostics['benchmarkStart'],
-                     date_range.DateRange(start_ts * 1e3))
+    self.assertEqual(
+      hist.diagnostics['benchmarks'], generic_set.GenericSet(['benchmark'])
+    )
+    self.assertEqual(
+      hist.diagnostics['stories'], generic_set.GenericSet(['story'])
+    )
+    self.assertEqual(
+      hist.diagnostics['storyTags'], generic_set.GenericSet(['test'])
+    )
+    self.assertEqual(
+      hist.diagnostics['benchmarkStart'], date_range.DateRange(start_ts * 1e3)
+    )
 
     hist = out_histograms.GetHistogramNamed('b')
     self.assertEqual(hist.name, 'b')
     self.assertEqual(hist.unit, 'ms_smallerIsBetter')
     self.assertEqual(hist.sample_values, [5])
     self.assertEqual(hist.description, 'desc_b')
-    self.assertEqual(hist.diagnostics['benchmarks'],
-                     generic_set.GenericSet(['benchmark']))
-    self.assertEqual(hist.diagnostics['stories'],
-                     generic_set.GenericSet(['story']))
-    self.assertEqual(hist.diagnostics['storyTags'],
-                     generic_set.GenericSet(['test']))
-    self.assertEqual(hist.diagnostics['benchmarkStart'],
-                     date_range.DateRange(start_ts * 1e3))
+    self.assertEqual(
+      hist.diagnostics['benchmarks'], generic_set.GenericSet(['benchmark'])
+    )
+    self.assertEqual(
+      hist.diagnostics['stories'], generic_set.GenericSet(['story'])
+    )
+    self.assertEqual(
+      hist.diagnostics['storyTags'], generic_set.GenericSet(['test'])
+    )
+    self.assertEqual(
+      hist.diagnostics['benchmarkStart'], date_range.DateRange(start_ts * 1e3)
+    )
 
   def testHtmlOutput(self):
     self.SerializeIntermediateResults(
-        testing.TestResult(
-            'benchmark/story',
-            output_artifacts=[
-                self.CreateHtmlTraceArtifact(),
-                self.CreateDiagnosticsArtifact(
-                    benchmarks=['benchmark'],
-                    osNames=['linux'],
-                    documentationUrls=[['documentation', 'url']],
-                ),
-            ],
-            tags=['tbmv2:sampleMetric'],
-            start_time='2009-02-13T23:31:30.987000Z',
-        ), )
+      testing.TestResult(
+        'benchmark/story',
+        output_artifacts=[
+          self.CreateHtmlTraceArtifact(),
+          self.CreateDiagnosticsArtifact(
+            benchmarks=['benchmark'],
+            osNames=['linux'],
+            documentationUrls=[['documentation', 'url']],
+          ),
+        ],
+        tags=['tbmv2:sampleMetric'],
+        start_time='2009-02-13T23:31:30.987000Z',
+      ),
+    )
 
-    processor.main([
+    processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'html',
@@ -511,7 +550,8 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.intermediate_dir,
         '--results-label',
         'label',
-    ])
+      ]
+    )
 
     with open(os.path.join(self.output_dir, html_output.OUTPUT_FILENAME)) as f:
       results = render_histograms_viewer.ReadExistingResults(f.read())
@@ -522,30 +562,36 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     hist = out_histograms.GetHistogramNamed(SAMPLE_HISTOGRAM_NAME)
     self.assertEqual(hist.unit, SAMPLE_HISTOGRAM_UNIT)
 
-    self.assertEqual(hist.diagnostics['benchmarks'],
-                     generic_set.GenericSet(['benchmark']))
-    self.assertEqual(hist.diagnostics['osNames'],
-                     generic_set.GenericSet(['linux']))
     self.assertEqual(
-        hist.diagnostics['documentationUrls'],
-        generic_set.GenericSet([['documentation', 'url']]),
+      hist.diagnostics['benchmarks'], generic_set.GenericSet(['benchmark'])
     )
-    self.assertEqual(hist.diagnostics['labels'],
-                     generic_set.GenericSet(['label']))
-    self.assertEqual(hist.diagnostics['benchmarkStart'],
-                     date_range.DateRange(1234567890987))
+    self.assertEqual(
+      hist.diagnostics['osNames'], generic_set.GenericSet(['linux'])
+    )
+    self.assertEqual(
+      hist.diagnostics['documentationUrls'],
+      generic_set.GenericSet([['documentation', 'url']]),
+    )
+    self.assertEqual(
+      hist.diagnostics['labels'], generic_set.GenericSet(['label'])
+    )
+    self.assertEqual(
+      hist.diagnostics['benchmarkStart'], date_range.DateRange(1234567890987)
+    )
 
   def testHtmlOutputResetResults(self):
     self.SerializeIntermediateResults(
-        testing.TestResult(
-            'benchmark/story',
-            output_artifacts=[
-                self.CreateHtmlTraceArtifact(),
-            ],
-            tags=['tbmv2:sampleMetric'],
-        ), )
+      testing.TestResult(
+        'benchmark/story',
+        output_artifacts=[
+          self.CreateHtmlTraceArtifact(),
+        ],
+        tags=['tbmv2:sampleMetric'],
+      ),
+    )
 
-    processor.main([
+    processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'html',
@@ -555,9 +601,11 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.intermediate_dir,
         '--results-label',
         'label1',
-    ])
+      ]
+    )
 
-    processor.main([
+    processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'html',
@@ -568,7 +616,8 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         '--results-label',
         'label2',
         '--reset-results',
-    ])
+      ]
+    )
 
     with open(os.path.join(self.output_dir, html_output.OUTPUT_FILENAME)) as f:
       results = render_histograms_viewer.ReadExistingResults(f.read())
@@ -577,20 +626,23 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     out_histograms.ImportDicts(results)
 
     hist = out_histograms.GetHistogramNamed(SAMPLE_HISTOGRAM_NAME)
-    self.assertEqual(hist.diagnostics['labels'],
-                     generic_set.GenericSet(['label2']))
+    self.assertEqual(
+      hist.diagnostics['labels'], generic_set.GenericSet(['label2'])
+    )
 
   def testHtmlOutputAppendResults(self):
     self.SerializeIntermediateResults(
-        testing.TestResult(
-            'benchmark/story',
-            output_artifacts=[
-                self.CreateHtmlTraceArtifact(),
-            ],
-            tags=['tbmv2:sampleMetric'],
-        ), )
+      testing.TestResult(
+        'benchmark/story',
+        output_artifacts=[
+          self.CreateHtmlTraceArtifact(),
+        ],
+        tags=['tbmv2:sampleMetric'],
+      ),
+    )
 
-    processor.main([
+    processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'html',
@@ -600,9 +652,11 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.intermediate_dir,
         '--results-label',
         'label1',
-    ])
+      ]
+    )
 
-    processor.main([
+    processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'html',
@@ -612,7 +666,8 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.intermediate_dir,
         '--results-label',
         'label2',
-    ])
+      ]
+    )
 
     with open(os.path.join(self.output_dir, html_output.OUTPUT_FILENAME)) as f:
       results = render_histograms_viewer.ReadExistingResults(f.read())
@@ -623,29 +678,34 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     self.assertEqual(len(sample_histograms), 2)
 
     expected_labels = set(['label1', 'label2'])
-    observed_labels = set(label for hist in sample_histograms
-                          for label in hist.diagnostics['labels'])
+    observed_labels = set(
+      label
+      for hist in sample_histograms
+      for label in hist.diagnostics['labels']
+    )
     self.assertEqual(observed_labels, expected_labels)
 
   def testCsvOutput(self):
     test_hist = histogram.Histogram('a', 'ms')
     test_hist.AddSample(3000)
     self.SerializeIntermediateResults(
-        testing.TestResult(
-            'benchmark/story',
-            output_artifacts=[
-                self.CreateHtmlTraceArtifact(),
-                self.CreateDiagnosticsArtifact(
-                    benchmarks=['benchmark'],
-                    osNames=['linux'],
-                    documentationUrls=[['documentation', 'url']],
-                ),
-            ],
-            tags=['tbmv2:sampleMetric'],
-            start_time='2009-02-13T23:31:30.987000Z',
-        ), )
+      testing.TestResult(
+        'benchmark/story',
+        output_artifacts=[
+          self.CreateHtmlTraceArtifact(),
+          self.CreateDiagnosticsArtifact(
+            benchmarks=['benchmark'],
+            osNames=['linux'],
+            documentationUrls=[['documentation', 'url']],
+          ),
+        ],
+        tags=['tbmv2:sampleMetric'],
+        start_time='2009-02-13T23:31:30.987000Z',
+      ),
+    )
 
-    processor.main([
+    processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'csv',
@@ -655,7 +715,8 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.intermediate_dir,
         '--results-label',
         'label',
-    ])
+      ]
+    )
 
     sample_rows = self.ReadSampleHistogramsFromCsv()
     self.assertEqual(len(sample_rows), 1)
@@ -673,15 +734,17 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
 
   def testCsvOutputResetResults(self):
     self.SerializeIntermediateResults(
-        testing.TestResult(
-            'benchmark/story',
-            output_artifacts=[
-                self.CreateHtmlTraceArtifact(),
-            ],
-            tags=['tbmv2:sampleMetric'],
-        ), )
+      testing.TestResult(
+        'benchmark/story',
+        output_artifacts=[
+          self.CreateHtmlTraceArtifact(),
+        ],
+        tags=['tbmv2:sampleMetric'],
+      ),
+    )
 
-    processor.main([
+    processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'csv',
@@ -691,9 +754,11 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.intermediate_dir,
         '--results-label',
         'label1',
-    ])
+      ]
+    )
 
-    processor.main([
+    processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'csv',
@@ -704,7 +769,8 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         '--results-label',
         'label2',
         '--reset-results',
-    ])
+      ]
+    )
 
     sample_rows = self.ReadSampleHistogramsFromCsv()
     self.assertEqual(len(sample_rows), 1)
@@ -712,15 +778,17 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
 
   def testCsvOutputAppendResults(self):
     self.SerializeIntermediateResults(
-        testing.TestResult(
-            'benchmark/story',
-            output_artifacts=[
-                self.CreateHtmlTraceArtifact(),
-            ],
-            tags=['tbmv2:sampleMetric'],
-        ), )
+      testing.TestResult(
+        'benchmark/story',
+        output_artifacts=[
+          self.CreateHtmlTraceArtifact(),
+        ],
+        tags=['tbmv2:sampleMetric'],
+      ),
+    )
 
-    processor.main([
+    processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'csv',
@@ -730,9 +798,11 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.intermediate_dir,
         '--results-label',
         'label1',
-    ])
+      ]
+    )
 
-    processor.main([
+    processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'csv',
@@ -742,7 +812,8 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.intermediate_dir,
         '--results-label',
         'label2',
-    ])
+      ]
+    )
 
     sample_rows = self.ReadSampleHistogramsFromCsv()
     self.assertEqual(len(sample_rows), 2)
@@ -751,11 +822,12 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
 
   def testExitCodeHasFailures(self):
     self.SerializeIntermediateResults(
-        testing.TestResult('benchmark/story', status='PASS'),
-        testing.TestResult('benchmark/story', status='FAIL'),
+      testing.TestResult('benchmark/story', status='PASS'),
+      testing.TestResult('benchmark/story', status='FAIL'),
     )
 
-    exit_code = processor.main([
+    exit_code = processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'json-test-results',
@@ -763,17 +835,19 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.output_dir,
         '--intermediate-dir',
         self.intermediate_dir,
-    ])
+      ]
+    )
 
     self.assertEqual(exit_code, 1)
 
   def testExitCodeAllSkipped(self):
     self.SerializeIntermediateResults(
-        testing.TestResult('benchmark/story', status='SKIP'),
-        testing.TestResult('benchmark/story', status='SKIP'),
+      testing.TestResult('benchmark/story', status='SKIP'),
+      testing.TestResult('benchmark/story', status='SKIP'),
     )
 
-    exit_code = processor.main([
+    exit_code = processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'json-test-results',
@@ -781,17 +855,19 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.output_dir,
         '--intermediate-dir',
         self.intermediate_dir,
-    ])
+      ]
+    )
 
     self.assertEqual(exit_code, 111)
 
   def testExitCodeSomeSkipped(self):
     self.SerializeIntermediateResults(
-        testing.TestResult('benchmark/story', status='SKIP'),
-        testing.TestResult('benchmark/story', status='PASS'),
+      testing.TestResult('benchmark/story', status='SKIP'),
+      testing.TestResult('benchmark/story', status='PASS'),
     )
 
-    exit_code = processor.main([
+    exit_code = processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'json-test-results',
@@ -799,27 +875,30 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.output_dir,
         '--intermediate-dir',
         self.intermediate_dir,
-    ])
+      ]
+    )
 
     self.assertEqual(exit_code, 0)
 
   def testHistogramsOutput_TBMv3(self):
     self.SerializeIntermediateResults(
-        testing.TestResult(
-            'benchmark/story',
-            output_artifacts=[
-                self.CreateProtoTraceArtifact(),
-                self.CreateDiagnosticsArtifact(
-                    benchmarks=['benchmark'],
-                    osNames=['linux'],
-                    documentationUrls=[['documentation', 'url']],
-                ),
-            ],
-            tags=['tbmv3:dummy_metric'],
-            start_time='2009-02-13T23:31:30.987000Z',
-        ), )
+      testing.TestResult(
+        'benchmark/story',
+        output_artifacts=[
+          self.CreateProtoTraceArtifact(),
+          self.CreateDiagnosticsArtifact(
+            benchmarks=['benchmark'],
+            osNames=['linux'],
+            documentationUrls=[['documentation', 'url']],
+          ),
+        ],
+        tags=['tbmv3:dummy_metric'],
+        start_time='2009-02-13T23:31:30.987000Z',
+      ),
+    )
 
-    processor.main([
+    processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'histograms',
@@ -829,10 +908,12 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.intermediate_dir,
         '--results-label',
         'label',
-    ])
+      ]
+    )
 
-    with open(os.path.join(self.output_dir,
-                           histograms_output.OUTPUT_FILENAME)) as f:
+    with open(
+      os.path.join(self.output_dir, histograms_output.OUTPUT_FILENAME)
+    ) as f:
       results = json.load(f)
 
     out_histograms = histogram_set.HistogramSet()
@@ -843,36 +924,42 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
     hist = out_histograms.GetHistogramNamed('dummy::simple_field')
     self.assertEqual(hist.unit, 'count_smallerIsBetter')
 
-    self.assertEqual(hist.diagnostics['benchmarks'],
-                     generic_set.GenericSet(['benchmark']))
-    self.assertEqual(hist.diagnostics['osNames'],
-                     generic_set.GenericSet(['linux']))
     self.assertEqual(
-        hist.diagnostics['documentationUrls'],
-        generic_set.GenericSet([['documentation', 'url']]),
+      hist.diagnostics['benchmarks'], generic_set.GenericSet(['benchmark'])
     )
-    self.assertEqual(hist.diagnostics['labels'],
-                     generic_set.GenericSet(['label']))
-    self.assertEqual(hist.diagnostics['benchmarkStart'],
-                     date_range.DateRange(1234567890987))
+    self.assertEqual(
+      hist.diagnostics['osNames'], generic_set.GenericSet(['linux'])
+    )
+    self.assertEqual(
+      hist.diagnostics['documentationUrls'],
+      generic_set.GenericSet([['documentation', 'url']]),
+    )
+    self.assertEqual(
+      hist.diagnostics['labels'], generic_set.GenericSet(['label'])
+    )
+    self.assertEqual(
+      hist.diagnostics['benchmarkStart'], date_range.DateRange(1234567890987)
+    )
 
   def testComplexMetricOutput_TBMv3(self):
     self.SerializeIntermediateResults(
-        testing.TestResult(
-            'benchmark/story',
-            output_artifacts=[
-                self.CreateProtoTraceArtifact(),
-                self.CreateDiagnosticsArtifact(
-                    benchmarks=['benchmark'],
-                    osNames=['linux'],
-                    documentationUrls=[['documentation', 'url']],
-                ),
-            ],
-            tags=['tbmv3:dummy_metric'],
-            start_time='2009-02-13T23:31:30.987000Z',
-        ), )
+      testing.TestResult(
+        'benchmark/story',
+        output_artifacts=[
+          self.CreateProtoTraceArtifact(),
+          self.CreateDiagnosticsArtifact(
+            benchmarks=['benchmark'],
+            osNames=['linux'],
+            documentationUrls=[['documentation', 'url']],
+          ),
+        ],
+        tags=['tbmv3:dummy_metric'],
+        start_time='2009-02-13T23:31:30.987000Z',
+      ),
+    )
 
-    processor.main([
+    processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'histograms',
@@ -882,10 +969,12 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.intermediate_dir,
         '--results-label',
         'label',
-    ])
+      ]
+    )
 
-    with open(os.path.join(self.output_dir,
-                           histograms_output.OUTPUT_FILENAME)) as f:
+    with open(
+      os.path.join(self.output_dir, histograms_output.OUTPUT_FILENAME)
+    ) as f:
       results = json.load(f)
 
     # For testing the TBMv3 workflow we use dummy_metric defined in
@@ -904,36 +993,42 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
 
     # Unannotated fields should not be included in final histogram output.
     simple_nested_unannotated = out_histograms.GetHistogramsNamed(
-        'dummy::simple_nested:unannotated_field')
+      'dummy::simple_nested:unannotated_field'
+    )
     self.assertEqual(len(simple_nested_unannotated), 0)
     repeated_nested_unannotated = out_histograms.GetHistogramsNamed(
-        'dummy::repeated_nested:unannotated_field')
+      'dummy::repeated_nested:unannotated_field'
+    )
     self.assertEqual(len(repeated_nested_unannotated), 0)
 
     simple_nested_annotated = out_histograms.GetHistogramNamed(
-        'dummy::simple_nested:annotated_field')
+      'dummy::simple_nested:annotated_field'
+    )
     self.assertEqual(simple_nested_annotated.unit, 'ms_smallerIsBetter')
     self.assertEqual(simple_nested_annotated.num_values, 1)
     self.assertEqual(simple_nested_annotated.average, 44)
     repeated_nested_annotated = out_histograms.GetHistogramNamed(
-        'dummy::repeated_nested:annotated_field')
+      'dummy::repeated_nested:annotated_field'
+    )
     self.assertEqual(repeated_nested_annotated.unit, 'ms_smallerIsBetter')
     self.assertEqual(repeated_nested_annotated.num_values, 2)
     self.assertEqual(repeated_nested_annotated.sample_values, [2, 4])
 
   def testExtraMetrics(self):
     self.SerializeIntermediateResults(
-        testing.TestResult(
-            'benchmark/story',
-            output_artifacts=[
-                self.CreateHtmlTraceArtifact(),
-                self.CreateProtoTraceArtifact(),
-            ],
-            tags=['tbmv2:sampleMetric'],
-            start_time='2009-02-13T23:31:30.987000Z',
-        ), )
+      testing.TestResult(
+        'benchmark/story',
+        output_artifacts=[
+          self.CreateHtmlTraceArtifact(),
+          self.CreateProtoTraceArtifact(),
+        ],
+        tags=['tbmv2:sampleMetric'],
+        start_time='2009-02-13T23:31:30.987000Z',
+      ),
+    )
 
-    processor.main([
+    processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'histograms',
@@ -945,10 +1040,12 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         'label',
         '--extra-metric',
         'tbmv3:dummy_metric',
-    ])
+      ]
+    )
 
-    with open(os.path.join(self.output_dir,
-                           histograms_output.OUTPUT_FILENAME)) as f:
+    with open(
+      os.path.join(self.output_dir, histograms_output.OUTPUT_FILENAME)
+    ) as f:
       results = json.load(f)
 
     out_histograms = histogram_set.HistogramSet()
@@ -962,21 +1059,23 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
 
   def testMultipleTBMv3Metrics(self):
     self.SerializeIntermediateResults(
-        testing.TestResult(
-            'benchmark/story',
-            output_artifacts=[
-                self.CreateProtoTraceArtifact(),
-                self.CreateDiagnosticsArtifact(
-                    benchmarks=['benchmark'],
-                    osNames=['linux'],
-                    documentationUrls=[['documentation', 'url']],
-                ),
-            ],
-            tags=['tbmv3:dummy_metric', 'tbmv3:test_chrome_metric'],
-            start_time='2009-02-13T23:31:30.987000Z',
-        ), )
+      testing.TestResult(
+        'benchmark/story',
+        output_artifacts=[
+          self.CreateProtoTraceArtifact(),
+          self.CreateDiagnosticsArtifact(
+            benchmarks=['benchmark'],
+            osNames=['linux'],
+            documentationUrls=[['documentation', 'url']],
+          ),
+        ],
+        tags=['tbmv3:dummy_metric', 'tbmv3:test_chrome_metric'],
+        start_time='2009-02-13T23:31:30.987000Z',
+      ),
+    )
 
-    processor.main([
+    processor.main(
+      [
         '--is-unittest',
         '--output-format',
         'histograms',
@@ -986,10 +1085,12 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
         self.intermediate_dir,
         '--results-label',
         'label',
-    ])
+      ]
+    )
 
-    with open(os.path.join(self.output_dir,
-                           histograms_output.OUTPUT_FILENAME)) as f:
+    with open(
+      os.path.join(self.output_dir, histograms_output.OUTPUT_FILENAME)
+    ) as f:
       results = json.load(f)
 
     out_histograms = histogram_set.HistogramSet()

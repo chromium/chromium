@@ -26,7 +26,7 @@ from benchmarks import press
   component='Blink>JavaScript',
   documentation_url='https://browserbench.org/Speedometer',
 )
-class Speedometer10(press._PressBenchmark):  # pylint: disable=protected-access
+class Speedometer10(press._PressBenchmark):
   """Speedometer1.0 benchmark.
   Explicitly named version."""
 

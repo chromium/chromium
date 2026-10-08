@@ -8,7 +8,8 @@ import json
 import logging
 import os
 
-import requests  # pylint: disable=import-error
+import requests
+
 
 import multiprocessing
 from multiprocessing.dummy import Pool as ThreadPool
@@ -48,7 +49,7 @@ def ApplyInParallel(function, work_list, on_failure=None):
   def function_with_try(arg):
     try:
       function(arg)
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
       # logging exception here is the only way to get a stack trace since
       # multiprocessing's pool implementation does not save that data. See
       # crbug.com/953365.

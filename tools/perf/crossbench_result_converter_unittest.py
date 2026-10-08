@@ -169,7 +169,6 @@ class CrossbenchResultConverterTest(unittest.TestCase):
       with open(csv_path, 'w') as f:
         f.write(csv_content)
 
-      # pylint: disable=protected-access
       hist_set = crossbench_result_converter._loadline1_results(csv_path)
       results = self.list_to_dict(hist_set.AsDicts())
 
@@ -196,7 +195,6 @@ class CrossbenchResultConverterTest(unittest.TestCase):
       with open(csv_path, 'w') as f:
         f.write(csv_content)
 
-      # pylint: disable=protected-access
       hist_set = crossbench_result_converter._loadline2_results(csv_path)
       results = self.list_to_dict(hist_set.AsDicts())
 
@@ -223,7 +221,6 @@ class CrossbenchResultConverterTest(unittest.TestCase):
       with open(csv_path, 'w') as f:
         f.write(csv_content)
 
-      # pylint: disable=protected-access
       hist_set = crossbench_result_converter._web_power_results(csv_path)
       results = self.list_to_dict(hist_set.AsDicts())
 
@@ -342,7 +339,6 @@ class CrossbenchResultConverterTest(unittest.TestCase):
       csv_path = pathlib.Path(temp_dir) / 'power_rails.csv'
       csv_path.write_text(csv_content)
 
-      # pylint: disable=protected-access
       hist_set = crossbench_result_converter._web_power_power_results(csv_path)
       results = self.list_to_dict(hist_set.AsDicts())
 

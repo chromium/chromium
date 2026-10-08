@@ -23,7 +23,7 @@ _SPEEDOMETER_DIR = os.path.join(
 )
 
 
-class _Speedometer2(press._PressBenchmark):  # pylint: disable=protected-access
+class _Speedometer2(press._PressBenchmark):
   """Abstract base Speedometer2 Benchmark class.
 
   Runs all the speedometer 2 suites by default. Add --suite=<regex> to filter

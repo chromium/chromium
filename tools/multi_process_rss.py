@@ -30,7 +30,7 @@ if sys.platform.startswith('linux'):
   _TOOLS_PATH = os.path.dirname(os.path.abspath(__file__))
   _TOOLS_LINUX_PATH = os.path.join(_TOOLS_PATH, 'linux')
   sys.path.append(_TOOLS_LINUX_PATH)
-  import procfs  # pylint: disable=F0401
+  import procfs
 
 
 class _NullHandler(logging.Handler):

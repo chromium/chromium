@@ -8,7 +8,6 @@ from contrib.cluster_telemetry import ct_benchmarks_util
 from contrib.cluster_telemetry import page_set
 
 
-# pylint: disable=protected-access
 class LeakDetectionClusterTelemetry(ld._LeakDetectionBase):
   options = {'upload_results': True}
 

@@ -15,7 +15,8 @@ FILE_PATH = Path(__file__).resolve()
 sys.path.append(str(FILE_PATH.parents[2]))
 
 # TODO(crbug.com/40641687): Figure out how to get httplib2 hermetically.
-import httplib2  # pylint: disable=import-error
+import httplib2
+
 
 from core.services import request
 

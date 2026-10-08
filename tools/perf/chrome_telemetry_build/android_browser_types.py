@@ -24,7 +24,7 @@ TELEMETRY_ANDROID_BROWSER_TARGET_SUFFIXES = [
 
 if os.path.exists(_CLANK_LIST_FILEPATH):
   sys.path.append(_CLANK_DIR)
-  import telemetry_browser_types  # pylint: disable=import-error,wrong-import-position
+  import telemetry_browser_types
 
   sys.path.remove(_CLANK_DIR)
   TELEMETRY_ANDROID_BROWSER_TARGET_SUFFIXES += (

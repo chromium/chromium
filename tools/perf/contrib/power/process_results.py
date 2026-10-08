@@ -98,7 +98,7 @@ def _GetTraceEventProto(story_results_path):
 def _GetProcessNameMapping(trace_path):
   # We can not have it at the top level as perfetto is not checked out in some
   # bots and this file is loaded in some tests to look for benchmarks
-  from perfetto.trace_processor import TraceProcessor  # pylint: disable=import-error,import-outside-toplevel
+  from perfetto.trace_processor import TraceProcessor
 
   mappings = {}
   logging.info(
@@ -114,7 +114,7 @@ def _GetProcessNameMapping(trace_path):
 def _AddProcessNameToProfile(input_path, output_path, process_name):
   # We can not have it at the top level as perfetto is not checked out in some
   # bots and this file is loaded in some tests to look for benchmarks
-  import profile_pb2  # pylint: disable=import-error,import-outside-toplevel
+  import profile_pb2
 
   profile = profile_pb2.Profile()
   with open(input_path, "rb") as f:

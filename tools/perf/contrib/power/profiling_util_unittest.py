@@ -65,7 +65,6 @@ class ProfilingUtilTests(unittest.TestCase):
 
   # *args and **kwargs are needed for the mock to be able to accept extra
   # arguments.
-  # pylint: disable=unused-argument
   def writePlaceholderProfile(self, *args, **kwargs):
     os.makedirs(self._profile_source_dir)
     with open(

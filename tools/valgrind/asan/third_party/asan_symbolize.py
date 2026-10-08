@@ -391,7 +391,7 @@ class BreakpadSymbolizer(Symbolizer):
         pass
       elif fragments[0] == 'FUNC':
         cur_function_addr = int(fragments[1], 16)
-        if not cur_function_addr in self.symbols.keys():
+        if cur_function_addr not in self.symbols.keys():
           self.symbols[cur_function_addr] = ' '.join(fragments[4:])
       else:
         # Line starting with an address.
@@ -474,7 +474,7 @@ class SymbolizationLoop(object):
     #     .dSYM hints to it.
     result = None
     if not force_system_symbolizer:
-      if not binary in self.llvm_symbolizers:
+      if binary not in self.llvm_symbolizers:
         use_new_symbolizer = True
         if self.system == 'Darwin' and self.dsym_hint_producer:
           dsym_hints_for_binary = set(self.dsym_hint_producer(binary))
@@ -490,7 +490,7 @@ class SymbolizationLoop(object):
       # Use the chain of symbolizers:
       # Breakpad symbolizer -> LLVM symbolizer -> addr2line/atos
       # (fall back to next symbolizer if the previous one fails).
-      if not binary in symbolizers:
+      if binary not in symbolizers:
         symbolizers[binary] = ChainSymbolizer(
           [BreakpadSymbolizerFactory(binary), self.llvm_symbolizers[binary]]
         )

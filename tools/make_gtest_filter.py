@@ -141,7 +141,7 @@ def CompressWithWildcards(test_list, min_depth, min_cases):
   # partitioned per-suite.
   for case in test_list:
     suite_name, test = case.split('.')
-    if not suite_name in suite_tries:
+    if suite_name not in suite_tries:
       suite_tries[suite_name] = TrieNode()
     TrieInsert(suite_tries[suite_name], test)
 

@@ -4,8 +4,6 @@
 from contrib.cluster_telemetry import loading_base_ct
 from contrib.cluster_telemetry import page_set
 
-# pylint: disable=protected-access
-
 
 class LayoutShiftClusterTelemetry(loading_base_ct._LoadingBaseClusterTelemetry):
   @classmethod

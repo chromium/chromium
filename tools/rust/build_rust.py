@@ -187,7 +187,7 @@ RUST_BETA_SYSROOT_DIR = os.path.join(
 # cipd desc infra/3pp/static_libs/openssl/linux-amd64 --version <instance id>
 # - A version tag looks like: `version:2@1.1.1j.chromium.2` and we
 #   store the part after the `2@` here.
-CIPD_DOWNLOAD_URL = f'https://chrome-infra-packages.appspot.com/dl'
+CIPD_DOWNLOAD_URL = 'https://chrome-infra-packages.appspot.com/dl'
 OPENSSL_CIPD_LINUX_AMD_PATH = 'infra/3pp/static_libs/openssl/linux-amd64'
 OPENSSL_CIPD_LINUX_AMD_VERSION = '1.1.1j.chromium.2'
 OPENSSL_CIPD_MAC_AMD_PATH = 'infra/3pp/static_libs/openssl/mac-amd64'
@@ -326,7 +326,7 @@ def InstallBetaPackage(package_dir, install_dir):
     cmd += [
         os.path.join(package_dir, 'install.sh'),
         f'--destdir={install_dir}',
-        f'--prefix=',
+        '--prefix=',
     ]
 
     if sys.platform.startswith('linux'):
@@ -1122,7 +1122,7 @@ def main():
             RmTree(RUST_BUILD_DIR)
 
     if not args.skip_test:
-        print(f'Building stage 2 artifacts and running tests...')
+        print('Building stage 2 artifacts and running tests...')
         xpy.run('test', xpy_args + GetTestArgs())
 
     if not args.skip_install:

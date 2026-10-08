@@ -132,7 +132,7 @@ def _GenerateSmokeTestCase(benchmark_class, story_to_smoke_test):
   @decorators.Disabled('chromeos')  # crbug.com/351114
   @decorators.Disabled('mac')  # crbug.com/1277277
   def RunTest(self):
-    class SinglePageBenchmark(benchmark_class):  # pylint: disable=no-init
+    class SinglePageBenchmark(benchmark_class):
       def CreateStorySet(self, options):
         story_set = super(SinglePageBenchmark, self).CreateStorySet(options)
         stories_to_remove = [

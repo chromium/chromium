@@ -158,15 +158,15 @@ def PickSampleUrls():
           break
         remaining_num_sites -= 1
         hostname = entry.strip().split(',')[1]
-        if not '/' in hostname:  # Skip Alexa 1,000,000 entries that have paths.
+        if '/' not in hostname:  # Skip Alexa 1,000,000 entries that have paths.
           url = "http://%s/" % hostname
-          if not url in bad_urls:
+          if url not in bad_urls:
             urls.append(url)
     # Don't write these to disk yet; we'll do that in SaveWorkingUrls below
     # once we have tried to download them and seen which ones fail.
   else:
     with open(urls_path) as f:
-      urls = [u for u in f.read().splitlines() if not u in bad_urls]
+      urls = [u for u in f.read().splitlines() if u not in bad_urls]
   return True
 
 

@@ -360,7 +360,7 @@ def Main():
     successes = len(results) - failures
     print('%d failed, %d succeeded' % (failures, successes))
     # Without this various child processes often hangs the terminal.
-    os._exit(1)  # pylint: disable=protected-access
+    os._exit(1)
 
   failures = CountFailures(results)
   if failures == 0:

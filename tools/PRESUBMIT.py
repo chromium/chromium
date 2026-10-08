@@ -16,3 +16,7 @@ def CheckPythonTests(input_api, output_api):
       files_to_check=[r'.+_(?:unit)?test\.py$'],
     )
   )
+
+
+def CheckRuff(input_api, output_api):
+  return input_api.canned_checks.RunRuff(input_api, output_api)

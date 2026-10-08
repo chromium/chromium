@@ -3,7 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# pylint: disable=too-many-lines
 
 from __future__ import absolute_import
 from __future__ import print_function
@@ -27,7 +26,8 @@ path_util.AddTelemetryToPath()
 
 # We don't use bot_platforms, but importing it is needed to ensure the
 # inclusion of some dependencies required for testing.
-from core import bot_platforms  # pylint: disable=unused-import
+from core import bot_platforms
+
 
 from core import results_merger
 from core import upload_results_to_perf_dashboard
@@ -44,7 +44,8 @@ path_util.AddAndroidPylibToPath()
 path_util.AddBuildUtilToPath()
 
 try:
-  from lib.common import google_storage_helper  # pylint: disable=import-error
+  from lib.common import google_storage_helper
+
   from pylib.utils import logdog_helper
 except ImportError:
   pass

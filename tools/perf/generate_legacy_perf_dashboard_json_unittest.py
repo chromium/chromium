@@ -27,7 +27,7 @@ class LegacyResultsProcessorUnittest(unittest.TestCase):
     """
     return generate_legacy_perf_dashboard_json.LegacyResultsProcessor()
 
-  def _ProcessLog(self, log_processor, logfile):  # pylint: disable=R0201
+  def _ProcessLog(self, log_processor, logfile):
     """Reads in a input log file and processes it.
 
     This changes the state of the log processor object; the output is stored

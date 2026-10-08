@@ -17,7 +17,8 @@ def Run(os_path=None, args=None):
     old_sys_path = sys.path[:]
     sys.path.append(_NODE_PATH)
 
-    import node, node_modules
+    import node
+    import node_modules
   finally:
     sys.path = old_sys_path
 

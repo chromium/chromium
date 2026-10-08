@@ -206,16 +206,12 @@ class ResultsProcessorUnitTests(unittest.TestCase):
   def testAmortizeProcessingDuration_UndefinedDuration(self):
     test_results = [testing.TestResult('benchmark/story')]
     del test_results[0]['runDuration']
-    # pylint: disable=protected-access
     processor._AmortizeProcessingDuration(1.0, test_results)
-    # pylint: enable=protected-access
     self.assertNotIn('runDuration', test_results[0])
     self.assertEqual(len(test_results), 1)
 
   def testAmortizeProcessingDuration_OneResult(self):
     test_results = [testing.TestResult('benchmark/story', run_duration='1.0s')]
-    # pylint: disable=protected-access
     processor._AmortizeProcessingDuration(1.0, test_results)
-    # pylint: enable=protected-access
     self.assertEqual(str(test_results[0]['runDuration']), '2.0s')
     self.assertEqual(len(test_results), 1)

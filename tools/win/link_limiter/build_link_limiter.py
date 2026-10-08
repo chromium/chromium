@@ -38,7 +38,7 @@ def run_with_vsvars(cmd, tmpdir=None):
 
 def get_vc_dir():
     _, out = run_with_vsvars('echo VCINSTALLDIR=%VCINSTALLDIR%')
-    for line in out.splitlines():  # pylint: disable-msg=E1103
+    for line in out.splitlines():
         if line.startswith('VCINSTALLDIR='):
             return line[len('VCINSTALLDIR=') :]
     return None

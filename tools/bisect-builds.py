@@ -658,7 +658,7 @@ class ArchiveBuild(abc.ABC):
   @property
   @abc.abstractmethod
   def build_type(self):
-    raise NotImplemented()
+    raise NotImplementedError()
 
   @abc.abstractmethod
   def _get_rev_list(self, min_rev=None, max_rev=None):
@@ -676,7 +676,7 @@ class ArchiveBuild(abc.ABC):
     The return value of revisions in the list should match the type of
     good_revision and bad_revision, and should be comparable.
     """
-    raise NotImplemented()
+    raise NotImplementedError()
 
   @property
   def _rev_list_cache_filename(self):
@@ -689,7 +689,7 @@ class ArchiveBuild(abc.ABC):
   def _rev_list_cache_key(self):
     """Returns the cache key for archive build. The cache key should be able to
     distinguish like build_type, platform."""
-    raise NotImplemented()
+    raise NotImplementedError()
 
   def _load_rev_list_cache(self):
     if not self.use_local_cache:
@@ -814,7 +814,7 @@ class ArchiveBuild(abc.ABC):
   @abc.abstractmethod
   def get_download_url(self, revision):
     """Gets the download URL for the specific revision."""
-    raise NotImplemented()
+    raise NotImplementedError()
 
   def get_download_job(self, revision, name=None):
     """Gets as a DownloadJob that download the specific revision in threads."""
@@ -1894,7 +1894,6 @@ def EvaluateRevision(archive_build, download, revision, args, evaluate):
 # The arguments release_builds, status, stdout and stderr are unused.
 # They are present here because this function is passed to Bisect which then
 # calls it with 5 arguments.
-# pylint: disable=W0613
 def AskIsGoodBuild(rev, exit_status, stdout, stderr):
   """Asks the user whether build |rev| is good or bad."""
   # Loop until we get a response that we can parse.

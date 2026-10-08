@@ -234,10 +234,10 @@ class LegacyRunner:
     # TODO(crbug.com/41492688): Ensure the chrome version for internal builders
     # when they are added.
     # Set reclient and siso to use untrusted even for imitating ci builders
-    if not '$build/reclient' in input_props:
+    if '$build/reclient' not in input_props:
       input_props['$build/reclient'] = {}
     input_props['$build/reclient']['instance'] = self._get_reclient_instance()
-    if not '$build/siso' in input_props:
+    if '$build/siso' not in input_props:
       input_props['$build/siso'] = {}
     # Builders often have a lower build parallelization than what most devs
     # expect. So uncap the amount of siso jobs.

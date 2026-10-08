@@ -169,8 +169,8 @@ def main():
     cargo_args = [
         'build',
         f'--target={RustTargetTriple()}',
-        f'--no-default-features',
-        f'--features=logging' + static_feature,
+        '--no-default-features',
+        '--features=logging' + static_feature,
         '--release',
         '--bin',
         'bindgen',
@@ -187,12 +187,12 @@ def main():
     )
     if sys.platform == 'win32':
         shutil.copy(
-            os.path.join(llvm_dir, 'bin', f'libclang.dll'),
+            os.path.join(llvm_dir, 'bin', 'libclang.dll'),
             os.path.join(install_dir, 'bin'),
         )
     elif sys.platform == 'darwin':
         shutil.copy(
-            os.path.join(llvm_dir, 'lib', f'libclang.dylib'),
+            os.path.join(llvm_dir, 'lib', 'libclang.dylib'),
             os.path.join(install_dir, 'lib'),
         )
     else:

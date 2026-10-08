@@ -41,12 +41,14 @@ satisfied.
 import sys
 
 try:
-  import numpy  # pylint: disable=import-error
+  import numpy
+
 except ImportError:
   numpy = None
 
 try:
-  import pandas  # pylint: disable=import-error
+  import pandas
+
 except ImportError:
   pandas = None
 

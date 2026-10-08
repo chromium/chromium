@@ -7,7 +7,8 @@ import os
 import tempfile
 import unittest
 
-import mock  # pylint: disable=import-error
+import mock
+
 
 from py_utils import cloud_storage
 from telemetry.wpr import archive_info
@@ -44,7 +45,6 @@ class FetchBenchmarkDepsUnittest(unittest.TestCase):
         mock_get.GetFilesInDirectoryIfChanged.return_value = True
         fetch_benchmark_deps.main(args)
         self.assertEqual(
-          # pylint: disable=protected-access
           os.path.normpath(mock_download.call_args[0][0]._file_path),
           os.path.join(
             path_util.GetPerfStorySetsDir(),

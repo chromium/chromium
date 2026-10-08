@@ -9,7 +9,6 @@ import os
 from benchmarks import blink_perf
 
 
-# pylint: disable=protected-access
 class BlinkPerfAll(blink_perf._BlinkPerfBenchmark):
   @classmethod
   def Name(cls):

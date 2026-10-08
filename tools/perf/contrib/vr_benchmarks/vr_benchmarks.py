@@ -113,7 +113,6 @@ class _BaseWebXRBenchmark(_BaseWebVRWebXRBenchmark):
 
 
 @benchmark.Info(emails=['bsheedy@chromium.org', 'tiborg@chromium.org'])
-# pylint: disable=too-many-ancestors
 class XrWebXrStatic(_BaseWebXRBenchmark):
   """Measures WebXR performance with synthetic sample pages."""
 

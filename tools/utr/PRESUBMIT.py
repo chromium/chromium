@@ -13,26 +13,3 @@ def CheckTests(input_api, output_api):
       input_api, output_api, '.', [r'.+_test\.py$']
     )
   )
-
-
-def CheckPylint(input_api, output_api):
-  if not input_api.HasAffectedFiles(extensions='.py'):
-    return []
-  disabled_warnings = [
-    'bad-indentation',
-    'consider-using-dict-items',
-    'line-too-long',
-    'logging-not-lazy',
-    'missing-module-docstring',
-    'protected-access',
-    'superfluous-parens',
-    'unspecified-encoding',
-    'unused-import',
-  ]
-  return input_api.canned_checks.RunPylint(
-    input_api,
-    output_api,
-    disabled_warnings=disabled_warnings,
-    version='3.2',
-    files_to_skip=[r'^.bundles*$'],
-  )

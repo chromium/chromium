@@ -4,8 +4,6 @@
 
 """Unit tests for tools/perf/PRESUBMIT.py."""
 
-# pylint: disable=bad-indentation
-
 import ntpath
 import os
 import re
@@ -20,12 +18,9 @@ if _PERF_DIR not in sys.path:
 if _SRC_DIR not in sys.path:
   sys.path.append(_SRC_DIR)
 
-# pylint: disable=import-error
 from PRESUBMIT_test_mocks import MockInputApi, MockOutputApi
 
 import PRESUBMIT
-
-# pylint: disable=protected-access
 
 
 class ValidationScriptTest(unittest.TestCase):
@@ -161,127 +156,10 @@ class MockPylintOutputApi:
   pass
 
 
-class GetPylintFilesToCheckTest(unittest.TestCase):
+class PresubmitUnittestsTest(unittest.TestCase):
   def setUp(self):
-    self.input_api = MockPylintInputApi()
-    self.output_api = MockPylintOutputApi()
-
-  def testNoDiffsReturnsNone(self):
-    self.input_api.no_diffs = True
-    self.assertIsNone(PRESUBMIT._GetPylintFilesToCheck(self.input_api))
-
-  def testPresubmitModifiedReturnsNone(self):
-    presubmit_file = MockAffectedFile(os.path.join(_PERF_DIR, 'PRESUBMIT.py'))
-    self.input_api.InitFiles([presubmit_file])
-    self.assertIsNone(PRESUBMIT._GetPylintFilesToCheck(self.input_api))
-
-  def testPylintrcModifiedReturnsNone(self):
-    pylintrc_file = MockAffectedFile(os.path.join(_PERF_DIR, 'pylintrc'))
-    self.input_api.InitFiles([pylintrc_file])
-    self.assertIsNone(PRESUBMIT._GetPylintFilesToCheck(self.input_api))
-
-  def testRootPythonFileModifiedReturnsNone(self):
-    root_py = MockAffectedFile(os.path.join(_PERF_DIR, 'generate_perf_data.py'))
-    self.input_api.InitFiles([root_py])
-    self.assertIsNone(PRESUBMIT._GetPylintFilesToCheck(self.input_api))
-
-  def testDeletedPythonFilesReturnsNone(self):
-    deleted_py = MockAffectedFile(
-      os.path.join(_PERF_DIR, 'core', 'deleted.py'), action='D'
-    )
-    self.input_api.InitFiles([deleted_py])
-    self.assertIsNone(PRESUBMIT._GetPylintFilesToCheck(self.input_api))
-
-  def testDeletedNonPythonFilesReturnsEmpty(self):
-    deleted_json = MockAffectedFile(
-      os.path.join(_PERF_DIR, 'core', 'deleted.json'), action='D'
-    )
-    self.input_api.InitFiles([deleted_json])
-    self.assertEqual(PRESUBMIT._GetPylintFilesToCheck(self.input_api), [])
-
-  def testNonPythonFilesReturnsEmpty(self):
-    json_file = MockAffectedFile(
-      os.path.join(_PERF_DIR, 'core', 'shard_maps', 'test.json')
-    )
-    self.input_api.InitFiles([json_file])
-    self.assertEqual(PRESUBMIT._GetPylintFilesToCheck(self.input_api), [])
-
-  def testFilesOutsidePerfReturnsEmpty(self):
-    outside_file = MockAffectedFile(os.path.join(_SRC_DIR, 'chrome', 'test.py'))
-    self.input_api.InitFiles([outside_file])
-    self.assertEqual(PRESUBMIT._GetPylintFilesToCheck(self.input_api), [])
-
-  def testSingleSubdirectoryScoped(self):
-    py1 = MockAffectedFile(os.path.join(_PERF_DIR, 'core', 'bot_platforms.py'))
-    py2 = MockAffectedFile(
-      os.path.join(_PERF_DIR, 'core', 'perf_data_generator.py')
-    )
-    self.input_api.InitFiles([py1, py2])
-    patterns = PRESUBMIT._GetPylintFilesToCheck(self.input_api)
-    self.assertEqual(patterns, [r'core(?:/|\\).*\.py$'])
-
-  def testMultipleSubdirectoriesScoped(self):
-    py1 = MockAffectedFile(
-      os.path.join(_PERF_DIR, 'benchmarks', 'benchmark.py')
-    )
-    py2 = MockAffectedFile(os.path.join(_PERF_DIR, 'core', 'bot_platforms.py'))
-    self.input_api.InitFiles([py1, py2])
-    patterns = PRESUBMIT._GetPylintFilesToCheck(self.input_api)
-    self.assertEqual(
-      patterns,
-      [r'benchmarks(?:/|\\).*\.py$', r'core(?:/|\\).*\.py$'],
-    )
-
-  def testNestedSubdirectoryScopedToFirstLevel(self):
-    py_file = MockAffectedFile(
-      os.path.join(_PERF_DIR, 'core', 'shard_maps', 'test.py')
-    )
-    self.input_api.InitFiles([py_file])
-    patterns = PRESUBMIT._GetPylintFilesToCheck(self.input_api)
-    self.assertEqual(patterns, [r'core(?:/|\\).*\.py$'])
-
-  def testWindowsPathSeparatorsAndCasing(self):
-    perf_dir_win = ntpath.normpath('C:/src/chromium/src/tools/perf')
-    file_path_win = ntpath.normpath(
-      'C:/src/chromium/src/tools/perf/Core/bot_platforms.py'
-    )
-    mock_file = MockAffectedFile(file_path_win)
-    input_api = MockPylintInputApi()
-    input_api.os_path = ntpath
-    input_api._presubmit_local_path = perf_dir_win
-    input_api.InitFiles([mock_file])
-    patterns = PRESUBMIT._GetPylintFilesToCheck(input_api)
-    self.assertEqual(patterns, [r'Core(?:/|\\).*\.py$'])
-
-  def testCheckPyLintReturnsEmptyWhenNoPythonFiles(self):
-    json_file = MockAffectedFile(
-      os.path.join(_PERF_DIR, 'core', 'shard_maps', 'test.json')
-    )
-    self.input_api.InitFiles([json_file])
-    with mock.patch.object(
-      self.input_api.canned_checks, 'GetPylint', create=True
-    ) as mock_get_pylint:
-      results = PRESUBMIT.CheckPyLint(self.input_api, self.output_api)
-      mock_get_pylint.assert_not_called()
-      self.assertEqual(results, [])
-
-  def testCheckPyLintPassesFilesToCheck(self):
-    py_file = MockAffectedFile(
-      os.path.join(_PERF_DIR, 'core', 'bot_platforms.py')
-    )
-    self.input_api.InitFiles([py_file])
-    with mock.patch.object(
-      self.input_api.canned_checks, 'GetPylint', create=True, return_value=[]
-    ) as mock_get_pylint:
-      with mock.patch.object(
-        self.input_api, 'RunTests', return_value=[]
-      ) as mock_run_tests:
-        results = PRESUBMIT.CheckPyLint(self.input_api, self.output_api)
-        mock_get_pylint.assert_called_once()
-        _, kwargs = mock_get_pylint.call_args
-        self.assertEqual(kwargs['files_to_check'], [r'core(?:/|\\).*\.py$'])
-        mock_run_tests.assert_called_once()
-        self.assertEqual(results, [])
+    self.input_api = MockInputApi()
+    self.output_api = MockOutputApi()
 
   def testCheckPresubmitUnittestsRunsTest(self):
     with mock.patch.object(
