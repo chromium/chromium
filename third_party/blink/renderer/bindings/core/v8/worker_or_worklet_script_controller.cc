@@ -235,20 +235,9 @@ void WorkerOrWorkletScriptController::Initialize(const KURL& url_for_debugger) {
     disable_wasm_eval_pending_ = String();
   }
 
-  // This is a workaround for worker with on-the-main-thread script fetch and
-  // worklets.
-  // - For workers with off-the-main-thread worker script fetch,
-  //   PrepareForEvaluation() is called in WorkerGlobalScope::Initialize() after
-  //   top-level worker script fetch and before script evaluation.
-  // - For workers with on-the-main-thread worker script fetch, it's too early
-  //   to call PrepareForEvaluation() in WorkerGlobalScope::Initialize() because
-  //   it's called immediately after WorkerGlobalScope's constructor, that is,
-  //   before WorkerOrWorkletScriptController::Initialize(). Therefore, we
-  //   ignore the first call of PrepareForEvaluation() from
-  //   WorkerGlobalScope::Initialize(), and call it here again.
-  // TODO(https://crbug.com/835717): Remove this workaround once
-  // off-the-main-thread worker script fetch is enabled by default for dedicated
-  // workers.
+  // This is a workaround for worklets.
+  // - For workers, `PrepareForEvaluation()` is called in `WorkerGlobalScope::Initialize()`
+  //   after top-level worker script fetch and before script evaluation.
   //
   // - For worklets, there is no appropriate timing to call
   //   PrepareForEvaluation() other than here because worklets have various
@@ -257,31 +246,18 @@ void WorkerOrWorkletScriptController::Initialize(const KURL& url_for_debugger) {
   //   addModule() call in JS).
   // TODO(nhiroki): Unify worklet initialization sequences, and move this to an
   // appropriate place.
-  if ((global_scope_->IsWorkerGlobalScope() &&
-       To<WorkerGlobalScope>(global_scope_.Get())
-           ->IsOffMainThreadScriptFetchDisabled()) ||
-      global_scope_->IsWorkletGlobalScope()) {
+  if (global_scope_->IsWorkletGlobalScope()) {
     // This should be called after origin trial tokens are applied for
-    // OriginTrialContext in WorkerGlobalScope::Initialize() to install origin
-    // trial features in JavaScript's global object. Workers with
-    // on-the-main-thread script fetch and worklets apply origin trial tokens
-    // before WorkerOrWorkletScriptController::initialize(), so it's safe to
-    // call this here.
+    // OriginTrialContext to install origin trial features in JavaScript's
+    // global object. Worklets apply origin trial tokens before
+    // WorkerOrWorkletScriptController::initialize(), so it's safe to call this
+    // here.
     PrepareForEvaluation();
   }
 }
 
 void WorkerOrWorkletScriptController::PrepareForEvaluation() {
-  if (!IsContextInitialized()) {
-    // For workers with on-the-main-thread worker script fetch, this can be
-    // called before WorkerOrWorkletScriptController::Initialize() via
-    // WorkerGlobalScope creation function. In this case, PrepareForEvaluation()
-    // calls this function again. See comments in PrepareForEvaluation().
-    DCHECK(global_scope_->IsWorkerGlobalScope());
-    DCHECK(To<WorkerGlobalScope>(global_scope_.Get())
-               ->IsOffMainThreadScriptFetchDisabled());
-    return;
-  }
+  CHECK(IsContextInitialized());
   DCHECK(!is_ready_to_evaluate_);
   is_ready_to_evaluate_ = true;
 

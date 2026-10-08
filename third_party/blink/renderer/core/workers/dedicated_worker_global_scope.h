@@ -130,7 +130,6 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
       const FetchClientSettingsObjectSnapshot& outside_settings_object,
       WorkerResourceTimingNotifier& outside_resource_timing_notifier,
       network::mojom::CredentialsMode) override;
-  bool IsOffMainThreadScriptFetchDisabled() override;
   void WorkerScriptFetchFinished(
       Script& worker_script,
       std::optional<v8_inspector::V8StackTraceId> stack_id) override;

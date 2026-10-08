@@ -93,10 +93,6 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
       creation_params->begin_frame_provider_params;
 
   KURL response_script_url = creation_params->script_url;
-  network::mojom::ReferrerPolicy response_referrer_policy =
-      creation_params->referrer_policy;
-  DocumentPolicy::DocumentPolicyBundle response_document_policy =
-      std::move(creation_params->document_policy);
   base::TimeTicks start_time;
   if (creation_params->dedicated_worker_start_time.has_value()) {
     start_time = *creation_params->dedicated_worker_start_time;
@@ -109,26 +105,12 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
 
   Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp =
       std::move(creation_params->response_content_security_policies);
-  auto* global_scope = MakeGarbageCollected<DedicatedWorkerGlobalScope>(
+  // `Initialize()` is called after script fetch.
+  return MakeGarbageCollected<DedicatedWorkerGlobalScope>(
       base::PassKey<DedicatedWorkerGlobalScope>(), std::move(creation_params),
       thread, time_origin, std::move(inherited_trial_features),
       begin_frame_provider_params, std::move(dedicated_worker_host),
       std::move(back_forward_cache_controller_host), start_time);
-
-  if (global_scope->IsOffMainThreadScriptFetchDisabled()) {
-    // Legacy on-the-main-thread worker script fetch (to be removed):
-    // Pass null origin trial tokens here as it is already set to outside's
-    // origin trial tokens in DedicatedWorkerGlobalScope's constructor.
-    global_scope->Initialize(response_script_url, response_referrer_policy,
-                             std::move(response_csp),
-                             std::move(response_document_policy),
-                             nullptr /* response_origin_trial_tokens */);
-    return global_scope;
-  } else {
-    // Off-the-main-thread worker script fetch:
-    // Initialize() is called after script fetch.
-    return global_scope;
-  }
 }
 
 // static
@@ -397,12 +379,6 @@ void DedicatedWorkerGlobalScope::FetchAndRunModuleScript(
                     ModuleScriptCustomFetchType::kWorkerConstructor,
                     MakeGarbageCollected<WorkerModuleTreeClient>(
                         ScriptController()->GetScriptState()));
-}
-
-bool DedicatedWorkerGlobalScope::IsOffMainThreadScriptFetchDisabled() {
-  // TODO(https://crbug.com/835717): Remove this function now that dedicated
-  // workers support off-the-main-thread script fetch by default.
-  return false;
 }
 
 const String DedicatedWorkerGlobalScope::name() const {

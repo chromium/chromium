@@ -262,10 +262,6 @@ class CORE_EXPORT WorkerGlobalScope
   // under trustedTypes/
   TrustedTypePolicyFactory* GetTrustedTypes() const override;
 
-  // TODO(https://crbug.com/835717): Remove this function after dedicated
-  // workers support off-the-main-thread script fetch by default.
-  virtual bool IsOffMainThreadScriptFetchDisabled() { return false; }
-
   // Takes the ownership of the parameters used to load the worker main module
   // script in renderer process.
   std::unique_ptr<WorkerMainScriptLoadParameters>
