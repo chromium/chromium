@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.tasks.tab_management.data_provider;
 
+import org.chromium.base.Token;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -67,11 +69,24 @@ public class FlatTabListDataProvider extends TabListDataProvider {
                         requestDataReset();
                     }
 
-                    // TODO(crbug.com/562590772): Add incremental TabModelObserver and
-                    // TabGroupObserver callbacks for tab moves and selection.
+                    // TODO(crbug.com/562590772): Add incremental TabModelObserver callbacks for tab
+                    // moves and selection.
                 };
 
-        initObservers(tabModelObserver);
+        TabGroupObserver tabGroupObserver =
+                new TabGroupObserver() {
+                    @Override
+                    public void didMergeTabToGroup(Tab movedTab, boolean isDestinationTab) {
+                        syncTabItem(movedTab);
+                    }
+
+                    @Override
+                    public void didMoveTabOutOfGroup(Tab movedTab, Token oldTabGroupId) {
+                        syncTabItem(movedTab);
+                    }
+                };
+
+        initObservers(tabModelObserver, tabGroupObserver);
     }
 
     @Override

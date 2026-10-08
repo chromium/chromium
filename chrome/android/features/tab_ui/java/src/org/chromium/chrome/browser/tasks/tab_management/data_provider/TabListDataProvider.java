@@ -11,6 +11,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -32,6 +33,7 @@ public abstract class TabListDataProvider {
 
     private @Nullable TabModel mAttachedTabModel;
     private @Nullable TabModelObserver mTabModelObserver;
+    private @Nullable TabGroupObserver mTabGroupObserver;
 
     /**
      * Constructs a {@link TabListDataProvider}.
@@ -93,17 +95,22 @@ public abstract class TabListDataProvider {
         mTabModelSupplier.removeObserver(mOnTabModelChanged);
         detachFromCurrentModel();
         mTabModelObserver = null;
+        mTabGroupObserver = null;
     }
 
     /**
-     * Registers the {@link TabModelObserver} and starts observing {@link TabModel} switches. Must
-     * be called at the end of the subclass constructor after subclass fields are initialized.
+     * Registers observers and starts observing {@link TabModel} switches. Must be called at the end
+     * of the subclass constructor after subclass fields are initialized.
      *
      * @param tabModelObserver The {@link TabModelObserver} to register on the active {@link
      *     TabModel}.
+     * @param tabGroupObserver The optional {@link TabGroupObserver} to register on the active
+     *     {@link TabModel}.
      */
-    protected void initObservers(TabModelObserver tabModelObserver) {
+    protected void initObservers(
+            TabModelObserver tabModelObserver, @Nullable TabGroupObserver tabGroupObserver) {
         mTabModelObserver = tabModelObserver;
+        mTabGroupObserver = tabGroupObserver;
         mTabModelSupplier.addSyncObserver(mOnTabModelChanged);
     }
 
@@ -181,6 +188,21 @@ public abstract class TabListDataProvider {
         notifyObservers(obs -> obs.onItemsRemoved(List.of(removedItem)));
     }
 
+    /**
+     * Synchronizes {@code tab}'s {@link TabItem} in {@link #mItems} against {@link
+     * #shouldShowTab(Tab)}. Inserts the tab if it became visible, or removes it if it is no longer
+     * visible.
+     *
+     * @param tab The {@link Tab} to synchronize.
+     */
+    protected void syncTabItem(Tab tab) {
+        if (shouldShowTab(tab)) {
+            addTabItem(tab);
+        } else {
+            removeTabItem(tab.getId());
+        }
+    }
+
     private int indexOfTabId(@TabId int tabId) {
         if (tabId == Tab.INVALID_TAB_ID) return TabList.INVALID_TAB_INDEX;
         for (int i = 0; i < mItems.size(); i++) {
@@ -231,12 +253,20 @@ public abstract class TabListDataProvider {
         mAttachedTabModel = model;
         if (mAttachedTabModel != null) {
             mAttachedTabModel.addObserver(mTabModelObserver);
+            if (mTabGroupObserver != null) {
+                mAttachedTabModel.addTabGroupObserver(mTabGroupObserver);
+            }
         }
     }
 
     private void detachFromCurrentModel() {
-        if (mAttachedTabModel != null && mTabModelObserver != null) {
-            mAttachedTabModel.removeObserver(mTabModelObserver);
+        if (mAttachedTabModel != null) {
+            if (mTabModelObserver != null) {
+                mAttachedTabModel.removeObserver(mTabModelObserver);
+            }
+            if (mTabGroupObserver != null) {
+                mAttachedTabModel.removeTabGroupObserver(mTabGroupObserver);
+            }
         }
         mAttachedTabModel = null;
         mItems.clear();
