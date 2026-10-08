@@ -54,6 +54,7 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -78,6 +79,10 @@ constexpr CGFloat kButtonMinScale = 0.37;
 
 // Duration of standard toolbar transition animations (fade, scale).
 constexpr CGFloat kAnimationDuration = 0.2;
+
+// Duration of the toolbar slide-in animation.
+const base::TimeDelta kToolbarSlideInAnimationDuration =
+    base::Milliseconds(500);
 
 // Margin between the location bar and the tab group indicator view.
 constexpr CGFloat kLocationBarToTabGroupMargin = 6;
@@ -895,8 +900,29 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
 }
 
 - (void)triggerToolbarSlideInAnimation {
-  // TODO(crbug.com/472279443): Implement this.
-  NOTREACHED();
+  // Toolbar slide-in animations are disabled on iPads.
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+
+  UIView* view = self.view;
+  CGFloat toolbarHeight = view.frame.size.height;
+  view.transform = CGAffineTransformMakeTranslation(
+      0, _topPosition ? -toolbarHeight : toolbarHeight);
+  auto animations = ^{
+    [UIView addKeyframeWithRelativeStartTime:0
+                            relativeDuration:1
+                                  animations:^{
+                                    view.transform = CGAffineTransformIdentity;
+                                  }];
+  };
+
+  [UIView
+      animateKeyframesWithDuration:kToolbarSlideInAnimationDuration.InSecondsF()
+                             delay:0
+                           options:UIViewAnimationCurveEaseInOut
+                        animations:animations
+                        completion:nil];
 }
 
 - (void)hideBannerPromo {
