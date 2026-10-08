@@ -27,14 +27,58 @@ public class BottomBarConfigUtils {
 
     private BottomBarConfigUtils() {}
 
-    // LINT.IfChange(isBottomBarEnabled)
-    /** Whether the bottom bar is enabled. */
+    /**
+     * Returns whether the bottom bar is enabled, i.e. the device and feature flag are eligible and
+     * the user has not turned it off in Settings. Most callers checking whether the bottom bar is
+     * active should use this method.
+     */
     public static boolean isBottomBarEnabled(Context context) {
+        return isBottomBarEligible(context) && isBottomBarUserEnabled();
+    }
+
+    /**
+     * Returns whether the bottom bar is eligible on this device, i.e. the feature flag is enabled
+     * and the form factor supports it. This does not take the user's Settings choice into account.
+     */
+    private static boolean isBottomBarEligible(Context context) {
         return !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
                 && !DeviceInfo.isAutomotive()
                 && ChromeFeatureList.sAndroidBottomBar.isEnabled();
     }
-    // LINT.ThenChange(//chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/ToolbarVariationUtils.java:isToolbarUiRefactorEnabled)
+
+    /**
+     * Returns whether the "Show bottom toolbar" switch should be offered in Settings: the bottom
+     * bar must be eligible on this device and the show_settings_toggle param must be on. Never true
+     * when the AndroidBottomBar flag is off.
+     */
+    public static boolean shouldShowSettingsToggle(Context context) {
+        return isBottomBarEligible(context)
+                && ChromeFeatureList.sAndroidBottomBarShowSettingsToggle.getValue();
+    }
+
+    /**
+     * Returns whether the user has the bottom bar turned on in Settings. Until the user flips the
+     * switch, the default comes from the default_user_enabled feature param; once the user has made
+     * an explicit choice it is kept regardless of the param. Feature consumers should call {@link
+     * #isBottomBarEnabled(Context)} instead.
+     */
+    public static boolean isBottomBarUserEnabled() {
+        return ChromeSharedPreferences.getInstance()
+                .readBoolean(
+                        ChromePreferenceKeys.BOTTOM_BAR_ENABLED,
+                        ChromeFeatureList.sAndroidBottomBarDefaultUserEnabled.getValue());
+    }
+
+    /**
+     * Sets whether the user has the bottom bar turned on in Settings. Because the bottom bar
+     * container stub is only inflated during startup (see {@code
+     * ToolbarManager#enableBottomControls()}), toggling this setting requires recreating {@code
+     * ChromeTabbedActivity} (e.g. via {@code Activity#recreate()}) to take effect.
+     */
+    public static void setBottomBarUserEnabled(boolean enabled) {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.BOTTOM_BAR_ENABLED, enabled);
+    }
 
     /**
      * Returns the configured height of the bottom bar in DP (clamped to [{@link

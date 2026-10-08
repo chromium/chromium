@@ -134,6 +134,9 @@ public final class ChromePreferenceKeys {
     public static final String BOOKMARKS_SORT_ORDER = "Chrome.Bookmarks.BookmarkRowSortOrder";
     public static final String BOOKMARKS_VISUALS_PREF = "Chrome.Bookmarks.BookmarkRowDisplay";
 
+    /** Whether the bottom bar is enabled by the user. Default value is true. */
+    public static final String BOTTOM_BAR_ENABLED = "Chrome.BottomBar.Enabled";
+
     /** Whether the GLIC button is enabled by the user in the bottom bar. */
     public static final String BOTTOM_BAR_GLIC_BUTTON_ENABLED =
             "Chrome.BottomBar.GlicButtonEnabled";
@@ -1180,6 +1183,7 @@ public final class ChromePreferenceKeys {
                 BLUETOOTH_NOTIFICATION_IDS,
                 BOOKMARKS_SORT_ORDER,
                 BOOKMARKS_VISUALS_PREF,
+                BOTTOM_BAR_ENABLED,
                 BOTTOM_BAR_GLIC_BUTTON_ENABLED,
                 CLIPBOARD_SHARED_URI,
                 CLIPBOARD_SHARED_URI_TIMESTAMP,

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
@@ -15,10 +16,17 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 
 /** Unit tests for {@link ToolbarVariationUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ToolbarVariationUtilsUnitTest {
+    @After
+    public void tearDown() {
+        ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.BOTTOM_BAR_ENABLED);
+    }
 
     @Test
     @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/false"})
@@ -47,6 +55,15 @@ public class ToolbarVariationUtilsUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testIsNewToolbarUiEnabled_Disabled() {
+        assertFalse(
+                ToolbarVariationUtils.isToolbarUiRefactorEnabled(
+                        RuntimeEnvironment.getApplication()));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testIsNewToolbarUiEnabled_UserDisabled() {
+        BottomBarConfigUtils.setBottomBarUserEnabled(false);
         assertFalse(
                 ToolbarVariationUtils.isToolbarUiRefactorEnabled(
                         RuntimeEnvironment.getApplication()));

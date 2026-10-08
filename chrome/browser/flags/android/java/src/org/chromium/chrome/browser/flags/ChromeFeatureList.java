@@ -1999,6 +1999,11 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "always_use_filled_glic_icon", true);
     public static final BooleanCachedFeatureParam sAndroidBottomBarBypassGlicGeofencing =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "bypass_glic_geofencing", false);
+    // Default value of the user's "Show bottom toolbar" setting while the user has not touched it.
+    // Once the user flips the toggle, their explicit choice wins over this param. Cached because
+    // the resulting enablement is read pre-native while the toolbar layout is inflated.
+    public static final BooleanCachedFeatureParam sAndroidBottomBarDefaultUserEnabled =
+            newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "default_user_enabled", true);
     public static final BooleanCachedFeatureParam sAndroidBottomBarKeepAppMenuInToolbar =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "keep_app_menu_in_toolbar", false);
     public static final BooleanCachedFeatureParam sAndroidBottomBarNtpScrollOffEnabled =
@@ -2007,6 +2012,11 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "show_bottom_bar_on_gts", false);
     public static final BooleanCachedFeatureParam sAndroidBottomBarShowGlicSettingToggle =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "show_glic_setting_toggle", false);
+    // Whether the "Show bottom toolbar" switch is offered in Appearance settings. Only consulted
+    // when the bottom bar is eligible; a disabled AndroidBottomBar flag always hides the switch.
+    // Cached to match sAndroidBottomBarDefaultUserEnabled.
+    public static final BooleanCachedFeatureParam sAndroidBottomBarShowSettingsToggle =
+            newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "show_settings_toggle", true);
     public static final BooleanCachedFeatureParam sAndroidBottomBarShowUpdateBadge =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "show_update_badge", true);
     public static final IntCachedFeatureParam sAndroidBottomBarHeightDp =
@@ -2369,11 +2379,13 @@ public abstract class ChromeFeatureList {
                     sAndroidAppRatingPromptBypassChecks,
                     sAndroidBottomBarAlwaysUseFilledGlicIcon,
                     sAndroidBottomBarBypassGlicGeofencing,
+                    sAndroidBottomBarDefaultUserEnabled,
                     sAndroidBottomBarHeightDp,
                     sAndroidBottomBarKeepAppMenuInToolbar,
                     sAndroidBottomBarNtpScrollOffEnabled,
                     sAndroidBottomBarShowBottomBarOnGts,
                     sAndroidBottomBarShowGlicSettingToggle,
+                    sAndroidBottomBarShowSettingsToggle,
                     sAndroidBottomBarShowUpdateBadge,
                     sAndroidTipsNotificationsAlwaysShowOptInPromo,
                     sAndroidTipsNotificationsResetFeatureTipShown,

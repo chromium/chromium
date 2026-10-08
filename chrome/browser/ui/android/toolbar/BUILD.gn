@@ -13,9 +13,8 @@ android_library("variation_utils_java") {
     "java/src/org/chromium/chrome/browser/toolbar/ToolbarVariationUtils.java",
   ]
   deps = [
-    "//base:build_info_java",
     "//chrome/browser/flags:java",
-    "//ui/android:ui_no_recycler_view_java",
+    "//chrome/browser/ui/android/bottombar:config_java",
   ]
 }
 
@@ -555,6 +554,7 @@ robolectric_library("junit") {
     "//chrome/browser/ui/android/actions:java",
     "//chrome/browser/ui/android/appmenu:java",
     "//chrome/browser/ui/android/bars_common:java",
+    "//chrome/browser/ui/android/bottombar:config_java",
     "//chrome/browser/ui/android/desktop_windowing:java",
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/edge_to_edge/internal:java",
