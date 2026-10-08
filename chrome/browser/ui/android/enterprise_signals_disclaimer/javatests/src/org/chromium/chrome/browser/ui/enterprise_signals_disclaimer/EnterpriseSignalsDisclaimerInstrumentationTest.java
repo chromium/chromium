@@ -10,16 +10,13 @@ import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.swipeDown;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
-import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
-import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
+import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 import static org.chromium.ui.test.util.ViewUtils.waitForVisibleView;
-import static org.chromium.ui.test.util.ViewUtils.withEventualExpectedViewState;
 
 import android.view.FocusFinder;
 import android.view.View;
@@ -177,10 +174,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
     }
 
     private void waitForDisclaimerNotShowing() {
-        onView(isRoot())
-                .check(
-                        withEventualExpectedViewState(
-                                withId(R.id.disclaimer_scroll_view), VIEW_GONE | VIEW_NULL));
+        waitForNoView(withId(R.id.disclaimer_scroll_view));
     }
 
     private EnterpriseSignalsDisclaimerController createController() {

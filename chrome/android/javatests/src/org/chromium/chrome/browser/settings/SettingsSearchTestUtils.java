@@ -8,13 +8,14 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
 
+import static org.chromium.base.test.transit.ViewElement.displayingAtLeastOption;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.toolbar.top.ButtonHighlightMatcher.withHighlight;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -26,7 +27,6 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.hamcrest.Matcher;
 
 import org.chromium.chrome.R;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.Set;
 
@@ -91,13 +91,10 @@ public class SettingsSearchTestUtils {
 
     /** Asserts that no search results are found in Settings search. */
     public static void assertNoSearchResultsFound() {
-        // Uses {@code ViewUtils.isEventuallyVisible} rather than {@code isDisplayed()} because the
+        // Uses {@code ViewFinder.waitForView} rather than {@code isDisplayed()} because the
         // keyboard can cover the empty state text on smaller devices, resulting in less than 51% of
         // the view being displayed.
-        onView(isRoot())
-                .check(
-                        ViewUtils.isEventuallyVisible(
-                                withText(R.string.search_in_settings_no_match)));
+        waitForView(withText(R.string.search_in_settings_no_match), displayingAtLeastOption(1));
     }
 
     /**
