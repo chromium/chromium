@@ -189,10 +189,6 @@ const char kWebAudioBypassOutputBufferingOptOut[] =
 const char kDisableBackForwardCacheForWebSockets[] =
     "disable-back-forward-cache-for-web-sockets";
 
-// Override mechanism for ReduceAcceptLanguage. This feature is typically
-// controlled by base features, but requires an enterprise policy override.
-const char kDisableReduceAcceptLanguage[] = "disable-reduce-accept-language";
-
 // A switch that controls XSLT availability via enterprise policy.
 const char kXSLTEnabledPolicy[] = "xslt-enabled-policy";
 

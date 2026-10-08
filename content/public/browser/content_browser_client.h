@@ -3095,11 +3095,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool IsBlobUrlPartitioningEnabled(
       content::BrowserContext* browser_context);
 
-  // Checks if the given BrowserContext allows to reduce Accept-Language in HTTP
-  // header and Javascript getter.
-  virtual bool ShouldReduceAcceptLanguage(
-      content::BrowserContext* browser_context);
-
   // Checks whether window.name is allowed to be cleared for top-level
   // cross-site navigations that create a new BrowsingContextGroup.
   virtual bool IsClearWindowNameForNewBrowsingContextGroupAllowed(

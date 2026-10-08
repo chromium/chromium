@@ -1191,11 +1191,6 @@ inline constexpr char kPartitionedBlobUrlUsage[] =
 inline constexpr char kXSLTDeprecationBannerSuppressed[] =
     "profile.xslt_deprecation_banner_suppressed";
 
-// Boolean value indicating if the Reduce Accept-Language feature should be
-// enabled. Defaults to network::features::kReduceAcceptLanguage field trial.
-inline constexpr char kReduceAcceptLanguageEnabled[] =
-    "profile.reduce_accept_language_enabled";
-
 // Boolean indicating if JS dialogs triggered from a different origin iframe
 // should be blocked. Has no effect if
 // "SuppressDifferentOriginSubframeJSDialogs" feature is disabled.

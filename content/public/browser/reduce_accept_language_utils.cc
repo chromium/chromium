@@ -65,12 +65,6 @@ ReduceAcceptLanguageUtils ReduceAcceptLanguageUtils::CreateForTesting(
 std::optional<ReduceAcceptLanguageUtils> ReduceAcceptLanguageUtils::Create(
     BrowserContext* browser_context) {
   DCHECK(browser_context);
-  // Check whether enterprise policy disable this feature.
-  if (!GetContentClient()->browser()->ShouldReduceAcceptLanguage(
-          browser_context)) {
-    return std::nullopt;
-  }
-
   if (!ReduceAcceptLanguageFeatureEnabled()) {
     return std::nullopt;
   }

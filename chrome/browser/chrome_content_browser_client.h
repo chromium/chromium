@@ -1119,9 +1119,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsBlobUrlPartitioningEnabled(
       content::BrowserContext* browser_context) override;
 
-  bool ShouldReduceAcceptLanguage(
-      content::BrowserContext* browser_context) override;
-
   bool IsClearWindowNameForNewBrowsingContextGroupAllowed(
       content::BrowserContext* browser_context) override;
 

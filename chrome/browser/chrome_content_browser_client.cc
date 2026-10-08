@@ -1744,7 +1744,6 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
       policy::policy_prefs::kBackForwardCacheForWebSocketsAllowed, true);
   registry->RegisterBooleanPref(
       prefs::kServiceWorkerToControlSrcdocIframeEnabled, true);
-  registry->RegisterBooleanPref(prefs::kReduceAcceptLanguageEnabled, true);
   registry->RegisterBooleanPref(policy::policy_prefs::kBuiltInAIAPIsEnabled,
                                 true);
   registry->RegisterBooleanPref(
@@ -3018,10 +3017,6 @@ void AppendExtraCommandLineSwitchesFromPrefs(base::CommandLine* command_line,
           policy::policy_prefs::kBackForwardCacheForWebSocketsAllowed)) {
     command_line->AppendSwitch(
         blink::switches::kDisableBackForwardCacheForWebSockets);
-  }
-
-  if (!prefs->GetBoolean(prefs::kReduceAcceptLanguageEnabled)) {
-    command_line->AppendSwitch(blink::switches::kDisableReduceAcceptLanguage);
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -9378,20 +9373,6 @@ bool ChromeContentBrowserClient::IsBlobUrlPartitioningEnabled(
       Profile::FromBrowserContext(browser_context)
           ->GetPrefs()
           ->FindPreference(prefs::kPartitionedBlobUrlUsage);
-
-  if (pref && pref->IsManaged() && pref->GetValue()->is_bool()) {
-    return pref->GetValue()->GetBool();
-  }
-  return true;
-}
-
-bool ChromeContentBrowserClient::ShouldReduceAcceptLanguage(
-    content::BrowserContext* browser_context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  const PrefService::Preference* pref =
-      Profile::FromBrowserContext(browser_context)
-          ->GetPrefs()
-          ->FindPreference(prefs::kReduceAcceptLanguageEnabled);
 
   if (pref && pref->IsManaged() && pref->GetValue()->is_bool()) {
     return pref->GetValue()->GetBool();

@@ -1,11 +1,14 @@
 caption: Control <ph name="ALR_FEATURE_NAME">Accept-Language Reduction</ph>
+deprecated: true
 
 desc: |-
-  The <ph name="AL_HEADER_NAME">Accept-Language</ph> HTTP request header and the JavaScript <ph name="JS_GETTER_NAME">navigator.languages</ph> getter are planned for reduction for privacy reasons.
-  To facilitate testing and ensure compatibility, this policy allows you to enable or disable the <ph name="ALR_FEATURE_NAME">Accept-Language Reduction</ph> feature.
+  This policy is deprecated and has no effect starting with M157 because the <ph name="ALR_FEATURE_NAME">Accept-Language Reduction</ph> feature has been discontinued. The <ph name="AL_HEADER_NAME">Accept-Language</ph> HTTP request header and the JavaScript <ph name="JS_GETTER_NAME">navigator.languages</ph> getter continue to provide the full configured language list.
 
-  If this policy is set to enabled or left unset, <ph name="ALR_FEATURE_NAME">Accept-Language Reduction</ph> will be applied through field trials.
-  If this policy is set to disabled, field trials will not be able to activate <ph name="ALR_FEATURE_NAME">Accept-Language Reduction</ph>.
+  Before M157, the <ph name="AL_HEADER_NAME">Accept-Language</ph> HTTP request header and the JavaScript <ph name="JS_GETTER_NAME">navigator.languages</ph> getter were planned for reduction for privacy reasons.
+  To facilitate testing and ensure compatibility, this policy allowed you to enable or disable the <ph name="ALR_FEATURE_NAME">Accept-Language Reduction</ph> feature.
+
+  If this policy was set to enabled or left unset, <ph name="ALR_FEATURE_NAME">Accept-Language Reduction</ph> was applied through field trials.
+  If this policy was set to disabled, field trials were not able to activate <ph name="ALR_FEATURE_NAME">Accept-Language Reduction</ph>.
 
   For more information about this feature, please visit: https://github.com/explainers-by-googlers/reduce-accept-language.
 
@@ -17,9 +20,9 @@ owners:
 - potassium-katabolism@google.com
 
 supported_on:
- - chrome.*:136-
- - chrome_os:136-
- - android:136-
+ - chrome.*:136-156
+ - chrome_os:136-156
+ - android:136-156
 
 features:
   dynamic_refresh: true
