@@ -37,9 +37,16 @@ class ScriptPromise;
 // operation, whose `kind` argument is either ASYNC or SYNC, directing the
 // operation as to which iterator type to try and obtain from the ES object.
 //
+// Web IDL's async_sequence<T> type [4] looks the iteration method up when a
+// value is converted and only calls it later, when the sequence is "opened";
+// see `LookUpAsyncIterableMethod()` and `FromIteratorMethod()` for that split,
+// and `Kind::kAsyncFromSync` for consuming an @@iterator-only object
+// asynchronously.
+//
 // [1]: https://tc39.es/ecma262/#sec-iterator-records
 // [2]: https://tc39.es/ecma262/#table-async-iterator-required
 // [3]: https://tc39.es/ecma262/#sec-getiterator
+// [4]: https://webidl.spec.whatwg.org/#idl-async-iterable-type
 //
 //
 // Async iterable usage:
@@ -56,7 +63,7 @@ class ScriptPromise;
 //       }
 //
 //       // When `iterator_.IsNull()` is true but no exception is on the stack,
-//       // then `obj` is not async iterable.
+//       // then `obj` is neither async iterable nor iterable.
 //       if (iterator_.IsNull()) {
 //         DCHECK(!exception_state.HadException());
 //         return;
@@ -127,21 +134,78 @@ class CORE_EXPORT ScriptIterator {
     kNull = 0,
     kSync = 1,
     kAsync = 2,
+    // A sync iterator driven through the async protocol. ECMAScript's
+    // CreateAsyncFromSyncIterator() models this with a wrapper object whose
+    // next() and return() delegate to the sync iterator; here the
+    // ScriptIterator itself stands in for that object, holding the sync
+    // iterator record while Next() and CloseAsync() implement the wrapper's
+    // next() and return(): Next() yields (via GetValue()) a Promise for an
+    // iterator result object whose value has been awaited, and CloseAsync()
+    // forwards to the sync iterator's return(). Consumers drive this kind
+    // exactly like `kAsync`. GetIterator(obj, ASYNC) and Web IDL's
+    // async_sequence<T> conversion produce it when an object has an @@iterator
+    // method but no @@asyncIterator method.
+    // https://tc39.es/ecma262/#sec-createasyncfromsynciterator
+    kAsyncFromSync = 3,
   };
 
   // Creates a ScriptIterator out of an ES object that implements the iterable
-  // and iterator protocols.
+  // and iterator protocols, following GetIterator(obj, kind). With `kAsync`,
+  // an object that only has an @@iterator method is iterated through the
+  // async protocol, as CreateAsyncFromSyncIterator() specifies; the returned
+  // iterator then has `Kind::kAsyncFromSync`, which consumers drive exactly
+  // like `kAsync`.
   // Both the return value and the ExceptionState should be checked:
   // - The ExceptionState will contain an exception if V8 throws one, or if the
   //   ES objects do not conform to the expected protocols. In this case, the
   //   returned ScriptIterator will be null.
   // - ScriptIterator can be null even if there is no exception. In this case,
-  //   it indicates that the given ES object does not have an @@iterator
-  //   property.
+  //   it indicates that the given ES object has no @@iterator method (nor,
+  //   with `kAsync`, an @@asyncIterator method).
+  // TODO(crbug.com/356891478): the 'exception_state' output argument must be
+  // declared after the last input argument.
+  // https://google.github.io/styleguide/cppguide.html#Inputs_and_Outputs
   static ScriptIterator FromIterable(v8::Isolate* isolate,
                                      v8::Local<v8::Object> iterable,
                                      ExceptionState& exception_state,
                                      ScriptIterator::Kind kind);
+
+  // Implements GetIteratorFromMethod(obj, method):
+  // https://tc39.es/ecma262/#sec-getiteratorfrommethod
+  //
+  // `method` is called on `iterable`, and the result must be an object;
+  // otherwise a TypeError is thrown and a null ScriptIterator is returned.
+  // `kind` says how the resulting iterator is driven: pass `kAsyncFromSync`
+  // when `method` is an @@iterator method whose iterator must be consumed
+  // asynchronously.
+  // TODO(crbug.com/356891478): the 'exception_state' output argument must be
+  // declared after the last input argument.
+  // https://google.github.io/styleguide/cppguide.html#Inputs_and_Outputs
+  static ScriptIterator FromIteratorMethod(v8::Isolate* isolate,
+                                           v8::Local<v8::Object> iterable,
+                                           v8::Local<v8::Function> method,
+                                           ExceptionState& exception_state,
+                                           ScriptIterator::Kind kind);
+
+  // GetMethod(obj, @@asyncIterator), then, if that is undefined,
+  // GetMethod(obj, @@iterator): the lookups of Web IDL's async_sequence<T>
+  // conversion, and of GetIterator(obj, ASYNC).
+  // https://webidl.spec.whatwg.org/#js-async-sequence
+  //
+  // Returns false, with an exception on `exception_state`, if a property
+  // getter throws or a present method is not callable. Otherwise returns true
+  // and sets `*method` and `*kind` (`kAsync` or `kAsyncFromSync`); `*method`
+  // is left empty, and `*kind` untouched, when neither method exists, so that
+  // callers can choose between throwing a TypeError and trying another
+  // conversion.
+  // TODO(crbug.com/356891478): the 'exception_state' output argument must be
+  // declared after the last input argument.
+  // https://google.github.io/styleguide/cppguide.html#Inputs_and_Outputs
+  static bool LookUpAsyncIterableMethod(v8::Isolate* isolate,
+                                        v8::Local<v8::Object> object,
+                                        ExceptionState& exception_state,
+                                        v8::Local<v8::Function>* method,
+                                        ScriptIterator::Kind* kind);
 
   // Returns a `ScriptIterator` whose `IsNull()` is true. This is only needed
   // when storing a bare `ScriptIterator` in a class, which is useful in the
@@ -161,26 +225,33 @@ class CORE_EXPORT ScriptIterator {
   bool Next(ExecutionContext* execution_context,
             ExceptionState& exception_state);
 
-  // This method implements both:
-  //  - https://tc39.es/ecma262/#sec-iteratorclose
-  //  - https://whatpr.org/webidl/1397.html#async-iterator-close
+  // These methods implement:
+  //  - https://tc39.es/ecma262/#sec-iteratorclose (CloseSync)
+  //  - https://webidl.spec.whatwg.org/#async-iterator-close (CloseAsync)
   //
-  // It should be called when the consumer of an iterator (sync or async) needs
-  // to signal to the iterator that it will stop consuming values before the
-  // iterator is exhausted. Specifically, this method calls the `return()`
-  // method on the underlying `iterator_`. If `kind_` is `kAsync`, any errors
-  // are swallowed on the stack and returned in the form of a rejected Promise.
-  // In the `kSync` case, any errors encountered are rethrown. Otherwise:
+  // They should be called when the consumer of an iterator needs to signal to
+  // the iterator that it will stop consuming values before the iterator is
+  // exhausted. Specifically, they call the `return()` method on the underlying
+  // `iterator_`.
   //
-  //   1. If `kind_` is `kAsync`, returns a Promise that resolves to undefined
-  //      unless `return()` fails to return an Object, in which case the
-  //      returned Promise is rejected.
-  //   2. If `kind_` is `kSync`, returns `reason`, per the ECMAScript Standard,
-  //      and throws an error if `return()` fails to return an Object.
+  //   1. `CloseSync()` requires `kind_` to be `kSync`. It returns `reason`,
+  //      per the ECMAScript Standard, and throws an error if `return()` throws
+  //      or fails to return an Object.
+  //   2. `CloseAsync()` requires `kind_` to be `kAsync` or `kAsyncFromSync`.
+  //      Any errors are swallowed on the stack and returned in the form of a
+  //      rejected Promise. It returns a Promise that resolves to undefined,
+  //      also when there is no `return()` method, unless `return()` throws, is
+  //      not callable, or fails to (eventually) produce an Object, in which
+  //      case the returned Promise is rejected. For `kAsyncFromSync` the sync
+  //      iterator's `return()` is called and its result's value is awaited, as
+  //      %AsyncFromSyncIteratorPrototype%.return does.
+  // TODO(crbug.com/356891478): the 'exception_state' output argument must be
+  // declared after the last input argument.
+  // https://google.github.io/styleguide/cppguide.html#Inputs_and_Outputs
   ScriptValue CloseSync(ScriptState* script_state,
                         ExceptionState& exception_state,
                         v8::Local<v8::Value> reason);
-  ScriptPromise<IDLAny> CloseAsync(
+  ScriptPromise<IDLUndefined> CloseAsync(
       ScriptState* script_state,
       const ExceptionContext& exception_context,
       v8::Local<v8::Value> reason = v8::Local<v8::Value>());
@@ -204,6 +275,22 @@ class CORE_EXPORT ScriptIterator {
                  v8::Local<v8::Value> next_method,
                  Kind kind);
 
+  // Steps 6-16 of AsyncFromSyncIteratorContinuation(result,
+  // promiseCapability, syncIteratorRecord, closeOnRejection) for the
+  // `kAsyncFromSync` kind, given the `done` and `value` that its steps 2-5
+  // read from the sync iterator result:
+  // https://tc39.es/ecma262/#sec-asyncfromsynciteratorcontinuation
+  //
+  // Returns a Promise for an iterator result object whose value is the awaited
+  // `value`. If `value` rejects and `close_on_rejection` is true, the sync
+  // iterator is closed before the returned Promise is rejected. Returns an
+  // empty MaybeLocal only if script execution is being terminated.
+  v8::MaybeLocal<v8::Promise> AsyncFromSyncIteratorContinuation(
+      ScriptState* script_state,
+      bool done,
+      v8::Local<v8::Value> value,
+      bool close_on_rejection);
+
   v8::Isolate* isolate_ = nullptr;
   WorldSafeV8Reference<v8::Object> iterator_;
   WorldSafeV8Reference<v8::Value> next_method_;
@@ -211,7 +298,7 @@ class CORE_EXPORT ScriptIterator {
   v8::Local<v8::String> value_key_;
   bool done_ = true;
   WorldSafeV8Reference<v8::Value> value_;
-  Kind kind_;
+  Kind kind_ = Kind::kNull;
 };
 
 }  // namespace blink

@@ -45,27 +45,34 @@ v8::Local<v8::Object> ESCreateIterResultObject(ScriptState* script_state,
   return ESCreateIterResultObject(script_state, done, value);
 }
 
+bool ESUnpackIterResultObject(ScriptState* script_state,
+                              v8::Local<v8::Object> iter_result,
+                              bool* out_done,
+                              v8::Local<v8::Value>* out_value) {
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::Local<v8::Context> context = script_state->GetContext();
+  // The order of the two reads is observable through accessor properties on
+  // `iter_result`, so "done" must be read first.
+  v8::Local<v8::Value> done;
+  if (!iter_result->Get(context, V8AtomicString(isolate, "done"))
+           .ToLocal(&done)) {
+    return false;
+  }
+  *out_done = done->BooleanValue(isolate);
+  return iter_result->Get(context, V8AtomicString(isolate, "value"))
+      .ToLocal(out_value);
+}
+
 }  // namespace bindings
 
 bool V8UnpackIterationResult(ScriptState* script_state,
                              v8::Local<v8::Object> sync_iteration_result,
                              v8::Local<v8::Value>* out_value,
                              bool* out_done) {
-  v8::Isolate* isolate = script_state->GetIsolate();
-  v8::Local<v8::Context> context = script_state->GetContext();
-  v8::TryCatch try_block(isolate);
-
-  if (!sync_iteration_result->Get(context, V8AtomicString(isolate, "value"))
-           .ToLocal(out_value)) {
-    return false;
-  }
-  v8::Local<v8::Value> done_value;
-  if (!sync_iteration_result->Get(context, V8AtomicString(isolate, "done"))
-           .ToLocal(&done_value)) {
-    return false;
-  }
-  *out_done = done_value->BooleanValue(isolate);
-  return true;
+  v8::TryCatch try_block(script_state->GetIsolate());
+  // Note the swapped out-parameter order of the two functions.
+  return bindings::ESUnpackIterResultObject(script_state, sync_iteration_result,
+                                            out_done, out_value);
 }
 
 }  // namespace blink

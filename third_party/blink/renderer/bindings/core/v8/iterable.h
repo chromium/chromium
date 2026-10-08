@@ -52,6 +52,18 @@ CORE_EXPORT v8::Local<v8::Object> ESCreateIterResultObject(
     v8::Local<v8::Value> item1,
     v8::Local<v8::Value> item2);
 
+// Reads the "done" and then the "value" property of an iterator result
+// object, in the order IteratorComplete() and IteratorValue() do:
+// https://tc39.es/ecma262/#sec-iteratorcomplete
+// https://tc39.es/ecma262/#sec-iteratorvalue
+// Returns false if a property access throws; the exception is left pending for
+// the caller's v8::TryCatch or TryRethrowScope.
+[[nodiscard]] CORE_EXPORT bool ESUnpackIterResultObject(
+    ScriptState* script_state,
+    v8::Local<v8::Object> iter_result,
+    bool* out_done,
+    v8::Local<v8::Value>* out_value);
+
 template <typename IDLKeyType,
           typename IDLValueType,
           typename KeyType,
@@ -320,6 +332,8 @@ class ValueSyncIterable {
 
 // Unpacks `sync_iteration_result`, stores 'value' and 'done' properties in
 // `out_value` and 'out_done` respectively, and returns true on success.
+// Exceptions thrown by property getters are swallowed; production code should
+// use bindings::ESUnpackIterResultObject() instead.
 [[nodiscard]] CORE_EXPORT bool V8UnpackIterationResult(
     ScriptState* script_state,
     v8::Local<v8::Object> sync_iteration_result,
