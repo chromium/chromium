@@ -41,6 +41,14 @@
 // Whether the labels should be disabled (change text color). Default NO.
 @property(nonatomic, assign, getter=isTextDisabled) BOOL textDisabled;
 
+// The vertical alignment of the cell content. Defaults to
+// UIStackViewAlignmentCenter.
+@property(nonatomic, assign) UIStackViewAlignment verticalAlignment;
+
+// Whether the cell should reserve horizontal space for the leading content view
+// even when `leadingConfiguration` is nil. Defaults to NO.
+@property(nonatomic, assign) BOOL reservesLeadingSpace;
+
 // The title of the cell. `attributedTitle` takes precedence over `title`.
 @property(nonatomic, copy) NSString* title;
 @property(nonatomic, copy) NSAttributedString* attributedTitle;

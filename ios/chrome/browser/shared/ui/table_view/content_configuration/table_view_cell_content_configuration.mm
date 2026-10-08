@@ -20,6 +20,7 @@
     _trailingTextNumberOfLines = 1;
     _titleLineBreakMode = NSLineBreakByWordWrapping;
     _subtitleLineBreakMode = NSLineBreakByWordWrapping;
+    _verticalAlignment = UIStackViewAlignmentCenter;
   }
   return self;
 }
@@ -72,9 +73,11 @@
 
 - (UIEdgeInsets)separatorInsets {
   CGFloat leadingInset = kTableViewHorizontalSpacing;
-  if (_leadingConfiguration) {
+  if (_leadingConfiguration || _reservesLeadingSpace) {
     leadingInset += kTableViewImagePadding;
-    leadingInset += [_leadingConfiguration contentSize].width;
+    leadingInset += _leadingConfiguration
+                        ? [_leadingConfiguration contentSize].width
+                        : kTableViewIconImageSize;
   }
   return UIEdgeInsetsMake(0, leadingInset, 0, 0);
 }
@@ -99,6 +102,8 @@
   copy.leadingConfiguration = [self.leadingConfiguration copyWithZone:zone];
   copy.trailingConfiguration = [self.trailingConfiguration copyWithZone:zone];
   copy.textDisabled = self.textDisabled;
+  copy.verticalAlignment = self.verticalAlignment;
+  copy.reservesLeadingSpace = self.reservesLeadingSpace;
   copy.title = self.title;
   copy.attributedTitle = self.attributedTitle;
   copy.titleColor = self.titleColor;

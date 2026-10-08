@@ -46,6 +46,7 @@ const NSInteger kDefaultNumberOfLinesSubtitle = 1;
     _detailTextNumberOfLines = kDefaultNumberOfLinesSubtitle;
     _textLineBreakMode = NSLineBreakByTruncatingTail;
     _detailTextLineBreakMode = NSLineBreakByTruncatingTail;
+    _verticalAlignment = UIStackViewAlignmentCenter;
   }
   return self;
 }
@@ -105,6 +106,8 @@ const NSInteger kDefaultNumberOfLinesSubtitle = 1;
 
   contentConfiguration.titleLineBreakMode = self.textLineBreakMode;
   contentConfiguration.subtitleLineBreakMode = self.detailTextLineBreakMode;
+  contentConfiguration.verticalAlignment = self.verticalAlignment;
+  contentConfiguration.reservesLeadingSpace = self.reservesLeadingSpace;
 
   if (self.iconImage) {
     ColorfulSymbolContentConfiguration* symbolConfiguration =

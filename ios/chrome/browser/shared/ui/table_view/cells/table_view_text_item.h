@@ -36,6 +36,10 @@
 // Sets the number of line for the cell title. Default is 2.
 @property(nonatomic, assign) NSInteger titleNumberOfLines;
 
+// Whether the cell should reserve horizontal space for a leading icon.
+// Used to align text with other cells that display an icon. Defaults to NO.
+@property(nonatomic, assign) BOOL reservesLeadingSpace;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CELLS_TABLE_VIEW_TEXT_ITEM_H_

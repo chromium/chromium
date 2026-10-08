@@ -68,6 +68,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":content_configuration",
+    "//base",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//testing/gtest",
   ]

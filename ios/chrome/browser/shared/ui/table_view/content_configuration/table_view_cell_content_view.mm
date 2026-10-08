@@ -104,6 +104,10 @@ constexpr CGFloat kTrailingMarginWithAccessory = 8;
   // The container for the trailing content view.
   UIView* _trailingContentViewContainer;
 
+  // Constraints for reserving leading space when there is no leading content
+  // view.
+  NSLayoutConstraint* _leadingReservedWidthConstraint;
+
   // The labels.
   UILabel* _title;
   UILabel* _subtitle;
@@ -134,7 +138,6 @@ constexpr CGFloat kTrailingMarginWithAccessory = 8;
     _configuration = [configuration copy];
     [self setupViews];
     [self applyConfiguration];
-    [self updateForContentSizeChange];
 
     [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
                        withAction:@selector(updateForContentSizeChange)];
@@ -191,6 +194,7 @@ constexpr CGFloat kTrailingMarginWithAccessory = 8;
     _leadingContentView = nil;
   }
   _leadingContentViewContainer.hidden = YES;
+  _leadingReservedWidthConstraint.active = NO;
 
   if (leadingConfiguration) {
     _leadingContentViewContainer.hidden = NO;
@@ -202,6 +206,9 @@ constexpr CGFloat kTrailingMarginWithAccessory = 8;
       [_leadingContentViewContainer addSubview:_leadingContentView];
       AddSameConstraints(_leadingContentView, _leadingContentViewContainer);
     }
+  } else if (_configuration.reservesLeadingSpace) {
+    _leadingContentViewContainer.hidden = NO;
+    _leadingReservedWidthConstraint.active = YES;
   }
 
   id<ChromeContentConfiguration> trailingConfiguration =
@@ -261,7 +268,7 @@ constexpr CGFloat kTrailingMarginWithAccessory = 8;
   _trailingLabel.hidden = !_trailingLabel.text;
   _trailingLabel.enabled = !_configuration.textDisabled;
 
-  [self updateNumberOfLines];
+  [self updateForContentSizeChange];
 
   [_titleSubtitleContainer invalidateIntrinsicContentSize];
 }
@@ -304,9 +311,9 @@ constexpr CGFloat kTrailingMarginWithAccessory = 8;
     [NSLayoutConstraint activateConstraints:_accessibilityTextConstraints];
   } else {
     _allTextStack.axis = UILayoutConstraintAxisHorizontal;
-    _allTextStack.alignment = UIStackViewAlignmentCenter;
+    _allTextStack.alignment = _configuration.verticalAlignment;
     _mainStack.axis = UILayoutConstraintAxisHorizontal;
-    _mainStack.alignment = UIStackViewAlignmentCenter;
+    _mainStack.alignment = _configuration.verticalAlignment;
 
     _trailingLabel.textAlignment =
         self.effectiveUserInterfaceLayoutDirection ==
@@ -325,6 +332,9 @@ constexpr CGFloat kTrailingMarginWithAccessory = 8;
 - (void)setupViews {
   _leadingContentViewContainer = [[UIView alloc] init];
   _leadingContentViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
+
+  _leadingReservedWidthConstraint = [_leadingContentViewContainer.widthAnchor
+      constraintEqualToConstant:kTableViewIconImageSize];
 
   _trailingContentViewContainer = [[UIView alloc] init];
   _trailingContentViewContainer.translatesAutoresizingMaskIntoConstraints = NO;

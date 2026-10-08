@@ -52,6 +52,7 @@
   }
   configuration.titleColor = self.textColor;
   configuration.titleNumberOfLines = self.titleNumberOfLines;
+  configuration.reservesLeadingSpace = self.reservesLeadingSpace;
 
   cell.contentConfiguration = configuration;
 

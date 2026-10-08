@@ -66,6 +66,15 @@ enum class BadgeType {
 @property(nonatomic, assign) NSLineBreakMode textLineBreakMode;
 @property(nonatomic, assign) NSLineBreakMode detailTextLineBreakMode;
 
+// The vertical alignment of the cell content. Defaults to
+// UIStackViewAlignmentCenter.
+@property(nonatomic, assign) UIStackViewAlignment verticalAlignment;
+
+// Whether the cell should reserve horizontal space for a leading icon even if
+// no icon is provided. Used to align text with other cells that display an
+// icon. Defaults to NO.
+@property(nonatomic, assign) BOOL reservesLeadingSpace;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CELLS_TABLE_VIEW_DETAIL_ICON_ITEM_H_

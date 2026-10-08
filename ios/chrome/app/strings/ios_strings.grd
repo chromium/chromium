@@ -5678,6 +5678,15 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_OPTIONS_ENABLE_UNIVERSAL_OPT_OUT_DETAILS" desc="Subtitle of a setting. It appears below the title: ‘Send an opt-out request to sites regarding use of your data’. Users choose whether they want to send a request to sites about how to treat their user data. This string explains that sites may not respond to the user’s request even when this toggle is on; and, even when they do respond, sites may handle opt-out requests differently based on regional laws. On desktop computers, this string appears in the ‘Site requests’ section of the ‘Third-party cookies and site data’ page. On mobile devices, this string appears on its own subpage. The tone should be informative." meaning="Subtitle of a setting. Uses iOS specific link placeholder.">
         The sites you visit, including Google, are responsible for determining how they respond to this request. Depending on the laws in your region, sites may respond by limiting the sale and sharing of your data or its use for personalized ads. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>
+      <message name="IDS_IOS_OPTIONS_ENABLE_UNIVERSAL_OPT_OUT_ERROR_IPAD" desc="Error message displayed in the Universal Opt-Out settings screen when the web extension fails to load on iPad. [iOS only]">
+        Something went wrong with this setting. Update and restart Chrome and iPadOS, and try again. If this error keeps happening, your iPad might not support this setting.
+      </message>
+      <message name="IDS_IOS_OPTIONS_ENABLE_UNIVERSAL_OPT_OUT_ERROR_IPHONE" desc="Error message displayed in the Universal Opt-Out settings screen when the web extension fails to load on iPhone. [iOS only]">
+        Something went wrong with this setting. Update and restart Chrome and iOS, and try again. If this error keeps happening, your iPhone might not support this setting.
+      </message>
+      <message name="IDS_IOS_OPTIONS_ENABLE_UNIVERSAL_OPT_OUT_ERROR_LEARN_MORE" desc="Button label allowing the user to learn more about the Universal Opt-Out error. [iOS only]">
+        Learn more
+      </message>
       <message name="IDS_IOS_OPTIONS_GENERAL_TAB_LABEL" desc="The title of the Basics section of the Settings page. [iOS only]" meaning="The title of the Basics section of the Settings page.">
         Basics
       </message>

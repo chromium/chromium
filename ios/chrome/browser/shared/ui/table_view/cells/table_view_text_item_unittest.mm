@@ -88,3 +88,18 @@ TEST_F(TableViewTextItemTest, HeadlineFont) {
                                            effectiveRange:nil];
   EXPECT_NSEQ([UIFont preferredFontForTextStyle:UIFontTextStyleHeadline], font);
 }
+
+// Tests that reservesLeadingSpace is passed to contentConfiguration.
+TEST_F(TableViewTextItemTest, TestReservesLeadingSpace) {
+  TableViewTextItem* item = [[TableViewTextItem alloc] initWithType:0];
+  item.text = @"Cell text";
+  item.reservesLeadingSpace = YES;
+
+  LegacyTableViewCell* cell = [[[item cellClass] alloc] init];
+  [item configureCell:cell];
+
+  TableViewCellContentConfiguration* configuration =
+      base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
+          cell.contentConfiguration);
+  EXPECT_TRUE(configuration.reservesLeadingSpace);
+}

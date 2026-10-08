@@ -134,3 +134,35 @@ TEST_F(TableViewDetailIconItemTest, ItemWithDetailTextNumberOfLines) {
   EXPECT_NSEQ(detail_text, configuration.trailingText);
   EXPECT_EQ(1, configuration.trailingTextNumberOfLines);
 }
+
+// Tests that verticalAlignment is passed to contentConfiguration.
+TEST_F(TableViewDetailIconItemTest, TestVerticalAlignment) {
+  TableViewDetailIconItem* item =
+      [[TableViewDetailIconItem alloc] initWithType:0];
+  item.text = @"Text";
+  item.verticalAlignment = UIStackViewAlignmentTop;
+
+  LegacyTableViewCell* cell = [[[item cellClass] alloc] init];
+  [item configureCell:cell];
+
+  TableViewCellContentConfiguration* configuration =
+      base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
+          cell.contentConfiguration);
+  EXPECT_EQ(UIStackViewAlignmentTop, configuration.verticalAlignment);
+}
+
+// Tests that reservesLeadingSpace is passed to contentConfiguration.
+TEST_F(TableViewDetailIconItemTest, TestReservesLeadingSpace) {
+  TableViewDetailIconItem* item =
+      [[TableViewDetailIconItem alloc] initWithType:0];
+  item.text = @"Text";
+  item.reservesLeadingSpace = YES;
+
+  LegacyTableViewCell* cell = [[[item cellClass] alloc] init];
+  [item configureCell:cell];
+
+  TableViewCellContentConfiguration* configuration =
+      base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
+          cell.contentConfiguration);
+  EXPECT_TRUE(configuration.reservesLeadingSpace);
+}

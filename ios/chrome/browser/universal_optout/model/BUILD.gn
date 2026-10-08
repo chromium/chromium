@@ -21,6 +21,10 @@ source_set("model") {
   ]
 }
 
+source_set("constants") {
+  sources = [ "constants.h" ]
+}
+
 source_set("eligibility_utils") {
   sources = [
     "eligibility_utils.h",
