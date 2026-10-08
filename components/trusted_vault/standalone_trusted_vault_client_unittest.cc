@@ -23,12 +23,14 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/trusted_vault/command_line_switches.h"
+#include "components/trusted_vault/features.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/standalone_trusted_vault_frontend.h"
 #include "components/trusted_vault/standalone_trusted_vault_server_constants.h"
@@ -419,6 +421,51 @@ TEST_F(StandaloneTrustedVaultClientTest,
 
   sync_client->RemoveObserver(&sync_observer);
   passkeys_client->RemoveObserver(&passkeys_observer);
+}
+
+TEST_F(StandaloneTrustedVaultClientTest,
+       ShouldStoreAndFetchKeysAcrossDomainsWhenFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kTrustedVaultSharedRecoveryFactorsAndEncryption);
+
+  const std::vector<uint8_t> kSyncKey = {1, 2, 3, 4};
+  const std::vector<uint8_t> kPasskeysKey = {5, 6, 7, 8};
+  CoreAccountInfo account_info = MakeAccountAvailable(kTestEmail);
+
+  {
+    scoped_refptr<StandaloneTrustedVaultFrontend> frontend = CreateFrontend();
+    std::unique_ptr<StandaloneTrustedVaultClient> sync_client =
+        CreateClient(SecurityDomainId::kChromeSync, frontend);
+    std::unique_ptr<StandaloneTrustedVaultClient> passkeys_client =
+        CreateClient(SecurityDomainId::kPasskeys, frontend);
+    WaitForIdle(sync_client.get());
+
+    StoreKeys(sync_client.get(), account_info.gaia, {kSyncKey},
+              /*last_key_version=*/1);
+    StoreKeys(passkeys_client.get(), account_info.gaia, {kPasskeysKey},
+              /*last_key_version=*/2);
+    WaitForIdle(sync_client.get());
+
+    EXPECT_THAT(FetchKeys(sync_client.get(), account_info),
+                ElementsAre(kSyncKey));
+    EXPECT_THAT(FetchKeys(passkeys_client.get(), account_info),
+                ElementsAre(kPasskeysKey));
+  }
+
+  // Verify persistence across frontend/client restart with LocalDomainsStorage.
+  {
+    scoped_refptr<StandaloneTrustedVaultFrontend> frontend = CreateFrontend();
+    std::unique_ptr<StandaloneTrustedVaultClient> sync_client =
+        CreateClient(SecurityDomainId::kChromeSync, frontend);
+    std::unique_ptr<StandaloneTrustedVaultClient> passkeys_client =
+        CreateClient(SecurityDomainId::kPasskeys, frontend);
+
+    EXPECT_THAT(FetchKeys(sync_client.get(), account_info),
+                ElementsAre(kSyncKey));
+    EXPECT_THAT(FetchKeys(passkeys_client.get(), account_info),
+                ElementsAre(kPasskeysKey));
+  }
 }
 
 }  // namespace

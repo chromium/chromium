@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -17,8 +18,10 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/trusted_vault/command_line_switches.h"
+#include "components/trusted_vault/features.h"
 #include "components/trusted_vault/legacy_standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/legacy_standalone_trusted_vault_storage_adapter.h"
+#include "components/trusted_vault/local_domains_storage.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/standalone_trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher_impl.h"
@@ -261,13 +264,21 @@ StandaloneTrustedVaultFrontend::StandaloneTrustedVaultFrontend(
             access_token_fetcher_frontend_.GetWeakPtr()));
   }
 
+  std::unique_ptr<StandaloneTrustedVaultStorage> storage;
+  if (base::FeatureList::IsEnabled(
+          kTrustedVaultSharedRecoveryFactorsAndEncryption)) {
+    storage = LocalDomainsStorage::Create(base_dir);
+  } else {
+    storage = std::make_unique<LegacyStandaloneTrustedVaultStorageAdapter>(
+        std::make_unique<LegacyStandaloneTrustedVaultStorage>(
+            base_dir, SecurityDomainId::kChromeSync));
+  }
+
   backend_.reset(new StandaloneTrustedVaultBackend(
 #if BUILDFLAG(IS_MAC)
       icloud_keychain_access_group_prefix,
 #endif
-      std::make_unique<LegacyStandaloneTrustedVaultStorageAdapter>(
-          std::make_unique<LegacyStandaloneTrustedVaultStorage>(
-              base_dir, SecurityDomainId::kChromeSync)),
+      std::move(storage),
       std::make_unique<BackendDelegate>(base::BindPostTaskToCurrentDefault(
           base::BindRepeating(&StandaloneTrustedVaultFrontend::
                                   NotifyRecoverabilityDegradedChanged,

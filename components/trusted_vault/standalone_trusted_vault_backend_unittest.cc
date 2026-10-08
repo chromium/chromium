@@ -1818,6 +1818,27 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   SetPrimaryAccountWithUnknownAuthError(kAccountInfo1);
 }
 
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldSupportSharedRecoveryFactorsAndEncryptionFeatureFlag) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kTrustedVaultSharedRecoveryFactorsAndEncryption);
+
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
+  const std::vector<uint8_t> kVaultKey = {10, 20, 30};
+  const int kLastKeyVersion = 1;
+
+  backend()->StoreKeys(kAccountInfo.gaia, SecurityDomainId::kPasskeys,
+                       {kVaultKey}, kLastKeyVersion);
+  backend()->SetPrimaryAccount(
+      kAccountInfo, StandaloneTrustedVaultBackend::RefreshTokenErrorState::
+                        kNoPersistentAuthErrors);
+
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback> cb;
+  EXPECT_CALL(cb, Run(testing::ElementsAre(kVaultKey)));
+  backend()->FetchKeys(kAccountInfo, SecurityDomainId::kPasskeys, cb.Get());
+}
+
 }  // namespace
 
 }  // namespace trusted_vault

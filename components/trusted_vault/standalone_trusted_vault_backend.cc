@@ -45,6 +45,17 @@ namespace trusted_vault {
 
 namespace {
 
+base::flat_set<SecurityDomainId> GetSupportedSecurityDomainIdValues() {
+  if (base::FeatureList::IsEnabled(
+          kTrustedVaultSharedRecoveryFactorsAndEncryption)) {
+    return base::flat_set<SecurityDomainId>(kAllSecurityDomainIdValues.begin(),
+                                            kAllSecurityDomainIdValues.end());
+  }
+  return base::flat_set<SecurityDomainId>(
+      kSupportedSecurityDomainIdValues.begin(),
+      kSupportedSecurityDomainIdValues.end());
+}
+
 // Note that it returns false upon transition from kUnknown to
 // kNoPersistentAuthErrors.
 bool PersistentAuthErrorWasResolved(
@@ -251,7 +262,7 @@ StandaloneTrustedVaultBackend::CreateForTesting(
 
 void StandaloneTrustedVaultBackend::OnDegradedRecoverabilityChanged(
     SecurityDomainId security_domain) {
-  CHECK(kSupportedSecurityDomainIdValues.contains(security_domain));
+  CHECK(GetSupportedSecurityDomainIdValues().contains(security_domain));
   delegate_->NotifyRecoverabilityDegradedChanged(security_domain);
 }
 
@@ -264,7 +275,7 @@ void StandaloneTrustedVaultBackend::FetchKeys(
     SecurityDomainId security_domain,
     FetchKeysCallback callback) {
   DCHECK(!callback.is_null());
-  CHECK(kSupportedSecurityDomainIdValues.contains(security_domain));
+  CHECK(GetSupportedSecurityDomainIdValues().contains(security_domain));
 
   if (storage_->HasNonConstantKey(account_info.gaia, security_domain) &&
       !storage_->GetKeysMarkedAsStaleByConsumer(account_info.gaia,
@@ -315,7 +326,7 @@ void StandaloneTrustedVaultBackend::FetchKeys(
 void StandaloneTrustedVaultBackend::AttemptRecoveryFactor(
     SecurityDomainId security_domain,
     size_t local_recovery_factor) {
-  CHECK(kSupportedSecurityDomainIdValues.contains(security_domain));
+  CHECK(GetSupportedSecurityDomainIdValues().contains(security_domain));
   CHECK(local_recovery_factor >= 0 &&
         local_recovery_factor < local_recovery_factors_.size());
   local_recovery_factors_[local_recovery_factor]->AttemptRecovery(
@@ -329,7 +340,7 @@ void StandaloneTrustedVaultBackend::StoreKeys(
     SecurityDomainId security_domain,
     const std::vector<std::vector<uint8_t>>& keys,
     int last_key_version) {
-  CHECK(kSupportedSecurityDomainIdValues.contains(security_domain));
+  CHECK(GetSupportedSecurityDomainIdValues().contains(security_domain));
   // Setters will create a user vault if it doesn't exist yet.
 
   // Having retrieved (or downloaded) new keys indicates that information
@@ -394,7 +405,7 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
         local_recovery_factors_factory_->CreateLocalRecoveryFactors(
             storage_.get(), connection_.get(), *primary_account_);
 
-    for (SecurityDomainId domain : kSupportedSecurityDomainIdValues) {
+    for (SecurityDomainId domain : GetSupportedSecurityDomainIdValues()) {
       degraded_recoverability_handlers_[domain] =
           std::make_unique<TrustedVaultDegradedRecoverabilityHandler>(
               connection_.get(), /*observer=*/this, storage_.get(),
@@ -443,7 +454,7 @@ void StandaloneTrustedVaultBackend::UpdateAccountsInCookieJarInfo(
 bool StandaloneTrustedVaultBackend::MarkLocalKeysAsStale(
     const CoreAccountInfo& account_info,
     SecurityDomainId security_domain) {
-  CHECK(kSupportedSecurityDomainIdValues.contains(security_domain));
+  CHECK(GetSupportedSecurityDomainIdValues().contains(security_domain));
   if (storage_->GetVaultKeys(account_info.gaia, security_domain).empty() ||
       storage_->GetKeysMarkedAsStaleByConsumer(account_info.gaia,
                                                security_domain)) {
@@ -460,7 +471,7 @@ void StandaloneTrustedVaultBackend::GetIsRecoverabilityDegraded(
     const CoreAccountInfo& account_info,
     SecurityDomainId security_domain,
     base::OnceCallback<void(bool)> cb) {
-  CHECK(kSupportedSecurityDomainIdValues.contains(security_domain));
+  CHECK(GetSupportedSecurityDomainIdValues().contains(security_domain));
   if (account_info == primary_account_) {
     auto it = degraded_recoverability_handlers_.find(security_domain);
     if (it != degraded_recoverability_handlers_.end()) {
@@ -483,7 +494,7 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
     const std::vector<uint8_t>& public_key,
     int method_type_hint,
     base::OnceCallback<void(bool)> cb) {
-  CHECK(kSupportedSecurityDomainIdValues.contains(security_domain));
+  CHECK(GetSupportedSecurityDomainIdValues().contains(security_domain));
   if (public_key.empty()) {
     std::move(cb).Run(false);
     return;
@@ -584,7 +595,7 @@ StandaloneTrustedVaultBackend::GetLastAddedRecoveryMethodPublicKeyForTesting()
 int StandaloneTrustedVaultBackend::GetLastKeyVersionForTesting(
     const GaiaId& gaia_id,
     SecurityDomainId security_domain) {
-  CHECK(kSupportedSecurityDomainIdValues.contains(security_domain));
+  CHECK(GetSupportedSecurityDomainIdValues().contains(security_domain));
   return storage_->GetLastKeyVersion(gaia_id, security_domain);
 }
 
@@ -595,7 +606,7 @@ bool StandaloneTrustedVaultBackend::HasPendingTrustedRecoveryMethodForTesting()
 
 void StandaloneTrustedVaultBackend::MaybeRegisterLocalRecoveryFactors(
     SecurityDomainId security_domain) {
-  CHECK(kSupportedSecurityDomainIdValues.contains(security_domain));
+  CHECK(GetSupportedSecurityDomainIdValues().contains(security_domain));
   // TODO(crbug.com/40255601): in case of transient failure this function is
   // likely to be not called until the browser restart; implement retry logic.
 
@@ -628,7 +639,7 @@ void StandaloneTrustedVaultBackend::MaybeRegisterLocalRecoveryFactors(
 
 void StandaloneTrustedVaultBackend::
     MaybeRegisterLocalRecoveryFactorsForAllDomains() {
-  for (SecurityDomainId domain : kSupportedSecurityDomainIdValues) {
+  for (SecurityDomainId domain : GetSupportedSecurityDomainIdValues()) {
     MaybeRegisterLocalRecoveryFactors(domain);
   }
 }
@@ -664,7 +675,7 @@ void StandaloneTrustedVaultBackend::OnRecoveryFactorRegistered(
     TrustedVaultRegistrationStatus status,
     int key_version,
     bool had_local_keys) {
-  CHECK(kSupportedSecurityDomainIdValues.contains(security_domain));
+  CHECK(GetSupportedSecurityDomainIdValues().contains(security_domain));
   // SetPrimaryAccount() cancels ongoing registration attempts and clears
   // the map. However, there is a chance that a call for this callback is
   // already scheduled at that time. Checking for <= 0 defensively covers this
@@ -697,7 +708,8 @@ void StandaloneTrustedVaultBackend::OnRecoveryFactorRegistered(
       NOTREACHED();
     case TrustedVaultRegistrationStatus::kSuccess:
     case TrustedVaultRegistrationStatus::kAlreadyRegistered:
-      if (!had_local_keys) {
+      if (!had_local_keys &&
+          SupportsConstantKeyPreEnrollment(security_domain)) {
         // Recover factor registration was triggered while no local non-constant
         // keys were available. Detected server-side key should be stored upon
         // successful completion (or if recovery factor was already registered,
@@ -734,7 +746,7 @@ void StandaloneTrustedVaultBackend::OnKeysRecovered(
     const std::vector<std::vector<uint8_t>>& downloaded_vault_keys,
     int last_vault_key_version) {
   CHECK(primary_account_.has_value());
-  CHECK(kSupportedSecurityDomainIdValues.contains(security_domain));
+  CHECK(GetSupportedSecurityDomainIdValues().contains(security_domain));
   // This method should be called only as a result of fetching keys attributed
   // to current |ongoing_fetch_keys_|.
   auto it = ongoing_fetch_keys_.find(security_domain);
@@ -790,7 +802,7 @@ void StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded(
     base::OnceCallback<void(bool)> cb,
     TrustedVaultRegistrationStatus status,
     int unused_epoch) {
-  CHECK(kSupportedSecurityDomainIdValues.contains(security_domain));
+  CHECK(GetSupportedSecurityDomainIdValues().contains(security_domain));
   ongoing_add_recovery_method_requests_.erase(security_domain);
 
   switch (status) {
@@ -826,7 +838,7 @@ void StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded(
 void StandaloneTrustedVaultBackend::FulfillOngoingFetchKeys(
     SecurityDomainId security_domain,
     std::optional<TrustedVaultRecoverKeysOutcomeForUMA> status_for_uma) {
-  CHECK(kSupportedSecurityDomainIdValues.contains(security_domain));
+  CHECK(GetSupportedSecurityDomainIdValues().contains(security_domain));
   auto it = ongoing_fetch_keys_.find(security_domain);
   if (it == ongoing_fetch_keys_.end()) {
     return;
@@ -861,7 +873,7 @@ void StandaloneTrustedVaultBackend::FulfillFetchKeys(
     SecurityDomainId security_domain,
     FetchKeysCallback callback,
     std::optional<TrustedVaultRecoverKeysOutcomeForUMA> status_for_uma) {
-  CHECK(kSupportedSecurityDomainIdValues.contains(security_domain));
+  CHECK(GetSupportedSecurityDomainIdValues().contains(security_domain));
   if (status_for_uma.has_value()) {
     RecordTrustedVaultRecoverKeysOutcome(security_domain, *status_for_uma);
   }
