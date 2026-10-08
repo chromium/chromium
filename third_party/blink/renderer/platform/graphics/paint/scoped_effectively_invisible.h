@@ -14,11 +14,19 @@ class ScopedEffectivelyInvisible final {
   STACK_ALLOCATED();
 
  public:
-  explicit ScopedEffectivelyInvisible(PaintController& paint_controller)
+  enum class Visibility {
+    kEffectivelyInvisible,
+    kVisible,
+  };
+
+  explicit ScopedEffectivelyInvisible(
+      PaintController& paint_controller,
+      Visibility visibility = Visibility::kEffectivelyInvisible)
       : paint_controller_(paint_controller),
         previous_effectively_invisible_(
             paint_controller.CurrentEffectivelyInvisible()) {
-    paint_controller.SetCurrentEffectivelyInvisible(true);
+    paint_controller.SetCurrentEffectivelyInvisible(
+        visibility == Visibility::kEffectivelyInvisible);
   }
   ScopedEffectivelyInvisible(const ScopedEffectivelyInvisible&) = delete;
   ScopedEffectivelyInvisible& operator=(const ScopedEffectivelyInvisible&) =

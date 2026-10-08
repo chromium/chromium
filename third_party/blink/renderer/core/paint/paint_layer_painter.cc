@@ -431,7 +431,15 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
 
   std::optional<ScopedEffectivelyInvisible> effectively_invisible;
   if (PaintedOutputInvisible(object.StyleRef())) {
-    effectively_invisible.emplace(controller);
+    effectively_invisible.emplace(
+        controller,
+        ScopedEffectivelyInvisible::Visibility::kEffectivelyInvisible);
+  } else if (is_canvas_drawable_element) {
+    // Drawable elements establish an independent paint record for
+    // drawElementImage() and should not inherit effective invisibility from
+    // ancestors (such as opacity: 0 on the canvas or an ancestor).
+    effectively_invisible.emplace(
+        controller, ScopedEffectivelyInvisible::Visibility::kVisible);
   }
 
   std::optional<ScopedPaintChunkProperties> layer_chunk_properties;
