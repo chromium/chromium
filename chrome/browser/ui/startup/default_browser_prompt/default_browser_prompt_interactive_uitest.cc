@@ -351,5 +351,13 @@ class DefaultBrowserPromptHeadlessBrowserTest
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserPromptHeadlessBrowserTest, DoesNotCrash) {
   DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
-  RunTestSequence(WaitForHide(ConfirmInfoBar::kInfoBarElementId));
+  // Infobars that require confirmation (like this one) are not suppressed in
+  // headless mode, so the infobar may or may not be visible by the time the
+  // test sequence starts. Explicitly close the prompts so that waiting for the
+  // infobar to hide is deterministic regardless of timing.
+  RunTestSequence(Do([]() {
+                    DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
+                        DefaultBrowserPromptManager::CloseReason::kDismiss);
+                  }),
+                  WaitForHide(ConfirmInfoBar::kInfoBarElementId));
 }

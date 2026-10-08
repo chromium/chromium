@@ -3432,6 +3432,7 @@
                         "MigratedBadFlags": "true",
                         "MigratedChromeForTesting": "true",
                         "MigratedCollectedCookies": "true",
+                        "MigratedDefaultBrowser": "true",
                         "MigratedDevToolsConfirm": "true",
                         "MigratedDevToolsSharedProcess": "true",
                         "MigratedGoogleApiKeys": "true",
