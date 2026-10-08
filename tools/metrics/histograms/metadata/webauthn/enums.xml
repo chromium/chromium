@@ -48,9 +48,11 @@ chromium-metrics-reviews@google.com.
 <enum name="CmtgDeviceKeysResult">
   <int value="0" label="Success"/>
   <int value="1" label="Network error"/>
+  <int value="2" label="Parse error"/>
+  <int value="3" label="Access token error"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/webauthn/core/browser/cryptauth_cmtg_device_key_provider.cc:CmtgDeviceKeysResult) -->
+<!-- LINT.ThenChange(//components/webauthn/core/browser/cryptauth_cmtg_device_key_provider.h:CmtgDeviceKeysResult) -->
 
 <!-- LINT.IfChange(CombinedSelectorAction) -->
 

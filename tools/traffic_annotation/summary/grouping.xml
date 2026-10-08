@@ -434,6 +434,7 @@ after discussions on the right group.
       <annotation id="search_engine_preconnect"/>
       <annotation id="predictive_preconnect"/>
       <annotation id="network_hints_preconnect"/>
+      <annotation id="cryptauth_cmtg_device_keys"/>
     </sender>
   </group>
   <group name="Admin Features">

@@ -21,7 +21,12 @@ namespace webauthn {
 class CmtgDeviceKeyProvider : public KeyedService {
  public:
   enum class Error {
+    // The request could not be completed due to a network or HTTP error.
     kNetworkError,
+    // The server's response could not be parsed.
+    kParseError,
+    // An OAuth access token for the request could not be fetched.
+    kAccessTokenError,
   };
 
   enum class Operation {

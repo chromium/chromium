@@ -8,8 +8,11 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/webauthn/core/browser/cmtg_device_key_provider.h"
 #include "components/webauthn/core/browser/cryptauth_cmtg_device_key_provider.h"
+#include "content/public/browser/storage_partition.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 CmtgDeviceKeyProviderFactory* CmtgDeviceKeyProviderFactory::GetInstance() {
   static base::NoDestructor<CmtgDeviceKeyProviderFactory> instance;
@@ -27,13 +30,19 @@ CmtgDeviceKeyProviderFactory::CmtgDeviceKeyProviderFactory()
           "CmtgDeviceKeyProvider",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
-              .WithGuest(ProfileSelection::kOffTheRecordOnly)
-              .Build()) {}
+              .WithGuest(ProfileSelection::kNone)
+              .Build()) {
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
 
 CmtgDeviceKeyProviderFactory::~CmtgDeviceKeyProviderFactory() = default;
 
 std::unique_ptr<KeyedService>
 CmtgDeviceKeyProviderFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<webauthn::CryptauthCmtgDeviceKeyProvider>();
+  Profile* const profile = Profile::FromBrowserContext(context);
+  return std::make_unique<webauthn::CryptauthCmtgDeviceKeyProvider>(
+      *IdentityManagerFactory::GetForProfile(profile),
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess());
 }

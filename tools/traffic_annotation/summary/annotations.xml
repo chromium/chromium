@@ -552,4 +552,5 @@ Refer to README.md for content description and update process.
  <item id="predictive_preconnect" added_in_milestone="132" content_hash_code="063ba9b5" os_list="linux,windows,android,chromeos" file_path="chrome/browser/predictors/loading_predictor.cc" />
  <item id="network_hints_preconnect" added_in_milestone="132" content_hash_code="034f1524" os_list="linux,windows,android,chromeos" file_path="chrome/browser/predictors/network_hints_handler_impl.cc" />
  <item id="proxy_config_linux_resolver" added_in_milestone="157" content_hash_code="031b836f" os_list="linux" file_path="net/proxy_resolution/linux/linux_system_proxy_resolution_request.cc" />
+ <item id="cryptauth_cmtg_device_keys" added_in_milestone="157" content_hash_code="05dfe7f9" os_list="linux,windows,android,chromeos" file_path="components/webauthn/core/browser/cryptauth_cmtg_device_key_provider.cc" />
 </annotations>

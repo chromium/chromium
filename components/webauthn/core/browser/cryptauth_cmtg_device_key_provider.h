@@ -7,7 +7,17 @@
 
 #include <memory>
 
+#include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/webauthn/core/browser/cmtg_device_key_provider.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 namespace webauthn {
 
@@ -17,20 +27,29 @@ namespace webauthn {
 enum class CmtgDeviceKeysResult {
   kSuccess = 0,
   kNetworkError = 1,
-  kMaxValue = kNetworkError,
+  kParseError = 2,
+  kAccessTokenError = 3,
+  kMaxValue = kAccessTokenError,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/webauthn/enums.xml:CmtgDeviceKeysResult)
 
 // Default implementation of CmtgDeviceKeyProvider that vends device keys from
-// Cryptauth. Currently implemented as a stub for testing and early integration
-// that vends a constant randomly-generated key for the lifetime of the process.
+// the CryptAuth CMTG wrapper key service.
 class CryptauthCmtgDeviceKeyProvider : public CmtgDeviceKeyProvider {
  public:
-  CryptauthCmtgDeviceKeyProvider();
+  // `url_loader_factory` must be non-null.
+  CryptauthCmtgDeviceKeyProvider(
+      signin::IdentityManager& identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~CryptauthCmtgDeviceKeyProvider() override;
 
+  // CmtgDeviceKeyProvider:
   std::unique_ptr<Request> GetDeviceKeys(Operation operation,
                                          Callback callback) override;
+
+ private:
+  const raw_ref<signin::IdentityManager> identity_manager_;
+  const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 
 }  // namespace webauthn

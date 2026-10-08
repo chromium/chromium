@@ -14,11 +14,16 @@ source_set("browser") {
   ]
   deps = [
     "//base",
+    "//components/device_event_log",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
     "//components/sync",
     "//components/webauthn:features",
     "//crypto",
+    "//google_apis",
     "//net",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//url",
   ]
 
@@ -135,6 +140,7 @@ source_set("unit_tests") {
     ":browser",
     ":common_utils",
     "//base/test:test_support",
+    "//components/signin/public/identity_manager:test_support",
     "//components/webauthn:features",
     "//services/network:test_support",
     "//services/network/public/cpp",
