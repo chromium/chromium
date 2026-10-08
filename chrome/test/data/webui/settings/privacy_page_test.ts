@@ -4,14 +4,11 @@
 
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {CrToastElement} from 'chrome://settings/lazy_load.js';
 import {ClearBrowsingDataBrowserProxyImpl, CookieControlsMode, TimePeriod} from 'chrome://settings/lazy_load.js';
 import type {CrLinkRowElement, SettingsPrivacyPageElement, SyncStatus} from 'chrome://settings/settings.js';
 import {HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, PrefsBrowserProxy, PrefService, PrivacyGuideInteractions, resetRouterForTesting, Router, routes, StatusAction, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise, isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {getInitialPrivacyGuideTestPrefs} from './privacy_guide_test_util.js';
 import {TestClearBrowsingDataBrowserProxy} from './test_clear_browsing_data_browser_proxy.js';
@@ -81,7 +78,7 @@ suite('PrivacyPage', function() {
     page = document.createElement('settings-privacy-page');
     document.body.appendChild(page);
 
-    return flushTasks();
+    return microtasksFinished();
   }
 
   setup(async function() {
@@ -105,42 +102,38 @@ suite('PrivacyPage', function() {
     resetRouterForTesting();
   });
 
-  test('showDeleteBrowsingDataDialog', function() {
-    assertFalse(!!page.shadowRoot!.querySelector(
-        'settings-clear-browsing-data-dialog'));
+  test('showDeleteBrowsingDataDialog', async function() {
+    assertFalse(
+        !!page.shadowRoot.querySelector('settings-clear-browsing-data-dialog'));
     page.$.clearBrowsingData.click();
-    flush();
+    await microtasksFinished();
 
     const dialog =
-        page.shadowRoot!.querySelector('settings-clear-browsing-data-dialog');
+        page.shadowRoot.querySelector('settings-clear-browsing-data-dialog');
     assertTrue(!!dialog);
   });
 
   test('showDeletionConfirmationToast', async function() {
-    const toast = page.shadowRoot!.querySelector<CrToastElement>(
-        '#deleteBrowsingDataToast');
-    assertTrue(!!toast);
-    assertFalse(toast.open);
+    assertFalse(page.$.deleteBrowsingDataToast.open);
     page.$.clearBrowsingData.click();
-    flush();
+    await microtasksFinished();
 
     const dialog =
-        page.shadowRoot!.querySelector('settings-clear-browsing-data-dialog');
+        page.shadowRoot.querySelector('settings-clear-browsing-data-dialog');
     assertTrue(!!dialog);
     dialog.fire('browsing-data-deleted', {deletionConfirmationText: 'test'});
     dialog.$.deleteBrowsingDataDialog.close();
     await eventToPromise('close', dialog);
-    flush();
+    await microtasksFinished();
 
-    assertTrue(toast.open);
-    assertEquals('test', toast.textContent.trim());
+    assertTrue(page.$.deleteBrowsingDataToast.open);
+    assertEquals('test', page.$.deleteBrowsingDataToast.textContent.trim());
   });
 
   // Test that clicking on the security page row navigates to
   // chrome://settings/security
   test('onSecurityPageClick', function() {
     page.$.securityLinkRow.click();
-    flush();
     assertEquals(routes.SECURITY, Router.getInstance().getCurrentRoute());
   });
 });
@@ -163,17 +156,16 @@ suite('CookiesSubpage', function() {
 
     page = document.createElement('settings-privacy-page');
     document.body.appendChild(page);
-    return flushTasks();
+    return microtasksFinished();
   });
 
   test('clickCookiesRow', async function() {
     const thirdPartyCookiesLinkRow =
-        page.shadowRoot!.querySelector<HTMLElement>(
-            '#thirdPartyCookiesLinkRow');
+        page.shadowRoot.querySelector<HTMLElement>('#thirdPartyCookiesLinkRow');
     assertTrue(!!thirdPartyCookiesLinkRow);
     thirdPartyCookiesLinkRow.click();
     // Check that the correct page was navigated to.
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(routes.COOKIES, Router.getInstance().getCurrentRoute());
   });
 });
@@ -194,7 +186,7 @@ suite('CookiesSubpageRedesignDisabled', function() {
     page = document.createElement('settings-privacy-page');
     document.body.appendChild(page);
 
-    return flushTasks();
+    return microtasksFinished();
   }
 
   test(
@@ -204,7 +196,7 @@ suite('CookiesSubpageRedesignDisabled', function() {
         await createPage();
 
         const thirdPartyCookiesLinkRow =
-            page.shadowRoot!.querySelector<CrLinkRowElement>(
+            page.shadowRoot.querySelector<CrLinkRowElement>(
                 '#thirdPartyCookiesLinkRow');
         assertTrue(!!thirdPartyCookiesLinkRow);
         assertEquals(
@@ -213,12 +205,14 @@ suite('CookiesSubpageRedesignDisabled', function() {
 
         prefService.setPrefValue(
             'profile.cookie_controls_mode', CookieControlsMode.OFF);
+        await microtasksFinished();
         assertEquals(
             page.i18n('thirdPartyCookiesLinkRowSublabelEnabled'),
             thirdPartyCookiesLinkRow.subLabel);
 
         prefService.setPrefValue(
             'profile.cookie_controls_mode', CookieControlsMode.INCOGNITO_ONLY);
+        await microtasksFinished();
         assertEquals(
             page.i18n('thirdPartyCookiesLinkRowSublabelEnabled'),
             thirdPartyCookiesLinkRow.subLabel,
@@ -227,6 +221,7 @@ suite('CookiesSubpageRedesignDisabled', function() {
         prefService.setPrefValue(
             'profile.cookie_controls_mode',
             CookieControlsMode.BLOCK_THIRD_PARTY);
+        await microtasksFinished();
         assertEquals(
             page.i18n('thirdPartyCookiesLinkRowSublabelDisabled'),
             thirdPartyCookiesLinkRow.subLabel);
@@ -239,7 +234,7 @@ suite('CookiesSubpageRedesignDisabled', function() {
     await createPage();
 
     const thirdPartyCookiesLinkRow =
-        page.shadowRoot!.querySelector<CrLinkRowElement>(
+        page.shadowRoot.querySelector<CrLinkRowElement>(
             '#thirdPartyCookiesLinkRow');
     assertTrue(!!thirdPartyCookiesLinkRow);
     assertEquals(
@@ -274,7 +269,7 @@ suite('PrivacyGuideRow', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-privacy-page');
     document.body.appendChild(page);
-    return flushTasks();
+    return microtasksFinished();
   }
 
   test('rowNotShown', async function() {
@@ -292,7 +287,7 @@ suite('PrivacyGuideRow', function() {
         'privacyGuideLinkRow is visible');
   });
 
-  test('privacyGuideRowVisibleSupervisedAccount', function() {
+  test('privacyGuideRowVisibleSupervisedAccount', async function() {
     assertTrue(isChildVisible(page, '#privacyGuideLinkRow'));
 
     // The user signs in to a supervised user account. This hides the privacy
@@ -302,34 +297,34 @@ suite('PrivacyGuideRow', function() {
       statusAction: StatusAction.NO_ACTION,
     };
     webUIListenerCallback('sync-status-changed', syncStatus);
-    flush();
+    await microtasksFinished();
     assertFalse(isChildVisible(page, '#privacyGuideLinkRow'));
 
     // The user is no longer signed in to a supervised user account. This
     // doesn't show the entry point.
     syncStatus.supervisedUser = false;
     webUIListenerCallback('sync-status-changed', syncStatus);
-    flush();
+    await microtasksFinished();
     assertFalse(isChildVisible(page, '#privacyGuideLinkRow'));
   });
 
-  test('privacyGuideRowVisibleManaged', function() {
+  test('privacyGuideRowVisibleManaged', async function() {
     assertTrue(isChildVisible(page, '#privacyGuideLinkRow'));
 
     // The user becomes managed. This hides the privacy guide entry point.
     webUIListenerCallback('is-managed-changed', true);
-    flush();
+    await microtasksFinished();
     assertFalse(isChildVisible(page, '#privacyGuideLinkRow'));
 
     // The user is no longer managed. This doesn't show the entry point.
     webUIListenerCallback('is-managed-changed', false);
-    flush();
+    await microtasksFinished();
     assertFalse(isChildVisible(page, '#privacyGuideLinkRow'));
   });
 
   test('privacyGuideRowClick', async function() {
     const privacyGuideLinkRow =
-        page.shadowRoot!.querySelector<HTMLElement>('#privacyGuideLinkRow');
+        page.shadowRoot.querySelector<HTMLElement>('#privacyGuideLinkRow');
     assertTrue(!!privacyGuideLinkRow);
     privacyGuideLinkRow.click();
 
@@ -342,7 +337,7 @@ suite('PrivacyGuideRow', function() {
 
     // Ensure the privacy guide dialog is shown.
     assertTrue(
-        !!page.shadowRoot!.querySelector<HTMLElement>('#privacyGuideDialog'));
+        !!page.shadowRoot.querySelector<HTMLElement>('#privacyGuideDialog'));
   });
 });
 
@@ -363,7 +358,7 @@ suite('HappinessTrackingSurveys', function() {
 
     page = document.createElement('settings-privacy-page');
     document.body.appendChild(page);
-    return flushTasks();
+    return microtasksFinished();
   });
 
   teardown(function() {
@@ -380,8 +375,7 @@ suite('HappinessTrackingSurveys', function() {
 
   test('CookiesTrigger', async function() {
     const thirdPartyCookiesLinkRow =
-        page.shadowRoot!.querySelector<HTMLElement>(
-            '#thirdPartyCookiesLinkRow');
+        page.shadowRoot.querySelector<HTMLElement>('#thirdPartyCookiesLinkRow');
     assertTrue(!!thirdPartyCookiesLinkRow);
     thirdPartyCookiesLinkRow.click();
     const interaction =

@@ -9,107 +9,92 @@
  */
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import '../icons.html.js';
 import '../privacy_icons.html.js';
 import '../settings_page/settings_section.js';
-import '../settings_shared.css.js';
 import './privacy_guide/privacy_guide_dialog.js';
 
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
+import {getCss as getCrHiddenStyleCss} from 'chrome://resources/cr_elements/cr_hidden_style_lit.css.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import {getCss as getCrSharedStyleCss} from 'chrome://resources/cr_elements/cr_shared_style_lit.css.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyGuideInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
-import {RouteObserverMixin, Router} from '../router.js';
+import {Router} from '../router.js';
 import type {Route} from '../router.js';
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
+import {getCss as getSettingsSharedCss} from '../settings_shared_lit.css.js';
 import {CookieControlsMode} from '../site_settings/constants.js';
 
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from './hats_browser_proxy.js';
-import {PrivacyGuideAvailabilityMixin} from './privacy_guide/privacy_guide_availability_mixin.js';
-import {getTemplate} from './privacy_page.html.js';
+import {PrivacyGuideAvailabilityMixinLit} from './privacy_guide/privacy_guide_availability_mixin_lit.js';
+import {getHtml} from './privacy_page.html.js';
 
 export interface SettingsPrivacyPageElement {
   $: {
     clearBrowsingData: CrLinkRowElement,
+    deleteBrowsingDataToast: CrToastElement,
     siteSettingsLinkRow: CrLinkRowElement,
     securityLinkRow: CrLinkRowElement,
   };
 }
 
 const SettingsPrivacyPageElementBase =
-    PrivacyGuideAvailabilityMixin(SettingsViewMixin(RouteObserverMixin(
-        I18nMixin(PrefServiceObserverMixin(PolymerElement)))));
+    PrivacyGuideAvailabilityMixinLit(SettingsViewMixinLit(
+        I18nMixinLit(PrefServiceObserverMixinLit(CrLitElement))));
+
+export type PrivacyPageElement = SettingsPrivacyPageElement;
 
 export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   static get is() {
     return 'settings-privacy-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return [
+      getCrSharedStyleCss(),
+      getCrHiddenStyleCss(),
+      getSettingsSharedCss(),
+    ];
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      showClearBrowsingDataDialog_: Boolean,
-      showPrivacyGuideDialog_: Boolean,
+      showClearBrowsingDataDialog_: {type: Boolean},
+      showPrivacyGuideDialog_: {type: Boolean},
 
       // The label of the confirmation toast that is displayed after deletion
       // from 'Delete Browsing data' is completed.
-      dbdDeletionConfirmationToastLabel_: {
-        type: String,
-        value: '',
-      },
+      dbdDeletionConfirmationToastLabel_: {type: String},
 
-      shouldShowDbdDeletionConfirmationToast_: {
-        type: Boolean,
-        value: false,
-      },
+      showUniversalOptOutSettings_: {type: Boolean},
 
-      showUniversalOptOutSettings_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showUniversalOptOutSettings'),
-      },
-
-      thirdPartyCookiesLabel_: {
-        type: String,
-        computed:
-            'computeThirdPartyCookiesLabel_(showUniversalOptOutSettings_)',
-      },
-
-      thirdPartyCookiesSublabel_: {
-        type: String,
-        computed:
-            'computeThirdPartyCookiesSublabel_(showUniversalOptOutSettings_, ' +
-            'cookieControlsModePref_)',
-      },
-
-      cookieControlsModePref_: {
-        type: Object,
-      },
+      cookieControlsModePref_: {type: Object},
     };
   }
 
-  declare private showClearBrowsingDataDialog_: boolean;
-  declare private showPrivacyGuideDialog_: boolean;
-  declare private dbdDeletionConfirmationToastLabel_: string;
-  declare private shouldShowDbdDeletionConfirmationToast_: boolean;
-  declare private showUniversalOptOutSettings_: boolean;
-  declare private thirdPartyCookiesLabel_: string;
-  declare private thirdPartyCookiesSublabel_: string;
-  declare private cookieControlsModePref_:
-      chrome.settingsPrivate.PrefObject<CookieControlsMode>;
+  protected accessor showClearBrowsingDataDialog_: boolean = false;
+  protected accessor showPrivacyGuideDialog_: boolean = false;
+  protected accessor dbdDeletionConfirmationToastLabel_: string = '';
+  private accessor showUniversalOptOutSettings_: boolean =
+      loadTimeData.getBoolean('showUniversalOptOutSettings');
+  private accessor cookieControlsModePref_:
+      chrome.settingsPrivate.PrefObject<CookieControlsMode>|undefined;
 
+  private shouldShowDbdDeletionConfirmationToast_: boolean = false;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
@@ -129,63 +114,57 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         this.isPrivacyGuideAvailable;
   }
 
-  private onClearBrowsingDataClick_() {
+  protected onClearBrowsingDataClick_() {
     this.interactedWithPage_();
 
     Router.getInstance().navigateTo(routes.CLEAR_BROWSER_DATA);
   }
 
-  private onCookiesClick_() {
+  protected onCookiesClick_() {
     this.interactedWithPage_();
 
     Router.getInstance().navigateTo(routes.COOKIES);
   }
 
-  private onCbdDialogClosed_() {
+  protected onCbdDialogClose_() {
     Router.getInstance().navigateTo(routes.CLEAR_BROWSER_DATA.parent!);
 
     if (this.shouldShowDbdDeletionConfirmationToast_) {
       assert(this.dbdDeletionConfirmationToastLabel_);
-      const toast = this.shadowRoot!.querySelector<CrToastElement>(
-          '#deleteBrowsingDataToast');
-      assert(toast);
-      toast.show();
+      this.$.deleteBrowsingDataToast.show();
       this.shouldShowDbdDeletionConfirmationToast_ = false;
     }
 
-    afterNextRender(this, () => {
+    this.updateComplete.then(() => {
       // Focus after next render has completed to ensure any a11y messages get
       // read and the UI has updated before screen readers read out the newly
       // focused element.
-      const toFocus =
-          this.shadowRoot!.querySelector<HTMLElement>('#clearBrowsingData');
-      assert(toFocus);
-      focusWithoutInk(toFocus);
+      focusWithoutInk(this.$.clearBrowsingData);
     });
   }
 
-  private onPrivacyGuideDialogClosed_() {
+  protected onPrivacyGuideDialogClose_() {
     Router.getInstance().navigateToPreviousRoute();
     const toFocus =
-        this.shadowRoot!.querySelector<HTMLElement>('#privacyGuideLinkRow');
+        this.shadowRoot.querySelector<HTMLElement>('#privacyGuideLinkRow');
     assert(toFocus);
     focusWithoutInk(toFocus);
   }
 
-  private onSiteSettingsLinkRowClick_() {
+  protected onSiteSettingsLinkRowClick_() {
     this.interactedWithPage_();
 
     Router.getInstance().navigateTo(routes.SITE_SETTINGS);
   }
 
-  private onSecurityPageClick_() {
+  protected onSecurityPageClick_() {
     this.interactedWithPage_();
     this.metricsBrowserProxy_.recordAction(
         'SafeBrowsing.Settings.ShowedFromParentSettings');
     Router.getInstance().navigateTo(routes.SECURITY);
   }
 
-  private onPrivacyGuideClick_() {
+  protected onPrivacyGuideClick_() {
     this.metricsBrowserProxy_.recordPrivacyGuideEntryExitHistogram(
         PrivacyGuideInteractions.SETTINGS_LINK_ROW_ENTRY);
     this.metricsBrowserProxy_.recordAction(
@@ -200,14 +179,14 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         TrustSafetyInteraction.USED_PRIVACY_CARD);
   }
 
-  private computeThirdPartyCookiesLabel_(): string {
+  protected getThirdPartyCookiesLabel_(): string {
     return this.i18n(
         this.showUniversalOptOutSettings_ ?
             'thirdPartyCookiesAndSiteDataLinkRowLabel' :
             'thirdPartyCookiesLinkRowLabel');
   }
 
-  private computeThirdPartyCookiesSublabel_(): string {
+  protected getThirdPartyCookiesSublabel_(): string {
     if (this.showUniversalOptOutSettings_) {
       return this.i18n('thirdPartyCookiesAndSiteDataLinkRowSublabel');
     }
@@ -227,13 +206,13 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     }
   }
 
-  private onBrowsingDataDeleted_(
+  protected onBrowsingDataDeleted_(
       e: CustomEvent<{deletionConfirmationText: string}>) {
     this.dbdDeletionConfirmationToastLabel_ = e.detail.deletionConfirmationText;
     this.shouldShowDbdDeletionConfirmationToast_ = true;
   }
 
-  // SettingsViewMixin implementation.
+  // SettingsViewMixinLit implementation.
   override getFocusConfig() {
     const map = new Map();
 
@@ -256,7 +235,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     return map;
   }
 
-  // SettingsViewMixin implementation.
+  // SettingsViewMixinLit implementation.
   override getAssociatedControlFor(childViewId: string): HTMLElement {
     let triggerId: string|null = null;
     switch (childViewId) {
@@ -329,8 +308,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
     assert(triggerId);
 
-    const control =
-        this.shadowRoot!.querySelector<HTMLElement>(`#${triggerId}`);
+    const control = this.shadowRoot.querySelector<HTMLElement>(`#${triggerId}`);
     assert(
         control,
         `Failed to find associated control for child '${childViewId}'`);
