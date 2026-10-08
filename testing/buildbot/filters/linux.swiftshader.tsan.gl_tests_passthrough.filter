@@ -1,4 +1,6 @@
 # crbug.com/462477487
+-ExternalVkImageBackingFactoryTest.InteropRejectsSeparateGLTexture
+-ExternalVkImageBackingFactoryTest.SeparateGLTextureWriteAccessSyncsContent
 -ExternalVkImageBackingFactoryWithFormatTest.Basic/*
 -ExternalVkImageBackingFactoryWithFormatTest.InitialPixelUpload*/*
 -ExternalVkImageBackingFactoryWithFormatTest.ReadbackToMemory/*

@@ -21,6 +21,7 @@
 #include "gpu/command_buffer/service/shared_image/texture_holder_vk.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "gpu/command_buffer/service/vulkan_context_provider.h"
+#include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
@@ -32,7 +33,8 @@ class GLTextureHolder;
 class VulkanCommandPool;
 class VulkanImage;
 
-class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
+class GPU_GLES2_EXPORT ExternalVkImageBacking final
+    : public ClearTrackingSharedImageBacking {
  public:
   static std::unique_ptr<ExternalVkImageBacking> Create(
       scoped_refptr<SharedContextState> context_state,
@@ -106,6 +108,9 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   bool use_separate_gl_texture() const { return use_separate_gl_texture_; }
   bool enable_webgpu_on_vk_via_gl_interop() const {
     return enable_webgpu_on_vk_via_gl_interop_;
+  }
+  bool HasLatestContentInVkImage() const {
+    return (latest_content_ & kInVkImage) != 0;
   }
 
   bool need_synchronization() const {
