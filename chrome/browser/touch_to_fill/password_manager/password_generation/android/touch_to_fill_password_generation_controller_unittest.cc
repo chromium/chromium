@@ -48,6 +48,10 @@ class TouchToFillPasswordGenerationControllerTest
     return password_manager_driver_->AsWeakPtrImpl();
   }
 
+  // Destroys the driver, which invalidates its weak pointers, while the frame
+  // stays alive.
+  void DestroyDriver() { password_manager_driver_.reset(); }
+
   TestingPrefServiceSimple* pref_service() { return &test_pref_service_; }
 
   base::MockCallback<base::OnceCallback<void()>> on_dismissed_callback_;
@@ -91,6 +95,30 @@ TEST_F(TouchToFillPasswordGenerationControllerTest,
   SendTextInputStateChangedToWidget(rvh()->GetWidget(),
                                     std::move(initial_state));
   // Keyboard is expected to be shown again after resetting the controller.
+  EXPECT_FALSE(content::GetTextInputStateFromWebContents(web_contents())
+                   ->always_hide_ime);
+}
+
+// Tests that the driver going away while the bottom sheet is shown is handled:
+// accepting the password doesn't crash and the keyboard is no longer suppressed
+// after the controller is destroyed.
+TEST_F(TouchToFillPasswordGenerationControllerTest, HandlesDriverGoingAway) {
+  auto controller = std::make_unique<TouchToFillPasswordGenerationController>(
+      password_mananger_driver(), web_contents(),
+      PasswordGenerationElementData(),
+      std::make_unique<MockTouchToFillPasswordGenerationBridge>(),
+      on_dismissed_callback_.Get(),
+      mock_manual_filling_controller_.AsWeakPtr());
+  controller->ShowTouchToFill(
+      test_user_account_, PasswordGenerationType::kAutomatic, pref_service());
+
+  DestroyDriver();
+  controller->OnGeneratedPasswordAccepted(u"generated_password");
+  controller.reset();
+
+  ui::mojom::TextInputStatePtr state = ui::mojom::TextInputState::New();
+  state->type = ui::TEXT_INPUT_TYPE_PASSWORD;
+  SendTextInputStateChangedToWidget(rvh()->GetWidget(), std::move(state));
   EXPECT_FALSE(content::GetTextInputStateFromWebContents(web_contents())
                    ->always_hide_ime);
 }

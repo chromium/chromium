@@ -16,6 +16,7 @@
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 
@@ -94,6 +95,11 @@ void TouchToFillPasswordGenerationController::OnDismissed(
 
 void TouchToFillPasswordGenerationController::OnGeneratedPasswordAccepted(
     const std::u16string& password) {
+  // `frame_driver_` is null if it was invalidated since the bottom sheet was
+  // shown, e.g. because the frame was deleted.
+  if (!frame_driver_) {
+    return;
+  }
   frame_driver_->GeneratedPasswordAccepted(
       generation_element_data_.form_data,
       generation_element_data_.generation_element_id, password);
@@ -108,9 +114,11 @@ void TouchToFillPasswordGenerationController::AddSuppressShowingImeCallback() {
   if (suppress_showing_ime_callback_added_) {
     return;
   }
-  frame_driver_->render_frame_host()
-      ->GetRenderWidgetHost()
-      ->AddSuppressShowingImeCallback(suppress_showing_ime_callback_);
+  content::RenderFrameHost* render_frame_host =
+      frame_driver_->render_frame_host();
+  render_frame_host->GetRenderWidgetHost()->AddSuppressShowingImeCallback(
+      suppress_showing_ime_callback_);
+  suppress_showing_ime_frame_id_ = render_frame_host->GetGlobalId();
   suppress_showing_ime_callback_added_ = true;
 }
 
@@ -119,11 +127,14 @@ void TouchToFillPasswordGenerationController::
   if (!suppress_showing_ime_callback_added_) {
     return;
   }
-  if (frame_driver_) {
-    frame_driver_->render_frame_host()
-        ->GetRenderWidgetHost()
-        ->RemoveSuppressShowingImeCallback(suppress_showing_ime_callback_,
-                                           /*trigger_ime=*/false);
+  // Find the frame by its ID rather than via `frame_driver_`, so that the
+  // callback is removed even if the driver was invalidated while the frame is
+  // still alive.
+  if (content::RenderFrameHost* render_frame_host =
+          content::RenderFrameHost::FromID(suppress_showing_ime_frame_id_)) {
+    render_frame_host->GetRenderWidgetHost()->RemoveSuppressShowingImeCallback(
+        suppress_showing_ime_callback_,
+        /*trigger_ime=*/false);
   }
   suppress_showing_ime_callback_added_ = false;
 }
