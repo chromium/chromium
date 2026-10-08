@@ -180,14 +180,6 @@ export function getHtml(this: SettingsAppearancePageElement) {
         </settings-toggle-button>
       ` : ''}
 
-      ${this.showOrganizerPanelEnabled_ ? html`
-        <settings-toggle-button id="showOrganizerPanelButton"
-            pref-key="organizer_panel.pinned_to_tabstrip"
-            label="$i18n{showOrganizerPanelButton}"
-            @change="${this.onShowOrganizerPanelButtonChange_}">
-        </settings-toggle-button>
-      ` : ''}
-
       ${this.showEverythingMenuToggle_() ? html`
         <settings-toggle-button id="showEverythingMenuButton"
             pref-key="everything_menu.pinned_to_tabstrip"
@@ -207,11 +199,20 @@ export function getHtml(this: SettingsAppearancePageElement) {
       </div>
     ` : ''}
 
-    <settings-toggle-button id="showTabSearchButton" class="hr"
-        pref-key="tab_search.pinned_to_tabstrip"
-        label="$i18n{showTabSearchButton}"
-        @change="${this.onShowTabSearchButtonChange_}">
-    </settings-toggle-button>
+    ${this.showOrganizerPanelEnabled_ ? html`
+      <settings-toggle-button id="showOrganizerPanelButton"
+          pref-key="tab_search.pinned_to_tabstrip"
+          label="$i18n{showOrganizerPanelButton}"
+          @change="${this.onShowOrganizerPanelButtonChange_}">
+      </settings-toggle-button>
+    ` : html`
+      <settings-toggle-button id="showTabSearchButton" class="hr"
+          pref-key="tab_search.pinned_to_tabstrip"
+          label="$i18n{showTabSearchButton}"
+          @change="${this.onShowTabSearchButtonChange_}">
+      </settings-toggle-button>
+    `}
+
 
     <settings-toggle-button class="hr" id="showSavedTabGroups"
         pref-key="bookmark_bar.show_tab_groups"
@@ -234,8 +235,9 @@ export function getHtml(this: SettingsAppearancePageElement) {
     <div class="list-frame indented-rows">
       ${this.configurableSidePanels_.map(item => html`
         <div class="cr-row continuation">
-          <div class="flex cr-padded-text"
-              aria-hidden="true">${item.label}</div>
+          <div class="flex cr-padded-text" aria-hidden="true">
+            ${item.label}
+          </div>
           <settings-dropdown-menu
               label="${this.i18n(
                   'sidePanelAlignmentA11yLabel', item.label,

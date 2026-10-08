@@ -98,11 +98,6 @@ async function createAppearancePage() {
       value: true,
     },
     {
-      key: 'organizer_panel.pinned_to_tabstrip',
-      type: chrome.settingsPrivate.PrefType.BOOLEAN,
-      value: true,
-    },
-    {
       key: 'everything_menu.pinned_to_tabstrip',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: true,
@@ -914,8 +909,6 @@ suite('TabScrollButtonsSettings', () => {
 });
 
 suite('TabStripComboButtonSettings', () => {
-  let metricsBrowserProxy: TestMetricsBrowserProxy;
-
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
@@ -935,15 +928,8 @@ suite('TabStripComboButtonSettings', () => {
   test('Toggles update correct prefs', async function() {
     assertTrue(
         prefService.getPref<boolean>('tab_search.pinned_to_tabstrip').value);
-    assertTrue(
-        prefService.getPref<boolean>('organizer_panel.pinned_to_tabstrip')
-            .value);
-
-    const tabSearchToggle =
-        appearancePage.shadowRoot.querySelector<SettingsToggleButtonElement>(
-            '#showTabSearchButton');
-    assertTrue(!!tabSearchToggle);
-    assertTrue(tabSearchToggle.checked);
+    assertFalse(
+        !!appearancePage.shadowRoot.querySelector('#showTabSearchButton'));
 
     const projectsToggle =
         appearancePage.shadowRoot.querySelector<SettingsToggleButtonElement>(
@@ -951,40 +937,64 @@ suite('TabStripComboButtonSettings', () => {
     assertTrue(!!projectsToggle);
     assertTrue(projectsToggle.checked);
 
-    tabSearchToggle.click();
+    projectsToggle.click();
     await microtasksFinished();
     assertFalse(
         prefService.getPref<boolean>('tab_search.pinned_to_tabstrip').value);
 
-    projectsToggle.click();
+    loadTimeData.overrideValues({
+      showOrganizerPanelEnabled: false,
+    });
+    await createAppearancePage();
+
+    assertTrue(
+        prefService.getPref<boolean>('tab_search.pinned_to_tabstrip').value);
+    assertFalse(
+        !!appearancePage.shadowRoot.querySelector('#showOrganizerPanelButton'));
+
+    const tabSearchToggle =
+        appearancePage.shadowRoot.querySelector<SettingsToggleButtonElement>(
+            '#showTabSearchButton');
+    assertTrue(!!tabSearchToggle);
+    assertTrue(tabSearchToggle.checked);
+
+    tabSearchToggle.click();
     await microtasksFinished();
     assertFalse(
-        prefService.getPref<boolean>('organizer_panel.pinned_to_tabstrip')
-            .value);
+        prefService.getPref<boolean>('tab_search.pinned_to_tabstrip').value);
   });
 
   test('Toggles record metrics', async function() {
+    const projectsToggle =
+        appearancePage.shadowRoot.querySelector<SettingsToggleButtonElement>(
+            '#showOrganizerPanelButton');
+    assertTrue(!!projectsToggle);
+    projectsToggle.click();
+    let action = await metricsBrowserProxy.whenCalled('recordAction');
+    assertEquals('TabStripComboButton.OrganizerPanel.Unpinned', action);
+
+    metricsBrowserProxy.resetResolver('recordAction');
+    projectsToggle.click();
+    action = await metricsBrowserProxy.whenCalled('recordAction');
+    assertEquals('TabStripComboButton.OrganizerPanel.Pinned', action);
+
+    loadTimeData.overrideValues({
+      showOrganizerPanelEnabled: false,
+    });
+    await createAppearancePage();
+
     const tabSearchToggle =
         appearancePage.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#showTabSearchButton');
     assertTrue(!!tabSearchToggle);
     tabSearchToggle.click();
-    let action = await metricsBrowserProxy.whenCalled('recordAction');
+    action = await metricsBrowserProxy.whenCalled('recordAction');
     assertEquals('TabStripComboButton.TabSearch.Unpinned', action);
 
     metricsBrowserProxy.resetResolver('recordAction');
     tabSearchToggle.click();
     action = await metricsBrowserProxy.whenCalled('recordAction');
     assertEquals('TabStripComboButton.TabSearch.Pinned', action);
-
-    const projectsToggle =
-        appearancePage.shadowRoot.querySelector<SettingsToggleButtonElement>(
-            '#showOrganizerPanelButton');
-    assertTrue(!!projectsToggle);
-    metricsBrowserProxy.resetResolver('recordAction');
-    projectsToggle.click();
-    action = await metricsBrowserProxy.whenCalled('recordAction');
-    assertEquals('TabStripComboButton.OrganizerPanel.Unpinned', action);
   });
 
   test('Everything menu toggle updates correct pref', async function() {
