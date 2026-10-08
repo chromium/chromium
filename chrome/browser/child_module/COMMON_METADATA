@@ -1,6 +1,3 @@
-monorail {
-  component: "Chromium>Internals>Core"
-}
 buganizer_public {
-  component_id: 1456128
+  component_id: 2286367
 }
