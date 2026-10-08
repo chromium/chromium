@@ -244,9 +244,12 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
 
   WKWebView* wkWebView = [self findWKWebViewInView:_webStateView];
 
-  // Allow overscroll for the main scroll view and sub-scroll views (e.g.
-  // iframes) if they are descendants of the web view.
-  BOOL isDescendant = [scrollView isDescendantOfView:wkWebView];
+  // Allow overscroll for the main scroll view, sub-scroll views (e.g.
+  // iframes), and history scroll views so the bottom sheet expands to its
+  // largest detent before inner content scrolls.
+  BOOL isDescendant =
+      [scrollView isDescendantOfView:wkWebView] ||
+      [scrollView isDescendantOfView:_historyViewController.view];
   if (!isDescendant) {
     return NO;
   }
@@ -260,7 +263,8 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
 
   BOOL sheetMovementForLargestDetent =
       isInLargestDetent && isAtTop && draggingDown;
-  BOOL sheetMovementForSmallerDetents = !isInLargestDetent && isAtTop;
+  BOOL sheetMovementForSmallerDetents =
+      !isInLargestDetent && (isAtTop || !draggingDown);
 
   if (sheetMovementForLargestDetent || sheetMovementForSmallerDetents) {
     return YES;

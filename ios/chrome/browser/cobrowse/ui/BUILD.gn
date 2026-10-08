@@ -46,6 +46,8 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "assistant_aim_header_view_unittest.mm",
+    "assistant_aim_history_view_controller_unittest.mm",
+    "assistant_aim_view_controller_unittest.mm",
     "assistant_aim_zero_state_view_controller_unittest.mm",
   ]
   deps = [

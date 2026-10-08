@@ -30,6 +30,9 @@ const CGFloat kZeroStateLabelSpacing = 8.0;
 // The leading/trailing padding of the signed out zero state labels.
 const CGFloat kZeroStateHorizontalPadding = 32.0;
 
+// The minimum top/bottom padding around the signed out zero state labels.
+constexpr CGFloat kZeroStateVerticalPadding = 16.0;
+
 }  // namespace
 
 @interface AssistantAIMHistoryViewController () <UICollectionViewDelegate>
@@ -39,13 +42,15 @@ const CGFloat kZeroStateHorizontalPadding = 32.0;
   UICollectionView* _collectionView;
   UICollectionViewDiffableDataSource<NSString*, NSString*>* _dataSource;
   std::vector<AssistantAIMHistoryItem> _items;
-  // Zero state displayed instead of the list when the user is signed out.
-  UIStackView* _signedOutZeroStateView;
+  // Scrollable zero state displayed instead of the list when the user is signed
+  // out.
+  UIScrollView* _signedOutZeroStateScrollView;
 }
 
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.backgroundColor = [UIColor clearColor];
+  self.view.clipsToBounds = YES;
 
   [self setUpCollectionView];
   [self setUpSignedOutZeroState];
@@ -211,6 +216,26 @@ const CGFloat kZeroStateHorizontalPadding = 32.0;
 
 // Creates the zero state displayed when the user is signed out.
 - (void)setUpSignedOutZeroState {
+  _signedOutZeroStateScrollView = [[UIScrollView alloc] init];
+  _signedOutZeroStateScrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  _signedOutZeroStateScrollView.clipsToBounds = YES;
+  [self.view addSubview:_signedOutZeroStateScrollView];
+  AddSameConstraints(_signedOutZeroStateScrollView, self.view);
+
+  UIView* contentView = [[UIView alloc] init];
+  contentView.translatesAutoresizingMaskIntoConstraints = NO;
+  [_signedOutZeroStateScrollView addSubview:contentView];
+  AddSameConstraints(contentView,
+                     _signedOutZeroStateScrollView.contentLayoutGuide);
+
+  // Match the scroll view's frame height at low priority so the stack stays
+  // vertically centered when it fits, while allowing `contentView` to expand
+  // and scroll when the stack exceeds the container height at AX text sizes.
+  NSLayoutConstraint* contentHeightConstraint = [contentView.heightAnchor
+      constraintEqualToAnchor:_signedOutZeroStateScrollView.frameLayoutGuide
+                                  .heightAnchor];
+  contentHeightConstraint.priority = UILayoutPriorityDefaultLow;
+
   UILabel* titleLabel =
       [self zeroStateLabelWithText:l10n_util::GetNSString(
                                        IDS_IOS_AIM_HISTORY_SIGNED_OUT_TITLE)
@@ -222,27 +247,41 @@ const CGFloat kZeroStateHorizontalPadding = 32.0;
                          textStyle:UIFontTextStyleSubheadline
                              color:[UIColor colorNamed:kTextSecondaryColor]];
 
-  _signedOutZeroStateView = [[UIStackView alloc]
+  UIStackView* signedOutZeroStateView = [[UIStackView alloc]
       initWithArrangedSubviews:@[ titleLabel, subtitleLabel ]];
-  _signedOutZeroStateView.axis = UILayoutConstraintAxisVertical;
-  _signedOutZeroStateView.spacing = kZeroStateLabelSpacing;
-  _signedOutZeroStateView.alignment = UIStackViewAlignmentCenter;
-  _signedOutZeroStateView.translatesAutoresizingMaskIntoConstraints = NO;
-  _signedOutZeroStateView.accessibilityIdentifier =
+  signedOutZeroStateView.axis = UILayoutConstraintAxisVertical;
+  signedOutZeroStateView.spacing = kZeroStateLabelSpacing;
+  signedOutZeroStateView.alignment = UIStackViewAlignmentCenter;
+  signedOutZeroStateView.translatesAutoresizingMaskIntoConstraints = NO;
+  signedOutZeroStateView.accessibilityIdentifier =
       kAssistantAIMHistorySignedOutViewAccessibilityIdentifier;
 
-  [self.view addSubview:_signedOutZeroStateView];
+  [contentView addSubview:signedOutZeroStateView];
 
   [NSLayoutConstraint activateConstraints:@[
-    [_signedOutZeroStateView.centerXAnchor
-        constraintEqualToAnchor:self.view.centerXAnchor],
-    [_signedOutZeroStateView.centerYAnchor
-        constraintEqualToAnchor:self.view.centerYAnchor],
-    [_signedOutZeroStateView.leadingAnchor
-        constraintGreaterThanOrEqualToAnchor:self.view.leadingAnchor
+    [contentView.widthAnchor
+        constraintEqualToAnchor:_signedOutZeroStateScrollView.frameLayoutGuide
+                                    .widthAnchor],
+    [contentView.heightAnchor
+        constraintGreaterThanOrEqualToAnchor:_signedOutZeroStateScrollView
+                                                 .frameLayoutGuide
+                                                 .heightAnchor],
+    contentHeightConstraint,
+    [signedOutZeroStateView.centerXAnchor
+        constraintEqualToAnchor:contentView.centerXAnchor],
+    [signedOutZeroStateView.centerYAnchor
+        constraintEqualToAnchor:contentView.centerYAnchor],
+    [signedOutZeroStateView.topAnchor
+        constraintGreaterThanOrEqualToAnchor:contentView.topAnchor
+                                    constant:kZeroStateVerticalPadding],
+    [signedOutZeroStateView.bottomAnchor
+        constraintLessThanOrEqualToAnchor:contentView.bottomAnchor
+                                 constant:-kZeroStateVerticalPadding],
+    [signedOutZeroStateView.leadingAnchor
+        constraintGreaterThanOrEqualToAnchor:contentView.leadingAnchor
                                     constant:kZeroStateHorizontalPadding],
-    [_signedOutZeroStateView.trailingAnchor
-        constraintLessThanOrEqualToAnchor:self.view.trailingAnchor
+    [signedOutZeroStateView.trailingAnchor
+        constraintLessThanOrEqualToAnchor:contentView.trailingAnchor
                                  constant:-kZeroStateHorizontalPadding],
   ]];
 }
@@ -265,7 +304,7 @@ const CGFloat kZeroStateHorizontalPadding = 32.0;
 // the sign-in state.
 - (void)updateContentVisibility {
   _collectionView.hidden = !self.signedIn;
-  _signedOutZeroStateView.hidden = self.signedIn;
+  _signedOutZeroStateScrollView.hidden = self.signedIn;
 }
 
 @end
