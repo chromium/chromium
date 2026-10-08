@@ -227,3 +227,18 @@ source_set("install_test_util") {
     "//testing/gtest",
   ]
 }
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  sources = [ "keystone_install_unittest.cc" ]
+  data = [
+    "keystone_install.sh",
+    "keystone_install_test.sh",
+  ]
+  deps = [
+    ":install_test_util",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
