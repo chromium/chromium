@@ -570,7 +570,10 @@ public class BottomControlsMediatorTest {
     @EnableFeatures(ChromeFeatureList.BOTTOM_CONTROLS_JANK_IMPROVEMENT)
     public void testAndroidViewVisibility_DeferredWhileScrolling() {
         mMediator.setBottomControlsVisible(true);
-        ShadowLooper.idleMainLooper();
+        // setBottomControlsVisible(true) shows the controls transiently; flush the delayed
+        // release so the browser constraints are back to BOTH (controls can scroll).
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertThat(mBrowserControlsVisibilityDelegate.get()).isEqualTo(BrowserControlsState.BOTH);
         assertTrue(mModel.get(ANDROID_VIEW_VISIBLE));
 
         // Scroll controls off so Android view becomes invisible.
@@ -589,5 +592,89 @@ public class BottomControlsMediatorTest {
         // When scrolling stops, Android view visibility should be restored.
         mMediator.onContentViewScrollingStateChanged(false);
         assertTrue(mModel.get(ANDROID_VIEW_VISIBLE));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.BOTTOM_CONTROLS_JANK_IMPROVEMENT)
+    public void testAndroidViewVisibility_NotDeferredWhenControlsForcedShown() {
+        mMediator.setBottomControlsVisible(true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertTrue(mModel.get(ANDROID_VIEW_VISIBLE));
+
+        // Scroll controls off so Android view becomes invisible.
+        doReturn(DEFAULT_HEIGHT).when(mBrowserControlsVisibilityManager).getBottomControlOffset();
+        mMediator.onBrowserControlsOffsetUpdate(DEFAULT_HEIGHT);
+        assertFalse(mModel.get(ANDROID_VIEW_VISIBLE));
+
+        // Mid-scroll, a browser-level override (e.g. a Message or bottom sheet) forces the
+        // controls SHOWN and they animate back to offset 0.
+        mMediator.onContentViewScrollingStateChanged(true);
+        int token = mBrowserControlsVisibilityDelegate.showControlsPersistent();
+        assertThat(mBrowserControlsVisibilityDelegate.get()).isEqualTo(BrowserControlsState.SHOWN);
+        doReturn(0).when(mBrowserControlsVisibilityManager).getBottomControlOffset();
+        mMediator.onBrowserControlsOffsetUpdate(0);
+
+        // The controls can no longer scroll, so the Android view must become interactive
+        // immediately rather than waiting for the scroll/fling to end.
+        assertTrue(mModel.get(ANDROID_VIEW_VISIBLE));
+
+        // Once the override is released the constraints return to BOTH and deferral kicks back
+        // in: scrolling off and back on while still scrolling leaves the view hidden.
+        mBrowserControlsVisibilityDelegate.releasePersistentShowingToken(token);
+        assertThat(mBrowserControlsVisibilityDelegate.get()).isEqualTo(BrowserControlsState.BOTH);
+        doReturn(DEFAULT_HEIGHT).when(mBrowserControlsVisibilityManager).getBottomControlOffset();
+        mMediator.onBrowserControlsOffsetUpdate(DEFAULT_HEIGHT);
+        assertFalse(mModel.get(ANDROID_VIEW_VISIBLE));
+        doReturn(0).when(mBrowserControlsVisibilityManager).getBottomControlOffset();
+        mMediator.onBrowserControlsOffsetUpdate(0);
+        assertFalse(mModel.get(ANDROID_VIEW_VISIBLE));
+
+        // The deferred show lands when scrolling ends.
+        mMediator.onContentViewScrollingStateChanged(false);
+        assertTrue(mModel.get(ANDROID_VIEW_VISIBLE));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.BOTTOM_CONTROLS_JANK_IMPROVEMENT)
+    public void testAndroidViewVisibility_ShownWhenConstraintsLockAfterOffsetSettled() {
+        mMediator.setBottomControlsVisible(true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertThat(mBrowserControlsVisibilityDelegate.get()).isEqualTo(BrowserControlsState.BOTH);
+        assertTrue(mModel.get(ANDROID_VIEW_VISIBLE));
+
+        // Scroll controls off so Android view becomes invisible.
+        doReturn(DEFAULT_HEIGHT).when(mBrowserControlsVisibilityManager).getBottomControlOffset();
+        mMediator.onBrowserControlsOffsetUpdate(DEFAULT_HEIGHT);
+        assertFalse(mModel.get(ANDROID_VIEW_VISIBLE));
+
+        // Mid-scroll the offset settles back at 0 while constraints are still BOTH, so the show
+        // is deferred.
+        mMediator.onContentViewScrollingStateChanged(true);
+        doReturn(0).when(mBrowserControlsVisibilityManager).getBottomControlOffset();
+        mMediator.onBrowserControlsOffsetUpdate(0);
+        assertFalse(mModel.get(ANDROID_VIEW_VISIBLE));
+
+        // The controls are then locked SHOWN while the fling is still active. Since the offset
+        // is already 0, no further offset update arrives; the constraints observer must flush the
+        // deferred show without waiting for the scroll to end.
+        int token = mBrowserControlsVisibilityDelegate.showControlsPersistent();
+        assertThat(mBrowserControlsVisibilityDelegate.get()).isEqualTo(BrowserControlsState.SHOWN);
+        assertTrue(mModel.get(ANDROID_VIEW_VISIBLE));
+
+        // Releasing the lock (back to BOTH) does not hide the view.
+        mBrowserControlsVisibilityDelegate.releasePersistentShowingToken(token);
+        assertThat(mBrowserControlsVisibilityDelegate.get()).isEqualTo(BrowserControlsState.BOTH);
+        assertTrue(mModel.get(ANDROID_VIEW_VISIBLE));
+
+        // After destroy() the mediator no longer reacts to constraint changes.
+        doReturn(DEFAULT_HEIGHT).when(mBrowserControlsVisibilityManager).getBottomControlOffset();
+        mMediator.onBrowserControlsOffsetUpdate(DEFAULT_HEIGHT);
+        assertFalse(mModel.get(ANDROID_VIEW_VISIBLE));
+        doReturn(0).when(mBrowserControlsVisibilityManager).getBottomControlOffset();
+        mMediator.onBrowserControlsOffsetUpdate(0);
+        assertFalse(mModel.get(ANDROID_VIEW_VISIBLE));
+        mMediator.destroy();
+        mBrowserControlsVisibilityDelegate.showControlsPersistent();
+        assertFalse(mModel.get(ANDROID_VIEW_VISIBLE));
     }
 }

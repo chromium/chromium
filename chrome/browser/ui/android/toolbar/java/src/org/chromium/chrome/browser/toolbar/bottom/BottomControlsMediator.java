@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -16,6 +17,7 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
@@ -101,6 +103,9 @@ class BottomControlsMediator
 
     private final ChangeObserver mEdgeToEdgeChangeObserver = this::onEdgeToEdgeChanged;
 
+    private final Callback<@BrowserControlsState Integer> mBrowserControlsConstraintsObserver =
+            this::onBrowserControlsConstraintsChanged;
+
     private @Nullable CurrentTabObserver mTabObserver;
     private @Nullable EdgeToEdgeController mActiveEdgeToEdgeController;
     private boolean mWasNtpScrollOffEnabled;
@@ -168,6 +173,7 @@ class BottomControlsMediator
         mBottomControlsStacker = controlsStacker;
         controlsStacker.getBrowserControls().addObserver(this);
         mBrowserControlsVisibilityDelegate = browserControlsVisibilityDelegate;
+        mBrowserControlsVisibilityDelegate.addSyncObserver(mBrowserControlsConstraintsObserver);
         mFullscreenManager = fullscreenManager;
         mFullscreenManager.addObserver(this);
         mLayerType = layerType;
@@ -260,6 +266,7 @@ class BottomControlsMediator
         mCallbackController.destroy();
         getBrowserControls().removeObserver(this);
         mBottomControlsStacker.removeLayer(this);
+        mBrowserControlsVisibilityDelegate.removeObserver(mBrowserControlsConstraintsObserver);
         mFullscreenManager.removeObserver(this);
         mWindowAndroid.getKeyboardDelegate().removeKeyboardVisibilityListener(this);
         if (mLayoutStateProvider != null) {
@@ -298,6 +305,17 @@ class BottomControlsMediator
         if (mContentViewScrolling == scrolling) return;
         mContentViewScrolling = scrolling;
         if (!scrolling && ChromeFeatureList.sBottomControlsJankImprovement.isEnabled()) {
+            updateAndroidViewVisibility();
+        }
+    }
+
+    private void onBrowserControlsConstraintsChanged(@BrowserControlsState int constraints) {
+        // Mirrors BrowserControlsManager#onConstraintsChanged -> scheduleVisibilityUpdate(). If
+        // the Android view show was deferred while scrolling and the offset has already settled
+        // at 0, no further onBrowserControlsOffsetUpdate() arrives when the controls become
+        // locked, so re-evaluate visibility now that the BOTH deferral no longer applies.
+        if (constraints != BrowserControlsState.BOTH
+                && ChromeFeatureList.sBottomControlsJankImprovement.isEnabled()) {
             updateAndroidViewVisibility();
         }
     }
@@ -431,9 +449,15 @@ class BottomControlsMediator
                                 || mOverlayPanelState == PanelState.PEEKED)
                         && !mIsInSwipeLayout
                         && (browserControls.getBottomControlOffset() == 0 || offsetOverridden);
+        // Defer showing the Android view until scrolling stops, but only while the browser-level
+        // constraints still allow the controls to scroll (BOTH). This mirrors
+        // BrowserControlsManager#updateVisibility: when something forces the controls SHOWN
+        // mid-scroll (e.g. a Message or bottom sheet), the controls animate in and the view must
+        // become interactive immediately rather than at the end of the fling.
         if (visible
                 && ChromeFeatureList.sBottomControlsJankImprovement.isEnabled()
                 && mContentViewScrolling
+                && mBrowserControlsVisibilityDelegate.get() == BrowserControlsState.BOTH
                 && !offsetOverridden
                 && !mModel.get(BottomControlsProperties.ANDROID_VIEW_VISIBLE)
                 && !isNtpScrollOffEnabled()) {
