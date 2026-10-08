@@ -7,6 +7,8 @@
 namespace features {
 
 // Please keep features in alphabetical order.
+BASE_FEATURE(kBlobStatefulMemoryPressure, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kBlobURLFetchRangeHeaderValidation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

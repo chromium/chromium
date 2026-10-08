@@ -39,6 +39,7 @@
 #include "build/build_config.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_data_item.h"
+#include "storage/browser/blob/features.h"
 #include "storage/browser/blob/shareable_blob_data_item.h"
 #include "storage/browser/blob/shareable_file_reference.h"
 
@@ -299,19 +300,34 @@ uint64_t GetTotalSizeAndFileSizes(
   return total_size_output;
 }
 
-constexpr base::MemoryConsumerTraits kBlobMemoryControllerTraits(
-    // Can hold up to ~2GB of blob data in memory (platform-dependent).
-    base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
-    // Eviction requires traversing LRU cache and paging items to disk.
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
-    // Paged items can be read back from disk.
-    base::MemoryConsumerTraits::InformationRetention::kLossless,
-    // Eviction is asynchronous, and it uses AsyncMemoryConsumerRegistration.
-    base::MemoryConsumerTraits::ExecutionType::kAsynchronous,
-    // Blob data lives in-process.
-    base::MemoryConsumerTraits::InProcess::kYes,
-    // Reading paged data back from disk.
-    base::MemoryConsumerTraits::RecreateMemoryCost::kCheap);
+// Returns true if the stateful memory pressure behavior should be used. When
+// false, the controller behaves exactly as if base::kStatefulMemoryPressure was
+// disabled.
+bool IsStatefulMemoryPressureEnabled() {
+  return base::FeatureList::IsEnabled(base::kStatefulMemoryPressure) &&
+         base::FeatureList::IsEnabled(features::kBlobStatefulMemoryPressure);
+}
+
+base::MemoryConsumerTraits GetBlobMemoryControllerTraits() {
+  return base::MemoryConsumerTraits(
+      // Can hold up to ~2GB of blob data in memory (platform-dependent).
+      base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
+      // Eviction requires traversing LRU cache and paging items to disk.
+      base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      // Paged items can be read back from disk.
+      base::MemoryConsumerTraits::InformationRetention::kLossless,
+      // Eviction is asynchronous, and it uses AsyncMemoryConsumerRegistration.
+      base::MemoryConsumerTraits::ExecutionType::kAsynchronous,
+      // Blob data lives in-process.
+      base::MemoryConsumerTraits::InProcess::kYes,
+      // Reading paged data back from disk.
+      base::MemoryConsumerTraits::RecreateMemoryCost::kCheap,
+      // When not stateful, the memory coordinator must repeat release signals
+      // while under pressure, matching the legacy behavior.
+      IsStatefulMemoryPressureEnabled()
+          ? base::MemoryConsumerTraits::IsStateful::kYes
+          : base::MemoryConsumerTraits::IsStateful::kNo);
+}
 
 }  // namespace
 
@@ -568,7 +584,7 @@ BlobMemoryController::BlobMemoryController(
           base::LRUCache<uint64_t, ShareableBlobDataItem*>::NO_AUTO_EVICT),
       memory_consumer_registration_(
           "BlobMemoryController",
-          kBlobMemoryControllerTraits,
+          GetBlobMemoryControllerTraits(),
           this,
           base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled) {}
 
@@ -803,7 +819,7 @@ void BlobMemoryController::OnStorageLimitsCalculated(BlobStorageLimits limits) {
   base_limits_ = limits;
   limits_ = limits;
 
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (IsStatefulMemoryPressureEnabled()) {
     size_t target_max_memory = base::ScaleByMemoryLimit(
         base_limits_.max_blob_in_memory_space, memory_limit());
     limits_.max_blob_in_memory_space =
@@ -903,15 +919,13 @@ void BlobMemoryController::MaybeScheduleEvictionUntilSystemHealthy(
       blob_memory_used_;
 
   base::MemoryLimit effective_limit =
-      base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)
-          ? this->memory_limit()
-          : memory_limit;
+      IsStatefulMemoryPressureEnabled() ? this->memory_limit() : memory_limit;
 
   size_t in_memory_limit = limits_.memory_limit_before_paging();
   uint64_t min_page_file_size = limits_.min_page_file_size;
 
   if (effective_limit <= base::MemoryLimit::ModeratePressureThreshold()) {
-    if (!base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    if (!IsStatefulMemoryPressureEnabled()) {
       // One-shot pressure logic
       in_memory_limit = 0;
     }
@@ -1025,7 +1039,7 @@ void BlobMemoryController::OnEvictionComplete(
 }
 
 void BlobMemoryController::OnUpdateMemoryLimit() {
-  if (!base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (!IsStatefulMemoryPressureEnabled()) {
     return;
   }
   if (memory_limit() < base::MemoryLimit::ModeratePressureThreshold()) {
@@ -1040,7 +1054,7 @@ void BlobMemoryController::OnUpdateMemoryLimit() {
 }
 
 void BlobMemoryController::OnReleaseMemory() {
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (IsStatefulMemoryPressureEnabled()) {
     if (memory_limit() < base::MemoryLimit::ModeratePressureThreshold()) {
       return;
     }
