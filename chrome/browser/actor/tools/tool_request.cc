@@ -29,7 +29,7 @@ ToolRequest::ToolRequest(const ToolRequest& other) = default;
 ToolRequest& ToolRequest::operator=(const ToolRequest& other) = default;
 
 std::optional<ToolDefinition> ToolRequest::GetToolDefinition() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return std::nullopt;
 }
 
