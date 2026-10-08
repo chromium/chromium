@@ -36,6 +36,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
@@ -793,6 +794,16 @@ class AppMenuHandlerImpl
             appRect.bottom = mDecorView.getHeight();
         }
 
+        // When anchored to the bottom bar with top-anchored controls, keep the menu from growing
+        // over the top controls unless the delegate says there is nothing there to protect.
+        int reservedTopSpace =
+                isFromBottomBar
+                                && mBrowserControlsStateProvider.getControlsPosition()
+                                        == ControlsPosition.TOP
+                                && mDelegate.shouldKeepMenuBelowTopControls()
+                        ? mBrowserControlsStateProvider.getTopControlsHeight()
+                        : 0;
+
         mAppMenu.show(
                 wrapper,
                 anchorView,
@@ -806,6 +817,7 @@ class AppMenuHandlerImpl
                 mBrowserControlsStateProvider.getControlsPosition(),
                 addTopPaddingBeforeFirstRow(),
                 isFromBottomBar,
+                reservedTopSpace,
                 this);
         assumeNonNull(mAppMenuDragHelper);
         mAppMenuDragHelper.onShow(startDragging);

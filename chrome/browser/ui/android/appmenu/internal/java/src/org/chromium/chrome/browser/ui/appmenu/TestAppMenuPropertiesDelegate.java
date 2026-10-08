@@ -168,5 +168,10 @@ class TestAppMenuPropertiesDelegate implements AppMenuPropertiesDelegate {
     }
 
     @Override
+    public boolean shouldKeepMenuBelowTopControls() {
+        return false;
+    }
+
+    @Override
     public void onMenuShown() {}
 }

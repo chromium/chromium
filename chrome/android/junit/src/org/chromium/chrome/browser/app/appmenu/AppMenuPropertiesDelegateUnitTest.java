@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTabGroupItemProperties;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
@@ -79,6 +80,7 @@ import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.PowerBookmarkType;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
@@ -557,6 +559,24 @@ public class AppMenuPropertiesDelegateUnitTest {
         assertEquals(
                 "sync_group_456",
                 bundle.getString(AppMenuPropertiesDelegateImpl.SYNC_GROUP_ID_BUNDLE_KEY));
+    }
+
+    @Test
+    public void testShouldKeepMenuBelowTopControls() {
+        when(mTab.getNativePage()).thenReturn(null);
+        assertTrue(mAppMenuPropertiesDelegate.shouldKeepMenuBelowTopControls());
+
+        NativePage nativePage = mock(NativePage.class);
+        when(nativePage.getHost()).thenReturn(UrlConstants.NTP_HOST);
+        when(mTab.getNativePage()).thenReturn(nativePage);
+        assertFalse(mAppMenuPropertiesDelegate.shouldKeepMenuBelowTopControls());
+
+        // The incognito NTP is intentionally treated the same: its omnibox shows no URL.
+        when(mTab.isOffTheRecord()).thenReturn(true);
+        assertFalse(mAppMenuPropertiesDelegate.shouldKeepMenuBelowTopControls());
+
+        mActivityTabProvider.setForTesting(null);
+        assertTrue(mAppMenuPropertiesDelegate.shouldKeepMenuBelowTopControls());
     }
 
     private void setUpIncognitoMocks() {
