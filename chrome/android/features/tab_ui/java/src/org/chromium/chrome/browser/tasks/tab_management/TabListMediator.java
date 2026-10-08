@@ -418,7 +418,7 @@ public class TabListMediator implements TabListNotificationHandler {
                     if (!mTrackingTabs) return;
                     Tab tab = getCurrentTabModelChecked().getTabById(state.tabId);
                     if (tab != null) {
-                        mTabListLayoutDelegate.onUiTabStateChanged(tab, state);
+                        mTabListLayoutDelegate.onUiTabStateChanged(tab);
                     }
                 }
             };
@@ -1285,8 +1285,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
         updateFaviconForTab(model, tab, null, null);
 
-        ActorUiTabController controller = ActorUiTabController.from(tab);
-        updateActorUiState(model, controller == null ? null : controller.getUiTabState());
+        updateActorUiState(model, tab);
 
         boolean forceUpdate = model.get(TabProperties.IS_SELECTED) && !quickMode;
         boolean forceUpdateLastSelected =
@@ -1306,13 +1305,16 @@ public class TabListMediator implements TabListNotificationHandler {
         }
     }
 
-    void updateActorUiState(PropertyModel model, @Nullable UiTabState state) {
-        boolean isTabGroupCard = TabProperties.isTabGroupHeader(model);
+    void updateActorUiState(PropertyModel model, Tab tab) {
+        if (TabProperties.isTabGroupHeader(model) || tab.isNativePage()) {
+            model.set(TabProperties.ACTOR_UI_STATE, null);
+            return;
+        }
+        ActorUiTabController controller = ActorUiTabController.from(tab);
+        UiTabState state = controller == null ? null : controller.getUiTabState();
         model.set(
                 TabProperties.ACTOR_UI_STATE,
-                (isTabGroupCard || state == null || state.tabIndicator == TabIndicatorStatus.NONE)
-                        ? null
-                        : state);
+                (state == null || state.tabIndicator == TabIndicatorStatus.NONE) ? null : state);
     }
 
     boolean isTabInTabGroup(Tab tab) {
@@ -1782,8 +1784,7 @@ public class TabListMediator implements TabListNotificationHandler {
                         .with(TabProperties.SHOW_THUMBNAIL_SPINNER, false)
                         .build();
 
-        ActorUiTabController controller = ActorUiTabController.from(tab);
-        updateActorUiState(tabInfo, controller == null ? null : controller.getUiTabState());
+        updateActorUiState(tabInfo, tab);
 
         if (mRailCollapseStateSupplier != null) {
             tabInfo.set(TabProperties.RAIL_COLLAPSE_STATE, mRailCollapseStateSupplier.get());
@@ -2534,7 +2535,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
             PropertyModel model = getModelFromTabId(tab.getId());
             if (model != null) {
-                updateActorUiState(model, controller.getUiTabState());
+                updateActorUiState(model, tab);
             }
         }
 
@@ -3076,6 +3077,9 @@ public class TabListMediator implements TabListNotificationHandler {
                 actingTabIds = new ArrayList<>();
                 // Group headers display active indicators for all member tabs.
                 for (Tab groupTab : tabModel.getTabsInGroup(assumeNonNull(tabGroupId))) {
+                    if (groupTab.isClosing() || groupTab.isDestroyed() || groupTab.isNativePage()) {
+                        continue;
+                    }
                     ActorUiTabController controller = ActorUiTabController.from(groupTab);
                     if (controller != null) {
                         UiTabState state = controller.getUiTabState();

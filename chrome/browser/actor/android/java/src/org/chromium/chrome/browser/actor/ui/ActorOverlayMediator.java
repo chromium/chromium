@@ -124,6 +124,11 @@ class ActorOverlayMediator
                     public void onHidden(Tab tab, int reason) {
                         updateOverlayState();
                     }
+
+                    @Override
+                    public void onContentChanged(Tab tab) {
+                        updateOverlayState();
+                    }
                 };
 
         mOmniboxFocusObserver = ignored -> updateOverlayState();
