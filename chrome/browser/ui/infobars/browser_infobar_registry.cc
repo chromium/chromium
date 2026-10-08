@@ -453,6 +453,24 @@ void RegisterInfoBars() {
             .Build();
     browser_infobar_manager->Register(std::move(spec));
   }
+
+  if (IsInfoBarMigrated(InfoBarDelegate::TAB_SHARING_INFOBAR_DELEGATE)) {
+    auto spec =
+        InfoBarSpec::Builder(InfoBarDelegate::TAB_SHARING_INFOBAR_DELEGATE)
+            .SetIcon(features::IsRoundedIconsEnabled()
+                         ? vector_icons::kScreenShareIcon
+                         : vector_icons::kScreenShareOldIcon)
+            .SetScope(InfoBarScope::kTab)
+            .SetPriority(InfoBarDelegate::InfobarPriority::kCriticalSecurity)
+            .SetExpireOnNavigation(false)
+            .SetIsCloseable(false)
+            .SetCloseOnAccept(false)
+            .SetCloseOnCancel(false)
+            .SetCloseOnExtraButton(false)
+            .SetAllowDuplicates(true)
+            .Build();
+    browser_infobar_manager->Register(std::move(spec));
+  }
 }
 
 void RegisterPreProfileInitInfoBars() {

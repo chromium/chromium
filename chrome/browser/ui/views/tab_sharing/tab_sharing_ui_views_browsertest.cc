@@ -15,6 +15,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_capture_border_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
+#include "chrome/browser/ui/views/infobars/confirm_infobar.h"
 #include "chrome/browser/ui/views/tab_sharing/tab_sharing_infobar.h"
 #include "chrome/browser/ui/views/tab_sharing/tab_sharing_test_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -31,6 +33,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
@@ -94,15 +97,24 @@ infobars::ContentInfoBarManager* GetInfoBarManager(
       GetWebContents(browser, tab));
 }
 
-TabSharingInfoBar* GetInfoBar(BrowserWindowInterface* browser, int tab) {
-  return static_cast<TabSharingInfoBar*>(
-      GetInfoBarManager(browser, tab)->infobars()[0]);
+infobars::InfoBar* GetInfoBar(BrowserWindowInterface* browser, int tab) {
+  return GetInfoBarManager(browser, tab)->infobars()[0];
 }
 
 TabSharingInfoBarDelegate* GetDelegate(BrowserWindowInterface* browser,
                                        int tab) {
   return static_cast<TabSharingInfoBarDelegate*>(
       GetInfoBar(browser, tab)->delegate());
+}
+
+const views::View* GetStatusMessageView(BrowserWindowInterface* browser,
+                                        int tab) {
+  infobars::InfoBar* infobar = GetInfoBar(browser, tab);
+  if (infobar->delegate()->AsConfirmInfoBarDelegate()) {
+    return static_cast<ConfirmInfoBar*>(infobar)->message_view_for_testing();
+  }
+  return static_cast<TabSharingInfoBar*>(infobar)
+      ->GetStatusMessageViewForTesting();
 }
 
 std::u16string GetInfoText(const TabSharingStatusMessageView& info_view) {
@@ -117,8 +129,7 @@ std::u16string GetInfoText(const TabSharingStatusMessageView& info_view) {
 }
 
 std::u16string GetInfobarMessageText(BrowserWindowInterface* browser, int tab) {
-  const views::View& view =
-      *GetInfoBar(browser, tab)->GetStatusMessageViewForTesting();
+  const views::View& view = *GetStatusMessageView(browser, tab);
   if (view.GetClassName() == "Label") {
     return std::u16string(static_cast<const views::Label&>(view).GetText());
   } else if (view.GetClassName() == "TabSharingStatusMessageView") {
@@ -130,8 +141,7 @@ std::u16string GetInfobarMessageText(BrowserWindowInterface* browser, int tab) {
 std::vector<views::MdTextButton*> GetMessageLinks(
     BrowserWindowInterface* browser,
     int tab) {
-  const views::View& status_message_view =
-      *GetInfoBar(browser, tab)->GetStatusMessageViewForTesting();
+  const views::View& status_message_view = *GetStatusMessageView(browser, tab);
   CHECK_EQ(status_message_view.GetClassName(), "TabSharingStatusMessageView");
 
   std::vector<views::MdTextButton*> buttons;
@@ -144,6 +154,11 @@ std::vector<views::MdTextButton*> GetMessageLinks(
 }
 
 bool HasShareThisTabInsteadButton(BrowserWindowInterface* browser, int tab) {
+  if (auto* confirm_delegate =
+          GetInfoBar(browser, tab)->delegate()->AsConfirmInfoBarDelegate()) {
+    return confirm_delegate->GetButtons() &
+           ConfirmInfoBarDelegate::BUTTON_CANCEL;
+  }
   return GetDelegate(browser, tab)->GetButtons() &
          TabSharingInfoBarButton::kShareThisTabInstead;
 }
@@ -152,6 +167,11 @@ std::u16string GetShareThisTabInsteadButtonLabel(
     BrowserWindowInterface* browser,
     int tab) {
   DCHECK(HasShareThisTabInsteadButton(browser, tab));  // Test error otherwise.
+  if (auto* confirm_delegate =
+          GetInfoBar(browser, tab)->delegate()->AsConfirmInfoBarDelegate()) {
+    return confirm_delegate->GetButtonLabel(
+        ConfirmInfoBarDelegate::BUTTON_CANCEL);
+  }
   return GetDelegate(browser, tab)
       ->GetButtonLabel(TabSharingInfoBarButton::kShareThisTabInstead);
 }
@@ -160,6 +180,11 @@ ui::ImageModel GetShareThisTabInsteadButtonImage(
     BrowserWindowInterface* browser,
     int tab) {
   DCHECK(HasShareThisTabInsteadButton(browser, tab));  // Test error otherwise.
+  if (auto* confirm_delegate =
+          GetInfoBar(browser, tab)->delegate()->AsConfirmInfoBarDelegate()) {
+    return confirm_delegate->GetButtonImage(
+        ConfirmInfoBarDelegate::BUTTON_CANCEL);
+  }
   return GetDelegate(browser, tab)
       ->GetButtonImage(TabSharingInfoBarButton::kShareThisTabInstead);
 }
@@ -167,11 +192,31 @@ ui::ImageModel GetShareThisTabInsteadButtonImage(
 bool ShareThisTabInsteadButtonIsEnabled(BrowserWindowInterface* browser,
                                         int tab) {
   DCHECK(HasShareThisTabInsteadButton(browser, tab));  // Test error otherwise.
+  if (auto* confirm_delegate =
+          GetInfoBar(browser, tab)->delegate()->AsConfirmInfoBarDelegate()) {
+    return confirm_delegate->GetButtonEnabled(
+        ConfirmInfoBarDelegate::BUTTON_CANCEL);
+  }
   return GetDelegate(browser, tab)
       ->IsButtonEnabled(TabSharingInfoBarButton::kShareThisTabInstead);
 }
 
+void ClickShareThisTabInsteadButton(BrowserWindowInterface* browser, int tab) {
+  DCHECK(HasShareThisTabInsteadButton(browser, tab));
+  if (auto* confirm_delegate =
+          GetInfoBar(browser, tab)->delegate()->AsConfirmInfoBarDelegate()) {
+    confirm_delegate->Cancel();
+    return;
+  }
+  GetDelegate(browser, tab)->ShareThisTabInstead();
+}
+
 bool HasCscIndicatorButton(BrowserWindowInterface* browser, int tab) {
+  if (auto* confirm_delegate =
+          GetInfoBar(browser, tab)->delegate()->AsConfirmInfoBarDelegate()) {
+    return confirm_delegate->GetButtons() &
+           ConfirmInfoBarDelegate::BUTTON_EXTRA;
+  }
   return GetDelegate(browser, tab)->GetButtons() &
          TabSharingInfoBarButton::kCapturedSurfaceControlIndicator;
 }
@@ -179,6 +224,11 @@ bool HasCscIndicatorButton(BrowserWindowInterface* browser, int tab) {
 std::u16string GetCscIndicatorButtonLabel(BrowserWindowInterface* browser,
                                           int tab) {
   DCHECK(HasCscIndicatorButton(browser, tab));  // Test error otherwise.
+  if (auto* confirm_delegate =
+          GetInfoBar(browser, tab)->delegate()->AsConfirmInfoBarDelegate()) {
+    return confirm_delegate->GetButtonLabel(
+        ConfirmInfoBarDelegate::BUTTON_EXTRA);
+  }
   return GetDelegate(browser, tab)
       ->GetButtonLabel(
           TabSharingInfoBarButton::kCapturedSurfaceControlIndicator);
@@ -187,6 +237,15 @@ std::u16string GetCscIndicatorButtonLabel(BrowserWindowInterface* browser,
 ui::ImageModel GetCscIndicatorButtonImage(BrowserWindowInterface* browser,
                                           int tab) {
   DCHECK(HasCscIndicatorButton(browser, tab));  // Test error otherwise.
+  if (auto* confirm_delegate =
+          GetInfoBar(browser, tab)->delegate()->AsConfirmInfoBarDelegate()) {
+    EXPECT_FALSE(confirm_delegate->ShouldUseTextColorForButtonIcon(
+        ConfirmInfoBarDelegate::BUTTON_EXTRA));
+    return static_cast<ConfirmInfoBar*>(GetInfoBar(browser, tab))
+        ->extra_button_for_testing()
+        ->GetImageModel(views::Button::STATE_NORMAL)
+        .value_or(ui::ImageModel());
+  }
   return GetDelegate(browser, tab)
       ->GetButtonImage(
           TabSharingInfoBarButton::kCapturedSurfaceControlIndicator);
@@ -247,10 +306,19 @@ const policy::DlpContentRestrictionSet kScreenshareRestrictionSet(
 
 class TabSharingUIViewsBrowserTestBase : public InProcessBrowserTest {
  public:
-  TabSharingUIViewsBrowserTestBase() {
+  explicit TabSharingUIViewsBrowserTestBase(
+      bool use_centralized_infobar = false) {
     // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
     // disable kHttpsUpgrades feature.
-    features_.InitWithFeatureState(features::kHttpsUpgrades, false);
+    if (use_centralized_infobar) {
+      features_.InitWithFeaturesAndParameters(
+          {{infobars::kCentralizedInfoBarFramework,
+            {{"MigratedTabSharing", "true"}}}},
+          {features::kHttpsUpgrades});
+    } else {
+      features_.InitWithFeatures({}, {features::kHttpsUpgrades,
+                                      infobars::kCentralizedInfoBarFramework});
+    }
   }
 
   void SetUpOnMainThread() override {
@@ -433,12 +501,22 @@ class TabSharingUIViewsBrowserTestBase : public InProcessBrowserTest {
   std::unique_ptr<TabSharingUI> tab_sharing_ui_;
 };
 
-class TabSharingUIViewsBrowserTest : public TabSharingUIViewsBrowserTestBase {
+class TabSharingUIViewsBrowserTest : public TabSharingUIViewsBrowserTestBase,
+                                     public testing::WithParamInterface<bool> {
  public:
-  TabSharingUIViewsBrowserTest() = default;
+  TabSharingUIViewsBrowserTest()
+      : TabSharingUIViewsBrowserTestBase(GetParam()) {}
 };
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, StartSharing) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         TabSharingUIViewsBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "MigratedInfobar"
+                                             : "LegacyInfobar";
+                         });
+
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, StartSharing) {
   AddTabs(browser(), 2);
   ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
 
@@ -463,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, StartSharing) {
       .browser = browser(), .capturing_tab = 0, .captured_tab = 1});
 }
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, SwitchSharedTab) {
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, SwitchSharedTab) {
   AddTabs(browser(), 2);
   ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
   CreateUiAndStartSharing(browser(), /*capturing_tab=*/0, /*captured_tab=*/1);
@@ -478,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, SwitchSharedTab) {
       .browser = browser(), .capturing_tab = 0, .captured_tab = 2});
 }
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, StopSharing) {
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, StopSharing) {
   AddTabs(browser(), 2);
   ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
   CreateUiAndStartSharing(browser(), /*capturing_tab=*/0, /*captured_tab=*/1);
@@ -493,7 +571,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, StopSharing) {
                           .infobar_count = 0});
 }
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, CloseTab) {
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, CloseTab) {
   AddTabs(browser(), 2);
   ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
   CreateUiAndStartSharing(browser(), /*capturing_tab=*/0, /*captured_tab=*/1);
@@ -520,7 +598,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, CloseTab) {
                           .infobar_count = 0});
 }
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
                        BorderWidgetShouldCloseWhenBrowserCloses) {
   BrowserWindowInterface* new_browser = CreateBrowser(browser()->GetProfile());
   AddTabs(new_browser, 2);
@@ -549,7 +627,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
 #else
 #define MAYBE_CloseTabInIncognitoBrowser CloseTabInIncognitoBrowser
 #endif
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
                        MAYBE_CloseTabInIncognitoBrowser) {
   AddTabs(browser(), 2);
   ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
@@ -606,7 +684,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
   });
 }
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, KillTab) {
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, KillTab) {
   AddTabs(browser(), 2);
   ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
   CreateUiAndStartSharing(browser(), /*capturing_tab=*/1, /*captured_tab=*/2);
@@ -629,7 +707,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, KillTab) {
   tab_sharing_ui_views()->StopSharing("reason");
 }
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, KillSharedTab) {
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, KillSharedTab) {
   AddTabs(browser(), 2);
   ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
   CreateUiAndStartSharing(browser(), /*capturing_tab=*/0, /*captured_tab=*/1);
@@ -651,7 +729,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, KillSharedTab) {
                           .infobar_count = 0});
 }
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
                        InfobarLabelUpdatedOnNavigation) {
   AddTabs(browser(), 1);
   ASSERT_EQ(browser()->GetTabStripModel()->count(), 2);
@@ -675,7 +753,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
       ::testing::HasSubstr("about:blank"));
 }
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
                        InfobarGainsCapturedSurfaceControlIndicator) {
   // Think of tab #0 as kOtherTab. It is verified by VerifyUi().
   constexpr int kCapturedTab = 1;
@@ -702,7 +780,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
   VerifyUi(expectations);
 }
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
                        SourceChangesRemembersIfCapturedSurfaceControlInactive) {
   constexpr int kOtherTab = 0;
   constexpr int kCapturedTab = 1;
@@ -718,10 +796,10 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
   // the source-change.
   EXPECT_CALL(*this,
               OnSourceChange(_, /*captured_surface_control_active=*/false));
-  GetDelegate(browser(), kOtherTab)->ShareThisTabInstead();
+  ClickShareThisTabInsteadButton(browser(), kOtherTab);
 }
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
                        SourceChangesRemembersIfCapturedSurfaceControlActive) {
   constexpr int kOtherTab = 0;
   constexpr int kCapturedTab = 1;
@@ -738,12 +816,12 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
 
   EXPECT_CALL(*this,
               OnSourceChange(_, /*captured_surface_control_active=*/true));
-  GetDelegate(browser(), kOtherTab)->ShareThisTabInstead();
+  ClickShareThisTabInsteadButton(browser(), kOtherTab);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
                        SharingWithDlpAndNavigation) {
   // DLP setup
   ApplyDlpForAllUsers();
@@ -812,9 +890,11 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 class TabSharingMessageLinksBrowserTest
-    : public TabSharingUIViewsBrowserTestBase {
+    : public TabSharingUIViewsBrowserTestBase,
+      public testing::WithParamInterface<bool> {
  public:
-  TabSharingMessageLinksBrowserTest() = default;
+  TabSharingMessageLinksBrowserTest()
+      : TabSharingUIViewsBrowserTestBase(GetParam()) {}
 
   void SetUpOnMainThread() override {
     TabSharingUIViewsBrowserTestBase::SetUpOnMainThread();
@@ -835,7 +915,15 @@ class TabSharingMessageLinksBrowserTest
   const std::string kCapturedTabLinkText = "chrome://new-tab-page";
 };
 
-IN_PROC_BROWSER_TEST_F(TabSharingMessageLinksBrowserTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         TabSharingMessageLinksBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "MigratedInfobar"
+                                             : "LegacyInfobar";
+                         });
+
+IN_PROC_BROWSER_TEST_P(TabSharingMessageLinksBrowserTest,
                        ClickingOnLinkInCapturingTabActivatesCapturedTab) {
   CreateUiAndStartSharing(browser(), kCapturingTab, kCapturedTab);
   ActivateTab(browser(), kCapturingTab);
@@ -850,7 +938,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingMessageLinksBrowserTest,
   EXPECT_TRUE(IsActive(browser(), kCapturedTab));
 }
 
-IN_PROC_BROWSER_TEST_F(TabSharingMessageLinksBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabSharingMessageLinksBrowserTest,
                        ClickingOnLinkInCapturedTabActivatesCapturingTab) {
   CreateUiAndStartSharing(browser(), kCapturingTab, kCapturedTab);
   ActivateTab(browser(), kCapturedTab);
@@ -865,7 +953,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingMessageLinksBrowserTest,
   EXPECT_TRUE(IsActive(browser(), kCapturingTab));
 }
 
-IN_PROC_BROWSER_TEST_F(TabSharingMessageLinksBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabSharingMessageLinksBrowserTest,
                        ClickingOnCaptureeLinkInOtherTabActivatesCapturedTab) {
   CreateUiAndStartSharing(browser(), kCapturingTab, kCapturedTab);
   ActivateTab(browser(), kOtherTab);
@@ -881,7 +969,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingMessageLinksBrowserTest,
   EXPECT_TRUE(IsActive(browser(), kCapturedTab));
 }
 
-IN_PROC_BROWSER_TEST_F(TabSharingMessageLinksBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabSharingMessageLinksBrowserTest,
                        ClickingOnCapturerLinkInOtherTabActivatesCapturingTab) {
   CreateUiAndStartSharing(browser(), kCapturingTab, kCapturedTab);
   ActivateTab(browser(), kOtherTab);
@@ -897,8 +985,20 @@ IN_PROC_BROWSER_TEST_F(TabSharingMessageLinksBrowserTest,
   EXPECT_TRUE(IsActive(browser(), kCapturingTab));
 }
 
-class MultipleTabSharingUIViewsBrowserTest : public InProcessBrowserTest {
+class MultipleTabSharingUIViewsBrowserTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
+  MultipleTabSharingUIViewsBrowserTest() {
+    if (GetParam()) {
+      features_.InitAndEnableFeatureWithParameters(
+          infobars::kCentralizedInfoBarFramework,
+          {{"MigratedTabSharing", "true"}});
+    } else {
+      features_.InitAndDisableFeature(infobars::kCentralizedInfoBarFramework);
+    }
+  }
+
   void CreateUIsAndStartSharing(BrowserWindowInterface* browser,
                                 int capturing_tab,
                                 int captured_tab_first,
@@ -933,10 +1033,19 @@ class MultipleTabSharingUIViewsBrowserTest : public InProcessBrowserTest {
   }
 
  private:
+  base::test::ScopedFeatureList features_;
   std::vector<std::unique_ptr<TabSharingUI>> tab_sharing_ui_views_;
 };
 
-IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, VerifyUi) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         MultipleTabSharingUIViewsBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "MigratedInfobar"
+                                             : "LegacyInfobar";
+                         });
+
+IN_PROC_BROWSER_TEST_P(MultipleTabSharingUIViewsBrowserTest, VerifyUi) {
   AddTabs(browser(), 3);
   ASSERT_EQ(browser()->GetTabStripModel()->count(), 4);
   CreateUIsAndStartSharing(browser(), /*capturing_tab=*/0,
@@ -971,7 +1080,7 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, VerifyUi) {
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, StopSharing) {
+IN_PROC_BROWSER_TEST_P(MultipleTabSharingUIViewsBrowserTest, StopSharing) {
   AddTabs(browser(), 3);
   ASSERT_EQ(browser()->GetTabStripModel()->count(), 4);
   CreateUIsAndStartSharing(browser(), /*capturing_tab=*/0,
@@ -988,7 +1097,7 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, StopSharing) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, CloseTabs) {
+IN_PROC_BROWSER_TEST_P(MultipleTabSharingUIViewsBrowserTest, CloseTabs) {
   AddTabs(browser(), 3);
   ASSERT_EQ(browser()->GetTabStripModel()->count(), 4);
   CreateUIsAndStartSharing(browser(), /*capturing_tab=*/0,
@@ -1007,7 +1116,7 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, CloseTabs) {
 
 // TODO(crbug.com/40267838): Enable on CrOS.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     MultipleTabSharingUIViewsBrowserTest,
     NormalModeCapturerDoesNotProduceInfobarInGuestModeTabOpenedBeforeCapture) {
   // Create a guest-mode browser.
@@ -1036,7 +1145,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/1)->infobars().size(), 0u);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     MultipleTabSharingUIViewsBrowserTest,
     NormalModeCapturerDoesNotProduceInfobarInGuestModeTabOpenedAfterCapture) {
   // Create a normal-mode browser.
@@ -1065,7 +1174,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/1)->infobars().size(), 0u);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     MultipleTabSharingUIViewsBrowserTest,
     GuestModeCapturerDoesNotProduceInfobarInNormalModeTabOpenedBeforeCapture) {
   // Create a normal-mode browser.
@@ -1094,7 +1203,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/1)->infobars().size(), 0u);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     MultipleTabSharingUIViewsBrowserTest,
     GuestModeCapturerDoesNotProduceInfobarInNormalModeTabOpenedAfterCapture) {
   // Create a guest-mode browser.
@@ -1123,7 +1232,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/1)->infobars().size(), 0u);
 }
 
-IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest,
+IN_PROC_BROWSER_TEST_P(MultipleTabSharingUIViewsBrowserTest,
                        TabsAddedInGuestModeHaveInfobarIfGuestModeCapture) {
   // Create a guest-mode browser.
   BrowserWindowInterface* const guest_browser = CreateGuestBrowser();
@@ -1146,8 +1255,18 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest,
 #endif
 
 class TabSharingUIViewsPreferCurrentTabBrowserTest
-    : public InProcessBrowserTest {
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
+  TabSharingUIViewsPreferCurrentTabBrowserTest() {
+    if (GetParam()) {
+      features_.InitAndEnableFeatureWithParameters(
+          infobars::kCentralizedInfoBarFramework,
+          {{"MigratedTabSharing", "true"}});
+    } else {
+      features_.InitAndDisableFeature(infobars::kCentralizedInfoBarFramework);
+    }
+  }
   ~TabSharingUIViewsPreferCurrentTabBrowserTest() override = default;
 
   void ManualSetUp(int captured_tab) {
@@ -1181,10 +1300,19 @@ class TabSharingUIViewsPreferCurrentTabBrowserTest
   const int kTab0 = 0;
   const int kTab1 = 1;
 
+  base::test::ScopedFeatureList features_;
   std::unique_ptr<TabSharingUI> tab_sharing_ui_views_;
 };
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsPreferCurrentTabBrowserTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         TabSharingUIViewsPreferCurrentTabBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "MigratedInfobar"
+                                             : "LegacyInfobar";
+                         });
+
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsPreferCurrentTabBrowserTest,
                        VerifyUiWhenSelfCapturing) {
   ManualSetUp(/*captured_tab=*/kTab0);
 
@@ -1197,7 +1325,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsPreferCurrentTabBrowserTest,
             kShareThisTabInsteadMessage);
 }
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsPreferCurrentTabBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsPreferCurrentTabBrowserTest,
                        VerifyUiWhenCapturingAnotherTab) {
   ManualSetUp(/*captured_tab=*/kTab1);
 
@@ -1212,9 +1340,11 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsPreferCurrentTabBrowserTest,
 
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 class TabSharingUIViewsDataProtectionBrowserTest
-    : public TabSharingUIViewsBrowserTestBase {
+    : public TabSharingUIViewsBrowserTestBase,
+      public testing::WithParamInterface<bool> {
  public:
-  TabSharingUIViewsDataProtectionBrowserTest() {
+  TabSharingUIViewsDataProtectionBrowserTest()
+      : TabSharingUIViewsBrowserTestBase(GetParam()) {
     scoped_feature_list_.InitAndEnableFeature(
         enterprise_data_protection::kEnableTabSharingProtection);
   }
@@ -1236,7 +1366,15 @@ class TabSharingUIViewsDataProtectionBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsDataProtectionBrowserTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         TabSharingUIViewsDataProtectionBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "MigratedInfobar"
+                                             : "LegacyInfobar";
+                         });
+
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsDataProtectionBrowserTest,
                        SharingWithTabSharingProtection) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL kUrlAllowed =

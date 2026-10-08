@@ -157,6 +157,12 @@ class TabSharingUIViews : public TabSharingUI,
 
   void CreateInfobarsForAllTabs();
   void CreateInfobarForWebContents(content::WebContents* contents);
+  infobars::InfoBar* CreateMigratedInfobarForWebContents(
+      content::WebContents* contents,
+      infobars::InfoBar* old_infobar,
+      TabSharingInfoBarDelegate::TabRole role,
+      TabSharingInfoBarDelegate::ButtonState
+          share_this_tab_instead_button_state);
   void RefreshAllTabSharingInfoBars(bool recreate_shared_tab);
   void RemoveInfobarsForAllTabs();
 

@@ -128,6 +128,11 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 BASE_FEATURE_PARAM(bool,
+                   kMigratedTabSharing,
+                   &kCentralizedInfoBarFramework,
+                   false);
+
+BASE_FEATURE_PARAM(bool,
                    kMigratedInstallationError,
                    &kCentralizedInfoBarFramework,
                    false);
@@ -186,6 +191,8 @@ const base::FeatureParam<bool>* GetInfoBarMigrationParam(
       return &kMigratedExtensionDevTools;
     case InfoBarDelegate::SESSION_RESTORE_INFOBAR_DELEGATE:
       return &kMigratedSessionRestore;
+    case InfoBarDelegate::TAB_SHARING_INFOBAR_DELEGATE:
+      return &kMigratedTabSharing;
     case InfoBarDelegate::INSTALLATION_ERROR_INFOBAR_DELEGATE:
       return &kMigratedInstallationError;
     case InfoBarDelegate::EXTENSIONS_WEB_AUTH_FLOW_INFOBAR_DELEGATE:
