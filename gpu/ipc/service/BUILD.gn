@@ -96,6 +96,8 @@ component("service") {
     sources += [
       "dcomp_texture_win.cc",
       "dcomp_texture_win.h",
+      "gpu_init_win.cc",
+      "gpu_init_win.h",
       "image_transport_surface_win.cc",
     ]
     if (skia_use_dawn) {
