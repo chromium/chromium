@@ -133,6 +133,28 @@ TEST(TimeZoneTest, DaylightSavingTime) {
   EXPECT_FALSE(phoenix.InDaylightTime(summer_time));
 }
 
+TEST(TimeZoneTest, ExtremeTimes) {
+  const TimeZone time_zones[] = {
+      TimeZone::GMT(),
+      TimeZone::Unknown(),
+      TimeZone::FromString("America/Los_Angeles"),
+      TimeZone::FromString("Asia/Tokyo"),
+  };
+
+  for (const TimeZone& tz : time_zones) {
+    for (base::Time extreme_time : {base::Time::Min(), base::Time::Max()}) {
+      for (bool is_local : {false, true}) {
+        base::TimeDelta raw_offset = base::Hours(99);
+        base::TimeDelta dst_offset = base::Hours(99);
+        tz.GetOffset(extreme_time, is_local, raw_offset, dst_offset);
+        EXPECT_EQ(raw_offset, tz.GetRawOffset());
+        EXPECT_EQ(dst_offset, base::TimeDelta());
+      }
+      EXPECT_FALSE(tz.InDaylightTime(extreme_time));
+    }
+  }
+}
+
 TEST(TimeZoneTest, Equality) {
   TimeZone tz1 = TimeZone::FromString("America/Los_Angeles");
   TimeZone tz2 = TimeZone::FromString("America/Los_Angeles");
