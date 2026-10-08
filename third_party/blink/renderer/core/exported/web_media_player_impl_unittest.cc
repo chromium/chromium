@@ -1282,6 +1282,45 @@ TEST_F(WebMediaPlayerImplTest, LazyLoadPreloadMetadataSuspend) {
   EXPECT_CALL(*surface_layer_bridge_ptr_, ClearObserver());
 }
 
+// Verify that shutting down WebMediaPlayerImpl before destroying it cancels the
+// delayed lazy load StopPreloading callback before DemuxerManager is destroyed.
+TEST_F(WebMediaPlayerImplTest,
+       LazyLoadPreloadMetadataSuspendShutdownBeforeDestroy) {
+  InitializeWebMediaPlayerImpl();
+  EXPECT_CALL(*client_, CouldPlayIfEnoughData()).WillRepeatedly(Return(false));
+  wmpi_->SetPreload(WebMediaPlayer::kPreloadMetaData);
+
+  LoadAndWaitForReadyState(kVideoOnlyTestFile,
+                           WebMediaPlayer::kReadyStateHaveMetadata);
+  testing::Mock::VerifyAndClearExpectations(client_.Get());
+  EXPECT_CALL(*client_, ReadyStateChanged()).Times(AnyNumber());
+  CycleThreads();
+  EXPECT_TRUE(IsSuspended());
+  EXPECT_TRUE(wmpi_->DidLazyLoad());
+  EXPECT_FALSE(ShouldCancelUponDefer());
+
+  EXPECT_CALL(*surface_layer_bridge_ptr_, ClearObserver());
+  EXPECT_CALL(*client_, SetCcLayer(nullptr));
+  EXPECT_CALL(*client_, MediaRemotingStopped(_));
+
+  // Shut down the player without destroying it yet, then cycle threads so
+  // DestructionHelper deletes `demuxer_manager_`.
+  wmpi_->Shutdown();
+  CycleThreads();
+
+  // Wait past the 250ms delay used by `have_enough_after_lazy_load_cb_` while
+  // `wmpi_` is still alive.
+  base::RunLoop loop;
+  GetWebLocalFrame()
+      ->Scheduler()
+      ->GetTaskRunner(TaskType::kMediaElementEvent)
+      ->PostDelayedTask(FROM_HERE, loop.QuitClosure(), base::Milliseconds(300));
+  loop.Run();
+
+  wmpi_.reset();
+  CycleThreads();
+}
+
 // Verify that lazy load is skipped when rVFC has been requested.
 TEST_F(WebMediaPlayerImplTest, LazyLoadSkippedForRVFC) {
   InitializeWebMediaPlayerImpl();
