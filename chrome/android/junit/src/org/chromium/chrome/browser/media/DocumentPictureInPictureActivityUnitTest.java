@@ -8,11 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -21,6 +17,7 @@ import android.app.ActivityManager.AppTask;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Build;
+import android.view.View;
 import android.view.WindowManager;
 import android.view.WindowMetrics;
 import android.widget.FrameLayout;
@@ -37,8 +34,10 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
@@ -53,8 +52,32 @@ import org.chromium.url.Origin;
 
 /** Unit tests for {@link DocumentPictureInPictureActivity}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DocumentPictureInPictureActivityUnitTest {
+    private static class TestDocumentPictureInPictureActivity
+            extends DocumentPictureInPictureActivity {
+        private ActivityWindowAndroid mTestWindowAndroid;
+        private WindowManager mTestWindowManager;
+        private int mFinishCount;
+
+        @Override
+        public void finish() {
+            mFinishCount++;
+            super.finish();
+        }
+
+        // The real ActivityWindowAndroid is only created during native initialization.
+        @Override
+        public ActivityWindowAndroid getWindowAndroid() {
+            return mTestWindowAndroid;
+        }
+
+        // Robolectric always reports window bounds anchored at the display origin.
+        @Override
+        public WindowManager getWindowManager() {
+            return mTestWindowManager;
+        }
+    }
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ActivityWindowAndroid mActivityWindowAndroid;
@@ -62,13 +85,13 @@ public class DocumentPictureInPictureActivityUnitTest {
     @Mock private PictureInPictureBoundsCacheBridge.Natives mMockNatives;
     @Mock private WindowManager mWindowManager;
     @Mock private WindowMetrics mWindowMetrics;
-    @Mock private FrameLayout mContentLayout;
     @Mock private AndroidTaskUtils.MoveTaskDelegate mMoveTaskDelegate;
     @Mock private AppTask mAppTask;
     @Mock private DisplayAndroidManager mDisplayAndroidManager;
     @Mock private DocumentPictureInPictureActivity.Natives mMockActivityNatives;
 
-    private DocumentPictureInPictureActivity mActivity;
+    private TestDocumentPictureInPictureActivity mActivity;
+    private FrameLayout mContentLayout;
 
     @Before
     public void setUp() {
@@ -86,17 +109,24 @@ public class DocumentPictureInPictureActivityUnitTest {
         when(mDisplayAndroid.getLocalBounds()).thenReturn(displayBounds);
         when(mDisplayAndroid.getDisplayId()).thenReturn(0);
 
-        mActivity = spy(Robolectric.buildActivity(DocumentPictureInPictureActivity.class).get());
+        mActivity = Robolectric.buildActivity(TestDocumentPictureInPictureActivity.class).get();
 
-        doReturn(mActivityWindowAndroid).when(mActivity).getWindowAndroid();
+        mActivity.mTestWindowAndroid = mActivityWindowAndroid;
         when(mActivityWindowAndroid.getDisplay()).thenReturn(mDisplayAndroid);
 
-        doReturn(mWindowManager).when(mActivity).getWindowManager();
+        mActivity.mTestWindowManager = mWindowManager;
         when(mWindowManager.getCurrentWindowMetrics()).thenReturn(mWindowMetrics);
 
-        doReturn(mContentLayout)
-                .when(mActivity)
-                .findViewById(R.id.document_picture_in_picture_content);
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        FrameLayout root = new FrameLayout(mActivity);
+        mContentLayout = new FrameLayout(mActivity);
+        mContentLayout.setId(R.id.document_picture_in_picture_content);
+        root.addView(mContentLayout);
+        mActivity.setContentView(root);
+        // Attach the window so that getLocationOnScreen() reports real values.
+        ContextUtils.getApplicationContext()
+                .getSystemService(WindowManager.class)
+                .addView(mActivity.getWindow().getDecorView(), new WindowManager.LayoutParams());
 
         when(mDisplayAndroidManager.getDisplayMatching(any(Rect.class)))
                 .thenReturn(mDisplayAndroid);
@@ -104,6 +134,9 @@ public class DocumentPictureInPictureActivityUnitTest {
 
     @After
     public void tearDown() {
+        ContextUtils.getApplicationContext()
+                .getSystemService(WindowManager.class)
+                .removeViewImmediate(mActivity.getWindow().getDecorView());
         AndroidTaskUtils.setMoveTaskDelegateForTesting(null);
         AndroidTaskUtils.setAppTaskForTesting(null);
         DisplayAndroidManager.resetInstanceForTesting();
@@ -111,11 +144,18 @@ public class DocumentPictureInPictureActivityUnitTest {
         DocumentPictureInPictureActivityJni.setInstanceForTesting(null);
     }
 
+    private void layoutContent(int left, int top, int width, int height) {
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(width, height);
+        params.leftMargin = left;
+        params.topMargin = top;
+        mContentLayout.setLayoutParams(params);
+        RobolectricUtil.runAllBackgroundAndUi();
+    }
+
     @Test
     @Config(sdk = Build.VERSION_CODES.S)
     public void testResizeContents() {
-        when(mContentLayout.getWidth()).thenReturn(100);
-        when(mContentLayout.getHeight()).thenReturn(100);
+        layoutContent(/* left= */ 0, /* top= */ 0, /* width= */ 100, /* height= */ 100);
 
         int newWidthDp = 150;
         int newHeightDp = 150;
@@ -147,8 +187,7 @@ public class DocumentPictureInPictureActivityUnitTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.S)
     public void testResizeContents_NoChange() {
-        when(mContentLayout.getWidth()).thenReturn(100);
-        when(mContentLayout.getHeight()).thenReturn(100);
+        layoutContent(/* left= */ 0, /* top= */ 0, /* width= */ 100, /* height= */ 100);
 
         mActivity.resizeContents(100, 100);
 
@@ -169,17 +208,7 @@ public class DocumentPictureInPictureActivityUnitTest {
 
         mActivity.setParentWebContentsOnInstanceForTesting(parentWebContents);
 
-        when(mContentLayout.getWidth()).thenReturn(200);
-        when(mContentLayout.getHeight()).thenReturn(200);
-        doAnswer(
-                        invocation -> {
-                            int[] loc = invocation.getArgument(0);
-                            loc[0] = 100;
-                            loc[1] = 100;
-                            return null;
-                        })
-                .when(mContentLayout)
-                .getLocationOnScreen(any(int[].class));
+        layoutContent(/* left= */ 100, /* top= */ 100, /* width= */ 200, /* height= */ 200);
 
         mActivity.saveBoundsToCache();
 
@@ -197,7 +226,7 @@ public class DocumentPictureInPictureActivityUnitTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.S)
     public void testSaveBoundsToCache_NullLayout() {
-        doReturn(null).when(mActivity).findViewById(R.id.document_picture_in_picture_content);
+        mContentLayout.setId(View.NO_ID);
 
         mActivity.saveBoundsToCache();
 
@@ -207,8 +236,7 @@ public class DocumentPictureInPictureActivityUnitTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.S)
     public void testSaveBoundsToCache_ZeroDimensions() {
-        when(mContentLayout.getWidth()).thenReturn(0);
-        when(mContentLayout.getHeight()).thenReturn(0);
+        layoutContent(/* left= */ 0, /* top= */ 0, /* width= */ 0, /* height= */ 0);
 
         mActivity.saveBoundsToCache();
 
@@ -226,8 +254,7 @@ public class DocumentPictureInPictureActivityUnitTest {
         mActivity.setPromptEnforcedBoundsForTesting(new Rect(100, 100, 440, 380));
 
         // Current content layout bounds match the enforced bounds.
-        when(mContentLayout.getWidth()).thenReturn(340);
-        when(mContentLayout.getHeight()).thenReturn(280);
+        layoutContent(/* left= */ 0, /* top= */ 0, /* width= */ 340, /* height= */ 280);
 
         // Mock current window bounds in pixels (from WindowMetrics).
         Rect windowBoundsPx = new Rect(100, 100, 300, 300); // 200x200
@@ -255,8 +282,7 @@ public class DocumentPictureInPictureActivityUnitTest {
         mActivity.setPromptEnforcedBoundsForTesting(new Rect(100, 100, 440, 380)); // 340x280
 
         // Current bounds differ from enforced bounds by more than 2dp tolerance.
-        when(mContentLayout.getWidth()).thenReturn(400);
-        when(mContentLayout.getHeight()).thenReturn(400);
+        layoutContent(/* left= */ 0, /* top= */ 0, /* width= */ 400, /* height= */ 400);
 
         mActivity.revertToRequestedBounds();
 
@@ -276,8 +302,7 @@ public class DocumentPictureInPictureActivityUnitTest {
         mActivity.setPromptEnforcedBoundsForTesting(null);
 
         // Current bounds match requested.
-        when(mContentLayout.getWidth()).thenReturn(500);
-        when(mContentLayout.getHeight()).thenReturn(500);
+        layoutContent(/* left= */ 0, /* top= */ 0, /* width= */ 500, /* height= */ 500);
 
         mActivity.revertToRequestedBounds();
 
@@ -302,17 +327,7 @@ public class DocumentPictureInPictureActivityUnitTest {
 
         // The user closed the window without interacting, so the bounds are still at the enforced
         // size.
-        when(mContentLayout.getWidth()).thenReturn(340);
-        when(mContentLayout.getHeight()).thenReturn(280);
-        doAnswer(
-                        invocation -> {
-                            int[] loc = invocation.getArgument(0);
-                            loc[0] = 100;
-                            loc[1] = 100;
-                            return null;
-                        })
-                .when(mContentLayout)
-                .getLocationOnScreen(any(int[].class));
+        layoutContent(/* left= */ 100, /* top= */ 100, /* width= */ 340, /* height= */ 280);
 
         mActivity.saveBoundsToCache();
 
@@ -334,27 +349,28 @@ public class DocumentPictureInPictureActivityUnitTest {
         mActivity.performPreInflationStartup();
 
         // Verify that performPreInflationStartup aborts early by calling finish().
-        verify(mActivity).finish();
+        Assert.assertTrue(mActivity.isFinishing());
     }
 
     @Test
     @Config(sdk = Build.VERSION_CODES.S)
     public void testCloseActivity() {
-        doReturn(false).when(mActivity).isFinishing();
+        Assert.assertFalse(mActivity.isFinishing());
 
         mActivity.closeActivity();
 
-        verify(mActivity).finish();
+        Assert.assertTrue(mActivity.isFinishing());
     }
 
     @Test
     @Config(sdk = Build.VERSION_CODES.S)
     public void testCloseActivity_DoesNotFinishIfAlreadyFinishing() {
-        doReturn(true).when(mActivity).isFinishing();
+        mActivity.finish();
+        Assert.assertEquals(1, mActivity.mFinishCount);
 
         mActivity.closeActivity();
 
-        verify(mActivity, never()).finish();
+        Assert.assertEquals(1, mActivity.mFinishCount);
     }
 
     @Test

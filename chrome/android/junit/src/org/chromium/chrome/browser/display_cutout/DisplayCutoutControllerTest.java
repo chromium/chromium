@@ -37,15 +37,15 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.blink.mojom.ViewportFit;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
@@ -62,8 +62,17 @@ import java.lang.ref.WeakReference;
 
 /** Tests for {@link DisplayCutoutController} class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DisplayCutoutControllerTest {
+    // getIntentDataProvider() is otherwise only populated during native initialization.
+    private static class TestCustomTabActivity extends CustomTabActivity {
+        private BrowserServicesIntentDataProvider mTestIntentDataProvider;
+
+        @Override
+        public BrowserServicesIntentDataProvider getIntentDataProvider() {
+            return mTestIntentDataProvider;
+        }
+    }
+
     private static final Insets INITIAL_STATUS_BAR_INSETS = Insets.of(0, 80, 0, 0);
     private static final Insets INITIAL_NAV_BAR_INSETS = Insets.of(0, 0, 0, 24);
     private static final Insets UPDATED_STATUS_BAR_INSETS = Insets.of(0, 64, 0, 0);
@@ -74,44 +83,29 @@ public class DisplayCutoutControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Tab mTab;
-
     @Mock private MockWebContents mWebContents;
-
     @Mock private WindowAndroid mWindowAndroid;
-
-    @Mock private Window mWindow;
+    @Mock private InsetObserver mInsetObserver;
+    @Mock private BrowserServicesIntentDataProvider mIntentDataProvider;
+    @Mock private DisplayCutoutController.Delegate mDelegate;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<WebContentsObserver> mWebContentObserverCaptor;
 
-    @Mock private ChromeActivity mChromeActivity;
-
-    @Mock private InsetObserver mInsetObserver;
-
-    @Mock private BaseCustomTabActivity mCustomTabActivity;
-
-    @Mock private BrowserServicesIntentDataProvider mIntentDataProvider;
-
-    @Mock private DisplayCutoutController.Delegate mDelegate;
-
+    private final UserDataHost mTabDataHost = new UserDataHost();
+    private Activity mActivity;
     private DisplayCutoutTabHelper mDisplayCutoutTabHelper;
     private DisplayCutoutController mController;
 
-    private WeakReference<Activity> mActivityRef;
-
-    private final UserDataHost mTabDataHost = new UserDataHost();
-
     @Before
     public void setUp() {
-        mActivityRef = new WeakReference<>(mChromeActivity);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
 
-        when(mChromeActivity.getWindow()).thenReturn(mWindow);
-        when(mWindow.getAttributes()).thenReturn(new LayoutParams());
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getUserDataHost()).thenReturn(mTabDataHost);
         when(mWebContents.isFullscreenForCurrentTab()).thenReturn(true);
-        when(mWindowAndroid.getActivity()).thenReturn(mActivityRef);
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
         when(mWindowAndroid.getInsetObserver()).thenReturn(mInsetObserver);
 
         // Common defaults for Delegate-based tests. Individual tests still set test-specific
@@ -316,7 +310,7 @@ public class DisplayCutoutControllerTest {
         // A real soft keyboard is far taller than the navigation bar.
         when(updatedInsets.getInsets(ime())).thenReturn(Insets.of(0, 0, 0, 392));
 
-        when(mDelegate.getAttachedActivity()).thenReturn(mChromeActivity);
+        when(mDelegate.getAttachedActivity()).thenReturn(mActivity);
         when(mDelegate.getInsetObserver()).thenReturn(mInsetObserver);
         when(mDelegate.getDisplayMode()).thenReturn(DisplayMode.STANDALONE);
         when(mDelegate.isShortEdgesCutoutModeEnabled()).thenReturn(true);
@@ -402,7 +396,7 @@ public class DisplayCutoutControllerTest {
         when(insets.getInsets(ime())).thenReturn(Insets.of(0, 0, 0, imeBottom));
         when(insets.isVisible(ime())).thenReturn(true);
 
-        when(mDelegate.getAttachedActivity()).thenReturn(mChromeActivity);
+        when(mDelegate.getAttachedActivity()).thenReturn(mActivity);
         when(mDelegate.getInsetObserver()).thenReturn(mInsetObserver);
         when(mDelegate.getDisplayMode()).thenReturn(DisplayMode.STANDALONE);
         when(mDelegate.isShortEdgesCutoutModeEnabled()).thenReturn(true);
@@ -595,13 +589,11 @@ public class DisplayCutoutControllerTest {
         when(mDelegate.getDisplayMode()).thenReturn(DisplayMode.STANDALONE);
         when(mDelegate.isShortEdgesCutoutModeEnabled()).thenReturn(true);
         when(mDelegate.getInsetObserver()).thenReturn(mInsetObserver);
-        when(mDelegate.getAttachedActivity()).thenReturn(mChromeActivity);
-
-        LayoutParams attributes = new LayoutParams();
-        when(mWindow.getAttributes()).thenReturn(attributes);
+        when(mDelegate.getAttachedActivity()).thenReturn(mActivity);
 
         DisplayCutoutController controller = new DisplayCutoutController(mDelegate);
         controller.onActivityAttachmentChanged(mWindowAndroid);
+        LayoutParams attributes = mActivity.getWindow().getAttributes();
 
         // A cover page draws under the cutout via short edges mode.
         controller.setViewportFit(ViewportFit.COVER);
@@ -625,10 +617,7 @@ public class DisplayCutoutControllerTest {
         when(mDelegate.getDisplayMode()).thenReturn(DisplayMode.STANDALONE);
         when(mDelegate.isShortEdgesCutoutModeEnabled()).thenReturn(true);
         when(mDelegate.getInsetObserver()).thenReturn(mInsetObserver);
-        when(mDelegate.getAttachedActivity()).thenReturn(mChromeActivity);
-
-        LayoutParams attributes = new LayoutParams();
-        when(mWindow.getAttributes()).thenReturn(attributes);
+        when(mDelegate.getAttachedActivity()).thenReturn(mActivity);
 
         DisplayCutoutController controller = new DisplayCutoutController(mDelegate);
         controller.onActivityAttachmentChanged(mWindowAndroid);
@@ -649,8 +638,9 @@ public class DisplayCutoutControllerTest {
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         reset(mTab);
 
+        setWindowCutoutMode(LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER);
         mTabObserverCaptor.getValue().onInteractabilityChanged(mTab, true);
-        verify(mWindow).getAttributes();
+        assertWindowCutoutMode(LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
     }
 
     @Test
@@ -661,8 +651,9 @@ public class DisplayCutoutControllerTest {
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         reset(mTab);
 
+        setWindowCutoutMode(LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER);
         mTabObserverCaptor.getValue().onInteractabilityChanged(mTab, false);
-        verify(mWindow).getAttributes();
+        assertWindowCutoutMode(LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
     }
 
     @Test
@@ -672,8 +663,9 @@ public class DisplayCutoutControllerTest {
         reset(mTab);
 
         mTabObserverCaptor.getValue().onActivityAttachmentChanged(mTab, null);
+        setWindowCutoutMode(LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER);
         mTabObserverCaptor.getValue().onInteractabilityChanged(mTab, false);
-        verify(mWindow, never()).getAttributes();
+        assertWindowCutoutMode(LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER);
     }
 
     @Test
@@ -684,8 +676,9 @@ public class DisplayCutoutControllerTest {
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         reset(mTab);
 
+        setWindowCutoutMode(LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER);
         mTabObserverCaptor.getValue().onShown(mTab, TabSelectionType.FROM_NEW);
-        verify(mWindow).getAttributes();
+        assertWindowCutoutMode(LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
     }
 
     @Test
@@ -775,6 +768,18 @@ public class DisplayCutoutControllerTest {
                 mDisplayCutoutTabHelper.mCutoutController.getWebContentObserverForTesting());
     }
 
+    private void setWindowCutoutMode(int mode) {
+        Window window = mActivity.getWindow();
+        LayoutParams attributes = window.getAttributes();
+        attributes.layoutInDisplayCutoutMode = mode;
+        window.setAttributes(attributes);
+    }
+
+    private void assertWindowCutoutMode(int expectedMode) {
+        Assert.assertEquals(
+                expectedMode, mActivity.getWindow().getAttributes().layoutInDisplayCutoutMode);
+    }
+
     /**
      * Wires up the mTab path through a webapp BaseCustomTabActivity with the given resolved display
      * mode, with the short-edges feature disabled, and returns a fresh controller built via the
@@ -782,8 +787,10 @@ public class DisplayCutoutControllerTest {
      */
     private DisplayCutoutController setUpFeatureDisabledWebApp(@DisplayMode.EnumType int mode) {
         when(mTab.isUserInteractable()).thenReturn(true);
-        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mCustomTabActivity));
-        when(mCustomTabActivity.getIntentDataProvider()).thenReturn(mIntentDataProvider);
+        TestCustomTabActivity customTabActivity =
+                Robolectric.buildActivity(TestCustomTabActivity.class).get();
+        customTabActivity.mTestIntentDataProvider = mIntentDataProvider;
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(customTabActivity));
         when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.WEBAPP);
         when(mIntentDataProvider.getResolvedDisplayMode()).thenReturn(mode);
         when(mWebContents.isFullscreenForCurrentTab()).thenReturn(false);
