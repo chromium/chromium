@@ -10,7 +10,8 @@
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "cloud_safety_session.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"
 
@@ -80,8 +81,9 @@ void CrosSafetyService::CreateOnDeviceSafetySession(
     mojo::PendingReceiver<cros_safety::mojom::OnDeviceSafetySession> session,
     CreateOnDeviceSafetySessionCallback callback) {
   // ARC is only available under primary user session.
-  if (!user_manager::UserManager::Get()->IsPrimaryUser(
-          user_manager::UserManager::Get()->GetActiveUser()) ||
+  auto* manager = session_manager::SessionManager::Get();
+  const session_manager::Session* active_session = manager->GetActiveSession();
+  if (!active_session || active_session != manager->GetPrimarySession() ||
       !arc::IsArcAvailable() || !arc::ArcServiceManager::Get()) {
     // TODO(crbug.com/379073760) Separate kArcDisabledByUser cases so we can
     // inform the user to enable arc.

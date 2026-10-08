@@ -5,11 +5,16 @@
 #include "chromeos/ash/services/bluetooth_config/bluetooth_power_controller_impl.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/check.h"
+#include "base/check_deref.h"
+#include "base/check_op.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash::bluetooth_config {
@@ -85,10 +90,10 @@ void BluetoothPowerControllerImpl::SetBluetoothHidDetectionInactive(
     return;
   }
 
-  DCHECK(local_state_)
+  CHECK(local_state_)
       << "HID detection finished but unable to restore persisted Bluetooth "
          "state because local_state_ is null.";
-  DCHECK(!user_manager::UserManager::Get()->GetActiveUser());
+  CHECK(!session_manager::SessionManager::Get()->GetActiveSession());
 
   BLUETOOTH_LOG(EVENT)
       << "HID detection finished, restoring persisted Bluetooth state.";
@@ -141,8 +146,9 @@ void BluetoothPowerControllerImpl::InitLocalStatePrefService(
 
   // Apply the local state pref if no user has logged in (still in login
   // screen).
-  if (!user_manager::UserManager::Get()->GetActiveUser())
+  if (!session_manager::SessionManager::Get()->GetActiveSession()) {
     ApplyBluetoothLocalStatePref();
+  }
 }
 
 void BluetoothPowerControllerImpl::ApplyBluetoothLocalStatePref() {
@@ -174,8 +180,8 @@ void BluetoothPowerControllerImpl::InitPrimaryUserPrefService(
     return;
   }
 
-  DCHECK_EQ(session_manager::SessionManager::Get()->GetActiveSession(),
-            session_manager::SessionManager::Get()->GetPrimarySession());
+  CHECK_EQ(session_manager::SessionManager::Get()->GetActiveSession(),
+           session_manager::SessionManager::Get()->GetPrimarySession());
 
   if (!has_attempted_apply_primary_user_pref_) {
     BLUETOOTH_LOG(EVENT)
@@ -186,8 +192,13 @@ void BluetoothPowerControllerImpl::InitPrimaryUserPrefService(
 }
 
 void BluetoothPowerControllerImpl::ApplyBluetoothPrimaryUserPref() {
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
   std::optional<user_manager::UserType> user_type =
-      user_manager::UserManager::Get()->GetActiveUser()->GetType();
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+                      primary_session->account_id()))
+          .GetType();
 
   // Apply the Bluetooth pref only for regular users (i.e. users representing
   // a human individual). We don't want to apply Bluetooth pref for other users

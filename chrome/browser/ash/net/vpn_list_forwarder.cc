@@ -8,9 +8,10 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
@@ -61,19 +62,21 @@ bool IsVPNProvider(const extensions::Extension* extension) {
       extensions::mojom::APIPermissionID::kVpnProvider);
 }
 
-Profile* GetProfileForPrimaryUser() {
-  const user_manager::User* const primary_user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!primary_user)
+content::BrowserContext* GetPrimaryUserBrowserContext() {
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  if (!primary_session) {
     return nullptr;
+  }
 
-  return ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
+  return ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+      primary_session->account_id());
 }
 
 }  // namespace
 
 VpnListForwarder::VpnListForwarder() {
-  if (user_manager::UserManager::Get()->GetPrimaryUser()) {
+  if (session_manager::SessionManager::Get()->GetPrimarySession()) {
     // If a user is logged in, start observing the primary user's extension
     // registry immediately.
     AttachToPrimaryUserProfile();
@@ -147,7 +150,10 @@ void VpnListForwarder::OnShutdown(extensions::ExtensionRegistry* registry) {
 }
 
 void VpnListForwarder::ActiveUserChanged(user_manager::User* active_user) {
-  CHECK_EQ(user_manager::UserManager::Get()->GetPrimaryUser(), active_user,
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  CHECK_EQ(primary_session->account_id(), active_user->GetAccountId(),
            base::NotFatalUntil::M161);
   active_user->AddProfileCreatedObserver(
       base::BindOnce(&VpnListForwarder::AttachToPrimaryUserProfile,
@@ -174,7 +180,7 @@ void VpnListForwarder::AttachToPrimaryUserProfile() {
 void VpnListForwarder::AttachToPrimaryUserExtensionRegistry() {
   CHECK(!extension_registry_, base::NotFatalUntil::M161);
   extension_registry_ =
-      extensions::ExtensionRegistry::Get(GetProfileForPrimaryUser());
+      extensions::ExtensionRegistry::Get(GetPrimaryUserBrowserContext());
   extension_registry_->AddObserver(this);
 
   for (const auto& extension : extension_registry_->enabled_extensions()) {
@@ -187,7 +193,7 @@ void VpnListForwarder::AttachToPrimaryUserExtensionRegistry() {
 
 void VpnListForwarder::AttachToPrimaryUserArcVpnProviderManager() {
   arc_vpn_provider_manager_ =
-      app_list::ArcVpnProviderManager::Get(GetProfileForPrimaryUser());
+      app_list::ArcVpnProviderManager::Get(GetPrimaryUserBrowserContext());
 
   if (arc_vpn_provider_manager_)
     arc_vpn_provider_manager_->AddObserver(this);
