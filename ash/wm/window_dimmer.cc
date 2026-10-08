@@ -72,7 +72,7 @@ WindowDimmer::~WindowDimmer() {
   if (window_) {
     window_->RemoveObserver(this);
     // See class description for details on ownership.
-    delete window_;
+    delete window_.ExtractAsDangling();
   }
 }
 

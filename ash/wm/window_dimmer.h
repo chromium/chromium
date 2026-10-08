@@ -98,7 +98,7 @@ class ASH_EXPORT WindowDimmer : public wm::ActivationDelegate,
 
   raw_ptr<aura::Window> parent_;
   // See class description for details on ownership.
-  raw_ptr<aura::Window, DanglingUntriaged> window_;
+  raw_ptr<aura::Window> window_;
 
   raw_ptr<Delegate> delegate_;  // Not owned.
 
