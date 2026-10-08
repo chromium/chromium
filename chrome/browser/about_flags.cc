@@ -13496,7 +13496,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"enable-http-headers-injection",
      flag_descriptions::kHttpHeadersInjectionName,
-     flag_descriptions::kHttpHeadersInjectionDescription, kOsDesktop,
+     flag_descriptions::kHttpHeadersInjectionDescription, kOsAll,
      FEATURE_VALUE_TYPE(enterprise_custom_headers::kHttpHeadersInjection)},
 
 #if BUILDFLAG(IS_ANDROID)

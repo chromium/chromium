@@ -765,6 +765,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/domain_reliability",
     "//chrome/browser/engagement",
     "//chrome/browser/enterprise/connectors/reporting",
+    "//chrome/browser/enterprise/network_header_injection",
     "//chrome/browser/favicon",
     "//chrome/browser/feature_engagement",
     "//chrome/browser/file_system_access",
@@ -881,6 +882,7 @@ source_set("profiles_extra_parts_impl") {
     "//components/commerce/core:feature_list",
     "//components/commerce/core:persisted_state_db_content_proto",
     "//components/enterprise/content",
+    "//components/enterprise/network_header_injection/core",
     "//components/manta",
     "//components/omnibox/browser",
     "//components/optimization_guide/core",
@@ -1009,11 +1011,7 @@ source_set("profiles_extra_parts_impl") {
   }
 
   if (is_win || is_mac || is_linux || is_chromeos) {
-    deps += [
-      "//chrome/browser/enterprise/network_header_injection",
-      "//chrome/browser/multistep_filter",
-      "//components/enterprise/network_header_injection/core",
-    ]
+    deps += [ "//chrome/browser/multistep_filter" ]
   }
 
   if (is_win || is_mac || is_linux) {

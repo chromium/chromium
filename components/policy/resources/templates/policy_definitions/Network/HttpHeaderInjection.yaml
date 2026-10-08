@@ -37,6 +37,8 @@ owners:
 supported_on:
 - chrome.*:152-
 - chrome_os:152-
+future_on:
+- android
 schema:
   items:
     properties:

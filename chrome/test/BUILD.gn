@@ -809,6 +809,7 @@ source_set("platform_browser_tests") {
     "//chrome/browser:platform_browser_tests",
     "//chrome/browser/browsing_data:platform_browser_tests",
     "//chrome/browser/enterprise/net:platform_browser_tests",
+    "//chrome/browser/enterprise/network_header_injection:browser_tests",
     "//chrome/browser/enterprise/reporting:platform_browser_tests",
     "//chrome/browser/metrics:platform_browser_tests",
     "//chrome/browser/net:platform_browser_tests",
@@ -3199,6 +3200,7 @@ test("unit_tests") {
     "//chrome/browser/enterprise/encryption:unit_tests",
     "//chrome/browser/enterprise/identifiers:unit_tests",
     "//chrome/browser/enterprise/idle:unit_tests",
+    "//chrome/browser/enterprise/network_header_injection:unit_tests",
     "//chrome/browser/enterprise/platform_auth:unit_tests",
     "//chrome/browser/enterprise/profile_management:unit_tests",
     "//chrome/browser/enterprise/remote_commands:unit_tests",
@@ -3534,7 +3536,6 @@ test("unit_tests") {
 
   if (is_win || is_mac || is_linux || is_chromeos) {
     deps += [
-      "//chrome/browser/enterprise/network_header_injection:unit_tests",
       "//chrome/browser/multistep_filter:unit_tests",
       "//chrome/browser/skills:unit_tests",
       "//chrome/browser/ui/read_anything:unit_tests",

@@ -5,13 +5,10 @@
 import("//components/enterprise/buildflags/buildflags.gni")
 
 source_set("policy") {
-  sources = []
-  if (!is_android) {
-    sources += [
-      "http_header_injection_policy_handler.cc",
-      "http_header_injection_policy_handler.h",
-    ]
-  }
+  sources = [
+    "http_header_injection_policy_handler.cc",
+    "http_header_injection_policy_handler.h",
+  ]
 
   deps = [
     ":core",
@@ -53,12 +50,10 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "http_header_injection_matcher_unittest.cc",
+    "http_header_injection_policy_handler_unittest.cc",
     "http_header_injection_rule_unittest.cc",
     "http_header_injection_service_unittest.cc",
   ]
-  if (!is_android) {
-    sources += [ "http_header_injection_policy_handler_unittest.cc" ]
-  }
 
   deps = [
     ":core",

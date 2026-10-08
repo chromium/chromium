@@ -5,7 +5,6 @@
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -14,13 +13,18 @@
 #include "components/policy/core/common/policy_map.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
-#include "extensions/browser/api/declarative_net_request/test_utils.h"
-#include "extensions/test/test_extension_dir.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
+#include "extensions/browser/api/declarative_net_request/test_utils.h"
+#include "extensions/test/test_extension_dir.h"
+#endif
 
 namespace enterprise_custom_headers {
 
@@ -110,6 +114,7 @@ class HttpHeaderInjectionBrowserTest : public policy::PolicyTest {
         << (it != last_request_headers_.end() ? it->second : "");
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   scoped_refptr<const extensions::Extension> LoadExtensionWithHeaderRules(
       const std::string& resource_type) {
     extensions::TestExtensionDir test_dir;
@@ -155,11 +160,11 @@ class HttpHeaderInjectionBrowserTest : public policy::PolicyTest {
     )",
                                         {resource_type}, nullptr));
 
-    extensions::ChromeTestExtensionLoader loader(browser()->GetProfile());
+    Profile* profile = chrome_test_utils::GetProfile(this);
+    extensions::ChromeTestExtensionLoader loader(profile);
 
     auto* rules_monitor_service =
-        extensions::declarative_net_request::RulesMonitorService::Get(
-            browser()->GetProfile());
+        extensions::declarative_net_request::RulesMonitorService::Get(profile);
     extensions::declarative_net_request::RulesetManagerObserver ruleset_waiter(
         rules_monitor_service->ruleset_manager());
 
@@ -170,6 +175,7 @@ class HttpHeaderInjectionBrowserTest : public policy::PolicyTest {
 
     return extension;
   }
+#endif
 
   base::test::ScopedFeatureList feature_list_;
   net::test_server::HttpRequest::HeaderMap last_request_headers_;
@@ -245,6 +251,7 @@ IN_PROC_BROWSER_TEST_F(HttpHeaderInjectionBrowserTest, Precedence) {
   CheckHeaderValuePresent("X-Test-Header", "Value2");
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // Tests that enterprise header injection works alongside an extension that also
 // modifies headers.
 IN_PROC_BROWSER_TEST_F(HttpHeaderInjectionBrowserTest, ExtensionInteraction) {
@@ -264,6 +271,7 @@ IN_PROC_BROWSER_TEST_F(HttpHeaderInjectionBrowserTest, ExtensionInteraction) {
   // alongside the enterprise policy.
   CheckHeaderValuePresent("X-Extension-Header", "ExtensionValue");
 }
+#endif
 
 // Tests that custom headers are correctly injected into WebSocket handshake
 // requests.
@@ -296,6 +304,7 @@ IN_PROC_BROWSER_TEST_F(HttpHeaderInjectionBrowserTest, WebSocketInjection) {
   EXPECT_EQ("TestValue", *test_header);
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // Tests that enterprise headers injected into WebSocket handshake requests take
 // precedence over modifications made by extensions.
 IN_PROC_BROWSER_TEST_F(HttpHeaderInjectionBrowserTest,
@@ -338,5 +347,6 @@ IN_PROC_BROWSER_TEST_F(HttpHeaderInjectionBrowserTest,
   ASSERT_TRUE(ext_header);
   EXPECT_EQ("ExtensionValue", *ext_header);
 }
+#endif
 
 }  // namespace enterprise_custom_headers

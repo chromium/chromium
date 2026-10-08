@@ -9,8 +9,9 @@
 
 namespace enterprise_custom_headers {
 
-// Controls enabling the HTTP Header Injection feature.
-// This acts as a killswitch.
+// Controls the HTTP Header Injection feature. Enabled by default on desktop
+// platforms, where it acts as a kill-switch. Disabled by default on Android
+// until the feature is launched there.
 BASE_DECLARE_FEATURE(kHttpHeadersInjection);
 
 bool IsHttpHeaderInjectionEnabled();

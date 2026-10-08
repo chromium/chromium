@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
+
 static_library("network_header_injection") {
   public = [
     "http_header_injection_client.h",
@@ -71,15 +73,20 @@ source_set("browser_tests") {
     ":network_header_injection",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/extensions",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
     "//components/enterprise/network_header_injection/core",
     "//components/policy/core/common",
     "//content/test:test_support",
-    "//extensions:test_support",
+    "//extensions/buildflags",
     "//net:test_support",
     "//testing/gtest",
   ]
+  if (enable_extensions_core) {
+    deps += [
+      "//chrome/browser/extensions",
+      "//extensions:test_support",
+    ]
+  }
 }
