@@ -4,6 +4,8 @@
 
 #include "chrome/browser/actor/tools/registry/tool_schema_builder.h"
 
+#include <string_view>
+
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -53,6 +55,30 @@ TEST(ToolSchemaBuilderTest, AddsFormattedStringProperty) {
   EXPECT_EQ(schema, expected);
 }
 
+TEST(ToolSchemaBuilderTest, AddsStringEnumProperty) {
+  constexpr std::string_view kDirections[] = {"up", "down", "left", "right"};
+  base::DictValue schema =
+      ToolSchemaBuilder()
+          .AddStringEnumProperty("direction", "Scroll direction.", kDirections)
+          .Build();
+  base::DictValue expected =
+      base::DictValue()
+          .Set("type", "object")
+          .Set("properties",
+               base::DictValue().Set(
+                   "direction", base::DictValue()
+                                    .Set("type", "string")
+                                    .Set("description", "Scroll direction.")
+                                    .Set("enum", base::ListValue()
+                                                     .Append("up")
+                                                     .Append("down")
+                                                     .Append("left")
+                                                     .Append("right"))))
+          .Set("required", base::ListValue().Append("direction"))
+          .Set("additionalProperties", false);
+  EXPECT_EQ(schema, expected);
+}
+
 TEST(ToolSchemaBuilderTest, AddsIntegerProperty) {
   base::DictValue schema =
       ToolSchemaBuilder().AddIntegerProperty("seek_ms", "Seek offset.").Build();
@@ -65,6 +91,23 @@ TEST(ToolSchemaBuilderTest, AddsIntegerProperty) {
                                          .Set("type", "integer")
                                          .Set("description", "Seek offset.")))
           .Set("required", base::ListValue().Append("seek_ms"))
+          .Set("additionalProperties", false);
+  EXPECT_EQ(schema, expected);
+}
+
+TEST(ToolSchemaBuilderTest, AddsNumberProperty) {
+  base::DictValue schema = ToolSchemaBuilder()
+                               .AddNumberProperty("distance", "Scroll pixels.")
+                               .Build();
+  base::DictValue expected =
+      base::DictValue()
+          .Set("type", "object")
+          .Set("properties",
+               base::DictValue().Set("distance",
+                                     base::DictValue()
+                                         .Set("type", "number")
+                                         .Set("description", "Scroll pixels.")))
+          .Set("required", base::ListValue().Append("distance"))
           .Set("additionalProperties", false);
   EXPECT_EQ(schema, expected);
 }
