@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SEARCH_ENGINES_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -21,6 +22,7 @@ class Profile;
 class TemplateURLService;
 
 namespace search_engines {
+enum class ChoiceMadeLocation;
 class SearchEngineSettingsDataProvider;
 }
 
@@ -87,6 +89,16 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
   //        was made.
   //   [2]: bool (optional): Whether to save the choice in guest mode.
   void HandleSetDefaultSearchEngine(const base::ListValue& args);
+
+  // Makes the engine with `id` the default search engine, records the user
+  // action, and updates the guest mode choice if `save_guest_choice` has a
+  // value. `IdType` is one of the ID types accepted by
+  // `KeywordEditorController::MakeDefaultTemplateURL()`.
+  template <typename IdType>
+  void SetDefaultSearchEngine(
+      IdType id,
+      search_engines::ChoiceMadeLocation choice_made_location,
+      std::optional<bool> save_guest_choice);
 
   // Activates or deactivates a search engine. Called from WebUI.
   // `args` contains:

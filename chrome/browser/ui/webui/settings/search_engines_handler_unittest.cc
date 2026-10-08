@@ -11,24 +11,30 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/country_codes/country_codes.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_switches.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/version_info/version_info.h"
@@ -148,7 +154,21 @@ class SearchEnginesHandlerTest : public testing::Test {
         {"db:", base::NumberToString(bing_engine_->id().value())});
   }
 
+  std::string ToPrepopId(int id) {
+    return base::StrCat({"prepop:", base::NumberToString(id)});
+  }
+
   bool has_edit_controller() const { return !!handler_->edit_controller_; }
+
+  void SendSetDefaultSearchEngine(std::string_view engine_id,
+                                  base::Value save_guest_choice) {
+    base::ListValue args;
+    args.Append(engine_id);
+    args.Append(
+        static_cast<int>(search_engines::ChoiceMadeLocation::kSearchSettings));
+    args.Append(std::move(save_guest_choice));
+    web_ui()->HandleReceivedMessage("setDefaultSearchEngine", args);
+  }
 
  private:
   base::HistogramTester histogram_tester_;
@@ -707,6 +727,100 @@ TEST_F(SearchEnginesHandlerTest, GetDefaultSearchEnginePickerData) {
   EXPECT_TRUE(found_bing);
   EXPECT_TRUE(found_default_custom);
   EXPECT_FALSE(found_non_default_custom);
+}
+
+class SearchEnginesHandlerWithMoreEnginesTest
+    : public SearchEnginesHandlerTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      switches::kSearchSettingsWithMoreEngines};
+};
+
+TEST_F(SearchEnginesHandlerWithMoreEnginesTest,
+       SetDefaultSearchEngineByPrepopulateId) {
+  ConfigureTestWithRegularProfile();
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile());
+  PrefService* pref_service = profile()->GetPrefs();
+  ASSERT_FALSE(pref_service->HasPrefPath(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
+  base::UserActionTester user_action_tester;
+
+  SendSetDefaultSearchEngine(ToPrepopId(TemplateURLPrepopulateData::naver.id),
+                             /*save_guest_choice=*/base::Value());
+
+  EXPECT_EQ(template_url_service->GetDefaultSearchProvider()->prepopulate_id(),
+            TemplateURLPrepopulateData::naver.id);
+  EXPECT_NEAR(pref_service->GetInt64(
+                  prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
+              base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds(),
+              /*abs_error=*/2);
+  EXPECT_EQ(pref_service->GetString(
+                prefs::kDefaultSearchProviderChoiceScreenCompletionVersion),
+            version_info::GetVersionNumber());
+  EXPECT_EQ(user_action_tester.GetActionCount("Options_SearchEngineSetDefault"),
+            1);
+}
+
+TEST_F(SearchEnginesHandlerTest,
+       SetDefaultSearchEngineByPrepopulateId_NoOpWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(switches::kSearchSettingsWithMoreEngines);
+  ConfigureTestWithRegularProfile();
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile());
+  const TemplateURL* initial_dse =
+      template_url_service->GetDefaultSearchProvider();
+  base::UserActionTester user_action_tester;
+
+  SendSetDefaultSearchEngine(ToPrepopId(TemplateURLPrepopulateData::naver.id),
+                             /*save_guest_choice=*/base::Value());
+
+  EXPECT_EQ(template_url_service->GetDefaultSearchProvider(), initial_dse);
+  EXPECT_EQ(user_action_tester.GetActionCount("Options_SearchEngineSetDefault"),
+            0);
+}
+
+TEST_F(SearchEnginesHandlerWithMoreEnginesTest,
+       SetDefaultSearchEngineByPrepopulateId_ManagedByPolicy) {
+  TestingProfile* testing_profile =
+      profile_manager().CreateTestingProfile("Profile 1");
+  TemplateURLData managed_data;
+  managed_data.SetShortName(u"managed");
+  managed_data.SetKeyword(u"managed");
+  managed_data.SetURL("https://managed.com/search?q={searchTerms}");
+  SetManagedDefaultSearchPreferences(managed_data, /*enabled=*/true,
+                                     testing_profile);
+  ConfigureTestWithProfile(testing_profile);
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(template_url_service->is_default_search_managed());
+  const TemplateURL* initial_dse =
+      template_url_service->GetDefaultSearchProvider();
+  const size_t initial_count = template_url_service->GetTemplateURLs().size();
+
+  SendSetDefaultSearchEngine(ToPrepopId(TemplateURLPrepopulateData::naver.id),
+                             /*save_guest_choice=*/base::Value());
+
+  EXPECT_EQ(template_url_service->GetDefaultSearchProvider(), initial_dse);
+  EXPECT_EQ(template_url_service->GetTemplateURLs().size(), initial_count);
+}
+
+TEST_F(SearchEnginesHandlerWithMoreEnginesTest,
+       SetDefaultSearchEngineByPrepopulateId_UpdatesSavedGuestSearch) {
+  ConfigureTestWithProfile(profile_manager().CreateGuestProfile());
+  auto* choice_service =
+      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+          profile());
+  ASSERT_TRUE(choice_service->IsDsePropagationAllowedForGuest());
+  ASSERT_EQ(std::nullopt,
+            choice_service->GetSavedSearchEngineBetweenGuestSessions());
+
+  SendSetDefaultSearchEngine(ToPrepopId(TemplateURLPrepopulateData::naver.id),
+                             /*save_guest_choice=*/base::Value(true));
+
+  EXPECT_EQ(TemplateURLPrepopulateData::naver.id,
+            choice_service->GetSavedSearchEngineBetweenGuestSessions());
 }
 
 }  // namespace settings

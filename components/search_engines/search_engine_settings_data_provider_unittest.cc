@@ -16,6 +16,7 @@
 #include "components/country_codes/country_codes.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
+#include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/search_engine_split_metrics.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url.h"
@@ -25,6 +26,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
@@ -727,6 +729,23 @@ TEST_F(SearchEngineSettingsDataProviderTest,
               testing::Contains(HasShortName("Custom Default Engine")));
   EXPECT_THAT(data.primary, testing::Not(testing::Contains(HasShortName(
                                 "Non-Default Custom Site Search"))));
+}
+
+TEST_F(SearchEngineSettingsDataProviderNonSplitRegionTest,
+       GetDefaultSearchEnginePickerData_NonRegionalDefaultIncluded) {
+  template_url_service().Load();
+  const int id = TemplateURLPrepopulateData::naver.id;
+  ASSERT_FALSE(prepopulate_data_resolver().GetPrepopulatedEngine(id));
+
+  template_url_service().SetUserSelectedDefaultSearchProviderByPrepopulateId(
+      id, ChoiceMadeLocation::kSearchSettings);
+  const TemplateURL* dse = template_url_service().GetDefaultSearchProvider();
+  ASSERT_EQ(dse->prepopulate_id(), id);
+
+  auto provider = CreateProvider();
+  auto data = provider->GetDefaultSearchEnginePickerData();
+
+  EXPECT_THAT(data.primary, testing::Contains(dse));
 }
 
 // Engines shown in the picker must not be dropped because a custom or site

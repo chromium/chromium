@@ -157,6 +157,10 @@ bool KeywordEditorController::IsManaged(const TemplateURL* url) const {
 void KeywordEditorController::RemoveTemplateURL(TemplateURLID id) {
   TemplateURL* template_url = GetTemplateURL(id);
   if (!template_url) {
+    // Would indicate stale or invalid IDs circulating. Not expected to be a
+    // realistic occurrence, considering observers should refresh the page on
+    // TemplateURLService changes.
+    NOTREACHED(base::NotFatalUntil::M165);
     return;
   }
 
@@ -171,9 +175,16 @@ const TemplateURL* KeywordEditorController::GetDefaultSearchProvider() {
 void KeywordEditorController::MakeDefaultTemplateURL(
     TemplateURLID id,
     search_engines::ChoiceMadeLocation choice_location) {
+  const TemplateURL* default_search_provider = GetDefaultSearchProvider();
+  if (default_search_provider && default_search_provider->id() == id) {
+    return;
+  }
   TemplateURL* template_url = GetTemplateURL(id);
-  if (!template_url ||
-      template_url == template_url_service_->GetDefaultSearchProvider()) {
+  if (!template_url) {
+    // Would indicate stale or invalid IDs circulating. Not expected to be a
+    // realistic occurrence, considering observers should refresh the page on
+    // TemplateURLService changes.
+    NOTREACHED(base::NotFatalUntil::M165);
     return;
   }
 
@@ -181,10 +192,27 @@ void KeywordEditorController::MakeDefaultTemplateURL(
                                                               choice_location);
 }
 
+void KeywordEditorController::MakeDefaultTemplateURL(
+    PrepopulatedId id,
+    search_engines::ChoiceMadeLocation choice_location) {
+  const TemplateURL* default_search_provider = GetDefaultSearchProvider();
+  if (default_search_provider &&
+      default_search_provider->prepopulate_id() == id.value()) {
+    return;
+  }
+
+  template_url_service_->SetUserSelectedDefaultSearchProviderByPrepopulateId(
+      id.value(), choice_location);
+}
+
 void KeywordEditorController::SetIsActiveTemplateURL(TemplateURLID id,
                                                      bool is_active) {
   TemplateURL* template_url = GetTemplateURL(id);
   if (!template_url) {
+    // Would indicate stale or invalid IDs circulating. Not expected to be a
+    // realistic occurrence, considering observers should refresh the page on
+    // TemplateURLService changes.
+    NOTREACHED(base::NotFatalUntil::M165);
     return;
   }
 

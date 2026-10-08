@@ -634,6 +634,7 @@ if (!is_android) {
       "//components/regional_capabilities",
       "//components/search_engines",
       "//components/search_engines:test_support",
+      "//components/search_engines/search_engine_choice:switches",
       "//components/services/app_service",
       "//components/signin/core/browser:test_support",
       "//components/signin/public/base",

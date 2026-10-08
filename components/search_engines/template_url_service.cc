@@ -1380,6 +1380,31 @@ void TemplateURLService::SetUserSelectedDefaultSearchProvider(
 #endif
 }
 
+void TemplateURLService::SetUserSelectedDefaultSearchProviderByPrepopulateId(
+    int prepopulate_id,
+    search_engines::ChoiceMadeLocation choice_made_location) {
+  CHECK_NE(prepopulate_id, 0);
+
+  // Reuse the existing entry if there is one. Passing freshly resolved data
+  // instead would overwrite existing properties and user edits.
+  if (TemplateURL* existing = FindPrepopulatedTemplateURL(prepopulate_id)) {
+    SetUserSelectedDefaultSearchProvider(existing, choice_made_location);
+    return;
+  }
+
+  // No engine with this ID yet: it gets added when selected as default.
+  std::unique_ptr<TemplateURLData> data =
+      prepopulate_data_resolver_->GetEngineFromFullList(prepopulate_id);
+  if (!data) {
+    // Failing here would indicate a coding error or that something attempted to
+    // call WebUI APIs with an invalid prepopulated ID.
+    NOTREACHED(base::NotFatalUntil::M165);
+    return;
+  }
+  TemplateURL engine(*data);
+  SetUserSelectedDefaultSearchProvider(&engine, choice_made_location);
+}
+
 DefaultSearchManager* TemplateURLService::GetDefaultSearchManager() {
   return &default_search_manager_;
 }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/search_engines/keyword_editor_controller.h"
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <string>
@@ -27,6 +28,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 using base::ASCIIToUTF16;
 
@@ -334,6 +336,49 @@ TEST_F(KeywordEditorControllerManagedDSPTest, CannotSetDefaultWhileManaged) {
   EXPECT_FALSE(controller()->CanMakeDefault(turl2));
   EXPECT_TRUE(
       controller()->IsManaged(util()->model()->GetDefaultSearchProvider()));
+}
+
+// Tests making a prepopulated engine that isn't in the model yet the default.
+TEST_F(KeywordEditorControllerTest, MakeDefaultByPrepopulatedId) {
+  const int prepopulate_id = TemplateURLPrepopulateData::naver.id;
+  ASSERT_FALSE(std::ranges::contains(util()->model()->GetTemplateURLs(),
+                                     prepopulate_id,
+                                     &TemplateURL::prepopulate_id));
+
+  controller()->MakeDefaultTemplateURL(
+      KeywordEditorController::PrepopulatedId(prepopulate_id),
+      search_engines::ChoiceMadeLocation::kOther);
+
+  const TemplateURL* dse = util()->model()->GetDefaultSearchProvider();
+  ASSERT_TRUE(dse);
+  EXPECT_EQ(prepopulate_id, dse->prepopulate_id());
+  EXPECT_TRUE(std::ranges::contains(util()->model()->GetTemplateURLs(), dse));
+
+  // Making it default a second time does nothing.
+  ClearChangeCount();
+  controller()->MakeDefaultTemplateURL(
+      KeywordEditorController::PrepopulatedId(prepopulate_id),
+      search_engines::ChoiceMadeLocation::kOther);
+  VerifyNotChanged();
+  EXPECT_EQ(dse, util()->model()->GetDefaultSearchProvider());
+}
+
+// Tests that a prepopulated engine can't be made the default if the default
+// search provider is managed via policy.
+TEST_F(KeywordEditorControllerManagedDSPTest,
+       CannotSetDefaultByPrepopulatedIdWhileManaged) {
+  SimulateDefaultSearchIsManaged("http://managed/{searchTerms}",
+                                 /*is_mandatory=*/true);
+  const TemplateURL* managed_dse = util()->model()->GetDefaultSearchProvider();
+  const size_t initial_count = util()->model()->GetTemplateURLs().size();
+
+  controller()->MakeDefaultTemplateURL(
+      KeywordEditorController::PrepopulatedId(
+          TemplateURLPrepopulateData::naver.id),
+      search_engines::ChoiceMadeLocation::kOther);
+
+  EXPECT_EQ(managed_dse, util()->model()->GetDefaultSearchProvider());
+  EXPECT_EQ(initial_count, util()->model()->GetTemplateURLs().size());
 }
 
 // Tests that a TemplateURL can be made the default if the default search

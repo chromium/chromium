@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/types/id_type.h"
 #include "components/search_engines/template_url_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -21,8 +22,16 @@ namespace search_engines {
 enum class ChoiceMadeLocation;
 }
 
+namespace TemplateURLPrepopulateData {
+struct PrepopulatedEngine;
+}
+
 class KeywordEditorController {
  public:
+  // See `TemplateURL::prepopulate_id()`.
+  using PrepopulatedId =
+      base::IdType32<TemplateURLPrepopulateData::PrepopulatedEngine>;
+
   explicit KeywordEditorController(Profile* profile);
 
   KeywordEditorController(const KeywordEditorController&) = delete;
@@ -80,6 +89,12 @@ class KeywordEditorController {
   // Make the TemplateURL with the specified id the default search provider.
   void MakeDefaultTemplateURL(
       TemplateURLID id,
+      search_engines::ChoiceMadeLocation choice_location);
+
+  // Make the prepopulated engine with the specified id the default search
+  // provider, adding it to the model if needed.
+  void MakeDefaultTemplateURL(
+      PrepopulatedId id,
       search_engines::ChoiceMadeLocation choice_location);
 
   // Activates the TemplateURL with the specified id if `is_active` is true or

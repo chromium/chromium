@@ -14,14 +14,21 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/with_feature_override.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
+#include "components/search_engines/choice_made_location.h"
+#include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_type.h"
+#include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
@@ -1128,4 +1135,310 @@ TEST_F(SearchEngineSplitTemplateURLServiceSplitRegionTest,
       "Search.OseSplitYahooJapan.CountOnProfileLoad", 1);
   histogram_tester_.ExpectTotalCount(
       "Search.OseSplitYahooJapan.EngineStateOnProfileLoad", 1);
+}
+
+// -- SetUserSelectedDefaultSearchProviderByPrepopulateId ---------------------
+
+// Uses a `TemplateURLService` without a keywords database: once loaded, the
+// model only contains the fallback default search engine, so each test adds
+// the engines it needs.
+// Defaults to an EEA country so that choices made from settings are recorded.
+class TemplateURLServiceSetDseByPrepopulateIdTest : public testing::Test {
+ public:
+  explicit TemplateURLServiceSetDseByPrepopulateIdTest(
+      std::string_view country = "BE",
+      const std::vector<base::test::FeatureRef>& enabled_features = {}) {
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+        switches::kSearchEngineChoiceCountry, country);
+    feature_list_.InitWithFeatures(enabled_features, {});
+    test_environment_ =
+        std::make_unique<search_engines::SearchEnginesTestEnvironment>();
+  }
+
+  TemplateURLService& service() {
+    return *test_environment_->template_url_service();
+  }
+
+  const TemplateURLPrepopulateData::Resolver& resolver() {
+    return test_environment_->prepopulate_data_resolver();
+  }
+
+  sync_preferences::TestingPrefServiceSyncable& pref_service() {
+    return test_environment_->pref_service();
+  }
+
+  void Load() {
+    service().Load();
+    ASSERT_TRUE(service().loaded());
+  }
+
+  // Adds the prepopulated engine with `prepopulate_id` from the regional list.
+  TemplateURL* AddRegionalEngine(int prepopulate_id) {
+    std::unique_ptr<TemplateURLData> data =
+        resolver().GetPrepopulatedEngine(prepopulate_id);
+    CHECK(data);
+    return service().Add(std::make_unique<TemplateURL>(*data));
+  }
+
+  // Returns the ID of a regional engine that is not the current DSE.
+  int GetNonDefaultRegionalEngineId() {
+    const TemplateURL* dse = service().GetDefaultSearchProvider();
+    for (const auto& data : resolver().GetPrepopulatedEngines()) {
+      if (!dse || data->prepopulate_id != dse->prepopulate_id()) {
+        return data->prepopulate_id;
+      }
+    }
+    NOTREACHED();
+  }
+
+  std::vector<const TemplateURL*> GetEnginesWithPrepopulateId(
+      int prepopulate_id) {
+    std::vector<const TemplateURL*> result;
+    for (const TemplateURL* turl : service().GetTemplateURLs()) {
+      if (turl->prepopulate_id() == prepopulate_id) {
+        result.push_back(turl);
+      }
+    }
+    return result;
+  }
+
+  void SetDse(int prepopulate_id) {
+    service().SetUserSelectedDefaultSearchProviderByPrepopulateId(
+        prepopulate_id, search_engines::ChoiceMadeLocation::kSearchSettings);
+  }
+
+ private:
+  base::test::ScopedCommandLine scoped_command_line_;
+  base::test::ScopedFeatureList feature_list_;
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<search_engines::SearchEnginesTestEnvironment>
+      test_environment_;
+};
+
+TEST_F(TemplateURLServiceSetDseByPrepopulateIdTest, AddsAndSetsNewEngine) {
+  Load();
+  const int id = TemplateURLPrepopulateData::naver.id;
+  ASSERT_FALSE(resolver().GetPrepopulatedEngine(id));  // Not regional.
+  ASSERT_THAT(GetEnginesWithPrepopulateId(id), testing::IsEmpty());
+
+  SetDse(id);
+
+  const TemplateURL* dse = service().GetDefaultSearchProvider();
+  ASSERT_TRUE(dse);
+  EXPECT_EQ(dse->prepopulate_id(), id);
+  EXPECT_EQ(dse->keyword(), TemplateURLPrepopulateData::naver.keyword);
+  EXPECT_THAT(GetEnginesWithPrepopulateId(id), testing::ElementsAre(dse));
+  EXPECT_EQ(service().default_search_provider_source(),
+            DefaultSearchManager::FROM_USER);
+  EXPECT_TRUE(pref_service().HasPrefPath(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
+}
+
+TEST_F(TemplateURLServiceSetDseByPrepopulateIdTest, ReusesExistingEngine) {
+  Load();
+  TemplateURL* existing = AddRegionalEngine(GetNonDefaultRegionalEngineId());
+  ASSERT_TRUE(existing);
+  const std::string guid = existing->sync_guid();
+
+  SetDse(existing->prepopulate_id());
+
+  EXPECT_EQ(service().GetDefaultSearchProvider(), existing);
+  EXPECT_EQ(existing->sync_guid(), guid);
+  EXPECT_THAT(GetEnginesWithPrepopulateId(existing->prepopulate_id()),
+              testing::ElementsAre(existing));
+}
+
+TEST_F(TemplateURLServiceSetDseByPrepopulateIdTest, PreservesUserEdits) {
+  Load();
+  TemplateURL* existing = AddRegionalEngine(GetNonDefaultRegionalEngineId());
+  ASSERT_TRUE(existing);
+  service().ResetTemplateURL(existing, u"Edited name", u"edited_keyword",
+                             existing->url());
+  ASSERT_FALSE(existing->safe_for_autoreplace());
+
+  SetDse(existing->prepopulate_id());
+
+  const TemplateURL* dse = service().GetDefaultSearchProvider();
+  EXPECT_EQ(dse, existing);
+  EXPECT_EQ(dse->short_name(), u"Edited name");
+  EXPECT_EQ(dse->keyword(), u"edited_keyword");
+}
+
+TEST_F(TemplateURLServiceSetDseByPrepopulateIdTest, CrashesOnInvalidIds) {
+  Load();
+
+  int unknown_id = 0;
+  for (int id = 1; id <= TemplateURLPrepopulateData::kMaxPrepopulatedEngineID;
+       ++id) {
+    if (!resolver().GetEngineFromFullList(id)) {
+      unknown_id = id;
+      break;
+    }
+  }
+  ASSERT_NE(unknown_id, 0);
+
+  for (int id : {-1, TemplateURLPrepopulateData::kMaxPrepopulatedEngineID + 1,
+                 unknown_id}) {
+    // Include the ID being tested in failure messages from this iteration.
+    SCOPED_TRACE(id);
+    EXPECT_CHECK_DEATH(SetDse(id));
+  }
+}
+
+TEST_F(TemplateURLServiceSetDseByPrepopulateIdTest, CrashesOnIdZero) {
+  Load();
+  EXPECT_CHECK_DEATH(SetDse(0));
+}
+
+TEST_F(TemplateURLServiceSetDseByPrepopulateIdTest, NoEffectIfManagedByPolicy) {
+  TemplateURLData policy_data;
+  policy_data.SetShortName(u"Managed");
+  policy_data.SetKeyword(u"managed");
+  policy_data.SetURL("https://managed.com/search?q={searchTerms}");
+  pref_service().SetManagedPref(
+      DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+      TemplateURLDataToDictionary(policy_data));
+  Load();
+  ASSERT_TRUE(service().is_default_search_managed());
+  const TemplateURL* initial_dse = service().GetDefaultSearchProvider();
+  const size_t initial_count = service().GetTemplateURLs().size();
+
+  SetDse(TemplateURLPrepopulateData::naver.id);
+
+  EXPECT_EQ(service().GetDefaultSearchProvider(), initial_dse);
+  EXPECT_EQ(service().GetTemplateURLs().size(), initial_count);
+  EXPECT_THAT(GetEnginesWithPrepopulateId(TemplateURLPrepopulateData::naver.id),
+              testing::IsEmpty());
+}
+
+TEST_F(TemplateURLServiceSetDseByPrepopulateIdTest, AppliedOnceLoaded) {
+  ASSERT_FALSE(service().loaded());
+
+  SetDse(TemplateURLPrepopulateData::naver.id);
+
+  Load();
+  EXPECT_EQ(service().GetDefaultSearchProvider()->prepopulate_id(),
+            TemplateURLPrepopulateData::naver.id);
+  EXPECT_THAT(GetEnginesWithPrepopulateId(TemplateURLPrepopulateData::naver.id),
+              testing::SizeIs(1));
+}
+
+// Documents current behavior: keyword conflicts are not resolved in favor of
+// the new default search engine. Replacing or upgrading conflicting engines is
+// a planned follow-up.
+TEST_F(TemplateURLServiceSetDseByPrepopulateIdTest,
+       KeywordConflictWithUserEditedEngine) {
+  Load();
+  TemplateURLData custom_data;
+  custom_data.SetShortName(u"Custom");
+  custom_data.SetKeyword(TemplateURLPrepopulateData::naver.keyword);
+  custom_data.SetURL("https://custom.com/search?q={searchTerms}");
+  custom_data.safe_for_autoreplace = false;
+  TemplateURL* custom =
+      service().Add(std::make_unique<TemplateURL>(custom_data));
+  ASSERT_TRUE(custom);
+
+  SetDse(TemplateURLPrepopulateData::naver.id);
+
+  const TemplateURL* dse = service().GetDefaultSearchProvider();
+  ASSERT_TRUE(dse);
+  EXPECT_EQ(dse->prepopulate_id(), TemplateURLPrepopulateData::naver.id);
+  EXPECT_EQ(service().GetTemplateURLForKeyword(
+                TemplateURLPrepopulateData::naver.keyword),
+            custom);
+}
+
+// Auto-discovered engines that the user never activated or edited are
+// replaced by the new default search engine when their keyword conflicts.
+TEST_F(TemplateURLServiceSetDseByPrepopulateIdTest,
+       KeywordConflictWithReplaceableEngine) {
+  Load();
+  TemplateURLData osdd_data;
+  osdd_data.SetShortName(u"Auto-discovered");
+  osdd_data.SetKeyword(TemplateURLPrepopulateData::naver.keyword);
+  osdd_data.SetURL("https://osdd.com/search?q={searchTerms}");
+  osdd_data.safe_for_autoreplace = true;
+  TemplateURL* osdd = service().Add(std::make_unique<TemplateURL>(osdd_data));
+  ASSERT_TRUE(osdd);
+  const std::string osdd_guid = osdd->sync_guid();
+
+  SetDse(TemplateURLPrepopulateData::naver.id);
+
+  const TemplateURL* dse = service().GetDefaultSearchProvider();
+  ASSERT_TRUE(dse);
+  EXPECT_EQ(dse->prepopulate_id(), TemplateURLPrepopulateData::naver.id);
+  EXPECT_FALSE(service().GetTemplateURLForGUID(osdd_guid));
+  EXPECT_EQ(service().GetTemplateURLForKeyword(
+                TemplateURLPrepopulateData::naver.keyword),
+            dse);
+  EXPECT_FALSE(service().HiddenFromLists(dse));
+}
+
+// In JP with shadow variants, the regional list has `yahoo_jp_next` (ID 116),
+// and `yahoo_jp` (ID 2) is a regional variant, only kept for users who already
+// have it.
+class TemplateURLServiceSetDseByPrepopulateIdShadowVariantsTest
+    : public TemplateURLServiceSetDseByPrepopulateIdTest {
+ public:
+  TemplateURLServiceSetDseByPrepopulateIdShadowVariantsTest()
+      : TemplateURLServiceSetDseByPrepopulateIdTest(
+            "JP",
+            {switches::kPrepopulatedEnginesShadowVariants,
+             switches::kApplySearchEngineTypeMigration}) {}
+};
+
+TEST_F(TemplateURLServiceSetDseByPrepopulateIdShadowVariantsTest,
+       SwitchFromShadowVariant) {
+  Load();
+  const int shadow_id = TemplateURLPrepopulateData::yahoo_jp.id;
+  const int next_id = TemplateURLPrepopulateData::yahoo_jp_next.id;
+  TemplateURL* shadow = service().Add(
+      std::make_unique<TemplateURL>(*TemplateURLDataFromPrepopulatedEngine(
+          TemplateURLPrepopulateData::yahoo_jp)));
+  ASSERT_TRUE(shadow);
+  service().SetUserSelectedDefaultSearchProvider(shadow);
+  ASSERT_EQ(service().GetDefaultSearchProvider(), shadow);
+
+  // Selecting the shadow variant while it's the DSE is a no-op.
+  SetDse(shadow_id);
+  EXPECT_EQ(service().GetDefaultSearchProvider(), shadow);
+
+  SetDse(next_id);
+
+  const TemplateURL* dse = service().GetDefaultSearchProvider();
+  ASSERT_TRUE(dse);
+  EXPECT_EQ(dse->prepopulate_id(), next_id);
+  EXPECT_THAT(GetEnginesWithPrepopulateId(next_id), testing::ElementsAre(dse));
+  EXPECT_THAT(GetEnginesWithPrepopulateId(shadow_id),
+              testing::ElementsAre(shadow));
+}
+
+// Not expected from the picker, which only offers the shadow variant when it's
+// the DSE, but could happen with stale picker data.
+TEST_F(TemplateURLServiceSetDseByPrepopulateIdShadowVariantsTest,
+       ResolvesShadowVariantDefinition) {
+  Load();
+  const int shadow_id = TemplateURLPrepopulateData::yahoo_jp.id;
+  const int next_id = TemplateURLPrepopulateData::yahoo_jp_next.id;
+  ASSERT_EQ(shadow_id, TemplateURLPrepopulateData::yahoo.id);
+  TemplateURL* next = AddRegionalEngine(next_id);
+  ASSERT_TRUE(next);
+  ASSERT_THAT(GetEnginesWithPrepopulateId(shadow_id), testing::IsEmpty());
+
+  SetDse(shadow_id);
+
+  // The JP regional variant is used, not the first `yahoo` entry with the same
+  // ID in the full list.
+  const TemplateURL* dse = service().GetDefaultSearchProvider();
+  ASSERT_TRUE(dse);
+  EXPECT_EQ(dse->prepopulate_id(), shadow_id);
+  EXPECT_EQ(dse->url(), TemplateURLPrepopulateData::yahoo_jp.search_url);
+  EXPECT_NE(dse->url(), TemplateURLPrepopulateData::yahoo.search_url);
+
+  // Both engines share the `yahoo.co.jp` keyword. The previously listed one is
+  // kept, and still resolves the keyword.
+  EXPECT_THAT(GetEnginesWithPrepopulateId(next_id), testing::ElementsAre(next));
+  EXPECT_EQ(service().GetTemplateURLForKeyword(
+                TemplateURLPrepopulateData::yahoo_jp.keyword),
+            next);
 }

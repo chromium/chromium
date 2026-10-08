@@ -397,14 +397,32 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // controlled by an extension.
   bool CanMakeDefault(const TemplateURL* url) const;
 
-  // Set the default search provider. `url` may be null.
-  // This will assert if the default search is managed; the UI should not be
-  // invoking this method in that situation.
-  // `choice_made_location` indicates in which context the user made the
-  // selection, which will affect how some prefs are set and record additional
-  // metrics.
+  // Sets `url` as the user-selected default search provider, or clears the
+  // user selection if `url` is null.
+  //
+  // `choice_made_location` is the context in which the user made the selection;
+  // it affects how some prefs are set and which metrics are recorded.
+  //
+  // While the default search provider is managed by policy or controlled by an
+  // extension, the selection is saved but has no effect. If the model failed
+  // to load, the selection only lasts for the session, and is ignored if the
+  // user can't modify the default search provider.
   void SetUserSelectedDefaultSearchProvider(
       TemplateURL* url,
+      search_engines::ChoiceMadeLocation choice_made_location =
+          search_engines::ChoiceMadeLocation::kOther);
+
+  // Sets the engine with a non-0 `prepopulate_id` as the user-selected default
+  // search provider. If this model has no engine with that `prepopulate_id`
+  // yet, one is added from its prepopulated definition; otherwise, the existing
+  // engine is used as-is, preserving user edits.
+  //
+  // Before this model is loaded,
+  // the prepopulated definition is always used, and replaces any existing
+  // engine with that `prepopulate_id` once loaded. See
+  // `SetUserSelectedDefaultSearchProvider()` for more details.
+  void SetUserSelectedDefaultSearchProviderByPrepopulateId(
+      int prepopulate_id,
       search_engines::ChoiceMadeLocation choice_made_location =
           search_engines::ChoiceMadeLocation::kOther);
 

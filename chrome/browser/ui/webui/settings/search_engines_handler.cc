@@ -43,6 +43,7 @@
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_switches.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_settings_data_provider.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -79,6 +80,7 @@ const char kQueryUrlField[] = "queryUrl";
 // engines coming from other sources (e.g. prepopulated engines not yet added to
 // the `TemplateURLService`) can be referenced without risk of collision.
 constexpr std::string_view kTemplateURLIdPrefix = "db:";
+constexpr std::string_view kPrepopulatedEngineIdPrefix = "prepop:";
 
 // Returns the opaque string ID used to reference `template_url` in the WebUI.
 std::string SerializeEngineId(const TemplateURL& template_url) {
@@ -96,6 +98,16 @@ TemplateURLID ParseTemplateURLId(std::string_view engine_id) {
   CHECK(raw_id.has_value() && base::StringToInt64(*raw_id, &value))
       << "Malformed search engine ID: " << engine_id;
   return TemplateURLID(value);
+}
+
+KeywordEditorController::PrepopulatedId ParsePrepopulatedId(
+    std::string_view engine_id) {
+  std::optional<std::string_view> raw_id =
+      base::RemovePrefix(engine_id, kPrepopulatedEngineIdPrefix);
+  int value = 0;
+  CHECK(raw_id.has_value() && base::StringToInt(*raw_id, &value) && value != 0)
+      << "Malformed prepopulated search engine ID: " << engine_id;
+  return KeywordEditorController::PrepopulatedId(value);
 }
 
 void ProcessGuestDsePropagation(Profile& profile,
@@ -535,10 +547,29 @@ void SearchEnginesHandler::HandleGetSearchEnginesList(
   ResolveJavascriptCallback(callback_id, GetSearchEnginesList());
 }
 
+template <typename IdType>
+void SearchEnginesHandler::SetDefaultSearchEngine(
+    IdType id,
+    search_engines::ChoiceMadeLocation choice_made_location,
+    std::optional<bool> save_guest_choice) {
+  list_controller_.MakeDefaultTemplateURL(id, choice_made_location);
+  settings_utils::MaybeNotifySettingsCustomEvent(
+      web_ui(), settings::kDefaultSearchEngineChangedId);
+  base::RecordAction(base::UserMetricsAction("Options_SearchEngineSetDefault"));
+
+  if (save_guest_choice.has_value()) {
+    if (const TemplateURL* default_provider =
+            list_controller_.GetDefaultSearchProvider()) {
+      ProcessGuestDsePropagation(*profile_, save_guest_choice.value(),
+                                 default_provider->prepopulate_id());
+    }
+  }
+}
+
 void SearchEnginesHandler::HandleSetDefaultSearchEngine(
     const base::ListValue& args) {
   CHECK_EQ(3U, args.size());
-  const TemplateURLID id = ParseTemplateURLId(args[0].GetString());
+  const std::string& engine_id = args[0].GetString();
 
   search_engines::ChoiceMadeLocation choice_made_location =
       static_cast<search_engines::ChoiceMadeLocation>(args[1].GetInt());
@@ -546,16 +577,23 @@ void SearchEnginesHandler::HandleSetDefaultSearchEngine(
             search_engines::ChoiceMadeLocation::kSearchSettings ||
         choice_made_location ==
             search_engines::ChoiceMadeLocation::kSearchEngineSettings);
-  list_controller_.MakeDefaultTemplateURL(id, choice_made_location);
-  settings_utils::MaybeNotifySettingsCustomEvent(
-      web_ui(), settings::kDefaultSearchEngineChangedId);
-  base::RecordAction(base::UserMetricsAction("Options_SearchEngineSetDefault"));
 
-  if (std::optional<bool> save_guest_choice = args[2].GetIfBool();
-      save_guest_choice.has_value()) {
-    ProcessGuestDsePropagation(
-        *profile_, save_guest_choice.value(),
-        list_controller_.GetDefaultSearchProvider()->prepopulate_id());
+  CHECK(args[2].is_none() || args[2].is_bool());
+  std::optional<bool> save_guest_choice = args[2].GetIfBool();
+
+  if (engine_id.starts_with(kTemplateURLIdPrefix)) {
+    SetDefaultSearchEngine(ParseTemplateURLId(engine_id), choice_made_location,
+                           save_guest_choice);
+  } else if (base::FeatureList::IsEnabled(
+                 switches::kSearchSettingsWithMoreEngines)) {
+    if (engine_id.starts_with(kPrepopulatedEngineIdPrefix)) {
+      CHECK_EQ(choice_made_location,
+               search_engines::ChoiceMadeLocation::kSearchSettings);
+      SetDefaultSearchEngine(ParsePrepopulatedId(engine_id),
+                             choice_made_location, save_guest_choice);
+    } else {
+      NOTREACHED() << "Malformed search engine ID: " << engine_id;
+    }
   }
 }
 
