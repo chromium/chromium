@@ -12,7 +12,6 @@ extern const char kTranslateScriptURL[];
 extern const char kTranslateSecurityOrigin[];
 extern const char kTranslateRankerModelURL[];
 extern const char kForcedTranslateLanguage[];
-extern const char kDisableTranslateTrigger[];
 
 }  // namespace switches
 }  // namespace translate

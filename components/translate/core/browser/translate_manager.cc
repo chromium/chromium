@@ -868,10 +868,9 @@ const TranslateTriggerDecision TranslateManager::ComputePossibleOutcomes(
   // corresponding metrics in InitiateTranslation.
   TranslateTriggerDecision decision;
 
-  // If translation is disabled by the command line, we can return early to
-  // prevent further filtering and potential side effects.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableTranslateTrigger)) {
+  // If translation triggering is disabled, we can return early to prevent
+  // further filtering and potential side effects.
+  if (!IsTranslateTriggerEnabled()) {
     decision.PreventAllTriggering();
     return decision;
   }

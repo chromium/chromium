@@ -4,6 +4,9 @@
 
 #include "components/translate/core/common/translate_features.h"
 
+#include "base/base_switches.h"
+#include "base/command_line.h"
+
 namespace translate {
 
 BASE_FEATURE(kEnableTranslatePdf, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -22,5 +25,19 @@ BASE_FEATURE(kTranslateElementRegionalization,
 
 BASE_FEATURE(kPartialTranslateUseOnePlatformApi,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTranslateTrigger, base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsTranslateTriggerEnabled() {
+  if (!base::FeatureList::IsEnabled(kTranslateTrigger)) {
+    return false;
+  }
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kEnableBenchmarking)) {
+    return true;
+  }
+  return base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
+      kTranslateTrigger.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE);
+}
 
 }  // namespace translate

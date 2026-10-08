@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/base_switches.h"
 #include "base/i18n/language_tag.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
@@ -15,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -231,6 +233,39 @@ class TranslateManagerTest : public ::testing::Test {
     EXPECT_CALL(*mock_translate_metrics_logger_, LogTriggerDecision(_))
         .Times(::testing::AnyNumber())
         .After(highest_priority_trigger_decision_expectation);
+  }
+
+  void ExpectTranslateTriggerDisabled() {
+    PrepareTranslateManager();
+    manager_->set_application_locale("en");
+
+    ON_CALL(mock_translate_client_, IsTranslatableURL(GURL()))
+        .WillByDefault(Return(true));
+    language::AcceptLanguagesService accept_languages(&prefs_,
+                                                      accept_languages_prefs);
+    ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
+        .WillByDefault(Return(&accept_languages));
+
+    mock_translate_metrics_logger_ =
+        std::make_unique<MockTranslateMetricsLogger>();
+    translate_manager_->RegisterTranslateMetricsLogger(
+        mock_translate_metrics_logger_->GetWeakPtr());
+
+    prefs_.SetBoolean(prefs::kOfferTranslateEnabled, true);
+    network_notifier_.SimulateOnline();
+    // Simulate a French page.
+    translate_manager_->GetLanguageState()->LanguageDetermined("fr", true);
+
+    // Expect 0 calls to show the UI and the metrics logger due to early exit.
+    EXPECT_CALL(mock_translate_client_, ShowTranslateUI(_, _, _, _, _))
+        .Times(0);
+    EXPECT_CALL(*mock_translate_metrics_logger_, LogTriggerDecision(_))
+        .Times(0);
+
+    translate_manager_->InitiateTranslation("fr");
+
+    // Manual translation should still be possible.
+    EXPECT_TRUE(translate_manager_->CanManuallyTranslate());
   }
 
   // Required to instantiate a net::test::MockNetworkChangeNotifier, because it
@@ -1829,44 +1864,34 @@ TEST_F(TranslateManagerTest, RevertTranslationTriggersRevertPdfTranslation) {
   translate_manager_->RevertTranslation();
 }
 
-TEST_F(TranslateManagerTest, DisableTranslateTriggerFlag) {
-  PrepareTranslateManager();
-  manager_->set_application_locale("en");
+TEST_F(TranslateManagerTest, DisableTranslateTriggerFeature) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kTranslateTrigger);
 
-  ON_CALL(mock_translate_client_, IsTranslatableURL(GURL()))
-      .WillByDefault(Return(true));
-  language::AcceptLanguagesService accept_languages(&prefs_,
-                                                    accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
-      .WillByDefault(Return(&accept_languages));
-
-  // Enable command line flag.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableTranslateTrigger);
-
-  mock_translate_metrics_logger_ =
-      std::make_unique<MockTranslateMetricsLogger>();
-  translate_manager_->RegisterTranslateMetricsLogger(
-      mock_translate_metrics_logger_->GetWeakPtr());
-
-  network_notifier_.SimulateOnline();
-  // Simulate a French page.
-  translate_manager_->GetLanguageState()->LanguageDetermined("fr", true);
-
-  // Expect 0 calls to show the UI and the metrics logger due to early exit.
-  EXPECT_CALL(mock_translate_client_, ShowTranslateUI(_, _, _, _, _)).Times(0);
-  EXPECT_CALL(*mock_translate_metrics_logger_, LogTriggerDecision(_)).Times(0);
-
-  translate_manager_->InitiateTranslation("fr");
-
-  // Disable command line flag for subsequent tests.
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kDisableTranslateTrigger);
+  ExpectTranslateTriggerDisabled();
 }
 
-TEST_F(TranslateManagerTest, DisableTranslateTriggerFlag_ManualTranslation) {
+TEST_F(TranslateManagerTest, DisableTranslateTrigger_EnableBenchmarkingFlag) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      ::switches::kEnableBenchmarking);
+
+  ExpectTranslateTriggerDisabled();
+}
+
+TEST_F(TranslateManagerTest,
+       EnableTranslateTriggerFeatureOverridesEnableBenchmarkingFlag) {
+  // Explicitly enabling kTranslateTrigger via command line should override
+  // --enable-benchmarking.
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      ::switches::kEnableBenchmarking);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kTranslateTrigger);
+
   PrepareTranslateManager();
   manager_->set_application_locale("en");
+  ASSERT_TRUE(TranslateDownloadManager::IsSupportedLanguage("zu"));
 
   ON_CALL(mock_translate_client_, IsTranslatableURL(GURL()))
       .WillByDefault(Return(true));
@@ -1875,21 +1900,24 @@ TEST_F(TranslateManagerTest, DisableTranslateTriggerFlag_ManualTranslation) {
   ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
 
-  // Enable command line flag.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableTranslateTrigger);
-
-  prefs_.SetBoolean(prefs::kOfferTranslateEnabled, true);
   network_notifier_.SimulateOnline();
-  // Simulate a French page.
-  translate_manager_->GetLanguageState()->LanguageDetermined("fr", true);
 
-  // Manual translation should be possible with flag enabled.
-  EXPECT_TRUE(translate_manager_->CanManuallyTranslate());
+  // Use a predefined target language so that InitiateTranslation()
+  // deterministically shows the "Translate this page?" UI.
+  translate_manager_->SetPredefinedTargetLanguage(GetKnownLanguageTag("ru"));
 
-  // Disable command line flag for subsequent tests.
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kDisableTranslateTrigger);
+  // Simulate a Zulu page.
+  translate_manager_->GetLanguageState()->LanguageDetermined("zu", true);
+
+  // Expect the "Translate this page?" UI to be shown.
+  EXPECT_CALL(
+      mock_translate_client_,
+      ShowTranslateUI(translate::TRANSLATE_STEP_BEFORE_TRANSLATE, "zu", "ru",
+                      TranslateErrors::NONE, /*triggered_from_menu=*/false))
+      .WillOnce(Return(true));
+
+  ExpectHighestPriorityTriggerDecision(TriggerDecision::kShowUI);
+  translate_manager_->InitiateTranslation("zu");
 }
 
 }  // namespace testing

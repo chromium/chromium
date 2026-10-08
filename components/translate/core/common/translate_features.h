@@ -33,6 +33,13 @@ BASE_DECLARE_FEATURE(kTranslateElementRegionalization);
 // If enabled, the OnePlatform Translate API is called directly.
 BASE_DECLARE_FEATURE(kPartialTranslateUseOnePlatformApi);
 
+// Controls whether translation triggering for pages (including the translate
+// page popup and auto-translate) is enabled. Manual translation is unaffected.
+// Disabled by default when --enable-benchmarking is present unless explicitly
+// overridden via --enable-features=TranslateTrigger.
+BASE_DECLARE_FEATURE(kTranslateTrigger);
+bool IsTranslateTriggerEnabled();
+
 }  // namespace translate
 
 #endif  // COMPONENTS_TRANSLATE_CORE_COMMON_TRANSLATE_FEATURES_H_
