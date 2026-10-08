@@ -119,13 +119,6 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
              const std::optional<WorkerBackingThreadStartupData>&,
              std::unique_ptr<WorkerDevToolsParams>);
 
-  // Posts a task to evaluate a top-level classic script on the worker thread.
-  // Called on the parent thread after Start().
-  void EvaluateClassicScript(const KURL& script_url,
-                             const String& source_code,
-                             std::unique_ptr<Vector<uint8_t>> cached_meta_data,
-                             const v8_inspector::V8StackTraceId& stack_id);
-
   // Posts a task to fetch and run a top-level classic script on the worker
   // thread. Called on the parent thread after Start().
   void FetchAndRunClassicScript(
@@ -357,11 +350,6 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   // from other threads.
   void MakeSureTaskRunnersAreInitialized();
 
-  void EvaluateClassicScriptOnWorkerThread(
-      const KURL& script_url,
-      String source_code,
-      std::unique_ptr<Vector<uint8_t>> cached_meta_data,
-      const v8_inspector::V8StackTraceId& stack_id);
   void FetchAndRunClassicScriptOnWorkerThread(
       const KURL& script_url,
       std::unique_ptr<WorkerMainScriptLoadParameters>

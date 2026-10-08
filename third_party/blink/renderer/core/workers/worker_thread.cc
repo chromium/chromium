@@ -186,19 +186,6 @@ void WorkerThread::Start(
                           std::move(devtools_params)));
 }
 
-void WorkerThread::EvaluateClassicScript(
-    const KURL& script_url,
-    const String& source_code,
-    std::unique_ptr<Vector<uint8_t>> cached_meta_data,
-    const v8_inspector::V8StackTraceId& stack_id) {
-  DCHECK_CALLED_ON_VALID_THREAD(parent_thread_checker_);
-  PostCrossThreadTask(
-      *GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
-      CrossThreadBindOnce(&WorkerThread::EvaluateClassicScriptOnWorkerThread,
-                          CrossThreadUnretained(this), script_url, source_code,
-                          std::move(cached_meta_data), stack_id));
-}
-
 void WorkerThread::FetchAndRunClassicScript(
     const KURL& script_url,
     std::unique_ptr<WorkerMainScriptLoadParameters>
@@ -731,17 +718,6 @@ void WorkerThread::InitializeOnWorkerThread(
   // Note the above call runs nested message loop which may result in
   // worker thread being torn down by request from the parent thread,
   // while waiting for debugger.
-}
-
-void WorkerThread::EvaluateClassicScriptOnWorkerThread(
-    const KURL& script_url,
-    String source_code,
-    std::unique_ptr<Vector<uint8_t>> cached_meta_data,
-    const v8_inspector::V8StackTraceId& stack_id) {
-  WorkerGlobalScope* global_scope = To<WorkerGlobalScope>(GlobalScope());
-  CHECK(global_scope);
-  global_scope->EvaluateClassicScript(script_url, std::move(source_code),
-                                      std::move(cached_meta_data), stack_id);
 }
 
 void WorkerThread::FetchAndRunClassicScriptOnWorkerThread(
