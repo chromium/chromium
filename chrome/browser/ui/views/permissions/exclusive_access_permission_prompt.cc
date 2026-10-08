@@ -36,6 +36,16 @@ ExclusiveAccessPermissionPrompt::GetPromptDisposition() const {
   return permissions::PermissionPromptDisposition::CUSTOM_MODAL_DIALOG;
 }
 
+std::optional<gfx::Rect>
+ExclusiveAccessPermissionPrompt::GetViewBoundsInScreen() const {
+  if (prompt_view_tracker_.view()) {
+    // This is a modal prompt, the view bounds will cover the whole content
+    // view.
+    return web_contents()->GetContainerBounds();
+  }
+  return std::nullopt;
+}
+
 void ExclusiveAccessPermissionPrompt::DismissScrim() {
   delegate_->Dismiss(/*prompt_options=*/std::monostate());
 }

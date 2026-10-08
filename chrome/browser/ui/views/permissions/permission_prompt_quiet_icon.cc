@@ -28,3 +28,10 @@ PermissionPromptQuietIcon::GetPromptDisposition() const {
              : permissions::PermissionPromptDisposition::
                    LOCATION_BAR_RIGHT_ANIMATED_ICON;
 }
+
+std::optional<gfx::Rect> PermissionPromptQuietIcon::GetViewBoundsInScreen()
+    const {
+  // The quiet prompt is only an icon in the location bar and does not own a
+  // view that overlays the web contents.
+  return std::nullopt;
+}

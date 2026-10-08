@@ -37,7 +37,7 @@ class PermissionPromptDesktop : public permissions::PermissionPrompt {
   permissions::PermissionPromptDisposition GetPromptDisposition()
       const override = 0;
   bool IsAskPrompt() const override;
-  std::optional<gfx::Rect> GetViewBoundsInScreen() const override;
+  std::optional<gfx::Rect> GetViewBoundsInScreen() const override = 0;
   std::vector<permissions::ElementAnchoredBubbleVariant> GetPromptVariants()
       const override;
   std::optional<permissions::feature_params::PermissionElementPromptPosition>

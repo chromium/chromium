@@ -42,6 +42,7 @@ class ExclusiveAccessPermissionPrompt
   // PermissionPromptDesktop:
   permissions::PermissionPromptDisposition GetPromptDisposition()
       const override;
+  std::optional<gfx::Rect> GetViewBoundsInScreen() const override;
 
   // EmbeddedPermissionPromptContentScrimView::Delegate:
   void DismissScrim() override;
