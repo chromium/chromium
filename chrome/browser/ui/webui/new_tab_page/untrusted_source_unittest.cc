@@ -87,6 +87,11 @@ class UntrustedSourceTest : public testing::Test {
                   identity_manager);
             },
             identity_env_.identity_manager()));
+    // The expanded LHS reads the Google base URL from TemplateURLService, which
+    // is null in unit tests unless a testing factory is set.
+    profile_builder.AddTestingFactory(
+        TemplateURLServiceFactory::GetInstance(),
+        base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
     auto profile = profile_builder.Build();
     return profile;
   }

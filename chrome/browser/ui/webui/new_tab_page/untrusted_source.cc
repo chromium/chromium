@@ -30,11 +30,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/new_tab_page_untrusted_resources.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/policy/core/browser/url_list/policy_blocklist_service.h"
 #include "components/search/ntp_features.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -50,8 +53,9 @@ namespace {
 
 constexpr int kMaxUriDecodeLen = 2048;
 
-// Google Search page shown in the NTP's left-hand side (LHS) panel.
-constexpr char kLhsUrl[] = "https://www.google.com/search?nem=341";
+// Google Search page shown in the NTP's left-hand side (LHS) panel, relative
+// to the Google base URL.
+constexpr char kLhsRelativeUrl[] = "/search?nem=341";
 
 std::string FormatTemplate(int resource_id,
                            const ui::TemplateReplacements& replacements) {
@@ -243,7 +247,14 @@ void UntrustedSource::StartDataRequest(
   }
   if (path == "expanded-lhs") {
     ui::TemplateReplacements replacements;
-    replacements["url"] = kLhsUrl;
+    GURL lhs_url = GURL(TemplateURLServiceFactory::GetForProfile(profile_)
+                            ->search_terms_data()
+                            .GoogleBaseURLValue())
+                       .Resolve(kLhsRelativeUrl);
+    if (auto forced_host = contextual_tasks::GetForcedEmbeddedPageHost()) {
+      lhs_url = forced_host->ApplyToUrl(lhs_url);
+    }
+    replacements["url"] = lhs_url.spec();
     std::move(callback).Run(
         base::MakeRefCounted<base::RefCountedString>(FormatTemplate(
             IDR_NEW_TAB_PAGE_UNTRUSTED_EXPANDED_LHS_HTML, replacements)));
