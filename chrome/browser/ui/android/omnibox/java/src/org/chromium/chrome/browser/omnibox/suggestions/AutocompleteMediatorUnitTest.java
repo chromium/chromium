@@ -1062,6 +1062,30 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
+    public void urlTextWrappingChanged_afterFocusingSuggestion_keepsSuggestionsOnDesktop() {
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ true);
+        FuseboxSessionState session = createSession(AutocompleteRequestType.SEARCH, SAMPLE_QUERY);
+        mMediator.beginInput(session);
+        AutocompleteMatch match = createSearchSuggestMatch();
+        AutocompleteResult autocompleteResult = createAutocompleteResult(match);
+
+        mMediator.onSuggestionsReceived(autocompleteResult, /* isFinal= */ true);
+        assertFalse(session.getAutocompleteInput().hasPreviewText());
+        assertFalse(mSuggestionModels.isEmpty());
+
+        mMediator.allowPendingItemSelection();
+        mMediator.setOmniboxEditingText("long suggestion text that wraps");
+        assertEquals(
+                "long suggestion text that wraps", session.getAutocompleteInput().getPreviewText());
+
+        clearInvocations(mMockProcessor, mAutocompleteDelegate);
+        mUrlTextWrappingSupplier.set(true);
+        assertFalse(mSuggestionModels.isEmpty());
+        verify(mMockProcessor, atLeastOnce()).createModel();
+        verify(mAutocompleteDelegate, never()).onSuggestionsChanged(any(), anyBoolean());
+    }
+
+    @Test
     public void onSuggestionsReceived_destroyedUrlTextWrappingSupplier_doesNotCrash() {
         OmniboxCapabilities.setHasDesktopExperienceForTesting(/* hasDesktopExperience= */ true);
         FuseboxSessionState session = createSession(AutocompleteRequestType.SEARCH, SAMPLE_QUERY);
@@ -2693,8 +2717,10 @@ public class AutocompleteMediatorUnitTest {
         mMediator.allowPendingItemSelection();
         mMediator.setOmniboxEditingText("suggestion text");
 
-        // Verify the source of truth (AutocompleteInput) is NOT updated.
+        // Verify the source of truth (AutocompleteInput) userText is NOT updated, while previewText
+        // is updated.
         assertEquals("user text", session.getAutocompleteInput().getUserText());
+        assertEquals("suggestion text", session.getAutocompleteInput().getPreviewText());
         // Verify UI is updated with the suggestion text.
         verify(mAutocompleteDelegate).setOmniboxEditingText("suggestion text");
     }
@@ -2710,8 +2736,9 @@ public class AutocompleteMediatorUnitTest {
         mMediator.allowPendingItemSelection();
         mMediator.setOmniboxEditingText("keyword query");
 
-        // Verify user text is NOT updated.
+        // Verify user text is NOT updated, while previewText is updated with stripped text.
         assertEquals("u", session.getAutocompleteInput().getUserText());
+        assertEquals("query", session.getAutocompleteInput().getPreviewText());
         // Verify SiteSearchData is NOT cleared.
         assertNotNull(session.getAutocompleteInput().getSiteSearchData());
         // Verify UI is updated with stripped text.

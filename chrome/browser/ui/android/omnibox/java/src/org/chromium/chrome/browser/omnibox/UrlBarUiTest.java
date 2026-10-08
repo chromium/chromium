@@ -12,8 +12,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -1236,28 +1240,45 @@ public class UrlBarUiTest {
     @Test
     @SmallTest
     @Feature("Omnibox")
-    public void dpadDown_walksWrappedLinesBeforeReachingKeyListener() {
+    public void dpadDown_walksWrappedLinesWhenNotConsumedByKeyListener() {
         setUpWrappedMultilineInput(/* wrap= */ true);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mUrlBar.setSelection(0);
                     var event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_DOWN);
 
-                    // Line 0 -> Line 1 (consumed, listener not notified).
+                    // Line 0 -> Line 1 (offered to listener, then walks wrapped lines).
                     assertTrue(mUrlBar.onKeyDown(KeyEvent.KEYCODE_DPAD_DOWN, event));
                     assertEquals(4, mUrlBar.getSelectionStart());
 
-                    // Line 1 -> Line 2 (consumed, listener not notified).
+                    // Line 1 -> Line 2.
                     assertTrue(mUrlBar.onKeyDown(KeyEvent.KEYCODE_DPAD_DOWN, event));
                     assertEquals(8, mUrlBar.getSelectionStart());
 
-                    // Line 2 -> end of text (consumed, listener not notified).
+                    // Line 2 -> end of text.
                     assertTrue(mUrlBar.onKeyDown(KeyEvent.KEYCODE_DPAD_DOWN, event));
                     assertEquals(11, mUrlBar.getSelectionStart());
-                    verifyNoMoreInteractions(mViewOnKeyListener);
 
-                    // Already at end of text -> passed to key listener.
-                    mUrlBar.onKeyDown(KeyEvent.KEYCODE_DPAD_DOWN, event);
+                    // Already at end of text -> not consumed.
+                    assertFalse(mUrlBar.onKeyDown(KeyEvent.KEYCODE_DPAD_DOWN, event));
+                    verify(mViewOnKeyListener, times(4))
+                            .onKey(mUrlBar, KeyEvent.KEYCODE_DPAD_DOWN, event);
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature("Omnibox")
+    public void dpadDown_consumedByKeyListenerDoesNotWalkWrappedLines() {
+        setUpWrappedMultilineInput(/* wrap= */ true);
+        doReturn(true).when(mViewOnKeyListener).onKey(any(), anyInt(), any());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mUrlBar.setSelection(0);
+                    var event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_DOWN);
+
+                    assertTrue(mUrlBar.onKeyDown(KeyEvent.KEYCODE_DPAD_DOWN, event));
+                    assertEquals(0, mUrlBar.getSelectionStart());
                     verify(mViewOnKeyListener).onKey(mUrlBar, KeyEvent.KEYCODE_DPAD_DOWN, event);
                 });
     }
@@ -1265,28 +1286,45 @@ public class UrlBarUiTest {
     @Test
     @SmallTest
     @Feature("Omnibox")
-    public void dpadUp_walksWrappedLinesBeforeReachingKeyListener() {
+    public void dpadUp_walksWrappedLinesWhenNotConsumedByKeyListener() {
         setUpWrappedMultilineInput(/* wrap= */ true);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mUrlBar.setSelection(11);
                     var event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_UP);
 
-                    // Line 2 -> Line 1 (consumed, listener not notified).
+                    // Line 2 -> Line 1 (offered to listener, then walks wrapped lines).
                     assertTrue(mUrlBar.onKeyDown(KeyEvent.KEYCODE_DPAD_UP, event));
                     assertEquals(7, mUrlBar.getSelectionStart());
 
-                    // Line 1 -> Line 0 (consumed, listener not notified).
+                    // Line 1 -> Line 0.
                     assertTrue(mUrlBar.onKeyDown(KeyEvent.KEYCODE_DPAD_UP, event));
                     assertEquals(3, mUrlBar.getSelectionStart());
 
-                    // Line 0 -> start of text (consumed, listener not notified).
+                    // Line 0 -> start of text.
                     assertTrue(mUrlBar.onKeyDown(KeyEvent.KEYCODE_DPAD_UP, event));
                     assertEquals(0, mUrlBar.getSelectionStart());
-                    verifyNoMoreInteractions(mViewOnKeyListener);
 
-                    // Already at start of text -> passed to key listener.
-                    mUrlBar.onKeyDown(KeyEvent.KEYCODE_DPAD_UP, event);
+                    // Already at start of text -> not consumed.
+                    assertFalse(mUrlBar.onKeyDown(KeyEvent.KEYCODE_DPAD_UP, event));
+                    verify(mViewOnKeyListener, times(4))
+                            .onKey(mUrlBar, KeyEvent.KEYCODE_DPAD_UP, event);
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature("Omnibox")
+    public void dpadUp_consumedByKeyListenerDoesNotWalkWrappedLines() {
+        setUpWrappedMultilineInput(/* wrap= */ true);
+        doReturn(true).when(mViewOnKeyListener).onKey(any(), anyInt(), any());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mUrlBar.setSelection(11);
+                    var event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_UP);
+
+                    assertTrue(mUrlBar.onKeyDown(KeyEvent.KEYCODE_DPAD_UP, event));
+                    assertEquals(11, mUrlBar.getSelectionStart());
                     verify(mViewOnKeyListener).onKey(mUrlBar, KeyEvent.KEYCODE_DPAD_UP, event);
                 });
     }
@@ -1420,12 +1458,13 @@ public class UrlBarUiTest {
                     mUrlBar.setSelection(0);
                     var downEvent = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_NUMPAD_2);
                     assertTrue(mUrlBar.onKeyDown(KeyEvent.KEYCODE_NUMPAD_2, downEvent));
+                    verify(mViewOnKeyListener).onKey(mUrlBar, KeyEvent.KEYCODE_NUMPAD_2, downEvent);
                     assertEquals(4, mUrlBar.getSelectionStart());
 
                     var upEvent = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_NUMPAD_8);
                     assertTrue(mUrlBar.onKeyDown(KeyEvent.KEYCODE_NUMPAD_8, upEvent));
+                    verify(mViewOnKeyListener).onKey(mUrlBar, KeyEvent.KEYCODE_NUMPAD_8, upEvent);
                     assertEquals(0, mUrlBar.getSelectionStart());
-                    verifyNoMoreInteractions(mViewOnKeyListener);
                 });
     }
 

@@ -1088,7 +1088,9 @@ class AutocompleteMediator
         // - the user amends the input (by typing), or
         // - the user accepts the input (by pressing Enter).
         // for that reason this logic should not apply UserText.
-        mDelegate.setOmniboxEditingText(stripKeywordIfNecessary(text));
+        String strippedText = stripKeywordIfNecessary(text);
+        mAutocompleteInput.setPreviewText(strippedText);
+        mDelegate.setOmniboxEditingText(strippedText);
         if (suggestion != null) {
             mAutocompleteInput.setPreviewMatchUrl(getPreviewMatchUrl(suggestion));
         }

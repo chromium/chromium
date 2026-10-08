@@ -429,17 +429,23 @@ public class UrlBar extends AutocompleteEditText {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // Cursor movement across wrapped lines takes precedence over key listeners (which use the
-        // vertical DPAD keys to navigate the suggestions list).
+        // Vertical text selection (Shift + DPAD_UP/DOWN) stays in the UrlBar; otherwise, key
+        // listeners (which navigate the visible suggestions list) take precedence over cursor
+        // movement across wrapped lines.
+        boolean isShiftVerticalMove =
+                KeyNavigationUtil.isGoUpOrDown(event) && event.hasModifiers(KeyEvent.META_SHIFT_ON);
+        if (!isShiftVerticalMove
+                && (KeyNavigationUtil.isEnter(event)
+                        || KeyNavigationUtil.isGoAnyDirection(event)
+                        || KeyNavigationUtil.isTabNavigation(event)
+                        || event.getKeyCode() == KeyEvent.KEYCODE_DEL)
+                && (mKeyDownListener != null && mKeyDownListener.onKey(this, keyCode, event))) {
+            return true;
+        }
+
         if (moveCursorVerticallyInWrappedText(keyCode, event)) return true;
 
-        return ((KeyNavigationUtil.isEnter(event)
-                                || KeyNavigationUtil.isGoAnyDirection(event)
-                                || KeyNavigationUtil.isTabNavigation(event)
-                                || event.getKeyCode() == KeyEvent.KEYCODE_DEL)
-                        && (mKeyDownListener != null
-                                && mKeyDownListener.onKey(this, keyCode, event)))
-                || super_onKeyDown(keyCode, event);
+        return super_onKeyDown(keyCode, event);
     }
 
     @CheckDiscard("exposed for testing; should be inlined")
@@ -576,15 +582,15 @@ public class UrlBar extends AutocompleteEditText {
     }
 
     /**
-     * Gives the underlying {@link android.widget.EditText} a chance to move the text cursor
-     * vertically across the lines of wrapped, multiline user input before the vertical DPAD keys
-     * are offered to the key listeners (which use them to navigate the suggestions list).
+     * Gives the underlying {@link android.widget.EditText} a chance to move the text cursor or
+     * extend the selection vertically across the lines of wrapped, multiline user input when the
+     * vertical DPAD keys are not consumed by the key listeners (e.g. when the suggestions list is
+     * hidden or when selecting text with Shift).
      *
      * <p>Mimics the behavior of a conventional multiline text editor: the cursor first travels
      * between the wrapped lines (entirely handled by the EditText's movement method), and once the
      * top or the bottom line is reached, it snaps to the very beginning or the very end of the
-     * text. When the cursor already rests at that edge, the key event is not consumed here,
-     * allowing it to reach the key listeners.
+     * text.
      *
      * @param keyCode the code of the pressed key
      * @param event the key event to evaluate
