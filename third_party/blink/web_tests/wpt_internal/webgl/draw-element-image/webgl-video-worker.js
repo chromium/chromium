@@ -52,10 +52,12 @@ void main(){
     const gl = this.gl;
     gl.useProgram(this.program);
 
+    const {width, height} = gl.canvas.getElementImageDefaultSize(target);
+
     // Destination rect in GL clip space, placed at (x, y) in canvas grid
     const xMin = -1 + (2 * x / gl.drawingBufferWidth);
-    const xMax = (2 * (target.width + x) / gl.drawingBufferWidth) - 1.0;
-    const yMin = 1.0 - (2 * (target.height + y) / gl.drawingBufferHeight);
+    const xMax = (2 * (width + x) / gl.drawingBufferWidth) - 1.0;
+    const yMin = 1.0 - (2 * (height + y) / gl.drawingBufferHeight);
     const yMax = 1 - (2 * y / gl.drawingBufferHeight);
 
     gl.bindVertexArray(this.vertArray);
@@ -76,8 +78,8 @@ void main(){
     gl.bindTexture(gl.TEXTURE_2D, this.tex);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     // Allocate texture backing
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, target.width, target.height, 0,
-                  gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, width, height, 0, gl.RGBA,
+                  gl.UNSIGNED_BYTE, null);
     gl.texElementSubImage2D(gl.TEXTURE_2D, /*level*/ 0, /*xoffset*/ 0,
                             /*yoffset*/ 0, target);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);

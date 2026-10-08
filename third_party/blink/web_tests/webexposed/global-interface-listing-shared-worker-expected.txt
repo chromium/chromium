@@ -480,8 +480,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method use
 [Worker] interface ElementImage
 [Worker]     attribute @@toStringTag
-[Worker]     getter height
-[Worker]     getter width
 [Worker]     method close
 [Worker]     method constructor
 [Worker] interface ErrorEvent : Event
@@ -1433,6 +1431,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method convertToBlob
 [Worker]     method getContext
+[Worker]     method getElementImageDefaultSize
 [Worker]     method getElementTransform
 [Worker]     method transferToImageBitmap
 [Worker]     method updateElementGeometry

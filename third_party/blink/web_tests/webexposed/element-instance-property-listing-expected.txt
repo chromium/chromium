@@ -592,6 +592,7 @@ html element canvas
     property configureHighDynamicRange
     property content
     property getContext
+    property getElementImageDefaultSize
     property getElementTransform
     property height
     property onelementgeometryupdate

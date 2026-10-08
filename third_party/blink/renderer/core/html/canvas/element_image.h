@@ -19,8 +19,6 @@ class CORE_EXPORT ElementImage final : public ScriptWrappable {
  public:
   explicit ElementImage(std::unique_ptr<CanvasDrawablePaintRecord> record);
 
-  double width(ScriptState*) const;
-  double height(ScriptState*) const;
   void close();
 
   DOMNodeId GetNodeId() const;

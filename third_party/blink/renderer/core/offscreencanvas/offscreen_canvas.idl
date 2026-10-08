@@ -15,6 +15,8 @@
     [CallWith=ScriptState, MeasureAs=OffscreenCanvasTransferToImageBitmap, RaisesException] ImageBitmap transferToImageBitmap();
     [CallWith=ScriptState, MeasureAs=OffscreenCanvasConvertToBlob, RaisesException] Promise<Blob> convertToBlob(optional ImageEncodeOptions options = {});
 
+    // The default size of the element in canvas grid coordinates.
+    [RuntimeEnabled=CanvasDrawElement, RaisesException] ElementImageDefaultSize getElementImageDefaultSize((Element or ElementImage) element);
     [RuntimeEnabled=CanvasDrawElement, RaisesException] DOMMatrix getElementTransform((Element or ElementImage) element, DOMMatrix draw_transform);
     [RuntimeEnabled=CanvasDrawElement, RaisesException] void updateElementGeometry((Element or ElementImage) element, optional UpdateElementGeometryOptions options = {});
     [RuntimeEnabled=CanvasDrawElement] void clearElementGeometry((Element or ElementImage) element);

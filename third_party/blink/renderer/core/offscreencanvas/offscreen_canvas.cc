@@ -17,6 +17,7 @@
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element_geometry_update_event_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_element_image_default_size.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_element_elementimage.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_update_element_geometry_options.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
@@ -446,6 +447,44 @@ ScriptPromise<ImageBitmap> OffscreenCanvas::CreateImageBitmap(
           ? MakeGarbageCollected<ImageBitmap>(this, crop_rect, options)
           : nullptr,
       options, exception_state);
+}
+
+ElementImageDefaultSize* OffscreenCanvas::getElementImageDefaultSize(
+    const V8UnionElementOrElementImage* element_or_image,
+    ExceptionState& exception_state) const {
+  if (element_or_image->IsElement()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Elements cannot be drawn into an OffscreenCanvas.");
+    return nullptr;
+  }
+
+  if (element_or_image->IsElementImage()) {
+    const auto& paint_record =
+        element_or_image->GetAsElementImage()->PaintRecord();
+    if (!paint_record) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "The ElementImage has been closed.");
+      return nullptr;
+    }
+    if (paint_record->paint_state.canvas_node_id == kInvalidDOMNodeId ||
+        paint_record->paint_state.canvas_node_id != PlaceholderCanvasId()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "The ElementImage was captured from a different canvas.");
+      return nullptr;
+    }
+    gfx::Vector2dF scale =
+        GetCanvasGridScaleFactor(paint_record->paint_state, Size());
+    auto* default_size = ElementImageDefaultSize::Create();
+    default_size->setWidth(paint_record->paint_state.box_size.width() *
+                           scale.x());
+    default_size->setHeight(paint_record->paint_state.box_size.height() *
+                            scale.y());
+    return default_size;
+  }
+
+  return ElementImageDefaultSize::Create();
 }
 
 DOMMatrix* OffscreenCanvas::getElementTransform(

@@ -2657,8 +2657,6 @@ interface ElementGeometryUpdateEvent : Event
     method constructor
 interface ElementImage
     attribute @@toStringTag
-    getter height
-    getter width
     method close
     method constructor
 interface ElementInternals
@@ -3775,6 +3773,7 @@ interface HTMLCanvasElement : HTMLElement
     method configureHighDynamicRange
     method constructor
     method getContext
+    method getElementImageDefaultSize
     method getElementTransform
     method requestPaint
     method toBlob
@@ -6947,6 +6946,7 @@ interface OffscreenCanvas : EventTarget
     method constructor
     method convertToBlob
     method getContext
+    method getElementImageDefaultSize
     method getElementTransform
     method transferToImageBitmap
     method updateElementGeometry

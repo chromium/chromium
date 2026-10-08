@@ -222,6 +222,8 @@ generated_dictionary_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_element_definition_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_element_geometry_update_event_init.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_element_geometry_update_event_init.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_element_image_default_size.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_element_image_default_size.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_element_registration_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_element_registration_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_error_event_init.cc",

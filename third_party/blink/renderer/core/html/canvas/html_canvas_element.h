@@ -71,6 +71,7 @@ class DOMMatrix;
 class Element;
 class UpdateElementGeometryOptions;
 class ElementImage;
+class ElementImageDefaultSize;
 class GraphicsContext;
 class HTMLCanvasAccessibilityManager;
 class HTMLCanvasElement;
@@ -378,6 +379,10 @@ class CORE_EXPORT HTMLCanvasElement final
   void UpdatePreferred2DRasterMode();
 
   void ResetLayer();
+
+  ElementImageDefaultSize* getElementImageDefaultSize(
+      const V8UnionElementOrElementImage* element,
+      ExceptionState&) const;
 
   // If `element` is drawn into the canvas's coordinate system with
   // `draw_transform`, this returns the transform that can be applied to

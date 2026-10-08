@@ -7,57 +7,10 @@
 #include <memory>
 #include <utility>
 
-#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
-
 namespace blink {
-
-namespace {
-
-CanvasRenderingContextHost* GetHost(ScriptState* script_state, DOMNodeId id) {
-  ExecutionContext* context = ExecutionContext::From(script_state);
-  if (!context) {
-    return nullptr;
-  }
-  CanvasRenderingContextHost* host =
-      OffscreenCanvas::FromPlaceholderId(context, id);
-  if (!host && context->IsWindow()) {
-    host = DynamicTo<HTMLCanvasElement>(DOMNodeIds::NodeForId(id));
-  }
-  return host;
-}
-
-}  // namespace
 
 ElementImage::ElementImage(std::unique_ptr<CanvasDrawablePaintRecord> record)
     : record_(std::move(record)) {}
-
-double ElementImage::width(ScriptState* script_state) const {
-  if (!record_) {
-    return 0;
-  }
-  auto* host = GetHost(script_state, record_->paint_state.canvas_node_id);
-  if (!host) {
-    return 0;
-  }
-  gfx::Vector2dF canvas_grid_scale_factor =
-      GetCanvasGridScaleFactor(record_->paint_state, host->Size());
-  return record_->paint_state.box_size.width() * canvas_grid_scale_factor.x();
-}
-
-double ElementImage::height(ScriptState* script_state) const {
-  if (!record_) {
-    return 0;
-  }
-  auto* host = GetHost(script_state, record_->paint_state.canvas_node_id);
-  if (!host) {
-    return 0;
-  }
-  gfx::Vector2dF canvas_grid_scale_factor =
-      GetCanvasGridScaleFactor(record_->paint_state, host->Size());
-  return record_->paint_state.box_size.height() * canvas_grid_scale_factor.y();
-}
 
 void ElementImage::close() {
   record_.reset();

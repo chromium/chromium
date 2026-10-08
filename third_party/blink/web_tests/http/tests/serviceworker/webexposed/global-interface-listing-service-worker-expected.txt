@@ -524,8 +524,6 @@ interface DisposableStack
     method use
 interface ElementImage
     attribute @@toStringTag
-    getter height
-    getter width
     method close
     method constructor
 interface ErrorEvent : Event
@@ -1501,6 +1499,7 @@ interface OffscreenCanvas : EventTarget
     method constructor
     method convertToBlob
     method getContext
+    method getElementImageDefaultSize
     method getElementTransform
     method transferToImageBitmap
     method updateElementGeometry
