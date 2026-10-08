@@ -112,12 +112,10 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
   _prefService = self.browser->GetProfile()->GetPrefs();
 
   // Deregisters the Level Up promo right after it is shown;
-  // Otherwise, displays the Level Up promo.
-  if (_prefService->GetBoolean(prefs::kLevelUpOptIn)) {
+  if (!_prefService->GetBoolean(prefs::kLevelUpOptIn)) {
+    [self showLevelUpPromo];
     PromosManagerFactory::GetForProfile(self.browser->GetProfile())
         ->DeregisterPromo(promos_manager::Promo::LevelUp);
-  } else {
-    [self showLevelUpPromo];
     return;
   }
 
