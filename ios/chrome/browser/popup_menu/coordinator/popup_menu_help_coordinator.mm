@@ -1059,6 +1059,13 @@ enum class PopupMenuIPHSessionType {
 // screen.
 - (BOOL)isToolsMenuAtBottom {
   if (IsChromeNextIaEnabled()) {
+    // In split toolbar mode, on the NTP, the tools menu is at the top of the
+    // NTP, not in the toolbar.
+    if (IsSplitToolbarMode(self.baseViewController) &&
+        IsVisibleURLNewTabPage(
+            self.browser->GetWebStateList()->GetActiveWebState())) {
+      return NO;
+    }
     return IsCurrentLayoutBottomOmnibox(self.browser);
   }
   return IsSplitToolbarMode(self.baseViewController);

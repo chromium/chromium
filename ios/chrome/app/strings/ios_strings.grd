@@ -4920,7 +4920,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
         "Search with AI Mode" completed!
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_AUTOFILL" desc="Completion snackbar message for the Autofill task. [iOS only]">
-        "Save a password" completed!
+        New achievement unlocked! 🥳
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_DELETE_BROWSING_DATA" desc="Completion snackbar message for the Delete Browsing Data task. [iOS only]">
         "Delete browsing data" completed!
@@ -4932,13 +4932,13 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
         "Go Incognito" completed!
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_LENS_CAMERA_SEARCH" desc="Completion snackbar message for the Lens Camera Search task. [iOS only]">
-        "Use your camera to search with Google Lens" completed!
+        New achievement unlocked! 🥳
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_LENS_WEBSITE_SEARCH" desc="Completion snackbar message for the Lens Website Search task. [iOS only]">
         "Search your screen with Google Lens" completed!
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_PASSWORD_CHECKUP" desc="Completion snackbar message for the Password Checkup task. [iOS only]">
-        "Check your passwords" completed!
+        New achievement unlocked! 🥳
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_PAYMENT_METHODS" desc="Completion snackbar message for the Payment Methods task. [iOS only]">
         "Manage payment methods" completed!
@@ -4950,7 +4950,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
         "Go Incognito" completed!
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_TAB_GROUPS" desc="Completion snackbar message for the Tab Groups task. [iOS only]">
-        "Create a tab group" completed!
+        New achievement unlocked! 🥳
       </message>
       <message name="IDS_IOS_LEVEL_UP_TURN_OFF_CONFIRMATION_SUBTITLE" desc="Subtitle message in the confirmation alert dialog when turning off Level Up. [iOS only]">
         This will permanently delete your Level Up progress and feature usage data for Level Up will no longer be sent to Google for your profile.
