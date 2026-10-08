@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/public/test/navigation_test_util.h"
@@ -369,6 +370,47 @@ TEST_F(NavigationManagerImplTest, LoadURLWithHashChange) {
   ASSERT_TRUE(item);
   EXPECT_EQ(hash_url, item->GetURL());
   EXPECT_TRUE(item->IsCreatedFromHashChange());
+}
+
+// Tests that calling LoadURLWithParams with the current URL after a pushState
+// navigation to a URL with a fragment reloads the page and clears the hash
+// change flag on the NavigationItem.
+TEST_F(NavigationManagerImplTest,
+       ReloadWithLoadWithParamsAfterPushStateWithFragment) {
+  GURL initial_url = test_server_->GetURL("/echo");
+  ASSERT_TRUE(LoadUrl(initial_url));
+
+  // Push state to a URL with a fragment.
+  GURL hash_url = test_server_->GetURL("/echo#section2");
+  web::test::ExecuteJavaScript(@"history.pushState(null, '', '#section2');",
+                               web_state());
+
+  // Wait for the pushState navigation to commit.
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        return navigation_manager()->GetLastCommittedItem() &&
+               navigation_manager()->GetLastCommittedItem()->GetURL() ==
+                   hash_url;
+      }));
+
+  // Modify DOM text to verify that the subsequent reload replaces page content.
+  web::test::ExecuteJavaScript(@"document.body.innerText = 'Modified';",
+                               web_state());
+  ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "Modified"));
+
+  // Reload the current URL with LoadURLWithParams (as the omnibox does).
+  NavigationManager::WebLoadParams params(hash_url);
+  params.transition_type = ui::PAGE_TRANSITION_TYPED;
+  ASSERT_TRUE(LoadWithParams(params));
+
+  EXPECT_EQ(hash_url, navigation_manager()->GetLastCommittedItem()->GetURL());
+  NavigationItemImpl* item =
+      navigation_manager_impl().GetLastCommittedItemImpl();
+  ASSERT_TRUE(item);
+  EXPECT_FALSE(item->IsCreatedFromHashChange());
+
+  // Verify that the document reloaded from the server.
+  EXPECT_TRUE(test::WaitForWebViewContainingText(web_state(), "Echo"));
 }
 
 // Tests that LoadURLWithParams on a detached NavigationManager with empty

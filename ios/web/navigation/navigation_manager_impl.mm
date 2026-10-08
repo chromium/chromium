@@ -30,6 +30,7 @@
 #import "ios/web/navigation/back_forward_navigation_type.h"
 #import "ios/web/navigation/crw_navigation_item_holder.h"
 #import "ios/web/navigation/navigation_manager_delegate.h"
+#import "ios/web/navigation/wk_back_forward_list_item_holder.h"
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -49,6 +50,8 @@ void SetNavigationItemInWKItem(WKBackForwardListItem* wk_item,
   if (item) {
     item->SetWasCreatedAutomatically(
         web::provider::WasCreatedAutomatically(wk_item));
+    web::WKBackForwardListItemHolder::FromNavigationItem(item.get())
+        ->set_back_forward_list_item(wk_item);
   }
   [[CRWNavigationItemHolder holderForBackForwardListItem:wk_item]
       setNavigationItem:std::move(item)];
@@ -927,6 +930,14 @@ void NavigationManagerImpl::LoadURLWithParams(
   delegate_->ClearDialogs();
   delegate_->RecordPageStateInNavigationItem();
 
+  // Same-document navigations such as `history.pushState()` advance
+  // `WKBackForwardList` without calling `CommitPendingItem()`. Sync
+  // `last_committed_item_index_` before `AddPendingItem()` potentially sets
+  // `pending_item_index_`.
+  if (pending_item_index_ == -1 && !empty_window_open_item_) {
+    last_committed_item_index_ = web_view_cache_.GetCurrentItemIndex();
+  }
+
   NavigationInitiationType initiation_type =
       params.is_renderer_initiated
           ? NavigationInitiationType::RENDERER_INITIATED
@@ -935,18 +946,18 @@ void NavigationManagerImpl::LoadURLWithParams(
                  initiation_type, /*is_post_navigation=*/false,
                  /*is_error_navigation=*/false, params.https_upgrade_type);
 
-  // Mark pending item as created from hash change if necessary. This is needed
-  // because window.hashchange message may not arrive on time.
+  // Mark pending item as created from hash change if necessary, or reset the
+  // flag when reloading an existing item. This is needed because
+  // `window.hashchange` message may not arrive on time.
   NavigationItemImpl* pending_item = GetPendingItemImpl();
   if (pending_item) {
     NavigationItem* last_committed_item = GetLastCommittedItem();
     GURL last_committed_url =
         last_committed_item ? last_committed_item->GetVirtualURL() : GURL();
     GURL pending_url = pending_item->GetURL();
-    if (last_committed_url != pending_url &&
-        last_committed_url.EqualsIgnoringRef(pending_url)) {
-      pending_item->SetIsCreatedFromHashChange(true);
-    }
+    pending_item->SetIsCreatedFromHashChange(
+        last_committed_url != pending_url &&
+        last_committed_url.EqualsIgnoringRef(pending_url));
 
     if (params.virtual_url.is_valid()) {
       pending_item->SetVirtualURL(params.virtual_url);

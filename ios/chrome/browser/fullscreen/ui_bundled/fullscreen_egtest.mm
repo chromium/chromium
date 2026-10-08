@@ -918,6 +918,60 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
                   @"toolbar or safe area.");
 }
 
+// Verifies that after `history.pushState()` with a hash and reloading by
+// focusing the omnibox and pressing Enter, the page reloads and the scroll view
+// `contentOffset` keeps the viewport positioned below the top toolbar.
+- (void)testPushStateAndOmniboxReloadKeepsViewportBelowToolbar {
+  _responses["/pushstate"] =
+      "<!DOCTYPE html>"
+      "<html style='margin:0; height:100%; overflow:hidden;'>"
+      "<head><meta name='viewport' content='width=device-width, "
+      "initial-scale=1.0'></head>"
+      "<body style='margin:0; height:100%; overflow:hidden;'>"
+      "  <div id='top' style='height:40px; background:red;'>Top</div>"
+      "</body>"
+      "</html>";
+
+  GURL URL = self.testServer->GetURL("/pushstate");
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"Top"];
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
+
+  CGFloat expectedYOffset = 0;
+  BOOL usesContentInset = [ChromeEarlGrey isFullscreenSmoothScrollingSupported];
+  if (@available(iOS 26, *)) {
+    usesContentInset = usesContentInset ||
+                       [FullscreenAppInterface isFullscreenRefactoringEnabled];
+  }
+  if (usesContentInset) {
+    expectedYOffset = -[FullscreenAppInterface currentViewportInsets].top;
+    GREYAssertTrue(expectedYOffset < 0,
+                   @"Top viewport inset should be non-zero");
+  }
+
+  [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
+      assertWithMatcher:grey_scrollViewContentOffset(
+                            CGPointMake(0, expectedYOffset))];
+
+  [ChromeEarlGrey
+      evaluateJavaScriptForSideEffect:
+          @"document.getElementById('top').textContent = 'Pushed';"
+          @"history.pushState(null, '', location.pathname + '#pushed')"];
+  [ChromeEarlGrey waitForWebStateContainingText:"Pushed"];
+  [ChromeEarlGrey
+      waitForWebStateVisibleURL:self.testServer->GetURL("/pushstate#pushed")];
+
+  [ChromeEarlGreyUI focusOmnibox];
+  [ChromeEarlGreyUI pressEnter];
+  [ChromeEarlGrey waitForWebStateContainingText:"Top"];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
+
+  [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
+      assertWithMatcher:grey_scrollViewContentOffset(
+                            CGPointMake(0, expectedYOffset))];
+}
+
 @end
 
 #pragma mark - Smooth scrolling enabled Tests
