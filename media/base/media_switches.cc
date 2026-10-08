@@ -496,12 +496,6 @@ BASE_FEATURE(kContextMenuSaveVideoFrameAs, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables the "Search Video Frame with <Search Provider>" context menu item.
 BASE_FEATURE(kContextMenuSearchForVideoFrame, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Forces D3DVideoDecoder to use one decoder texture per picture buffer.
-// Owner: media-gpu-team@chromium.org
-// Expiry: When no longer needed for decode texture selection experiments.
-BASE_FEATURE(kD3D11VideoDecoderForceSingleTexture,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kD3D11VideoDecoderUseSharedHandle,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
