@@ -2638,6 +2638,43 @@ TEST_F(IntersectionObserverTest, DelayedIntersection) {
             frame_view->GetIntersectionObservationStateForTesting());
 }
 
+TEST_F(IntersectionObserverTest, DelayedIntersectionAfterFrameDetach) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(
+      "<div id=target style='position: absolute'>Hello world!</div>");
+  Compositor().BeginFrame();
+
+  auto* observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+  auto* observer = MakeGarbageCollected<IntersectionObserver>(
+      *observer_delegate, std::nullopt,
+      IntersectionObserver::Params{.thresholds = {0},
+                                   .delay = base::Seconds(1)});
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  ASSERT_TRUE(target);
+  observer->observe(target);
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  ASSERT_EQ(observer_delegate->CallCount(), 1);
+
+  target->SetInlineStyleProperty(CSSPropertyID::kTop, "2000px");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  // Keep the old view alive so GC cannot cancel its pending timer.
+  Persistent<LocalFrameView> frame_view = GetDocument().View();
+  ASSERT_TRUE(frame_view->HasScheduledDelayedIntersectionForTesting());
+  ASSERT_FALSE(frame_view->NeedsUpdateDelayedIntersectionForTesting());
+
+  WebViewHelper().Reset();
+  ASSERT_TRUE(frame_view->GetFrame().IsDetached());
+  EXPECT_FALSE(frame_view->HasScheduledDelayedIntersectionForTesting());
+
+  task_environment().FastForwardBy(base::Seconds(1));
+  EXPECT_FALSE(frame_view->NeedsUpdateDelayedIntersectionForTesting());
+}
+
 TEST_F(IntersectionObserverTest, DelayedAndNonDelayedIntersections) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_resource("https://example.com/", "text/html");

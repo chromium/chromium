@@ -531,6 +531,9 @@ void LocalFrameView::Dispose() {
     update_plugins_timer_.Stop();
   part_update_set_.clear();
 
+  // The frame may be detached before a pending intersection update fires.
+  delayed_intersection_timer_.Stop();
+
   // These are LayoutObjects whose layout has been deferred to a subsequent
   // lifecycle update. Not gonna happen.
   layout_subtree_root_list_.Clear();
