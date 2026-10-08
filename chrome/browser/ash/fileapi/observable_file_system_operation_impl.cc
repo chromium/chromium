@@ -6,8 +6,7 @@
 
 #include "chrome/browser/ash/fileapi/file_change_service.h"
 #include "chrome/browser/ash/fileapi/file_change_service_factory.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/file_system/copy_or_move_hook_delegate.h"
@@ -23,9 +22,11 @@ using WriteCallback = storage::FileSystemOperation::WriteCallback;
 
 // Returns the `FileChangeService` associated with the given `account_id`.
 FileChangeService* GetFileChangeService(const AccountId& account_id) {
-  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
-  return profile ? FileChangeServiceFactory::GetInstance()->GetService(profile)
-                 : nullptr;
+  auto* browser_context =
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id);
+  return browser_context ? FileChangeServiceFactory::GetInstance()->GetService(
+                               browser_context)
+                         : nullptr;
 }
 
 // Notifies the `FileChangeService` associated with the given `account_id` of a

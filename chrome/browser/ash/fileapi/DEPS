@@ -20,7 +20,6 @@ include_rules = [
   "+chrome/browser/ash/file_system_provider",
   "+chrome/browser/ash/fusebox",
   "+chrome/browser/ash/login/users",
-  "+chrome/browser/ash/profiles",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/extensions/extension_util.h",
   "+chrome/browser/media_galleries/fileapi",

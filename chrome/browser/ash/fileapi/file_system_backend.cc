@@ -23,8 +23,9 @@
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/fileapi/file_system_backend_delegate.h"
 #include "chrome/browser/ash/fileapi/observable_file_system_operation_impl.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "components/user_manager/user.h"
@@ -49,7 +50,8 @@ namespace {
 // Returns the `AccountId` associated with the specified `profile`.
 AccountId GetAccountId(Profile* profile) {
   user_manager::User* user =
-      profile ? ProfileHelper::Get()->GetUserByProfile(profile) : nullptr;
+      profile ? BrowserContextHelper::Get()->GetUserByBrowserContext(profile)
+              : nullptr;
   return user ? user->GetAccountId() : AccountId();
 }
 
