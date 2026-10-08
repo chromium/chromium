@@ -156,11 +156,8 @@ WebRtcTextLogHandler::WebRtcTextLogHandler(int render_process_id)
 WebRtcTextLogHandler::~WebRtcTextLogHandler() {
   // If the log isn't closed that means we haven't decremented the log count
   // in the LogUploader.
-  CHECK(logging_state_ == CLOSED || channel_is_closing_,
-        base::NotFatalUntil::M161);
-  // TODO(crbug.com/570643471): CHECK-exclusion: Convert to a CHECK once we are
-  // confident it won't be triggered.
-  DCHECK(!log_buffer_);
+  CHECK_EQ(logging_state_, CLOSED, base::NotFatalUntil::M161);
+  CHECK(!log_buffer_, base::NotFatalUntil::M161);
 }
 
 WebRtcTextLogHandler::LoggingState WebRtcTextLogHandler::GetState() const {

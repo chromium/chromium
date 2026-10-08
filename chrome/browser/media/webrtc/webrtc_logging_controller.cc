@@ -479,6 +479,13 @@ WebRtcLoggingController::WebRtcLoggingController(
           std::make_unique<WebRtcTextLogHandler>(render_process_id)) {}
 
 WebRtcLoggingController::~WebRtcLoggingController() {
+  if (text_log_handler_->GetChannelIsClosing() &&
+      text_log_handler_->GetState() != WebRtcTextLogHandler::CLOSED) {
+    if (WebRtcLogUploader* log_uploader = WebRtcLogUploader::GetInstance()) {
+      log_uploader->LoggingStoppedDontUpload();
+    }
+    text_log_handler_->DiscardLog();
+  }
   // If we hit this, then we might be leaking a log reference count (see
   // ApplyForStartLogging).
   DCHECK_EQ(WebRtcTextLogHandler::CLOSED, text_log_handler_->GetState());

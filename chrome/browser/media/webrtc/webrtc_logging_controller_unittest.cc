@@ -12,7 +12,9 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/media/webrtc_logging.mojom.h"
@@ -68,6 +70,11 @@ class FakeWebRtcLoggingAgent : public chrome::mojom::WebRtcLoggingAgent {
     receivers_.Add(this,
                    mojo::PendingReceiver<chrome::mojom::WebRtcLoggingAgent>(
                        std::move(pipe)));
+  }
+
+  void Disconnect() {
+    receivers_.Clear();
+    client_.reset();
   }
 
  private:
@@ -399,6 +406,27 @@ TEST_F(WebRtcLoggingControllerTest, StartEventLogging_KWeb_NotAuthorized) {
                                                 "session_id", 1024, 1000, 123,
                                                 event_log_future.GetCallback());
   EXPECT_FALSE(event_log_future.Get<0>());
+}
+
+TEST_F(WebRtcLoggingControllerTest, DestroyWhileUploadOnRenderClosePending) {
+  LoadMainTestProfile(true);
+
+  base::test::TestFuture<bool, const std::string&> start_future;
+  webrtc_logging_controller_->StartLogging(start_future.GetCallback());
+  ASSERT_TRUE(start_future.Get<0>()) << start_future.Get<1>();
+  webrtc_logging_controller_->set_upload_log_on_render_close(true);
+
+  // Disconnect the renderer agent and run only the UI thread task that handles
+  // OnAgentDisconnected(), leaving the background PostTaskAndReplyWithResult
+  // pending when the test environment tears down.
+  fake_agent_.Disconnect();
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  webrtc_logging_controller_ = nullptr;
+  rph_.reset();
 }
 
 }  // namespace webrtc_text_log
