@@ -163,11 +163,12 @@ enum class FilePickerFilterChange {
   }
 }
 
-- (void)reportDriveSignInResult:(SigninCoordinatorResult)result {
-  if (result == SigninCoordinatorResultSuccess) {
+- (void)reportDriveSignInResult:
+    (const SigninCoordinatorResultOrIdentity&)result {
+  if (result.has_value()) {
     base::UmaHistogramEnumeration("IOS.FilePicker.Drive.SignIn.Result",
                                   FilePickerDriveSignInResult::kSignInSuccess);
-  } else if (result == SigninCoordinatorResultCanceledByUser) {
+  } else if (result.error() == SigninCoordinatorResultCanceledByUser) {
     base::UmaHistogramEnumeration("IOS.FilePicker.Drive.SignIn.Result",
                                   FilePickerDriveSignInResult::kSignInCanceled);
   } else {

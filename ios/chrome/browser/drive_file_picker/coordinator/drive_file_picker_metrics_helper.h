@@ -7,12 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_options.h"
 
 struct ChooseFileEvent;
-
-typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 
 // The different state of search.
 enum class DriveFilePickerSearchState {
@@ -75,7 +74,8 @@ enum class DriveFilePickerSearchState {
              hasAccountOnDevice:(BOOL)hasAccountOnDevice;
 
 // Reports the sign-in result after the sign-in flow completes.
-- (void)reportDriveSignInResult:(SigninCoordinatorResult)result;
+- (void)reportDriveSignInResult:
+    (const SigninCoordinatorResultOrIdentity&)result;
 
 @end
 

@@ -438,9 +438,11 @@ void ConfirmChangeProfileWithCompletion(
   _addAccountCoordinator = nil;
 }
 
-- (void)addAccountCompletionWithCoordinator:(SigninCoordinator*)coordinator
-                                     result:(SigninCoordinatorResultOrIdentity)
-                                                result {
+- (void)
+    addAccountCompletionWithCoordinator:(SigninCoordinator*)coordinator
+                                 result:
+                                     (const SigninCoordinatorResultOrIdentity&)
+                                         result {
   CHECK_EQ(_addAccountCoordinator, coordinator);
   if (result.has_value()) {
     CHECK(result.value());
@@ -504,13 +506,10 @@ void ConfirmChangeProfileWithCompletion(
   [_signinCoordinator start];
 }
 
-- (void)handleSignInResult:(SigninCoordinatorResultOrIdentity)result {
+- (void)handleSignInResult:(const SigninCoordinatorResultOrIdentity&)result {
   [_signinCoordinator stop];
   _signinCoordinator = nil;
-  [_metricsHelper
-      reportDriveSignInResult:
-          signin::SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
-              result)];
+  [_metricsHelper reportDriveSignInResult:result];
   if (result.has_value()) {
     [self startRootFilePicker];
     return;
