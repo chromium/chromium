@@ -22,7 +22,7 @@ namespace component_updater {
 namespace {
 
 using InstalledAsset =
-    optimization_guide::ManifestAssetManager::Delegate::InstalledAsset;
+    optimization_guide::ManifestAssetManagerDelegate::InstalledAsset;
 
 TEST(OptimizationGuideOnDeviceModelInstallerTest, GetInstalledAssets) {
   content::BrowserTaskEnvironment task_environment;

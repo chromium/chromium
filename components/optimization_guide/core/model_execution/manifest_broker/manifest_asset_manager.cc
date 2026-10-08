@@ -19,7 +19,6 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notimplemented.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
@@ -29,7 +28,6 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "build/branding_buildflags.h"
-#include "components/crx_file/id_util.h"
 #include "components/optimization_guide/core/model_execution/component_download_observer.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
@@ -372,7 +370,7 @@ bool AssetPriorities::IsAtLeast(AssetPriority priority,
 ManifestAssetManager::ManifestAssetManager(
     PrefService& local_state,
     UsageTracker& usage_tracker,
-    Delegate& delegate,
+    ManifestAssetManagerDelegate& delegate,
     component_updater::ComponentUpdateService* component_update_service,
     std::unique_ptr<ManifestSolutionFactory> factory)
     : local_state_(local_state),
@@ -419,11 +417,7 @@ std::optional<std::string> ManifestAssetManager::GetCrxIdForAsset(
     return std::nullopt;
   }
 
-  std::vector<uint8_t> public_key_hash;
-  if (!base::HexStringToBytes(it->second.public_key(), &public_key_hash)) {
-    return std::nullopt;
-  }
-  return crx_file::id_util::GenerateIdFromHash(public_key_hash);
+  return GetCrxIdFromPublicKeyHex(it->second.public_key());
 }
 
 void ManifestAssetManager::AddDownloadProgressObserver(
@@ -516,13 +510,6 @@ void ManifestAssetManager::RefreshSolutions() {
   }
 }
 
-// static
-bool ManifestAssetManager::VerifyInstallation(const base::FilePath& install_dir,
-                                              const base::DictValue& manifest) {
-  // TODO(crbug.com/489511499): implement proper verification logic.
-  return base::PathExists(install_dir);
-}
-
 void ManifestAssetManager::OnPriorityIncrease(
     const std::string& use_case_name,
     UsageTracker::Priority previous_priority) {
@@ -564,7 +551,8 @@ void ManifestAssetManager::ScanForOrphanedAssets() {
 }
 
 void ManifestAssetManager::OnOrphanedAssetsFound(
-    std::vector<Delegate::InstalledAsset> installed_assets) {
+    std::vector<ManifestAssetManagerDelegate::InstalledAsset>
+        installed_assets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<std::string> keys_to_save;
   for (const auto& asset : installed_assets) {
@@ -913,11 +901,10 @@ std::vector<mojom::BrokerAssetInfoPtr> ManifestAssetManager::GetBrokerAssets()
 
     // Fetch initial download progress if available.
     if (component_update_service_) {
-      std::vector<uint8_t> hash;
-      if (base::HexStringToBytes(public_key, &hash)) {
-        std::string crx_id = crx_file::id_util::GenerateIdFromHash(hash);
+      if (std::optional<std::string> crx_id =
+              GetCrxIdFromPublicKeyHex(public_key)) {
         if (auto progress =
-                GetDownloadProgress(component_update_service_, crx_id)) {
+                GetDownloadProgress(component_update_service_, *crx_id)) {
           asset_info->bytes_downloaded = progress->first;
           asset_info->bytes_total = progress->second;
         }

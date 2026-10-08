@@ -42,7 +42,8 @@
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
-#include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/manifest.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager_delegate.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
@@ -131,11 +132,8 @@ bool GetPublicKeyHashFromHex(const std::string& public_key_hex,
 }
 
 std::string GenerateIdFromPublicKeyHex(const std::string& public_key_hex) {
-  std::vector<uint8_t> public_key_hash;
-  if (!GetPublicKeyHashFromHex(public_key_hex, &public_key_hash)) {
-    return std::string();
-  }
-  return crx_file::id_util::GenerateIdFromHash(public_key_hash);
+  return optimization_guide::GetCrxIdFromPublicKeyHex(public_key_hex)
+      .value_or(std::string());
 }
 
 base::FilePath GetComponentInstallDirectory() {
@@ -175,10 +173,9 @@ std::optional<base::Version> InferInstalledComponentVersion(
   return inferred_version;
 }
 
-std::vector<optimization_guide::ManifestAssetManager::Delegate::InstalledAsset>
+std::vector<optimization_guide::ManifestAssetManagerDelegate::InstalledAsset>
 FindInstalledAssetsOnDisk(const base::FilePath& component_install_dir) {
-  std::vector<
-      optimization_guide::ManifestAssetManager::Delegate::InstalledAsset>
+  std::vector<optimization_guide::ManifestAssetManagerDelegate::InstalledAsset>
       installed_assets;
   if (component_install_dir.empty()) {
     return installed_assets;
@@ -254,7 +251,9 @@ class ManifestAssetInstallerPolicy final : public ComponentInstallerPolicy {
       std::string public_key_hex,
       std::string target_version,
       std::string component_name,
-      base::WeakPtr<optimization_guide::ManifestAssetManager> asset_manager)
+      base::WeakPtr<
+          optimization_guide::ManifestAssetManagerDelegate::AssetManager>
+          asset_manager)
       : public_key_hex_(std::move(public_key_hex)),
         target_version_(std::move(target_version)),
         component_name_(std::move(component_name)),
@@ -303,16 +302,16 @@ class ManifestAssetInstallerPolicy final : public ComponentInstallerPolicy {
 
   bool VerifyInstallation(const base::DictValue& manifest,
                           const base::FilePath& install_dir) const override {
-    return optimization_guide::ManifestAssetManager::VerifyInstallation(
+    return optimization_guide::ManifestAssetManagerDelegate::VerifyInstallation(
         install_dir, manifest);
   }
 
   void OnCustomUninstall() override {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &optimization_guide::ManifestAssetManager::OnAssetUninstalled,
-            asset_manager_, public_key_hex_));
+        base::BindOnce(&optimization_guide::ManifestAssetManagerDelegate::
+                           AssetManager::OnAssetUninstalled,
+                       asset_manager_, public_key_hex_));
   }
 
   base::FilePath GetRelativeInstallDir() const override {
@@ -350,7 +349,8 @@ class ManifestAssetInstallerPolicy final : public ComponentInstallerPolicy {
   const std::string target_version_;
   const std::string component_name_;
   // The manifest asset manager should be accessed in the UI thread.
-  base::WeakPtr<optimization_guide::ManifestAssetManager> asset_manager_;
+  base::WeakPtr<optimization_guide::ManifestAssetManagerDelegate::AssetManager>
+      asset_manager_;
 };
 
 // Installer policy for the component that contains the model manifest config.
@@ -429,7 +429,7 @@ class ManifestConfigInstallerPolicy final : public ComponentInstallerPolicy {
 };
 
 class ManifestAssetManagerDelegateImpl final
-    : public optimization_guide::ManifestAssetManager::Delegate {
+    : public optimization_guide::ManifestAssetManagerDelegate {
  public:
   base::CallbackListSubscription ListenForManifestReady(
       base::RepeatingCallback<void(base::FilePath)> on_ready) override {
@@ -459,12 +459,10 @@ class ManifestAssetManagerDelegateImpl final
         std::move(callback));
   }
 
-  void RegisterOnDemandComponent(
-      const std::string& public_key_hex,
-      const std::string& target_version,
-      const std::string& component_name,
-      base::WeakPtr<optimization_guide::ManifestAssetManager> manager)
-      override {
+  void RegisterOnDemandComponent(const std::string& public_key_hex,
+                                 const std::string& target_version,
+                                 const std::string& component_name,
+                                 base::WeakPtr<AssetManager> manager) override {
     CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
     if (!g_browser_process) {
       return;
@@ -477,8 +475,8 @@ class ManifestAssetManagerDelegateImpl final
             public_key_hex, target_version, component_name, manager));
 
     auto register_callback = base::BindOnce(
-        [](base::WeakPtr<optimization_guide::ManifestAssetManager> manager,
-           ComponentUpdateService* cus, const std::string& public_key_hex,
+        [](base::WeakPtr<AssetManager> manager, ComponentUpdateService* cus,
+           const std::string& public_key_hex,
            const std::string& target_version) {
           if (manager) {
             manager->InstallerRegistered(
@@ -494,8 +492,7 @@ class ManifestAssetManagerDelegateImpl final
   }
 
   void Uninstall(const std::string& public_key_hex,
-                 base::WeakPtr<optimization_guide::ManifestAssetManager>
-                     manager) override {
+                 base::WeakPtr<AssetManager> manager) override {
     CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
     std::string crx_id = GenerateIdFromPublicKeyHex(public_key_hex);
@@ -571,7 +568,7 @@ class ManifestAssetManagerDelegateImpl final
 
 }  // namespace
 
-std::unique_ptr<optimization_guide::ManifestAssetManager::Delegate>
+std::unique_ptr<optimization_guide::ManifestAssetManagerDelegate>
 CreateManifestAssetManagerDelegate() {
   return std::make_unique<ManifestAssetManagerDelegateImpl>();
 }

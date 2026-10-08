@@ -31,7 +31,7 @@ class ManifestBrokerState final : public OnDeviceCapability,
  public:
   ManifestBrokerState(
       PrefService& local_state,
-      std::unique_ptr<ManifestAssetManager::Delegate> delegate,
+      std::unique_ptr<ManifestAssetManagerDelegate> delegate,
       on_device_model::ServiceClient::LaunchFn launch_fn,
       component_updater::ComponentUpdateService* component_update_service);
   ~ManifestBrokerState() override;
@@ -108,7 +108,7 @@ class ManifestBrokerState final : public OnDeviceCapability,
   void NotifyObserversOfBrokerStateChange();
 
   raw_ref<PrefService> local_state_;
-  std::unique_ptr<ManifestAssetManager::Delegate> delegate_;
+  std::unique_ptr<ManifestAssetManagerDelegate> delegate_;
   on_device_model::ServiceClient service_client_;
   const raw_ptr<component_updater::ComponentUpdateService>
       component_update_service_;

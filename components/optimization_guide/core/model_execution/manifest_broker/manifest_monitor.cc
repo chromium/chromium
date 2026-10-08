@@ -74,7 +74,7 @@ bool IsAllowedByUserSetting(const PrefService& local_state) {
 
 ManifestMonitor::ManifestMonitor(PrefService& local_state,
                                  PerformanceClassifier& performance_classifier,
-                                 Delegate& delegate)
+                                 ManifestMonitorDelegate& delegate)
     : performance_classifier_(performance_classifier),
       local_state_(local_state),
       load_task_runner_(CreateLoadTaskRunner()) {

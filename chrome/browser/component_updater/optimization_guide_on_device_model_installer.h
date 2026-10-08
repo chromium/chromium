@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager_delegate.h"
 
 namespace optimization_guide {
 
@@ -21,7 +21,7 @@ inline constexpr char kGetFreeDiskSpaceWithUserVisiblePriorityTaskSwitch[] =
 namespace component_updater {
 
 // Creates a generic delegate for Manifest Component.
-std::unique_ptr<optimization_guide::ManifestAssetManager::Delegate>
+std::unique_ptr<optimization_guide::ManifestAssetManagerDelegate>
 CreateManifestAssetManagerDelegate();
 
 }  // namespace component_updater

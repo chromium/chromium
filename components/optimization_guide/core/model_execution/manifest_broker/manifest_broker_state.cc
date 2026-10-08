@@ -54,7 +54,7 @@ base::flat_map<mojom::OnDeviceFeature, proto::Any> GetFeatureConfigs(
 
 ManifestBrokerState::ManifestBrokerState(
     PrefService& local_state,
-    std::unique_ptr<ManifestAssetManager::Delegate> delegate,
+    std::unique_ptr<ManifestAssetManagerDelegate> delegate,
     on_device_model::ServiceClient::LaunchFn launch_fn,
     component_updater::ComponentUpdateService* component_update_service)
     : local_state_(local_state),

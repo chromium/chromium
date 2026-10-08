@@ -8,7 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/version.h"
-#include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager_delegate.h"
 
 namespace optimization_guide {
 
@@ -31,7 +31,7 @@ inline constexpr char kOptimizationGuideManifestOverrideSwitch[] =
 //   }
 // }
 class OverrideManifestAssetManagerDelegate final
-    : public ManifestAssetManager::Delegate {
+    : public ManifestAssetManagerDelegate {
  public:
   explicit OverrideManifestAssetManagerDelegate(
       const base::FilePath& override_path);
@@ -43,14 +43,13 @@ class OverrideManifestAssetManagerDelegate final
   void GetFreeDiskSpace(base::OnceCallback<void(std::optional<base::ByteSize>)>
                             callback) const override;
 
-  void RegisterOnDemandComponent(
-      const std::string& public_key_hex,
-      const std::string& target_version,
-      const std::string& component_name,
-      base::WeakPtr<ManifestAssetManager> manager) override;
+  void RegisterOnDemandComponent(const std::string& public_key_hex,
+                                 const std::string& target_version,
+                                 const std::string& component_name,
+                                 base::WeakPtr<AssetManager> manager) override;
 
   void Uninstall(const std::string& public_key_hex,
-                 base::WeakPtr<ManifestAssetManager> manager) override;
+                 base::WeakPtr<AssetManager> manager) override;
 
   void RequestUpdate(const std::string& public_key_hex,
                      bool is_background) override;

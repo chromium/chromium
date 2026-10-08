@@ -17,7 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/run_until.h"
 #include "base/version.h"
-#include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager_delegate.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/manifest_component_directory.h"
 #include "components/optimization_guide/core/model_execution/test/fake_component_update_service.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
@@ -83,7 +83,7 @@ class TestManifestAssetManagerComponentState final {
     // The last target that was registered.
     InstallTarget target;
     // The manager to send callbacks to.
-    base::WeakPtr<ManifestAssetManager> manager;
+    base::WeakPtr<ManifestAssetManagerDelegate::AssetManager> manager;
     // Whether the manager is expecting OnInstallerRegistered to be called.
     bool pending_registration = false;
     // Whether the manager is expecting OnAssetUninstalled to be called.
@@ -102,7 +102,7 @@ class TestManifestAssetManagerComponentState final {
   ~TestManifestAssetManagerComponentState();
 
   // Constructs the delegate for the ManifestBrokerState to use.
-  std::unique_ptr<ManifestAssetManager::Delegate> CreateDelegate();
+  std::unique_ptr<ManifestAssetManagerDelegate> CreateDelegate();
 
   /////////////////////////////
   // Behavior configuration  //
@@ -223,7 +223,7 @@ class TestManifestAssetManagerComponentState final {
   absl::flat_hash_map<std::string, Registration> registrations_;
   // The manager most recently seen by the delegate. Used to deliver
   // notifications for keys the manager never registered.
-  base::WeakPtr<ManifestAssetManager> manager_;
+  base::WeakPtr<ManifestAssetManagerDelegate::AssetManager> manager_;
 
   // All registrations for the Manifest component.
   base::RepeatingCallbackList<void(base::FilePath)> manifest_ready_callbacks_;

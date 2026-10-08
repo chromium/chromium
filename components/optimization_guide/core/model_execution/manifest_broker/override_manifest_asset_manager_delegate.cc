@@ -69,28 +69,27 @@ void OverrideManifestAssetManagerDelegate::RegisterOnDemandComponent(
     const std::string& public_key_hex,
     const std::string& target_version,
     const std::string& component_name,
-    base::WeakPtr<ManifestAssetManager> manager) {
+    base::WeakPtr<AssetManager> manager) {
   std::string key = public_key_hex + ":" + target_version;
   auto it = component_overrides_.find(key);
   if (it != component_overrides_.end()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&ManifestAssetManager::OnAssetReady, manager,
-                                  public_key_hex, base::Version(target_version),
-                                  it->second));
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(&ManifestAssetManager::InstallerRegistered, manager,
-                       public_key_hex, target_version, true));
+        base::BindOnce(&AssetManager::OnAssetReady, manager, public_key_hex,
+                       base::Version(target_version), it->second));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&AssetManager::InstallerRegistered, manager,
+                                  public_key_hex, target_version, true));
   }
 }
 
 void OverrideManifestAssetManagerDelegate::Uninstall(
     const std::string& public_key_hex,
-    base::WeakPtr<ManifestAssetManager> manager) {
+    base::WeakPtr<AssetManager> manager) {
   if (manager) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&ManifestAssetManager::OnAssetUninstalled,
-                                  manager, public_key_hex));
+        FROM_HERE, base::BindOnce(&AssetManager::OnAssetUninstalled, manager,
+                                  public_key_hex));
   }
 }
 

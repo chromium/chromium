@@ -46,7 +46,7 @@ sequenceDiagram
 The desktop implementation uses a manifest-based broker architecture
 (`ManifestBroker`). It uses the `on_device_model` service utility process (see
 `//services/on_device_model`) as its Service (via `ServiceClient`) and gets
-Assets from the Chrome Component Updater via `ManifestAssetManager::Delegate`.
+Assets from the Chrome Component Updater via `ManifestAssetManagerDelegate`.
 
 In this architecture, available models, adaptations, safety models, and solution
 configurations are specified in a centralized Manifest proto
@@ -71,7 +71,7 @@ parts:
 *   **`OnDeviceModelAccessController`**: Tracks safety/performance/crash state
     and access permissions (e.g. GPU blocking or model crash limits).
 *   **`ManifestAssetManager`**: Coordinates with the Component Updater via
-    `ManifestAssetManager::Delegate` to register, download, update, and
+    `ManifestAssetManagerDelegate` to register, download, update, and
     uninstall on-demand model and adaptation assets based on active use cases
     and disk space constraints. Also manages download progress.
 *   **`ManifestSolutionFactory`**: Instantiated when a new manifest is loaded.

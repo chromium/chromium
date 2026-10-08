@@ -79,7 +79,7 @@ void LaunchService(
           .Pass());
 }
 
-std::unique_ptr<ManifestAssetManager::Delegate> CreateManifestDelegate() {
+std::unique_ptr<ManifestAssetManagerDelegate> CreateManifestDelegate() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(kOptimizationGuideManifestOverrideSwitch)) {
     base::FilePath override_path = command_line->GetSwitchValuePath(

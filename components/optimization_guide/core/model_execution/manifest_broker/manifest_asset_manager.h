@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
@@ -24,16 +25,15 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/component_updater_service.h"
-#include "components/crx_file/id_util.h"
 #include "components/optimization_guide/core/model_execution/component_download_observer.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager_delegate.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_monitor.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_solution_factory.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_download_progress_manager.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
-#include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
 
@@ -82,52 +82,15 @@ class AssetPriorities {
 };
 
 // Manages the state of assets defined in the on-device model manifest.
-class ManifestAssetManager : public UsageTracker::Observer {
+class ManifestAssetManager : public UsageTracker::Observer,
+                             public ManifestAssetManagerDelegate::AssetManager {
  public:
-  // Delegate to bridge the gap to the platform-specific download mechanism
-  // (e.g., Chrome Component Updater on Desktop, AICore on Android).
-  class Delegate : public ManifestMonitor::Delegate {
-   public:
-    virtual ~Delegate() = default;
-
-    // Registers the component installer for `public_key`. The policy should
-    // hold a weak pointer to the manager and call its `OnAssetReady` and
-    // `OnAssetUninstalled` methods when appropriate.
-    virtual void RegisterOnDemandComponent(
-        const std::string& public_key_hex,
-        const std::string& target_version,
-        const std::string& component_name,
-        base::WeakPtr<ManifestAssetManager> manager) = 0;
-
-    // Uninstalls a component and frees disk space.
-    virtual void Uninstall(const std::string& public_key_hex,
-                           base::WeakPtr<ManifestAssetManager> manager) = 0;
-
-    // Triggers an immediate update check for a component.
-    virtual void RequestUpdate(const std::string& public_key_hex,
-                               bool is_background) = 0;
-
-    struct InstalledAsset {
-      std::string public_key_hex;
-      // The inferred version of the asset, or `std::nullopt` if the asset
-      // directory exists on disk but has no usable version.
-      std::optional<base::Version> version;
-
-      bool operator==(const InstalledAsset&) const = default;
-    };
-
-    // Lists all manifest-controlled assets currently installed on disk.
-    virtual void GetInstalledAssets(
-        base::OnceCallback<void(std::vector<InstalledAsset>)> callback)
-        const = 0;
-  };
-
   // Constructs a ManifestAssetManager, and begins provide assets to the given
   // `factory`.
   explicit ManifestAssetManager(
       PrefService& local_state,
       UsageTracker& usage_tracker,
-      Delegate& delegate,
+      ManifestAssetManagerDelegate& delegate,
       component_updater::ComponentUpdateService* component_update_service,
       std::unique_ptr<ManifestSolutionFactory> factory);
   ~ManifestAssetManager() override;
@@ -165,26 +128,14 @@ class ManifestAssetManager : public UsageTracker::Observer {
   std::vector<std::pair<mojom::BrokerModelInfoPtr, base::FilePath>>
   GetBrokerModels() const;
 
-  // Returns whether the component installation is valid.
-  static bool VerifyInstallation(const base::FilePath& install_dir,
-                                 const base::DictValue& manifest);
-
-  // Called when a component has been successfully installed or updated.
+  // ManifestAssetManagerDelegate::AssetManager:
   void OnAssetReady(const std::string& public_key,
                     const base::Version& version,
-                    const base::FilePath& install_dir);
-
-  // Called when a component has been completely uninstalled.
-  void OnAssetUninstalled(const std::string& public_key);
-
-  // Called when the component installer has finished registering the asset.
+                    const base::FilePath& install_dir) override;
+  void OnAssetUninstalled(const std::string& public_key) override;
   void InstallerRegistered(const std::string& public_key,
                            const std::string& version,
-                           bool is_already_installed);
-
-  // Helper to resolve an asset name to its CRX ID.
-  std::optional<std::string> GetCrxIdForAsset(
-      const std::string& asset_name) const;
+                           bool is_already_installed) override;
 
   // Recomputes the priorities of assets required by use cases.
   void RecomputeAssetPriorities();
@@ -306,7 +257,12 @@ class ManifestAssetManager : public UsageTracker::Observer {
   // Scans disk for installed assets not tracked in the ledger.
   void ScanForOrphanedAssets();
   void OnOrphanedAssetsFound(
-      std::vector<Delegate::InstalledAsset> installed_assets);
+      std::vector<ManifestAssetManagerDelegate::InstalledAsset>
+          installed_assets);
+
+  // Helper to resolve an asset name to its CRX ID.
+  std::optional<std::string> GetCrxIdForAsset(
+      const std::string& asset_name) const;
 
   // Get disk space, and call `UpdateRegistration` when done.
   void OnDiskSpaceEvaluated(std::optional<base::ByteSize> free_space);
@@ -343,7 +299,7 @@ class ManifestAssetManager : public UsageTracker::Observer {
 
   const raw_ref<PrefService> local_state_;
   const raw_ref<UsageTracker> usage_tracker_;
-  const raw_ref<Delegate> delegate_;
+  const raw_ref<ManifestAssetManagerDelegate> delegate_;
   raw_ptr<component_updater::ComponentUpdateService> component_update_service_;
 
   // Tracks the state of all components known to the manager. Keyed by the
