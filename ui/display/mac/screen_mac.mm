@@ -143,7 +143,7 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
         if (auto color_profile = skia::ColorProfile::Make(
                 base::apple::CFDataToSpan(cf_icc_profile.get()))) {
           display_color_space =
-              gfx::ColorSpace(color_profile->GetSkColorSpace().get());
+              gfx::ColorSpace(color_profile->GetDisplaySkColorSpace().get());
         }
       }
     }

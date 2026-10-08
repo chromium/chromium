@@ -4,6 +4,9 @@
 
 #include "skia/ext/color_profile.h"
 
+#include <array>
+#include <cmath>
+
 #include "base/check.h"
 #include "base/notreached.h"
 #include "skia/ext/cicp.h"
@@ -84,6 +87,33 @@ void ColorProfile::ComputeSkColorSpace() {
   is_sk_color_space_exact_ = false;
 }
 
+void ColorProfile::ComputeDisplaySkColorSpace() {
+  display_sk_color_space_ = sk_color_space_;
+  is_display_sk_color_space_exact_ = is_sk_color_space_exact_;
+  if (!profile_.has_toXYZD50) {
+    return;
+  }
+
+  // Reject profiles whose white point (the row sums of the toXYZD50 matrix) is
+  // not D50. https://crbug.com/847024, https://crbug.com/565342193
+  constexpr std::array<float, 3> kD50WhitePoint = {0.96420f, 1.00000f,
+                                                   0.82491f};
+  constexpr float kWhitePointTolerance = 0.04f;
+  const skcms_Matrix3x3& m = profile_.toXYZD50;
+  const std::array<float, 3> white_point = {
+      m.vals[0][0] + m.vals[0][1] + m.vals[0][2],
+      m.vals[1][0] + m.vals[1][1] + m.vals[1][2],
+      m.vals[2][0] + m.vals[2][1] + m.vals[2][2],
+  };
+  for (size_t i = 0; i < 3; ++i) {
+    if (std::fabs(white_point[i] - kD50WhitePoint[i]) > kWhitePointTolerance) {
+      display_sk_color_space_ = SkColorSpace::MakeSRGB();
+      is_display_sk_color_space_exact_ = false;
+      return;
+    }
+  }
+}
+
 ColorProfile::ColorProfile() = default;
 ColorProfile::~ColorProfile() = default;
 
@@ -95,6 +125,8 @@ sk_sp<ColorProfile> ColorProfile::Make(sk_sp<SkColorSpace> sk_color_space) {
   result->sk_color_space_ = std::move(sk_color_space);
   result->sk_color_space_->toProfile(&result->profile_);
   result->is_sk_color_space_exact_ = true;
+  result->display_sk_color_space_ = result->sk_color_space_;
+  result->is_display_sk_color_space_exact_ = true;
   return result;
 }
 
@@ -132,6 +164,7 @@ sk_sp<ColorProfile> ColorProfile::Make(
   result->profile_.trc[2].table_entries = 0;
   result->profile_.trc[2].parametric = blue_trfn;
   result->ComputeSkColorSpace();
+  result->ComputeDisplaySkColorSpace();
   return result;
 }
 
@@ -145,6 +178,7 @@ sk_sp<ColorProfile> ColorProfile::Make(base::span<const uint8_t> buffer) {
   result->profile_ = skia_profile->GetProfile();
   result->skia_profile_ = std::move(skia_profile);
   result->ComputeSkColorSpace();
+  result->ComputeDisplaySkColorSpace();
   return result;
 }
 
