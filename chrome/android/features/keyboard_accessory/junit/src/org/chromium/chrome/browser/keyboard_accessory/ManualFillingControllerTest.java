@@ -22,7 +22,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
@@ -31,6 +30,7 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -51,19 +51,14 @@ import static org.chromium.chrome.browser.tab.TabLaunchType.FROM_BROWSER_ACTIONS
 import static org.chromium.chrome.browser.tab.TabSelectionType.FROM_NEW;
 import static org.chromium.chrome.browser.tab.TabSelectionType.FROM_USER;
 
-import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.RectF;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
-import android.view.LayoutInflater;
 import android.view.Surface;
-import android.view.View;
-import android.view.Window;
 
 import androidx.annotation.Px;
-import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -74,26 +69,26 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.mockito.stubbing.Answer;
-import org.robolectric.RuntimeEnvironment;
+import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UserDataHost;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeWindow;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -111,7 +106,6 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
-import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -121,6 +115,11 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.components.autofill.autofill_ai.AutofillAiSourceAttributionInfo;
 import org.chromium.components.autofill.autofill_ai.SourceType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -152,7 +151,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 /** Controller tests for the root controller for interactions with the manual filling UI. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -162,8 +163,44 @@ import java.util.concurrent.atomic.AtomicReference;
     ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING,
     ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
 })
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ManualFillingControllerTest {
+    /**
+     * Subclass of {@link ChromeTabbedActivity} used to supply test doubles for activity-level
+     * getters queried by {@link ManualFillingMediator} without running native initialization.
+     */
+    private static class TestChromeActivity extends ChromeTabbedActivity {
+        private TabModelSelector mTabModelSelector;
+        private FullscreenManager mFullscreenManager;
+        private NonNullObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+        private Supplier<WebContents> mCurrentWebContentsSupplier;
+        private Resources mResources;
+
+        @Override
+        public TabModelSelector getTabModelSelector() {
+            return mTabModelSelector;
+        }
+
+        @Override
+        public FullscreenManager getFullscreenManager() {
+            return mFullscreenManager;
+        }
+
+        @Override
+        public NonNullObservableSupplier<CompositorViewHolder> getCompositorViewHolderSupplier() {
+            return mCompositorViewHolderSupplier;
+        }
+
+        @Override
+        public @Nullable WebContents getCurrentWebContents() {
+            return mCurrentWebContentsSupplier != null ? mCurrentWebContentsSupplier.get() : null;
+        }
+
+        @Override
+        public Resources getResources() {
+            return mResources != null ? mResources : super.getResources();
+        }
+    }
+
     private static final int sKeyboardHeightDp = 100;
     private static final int sAccessoryHeightDp = 48;
     private static final int sDynamicPositioningMaxWidthPx = 100;
@@ -174,17 +211,11 @@ public class ManualFillingControllerTest {
     @Captor private ArgumentCaptor<KeyboardAccessoryStyle> mStyleCaptor;
 
     @Mock private ChromeWindow mMockWindow;
-    @Mock private ChromeActivity mMockActivity;
-    @Mock private Window mMockActivityWindow;
-    private WebContents mLastMockWebContents;
     @Mock private Profile mMockProfile;
     @Mock private Profile.Natives mProfileJniMock;
-    @Mock private ContentView mMockContentView;
     @Mock private TabModelSelector mMockTabModelSelector;
-    @Mock private Resources mMockResources;
     @Mock private KeyboardAccessoryCoordinator mMockKeyboardAccessory;
     @Mock private AccessorySheetCoordinator mMockAccessorySheet;
-    @Mock private CompositorViewHolder mMockCompositorViewHolder;
     @Mock private BottomSheetController mMockBottomSheetController;
     @Mock private ManualFillingComponent.SoftKeyboardDelegate mMockSoftKeyboardDelegate;
     @Mock private ActivityKeyboardVisibilityDelegate mMockKeyboardDelegate;
@@ -192,8 +223,15 @@ public class ManualFillingControllerTest {
     @Mock private InsetObserver mInsetObserver;
     @Mock private BackPressManager mMockBackPressManager;
     @Mock private EdgeToEdgeController mMockEdgeToEdgeController;
-    @Mock private MultiWindowModeStateDispatcher mMockMultiWindowModeStateDispatcher;
+    @Mock private BrowserControlsManager mMockBrowserControlsManager;
+    @Mock private SideUiStateProvider mMockSideUiStateProvider;
     @Mock private ManualFillingComponentBridge.Natives mManualFillingComponentBridgeJniMock;
+
+    private TestChromeActivity mActivity;
+    private WebContents mLastMockWebContents;
+    private ContentView mContentView;
+    private Resources mMockResources;
+    private CompositorViewHolder mCompositorViewHolder;
 
     private final ManualFillingCoordinator mController = new ManualFillingCoordinator();
     private final ManualFillingMediator mMediator = mController.getMediatorForTesting();
@@ -209,8 +247,6 @@ public class ManualFillingControllerTest {
             mMockEdgeToEdgeControllerSupplier = ObservableSuppliers.createNullable();
     private final SettableMonotonicObservableSupplier<TabModel> mMockTabModelSupplier =
             ObservableSuppliers.createMonotonic();
-
-    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
 
     /**
      * Helper class that provides shortcuts to providing and observing AccessorySheetData and
@@ -362,50 +398,29 @@ public class ManualFillingControllerTest {
 
     @Before
     public void setUp() {
-        when(mMockWindow.getActivity()).thenReturn(new WeakReference<>(mMockActivity));
-        when(mMockActivity.getWindow()).thenReturn(mMockActivityWindow);
-        when(mMockActivityWindow.getDecorView()).thenReturn(mock(View.class));
+        mActivity = Robolectric.buildActivity(TestChromeActivity.class).get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mMockResources = spy(mActivity.getResources());
+        mActivity.mResources = mMockResources;
+        mCompositorViewHolder = new CompositorViewHolder(mActivity, /* attrs= */ null);
+        mCompositorViewHolder.setBrowserControlsManager(mMockBrowserControlsManager);
+        mContentView = ContentView.createContentView(mActivity, /* webContents= */ null);
+        when(mMockWindow.getActivity()).thenReturn(new WeakReference<>(mActivity));
         when(mMockWindow.getUnownedUserDataHost()).thenReturn(mUnownedUserDataHost);
         mInsetSupplier.setKeyboardInsetSupplier(mKeyboardInsetSupplier);
         mInsetSupplier.setKeyboardAccessoryInsetSupplier(mController.getBottomInsetSupplier());
         when(mMockWindow.getApplicationBottomInsetTracker()).thenReturn(mInsetSupplier);
         when(mMockSoftKeyboardDelegate.calculateSoftKeyboardHeight(any())).thenReturn(0);
-        when(mMockActivity.getTabModelSelector()).thenReturn(mMockTabModelSelector);
+        mActivity.mTabModelSelector = mMockTabModelSelector;
         when(mMockTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mMockTabModelSupplier);
         when(mMockTabModelSelector.getModels()).thenReturn(Collections.emptyList());
-        when(mMockActivity.getActivityTabProvider()).thenReturn(mActivityTabProvider);
-        BrowserControlsManager browserControlsManager =
-                new BrowserControlsManager(mMockActivity, 0, mMockMultiWindowModeStateDispatcher);
-        when(mMockActivity.getBrowserControlsManager()).thenReturn(browserControlsManager);
-        when(mMockActivity.getFullscreenManager()).thenReturn(mMockFullscreenManager);
+        mActivity.mFullscreenManager = mMockFullscreenManager;
         doNothing().when(mMockFullscreenManager).addObserver(mFullscreenObserverCaptor.capture());
         SettableNonNullObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier =
-                ObservableSuppliers.createNonNull(mMockCompositorViewHolder);
-        when(mMockActivity.getCompositorViewHolderSupplier())
-                .thenReturn(compositorViewHolderSupplier);
-        when(mMockActivity.getResources()).thenReturn(mMockResources);
-        ApplicationProvider.getApplicationContext().setTheme(R.style.Theme_BrowserUI_DayNight);
-        when(mMockActivity.getTheme())
-                .thenReturn(ApplicationProvider.getApplicationContext().getTheme());
-        when(mMockActivity.getColor(anyInt()))
-                .thenAnswer(
-                        invocation ->
-                                ApplicationProvider.getApplicationContext()
-                                        .getColor((Integer) invocation.getArgument(0)));
-        when(mMockActivity.getPackageManager())
-                .thenReturn(RuntimeEnvironment.application.getPackageManager());
-        when(mMockActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
-                .thenReturn(
-                        ApplicationProvider.getApplicationContext()
-                                .getSystemService(Context.LAYOUT_INFLATER_SERVICE));
-        when(mMockActivity.getSystemService(LayoutInflater.class))
-                .thenReturn(
-                        ApplicationProvider.getApplicationContext()
-                                .getSystemService(LayoutInflater.class));
-        when(mMockActivity.findViewById(android.R.id.content)).thenReturn(mMockContentView);
-        when(mMockContentView.getRootView()).thenReturn(mock(View.class));
+                ObservableSuppliers.createNonNull(mCompositorViewHolder);
+        mActivity.mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mLastMockWebContents = mock(MockWebContents.class);
-        when(mMockActivity.getCurrentWebContents()).then(i -> mLastMockWebContents);
+        mActivity.mCurrentWebContentsSupplier = () -> mLastMockWebContents;
 
         ProfileJni.setInstanceForTesting(mProfileJniMock);
         when(mProfileJniMock.fromWebContents(any())).thenReturn(mMockProfile);
@@ -419,6 +434,7 @@ public class ManualFillingControllerTest {
         Configuration config = new Configuration();
         config.hardKeyboardHidden = HARDKEYBOARDHIDDEN_UNDEFINED;
         when(mMockResources.getConfiguration()).thenReturn(config);
+        when(mMockResources.getDimensionPixelSize(R.dimen.toolbar_shadow_height)).thenReturn(0);
         when(mMockResources.getDimensionPixelSize(
                         R.dimen.keyboard_accessory_bar_dynamic_positioning_max_width))
                 .thenReturn(sDynamicPositioningMaxWidthPx);
@@ -617,7 +633,7 @@ public class ManualFillingControllerTest {
 
         // Trigger settings click
         spans[1].onClick(null);
-        verify(mockSettingsNavigation).startSettings(eq(mMockActivity), any(), any(), eq(true));
+        verify(mockSettingsNavigation).startSettings(eq(mActivity), any(), any(), eq(true));
 
         when(mMockBottomSheetController.requestShowContent(any(), eq(true))).thenReturn(true);
         // Trigger attribution click
@@ -1188,14 +1204,14 @@ public class ManualFillingControllerTest {
                 /* shouldShowOnLargeFormFactor= */ true,
                 /* isContentEditable= */ false);
         setContentAreaDimensions(2.f, 180, 220);
-        mMediator.onLayoutChange(mMockContentView, 0, 0, 540, 360, 0, 0, 640, 360);
+        mMediator.onLayoutChange(mContentView, 0, 0, 540, 360, 0, 0, 640, 360);
         verify(mMockKeyboardAccessory).show();
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), not(is(HIDDEN)));
 
         // Rotating the screen causes a relayout:
         setContentAreaDimensions(2.f, 320, 128, Surface.ROTATION_90);
         when(mMockSoftKeyboardDelegate.isSoftKeyboardShowing(any())).thenReturn(false);
-        mMediator.onLayoutChange(mMockContentView, 0, 0, 160, 640, 0, 0, 540, 360);
+        mMediator.onLayoutChange(mContentView, 0, 0, 160, 640, 0, 0, 540, 360);
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(HIDDEN));
     }
 
@@ -1468,7 +1484,7 @@ public class ManualFillingControllerTest {
         final int density = 2;
         mMockEdgeToEdgeControllerSupplier.set(null);
         EdgeToEdgeStateProvider edgeToEdgeStateProvider =
-                new EdgeToEdgeStateProvider(mMockActivityWindow);
+                new EdgeToEdgeStateProvider(mActivity.getWindow());
         edgeToEdgeStateProvider.attach(mMockWindow);
         int edgeToEdgeToken = edgeToEdgeStateProvider.acquireEdgeToEdgeToken();
 
@@ -1562,6 +1578,7 @@ public class ManualFillingControllerTest {
         // Make sure the model is in a non-HIDDEN state first.
         mModel.set(KEYBOARD_EXTENSION_STATE, FLOATING_SHEET);
         reset(mMockKeyboardAccessory, mMockAccessorySheet);
+        mCompositorViewHolder.layout(0, 0, 100, 100);
 
         // Set the model HIDDEN. This should update keyboard and subcomponents.
         mModel.set(KEYBOARD_EXTENSION_STATE, HIDDEN);
@@ -1570,7 +1587,7 @@ public class ManualFillingControllerTest {
         verify(mMockAccessorySheet).hide();
         verify(mMockKeyboardAccessory).closeActiveTab();
         verify(mMockKeyboardAccessory).dismiss();
-        verify(mMockCompositorViewHolder).requestLayout(); // Triggered as if it was a keyboard.
+        assertTrue(mCompositorViewHolder.isLayoutRequested()); // Triggered as if it was a keyboard.
     }
 
     @Test
@@ -1599,6 +1616,7 @@ public class ManualFillingControllerTest {
         when(mMockSoftKeyboardDelegate.isSoftKeyboardShowing(any())).thenReturn(false);
         mModel.set(KEYBOARD_EXTENSION_STATE, HIDDEN);
         reset(mMockKeyboardAccessory, mMockAccessorySheet);
+        mCompositorViewHolder.layout(0, 0, 100, 100);
 
         // Set the model FLOATING_BAR. This should update keyboard and subcomponents.
         mModel.set(KEYBOARD_EXTENSION_STATE, FLOATING_BAR);
@@ -1607,7 +1625,7 @@ public class ManualFillingControllerTest {
         verify(mMockSoftKeyboardDelegate, atLeastOnce()).showSoftKeyboard(any());
         verify(mMockAccessorySheet).hide();
         verify(mMockKeyboardAccessory).closeActiveTab();
-        verify(mMockCompositorViewHolder).requestLayout(); // Triggered as if it was a keyboard.
+        assertTrue(mCompositorViewHolder.isLayoutRequested()); // Triggered as if it was a keyboard.
         verify(mMockKeyboardAccessory).show();
     }
 
@@ -1691,7 +1709,7 @@ public class ManualFillingControllerTest {
 
         // Showing the keyboard should now trigger a transition into EXTENDING state.
         when(mMockSoftKeyboardDelegate.isSoftKeyboardShowing(any())).thenReturn(true);
-        mMediator.onLayoutChange(mMockContentView, 0, 0, 320, 90, 0, 0, 320, 180);
+        mMediator.onLayoutChange(mContentView, 0, 0, 320, 90, 0, 0, 320, 180);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(EXTENDING_KEYBOARD));
     }
@@ -1749,7 +1767,7 @@ public class ManualFillingControllerTest {
 
         // Simulate opening a keyboard:
         when(mMockSoftKeyboardDelegate.isSoftKeyboardShowing(any())).thenReturn(true);
-        mMediator.onLayoutChange(mMockContentView, 0, 0, 320, 90, 0, 0, 320, 180);
+        mMediator.onLayoutChange(mContentView, 0, 0, 320, 90, 0, 0, 320, 180);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(EXTENDING_KEYBOARD));
     }
@@ -1814,12 +1832,12 @@ public class ManualFillingControllerTest {
         // Now the filling component waits for the keyboard to disappear before changing the stat:
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(WAITING_TO_REPLACE));
         // Layout changes but the keyboard is still there, so nothing happens:
-        mMediator.onLayoutChange(mMockContentView, 0, 0, 320, 90, 0, 0, 320, 90);
+        mMediator.onLayoutChange(mContentView, 0, 0, 320, 90, 0, 0, 320, 90);
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(WAITING_TO_REPLACE));
 
         // The keyboard finally hides completely and the state changes to REPLACING.
         when(mMockSoftKeyboardDelegate.isSoftKeyboardShowing(any())).thenReturn(false);
-        mMediator.onLayoutChange(mMockContentView, 0, 0, 320, 90, 0, 0, 320, 180);
+        mMediator.onLayoutChange(mContentView, 0, 0, 320, 90, 0, 0, 320, 180);
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(REPLACING_KEYBOARD));
     }
 
@@ -1847,7 +1865,7 @@ public class ManualFillingControllerTest {
 
         // Simulate the keyboard opening:
         when(mMockSoftKeyboardDelegate.isSoftKeyboardShowing(any())).thenReturn(true);
-        mMediator.onLayoutChange(mMockContentView, 0, 0, 320, 90, 0, 0, 320, 180);
+        mMediator.onLayoutChange(mContentView, 0, 0, 320, 90, 0, 0, 320, 180);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(EXTENDING_KEYBOARD));
     }
@@ -2346,9 +2364,9 @@ public class ManualFillingControllerTest {
         mCache.getStateFor(tab)
                 .getWebContentsObserverForTesting()
                 .onVisibilityChanged(Visibility.VISIBLE);
-        when(tab.getContentView()).thenReturn(mMockContentView);
+        when(tab.getContentView()).thenReturn(mContentView);
         when(mMockTabModelSelector.getCurrentTab()).thenReturn(tab);
-        mActivityTabProvider.setForTesting(tab);
+        mActivity.getActivityTabProvider().setForTesting(tab);
         mediator.getTabModelObserverForTesting()
                 .didAddTab(tab, FROM_BROWSER_ACTIONS, TabCreationState.LIVE_IN_FOREGROUND, false);
         mediator.getTabObserverForTesting().onShown(tab, FROM_NEW);
@@ -2468,7 +2486,7 @@ public class ManualFillingControllerTest {
         int newHeight = (int) (density * height);
         int newWidth = (int) (density * width);
         mMediator.onLayoutChange(
-                mMockContentView, 0, 0, newWidth, newHeight, 0, 0, oldWidth, oldHeight);
+                mContentView, 0, 0, newWidth, newHeight, 0, 0, oldWidth, oldHeight);
     }
 
     /**
@@ -2488,17 +2506,22 @@ public class ManualFillingControllerTest {
 
     private void simulateVisibleViewportBounds(
             @Px int left, @Px int top, @Px int right, @Px int bottom) {
-        RectF visibleViewport = new RectF(left, top, right, bottom);
-        Mockito.doAnswer(
-                        (Answer<Void>)
-                                (invocationOnMock) -> {
-                                    invocationOnMock
-                                            .getArgument(0, RectF.class)
-                                            .set(visibleViewport);
-                                    return null;
-                                })
-                .when(mMockCompositorViewHolder)
-                .getVisibleViewport(any(RectF.class));
+        if (top != 0) {
+            when(mMockBrowserControlsManager.getTopVisibleContentOffset()).thenReturn((float) top);
+        }
+        if (left != 0) {
+            when(mMockSideUiStateProvider.getCurrentSideUiSpecs())
+                    .thenReturn(
+                            new SideUiSpecs(
+                                    Map.of(
+                                            AnchorSide.LEFT,
+                                            new SideUiSize(left, HeightType.TOOLBAR))));
+            OneshotSupplierImpl<SideUiStateProvider> sideUiSupplier = new OneshotSupplierImpl<>();
+            sideUiSupplier.set(mMockSideUiStateProvider);
+            mCompositorViewHolder.setSideUiStateProviderSupplier(sideUiSupplier);
+            RobolectricUtil.runAllBackgroundAndUi();
+        }
+        mCompositorViewHolder.layout(0, 0, right, bottom);
     }
 
     @Test

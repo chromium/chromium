@@ -20,7 +20,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
@@ -29,13 +28,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.ui.test.util.MockitoHelper.doCallback;
-
 import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.content.res.Resources;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.View;
 
 import org.junit.Before;
@@ -49,6 +43,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ActivityState;
@@ -57,6 +52,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.cc.input.BrowserControlsOffsetTags;
 import org.chromium.cc.input.BrowserControlsState;
@@ -90,7 +86,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link BrowserControlsManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BrowserControlsManagerUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
@@ -99,14 +94,10 @@ public class BrowserControlsManagerUnitTest {
     private static final int EXTRA_TOP_CONTROL_HEIGHT = 20;
     private static final int TOOLBAR_HAIRLINE_HEIGHT = 5;
 
-    @Mock private Activity mActivity;
     @Mock private ControlContainer mControlContainer;
-    @Mock private View mContainerView;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private Resources mResources;
     @Mock private BrowserControlsStateProvider.Observer mBrowserControlsStateProviderObserver;
     @Mock private Tab mTab;
-    @Mock private ContentView mContentView;
     @Mock private TabModel mTabModel;
     @Mock private TabBrowserControlsOffsetHelper mTabBrowserControlsOffsetHelper;
     @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
@@ -115,6 +106,9 @@ public class BrowserControlsManagerUnitTest {
     private @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     private @Captor ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
+    private Activity mActivity;
+    private View mContainerView;
+    private ContentView mContentView;
     private final UserDataHost mUserDataHost = new UserDataHost();
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private BrowserControlsManager mBrowserControlsManager;
@@ -124,19 +118,12 @@ public class BrowserControlsManagerUnitTest {
 
     @Before
     public void setUp() {
-        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
-        when(mActivity.getResources()).thenReturn(mResources);
-        when(mResources.getDimensionPixelSize(R.dimen.control_container_height))
-                .thenReturn(TOOLBAR_HEIGHT);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mContainerView = new View(mActivity);
+        mActivity.setContentView(mContainerView);
+        RobolectricUtil.runAllBackgroundAndUi();
+        mContentView = ContentView.createContentView(mActivity, /* webContents= */ null);
         when(mControlContainer.getView()).thenReturn(mContainerView);
-
-        // Only the last/current visibility matters and is verified by tests.
-        when(mContainerView.getVisibility()).thenReturn(View.VISIBLE);
-        doCallback(
-                        (Integer visibility) ->
-                                when(mContainerView.getVisibility()).thenReturn(visibility))
-                .when(mContainerView)
-                .setVisibility(anyInt());
 
         when(mTab.isUserInteractable()).thenReturn(true);
         when(mTab.isInitialized()).thenReturn(true);
@@ -144,10 +131,6 @@ public class BrowserControlsManagerUnitTest {
         mUserDataHost.setUserData(
                 TabBrowserControlsOffsetHelper.USER_DATA_KEY, mTabBrowserControlsOffsetHelper);
         when(mTab.getContentView()).thenReturn(mContentView);
-        doNothing().when(mContentView).removeOnHierarchyChangeListener(any());
-        doNothing().when(mContentView).removeOnSystemUiVisibilityChangeListener(any());
-        doNothing().when(mContentView).addOnHierarchyChangeListener(any());
-        doNothing().when(mContentView).addOnSystemUiVisibilityChangeListener(any());
         when(mTabModel.iterator()).thenAnswer(inv -> Collections.emptyList().iterator());
         when(mTabModelSelector.getModels()).thenReturn(Collections.singletonList(mTabModel));
         when(mTabModelSelector.getCurrentTabModelSupplier())
@@ -187,10 +170,6 @@ public class BrowserControlsManagerUnitTest {
                 R.dimen.control_container_height);
         mBrowserControlsManager.addObserver(mBrowserControlsStateProviderObserver);
         mControlsDelegate = mBrowserControlsManager.getBrowserVisibilityDelegate();
-
-        doCallback((Runnable runnable) -> runnable.run())
-                .when(mContainerView)
-                .postOnAnimation(any());
 
         // TabBrowserControlsOffsetHelper casts to TabImpl which is package private, mock instead.
         mUserDataHost.setUserData(
@@ -558,14 +537,13 @@ public class BrowserControlsManagerUnitTest {
     }
 
     @Test
-    @SuppressWarnings("DirectInvocationOnMock")
     public void testShowAndroidControlsObserver() {
         remakeWithoutSpy();
 
         int token =
                 mBrowserControlsManager.hideAndroidControlsAndClearOldToken(
                         TokenHolder.INVALID_TOKEN);
-        verify(mContainerView).setVisibility(View.INVISIBLE);
+        assertEquals(View.INVISIBLE, mContainerView.getVisibility());
         verify(mBrowserControlsStateProviderObserver)
                 .onAndroidControlsVisibilityChanged(View.INVISIBLE);
 
@@ -591,7 +569,7 @@ public class BrowserControlsManagerUnitTest {
                 R.dimen.control_container_height);
         assertEquals(View.VISIBLE, browserControlsManager.getAndroidControlsVisibility());
 
-        when(mContainerView.getVisibility()).thenReturn(View.INVISIBLE);
+        mContainerView.setVisibility(View.INVISIBLE);
         assertEquals(View.INVISIBLE, browserControlsManager.getAndroidControlsVisibility());
     }
 
@@ -622,6 +600,7 @@ public class BrowserControlsManagerUnitTest {
 
         // Now stop scrolling, and the visibility should update.
         notifyContentViewScrollingStateChanged(false);
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(View.VISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
 
         // Set up the same situation where we're scrolling and have a hidden view that wants to be
@@ -635,6 +614,7 @@ public class BrowserControlsManagerUnitTest {
 
         // But now switch tabs instead. The manager should clear the scrolling signal.
         mActivityTabProvider.setForTesting(Mockito.mock(Tab.class));
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(View.VISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
     }
 
@@ -659,16 +639,19 @@ public class BrowserControlsManagerUnitTest {
 
         // Reduce the size of the controls such that we should hide the java view.
         notifyBrowserControlsOffsetChanged(TOOLBAR_HEIGHT, 0);
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(View.INVISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
 
         // Now scroll the controls back fully onscreen. Suppression layout optimizations should not
         // restore visibility of the java views eagerly.
         notifyBrowserControlsOffsetChanged(0, 0);
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(View.INVISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
 
         // However when entering SHOWN state, the optimization should ignore scrolling and
         // immediately restore view visibility.
         mControlsDelegate.set(BrowserControlsState.SHOWN);
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(View.VISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
     }
 
@@ -731,9 +714,11 @@ public class BrowserControlsManagerUnitTest {
         assertEquals(
                 0.25f, mBrowserControlsManager.getBrowserControlHiddenRatio(), MathUtils.EPSILON);
 
-        Mockito.clearInvocations(mContainerView);
+        RobolectricUtil.runAllBackgroundAndUi();
+        mContainerView.layout(0, 0, 0, 0);
         notifyBrowserControlsOffsetChanged(0, 0);
-        verify(mContainerView).requestLayout();
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertThat(mContainerView.getWidth(), greaterThan(0));
         assertEquals(View.VISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
 
         // For native pages, we can't run an animation so the initial offsets should be overridden
@@ -808,8 +793,8 @@ public class BrowserControlsManagerUnitTest {
         // Put the control container in a hidden state and bottom-positioned.
         mBrowserControlsManager.setControlsPosition(
                 ControlsPosition.BOTTOM, 0, 0, 0, TOOLBAR_HEIGHT, 10, TOOLBAR_HEIGHT);
-        ShadowLooper.idleMainLooper();
-        Mockito.clearInvocations(mContainerView);
+        RobolectricUtil.runAllBackgroundAndUi();
+        mContainerView.layout(0, 0, 0, 0);
         // Locking the controls via the TabControlsObserver should check for forced relayout.
         mBrowserControlsManager
                 .getTabControlsObserverForTesting()
@@ -818,8 +803,8 @@ public class BrowserControlsManagerUnitTest {
                         new BrowserControlsOffsetTagsInfo(),
                         new BrowserControlsOffsetTagsInfo(),
                         BrowserControlsState.SHOWN);
-        ShadowLooper.idleMainLooper();
-        verify(mContainerView).requestLayout();
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertThat(mContainerView.getWidth(), greaterThan(0));
     }
 
     @Test
@@ -1131,7 +1116,6 @@ public class BrowserControlsManagerUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.BROWSER_CONTROLS_HIDING_TOKEN)
-    @SuppressWarnings("DirectInvocationOnMock")
     public void testSetTab_skipsTransientControlsWhenHidingTokensActive() {
         remakeWithoutSpy();
         Tab newTab = Mockito.mock(Tab.class);
@@ -1145,12 +1129,12 @@ public class BrowserControlsManagerUnitTest {
 
         // Switching tabs while hiding tokens are active should keep controls hidden.
         mActivityTabProvider.setForTesting(newTab);
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(View.INVISIBLE, mContainerView.getVisibility());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.BROWSER_CONTROLS_HIDING_TOKEN)
-    @SuppressWarnings("DirectInvocationOnMock")
     public void testOnActivityStateStarted_skipsTransientControlsWhenHidingTokensActive() {
         remakeWithoutSpy();
         mBrowserControlsManager.hideAndroidControlsAndClearOldToken(
@@ -1158,14 +1142,13 @@ public class BrowserControlsManagerUnitTest {
         assertTrue(mBrowserControlsManager.hasHidingTokens());
 
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STARTED);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertEquals(View.INVISIBLE, mContainerView.getVisibility());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.BROWSER_CONTROLS_HIDING_TOKEN)
-    @SuppressWarnings("DirectInvocationOnMock")
     public void testScheduleVisibilityUpdate_immediateHideWithHidingToken() {
         remakeWithoutSpy();
         assertEquals(View.VISIBLE, mContainerView.getVisibility());
@@ -1178,7 +1161,6 @@ public class BrowserControlsManagerUnitTest {
     }
 
     @Test
-    @SuppressWarnings("DirectInvocationOnMock")
     public void testReleaseAndroidControlsHidingToken_invalidTokenNoOp() {
         remakeWithoutSpy();
         mBrowserControlsManager.releaseAndroidControlsHidingToken(TokenHolder.INVALID_TOKEN);
@@ -1310,31 +1292,27 @@ public class BrowserControlsManagerUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.BOTTOM_CONTROLS_JANK_IMPROVEMENT)
-    @SuppressWarnings("DirectInvocationOnMock")
     public void testOnConstraintsChanged_ForceRelayoutOnlyFromHidden() {
         remakeWithoutSpy();
-        doCallback((Runnable runnable) -> new Handler(Looper.getMainLooper()).post(runnable))
-                .when(mContainerView)
-                .postOnAnimation(any());
-        Mockito.clearInvocations(mContainerView);
 
         // Make view invisible so getAndroidControlsVisibility() != View.VISIBLE
-        when(mContainerView.getVisibility()).thenReturn(View.INVISIBLE);
+        mContainerView.setVisibility(View.INVISIBLE);
+        mContainerView.layout(0, 0, 0, 0);
 
         // Transition from BOTH to SHOWN should NOT force relayout.
         mControlsDelegate.set(BrowserControlsState.SHOWN);
-        ShadowLooper.idleMainLooper();
-        verify(mContainerView, never()).requestLayout();
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(0, mContainerView.getWidth());
 
         // Transition to HIDDEN, then to SHOWN SHOULD force relayout.
         mControlsDelegate.set(BrowserControlsState.HIDDEN);
-        ShadowLooper.idleMainLooper();
-        when(mContainerView.getVisibility()).thenReturn(View.INVISIBLE);
-        Mockito.clearInvocations(mContainerView);
+        RobolectricUtil.runAllBackgroundAndUi();
+        mContainerView.setVisibility(View.INVISIBLE);
+        mContainerView.layout(0, 0, 0, 0);
 
         mControlsDelegate.set(BrowserControlsState.SHOWN);
-        ShadowLooper.idleMainLooper();
-        verify(mContainerView).requestLayout();
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertThat(mContainerView.getWidth(), greaterThan(0));
     }
 
     @Test
