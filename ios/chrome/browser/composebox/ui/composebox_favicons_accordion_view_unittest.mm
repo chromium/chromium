@@ -6,10 +6,13 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/composebox/ui/composebox_ui_test_util.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -81,6 +84,57 @@ TEST_F(ComposeboxFaviconsAccordionViewTest, TestUpdateWithMoreThanMaxImages) {
 
   UILabel* badge = (UILabel*)view.arrangedSubviews[2];
   EXPECT_NSEQ(badge.text, @"+3");
+}
+
+// Tests that the accordion view configures the Large Content Viewer with the
+// shared tabs count and a scalable SF Symbol when populated, and resets it when
+// empty or loading.
+TEST_F(ComposeboxFaviconsAccordionViewTest, TestLargeContentViewer) {
+  ComposeboxFaviconsAccordionView* view =
+      [[ComposeboxFaviconsAccordionView alloc] initWithFrame:CGRectZero];
+  EXPECT_TRUE(HasLargeContentViewerInteraction(view));
+  EXPECT_FALSE(view.showsLargeContentViewer);
+  EXPECT_FALSE(view.largeContentTitle);
+  EXPECT_FALSE(view.largeContentImage);
+
+  // 1 tab -> singular localized title.
+  [view updateWithImages:@[ CreateTestImage() ]];
+  EXPECT_TRUE(view.showsLargeContentViewer);
+  EXPECT_TRUE(view.scalesLargeContentImage);
+  EXPECT_NSEQ(
+      view.largeContentTitle,
+      l10n_util::GetPluralNSStringF(IDS_IOS_COMPOSEBOX_SHARED_TABS_COUNT, 1));
+  ASSERT_TRUE(view.largeContentImage);
+  EXPECT_TRUE(view.largeContentImage.symbolImage);
+
+  // 5 tabs -> plural localized title.
+  NSMutableArray<UIImage*>* images = [NSMutableArray array];
+  for (int i = 0; i < 5; i++) {
+    [images addObject:CreateTestImage()];
+  }
+  [view updateWithImages:images];
+  EXPECT_TRUE(view.showsLargeContentViewer);
+  EXPECT_TRUE(view.scalesLargeContentImage);
+  EXPECT_NSEQ(
+      view.largeContentTitle,
+      l10n_util::GetPluralNSStringF(IDS_IOS_COMPOSEBOX_SHARED_TABS_COUNT, 5));
+  ASSERT_TRUE(view.largeContentImage);
+  EXPECT_TRUE(view.largeContentImage.symbolImage);
+
+  // Loading state resets Large Content Viewer properties.
+  view.isLoading = YES;
+  EXPECT_FALSE(view.showsLargeContentViewer);
+  EXPECT_FALSE(view.largeContentTitle);
+  EXPECT_FALSE(view.largeContentImage);
+  view.isLoading = NO;
+
+  // Empty state resets Large Content Viewer properties.
+  [view updateWithImages:@[ CreateTestImage() ]];
+  EXPECT_TRUE(view.showsLargeContentViewer);
+  [view updateWithImages:@[]];
+  EXPECT_FALSE(view.showsLargeContentViewer);
+  EXPECT_FALSE(view.largeContentTitle);
+  EXPECT_FALSE(view.largeContentImage);
 }
 
 TEST_F(ComposeboxFaviconsAccordionViewTest, TestUpdateClearsPreviousSubviews) {

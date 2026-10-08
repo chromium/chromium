@@ -75,9 +75,11 @@ source_set("favicons_accordion") {
     "composebox_favicons_accordion_view.mm",
   ]
   deps = [
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }

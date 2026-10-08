@@ -7,6 +7,8 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -42,6 +44,8 @@ const CGFloat kBadgeFontSize = 10.0;
     self.alignment = UIStackViewAlignmentCenter;
     self.spacing = kFaviconStackSpacing;
     self.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addInteraction:[[UILargeContentViewerInteraction alloc]
+                             initWithDelegate:nil]];
 
     _activityIndicator = [[UIActivityIndicatorView alloc]
         initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
@@ -57,6 +61,9 @@ const CGFloat kBadgeFontSize = 10.0;
   }
   _isLoading = isLoading;
   if (_isLoading) {
+    self.showsLargeContentViewer = NO;
+    self.largeContentTitle = nil;
+    self.largeContentImage = nil;
     for (UIView* view in self.arrangedSubviews) {
       [view removeFromSuperview];
     }
@@ -75,6 +82,19 @@ const CGFloat kBadgeFontSize = 10.0;
 
   for (UIView* view in self.arrangedSubviews) {
     [view removeFromSuperview];
+  }
+
+  if (images.count > 0) {
+    self.showsLargeContentViewer = YES;
+    self.scalesLargeContentImage = YES;
+    self.largeContentImage =
+        SymbolWithPointSize(SymbolGlobeAmericas, kFaviconSize);
+    self.largeContentTitle = l10n_util::GetPluralNSStringF(
+        IDS_IOS_COMPOSEBOX_SHARED_TABS_COUNT, images.count);
+  } else {
+    self.showsLargeContentViewer = NO;
+    self.largeContentTitle = nil;
+    self.largeContentImage = nil;
   }
 
   for (NSUInteger i = 0; i < images.count; i++) {
