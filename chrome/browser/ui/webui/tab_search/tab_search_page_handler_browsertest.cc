@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/metrics_reporter/mock_metrics_reporter.h"
@@ -551,6 +552,13 @@ IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest,
 
 IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, TabsAndGroups) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  // TODO(crbug.com/571588484): Test the tab closure with the
+  // tab group deletion dialog enabled.
+  if (auto* dialog_controller =
+          tab_groups::DeletionDialogController::From(browser1())) {
+    dialog_controller->SetPrefsPreventShowingDialogForTesting(true);
+  }
 
   // Add tabs to a browser.
   AddTabWithTitle(browser1(), tab_url1_, kTabName1);

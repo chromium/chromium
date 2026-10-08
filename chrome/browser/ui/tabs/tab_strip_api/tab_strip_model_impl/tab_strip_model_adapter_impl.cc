@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/converters/tab_converters.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/tree_builder/mojo_tree_builder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "components/browser_apis/tab_strip/types/tab_states.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -75,9 +76,13 @@ const ui::ColorProvider& TabStripModelAdapterImpl::GetColorProvider() const {
 }
 
 void TabStripModelAdapterImpl::CloseTab(size_t tab_index) {
-  tab_strip_model_->CloseWebContentsAt(
-      tab_index, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB |
-                     TabCloseTypes::CLOSE_USER_GESTURE);
+  if (!tab_strip_model_->ContainsIndex(tab_index)) {
+    return;
+  }
+
+  tabs::TabInterface* tab = tab_strip_model_->GetTabAtIndex(tab_index);
+  CHECK(tab);
+  tab_strip_model_->delegate()->CloseTab(tab, CloseTabSource::kFromNonUIEvent);
 }
 
 void TabStripModelAdapterImpl::CloseTabGroup(
