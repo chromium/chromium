@@ -39,3 +39,9 @@
 
 # https://crbug.com/538266717
 -org.chromium.chrome.browser.popups.PopupMultiwindowPTTest*
+
+# https://crbug.com/571584010
+-CrComponentsComposeboxTest.ComposeboxFaviconGroup
+-ExtensionApiTabTest.Query
+-HistoryWithHistoryEmbeddingsTest.HistoryAppTest
+-PasswordGenerationAgentTest.*
