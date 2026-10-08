@@ -581,7 +581,7 @@ const char* QuicSessionPool::AsyncDnsJob::SlotName(
   return &connector == state.primary_connector.get() ? "primary" : "secondary";
 }
 
-int QuicSessionPool::AsyncDnsJob::OnAttemptStarted(
+int QuicSessionPool::AsyncDnsJob::WillStartAttempt(
     const EndpointConnector& connector,
     const Candidate& candidate,
     base::TimeTicks start_time) {
@@ -605,8 +605,12 @@ int QuicSessionPool::AsyncDnsJob::OnAttemptStarted(
             .Set("resolution_in_flight", !resolution_finished_)
             .Set("is_stale", connector.is_stale());
       });
-  MaybeStartSlowTimer(GetState(connector));
   return attempt_id;
+}
+
+void QuicSessionPool::AsyncDnsJob::OnAttemptInFlight(
+    const EndpointConnector& connector) {
+  MaybeStartSlowTimer(GetState(connector));
 }
 
 void QuicSessionPool::AsyncDnsJob::LogJobComplete(int rv) const {
@@ -769,7 +773,8 @@ void QuicSessionPool::AsyncDnsJob::DestroyOtherConnector(
 
 void QuicSessionPool::AsyncDnsJob::MaybeStartSlowTimer(ConnectionState& state) {
   if (state.slow_timer_started || state.secondary_connector ||
-      !state.primary_connector || !state.primary_connector->has_attempt()) {
+      !state.primary_connector ||
+      !state.primary_connector->has_attempt_in_flight()) {
     return;
   }
   base::TimeDelta delay = features::kQuicSlowTimerDelay.Get();
@@ -852,13 +857,13 @@ bool QuicSessionPool::AsyncDnsJob::HasWaitingConnector(
 
 bool QuicSessionPool::AsyncDnsJob::HasAttemptInFlight() const {
   return (fresh_state_.primary_connector &&
-          fresh_state_.primary_connector->has_attempt()) ||
+          fresh_state_.primary_connector->has_attempt_in_flight()) ||
          (fresh_state_.secondary_connector &&
-          fresh_state_.secondary_connector->has_attempt()) ||
+          fresh_state_.secondary_connector->has_attempt_in_flight()) ||
          (stale_state_.primary_connector &&
-          stale_state_.primary_connector->has_attempt()) ||
+          stale_state_.primary_connector->has_attempt_in_flight()) ||
          (stale_state_.secondary_connector &&
-          stale_state_.secondary_connector->has_attempt());
+          stale_state_.secondary_connector->has_attempt_in_flight());
 }
 
 
@@ -918,6 +923,9 @@ void QuicSessionPool::AsyncDnsJob::MaybePromoteStaleConnectors() {
   }
 
   stale_state_.slow_timer.Stop();
+  if (!stale_state_.primary_connector && !stale_state_.secondary_connector) {
+    return;
+  }
 
   // Stale connectors whose in-flight attempts target endpoints present in fresh
   // DNS results are promoted to the fresh state machine. If an in-flight stale
@@ -969,9 +977,12 @@ void QuicSessionPool::AsyncDnsJob::MaybePromoteStaleConnectors() {
 
   // If a secondary connector is now present in the fresh state (e.g. promoted
   // from stale), cancel any pending slow timer to prevent OnSlowTimer from
-  // asserting CHECK(!state->secondary_connector).
+  // asserting CHECK(!state->secondary_connector). Otherwise, arm the fresh
+  // slow timer if the primary slot now holds a promoted in-flight attempt.
   if (fresh_state_.secondary_connector) {
     fresh_state_.slow_timer.Stop();
+  } else {
+    MaybeStartSlowTimer(fresh_state_);
   }
 }
 
@@ -993,22 +1004,21 @@ bool QuicSessionPool::AsyncDnsJob::IsEndpointInFreshList(
 
 std::optional<int>
 QuicSessionPool::AsyncDnsJob::ProcessServiceEndpointResults() {
+  if (MaybePoolToExistingSession()) {
+    MaybeSetDnsResolutionEndTime();
+    return OK;
+  }
+
   MaybePromoteStaleConnectors();
 
   ConnectionState& state = service_endpoint_request_->IsStaleWhileRefreshing()
                                ? stale_state_
                                : fresh_state_;
 
-  if (MaybePoolToExistingSession()) {
-    MaybeSetDnsResolutionEndTime();
-    return OK;
-  }
-
   // We already checked for eager pooling matches. Since none were found,
   // there is nothing to do while every connector keeps an attempt in flight.
   // A connector will read the new results if/when it advances.
   if (state.primary_connector && !HasWaitingConnector(state)) {
-    MaybeStartSlowTimer(state);
     return ERR_IO_PENDING;
   }
 
@@ -1081,8 +1091,6 @@ std::optional<int> QuicSessionPool::AsyncDnsJob::AdvanceConnectors(
     DestroyOtherConnector(*state.secondary_connector);
     return OK;
   }
-
-  MaybeStartSlowTimer(state);
 
   if (primary_rv == ERR_IO_PENDING || secondary_rv == ERR_IO_PENDING) {
     return ERR_IO_PENDING;

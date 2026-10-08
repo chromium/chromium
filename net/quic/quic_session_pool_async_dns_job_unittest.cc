@@ -5322,6 +5322,7 @@ TEST_P(QuicSessionPoolAsyncDnsJobOptimisticDnsTest,
   stale_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Second request for server2.
+  net_log_observer_.Clear();
   base::WeakPtr<FakeServiceEndpointRequest> endpoint_request2 =
       fake_resolver_.AddFakeRequest();
 
@@ -5362,6 +5363,15 @@ TEST_P(QuicSessionPoolAsyncDnsJobOptimisticDnsTest,
   ASSERT_TRUE(handle1);
   ASSERT_TRUE(handle2);
   EXPECT_TRUE(handle2->SharesSameSession(*handle1));
+
+  // The slow timer should be armed only once (for the stale attempt) and not
+  // a second time when fresh DNS immediately pools to the existing session.
+  EXPECT_EQ(
+      net_log_observer_
+          .GetEntriesWithType(
+              NetLogEventType::QUIC_SESSION_POOL_ASYNC_DNS_JOB_SLOW_TIMER_ARMED)
+          .size(),
+      1u);
 
   existing_data.ExpectAllReadDataConsumed();
   existing_data.ExpectAllWriteDataConsumed();

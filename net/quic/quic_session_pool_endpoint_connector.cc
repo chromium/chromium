@@ -40,6 +40,7 @@ std::optional<int> QuicSessionPool::EndpointConnector::TryAdvance() {
   if (attempt_) {
     return ERR_IO_PENDING;
   }
+  CHECK(!attempt_in_flight_);
 
   // Another job may have created a usable session while the previous
   // attempt ran. Pool to it instead of attempting again.
@@ -58,7 +59,7 @@ std::optional<int> QuicSessionPool::EndpointConnector::TryAdvance() {
     attempt_start_time_ = base::TimeTicks::Now();
     ++attempts_started_;
     attempt_id_ =
-        job_->OnAttemptStarted(*this, *candidate, attempt_start_time_);
+        job_->WillStartAttempt(*this, *candidate, attempt_start_time_);
     // Passing a null `crypto_client_config_handle` is safe because the owning
     // job holds a handle for as long as this attempt can be alive.
     attempt_ = std::make_unique<QuicSessionAttempt>(
@@ -74,13 +75,14 @@ std::optional<int> QuicSessionPool::EndpointConnector::TryAdvance() {
 
     int rv = attempt_->Start(base::BindOnce(
         &EndpointConnector::OnAttemptComplete, weak_factory_.GetWeakPtr()));
-    attempt_in_flight_ = (rv == ERR_IO_PENDING);
+    if (rv == ERR_IO_PENDING) {
+      attempt_in_flight_ = true;
+      job_->OnAttemptInFlight(*this);
+      return ERR_IO_PENDING;
+    }
     if (rv == OK) {
       RecordAttemptTime("Success");
       return OK;
-    }
-    if (rv == ERR_IO_PENDING) {
-      return ERR_IO_PENDING;
     }
     // The attempt failed while starting. Continue with the next candidate.
     RecordAttemptFailure(rv);
