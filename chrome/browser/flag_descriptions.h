@@ -1926,6 +1926,27 @@ inline constexpr char kGlicContextualCueingV2AutoSubmitDescription[] =
     "Enable automatically submitting a suggested prompt when the v2 contextual "
     "cue UI for Glic is clicked.";
 
+inline constexpr char kGlicContextualCuesHandleEduName[] =
+    "Glic Contextual Cues Handle Edu";
+inline constexpr char kGlicContextualCuesHandleEduDescription[] =
+    "Enables Glic contextual cues for education pages.";
+
+inline constexpr char kGlicContextualCuesHandleShoppingName[] =
+    "Glic Contextual Cues Handle Shopping";
+inline constexpr char kGlicContextualCuesHandleShoppingDescription[] =
+    "Enables Glic contextual cues for shopping pages.";
+
+inline constexpr char kContextualSearchContextualCuesHandleEduName[] =
+    "Contextual Search Contextual Cues Handle Edu";
+inline constexpr char kContextualSearchContextualCuesHandleEduDescription[] =
+    "Enables Contextual Search contextual cues for education pages.";
+
+inline constexpr char kContextualSearchContextualCuesHandleShoppingName[] =
+    "Contextual Search Contextual Cues Handle Shopping";
+inline constexpr char
+    kContextualSearchContextualCuesHandleShoppingDescription[] =
+        "Enables Contextual Search contextual cues for shopping pages.";
+
 inline constexpr char kGlicContextualCueV2ActiveUserBackoffName[] =
     "Glic Contextual Cueing v2 Active User Backoff";
 inline constexpr char kGlicContextualCueV2ActiveUserBackoffDescription[] =

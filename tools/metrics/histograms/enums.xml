@@ -10852,6 +10852,7 @@ from previous Chrome versions.
   <int value="-1250151947" label="LensOverlayEduActionChip:enabled"/>
   <int value="-1249388330" label="cast-streaming-force-disable-hardware-hevc"/>
   <int value="-1249349654" label="UseAndroidStagingSmds:disabled"/>
+  <int value="-1249254465" label="GlicContextualCuesHandleShopping:disabled"/>
   <int value="-1249142697" label="NtpWallpaperSearchButtonAnimation:enabled"/>
   <int value="-1249070953" label="DeviceSignalsBackfillDisclaimer:disabled"/>
   <int value="-1248478422" label="enable-zip-archiver-packer"/>
@@ -13038,6 +13039,7 @@ from previous Chrome versions.
   <int value="-580897686" label="SharedHighlightingAmp:enabled"/>
   <int value="-580051880" label="BirchWeather:disabled"/>
   <int value="-579897981" label="EnableEdgeDetection:enabled"/>
+  <int value="-579893388" label="GlicContextualCuesHandleShopping:enabled"/>
   <int value="-579771734" label="AimEligibilityComponentExtension:disabled"/>
   <int value="-579656054" label="CCTResizableSideSheetForThirdParties:enabled"/>
   <int value="-579655251"
@@ -15035,6 +15037,8 @@ from previous Chrome versions.
   <int value="23016318" label="NewTabPageCustomizationV2:enabled"/>
   <int value="23121136" label="MobileIdentityConsistencyVar:enabled"/>
   <int value="23556595" label="MarkHttpAs:enabled"/>
+  <int value="23589270"
+      label="ContextualSearchContextualCuesHandleShopping:disabled"/>
   <int value="24106600" label="CrossDeviceThemeTracker:disabled"/>
   <int value="24332306" label="ButtonARCNetworkDiagnostics:disabled"/>
   <int value="24559850" label="WinPdfUseFontProxy:enabled"/>
@@ -16849,6 +16853,7 @@ from previous Chrome versions.
   <int value="584541349" label="ContextualSearchSingleActions:disabled"/>
   <int value="584661108"
       label="OmniboxHistoryQuickProviderAllowButDoNotScoreMidwordTerms:disabled"/>
+  <int value="585224294" label="GlicContextualCuesHandleEdu:disabled"/>
   <int value="586021329" label="VibrateRequiresUserGesture:enabled"/>
   <int value="586643893" label="PickerGrid:enabled"/>
   <int value="588333474" label="OfflineIndicator:disabled"/>
@@ -18373,6 +18378,7 @@ from previous Chrome versions.
   <int value="1048263286" label="LauncherManateeForKeyboardShortcuts:disabled"/>
   <int value="1048760359"
       label="AccessibilityImproveLiveRegionAnnounce:enabled"/>
+  <int value="1048990518" label="GlicContextualCuesHandleEdu:enabled"/>
   <int value="1049339770" label="AppMenuMobileSiteOption:enabled"/>
   <int value="1049346775" label="OmniboxDocumentProviderAso:disabled"/>
   <int value="1049408928" label="LaunchOnStartupInfoBar:enabled"/>
@@ -20075,6 +20081,8 @@ from previous Chrome versions.
   <int value="1551752543" label="ArcvmSwapoutKeyboardShortcut:disabled"/>
   <int value="1552753678" label="DnsHttpssvc:disabled"/>
   <int value="1553017633" label="OmniboxHeaderPaddingUpdate:disabled"/>
+  <int value="1553108578"
+      label="ContextualSearchContextualCuesHandleShopping:enabled"/>
   <int value="1553310752" label="AccessibilityCursorColor:enabled"/>
   <int value="1553417445" label="RefreshFeedOnRestart:disabled"/>
   <int value="1553422694" label="EnablePalmOnMaxTouchMajor:enabled"/>
@@ -20573,6 +20581,8 @@ from previous Chrome versions.
   <int value="1703206814" label="CloseAllTabsModalDialog:disabled"/>
   <int value="1703927420" label="PiexWasm:enabled"/>
   <int value="1704683975" label="AccessibilityExtendedSelection:disabled"/>
+  <int value="1704750774"
+      label="ContextualSearchContextualCuesHandleEdu:enabled"/>
   <int value="1705542171" label="NtpModulesFirstRunExperience:enabled"/>
   <int value="1705724232" label="use-android-midi-api"/>
   <int value="1705822740"
@@ -20776,6 +20786,8 @@ from previous Chrome versions.
   <int value="1768427719" label="ExactMatchFavicons:enabled"/>
   <int value="1768759000" label="AutofillProfileServerValidation:disabled"/>
   <int value="1768793496" label="autofill-ai-with-data-schema:disabled"/>
+  <int value="1770142970"
+      label="ContextualSearchContextualCuesHandleEdu:disabled"/>
   <int value="1770189877" label="ConfirmNtpSuggestionRemovals:enabled"/>
   <int value="1770848838" label="AndroidSystemContactsPicker:disabled"/>
   <int value="1770871311" label="TextClassifierTimeout:disabled"/>
