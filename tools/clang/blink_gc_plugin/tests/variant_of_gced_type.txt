@@ -1,31 +1,166 @@
-variant_of_gced_type.cpp:11:25: warning: [blink-gc] Disallowed construction of 'variant<blink::Base>' found; 'Base' is a garbage-collected type. Variant cannot hold garbage-collected objects.
-    absl::variant<Base> not_ok;
-                        ^~~~~~
-variant_of_gced_type.cpp:14:31: warning: [blink-gc] Disallowed construction of 'variant<blink::Base, blink::Base>' found; 'Base' is a garbage-collected type. Variant cannot hold garbage-collected objects.
-    absl::variant<Base, Base> similarly_not_ok;
-                              ^~~~~~~~~~~~~~~~
-variant_of_gced_type.cpp:17:30: warning: [blink-gc] Disallowed construction of 'variant<int, blink::Base>' found; 'Base' is a garbage-collected type. Variant cannot hold garbage-collected objects.
-    absl::variant<int, Base> not_ok_either;
-                             ^~~~~~~~~~~~~
-variant_of_gced_type.cpp:20:33: warning: [blink-gc] Disallowed construction of 'variant<int, blink::Derived>' found; 'Derived' is a garbage-collected type. Variant cannot hold garbage-collected objects.
-    absl::variant<int, Derived> ditto;
-                                ^~~~~
-variant_of_gced_type.cpp:23:9: warning: [blink-gc] Disallowed construction of 'variant<blink::Mixin>' found; 'Mixin' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+variant_of_gced_type.cpp:9:1: warning: [blink-gc] Class 'WithVariant' contains invalid fields.
+class WithVariant : public GarbageCollected<WithVariant> {
+^
+variant_of_gced_type.cpp:20:3: note: [blink-gc] Raw pointer field 'variant_field7_' to a GC managed class declared here:
+  absl::variant<Base*> variant_field7_;
+  ^
+variant_of_gced_type.cpp:21:3: note: [blink-gc] Raw pointer field 'variant_field8_' to a GC managed class declared here:
+  std::variant<Base*> variant_field8_;
+  ^
+variant_of_gced_type.cpp:22:3: note: [blink-gc] Raw pointer field 'variant_field9_' to a traceable class declared here:
+  absl::variant<Traceable*> variant_field9_;
+  ^
+variant_of_gced_type.cpp:23:3: note: [blink-gc] Raw pointer field 'variant_field10_' to a traceable class declared here:
+  std::variant<Traceable*> variant_field10_;
+  ^
+variant_of_gced_type.cpp:26:3: note: [blink-gc] Reference pointer field 'variant_field13_' to a GC managed class declared here:
+  absl::variant<Base&> variant_field13_;
+  ^
+variant_of_gced_type.cpp:27:3: note: [blink-gc] Reference pointer field 'variant_field14_' to a GC managed class declared here:
+  std::variant<Base&> variant_field14_;
+  ^
+variant_of_gced_type.cpp:28:3: note: [blink-gc] Reference pointer field 'variant_field15_' to a traceable class declared here:
+  absl::variant<Traceable&> variant_field15_;
+  ^
+variant_of_gced_type.cpp:29:3: note: [blink-gc] Reference pointer field 'variant_field16_' to a traceable class declared here:
+  std::variant<Traceable&> variant_field16_;
+  ^
+variant_of_gced_type.cpp:14:3: warning: [blink-gc] Disallowed construction of 'variant<blink::Base>' found; 'Base' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+  absl::variant<Base> variant_field_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:15:3: warning: [blink-gc] Disallowed construction of 'variant<blink::Base>' found; 'Base' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+  std::variant<Base> variant_field2_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:16:3: warning: [blink-gc] Disallowed construction of 'variant<blink::Traceable>' found; 'Traceable' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+  absl::variant<Traceable> variant_field3_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:17:3: warning: [blink-gc] Disallowed construction of 'variant<blink::Traceable>' found; 'Traceable' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+  std::variant<Traceable> variant_field4_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:18:3: warning: [blink-gc] Disallowed construction of 'variant<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+  absl::variant<Member<Base>> variant_field5_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:19:3: warning: [blink-gc] Disallowed construction of 'variant<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+  std::variant<Member<Base>> variant_field6_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:20:3: warning: [blink-gc] Disallowed construction of 'variant<blink::Base *>' found; 'Base' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+  absl::variant<Base*> variant_field7_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:21:3: warning: [blink-gc] Disallowed construction of 'variant<blink::Base *>' found; 'Base' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+  std::variant<Base*> variant_field8_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:22:3: warning: [blink-gc] Disallowed construction of 'variant<blink::Traceable *>' found; 'Traceable' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+  absl::variant<Traceable*> variant_field9_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:23:3: warning: [blink-gc] Disallowed construction of 'variant<blink::Traceable *>' found; 'Traceable' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+  std::variant<Traceable*> variant_field10_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:24:3: warning: [blink-gc] Disallowed construction of 'variant<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl> *>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+  absl::variant<Member<Base>*> variant_field11_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:25:3: warning: [blink-gc] Disallowed construction of 'variant<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl> *>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+  std::variant<Member<Base>*> variant_field12_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:26:3: warning: [blink-gc] Disallowed construction of 'variant<blink::Base &>' found; 'Base' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+  absl::variant<Base&> variant_field13_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:27:3: warning: [blink-gc] Disallowed construction of 'variant<blink::Base &>' found; 'Base' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+  std::variant<Base&> variant_field14_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:28:3: warning: [blink-gc] Disallowed construction of 'variant<blink::Traceable &>' found; 'Traceable' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+  absl::variant<Traceable&> variant_field15_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:29:3: warning: [blink-gc] Disallowed construction of 'variant<blink::Traceable &>' found; 'Traceable' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+  std::variant<Traceable&> variant_field16_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:30:3: warning: [blink-gc] Disallowed construction of 'variant<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl> &>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+  absl::variant<Member<Base>&> variant_field17_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:31:3: warning: [blink-gc] Disallowed construction of 'variant<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl> &>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+  std::variant<Member<Base>&> variant_field18_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:72:5: warning: [blink-gc] Disallowed construction of 'variant<blink::Mixin>' found; 'Mixin' is a garbage-collected type. Variant cannot hold garbage-collected objects.
     new absl::variant<Mixin>;
-        ^~~~
-variant_of_gced_type.cpp:27:24: warning: [blink-gc] Disallowed construction of 'variant<blink::Base>' found; 'Base' is a garbage-collected type. Variant cannot hold garbage-collected objects.
-    std::variant<Base> not_ok;
-                       ^~~~~~
-variant_of_gced_type.cpp:30:30: warning: [blink-gc] Disallowed construction of 'variant<blink::Base, blink::Base>' found; 'Base' is a garbage-collected type. Variant cannot hold garbage-collected objects.
-    std::variant<Base, Base> similarly_not_ok;
-                             ^~~~~~~~~~~~~~~~
-variant_of_gced_type.cpp:33:29: warning: [blink-gc] Disallowed construction of 'variant<int, blink::Base>' found; 'Base' is a garbage-collected type. Variant cannot hold garbage-collected objects.
-    std::variant<int, Base> not_ok_either;
-                            ^~~~~~~~~~~~~
-variant_of_gced_type.cpp:36:32: warning: [blink-gc] Disallowed construction of 'variant<int, blink::Derived>' found; 'Derived' is a garbage-collected type. Variant cannot hold garbage-collected objects.
-    std::variant<int, Derived> ditto;
-                               ^~~~~
-variant_of_gced_type.cpp:39:9: warning: [blink-gc] Disallowed construction of 'variant<blink::Mixin>' found; 'Mixin' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+    ^~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:73:5: warning: [blink-gc] Disallowed construction of 'variant<blink::Traceable>' found; 'Traceable' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+    new absl::variant<Traceable>;
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:74:5: warning: [blink-gc] Disallowed construction of 'variant<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+    new absl::variant<Member<Base>>;
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:75:5: warning: [blink-gc] Disallowed construction of 'variant<blink::Base *>' found; 'Base' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+    new absl::variant<Base*>;
+    ^~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:76:5: warning: [blink-gc] Disallowed construction of 'variant<blink::Traceable *>' found; 'Traceable' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+    new absl::variant<Traceable*>;
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:77:5: warning: [blink-gc] Disallowed construction of 'variant<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl> *>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+    new absl::variant<Member<Base>*>;
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:78:5: warning: [blink-gc] Disallowed construction of 'variant<blink::Base &>' found; 'Base' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+    new absl::variant<Base&>;
+    ^~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:79:5: warning: [blink-gc] Disallowed construction of 'variant<blink::Traceable &>' found; 'Traceable' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+    new absl::variant<Traceable&>;
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:80:5: warning: [blink-gc] Disallowed construction of 'variant<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl> &>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+    new absl::variant<Member<Base>&>;
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:36:5: warning: [blink-gc] Disallowed construction of 'variant<blink::Base>' found; 'Base' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+    absl::variant<Base> not_ok;
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:39:5: warning: [blink-gc] Disallowed construction of 'variant<blink::Base, blink::Base>' found; 'Base' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+    absl::variant<Base, Base> similarly_not_ok;
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:42:5: warning: [blink-gc] Disallowed construction of 'variant<int, blink::Base>' found; 'Base' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+    absl::variant<int, Base> not_ok_either;
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:45:5: warning: [blink-gc] Disallowed construction of 'variant<int, blink::Derived>' found; 'Derived' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+    absl::variant<int, Derived> ditto;
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:120:5: warning: [blink-gc] Disallowed construction of 'variant<blink::Mixin>' found; 'Mixin' is a garbage-collected type. Variant cannot hold garbage-collected objects.
     new std::variant<Mixin>;
-        ^~~
-10 warnings generated.
+    ^~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:121:5: warning: [blink-gc] Disallowed construction of 'variant<blink::Traceable>' found; 'Traceable' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+    new std::variant<Traceable>;
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:122:5: warning: [blink-gc] Disallowed construction of 'variant<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+    new std::variant<Member<Base>>;
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:123:5: warning: [blink-gc] Disallowed construction of 'variant<blink::Base *>' found; 'Base' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+    new std::variant<Base*>;
+    ^~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:124:5: warning: [blink-gc] Disallowed construction of 'variant<blink::Traceable *>' found; 'Traceable' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+    new std::variant<Traceable*>;
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:125:5: warning: [blink-gc] Disallowed construction of 'variant<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl> *>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+    new std::variant<Member<Base>*>;
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:126:5: warning: [blink-gc] Disallowed construction of 'variant<blink::Base &>' found; 'Base' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+    new std::variant<Base&>;
+    ^~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:127:5: warning: [blink-gc] Disallowed construction of 'variant<blink::Traceable &>' found; 'Traceable' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+    new std::variant<Traceable&>;
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:128:5: warning: [blink-gc] Disallowed construction of 'variant<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl> &>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+    new std::variant<Member<Base>&>;
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:84:5: warning: [blink-gc] Disallowed construction of 'variant<blink::Base>' found; 'Base' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+    std::variant<Base> not_ok;
+    ^~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:87:5: warning: [blink-gc] Disallowed construction of 'variant<blink::Base, blink::Base>' found; 'Base' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+    std::variant<Base, Base> similarly_not_ok;
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:90:5: warning: [blink-gc] Disallowed construction of 'variant<int, blink::Base>' found; 'Base' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+    std::variant<int, Base> not_ok_either;
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:93:5: warning: [blink-gc] Disallowed construction of 'variant<int, blink::Derived>' found; 'Derived' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+    std::variant<int, Derived> ditto;
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:160:3: warning: [blink-gc] Disallowed construction of 'variant<blink::Base>' found; 'Base' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+  absl::variant<Base> variant_field_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+variant_of_gced_type.cpp:161:3: warning: [blink-gc] Disallowed construction of 'variant<blink::Base>' found; 'Base' is a garbage-collected type. Variant cannot hold garbage-collected objects.
+  std::variant<Base> variant_field2_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+47 warnings generated.

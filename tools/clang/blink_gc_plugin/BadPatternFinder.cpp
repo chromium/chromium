@@ -87,6 +87,14 @@ class UniquePtrGarbageCollectedMatcher : public MatchFinder::MatchCallback {
   DiagnosticsReporter& diagnostics_;
 };
 
+TypeMatcher GcedOrMemberOrTraceableOrPtrOrRef() {
+  auto gced_or_member_or_traceable =
+      anyOf(GarbageCollectedType(), MemberType(), TraceableType());
+  return anyOf(gced_or_member_or_traceable,
+               pointerType(pointee(gced_or_member_or_traceable)).bind("ptr"),
+               referenceType(pointee(gced_or_member_or_traceable)).bind("ptr"));
+}
+
 bool IsOnStack(const clang::Decl* decl, RecordCache& record_cache) {
   if (llvm::dyn_cast<const clang::VarDecl>(decl)) {
     return true;
@@ -97,111 +105,119 @@ bool IsOnStack(const clang::Decl* decl, RecordCache& record_cache) {
   const clang::CXXRecordDecl* parent_decl =
       llvm::dyn_cast<const clang::CXXRecordDecl>(field_decl->getParent());
   assert(parent_decl);
-  return record_cache.Lookup(parent_decl)->IsStackAllocated();
+  RecordInfo* record_info = record_cache.Lookup(parent_decl);
+  assert(record_info);
+  return record_info->IsStackAllocated();
 }
 
-class OptionalOrRawPtrToGCedMatcher : public MatchFinder::MatchCallback {
+// For the absl::variant checker, we need to match the inside of a variadic
+// template class, which doesn't seem easy with the built-in matchers: define
+// a custom matcher to go through the template parameter list.
+AST_MATCHER_P(clang::TemplateArgument,
+              parameterPackHasAnyElement,
+              // Clang exports other instantiations of Matcher via
+              // using-declarations in public headers, e.g. `using TypeMatcher
+              // = Matcher<QualType>`.
+              //
+              // Once https://reviews.llvm.org/D89920, a Clang patch adding a
+              // similar alias for template arguments, lands, this can be
+              // changed to TemplateArgumentMatcher and won't need to use the
+              // internal namespace any longer.
+              clang::ast_matchers::internal::Matcher<clang::TemplateArgument>,
+              InnerMatcher) {
+  if (Node.getKind() != clang::TemplateArgument::Pack) {
+    return false;
+  }
+  return llvm::any_of(Node.pack_elements(),
+                      [&](const clang::TemplateArgument& Arg) {
+                        return InnerMatcher.matches(Arg, Finder, Builder);
+                      });
+}
+
+class OptionalOrRawPtrOrVariantToGCedMatcher
+    : public MatchFinder::MatchCallback {
  public:
-  OptionalOrRawPtrToGCedMatcher(DiagnosticsReporter& diagnostics,
-                                RecordCache& record_cache)
+  OptionalOrRawPtrOrVariantToGCedMatcher(DiagnosticsReporter& diagnostics,
+                                         RecordCache& record_cache)
       : diagnostics_(diagnostics), record_cache_(record_cache) {}
 
   void Register(MatchFinder& match_finder) {
-    // Matches fields and new-expressions of type std::optional or
-    // absl::optional where the template argument is known to refer to a
-    // garbage-collected type.
-    auto optional_gced_type = hasType(
+    // Matches fields, variables, and new-expressions of type std::optional,
+    // absl::optional, base::raw_ptr, base::raw_ref, std::variant, or
+    // absl::variant where a template argument is known to refer to a
+    // garbage-collected, traceable, or Member type. Neither optional nor
+    // variant are safe to use with concurrent marking (if the active state or
+    // stored type changes while the object is concurrently being marked, Oilpan
+    // can fail to trace it properly, leading to UAFs and memory corruptions),
+    // and raw_ptr/raw_ref must not be used to reference Oilpan-managed types.
+    auto gced_arg = refersToType(GcedOrMemberOrTraceableOrPtrOrRef());
+    auto gced_type = hasType(
         classTemplateSpecializationDecl(
             hasAnyName("::absl::optional", "::std::optional", "::base::raw_ptr",
-                       "::base::raw_ref"),
-            hasTemplateArgument(0, refersToType(anyOf(GarbageCollectedType(),
-                                                      TraceableType()))))
+                       "::base::raw_ref", "::absl::variant", "::std::variant"),
+            hasAnyTemplateArgument(
+                anyOf(gced_arg, parameterPackHasAnyElement(gced_arg))))
             .bind("type"));
-    auto optional_field = fieldDecl(optional_gced_type).bind("bad_decl");
-    auto optional_var = varDecl(optional_gced_type).bind("bad_decl");
-    auto optional_new_expression =
-        cxxNewExpr(has(cxxConstructExpr(optional_gced_type))).bind("bad_new");
-    match_finder.addDynamicMatcher(optional_field, this);
-    match_finder.addDynamicMatcher(optional_var, this);
-    match_finder.addDynamicMatcher(optional_new_expression, this);
+    auto field = fieldDecl(gced_type).bind("bad_decl");
+    auto var = varDecl(gced_type).bind("bad_decl");
+    auto new_expression =
+        cxxNewExpr(has(cxxConstructExpr(gced_type))).bind("bad_new");
+    match_finder.addDynamicMatcher(field, this);
+    match_finder.addDynamicMatcher(var, this);
+    match_finder.addDynamicMatcher(new_expression, this);
   }
 
   void run(const MatchFinder::MatchResult& result) override {
     auto* type = result.Nodes.getNodeAs<clang::CXXRecordDecl>("type");
     bool is_optional = (type->getName() == "optional");
+    bool is_variant = (type->getName() == "variant");
     auto* arg_type = result.Nodes.getNodeAs<clang::CXXRecordDecl>("gctype");
     bool is_gced = arg_type;
     if (!arg_type) {
       arg_type = result.Nodes.getNodeAs<clang::CXXRecordDecl>("traceable");
     }
-    assert(arg_type);
+    auto* member = result.Nodes.getNodeAs<clang::CXXRecordDecl>("member");
+    assert(arg_type || member);
+    bool is_ptr = result.Nodes.getNodeAs<clang::Type>("ptr");
     if (auto* bad_decl = result.Nodes.getNodeAs<clang::Decl>("bad_decl")) {
       if (Config::IsIgnoreAnnotated(bad_decl)) {
         return;
       }
-      // Optionals of non-GCed traceable or GCed collections are allowed on
-      // stack.
-      if (is_optional && !is_gced && IsOnStack(bad_decl, record_cache_)) {
-        return;
-      }
-      if (is_optional) {
-        diagnostics_.OptionalDeclUsedWithGC(bad_decl, type, arg_type);
-      } else {
-        diagnostics_.RawPtrOrRefDeclUsedWithGC(bad_decl, type, arg_type);
-      }
-    } else {
-      auto* bad_new = result.Nodes.getNodeAs<clang::Expr>("bad_new");
-      assert(bad_new);
-      if (is_optional) {
-        diagnostics_.OptionalNewExprUsedWithGC(bad_new, type, arg_type);
-      } else {
-        diagnostics_.RawPtrOrRefNewExprUsedWithGC(bad_new, type, arg_type);
-      }
-    }
-  }
-
- private:
-  DiagnosticsReporter& diagnostics_;
-  RecordCache& record_cache_;
-};
-
-class OptionalMemberMatcher : public MatchFinder::MatchCallback {
- public:
-  OptionalMemberMatcher(DiagnosticsReporter& diagnostics,
-                        RecordCache& record_cache)
-      : diagnostics_(diagnostics), record_cache_(record_cache) {}
-
-  void Register(MatchFinder& match_finder) {
-    // Matches fields and new-expressions of type std::optional or
-    // absl::optional where the template argument is known to refer to a
-    // garbage-collected type.
-    auto optional_gced_type =
-        hasType(classTemplateSpecializationDecl(
-                    hasAnyName("::absl::optional", "::std::optional"),
-                    hasTemplateArgument(0, refersToType(MemberType())))
-                    .bind("type"));
-    // On stack optional<Member> is safe, so we don't need to find variables
-    // here.Matching fields should suffice.
-    auto optional_field = fieldDecl(optional_gced_type).bind("bad_decl");
-    auto optional_new_expression =
-        cxxNewExpr(has(cxxConstructExpr(optional_gced_type))).bind("bad_new");
-    match_finder.addDynamicMatcher(optional_field, this);
-    match_finder.addDynamicMatcher(optional_new_expression, this);
-  }
-
-  void run(const MatchFinder::MatchResult& result) override {
-    auto* type = result.Nodes.getNodeAs<clang::CXXRecordDecl>("type");
-    auto* member = result.Nodes.getNodeAs<clang::CXXRecordDecl>("member");
-    if (auto* bad_decl = result.Nodes.getNodeAs<clang::Decl>("bad_decl")) {
-      if (Config::IsIgnoreAnnotated(bad_decl) ||
+      // Optionals and variants of non-GCed traceable, Members, or
+      // pointers/references are allowed on stack.
+      if ((is_optional || is_variant) && (!is_gced || is_ptr) &&
           IsOnStack(bad_decl, record_cache_)) {
         return;
       }
-      diagnostics_.OptionalDeclUsedWithMember(bad_decl, type, member);
+      if (is_optional) {
+        if (arg_type) {
+          diagnostics_.OptionalDeclUsedWithGC(bad_decl, type, arg_type);
+        } else {
+          diagnostics_.OptionalDeclUsedWithMember(bad_decl, type, member);
+        }
+      } else if (is_variant) {
+        diagnostics_.VariantUsedWithGC(bad_decl, type,
+                                       arg_type ? arg_type : member);
+      } else {
+        diagnostics_.RawPtrOrRefDeclUsedWithGC(bad_decl, type,
+                                               arg_type ? arg_type : member);
+      }
     } else {
       auto* bad_new = result.Nodes.getNodeAs<clang::Expr>("bad_new");
       assert(bad_new);
-      diagnostics_.OptionalNewExprUsedWithMember(bad_new, type, member);
+      if (is_optional) {
+        if (arg_type) {
+          diagnostics_.OptionalNewExprUsedWithGC(bad_new, type, arg_type);
+        } else {
+          diagnostics_.OptionalNewExprUsedWithMember(bad_new, type, member);
+        }
+      } else if (is_variant) {
+        diagnostics_.VariantUsedWithGC(bad_new, type,
+                                       arg_type ? arg_type : member);
+      } else {
+        diagnostics_.RawPtrOrRefNewExprUsedWithGC(bad_new, type,
+                                                  arg_type ? arg_type : member);
+      }
     }
   }
 
@@ -311,67 +327,6 @@ class CollectionOfGarbageCollectedMatcher : public MatchFinder::MatchCallback {
  private:
   DiagnosticsReporter& diagnostics_;
   RecordCache& record_cache_;
-};
-
-// For the absl::variant checker, we need to match the inside of a variadic
-// template class, which doesn't seem easy with the built-in matchers: define
-// a custom matcher to go through the template parameter list.
-AST_MATCHER_P(clang::TemplateArgument,
-              parameterPackHasAnyElement,
-              // Clang exports other instantiations of Matcher via
-              // using-declarations in public headers, e.g. `using TypeMatcher
-              // = Matcher<QualType>`.
-              //
-              // Once https://reviews.llvm.org/D89920, a Clang patch adding a
-              // similar alias for template arguments, lands, this can be
-              // changed to TemplateArgumentMatcher and won't need to use the
-              // internal namespace any longer.
-              clang::ast_matchers::internal::Matcher<clang::TemplateArgument>,
-              InnerMatcher) {
-  if (Node.getKind() != clang::TemplateArgument::Pack) {
-    return false;
-  }
-  return llvm::any_of(Node.pack_elements(),
-                      [&](const clang::TemplateArgument& Arg) {
-                        return InnerMatcher.matches(Arg, Finder, Builder);
-                      });
-}
-
-// Prevents the use of garbage collected objects in `absl::variant`.
-// That's because `absl::variant` doesn't work well with concurrent marking.
-// Oilpan uses an object's type to know how to trace it. If the type stored in
-// an `absl::variant` changes while the object is concurrently being marked,
-// Oilpan might fail to find a matching pair of element type and reference.
-// This in turn can lead to UAFs and other memory corruptions.
-class VariantGarbageCollectedMatcher : public MatchFinder::MatchCallback {
- public:
-  explicit VariantGarbageCollectedMatcher(DiagnosticsReporter& diagnostics)
-      : diagnostics_(diagnostics) {}
-
-  void Register(MatchFinder& match_finder) {
-    // Matches any constructed absl::variant where a template argument is
-    // known to refer to a garbage-collected type.
-    auto variant_construction =
-        cxxConstructExpr(
-            hasDeclaration(cxxConstructorDecl(
-                ofClass(classTemplateSpecializationDecl(
-                            hasAnyName("::absl::variant", "::std::variant"),
-                            hasAnyTemplateArgument(parameterPackHasAnyElement(
-                                refersToType(GarbageCollectedType()))))
-                            .bind("variant")))))
-            .bind("bad");
-    match_finder.addDynamicMatcher(variant_construction, this);
-  }
-
-  void run(const MatchFinder::MatchResult& result) override {
-    auto* bad_use = result.Nodes.getNodeAs<clang::Expr>("bad");
-    auto* variant = result.Nodes.getNodeAs<clang::CXXRecordDecl>("variant");
-    auto* gc_type = result.Nodes.getNodeAs<clang::CXXRecordDecl>("gctype");
-    diagnostics_.VariantUsedWithGC(bad_use, variant, gc_type);
-  }
-
- private:
-  DiagnosticsReporter& diagnostics_;
 };
 
 class MemberOnStackMatcher : public MatchFinder::MatchCallback {
@@ -630,18 +585,15 @@ void FindBadPatterns(clang::ASTContext& ast_context,
   UniquePtrGarbageCollectedMatcher unique_ptr_gc(diagnostics);
   unique_ptr_gc.Register(match_finder);
 
-  OptionalOrRawPtrToGCedMatcher optional_or_rawptr_gc(diagnostics,
-                                                      record_cache);
-  optional_or_rawptr_gc.Register(match_finder);
+  OptionalOrRawPtrOrVariantToGCedMatcher optional_or_rawptr_or_variant_gc(
+      diagnostics, record_cache);
+  optional_or_rawptr_or_variant_gc.Register(match_finder);
 
   CollectionOfGarbageCollectedMatcher collection_of_gc(diagnostics,
                                                        record_cache);
   if (options.enable_off_heap_collections_of_gced_check) {
     collection_of_gc.Register(match_finder);
   }
-
-  VariantGarbageCollectedMatcher variant_gc(diagnostics);
-  variant_gc.Register(match_finder);
 
   MemberOnStackMatcher member_on_stack(diagnostics);
   if (options.enable_members_on_stack_check) {
@@ -658,9 +610,6 @@ void FindBadPatterns(clang::ASTContext& ast_context,
 
   GCedVarOrField gced_var_or_field(diagnostics);
   gced_var_or_field.Register(match_finder);
-
-  OptionalMemberMatcher optional_member(diagnostics, record_cache);
-  optional_member.Register(match_finder);
 
   match_finder.matchAST(ast_context);
 }

@@ -862,6 +862,14 @@ void DiagnosticsReporter::RawPtrOrRefNewExprUsedWithGC(
 }
 
 void DiagnosticsReporter::VariantUsedWithGC(
+    const clang::Decl* decl,
+    const clang::CXXRecordDecl* variant,
+    const clang::CXXRecordDecl* gc_type) {
+  ReportDiagnostic(decl->getBeginLoc(), diag_variant_used_with_gc_)
+      << variant << gc_type << decl->getSourceRange();
+}
+
+void DiagnosticsReporter::VariantUsedWithGC(
     const clang::Expr* expr,
     const clang::CXXRecordDecl* variant,
     const clang::CXXRecordDecl* gc_type) {

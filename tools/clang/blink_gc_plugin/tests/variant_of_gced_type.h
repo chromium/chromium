@@ -24,6 +24,13 @@ class Mixin : public GarbageCollectedMixin {
   void Trace(Visitor*) const {}
 };
 
+class Traceable {
+  DISALLOW_NEW();
+
+ public:
+  void Trace(Visitor*) const {}
+};
+
 }  // namespace blink
 
 #endif  // TOOLS_CLANG_BLINK_GC_PLUGIN_TESTS_VARIANT_OF_GCED_TYPE_H_
