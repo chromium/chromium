@@ -5,9 +5,6 @@
 package org.chromium.chrome.browser.toolbar;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.res.Resources;
@@ -35,12 +32,10 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
-import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link ToolbarProgressBarLayer}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ToolbarProgressBarLayerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -48,14 +43,12 @@ public class ToolbarProgressBarLayerTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock private ToolbarControlContainer mControlContainer;
-    @Mock private ToolbarProgressBar mProgressBarView;
     @Mock private TopControlsStacker mTopControlsStacker;
     @Mock private BottomControlsStacker mBottomControlsStacker;
-    @Mock private CoordinatorLayout mContentView;
-    @Mock private ToolbarLayout mToolbarLayout;
 
     private Activity mActivity;
+    private ToolbarControlContainer mControlContainer;
+    private ToolbarProgressBar mProgressBarView;
     private View mProgressBarContainer;
     private View mToolbarHairline;
 
@@ -66,8 +59,11 @@ public class ToolbarProgressBarLayerTest {
     @Before
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
-        mProgressBarContainer = spy(new View(mActivity));
-        doReturn(mContentView).when(mProgressBarContainer).getParent();
+        mControlContainer = new ToolbarControlContainer(mActivity, /* attrs= */ null);
+        mProgressBarView = new ToolbarProgressBar(mActivity, /* attrs= */ null);
+        mProgressBarContainer = new View(mActivity);
+        CoordinatorLayout contentView = new CoordinatorLayout(mActivity);
+        contentView.addView(mProgressBarContainer);
         mToolbarHairline = new View(mActivity);
 
         mTopAnchorViewIdSupplier = ObservableSuppliers.createMonotonic(Resources.ID_NULL);
@@ -82,20 +78,21 @@ public class ToolbarProgressBarLayerTest {
                         mTopAnchorViewIdSupplier,
                         mTopControlsStacker,
                         mBottomControlsStacker,
-                        false,
-                        mToolbarLayout);
+                        /* isToolbarPositionCustomizationEnabled= */ false,
+                        // Only used for its Context in a path not exercised by these tests.
+                        /* toolbarLayout= */ null);
     }
 
     @Test
     public void testTopControlVisibility() {
-        when(mProgressBarView.isStarted()).thenReturn(true);
+        mProgressBarView.start();
         mTestControlPosition = ControlsPosition.TOP;
         assertEquals(TopControlVisibility.VISIBLE, mLayer.getTopControlVisibility());
 
         mTestControlPosition = ControlsPosition.BOTTOM;
         assertEquals(TopControlVisibility.HIDDEN, mLayer.getTopControlVisibility());
 
-        when(mProgressBarView.isStarted()).thenReturn(false);
+        mProgressBarView.finish(/* fadeOut= */ false);
         mTestControlPosition = ControlsPosition.TOP;
         assertEquals(TopControlVisibility.HIDDEN, mLayer.getTopControlVisibility());
     }
@@ -103,20 +100,18 @@ public class ToolbarProgressBarLayerTest {
     @Test
     public void testUpdateTopAnchorView() {
         mTestControlPosition = ControlsPosition.TOP;
-        View controlContainerView = new View(mActivity);
-        controlContainerView.setId(123);
-        when(mControlContainer.getView()).thenReturn(controlContainerView);
+        mControlContainer.setId(123);
         mProgressBarContainer.setLayoutParams(
                 new CoordinatorLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         // The progress bar anchors to whatever the supplier resolves (the anchor priority ladder
         // now lives in ToolbarManager).
-        mTopAnchorViewIdSupplier.set(controlContainerView.getId());
+        mTopAnchorViewIdSupplier.set(mControlContainer.getId());
         mLayer.onTopControlLayerHeightChanged(0, 0);
         ShadowLooper.idleMainLooper();
         assertEquals(
-                controlContainerView.getId(),
+                mControlContainer.getId(),
                 ((CoordinatorLayout.LayoutParams) mProgressBarContainer.getLayoutParams())
                         .getAnchorId());
 
@@ -153,17 +148,16 @@ public class ToolbarProgressBarLayerTest {
                         mTopAnchorViewIdSupplier,
                         mTopControlsStacker,
                         mBottomControlsStacker,
-                        true,
-                        mToolbarLayout);
+                        /* isToolbarPositionCustomizationEnabled= */ true,
+                        // Only used for its Context in a path not exercised by these tests.
+                        /* toolbarLayout= */ null);
 
         mTestControlPosition = ControlsPosition.TOP;
-        View controlContainerView = new View(mActivity);
-        controlContainerView.setId(123);
-        when(mControlContainer.getView()).thenReturn(controlContainerView);
+        mControlContainer.setId(123);
         CoordinatorLayout.LayoutParams params =
                 new CoordinatorLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        params.setAnchorId(controlContainerView.getId());
+        params.setAnchorId(mControlContainer.getId());
         mProgressBarContainer.setLayoutParams(params);
 
         // When customization is enabled, updateTopAnchorView() bails out early, so the supplier's
@@ -172,7 +166,7 @@ public class ToolbarProgressBarLayerTest {
         ShadowLooper.idleMainLooper();
         layer.onTopControlLayerHeightChanged(0, 0);
         assertEquals(
-                controlContainerView.getId(),
+                mControlContainer.getId(),
                 ((CoordinatorLayout.LayoutParams) mProgressBarContainer.getLayoutParams())
                         .getAnchorId());
     }
@@ -190,9 +184,6 @@ public class ToolbarProgressBarLayerTest {
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.leftMargin = 240;
         mProgressBarContainer.setLayoutParams(params);
-
-        View controlContainerView = new View(mActivity);
-        when(mControlContainer.getView()).thenReturn(controlContainerView);
 
         mLayer.onProgressBarInfoUpdate(drawingInfo);
 

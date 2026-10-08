@@ -50,12 +50,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
-import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for the top toolbar overlay's mediator (composited version of the top toolbar). */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TopToolbarOverlayMediatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -65,7 +63,7 @@ public class TopToolbarOverlayMediatorTest {
     @Mock private ToolbarThemeColorProvider mToolbarThemeColorProvider;
     @Mock private Tab mTab;
     @Mock private Tab mTab2;
-    @Mock private ToolbarProgressBar mProgressBar;
+    private ToolbarProgressBar mProgressBar;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
@@ -73,9 +71,6 @@ public class TopToolbarOverlayMediatorTest {
     private ArgumentCaptor<BrowserControlsStateProvider.Observer> mBrowserControlsObserverCaptor;
 
     @Captor private ArgumentCaptor<LayoutStateProvider.LayoutStateObserver> mLayoutObserverCaptor;
-
-    @Captor
-    private ArgumentCaptor<ClipDrawableProgressBar.ProgressBarObserver> mProgressBarObserverCaptor;
 
     private final SettableMonotonicObservableSupplier<Tab> mTabSupplier =
             ObservableSuppliers.createMonotonic();
@@ -95,6 +90,7 @@ public class TopToolbarOverlayMediatorTest {
         TopToolbarOverlayMediator.setToolbarBackgroundColorForTesting(Color.RED);
         TopToolbarOverlayMediator.setUrlBarColorForTesting(Color.BLUE);
         TopToolbarOverlayMediator.setIsTabletForTesting(false);
+        mProgressBar = new ToolbarProgressBar(mContext, /* attrs= */ null);
 
         mModel =
                 new PropertyModel.Builder(TopToolbarOverlayProperties.ALL_KEYS)
@@ -130,7 +126,6 @@ public class TopToolbarOverlayMediatorTest {
         // Ensure the observer is added to the initial tab.
         setTabSupplierTab(mTab);
 
-        verify(mProgressBar).addObserver(mProgressBarObserverCaptor.capture());
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         verify(mBrowserControlsVisibilityManager)
                 .addObserver(mBrowserControlsObserverCaptor.capture());
@@ -255,7 +250,8 @@ public class TopToolbarOverlayMediatorTest {
 
         mModel.set(TopToolbarOverlayProperties.PROGRESS_BAR_INFO, null);
 
-        mProgressBarObserverCaptor.getValue().onVisibleProgressUpdated();
+        // The progress bar starts at alpha 0; making it visible notifies its observers.
+        mProgressBar.setAlpha(1.0f);
 
         assertNotNull(
                 "The progress bar data should be populated.",
@@ -284,7 +280,8 @@ public class TopToolbarOverlayMediatorTest {
         TopToolbarOverlayMediator.setIsTabletForTesting(true);
         mModel.set(TopToolbarOverlayProperties.PROGRESS_BAR_INFO, null);
 
-        mProgressBarObserverCaptor.getValue().onVisibleProgressUpdated();
+        // The progress bar starts at alpha 0; making it visible notifies its observers.
+        mProgressBar.setAlpha(1.0f);
 
         assertNotNull(
                 "The progress bar data should not be empty.",
