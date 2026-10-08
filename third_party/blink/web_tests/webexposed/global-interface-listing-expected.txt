@@ -7344,7 +7344,6 @@ interface OffscreenCanvas : EventTarget
     method convertToBlob
     method getContext
     method getElementImageDefaultSize
-    method getElementTransform
     method transferToImageBitmap
     method updateElementGeometry
     setter height

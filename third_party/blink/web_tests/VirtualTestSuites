@@ -2775,7 +2775,7 @@
       "external/wpt/html/canvas/element/manual/draw-element-image/ink-overflow.tentative.html",
       "external/wpt/html/canvas/element/manual/draw-element-image/nested-canvas-scale.tentative.html",
       "external/wpt/html/canvas/element/manual/draw-element-image/scale.tentative.html",
-      "external/wpt/html/canvas/element/manual/draw-element-image/get-element-transform.tentative.html",
+      "external/wpt/html/canvas/element/manual/draw-element-image/canvas-transform-update.tentative.html",
       "wpt_internal/webgl/draw-element-image/webgl-css-transform-on-div.html",
       "wpt_internal/webgl/draw-element-image/webgl-ink-overflow.html",
       "wpt_internal/webgl/draw-element-image/webgl-scaling.html"
@@ -2825,7 +2825,7 @@
       "external/wpt/css/css-ui/caret-shape-block-color-001.html",
       "external/wpt/html/canvas/element/manual/draw-element-image/ink-overflow.tentative.html",
       "external/wpt/html/canvas/element/manual/draw-element-image/scale.tentative.html",
-      "external/wpt/html/canvas/element/manual/draw-element-image/get-element-transform.tentative.html",
+      "external/wpt/html/canvas/element/manual/draw-element-image/canvas-transform-update.tentative.html",
       "external/wpt/html/canvas/element/manual/draw-element-image/canvas-transform-get-bounding-client-rect.tentative.html",
       "external/wpt/html/canvas/element/manual/draw-element-image/nested-canvas-scale.tentative.html",
       "external/wpt/html/canvas/element/manual/draw-element-image/update-element-geometry-get-bounding-client-rect.tentative.html",

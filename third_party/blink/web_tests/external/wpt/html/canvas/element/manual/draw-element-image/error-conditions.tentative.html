@@ -46,9 +46,6 @@ promise_test(async () => {
   assert_throws_dom("InvalidStateError",
     () => canvas.getElementImageDefaultSize(child),
     "Can't get element image default size if content=drawable is not specified.");
-  assert_throws_dom("InvalidStateError",
-    () => canvas.getElementTransform(child, new DOMMatrix()),
-    "Can't get element transform if content=drawable is not specified.");
 
   canvas.setAttribute("content", "drawable"); // Add attribute.
   await waitForCanvasPaint(canvas);
@@ -57,7 +54,6 @@ promise_test(async () => {
   let img = canvas.captureElementImage(child);
   canvas.getElementImageDefaultSize(child);
   canvas.getElementImageDefaultSize(img);
-  canvas.getElementTransform(child, new DOMMatrix());
 
   canvaswithoutlayout.removeAttribute("content");
   assert_throws_dom("InvalidStateError",
@@ -70,9 +66,6 @@ promise_test(async () => {
   assert_throws_dom("InvalidStateError",
     () => canvaswithoutlayout.getElementImageDefaultSize(child2),
     "Can't get element image default size if content=drawable is not specified.");
-  assert_throws_dom("InvalidStateError",
-    () => canvaswithoutlayout.getElementTransform(child2, new DOMMatrix()),
-    "Can't get element transform if content=drawable is not specified.");
 
   // Also test non-drawable descendants exceptions
   assert_throws_dom("InvalidStateError",
@@ -81,9 +74,6 @@ promise_test(async () => {
   assert_throws_dom("InvalidStateError",
     () => canvas.getElementImageDefaultSize(grandchild),
     "Can't get default size for non-drawable descendants.");
-  assert_throws_dom("InvalidStateError",
-    () => canvas.getElementTransform(grandchild, new DOMMatrix()),
-    "Can't get transform for non-drawable descendants.");
 });
 </script>
 </html>

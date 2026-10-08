@@ -487,41 +487,6 @@ ElementImageDefaultSize* OffscreenCanvas::getElementImageDefaultSize(
   return ElementImageDefaultSize::Create();
 }
 
-DOMMatrix* OffscreenCanvas::getElementTransform(
-    const V8UnionElementOrElementImage* element_or_image,
-    DOMMatrix* draw_transform,
-    ExceptionState& exception_state) {
-  if (element_or_image->IsElement()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Elements cannot be drawn into an OffscreenCanvas.");
-    return nullptr;
-  }
-
-  if (element_or_image->IsElementImage()) {
-    const auto& paint_record =
-        element_or_image->GetAsElementImage()->PaintRecord();
-    if (!paint_record) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "The ElementImage has been closed.");
-      return nullptr;
-    }
-    if (paint_record->paint_state.canvas_node_id == kInvalidDOMNodeId ||
-        paint_record->paint_state.canvas_node_id != PlaceholderCanvasId()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kInvalidStateError,
-          "The ElementImage was captured from a different canvas.");
-      return nullptr;
-    }
-    gfx::Transform transform = GetElementTransform(
-        paint_record->paint_state, Size(), draw_transform->Matrix());
-    return MakeGarbageCollected<DOMMatrix>(transform,
-                                           transform.Is2dTransform());
-  }
-
-  return DOMMatrix::Create();
-}
-
 void OffscreenCanvas::updateElementGeometry(
     const V8UnionElementOrElementImage* element_or_element_image,
     const UpdateElementGeometryOptions* options,

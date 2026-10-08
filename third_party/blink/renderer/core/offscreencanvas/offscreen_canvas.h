@@ -31,7 +31,6 @@
 namespace blink {
 
 class CanvasContextCreationAttributesCore;
-class DOMMatrix;
 class ElementImageDefaultSize;
 class UpdateElementGeometryOptions;
 class ImageBitmap;
@@ -88,9 +87,6 @@ class CORE_EXPORT OffscreenCanvas final
   ElementImageDefaultSize* getElementImageDefaultSize(
       const V8UnionElementOrElementImage* element,
       ExceptionState&) const;
-  DOMMatrix* getElementTransform(const V8UnionElementOrElementImage* element,
-                                 DOMMatrix* draw_transform,
-                                 ExceptionState&);
   void updateElementGeometry(const V8UnionElementOrElementImage*,
                              const UpdateElementGeometryOptions*,
                              ExceptionState&);

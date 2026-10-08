@@ -50,9 +50,5 @@ promise_test(async t => {
   assert_throws_dom('InvalidStateError',
     () => offscreen.getElementImageDefaultSize(child),
     'getElementImageDefaultSize with Element on OffscreenCanvas should throw InvalidStateError');
-
-  assert_throws_dom('InvalidStateError',
-    () => offscreen.getElementTransform(child, new DOMMatrix()),
-    'getElementTransform with Element on OffscreenCanvas should throw InvalidStateError');
 }, 'Passing an Element to OffscreenCanvas methods on the main thread throws InvalidStateError');
 </script>

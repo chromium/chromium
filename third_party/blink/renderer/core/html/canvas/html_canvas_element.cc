@@ -977,27 +977,6 @@ ElementImageDefaultSize* HTMLCanvasElement::getElementImageDefaultSize(
 }
 
 DOMMatrix* HTMLCanvasElement::getElementTransform(
-    const V8UnionElementOrElementImage* element_or_image,
-    DOMMatrix* draw_transform,
-    ExceptionState& exception_state) {
-  if (!VerifyDrawElementImageEligibility(
-          element_or_image, "getElementTransform", exception_state)) {
-    return nullptr;
-  }
-
-  const auto* paint_state = GetCanvasDrawablePaintState(element_or_image);
-  if (!paint_state) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "No cached paint record for element.");
-    return nullptr;
-  }
-
-  gfx::Transform transform =
-      GetElementTransform(*paint_state, Size(), draw_transform->Matrix());
-  return MakeGarbageCollected<DOMMatrix>(transform, transform.Is2dTransform());
-}
-
-DOMMatrix* HTMLCanvasElement::getElementTransform(
     Element* element,
     ExceptionState& exception_state) const {
   if (!VerifyDrawElementImageEligibility(element, "getElementTransform",
