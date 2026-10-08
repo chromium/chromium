@@ -97,6 +97,7 @@
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
+#include "third_party/blink/renderer/core/html/html_capability_element_base.h"
 #include "third_party/blink/renderer/core/html/html_details_element.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_directory_element.h"
@@ -2372,7 +2373,8 @@ ax::mojom::blink::Role AXNodeObject::RoleFromLayoutObjectOrNode() const {
     }
   }
 
-  // Capability elements (install, usermedia, geolocation) act as buttons.
+  // Capability elements (install, usermedia, geolocation, camera, microphone)
+  // act as buttons.
   if (IsA<HTMLCapabilityElementBase>(node)) {
     return ax::mojom::blink::Role::kButton;
   }
@@ -7322,6 +7324,23 @@ String AXNodeObject::NativeTextAlternative(
         *found_text_alternative = true;
       }
       return text_alternative;
+    }
+  }
+
+  if (auto* capability_element =
+          DynamicTo<HTMLCapabilityElementBase>(GetNode())) {
+    if (capability_element->IsIconOnly()) {
+      name_from = ax::mojom::blink::NameFrom::kContents;
+      text_alternative = capability_element->AccessibleLabel();
+      if (!text_alternative.empty()) {
+        if (name_sources) {
+          name_sources->push_back(NameSource(*found_text_alternative));
+          name_sources->back().type = name_from;
+          name_sources->back().text = text_alternative;
+          *found_text_alternative = true;
+        }
+        return text_alternative;
+      }
     }
   }
 

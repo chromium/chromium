@@ -456,25 +456,31 @@ TEST_F(HTMLCapabilityElementBaseTest, DisplayModeIconOnly) {
       MakeGarbageCollected<HTMLCameraElement>(GetDocument()),
       MakeGarbageCollected<HTMLMicrophoneElement>(GetDocument()),
       MakeGarbageCollected<HTMLGeolocationElement>(GetDocument())};
-  for (auto& permission_element : elements) {
+  const Vector<const char*> expected_labels = {
+      kCameraString, kMicrophoneString, kGeolocationString};
+  for (wtf_size_t i = 0; i < elements.size(); ++i) {
+    auto& permission_element = elements[i];
+    const char* expected_label = expected_labels[i];
     GetDocument().body()->AppendChild(permission_element);
     GetDocument().View()->UpdateAllLifecyclePhasesForTest();
     WaitForPermissionElementRegistration(permission_element);
     EXPECT_FALSE(permission_element->IsIconOnly());
-    EXPECT_FALSE(permission_element->permission_text_span_for_testing()
-                     ->innerText()
-                     .empty());
+    CheckInnerText(permission_element, expected_label);
+    EXPECT_EQ(expected_label, permission_element->AccessibleLabel());
+    EXPECT_EQ(expected_label, permission_element->computedName());
 
     permission_element->setAttribute(html_names::kDisplaymodeAttr,
                                      AtomicString("icon-only"));
     EXPECT_TRUE(permission_element->IsIconOnly());
     CheckInnerText(permission_element, g_empty_string);
+    EXPECT_EQ(expected_label, permission_element->AccessibleLabel());
+    EXPECT_EQ(expected_label, permission_element->computedName());
 
     permission_element->removeAttribute(html_names::kDisplaymodeAttr);
     EXPECT_FALSE(permission_element->IsIconOnly());
-    EXPECT_FALSE(permission_element->permission_text_span_for_testing()
-                     ->innerText()
-                     .empty());
+    CheckInnerText(permission_element, expected_label);
+    EXPECT_EQ(expected_label, permission_element->AccessibleLabel());
+    EXPECT_EQ(expected_label, permission_element->computedName());
   }
 }
 

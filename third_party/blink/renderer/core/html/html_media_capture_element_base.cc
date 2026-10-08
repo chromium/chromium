@@ -223,14 +223,6 @@ void HTMLMediaCaptureElementBase::UpdateAppearance() {
   UpdateIcon(permission_count == 1 ? permission_name
                                    : PermissionName::VIDEO_CAPTURE);
 
-  if (IsIconOnly()) {
-    if (permission_text_span() &&
-        !permission_text_span()->textContent().empty()) {
-      permission_text_span()->setInnerText(g_empty_string);
-    }
-    return;
-  }
-
   AtomicString language_string = ComputeInheritedLanguage().ToAsciiLower();
   bool granted = ShouldShowGrantedAppearance();
 
@@ -242,8 +234,7 @@ void HTMLMediaCaptureElementBase::UpdateAppearance() {
   uint16_t translated_message_id =
       GetTranslatedMessageID(untranslated_message_id, language_string);
   CHECK(translated_message_id);
-  permission_text_span()->setInnerText(
-      GetLocale().QueryString(translated_message_id));
+  SetPermissionText(GetLocale().QueryString(translated_message_id));
 }
 
 void HTMLMediaCaptureElementBase::UpdateIcon(PermissionName permission) {

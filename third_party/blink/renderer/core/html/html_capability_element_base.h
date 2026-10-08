@@ -86,6 +86,7 @@ class CORE_EXPORT HTMLCapabilityElementBase
   bool granted() const { return PermissionsGranted(); }
 
   bool IsIconOnly() const;
+  const String& AccessibleLabel() const;
 
   const Member<HTMLSpanElement>& permission_text_span_for_testing() const {
     return permission_text_span_;
@@ -142,6 +143,8 @@ class CORE_EXPORT HTMLCapabilityElementBase
   HTMLSpanElement* permission_text_span() const {
     return permission_text_span_.Get();
   }
+
+  void SetPermissionText(const String& text);
 
   HTMLPermissionIconElement* permission_internal_icon() const {
     return permission_internal_icon_.Get();
@@ -609,6 +612,8 @@ class CORE_EXPORT HTMLCapabilityElementBase
 
   // Whether the elements has entered fallback mode. See |EnableFallbackMode|.
   bool fallback_mode_ = false;
+
+  String accessible_label_;
 
  private:
   String GetActivationErrorMessage() const;

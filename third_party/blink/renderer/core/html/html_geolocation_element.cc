@@ -372,22 +372,12 @@ void HTMLGeolocationElement::MaybeTriggerAutolocate(ForceAutolocate force) {
 }
 
 void HTMLGeolocationElement::UpdateText() {
-  if (IsIconOnly()) {
-    if (permission_text_span() &&
-        !permission_text_span()->textContent().empty()) {
-      permission_text_span()->setInnerText(g_empty_string);
-    }
-    return;
-  }
   uint16_t message_id = GetTranslatedMessageID(
       is_precise_location() ? IDS_PERMISSION_REQUEST_PRECISE_GEOLOCATION
                             : IDS_PERMISSION_REQUEST_GEOLOCATION,
       ComputeInheritedLanguage().ToAsciiLower());
   CHECK(message_id);
-  String new_text = GetLocale().QueryString(message_id);
-  if (permission_text_span()->textContent() != new_text) {
-    permission_text_span()->setInnerText(new_text);
-  }
+  SetPermissionText(GetLocale().QueryString(message_id));
 }
 
 void HTMLGeolocationElement::UpdateIcon(

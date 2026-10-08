@@ -299,6 +299,8 @@ TEST_F(HTMLGeolocationElementTest, GeolocationDisplayModeIconOnly) {
                                     AtomicString("icon-only"));
   EXPECT_TRUE(geolocation_element->IsIconOnly());
   CheckInnerText(geolocation_element, g_empty_string);
+  EXPECT_EQ(kGeolocationString, geolocation_element->AccessibleLabel());
+  EXPECT_EQ(kGeolocationString, geolocation_element->computedName());
 
   geolocation_element->removeAttribute(html_names::kDisplaymodeAttr);
   EXPECT_FALSE(geolocation_element->IsIconOnly());

@@ -17,6 +17,7 @@
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/public/strings/grit/permission_element_strings.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_permission_state.h"
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/font_size_functions.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_instances.h"
@@ -498,6 +499,30 @@ bool HTMLCapabilityElementBase::IsIconOnly() const {
   }
   return EqualIgnoringAsciiCase(FastGetAttribute(html_names::kDisplaymodeAttr),
                                 "icon-only");
+}
+
+const String& HTMLCapabilityElementBase::AccessibleLabel() const {
+  return accessible_label_;
+}
+
+void HTMLCapabilityElementBase::SetPermissionText(const String& text) {
+  bool label_changed = accessible_label_ != text;
+  accessible_label_ = text;
+  String displayed_text = IsIconOnly() ? g_empty_string : text;
+  if (permission_text_span_ &&
+      permission_text_span_->textContent() != displayed_text) {
+    permission_text_span_->setInnerText(displayed_text);
+    label_changed = true;
+  }
+  if (label_changed) {
+    if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+      if (LayoutObject* layout_object = GetLayoutObject()) {
+        cache->TextChanged(layout_object);
+      } else {
+        cache->MarkElementDirty(this);
+      }
+    }
+  }
 }
 
 void HTMLCapabilityElementBase::UpdatePermissionStatus() {
