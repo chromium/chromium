@@ -33,6 +33,8 @@
 #include "chrome/browser/ui/webui/searchbox/omnibox_composebox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_full_handler.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
+#include "chrome/browser/ui/webui/theme_colors_source_manager.h"
+#include "chrome/browser/ui/webui/theme_colors_source_manager_factory.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -309,6 +311,21 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
 OmniboxPopupUI::~OmniboxPopupUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OmniboxPopupUI)
+
+// The popup's render-blocking chrome://theme/colors.css is served from the
+// renderer without a browser round-trip, like the WebUI toolbar.
+void OmniboxPopupUI::PopulateLocalResourceLoaderConfig(
+    blink::mojom::LocalResourceLoaderConfig* config,
+    const url::Origin& requesting_origin) {
+  auto* theme_colors_manager =
+      ThemeColorsSourceManagerFactory::GetForProfile(profile_);
+  // Without a manager the stylesheet is still fetched over the network.
+  if (!theme_colors_manager) {
+    return;
+  }
+  theme_colors_manager->PopulateLocalResourceLoaderConfig(
+      config, requesting_origin, web_ui()->GetWebContents());
+}
 
 void OmniboxPopupUI::BindInterface(
     content::RenderFrameHost* host,

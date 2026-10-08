@@ -818,6 +818,7 @@ if (!is_android) {
       "//chrome/browser/ui",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/browser/ui/webui/omnibox_popup",
       "//chrome/browser/ui/webui/webui_toolbar:impl",
       "//chrome/common:chrome_features",
       "//content/public/browser",
@@ -826,11 +827,14 @@ if (!is_android) {
       "//ui/color",
     ]
 
-    # webui_toolbar_ui.cc and webui_toolbar_ui_browsertest.cc include
-    # theme_colors_source_manager(_factory).h, while this target depends on
-    # //chrome/browser/ui (which pulls in webui_toolbar transitively).
-    allow_circular_includes_from =
-        [ "//chrome/browser/ui/webui/webui_toolbar:impl" ]
+    # webui_toolbar_ui.cc, webui_toolbar_ui_browsertest.cc and
+    # omnibox_popup_ui.cc include theme_colors_source_manager(_factory).h, while
+    # this target depends on //chrome/browser/ui (which pulls in webui_toolbar
+    # and omnibox_popup transitively).
+    allow_circular_includes_from = [
+      "//chrome/browser/ui/webui/omnibox_popup",
+      "//chrome/browser/ui/webui/webui_toolbar:impl",
+    ]
   }
 
   source_set("webui_load_timer") {

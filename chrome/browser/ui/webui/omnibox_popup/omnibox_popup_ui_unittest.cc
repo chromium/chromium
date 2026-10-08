@@ -12,6 +12,8 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
+#include "chrome/browser/ui/webui/theme_colors_source_manager.h"
+#include "chrome/browser/ui/webui/theme_colors_source_manager_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/contextual_search/contextual_search_service.h"
@@ -20,6 +22,10 @@
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/loader/local_resource_loader_config.mojom.h"
+#include "ui/color/color_provider.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 class OmniboxPopupUITest : public ChromeRenderViewHostTestHarness {
  public:
@@ -106,4 +112,30 @@ TEST_F(OmniboxPopupUITest, SafeWithNullContextualSearchService) {
 
   OmniboxPopupWebContentsHelper::FromWebContents(web_contents())
       ->set_omnibox_controller(nullptr);
+}
+
+TEST_F(OmniboxPopupUITest, PopulateLocalResourceLoaderConfig) {
+  ui::ColorProvider color_provider;
+  auto* theme_colors_manager =
+      ThemeColorsSourceManagerFactory::GetForProfile(profile());
+  ASSERT_NE(theme_colors_manager, nullptr);
+  theme_colors_manager->SetColorProviderForTesting(&color_provider);
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(web_contents());
+  auto omnibox_popup_ui = std::make_unique<OmniboxPopupUI>(&web_ui);
+
+  blink::mojom::LocalResourceLoaderConfig config;
+  omnibox_popup_ui->PopulateLocalResourceLoaderConfig(
+      &config, url::Origin::Create(GURL("chrome://omnibox-popup.top-chrome/")));
+
+  auto source_it =
+      config.sources.find(url::Origin::Create(GURL("chrome://theme/")));
+  ASSERT_NE(source_it, config.sources.end());
+  auto resource_it =
+      source_it->second->path_to_resource_map.find("colors.css?sets=ui,chrome");
+  ASSERT_NE(resource_it, source_it->second->path_to_resource_map.end());
+  EXPECT_TRUE(resource_it->second->is_response_body());
+
+  theme_colors_manager->SetColorProviderForTesting(nullptr);
 }
