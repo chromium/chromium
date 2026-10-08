@@ -8,6 +8,7 @@
 
 #include <array>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_split.h"
@@ -25,6 +26,8 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ime/ash/component_extension_ime_manager.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -191,9 +194,12 @@ IN_PROC_BROWSER_TEST_P(CustomizationVPDTest, GetUILanguageList) {
       << "Test failed for initial_locale='" << GetParam()
       << "', locales=" << Print(locales);
 
-  auto ui_language_list =
-      GetUILanguageList(g_browser_process->GetApplicationLocale(), nullptr, "",
-                        input_method::InputMethodManager::Get());
+  input_method::InputMethodManager& input_method_manager =
+      CHECK_DEREF(input_method::InputMethodManager::Get());
+  auto ui_language_list = GetUILanguageList(
+      g_browser_process->GetApplicationLocale(), nullptr, "",
+      CHECK_DEREF(input_method_manager.GetComponentExtensionIMEManager())
+          .GetXkbIMEAsInputMethodDescriptor());
   EXPECT_GE(ui_language_list.size(), locales.size())
       << "Test failed for initial_locale='" << GetParam() << "'";
 

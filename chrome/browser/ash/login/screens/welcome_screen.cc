@@ -647,7 +647,7 @@ void WelcomeScreen::ScheduleResolveLanguageList(
 
   ResolveUILanguageList(
       std::move(language_switch_result),
-      input_method::InputMethodManager::Get(),
+      CHECK_DEREF(input_method::InputMethodManager::Get()),
       base::BindOnce(&WelcomeScreen::OnLanguageListResolved,
                      language_weak_ptr_factory_.GetWeakPtr()));
 }

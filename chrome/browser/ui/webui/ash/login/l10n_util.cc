@@ -16,6 +16,7 @@
 #include <utility>
 
 #include "ash/login/resources/grit/ash_login_strings.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/i18n/legacy_language_tag_helpers.h"
@@ -357,7 +358,7 @@ void ResolveLanguageListInThreadPool(
     const std::string& locale,
     std::unique_ptr<locale_util::LanguageSwitchResult> language_switch_result,
     const scoped_refptr<base::TaskRunner> task_runner,
-    input_method::InputMethodManager* input_method_manager,
+    input_method::InputMethodDescriptors descriptors,
     UILanguageListResolvedCallback resolved_callback) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -388,7 +389,7 @@ void ResolveLanguageListInThreadPool(
   const std::string list_locale =
       language_switch_result ? language_switch_result->loaded_locale : locale;
   base::ListValue language_list(
-      GetUILanguageList(locale, nullptr, selected_code, input_method_manager));
+      GetUILanguageList(locale, nullptr, selected_code, descriptors));
 
   task_runner->PostTask(
       FROM_HERE,
@@ -434,9 +435,13 @@ void AdjustUILanguageList(std::string_view selected,
 
 void ResolveUILanguageList(
     std::unique_ptr<locale_util::LanguageSwitchResult> language_switch_result,
-    input_method::InputMethodManager* input_method_manager,
+    input_method::InputMethodManager& input_method_manager,
     UILanguageListResolvedCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  input_method::InputMethodDescriptors descriptors =
+      CHECK_DEREF(input_method_manager.GetComponentExtensionIMEManager())
+          .GetXkbIMEAsInputMethodDescriptor();
 
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock()},
@@ -444,7 +449,7 @@ void ResolveUILanguageList(
                      g_browser_process->GetApplicationLocale(),
                      std::move(language_switch_result),
                      base::SequencedTaskRunner::GetCurrentDefault(),
-                     input_method_manager, std::move(callback)));
+                     std::move(descriptors), std::move(callback)));
 }
 
 base::ListValue GetMinimalUILanguageList(std::string_view application_locale) {
@@ -464,11 +469,7 @@ base::ListValue GetUILanguageList(
     const std::string& app_locale,
     const std::vector<std::string>* most_relevant_language_codes,
     const std::string& selected,
-    input_method::InputMethodManager* input_method_manager) {
-  ComponentExtensionIMEManager* component_extension_ime_manager =
-      input_method_manager->GetComponentExtensionIMEManager();
-  input_method::InputMethodDescriptors descriptors =
-      component_extension_ime_manager->GetXkbIMEAsInputMethodDescriptor();
+    const input_method::InputMethodDescriptors& descriptors) {
   base::ListValue languages_list(GetLanguageList(
       app_locale, descriptors, l10n_util::GetUserFacingUILocaleList(),
       most_relevant_language_codes

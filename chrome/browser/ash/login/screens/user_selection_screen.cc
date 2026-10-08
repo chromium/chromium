@@ -73,6 +73,8 @@
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "ui/base/ime/ash/component_extension_ime_manager.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
 // Enable VLOG level 1.
@@ -121,9 +123,12 @@ base::ListValue GetPublicSessionLocales(
 
   // Construct the list of available locales. This list consists of the
   // recommended locales, followed by all others.
-  auto available_locales =
-      GetUILanguageList(application_locale, &recommended_locales, std::string(),
-                        input_method::InputMethodManager::Get());
+  input_method::InputMethodManager& input_method_manager =
+      CHECK_DEREF(input_method::InputMethodManager::Get());
+  auto available_locales = GetUILanguageList(
+      application_locale, &recommended_locales, std::string(),
+      CHECK_DEREF(input_method_manager.GetComponentExtensionIMEManager())
+          .GetXkbIMEAsInputMethodDescriptor());
 
   // Select the the first recommended locale that is actually available or the
   // current UI locale if none of them are available.

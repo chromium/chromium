@@ -10,16 +10,20 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
 #include "base/compiler_specific.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
+#include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
 #include "chrome/browser/ash/login/fjord_oobe/fjord_oobe_util.h"
 #include "chrome/browser/ui/webui/ash/login/l10n_util_test_util.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/mock_component_extension_ime_manager_delegate.h"
@@ -64,11 +68,16 @@ class L10nUtilTest : public testing::Test {
   void SetInputMethods1();
   void SetInputMethods2();
 
+  input_method::InputMethodDescriptors GetDescriptors() {
+    return CHECK_DEREF(input_manager_.GetComponentExtensionIMEManager())
+        .GetXkbIMEAsInputMethodDescriptor();
+  }
+
  protected:
   MockInputMethodManagerWithInputMethods input_manager_;
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
   system::ScopedFakeStatisticsProvider scoped_fake_statistics_provider_;
 };
 
@@ -101,9 +110,44 @@ TEST_F(L10nUtilTest, GetUILanguageList) {
   // This requires initialized StatisticsProvider (see L10nUtilTest()).
   auto list(GetUILanguageList(
       TestingBrowserProcess::GetGlobal()->GetApplicationLocale(), nullptr,
-      std::string(), &input_manager_));
+      std::string(), GetDescriptors()));
 
   VerifyOnlyUILanguages(list);
+}
+
+TEST_F(L10nUtilTest, ResolveUILanguageList) {
+  SetInputMethods1();
+
+  base::test::TestFuture<base::ListValue, const std::string&,
+                         const std::string&>
+      future;
+  ResolveUILanguageList(/*language_switch_result=*/nullptr, input_manager_,
+                        future.GetCallback());
+
+  auto [language_list, language_list_locale, selected_language] = future.Take();
+  VerifyOnlyUILanguages(language_list);
+  EXPECT_FALSE(language_list.empty());
+  EXPECT_EQ(language_list_locale,
+            TestingBrowserProcess::GetGlobal()->GetApplicationLocale());
+  EXPECT_EQ(selected_language,
+            TestingBrowserProcess::GetGlobal()->GetApplicationLocale());
+}
+
+TEST_F(L10nUtilTest, ResolveUILanguageListWithSwitchResult) {
+  SetInputMethods1();
+
+  base::test::TestFuture<base::ListValue, const std::string&,
+                         const std::string&>
+      future;
+  ResolveUILanguageList(
+      std::make_unique<locale_util::LanguageSwitchResult>("fr", "fr", true),
+      input_manager_, future.GetCallback());
+
+  auto [language_list, language_list_locale, selected_language] = future.Take();
+  VerifyOnlyUILanguages(language_list);
+  EXPECT_FALSE(language_list.empty());
+  EXPECT_EQ(language_list_locale, "fr");
+  EXPECT_EQ(selected_language, "fr");
 }
 
 TEST_F(L10nUtilTest, FindMostRelevantLocale) {
@@ -157,7 +201,7 @@ TEST_F(L10nUtilTest, GetUILanguageListMulti) {
   // This requires initialized StatisticsProvider (see L10nUtilTest()).
   auto list(GetUILanguageList(
       TestingBrowserProcess::GetGlobal()->GetApplicationLocale(), nullptr,
-      std::string(), &input_manager_));
+      std::string(), GetDescriptors()));
 
   VerifyOnlyUILanguages(list);
 
@@ -180,7 +224,7 @@ TEST_F(L10nUtilTest, GetUILanguageListWithMostRelevant) {
   // This requires initialized StatisticsProvider (see L10nUtilTest()).
   auto list(GetUILanguageList(
       TestingBrowserProcess::GetGlobal()->GetApplicationLocale(),
-      &most_relevant_language_codes, std::string(), &input_manager_));
+      &most_relevant_language_codes, std::string(), GetDescriptors()));
 
   VerifyOnlyUILanguages(list);
 
@@ -220,7 +264,7 @@ TEST_F(L10nUtilTestWithFjordOobe, TestLanguagesFiltered) {
   // This requires initialized StatisticsProvider (see L10nUtilTest()).
   auto list(GetUILanguageList(
       TestingBrowserProcess::GetGlobal()->GetApplicationLocale(), nullptr,
-      std::string(), &input_manager_));
+      std::string(), GetDescriptors()));
 
   VerifyAllowlistedLanguages(list);
 }
