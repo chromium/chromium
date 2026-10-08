@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_COBROWSE_MODEL_COBROWSE_BROWSER_AGENT_H_
 
 #import "base/callback_list.h"
+#import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
@@ -69,6 +70,9 @@ class CobrowseBrowserAgent : public BrowserUserData<CobrowseBrowserAgent>,
 
   // Subscription for eligibility changes.
   base::CallbackListSubscription eligibility_subscription_;
+
+  // Registrar for observing preference changes.
+  PrefChangeRegistrar pref_change_registrar_;
 
   // Called when eligibility changes.
   void OnEligibilityChanged();

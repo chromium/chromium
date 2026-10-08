@@ -10,6 +10,7 @@ source_set("ui_bundled") {
   deps = [
     "//components/enterprise/data_controls/core/browser:features",
     "//components/omnibox/browser",
+    "//components/prefs",
     "//components/search_engines",
     "//components/strings",
     "//ios/chrome/app/strings",
@@ -34,6 +35,8 @@ source_set("unit_tests") {
     ":ui_bundled",
     "//base",
     "//base/test:test_support",
+    "//components/contextual_search:prefs",
+    "//components/prefs",
     "//components/search_engines",
     "//ios/chrome/browser/aim/model:aim_availability",
     "//ios/chrome/browser/aim/model:test_support",

@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/cobrowse/model/cobrowse_util.h"
 
 #import "base/test/scoped_feature_list.h"
+#import "components/contextual_search/pref_names.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/aim/model/mock_ios_chrome_aim_eligibility_service.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -49,7 +51,8 @@ TEST_F(CobrowseUtilTest,
   EXPECT_TRUE(IsAimCobrowseWebSelectionSearchEligible(profile_.get()));
   AimEligibilityService* aim_eligibility_service =
       IOSChromeAimEligibilityServiceFactory::GetForProfile(profile_.get());
-  EXPECT_TRUE(IsAimCobrowseWebSelectionSearchEligible(aim_eligibility_service));
+  EXPECT_TRUE(IsAimCobrowseWebSelectionSearchEligible(aim_eligibility_service,
+                                                      profile_->GetPrefs()));
 }
 
 // Tests IsAimCobrowseWebSelectionSearchEligible when
@@ -63,8 +66,8 @@ TEST_F(CobrowseUtilTest,
   EXPECT_FALSE(IsAimCobrowseWebSelectionSearchEligible(profile_.get()));
   AimEligibilityService* aim_eligibility_service =
       IOSChromeAimEligibilityServiceFactory::GetForProfile(profile_.get());
-  EXPECT_FALSE(
-      IsAimCobrowseWebSelectionSearchEligible(aim_eligibility_service));
+  EXPECT_FALSE(IsAimCobrowseWebSelectionSearchEligible(aim_eligibility_service,
+                                                       profile_->GetPrefs()));
 }
 
 // Tests IsAimCobrowseWebSelectionSearchEligible when kAimCobrowse is disabled.
@@ -77,8 +80,8 @@ TEST_F(CobrowseUtilTest,
   EXPECT_FALSE(IsAimCobrowseWebSelectionSearchEligible(profile_.get()));
   AimEligibilityService* aim_eligibility_service =
       IOSChromeAimEligibilityServiceFactory::GetForProfile(profile_.get());
-  EXPECT_FALSE(
-      IsAimCobrowseWebSelectionSearchEligible(aim_eligibility_service));
+  EXPECT_FALSE(IsAimCobrowseWebSelectionSearchEligible(aim_eligibility_service,
+                                                       profile_->GetPrefs()));
 }
 
 // Tests IsAimCobrowseWebSelectionSearchEligible with incognito (off-the-record)
@@ -91,4 +94,27 @@ TEST_F(CobrowseUtilTest,
 
   ProfileIOS* otr_profile = profile_->GetOffTheRecordProfile();
   EXPECT_FALSE(IsAimCobrowseWebSelectionSearchEligible(otr_profile));
+}
+
+// Test `IsAimCobrowseEligible` and `IsAimCobrowseWebSelectionSearchEligible`
+// when `kSearchContentSharingSettings` policy is disabled.
+TEST_F(CobrowseUtilTest,
+       TestIsAimCobrowseEligibleWhenSearchContentSharingDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kAimCobrowse, kAssistantContainer, kAimCobrowseWebSelectionSearch}, {});
+
+  profile_->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kDisabled));
+
+  EXPECT_FALSE(IsAimCobrowseEligible(profile_.get()));
+  EXPECT_FALSE(IsAimCobrowseWebSelectionSearchEligible(profile_.get()));
+  AimEligibilityService* aim_eligibility_service =
+      IOSChromeAimEligibilityServiceFactory::GetForProfile(profile_.get());
+  EXPECT_FALSE(
+      IsAimCobrowseEligible(aim_eligibility_service, profile_->GetPrefs()));
+  EXPECT_FALSE(IsAimCobrowseWebSelectionSearchEligible(aim_eligibility_service,
+                                                       profile_->GetPrefs()));
 }

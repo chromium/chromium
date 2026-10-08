@@ -7,7 +7,9 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/time/time.h"
+#import "components/contextual_search/pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/aim/model/mock_ios_chrome_aim_eligibility_service.h"
@@ -260,6 +262,56 @@ TEST_F(CobrowseBrowserAgentTest,
       scene_state_, base::Time::Now() - base::Hours(8));
 
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_FALSE(agent->IsSessionActive());
+  EXPECT_EQ(agent->GetCobrowseContext(), nil);
+  EXPECT_FALSE(profile_->GetPrefs()
+                   ->GetDict(prefs::kCobrowseSessionActiveMap)
+                   .contains("test_session_id"));
+}
+
+// Test that `CobrowseBrowserAgent` does not restore the session when
+// `kSearchContentSharingSettings` policy is disabled.
+TEST_F(CobrowseBrowserAgentTest,
+       DoesNotRestoreContextWhenSearchContentSharingDisabled) {
+  profile_->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kDisabled));
+
+  ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                              prefs::kCobrowseSessionActiveMap);
+  update->Set("test_session_id",
+              CreateSessionPrefDict("my_server_id_123", "my_turn_id_456"));
+
+  CobrowseBrowserAgent::CreateForBrowser(browser_.get());
+  CobrowseBrowserAgent* agent =
+      CobrowseBrowserAgent::FromBrowser(browser_.get());
+
+  EXPECT_FALSE(agent->IsSessionActive());
+  EXPECT_EQ(agent->GetCobrowseContext(), nil);
+}
+
+// Test that disabling `kSearchContentSharingSettings` policy dynamically
+// terminates an active cobrowse session.
+TEST_F(CobrowseBrowserAgentTest,
+       TerminatesSessionWhenSearchContentSharingDisabled) {
+  ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                              prefs::kCobrowseSessionActiveMap);
+  update->Set("test_session_id",
+              CreateSessionPrefDict("my_server_id_123", "my_turn_id_456"));
+
+  CobrowseBrowserAgent::CreateForBrowser(browser_.get());
+  CobrowseBrowserAgent* agent =
+      CobrowseBrowserAgent::FromBrowser(browser_.get());
+
+  EXPECT_TRUE(agent->IsSessionActive());
+  EXPECT_NE(agent->GetCobrowseContext(), nil);
+
+  profile_->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kDisabled));
 
   EXPECT_FALSE(agent->IsSessionActive());
   EXPECT_EQ(agent->GetCobrowseContext(), nil);

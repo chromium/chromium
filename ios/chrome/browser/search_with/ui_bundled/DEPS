@@ -13,6 +13,7 @@ include_rules = [
 specific_include_rules = {
   # keep-sorted start
   ".*_unittest\\.mm": [
+    "+components/contextual_search/pref_names.h",
     "+ios/chrome/browser/aim/model",
     "+ios/chrome/browser/search_engines/model",
     "+ios/chrome/browser/shared/coordinator/scene",

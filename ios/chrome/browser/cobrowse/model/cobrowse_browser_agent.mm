@@ -10,6 +10,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
+#import "components/contextual_search/pref_names.h"
 #import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
@@ -106,6 +107,15 @@ CobrowseBrowserAgent::CobrowseBrowserAgent(Browser* browser)
         aim_eligibility_service->RegisterEligibilityChangedCallback(
             base::BindRepeating(&CobrowseBrowserAgent::OnEligibilityChanged,
                                 base::Unretained(this)));
+  }
+
+  PrefService* pref_service = browser_->GetProfile()->GetPrefs();
+  if (pref_service) {
+    pref_change_registrar_.Init(pref_service);
+    pref_change_registrar_.Add(
+        contextual_search::kSearchContentSharingSettings,
+        base::BindRepeating(&CobrowseBrowserAgent::OnEligibilityChanged,
+                            base::Unretained(this)));
   }
 
   SceneState* scene_state = browser_->GetSceneState();

@@ -134,6 +134,7 @@
       initWithTemplateURLService:templateURLService
            aimEligibilityService:aimEligibilityService
             cobrowseBrowserAgent:cobrowseBrowserAgent
+                     prefService:profile->GetPrefs()
                        incognito:incognito];
 
   id<SceneCommands> sceneHandler =
