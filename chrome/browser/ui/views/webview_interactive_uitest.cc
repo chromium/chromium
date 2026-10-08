@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/run_until.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -30,9 +29,14 @@ class WebViewInteractiveUiTest : public InProcessBrowserTest {
   }
 };
 
-// TODO(crbug.com/517764196): Fails on Windows.
+// TODO(crbug.com/517764196, crbug.com/562393492): Fails on Windows and Mac.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define MAYBE_MouseMoveEventDelivered DISABLED_MouseMoveEventDelivered
+#else
+#define MAYBE_MouseMoveEventDelivered MouseMoveEventDelivered
+#endif
 IN_PROC_BROWSER_TEST_F(WebViewInteractiveUiTest,
-                       DISABLED_MouseMoveEventDelivered) {
+                       MAYBE_MouseMoveEventDelivered) {
   // Create a widget with a WebView.
   TestingProfile testing_profile;
   auto widget = std::make_unique<Widget>();
@@ -78,23 +82,33 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveUiTest,
       point.x(), point.y(), run_loop.QuitClosure(), widget->GetNativeWindow());
   run_loop.Run();
 
-  // Verify listener was triggered.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    auto result = content::EvalJs(web_contents, "window.mouseMoveReceived");
-    return result.is_ok() && result.is_bool() && result.ExtractBool();
-  }));
-
-  int mouse_x = content::EvalJs(web_contents, "window.mouseX").ExtractInt();
-  int mouse_y = content::EvalJs(web_contents, "window.mouseY").ExtractInt();
-
   // The point we sent was the center of the WebView.
   // We calculate the expected coordinates using the local bounds of the
   // WebView.
   int expected_x = web_view->GetLocalBounds().width() / 2;
   int expected_y = web_view->GetLocalBounds().height() / 2;
 
-  EXPECT_NEAR(expected_x, mouse_x, 2);
-  EXPECT_NEAR(expected_y, mouse_y, 2);
+  // Verify listener was triggered at the expected coordinates (ignoring any
+  // initial mousemove event at the cursor's starting position when the window
+  // was shown).
+  EXPECT_EQ(true, content::EvalJs(web_contents, content::JsReplace(
+                                                    R"(
+    new Promise((resolve) => {
+      const isAtExpectedPoint = (x, y) =>
+          Math.abs(x - $1) <= 2 && Math.abs(y - $2) <= 2;
+      if (window.mouseMoveReceived &&
+          isAtExpectedPoint(window.mouseX, window.mouseY)) {
+        resolve(true);
+        return;
+      }
+      document.addEventListener('mousemove', (e) => {
+        if (isAtExpectedPoint(e.clientX, e.clientY)) {
+          resolve(true);
+        }
+      });
+    })
+  )",
+                                                    expected_x, expected_y)));
 }
 
 }  // namespace views
