@@ -1,5 +1,7 @@
 include_rules = [
   "+components/device_signals/core/browser",
+  "+components/enterprise/net/core",
   "+ios/chrome/browser/enterprise/connectors/device_trust",
+  "+ios/chrome/browser/enterprise/proxy/model",
   "+ios/chrome/browser/enterprise/signals/model",
 ]

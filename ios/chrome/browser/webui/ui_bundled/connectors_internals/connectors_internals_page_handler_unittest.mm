@@ -11,6 +11,8 @@
 #import <vector>
 
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
+#import "base/scoped_observation.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
@@ -24,11 +26,16 @@
 #import "components/enterprise/device_trust/core/device_trust_connector_service.h"
 #import "components/enterprise/device_trust/core/device_trust_service.h"
 #import "components/enterprise/device_trust/core/signals/signals_service.h"
+#import "components/enterprise/net/core/enterprise_proxy_service.h"
+#import "components/enterprise/net/core/features.h"
+#import "components/enterprise/net/core/prefs.h"
 #import "components/policy/core/common/management/management_service.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/enterprise/connectors/device_trust/features.h"
 #import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_connector_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_service_factory_ios.h"
+#import "ios/chrome/browser/enterprise/proxy/model/enterprise_network_auth_service_factory_ios.h"
+#import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_service_factory_ios.h"
 #import "ios/chrome/browser/policy/model/browser_management_service.h"
 #import "ios/chrome/browser/policy/model/browser_management_service_factory.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
@@ -39,10 +46,66 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "mojo/public/cpp/bindings/remote.h"
+#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#import "services/network/test/test_url_loader_factory.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
 namespace {
+
+base::DictValue CreatePvdPolicy(std::string_view pvd_id) {
+  base::DictValue policy;
+  policy.Set("pvd_id", pvd_id);
+  return policy;
+}
+
+// Observer that waits for `EnterpriseProxyService` refresh transitions using
+// `base::test::TestFuture`.
+class TestEnterpriseProxyServiceObserver
+    : public enterprise_net::EnterpriseProxyService::Observer {
+ public:
+  explicit TestEnterpriseProxyServiceObserver(
+      enterprise_net::EnterpriseProxyService* proxy_service)
+      : proxy_service_(proxy_service) {
+    observation_.Observe(proxy_service_);
+  }
+  ~TestEnterpriseProxyServiceObserver() override = default;
+
+  // Waits until `proxy_service_` starts a refresh.
+  bool WaitForRefreshStarted() { return refresh_started_future_.Wait(); }
+
+  // Waits until `proxy_service_` finishes refreshing.
+  bool WaitForRefreshCompleted() { return refresh_completed_future_.Wait(); }
+
+  // Resets the futures to observe a subsequent refresh cycle.
+  void Reset() {
+    refresh_started_future_.Clear();
+    refresh_completed_future_.Clear();
+  }
+
+  // enterprise_net::EnterpriseProxyService::Observer:
+  void OnDynamicProxyConfigsStatusChanged() override {
+    if (proxy_service_->IsRefreshInProgress()) {
+      if (!refresh_started_future_.IsReady()) {
+        refresh_started_future_.SetValue();
+      }
+    } else {
+      if (!refresh_completed_future_.IsReady()) {
+        refresh_completed_future_.SetValue();
+      }
+    }
+  }
+
+  void OnEnterpriseProxyServiceDestroyed() override { observation_.Reset(); }
+
+ private:
+  raw_ptr<enterprise_net::EnterpriseProxyService> proxy_service_ = nullptr;
+  base::ScopedObservation<enterprise_net::EnterpriseProxyService,
+                          enterprise_net::EnterpriseProxyService::Observer>
+      observation_{this};
+  base::test::TestFuture<void> refresh_started_future_;
+  base::test::TestFuture<void> refresh_completed_future_;
+};
 
 class FakeAttestationService
     : public enterprise_connectors::AttestationService {
@@ -95,7 +158,18 @@ class ConnectorsInternalsPageHandlerTest : public PlatformTest {
  public:
   void SetUp() override {
     PlatformTest::SetUp();
-    profile_ = TestProfileIOS::Builder().Build();
+    scoped_feature_list_.InitAndEnableFeature(
+        enterprise_net::kEnableDynamicRouteFetching);
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        EnterpriseNetworkAuthServiceFactoryIOS::GetInstance(),
+        EnterpriseNetworkAuthServiceFactoryIOS::GetDefaultFactory());
+    builder.AddTestingFactory(
+        EnterpriseProxyServiceFactoryIOS::GetInstance(),
+        EnterpriseProxyServiceFactoryIOS::GetDefaultFactory());
+    profile_ = std::move(builder).Build();
+    profile_->SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
     handler_ = std::make_unique<ConnectorsInternalsPageHandler>(
         page_handler_.BindNewPipeAndPassReceiver(), profile_.get());
   }
@@ -135,8 +209,10 @@ class ConnectorsInternalsPageHandlerTest : public PlatformTest {
     return std::move(builder).Build();
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestProfileIOS> profile_;
   mojo::Remote<connectors_internals::mojom::PageHandler> page_handler_;
   std::unique_ptr<ConnectorsInternalsPageHandler> handler_;
@@ -420,17 +496,152 @@ TEST_F(ConnectorsInternalsPageHandlerTest,
   EXPECT_TRUE(state->managed_profile_identity.is_null());
 }
 
-// Tests that GetProvisioningDomainState returns an empty list of configs
-// since PvD configs are not supported on iOS.
+// Test that `GetProvisioningDomainState` returns the PvD configurations from
+// `EnterpriseProxyService`.
 TEST_F(ConnectorsInternalsPageHandlerTest, GetProvisioningDomainState) {
+  auto* proxy_service =
+      EnterpriseProxyServiceFactoryIOS::GetForProfile(profile_.get());
+  ASSERT_TRUE(proxy_service);
+  TestEnterpriseProxyServiceObserver observer(proxy_service);
+
+  static constexpr std::string_view kValidPvdResponse = R"({
+    "identifier": "domain1.example.com",
+    "expires": "Wed, 21 Oct 2026 07:28:00 GMT",
+    "proxies": [
+      {
+        "protocol": "https-connect",
+        "identity": "proxy1",
+        "proxy": "proxy1.example.com:443"
+      }
+    ],
+    "proxy-match": [
+      {
+        "proxies": ["proxy1"],
+        "domains": ["*.example.com"]
+      }
+    ]
+  })";
+  test_url_loader_factory_.AddResponse(
+      "https://domain1.example.com/.well-known/pvd", kValidPvdResponse);
+
+  base::ListValue policy_domains;
+  policy_domains.Append(CreatePvdPolicy("domain1.example.com"));
+  profile_->GetPrefs()->SetList(enterprise_net::kProxyProvisioningDomains,
+                                std::move(policy_domains));
+
+  ASSERT_TRUE(observer.WaitForRefreshCompleted());
+
   base::test::TestFuture<
       connectors_internals::mojom::ProvisioningDomainStatePtr>
       future;
   page_handler_->GetProvisioningDomainState(future.GetCallback());
   auto state = future.Take();
+  ASSERT_TRUE(state);
+
+  ASSERT_EQ(state->pvd_configs.size(), 1u);
+  EXPECT_EQ(state->pvd_configs[0]->pvd_id, "domain1.example.com");
+  ASSERT_TRUE(state->pvd_configs[0]->expiration_time.has_value());
+  base::Time expected_time;
+  ASSERT_TRUE(
+      base::Time::FromString("Wed, 21 Oct 2026 07:28:00 GMT", &expected_time));
+  EXPECT_EQ(state->pvd_configs[0]->expiration_time.value(), expected_time);
+}
+
+// Test that `GetProvisioningDomainState` handles a null profile gracefully.
+TEST_F(ConnectorsInternalsPageHandlerTest,
+       GetProvisioningDomainState_NullProfile) {
+  mojo::Remote<connectors_internals::mojom::PageHandler>
+      null_profile_page_handler;
+  ConnectorsInternalsPageHandler null_profile_handler(
+      null_profile_page_handler.BindNewPipeAndPassReceiver(), nullptr);
+
+  base::test::TestFuture<
+      connectors_internals::mojom::ProvisioningDomainStatePtr>
+      future;
+  null_profile_page_handler->GetProvisioningDomainState(future.GetCallback());
+  auto state = future.Take();
 
   ASSERT_TRUE(state);
   EXPECT_TRUE(state->pvd_configs.empty());
+}
+
+// Test that `RefreshProvisioningDomainConfigs` triggers a refresh on
+// `EnterpriseProxyService` and resolves once the refresh completes.
+TEST_F(ConnectorsInternalsPageHandlerTest, RefreshProvisioningDomainConfigs) {
+  auto* proxy_service =
+      EnterpriseProxyServiceFactoryIOS::GetForProfile(profile_.get());
+  ASSERT_TRUE(proxy_service);
+  TestEnterpriseProxyServiceObserver observer(proxy_service);
+
+  static constexpr std::string_view kInitialPvdResponse = R"({
+    "identifier": "domain1.example.com",
+    "expires": "Wed, 21 Oct 2026 07:28:00 GMT",
+    "proxies": [
+      {
+        "protocol": "https-connect",
+        "identity": "proxy1",
+        "proxy": "proxy1.example.com:443"
+      }
+    ],
+    "proxy-match": [
+      {
+        "proxies": ["proxy1"],
+        "domains": ["*.example.com"]
+      }
+    ]
+  })";
+  test_url_loader_factory_.AddResponse(
+      "https://domain1.example.com/.well-known/pvd", kInitialPvdResponse);
+
+  base::ListValue policy_domains;
+  policy_domains.Append(CreatePvdPolicy("domain1.example.com"));
+  profile_->GetPrefs()->SetList(enterprise_net::kProxyProvisioningDomains,
+                                std::move(policy_domains));
+
+  ASSERT_TRUE(observer.WaitForRefreshCompleted());
+  observer.Reset();
+
+  // Clear canned responses so the manual refresh request stays pending until
+  // simulated.
+  test_url_loader_factory_.ClearResponses();
+
+  base::test::TestFuture<
+      connectors_internals::mojom::ProvisioningDomainStatePtr>
+      future;
+  page_handler_->RefreshProvisioningDomainConfigs(future.GetCallback());
+
+  ASSERT_TRUE(observer.WaitForRefreshStarted());
+  EXPECT_FALSE(future.IsReady());
+
+  static constexpr std::string_view kRefreshedPvdResponse = R"({
+    "identifier": "domain1.example.com",
+    "expires": "Thu, 22 Oct 2026 07:28:00 GMT",
+    "proxies": [
+      {
+        "protocol": "https-connect",
+        "identity": "proxy1",
+        "proxy": "proxy1.example.com:443"
+      }
+    ],
+    "proxy-match": [
+      {
+        "proxies": ["proxy1"],
+        "domains": ["*.example.com"]
+      }
+    ]
+  })";
+  ASSERT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://domain1.example.com/.well-known/pvd", kRefreshedPvdResponse));
+
+  auto state = future.Take();
+  ASSERT_TRUE(state);
+  ASSERT_EQ(state->pvd_configs.size(), 1u);
+  EXPECT_EQ(state->pvd_configs[0]->pvd_id, "domain1.example.com");
+  ASSERT_TRUE(state->pvd_configs[0]->expiration_time.has_value());
+  base::Time expected_time;
+  ASSERT_TRUE(
+      base::Time::FromString("Thu, 22 Oct 2026 07:28:00 GMT", &expected_time));
+  EXPECT_EQ(state->pvd_configs[0]->expiration_time.value(), expected_time);
 }
 
 }  // namespace

@@ -13,7 +13,6 @@ source_set("connectors_internals") {
   ]
   deps = [
     "//base",
-    "//components/enterprise/buildflags",
     "//components/device_signals/core/browser",
     "//components/enterprise",
     "//components/enterprise/client_certificates/core",
@@ -25,10 +24,12 @@ source_set("connectors_internals") {
     "//components/enterprise/device_trust/core",
     "//components/enterprise/device_trust/core:device_trust_connector_service",
     "//components/enterprise/device_trust/core:device_trust_service",
+    "//components/enterprise/net/core",
     "//components/prefs",
     "//ios/chrome/browser/enterprise/client_certificates",
     "//ios/chrome/browser/enterprise/connectors/device_trust:features",
     "//ios/chrome/browser/enterprise/connectors/device_trust/model",
+    "//ios/chrome/browser/enterprise/proxy/model",
     "//ios/chrome/browser/enterprise/signals/model",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/policy/model:cloud_profile_reporting",
@@ -54,16 +55,19 @@ source_set("unit_tests") {
     "//components/enterprise/device_trust/core:device_trust_service",
     "//components/enterprise/device_trust/core/attestation",
     "//components/enterprise/device_trust/core/signals",
+    "//components/enterprise/net/core",
     "//components/policy/core/common",
     "//components/prefs",
     "//ios/chrome/browser/enterprise/connectors/device_trust:features",
     "//ios/chrome/browser/enterprise/connectors/device_trust/model",
+    "//ios/chrome/browser/enterprise/proxy/model",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/policy/model:cloud_profile_reporting",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/test:test_support",
     "//mojo/public/cpp/bindings",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
     "//testing/gtest",
   ]
 }
-

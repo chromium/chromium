@@ -13,7 +13,6 @@
 #import "base/types/expected.h"
 #import "base/values.h"
 #import "components/enterprise/browser/reporting/report_request.h"
-#import "components/enterprise/buildflags/buildflags.h"
 #import "components/enterprise/connectors/connectors_internals.mojom.h"
 #import "components/enterprise/connectors/core/connectors_internals_utils.h"
 #import "components/enterprise/connectors/core/provisioning_domain_refresh_helper.h"
@@ -59,9 +58,7 @@ class ConnectorsInternalsPageHandler
 
   mojo::Receiver<connectors_internals::mojom::PageHandler> receiver_;
   raw_ptr<ProfileIOS> profile_;
-#if BUILDFLAG(ENTERPRISE_PROXY)
   enterprise_connectors::ProvisioningDomainRefreshHelper pvd_refresh_helper_;
-#endif
   std::unique_ptr<enterprise_reporting::ChromeProfileRequestGenerator>
       request_generator_;
   base::WeakPtrFactory<ConnectorsInternalsPageHandler> weak_ptr_factory_{this};
