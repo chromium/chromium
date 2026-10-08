@@ -21,7 +21,9 @@ enum class ToolId {
   kNavigate = 0,
   // Clicks an element on the active page by DOM node ID.
   kClick = 1,
-  kMaxValue = kClick,
+  // Switches to an open tab in the active browser window matching a query.
+  kSwitchTab = 2,
+  kMaxValue = kSwitchTab,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer

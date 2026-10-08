@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_SWITCH_TAB_TOOL_REQUEST_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_SWITCH_TAB_TOOL_REQUEST_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -33,12 +34,20 @@ class ToolRequestVisitorFunctor;
 class SwitchTabToolRequest : public ToolRequest {
  public:
   static constexpr char kName[] = "SwitchTab";
+  // Canonical model-facing name exposed in LLM prompt schemas and indexed by
+  // `ToolRegistry` for lookup and routing via `GetToolDefinition()`.
+  static constexpr std::string_view kModelFacingName = "switch_tab";
+  // JSON argument key for the search query string parameter.
+  static constexpr std::string_view kQueryParam = "query";
 
   explicit SwitchTabToolRequest(std::string query);
   ~SwitchTabToolRequest() override;
 
   SwitchTabToolRequest(const SwitchTabToolRequest&);
   SwitchTabToolRequest& operator=(const SwitchTabToolRequest&);
+
+  // Returns the `ToolId::kSwitchTab` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   // ToolRequest:
   CreateToolResult CreateTool(TaskId task_id,

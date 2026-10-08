@@ -5,10 +5,14 @@
 #include "chrome/browser/actor/tools/switch_tab_tool_request.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 
+#include "chrome/browser/actor/tools/registry/tool_definition.h"
+#include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
+#include "chrome/browser/actor/tools/registry/tool_schema_builder.h"
 #include "chrome/browser/actor/tools/switch_tab_tool.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
@@ -20,6 +24,14 @@
 namespace actor {
 
 namespace {
+
+// Default description for the `switch_tab` tool.
+constexpr std::string_view kSwitchTabToolDescription =
+    "Switches to an open tab in the current browser window matching the query.";
+
+// Description for the `query` parameter of the `switch_tab` tool.
+constexpr std::string_view kQueryParamDescription =
+    "The search query to match against open tab titles and URLs.";
 
 // A tab switch acts on the window the user is looking at, and the request has
 // no way to name a window yet, so resolve the profile's most recently active
@@ -46,6 +58,15 @@ SwitchTabToolRequest::SwitchTabToolRequest(const SwitchTabToolRequest&) =
     default;
 SwitchTabToolRequest& SwitchTabToolRequest::operator=(
     const SwitchTabToolRequest&) = default;
+
+// static
+std::optional<ToolDefinition> SwitchTabToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kSwitchTab, kModelFacingName,
+                               kSwitchTabToolDescription)
+      .SetToolParameterSchema(ToolSchemaBuilder().AddStringProperty(
+          kQueryParam, kQueryParamDescription))
+      .Build();
+}
 
 ToolRequest::CreateToolResult SwitchTabToolRequest::CreateTool(
     TaskId task_id,

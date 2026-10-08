@@ -19,11 +19,16 @@
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/registry/tool_definition_test_util.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#include "chrome/browser/actor/tools/switch_tab_tool_request.h"
+#endif
 
 namespace actor {
 namespace {
@@ -56,6 +61,19 @@ TEST(ToolRegistryTest, ClickToolDefinition) {
   EXPECT_THAT(*definition, RequiresParam(ClickToolRequest::kDomNodeIdParam));
 }
 
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+TEST(ToolRegistryTest, SwitchTabToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      SwitchTabToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kSwitchTab);
+  EXPECT_EQ(definition->name, SwitchTabToolRequest::kModelFacingName);
+  EXPECT_THAT(*definition,
+              HasParamOfType(SwitchTabToolRequest::kQueryParam, "string"));
+  EXPECT_THAT(*definition, RequiresParam(SwitchTabToolRequest::kQueryParam));
+}
+#endif
+
 TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -66,6 +84,19 @@ TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kNavigate, &ToolDefinition::id));
 }
+
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+TEST(ToolRegistryTest, GetAllToolsContainsSwitchTabTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kSwitchTab, &ToolDefinition::id));
+}
+#endif
 
 TEST(ToolRegistryTest, ToolIdToNameReturnsEmptyForUnrecognizedId) {
   EXPECT_TRUE(ToolRegistry::ToolIdToName(kUnrecognizedToolId).empty());
