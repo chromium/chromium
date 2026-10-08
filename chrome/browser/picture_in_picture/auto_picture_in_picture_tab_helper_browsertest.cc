@@ -42,7 +42,10 @@
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
+#include "chrome/browser/ui/views/picture_in_picture/document_pip_frame_view.h"
+#include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_path_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -959,11 +962,21 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
     auto* pip_contents =
         PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
 
+    // Fetch the overlay view from the standalone PiP window, if any.
+    if (auto* host = DocumentPipHost::FromChildWebContents(pip_contents)) {
+      auto* frame_view = views::AsViewClass<DocumentPipFrameView>(
+          host->GetWidget()->non_client_view()->frame_view());
+      CHECK(frame_view);
+      return frame_view->GetAutoPipSettingOverlayViewForTesting();
+    }
+
     // Fetch the overlay view from the browser window.
     auto* browser_view = BrowserView::GetBrowserViewForNativeWindow(
         pip_contents->GetTopLevelNativeWindow());
-    auto* pip_frame_view = static_cast<PictureInPictureBrowserFrameView*>(
+    CHECK(browser_view);
+    auto* pip_frame_view = views::AsViewClass<PictureInPictureBrowserFrameView>(
         browser_view->browser_widget()->GetFrameView());
+    CHECK(pip_frame_view);
     auto* overlay_view =
         pip_frame_view->get_auto_pip_setting_overlay_view_for_testing();
 
@@ -1673,6 +1686,57 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
 }
 
+// Runs Document PiP tests from `Base` with either the Browser-backed or the
+// standalone PiP window.
+template <typename Base>
+class DocumentPipBackendBrowserTest : public Base,
+                                      public testing::WithParamInterface<bool> {
+ protected:
+  bool standalone_enabled() const { return GetParam(); }
+
+  std::vector<base::test::FeatureRef> GetEnabledFeatures() override {
+    auto enabled_features = Base::GetEnabledFeatures();
+    if (standalone_enabled()) {
+      enabled_features.push_back(features::kDocumentPipStandaloneWindow);
+    }
+    return enabled_features;
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    auto disabled_features = Base::GetDisabledFeatures();
+    if (!standalone_enabled()) {
+      disabled_features.push_back(features::kDocumentPipStandaloneWindow);
+    }
+    return disabled_features;
+  }
+
+  void ExpectPipBackend(content::WebContents* pip_contents) {
+    auto* host = DocumentPipHost::FromChildWebContents(pip_contents);
+    auto* pip_browser_view = BrowserView::GetBrowserViewForNativeWindow(
+        pip_contents->GetTopLevelNativeWindow());
+    if (standalone_enabled()) {
+      EXPECT_NE(nullptr, host);
+      EXPECT_EQ(nullptr, pip_browser_view);
+    } else {
+      EXPECT_EQ(nullptr, host);
+      ASSERT_NE(nullptr, pip_browser_view);
+      EXPECT_TRUE(pip_browser_view->GetIsPictureInPictureType());
+    }
+  }
+};
+
+class AutoPictureInPictureDocumentPipBackendBrowserTest
+    : public DocumentPipBackendBrowserTest<
+          AutoPictureInPictureTabHelperBrowserTest> {};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AutoPictureInPictureDocumentPipBackendBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Standalone" : "BrowserBacked";
+                         });
+
+
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_OverlaySettingViewIsShownForDocumentPip \
   DISABLED_OverlaySettingViewIsShownForDocumentPip
@@ -1680,7 +1744,7 @@ IN_PROC_BROWSER_TEST_F(
 #define MAYBE_OverlaySettingViewIsShownForDocumentPip \
   OverlaySettingViewIsShownForDocumentPip
 #endif
-IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_P(AutoPictureInPictureDocumentPipBackendBrowserTest,
                        MAYBE_OverlaySettingViewIsShownForDocumentPip) {
   auto* window_manager = PictureInPictureWindowManager::GetInstance();
 
@@ -1697,14 +1761,9 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
     // mediasession action has been sent.
   }
 
-  // Fetch the overlay view from the browser window.
   auto* pip_contents = window_manager->GetChildWebContents();
-  auto* browser_view = BrowserView::GetBrowserViewForNativeWindow(
-      pip_contents->GetTopLevelNativeWindow());
-  ASSERT_TRUE(browser_view);
-  auto* pip_frame_view = static_cast<PictureInPictureBrowserFrameView*>(
-      browser_view->browser_widget()->GetFrameView());
-  ASSERT_TRUE(pip_frame_view);
+  ASSERT_TRUE(pip_contents);
+  ExpectPipBackend(pip_contents);
   auto* overlay_view = GetOverlayViewFromDocumentPipWindow();
   // The overlay should be shown.
   ASSERT_TRUE(overlay_view);

@@ -154,6 +154,9 @@ class DocumentPipFrameView : public views::FrameView,
   }
   views::ImageButton* GetCloseButtonForTesting() { return close_image_button_; }
   views::Label* GetWindowTitleForTesting() { return window_title_; }
+  AutoPipSettingOverlayView* GetAutoPipSettingOverlayViewForTesting() {
+    return auto_pip_setting_overlay_;
+  }
 
   // Recomputes the outer window bounds now that the Widget (and thus the
   // platform border) exists, so a request that specifies an explicit inner
