@@ -32,6 +32,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/image_view.h"
@@ -127,15 +128,11 @@ class IOSPromoBubbleHeaderView : public views::View {
                     .SetHorizontalAlignment(
                         gfx::HorizontalAlignment::ALIGN_TO_HEAD))
             .Build());
+
+    SetBorder(views::CreateSolidSidedBorder(gfx::Insets::TLBR(0, 0, 1, 0),
+                                            ui::kColorSeparator));
   }
   ~IOSPromoBubbleHeaderView() override = default;
-
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-    SetBorder(views::CreateSolidSidedBorder(
-        gfx::Insets::TLBR(0, 0, 1, 0),
-        GetColorProvider()->GetColor(ui::kColorSeparator)));
-  }
 };
 
 BEGIN_METADATA(IOSPromoBubbleHeaderView)
