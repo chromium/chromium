@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
+#import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/web/public/web_state.h"
 
@@ -181,13 +182,13 @@ std::u16string ContextualCueInfobarDelegate::GetButtonLabel(
 }
 
 ui::ImageModel ContextualCueInfobarDelegate::GetIcon() const {
-  UIImage* symbol_image =
-      SymbolWithPointSize(SymbolSparkles, kInfobarSymbolPointSize);
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+  Symbol symbol = SymbolGeminiBrandedLogo;
+#else
+  Symbol symbol = SymbolGeminiNonBrandedLogo;
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+  UIImage* symbol_image = SymbolWithPointSize(symbol, kInfobarSymbolPointSize);
   return ui::ImageModel::FromImage(gfx::Image(symbol_image));
-}
-
-bool ContextualCueInfobarDelegate::UseIconBackgroundTint() const {
-  return false;
 }
 
 bool ContextualCueInfobarDelegate::Accept() {

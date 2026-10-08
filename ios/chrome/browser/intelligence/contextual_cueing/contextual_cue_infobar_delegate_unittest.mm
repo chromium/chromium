@@ -169,7 +169,7 @@ TEST_F(ContextualCueInfobarDelegateTest, TestDelegateUIProperties) {
   EXPECT_EQ(delegate->GetButtons(), ConfirmInfoBarDelegate::BUTTON_OK);
   EXPECT_EQ(delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK),
             u"Take Action");
-  EXPECT_FALSE(delegate->UseIconBackgroundTint());
+  EXPECT_TRUE(delegate->UseIconBackgroundTint());
   EXPECT_FALSE(delegate->GetIcon().IsEmpty());
 }
 

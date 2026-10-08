@@ -41,6 +41,7 @@ source_set("contextual_cueing") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/web_state_list:utils",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui:buildflags",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ui/base",
     "//ui/gfx",
