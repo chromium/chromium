@@ -2,17 +2,30 @@
 <html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<img src="http://localhost:8080/security/resources/cors-image.php?max-age=60" crossorigin></img>
+<body>
 <script>
-async_test((test) => {
-  document.querySelector('img').addEventListener('load', () => {
-    const iframe = document.createElement('iframe');
-    iframe.sandbox = 'allow-scripts';
-    iframe.src = 'resources/cors-check-for-cached-image-iframe.html';
-    document.body.appendChild(iframe);
+promise_test(async () => {
+  const result = new Promise((resolve) => {
+    window.addEventListener('message', (e) => resolve(e.data), {once: true});
   });
-  window.addEventListener('message', test.step_func_done((e) => {
-    assert_equals(e.data, 'PASS');
-  }));
+
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  const loaded = new Promise((resolve, reject) => {
+    img.onload = resolve;
+    img.onerror = () => reject(new Error('Initial CORS image load failed'));
+  });
+  img.src = 'http://localhost:8080/security/resources/cors-image.php?max-age=60';
+  document.body.appendChild(img);
+  await loaded;
+
+  const iframe = document.createElement('iframe');
+  iframe.sandbox = 'allow-scripts';
+  iframe.src = 'resources/cors-check-for-cached-image-iframe.html';
+  document.body.appendChild(iframe);
+
+  assert_equals(await result, 'PASS');
 }, 'We should not reuse CORS check result when requested from another origin');
 </script>
+</body>
+</html>
