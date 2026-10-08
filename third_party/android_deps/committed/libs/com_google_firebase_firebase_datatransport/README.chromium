@@ -1,7 +1,7 @@
 Name: firebase-datatransport
 Short Name: firebase-datatransport
-URL: https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-datatransport/18.2.0/firebase-datatransport-18.2.0.aar
-Version: 18.2.0
+URL: https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-datatransport/21.0.0/firebase-datatransport-21.0.0.aar
+Version: 21.0.0
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE

@@ -127,17 +127,17 @@
     {
         "name": "collection",
         "group": "androidx.collection",
-        "version": "1.7.0-rc01"
+        "version": "1.7.0"
     },
     {
         "name": "collection-jvm",
         "group": "androidx.collection",
-        "version": "1.7.0-rc01"
+        "version": "1.7.0"
     },
     {
         "name": "collection-ktx",
         "group": "androidx.collection",
-        "version": "1.7.0-rc01"
+        "version": "1.7.0"
     },
     {
         "name": "animation",
@@ -887,22 +887,22 @@
     {
         "name": "navigationevent",
         "group": "androidx.navigationevent",
-        "version": "1.2.0-rc01"
+        "version": "1.2.0"
     },
     {
         "name": "navigationevent-android",
         "group": "androidx.navigationevent",
-        "version": "1.2.0-rc01"
+        "version": "1.2.0"
     },
     {
         "name": "navigationevent-compose",
         "group": "androidx.navigationevent",
-        "version": "1.2.0-SNAPSHOT"
+        "version": "1.2.0"
     },
     {
         "name": "navigationevent-compose-android",
         "group": "androidx.navigationevent",
-        "version": "1.2.0-SNAPSHOT"
+        "version": "1.2.0"
     },
     {
         "name": "paging-common",
@@ -937,7 +937,7 @@
     {
         "name": "palette",
         "group": "androidx.palette",
-        "version": "1.1.0-alpha01"
+        "version": "1.1.0-rc01"
     },
     {
         "name": "pdf-core",
@@ -1392,17 +1392,17 @@
     {
         "name": "transport-api",
         "group": "com.google.android.datatransport",
-        "version": "3.1.0"
+        "version": "5.0.0"
     },
     {
         "name": "transport-backend-cct",
         "group": "com.google.android.datatransport",
-        "version": "3.1.9"
+        "version": "5.0.0"
     },
     {
         "name": "transport-runtime",
         "group": "com.google.android.datatransport",
-        "version": "3.1.9"
+        "version": "5.0.0"
     },
     {
         "name": "play-services-auth",
@@ -1597,7 +1597,7 @@
     {
         "name": "firebase-annotations",
         "group": "com.google.firebase",
-        "version": "17.0.0"
+        "version": "18.0.0"
     },
     {
         "name": "firebase-common",
@@ -1607,27 +1607,27 @@
     {
         "name": "firebase-components",
         "group": "com.google.firebase",
-        "version": "19.0.0"
+        "version": "20.0.0"
     },
     {
         "name": "firebase-datatransport",
         "group": "com.google.firebase",
-        "version": "18.2.0"
+        "version": "21.0.0"
     },
     {
         "name": "firebase-encoders",
         "group": "com.google.firebase",
-        "version": "17.0.0"
+        "version": "18.0.0"
     },
     {
         "name": "firebase-encoders-json",
         "group": "com.google.firebase",
-        "version": "18.0.0"
+        "version": "19.0.0"
     },
     {
         "name": "firebase-encoders-proto",
         "group": "com.google.firebase",
-        "version": "16.0.0"
+        "version": "17.0.0"
     },
     {
         "name": "firebase-iid-interop",
@@ -1637,12 +1637,12 @@
     {
         "name": "firebase-installations",
         "group": "com.google.firebase",
-        "version": "19.1.2"
+        "version": "20.0.0"
     },
     {
         "name": "firebase-installations-interop",
         "group": "com.google.firebase",
-        "version": "17.3.0"
+        "version": "18.0.0"
     },
     {
         "name": "firebase-measurement-connector",
@@ -1652,7 +1652,7 @@
     {
         "name": "firebase-messaging",
         "group": "com.google.firebase",
-        "version": "25.1.3"
+        "version": "26.0.0"
     },
     {
         "name": "google-java-format",
@@ -2007,12 +2007,12 @@
     {
         "name": "kotlin-stdlib-jdk7",
         "group": "org.jetbrains.kotlin",
-        "version": "1.9.0"
+        "version": "2.1.21"
     },
     {
         "name": "kotlin-stdlib-jdk8",
         "group": "org.jetbrains.kotlin",
-        "version": "1.8.21"
+        "version": "2.1.21"
     },
     {
         "name": "atomicfu",
