@@ -28,6 +28,7 @@ class ReaderModeJavaScriptFeatureTest : public PlatformTest {
  public:
   ReaderModeJavaScriptFeatureTest() : valid_url_(GURL("https://example.com")) {
     profile_ = TestProfileIOS::Builder().Build();
+    web_state_.SetBrowserState(profile_.get());
 
     ReaderModeTabHelper::CreateForWebState(
         web_state(), DistillerServiceFactory::GetForProfile(profile_.get()));
