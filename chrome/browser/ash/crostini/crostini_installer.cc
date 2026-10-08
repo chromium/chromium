@@ -586,8 +586,10 @@ void CrostiniInstaller::OnAvailableDiskSpace(std::optional<int64_t> bytes) {
   // |restart_id| will be invalid when |CrostiniManager::RestartCrostini()|
   // decides to fail immediately and calls |OnCrostiniRestartFinished()|, which
   // subsequently set |state_| to |ERROR|.
-  CHECK_EQ(restart_id_ == CrostiniManager::kUninitializedRestartId,
-           state_ == State::ERROR, base::NotFatalUntil::M160);
+  // TODO(crbug.com/570196857): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(restart_id_ == CrostiniManager::kUninitializedRestartId,
+            state_ == State::ERROR);
 }
 
 }  // namespace crostini
