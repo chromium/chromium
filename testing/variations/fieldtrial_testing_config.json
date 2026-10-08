@@ -4693,26 +4693,6 @@
             ]
         }
     ],
-    "ComposeboxDriveContextMenuOptionDesktop_AimTeamfood": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Aim_Teamfood",
-                    "enable_features": [
-                        "ComposeboxDriveContextMenuOption",
-                        "ComposeboxDriveContextMenuOptionDisclaimer",
-                        "ForceDriveDisclaimerAccepted"
-                    ]
-                }
-            ]
-        }
-    ],
     "ComposeboxDriveContextMenuOptionSigninPromo": [
         {
             "platforms": [
@@ -4725,6 +4705,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "ComposeboxDriveContextMenuOption",
+                        "ComposeboxDriveContextMenuOptionDisclaimer",
                         "ComposeboxDriveContextMenuOptionSigninPromo"
                     ]
                 }
