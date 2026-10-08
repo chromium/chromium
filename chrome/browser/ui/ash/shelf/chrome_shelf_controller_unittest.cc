@@ -4003,6 +4003,54 @@ TEST_F(ChromeShelfControllerWithArcTest, ShelfItemWithMultipleWindows) {
   EXPECT_TRUE(window2->IsActive());
 }
 
+// Test that the application menu items keep referring to the windows shown in
+// the menu when windows are added or removed while the menu is open.
+TEST_F(ChromeShelfControllerWithArcTest, AppMenuItemsAfterWindowListChange) {
+  InitShelfController();
+
+  arc::mojom::AppInfoPtr appinfo =
+      CreateAppInfo("Test1", "test", "com.example.app");
+  AddArcAppAndShortcut(*appinfo);
+
+  // Widgets will be deleted by the system.
+  NotifyOnTaskCreated(*appinfo, 1 /* task_id */);
+  views::Widget* window1 = CreateArcWindow("org.chromium.arc.1");
+  ASSERT_TRUE(window1);
+  NotifyOnTaskCreated(*appinfo, 2 /* task_id */);
+  views::Widget* window2 = CreateArcWindow("org.chromium.arc.2");
+  ASSERT_TRUE(window2);
+
+  ash::ShelfItemDelegate* item_delegate = model_->GetShelfItemDelegate(
+      ash::ShelfID(ArcAppTest::GetAppId(*appinfo)));
+  ASSERT_TRUE(item_delegate);
+  // The menu shows [window2, window1].
+  ASSERT_EQ(2U, item_delegate->GetAppMenuItems(0, base::NullCallback()).size());
+
+  // Adding a window does not shift the menu items.
+  NotifyOnTaskCreated(*appinfo, 3 /* task_id */);
+  ASSERT_TRUE(CreateArcWindow("org.chromium.arc.3"));
+  EXPECT_THAT(item_delegate->GetAppMenuItemWindow(0),
+              base::test::ValueIs(window2->GetNativeWindow()));
+  EXPECT_THAT(item_delegate->GetAppMenuItemWindow(1),
+              base::test::ValueIs(window1->GetNativeWindow()));
+  EXPECT_THAT(item_delegate->GetAppMenuItemWindow(2),
+              base::test::ErrorIs(std::u16string()));
+
+  // Removing a window clears only its menu item.
+  window2->CloseNow();
+  NotifyOnTaskDestroyed(2);
+  EXPECT_THAT(item_delegate->GetAppMenuItemWindow(0),
+              base::test::ErrorIs(std::u16string()));
+  EXPECT_THAT(item_delegate->GetAppMenuItemWindow(1),
+              base::test::ValueIs(window1->GetNativeWindow()));
+
+  // Executing a command clears the cached menu windows.
+  item_delegate->ExecuteCommand(false, 1, ui::EF_NONE,
+                                display::kInvalidDisplayId);
+  EXPECT_THAT(item_delegate->GetAppMenuItemWindow(1),
+              base::test::ErrorIs(std::u16string()));
+}
+
 namespace {
 
 class ChromeShelfControllerArcDefaultAppsTest

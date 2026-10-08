@@ -97,6 +97,15 @@ AppWindowShelfItemController::GetFromNativeWindow(aura::Window* window,
   return std::ranges::find(list, window, &AppWindowBase::GetNativeWindow);
 }
 
+AppWindowBase* AppWindowShelfItemController::GetAppMenuWindow(
+    int64_t command_id) {
+  if (command_id < 0 ||
+      static_cast<size_t>(command_id) >= app_menu_windows_.size()) {
+    return nullptr;
+  }
+  return *std::next(app_menu_windows_.begin(), command_id);
+}
+
 void AppWindowShelfItemController::RemoveWindow(AppWindowBase* app_window) {
   DCHECK(app_window);
   aura::Window* window = app_window->GetNativeWindow();
@@ -106,6 +115,7 @@ void AppWindowShelfItemController::RemoveWindow(AppWindowBase* app_window) {
   if (app_window == last_active_window_) {
     last_active_window_ = nullptr;
   }
+  std::ranges::replace(app_menu_windows_, app_window, nullptr);
   auto iter = std::ranges::find(windows_, app_window);
   if (iter != windows_.end()) {
     windows_.erase(iter);
@@ -199,6 +209,7 @@ ash::ShelfItemDelegate::AppMenuItems
 AppWindowShelfItemController::GetAppMenuItems(
     int event_flags,
     const ItemFilterPredicate& filter_predicate) {
+  CacheAppMenuWindows();
   AppMenuItems items;
   std::u16string app_title = ShelfControllerHelper::GetAppTitle(
       ChromeShelfController::instance()->profile(), app_id());
@@ -233,15 +244,11 @@ AppWindowShelfItemController::GetAppMenuItems(
 
 base::expected<aura::Window*, std::u16string>
 AppWindowShelfItemController::GetAppMenuItemWindow(int command_id) {
-  if (command_id < 0 || static_cast<size_t>(command_id) >= windows_.size()) {
+  AppWindowBase* window = GetAppMenuWindow(command_id);
+  if (!window || !window->GetNativeWindow()) {
     return base::unexpected(std::u16string());
   }
-  aura::Window* window =
-      (*std::next(windows_.begin(), command_id))->GetNativeWindow();
-  if (!window) {
-    return base::unexpected(std::u16string());
-  }
-  return window;
+  return window->GetNativeWindow();
 }
 
 void AppWindowShelfItemController::GetContextMenu(
@@ -260,15 +267,7 @@ void AppWindowShelfItemController::Close() {
   for (AppWindowBase* window : hidden_windows_) {
     window->Close();
   }
-}
-
-void AppWindowShelfItemController::ActivateIndexedApp(size_t index) {
-  if (index >= windows_.size()) {
-    return;
-  }
-  auto it = windows_.begin();
-  std::advance(it, index);
-  ShowAndActivateOrMinimize(*it, /*allow_minimize=*/windows_.size() == 1);
+  ClearAppMenu();
 }
 
 void AppWindowShelfItemController::OnWindowPropertyChanged(aura::Window* window,
@@ -299,6 +298,14 @@ AppWindowBase* AppWindowShelfItemController::GetLastActiveWindow() {
     return nullptr;
   }
   return windows_.front();
+}
+
+void AppWindowShelfItemController::CacheAppMenuWindows() {
+  app_menu_windows_ = windows_;
+}
+
+void AppWindowShelfItemController::ClearAppMenu() {
+  app_menu_windows_.clear();
 }
 
 void AppWindowShelfItemController::UpdateShelfItemIcon() {
@@ -348,5 +355,8 @@ void AppWindowShelfItemController::ExecuteCommand(bool from_context_menu,
                                                   int64_t display_id) {
   DCHECK(!from_context_menu);
 
-  ActivateIndexedApp(command_id);
+  if (AppWindowBase* window = GetAppMenuWindow(command_id)) {
+    ShowAndActivateOrMinimize(window, /*allow_minimize=*/windows_.size() == 1);
+  }
+  ClearAppMenu();
 }

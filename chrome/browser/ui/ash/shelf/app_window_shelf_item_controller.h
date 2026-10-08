@@ -69,9 +69,6 @@ class AppWindowShelfItemController : public ash::ShelfItemDelegate,
                                const void* key,
                                intptr_t old) override;
 
-  // Activates the window at position |index|.
-  void ActivateIndexedApp(size_t index);
-
   // Get the number of running applications/incarnations of this.
   size_t window_count() const { return windows_.size(); }
 
@@ -81,11 +78,23 @@ class AppWindowShelfItemController : public ash::ShelfItemDelegate,
   // Returns last active window in the controller or first window.
   AppWindowBase* GetLastActiveWindow();
 
+  // Caches the windows for the application menu, whose command ids are indices
+  // into the cached list. This keeps the command ids referring to the windows
+  // shown in the menu even if windows are added or removed while it is open.
+  void CacheAppMenuWindows();
+
+  // Clears the cached windows shown in an application menu.
+  void ClearAppMenu();
+
  private:
   friend class ChromeShelfControllerTestBase;
 
   WindowList::iterator GetFromNativeWindow(aura::Window* window,
                                            WindowList& list);
+
+  // Returns the cached window for the application menu `command_id`, or
+  // nullptr if there is none or the window has been removed.
+  AppWindowBase* GetAppMenuWindow(int64_t command_id);
 
   // Handles the case when the app window in this controller has been changed,
   // and sets the new controller icon based on the currently active window.
@@ -101,6 +110,9 @@ class AppWindowShelfItemController : public ash::ShelfItemDelegate,
   // List of hidden associated app windows. These windows will not appear in
   // the UI.
   WindowList hidden_windows_;
+
+  // The cached windows shown in an application menu. Removed windows are null.
+  WindowList app_menu_windows_;
 
   // Pointer to the most recently active app window
   // TODO(khmel): Get rid of |last_active_window_| and provide more reliable

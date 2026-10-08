@@ -87,6 +87,8 @@ AppServiceAppWindowShelfItemController::GetAppMenuItems(
                                                          filter_predicate);
   }
 
+  CacheAppMenuWindows();
+
   // The window could be teleported from the inactive user's profile to the
   // current active user, so search all profiles.
   for (Profile* profile : controller_->GetProfileList()) {
