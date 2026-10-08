@@ -354,7 +354,7 @@ bool PrefProvider::UpdateLastVisitTime(
                rule.secondary_pattern == secondary_pattern;
       },
       [&](Rule& rule) -> bool {
-        // TODO(crbug.com/40267370): Re-add the DCHECK to ensure the existing
+        // TODO(crbug.com/496258594): Re-add the DCHECK to ensure the existing
         // `last_visited` is not null.
         rule.metadata.set_last_visited(GetCoarseVisitedTime(clock_->Now()));
         return true;

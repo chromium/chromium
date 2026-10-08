@@ -857,7 +857,7 @@ TEST_F(UnusedSitePermissionsManagerTest, NotRevokeNotificationPermission) {
       ContentSetting::CONTENT_SETTING_ALLOW);
 }
 
-// TODO(crbug.com/40267370): Clean-up after the backfill is done.
+// TODO(crbug.com/496258594): Clean-up after the backfill is done.
 class UnusedSitePermissionsManagerBackfillTest
     : public ChromeRenderViewHostTestHarness {
  public:

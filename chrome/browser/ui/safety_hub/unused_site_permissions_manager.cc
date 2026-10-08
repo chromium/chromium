@@ -191,7 +191,7 @@ UnusedSitePermissionsManager::UpdateOnBackgroundThread(
           recently_unused[origin.Serialize()].push_back(
               {type, std::move(setting)});
         }
-        // TODO(crbug.com/40267370): Clean-up after the backfill is done.
+        // TODO(crbug.com/496258594): Clean-up after the backfill is done.
       } else {
         // Track untimestamped permissions if the backfill was not completed
         // yet.
@@ -279,7 +279,7 @@ void UnusedSitePermissionsManager::RevokeUnusedPermissions(
     std::unique_ptr<SafetyHubResult> result) {
   auto* interim_result = static_cast<RevokedPermissionsResult*>(result.get());
 
-  // TODO(crbug.com/40267370): Clean-up after the backfill is done.
+  // TODO(crbug.com/496258594): Clean-up after the backfill is done.
   MaybePerformLastVisitedBackfill(interim_result);
 
   // Set this to true to prevent
