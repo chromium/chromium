@@ -93,6 +93,23 @@ class ActorSurfaceLookup {
                                                 : it->second;
   }
 
+  // Inverse of GetForTab(). Falls back to surfaces destroyed earlier in the
+  // current task; see `recently_destroyed_tabs_`.
+  tabs::TabHandle GetTabForHandle(ActorSurfaceHandle handle) const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (ActorSurface* surface = Get(handle)) {
+      return surface->GetTabHandle().value_or(tabs::TabHandle::Null());
+    }
+    // Maybe the surface's tab was just deleted. Find it from the recent
+    // deletions.
+    for (const auto& [tab, destroyed_handle] : recently_destroyed_tabs_) {
+      if (destroyed_handle == handle) {
+        return tab;
+      }
+    }
+    return tabs::TabHandle::Null();
+  }
+
  private:
   void ForgetDestroyedTab(tabs::TabHandle tab) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -136,11 +153,10 @@ ActorSurface* ActorSurfaceHandle::Get() const {
 }
 
 tabs::TabHandle ActorSurfaceHandle::GetTabHandle() const {
-  ActorSurface* surface = Get();
-  if (!surface) {
+  if (is_null()) {
     return tabs::TabHandle::Null();
   }
-  return surface->GetTabHandle().value_or(tabs::TabHandle::Null());
+  return ActorSurfaceLookup::GetInstance().GetTabForHandle(*this);
 }
 
 // static

@@ -62,8 +62,12 @@ class ActorSurfaceHandle {
   ActorSurface* Get() const;
 
   // Returns the tab currently backing this surface, or TabHandle::Null() if
-  // the surface no longer exists or is not backed by a tab. This is the
-  // inverse of From(); callers must not assume the two share a raw value.
+  // there is none. This is the inverse of From(); callers must not assume the
+  // two share a raw value.
+  //
+  // Like From(), also returns the tab if it was just destroyed (Get() returns
+  // null, but the handle lookup still exists), so that cleanups can still
+  // happen.
   tabs::TabHandle GetTabHandle() const;
 
   // Returns the handle of the surface currently backed by `tab`, or Null() if

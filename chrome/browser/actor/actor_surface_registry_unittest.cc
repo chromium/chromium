@@ -341,15 +341,17 @@ TEST_F(ActorSurfaceRegistryTest, FromTabResolvesSurfaceDestroyedInSameTask) {
 
   // Mirrors tab closure: the surface is destroyed with the tab's TabFeatures
   // before TabStripModel observers are notified, within the same task. Those
-  // observers must still be able to map the tab to its surface handle.
+  // observers must still be able to map between the tab and its surface
+  // handle in both directions.
   registry_->OnTabWillBeDestroyed(tab_handle());
   EXPECT_EQ(ActorSurfaceHandle::From(tab_handle()), handle);
   EXPECT_FALSE(handle.Get());
-  EXPECT_EQ(handle.GetTabHandle(), tabs::TabHandle::Null());
+  EXPECT_EQ(handle.GetTabHandle(), tab_handle());
 
   // The mapping is dropped once the current task completes.
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(ActorSurfaceHandle::From(tab_handle()).is_null());
+  EXPECT_EQ(handle.GetTabHandle(), tabs::TabHandle::Null());
 }
 
 }  // namespace
