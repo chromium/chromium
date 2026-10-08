@@ -12,6 +12,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
+class DownloadButton;
 class PinnedActionToolbarButton;
 
 // Reasons GetBubbleAnchorAsync() failed to return an anchor. The particular
@@ -52,9 +53,8 @@ class PinnedToolbarActions : public ToolbarController::PinnedActionsDelegate {
   // Queues an action to take place after the current animation completes.
   virtual void PostOrQueueActionAfterAnimation(base::OnceClosure action) = 0;
 
-  // Gets a pointer to the download button.
-  // TODO(https://crbug.com/474063115): Change this to a non-Views return type.
-  virtual ToolbarButton* GetDownloadButton() = 0;
+  // Gets a pointer to the download button, or nullptr if there isn't one.
+  virtual DownloadButton* GetDownloadButton() = 0;
 
   // Returns BubbleAnchor for the action.
   virtual views::BubbleAnchor GetBubbleAnchor(actions::ActionId action_id) = 0;

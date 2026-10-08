@@ -278,7 +278,7 @@ void WebUIPinnedToolbarActions::RetryPostOrQueueAction(
   PostOrQueueActionAfterAnimation(std::move(action));
 }
 
-ToolbarButton* WebUIPinnedToolbarActions::GetDownloadButton() {
+DownloadButton* WebUIPinnedToolbarActions::GetDownloadButton() {
   // TODO(https://crbug.com/474063115): Implement this.
   NOTIMPLEMENTED();
   return nullptr;

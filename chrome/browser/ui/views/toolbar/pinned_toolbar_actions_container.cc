@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/views/extensions/browser_action_drag_data.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/toolbar/download_button_views.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container_layout.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_divider.h"
@@ -117,7 +118,8 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
       browser_observer_(std::make_unique<BrowserObserver>(*this, browser_view)),
       browser_view_(browser_view),
       button_provider_(button_provider),
-      model_(PinnedToolbarActionsModel::Get(browser_view->GetProfile())) {
+      model_(PinnedToolbarActionsModel::Get(browser_view->GetProfile())),
+      download_button_(std::make_unique<DownloadButtonViews>(*this)) {
   SetPaintToLayer();
   SetProperty(views::kElementIdentifierKey,
               kPinnedToolbarActionsContainerElementId);
@@ -889,8 +891,8 @@ void PinnedToolbarActionsContainer::PostOrQueueActionAfterAnimation(
   GetAnimatingLayoutManager()->PostOrQueueAction(std::move(action));
 }
 
-ToolbarButton* PinnedToolbarActionsContainer::GetDownloadButton() {
-  return GetButtonFor(kActionShowDownloads);
+DownloadButton* PinnedToolbarActionsContainer::GetDownloadButton() {
+  return GetButtonFor(kActionShowDownloads) ? download_button_.get() : nullptr;
 }
 
 views::BubbleAnchor PinnedToolbarActionsContainer::GetBubbleAnchor(

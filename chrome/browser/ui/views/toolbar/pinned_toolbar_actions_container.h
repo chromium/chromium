@@ -21,6 +21,7 @@
 #include "ui/views/drag_controller.h"
 
 class BrowserView;
+class DownloadButtonViews;
 class ToolbarButtonProvider;
 class ToolbarDivider;
 
@@ -96,7 +97,7 @@ class PinnedToolbarActionsContainer
   bool IsActionPinnedOrPoppedOut(actions::ActionId id) override;
   bool IsActionHighlighted(actions::ActionId id) override;
   void PostOrQueueActionAfterAnimation(base::OnceClosure action) override;
-  ToolbarButton* GetDownloadButton() override;
+  DownloadButton* GetDownloadButton() override;
   views::BubbleAnchor GetBubbleAnchor(actions::ActionId action_id) override;
   void GetBubbleAnchorAsync(
       actions::ActionId action_id,
@@ -186,6 +187,10 @@ class PinnedToolbarActionsContainer
   std::vector<std::unique_ptr<PinnedActionToolbarButton>> permanent_buttons_;
   raw_ptr<ToolbarDivider> toolbar_divider_;
   raw_ptr<PinnedToolbarActionsModel> model_;
+
+  // Implements DownloadButton on top of the downloads button, when there is
+  // one.
+  const std::unique_ptr<DownloadButtonViews> download_button_;
 
   base::ScopedObservation<PinnedToolbarActionsModel,
                           PinnedToolbarActionsModel::Observer>

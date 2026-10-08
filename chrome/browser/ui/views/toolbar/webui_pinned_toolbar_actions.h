@@ -48,7 +48,7 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions,
   bool IsActionPinnedOrPoppedOut(actions::ActionId id) override;
   bool IsActionHighlighted(actions::ActionId id) override;
   void PostOrQueueActionAfterAnimation(base::OnceClosure action) override;
-  ToolbarButton* GetDownloadButton() override;
+  DownloadButton* GetDownloadButton() override;
   views::BubbleAnchor GetBubbleAnchor(actions::ActionId action_id) override;
   void GetBubbleAnchorAsync(
       actions::ActionId action_id,

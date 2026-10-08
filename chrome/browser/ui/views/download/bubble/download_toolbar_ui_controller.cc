@@ -12,16 +12,13 @@ DEFINE_USER_DATA(DownloadToolbarUIController);
 #include <string>
 
 #include "base/functional/bind.h"
-#include "base/i18n/number_formatting.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "cc/paint/paint_flags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
@@ -39,7 +36,7 @@ DEFINE_USER_DATA(DownloadToolbarUIController);
 #include "chrome/browser/ui/views/download/bubble/download_bubble_contents_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_started_animation_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/download_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -58,22 +55,13 @@ DEFINE_USER_DATA(DownloadToolbarUIController);
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/compositor.h"
-#include "ui/compositor/layer.h"
 #include "ui/gfx/animation/animation.h"
-#include "ui/gfx/animation/animation_delegate.h"
-#include "ui/gfx/geometry/skia_conversions.h"
-#include "ui/gfx/image/canvas_image_source.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/render_text.h"
-#include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/controls/progress_ring_utils.h"
 #include "ui/views/event_monitor.h"
-#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -81,12 +69,6 @@ DEFINE_USER_DATA(DownloadToolbarUIController);
 #endif
 
 namespace {
-
-using GetBadgeTextCallback = base::RepeatingCallback<gfx::RenderText&()>;
-
-constexpr int kProgressRingRadius = 9;
-constexpr int kProgressRingRadiusTouchMode = 12;
-constexpr float kProgressRingStrokeWidth = 2.0f;
 
 // Close the partial bubble after 5 seconds if the user doesn't interact with
 // it.
@@ -99,158 +81,9 @@ PinnedToolbarActions* GetPinnedToolbarActions(BrowserView* browser_view) {
              : nullptr;
 }
 
-ToolbarButton* GetDownloadsButton(BrowserView* browser_view) {
+DownloadButton* GetDownloadsButton(BrowserView* browser_view) {
   auto* container = GetPinnedToolbarActions(browser_view);
   return container ? container->GetDownloadButton() : nullptr;
-}
-
-class DownloadProgressRing : public views::View, gfx::AnimationDelegate {
-  METADATA_HEADER(DownloadProgressRing, views::View)
- public:
-  enum class DownloadStatus { kIdle, kDormant, kScanning, kDownloading };
-
-  DownloadProgressRing(DownloadProgressRing&) = delete;
-  DownloadProgressRing& operator=(const DownloadProgressRing&) = delete;
-  ~DownloadProgressRing() override = default;
-
-  // Create a DownloadProgressRing and adds it to |parent|. The
-  // returned progress ring is owned by the |parent|.
-  static DownloadProgressRing* Install(ToolbarButton* parent) {
-    auto progress_ring =
-        base::WrapUnique<DownloadProgressRing>(new DownloadProgressRing());
-    auto* ring = parent->AddChildView(std::move(progress_ring));
-    return ring;
-  }
-
-  // Returns the progress ring if it is a direct child of the `parent`.
-  static DownloadProgressRing* GetProgressRing(ToolbarButton* parent) {
-    for (auto& child : parent->children()) {
-      if (views::IsViewClass<DownloadProgressRing>(child)) {
-        return views::AsViewClass<DownloadProgressRing>(child);
-      }
-    }
-    return nullptr;
-  }
-
-  void SetIdle() {
-    status_ = DownloadStatus::kIdle;
-    scanning_animation_.End();
-    SchedulePaint();
-  }
-
-  void SetDormant() {
-    status_ = DownloadStatus::kDormant;
-    scanning_animation_.End();
-    SchedulePaint();
-  }
-
-  void SetScanning() {
-    status_ = DownloadStatus::kScanning;
-    scanning_animation_.Show();
-    SchedulePaint();
-  }
-
-  void SetDownloading(int progress_percentage) {
-    status_ = DownloadStatus::kDownloading;
-    download_progress_percentage_ = progress_percentage;
-    scanning_animation_.End();
-    SchedulePaint();
-  }
-
-  DownloadStatus GetStatus() { return status_; }
-
-  void UpdateColors(SkColor background_color, SkColor progress_color) {
-    background_color_ = background_color;
-    progress_color_ = progress_color;
-    SchedulePaint();
-  }
-
- private:
-  DownloadProgressRing() {
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
-    // Don't allow the view to process events.
-    SetCanProcessEventsWithinSubtree(false);
-    scanning_animation_.SetSlideDuration(base::Milliseconds(2500));
-    scanning_animation_.SetTweenType(gfx::Tween::LINEAR);
-  }
-
-  // AnimationDelegate:
-  void AnimationProgressed(const gfx::Animation* animation) override {
-    SchedulePaint();
-  }
-
-  // View:
-  void Layout(PassKey) override {
-    LayoutSuperclass<views::View>(this);
-    // Fill the parent completely.
-    SetBoundsRect(parent()->GetLocalBounds());
-  }
-
-  void OnPaint(gfx::Canvas* canvas) override {
-    // Do not show the progress ring when there is no in progress download.
-    if (status_ == DownloadStatus::kIdle) {
-      return;
-    }
-
-    int ring_radius = ui::TouchUiController::Get()->touch_ui()
-                          ? kProgressRingRadiusTouchMode
-                          : kProgressRingRadius;
-    int x = width() / 2 - ring_radius;
-    int y = height() / 2 - ring_radius;
-    int diameter = 2 * ring_radius;
-    gfx::RectF ring_bounds(x, y, /*width=*/diameter, /*height=*/diameter);
-
-    if (status_ == DownloadStatus::kDormant) {
-      // Draw a static solid ring.
-      views::DrawProgressRing(canvas, gfx::RectFToSkRect(ring_bounds),
-                              background_color_, background_color_,
-                              kProgressRingStrokeWidth,
-                              /*start_angle=*/0,
-                              /*sweep_angle=*/0);
-      return;
-    }
-
-    if (status_ == DownloadStatus::kScanning) {
-      if (!scanning_animation_.is_animating()) {
-        scanning_animation_.Reset();
-        scanning_animation_.Show();
-      }
-      views::DrawSpinningRing(
-          canvas, gfx::RectFToSkRect(ring_bounds), background_color_,
-          progress_color_, kProgressRingStrokeWidth, /*start_angle=*/
-          gfx::Tween::IntValueBetween(scanning_animation_.GetCurrentValue(), 0,
-                                      360));
-      return;
-    }
-
-    if (status_ == DownloadStatus::kDownloading) {
-      views::DrawProgressRing(
-          canvas, gfx::RectFToSkRect(ring_bounds), background_color_,
-          progress_color_, kProgressRingStrokeWidth, /*start_angle=*/-90,
-          /*sweep_angle=*/360 * download_progress_percentage_ / 100.0);
-    }
-  }
-
-  DownloadStatus status_ = DownloadStatus::kIdle;
-  int download_progress_percentage_ = 0;
-  SkColor background_color_ = SK_ColorBLACK;
-  SkColor progress_color_ = SK_ColorBLACK;
-  gfx::SlideAnimation scanning_animation_{this};
-};
-BEGIN_METADATA(DownloadProgressRing)
-END_METADATA
-
-DownloadProgressRing* GetProgressRing(BrowserView* browser_view) {
-  auto* button = GetDownloadsButton(browser_view);
-  if (!button) {
-    return nullptr;
-  }
-  auto* progress_ring = DownloadProgressRing::GetProgressRing(button);
-  if (!progress_ring) {
-    progress_ring = DownloadProgressRing::Install(button);
-  }
-  return progress_ring;
 }
 
 gfx::Insets GetPrimaryViewMargin() {
@@ -263,171 +96,6 @@ gfx::Insets GetSecurityViewMargin() {
   return gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
                              views::DISTANCE_RELATED_CONTROL_VERTICAL),
                          0);
-}
-
-// Helper class to draw a circular badge with text.
-class CircleBadgeImageSource : public gfx::CanvasImageSource {
- public:
-  CircleBadgeImageSource(const gfx::Size& size,
-                         SkColor background_color,
-                         GetBadgeTextCallback get_text_callback)
-      : gfx::CanvasImageSource(size),
-        background_color_(background_color),
-        get_text_callback_(std::move(get_text_callback)) {}
-
-  CircleBadgeImageSource(const CircleBadgeImageSource&) = delete;
-  CircleBadgeImageSource& operator=(const CircleBadgeImageSource&) = delete;
-
-  ~CircleBadgeImageSource() override = default;
-
-  // gfx::CanvasImageSource:
-  void Draw(gfx::Canvas* canvas) override {
-    cc::PaintFlags flags;
-    flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setAntiAlias(true);
-    flags.setColor(background_color_);
-
-    gfx::RenderText& render_text = get_text_callback_.Run();
-    const gfx::Rect& badge_rect = render_text.display_rect();
-    // Set the corner radius to make the rectangle appear like a circle.
-    const int corner_radius = badge_rect.height() / 2;
-    canvas->DrawRoundRect(badge_rect, corner_radius, flags);
-    render_text.Draw(canvas);
-  }
-
- private:
-  const SkColor background_color_;
-  GetBadgeTextCallback get_text_callback_;
-};
-
-class DownloadsImageBadge : public views::ImageView {
-  METADATA_HEADER(DownloadsImageBadge, views::ImageView)
- public:
-  DownloadsImageBadge(DownloadsImageBadge&) = delete;
-  DownloadsImageBadge& operator=(const DownloadsImageBadge&) = delete;
-  ~DownloadsImageBadge() override = default;
-
-  // Create a DownloadsImageBadge and adds it to |parent|. The
-  // returned badge is owned by the |parent|.
-  static DownloadsImageBadge* Install(ToolbarButton* parent) {
-    auto badge =
-        base::WrapUnique<DownloadsImageBadge>(new DownloadsImageBadge());
-    return parent->AddChildView(std::move(badge));
-  }
-
-  // Returns the image badge if it is a direct child of the `parent`.
-  static DownloadsImageBadge* GetImageBadge(ToolbarButton* parent) {
-    for (auto& child : parent->children()) {
-      if (views::IsViewClass<DownloadsImageBadge>(child)) {
-        return views::AsViewClass<DownloadsImageBadge>(child);
-      }
-    }
-    return nullptr;
-  }
-
-  void UpdateImage(bool is_active,
-                   int progress_download_count,
-                   SkColor badge_text_color,
-                   SkColor badge_background_color) {
-    const int badge_size = std::min(bounds().height(), bounds().width());
-    // Only display the badge if there are multiple downloads, or this image
-    // view is visible. Use 2dp to make sure that the image has size even with
-    // scale factor < 1.0. (this can happen on CrOS).
-    if (!is_active || progress_download_count < 2 || badge_size < 2) {
-      SetImage(ui::ImageModel());
-      return;
-    }
-    // base::Unretained is safe because this owns the ImageView to which the
-    // image source is applied.
-    SetImage(ui::ImageModel::FromImageSkia(
-        gfx::CanvasImageSource::MakeImageSkia<CircleBadgeImageSource>(
-            gfx::Size(badge_size, badge_size), badge_background_color,
-            base::BindRepeating(&DownloadsImageBadge::GetBadgeText,
-                                base::Unretained(this), progress_download_count,
-                                badge_text_color))));
-  }
-
- private:
-  // Max download count to show in the badge. Any higher number of downloads
-  // results in a placeholder ("9+").
-  static constexpr int kMaxDownloadCountDisplayed = 9;
-
-  DownloadsImageBadge() {
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
-    SetCanProcessEventsWithinSubtree(false);
-  }
-
-  gfx::RenderText& GetBadgeText(int progress_download_count,
-                                SkColor badge_text_color) {
-    CHECK_GE(progress_download_count, 2);
-    const int badge_height = bounds().height();
-    bool use_placeholder = progress_download_count > kMaxDownloadCountDisplayed;
-    const int index = use_placeholder ? 0 : progress_download_count - 1;
-    gfx::RenderText* render_text = render_texts_.at(index).get();
-    if (render_text == nullptr) {
-      ui::ResourceBundle* bundle = &ui::ResourceBundle::GetSharedInstance();
-      gfx::FontList font = bundle->GetFontList(ui::ResourceBundle::BaseFont)
-                               .DeriveWithHeightUpperBound(badge_height);
-      std::u16string text =
-          use_placeholder
-              ? base::StrCat(
-                    {base::FormatNumber(kMaxDownloadCountDisplayed), u"+"})
-              : base::FormatNumber(progress_download_count);
-
-      std::unique_ptr<gfx::RenderText> new_render_text =
-          gfx::RenderText::CreateRenderText();
-      new_render_text->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-      new_render_text->SetCursorEnabled(false);
-      new_render_text->SetFontList(std::move(font));
-      new_render_text->SetText(std::move(text));
-      new_render_text->SetDisplayRect(
-          gfx::Rect(gfx::Point(), gfx::Size(badge_height, badge_height)));
-
-      render_text = new_render_text.get();
-      render_texts_[index] = std::move(new_render_text);
-    }
-    render_text->SetColor(badge_text_color);
-    return *render_text;
-  }
-
-  // View:
-  void Layout(PassKey) override {
-    LayoutSuperclass<views::ImageView>(this);
-    gfx::Size parent_size = parent()->GetPreferredSize();
-    const int badge_height =
-        std::min(parent_size.width(), parent_size.height()) / 2;
-    const int badge_offset_x = parent_size.width() - badge_height;
-    const int badge_offset_y = parent_size.height() - badge_height;
-    // If the badge height has changed, clear the cache of render_texts_.
-    if (badge_height != bounds().height()) {
-      render_texts_ = std::array<std::unique_ptr<gfx::RenderText>,
-                                 kMaxDownloadCountDisplayed>{};
-    }
-    SetBoundsRect(
-        gfx::Rect(badge_offset_x, badge_offset_y, badge_height, badge_height));
-  }
-
-  // RenderTexts used for the number in the badge. Stores the text for "n" at
-  // index n - 1, and stores the text for the placeholder ("9+") at index 0.
-  // This is done to avoid re-creating the same RenderText on each paint. Text
-  // color of each RenderText is reset upon each paint.
-  std::array<std::unique_ptr<gfx::RenderText>, kMaxDownloadCountDisplayed>
-      render_texts_{};
-};
-BEGIN_METADATA(DownloadsImageBadge)
-END_METADATA
-
-DownloadsImageBadge* GetImageBadge(BrowserView* browser_view) {
-  auto* button = GetDownloadsButton(browser_view);
-  if (!button) {
-    return nullptr;
-  }
-  auto* badge = DownloadsImageBadge::GetImageBadge(button);
-  if (!badge) {
-    badge = DownloadsImageBadge::Install(button);
-  }
-  return badge;
 }
 
 }  // namespace
@@ -494,7 +162,7 @@ void DownloadToolbarUIController::Hide() {
 
 bool DownloadToolbarUIController::IsShowing() const {
   auto* button = GetDownloadsButton(browser_view_);
-  return button && button->GetVisible();
+  return button && button->IsShowing();
 }
 
 void DownloadToolbarUIController::Enable() {
@@ -565,7 +233,7 @@ void DownloadToolbarUIController::UpdateDownloadIcon(
 void DownloadToolbarUIController::AnnounceAccessibleAlertNow(
     const std::u16string& alert_text) {
   if (auto* button = GetDownloadsButton(browser_view_)) {
-    button->GetViewAccessibility().AnnounceText(alert_text);
+    button->AnnounceAccessibleAlert(alert_text);
   }
 }
 
@@ -660,22 +328,28 @@ void DownloadToolbarUIController::UpdateIcon() {
     return;
   }
 
+  // Determine how the progress ring should be drawn.
+  ActionItemProgressRingStatus ring_status;
+  if (state_ == IconState::kComplete || progress_info_.download_count == 0) {
+    // Do not show the progress ring when there is no in progress download.
+    ring_status = ActionItemProgressRingStatus::kIdle;
+  } else if (is_dormant_) {
+    ring_status = ActionItemProgressRingStatus::kDormant;
+  } else if (ShouldShowScanningAnimation()) {
+    ring_status = ActionItemProgressRingStatus::kScanning;
+  } else {
+    ring_status = ActionItemProgressRingStatus::kDownloading;
+  }
+
   int progress_download_count = progress_info_.download_count;
   bool is_disabled = !action_item_->GetEnabled() || is_dormant_;
   bool is_active = active_ == IconActive::kActive;
-  SkColor disabled_color =
-      button->GetColorProvider()->GetColor(kColorToolbarButtonIconInactive);
-  SkColor background_color =
-      is_disabled ? disabled_color
-                  : button->GetColorProvider()->GetColor(
-                        kColorDownloadToolbarButtonRingBackground);
-  SkColor progress_color =
-      is_disabled ? disabled_color
-                  : button->GetColorProvider()->GetColor(
-                        is_active ? kColorDownloadToolbarButtonActive
-                                  : kColorDownloadToolbarButtonInactive);
-  SkColor badge_background_color =
-      button->GetColorProvider()->GetColor(kColorToolbar);
+  SkColor badge_text_color =
+      is_disabled
+          ? button->GetColor(kColorToolbarButtonIconInactive)
+          : button->GetColor(is_active ? kColorDownloadToolbarButtonActive
+                                       : kColorDownloadToolbarButtonInactive);
+  SkColor badge_background_color = button->GetColor(kColorToolbar);
 
   const gfx::VectorIcon* new_icon;
   // An active icon is indicated by the color and the presence of an underline
@@ -729,30 +403,11 @@ void DownloadToolbarUIController::UpdateIcon() {
 
   redraw_progress_soon_ = false;
 
-  DownloadProgressRing* progress_ring = GetProgressRing(browser_view_);
-
-  GetImageBadge(browser_view_)
-      ->UpdateImage(is_active, progress_download_count, progress_color,
-                    badge_background_color);
-
-  // Do not show the progress ring when there is no in progress download.
-  if (state_ == IconState::kComplete || progress_info_.download_count == 0) {
-    progress_ring->SetIdle();
-    return;
-  }
-
-  progress_ring->UpdateColors(background_color, progress_color);
-
-  if (is_dormant_) {
-    progress_ring->SetDormant();
-    return;
-  }
-
-  if (ShouldShowScanningAnimation()) {
-    progress_ring->SetScanning();
-    return;
-  }
-  progress_ring->SetDownloading(progress_info_.progress_percentage);
+  // Update the ring before the badge so that, when first installed, the badge
+  // is stacked above the ring.
+  button->UpdateProgressRing(ring_status, progress_info_.progress_percentage);
+  button->UpdateBadge(is_active, progress_download_count, badge_text_color,
+                      badge_background_color);
 }
 
 void DownloadToolbarUIController::OpenPrimaryDialog() {
@@ -860,34 +515,28 @@ void DownloadToolbarUIController::ShowPendingDownloadStartedAnimation() {
   }
   // Animation cleans itself up after it's done.
   if (auto* button = GetDownloadsButton(browser_view_)) {
-    const ui::ColorProvider* color_provider = button->GetColorProvider();
     new DownloadBubbleStartedAnimationViews(
         web_contents, button->GetBoundsInScreen(),
-        color_provider->GetColor(
-            kColorDownloadToolbarButtonAnimationForeground),
-        color_provider->GetColor(
-            kColorDownloadToolbarButtonAnimationBackground));
+        button->GetColor(kColorDownloadToolbarButtonAnimationForeground),
+        button->GetColor(kColorDownloadToolbarButtonAnimationBackground));
   }
 }
 
 bool DownloadToolbarUIController::IsProgressRingInDownloadingStateForTesting() {
-  if (auto* progress_ring = GetProgressRing(browser_view_)) {
-    return progress_ring->GetStatus() ==
-           DownloadProgressRing::DownloadStatus::kDownloading;
-  }
-  return false;
+  auto* button = GetDownloadsButton(browser_view_);
+  return button && button->GetProgressRingStatusForTesting() ==
+                       ActionItemProgressRingStatus::kDownloading;
 }
 
 bool DownloadToolbarUIController::IsProgressRingInDormantStateForTesting() {
-  if (auto* progress_ring = GetProgressRing(browser_view_)) {
-    return progress_ring->GetStatus() ==
-           DownloadProgressRing::DownloadStatus::kDormant;
-  }
-  return false;
+  auto* button = GetDownloadsButton(browser_view_);
+  return button && button->GetProgressRingStatusForTesting() ==
+                       ActionItemProgressRingStatus::kDormant;
 }
 
 views::ImageView* DownloadToolbarUIController::GetImageBadgeForTesting() {
-  return GetImageBadge(browser_view_);
+  auto* button = GetDownloadsButton(browser_view_);
+  return button ? button->GetImageBadgeForTesting() : nullptr;
 }
 
 DownloadToolbarUIController::BubbleCloser::BubbleCloser(
@@ -1101,8 +750,7 @@ void DownloadToolbarUIController::OnPartialViewClosed() {
 void DownloadToolbarUIController::ShowIphPromo() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (auto* button = GetDownloadsButton(browser_view_)) {
-    button->SetProperty(views::kElementIdentifierKey,
-                        kToolbarDownloadButtonElementId);
+    button->SetElementIdentifier(kToolbarDownloadButtonElementId);
   }
   Profile* profile = browser_view_->GetProfile();
   // Don't show IPH Promo if safe browsing level is set by policy.
