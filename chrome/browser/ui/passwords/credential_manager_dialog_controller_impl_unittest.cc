@@ -39,13 +39,25 @@ class MockPasswordPrompt : public AccountChooserPrompt,
                            public AutoSigninFirstRunPrompt {
  public:
   MockPasswordPrompt() = default;
+  ~MockPasswordPrompt() override {
+    if (on_destroy_) {
+      std::move(on_destroy_).Run();
+    }
+  }
 
   MockPasswordPrompt(const MockPasswordPrompt&) = delete;
   MockPasswordPrompt& operator=(const MockPasswordPrompt&) = delete;
 
+  void set_on_destroy(base::OnceClosure on_destroy) {
+    on_destroy_ = std::move(on_destroy);
+  }
+
   MOCK_METHOD(void, ShowAccountChooser, (), (override));
   MOCK_METHOD(void, ShowAutoSigninPrompt, (), (override));
   MOCK_METHOD(void, ControllerGone, (), (override));
+
+ private:
+  base::OnceClosure on_destroy_;
 };
 
 password_manager::PasswordForm GetLocalForm() {
@@ -397,5 +409,79 @@ TEST_F(CredentialManagerDialogControllerTest,
   controller().OnCloseDialog();
 }
 #endif
+
+TEST_F(CredentialManagerDialogControllerTest,
+       ResetDialogDeletesDialogsAsynchronously) {
+  auto prompt = std::make_unique<StrictMock<MockPasswordPrompt>>();
+  auto* prompt_ptr = prompt.get();
+  password_manager::PasswordForm local_form = GetLocalForm();
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> locals;
+  locals.push_back(
+      std::make_unique<password_manager::PasswordForm>(local_form));
+
+  base::RunLoop run_loop;
+  bool prompt_destroyed = false;
+  prompt_ptr->set_on_destroy(base::BindOnce(
+      [](bool* destroyed, base::OnceClosure quit_closure) {
+        *destroyed = true;
+        std::move(quit_closure).Run();
+      },
+      &prompt_destroyed, run_loop.QuitClosure()));
+
+  EXPECT_CALL(*prompt_ptr, ShowAccountChooser());
+  controller().ShowAccountChooser(std::move(prompt), std::move(locals));
+
+  // Close the dialog via choosing credential.
+  EXPECT_CALL(*prompt_ptr, ControllerGone());
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  EXPECT_CALL(feature_manager(), IsBiometricAuthenticationBeforeFillingEnabled)
+      .WillOnce(testing::Return(false));
+#endif
+  EXPECT_CALL(ui_controller_mock(),
+              ChooseCredential(
+                  local_form,
+                  password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD));
+  controller().OnChooseCredentials(
+      local_form, password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD);
+
+  // The prompt must NOT be destroyed synchronously inside OnChooseCredentials /
+  // ResetDialog.
+  EXPECT_FALSE(prompt_destroyed);
+
+  // The prompt is destroyed asynchronously once pending tasks run.
+  run_loop.Run();
+  EXPECT_TRUE(prompt_destroyed);
+}
+
+TEST_F(CredentialManagerDialogControllerTest,
+       ResetDialogDeletesAutosigninPromptAsynchronously) {
+  auto prompt = std::make_unique<StrictMock<MockPasswordPrompt>>();
+  auto* prompt_ptr = prompt.get();
+
+  base::RunLoop run_loop;
+  bool prompt_destroyed = false;
+  prompt_ptr->set_on_destroy(base::BindOnce(
+      [](bool* destroyed, base::OnceClosure quit_closure) {
+        *destroyed = true;
+        std::move(quit_closure).Run();
+      },
+      &prompt_destroyed, run_loop.QuitClosure()));
+
+  EXPECT_CALL(*prompt_ptr, ShowAutoSigninPrompt());
+  controller().ShowAutosigninPrompt(std::move(prompt));
+
+  // Close the dialog via OnAutoSigninOK (which invokes ResetDialog).
+  EXPECT_CALL(*prompt_ptr, ControllerGone());
+  EXPECT_CALL(ui_controller_mock(), OnDialogHidden());
+  controller().OnAutoSigninOK();
+
+  // The prompt must NOT be destroyed synchronously inside OnAutoSigninOK /
+  // ResetDialog.
+  EXPECT_FALSE(prompt_destroyed);
+
+  // The prompt is destroyed asynchronously once pending tasks run.
+  run_loop.Run();
+  EXPECT_TRUE(prompt_destroyed);
+}
 
 }  // namespace

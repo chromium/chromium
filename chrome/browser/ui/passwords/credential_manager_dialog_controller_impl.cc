@@ -191,14 +191,7 @@ void CredentialManagerDialogControllerImpl::OnAutoSigninOK() {
       profile_->GetPrefs());
   password_manager::metrics_util::LogAutoSigninPromoUserAction(
       password_manager::metrics_util::AUTO_SIGNIN_OK_GOT_IT);
-  if (autosignin_dialog_) {
-    autosignin_dialog_->ControllerGone();
-    // Delete the dialog asynchronously because we are currently in a views
-    // callback. Synchronous destruction would cause a use-after-free crash
-    // when the call stack unwinds back to the views framework.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
-        FROM_HERE, std::move(autosignin_dialog_));
-  }
+  ResetDialog();
   delegate_->OnDialogHidden();
 }
 
@@ -209,14 +202,7 @@ void CredentialManagerDialogControllerImpl::OnAutoSigninTurnOff() {
       profile_->GetPrefs());
   password_manager::metrics_util::LogAutoSigninPromoUserAction(
       password_manager::metrics_util::AUTO_SIGNIN_TURN_OFF);
-  if (autosignin_dialog_) {
-    autosignin_dialog_->ControllerGone();
-    // Delete the dialog asynchronously because we are currently in a views
-    // callback. Synchronous destruction would cause a use-after-free crash
-    // when the call stack unwinds back to the views framework.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
-        FROM_HERE, std::move(autosignin_dialog_));
-  }
+  ResetDialog();
   delegate_->OnDialogHidden();
 }
 
@@ -239,13 +225,18 @@ void CredentialManagerDialogControllerImpl::OnCloseDialog() {
 }
 
 void CredentialManagerDialogControllerImpl::ResetDialog() {
+  // Delete the dialogs asynchronously to prevent synchronous destruction of the
+  // underlying views::Widget, which would unblock and focus the WebContents,
+  // potentially causing re-entrancy and synchronous WebContents destruction.
   if (account_chooser_dialog_) {
     account_chooser_dialog_->ControllerGone();
-    account_chooser_dialog_.reset();
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(account_chooser_dialog_));
   }
   if (autosignin_dialog_) {
     autosignin_dialog_->ControllerGone();
-    autosignin_dialog_.reset();
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(autosignin_dialog_));
   }
 }
 
