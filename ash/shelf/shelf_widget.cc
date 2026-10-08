@@ -44,12 +44,10 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/compositor/layer_delegate.h"
-#include "ui/compositor/layer_owner.h"
 #include "ui/compositor/layer_solid_color.h"
-#include "ui/compositor/layer_textured.h"
-#include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
@@ -59,6 +57,7 @@
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/views/accessible_pane_view.h"
+#include "ui/views/background.h"
 #include "ui/views/focus/focus_search.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/widget/widget.h"
@@ -95,47 +94,49 @@ class HideAnimationObserver : public ui::ImplicitAnimationObserver {
   raw_ptr<ui::Layer> layer_;
 };
 
-class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
-                                     public ui::LayerDelegate {
+// The view that draws the semi-opaque background of the shelf. It paints to
+// its own layer so that it can have rounded corners and background blur, and
+// is kept as the first child of ShelfWidgetDelegateView so that it is stacked
+// beneath the other shelf contents.
+class ShelfBackgroundView : public views::View {
+  METADATA_HEADER(ShelfBackgroundView, views::View)
+
  public:
-  ShelfBackgroundLayerDelegate(Shelf* shelf, views::View* owner_view)
-      : shelf_(shelf), owner_view_(owner_view) {}
-
-  ShelfBackgroundLayerDelegate(const ShelfBackgroundLayerDelegate&) = delete;
-  ShelfBackgroundLayerDelegate& operator=(const ShelfBackgroundLayerDelegate&) =
-      delete;
-  ~ShelfBackgroundLayerDelegate() override {}
-
-  void Initialize() {
-    auto layer = std::make_unique<ui::LayerTextured>();
-    layer->SetName("ShelfWidget:Background");
-    layer->set_delegate(this);
-    layer->SetFillsBoundsOpaquely(false);
-    SetLayer(std::move(layer));
+  explicit ShelfBackgroundView(Shelf* shelf) : shelf_(shelf) {
+    SetPaintToLayer();
+    layer()->SetName("ShelfWidget:Background");
+    layer()->SetFillsBoundsOpaquely(false);
+    // The background is purely decorative; events in the empty shelf area
+    // should be handled as before by the widget and its layout manager.
+    SetCanProcessEventsWithinSubtree(false);
+    SetBackground(
+        views::CreateRoundedRectBackground(background_color_, corner_radius_));
   }
+
+  ShelfBackgroundView(const ShelfBackgroundView&) = delete;
+  ShelfBackgroundView& operator=(const ShelfBackgroundView&) = delete;
+  ~ShelfBackgroundView() override = default;
 
   // Sets the shelf background color.
   void SetBackgroundColor(SkColor color) {
     if (color == background_color_) {
       return;
     }
-
     background_color_ = color;
-    layer()->SchedulePaint(gfx::Rect(layer()->size()));
+    UpdateBackground();
   }
 
   void SetBorderType(views::HighlightBorder::Type type) {
     if (type == highlight_border_type_) {
       return;
     }
-
     highlight_border_type_ = type;
-    layer()->SchedulePaint(gfx::Rect(layer()->size()));
+    SchedulePaint();
   }
 
   // Sets the rounded corners used by the shelf.
   void SetRoundedCornerRadius(float radius) {
-    const bool needs_paint = corner_radius_ != radius;
+    const bool changed = corner_radius_ != radius;
     corner_radius_ = radius;
 
     layer()->SetRoundedCornerRadius({
@@ -145,36 +146,33 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
         shelf_->SelectValueForShelfAlignment(0.0f, 0.0f, radius),
     });
 
-    if (needs_paint) {
-      layer()->SchedulePaint(gfx::Rect(layer()->size()));
+    if (changed) {
+      UpdateBackground();
     }
   }
 
   SkColor background_color() const { return background_color_; }
 
  private:
-  // views::LayerDelegate:
-  void OnPaintLayer(const ui::PaintContext& context) override {
-    ui::PaintRecorder recorder(context, layer()->size());
-    gfx::Canvas* canvas = recorder.canvas();
+  void UpdateBackground() {
+    SetBackground(
+        views::CreateRoundedRectBackground(background_color_, corner_radius_));
+    SchedulePaint();
+  }
 
-    // cc::PaintFlags flags for the background.
-    cc::PaintFlags flags;
-    flags.setColor(background_color_);
-    flags.setAntiAlias(true);
-    flags.setStyle(cc::PaintFlags::kFill_Style);
-    canvas->DrawRoundRect(gfx::Rect(layer()->size()), corner_radius_, flags);
-
+  // views::View:
+  void OnPaintBorder(gfx::Canvas* canvas) override {
     // Don't draw highlight border in login screen.
     LoginShelfView* login_shelf_view =
         shelf_->login_shelf_widget()->login_shelf_view();
-    if (login_shelf_view && login_shelf_view->GetVisible())
+    if (login_shelf_view && login_shelf_view->GetVisible()) {
       return;
+    }
 
     if (corner_radius_ > 0) {
       views::HighlightBorder::PaintBorderToCanvas(
-          canvas, *owner_view_, gfx::Rect(layer()->size()),
-          gfx::RoundedCornersF(corner_radius_), highlight_border_type_);
+          canvas, *this, GetLocalBounds(), gfx::RoundedCornersF(corner_radius_),
+          highlight_border_type_);
     } else {
       // If the shelf corners are not rounded, only paint the highlight border
       // on the inner edge of the shelf to separate the shelf and the work area.
@@ -184,14 +182,17 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
 
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override {
-    layer()->SchedulePaint(gfx::Rect(layer()->size()));
+    views::View::OnDeviceScaleFactorChanged(old_device_scale_factor,
+                                            new_device_scale_factor);
+    // PaintEdgeToCanvas() draws in pixel coordinates.
+    SchedulePaint();
   }
 
   void PaintEdgeToCanvas(gfx::Canvas* canvas) {
     SkColor inner_color = views::HighlightBorder::GetHighlightColor(
-        *owner_view_, highlight_border_type_);
-    SkColor outer_color = views::HighlightBorder::GetBorderColor(
-        *owner_view_, highlight_border_type_);
+        *this, highlight_border_type_);
+    SkColor outer_color =
+        views::HighlightBorder::GetBorderColor(*this, highlight_border_type_);
 
     const int border_thickness = views::kHighlightBorderThickness;
     const float half_thickness = border_thickness / 2.0f;
@@ -207,8 +208,7 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
     gfx::ScopedCanvas scoped_canvas(canvas);
     const float dsf = canvas->UndoDeviceScaleFactor();
     const gfx::RectF pixel_bounds =
-        gfx::ConvertRectToPixels(gfx::Rect(layer()->size()), dsf);
-
+        gfx::ConvertRectToPixels(GetLocalBounds(), dsf);
     // The points that are used to draw the highlighted edge.
     gfx::PointF start_point, end_point;
 
@@ -259,13 +259,15 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
   }
 
   const raw_ptr<Shelf> shelf_;
-  const raw_ptr<views::View> owner_view_;
 
   SkColor background_color_ = gfx::kPlaceholderColor;
   float corner_radius_ = 0.0f;
   views::HighlightBorder::Type highlight_border_type_ =
       views::HighlightBorder::Type::kHighlightBorderNoShadow;
 };
+
+BEGIN_METADATA(ShelfBackgroundView)
+END_METADATA
 
 }  // namespace
 
@@ -301,7 +303,6 @@ class ShelfWidgetDelegateView
   void OnThemeChanged() override;
 
   bool CanActivate() const override;
-  void ReorderChildLayers(ui::Layer* parent_layer) override;
   void OnWidgetInitialized() override;
 
   void UpdateBackgroundBlur();
@@ -328,10 +329,13 @@ class ShelfWidgetDelegateView
 
   SkColor GetShelfBackgroundColor() const;
 
-  ui::Layer* opaque_background_layer() { return opaque_background_.layer(); }
-  ShelfBackgroundLayerDelegate* opaque_background() {
-    return &opaque_background_;
-  }
+  // Returns the bounds of |opaque_background_|. The view is extended past
+  // this view's bounds in the direction of the shelf alignment to handle
+  // "overshoot" gestures gracefully.
+  gfx::Rect GetOpaqueBackgroundBounds() const;
+
+  ui::Layer* opaque_background_layer() { return opaque_background_->layer(); }
+  ShelfBackgroundView* opaque_background() { return opaque_background_; }
 
   ui::Layer* animating_background() { return &animating_background_; }
   ui::Layer* animating_drag_handle() { return &animating_drag_handle_; }
@@ -344,9 +348,10 @@ class ShelfWidgetDelegateView
   bool hide_background_for_transitions_ = false;
   const raw_ptr<ShelfWidget> shelf_widget_;
 
-  // A background layer that may be visible depending on a
-  // ShelfBackgroundAnimator.
-  ShelfBackgroundLayerDelegate opaque_background_;
+  // A background view that may be visible depending on a
+  // ShelfBackgroundAnimator. It is the first child so that its layer is
+  // stacked beneath the other shelf contents. Owned by the view hierarchy.
+  raw_ptr<ShelfBackgroundView> opaque_background_ = nullptr;
 
   // A background layer used to animate hotseat transitions.
   ui::LayerSolidColor animating_background_;
@@ -365,13 +370,15 @@ class ShelfWidgetDelegateView
 
 ShelfWidgetDelegateView::ShelfWidgetDelegateView(ShelfWidget* shelf_widget,
                                                  Shelf* shelf)
-    : shelf_widget_(shelf_widget), opaque_background_(shelf, this) {
+    : shelf_widget_(shelf_widget) {
   animating_background_.SetName("shelf/AnimatingBackground");
   animating_drag_handle_.SetName("shelf/AnimatingDragHandle");
 
   animating_background_.Add(&animating_drag_handle_);
 
-  opaque_background_.Initialize();
+  // Must be the first child so that it is stacked beneath the other contents.
+  opaque_background_ =
+      AddChildView(std::make_unique<ShelfBackgroundView>(shelf));
 
   DCHECK(shelf_widget_);
   SetOwnedByWidget(OwnedByWidgetPassKey());
@@ -392,8 +399,6 @@ ShelfWidgetDelegateView::ShelfWidgetDelegateView(ShelfWidget* shelf_widget,
 ShelfWidgetDelegateView::~ShelfWidgetDelegateView() = default;
 
 void ShelfWidgetDelegateView::SetParentLayer(ui::Layer* layer) {
-  layer->Add(opaque_background_layer());
-  ReorderLayers();
   // Animating background is only shown during hotseat state transitions to
   // animate the background from below the shelf. At the same time the shelf
   // widget may be animating between in-app and system shelf. Make animating
@@ -405,7 +410,7 @@ void ShelfWidgetDelegateView::SetParentLayer(ui::Layer* layer) {
 
 void ShelfWidgetDelegateView::HideOpaqueBackground() {
   hide_background_for_transitions_ = true;
-  opaque_background_layer()->SetVisible(false);
+  opaque_background_->SetVisible(false);
   drag_handle_->SetVisible(false);
 }
 
@@ -431,11 +436,6 @@ bool ShelfWidgetDelegateView::CanActivate() const {
   return false;
 }
 
-void ShelfWidgetDelegateView::ReorderChildLayers(ui::Layer* parent_layer) {
-  views::View::ReorderChildLayers(parent_layer);
-  parent_layer->StackAtBottom(opaque_background_layer());
-}
-
 void ShelfWidgetDelegateView::OnWidgetInitialized() {
   UpdateOpaqueBackground();
 }
@@ -445,7 +445,7 @@ void ShelfWidgetDelegateView::UpdateBackgroundBlur() {
     return;
   // Blur only if the background is visible.
   const bool should_blur_background =
-      opaque_background_layer()->visible() &&
+      opaque_background_->GetVisible() &&
       shelf_widget_->shelf_layout_manager()->ShouldBlurShelfBackground() &&
       chromeos::features::IsSystemBlurEnabled();
   if (should_blur_background == background_is_currently_blurred_)
@@ -466,17 +466,14 @@ void ShelfWidgetDelegateView::UpdateOpaqueBackground() {
   if (!Shell::Get()->tablet_mode_controller())
     return;
 
-  gfx::Rect opaque_background_bounds = GetLocalBounds();
-
   // Let the shelf occlude things below it - this helps prevent unnecessary
   // occlusion updates when changing display scale. The shelf widget may have
   // rounded corners and background blur. But, it almost opaque (very low high
   // alpha, and small rounded corners), so we manually make the window opaque
   // so that the window behind it can be marked as occluded.
   shelf_widget_->GetNativeWindow()->SetOpaqueRegionsForOcclusion(
-      std::vector<gfx::Rect>{opaque_background_bounds});
+      std::vector<gfx::Rect>{GetLocalBounds()});
 
-  const Shelf* shelf = shelf_widget_->shelf();
   const ShelfBackgroundType background_type =
       shelf_widget_->shelf_layout_manager()->shelf_background_type();
   const bool tablet_mode = display::Screen::Get()->InTabletMode();
@@ -486,28 +483,10 @@ void ShelfWidgetDelegateView::UpdateOpaqueBackground() {
   const bool split_view = ShelfConfig::Get()->in_split_view_with_overview();
   bool show_opaque_background =
       !in_overview_mode && (!tablet_mode || in_app || split_view);
-  auto* opaque_back_ground_layer = opaque_background_layer();
-  if (show_opaque_background != opaque_back_ground_layer->visible()) {
-    opaque_back_ground_layer->SetVisible(show_opaque_background);
-  }
+  opaque_background_->SetVisible(show_opaque_background);
+  opaque_background_->SetBoundsRect(GetOpaqueBackgroundBounds());
 
-  // Extend the opaque layer a little bit to handle "overshoot" gestures
-  // gracefully (the user drags the shelf further than it can actually go).
-  // That way:
-  // 1) When the shelf has rounded corners, only two of them are visible,
-  // 2) Even when the shelf is squared, it doesn't tear off the screen edge
-  // when dragged away.
-  // To achieve this, we extend the layer in the same direction where the shelf
-  // is aligned (downwards for a bottom shelf, etc.).
   const float radius = ShelfConfig::Get()->shelf_size() / 2.0f;
-  // We can easily round only 2 corners out of 4 which means we don't need as
-  // much extra shelf height.
-  const int safety_margin = kShelfMaxOvershootHeight;
-  opaque_background_bounds.Inset(gfx::Insets::TLBR(
-      0, -shelf->SelectValueForShelfAlignment(0, safety_margin, 0),
-      -shelf->SelectValueForShelfAlignment(safety_margin, 0, 0),
-      -shelf->SelectValueForShelfAlignment(0, 0, safety_margin)));
-  opaque_back_ground_layer->SetBounds(opaque_background_bounds);
 
   // Do not show rounded corners when the background is in maximized mode (app
   // window covers entire background, including splitscreen), whenever we are
@@ -515,14 +494,13 @@ void ShelfWidgetDelegateView::UpdateOpaqueBackground() {
   if (background_type == ShelfBackgroundType::kMaximized ||
       background_type == ShelfBackgroundType::kInApp ||
       background_type == ShelfBackgroundType::kOverview) {
-    opaque_background_.SetRoundedCornerRadius(0);
+    opaque_background_->SetRoundedCornerRadius(0);
   } else {
-    opaque_background_.SetRoundedCornerRadius(radius);
+    opaque_background_->SetRoundedCornerRadius(radius);
   }
 
   UpdateDragHandle();
   UpdateBackgroundBlur();
-  SchedulePaint();
 }
 
 void ShelfWidgetDelegateView::UpdateDragHandle() {
@@ -558,7 +536,33 @@ void ShelfWidgetDelegateView::OnBoundsChanged(const gfx::Rect& old_bounds) {
     shelf_widget_->status_area_widget()->UpdateCollapseState();
 }
 
+gfx::Rect ShelfWidgetDelegateView::GetOpaqueBackgroundBounds() const {
+  // Extend the opaque layer a little bit to handle "overshoot" gestures
+  // gracefully (the user drags the shelf further than it can actually go).
+  // That way:
+  // 1) When the shelf has rounded corners, only two of them are visible,
+  // 2) Even when the shelf is squared, it doesn't tear off the screen edge
+  // when dragged away.
+  // To achieve this, we extend the layer in the same direction where the shelf
+  // is aligned (downwards for a bottom shelf, etc.).
+  // We can easily round only 2 corners out of 4 which means we don't need as
+  // much extra shelf height.
+  const Shelf* shelf = shelf_widget_->shelf();
+  const int safety_margin = kShelfMaxOvershootHeight;
+  gfx::Rect bounds = GetLocalBounds();
+  bounds.Inset(gfx::Insets::TLBR(
+      0, -shelf->SelectValueForShelfAlignment(0, safety_margin, 0),
+      -shelf->SelectValueForShelfAlignment(safety_margin, 0, 0),
+      -shelf->SelectValueForShelfAlignment(0, 0, safety_margin)));
+  // Child view bounds are mirrored in RTL, but the overshoot must always
+  // extend toward the screen edge the shelf is aligned to, so pre-mirror the
+  // bounds to cancel that out.
+  return GetMirroredRect(bounds);
+}
+
 void ShelfWidgetDelegateView::Layout(PassKey) {
+  opaque_background_->SetBoundsRect(GetOpaqueBackgroundBounds());
+
   // Center drag handle within the expected in-app shelf bounds - it's safe to
   // assume bottom shelf, given that the drag handle is only shown within the
   // bottom shelf (either in tablet mode, or on login/lock screen)
@@ -572,7 +576,7 @@ void ShelfWidgetDelegateView::Layout(PassKey) {
 }
 
 void ShelfWidgetDelegateView::UpdateShelfBackground(SkColor color) {
-  opaque_background_.SetBackgroundColor(color);
+  opaque_background_->SetBackgroundColor(color);
   UpdateOpaqueBackground();
 }
 
@@ -603,7 +607,7 @@ void ShelfWidgetDelegateView::ShowAnimatingBackground(bool show) {
 }
 
 SkColor ShelfWidgetDelegateView::GetShelfBackgroundColor() const {
-  return opaque_background_.background_color();
+  return opaque_background_->background_color();
 }
 
 base::ScopedClosureRunner ShelfWidget::ForceShowHotseatInTabletMode() {
