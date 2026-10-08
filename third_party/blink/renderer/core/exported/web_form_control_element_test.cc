@@ -8,6 +8,8 @@
 
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "cc/paint/paint_op.h"
+#include "cc/paint/paint_op_buffer_iterator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -24,14 +26,19 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/skia/include/core/SkTextBlob.h"
 
 namespace blink {
 
@@ -65,9 +72,88 @@ class FakeEventListener final : public NativeEventListener {
   std::vector<String> keys_;
 };
 
+bool HasFormControlDisplayItem(const WebFormControlElement& form_control) {
+  const auto* control = form_control.ConstUnwrap<HTMLFormControlElement>();
+  const LayoutObject* layout_object = control->GetLayoutObject();
+  if (!layout_object) {
+    return false;
+  }
+  const PaintArtifact& paint_artifact =
+      control->GetDocument().View()->GetPaintArtifact();
+  for (const DisplayItem& item : paint_artifact.GetDisplayItemList()) {
+    if (item.ClientId() == layout_object->Id() && item.DrawsContent()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool HasTextBlobMatchingString(const PaintRecord& record,
+                               const std::string& expected_utf8) {
+  for (const cc::PaintOp& op : record) {
+    if (op.GetType() == cc::PaintOpType::kDrawRecord) {
+      const auto& draw_record_op = static_cast<const cc::DrawRecordOp&>(op);
+      if (HasTextBlobMatchingString(draw_record_op.record, expected_utf8)) {
+        return true;
+      }
+    } else if (op.GetType() == cc::PaintOpType::kDrawTextBlob) {
+      const auto& draw_text_op = static_cast<const cc::DrawTextBlobOp&>(op);
+      if (!draw_text_op.blob) {
+        continue;
+      }
+      SkTextBlob::Iter iter(*draw_text_op.blob);
+      SkTextBlob::Iter::Run run;
+      while (iter.next(&run)) {
+        if (run.fTypeface && run.fGlyphCount > 0) {
+          SkFont font(sk_ref_sp(run.fTypeface));
+          size_t count =
+              font.countText(expected_utf8.data(), expected_utf8.size(),
+                             SkTextEncoding::kUTF8);
+          if (count == base::checked_cast<size_t>(run.fGlyphCount)) {
+            std::vector<SkGlyphID> expected_glyphs(count);
+            font.textToGlyphs(expected_utf8.data(), expected_utf8.size(),
+                              SkTextEncoding::kUTF8, expected_glyphs);
+            auto actual = UNSAFE_BUFFERS(  // SAFETY: test-only code
+                base::span(run.fGlyphIndices, count));
+            if (actual == base::span(expected_glyphs)) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+  }
+  return false;
+}
+
+bool HasSuggestedValueDisplayItem(const WebFormControlElement& form_control) {
+  std::string suggested_utf8 = form_control.SuggestedValue().Utf8();
+  if (suggested_utf8.empty()) {
+    return false;
+  }
+  const auto* control = form_control.ConstUnwrap<HTMLFormControlElement>();
+  const PaintArtifact& paint_artifact =
+      control->GetDocument().View()->GetPaintArtifact();
+  for (const DisplayItem& item : paint_artifact.GetDisplayItemList()) {
+    if (const auto* drawing_item = DynamicTo<DrawingDisplayItem>(item)) {
+      if (HasTextBlobMatchingString(drawing_item->GetPaintRecord(),
+                                    suggested_utf8)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
-class WebFormControlElementTest : public PageTestBase {};
+class WebFormControlElementTest : public PageTestBase {
+ protected:
+  void SetUp() override {
+    PageTestBase::SetUp();
+    GetDocument().GetSettings()->SetScriptEnabled(true);
+  }
+};
 
 // Tests that resetting a form clears the `user_has_edited_the_field_` state.
 TEST_F(WebFormControlElementTest, ResetDocumentClearsEditedState) {
@@ -106,9 +192,9 @@ TEST_F(WebFormControlElementTest, TextControlPreviewDisabledInCanvas) {
 
   GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"(
     <form>
-      <canvas>
-        <input id="input_id">
-        <textarea id="textarea_id"></textarea>
+      <canvas content=drawable>
+        <input id="input_id" drawable>
+        <textarea id="textarea_id" drawable></textarea>
       </canvas>
     </form>
   )");
@@ -118,13 +204,16 @@ TEST_F(WebFormControlElementTest, TextControlPreviewDisabledInCanvas) {
   WebFormControlElement textarea(
       DynamicTo<HTMLFormControlElement>(GetElementById("textarea_id")));
 
-  input.SetSuggestedValue("suggestion");
-  textarea.SetSuggestedValue("suggestion");
+  input.SetSuggestedValue("input_suggestion");
+  textarea.SetSuggestedValue("textarea_suggestion");
+  UpdateAllLifecyclePhasesForTest();
 
-  // Elements inside canvas should not show autofill suggestions, as this can
-  // leak the information to javascript.
-  EXPECT_TRUE(input.SuggestedValue().IsEmpty());
-  EXPECT_TRUE(textarea.SuggestedValue().IsEmpty());
+  // Elements inside canvas should not paint
+  // autofill suggestions as this can leak the information to javascript.
+  EXPECT_TRUE(HasFormControlDisplayItem(input));
+  EXPECT_TRUE(HasFormControlDisplayItem(textarea));
+  EXPECT_FALSE(HasSuggestedValueDisplayItem(input));
+  EXPECT_FALSE(HasSuggestedValueDisplayItem(textarea));
 }
 
 TEST_F(WebFormControlElementTest,
@@ -133,9 +222,9 @@ TEST_F(WebFormControlElementTest,
 
   GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"(
     <form>
-      <input id="input_id">
-      <textarea id="textarea_id"></textarea>
-      <canvas id="canvas"></canvas>
+      <input id="input_id" drawable>
+      <textarea id="textarea_id" drawable></textarea>
+      <canvas id="canvas" content=drawable></canvas>
     </form>
   )");
 
@@ -144,19 +233,25 @@ TEST_F(WebFormControlElementTest,
   WebFormControlElement textarea(
       DynamicTo<HTMLFormControlElement>(GetElementById("textarea_id")));
 
-  input.SetSuggestedValue("suggestion");
-  textarea.SetSuggestedValue("suggestion");
+  input.SetSuggestedValue("input_suggestion");
+  textarea.SetSuggestedValue("textarea_suggestion");
+  UpdateAllLifecyclePhasesForTest();
 
   // Suggestions should work outside canvas.
-  EXPECT_EQ(input.SuggestedValue().Ascii(), "suggestion");
-  EXPECT_EQ(textarea.SuggestedValue().Ascii(), "suggestion");
+  EXPECT_TRUE(HasSuggestedValueDisplayItem(input));
+  EXPECT_TRUE(HasSuggestedValueDisplayItem(textarea));
 
-  // Moving the element into a canvas subtree should disable autofill
+  // Moving the element into a canvas subtree should suppress painting autofill
   // suggestions, as these can leak the information to javascript.
   GetElementById("canvas")->appendChild(GetElementById("input_id"));
-  EXPECT_TRUE(input.SuggestedValue().IsEmpty());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(HasFormControlDisplayItem(input));
+  EXPECT_FALSE(HasSuggestedValueDisplayItem(input));
+
   GetElementById("canvas")->appendChild(GetElementById("textarea_id"));
-  EXPECT_TRUE(textarea.SuggestedValue().IsEmpty());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(HasFormControlDisplayItem(textarea));
+  EXPECT_FALSE(HasSuggestedValueDisplayItem(textarea));
 }
 
 TEST_F(WebFormControlElementTest, SelectPreviewDisabledInCanvas) {
@@ -164,8 +259,8 @@ TEST_F(WebFormControlElementTest, SelectPreviewDisabledInCanvas) {
 
   GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"(
     <form>
-      <canvas>
-        <select id="select_id">
+      <canvas content=drawable>
+        <select id="select_id" drawable>
           <option value="Bar">Bar</option>
           <option value="Foo">Foo</option>
         </select>
@@ -177,10 +272,12 @@ TEST_F(WebFormControlElementTest, SelectPreviewDisabledInCanvas) {
       DynamicTo<HTMLFormControlElement>(GetElementById("select_id")));
 
   select.SetSuggestedValue("Foo");
+  UpdateAllLifecyclePhasesForTest();
 
-  // Elements inside canvas should not show autofill suggestions, as this can
-  // leak the information to javascript.
-  EXPECT_TRUE(select.SuggestedValue().IsEmpty());
+  // Elements inside canvas should not paint
+  // autofill suggestions as this can leak the information to javascript.
+  EXPECT_TRUE(HasFormControlDisplayItem(select));
+  EXPECT_FALSE(HasSuggestedValueDisplayItem(select));
 }
 
 TEST_F(WebFormControlElementTest,
@@ -189,11 +286,11 @@ TEST_F(WebFormControlElementTest,
 
   GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"(
     <form>
-        <select id="select_id">
+        <select id="select_id" drawable>
           <option value="Bar">Bar</option>
           <option value="Foo">Foo</option>
         </select>
-      <canvas id="canvas"></canvas>
+      <canvas id="canvas" content=drawable></canvas>
     </form>
   )");
 
@@ -201,14 +298,17 @@ TEST_F(WebFormControlElementTest,
       DynamicTo<HTMLFormControlElement>(GetElementById("select_id")));
 
   select.SetSuggestedValue("Foo");
+  UpdateAllLifecyclePhasesForTest();
 
   // Suggestions should work outside canvas.
-  EXPECT_EQ(select.SuggestedValue().Ascii(), "Foo");
+  EXPECT_TRUE(HasSuggestedValueDisplayItem(select));
 
-  // Elements inside canvas should not show autofill suggestions, as this can
+  // Elements inside canvas should not paint autofill suggestions, as this can
   // leak the information to javascript.
   GetElementById("canvas")->appendChild(GetElementById("select_id"));
-  EXPECT_TRUE(select.SuggestedValue().IsEmpty());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(HasFormControlDisplayItem(select));
+  EXPECT_FALSE(HasSuggestedValueDisplayItem(select));
 }
 
 TEST_F(WebFormControlElementTest, TextControlSlottedPreviewDisabledInCanvas) {
@@ -221,7 +321,7 @@ TEST_F(WebFormControlElementTest, TextControlSlottedPreviewDisabledInCanvas) {
           <slot name="slot1"></slot>
         </canvas>
       </template>
-      <form id="slotted" slot="slot1">
+      <form id="slotted" slot="slot1" drawable>
         <input id="input_id">
         <textarea id="textarea_id"></textarea>
       </form>
@@ -238,13 +338,16 @@ TEST_F(WebFormControlElementTest, TextControlSlottedPreviewDisabledInCanvas) {
   EXPECT_TRUE(GetElementById("input_id")->IsInCanvasSubtree());
   EXPECT_TRUE(GetElementById("textarea_id")->IsInCanvasSubtree());
 
-  input.SetSuggestedValue("suggestion");
-  textarea.SetSuggestedValue("suggestion");
+  input.SetSuggestedValue("input_suggestion");
+  textarea.SetSuggestedValue("textarea_suggestion");
+  UpdateAllLifecyclePhasesForTest();
 
-  // Elements inside canvas should not show autofill suggestions, as this can
+  // Elements inside canvas should not paint autofill suggestions, as this can
   // leak the information to javascript.
-  EXPECT_TRUE(input.SuggestedValue().IsEmpty());
-  EXPECT_TRUE(textarea.SuggestedValue().IsEmpty());
+  EXPECT_TRUE(HasFormControlDisplayItem(input));
+  EXPECT_TRUE(HasFormControlDisplayItem(textarea));
+  EXPECT_FALSE(HasSuggestedValueDisplayItem(input));
+  EXPECT_FALSE(HasSuggestedValueDisplayItem(textarea));
 }
 
 TEST_F(WebFormControlElementTest, TextControlPreviewDisabledWhenMovingToSlot) {
@@ -258,7 +361,7 @@ TEST_F(WebFormControlElementTest, TextControlPreviewDisabledWhenMovingToSlot) {
         </canvas>
       </template>
     </div>
-    <form id="slotted" slot="slot1">
+    <form id="slotted" slot="slot1" drawable>
       <input id="input_id">
       <textarea id="textarea_id"></textarea>
     </form>
@@ -274,12 +377,13 @@ TEST_F(WebFormControlElementTest, TextControlPreviewDisabledWhenMovingToSlot) {
   EXPECT_FALSE(input_elmt->IsInCanvasSubtree());
   EXPECT_FALSE(textarea_elmt->IsInCanvasSubtree());
 
-  input.SetSuggestedValue("suggestion");
-  textarea.SetSuggestedValue("suggestion");
+  input.SetSuggestedValue("input_suggestion");
+  textarea.SetSuggestedValue("textarea_suggestion");
+  UpdateAllLifecyclePhasesForTest();
 
   // Suggestions should work outside canvas.
-  EXPECT_EQ(input.SuggestedValue().Ascii(), "suggestion");
-  EXPECT_EQ(textarea.SuggestedValue().Ascii(), "suggestion");
+  EXPECT_TRUE(HasSuggestedValueDisplayItem(input));
+  EXPECT_TRUE(HasSuggestedValueDisplayItem(textarea));
 
   Element* host = GetElementById("slotHost");
   Element* form = GetElementById("slotted");
@@ -290,10 +394,12 @@ TEST_F(WebFormControlElementTest, TextControlPreviewDisabledWhenMovingToSlot) {
   EXPECT_TRUE(input_elmt->IsInCanvasSubtree());
   EXPECT_TRUE(textarea_elmt->IsInCanvasSubtree());
 
-  // Moving the element into a canvas subtree should disable autofill
+  // Moving the element into a canvas subtree should suppress painting autofill
   // suggestions, as these can leak the information to javascript.
-  EXPECT_TRUE(input.SuggestedValue().IsEmpty());
-  EXPECT_TRUE(textarea.SuggestedValue().IsEmpty());
+  EXPECT_TRUE(HasFormControlDisplayItem(input));
+  EXPECT_TRUE(HasFormControlDisplayItem(textarea));
+  EXPECT_FALSE(HasSuggestedValueDisplayItem(input));
+  EXPECT_FALSE(HasSuggestedValueDisplayItem(textarea));
 }
 
 TEST_F(WebFormControlElementTest,
@@ -304,7 +410,7 @@ TEST_F(WebFormControlElementTest,
     <div id="host">
       <template shadowrootmode="open">
         <canvas content=drawable>
-          <div id="slotwrapper">
+          <div id="slotwrapper" drawable>
             <slot></slot>
           </div>
         </canvas>
@@ -327,14 +433,18 @@ TEST_F(WebFormControlElementTest,
       DynamicTo<HTMLFormControlElement>(GetElementById("select_id")));
 
   EXPECT_TRUE(input.Unwrap<HTMLInputElement>()->IsInCanvasSubtree());
-  input.SetSuggestedValue("suggestion");
-  textarea.SetSuggestedValue("suggestion");
+  input.SetSuggestedValue("input_suggestion");
+  textarea.SetSuggestedValue("textarea_suggestion");
   select.SetSuggestedValue("Foo");
+  UpdateAllLifecyclePhasesForTest();
 
-  // Elements slotted inside a canvas should not show autofill suggestions.
-  EXPECT_TRUE(input.SuggestedValue().IsEmpty());
-  EXPECT_TRUE(textarea.SuggestedValue().IsEmpty());
-  EXPECT_TRUE(select.SuggestedValue().IsEmpty());
+  // Elements slotted inside a canvas should not paint autofill suggestions.
+  EXPECT_TRUE(HasFormControlDisplayItem(input));
+  EXPECT_TRUE(HasFormControlDisplayItem(textarea));
+  EXPECT_TRUE(HasFormControlDisplayItem(select));
+  EXPECT_FALSE(HasSuggestedValueDisplayItem(input));
+  EXPECT_FALSE(HasSuggestedValueDisplayItem(textarea));
+  EXPECT_FALSE(HasSuggestedValueDisplayItem(select));
 }
 
 TEST_F(WebFormControlElementTest,
@@ -351,7 +461,7 @@ TEST_F(WebFormControlElementTest,
           <slot name="s2"></slot>
         </canvas>
       </template>
-      <div id="wrapper" slot="s1">
+      <div id="wrapper" slot="s1" drawable>
         <input id="input_id">
         <textarea id="textarea_id"></textarea>
       </div>
@@ -363,22 +473,23 @@ TEST_F(WebFormControlElementTest,
   WebFormControlElement textarea(
       DynamicTo<HTMLFormControlElement>(GetElementById("textarea_id")));
 
-  input.SetSuggestedValue("suggestion");
-  textarea.SetSuggestedValue("suggestion");
-  EXPECT_EQ(input.SuggestedValue().Ascii(), "suggestion");
-  EXPECT_EQ(textarea.SuggestedValue().Ascii(), "suggestion");
+  input.SetSuggestedValue("input_suggestion");
+  textarea.SetSuggestedValue("textarea_suggestion");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(HasSuggestedValueDisplayItem(input));
+  EXPECT_TRUE(HasSuggestedValueDisplayItem(textarea));
 
   // Now dynamically change the slot to re-slot the wrapper into the canvas.
   GetElementById("wrapper")->setAttribute(html_names::kSlotAttr,
                                           AtomicString("s2"));
 
-  // Force slot assignment recalc and style update.
-  GetDocument().UpdateStyleAndLayoutTree();
+  UpdateAllLifecyclePhasesForTest();
 
-  // Nested elements slotted inside a canvas should have their suggestions
-  // cleared.
-  EXPECT_TRUE(input.SuggestedValue().IsEmpty());
-  EXPECT_TRUE(textarea.SuggestedValue().IsEmpty());
+  // Nested elements slotted inside a canvas should not paint their suggestions.
+  EXPECT_TRUE(HasFormControlDisplayItem(input));
+  EXPECT_TRUE(HasFormControlDisplayItem(textarea));
+  EXPECT_FALSE(HasSuggestedValueDisplayItem(input));
+  EXPECT_FALSE(HasSuggestedValueDisplayItem(textarea));
 }
 
 TEST_F(WebFormControlElementTest,
@@ -387,6 +498,7 @@ TEST_F(WebFormControlElementTest,
 
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.Initialize();
+  web_view_helper.Resize(gfx::Size(800, 600));
 
   Document* top_doc =
       web_view_helper.LocalMainFrame()->GetFrame()->GetDocument();
@@ -396,7 +508,7 @@ TEST_F(WebFormControlElementTest,
     <div id="host">
       <template shadowrootmode="open">
         <canvas content=drawable>
-          <div id="slotwrapper">
+          <div id="slotwrapper" drawable>
             <slot></slot>
           </div>
         </canvas>
@@ -422,10 +534,13 @@ TEST_F(WebFormControlElementTest,
       inner_doc->getElementById(AtomicString("inner_input_id"))));
 
   inner_input.SetSuggestedValue("suggestion");
+  web_view_helper.LocalMainFrame()->FrameWidget()->UpdateAllLifecyclePhases(
+      DocumentUpdateReason::kTest);
 
   // Elements inside an iframe slotted inside a canvas should have suggestions
-  // suppressed.
-  EXPECT_TRUE(inner_input.SuggestedValue().IsEmpty());
+  // suppressed from painting.
+  EXPECT_TRUE(HasFormControlDisplayItem(inner_input));
+  EXPECT_FALSE(HasSuggestedValueDisplayItem(inner_input));
 }
 
 TEST_F(WebFormControlElementTest,
@@ -434,6 +549,7 @@ TEST_F(WebFormControlElementTest,
 
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.Initialize();
+  web_view_helper.Resize(gfx::Size(800, 600));
 
   Document* top_doc =
       web_view_helper.LocalMainFrame()->GetFrame()->GetDocument();
@@ -447,7 +563,7 @@ TEST_F(WebFormControlElementTest,
           <slot name="s1"></slot>
         </div>
         <canvas id="canvas" content=drawable>
-          <div id="slotwrapper">
+          <div id="slotwrapper" drawable>
             <slot name="s2"></slot>
           </div>
         </canvas>
@@ -473,20 +589,23 @@ TEST_F(WebFormControlElementTest,
       inner_doc->getElementById(AtomicString("inner_input_id"))));
 
   inner_input.SetSuggestedValue("suggestion");
+  web_view_helper.LocalMainFrame()->FrameWidget()->UpdateAllLifecyclePhases(
+      DocumentUpdateReason::kTest);
 
-  // Suggested value should be visible since it's not under a canvas subtree
+  // Suggested value should be painted since it's not under a canvas subtree
   // yet.
-  EXPECT_EQ(inner_input.SuggestedValue().Ascii(), "suggestion");
+  EXPECT_TRUE(HasSuggestedValueDisplayItem(inner_input));
 
   // Dynamically move the iframe into the canvas subtree via the slot attribute.
   iframe->setAttribute(html_names::kSlotAttr, AtomicString("s2"));
 
-  // Force style and layout update.
+  // Force style, layout, and paint update.
   web_view_helper.LocalMainFrame()->FrameWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
 
-  // The suggested value in the inner document should be cleared.
-  EXPECT_TRUE(inner_input.SuggestedValue().IsEmpty());
+  // The suggested value in the inner document should not be painted.
+  EXPECT_TRUE(HasFormControlDisplayItem(inner_input));
+  EXPECT_FALSE(HasSuggestedValueDisplayItem(inner_input));
 }
 
 TEST_F(WebFormControlElementTest,
@@ -560,7 +679,7 @@ TEST_F(WebFormControlElementTest,
     <div id="host">
       <template shadowrootmode="open">
         <canvas content=drawable>
-          <div id="slotwrapper">
+          <div id="slotwrapper" drawable>
             <slot></slot>
           </div>
         </canvas>
@@ -579,13 +698,14 @@ TEST_F(WebFormControlElementTest,
   input_el->setAttribute(html_names::kIdAttr, AtomicString("new_input_id"));
   WebFormControlElement input(DynamicTo<HTMLFormControlElement>(input_el));
   input.SetSuggestedValue("suggestion");
-  EXPECT_EQ(input.SuggestedValue().Ascii(), "suggestion");
 
   // Now dynamically append the input to the already slotted parent.
   slotted_parent->appendChild(input_el);
+  UpdateAllLifecyclePhasesForTest();
 
-  // Suggestions should be immediately cleared.
-  EXPECT_TRUE(input.SuggestedValue().IsEmpty());
+  // Suggestions should not be painted.
+  EXPECT_TRUE(HasFormControlDisplayItem(input));
+  EXPECT_FALSE(HasSuggestedValueDisplayItem(input));
 }
 
 TEST_F(WebFormControlElementTest,
@@ -602,7 +722,7 @@ TEST_F(WebFormControlElementTest,
           <slot name="s2"></slot>
         </canvas>
       </template>
-      <div id="host2" slot="s1">
+      <div id="host2" slot="s1" drawable>
         <template shadowrootmode="open">
           <slot name="s3"></slot>
         </template>
@@ -614,19 +734,20 @@ TEST_F(WebFormControlElementTest,
   WebFormControlElement input(
       DynamicTo<HTMLFormControlElement>(GetElementById("input_id")));
   input.SetSuggestedValue("suggestion");
+  UpdateAllLifecyclePhasesForTest();
 
-  // The suggested value should be accepted outside canvas.
-  EXPECT_EQ(input.SuggestedValue().Ascii(), "suggestion");
+  // The suggested value should be painted outside canvas.
+  EXPECT_TRUE(HasSuggestedValueDisplayItem(input));
 
   // Now dynamically change the slot to re-slot host2 into the canvas.
   GetElementById("host2")->setAttribute(html_names::kSlotAttr,
                                         AtomicString("s2"));
 
-  // Force slot assignment recalc and style update.
-  GetDocument().UpdateStyleAndLayoutTree();
+  UpdateAllLifecyclePhasesForTest();
 
-  // The input element's suggested value should be cleared.
-  EXPECT_TRUE(input.SuggestedValue().IsEmpty());
+  // The input element's suggested value should not be painted.
+  EXPECT_TRUE(HasFormControlDisplayItem(input));
+  EXPECT_FALSE(HasSuggestedValueDisplayItem(input));
 }
 
 TEST_F(WebFormControlElementTest,
@@ -643,13 +764,13 @@ TEST_F(WebFormControlElementTest,
           <slot name="s2"></slot>
         </canvas>
       </template>
-      <div id="inner_host" slot="s2">
+      <div id="inner_host" slot="s2" drawable>
         <template shadowrootmode="open">
           <canvas id="inner_canvas" content=drawable>
             <slot name="s3"></slot>
           </canvas>
         </template>
-        <div id="slotted_div" slot="s3">
+        <div id="slotted_div" slot="s3" drawable>
           <input id="leaf_input">
         </div>
       </div>
@@ -660,10 +781,12 @@ TEST_F(WebFormControlElementTest,
       DynamicTo<HTMLFormControlElement>(GetElementById("leaf_input")));
   GetDocument().UpdateStyleAndLayoutTree();
   input.SetSuggestedValue("suggestion");
+  UpdateAllLifecyclePhasesForTest();
 
-  // The input is inside both an outer and inner canvas, so it should NOT show
+  // The input is inside both an outer and inner canvas, so it should NOT paint
   // suggested values.
-  EXPECT_TRUE(input.SuggestedValue().IsEmpty());
+  EXPECT_TRUE(HasFormControlDisplayItem(input));
+  EXPECT_FALSE(HasSuggestedValueDisplayItem(input));
 
   // Now dynamically move the inner host out of the outer canvas.
   GetElementById("inner_host")
@@ -673,9 +796,11 @@ TEST_F(WebFormControlElementTest,
 
   // Since the inner host is moved out of the outer canvas, but the inner input
   // is still slotted inside the inner canvas, the suggested value on the input
-  // element should still be cleared (suppressed).
+  // element should still not be painted.
   input.SetSuggestedValue("suggestion");
-  EXPECT_TRUE(input.SuggestedValue().IsEmpty());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(HasFormControlDisplayItem(input));
+  EXPECT_FALSE(HasSuggestedValueDisplayItem(input));
 }
 
 TEST_F(WebFormControlElementTest,
