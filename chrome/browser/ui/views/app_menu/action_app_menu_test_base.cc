@@ -212,6 +212,9 @@ void ActionAppMenuTestBase::SetUp() {
   add_action(kActionZoomNormal, u"100%");
   add_action(kActionZoomPlus, u"Zoom In");
   add_action(kActionFullscreen, u"Fullscreen");
+  add_action(kActionOpenInChrome, u"Open in Chrome");
+  add_action(kActionWebAppMenuAppInfo, u"App Info");
+  add_action(kActionUninstallWebApp, u"Uninstall");
 
   actions::ActionManager::Get().AddAction(std::move(root));
 

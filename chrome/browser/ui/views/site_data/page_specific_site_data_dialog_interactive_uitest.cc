@@ -12,7 +12,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_run_loop_timeout.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,16 +22,15 @@
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
 #include "chrome/browser/ui/views/site_data/related_app_row_view.h"
 #include "chrome/browser/ui/views/site_data/site_data_row_view.h"
-#include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
@@ -543,12 +541,7 @@ IN_PROC_BROWSER_TEST_F(
       InstrumentTab(kAppWindowId),
       // Open the ... menu, web app info, cookies & site data, etc.
       PressButton(kToolbarAppMenuButtonElementId),
-      WithView(kToolbarAppMenuButtonElementId,
-               base::BindOnce([](AppMenuButton* button) {
-                 CHECK(button->IsMenuShowing());
-                 button->app_menu()->ExecuteCommand(IDC_WEB_APP_MENU_APP_INFO,
-                                                    0);
-               })),
+      SelectMenuItem(WebAppMenuModel::kAppInfoMenuItem),
       PressButton(PageInfoMainView::kCookieButtonElementId),
       PressButton(PageInfoCookiesContentView::kCookieDialogButton),
       InAnyContext(
@@ -622,12 +615,7 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
         InstrumentTab(kWebContentsElementId,
                       /*tab_index=*/std::nullopt, iwa_browser),
         PressButton(kToolbarAppMenuButtonElementId),
-        WithView(kToolbarAppMenuButtonElementId,
-                 base::BindOnce([](AppMenuButton* button) {
-                   CHECK(button->IsMenuShowing());
-                   button->app_menu()->ExecuteCommand(IDC_WEB_APP_MENU_APP_INFO,
-                                                      0);
-                 })),
+        SelectMenuItem(WebAppMenuModel::kAppInfoMenuItem),
         PressButton(PageInfoMainView::kCookieButtonElementId),
         PressButton(PageInfoCookiesContentView::kCookieDialogButton),
         InAnyContext(AfterShow(

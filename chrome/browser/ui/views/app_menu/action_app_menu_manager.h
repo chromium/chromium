@@ -60,6 +60,7 @@ class ActionAppMenuManager {
   void AddYourChromeActions(actions::ActionItem* root);
   void AddToolsAndActionsActions(actions::ActionItem* root);
   void AddFooterActions(actions::ActionItem* root);
+  void AddWebAppActions(actions::ActionItem* root);
 
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
   std::unique_ptr<RecentTabsDynamicMenu> recent_tabs_menu_;

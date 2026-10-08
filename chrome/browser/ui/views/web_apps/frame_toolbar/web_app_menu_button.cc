@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
@@ -138,8 +139,12 @@ base::CallbackListSubscription WebAppMenuButton::AwaitLabelTextUpdated(
 
 void WebAppMenuButton::ShowMenuWithFlags(int run_types) {
   BrowserWindowInterface* browser = browser_view_->browser();
-  RunMenu(std::make_unique<WebAppMenuModel>(browser_view_, browser), browser,
-          run_types);
+  if (base::FeatureList::IsEnabled(features::kAppMenuGlowUp)) {
+    RunActionMenu(browser, run_types);
+  } else {
+    RunMenu(std::make_unique<WebAppMenuModel>(browser_view_, browser), browser,
+            run_types);
+  }
 }
 
 void WebAppMenuButton::OnThemeChanged() {

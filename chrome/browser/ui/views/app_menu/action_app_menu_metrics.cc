@@ -336,6 +336,9 @@ void ActionAppMenuMetrics::LogMenuActionWithId(actions::ActionId action_id) {
     case kActionWebAppMenuAppInfo:
       RecordAction(MENU_ACTION_APP_INFO, "AppInfo");
       break;
+    case kActionUninstallWebApp:
+      LogMenuActionHistogram(MENU_ACTION_UNINSTALL_APP);
+      break;
     case kActionViewPasswords:
       RecordAction(MENU_ACTION_PASSWORD_MANAGER, "PasswordManager");
       break;

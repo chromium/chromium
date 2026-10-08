@@ -151,9 +151,7 @@ bool ShouldAddTopPadding(size_t index, const actions::ActionListVector& items) {
         display_type == AppMenuActionItem::DisplayType::kHeader) {
       continue;
     }
-    if (SupportsVerticalPadding(prev_base)) {
-      return false;
-    }
+    return !SupportsVerticalPadding(prev_base);
   }
   return true;
 }
@@ -816,6 +814,10 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
       target_item_height = provider->GetDistanceMetric(
           DISTANCE_ACTION_APP_MENU_MEDIUM_ITEM_HEIGHT);
       break;
+    case AppMenuActionItem::ItemHeight::kLarge:
+      target_item_height = provider->GetDistanceMetric(
+          DISTANCE_ACTION_APP_MENU_LARGE_ITEM_HEIGHT);
+      break;
     case AppMenuActionItem::ItemHeight::kExpanded:
       target_item_height = provider->GetDistanceMetric(
           DISTANCE_ACTION_APP_MENU_EXPANDED_ITEM_HEIGHT);
@@ -829,11 +831,10 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
 
   menu_item->set_vertical_margin(vertical_padding);
 
-  const ui::ColorId container_color =
-      child_base->GetProperty(AppMenuActionItem::kContainerColorKey);
-
   // Get the styling from the ActionItem and apply it to its menu item.
-  if (container_color != ui::kColorMenuBackground) {
+  if (menu_item->GetParentMenuItem() == root_) {
+    const ui::ColorId container_color =
+        child_base->GetProperty(AppMenuActionItem::kContainerColorKey);
     const int top_radius = round_top_corners
                                ? provider->GetCornerRadiusMetric(
                                      kActionAppMenuContainerCornerRadius)

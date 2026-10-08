@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/app_menu_button_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -60,7 +61,7 @@ class WebAppMenuBrowserTest
     scoped_feature_list_.InitWithFeatures(
         {blink::features::kDesktopPWAsTabStrip,
          blink::features::kDesktopPWAsTabStripCustomizations},
-        {});
+        {features::kAppMenuGlowUp});
   }
 
   void SetUpOnMainThread() override {

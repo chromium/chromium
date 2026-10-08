@@ -68,6 +68,8 @@ void AddItemWithStringIdAndVectorIcon(ui::SimpleMenuModel* model,
 
 }  // namespace
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppMenuModel, kAppInfoMenuItem);
+
 constexpr int WebAppMenuModel::kUninstallAppCommandId;
 constexpr int WebAppMenuModel::kExtensionsMenuCommandId;
 
@@ -151,6 +153,7 @@ void WebAppMenuModel::Build() {
       this, IDC_WEB_APP_MENU_APP_INFO, IDS_APP_CONTEXT_MENU_SHOW_INFO,
       LocationBarModel::From(browser())->GetVectorIcon());
   size_t app_info_index = GetItemCount() - 1;
+  SetElementIdentifierAt(app_info_index, kAppInfoMenuItem);
 
   CHECK(browser());
   content::WebContents* web_contents =

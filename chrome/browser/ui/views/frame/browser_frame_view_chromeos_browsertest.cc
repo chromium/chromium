@@ -82,7 +82,6 @@
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
@@ -572,8 +571,6 @@ class WebAppFrameViewChromeOSTest
     return BrowserView::GetBrowserViewForBrowser(navigate_params.browser);
   }
 
-  AppMenu* GetAppMenu() { return web_app_menu_button_->app_menu(); }
-
   SkColor GetActiveColor() const {
     return *web_app_frame_toolbar_->active_foreground_color_;
   }
@@ -812,9 +809,9 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest,
 // Tests that the show app menu command opens the app menu for web-app windows.
 IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, BrowserCommandShowAppMenu) {
   SetUpWebApp();
-  EXPECT_EQ(nullptr, GetAppMenu());
+  EXPECT_FALSE(web_app_menu_button_->IsMenuShowing());
   chrome::ExecuteCommand(app_browser_, IDC_SHOW_APP_MENU);
-  EXPECT_NE(nullptr, GetAppMenu());
+  EXPECT_TRUE(web_app_menu_button_->IsMenuShowing());
 }
 
 // Tests that the focus next pane command focuses the app menu for web-app

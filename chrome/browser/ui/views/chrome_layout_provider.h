@@ -27,19 +27,19 @@ enum ChromeInsetsMetric {
   INSETS_TASK_MANAGER,
   // Padding used in the page info footer button.
   INSETS_PAGE_INFO_FOOTER_BUTTON,
-  // Border insets for Block-style Action App Menu items.
+  // Border insets for Action App Menu items.
   INSETS_ACTION_APP_MENU_ITEM,
-  // Margins for the search bar in the Block-style Action App Menu.
+  // Margins for the search bar in the Action App Menu.
   INSETS_ACTION_APP_MENU_SEARCH_BAR_MARGIN,
-  // Margins for the block actions section in the Block-style Action App Menu.
+  // Margins for the block actions section in the Action App Menu.
   INSETS_ACTION_APP_MENU_BLOCK_MARGIN,
-  // Border insets for section headers in the Block-style Action App Menu.
+  // Border insets for section headers in the Action App Menu.
   INSETS_ACTION_APP_MENU_HEADER,
-  // Margins for the footer container in the Block-style Action App Menu.
+  // Margins for the footer container in the Action App Menu.
   INSETS_ACTION_APP_MENU_FOOTER_MARGIN,
-  // Margins for the footer bottom container in the Block-style Action App Menu.
+  // Margins for the footer bottom container in the Action App Menu.
   INSETS_ACTION_APP_MENU_FOOTER_BOTTOM_CONTAINER,
-  // Padding for a Block-style Action App Menu footer button.
+  // Padding for a Action App Menu footer button.
   INSETS_ACTION_APP_MENU_FOOTER_BUTTON,
   // Padding for a status chip in the app menu.
   INSETS_APP_MENU_CHIP,
@@ -206,34 +206,36 @@ enum ChromeDistanceMetric {
   DISTANCE_INFOBAR_BUTTON_VERTICAL_PADDING,
   // Horizontal padding for the infobar buttons.
   DISTANCE_INFOBAR_BUTTON_HORIZONTAL_PADDING,
-  // Size of vector icons in the Block-style Action App Menu.
+  // Size of vector icons in the Action App Menu.
   DISTANCE_ACTION_APP_MENU_DEFAULT_ICON_SIZE,
-  // Size of vector icons in notification items in the Block-style Action App
+  // Size of vector icons in notification items in the Action App
   // Menu.
   DISTANCE_ACTION_APP_MENU_NOTIFICATION_ICON_SIZE,
-  // Full height of a Block-style Action App Menu item row.
+  // Full height of a Action App Menu item row.
   DISTANCE_ACTION_APP_MENU_FULL_ITEM_HEIGHT,
-  // Height of a medium Block-style Action App Menu item row (e.g.
+  // Height of a medium Action App Menu item row (e.g.
   // Notifications).
   DISTANCE_ACTION_APP_MENU_MEDIUM_ITEM_HEIGHT,
-  // Height of an expanded Block-style Action App Menu item row (e.g. Zoom,
+  // Height of a large Action App Menu item row (e.g. App Info).
+  DISTANCE_ACTION_APP_MENU_LARGE_ITEM_HEIGHT,
+  // Height of an expanded Action App Menu item row (e.g. Zoom,
   // Profile).
   DISTANCE_ACTION_APP_MENU_EXPANDED_ITEM_HEIGHT,
-  // Width of a block-style entry in the Action App Menu.
+  // Width of a entry in the Action App Menu.
   DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_WIDTH,
-  // Height of a block-style entry in the Action App Menu.
+  // Height of a entry in the Action App Menu.
   DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_HEIGHT,
-  // Size of vector icon inside a block-style entry.
+  // Size of vector icon inside a entry.
   DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_ICON_SIZE,
-  // Line height of the label inside a block-style entry.
+  // Line height of the label inside a entry.
   DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_LINE_HEIGHT,
-  // Spacing between action items in the Block-style Action App Menu footer.
+  // Spacing between action items in the Action App Menu footer.
   DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_SPACING,
-  // Spacing between child views in a Block-style Action App Menu footer button.
+  // Spacing between child views in a Action App Menu footer button.
   DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_BETWEEN_CHILD_SPACING,
   // Spacing for Enterprise Menu in Action App Menu
   DISTANCE_ACTION_APP_MENU_FOOTER_BOTTOM_CONTAINER_SPACING,
-  // Bottom margin for the separator in the Block-style Action App Menu
+  // Bottom margin for the separator in the Action App Menu
   // footer.
   DISTANCE_ACTION_APP_MENU_FOOTER_SEPARATOR_BOTTOM_MARGIN,
   // Vertical margin for section headers in the Action App Menu.
@@ -242,14 +244,14 @@ enum ChromeDistanceMetric {
   DISTANCE_ACTION_APP_MENU_BLOCK_ROW_SPACING,
   // Vertical spacing between icon and label inside a block entry button.
   DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_BETWEEN_CHILD_SPACING,
-  // Horizontal margin for Block-style Action App Menu section container cards.
+  // Horizontal margin for Action App Menu section container cards.
   DISTANCE_ACTION_APP_MENU_CONTAINER_MARGIN,
-  // Vertical padding at the top and bottom of multi-row Block-style Action App
+  // Vertical padding at the top and bottom of multi-row Action App
   // Menu section container cards.
   DISTANCE_ACTION_APP_MENU_CONTAINER_VERTICAL_PADDING,
-  // Top margin added below a notification header in the Block-style App Menu.
+  // Top margin added below a notification header in the App Menu.
   DISTANCE_ACTION_APP_MENU_NOTIFICATION_MARGIN,
-  // Maximum width for the Block-style Action App Menu.
+  // Maximum width for the Action App Menu.
   DISTANCE_ACTION_APP_MENU_MAX_WIDTH,
 };
 
@@ -265,9 +267,9 @@ enum ChromeShapeContextTokens : views::ShapeContextToken {
   kFeatureFirstRunInfoBoxRoundedBorderRadius,
   // Size to use for favicon containers in the Recent Activity dialog.
   kRecentActivityFaviconContainerRadius,
-  // Corner radius for Block-style Action App Menu section container cards.
+  // Corner radius for Action App Menu section container cards.
   kActionAppMenuContainerCornerRadius,
-  // Corner radius for a Block-style Action App Menu footer button.
+  // Corner radius for a Action App Menu footer button.
   kActionAppMenuFooterButtonCornerRadius,
   // Rounded corner radius for a block entry button.
   kActionAppMenuBlockEntryCornerRadius,
