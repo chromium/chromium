@@ -330,7 +330,9 @@ void PreconnectManagerImpl::LookupProxyForUrl(
     const content::StoragePartitionConfig* storage_partition_config,
     ProxyLookupClientImpl::ProxyLookupCallback callback) const {
   CHECK(url.DeprecatedGetOriginAsURL() == url, base::NotFatalUntil::M159);
-  CHECK(url.SchemeIsHTTPOrHTTPS(), base::NotFatalUntil::M159);
+  // TODO(crbug.com/571031313): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(url.SchemeIsHTTPOrHTTPS());
 
   auto* network_context = GetNetworkContext(storage_partition_config);
 
