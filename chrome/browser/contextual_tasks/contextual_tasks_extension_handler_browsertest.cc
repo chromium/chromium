@@ -2823,4 +2823,173 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(updated_task->GetUrlResources().empty());
 }
 
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerBrowserTest,
+    ZeroIframes_PostSearchMessageQueuesUntilHandshakeAndFlushes) {
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+
+  // Unregister the primary extension frame handler to simulate 0 extension
+  // iframes mounted in the page.
+  user_data->UnregisterExtensionFrame(handler_);
+  EXPECT_FALSE(user_data->HasBoundExtensionFrame());
+
+  std::vector<lens::ClientToSearchMessage> dispatched_messages;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&](const lens::ClientToSearchMessage& message) {
+        dispatched_messages.push_back(message);
+      }));
+
+  // Trigger Lens crop while 0 iframes are mounted and before
+  // OnDocumentConnected or handshake completes; the outbound message should be
+  // queued and must not be duplicated when OnDocumentConnected and
+  // OnHandshakeComplete run.
+  user_data->OnLensThumbnailCreated("data:image/png;base64,zero_iframe_crop");
+  auto model = user_data->GetOrCreateInputStateModel();
+  ASSERT_TRUE(model && model->lens_crop().has_value());
+  EXPECT_EQ("data:image/png;base64,zero_iframe_crop",
+            model->lens_crop()->data_uri);
+  EXPECT_TRUE(dispatched_messages.empty());
+
+  // Connect the AIM document via Service Worker Port (connectDocument).
+  user_data->OnDocumentConnected(web_contents_->GetPrimaryMainFrame());
+  EXPECT_TRUE(user_data->IsServiceWorkerPortConnected());
+  EXPECT_FALSE(user_data->IsHandshakeCompleteForTesting());
+  EXPECT_TRUE(dispatched_messages.empty());
+
+  // Now complete the handshake via SearchToClientMessage.HandshakeResponse.
+  EXPECT_CALL(*mock_controller_, SetAuthUserIndex(3));
+  lens::SearchToClientMessage handshake_resp;
+  handshake_resp.mutable_handshake_response()->set_auth_user_index(3);
+  std::string resp_str;
+  ASSERT_TRUE(handshake_resp.SerializeToString(&resp_str));
+  std::vector<uint8_t> resp_bytes(resp_str.begin(), resp_str.end());
+
+  EXPECT_TRUE(user_data->OnSearchMessageReceived(resp_bytes));
+  EXPECT_TRUE(user_data->IsHandshakeCompleteForTesting());
+  EXPECT_EQ(mock_session_handle_->auth_user_index(), 3u);
+  ASSERT_EQ(dispatched_messages.size(), 1u);
+  EXPECT_TRUE(dispatched_messages.back().has_inject_chrome_input());
+  EXPECT_EQ(dispatched_messages.back().inject_chrome_input().input_type(),
+            lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP);
+  EXPECT_TRUE(dispatched_messages.back().inject_chrome_input().is_active());
+
+  // RemoveLensCrop with 0 iframes should also succeed and clear the crop.
+  dispatched_messages.clear();
+  user_data->RemoveLensCrop();
+  EXPECT_FALSE(model->GetLensCrop().has_value());
+  ASSERT_EQ(dispatched_messages.size(), 1u);
+  EXPECT_FALSE(dispatched_messages.back().inject_chrome_input().is_active());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       ZeroIframes_PageNavigationResetsPerPageSearchState) {
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+
+  user_data->UnregisterExtensionFrame(handler_);
+  handler_ = nullptr;
+  EXPECT_FALSE(user_data->HasBoundExtensionFrame());
+
+  user_data->OnDocumentConnected(web_contents_->GetPrimaryMainFrame());
+  user_data->OnHandshakeComplete();
+  EXPECT_TRUE(user_data->IsServiceWorkerPortConnected());
+  EXPECT_TRUE(user_data->IsHandshakeCompleteForTesting());
+  EXPECT_FALSE(user_data->GetConnectedDocumentIdForTesting().empty());
+
+  std::vector<lens::ClientToSearchMessage> dispatched_messages;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&](const lens::ClientToSearchMessage& message) {
+        dispatched_messages.push_back(message);
+      }));
+
+  // Mount a Lens crop on the initial page.
+  user_data->OnLensThumbnailCreated("data:image/png;base64,page1_crop");
+  ASSERT_EQ(dispatched_messages.size(), 1u);
+  dispatched_messages.clear();
+
+  // Navigate to a new primary page. Per-page search state (stored on
+  // content::PageUserData) must immediately reflect the new page before
+  // OnDocumentConnected() is called for the new document.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_FALSE(user_data->IsServiceWorkerPortConnected());
+  EXPECT_FALSE(user_data->IsHandshakeCompleteForTesting());
+  EXPECT_TRUE(user_data->GetConnectedDocumentIdForTesting().empty());
+
+  // Completing handshake on the new page should re-mount the active Lens crop
+  // exactly once on the new page.
+  user_data->OnDocumentConnected(web_contents_->GetPrimaryMainFrame());
+  EXPECT_TRUE(user_data->IsServiceWorkerPortConnected());
+  EXPECT_FALSE(user_data->IsHandshakeCompleteForTesting());
+  user_data->OnHandshakeComplete();
+  EXPECT_TRUE(user_data->IsHandshakeCompleteForTesting());
+  ASSERT_EQ(dispatched_messages.size(), 1u);
+  EXPECT_TRUE(dispatched_messages.back().has_inject_chrome_input());
+  EXPECT_EQ(dispatched_messages.back().inject_chrome_input().input_type(),
+            lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP);
+  EXPECT_TRUE(dispatched_messages.back().inject_chrome_input().is_active());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       ZeroIframes_OnSubmitQueryRequest) {
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+
+  // Unregister the primary extension frame handler to simulate 0 extension
+  // iframes mounted in the page.
+  user_data->UnregisterExtensionFrame(handler_);
+  EXPECT_FALSE(user_data->HasBoundExtensionFrame());
+
+  user_data->OnDocumentConnected(web_contents_->GetPrimaryMainFrame());
+  user_data->OnHandshakeComplete();
+  EXPECT_TRUE(user_data->IsHandshakeCompleteForTesting());
+
+  std::vector<lens::ClientToSearchMessage> dispatched_messages;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&](const lens::ClientToSearchMessage& message) {
+        dispatched_messages.push_back(message);
+      }));
+
+  // Verify OnSubmitQueryRequest is handled with 0 iframes.
+  contextual_search::FileInfo file_info;
+  file_info.file_token = base::UnguessableToken::Create();
+  AttachActiveTab(file_info.file_token);
+  lens::LensOverlayRequestId req_id;
+  req_id.set_context_id(777);
+  file_info.request_id = req_id;
+  file_info.input_data = std::make_unique<lens::ContextualInputData>();
+  file_info.input_data->upload_type =
+      lens::LensOverlayContextualInputUploadType::
+          CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
+
+  ON_CALL(*mock_session_handle_, GetUploadedContextFileInfos())
+      .WillByDefault(
+          Return(std::vector<contextual_search::FileInfo>{file_info}));
+  ON_CALL(*mock_session_handle_, search_session_id())
+      .WillByDefault(Return("zero_iframe_session"));
+
+  lens::SearchToClientMessage submit_msg;
+  submit_msg.mutable_on_submit_query_request();
+  std::string submit_str;
+  ASSERT_TRUE(submit_msg.SerializeToString(&submit_str));
+
+  SimulateUserInteraction();
+  EXPECT_TRUE(user_data->OnSearchMessageReceived(
+      std::vector<uint8_t>(submit_str.begin(), submit_str.end())));
+  ASSERT_EQ(dispatched_messages.size(), 1u);
+  ASSERT_TRUE(dispatched_messages.back().has_on_submit_query_response());
+  const auto& resp = dispatched_messages.back().on_submit_query_response();
+  ASSERT_EQ(resp.added_contexts_size(), 1);
+  EXPECT_EQ(resp.added_contexts(0).search_session_id(), "zero_iframe_session");
+  EXPECT_EQ(resp.added_contexts(0).request_id().context_id(), 777);
+}
+
 }  // namespace contextual_tasks

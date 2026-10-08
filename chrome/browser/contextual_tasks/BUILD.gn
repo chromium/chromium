@@ -377,9 +377,13 @@ source_set("user_data") {
     "//components/signin/public/identity_manager",
     "//components/tabs:public",
     "//content/public/browser",
+    "//extensions/buildflags",
     "//third_party/lens_server_proto:lens_overlay_proto",
     "//url",
   ]
+  if (enable_extensions_core) {
+    deps += [ "//extensions/browser" ]
+  }
   if (!is_android) {
     deps += [
       "//chrome/browser/ui/lens",

@@ -7,7 +7,6 @@
 
 #include <optional>
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -51,10 +50,8 @@ class WebContents;
 }  // namespace content
 
 namespace lens {
-class AddedContext;
 struct ContextualInputData;
 class ClientToSearchMessage;
-class SearchToClientMessage_UpdateThreadContextLibrary;
 }  // namespace lens
 
 namespace contextual_tasks {
@@ -88,9 +85,6 @@ class ContextualTasksExtensionHandler
 
   // contextual_tasks::AimMessagePoster:
   void PostAimMessage(const lens::ClientToAimMessage& message) override;
-
-  // Sends a search communication message to the extension page.
-  void PostSearchMessage(const lens::ClientToSearchMessage& message);
 
   void BindContextualTasksFactory(
       mojo::PendingReceiver<
@@ -261,7 +255,6 @@ class ContextualTasksExtensionHandler
 
   contextual_search::ContextualSearchSessionHandle*
   GetOrCreateContextualSessionHandle();
-  std::optional<int64_t> GetActiveTabContextId();
   std::optional<base::UnguessableToken> GetLensOverlayToken();
 #if !BUILDFLAG(IS_ANDROID)
   LensSearchController* GetLensSearchController() const;
@@ -282,21 +275,10 @@ class ContextualTasksExtensionHandler
   // to the extension page. Duplicates are skipped.
   void SendTabContextToExtensionPage(
       const contextual_search::TabContextState& state);
-  bool IsPrimarySearchMessageSender() const;
   void OnLensThumbnailCreated(const std::string& thumbnail_uri);
   void RecordTimeToHandshakeComplete();
-  void HandleOnSubmitQueryRequest();
-  void AppendTabContextsToOnSubmitQueryResponse(
-      lens::ClientToSearchMessage* response_message,
-      contextual_search::ContextualSearchSessionHandle* session_handle,
-      const std::optional<base::UnguessableToken>& overlay_token);
-  void HandleOpenLinkInSidePanelMode(std::string_view url);
-  // Syncs this thread's context library from AIM Search Web's tab history
-  // into the `ContextualTasksService` for the current task.
-  void HandleThreadContextLibraryUpdateFromAim(
-      const lens::SearchToClientMessage_UpdateThreadContextLibrary& message);
-  std::optional<lens::AddedContext> GetLensAddedContext();
   void SendSearchMessageToBoundPage(const lens::ClientToSearchMessage& message);
+  void OnHandshakeComplete();
   void OnLensCropUpdated(const GURL& data_uri);
 
   mojo::Receiver<contextual_tasks::mojom::ExtensionPageHandlerFactory>
@@ -325,7 +307,6 @@ class ContextualTasksExtensionHandler
 
   omnibox::ToolMode active_tool_ = omnibox::TOOL_MODE_UNSPECIFIED;
   omnibox::ModelMode active_model_ = omnibox::MODEL_MODE_UNSPECIFIED;
-  base::TimeTicks last_handled_submit_interaction_time_;
 
   base::WeakPtrFactory<ContextualTasksExtensionHandler> weak_ptr_factory_{this};
 };
