@@ -45,30 +45,19 @@ def do_install(args):
 
     # Build a native kotlinc for use by compile_kt.py.
     graal_home = graalvm.ensure_graalvm()
-    # Stand-in for android.jar, since compile_kt.py uses -no-jdk.
-    common.run_cmd([
-        f'{graal_home}/bin/jimage', 'extract', '--include',
-        'glob:/java.base/**', '--dir', 'jdk', f'{graal_home}/lib/modules'
-    ])
     pathlib.Path('Sample.kt').write_text(_SAMPLE_KT, encoding='utf-8')
     lib_dir = os.path.join(args.output_prefix, 'lib')
     abi_jar = os.path.join(lib_dir, 'jvm-abi-gen.jar')
 
-    # kotlinc parses flags reflectively, so tracing must pass every flag that
-    # compile_kt.py uses, or the native binary will fail to parse them.
     def sample_args(out_dir):
         return [
             '-kotlin-home',
             args.output_prefix,
-            '-no-jdk',
-            '-no-stdlib',
-            '-no-reflect',
+            '-jdk-home',
+            graal_home,
+            '-Xjdk-release=25',
             # The scripting plugin is not compiled into the image.
             '-Xdisable-default-scripting-plugin',
-            '-jvm-target',
-            '25',
-            '-classpath',
-            f'jdk/java.base:{lib_dir}/kotlin-stdlib.jar',
             '-d',
             f'{out_dir}/classes',
             # Used by compile_kt.py to generate .interface.jar files.
@@ -90,6 +79,32 @@ def do_install(args):
             os.path.join(lib_dir, 'compose-compiler-plugin.jar')
         ],
         tracing_args_list=[sample_args('tracing_out')],
+        # Register all compiler argument methods for reflection (as upstream
+        # JetBrains does) so CLI flags are supported without retracing.
+        extra_reachability_metadata={
+            'reflection': [
+                {
+                    'type':
+                    'org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments',
+                    'allDeclaredMethods': True,
+                },
+                {
+                    'type':
+                    'org.jetbrains.kotlin.cli.common.arguments.CommonCompilerArguments',
+                    'allDeclaredMethods': True,
+                },
+                {
+                    'type':
+                    'org.jetbrains.kotlin.cli.common.arguments.CommonToolArguments',
+                    'allDeclaredMethods': True,
+                },
+                {
+                    'type':
+                    'org.jetbrains.kotlin.cli.common.arguments.Freezable',
+                    'allDeclaredMethods': True,
+                },
+            ],
+        },
         extra_native_image_args=[
             # kotlin-compiler.jar bundles jline's native-image.properties files,
             # but not the .json configs they point to, which fails the build.
@@ -102,11 +117,16 @@ def do_install(args):
             # Its <clinit> looks up charsets that are not included by default.
             '--initialize-at-build-time='
             'com.intellij.openapi.vfs.CharsetToolkit',
+            # Enable jrt:/ filesystem support required by -jdk-home (as upstream
+            # JetBrains does).
+            '-H:+UnlockExperimentalVMOptions',
+            '-H:+AllowJRTFileSystem',
         ],
     )
 
     # compile_kt.py fails on any output, so ensure there is none.
     output = common.run_cmd([output_path] + sample_args('smoke_out'),
+                            env=dict(os.environ, JAVA_HOME=graal_home),
                             stdout=subprocess.PIPE,
                             stderr=subprocess.STDOUT).stdout
     if output or not os.path.exists('smoke_out/abi/foo/Sample.class'):
