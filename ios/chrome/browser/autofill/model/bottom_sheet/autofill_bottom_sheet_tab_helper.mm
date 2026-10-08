@@ -413,7 +413,7 @@ void AutofillBottomSheetTabHelper::ShowProactivePasswordGenerationBottomSheet(
   [generation_provider_
       triggerPasswordGenerationForFormId:params.form_renderer_id
                          fieldIdentifier:params.field_renderer_id
-                                 inFrame:frame
+                                 inFrame:frame->AsWeakPtr()
                                proactive:YES];
 }
 

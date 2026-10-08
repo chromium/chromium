@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/weak_ptr.h"
 #import "components/autofill/core/common/unique_ids.h"
 
 namespace web {
@@ -23,7 +24,7 @@ class WebFrame;
             (autofill::FormRendererId)formIdentifier
                            fieldIdentifier:
                                (autofill::FieldRendererId)fieldIdentifier
-                                   inFrame:(web::WebFrame*)frame
+                                   inFrame:(base::WeakPtr<web::WebFrame>)frame
                                  proactive:(BOOL)proactivePasswordGeneration;
 
 @end

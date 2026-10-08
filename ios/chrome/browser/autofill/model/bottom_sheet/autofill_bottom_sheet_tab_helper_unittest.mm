@@ -351,7 +351,7 @@ TEST_F(AutofillBottomSheetTabHelperTest,
   OCMExpect([generation_provider_mock
       triggerPasswordGenerationForFormId:form_renderer_ID
                          fieldIdentifier:new_password_rendererID
-                                 inFrame:frame
+                                 inFrame:frame->AsWeakPtr()
                                proactive:YES]);
   helper_->SetPasswordGenerationProvider(generation_provider_mock);
 

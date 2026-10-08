@@ -244,7 +244,7 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
   FieldRendererId _lastFocusedFieldIdentifier;
 
   // Last focused frame.
-  raw_ptr<web::WebFrame, DanglingUntriaged> _lastFocusedFrame;
+  base::WeakPtr<web::WebFrame> _lastFocusedFrame;
 
   // A refcounted object is stored here, because otherwise the driver can
   // be deleted with the frame, and the driver needs to be alive after the
@@ -390,9 +390,10 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
 
 - (void)triggerPasswordGenerationForFormId:(FormRendererId)formIdentifier
                            fieldIdentifier:(FieldRendererId)fieldIdentifier
-                                   inFrame:(web::WebFrame*)frame
+                                   inFrame:
+                                       (base::WeakPtr<web::WebFrame>)weakFrame
                                  proactive:(BOOL)proactivePasswordGeneration {
-  if (!fieldIdentifier) {
+  if (!fieldIdentifier || !weakFrame) {
     return;
   }
   _proactivePasswordGeneration = proactivePasswordGeneration;
@@ -411,7 +412,7 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
   // call.
   [self generatePasswordForFormId:formIdentifier
                   fieldIdentifier:fieldIdentifier
-                          inFrame:frame
+                          inFrame:weakFrame
               isManuallyTriggered:!_proactivePasswordGeneration];
 }
 
@@ -508,7 +509,7 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
   }
 
   // Avoid keeping a pointer to a destroyed frame.
-  if (webFrame == _lastFocusedFrame) {
+  if (webFrame == _lastFocusedFrame.get()) {
     _lastFocusedFrame = nullptr;
   }
 
@@ -783,7 +784,7 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
       _proactivePasswordGeneration = NO;
       [self generatePasswordForFormId:formRendererID
                       fieldIdentifier:fieldRendererID
-                              inFrame:frame
+                              inFrame:frame->AsWeakPtr()
                   isManuallyTriggered:NO];
       password_manager::metrics_util::LogPasswordSuggestionSelected(
           password_manager::metrics_util::PasswordDropdownSelectedOption::
@@ -1193,8 +1194,9 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
 
 - (void)generatePasswordForFormId:(FormRendererId)formIdentifier
                   fieldIdentifier:(FieldRendererId)fieldIdentifier
-                          inFrame:(web::WebFrame*)frame
+                          inFrame:(base::WeakPtr<web::WebFrame>)weakFrame
               isManuallyTriggered:(BOOL)isManuallyTriggered {
+  web::WebFrame* frame = weakFrame.get();
   if (!frame) {
     return;
   }
@@ -1216,7 +1218,6 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
   }
 
   __weak SharedPasswordController* weakSelf = self;
-  base::WeakPtr<web::WebFrame> weakFrame = frame->AsWeakPtr();
   [self.formHelper
       extractPasswordFormData:formIdentifier
                       inFrame:frame
@@ -1464,7 +1465,7 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
   if (params.type == ActivityType::kFocus) {
     _lastFocusedFormIdentifier = params.form_renderer_id;
     _lastFocusedFieldIdentifier = params.field_renderer_id;
-    _lastFocusedFrame = frame;
+    _lastFocusedFrame = frame->AsWeakPtr();
   }
 
   // If there's a change in password forms on a page, they should be parsed

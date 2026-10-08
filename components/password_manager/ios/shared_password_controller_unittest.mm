@@ -1366,7 +1366,7 @@ TEST_F(SharedPasswordControllerTest, TriggerPasswordGeneration_Proactively) {
   // bottom sheet.
   [controller_ triggerPasswordGenerationForFormId:form_id
                                   fieldIdentifier:password_field_id
-                                          inFrame:frame
+                                          inFrame:frame->AsWeakPtr()
                                         proactive:YES];
 
   // Verify that the metrics that verify the emptyness of the generated password
