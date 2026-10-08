@@ -483,16 +483,12 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
 // Ensures that the various ways of enabling/disabling features do not produce
 // an invalid configuration.
 void ResolveInvalidConfigurations() {
-  // Fenced frames cannot be enabled without the support of the
-  // browser process.
-  if ((base::FeatureList::IsEnabled(features::kPrivacySandboxAdsAPIsOverride) ||
-       base::FeatureList::IsEnabled(
-           features::kPrivacySandboxAdsAPIsM1Override)) &&
-      !base::FeatureList::IsEnabled(blink::features::kFencedFrames)) {
-    LOG_IF(WARNING, WebRuntimeFeatures::IsFencedFramesEnabled())
-        << "Fenced frames cannot be enabled in this configuration. Use --"
-        << switches::kEnableFeatures << "="
-        << blink::features::kFencedFrames.name << " instead.";
+  // Fenced frames cannot be enabled without the support of the browser
+  // process, which is gated on blink::features::kFencedFrames. The Blink
+  // runtime feature is stable (and also enabled via the Privacy Sandbox Ads
+  // APIs overrides), so force it off whenever the base::Feature is disabled,
+  // e.g. by the FencedFramesDeprecation field trial.
+  if (!base::FeatureList::IsEnabled(blink::features::kFencedFrames)) {
     WebRuntimeFeatures::EnableFencedFrames(false);
   }
 
