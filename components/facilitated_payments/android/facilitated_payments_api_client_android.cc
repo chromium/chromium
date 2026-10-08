@@ -62,7 +62,10 @@ FacilitatedPaymentsApiClientCreator GetFacilitatedPaymentsApiClientCreator(
 
 FacilitatedPaymentsApiClientAndroid::FacilitatedPaymentsApiClientAndroid(
     content::RenderFrameHost* render_frame_host)
-    : java_bridge_(Java_FacilitatedPaymentsApiClientBridge_Constructor(
+    : web_contents_(content::WebContents::FromRenderFrameHost(render_frame_host)
+                        ->GetWeakPtr()),
+      render_frame_host_id_(render_frame_host->GetGlobalId()),
+      java_bridge_(Java_FacilitatedPaymentsApiClientBridge_Constructor(
           base::android::AttachCurrentThread(),
           reinterpret_cast<intptr_t>(this),
           render_frame_host->GetJavaRenderFrameHost())) {}
@@ -116,6 +119,21 @@ void FacilitatedPaymentsApiClientAndroid::InvokeInstrumentManager(
 
   invoke_instrument_manager_callback_ = std::move(callback);
   JNIEnv* env = base::android::AttachCurrentThread();
+  // If the user navigated to another page on the same merchant origin in the
+  // same tab after the API client was created (e.g. during `GetClientToken()`),
+  // recreate `java_bridge_` with the new active primary main frame.
+  if (web_contents_ && web_contents_->GetPrimaryMainFrame() &&
+      web_contents_->GetPrimaryMainFrame()->GetGlobalId() !=
+          render_frame_host_id_) {
+    content::RenderFrameHost* current_rfh =
+        web_contents_->GetPrimaryMainFrame();
+    Java_FacilitatedPaymentsApiClientBridge_resetNativePointer(env,
+                                                               java_bridge_);
+    render_frame_host_id_ = current_rfh->GetGlobalId();
+    java_bridge_ = Java_FacilitatedPaymentsApiClientBridge_Constructor(
+        env, reinterpret_cast<intptr_t>(this),
+        current_rfh->GetJavaRenderFrameHost());
+  }
   Java_FacilitatedPaymentsApiClientBridge_invokeInstrumentManager(
       env, java_bridge_, primary_account,
       base::android::ToJavaByteArray(env, action_token));
