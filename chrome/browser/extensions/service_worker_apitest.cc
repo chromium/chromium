@@ -50,6 +50,7 @@
 #include "chrome/browser/push_messaging/push_messaging_service_factory.h"
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/web_navigation.h"
@@ -115,7 +116,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "ui/base/base_window.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/url_constants.h"
 
@@ -572,8 +575,22 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, TabsExecuteScript) {
 // Tests chrome.windows APIs.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, WindowsBasic) {
   base::HistogramTester histogram_tester;
+  // On Android, requested window bounds are only applied when the window can be
+  // resized (e.g. the SDK supports the window bounds API and the window is in
+  // desktop windowing mode), and may differ slightly due to rounding during
+  // dip->px conversion. The extension creates the window itself, so query the
+  // existing normal window as a proxy for the new one.
+  const char* bounds_check_mode = nullptr;
+#if BUILDFLAG(IS_ANDROID)
+  ui::WindowResizePrecheckResult resize_precheck_result;
+  bounds_check_mode =
+      browser_window_interface()->GetWindow()->CanResize(resize_precheck_result)
+          ? "allowBoundsTolerance"
+          : "skipBoundsChecks";
+#endif
   ASSERT_TRUE(
-      RunExtensionTest("service_worker/worker_based_background/windows_basic"))
+      RunExtensionTest("service_worker/worker_based_background/windows_basic",
+                       {.custom_arg = bounds_check_mode}))
       << message_;
   // Extension should issue one chrome.windows.create call and two
   // chrome.windows.getAll, verify that we logged histogram for it.

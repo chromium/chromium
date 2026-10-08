@@ -114,6 +114,7 @@
 #include "ui/base/base_window.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/scoped_set_idle_state.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
@@ -374,6 +375,24 @@ void SimulateCustomUrlRedirect(const std::string& redirect_url,
   ASSERT_EQ(base::Value(),
             content::EvalJs(auth_web_contents, "window.location.replace(\"" +
                                                    redirect_url + "\");"));
+}
+
+// The acceptable margin of error (in dips) when comparing requested and actual
+// window bounds. On Android, this counters the rounding error during dip->px
+// conversion.
+constexpr int kBoundsToleranceDip = BUILDFLAG(IS_ANDROID) ? 2 : 0;
+
+// Returns whether `window` can be placed at requested bounds. On Android,
+// requested bounds are only applied when the window can be resized (e.g. the
+// SDK supports the window bounds API and the window is in desktop windowing
+// mode).
+bool CanApplyRequestedBounds(BrowserWindowInterface* window) {
+#if BUILDFLAG(IS_ANDROID)
+  ui::WindowResizePrecheckResult result;
+  return window->GetWindow()->CanResize(result);
+#else
+  return true;
+#endif
 }
 
 }  // namespace
@@ -4523,10 +4542,8 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTestWithPopupWindow,
       "[{\"interactive\": true, \"url\": \"" + auth_url.spec() + "\"}]";
   RunFunctionAsync(function.get(), args);
 
-  gfx::Rect bounds;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   BrowserWindowInterface* popup_browser = browser_opened.Wait();
-  bounds = popup_browser->GetWindow()->GetBounds();
 #else
   // On Android, wait for the window to be created.
   base::test::TestFuture<void> future;
@@ -4535,14 +4552,18 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTestWithPopupWindow,
   EXPECT_TRUE(future.Wait());
   BrowserWindowInterface* popup_browser =
       browser_window_util::GetBrowserForTabContents(*flow->web_contents());
-  bounds = popup_browser->GetWindow()->GetBounds();
 #endif
-  EXPECT_EQ(bounds.x(), TestDelegate::kTestBounds.x());
-  EXPECT_EQ(bounds.y(), TestDelegate::kTestBounds.y());
-  // The final width and height can contain platform-specific offsets for the
-  // window title bar, which we don't want to assert exactly here.
-  EXPECT_GE(bounds.width(), TestDelegate::kTestBounds.width());
-  EXPECT_GE(bounds.height(), TestDelegate::kTestBounds.height());
+  if (CanApplyRequestedBounds(popup_browser)) {
+    gfx::Rect bounds = popup_browser->GetWindow()->GetBounds();
+    EXPECT_NEAR(bounds.x(), TestDelegate::kTestBounds.x(), kBoundsToleranceDip);
+    EXPECT_NEAR(bounds.y(), TestDelegate::kTestBounds.y(), kBoundsToleranceDip);
+    // The final width and height can contain platform-specific offsets for the
+    // window title bar, which we don't want to assert exactly here.
+    EXPECT_GE(bounds.width(),
+              TestDelegate::kTestBounds.width() - kBoundsToleranceDip);
+    EXPECT_GE(bounds.height(),
+              TestDelegate::kTestBounds.height() - kBoundsToleranceDip);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTestWithPopupWindow,

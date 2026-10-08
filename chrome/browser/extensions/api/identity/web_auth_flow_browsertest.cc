@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow_info_bar_delegate.h"
 #include "chrome/browser/extensions/browser_window_util.h"
 #include "chrome/browser/infobars/infobar_features.h"
@@ -38,6 +39,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/base_window.h"
+#include "ui/base/ui_base_types.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -47,6 +49,28 @@
 #endif
 
 namespace extensions {
+
+namespace {
+
+// The acceptable margin of error (in dips) when comparing requested and actual
+// window bounds. On Android, this counters the rounding error during dip->px
+// conversion.
+constexpr int kBoundsToleranceDip = BUILDFLAG(IS_ANDROID) ? 2 : 0;
+
+// Returns whether `window` can be placed at requested bounds. On Android,
+// requested bounds are only applied when the window can be resized (e.g. the
+// SDK supports the window bounds API and the window is in desktop windowing
+// mode).
+bool CanApplyRequestedBounds(BrowserWindowInterface* window) {
+#if BUILDFLAG(IS_ANDROID)
+  ui::WindowResizePrecheckResult result;
+  return window->GetWindow()->CanResize(result);
+#else
+  return true;
+#endif
+}
+
+}  // namespace
 
 class MockWebAuthFlowDelegate : public WebAuthFlow::Delegate {
  public:
@@ -787,13 +811,15 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest, PopupWindowOpened_WithBounds) {
   ASSERT_TRUE(popup_window_browser);
   EXPECT_NE(popup_window_browser, GetFirstActivatedBrowser());
 
-  gfx::Rect bounds = popup_window_browser->GetWindow()->GetBounds();
-  EXPECT_EQ(bounds.x(), test_bounds.x());
-  EXPECT_EQ(bounds.y(), test_bounds.y());
-  // The final width and height can contain platform-specific offsets for the
-  // window title bar, which we don't want to assert exactly here.
-  EXPECT_GE(bounds.width(), test_bounds.width());
-  EXPECT_GE(bounds.height(), test_bounds.height());
+  if (CanApplyRequestedBounds(popup_window_browser)) {
+    gfx::Rect bounds = popup_window_browser->GetWindow()->GetBounds();
+    EXPECT_NEAR(bounds.x(), test_bounds.x(), kBoundsToleranceDip);
+    EXPECT_NEAR(bounds.y(), test_bounds.y(), kBoundsToleranceDip);
+    // The final width and height can contain platform-specific offsets for the
+    // window title bar, which we don't want to assert exactly here.
+    EXPECT_GE(bounds.width(), test_bounds.width() - kBoundsToleranceDip);
+    EXPECT_GE(bounds.height(), test_bounds.height() - kBoundsToleranceDip);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,

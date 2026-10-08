@@ -39,6 +39,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/base_window.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace {
@@ -855,8 +856,22 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
   EXPECT_EQ(params.browser, new_window);
   EXPECT_EQ(new_window->GetType(), BrowserWindowInterface::Type::TYPE_POPUP);
 
-  // Verify bounds.
-  EXPECT_EQ(new_window->GetWindow()->GetBounds(), gfx::Rect(10, 20, 300, 400));
+  // Verify bounds. Requested bounds are only applied when the window can be
+  // resized (e.g. the SDK supports the window bounds API and the window is in
+  // desktop windowing mode). Allow a margin of error for the rounding during
+  // dip->px conversion.
+  ui::WindowResizePrecheckResult resize_precheck_result;
+  if (new_window->GetWindow()->CanResize(resize_precheck_result)) {
+    constexpr int kBoundsToleranceDip = 2;
+    const gfx::Rect expected_bounds(10, 20, 300, 400);
+    const gfx::Rect actual_bounds = new_window->GetWindow()->GetBounds();
+    EXPECT_NEAR(actual_bounds.x(), expected_bounds.x(), kBoundsToleranceDip);
+    EXPECT_NEAR(actual_bounds.y(), expected_bounds.y(), kBoundsToleranceDip);
+    EXPECT_NEAR(actual_bounds.right(), expected_bounds.right(),
+                kBoundsToleranceDip);
+    EXPECT_NEAR(actual_bounds.bottom(), expected_bounds.bottom(),
+                kBoundsToleranceDip);
+  }
 
   TabListInterface* new_tab_list = TabListInterface::From(new_window);
   EXPECT_EQ(1, new_tab_list->GetTabCount());
