@@ -463,6 +463,27 @@ public class AtMemoryBottomSheetMediatorTest {
 
         assertEquals(1, mModelList.size());
         assertEquals(HomeProperties.ItemType.ILLUSTRATION_CARD, mModelList.get(0).type);
+        PropertyModel model = mModelList.get(0).model;
+        var context = ApplicationProvider.getApplicationContext();
+        assertEquals(
+                context.getString(R.string.autofill_at_memory_zero_state_title),
+                model.get(IllustrationCardItemProperties.TITLE));
+        assertEquals(
+                context.getString(R.string.autofill_at_memory_zero_state_subtitle),
+                model.get(IllustrationCardItemProperties.SUBTITLE));
+        String flightConfirmationCode =
+                context.getString(
+                        R.string.autofill_at_memory_zero_state_subtitle_flight_confirmation_code);
+        assertEquals(
+                List.of(
+                        context.getString(
+                                R.string.autofill_at_memory_zero_state_subtitle_order_number),
+                        flightConfirmationCode,
+                        context.getString(
+                                R.string.autofill_at_memory_zero_state_subtitle_tracking_number),
+                        context.getString(
+                                R.string.autofill_at_memory_zero_state_subtitle_hotel_address)),
+                model.get(IllustrationCardItemProperties.ROTATING_PLACEHOLDERS));
     }
 
     @Test
@@ -483,6 +504,9 @@ public class AtMemoryBottomSheetMediatorTest {
                 "Find and fill with Gemini",
                 mModelList.get(0).model.get(IllustrationCardItemProperties.TITLE));
         assertEquals("", mModelList.get(0).model.get(IllustrationCardItemProperties.SUBTITLE));
+        assertEquals(
+                List.of(),
+                mModelList.get(0).model.get(IllustrationCardItemProperties.ROTATING_PLACEHOLDERS));
     }
 
     @Test

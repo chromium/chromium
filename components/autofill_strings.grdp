@@ -936,16 +936,16 @@
   <message name="IDS_AT_MEMORY_NOTICE_TITLE" desc="Headline of an informational notice introducing a new enhanced autofill feature. 'Gmail' is a proper branding name and should remain unlocalized and match standard guidelines across languages." formatter_data="android_java">
     Now you can find and fill info from Gmail and more
   </message>
-  <message name="IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE_ORDER_NUMBER" desc="Example search query shown in the AtMemory zero state for finding an order number." translateable="false">
+  <message name="IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE_ORDER_NUMBER" desc="Example search query shown in the AtMemory zero state for finding an order number." formatter_data="android_java" translateable="false">
     Try "running shoes order number"
   </message>
-  <message name="IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE_FLIGHT_CONFIRMATION_CODE" desc="Example search query shown in the AtMemory zero state for finding a flight confirmation code." translateable="false">
+  <message name="IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE_FLIGHT_CONFIRMATION_CODE" desc="Example search query shown in the AtMemory zero state for finding a flight confirmation code." formatter_data="android_java" translateable="false">
     Try "confirmation code for LAX flight"
   </message>
-  <message name="IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE_TRACKING_NUMBER" desc="Example search query shown in the AtMemory zero state for finding a shipment tracking number." translateable="false">
+  <message name="IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE_TRACKING_NUMBER" desc="Example search query shown in the AtMemory zero state for finding a shipment tracking number." formatter_data="android_java" translateable="false">
     Try "running shoes tracking number"
   </message>
-  <message name="IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE_HOTEL_ADDRESS" desc="Example search query shown in the AtMemory zero state for finding a hotel address." translateable="false">
+  <message name="IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE_HOTEL_ADDRESS" desc="Example search query shown in the AtMemory zero state for finding a hotel address." formatter_data="android_java" translateable="false">
     Try "address for my hotel in Tokyo"
   </message>
   <if expr="is_android">

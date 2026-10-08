@@ -41,6 +41,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.FlyoutProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.HomeProperties;
+import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.IllustrationCardItemProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.ScreenId;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
@@ -57,6 +58,7 @@ import org.chromium.ui.widget.LoadingView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link AtMemoryBottomSheetView}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -562,6 +564,87 @@ public class AtMemoryBottomSheetViewTest {
 
         View arrowView = suggestionView.findViewById(R.id.arrow_view);
         assertEquals("Show more for Flight KLM204", arrowView.getContentDescription());
+    }
+
+    @Test
+    public void testIllustrationCardTitleRotation() {
+        ModelList modelList = new ModelList();
+        PropertyModel model =
+                new PropertyModel.Builder(IllustrationCardItemProperties.ALL_KEYS)
+                        .with(IllustrationCardItemProperties.TITLE, "Default title")
+                        .with(IllustrationCardItemProperties.SUBTITLE, "Default subtitle")
+                        .with(
+                                IllustrationCardItemProperties.ROTATING_PLACEHOLDERS,
+                                List.of("Title A", "Title B"))
+                        .build();
+        modelList.add(new ListItem(HomeProperties.ItemType.ILLUSTRATION_CARD, model));
+
+        AtMemoryHomeView homeView = mView.getHomeView();
+        homeView.setUpSheetItems(modelList);
+        ShadowLooper.idleMainLooper();
+
+        RecyclerView recyclerView = homeView.findViewById(R.id.suggestions_view);
+        recyclerView.layout(0, 0, 100, 1000);
+        AtMemoryBottomSheetIllustrationCardView cardView =
+                (AtMemoryBottomSheetIllustrationCardView) recyclerView.getChildAt(0);
+        TextView titleView = cardView.findViewById(R.id.illustration_card_title);
+
+        assertEquals("Default title", titleView.getText().toString());
+
+        ShadowLooper.idleMainLooper(
+                AtMemoryBottomSheetIllustrationCardView.TITLE_ROTATION_INTERVAL_MS,
+                TimeUnit.MILLISECONDS);
+        String first = titleView.getText().toString();
+        assertTrue(first.equals("Title A") || first.equals("Title B"));
+
+        String second = first.equals("Title A") ? "Title B" : "Title A";
+        ShadowLooper.idleMainLooper(
+                AtMemoryBottomSheetIllustrationCardView.TITLE_ROTATION_INTERVAL_MS,
+                TimeUnit.MILLISECONDS);
+        assertEquals(second, titleView.getText().toString());
+
+        ShadowLooper.idleMainLooper(
+                AtMemoryBottomSheetIllustrationCardView.TITLE_ROTATION_INTERVAL_MS,
+                TimeUnit.MILLISECONDS);
+        assertEquals(first, titleView.getText().toString());
+    }
+
+    @Test
+    public void testIllustrationCardTitleRotation_StopsWhenDetached() {
+        ModelList modelList = new ModelList();
+        PropertyModel model =
+                new PropertyModel.Builder(IllustrationCardItemProperties.ALL_KEYS)
+                        .with(IllustrationCardItemProperties.TITLE, "Default title")
+                        .with(IllustrationCardItemProperties.SUBTITLE, "Default subtitle")
+                        .with(
+                                IllustrationCardItemProperties.ROTATING_PLACEHOLDERS,
+                                List.of("Title A", "Title B"))
+                        .build();
+        modelList.add(new ListItem(HomeProperties.ItemType.ILLUSTRATION_CARD, model));
+
+        AtMemoryHomeView homeView = mView.getHomeView();
+        homeView.setUpSheetItems(modelList);
+        ShadowLooper.idleMainLooper();
+
+        RecyclerView recyclerView = homeView.findViewById(R.id.suggestions_view);
+        recyclerView.layout(0, 0, 100, 1000);
+        AtMemoryBottomSheetIllustrationCardView cardView =
+                (AtMemoryBottomSheetIllustrationCardView) recyclerView.getChildAt(0);
+        TextView titleView = cardView.findViewById(R.id.illustration_card_title);
+
+        ShadowLooper.idleMainLooper(
+                AtMemoryBottomSheetIllustrationCardView.TITLE_ROTATION_INTERVAL_MS,
+                TimeUnit.MILLISECONDS);
+        String rotatedTitle = titleView.getText().toString();
+        assertTrue(rotatedTitle.equals("Title A") || rotatedTitle.equals("Title B"));
+
+        cardView.onDetachedFromWindow();
+        assertEquals(rotatedTitle, titleView.getText().toString());
+
+        ShadowLooper.idleMainLooper(
+                AtMemoryBottomSheetIllustrationCardView.TITLE_ROTATION_INTERVAL_MS,
+                TimeUnit.MILLISECONDS);
+        assertEquals(rotatedTitle, titleView.getText().toString());
     }
 
     private List<ChipView> getChipViews(ViewGroup viewGroup) {

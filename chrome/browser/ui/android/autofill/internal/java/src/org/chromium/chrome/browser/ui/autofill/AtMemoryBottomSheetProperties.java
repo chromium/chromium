@@ -135,8 +135,12 @@ class AtMemoryBottomSheetProperties {
         // Subtitle to be displayed on the illustration card.
         static final ReadableObjectPropertyKey<@Nullable String> SUBTITLE =
                 new ReadableObjectPropertyKey<>();
+        // Titles that are cycled through in zero state, in order and starting at a random one,
+        // after the default title is shown.
+        static final ReadableObjectPropertyKey<List<String>> ROTATING_PLACEHOLDERS =
+                new ReadableObjectPropertyKey<>();
 
-        static final PropertyKey[] ALL_KEYS = {TITLE, SUBTITLE};
+        static final PropertyKey[] ALL_KEYS = {TITLE, SUBTITLE, ROTATING_PLACEHOLDERS};
 
         private IllustrationCardItemProperties() {}
     }

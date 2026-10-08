@@ -84,6 +84,9 @@ class AtMemoryBottomSheetViewBinder {
             view.setTitle(model.get(IllustrationCardItemProperties.TITLE));
         } else if (propertyKey == IllustrationCardItemProperties.SUBTITLE) {
             view.setSubtitle(model.get(IllustrationCardItemProperties.SUBTITLE));
+        } else if (propertyKey == IllustrationCardItemProperties.ROTATING_PLACEHOLDERS) {
+            view.setRotatingPlaceholders(
+                    model.get(IllustrationCardItemProperties.ROTATING_PLACEHOLDERS));
         } else {
             // Unhandled property.
             assert false : "Unhandled property: " + propertyKey;
