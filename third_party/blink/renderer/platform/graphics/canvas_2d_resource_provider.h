@@ -121,7 +121,6 @@ class PLATFORM_EXPORT CanvasResourceProviderDelegate
   GetAnimatedImageFrameIndexes(uint32_t id) const {
     return nullptr;
   }
-  virtual void DidFlush() {}
 };
 
 // * Subclass of CanvasResourceProvider that is specialized for usage

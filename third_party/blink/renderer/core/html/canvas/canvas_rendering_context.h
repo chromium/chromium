@@ -249,7 +249,6 @@ class CORE_EXPORT CanvasRenderingContext
   // of a presentable frame.
   virtual void FinalizeFrame(FlushReason) {}
   void FinalizeFrame() { return FinalizeFrame(FlushReason::kOther); }
-  virtual void DidFlush() {}
 
   // Thread::TaskObserver implementation
   void DidProcessTask(const base::PendingTask&) override;

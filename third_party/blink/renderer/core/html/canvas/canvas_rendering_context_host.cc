@@ -163,12 +163,6 @@ CanvasRenderingContextHost::GetAnimatedImageFrameIndexes(uint32_t id) const {
   return nullptr;
 }
 
-void CanvasRenderingContextHost::DidFlush() {
-  if (auto* context = RenderingContext()) {
-    context->DidFlush();
-  }
-}
-
 bool CanvasRenderingContextHost::IsWebGL() const {
   return RenderingContext() && RenderingContext()->IsWebGL();
 }

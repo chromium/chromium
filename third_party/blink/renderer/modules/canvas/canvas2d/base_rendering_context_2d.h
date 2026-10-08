@@ -293,7 +293,6 @@ class MODULES_EXPORT BaseRenderingContext2D
   void DisableAccelerationForCanvas2D() final { DisableAcceleration(); }
   void PageVisibilityChanged() override {}
   void Reset() override;
-  void DidFlush() override;
 
   void SetRestoreFailedCallbackForTesting(base::RepeatingClosure callback) {
     on_restore_failed_callback_for_testing_ = std::move(callback);

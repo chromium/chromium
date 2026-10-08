@@ -120,7 +120,6 @@ class CORE_EXPORT CanvasRenderingContextHost
   // Partial CanvasResourceProvider::Delegate implementation
   scoped_refptr<const cc::AnimatedImageFrameIndexMap>
   GetAnimatedImageFrameIndexes(uint32_t id) const override;
-  void DidFlush() override;
 
   virtual void PageVisibilityChanged();
 
