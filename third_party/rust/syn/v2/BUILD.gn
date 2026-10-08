@@ -92,7 +92,6 @@ cargo_crate("lib") {
     "default",
     "derive",
     "extra-traits",
-    "fold",
     "full",
     "parsing",
     "printing",

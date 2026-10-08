@@ -1,7 +1,7 @@
 Name: zerofrom-derive
 URL: https://crates.io/crates/zerofrom-derive
-Version: 0.1.7
-Revision: c9fac4e625ccb2c6a7aa35079fff9709db4385ac
+Version: 0.1.8
+Revision: ce235d80cf7cbd028e8bd59920420e1203b205b3
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Unicode-3.0
 License File: //third_party/rust/chromium_crates_io/vendor/zerofrom-derive-v0_1/LICENSE
