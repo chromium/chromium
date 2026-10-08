@@ -779,7 +779,9 @@ void MediaSessionImpl::Stop(SuspendType suspend_type) {
   if (audio_focus_state_ != State::SUSPENDED)
     OnSuspendInternal(suspend_type, State::SUSPENDED);
 
-  CHECK(audio_focus_state_ == State::SUSPENDED, base::NotFatalUntil::M160);
+  // TODO(crbug.com/563861408): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(audio_focus_state_ == State::SUSPENDED);
   normal_players_.clear();
 
   AbandonSystemAudioFocusIfNeeded();
