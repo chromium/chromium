@@ -4807,6 +4807,93 @@ void Element::DetachColumnPseudoElements(bool performing_reattach) {
   }
 }
 
+void Element::AttachLayoutPrecedingPseudoElements(AttachContext& context) {
+  if (!HasPseudoElements() || IsDocumentElement()) {
+    return;
+  }
+  AttachPrecedingScrollControlsPseudoElements(context);
+}
+
+void Element::AttachPrecedingPseudoElements(AttachContext& context) {
+  // Both the pseudo-elements and the overscroll area tracker live in rare data.
+  if (!RareData()) {
+    return;
+  }
+  if (!HasPseudoElements()) {
+    // The overscroll area parents are pseudo-elements of other elements (the
+    // overscroll areas tracked by this element), so they must be attached even
+    // if this element has no pseudo-elements of its own.
+    AttachOverscrollPseudoElements(context);
+    return;
+  }
+  AttachDocumentElementPrecedingPseudoElements(context);
+  AttachOverscrollPseudoElements(context);
+  AttachPseudoElement(kPseudoIdScrollMarker, context);
+  AttachPseudoElement(kPseudoIdMarker, context);
+  AttachPseudoElement(kPseudoIdCheckMark, context);
+  AttachPseudoElement(kPseudoIdBefore, context);
+}
+
+void Element::AttachLayoutSucceedingPseudoElements(AttachContext& context) {
+  if (!HasPseudoElements() || IsDocumentElement()) {
+    return;
+  }
+  AttachPseudoElement(kPseudoIdInterestButton, context);
+  AttachSucceedingScrollControlsPseudoElements(context);
+}
+
+void Element::AttachSucceedingPseudoElements(AttachContext& context) {
+  const bool has_pseudo_elements = HasPseudoElements();
+  if (has_pseudo_elements) {
+    AttachPseudoElement(kPseudoIdAfter, context);
+    AttachPseudoElement(kPseudoIdExpandIcon, context);
+    AttachPseudoElement(kPseudoIdPickerIcon, context);
+    AttachDocumentElementSucceedingPseudoElements(context);
+    AttachPseudoElement(kPseudoIdBackdrop, context);
+  }
+  UpdateFirstLetterPseudoElement(StyleUpdatePhase::kAttachLayoutTree);
+  // UpdateFirstLetterPseudoElement() may have just created the ::first-letter
+  // pseudo-element, so HasPseudoElements() must be checked again here if it
+  // was false above.
+  if (has_pseudo_elements || HasPseudoElements()) {
+    AttachPseudoElement(kPseudoIdFirstLetter, context);
+  }
+}
+
+void Element::DetachPrecedingPseudoElements(bool performing_reattach) {
+  // Both the pseudo-elements and the overscroll area tracker live in rare data.
+  if (!RareData()) {
+    return;
+  }
+  if (HasPseudoElements()) {
+    DetachPseudoElement(kPseudoIdScrollMarker, performing_reattach);
+    DetachPseudoElement(kPseudoIdScrollMarkerGroupBefore, performing_reattach);
+    DetachPseudoElement(kPseudoIdMarker, performing_reattach);
+    DetachPseudoElement(kPseudoIdCheckMark, performing_reattach);
+    DetachPseudoElement(kPseudoIdBefore, performing_reattach);
+  }
+  // The overscroll area parents belong to other elements (see
+  // AttachPrecedingPseudoElements()), so detach them regardless.
+  DetachOverscrollPseudoElements(performing_reattach);
+}
+
+void Element::DetachSucceedingPseudoElements(bool performing_reattach) {
+  if (!HasPseudoElements()) {
+    return;
+  }
+  DetachPseudoElement(kPseudoIdAfter, performing_reattach);
+  DetachPseudoElement(kPseudoIdExpandIcon, performing_reattach);
+  DetachPseudoElement(kPseudoIdPickerIcon, performing_reattach);
+  DetachPseudoElement(kPseudoIdInterestButton, performing_reattach);
+  DetachPseudoElement(kPseudoIdScrollButtonBlockStart, performing_reattach);
+  DetachPseudoElement(kPseudoIdScrollButtonInlineStart, performing_reattach);
+  DetachPseudoElement(kPseudoIdScrollButtonInlineEnd, performing_reattach);
+  DetachPseudoElement(kPseudoIdScrollButtonBlockEnd, performing_reattach);
+  DetachPseudoElement(kPseudoIdScrollMarkerGroupAfter, performing_reattach);
+  DetachPseudoElement(kPseudoIdBackdrop, performing_reattach);
+  DetachPseudoElement(kPseudoIdFirstLetter, performing_reattach);
+}
+
 void Element::AttachLayoutTree(AttachContext& context) {
   DCHECK(GetDocument().InStyleRecalc() ||
          GetDocument().GetStyleEngine().InScrollMarkersAttachment());
@@ -6235,8 +6322,10 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
       } else {
         child_attacher = &whitespace_attacher;
       }
-      RebuildTransitionLayoutTree(*child_attacher);
-      RebuildPseudoElementLayoutTree(kPseudoIdSkeleton, *child_attacher);
+      if (has_pseudo_elements) {
+        RebuildTransitionLayoutTree(*child_attacher);
+        RebuildPseudoElementLayoutTree(kPseudoIdSkeleton, *child_attacher);
+      }
       RebuildOverscrollAreaLayoutTree(*child_attacher);
       if (has_pseudo_elements) {
         RebuildPseudoElementLayoutTree(kPseudoIdAfter, *child_attacher);
@@ -6389,6 +6478,9 @@ void Element::DetachOverscrollPseudoElements(bool performing_reattach) {
 }
 
 void Element::AttachTransitionPseudoElements(AttachContext& context) {
+  if (!HasPseudoElements()) {
+    return;
+  }
   // For a document transition, the LayoutObject for the ::view-transition
   // pseudo-element is wrapped by the anonymous LayoutViewTransitionRoot,
   // which represents the snapshot containing block.
@@ -6409,6 +6501,9 @@ void Element::AttachTransitionPseudoElements(AttachContext& context) {
 }
 
 void Element::DetachTransitionPseudoElements(bool performing_reattach) {
+  if (!HasPseudoElements()) {
+    return;
+  }
   auto detach_pseudo = [&](PseudoElement* pseudo_element) {
     pseudo_element->DetachLayoutTree(performing_reattach);
   };
@@ -10898,7 +10993,12 @@ void Element::ApplyPendingBackdropPseudoElementUpdate() {
 }
 
 void Element::UpdateFirstLetterPseudoElement(StyleUpdatePhase phase) {
-  if (CanGeneratePseudoElement(kPseudoIdFirstLetter) ||
+  // HasPseudoElementStyle() is a cheap necessary condition for the virtual
+  // CanGeneratePseudoElement(kPseudoIdFirstLetter) call, and is false for the
+  // vast majority of elements.
+  const ComputedStyle* style = GetComputedStyle();
+  if ((style && style->HasPseudoElementStyle(kPseudoIdFirstLetter) &&
+       CanGeneratePseudoElement(kPseudoIdFirstLetter)) ||
       GetPseudoElement(kPseudoIdFirstLetter)) {
     UpdateFirstLetterPseudoElement(
         phase, StyleRecalcContext::FromPseudoElementAncestors(
@@ -11252,7 +11352,9 @@ PseudoElement* Element::GetPseudoElement(
     PseudoId pseudo_id,
     const AtomicString& pseudo_argument) const {
   if (NodeRareData* data = RareData()) {
-    return data->GetPseudoElement(pseudo_id, pseudo_argument);
+    PseudoElement* element = data->GetPseudoElement(pseudo_id, pseudo_argument);
+    DCHECK(!element || HasPseudoElements());
+    return element;
   }
   return nullptr;
 }
