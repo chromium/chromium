@@ -77,7 +77,7 @@ export function processTemplate(filePath) {
     // Early return for no substitution literals.
     // Return pure text without outer backticks.
     if (ts.isNoSubstitutionTemplateLiteral(node)) {
-      return node.text;
+      return node.rawText;
     }
 
     // Early return if not a template expression
@@ -86,7 +86,7 @@ export function processTemplate(filePath) {
     }
 
     // Start with pure head text, without opening backtick
-    let templateResult = node.head.text;
+    let templateResult = node.head.rawText;
 
     node.templateSpans.forEach((span, index, spans) => {
       const expr = span.expression;
@@ -148,9 +148,9 @@ export function processTemplate(filePath) {
         }
       }
 
-      // span.literal.text contains the static HTML text following the
+      // span.literal.rawText contains the static HTML text following the
       // expression.
-      templateResult += span.literal.text;
+      templateResult += span.literal.rawText;
     });
 
     // Return pure content without trailing backtick
