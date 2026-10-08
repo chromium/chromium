@@ -12,11 +12,11 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/extended_updates/test/mock_extended_updates_controller.h"
 #include "chrome/browser/ash/extended_updates/test/scoped_extended_updates_controller.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
@@ -41,7 +41,7 @@ class EolNotificationTest : public BrowserWithTestWindowTest {
     ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     BrowserWithTestWindowTest::SetUp();
     eol_notification_ = std::make_unique<EolNotification>(
-        ash::ProfileHelper::Get()->GetUserByProfile(profile()));
+        ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile()));
     clock_ = std::make_unique<base::SimpleTestClock>();
     eol_notification_->clock_ = clock_.get();
   }
