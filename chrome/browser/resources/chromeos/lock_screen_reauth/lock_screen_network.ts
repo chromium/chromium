@@ -13,6 +13,7 @@ import 'chrome://resources/ash/common/network/network_select.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import '/strings.m.js';
 
+import {NetworkList} from 'chrome://resources/ash/common/network/network_list_types.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import type {CrosNetworkConfigRemote} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {CrosNetworkConfig, StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
@@ -31,6 +32,7 @@ class LockScreenNetworkUi extends PolymerElement {
     const select = this.shadowRoot!.querySelector('network-select');
     select!.customItems = [
       {
+        customItemType: NetworkList.CustomItemType.OOBE,
         customItemName: 'addWiFiListItemName',
         polymerIcon: 'cr:add',
         customData: 'WiFi',
