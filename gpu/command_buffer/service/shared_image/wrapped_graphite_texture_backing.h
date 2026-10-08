@@ -102,7 +102,11 @@ class WrappedGraphiteTextureBacking : public ClearTrackingSharedImageBacking {
   const std::vector<
       scoped_refptr<SkiaImageRepresentation::GraphiteTextureHolder>>&
   GetWrappedGraphiteTextureHolders();
-  bool InsertRecordingAndSubmit();
+  bool InsertRecordingAndSubmit(SharedContextState* context_state);
+
+  // Returns the SharedContextState to use for accessing the backing on the
+  // current thread, or nullptr if there is none.
+  SharedContextState* GetContextStateForCurrentThread() const;
 
   skgpu::graphite::Recorder* recorder() const {
     return context_state_->gpu_main_graphite_recorder();

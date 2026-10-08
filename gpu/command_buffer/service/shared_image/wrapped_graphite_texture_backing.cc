@@ -240,7 +240,7 @@ bool WrappedGraphiteTextureBacking::InitializeWithData(
     }
   }
 
-  if (!InsertRecordingAndSubmit()) {
+  if (!InsertRecordingAndSubmit(context_state_.get())) {
     return false;
   }
 
@@ -258,17 +258,18 @@ void WrappedGraphiteTextureBacking::Update(gfx::GpuFenceHandle in_fence) {
 
 bool WrappedGraphiteTextureBacking::UploadFromMemory(
     const std::vector<SkPixmap>& pixmaps) {
-  // Using `context_state_` isn't compatible with a thread safe backing.
-  CHECK(!is_thread_safe() || created_task_runner_->BelongsToCurrentThread());
   CHECK_EQ(pixmaps.size(), texture_holders_.size());
 
-  if (context_state_->context_lost()) {
+  SharedContextState* context_state = GetContextStateForCurrentThread();
+  if (!context_state || context_state->context_lost()) {
     return false;
   }
 
+  skgpu::graphite::Recorder* graphite_recorder =
+      context_state->gpu_main_graphite_recorder();
   bool updated = true;
   for (size_t i = 0; i < texture_holders_.size(); ++i) {
-    updated = updated && recorder()->updateBackendTexture(
+    updated = updated && graphite_recorder->updateBackendTexture(
                              texture_holders_[i]->texture(), &pixmaps[i],
                              /*numLevels=*/1);
   }
@@ -277,16 +278,15 @@ bool WrappedGraphiteTextureBacking::UploadFromMemory(
     return false;
   }
 
-  return InsertRecordingAndSubmit();
+  return InsertRecordingAndSubmit(context_state);
 }
 
 bool WrappedGraphiteTextureBacking::ReadbackToMemory(
     const std::vector<SkPixmap>& pixmaps) {
-  // Using `context_state_` isn't compatible with a thread safe backing.
-  CHECK(!is_thread_safe() || created_task_runner_->BelongsToCurrentThread());
   CHECK_EQ(pixmaps.size(), texture_holders_.size());
 
-  if (context_state_->context_lost()) {
+  SharedContextState* context_state = GetContextStateForCurrentThread();
+  if (!context_state || context_state->context_lost()) {
     return false;
   }
 
@@ -309,7 +309,7 @@ bool WrappedGraphiteTextureBacking::ReadbackToMemory(
     }
 
     sk_sp<SkImage> sk_image =
-        SkImages::WrapTexture(context_state_->gpu_main_graphite_recorder(),
+        SkImages::WrapTexture(context_state->gpu_main_graphite_recorder(),
                               texture_holders_[i]->texture(), color_type,
                               kOpaque_SkAlphaType, std::move(src_color_space));
     if (!sk_image) {
@@ -318,7 +318,7 @@ bool WrappedGraphiteTextureBacking::ReadbackToMemory(
     const gfx::Size plane_size = format().GetPlaneSize(i, size());
     const SkIRect src_rect =
         SkIRect::MakeWH(plane_size.width(), plane_size.height());
-    if (!context_state_->graphite_shared_context()
+    if (!context_state->graphite_shared_context()
              ->asyncRescaleAndReadPixelsAndSubmit(
                  sk_image.get(), pixmaps[i].info(), src_rect,
                  SkImage::RescaleGamma::kSrc,
@@ -377,20 +377,53 @@ bool WrappedGraphiteTextureBacking::SupportsAccess(
   return CheckSupportForAccessStream(stream, format(), params);
 }
 
-bool WrappedGraphiteTextureBacking::InsertRecordingAndSubmit() {
-  auto recording = recorder()->snap();
+bool WrappedGraphiteTextureBacking::InsertRecordingAndSubmit(
+    SharedContextState* context_state) {
+  auto recording = context_state->gpu_main_graphite_recorder()->snap();
   if (!recording) {
     LOG(ERROR) << "Graphite failed to snap recording from GPU main recorder";
     return false;
   }
   skgpu::graphite::InsertRecordingInfo info = {};
   info.fRecording = recording.get();
-  if (!context_state_->graphite_shared_context()->insertRecording(info)) {
+  if (!context_state->graphite_shared_context()->insertRecording(info)) {
     LOG(ERROR) << "Graphite insertRecording() failed";
     return false;
   }
-  context_state_->graphite_shared_context()->submit();
+  context_state->graphite_shared_context()->submit();
   return true;
+}
+
+SharedContextState*
+WrappedGraphiteTextureBacking::GetContextStateForCurrentThread() const {
+  // `created_task_runner_` is only set when the backing is thread-safe or when
+  // DrDC is enabled with a thread-safe Graphite context. When on the creation
+  // thread (or when the backing is single-threaded), use `context_state_`
+  // directly. This avoids a TLS lookup on the creation thread and also works in
+  // unit tests that construct a SharedContextState without registering it in
+  // TLS.
+  if (!created_task_runner_ || created_task_runner_->BelongsToCurrentThread()) {
+    return context_state_.get();
+  }
+
+  // A thread-safe backing can be accessed on a thread other than the one it was
+  // created on, e.g. the DrDC CompositorGpuThread, where `context_state_` and
+  // its Graphite recorder can't be used. Use the SharedContextState registered
+  // for the current thread instead. This works since all Graphite
+  // SharedContextStates in the GPU process share the same device, e.g. via
+  // DawnContextProvider::CreateWithSharedDevice().
+  if (SharedContextState* current_context_state =
+          SharedContextState::GetForCurrentThread()) {
+    if (!current_context_state->graphite_shared_context() ||
+        !current_context_state->gpu_main_graphite_recorder()) {
+      LOG(ERROR) << "SharedContextState for current thread is not Graphite";
+      return nullptr;
+    }
+    return current_context_state;
+  }
+
+  LOG(ERROR) << "No SharedContextState registered for current thread";
+  return nullptr;
 }
 
 const std::vector<scoped_refptr<GraphiteTextureHolder>>&
