@@ -950,10 +950,17 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)settingsDoneButton {
-  return grey_allOf(
-      grey_ancestor([ChromeMatchersAppInterface settingsNavigationBar]),
-      grey_accessibilityID(kSettingsDoneButtonId), grey_sufficientlyVisible(),
-      nil);
+  NSMutableArray<id<GREYMatcher>>* ancestors = [NSMutableArray
+      arrayWithObject:grey_ancestor(
+                          [ChromeMatchersAppInterface settingsNavigationBar])];
+  Class floatingBarClass = NSClassFromString(@"_UIFloatingBarContainerView");
+  if (floatingBarClass) {
+    [ancestors addObject:grey_ancestor(grey_kindOfClass(floatingBarClass))];
+  }
+
+  return grey_allOf(grey_anyOfMatchers(ancestors),
+                    grey_accessibilityID(kSettingsDoneButtonId),
+                    grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)autofillCreditCardEditTableView {
@@ -1125,25 +1132,22 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
     buttonTitle = @"Back";
   }
 
-  if (@available(iOS 26, *)) {
-    return grey_allOf(
-        grey_anyOf(grey_accessibilityLabel(buttonTitle),
-                   grey_accessibilityLabel(@"Back"), grey_buttonTitle(@"Back"),
-                   grey_descendant(grey_buttonTitle(buttonTitle)), nil),
-        grey_anyOf(grey_kindOfClassName(@"_UIButtonBarButton"),
-                   grey_kindOfClassName(
-                       @"_TtCC5UIKit29ButtonBarButtonVisualProviderP33_"
-                       @"A98CD29F4F6ECA17AFECE41BBB264E596Button"),
-                   nil),
-        grey_ancestor(grey_kindOfClass([UINavigationBar class])), nil);
-  } else {
-    return grey_allOf(
-        grey_anyOf(grey_accessibilityLabel(buttonTitle),
-                   grey_accessibilityLabel(@"Back"), grey_buttonTitle(@"Back"),
-                   grey_descendant(grey_buttonTitle(buttonTitle)), nil),
-        grey_kindOfClassName(@"_UIButtonBarButton"),
-        grey_ancestor(grey_kindOfClass([UINavigationBar class])), nil);
+  NSMutableArray<id<GREYMatcher>>* ancestors = [NSMutableArray
+      arrayWithObject:grey_ancestor(grey_kindOfClass([UINavigationBar class]))];
+  Class floatingBarClass = NSClassFromString(@"_UIFloatingBarContainerView");
+  if (floatingBarClass) {
+    [ancestors addObject:grey_ancestor(grey_kindOfClass(floatingBarClass))];
   }
+
+  return grey_allOf(
+      grey_anyOf(grey_accessibilityID(@"BackButton"),
+                 grey_accessibilityLabel(buttonTitle),
+                 grey_accessibilityLabel(@"Back"), grey_buttonTitle(@"Back"),
+                 grey_descendant(grey_buttonTitle(buttonTitle)),
+                 grey_descendant(grey_accessibilityLabel(@"Back")),
+                 grey_descendant(grey_accessibilityLabel(buttonTitle)), nil),
+      grey_kindOfClassName(@"_UIButtonBarButton"),
+      grey_anyOfMatchers(ancestors), grey_interactable(), nil);
 }
 
 + (id<GREYMatcher>)settingsMenuBackButton {
