@@ -5248,20 +5248,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Enterprise.TimeToUnthrottlePolicyInit" units="ms"
-    expires_after="2024-01-14">
-  <owner>igorcov@chromium.org</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Duration between when the construction of the policy stack for a user
-    profile starts and when its initialization gets unthrottled.
-
-    Only reported on ChromeOS Ash, only for managed users who are primary users
-    in the given session. The values are capped at around 5 seconds, and
-    timeouts are reported as this upper boundary value as well.
-  </summary>
-</histogram>
-
 <histogram
     name="Enterprise.TokenBasedEnrollmentOobeConfig.{OobeConfigSource}.Success"
     enum="BooleanSuccess" expires_after="2027-01-28">
