@@ -21,6 +21,7 @@ class HttpResponseHeaders;
 
 namespace content {
 
+class RenderFrameHost;
 struct PolicyContainerPolicies;
 
 // Returns true if the parsed response headers contains a valid
@@ -64,6 +65,12 @@ network::ConnectionAllowlists GetConnectionAllowlistsForWorker(
     const network::mojom::URLResponseHead* response_head,
     const PolicyContainerPolicies* creator_policies,
     bool inherit_from_creator);
+
+// Determines if the Connection Allowlist for `frame` has allowed WebRTC. This
+// is controlled by the Connection Allowlist header's `webrtc` directive, and is
+// is used to prevent binding of downstream interfaces like P2PSocketManger and
+// MDNSResponder.
+bool IsWebRTCAllowedByConnectionAllowlist(RenderFrameHost* frame);
 
 }  // namespace content
 

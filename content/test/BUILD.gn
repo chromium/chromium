@@ -22,6 +22,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//services/device/public/cpp/compute_pressure/buildflags.gni")
+import("//services/network/public/cpp/features.gni")
 import("//services/screen_ai/buildflags/features.gni")
 import("//testing/test.gni")
 import("//third_party/blink/public/public_features.gni")
@@ -3444,6 +3445,16 @@ test("content_unittests") {
     sources +=
         [ "../browser/smart_card/emulation/smart_card_emulation_unittest.cc" ]
     deps += [ "//content/browser/smart_card/emulation" ]
+  }
+
+  if (enable_mdns) {
+    sources += [ "../browser/renderer_host/no_op_mdns_responder_unittest.cc" ]
+  }
+
+  if (is_p2p_enabled) {
+    sources +=
+        [ "../browser/renderer_host/p2p/no_op_p2p_socket_manager_unittest.cc" ]
+    deps += [ "//services/network/public/cpp:cpp_p2p" ]
   }
 
   if (enable_nocompile_tests) {

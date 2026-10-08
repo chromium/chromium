@@ -88,6 +88,7 @@
 #include "content/browser/can_commit_status.h"
 #include "content/browser/closewatcher/close_listener_host.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
+#include "content/browser/connection_allowlist_utils.h"
 #include "content/browser/data_url_loader_factory.h"
 #include "content/browser/declarative_performance_observer/declarative_performance_observer.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
@@ -363,6 +364,10 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "content/browser/renderer_host/popup_menu_helper_mac.h"
+#endif
+
+#if BUILDFLAG(ENABLE_MDNS)
+#include "content/browser/renderer_host/no_op_mdns_responder.h"
 #endif
 
 #if BUILDFLAG(IS_POSIX)
@@ -19729,6 +19734,17 @@ RenderFrameHostImpl::CreateDeviceBoundSessionObserver() {
 #if BUILDFLAG(ENABLE_MDNS)
 void RenderFrameHostImpl::CreateMdnsResponder(
     mojo::PendingReceiver<network::mojom::MdnsResponder> receiver) {
+  // If WebRTC is blocked by this document's Connection Allowlist, bind a no-op
+  // MdnsResponder so that no names are ever registered or announced, while
+  // still replying to every renderer request (see NoOpMdnsResponder).
+  // It is possible that a renderer which does not allow WebRTC could still
+  // reach this interface. TODO(crbug.com/571239543): Disable all WebRTC
+  // connections on the renderer side.
+  if (!IsWebRTCAllowedByConnectionAllowlist(this)) {
+    NoOpMdnsResponder::Create(std::move(receiver));
+    return;
+  }
+
   GetStoragePartition()->GetNetworkContext()->CreateMdnsResponder(
       std::move(receiver));
 }

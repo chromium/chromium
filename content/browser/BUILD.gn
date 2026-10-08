@@ -2519,8 +2519,17 @@ source_set("browser") {
     deps += [ "//media/mojo/mojom" ]
   }
 
+  if (enable_mdns) {
+    sources += [
+      "renderer_host/no_op_mdns_responder.cc",
+      "renderer_host/no_op_mdns_responder.h",
+    ]
+  }
+
   if (is_p2p_enabled) {
     sources += [
+      "renderer_host/p2p/no_op_p2p_socket_manager.cc",
+      "renderer_host/p2p/no_op_p2p_socket_manager.h",
       "renderer_host/p2p/socket_dispatcher_host.cc",
       "renderer_host/p2p/socket_dispatcher_host.h",
     ]

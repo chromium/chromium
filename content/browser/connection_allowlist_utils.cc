@@ -250,4 +250,22 @@ bool FrameConnectionAllowlistAllowsRequestAndReportIfNeeded(
       reporting_source);
 }
 
+bool IsWebRTCAllowedByConnectionAllowlist(RenderFrameHost* frame) {
+  // A speculative RFH doesn't have a PolicyContainerHost, and in theory it
+  // should not be binding WebRTC interfaces while speculative. So fail closed.
+  if (!frame->HasPolicyContainerHost()) {
+    return false;
+  }
+
+  const std::optional<network::ConnectionAllowlist>& enforced_ca =
+      frame->GetConnectionAllowlists().enforced;
+  if (enforced_ca.has_value() &&
+      enforced_ca->webrtc_behavior ==
+          network::ConnectionAllowlist::WebRtcBehavior::kBlock) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace content

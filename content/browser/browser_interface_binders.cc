@@ -27,6 +27,7 @@
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/browser_main_loop.h"
+#include "content/browser/connection_allowlist_utils.h"
 #include "content/browser/contacts/contacts_manager_impl.h"
 #include "content/browser/content_index/content_index_service_impl.h"
 #include "content/browser/cookie_store/cookie_store_manager.h"
@@ -121,6 +122,7 @@
 #include "services/device/public/mojom/vibration_manager.mojom.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "services/metrics/ukm_recorder_factory_impl.h"
+#include "services/network/public/cpp/connection_allowlist.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
@@ -227,6 +229,7 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_P2P_ENABLED)
+#include "content/browser/renderer_host/p2p/no_op_p2p_socket_manager.h"
 #include "services/network/public/mojom/p2p.mojom.h"
 #endif  // BUILDFLAG(IS_P2P_ENABLED)
 
@@ -807,6 +810,17 @@ void BindMediaPlayerObserverClientHandler(
 void BindSocketManager(
     RenderFrameHost* frame,
     mojo::PendingReceiver<network::mojom::P2PSocketManager> receiver) {
+  // If WebRTC is blocked by the document's Connection Allowlist, bind a no-op
+  // P2PSocketManager so that no sockets are ever created, while still letting
+  // the renderer fail gracefully (see NoOpP2PSocketManager). It is possible
+  // that a renderer which does not allow WebRTC could still reach this
+  // interface. TODO(crbug.com/571239543): Disable all WebRTC connections on the
+  // renderer side.
+  if (!IsWebRTCAllowedByConnectionAllowlist(frame)) {
+    NoOpP2PSocketManager::Create(std::move(receiver));
+    return;
+  }
+
   static_cast<RenderProcessHostImpl*>(frame->GetProcess())
       ->BindP2PSocketManager(
           frame->GetIsolationInfoForSubresources().network_anonymization_key(),
@@ -1030,26 +1044,9 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::IdleManager>(
       &BindRenderFrameHostImpl<&RenderFrameHostImpl::BindIdleManager>);
 
-#if BUILDFLAG(IS_P2P_ENABLED) || BUILDFLAG(ENABLE_MDNS)
-  // TODO(447954811): Remove the fenced frames check if we end up supporting
-  // Connection Allowlist for fenced frames.
-  bool should_ban_p2p_for_connection_allowlist =
-      host->HasPolicyContainerHost() &&
-      host->policy_container_host()
-          ->connection_allowlists()
-          .enforced.has_value() &&
-      host->policy_container_host()
-              ->connection_allowlists()
-              .enforced->webrtc_behavior ==
-          network::ConnectionAllowlist::WebRtcBehavior::kBlock &&
-      !host->IsNestedWithinFencedFrame();
-# endif  // BUILDFLAG(IS_P2P_ENABLED) || BUILDFLAG(ENABLE_MDNS)
-
 #if BUILDFLAG(ENABLE_MDNS)
-  if (!should_ban_p2p_for_connection_allowlist) {
-    map->Add<network::mojom::MdnsResponder>(
+  map->Add<network::mojom::MdnsResponder>(
       &BindRenderFrameHostImpl<&RenderFrameHostImpl::CreateMdnsResponder>);
-  }
 #endif  // BUILDFLAG(ENABLE_MDNS)
 
   // BrowserMainLoop::GetInstance() may be null on unit tests.
@@ -1066,18 +1063,7 @@ void PopulateBinderMapWithContext(
           &RenderFrameHostImpl::CreateNotificationService>);
 
 #if BUILDFLAG(IS_P2P_ENABLED)
-  // WebRTC p2p connections are disallowed in fenced frames. Creation of
-  // RTCPeerConnection is already disabled in the renderer, so in theory this
-  // unbound interface should never present an issue.
-  bool should_ban_p2p_for_fenced_frames =
-      base::FeatureList::IsEnabled(
-          blink::features::kFencedFramesLocalUnpartitionedDataAccess) &&
-      host->IsNestedWithinFencedFrame();
-
-  if (!should_ban_p2p_for_fenced_frames &&
-      !should_ban_p2p_for_connection_allowlist) {
-    map->Add<network::mojom::P2PSocketManager>(&BindSocketManager);
-  }
+  map->Add<network::mojom::P2PSocketManager>(&BindSocketManager);
 #endif  // BUILDFLAG(IS_P2P_ENABLED)
 
   map->Add<blink::mojom::PeerConnectionTrackerHost>(
