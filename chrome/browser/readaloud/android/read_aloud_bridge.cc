@@ -42,6 +42,7 @@ int32_t ToJavaPlaybackState(read_aloud::mojom::PlaybackState state) {
     case read_aloud::mojom::PlaybackState::kBuffering:
       return 3;  // PlaybackListener.State.BUFFERING
     case read_aloud::mojom::PlaybackState::kPaused:
+    case read_aloud::mojom::PlaybackState::kEndOfStream:
       return 4;  // PlaybackListener.State.PAUSED
     case read_aloud::mojom::PlaybackState::kPlaying:
       return 5;  // PlaybackListener.State.PLAYING

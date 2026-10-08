@@ -242,7 +242,8 @@ void MockReadAloudPlaybackController::StartTimer() {
 
 void MockReadAloudPlaybackController::OnTimerFired() {
   if (current_boundary_index_ >= word_boundaries_.size()) {
-    Pause();
+    timer_.Stop();
+    UpdatePlaybackState(read_aloud::mojom::PlaybackState::kEndOfStream);
     return;
   }
   TriggerWordBoundary();

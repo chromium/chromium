@@ -1849,8 +1849,9 @@ TEST_F(ReadAloudPlaybackControllerTest, SeekToTimeOnEmptyTimelineIsNoOp) {
   EXPECT_TRUE(controller_remote_.is_connected());
 }
 
-TEST_F(ReadAloudPlaybackControllerTest,
-       SeekToTimeToEndOfDocumentWhileBufferingTransitionsToPausedNotError) {
+TEST_F(
+    ReadAloudPlaybackControllerTest,
+    SeekToTimeToEndOfDocumentWhileBufferingTransitionsToEndOfStreamNotError) {
   CreateSession();
   HoldSynthesisResponses();
   SetSingleTextSegment(u"First sentence. Second sentence.");
@@ -1863,12 +1864,14 @@ TEST_F(ReadAloudPlaybackControllerTest,
   mock_client_->ClearStateHistory();
 
   // Scrubbing to the end of the timeline while buffering must finish playback
-  // cleanly in kPaused rather than misclassifying the empty queue as kError.
+  // cleanly in kEndOfStream rather than misclassifying the empty queue as
+  // kError.
   controller_remote_->SeekToTime(base::Seconds(60));
   FlushAll();
 
-  EXPECT_THAT(mock_client_->state_history(),
-              testing::ElementsAre(read_aloud::mojom::PlaybackState::kPaused));
+  EXPECT_THAT(
+      mock_client_->state_history(),
+      testing::ElementsAre(read_aloud::mojom::PlaybackState::kEndOfStream));
 }
 
 TEST_F(ReadAloudPlaybackControllerTest,

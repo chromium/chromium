@@ -88,7 +88,7 @@ class MockPlaybackControllerTest : public ::testing::Test {
 };
 
 // Verifies a standard playback sequence: initialization -> duration update ->
-// word boundary timer firing -> completion pause.
+// word boundary timer firing -> end of stream notification.
 TEST_F(MockPlaybackControllerTest, PlaybackSequence) {
   mojo::PendingRemote<read_aloud::mojom::ReadAloudPlaybackControllerClient>
       client_remote;
@@ -112,7 +112,8 @@ TEST_F(MockPlaybackControllerTest, PlaybackSequence) {
   controller_.FlushForTesting();
   ::testing::Mock::VerifyAndClearExpectations(client_.get());
 
-  // Step 2: Playback starts, fires boundaries at 0ms and 250ms, then pauses at end.
+  // Step 2: Playback starts, fires boundaries at 0ms and 250ms, then signals
+  // end of stream.
   {
     ::testing::InSequence seq;
     EXPECT_CALL(*client_, OnPlaybackStateChanged(
@@ -120,7 +121,7 @@ TEST_F(MockPlaybackControllerTest, PlaybackSequence) {
     EXPECT_CALL(*client_, OnWordBoundaryReached(0, 0, base::TimeDelta()));
     EXPECT_CALL(*client_, OnWordBoundaryReached(0, 6, base::Milliseconds(250)));
     EXPECT_CALL(*client_, OnPlaybackStateChanged(
-                              read_aloud::mojom::PlaybackState::kPaused));
+                              read_aloud::mojom::PlaybackState::kEndOfStream));
   }
 
   controller_->Play();
@@ -186,8 +187,8 @@ TEST_F(MockPlaybackControllerTest, SeekAndPause) {
   controller_.FlushForTesting();
   ::testing::Mock::VerifyAndClearExpectations(client_.get());
 
-  EXPECT_CALL(*client_,
-              OnPlaybackStateChanged(read_aloud::mojom::PlaybackState::kPaused))
+  EXPECT_CALL(*client_, OnPlaybackStateChanged(
+                            read_aloud::mojom::PlaybackState::kEndOfStream))
       .Times(1);
   task_environment_.FastForwardBy(base::Milliseconds(250));
   ::testing::Mock::VerifyAndClearExpectations(client_.get());

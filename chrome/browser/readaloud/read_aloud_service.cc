@@ -458,11 +458,12 @@ void ReadAloudService::OnPlaybackStateChanged(
     read_aloud::mojom::PlaybackState state) {
   switch (state) {
     case read_aloud::mojom::PlaybackState::kPaused:
+    case read_aloud::mojom::PlaybackState::kBuffering:
+    case read_aloud::mojom::PlaybackState::kPlaying:
+    case read_aloud::mojom::PlaybackState::kEndOfStream:
       // TODO(b/562011435): Utility-initiated pauses do not reach MediaSession.
       // media_session_->NotifyPlaybackPaused() should be called so the OS
       // notification reflects the paused state.
-    case read_aloud::mojom::PlaybackState::kBuffering:
-    case read_aloud::mojom::PlaybackState::kPlaying:
       NotifyPlaybackStateChanged(state);
       return;
     case read_aloud::mojom::PlaybackState::kError:

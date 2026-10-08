@@ -1500,6 +1500,13 @@ TEST_F(ReadAloudServiceTest, UtilityPlaybackStatesReachDelegate) {
   fake_controller()->client()->OnPlaybackStateChanged(
       read_aloud::mojom::PlaybackState::kPaused);
 
+  EXPECT_CALL(
+      *delegate_ptr,
+      OnPlaybackStateChanged(read_aloud::mojom::PlaybackState::kEndOfStream))
+      .Times(1);
+  fake_controller()->client()->OnPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kEndOfStream);
+
   fake_controller()->FlushForTesting();
 
   EXPECT_CALL(*delegate_ptr, OnPlaybackStateChanged(
