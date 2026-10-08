@@ -139,7 +139,11 @@ bool OneTimePermissionsTrackerHelper::ShouldIgnoreOriginForTesting(
   return ShouldIgnoreOrigin(origin);
 }
 
-OneTimePermissionsTrackerHelper::~OneTimePermissionsTrackerHelper() = default;
+OneTimePermissionsTrackerHelper::~OneTimePermissionsTrackerHelper() {
+  MediaCaptureDevicesDispatcher::GetInstance()
+      ->GetMediaStreamCaptureIndicator()
+      ->RemoveObserver(this);
+}
 
 void OneTimePermissionsTrackerHelper::WebContentsDestroyed() {
   MediaCaptureDevicesDispatcher::GetInstance()
@@ -202,9 +206,7 @@ void OneTimePermissionsTrackerHelper::OnIsCapturingAudioChanged(
 
 OneTimePermissionsTrackerHelper::OneTimePermissionsTrackerHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<OneTimePermissionsTrackerHelper>(
-          *web_contents) {
+    : content::WebContentsObserver(web_contents) {
   MediaCaptureDevicesDispatcher::GetInstance()
       ->GetMediaStreamCaptureIndicator()
       ->AddObserver(this);
@@ -215,5 +217,3 @@ OneTimePermissionsTrackerHelper::OneTimePermissionsTrackerHelper(
   OneTimePermissionsPageTracker::MaybeCreateForPage(
       web_contents->GetPrimaryPage());
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(OneTimePermissionsTrackerHelper);

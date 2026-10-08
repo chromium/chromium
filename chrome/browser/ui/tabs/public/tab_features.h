@@ -79,6 +79,7 @@ class MixedContentSettingsTabHelper;
 class NavigationMetricsRecorder;
 class NavigationPredictorPreconnectClient;
 class NewTabPagePreloadPipelineManager;
+class OneTimePermissionsTrackerHelper;
 class PinnedTranslateActionListener;
 class Profile;
 class PwaInstallPageActionController;
@@ -1052,6 +1053,9 @@ class TabFeatures {
 
   std::unique_ptr<MixedContentSettingsTabHelper>
       mixed_content_settings_tab_helper_;
+
+  std::unique_ptr<OneTimePermissionsTrackerHelper>
+      one_time_permissions_tracker_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

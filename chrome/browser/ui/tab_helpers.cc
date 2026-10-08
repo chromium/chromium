@@ -32,7 +32,6 @@
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
-#include "chrome/browser/permissions/one_time_permissions_tracker_helper.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/loading_predictor_tab_helper.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
@@ -266,7 +265,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
             profile));
   }
   ukm::InitializeSourceUrlRecorderForWebContents(web_contents);
-  OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents);
 
   // NO! Do not just add your tab helper here. This is a large alphabetized
   // block; please insert your tab helper above in alphabetical order.

@@ -13,6 +13,7 @@
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/permissions/permission_context_base.h"
+#include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -267,7 +268,7 @@ TEST_F(OneTimePermissionsTrackerTest, LongTimerResetOnUnbackgrounded) {
 }
 
 TEST_F(OneTimePermissionsTrackerTest, PageTrackerLifecycle) {
-  OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents());
+  OneTimePermissionsTrackerHelper helper(web_contents());
 
   const GURL origin_url("https://example.com");
   const url::Origin origin = url::Origin::Create(origin_url);
@@ -292,7 +293,7 @@ TEST_F(OneTimePermissionsTrackerTest, PageTrackerLifecycle) {
 }
 
 TEST_F(OneTimePermissionsTrackerTest, PageTrackerSameOriginNavigation) {
-  OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents());
+  OneTimePermissionsTrackerHelper helper(web_contents());
 
   const GURL origin_url1("https://example.com/page1.html");
   const GURL origin_url2("https://example.com/page2.html");
@@ -327,7 +328,7 @@ TEST_F(OneTimePermissionsTrackerTest, PageTrackerCreatedForExistingPage) {
 
   // Commit a page before the helper is attached.
   NavigateAndCommit(origin_url);
-  OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents());
+  OneTimePermissionsTrackerHelper helper(web_contents());
   EXPECT_EQ(observer.NotifiedCountLastPageClosed(), 0u);
 
   // Navigating to a different origin should deactivate the existing page and
@@ -341,7 +342,7 @@ TEST_F(OneTimePermissionsTrackerTest, PageTrackerCreatedForExistingPage) {
 }
 
 TEST_F(OneTimePermissionsTrackerTest, PageTrackerDiscard) {
-  OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents());
+  OneTimePermissionsTrackerHelper helper(web_contents());
 
   const GURL origin_url("https://example.com");
   const url::Origin origin = url::Origin::Create(origin_url);
@@ -366,9 +367,7 @@ TEST_F(OneTimePermissionsTrackerTest, PageTrackerDiscard) {
 }
 
 TEST_F(OneTimePermissionsTrackerTest, PageTrackerMediaCapture) {
-  OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents());
-  auto* helper =
-      OneTimePermissionsTrackerHelper::FromWebContents(web_contents());
+  OneTimePermissionsTrackerHelper helper(web_contents());
 
   const GURL origin_url("https://example.com");
   const url::Origin origin = url::Origin::Create(origin_url);
@@ -379,10 +378,10 @@ TEST_F(OneTimePermissionsTrackerTest, PageTrackerMediaCapture) {
   factory_tracker->AddObserver(&observer);
 
   NavigateAndCommit(origin_url);
-  helper->OnVisibilityChanged(content::Visibility::HIDDEN);
+  helper.OnVisibilityChanged(content::Visibility::HIDDEN);
 
-  helper->OnIsCapturingVideoChanged(web_contents(), true);
-  helper->OnIsCapturingVideoChanged(web_contents(), false);
+  helper.OnIsCapturingVideoChanged(web_contents(), true);
+  helper.OnIsCapturingVideoChanged(web_contents(), false);
 
   EXPECT_EQ(observer.NotifiedCountCapturingVideoExpired(), 0u);
   task_environment()->FastForwardBy(permissions::kOneTimePermissionTimeout +
@@ -395,7 +394,7 @@ TEST_F(OneTimePermissionsTrackerTest, PageTrackerMediaCapture) {
 
 TEST_F(OneTimePermissionsTrackerTest, PageTrackerPageCreatedInBackground) {
   web_contents()->WasHidden();
-  OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents());
+  OneTimePermissionsTrackerHelper helper(web_contents());
 
   const GURL origin_url("https://example.com");
   const url::Origin origin = url::Origin::Create(origin_url);
@@ -430,7 +429,7 @@ TEST_F(OneTimePermissionsTrackerTest, PageTrackerPageCreatedInBackground) {
 // while the tab is hidden must not restart the running background countdown.
 TEST_F(OneTimePermissionsTrackerTest,
        PageTrackerHiddenNavigationDoesNotResetTimer) {
-  OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents());
+  OneTimePermissionsTrackerHelper helper(web_contents());
 
   const GURL origin_url1("https://example.com/page1.html");
   const GURL origin_url2("https://example.com/page2.html");
@@ -463,9 +462,7 @@ TEST_F(OneTimePermissionsTrackerTest,
 }
 
 TEST_F(OneTimePermissionsTrackerTest, PageTrackerAudioCapture) {
-  OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents());
-  auto* helper =
-      OneTimePermissionsTrackerHelper::FromWebContents(web_contents());
+  OneTimePermissionsTrackerHelper helper(web_contents());
 
   const GURL origin_url("https://example.com");
   const url::Origin origin = url::Origin::Create(origin_url);
@@ -476,10 +473,10 @@ TEST_F(OneTimePermissionsTrackerTest, PageTrackerAudioCapture) {
   factory_tracker->AddObserver(&observer);
 
   NavigateAndCommit(origin_url);
-  helper->OnVisibilityChanged(content::Visibility::HIDDEN);
+  helper.OnVisibilityChanged(content::Visibility::HIDDEN);
 
-  helper->OnIsCapturingAudioChanged(web_contents(), true);
-  helper->OnIsCapturingAudioChanged(web_contents(), false);
+  helper.OnIsCapturingAudioChanged(web_contents(), true);
+  helper.OnIsCapturingAudioChanged(web_contents(), false);
 
   EXPECT_EQ(observer.NotifiedCountCapturingAudioExpired(), 0u);
   task_environment()->FastForwardBy(permissions::kOneTimePermissionTimeout +

@@ -8,7 +8,6 @@
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 namespace url {
 class Origin;
@@ -19,11 +18,11 @@ class Origin;
 // OneTimePermissionProvider to revoke permissions.
 class OneTimePermissionsTrackerHelper
     : public content::WebContentsObserver,
-      public content::WebContentsUserData<OneTimePermissionsTrackerHelper>,
       public MediaStreamCaptureIndicator::Observer {
  public:
   static bool ShouldIgnoreOriginForTesting(const url::Origin& origin);
 
+  explicit OneTimePermissionsTrackerHelper(content::WebContents* webContents);
   ~OneTimePermissionsTrackerHelper() override;
 
   OneTimePermissionsTrackerHelper(const OneTimePermissionsTrackerHelper&) =
@@ -43,12 +42,6 @@ class OneTimePermissionsTrackerHelper
                                  bool is_capturing_video) override;
   void OnIsCapturingAudioChanged(content::WebContents* web_contents,
                                  bool is_capturing_audio) override;
-
- private:
-  explicit OneTimePermissionsTrackerHelper(content::WebContents* webContents);
-  friend class content::WebContentsUserData<OneTimePermissionsTrackerHelper>;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_ONE_TIME_PERMISSIONS_TRACKER_HELPER_H_

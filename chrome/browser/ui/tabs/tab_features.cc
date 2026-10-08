@@ -64,6 +64,7 @@
 #include "chrome/browser/page_info/about_this_site_tab_helper.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/payments/web_payments_observer.h"
+#include "chrome/browser/permissions/one_time_permissions_tracker_helper.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/preloading/bookmarkbar_preload/bookmarkbar_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
@@ -1261,6 +1262,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   // Attach TrustedVaultEncryptionKeysTabHelper to the tab.
   TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(tab.GetContents());
+
+  // Track one-time permissions for the tab.
+  one_time_permissions_tracker_helper_ =
+      std::make_unique<OneTimePermissionsTrackerHelper>(tab.GetContents());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1838,6 +1843,10 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   web_modal::WebContentsModalDialogManager::CreateForWebContents(new_contents);
 
   TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(new_contents);
+
+  one_time_permissions_tracker_helper_.reset();
+  one_time_permissions_tracker_helper_ =
+      std::make_unique<OneTimePermissionsTrackerHelper>(new_contents);
 }
 
 customize_chrome::SidePanelController*

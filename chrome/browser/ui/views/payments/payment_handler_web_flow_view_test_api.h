@@ -33,6 +33,10 @@ class PaymentHandlerWebFlowViewTestApi {
     return controller_->permission_dashboard_view();
   }
 
+  OneTimePermissionsTrackerHelper* one_time_permissions_tracker_helper() {
+    return controller_->one_time_permissions_tracker_helper_.get();
+  }
+
   bool is_indicator_chip_collapse_timer_running() const {
     return controller_->indicator_chip_collapse_timer_.IsRunning();
   }

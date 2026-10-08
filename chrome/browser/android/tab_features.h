@@ -166,6 +166,7 @@ class MediaStateObserver;
 class MixedContentSettingsTabHelper;
 class NavigationMetricsRecorder;
 class NavigationPredictorPreconnectClient;
+class OneTimePermissionsTrackerHelper;
 class OomInterventionTabHelper;
 class PluginObserverAndroid;
 class PolicyAuditorBridge;
@@ -345,6 +346,8 @@ class TabFeatures {
   std::unique_ptr<vr::VrTabHelper> vr_tab_helper_;
   std::unique_ptr<MixedContentSettingsTabHelper>
       mixed_content_settings_tab_helper_;
+  std::unique_ptr<OneTimePermissionsTrackerHelper>
+      one_time_permissions_tracker_helper_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

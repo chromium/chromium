@@ -978,8 +978,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraDisabledTest,
       static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
   content::WebContents* payment_handler_contents =
       web_flow_controller->web_contents();
-  EXPECT_EQ(nullptr, OneTimePermissionsTrackerHelper::FromWebContents(
-                         payment_handler_contents));
+  EXPECT_EQ(
+      nullptr,
+      test_api(web_flow_controller).one_time_permissions_tracker_helper());
   EXPECT_EQ(nullptr, permissions::PermissionRequestManager::FromWebContents(
                          payment_handler_contents));
   EXPECT_NE(nullptr, PaymentHandlerWebFlowViewController::FromWebContents(
@@ -1047,8 +1048,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
   // from a nested pop-up window persisting through this session) and a
   // PermissionRequestManager (for permission prompting and indicators) on its
   // WebContents.
-  EXPECT_NE(nullptr, OneTimePermissionsTrackerHelper::FromWebContents(
-                         payment_handler_contents));
+  EXPECT_NE(
+      nullptr,
+      test_api(web_flow_controller).one_time_permissions_tracker_helper());
   EXPECT_NE(nullptr, permissions::PermissionRequestManager::FromWebContents(
                          payment_handler_contents));
 

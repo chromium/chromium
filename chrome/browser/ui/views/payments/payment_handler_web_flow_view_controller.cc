@@ -331,7 +331,8 @@ void PaymentHandlerWebFlowViewController::FillContentView(
                 ->GetMediaStreamCaptureIndicator()) {
       indicator_observation_.Observe(indicator.get());
     }
-    OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents());
+    one_time_permissions_tracker_helper_ =
+        std::make_unique<OneTimePermissionsTrackerHelper>(web_contents());
     permissions::PermissionRequestManager::CreateForWebContents(web_contents());
     permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
         web_contents());

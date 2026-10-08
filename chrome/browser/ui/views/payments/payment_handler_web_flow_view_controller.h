@@ -37,6 +37,7 @@
 #include "url/gurl.h"
 
 class LocationBarModel;
+class OneTimePermissionsTrackerHelper;
 class PermissionDashboardView;
 class PermissionPromptChipModel;
 class Profile;
@@ -262,6 +263,8 @@ class PaymentHandlerWebFlowViewController
   base::OneShotTimer indicator_dismiss_timer_;
   base::OneShotTimer delay_prompt_timer_;
   std::unique_ptr<PermissionPromptChipModel> chip_model_;
+  std::unique_ptr<OneTimePermissionsTrackerHelper>
+      one_time_permissions_tracker_helper_;
   std::unique_ptr<permissions::PermissionIndicatorsTabData>
       permission_indicators_tab_data_;
   base::WeakPtr<PaymentHandlerProgressBar> progress_bar_;

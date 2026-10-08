@@ -1391,7 +1391,6 @@ source_set("tab_helpers_impl") {
     "//chrome/browser/page_info",
     "//chrome/browser/page_load_metrics",
     "//chrome/browser/password_manager",
-    "//chrome/browser/permissions",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/predictors",
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
