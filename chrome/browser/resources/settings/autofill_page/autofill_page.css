@@ -1,0 +1,72 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../settings_shared_lit.css.js
+ * #include=settings-shared-lit
+ * #css_wrapper_metadata_end */
+
+#title {
+  color: var(--cr-primary-text-color);
+  font-size: 1.375rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  margin-bottom: 8px;
+  margin-top: 24px;
+  outline: none;
+  text-align: center;
+}
+
+#subtitle {
+  font-size: 0.813rem;
+  line-height: 1.25rem;
+  margin: 8px auto 4px auto;
+  max-width: 400px;
+  text-align: center;
+}
+
+.section-header {
+  color: var(--cr-primary-text-color);
+  font-size: 0.88rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  margin-bottom: 12px;
+  margin-top: var(--cr-section-vertical-margin);
+  outline: none;
+  padding-bottom: 4px;
+  padding-top: 8px;
+}
+
+.card-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+#suggestionsFromGeminiCard {
+  background-color: var(--cr-card-background-color);
+  border-radius: var(--cr-card-border-radius);
+  box-shadow: var(--cr-card-shadow);
+  overflow: hidden;
+}
+
+#suggestionsFromGeminiCard hr {
+  border: none;
+  border-top: 1px solid var(--cr-separator-color);
+  margin: -1px var(--cr-section-padding) 0;
+}
+
+#suggestionsFromGeminiSubLabel {
+  align-items: center;
+  color: var(--cr-secondary-text-color);
+  column-gap: 8px;
+  display: flex;
+  font-size: 12px;
+  padding: 16px var(--cr-section-padding);
+}
+
+#suggestionsFromGeminiSubLabel cr-icon {
+  margin-inline-start: 2px;
+}

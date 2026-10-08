@@ -581,6 +581,8 @@ build_webui("build") {
     "autofill_page/account_card.css",
     "autofill_page/autofill_ai_add_or_edit_dialog.css",
     "autofill_page/autofill_ai_entries_list.css",
+    "autofill_page/autofill_page.css",
+    "autofill_page/autofill_page_index.css",
     "autofill_page/autofill_shared.css",
     "autofill_page/autofill_shared_lit.css",
     "autofill_page/category_reference_card.css",

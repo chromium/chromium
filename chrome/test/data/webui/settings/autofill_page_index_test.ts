@@ -9,7 +9,6 @@ import {AiEnterpriseFeaturePrefName} from 'chrome://settings/lazy_load.js';
 import type {SettingsAutofillPageIndexElement} from 'chrome://settings/settings.js';
 import {loadTimeData, ModelExecutionEnterprisePolicyValue, PrefsBrowserProxy, PrefService, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {getContactInfoPrefs} from './contact_info_page_test_utils.js';
@@ -79,7 +78,7 @@ suite('AutofillPageIndex', function() {
     await PrefService.getInstance().whenInitialized();
   });
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     loadTimeData.overrideValues({
@@ -90,7 +89,7 @@ suite('AutofillPageIndex', function() {
 
     index = document.createElement('settings-autofill-page-index');
     document.body.appendChild(index);
-    return flushTasks();
+    await microtasksFinished();
   });
 
   test('Routing', async function() {
@@ -140,7 +139,7 @@ suite('AutofillPageIndex', function() {
 
     index = document.createElement('settings-autofill-page-index');
     document.body.appendChild(index);
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(undefined, routes.SUGGESTIONS_FROM_GEMINI);
     const subpage = index.$.viewManager.querySelector('#suggestionsFromGemini');
@@ -156,7 +155,7 @@ suite('AutofillPageIndex', function() {
 
     index = document.createElement('settings-autofill-page-index');
     document.body.appendChild(index);
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(undefined, routes.SHOPPING);
     const subpage = index.$.viewManager.querySelector('#shopping');

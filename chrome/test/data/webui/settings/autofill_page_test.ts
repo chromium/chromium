@@ -9,9 +9,8 @@ import {AiEnterpriseFeaturePrefName, AutofillManagerImpl, EntityDataManagerProxy
 import type {SettingsAutofillPageElement} from 'chrome://settings/settings.js';
 import {loadTimeData, MetricsBrowserProxyImpl, ModelExecutionEnterprisePolicyValue, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerPage, PrefsBrowserProxy, PrefService, resetRouterForTesting, Router, YourSavedInfoDataCategory, YourSavedInfoDataChip, YourSavedInfoRelatedService} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createAddressEntry, createCreditCardEntry, createIbanEntry, createPayOverTimeIssuerEntry, TestAutofillManager, TestPaymentsManager} from './autofill_fake_data.js';
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
@@ -85,12 +84,12 @@ suite('AutofillPage', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     autofillPage = document.createElement('settings-autofill-page');
     document.body.appendChild(autofillPage);
-    await flushTasks();
+    await microtasksFinished();
   }
 
   function getChipCount(chipLabel: string): number|undefined {
-    const cards = autofillPage.shadowRoot!.querySelectorAll(
-        'category-reference-card');
+    const cards =
+        autofillPage.shadowRoot.querySelectorAll('category-reference-card');
     for (const card of cards) {
       const chips = card.shadowRoot.querySelectorAll('cr-button');
       for (const chip of chips) {
@@ -110,7 +109,7 @@ suite('AutofillPage', function() {
 
   test('TitleExists', function() {
     const autofillPageTitleElement =
-        autofillPage.shadowRoot!.querySelector('#autofillPageTitle');
+        autofillPage.shadowRoot.querySelector('#autofillPageTitle');
     assertTrue(!!autofillPageTitleElement);
   });
 
@@ -119,15 +118,14 @@ suite('AutofillPage', function() {
       shoppingIntegrationEnabled: false,
     });
 
-    const shoppingCard =
-        autofillPage.shadowRoot!.querySelector<HTMLElement>(
-            '#shoppingManagerButton');
+    const shoppingCard = autofillPage.shadowRoot.querySelector<HTMLElement>(
+        '#shoppingManagerButton');
     assertFalse(!!shoppingCard);
   });
 
   test('CardsRenderCorrectly', function() {
-    const cards = autofillPage.shadowRoot!.querySelectorAll(
-        'category-reference-card');
+    const cards =
+        autofillPage.shadowRoot.querySelectorAll('category-reference-card');
     const expectedCardTitles = [
       loadTimeData.getString('localPasswordManager'),
       loadTimeData.getString('paymentsTitle'),
@@ -144,10 +142,9 @@ suite('AutofillPage', function() {
   });
 
   test('passwordsCardOpensPasswordManager', async function() {
-    const passwordsCard =
-        autofillPage.shadowRoot!.querySelector<HTMLElement>(`
+    const passwordsCard = autofillPage.shadowRoot.querySelector<HTMLElement>(`
         category-reference-card[card-title="${
-            loadTimeData.getString('localPasswordManager')}"]`);
+        loadTimeData.getString('localPasswordManager')}"]`);
     assertTrue(!!passwordsCard);
 
     passwordsCard.shadowRoot!.querySelector<HTMLElement>(
@@ -195,7 +192,7 @@ suite('AutofillPage', function() {
    },
   ].forEach(({cardTitle, expectedRoute, expectedCategory}) => {
     test(`${cardTitle} card navigates to the correct route`, async function() {
-      const card = autofillPage.shadowRoot!.querySelector<HTMLElement>(
+      const card = autofillPage.shadowRoot.querySelector<HTMLElement>(
           `category-reference-card[card-title="${
               loadTimeData.getString(cardTitle)}"]`);
       assertTrue(!!card);
@@ -235,7 +232,7 @@ suite('AutofillPage', function() {
     const payOverTimeIssuerList = [createPayOverTimeIssuerEntry()];
     autofillManager.lastCallback.setPersonalDataManagerListener!
         (addressList, cardList, ibanList, payOverTimeIssuerList);
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(2, getChipCount(loadTimeData.getString('addresses')));
     assertEquals(
@@ -248,7 +245,7 @@ suite('AutofillPage', function() {
   });
 
   test('ClickOnChipNavigatesToLeafPage', async function() {
-    const card = autofillPage.shadowRoot!.querySelector<HTMLElement>(
+    const card = autofillPage.shadowRoot.querySelector<HTMLElement>(
         `category-reference-card[card-title="${
             loadTimeData.getString('contactInfoTitle')}"]`);
     assertTrue(!!card);
@@ -270,7 +267,7 @@ suite('AutofillPage', function() {
   });
 
   test('ClickOnShoppingChipNavigatesToLeafPage', async function() {
-    const card = autofillPage.shadowRoot!.querySelector<HTMLElement>(
+    const card = autofillPage.shadowRoot.querySelector<HTMLElement>(
         `category-reference-card[card-title="${
             loadTimeData.getString('shoppingCardTitle')}"]`);
     assertTrue(!!card);
@@ -297,21 +294,21 @@ suite('AutofillPage', function() {
       showSuggestionsFromGeminiSettings: false,
     });
 
-    const geminiCard = autofillPage.shadowRoot!.querySelector<HTMLElement>(
+    const geminiCard = autofillPage.shadowRoot.querySelector<HTMLElement>(
         '#suggestionsFromGeminiCard');
     assertFalse(!!geminiCard);
   });
 
   test('SuggestionsFromGeminiCardNavigates', async function() {
-    const geminiCard = autofillPage.shadowRoot!.querySelector<HTMLElement>(
+    const geminiCard = autofillPage.shadowRoot.querySelector<HTMLElement>(
         '#suggestionsFromGeminiCard');
     assertTrue(!!geminiCard);
 
-    const button = autofillPage.shadowRoot!.querySelector<HTMLElement>(
+    const button = autofillPage.shadowRoot.querySelector<HTMLElement>(
         '#suggestionsFromGeminiLinkRow');
     assertTrue(!!button);
 
-    const icon = autofillPage.shadowRoot!.querySelector<CrIconElement>(
+    const icon = autofillPage.shadowRoot.querySelector<CrIconElement>(
         '#suggestionsFromGeminiSubLabel cr-icon');
     assertTrue(!!icon);
     // <if expr="_google_chrome">
@@ -385,7 +382,7 @@ suite('DataChipsVisibility', function() {
     const autofillPage: SettingsAutofillPageElement =
         document.createElement('settings-autofill-page');
     document.body.appendChild(autofillPage);
-    await flushTasks();
+    await microtasksFinished();
     return autofillPage;
   }
 
@@ -393,7 +390,7 @@ suite('DataChipsVisibility', function() {
       autofillPage: SettingsAutofillPageElement,
       cardSelector: string): string[] {
     const card =
-        autofillPage.shadowRoot!.querySelector<HTMLElement>(cardSelector);
+        autofillPage.shadowRoot.querySelector<HTMLElement>(cardSelector);
     assertTrue(!!card);
     const chips: HTMLElement[] =
         Array.from(card.shadowRoot!.querySelectorAll('cr-button'));
@@ -470,7 +467,7 @@ suite('DataChipsVisibility', function() {
     });
     autofillManager.lastCallback.setPersonalDataManagerListener!
         ([], [], [createIbanEntry()], []);
-    await flushTasks();
+    await microtasksFinished();
 
     assertDeepEquals(
         [
@@ -595,8 +592,7 @@ suite('RelatedServices', function() {
   });
 
   async function testRowOpensUrl(selector: string, urlStringId: string) {
-    const row =
-        autofillPage.shadowRoot!.querySelector<HTMLElement>(selector);
+    const row = autofillPage.shadowRoot.querySelector<HTMLElement>(selector);
     assertTrue(!!row);
     row.click();
     const url = await openWindowProxy.whenCalled('openUrl');
@@ -605,7 +601,7 @@ suite('RelatedServices', function() {
 
   test('CardRendersCorrectly', function() {
     const relatedServicesCard =
-        autofillPage.shadowRoot!.querySelector<HTMLElement>(
+        autofillPage.shadowRoot.querySelector<HTMLElement>(
             `settings-section[page-title="${
                 loadTimeData.getString(
                     'yourSavedInfoRelatedServicesTitle')}"]`);
@@ -624,7 +620,7 @@ suite('RelatedServices', function() {
 
   test('PasswordManagerRowOpensPasswordManager', async function() {
     const passwordManagerRow =
-        autofillPage.shadowRoot!.querySelector<HTMLElement>(
+        autofillPage.shadowRoot.querySelector<HTMLElement>(
             '#passwordManagerButton');
     assertTrue(!!passwordManagerRow);
     passwordManagerRow.click();

@@ -1,68 +1,3 @@
-<style include="settings-shared">
-  #title {
-    color: var(--cr-primary-text-color);
-    font-size: 1.375rem;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    margin-bottom: 8px;
-    margin-top: 24px;
-    outline: none;
-    text-align: center;
-  }
-
-  #subtitle {
-    font-size: 0.813rem;
-    line-height: 1.25rem;
-    margin: 8px auto 4px auto;
-    max-width: 400px;
-    text-align: center;
-  }
-
-  .section-header {
-    color: var(--cr-primary-text-color);
-    font-size: 0.88rem;
-    font-weight: 400;
-    letter-spacing: 0.02em;
-    margin-bottom: 12px;
-    margin-top: var(--cr-section-vertical-margin);
-    outline: none;
-    padding-bottom: 4px;
-    padding-top: 8px;
-  }
-
-  .card-container {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  #suggestionsFromGeminiCard {
-    background-color: var(--cr-card-background-color);
-    border-radius: var(--cr-card-border-radius);
-    box-shadow: var(--cr-card-shadow);
-    overflow: hidden;
-  }
-
-  #suggestionsFromGeminiCard hr {
-    border: none;
-    border-top: 1px solid var(--cr-separator-color);
-    margin: -1px var(--cr-section-padding) 0;
-  }
-
-  #suggestionsFromGeminiSubLabel {
-    align-items: center;
-    color: var(--cr-secondary-text-color);
-    column-gap: 8px;
-    display: flex;
-    font-size: 12px;
-    padding: 16px var(--cr-section-padding);
-  }
-
-  #suggestionsFromGeminiSubLabel cr-icon {
-    margin-inline-start: 2px;
-  }
-</style>
-
 <h1 id="title">$i18n{autofillPageTitle}</h1>
 <div id="subtitle" class="secondary">$i18n{yourSavedInfoPageDescription}</div>
 <settings-account-card></settings-account-card>
@@ -70,53 +5,53 @@
 <h2 id="autofillPageTitle" class="section-header">
   $i18n{autofillPageTitle}
 </h2>
-<div class="card-container" on-data-category-click="onDataCategoryClick_"
-    on-data-chip-click="onDataChipClick_">
+<div class="card-container" @data-category-click="${this.onDataCategoryClick_}"
+    @data-chip-click="${this.onDataChipClick_}">
   <category-reference-card card-title="$i18n{localPasswordManager}"
       is-external
-      category-id="[[hierarchy_.passwordManager.id]]"
-      chips="[[getVisibleChips_(hierarchy_.passwordManager.chips)]]">
+      .categoryId="${this.hierarchy_.passwordManager.id}"
+      .chips="${this.getVisibleChips_(this.hierarchy_.passwordManager.chips)}">
   </category-reference-card>
   <category-reference-card id="paymentManagerButton"
       card-title="$i18n{paymentsTitle}"
-      category-id="[[hierarchy_.payments.id]]"
-      chips="[[getVisibleChips_(hierarchy_.payments.chips)]]">
+      .categoryId="${this.hierarchy_.payments.id}"
+      .chips="${this.getVisibleChips_(this.hierarchy_.payments.chips)}">
   </category-reference-card>
   <category-reference-card id="addressesManagerButton"
       card-title="$i18n{contactInfoTitle}"
-      category-id="[[hierarchy_.contactInfo.id]]"
-      chips="[[getVisibleChips_(hierarchy_.contactInfo.chips)]]">
+      .categoryId="${this.hierarchy_.contactInfo.id}"
+      .chips="${this.getVisibleChips_(this.hierarchy_.contactInfo.chips)}">
   </category-reference-card>
   <category-reference-card id="identityManagerButton"
       card-title="$i18n{identityDocsCardTitle}"
-      category-id="[[hierarchy_.identityDocs.id]]"
-      chips="[[getVisibleChips_(hierarchy_.identityDocs.chips)]]">
+      .categoryId="${this.hierarchy_.identityDocs.id}"
+      .chips="${this.getVisibleChips_(this.hierarchy_.identityDocs.chips)}">
   </category-reference-card>
   <category-reference-card id="travelManagerButton"
       card-title="$i18n{travelCardTitle}"
-      category-id="[[hierarchy_.travel.id]]"
-      chips="[[getVisibleChips_(hierarchy_.travel.chips)]]">
+      .categoryId="${this.hierarchy_.travel.id}"
+      .chips="${this.getVisibleChips_(this.hierarchy_.travel.chips)}">
   </category-reference-card>
-  <template is="dom-if" if="[[isShoppingEnabled_]]">
+  ${this.isShoppingEnabled_ ? html`
     <category-reference-card id="shoppingManagerButton"
         card-title="$i18n{shoppingCardTitle}"
-        category-id="[[hierarchy_.shopping.id]]"
-        chips="[[getVisibleChips_(hierarchy_.shopping.chips)]]">
+        .categoryId="${this.hierarchy_.shopping.id}"
+        .chips="${this.getVisibleChips_(this.hierarchy_.shopping.chips)}">
     </category-reference-card>
-  </template>
-  <template is="dom-if" if="[[showSuggestionsFromGeminiSettings_]]">
+  ` : ''}
+  ${this.showSuggestionsFromGeminiSettings_ ? html`
     <div id="suggestionsFromGeminiCard">
       <cr-link-row id="suggestionsFromGeminiLinkRow"
-        label="$i18n{autofillPersonalContextSettingsTitle}"
-        on-click="onSuggestionsFromGeminiClick_">
+          label="$i18n{autofillPersonalContextSettingsTitle}"
+          @click="${this.onSuggestionsFromGeminiClick_}">
       </cr-link-row>
       <hr>
       <div id="suggestionsFromGeminiSubLabel" class="secondary">
-        <cr-icon icon="[[spark_]]" aria-hidden="true"></cr-icon>
+        <cr-icon icon="${this.spark_}" aria-hidden="true"></cr-icon>
         $i18n{autofillPersonalContextSettingsSummary}
       </div>
     </div>
-  </template>
+  ` : ''}
 </div>
 
 <settings-section page-title="$i18n{yourSavedInfoAutofillSettingsLabel}">
@@ -126,15 +61,15 @@
 <settings-section page-title="$i18n{yourSavedInfoRelatedServicesTitle}">
   <div route-path="default">
     <cr-link-row id="passwordManagerButton" label="$i18n{localPasswordManager}"
-        on-click="onPasswordManagerRelatedServiceClick_"
+        @click="${this.onPasswordManagerRelatedServiceClick_}"
         start-icon="cr20:password-manager" external>
     </cr-link-row>
     <cr-link-row id="googleWalletButton" label="$i18n{googleWalletTitle}"
-        on-click="onGoogleWalletRelatedServiceClick_"
+        @click="${this.onGoogleWalletRelatedServiceClick_}"
         start-icon="settings20:wallet" external>
     </cr-link-row>
     <cr-link-row id="googleAccountButton" label="$i18n{googleAccount}"
-        on-click="onGoogleAccountRelatedServiceClick_"
+        @click="${this.onGoogleAccountRelatedServiceClick_}"
         start-icon="settings20:google" external>
     </cr-link-row>
   </div>

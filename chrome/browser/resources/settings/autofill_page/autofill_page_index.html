@@ -1,12 +1,5 @@
-<style include="settings-shared">
-  cr-view-manager [hidden-by-search],
-  cr-view-manager[show-all] [slot=view][data-parent-view-id] {
-    display: none;
-  }
-</style>
-
 <cr-view-manager id="viewManager" class="cr-centered-card-container"
-    show-all$="[[shouldShowAll]]">
+    ?show-all="${this.shouldShowAll}">
 
   <settings-autofill-page slot="view" id="parent">
   </settings-autofill-page>
@@ -33,16 +26,16 @@
       data-parent-view-id="parent">
   </settings-travel-page>
 
-  <template is="dom-if" if="[[isShoppingEnabled_]]">
+  ${this.isShoppingEnabled_ ? html`
     <settings-shopping-page slot="view" id="shopping"
         data-parent-view-id="parent">
     </settings-shopping-page>
-  </template>
+  ` : ''}
 
-  <template is="dom-if" if="[[showSuggestionsFromGeminiSettings_]]">
+  ${this.showSuggestionsFromGeminiSettings_ ? html`
     <settings-suggestions-from-gemini-page slot="view"
         id="suggestionsFromGemini" data-parent-view-id="parent">
     </settings-suggestions-from-gemini-page>
-  </template>
+  ` : ''}
 
 </cr-view-manager>
