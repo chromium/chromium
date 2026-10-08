@@ -55,6 +55,16 @@ public class FlatTabListDataProvider extends TabListDataProvider {
                     }
 
                     @Override
+                    public void didMoveTab(Tab tab, int newIndex, int curIndex) {
+                        // Grouped tab moves and intra-group reorders are handled by
+                        // mTabGroupObserver; moveTabItem reorders standalone tabs when matching the
+                        // active filter.
+                        if (tab.getTabGroupId() == null) {
+                            moveTabItem(tab.getId());
+                        }
+                    }
+
+                    @Override
                     public void didRemoveTabForClosure(Tab tab) {
                         removeTabItem(tab.getId());
                     }
@@ -69,8 +79,8 @@ public class FlatTabListDataProvider extends TabListDataProvider {
                         requestDataReset();
                     }
 
-                    // TODO(crbug.com/562590772): Add incremental TabModelObserver callbacks for tab
-                    // moves and selection.
+                    // TODO(crbug.com/562590772): Add incremental TabModelObserver callbacks for
+                    // tab selection.
                 };
 
         TabGroupObserver tabGroupObserver =
@@ -78,6 +88,12 @@ public class FlatTabListDataProvider extends TabListDataProvider {
                     @Override
                     public void didMergeTabToGroup(Tab movedTab, boolean isDestinationTab) {
                         syncTabItem(movedTab);
+                    }
+
+                    @Override
+                    public void didMoveWithinGroup(
+                            Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
+                        moveTabItem(movedTab.getId());
                     }
 
                     @Override
