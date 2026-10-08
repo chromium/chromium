@@ -5354,6 +5354,7 @@ enum WebFeature {
   kDecisionModel_Destroy = 6037,
   kSVGPathElementGetPathSegmentAtLength = 6038,
   kOpaqueRangeDisconnect = 6039,
+  kHTMLSelectedContentElement = 6040,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

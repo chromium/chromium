@@ -8,16 +8,20 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
 HTMLSelectedContentElement::HTMLSelectedContentElement(Document& document)
-    : HTMLElement(html_names::kSelectedcontentTag, document) {}
+    : HTMLElement(html_names::kSelectedcontentTag, document) {
+  UseCounter::Count(document, WebFeature::kHTMLSelectedContentElement);
+}
 
 void HTMLSelectedContentElement::CloneContentsFromOptionElement(
     const HTMLOptionElement* option) {
