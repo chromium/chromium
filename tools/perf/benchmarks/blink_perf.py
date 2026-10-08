@@ -126,17 +126,19 @@ def AddScriptToPage(page, script):
 
 
 def _CreateMergedEventsBoundaries(events, max_start_time):
-  """Merge events with the given |event_name| and return a list of MergedEvent
-  objects. All events that are overlapping are megred together. Same as a union
-  operation.
+  """Merge events with the given |event_name| on a single thread and return a
+  list of MergedEvent objects. All events that are overlapping are merged
+  together. Same as a union operation.
 
   Note: When merging multiple events, we approximate the thread_duration:
   duration = (last.thread_start + last.thread_duration) - first.thread_start
+  All |events| must belong to the same thread so their thread_start clocks are
+  comparable.
 
   Args:
-    events: a list of TimelineEvents
+    events: an iterable of TimelineEvents from a single thread
     max_start_time: the maximum time that a TimelineEvent's start value can be.
-    Events past this this time will be ignored.
+    Events past this time will be ignored.
 
   Returns:
     a sorted list of MergedEvent objects which contain a Bounds object of the
@@ -156,7 +158,7 @@ def _CreateMergedEventsBoundaries(events, max_start_time):
     # Handle events where thread duration is None (async events).
     thread_start = None
     thread_end = None
-    if event.thread_start and event.thread_duration:
+    if event.thread_start is not None and event.thread_duration is not None:
       thread_start = event.thread_start
       thread_end = event.thread_start + event.thread_duration
     event_boundaries.append(EventBoundary("start", event.start, thread_start))
@@ -182,12 +184,14 @@ def _CreateMergedEventsBoundaries(events, max_start_time):
       curr_bounds.AddValue(event_boundary.wall_time)
       curr_thread_start = event_boundary.thread_time
       continue
-    # Create a the final bounds and thread duration when our event grouping
+    # Create the final bounds and thread duration when our event grouping
     # is over.
     if event_counter == 0:
       curr_bounds.AddValue(event_boundary.wall_time)
       thread_or_wall_duration = curr_bounds.bounds
-      if curr_thread_start and event_boundary.thread_time:
+      if (
+        curr_thread_start is not None and event_boundary.thread_time is not None
+      ):
         thread_or_wall_duration = event_boundary.thread_time - curr_thread_start
       merged_event_boundaries.append(
         MergedEvent(curr_bounds, thread_or_wall_duration)
@@ -229,43 +233,46 @@ def _ComputeTraceEventsThreadTimeForBlinkPerf(
     return trace_cpu_time_metrics
 
   for event_name in trace_events_to_measure:
-    merged_event_boundaries = _CreateMergedEventsBoundaries(
-      model.IterAllEventsOfName(event_name), test_runs_bounds[-1].max
-    )
-
-    curr_test_runs_bound_index = 0
-    for b in merged_event_boundaries:
-      if b.bounds.bounds == 0:
-        continue
-      # Fast forward (if needed) to the first relevant test.
-      while (
-        curr_test_runs_bound_index < len(test_runs_bounds)
-        and b.bounds.min > test_runs_bounds[curr_test_runs_bound_index].max
-      ):
-        curr_test_runs_bound_index += 1
-      if curr_test_runs_bound_index >= len(test_runs_bounds):
-        break
-      # Add metrics for all intersecting tests, as there may be multiple
-      # tests that intersect with the event bounds.
-      start_index = curr_test_runs_bound_index
-      while curr_test_runs_bound_index < len(
-        test_runs_bounds
-      ) and b.bounds.Intersects(test_runs_bounds[curr_test_runs_bound_index]):
-        intersect_wall_time = bounds.Bounds.GetOverlapBetweenBounds(
-          test_runs_bounds[curr_test_runs_bound_index], b.bounds
-        )
-        intersect_cpu_or_wall_time = (
-          intersect_wall_time * b.thread_or_wall_duration / b.bounds.bounds
-        )
-        trace_cpu_time_metrics[event_name][curr_test_runs_bound_index] += (
-          intersect_cpu_or_wall_time
-        )
-        curr_test_runs_bound_index += 1
-      # Rewind to the last intersecting test as it might intersect with the
-      # next event.
-      curr_test_runs_bound_index = max(
-        start_index, curr_test_runs_bound_index - 1
+    # Merge overlapping events per thread so we never subtract thread_start of
+    # one thread's CPU clock from thread_end of another thread's CPU clock.
+    for thread in model.GetAllThreads():
+      merged_event_boundaries = _CreateMergedEventsBoundaries(
+        thread.IterAllEventsOfName(event_name), test_runs_bounds[-1].max
       )
+
+      curr_test_runs_bound_index = 0
+      for b in merged_event_boundaries:
+        if b.bounds.bounds == 0:
+          continue
+        # Fast forward (if needed) to the first relevant test.
+        while (
+          curr_test_runs_bound_index < len(test_runs_bounds)
+          and b.bounds.min > test_runs_bounds[curr_test_runs_bound_index].max
+        ):
+          curr_test_runs_bound_index += 1
+        if curr_test_runs_bound_index >= len(test_runs_bounds):
+          break
+        # Add metrics for all intersecting tests, as there may be multiple
+        # tests that intersect with the event bounds.
+        start_index = curr_test_runs_bound_index
+        while curr_test_runs_bound_index < len(
+          test_runs_bounds
+        ) and b.bounds.Intersects(test_runs_bounds[curr_test_runs_bound_index]):
+          intersect_wall_time = bounds.Bounds.GetOverlapBetweenBounds(
+            test_runs_bounds[curr_test_runs_bound_index], b.bounds
+          )
+          intersect_cpu_or_wall_time = (
+            intersect_wall_time * b.thread_or_wall_duration / b.bounds.bounds
+          )
+          trace_cpu_time_metrics[event_name][curr_test_runs_bound_index] += (
+            intersect_cpu_or_wall_time
+          )
+          curr_test_runs_bound_index += 1
+        # Rewind to the last intersecting test as it might intersect with the
+        # next event.
+        curr_test_runs_bound_index = max(
+          start_index, curr_test_runs_bound_index - 1
+        )
   return trace_cpu_time_metrics
 
 

@@ -459,3 +459,37 @@ class ComputeTraceEventsMetricsForBlinkPerfTest(unittest.TestCase):
       ),
       {'foo': [100, 100], 'bar': [100, 100]},
     )
+
+  def testTraceEventMetricsOverlappingCrossProcesses(self):
+    model = model_module.TimelineModel()
+    renderer_main = model.GetOrCreateProcess(1).GetOrCreateThread(2)
+    renderer_main.name = 'CrRendererMain'
+
+    other_thread = model.GetOrCreateProcess(2).GetOrCreateThread(4)
+
+    # Set up two threads with independent thread-specific CPU clocks whose
+    # 'foo' events overlap in wall time:
+    # P1  [          blink_perf.runTest           ]
+    #     |     [      foo (CPU dur: 50)     ]    |
+    # P2  |           [   foo (CPU dur: 20)     ] |
+    #     |     |     |                      |  | |
+    #    100   120   150                    200 220 300
+    #
+    # P1 thread_time: [5000, 5050] (starts first in wall time)
+    # P2 thread_time: [10, 30]     (ends last in wall time)
+    # Merging across threads would subtract 30 - 5000 = -4970.
+    # Merging per thread sums each thread's CPU duration: 50 + 20 = 70.
+    self._AddBlinkTestSlice(renderer_main, 100, 300)
+
+    renderer_main.BeginSlice('blink', 'foo', 120, 5000)
+    renderer_main.EndSlice(200, 5050)
+
+    other_thread.BeginSlice('blink', 'foo', 150, 10)
+    other_thread.EndSlice(220, 30)
+
+    self.assertEqual(
+      blink_perf._ComputeTraceEventsThreadTimeForBlinkPerf(
+        model, renderer_main, ['foo']
+      ),
+      {'foo': [70]},
+    )
