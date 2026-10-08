@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/weak_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_mock_clock_override.h"
@@ -12,6 +13,9 @@
 #import "base/time/time.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "components/sync/test/test_sync_service.h"
+#import "components/tab_groups/tab_group_color.h"
+#import "components/tab_groups/tab_group_id.h"
+#import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service_factory.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/fake_browser_view_controller.h"
@@ -25,11 +29,13 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
@@ -448,6 +454,25 @@ TEST_F(TabGridCoordinatorTest, CrossModeTransitionFromIncognitoToRegular) {
       base::test::ios::kWaitForUIElementTimeout, ^bool() {
         return coordinator_.tabGridActive;
       }));
+}
+
+// Tests that requesting the recent activity of a tab group that has already
+// been destroyed doesn't present anything.
+TEST_F(TabGridCoordinatorTest, ShowRecentActivityForDestroyedGroup) {
+  auto tab_group = std::make_unique<TabGroup>(
+      tab_groups::TabGroupId::GenerateNew(),
+      tab_groups::TabGroupVisualData(u"Group",
+                                     tab_groups::TabGroupColorId::kGrey));
+  base::WeakPtr<const TabGroup> weak_tab_group = tab_group->GetWeakPtr();
+  tab_group.reset();
+  ASSERT_FALSE(weak_tab_group);
+  ASSERT_FALSE(GetViewController().presentedViewController);
+
+  id<TabGroupsCommands> tab_groups_handler =
+      HandlerForProtocol(browser_->GetCommandDispatcher(), TabGroupsCommands);
+  [tab_groups_handler showRecentActivityForGroup:weak_tab_group];
+
+  EXPECT_FALSE(GetViewController().presentedViewController);
 }
 
 }  // namespace

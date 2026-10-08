@@ -433,6 +433,9 @@ using collaboration::CollaborationControllerDelegate;
 }
 
 - (void)showRecentActivityForGroup:(base::WeakPtr<const TabGroup>)tabGroup {
+  if (!tabGroup) {
+    return;
+  }
   _tabGroupRecentActivityCoordinator = [[RecentActivityCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
