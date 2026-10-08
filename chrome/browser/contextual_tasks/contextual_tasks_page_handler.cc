@@ -14,8 +14,6 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "chrome/browser/actor/actor_actions_runner.h"
-#include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/ai_mode_context_library_converter.h"
@@ -46,7 +44,6 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #endif
 #include "chrome/common/pref_names.h"
-#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_tasks/public/context_decoration_params.h"
@@ -60,11 +57,8 @@
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/logger.h"
-#include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/prefs/pref_service.h"
-#include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
-#include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_handle_factory.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
@@ -486,10 +480,6 @@ void ContextualTasksPageHandler::OnWebviewMessage(
                     ->GetLastCommittedOrigin()
               : url::Origin());
     }
-  } else if (aim_to_client_message.has_execute_actions() &&
-             base::FeatureList::IsEnabled(
-                 contextual_tasks::kContextualTasksScriptTools)) {
-    OnReceivedExecuteActions(aim_to_client_message.execute_actions());
   }
 }
 
@@ -857,73 +847,4 @@ void ContextualTasksPageHandler::CloseWindow(
   if (ui_service_) {
     ui_service_->CloseTrackedWindow(window_id);
   }
-}
-
-void ContextualTasksPageHandler::OnReceivedExecuteActions(
-    const lens::ExecuteActions& execute_actions) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(base::FeatureList::IsEnabled(
-      contextual_tasks::kContextualTasksScriptTools));
-
-  if (!actor::ValidateActionsAreScriptTools(execute_actions.actions())) {
-    LOG(ERROR) << "ExecuteActions contained non-ScriptTool actions.";
-    SendActionsResult(actor::BuildErrorActionsResult(
-        actor::mojom::ActionResultCode::kArgumentsInvalid, std::nullopt));
-    return;
-  }
-
-  // Find the tab ID of the tab shared/associated with the current task.
-  SessionID shared_tab_id = SessionID::InvalidValue();
-  std::optional<base::Uuid> current_task_id = web_ui_controller_->GetTaskId();
-  if (current_task_id.has_value()) {
-    std::vector<SessionID> tab_ids =
-        contextual_tasks_service_->GetTabsAssociatedWithTask(*current_task_id);
-    if (!tab_ids.empty()) {
-      shared_tab_id = tab_ids.front();
-    }
-  }
-
-  if (!shared_tab_id.is_valid()) {
-    LOG(ERROR) << "ExecuteActions could not find a valid tab ID for task.";
-    SendActionsResult(actor::BuildErrorActionsResult(
-        actor::mojom::ActionResultCode::kTabWentAway, std::nullopt));
-    return;
-  }
-
-  int32_t shared_tab_handle_value =
-      tabs::SessionMappedTabHandleFactory::GetInstance().GetHandleForSessionId(
-          shared_tab_id.id());
-
-  actor::TaskSourceInfo source_info(
-      actor::TaskSourceInfo::Client::kContextualTasks,
-      current_task_id->AsLowercaseString());
-
-  actions_runner_ = std::make_unique<actor::ActorActionsRunner>(
-      *web_ui_controller_->GetProfile(), std::move(source_info),
-      execute_actions.actions(),
-      base::BindOnce(&ContextualTasksPageHandler::OnActionsComplete,
-                     weak_ptr_factory_.GetWeakPtr()),
-      shared_tab_handle_value);
-  actions_runner_->Start();
-}
-
-void ContextualTasksPageHandler::OnActionsComplete() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!actions_runner_) {
-    return;
-  }
-  std::unique_ptr<optimization_guide::proto::ActionsResult> result =
-      actions_runner_->TakeResult();
-  if (result) {
-    SendActionsResult(*result);
-  }
-  actions_runner_.reset();
-}
-
-void ContextualTasksPageHandler::SendActionsResult(
-    const optimization_guide::proto::ActionsResult& result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  lens::ClientToAimMessage message;
-  message.mutable_actions_result()->mutable_actions_result()->CopyFrom(result);
-  PostAimMessage(message);
 }

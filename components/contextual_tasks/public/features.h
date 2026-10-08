@@ -32,7 +32,6 @@ BASE_DECLARE_FEATURE(
     kContextualTasksContextSmartTabSharingDefaultOnAvailability);
 BASE_DECLARE_FEATURE(kContextualTasksContextLibrary);
 BASE_DECLARE_FEATURE(kContextualTasksContextLogging);
-BASE_DECLARE_FEATURE(kContextualTasksScriptTools);
 BASE_DECLARE_FEATURE(kContextualTasksShowOnboardingTooltip);
 
 // Bypasses the dismissed cap for contextual tasks tooltips.
