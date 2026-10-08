@@ -217,6 +217,36 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
                 [](views::View* view) { return view->GetVisible(); }));
 }
 
+class TabStripComboButtonOrganizerPanelInteractiveUiTest
+    : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {
+ public:
+  TabStripComboButtonOrganizerPanelInteractiveUiTest() = default;
+  ~TabStripComboButtonOrganizerPanelInteractiveUiTest() override = default;
+
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    return {{organizer_panel::kOrganizerPanel, {}}};
+  }
+
+  auto SetPinned(const char* pref, bool pinned) {
+    return Do([this, pref, pinned]() {
+      browser()->GetProfile()->GetPrefs()->SetBoolean(pref, pinned);
+    });
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(TabStripComboButtonOrganizerPanelInteractiveUiTest,
+                       TabGroupsButtonNotPresentWhenOrganizerPanelEnabled) {
+  RunTestSequence(
+      // Pin both tab search and everything menu.
+      SetPinned(prefs::kTabSearchPinnedToTabstrip, true),
+      SetPinned(prefs::kEverythingMenuPinnedToTabstrip, true),
+      // Tab search should be visible.
+      WaitForShow(kTabSearchButtonElementId),
+      // Saved tab group button should NOT be present in the view hierarchy of
+      // the combo button.
+      EnsureNotPresent(kSavedTabGroupButtonElementId));
+}
 
 class TabStripComboButtonHorizontalInteractiveUiTest
     : public InteractiveBrowserTest,

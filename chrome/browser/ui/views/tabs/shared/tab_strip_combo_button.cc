@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -73,7 +74,8 @@ TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser,
   std::unique_ptr<TabStripFlatEdgeButton> start_button;
   if (context_ == Context::kVerticalTabStrip) {
     if (tab_groups::SavedTabGroupUtils::IsEnabledForProfile(
-            browser_->GetProfile())) {
+            browser_->GetProfile()) &&
+        !organizer_panel::IsOrganizerPanelFeatureEnabled()) {
       start_button = CreateFlatEdgeButtonFor(kActionTabGroupsMenu,
                                              kSavedTabGroupButtonElementId);
 
