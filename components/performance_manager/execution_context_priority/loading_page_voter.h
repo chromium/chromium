@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_LOADING_PAGE_VOTER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_LOADING_PAGE_VOTER_H_
 
+#include <optional>
+
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/execution_context_priority/priority_voting_system.h"
@@ -13,18 +15,16 @@
 
 namespace performance_manager::execution_context_priority {
 
-// This voter casts a Process::Priority::kUserBlocking vote to all frames of
-// a loading page if it is the active tab, or a Process::Priority::kUserVisible
-// vote if it is not the active tab and the load was user- or browser-initiated
-// (see PageNode::IsUserOrBrowserInitiatedLoad()). This makes loading in the
-// active tab fast while preventing user-requested background loads from
-// freezing, without boosting unsolicited background navigations.
-// Note: This FrameNodeObserver can affect the initial priority of a frame and
-// thus uses `OnBeforeFrameNodeAdded`.
+// This voter casts a Process::Priority::kUserBlocking vote on a loading page if
+// it is the active tab, or a Process::Priority::kUserVisible vote if it is not
+// the active tab and the load was user- or browser-initiated (see
+// PageNode::IsUserOrBrowserInitiatedLoad()). The vote is cast on the PageNode,
+// and thus applies to all of its frames. This makes loading in the active tab
+// fast while preventing user-requested background loads from freezing, without
+// boosting unsolicited background navigations.
 class LoadingPageVoter : public PriorityVoter,
                          public PageNodeObserver,
-                         public PageLiveStateObserver,
-                         public FrameNodeObserver {
+                         public PageLiveStateObserver {
  public:
   static const char kPageIsLoadingReason[];
 
@@ -56,15 +56,6 @@ class LoadingPageVoter : public PriorityVoter,
   // PageLiveStateObserver:
   void OnIsActiveTabChanged(const PageNode* page_node) override;
 
-  // FrameNodeObserver:
-  void OnBeforeFrameNodeAdded(
-      const FrameNode* frame_node,
-      const FrameNode* pending_parent_frame_node,
-      const PageNode* pending_page_node,
-      const ProcessNode* pending_process_node,
-      const FrameNode* pending_parent_or_outer_document_or_embedder) override;
-  void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
-
   VoterId voter_id() const { return voting_channel_.voter_id(); }
 
  private:
@@ -77,25 +68,18 @@ class LoadingPageVoter : public PriorityVoter,
   // Returns true if the outermost embedder root page is the active tab.
   bool IsRootPageActiveTab(const PageNode* page_node) const;
 
-  // Returns the vote for a loading frame based on whether its root page is the
+  // Returns the vote for a loading page based on whether its root page is the
   // active tab or whether the load was user- or browser-initiated.
   std::optional<Vote> GetVote(const PageNode* page_node,
                               bool is_root_page_active_tab) const;
 
-  // Sets the votes for every frame in `page_node`, based on its current state.
-  // Removes them if the page isn't loading.
-  void UpdateVotesForPage(const PageNode* page_node);
+  // Casts, updates or removes the vote for the loading `page_node`.
+  void UpdateVote(const PageNode* page_node, bool is_root_page_active_tab);
 
   // Changes votes for `page_node` and its embedded subpages when root page
   // active tab state changes.
   void ChangeVotesForPageAndSubpages(const PageNode* page_node,
                                      bool is_root_page_active_tab);
-
-  // Sets or removes a vote for `frame_node` and its subtree.
-  void SetVoteForSubtree(const FrameNode* frame_node,
-                         const std::optional<Vote>& vote);
-  void ChangeVotesForFrameSubtree(const FrameNode* frame_node,
-                                  bool is_root_page_active_tab);
 
   const bool boost_only_requested_background_loads_;
 

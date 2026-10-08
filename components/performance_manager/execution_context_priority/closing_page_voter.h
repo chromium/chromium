@@ -7,7 +7,6 @@
 
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/execution_context_priority/priority_voting_system.h"
-#include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/voting/voting.h"
@@ -15,10 +14,10 @@
 
 namespace performance_manager::execution_context_priority {
 
-// This voter boosts the priority of a page that is closing.
+// This voter boosts the priority of a page that is closing. The vote is cast
+// on the PageNode, and thus applies to all of its frames.
 class ClosingPageVoter : public PriorityVoter,
                          public PageNodeObserver,
-                         public FrameNodeObserver,
                          public GraphRegisteredImpl<ClosingPageVoter> {
  public:
   static const char kPageIsClosingReason[];
@@ -39,22 +38,9 @@ class ClosingPageVoter : public PriorityVoter,
   // PageNodeObserver:
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
 
-  // FrameNodeObserver:
-  void OnBeforeFrameNodeAdded(
-      const FrameNode* frame_node,
-      const FrameNode* pending_parent_frame_node,
-      const PageNode* pending_page_node,
-      const ProcessNode* pending_process_node,
-      const FrameNode* pending_parent_or_outer_document_or_embedder) override;
-  void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
-
   VoterId voter_id() const { return voting_channel_.voter_id(); }
 
  private:
-  // Sets or removes a vote for `frame_node` and its subtree.
-  void SetVoteForSubtree(const FrameNode* frame_node,
-                         const std::optional<Vote>& vote);
-
   VotingChannel voting_channel_;
 
   // A set of pages that are currently closing.

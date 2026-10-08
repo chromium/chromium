@@ -4,10 +4,12 @@
 
 #include "components/performance_manager/execution_context_priority/loading_page_voter.h"
 
+#include <optional>
 #include <utility>
 
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/graph/graph_operations.h"
 
 namespace performance_manager::execution_context_priority {
 
@@ -38,13 +40,11 @@ void LoadingPageVoter::InitializeOnGraph(Graph* graph,
   voting_channel_ = std::move(voting_channel);
 
   graph->AddPageNodeObserver(this);
-  graph->AddFrameNodeObserver(this);
 
   CHECK(graph->HasOnlySystemNode());
 }
 
 void LoadingPageVoter::TearDownOnGraph(Graph* graph) {
-  graph->RemoveFrameNodeObserver(this);
   graph->RemovePageNodeObserver(this);
 
   voting_channel_.Reset();
@@ -54,20 +54,29 @@ void LoadingPageVoter::OnPageNodeAdded(const PageNode* page_node) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)->AddObserver(
       this);
   if (IsLoading(page_node->GetLoadingState())) {
-    UpdateVotesForPage(page_node);
+    UpdateVote(page_node, IsRootPageActiveTab(page_node));
   }
 }
 
 void LoadingPageVoter::OnBeforePageNodeRemoved(const PageNode* page_node) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)
       ->RemoveObserver(this);
+  if (IsLoading(page_node->GetLoadingState())) {
+    voting_channel_.SetVote(page_node, std::nullopt);
+  }
 }
 
 void LoadingPageVoter::OnLoadingStateChanged(
     const PageNode* page_node,
     PageNode::LoadingState previous_state) {
-  if (IsLoading(previous_state) != IsLoading(page_node->GetLoadingState())) {
-    UpdateVotesForPage(page_node);
+  const bool was_loading = IsLoading(previous_state);
+  const bool is_loading = IsLoading(page_node->GetLoadingState());
+
+  if (was_loading && !is_loading) {
+    voting_channel_.SetVote(page_node, std::nullopt);
+  }
+  if (!was_loading && is_loading) {
+    UpdateVote(page_node, IsRootPageActiveTab(page_node));
   }
 }
 
@@ -77,10 +86,13 @@ void LoadingPageVoter::OnIsUserOrBrowserInitiatedLoadChanged(
     // The original behavior doesn't depend on the initiator.
     return;
   }
+  if (!IsLoading(page_node->GetLoadingState())) {
+    return;
+  }
   // Happens when a navigation starts after the page started loading
   // (DidStartLoading() precedes DidStartNavigation()), or supersedes an
   // in-flight one.
-  UpdateVotesForPage(page_node);
+  UpdateVote(page_node, IsRootPageActiveTab(page_node));
 }
 
 void LoadingPageVoter::OnEmbedderFrameNodeChanged(
@@ -100,29 +112,6 @@ void LoadingPageVoter::OnIsActiveTabChanged(const PageNode* page_node) {
     return;
   }
   ChangeVotesForPageAndSubpages(page_node, IsPageActiveTab(page_node));
-}
-
-void LoadingPageVoter::OnBeforeFrameNodeAdded(
-    const FrameNode* frame_node,
-    const FrameNode* pending_parent_frame_node,
-    const PageNode* pending_page_node,
-    const ProcessNode* pending_process_node,
-    const FrameNode* pending_parent_or_outer_document_or_embedder) {
-  if (!IsLoading(pending_page_node->GetLoadingState())) {
-    return;
-  }
-
-  voting_channel_.SetVote(
-      frame_node,
-      GetVote(pending_page_node, IsRootPageActiveTab(pending_page_node)));
-}
-
-void LoadingPageVoter::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
-  const PageNode* page_node = frame_node->GetPageNode();
-  if (!IsLoading(page_node->GetLoadingState())) {
-    return;
-  }
-  voting_channel_.SetVote(frame_node, std::nullopt);
 }
 
 bool LoadingPageVoter::IsLoading(PageNode::LoadingState loading_state) const {
@@ -167,54 +156,30 @@ std::optional<Vote> LoadingPageVoter::GetVote(
   return std::nullopt;
 }
 
-void LoadingPageVoter::UpdateVotesForPage(const PageNode* page_node) {
-  const std::optional<Vote> vote =
-      IsLoading(page_node->GetLoadingState())
-          ? GetVote(page_node, IsRootPageActiveTab(page_node))
-          : std::nullopt;
-  for (const FrameNode* main_frame_node : page_node->GetMainFrameNodes()) {
-    SetVoteForSubtree(main_frame_node, vote);
-  }
+void LoadingPageVoter::UpdateVote(const PageNode* page_node,
+                                  bool is_root_page_active_tab) {
+  voting_channel_.SetVote(page_node,
+                          GetVote(page_node, is_root_page_active_tab));
 }
 
 void LoadingPageVoter::ChangeVotesForPageAndSubpages(
     const PageNode* page_node,
     bool is_root_page_active_tab) {
-  for (const FrameNode* main_frame : page_node->GetMainFrameNodes()) {
-    ChangeVotesForFrameSubtree(main_frame, is_root_page_active_tab);
-  }
-}
-
-void LoadingPageVoter::SetVoteForSubtree(const FrameNode* frame_node,
-                                         const std::optional<Vote>& vote) {
-  voting_channel_.SetVote(frame_node, vote);
-
-  // Recurse through subtree.
-  for (const FrameNode* child_frame_node : frame_node->GetChildFrameNodes()) {
-    SetVoteForSubtree(child_frame_node, vote);
-  }
-}
-
-void LoadingPageVoter::ChangeVotesForFrameSubtree(
-    const FrameNode* frame_node,
-    bool is_root_page_active_tab) {
-  const PageNode* page_node = frame_node->GetPageNode();
   if (IsLoading(page_node->GetLoadingState())) {
-    voting_channel_.SetVote(frame_node,
-                            GetVote(page_node, is_root_page_active_tab));
-  }
-
-  // Recurse through subtree.
-  for (const FrameNode* child_frame_node : frame_node->GetChildFrameNodes()) {
-    ChangeVotesForFrameSubtree(child_frame_node, is_root_page_active_tab);
+    UpdateVote(page_node, is_root_page_active_tab);
   }
 
   // Recurse into embedded subpages. Embedded pages track their own IsLoading()
   // state independently (so they submit their own initial votes), but they
   // share the IsActiveTab() status of the outermost root tab.
-  for (const PageNode* embedded_page : frame_node->GetEmbeddedPageNodes()) {
-    ChangeVotesForPageAndSubpages(embedded_page, is_root_page_active_tab);
-  }
+  GraphOperations::VisitFrameTreePreOrder(
+      page_node, [&](const FrameNode* frame_node) {
+        for (const PageNode* embedded_page :
+             frame_node->GetEmbeddedPageNodes()) {
+          ChangeVotesForPageAndSubpages(embedded_page, is_root_page_active_tab);
+        }
+        return true;
+      });
 }
 
 }  // namespace performance_manager::execution_context_priority
