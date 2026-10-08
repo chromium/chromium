@@ -465,6 +465,8 @@ void PopulateTrustedChromeWebUIFrameInterfaceBrokers(
 
 #if !BUILDFLAG(IS_ANDROID)
   PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(registry);
+#else
+  PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsAndroid(registry);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   registry.AddGlobal<color_change_listener::mojom::PageHandler>(

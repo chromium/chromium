@@ -31,6 +31,8 @@ void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsFeatures(
 void PopulateChromeWebUIFrameBindersPartsAndroid(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
     content::RenderFrameHost* render_frame_host);
+void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsAndroid(
+    content::WebUIBrowserInterfaceBrokerRegistry& registry);
 #else
 // These assumes "Desktop" is non-Android.
 void PopulateChromeWebUIFrameBindersPartsDesktop(

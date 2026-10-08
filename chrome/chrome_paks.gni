@@ -210,6 +210,12 @@ template("chrome_extra_paks") {
       sources += [ "$root_gen_dir/chrome/tabstrip_ntb_resources.pak" ]
     }
 
+    # tabstrip_ntb bundles these when optimize_webui=true, so Android only
+    # needs them in unbundled builds.
+    if (!is_android || (enable_webui_tabstrip_ntb && !optimize_webui)) {
+      sources += [ "$root_gen_dir/chrome/tab_strip_api_resources.pak" ]
+    }
+
     if (!is_android) {
       # New paks should be added here by default.
       sources += [
@@ -258,7 +264,6 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/tab_group_home_resources.pak",
         "$root_gen_dir/chrome/tab_group_shared_resources.pak",
         "$root_gen_dir/chrome/tab_search_resources.pak",
-        "$root_gen_dir/chrome/tab_strip_api_resources.pak",
         "$root_gen_dir/chrome/web_app_internals_resources.pak",
         "$root_gen_dir/chrome/webnn_internals_resources.pak",
         "$root_gen_dir/chrome/webui_browser_resources.pak",

@@ -424,8 +424,13 @@ IN_PROC_BROWSER_TEST_F(TabModelJniBridgeBackgroundTabLoadingTest,
   ASSERT_TRUE(tab1);
 
   // Tab 1 is opened in background with restored navigation entry.
-  tabs::TabInterface* tab2 =
-      GetTabListInterface()->OpenTab(GURL(), /*index=*/1, /*foreground=*/false);
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(GetProfile()));
+  tabs::TabInterface* tab2 = bridge()->CreateTab(
+      /*parent=*/nullptr, std::move(web_contents), /*index=*/1,
+      TabModel::TabLaunchType::FROM_TAB_LIST_INTERFACE_BACKGROUND,
+      /*should_pin=*/false);
   ASSERT_TRUE(tab2);
 
   std::vector<std::unique_ptr<content::NavigationEntry>> entries;
@@ -468,8 +473,13 @@ IN_PROC_BROWSER_TEST_F(TabModelJniBridgeDisabledBackgroundTabLoadingTest,
   ASSERT_TRUE(tab1);
 
   // Tab 1 is in background.
-  tabs::TabInterface* tab2 =
-      GetTabListInterface()->OpenTab(GURL(), /*index=*/1, /*foreground=*/false);
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(GetProfile()));
+  tabs::TabInterface* tab2 = bridge()->CreateTab(
+      /*parent=*/nullptr, std::move(web_contents), /*index=*/1,
+      TabModel::TabLaunchType::FROM_TAB_LIST_INTERFACE_BACKGROUND,
+      /*should_pin=*/false);
   ASSERT_TRUE(tab2);
 
   std::vector<std::unique_ptr<content::NavigationEntry>> entries;

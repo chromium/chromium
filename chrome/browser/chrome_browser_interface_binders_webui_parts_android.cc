@@ -13,6 +13,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/notebooks/internals/webui/notebooks_internals.mojom.h"
 #include "components/notebooks/internals/webui/notebooks_internals_ui.h"
+#include "content/public/browser/web_ui_browser_interface_broker_registry.h"
 #include "content/public/browser/web_ui_controller_interface_binder.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "ui/webui/buildflags.h"
@@ -28,6 +29,13 @@
 #include "ui/webui/resources/cr_components/history/foreign_sessions.mojom.h"  // nogncheck
 #include "ui/webui/resources/cr_components/history/history.mojom.h"  // nogncheck
 #include "ui/webui/resources/cr_components/history/history_cross_device_signin_promo.mojom.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(ENABLE_WEBUI_TABSTRIP_NTB)
+#include "base/feature_list.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/ui/webui/tabstrip_ntb/tabstrip_ntb_ui.h"   // nogncheck
+#include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"  // nogncheck
 #endif
 
 namespace chrome::internal {
@@ -63,6 +71,17 @@ void PopulateChromeWebUIFrameBindersPartsAndroid(
   RegisterWebUIControllerInterfaceBinder<
       notebooks_internals::mojom::PageHandlerFactory,
       notebooks::NotebooksInternalsUI>(map);
+}
+
+void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsAndroid(
+    content::WebUIBrowserInterfaceBrokerRegistry& registry) {
+#if BUILDFLAG(ENABLE_WEBUI_TABSTRIP_NTB)
+  if (base::FeatureList::IsEnabled(
+          chrome::android::kAndroidNewTabButtonTabstripWebUI)) {
+    registry.ForWebUI<tabstrip_ntb::TabStripNtbUI>()
+        .Add<tabs_api::mojom::TabStripService>();
+  }
+#endif  // BUILDFLAG(ENABLE_WEBUI_TABSTRIP_NTB)
 }
 
 }  // namespace chrome::internal

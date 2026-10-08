@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -519,9 +520,9 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     protected abstract boolean isSessionRestoreInProgress();
 
     /**
-     * Opens a tab programmatically
+     * Opens a tab programmatically.
      *
-     * @param url URL to show.
+     * @param url URL to show, or empty to open the new tab page.
      * @param index Index for the tab, it will ignore if it is invalid.
      * @param foreground Whether to open the tab in the foreground.
      */
@@ -529,6 +530,9 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     @VisibleForTesting
     public @JniType("TabAndroid*") @Nullable Tab openTabProgrammatically(
             @JniType("GURL") GURL url, int index, boolean foreground) {
+        if (url.isEmpty()) {
+            url = UrlConstantResolverFactory.getForProfile(mProfile).getNtpGurl();
+        }
         LoadUrlParams loadParams = new LoadUrlParams(url);
         @TabLaunchType
         int launchType =

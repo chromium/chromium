@@ -73,7 +73,8 @@ class TabListInterface {
   virtual void ActivateTab(tabs::TabHandle tab) = 0;
 
   // Opens a new tab to the given `url`, inserting it at `index` in the tab
-  // strip. `index` may be ignored by the implementation if necessary.
+  // strip. `index` may be ignored by the implementation if necessary. If `url`
+  // is empty, the new tab page is loaded instead.
   virtual tabs::TabInterface* OpenTab(const GURL& url,
                                       int index,
                                       bool foreground = true) = 0;

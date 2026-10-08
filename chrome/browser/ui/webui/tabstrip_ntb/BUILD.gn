@@ -16,6 +16,8 @@ source_set("tabstrip_ntb") {
     "//base",
     "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common",
+    "//components/browser_apis/tab_strip:mojom",
+    "//mojo/public/cpp/bindings",
   ]
 
   deps = [
@@ -24,5 +26,9 @@ source_set("tabstrip_ntb") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/tabstrip_ntb:resources",
     "//chrome/browser/ui/webui:theme_source",
+    "//chrome/common:buildflags",
+    "//components/browser_apis/tab_strip:service",
+    "//components/browser_apis/tab_strip/resources",
+    "//content/public/browser",
   ]
 }

@@ -76,6 +76,17 @@ source_set("browser_tests") {
     deps += [ "//components/search" ]
   }
 
+  if (enable_webui_tabstrip_ntb) {
+    sources += [ "tabstrip_ntb/tabstrip_ntb_browsertest.cc" ]
+    deps += [
+      "//chrome/browser/flags:flags_android",
+      "//chrome/browser/ui/webui/tabstrip_ntb",
+      "//chrome/test/base:chrome_test_utils",
+      "//components/browser_apis/tab_strip:service",
+      "//components/browser_apis/tab_strip/testing",
+    ]
+  }
+
   data = []
 
   if (!is_android) {
@@ -1055,6 +1066,11 @@ generate_grd("build_grd") {
   if (!enable_extensions_core && enable_guest_view) {
     deps += [ "guest_view_shared:build_grdp" ]
     grdp_files += [ "$target_gen_dir/guest_view_shared/resources.grdp" ]
+  }
+
+  if (enable_webui_tabstrip_ntb) {
+    deps += [ "tabstrip_ntb:build_grdp" ]
+    grdp_files += [ "$target_gen_dir/tabstrip_ntb/resources.grdp" ]
   }
 
   manifest_files =

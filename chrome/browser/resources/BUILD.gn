@@ -108,7 +108,6 @@ group("resources") {
       "webui_toolbar:resources",
       "webui_toolbar_shared:resources",
       "whats_new:resources",
-      "//components/browser_apis/tab_strip/resources",
     ]
     if (is_chrome_branded) {
       public_deps += [
@@ -218,6 +217,10 @@ group("resources") {
 
   if (enable_webui_tabstrip_ntb) {
     public_deps += [ "tabstrip_ntb:resources" ]
+  }
+
+  if (!is_android || enable_webui_tabstrip_ntb) {
+    public_deps += [ "//components/browser_apis/tab_strip/resources" ]
   }
 
   if (enable_compose) {

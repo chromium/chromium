@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -289,6 +290,23 @@ public class TabModelImplTest {
                                     TabLaunchType.FROM_TAB_LIST_INTERFACE_BACKGROUND,
                                     tab.isIncognitoBranded(),
                                     mTabModelJni.isIncognitoBranded()));
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testOpenTabProgrammatically_EmptyUrl() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(1, mTabModelJni.getCount());
+
+                    Tab tab = mTabModelJni.openTabProgrammatically(GURL.emptyGURL(), 0, true);
+                    assertNotNull(tab);
+                    GURL expectedUrl =
+                            UrlConstantResolverFactory.getForProfile(mTabModelJni.getProfile())
+                                    .getNtpGurl();
+                    assertEquals(expectedUrl, tab.getUrl());
+                    assertEquals(2, mTabModelJni.getCount());
                 });
     }
 

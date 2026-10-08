@@ -7,6 +7,7 @@ import '//resources/cr_elements/icons.html.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './new_tab_button.css.js';
 import {getHtml} from './new_tab_button.html.js';
 
@@ -24,8 +25,10 @@ export class NewTabButtonElement extends CrLitElement {
   }
 
   protected onClick() {
-    // TODO(crbug.com/494284032): Create a new tab via
-    // tabs_api.mojom.TabStripService.
+    chrome.histograms.recordUserAction('MobileToolbarNewTab');
+    // No position or URL: the tab is appended and opens the default new tab
+    // page.
+    BrowserProxy.getInstance().tabStripService.createTabAt(null, null);
   }
 }
 

@@ -10,13 +10,12 @@ assert(enable_webui_tabstrip_ntb)
 build_webui("build") {
   grd_prefix = "tabstrip_ntb"
 
-  static_files = [
-    "tabstrip_ntb.html",
-  ]
+  static_files = [ "tabstrip_ntb.html" ]
 
   ts_files = [
     "app.html.ts",
     "app.ts",
+    "browser_proxy.ts",
     "new_tab_button.html.ts",
     "new_tab_button.ts",
   ]
@@ -26,17 +25,34 @@ build_webui("build") {
     "new_tab_button.css",
   ]
 
+  ts_composite = true
   webui_context_type = "trusted"
 
+  ts_definitions = [ "//tools/typescript/definitions/chrome_histograms.d.ts" ]
+
   ts_deps = [
+    "//components/browser_apis/tab_strip/resources:build_ts",
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
+
+  # Shared tabs_api bindings, served from /tab_strip_api/ (see
+  # //components/browser_apis/tab_strip/resources).
+  ts_path_mappings =
+      [ "/tab_strip_api/*|" + rebase_path(
+            "$root_gen_dir/components/browser_apis/tab_strip/resources/tsc/*",
+            target_gen_dir) ]
 
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "tabstrip-ntb.top-chrome"
     optimize_webui_in_files = [ "app.js" ]
+    optimize_webui_external_paths =
+        [ "/tab_strip_api|" + rebase_path(
+              "$root_gen_dir/components/browser_apis/tab_strip/resources/tsc",
+              root_build_dir) ]
   }
 }
