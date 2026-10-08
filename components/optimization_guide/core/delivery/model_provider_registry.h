@@ -12,6 +12,52 @@
 
 namespace optimization_guide {
 
+// Different events of the prediction model delivery lifecycle for an
+// OptimizationTarget.
+// Keep in sync with OptimizationGuideModelDeliveryEvent in enums.xml.
+enum class ModelDeliveryEvent {
+  kUnknown = 0,
+
+  // The model was delivered from immediately or after a
+  // successful download.
+  kModelDeliveredAtRegistration = 1,
+  kModelDelivered = 2,
+
+  // GetModelsRequest was sent to the optimization guide server.
+  kGetModelsRequest = 3,
+
+  // Model was requested to be downloaded using download service.
+  kDownloadServiceRequest = 4,
+
+  // Download service started the model download.
+  kModelDownloadStarted = 5,
+
+  // Model got downloaded from the download service.
+  kModelDownloaded = 6,
+
+  // Download service was unavailable.
+  kDownloadServiceUnavailable = 7,
+
+  // GetModelsResponse failed.
+  kGetModelsResponseFailure = 8,
+
+  // Download URL received from model metadata is invalid
+  kDownloadURLInvalid = 9,
+
+  // Model download failed due to download service or verifying the downloaded
+  // model.
+  kModelDownloadFailure = 10,
+
+  // Loading the model from store failed.
+  kModelLoadFailed = 11,
+
+  // Model download was attempted after the model load failed.
+  kModelDownloadDueToModelLoadFailure = 12,
+
+  // Add new values above this line.
+  kMaxValue = kModelDownloadDueToModelLoadFailure,
+};
+
 // Basic implementation of OptimizationGuideModelProvider that tracks
 // observers and current models, and notifies observers on updates.
 // In production, this will be wrapped by PredictionManager to add download

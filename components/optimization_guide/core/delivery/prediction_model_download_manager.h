@@ -52,6 +52,47 @@ extern const char kPredictionModelOptimizationTargetCustomDataKey[];
 inline constexpr char kDisableModelDownloadVerificationForTestingSwitch[] =
     "disable-model-download-verification";
 
+// The statuses for a download file containing a prediction model when verified
+// and processed.
+//
+// Keep in sync with OptimizationGuidePredictionModelDownloadStatus
+// in enums.xml.
+enum class PredictionModelDownloadStatus {
+  kUnknown = 0,
+  // The downloaded file was successfully verified and processed.
+  kSuccess = 1,
+  // The downloaded file was not a valid CRX file.
+  kFailedCrxVerification = 2,
+  // A temporary directory for unzipping the CRX file failed to be created.
+  kFailedUnzipDirectoryCreation = 3,
+  // The CRX file failed to be unzipped.
+  kFailedCrxUnzip = 4,
+  // The model info failed to be read from disk.
+  kFailedModelInfoFileRead = 5,
+  // The model info failed to be parsed.
+  kFailedModelInfoParsing = 6,
+  // The model file was not found in the CRX file.
+  kFailedModelFileNotFound = 7,
+  // The model file failed to be moved to a more permanent directory.
+  kFailedModelFileOtherError = 8,
+  // The model info was invalid.
+  kFailedModelInfoInvalid = 9,
+  // The CRX file was a valid CRX file but did not come from a valid publisher.
+  kFailedCrxInvalidPublisher = 10,
+  // The opt guide parent directory for storing models in does not exist.
+  kOptGuideDirectoryDoesNotExist = 11,
+  // The new directory to persist this model version's files could not be
+  // created.
+  kCouldNotCreateDirectory = 12,
+  // The model info was not saved to model store file.
+  kFailedModelInfoSaving = 13,
+  // The additional file was not found in the CRX file.
+  kFailedInvalidAdditionalFile = 14,
+
+  // Add new values above this line.
+  kMaxValue = kFailedInvalidAdditionalFile,
+};
+
 // Manages the downloads of prediction models.
 // Keep in sync with OptimizationGuidePredictionModelDownloadState in enums.xml.
 class PredictionModelDownloadManager {
