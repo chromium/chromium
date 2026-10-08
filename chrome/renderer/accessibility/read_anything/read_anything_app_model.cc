@@ -628,11 +628,15 @@ void ReadAnythingAppModel::UpdateDistillationForDocsIfNeeded() {
   // are updated because this fallback occurs during initial page load while
   // the UI is showing loading and no content has been rendered yet.
   if (IsDocs() && is_readability_next_distillation_method()) {
-    set_next_distillation_method(DistillationMethod::kScreen2x);
+    FallbackToScreen2x();
     set_current_content_distillation_method(DistillationMethod::kScreen2x);
-    set_requires_readability_distillation(false);
-    set_requires_distillation(true);
   }
+}
+
+void ReadAnythingAppModel::FallbackToScreen2x() {
+  set_next_distillation_method(DistillationMethod::kScreen2x);
+  set_requires_readability_distillation(false);
+  set_requires_distillation(true);
 }
 
 bool ReadAnythingAppModel::IsPdf() const {

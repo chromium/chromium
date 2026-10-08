@@ -366,6 +366,14 @@ class ReadAnythingAppModel {
   bool is_readability_next_distillation_method() const {
     return next_distillation_method() == DistillationMethod::kReadability;
   }
+
+  // Switches the next distillation method from Readability to Screen2x. Clears
+  // Readability-only state (e.g. a pending Readability re-distillation request)
+  // so it cannot be dispatched to the Screen2x distiller, and marks that a
+  // Screen2x distillation is required. All Readability -> Screen2x fallbacks
+  // should go through this method.
+  void FallbackToScreen2x();
+
   bool is_readability_current_distillation_method() const {
     return current_content_distillation_method_ ==
            DistillationMethod::kReadability;

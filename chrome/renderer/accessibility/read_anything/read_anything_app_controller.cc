@@ -455,7 +455,9 @@ void ReadAnythingAppController::ProcessModelUpdates() {
     Distill();
   }
 
-  if (IsReadabilityEnabled() && model_.requires_readability_distillation()) {
+  if (IsReadabilityEnabled() &&
+      model_.is_readability_next_distillation_method() &&
+      model_.requires_readability_distillation()) {
     // Readability distillation is triggered immediately when the active tree
     // changes. Subsequent page events like kLoadComplete also
     // request distillation (primarily to handle same-document or SPA
@@ -3127,14 +3129,11 @@ void ReadAnythingAppController::UpdateContent(const std::string& title,
   // If readability distillation returns empty content, consider distillation as
   // failure and default to Screen2X distillation.
   if (dom_distiller_content_html_.empty()) {
-    model_.set_next_distillation_method(
-        ReadAnythingAppModel::DistillationMethod::kScreen2x);
-
     // Immediately attempt distillation. If there's not yet an active tree,
     // distillation will be attempted after the event processes. However,
     // attempting distillation immediately will allow distillation failures
     // to register.
-    model_.set_requires_distillation(true);
+    model_.FallbackToScreen2x();
     DistillNewTree();
     return;
   }

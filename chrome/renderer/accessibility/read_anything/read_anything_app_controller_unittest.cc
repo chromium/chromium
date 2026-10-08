@@ -7428,6 +7428,14 @@ class ReadAnythingAppControllerDistillerRefactorTest
     return reply;
   }
 
+  // Sends a kLoadComplete event on `tree_id`.
+  void SendLoadComplete(const ui::AXTreeID& tree_id) {
+    ui::AXTreeUpdate update;
+    test::SetUpdateTreeID(&update, tree_id);
+    ui::AXEvent load_complete(1, ax::mojom::Event::kLoadComplete);
+    AccessibilityEventReceived({std::move(update)}, {std::move(load_complete)});
+  }
+
   // Sends the browser's reply to a stored Readability request and waits for
   // the controller to handle it.
   void Reply(ReadabilityReply& reply,
@@ -7644,4 +7652,58 @@ TEST_F(ReadAnythingAppControllerDistillerRefactorSelectTextTest,
   page_handler_.FlushForTesting();
 
   EXPECT_TRUE(model().readability_distillation_complete_for_current_tree());
+}
+
+TEST_F(
+    ReadAnythingAppControllerDistillerRefactorTest,
+    LoadCompleteWhileReadabilityInFlight_SetsRequiresReadabilityDistillation) {
+  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  AddTree(tree_id);
+  UseReadability();
+  ExpectReadabilityRequest();
+  controller().OnActiveAXTreeIDChanged(tree_id, ukm::kInvalidSourceId, false);
+  page_handler_.FlushForTesting();
+
+  SendLoadComplete(tree_id);
+
+  // Update processing is paused while Readability is in flight, so the flag
+  // stays set instead of starting a re-distill.
+  EXPECT_TRUE(model().requires_readability_distillation());
+}
+
+TEST_F(
+    ReadAnythingAppControllerDistillerRefactorTest,
+    UpdateContent_EmptyContentWithPendingLoadComplete_ClearsReadabilityFlag) {
+  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  AddTree(tree_id);
+  UseReadability();
+  ReadabilityReply& reply = ExpectReadabilityRequest();
+  controller().OnActiveAXTreeIDChanged(tree_id, ukm::kInvalidSourceId, false);
+  page_handler_.FlushForTesting();
+  SendLoadComplete(tree_id);
+
+  // Falls back to Screen2x, which finishes synchronously and processes model
+  // updates. The leftover flag must not reach the Screen2x distiller.
+  Reply(reply, read_anything::mojom::ReadabilityDistillationResult::kEmpty);
+
+  EXPECT_EQ(active_distiller()->GetDistillationMethod(),
+            ReadAnythingAppModel::DistillationMethod::kScreen2x);
+  EXPECT_FALSE(model().requires_readability_distillation());
+}
+
+TEST_F(ReadAnythingAppControllerDistillerRefactorTest,
+       ProcessModelUpdates_NextMethodScreen2x_IgnoresReadabilityFlag) {
+  // The fixture starts on Screen2x.
+  ASSERT_EQ(model().next_distillation_method(),
+            ReadAnythingAppModel::DistillationMethod::kScreen2x);
+
+  // A leftover Readability flag must not be sent to the Screen2x distiller,
+  // which requires a tree. The strict page handler mock fails on any
+  // Readability request.
+  model().set_requires_readability_distillation(true);
+  ProcessModelUpdates();
+  page_handler_.FlushForTesting();
+
+  EXPECT_EQ(active_distiller()->GetDistillationMethod(),
+            ReadAnythingAppModel::DistillationMethod::kScreen2x);
 }

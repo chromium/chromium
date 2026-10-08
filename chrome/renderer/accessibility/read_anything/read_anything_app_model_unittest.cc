@@ -1495,6 +1495,28 @@ class ReadAnythingAppModelReadabilityTest : public ReadAnythingAppModelTest {
 };
 
 TEST_F(ReadAnythingAppModelReadabilityTest,
+       FallbackToScreen2x_ClearsReadabilityStateAndRequiresDistillation) {
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kReadability);
+  model().set_current_content_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kReadability);
+  model().set_requires_readability_distillation(true);
+  model().set_requires_distillation(false);
+
+  model().FallbackToScreen2x();
+
+  EXPECT_EQ(model().next_distillation_method(),
+            ReadAnythingAppModel::DistillationMethod::kScreen2x);
+  EXPECT_FALSE(model().is_readability_next_distillation_method());
+  EXPECT_FALSE(model().requires_readability_distillation());
+  EXPECT_TRUE(model().requires_distillation());
+  // The current content method is left untouched; callers decide whether to
+  // update it.
+  EXPECT_EQ(model().current_content_distillation_method(),
+            ReadAnythingAppModel::DistillationMethod::kReadability);
+}
+
+TEST_F(ReadAnythingAppModelReadabilityTest,
        GetAXTreeAnchors_ExtractsBasicLink) {
   std::string url = "https://www.google.com";
   std::string link_text = "Ir a Google";
