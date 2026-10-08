@@ -76,6 +76,10 @@ TEST(AXActionDataMojomTraitsTest, RoundTrip) {
   EXPECT_EQ(output.GetStringListAttribute(
                 ax::mojom::StringListAttribute::kAriaNotificationAnnouncements),
             std::vector<std::string>({"announcement"}));
+
+  input.target_rect = std::nullopt;
+  EXPECT_TRUE(SerializeAndDeserialize<ax::mojom::AXActionData>(input, output));
+  EXPECT_EQ(output.target_rect, std::nullopt);
 }
 
 TEST(AXActionDataMojomTraitsTest, IntListAttributes) {

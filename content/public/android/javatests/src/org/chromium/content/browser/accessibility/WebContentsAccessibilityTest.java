@@ -1344,6 +1344,35 @@ public class WebContentsAccessibilityTest {
                 "Expected view to scroll down to make button visible.");
     }
 
+    @Test
+    @SmallTest
+    public void testAccessibilityFocusPartiallyOffscreenBottomScrollsIntoView() throws Throwable {
+        // Build a page where a target element's top edge is visible near the bottom of the
+        // viewport and its height extends below the viewport.
+        setupTestWithHTML(
+                """
+                <body style="margin: 0;">
+                  <div style="height: 90vh;"></div>
+                  <div id="target" style="height: 500px; background: red;">Partially offscreen</div>
+                </body>
+                """);
+
+        int targetVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "target");
+
+        // Initial scroll Y should be 0.
+        Assert.assertEquals(0f, mActivityTestRule.mWcax.getScrollYForTesting(), 0.01f);
+
+        // Perform accessibility focus action.
+        performActionOnUiThread(targetVvid, ACTION_ACCESSIBILITY_FOCUS, null);
+
+        // Poll until scroll Y is updated.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mActivityTestRule.mWcax.getScrollYForTesting() > 0f;
+                },
+                "Expected view to scroll down to make target fully visible.");
+    }
+
     /**
      * Test that UMA histograms are recorded for the cache statistics, including the max number of
      * nodes stored in the cache, and percentage of requests retrieved from the cache.

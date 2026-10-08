@@ -1875,6 +1875,179 @@ TEST_F(AccessibilityTest, ScrollMarkerPseudoElement) {
   ASSERT_GT(scroller->scrollTop(), 0);
 }
 
+TEST_F(AccessibilityTest, ScrollToMakeVisible) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #scroller {
+      overflow: auto;
+      height: 300px;
+      width: 300px;
+    }
+    #target {
+      margin-top: 250px;
+      height: 200px;
+      width: 100px;
+      background-color: blue;
+      scroll-margin: 0px;
+    }
+    #inline_container {
+      margin-top: -450px;
+    }
+    .inline_pusher {
+      display: inline-block;
+      width: 100%;
+      height: 800px;
+    }
+    .spacer {
+      height: 1000px;
+    }
+    </style>
+    <div id="scroller">
+      <div id="target"></div>
+      <div id="inline_container">
+        <span class="inline_pusher"></span>
+        <span id="inline_target">Inline target text</span>
+      </div>
+      <div class="spacer"></div>
+    </div>
+  )HTML");
+
+  Element* scroller = GetElementById("scroller");
+  Element* target = GetElementById("target");
+  Element* inline_target = GetElementById("inline_target");
+
+  // 1. `ScrollToMakeVisible()` on a `LayoutBox` (`#target`) whose top edge
+  // (`250px`) is inside the `300px` scroller but whose bottom (`450px`) extends
+  // below the scroller should scroll the full bounding box into view.
+  ASSERT_EQ(scroller->scrollTop(), 0);
+  WebAXObject ax_target = WebAXObject::FromWebNode(target);
+  ax_target.ScrollToMakeVisible();
+  ASSERT_GT(scroller->scrollTop(), 0);
+
+  // 2. `ScrollToMakeVisible()` on a `LayoutInline` (`#inline_target`) located
+  // 800px down inside `#inline_container` (whose own top-left origin is at y=0)
+  // should scroll `#inline_target` (y=800) into view (`scrollTop > 500`).
+  scroller->setScrollTop(0);
+  ASSERT_EQ(scroller->scrollTop(), 0);
+  WebAXObject ax_inline_target = WebAXObject::FromWebNode(inline_target);
+  ax_inline_target.ScrollToMakeVisible();
+  EXPECT_GT(scroller->scrollTop(), 500);
+}
+
+TEST_F(AccessibilityTest, ScrollToMakeVisibleWithSubFocus) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #scroller {
+      overflow: auto;
+      height: 300px;
+      width: 300px;
+    }
+    #target {
+      margin-top: 250px;
+      height: 200px;
+      width: 100px;
+      background-color: blue;
+      scroll-margin: 0px;
+    }
+    #inline_container {
+      margin-top: -450px;
+    }
+    .inline_pusher {
+      display: inline-block;
+      width: 100%;
+      height: 800px;
+    }
+    .spacer {
+      height: 1000px;
+    }
+    </style>
+    <div id="scroller">
+      <div id="target"></div>
+      <div id="inline_container">
+        <span class="inline_pusher"></span>
+        <span id="inline_target">Inline target text</span>
+      </div>
+      <div class="spacer"></div>
+    </div>
+  )HTML");
+
+  Element* scroller = GetElementById("scroller");
+  Element* target = GetElementById("target");
+  Element* inline_target = GetElementById("inline_target");
+  WebAXObject ax_target = WebAXObject::FromWebNode(target);
+  WebAXObject ax_inline_target = WebAXObject::FromWebNode(inline_target);
+
+  // 1. Non-empty `(0, 0, w, h)` subfocus rect on `#inline_target` (simulating
+  // `AXPlatformNodeBase::ScrollToNode`, `AXPlatformNodeWin::ScrollIntoView`,
+  // and `AccessibilityBridgeFuchsiaImpl`, which pass a local bounding box with
+  // origin `(0, 0)`).
+  ASSERT_EQ(scroller->scrollTop(), 0);
+  ax_inline_target.ScrollToMakeVisibleWithSubFocus(gfx::Rect(0, 0, 50, 20));
+  EXPECT_GT(scroller->scrollTop(), 500);
+
+  // 2. A non-empty subfocus rectangle (`(0, 0, 100, 200)`) in local coordinates
+  // on a `LayoutBox` should scroll that sub-region into view.
+  scroller->setScrollTop(0);
+  ASSERT_EQ(scroller->scrollTop(), 0);
+  ax_target.ScrollToMakeVisibleWithSubFocus(gfx::Rect(0, 0, 100, 200));
+  ASSERT_GT(scroller->scrollTop(), 0);
+
+  // 3. Zero-size point/edge subfocus rectangles:
+  // - A `(0, 0, 0, 0)` top-left origin subfocus on `#target` (whose top-left
+  //   origin at `y = 250px` is already inside the `0..300px` visible viewport)
+  //   is already visible when using closest-edge alignment, so it does not
+  //   scroll (contrasting with `ScrollToMakeVisible()`).
+  scroller->setScrollTop(0);
+  ASSERT_EQ(scroller->scrollTop(), 0);
+  ax_target.ScrollToMakeVisibleWithSubFocus(
+      gfx::Rect(0, 0, 0, 0),
+      ax::mojom::blink::ScrollAlignment::kScrollAlignmentClosestEdge,
+      ax::mojom::blink::ScrollAlignment::kScrollAlignmentClosestEdge,
+      ax::mojom::blink::ScrollBehavior::kDoNotScrollIfVisible);
+  ASSERT_EQ(scroller->scrollTop(), 0);
+
+  // - A `(0, 0, 0, 0)` top-left origin subfocus on `#inline_target` is offset
+  //   by `LocalBoundingBoxRectForAccessibility().origin()` (`y = 800px`, off
+  //   screen) and scrolls `#inline_target` into view.
+  ax_inline_target.ScrollToMakeVisibleWithSubFocus(
+      gfx::Rect(0, 0, 0, 0),
+      ax::mojom::blink::ScrollAlignment::kScrollAlignmentClosestEdge,
+      ax::mojom::blink::ScrollAlignment::kScrollAlignmentClosestEdge,
+      ax::mojom::blink::ScrollBehavior::kDoNotScrollIfVisible);
+  EXPECT_GT(scroller->scrollTop(), 500);
+
+  // - A subfocus point near the top of `#target` (`(0, 10, 0, 0)`, which maps
+  //   to `y = 260px` inside the `0..300px` visible viewport) is already visible
+  //   when using closest-edge alignment, so it should not scroll.
+  scroller->setScrollTop(0);
+  ASSERT_EQ(scroller->scrollTop(), 0);
+  ax_target.ScrollToMakeVisibleWithSubFocus(
+      gfx::Rect(0, 10, 0, 0),
+      ax::mojom::blink::ScrollAlignment::kScrollAlignmentClosestEdge,
+      ax::mojom::blink::ScrollAlignment::kScrollAlignmentClosestEdge,
+      ax::mojom::blink::ScrollBehavior::kDoNotScrollIfVisible);
+  ASSERT_EQ(scroller->scrollTop(), 0);
+
+  // - A zero-size bottom-right corner point (`(100, 200, 0, 0)`, which maps to
+  //   `y = 450px` below the `300px` viewport) or bottom-edge segment
+  //   (`(0, 200, 100, 0)`) must preserve its non-zero local offset and scroll
+  //   into view.
+  ax_target.ScrollToMakeVisibleWithSubFocus(
+      gfx::Rect(100, 200, 0, 0),
+      ax::mojom::blink::ScrollAlignment::kScrollAlignmentClosestEdge,
+      ax::mojom::blink::ScrollAlignment::kScrollAlignmentClosestEdge,
+      ax::mojom::blink::ScrollBehavior::kDoNotScrollIfVisible);
+  ASSERT_GT(scroller->scrollTop(), 0);
+
+  scroller->setScrollTop(0);
+  ASSERT_EQ(scroller->scrollTop(), 0);
+  ax_target.ScrollToMakeVisibleWithSubFocus(
+      gfx::Rect(0, 200, 100, 0),
+      ax::mojom::blink::ScrollAlignment::kScrollAlignmentClosestEdge,
+      ax::mojom::blink::ScrollAlignment::kScrollAlignmentClosestEdge,
+      ax::mojom::blink::ScrollBehavior::kDoNotScrollIfVisible);
+  ASSERT_GT(scroller->scrollTop(), 0);
+}
 TEST_F(AccessibilityTest, ScrollToMakeScrollerVisible) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -1913,7 +2086,7 @@ TEST_F(AccessibilityTest, ScrollToMakeScrollerVisible) {
   // changes its position on screen. If part of its scrolling content was
   // being targeted, the inner AXObject would be used.
   WebAXObject scrollerAXObject = WebAXObject::FromWebNode(scroller);
-  scrollerAXObject.ScrollToMakeVisibleWithSubFocus(gfx::Rect());
+  scrollerAXObject.ScrollToMakeVisible();
   ASSERT_EQ(scroller->scrollLeft(), 800);
 
   // But it still should have scrolled the ancestor scroller down

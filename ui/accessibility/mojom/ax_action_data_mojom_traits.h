@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
 #include "ui/accessibility/ax_action_data.h"
@@ -50,7 +51,8 @@ struct StructTraits<ax::mojom::AXActionDataDataView, ui::AXActionData> {
   static int32_t custom_action_id(const ui::AXActionData& a) {
     return a.custom_action_id;
   }
-  static const gfx::Rect& target_rect(const ui::AXActionData& a) {
+  static const std::optional<gfx::Rect>& target_rect(
+      const ui::AXActionData& a) {
     return a.target_rect;
   }
   static const gfx::Point& target_point(const ui::AXActionData& a) {

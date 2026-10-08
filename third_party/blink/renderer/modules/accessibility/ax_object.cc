@@ -8043,24 +8043,17 @@ bool AXObject::RequestScrollToGlobalPointAction(const gfx::Point& point) {
   return OnNativeScrollToGlobalPointAction(point);
 }
 
-bool AXObject::RequestScrollToMakeVisibleAction() {
-  return OnNativeScrollToMakeVisibleAction();
-}
-
-bool AXObject::RequestScrollToMakeVisibleWithSubFocusAction(
-    const gfx::Rect& subfocus,
-    blink::mojom::blink::ScrollAlignment horizontal_scroll_alignment,
-    blink::mojom::blink::ScrollAlignment vertical_scroll_alignment) {
+AXObject* AXObject::GetTargetForScrollAction() {
   Document* document = GetDocument();
   if (!document) {
-    return false;
+    return nullptr;
   }
   AXObjectCacheImpl& cache = AXObjectCache();
   Node* node = GetNode();
   if (!node) {
     node = GetClosestElement();
     if (!node) {
-      return false;
+      return nullptr;
     }
   }
 
@@ -8071,17 +8064,23 @@ bool AXObject::RequestScrollToMakeVisibleWithSubFocusAction(
 
   // Updating style and layout for the node can cause it to gain layout,
   // detaching the original AXNodeObject to make room for a new one with layout.
-  if (IsDetached()) {
-    AXObject* new_object = cache.Get(node);
-    return new_object
-               ? new_object->OnNativeScrollToMakeVisibleWithSubFocusAction(
-                     subfocus, horizontal_scroll_alignment,
-                     vertical_scroll_alignment)
-               : false;
-  }
+  return IsDetached() ? cache.Get(node) : this;
+}
 
-  return OnNativeScrollToMakeVisibleWithSubFocusAction(
-      subfocus, horizontal_scroll_alignment, vertical_scroll_alignment);
+bool AXObject::RequestScrollToMakeVisibleAction() {
+  AXObject* target = GetTargetForScrollAction();
+  return target ? target->OnNativeScrollToMakeVisibleAction() : false;
+}
+
+bool AXObject::RequestScrollToMakeVisibleWithSubFocusAction(
+    const gfx::Rect& target_rect,
+    blink::mojom::blink::ScrollAlignment horizontal_scroll_alignment,
+    blink::mojom::blink::ScrollAlignment vertical_scroll_alignment) {
+  AXObject* target = GetTargetForScrollAction();
+  return target ? target->OnNativeScrollToMakeVisibleWithSubFocusAction(
+                      target_rect, horizontal_scroll_alignment,
+                      vertical_scroll_alignment)
+                : false;
 }
 
 bool AXObject::RequestSetSelectedAction(bool selected) {
@@ -8391,32 +8390,12 @@ void AXObject::DispatchKeyboardEvent(LocalDOMWindow* local_dom_window,
       *blink::KeyboardEvent::Create(key, local_dom_window, true));
 }
 
-bool AXObject::OnNativeScrollToMakeVisibleAction() const {
-  LayoutObject* layout_object = GetLayoutObjectForNativeScrollAction();
-  if (!layout_object)
-    return false;
-  PhysicalRect target_rect(layout_object->AbsoluteBoundingBoxRect());
-  scroll_into_view_util::ScrollRectToVisible(
-      *layout_object, target_rect,
-      scroll_into_view_util::CreateScrollIntoViewParams(
-          ScrollAlignment::CenterIfNeeded(), ScrollAlignment::CenterIfNeeded(),
-          mojom::blink::ScrollType::kProgrammatic, false,
-          mojom::blink::ScrollBehavior::kAuto));
-  AXObjectCache().PostNotification(GetDocument(),
-                                   ax::mojom::blink::Event::kLocationChanged);
-  return true;
-}
-
-bool AXObject::OnNativeScrollToMakeVisibleWithSubFocusAction(
-    const gfx::Rect& rect,
+void AXObject::ScrollLayoutObjectRectToVisible(
+    const LayoutObject& target_layout_object,
+    const PhysicalRect& absolute_target_rect,
     blink::mojom::blink::ScrollAlignment horizontal_scroll_alignment,
     blink::mojom::blink::ScrollAlignment vertical_scroll_alignment) const {
-  const LayoutObject* layout_object = GetLayoutObjectForNativeScrollAction();
-  if (!layout_object)
-    return false;
-
-  PhysicalRect target_rect =
-      layout_object->LocalToAbsoluteRect(PhysicalRect(rect));
+  const LayoutObject* layout_object = &target_layout_object;
   // To scroll an element into view, we don't scroll the element itself
   // unless it is the document scrolling element.
   // TODO(crbug.com/401443093): Consider moving this logic further down
@@ -8425,7 +8404,7 @@ bool AXObject::OnNativeScrollToMakeVisibleWithSubFocusAction(
     layout_object = container;
   }
   scroll_into_view_util::ScrollRectToVisible(
-      *layout_object, target_rect,
+      *layout_object, absolute_target_rect,
       scroll_into_view_util::CreateScrollIntoViewParams(
           horizontal_scroll_alignment, vertical_scroll_alignment,
           mojom::blink::ScrollType::kProgrammatic,
@@ -8433,6 +8412,34 @@ bool AXObject::OnNativeScrollToMakeVisibleWithSubFocusAction(
           mojom::blink::ScrollBehavior::kAuto));
   AXObjectCache().PostNotification(GetDocument(),
                                    ax::mojom::blink::Event::kLocationChanged);
+}
+
+bool AXObject::OnNativeScrollToMakeVisibleAction() const {
+  const LayoutObject* layout_object = GetLayoutObjectForNativeScrollAction();
+  if (!layout_object) {
+    return false;
+  }
+  ScrollLayoutObjectRectToVisible(
+      *layout_object, PhysicalRect(layout_object->AbsoluteBoundingBoxRect()),
+      ScrollAlignment::CenterIfNeeded(), ScrollAlignment::CenterIfNeeded());
+  return true;
+}
+
+bool AXObject::OnNativeScrollToMakeVisibleWithSubFocusAction(
+    const gfx::Rect& target_rect,
+    blink::mojom::blink::ScrollAlignment horizontal_scroll_alignment,
+    blink::mojom::blink::ScrollAlignment vertical_scroll_alignment) const {
+  const LayoutObject* layout_object = GetLayoutObjectForNativeScrollAction();
+  if (!layout_object) {
+    return false;
+  }
+
+  PhysicalRect local_target_rect(target_rect);
+  local_target_rect.offset += PhysicalOffset::FromPointFRound(
+      layout_object->LocalBoundingBoxRectForAccessibility().origin());
+  ScrollLayoutObjectRectToVisible(
+      *layout_object, layout_object->LocalToAbsoluteRect(local_target_rect),
+      horizontal_scroll_alignment, vertical_scroll_alignment);
   return true;
 }
 

@@ -5,6 +5,7 @@
 #ifndef UI_ACCESSIBILITY_AX_ACTION_DATA_H_
 #define UI_ACCESSIBILITY_AX_ACTION_DATA_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -77,8 +78,10 @@ struct AX_BASE_EXPORT AXActionData {
   // For custom action.
   AXNodeID custom_action_id = kInvalidAXNodeID;
 
-  // The target rect for the action.
-  gfx::Rect target_rect;
+  // The target rect for the action. For `kScrollToMakeVisible`, this is an
+  // optional node-local subfocus rectangle; when `std::nullopt`, the target
+  // node's full bounding box is scrolled into view.
+  std::optional<gfx::Rect> target_rect;
 
   // The target point for the action in screen coordinates.
   gfx::Point target_point;

@@ -1231,7 +1231,7 @@ void BrowserAccessibilityManager::Scroll(const BrowserAccessibility& node,
 
 void BrowserAccessibilityManager::ScrollToMakeVisible(
     const BrowserAccessibility& node,
-    gfx::Rect subfocus,
+    std::optional<gfx::Rect> subfocus,
     ax::mojom::ScrollAlignment horizontal_scroll_alignment,
     ax::mojom::ScrollAlignment vertical_scroll_alignment,
     ax::mojom::ScrollBehavior scroll_behavior) {

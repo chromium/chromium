@@ -3439,7 +3439,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   ASSERT_NE(button_node, nullptr);
 
   ui::BrowserAccessibilityManager* manager = button_node->manager();
-  manager->ScrollToMakeVisible(*button_node, gfx::Rect());
+  manager->ScrollToMakeVisible(*button_node);
 
   EXPECT_EQ(manager->GetAccessibilityFocus(), button_node);
 }
@@ -3469,7 +3469,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   ASSERT_NE(button_node, nullptr);
 
   ui::BrowserAccessibilityManager* manager = button_node->manager();
-  manager->ScrollToMakeVisible(*button_node, gfx::Rect());
+  manager->ScrollToMakeVisible(*button_node);
 
   EXPECT_EQ(GetManager()->GetAccessibilityFocus(), button_node);
 }

@@ -405,10 +405,11 @@ TEST_F(AccessibilityBridgeFuchsiaTest, ScrollToMakeVisible) {
 
   // The target rect should have the same size as the node's bounds, but
   // should have (x, y) == (0, 0).
-  EXPECT_EQ(action_data->target_rect.x(), 0.f);
-  EXPECT_EQ(action_data->target_rect.y(), 0.f);
-  EXPECT_EQ(action_data->target_rect.width(), 3.f);
-  EXPECT_EQ(action_data->target_rect.height(), 4.f);
+  ASSERT_TRUE(action_data->target_rect.has_value());
+  EXPECT_EQ(action_data->target_rect->x(), 0.f);
+  EXPECT_EQ(action_data->target_rect->y(), 0.f);
+  EXPECT_EQ(action_data->target_rect->width(), 3.f);
+  EXPECT_EQ(action_data->target_rect->height(), 4.f);
 }
 
 }  // namespace

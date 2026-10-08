@@ -1518,9 +1518,12 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Modify or take an action on an object. Returns true if handled.
   bool PerformAction(const ui::AXActionData&);
+  // Scrolls a sub-rectangle within this object into view. See
+  // `OnNativeScrollToMakeVisibleWithSubFocusAction()` for details on
+  // `target_rect`.
   // TODO(accessibility) Do this through PerformAction() and move to private.
   bool RequestScrollToMakeVisibleWithSubFocusAction(
-      const gfx::Rect&,
+      const gfx::Rect& target_rect,
       blink::mojom::blink::ScrollAlignment horizontal_scroll_alignment,
       blink::mojom::blink::ScrollAlignment vertical_scroll_alignment);
 
@@ -1538,9 +1541,17 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual bool OnNativeFocusAction();
   virtual bool OnNativeIncrementAction();
   bool OnNativeScrollToGlobalPointAction(const gfx::Point&) const;
+  // Scrolls this object's full bounding box
+  // (`LayoutObject::AbsoluteBoundingBoxRect()`) into view.
   bool OnNativeScrollToMakeVisibleAction() const;
+  // Scrolls `target_rect` into view using the requested scroll alignments.
+  // `target_rect` is relative to the object's own top-left origin, so it is
+  // offset by `LayoutObject::LocalBoundingBoxRectForAccessibility().origin()`
+  // (which is `(0, 0)` for `LayoutBox` and `(inline_x, inline_y)` in the
+  // containing block for `LayoutInline` and `LayoutText`) and mapped to
+  // absolute coordinates via `LayoutObject::LocalToAbsoluteRect()`.
   bool OnNativeScrollToMakeVisibleWithSubFocusAction(
-      const gfx::Rect&,
+      const gfx::Rect& target_rect,
       blink::mojom::blink::ScrollAlignment horizontal_scroll_alignment,
       blink::mojom::blink::ScrollAlignment vertical_scroll_alignment) const;
   virtual bool OnNativeSetSelectedAction(bool);
@@ -1809,6 +1820,15 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // objects generated. Returns nullptr if a native scroll action to the node is
   // not possible.
   LayoutObject* GetLayoutObjectForNativeScrollAction() const;
+  // Updates style and layout for this object's node and returns the live
+  // `AXObject` (re-fetching from `AXObjectCache()` if updating layout detached
+  // `this`).
+  AXObject* GetTargetForScrollAction();
+  void ScrollLayoutObjectRectToVisible(
+      const LayoutObject& target_layout_object,
+      const PhysicalRect& absolute_target_rect,
+      blink::mojom::blink::ScrollAlignment horizontal_scroll_alignment,
+      blink::mojom::blink::ScrollAlignment vertical_scroll_alignment) const;
 
   void DispatchKeyboardEvent(LocalDOMWindow* local_dom_window,
                              WebInputEvent::Type type,

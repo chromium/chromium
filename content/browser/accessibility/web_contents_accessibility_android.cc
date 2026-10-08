@@ -2294,12 +2294,9 @@ bool WebContentsAccessibilityAndroid::ScrollToMakeNodeVisible(
   if (!node) {
     return false;
   }
-  // Passing an empty gfx::Rect() signals to Blink to scroll the element's
-  // natural layout bounds into view. Explicitly deriving and passing
-  // absolute-sized target rects can miscalculate scroll destinations for
-  // elements nested inside positioned layers or web components, leading to
-  // unexpected page over-scrolling.
-  node->manager()->ScrollToMakeVisible(*node, gfx::Rect());
+  // Scroll the node's full layout bounding box into view without specifying a
+  // subfocus rectangle.
+  node->manager()->ScrollToMakeVisible(*node);
   return true;
 }
 
