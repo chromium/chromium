@@ -720,7 +720,9 @@ void DownloadTargetDeterminer::RequestConfirmationDone(
         download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED);
     return;
   }
-  CHECK(!virtual_path.empty(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/571289487): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK(!virtual_path.empty());
   CHECK_EQ(STATE_DETERMINE_LOCAL_PATH, next_state_, base::NotFatalUntil::M161);
 
   // If the user wasn't prompted, then we need to clear the
