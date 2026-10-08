@@ -929,13 +929,7 @@ class DragInteractiveUiTest : public InteractiveBrowserTest {
 
 // A simple test that verifies widget dragging works by moving a view around.
 // The bounds of the view are expected to change as the mouse moves.
-// TODO(crbug.com/40249472): Dragging views does not work on all platforms.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_DragView DragView
-#else
-#define MAYBE_DragView DISABLED_DragView
-#endif
-IN_PROC_BROWSER_TEST_F(DragInteractiveUiTest, MAYBE_DragView) {
+IN_PROC_BROWSER_TEST_F(DragInteractiveUiTest, DragView) {
   ui::ElementContext widget_context =
       views::ElementTrackerViews::GetContextForWidget(test_widget_.get());
   RunTestSequenceInContext(
