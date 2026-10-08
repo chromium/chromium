@@ -660,11 +660,8 @@ bool PopupBaseView::OverlapsWithAnotherPrompt(
     return true;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillPopupCheckHtmlFormPopupOverlap)) {
-    if (BoundsOverlapWithHtmlFormPopup(popup_bounds, web_contents)) {
-      return true;
-    }
+  if (BoundsOverlapWithHtmlFormPopup(popup_bounds, web_contents)) {
+    return true;
   }
 
   return false;
