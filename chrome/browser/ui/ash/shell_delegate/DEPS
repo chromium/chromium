@@ -4,7 +4,6 @@ include_rules = [
   # Existing dependencies within //chrome. There is an active effort to
   # refactor ash codes in //chrome to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/api/tasks",
   "+chrome/browser/ash/arc/arc_util.h",
   "+chrome/browser/ash/arc/session/arc_service_launcher.h",
@@ -42,7 +41,6 @@ include_rules = [
   "+chrome/browser/ui/views/tabs",
   "+chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h",
   "+chrome/browser/ui/window_feature_controller/window_feature_controller.h",
-  "+chrome/browser/web_applications",
   "+chrome/common",
 ]
 

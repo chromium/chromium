@@ -57,7 +57,6 @@
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/accessibility/select_to_speak_event_handler_delegate_impl.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/api/braille_display_private/stub_braille_controller.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile_manager.h"

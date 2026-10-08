@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/early_prefs/early_prefs_reader.h"
 #include "chromeos/ash/components/osauth/impl/early_login_auth_policy_connector.h"

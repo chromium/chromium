@@ -13,7 +13,6 @@ include_rules = [
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/policy/enrollment",
   "+chrome/browser/ash/preferences/preferences.h",
-  "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/extensions/api/braille_display_private",
   "+chrome/browser/extensions/component_loader.h",

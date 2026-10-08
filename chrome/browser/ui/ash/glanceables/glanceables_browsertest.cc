@@ -28,7 +28,6 @@
 #include "ash/test/ash_test_util.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"

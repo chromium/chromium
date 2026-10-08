@@ -6,7 +6,6 @@ include_rules = [
   "+chrome/browser/ash/apps",
   "+chrome/browser/ash/arc",
   "+chrome/browser/ash/file_manager",
-  "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/system_web_apps/apps/calculator_app",
   "+chrome/browser/ash/system_web_apps/apps/camera_app",
   "+chrome/browser/ash/system_web_apps/system_web_app_manager.h",

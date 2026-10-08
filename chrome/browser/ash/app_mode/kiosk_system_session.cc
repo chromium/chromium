@@ -24,7 +24,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
 #include "chrome/browser/ash/app_mode/metrics/network_connectivity_metrics_service.h"
 #include "chrome/browser/ash/app_mode/metrics/periodic_metrics_service.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/pref_registry/pref_registry_syncable.h"

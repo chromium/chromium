@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/global_media_controls/cast_media_notification_producer_keyed_service_factory.h"
 
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"

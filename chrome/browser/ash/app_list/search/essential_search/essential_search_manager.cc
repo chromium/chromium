@@ -9,7 +9,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/essential_search/socs_cookie_fetcher.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"

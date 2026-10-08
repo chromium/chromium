@@ -7,7 +7,6 @@
 #include "ash/constants/webui_url_constants.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
 #include "chrome/browser/profiles/profile.h"

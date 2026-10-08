@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/auth/legacy_fingerprint_engine.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"

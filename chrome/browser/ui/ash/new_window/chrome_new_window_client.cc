@@ -32,7 +32,6 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/url_util.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/apps/calculator_app/calculator_app_utils.h"
 #include "chrome/browser/ash/system_web_apps/apps/camera_app/chrome_camera_app_ui_delegate.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
