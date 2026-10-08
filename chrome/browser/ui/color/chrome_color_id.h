@@ -348,6 +348,7 @@
   E_CPONLY(kColorComposeboxFileChipSpinner) \
   E_CPONLY(kColorComposeboxFont) \
   E_CPONLY(kColorComposeboxFontLight) \
+  E_CPONLY(kColorComposeboxGhostCardBackground) \
   E_CPONLY(kColorComposeboxCancelButton) \
   E_CPONLY(kColorComposeboxCancelButtonLight) \
   E_CPONLY(kColorComposeboxErrorScrimBackground) \

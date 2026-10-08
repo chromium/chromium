@@ -13,6 +13,8 @@
 
 :host {
   --composebox-cancel-button-top: var(--cr-composebox-cancel-button-top, 12px);
+  --color-composebox-ghost-card-background:
+      var(--color-sys-state-ripple-neutral-on-subtle);
   --cr-composebox-grid-min-item-width: 100px;
   --cr-composebox-grid-padding-bottom: 10px;
   --cr-composebox-grid-row-gap: 16px;

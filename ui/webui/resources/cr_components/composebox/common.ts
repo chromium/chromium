@@ -748,3 +748,13 @@ export function recordTabPickerTabSelected(
       Math.min(index, TAB_PICKER_POSITION_HISTOGRAM_MAX),
       TAB_PICKER_POSITION_HISTOGRAM_MAX + 1);
 }
+
+// Returns a CSP-safe image URL using Chrome's SanitizedImageSource
+// (//image?...).
+export function computeImageUrl(url: string|undefined): string {
+  if (!url) {
+    return '';
+  }
+  return `//image?staticEncode=true&encodeType=webp&url=${
+      encodeURIComponent(url)}`;
+}

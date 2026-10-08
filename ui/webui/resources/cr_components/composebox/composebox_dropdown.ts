@@ -9,12 +9,17 @@ import {hasKeyModifiers} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {RenderType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {RenderType, SuggestStyle} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
+import {computeImageUrl} from './common.js';
 import {getCss} from './composebox_dropdown.css.js';
 import {getHtml} from './composebox_dropdown.html.js';
 import type {ComposeboxMatchElement} from './composebox_match.js';
+
+// Maximum time to wait for a batch of rich suggestion images to preload before
+// revealing the cards.
+const IMAGE_PRELOAD_TIMEOUT_MS = 2000;
 
 // The '%' operator in JS returns negative numbers. This workaround avoids that.
 function remainder(lhs: number, rhs: number) {
@@ -62,7 +67,25 @@ export class ComposeboxDropdownElement extends CrLitElement {
       },
       overrideClampLineNum: {type: Number},
       richImageSuggestionsEnabled: {type: Boolean},
+      isImageBatchLoading_: {type: Boolean},
     };
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.cancelImagePreload_();
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (!this.richImageSuggestionsEnabled) {
+      return;
+    }
+
+    if (changedProperties.has('result') ||
+        changedProperties.has('maxSuggestions')) {
+      this.updateImagePreload_();
+    }
   }
 
   override updated(changedProperties: PropertyValues<this>) {
@@ -87,6 +110,13 @@ export class ComposeboxDropdownElement extends CrLitElement {
   accessor toolMode: ToolMode = ToolMode.kUnspecified;
   accessor overrideClampLineNum: number = -1;
   accessor richImageSuggestionsEnabled: boolean = false;
+  accessor isImageBatchLoading_: boolean = false;
+  private imagePreloadGeneration_: number = 0;
+  private imagePreloadTimeoutId_: number|undefined;
+  // Retains HTMLImageElement instances so Blink's MemoryCache holds a strong
+  // reference to the decoded ImageResource across tool-mode toggles.
+  private loadedImages_: Map<string, HTMLImageElement> = new Map();
+  private preloadingImages_: Set<HTMLImageElement> = new Set();
 
   //============================================================================
   // Public methods
@@ -326,6 +356,91 @@ export class ComposeboxDropdownElement extends CrLitElement {
 
   protected isMatchHidden_(index: number): boolean {
     return this.hideVerbatimMatch_(index) || index > this.getMaxVisibleIndex_();
+  }
+
+  protected isMatchLoading_(match: AutocompleteMatch): boolean {
+    return this.richImageSuggestionsEnabled &&
+        match.suggestStyle === SuggestStyle.kRichImage &&
+        Boolean(match.suggestTemplate.image?.url) && this.isImageBatchLoading_;
+  }
+
+  private clearImagePreloadTimeout_() {
+    if (this.imagePreloadTimeoutId_ !== undefined) {
+      clearTimeout(this.imagePreloadTimeoutId_);
+      this.imagePreloadTimeoutId_ = undefined;
+    }
+  }
+
+  private cancelImagePreload_() {
+    this.imagePreloadGeneration_++;
+    this.clearImagePreloadTimeout_();
+    for (const img of this.preloadingImages_) {
+      img.onload = null;
+      img.onerror = null;
+    }
+    this.preloadingImages_.clear();
+  }
+
+  private updateImagePreload_() {
+    this.cancelImagePreload_();
+    const generation = this.imagePreloadGeneration_;
+    if (!this.result) {
+      this.isImageBatchLoading_ = false;
+      return;
+    }
+
+    const imageMatches = this.result.matches.filter(
+        (m, index) => !this.isMatchHidden_(index) &&
+            m.suggestStyle === SuggestStyle.kRichImage &&
+            Boolean(m.suggestTemplate.image?.url));
+    if (imageMatches.length === 0 ||
+        imageMatches.every(
+            m => this.loadedImages_.has(m.suggestTemplate.image!.url))) {
+      this.isImageBatchLoading_ = false;
+      return;
+    }
+
+    this.isImageBatchLoading_ = true;
+    const preloadPromises = imageMatches.map(m => {
+      const imageUrl = m.suggestTemplate.image!.url;
+      return new Promise<void>(resolve => {
+        if (this.loadedImages_.has(imageUrl)) {
+          resolve();
+          return;
+        }
+        const img = new Image();
+        this.preloadingImages_.add(img);
+        img.onload = () => {
+          this.preloadingImages_.delete(img);
+          this.loadedImages_.set(imageUrl, img);
+          resolve();
+        };
+        img.onerror = () => {
+          this.preloadingImages_.delete(img);
+          resolve();
+        };
+        img.src = computeImageUrl(imageUrl);
+      });
+    });
+
+    const timeoutPromise = new Promise<void>(resolve => {
+      this.imagePreloadTimeoutId_ =
+          window.setTimeout(resolve, IMAGE_PRELOAD_TIMEOUT_MS);
+    });
+
+    void Promise
+        .race([
+          Promise.all(preloadPromises),
+          timeoutPromise,
+        ])
+        .then(() => {
+          if (this.imagePreloadGeneration_ === generation) {
+            // Only clear the timeout; let any still-in-flight images in
+            // `preloadingImages_` finish and populate `loadedImages_`.
+            this.clearImagePreloadTimeout_();
+            this.isImageBatchLoading_ = false;
+          }
+        });
   }
 }
 

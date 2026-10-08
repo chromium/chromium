@@ -29,7 +29,7 @@ export function getHtml(this: ComposeboxDropdownElement) {
                       match-icon, match-remove-button, match-contents,
                       match-description"
                   style="--loading-bar-animation-delay: ${index + 1};"
-                  tabindex="0"
+                  tabindex="${this.isMatchLoading_(match) ? -1 : 0}"
                   role="option"
                   .match="${match}"
                   .matchIndex="${index}"
@@ -40,7 +40,8 @@ export function getHtml(this: ComposeboxDropdownElement) {
                       this.richImageSuggestionsEnabled}"
                   ?selected="${this.isSelected_(index)}"
                   ?is-last="${this.isLastMatch_(index)}"
-                  ?hidden="${this.isMatchHidden_(index)}">
+                  ?hidden="${this.isMatchHidden_(index)}"
+                  ?loading="${this.isMatchLoading_(match)}">
               </cr-composebox-match>
             </div>
           `)}

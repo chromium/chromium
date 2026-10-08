@@ -13,6 +13,7 @@ import {SuggestStyle} from '//resources/mojo/components/omnibox/browser/searchbo
 import {SecondaryTextPlacement} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
+import {computeImageUrl} from './common.js';
 import {getCss} from './composebox_match.css.js';
 import {getHtml} from './composebox_match.html.js';
 import {ComposeboxProxyImpl, createAutocompleteMatch} from './composebox_proxy.js';
@@ -81,9 +82,14 @@ export class ComposeboxMatchElement extends CrLitElement {
         type: String,
         reflect: true,
       },
+      loading: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
+  accessor loading: boolean = false;
   accessor match: AutocompleteMatch = createAutocompleteMatch();
   accessor overrideClampLineNum: number = -1;
 
@@ -155,33 +161,27 @@ export class ComposeboxMatchElement extends CrLitElement {
     return this.match.iconPath || '';
   }
 
-  // Returns a CSP-safe image URL using Chrome's SanitizedImageSource
-  // (//image?...).
-  protected computeImageUrl_(url: string|undefined): string {
-    if (!url) {
-      return '';
-    }
-    return `//image?staticEncode=true&encodeType=webp&url=${
-        encodeURIComponent(url)}`;
-  }
-
   protected imageStyle_(): string {
-    if (!this.isRichImage) {
+    if (!this.isRichImage || this.loading) {
       return '';
     }
-    const src = this.computeImageUrl_(this.match.suggestTemplate.image?.url);
+    const src = computeImageUrl(this.match.suggestTemplate.image?.url);
     return src ? `background-image: ${getUrlForCss(src)};` : '';
   }
 
   private onMatchFocusin_() {
+    if (this.loading) {
+      return;
+    }
     this.fire('match-focusin', {
       index: this.matchIndex,
     });
   }
 
   private onMouseClick_(e: MouseEvent) {
-    if (e.button > 1) {
-      // Only handle main (generally left) and middle button presses.
+    if (this.loading || e.button > 1) {
+      // Only handle main (generally left) and middle button presses, and ignore
+      // clicks while cards are in a loading state.
       return;
     }
 
