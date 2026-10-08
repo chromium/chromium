@@ -160,6 +160,8 @@ class WebAppBrowserController : public AppBrowserController,
 
  protected:
   // AppBrowserController:
+  bool IsOriginAllowedForAboutBlankPopup(
+      const url::Origin& origin) const override;
   void OnTabInserted(content::WebContents* contents) override;
   void OnTabRemoved(content::WebContents* contents) override;
 

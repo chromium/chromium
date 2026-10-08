@@ -54,6 +54,10 @@ class ImageModel;
 class ThemeProvider;
 }  // namespace ui
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace web_app {
 
 class WebAppBrowserController;
@@ -376,6 +380,11 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
                        webapps::AppId app_id,
                        bool has_tab_strip);
   AppBrowserController(BrowserWindowInterface* browser, webapps::AppId app_id);
+
+  // Whether an about:blank popup with this inherited origin may omit the
+  // custom tab bar. The default permits only the app's start URL origin.
+  virtual bool IsOriginAllowedForAboutBlankPopup(
+      const url::Origin& origin) const;
 
   // Called once the app browser controller has determined its initial url.
   virtual void OnReceivedInitialURL();

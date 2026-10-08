@@ -653,6 +653,12 @@ bool WebAppBrowserController::IsUrlInAppScope(const GURL& url) const {
   return scope->IsInScope(url, {.allow_http_to_https_upgrade = true});
 }
 
+bool WebAppBrowserController::IsOriginAllowedForAboutBlankPopup(
+    const url::Origin& origin) const {
+  return AppBrowserController::IsOriginAllowedForAboutBlankPopup(origin) ||
+         (!origin.opaque() && IsUrlInAppScope(origin.GetURL()));
+}
+
 WebAppBrowserController* WebAppBrowserController::AsWebAppBrowserController() {
   return this;
 }

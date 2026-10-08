@@ -362,8 +362,8 @@ bool AppBrowserController::ShouldShowCustomTabBar() const {
       content::RenderFrameHost* const primary_main_frame =
           web_contents->GetPrimaryMainFrame();
       if (primary_main_frame &&
-          primary_main_frame->GetLastCommittedOrigin().IsSameOriginWith(
-              start_url)) {
+          IsOriginAllowedForAboutBlankPopup(
+              primary_main_frame->GetLastCommittedOrigin())) {
         return false;
       }
     }
@@ -403,6 +403,11 @@ bool AppBrowserController::ShouldShowCustomTabBar() const {
   }
 
   return false;
+}
+
+bool AppBrowserController::IsOriginAllowedForAboutBlankPopup(
+    const url::Origin& origin) const {
+  return origin.IsSameOriginWith(GetAppStartUrl());
 }
 
 bool AppBrowserController::has_tab_strip() const {
@@ -590,6 +595,21 @@ std::u16string AppBrowserController::GetLaunchFlashText() const {
 #else   // !(BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX))
     return GetAppShortName();
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  }
+
+  // Identify the document's inherited origin when an about:blank app popup
+  // does not need the custom tab bar, regardless of how it is in app scope.
+  if (browser()->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP &&
+      !ShouldShowCustomTabBar()) {
+    content::WebContents* contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    if (contents && contents->GetLastCommittedURL().IsAboutBlank()) {
+      const url::Origin& origin =
+          contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+      if (!origin.opaque()) {
+        return FormatUrlOrigin(origin.GetURL());
+      }
+    }
   }
   return GetFormattedUrlOrigin();
 }
