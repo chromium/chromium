@@ -158,7 +158,7 @@ SVGPathSegment* SVGPathElement::getPathSegmentAtLength(float distance) {
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
   EnsureComputedStyle();
-  const SVGPathByteStream& byte_stream = PathByteStream();
+  const SVGPathByteStream& byte_stream = path_->BaseValue()->ByteStream();
   if (byte_stream.IsEmpty()) {
     return nullptr;
   }

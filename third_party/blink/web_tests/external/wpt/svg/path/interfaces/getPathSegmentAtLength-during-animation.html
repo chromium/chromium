@@ -21,14 +21,14 @@ promise_test(async () => {
   svg.setCurrentTime(1);
   await waitForAtLeastOneFrame();
 
-  // `getPathSegmentAtLength()` must use the animated geometry.
+  // `getPathSegmentAtLength()` must use the base value, ignoring the animation.
   assert_path_segment_equals(
-      path.getPathSegmentAtLength(25), { type: "L", values: [100, 0] });
+      path.getPathSegmentAtLength(25), { type: "L", values: [50, 0] });
 
-  // The base value must remain unchanged.
+  // `getPathData()` must also return the base value.
   assert_path_data_equals(path.getPathData(), [
     { type: "M", values: [0, 0] },
     { type: "L", values: [50, 0] }
   ]);
-}, "getPathSegmentAtLength() uses the animated value during SMIL animation");
+}, "getPathSegmentAtLength() must not use the animated value during SMIL animation");
 </script>
