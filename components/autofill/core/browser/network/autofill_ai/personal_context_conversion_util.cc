@@ -131,10 +131,14 @@ PersonalContextSourceReferenceToSource(
       source;
   switch (source_reference.source_reference_case()) {
     case personal_context::proto::SourceReference::kGmail:
-      source =
-          Source{.url = GetGmailSourceUrl(source_reference.gmail()),
-                 .metadata = GmailSourceMetadata{
-                     .title = std::string(source_reference.gmail().subject())}};
+      source = Source{
+          .url = GetGmailSourceUrl(source_reference.gmail()),
+          .metadata = GmailSourceMetadata{
+              .title = std::string(source_reference.gmail().subject()),
+              .timestamp = source_reference.gmail().has_timestamp()
+                               ? FormatDateTimeAsTime(
+                                     source_reference.gmail().timestamp())
+                               : base::Time()}};
       break;
     case personal_context::proto::SourceReference::kPhotos:
       source = Source{

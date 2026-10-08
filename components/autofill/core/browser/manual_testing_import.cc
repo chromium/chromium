@@ -4,8 +4,10 @@
 
 #include "components/autofill/core/browser/manual_testing_import.h"
 
+#include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/check.h"
 #include "base/command_line.h"
@@ -17,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -207,6 +210,22 @@ std::optional<CreditCard> MakeCard(const base::DictValue& dict) {
   return card;
 }
 
+// Returns the `timestamp` entry of `src_dict` parsed as UTC, or
+// `base::Time::Now()` if the key is absent so manual test data ranks as fresh.
+// Returns nullopt (after logging) if the value is present but unparsable.
+std::optional<base::Time> ParseSourceTimestamp(
+    const base::DictValue& src_dict) {
+  base::Time timestamp = base::Time::Now();
+  if (const std::string* timestamp_str =
+          src_dict.FindString(kKeySourceTimestamp)) {
+    if (!base::Time::FromUTCString(timestamp_str->c_str(), &timestamp)) {
+      LOG(ERROR) << "Invalid timestamp: " << *timestamp_str << ".";
+      return std::nullopt;
+    }
+  }
+  return timestamp;
+}
+
 std::vector<EntityInstance::PersonalContextRecordTypePayload::Source>
 GetPersonalContextSourcesFromDict(const base::DictValue& dict) {
   using Source = EntityInstance::PersonalContextRecordTypePayload::Source;
@@ -236,28 +255,25 @@ GetPersonalContextSourcesFromDict(const base::DictValue& dict) {
       continue;
     }
     GURL url(*url_str);
+    std::optional<base::Time> timestamp = ParseSourceTimestamp(src_dict);
+    if (!timestamp) {
+      continue;
+    }
     switch (*type) {
       case Source::Type::kGmail: {
         const std::string* title_str = src_dict.FindString(kKeySourceTitle);
         sources.push_back(
             {.url = std::move(url),
              .metadata = EntityInstance::PersonalContextRecordTypePayload::
-                 GmailSourceMetadata{.title = title_str ? *title_str : ""}});
+                 GmailSourceMetadata{.title = title_str ? *title_str : "",
+                                     .timestamp = *timestamp}});
         break;
       }
       case Source::Type::kPhotos: {
-        base::Time timestamp = base::Time::Now();
-        if (const std::string* timestamp_str =
-                src_dict.FindString(kKeySourceTimestamp)) {
-          if (!base::Time::FromUTCString(timestamp_str->c_str(), &timestamp)) {
-            LOG(ERROR) << "Invalid timestamp: " << *timestamp_str << ".";
-            break;
-          }
-        }
         sources.push_back(
             {.url = std::move(url),
              .metadata = EntityInstance::PersonalContextRecordTypePayload::
-                 PhotosSourceMetadata{.timestamp = timestamp}});
+                 PhotosSourceMetadata{.timestamp = *timestamp}});
         break;
       }
     }

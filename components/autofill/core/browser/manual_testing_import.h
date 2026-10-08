@@ -108,11 +108,14 @@ namespace autofill {
 //       "sources": [
 //         {
 //           "type": "photos",
-//           "url": "https://photos.google.com/sample"
+//           "url": "https://photos.google.com/sample",
+//           "timestamp": "2025-05-15T10:30:00Z"
 //         },
 //         {
 //           "type": "gmail",
-//           "url": "https://mail.google.com/sample"
+//           "url": "https://mail.google.com/sample",
+//           "title": "Passport Confirmation",
+//           "timestamp": "2025-05-16T12:00:00Z"
 //         }
 //       ],
 //       "attributes": {
@@ -127,8 +130,9 @@ namespace autofill {
 // "localOrSyncable" (defaulting to "localOrSyncable"). For entities, it can
 // be "local", "serverWallet", or "personalContext" (defaulting to "local").
 // For entities with "personalContext" record type, the "sources" list is
-// optional and can contain objects with "type" ("gmail" or "photos") and
-// "url".
+// optional and can contain objects with "type" ("gmail" or "photos"), "url",
+// optional "title" (for gmail), and optional "timestamp" (for both gmail and
+// photos, an ISO-8601 UTC string defaulting to base::Time::Now()).
 // For entities with "serverWallet" record type, "management_url" is an
 // optional string (defaulting to "").
 // The "initial_creator_id" is an optional int value which sets the profile's

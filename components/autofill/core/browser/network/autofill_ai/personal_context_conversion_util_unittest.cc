@@ -416,16 +416,25 @@ TEST(AutofillAiPersonalContextConverters, ConvertEntityWithGmailSource) {
   source->mutable_gmail()->mutable_message_urls()->set_mobile_web_url(
       "https://mail.google.com/mail/mu/mp/#cv/Inbox/123");
   source->mutable_gmail()->set_subject("Passport Information");
+  source->mutable_gmail()->mutable_timestamp()->set_year(2025);
+  source->mutable_gmail()->mutable_timestamp()->set_month(10);
+  source->mutable_gmail()->mutable_timestamp()->set_day(15);
+  source->mutable_gmail()->mutable_timestamp()->set_hours(14);
+  source->mutable_gmail()->mutable_timestamp()->set_minutes(30);
 
   std::optional<EntityInstance> opt_result =
       PersonalContextEntityToEntityInstance(entity);
 
   ASSERT_TRUE(opt_result.has_value());
   const EntityInstance& result = opt_result.value();
+  base::Time expected_timestamp;
+  ASSERT_TRUE(
+      base::Time::FromUTCString("2025-10-15 14:30:00", &expected_timestamp));
   EntityInstance::PersonalContextRecordTypePayload payload{
       .sources = {Source{
           .url = GetGmailSourceUrl(source->gmail()),
-          .metadata = GmailSourceMetadata{.title = "Passport Information"}}}};
+          .metadata = GmailSourceMetadata{.title = "Passport Information",
+                                          .timestamp = expected_timestamp}}}};
   EXPECT_EQ(std::get<EntityInstance::PersonalContextRecordTypePayload>(
                 result.record_type_data()),
             payload);

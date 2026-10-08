@@ -477,7 +477,8 @@ std::ostream& operator<<(
   std::visit(absl::Overload{
                  [&os](const EntityInstance::PersonalContextRecordTypePayload::
                            GmailSourceMetadata& gmail) {
-                   os << ", title: \"" << gmail.title << "\"";
+                   os << ", title: \"" << gmail.title << "\", timestamp: \""
+                      << gmail.timestamp << "\"";
                  },
                  [&os](const EntityInstance::PersonalContextRecordTypePayload::
                            PhotosSourceMetadata& photos) {

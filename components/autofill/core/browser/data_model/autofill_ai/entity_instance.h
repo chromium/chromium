@@ -321,10 +321,14 @@ class EntityInstance final {
   struct PersonalContextRecordTypePayload {
     struct GmailSourceMetadata {
       std::string title;
+      // Timestamp of the email message. May be null if the server omitted it.
+      base::Time timestamp;
       friend bool operator==(const GmailSourceMetadata&,
                              const GmailSourceMetadata&) = default;
     };
     struct PhotosSourceMetadata {
+      // Timestamp of the photo. May be null if the server omitted it, though
+      // valid photos on mobile require a non-null timestamp.
       base::Time timestamp;
       friend bool operator==(const PhotosSourceMetadata&,
                              const PhotosSourceMetadata&) = default;
@@ -357,6 +361,19 @@ class EntityInstance final {
             absl::Overload{
                 [](const GmailSourceMetadata&) { return Type::kGmail; },
                 [](const PhotosSourceMetadata&) { return Type::kPhotos; }},
+            metadata);
+      }
+
+      // Timestamp of the underlying source record (email date or photo
+      // capture time). Null if unknown.
+      base::Time timestamp() const {
+        return std::visit(
+            absl::Overload{[](const GmailSourceMetadata& gmail) {
+                             return gmail.timestamp;
+                           },
+                           [](const PhotosSourceMetadata& photos) {
+                             return photos.timestamp;
+                           }},
             metadata);
       }
 

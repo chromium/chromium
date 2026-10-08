@@ -396,7 +396,8 @@ TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_PersonalContext_Sources) {
           {
             "type" : "gmail",
             "url" : "https://mail.google.com/sample",
-            "title" : "Sample Email"
+            "title" : "Sample Email",
+            "timestamp" : "2025-10-16T10:00:00Z"
           }
         ],
         "attributes" : {
@@ -423,19 +424,75 @@ TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_PersonalContext_Sources) {
   const auto* payload =
       std::get_if<PersonalContextRecordTypePayload>(&entity.record_type_data());
   ASSERT_TRUE(payload);
-  base::Time expected_timestamp;
-  ASSERT_TRUE(
-      base::Time::FromUTCString("2025-10-15T14:30:00Z", &expected_timestamp));
-  EXPECT_EQ(
-      *payload,
-      (PersonalContextRecordTypePayload{
-          .sources = {
-              Source{.url = GURL("https://photos.google.com/sample"),
-                     .metadata =
-                         PhotosSourceMetadata{.timestamp = expected_timestamp}},
-              Source{.url = GURL("https://mail.google.com/sample"),
-                     .metadata = GmailSourceMetadata{.title = "Sample Email"}},
-          }}));
+  base::Time expected_photos_timestamp;
+  ASSERT_TRUE(base::Time::FromUTCString("2025-10-15T14:30:00Z",
+                                        &expected_photos_timestamp));
+  base::Time expected_gmail_timestamp;
+  ASSERT_TRUE(base::Time::FromUTCString("2025-10-16T10:00:00Z",
+                                        &expected_gmail_timestamp));
+  EXPECT_EQ(*payload,
+            (PersonalContextRecordTypePayload{
+                .sources = {
+                    Source{.url = GURL("https://photos.google.com/sample"),
+                           .metadata =
+                               PhotosSourceMetadata{
+                                   .timestamp = expected_photos_timestamp}},
+                    Source{.url = GURL("https://mail.google.com/sample"),
+                           .metadata =
+                               GmailSourceMetadata{
+                                   .title = "Sample Email",
+                                   .timestamp = expected_gmail_timestamp}},
+                }}));
+}
+
+// Tests that omitting timestamps in personal context sources defaults them to
+// base::Time::Now().
+TEST_F(ManualTestingImportTest,
+       LoadEntitiesFromFile_PersonalContext_OmittedTimestampsDefaultToNow) {
+  base::FilePath file_path = GetFilePath();
+  base::WriteFile(file_path, R"({
+    "entities" : [
+      {
+        "entity_type" : "Passport",
+        "record_type" : "personalContext",
+        "sources" : [
+          {
+            "type" : "photos",
+            "url" : "https://photos.google.com/sample"
+          },
+          {
+            "type" : "gmail",
+            "url" : "https://mail.google.com/sample",
+            "title" : "Sample Email"
+          }
+        ],
+        "attributes" : {
+          "Number" : "12345"
+        }
+      }
+    ]
+  })");
+
+  const base::Time start_time = base::Time::Now();
+  std::optional<std::vector<EntityInstance>> entities =
+      LoadEntitiesFromFile(file_path);
+  const base::Time end_time = base::Time::Now();
+
+  ASSERT_TRUE(entities.has_value());
+  ASSERT_EQ(entities->size(), 1u);
+
+  using PersonalContextRecordTypePayload =
+      EntityInstance::PersonalContextRecordTypePayload;
+  const EntityInstance& entity = entities->front();
+  const auto* payload =
+      std::get_if<PersonalContextRecordTypePayload>(&entity.record_type_data());
+  ASSERT_TRUE(payload);
+  ASSERT_EQ(payload->sources.size(), 2u);
+
+  EXPECT_GE(payload->sources[0].timestamp(), start_time);
+  EXPECT_LE(payload->sources[0].timestamp(), end_time);
+  EXPECT_GE(payload->sources[1].timestamp(), start_time);
+  EXPECT_LE(payload->sources[1].timestamp(), end_time);
 }
 
 // Tests that the WalletRecordTypePayload is read correctly.
