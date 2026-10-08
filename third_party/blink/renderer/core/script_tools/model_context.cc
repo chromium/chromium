@@ -325,12 +325,17 @@ ModelContext::ModelContext(Document& document)
       script_tool_host_remote_(document.GetExecutionContext()),
       model_context_host_remote_(document.GetExecutionContext()),
       model_context_receiver_(this, document.GetExecutionContext()) {
-  if (auto* execution_context = document.GetExecutionContext()) {
-    execution_context->GetBrowserInterfaceBroker().GetInterface(
-        model_context_host_remote_.BindNewPipeAndPassReceiver(task_runner_));
-    model_context_host_remote_->BindModelContext(
-        model_context_receiver_.BindNewPipeAndPassRemote(task_runner_));
+  // Documents without a frame can share another document's execution context,
+  // but must not bind to that document's browser host.
+  if (!document.GetFrame()) {
+    return;
   }
+  auto* execution_context = document.GetExecutionContext();
+  CHECK(execution_context);
+  execution_context->GetBrowserInterfaceBroker().GetInterface(
+      model_context_host_remote_.BindNewPipeAndPassReceiver(task_runner_));
+  model_context_host_remote_->BindModelContext(
+      model_context_receiver_.BindNewPipeAndPassRemote(task_runner_));
 }
 
 void ModelContext::ForEachScriptTool(
@@ -799,6 +804,8 @@ bool ModelContext::ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
 
 void ModelContext::RegisterDeclarativeTool(
     DeclarativeWebMCPTool* declarative_tool) {
+  // The form code must ensure the document has a frame before calling this.
+  // Frameless documents do not have a bound ModelContextHost.
   if (!document_->GetExecutionContext()->IsFeatureEnabled(
           network::mojom::PermissionsPolicyFeature::kTools)) {
     // TODO(crbug.com/507724727) Surface an error if the `tools` permission
@@ -876,6 +883,8 @@ void ModelContext::MaybeRecordToolCount() {
 }
 
 void ModelContext::PauseExecution() {
+  // The form code must ensure the document is active before calling this.
+  // Pausing execution requires a browser connection for the document's frame.
   if (!script_tool_host_remote_.is_bound()) {
     document_->GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
         script_tool_host_remote_.BindNewPipeAndPassReceiver(task_runner_));
