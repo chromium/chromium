@@ -129,23 +129,26 @@ CGFloat const kSheetCornerRadius = 30;
       _geminiHandler = HandlerForProtocol(dispatcher, GeminiCommands);
     }
   }
+  ProfileIOS* profile = self.profile;
   _activeSearchEngineLogoMediator = [NSMutableDictionary dictionary];
   _backgroundService =
-      HomeBackgroundCustomizationServiceFactory::GetForProfile(self.profile);
+      HomeBackgroundCustomizationServiceFactory::GetForProfile(profile);
 
   _mediator = [[HomeCustomizationMediator alloc]
                      initWithPrefService:self.profile->GetPrefs()
       discoverFeedVisibilityBrowserAgent:DiscoverFeedVisibilityBrowserAgent::
                                              FromBrowser(self.browser)
                          shoppingService:commerce::ShoppingServiceFactory::
-                                             GetForProfile(self.profile)];
+                                             GetForProfile(profile)
+                             tipsManager:TipsManagerIOSFactory::GetForProfile(
+                                             profile)];
   _mediator.navigationDelegate = self;
 
   if (!_backgroundService->IsCustomizationDisabledOrColorManagedByPolicy()) {
     UserUploadedImageManager* userUploadedImageManager =
-        UserUploadedImageManagerFactory::GetForProfile(self.profile);
+        UserUploadedImageManagerFactory::GetForProfile(profile);
     image_fetcher::ImageFetcherService* imageFetcherService =
-        ImageFetcherServiceFactory::GetForProfile(self.profile);
+        ImageFetcherServiceFactory::GetForProfile(profile);
     image_fetcher::ImageFetcher* imageFetcher =
         imageFetcherService->GetImageFetcher(
             image_fetcher::ImageFetcherConfig::kReducedMode);
@@ -155,10 +158,10 @@ CGFloat const kSheetCornerRadius = 30;
                                       imageFetcher:imageFetcher
                         homeBackgroundImageService:nil
                           userUploadedImageManager:userUploadedImageManager
-                                       prefService:self.profile->GetPrefs()
+                                       prefService:profile->GetPrefs()
                           featureEngagementTracker:
                               feature_engagement::TrackerFactory::GetForProfile(
-                                  self.profile)];
+                                  profile)];
   }
 
   // The Customization menu consists of a stack of presenting view controllers.
