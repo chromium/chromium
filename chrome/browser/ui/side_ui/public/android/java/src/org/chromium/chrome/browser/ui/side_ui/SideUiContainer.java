@@ -260,6 +260,18 @@ public interface SideUiContainer {
     }
 
     /**
+     * Returns the inset in px of the resize handle's bar from the container's inner edge, i.e. the
+     * edge facing the web contents, e.g. to align the bar with the container's scrollbar, or null
+     * to center the bar in the handle.
+     *
+     * <p>Only called while {@link #supportsManualResize()} returns true, when the handle is
+     * created.
+     */
+    default @Px @Nullable Integer getResizeHandleBarInsetPx() {
+        return null;
+    }
+
+    /**
      * Called for each pointer move while the resize handle is being dragged.
      *
      * <p>The proposed width is the raw width implied by the pointer position; it is not clamped.

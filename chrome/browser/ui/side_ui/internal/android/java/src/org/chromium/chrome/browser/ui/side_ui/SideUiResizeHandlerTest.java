@@ -51,6 +51,7 @@ public class SideUiResizeHandlerTest {
     private static final int CONTAINER_WIDTH_PX = 240;
     private static final int CONTAINER_HEIGHT_PX = 600;
     private static final int HANDLE_WIDTH_PX = 36;
+    private static final int BAR_INSET_PX = 9;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -182,6 +183,7 @@ public class SideUiResizeHandlerTest {
     public void testHandleViewDrawsCenteredBar() {
         SideUiResizeHandler handler = createHandler(AnchorSide.LEFT);
         when(mSideUiContainer.supportsManualResize()).thenReturn(true);
+        when(mSideUiContainer.getResizeHandleBarInsetPx()).thenReturn(null);
 
         handler.onUiUpdateCompleted();
 
@@ -200,6 +202,42 @@ public class SideUiResizeHandlerTest {
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.side_ui_resize_handle_bar_height),
                 barLayoutParams.height);
+    }
+
+    @Test
+    public void testHandleViewBarInset_LeftAnchor_InsetFromRightEdge() {
+        SideUiResizeHandler handler = createHandler(AnchorSide.LEFT);
+        when(mSideUiContainer.supportsManualResize()).thenReturn(true);
+        when(mSideUiContainer.getResizeHandleBarInsetPx()).thenReturn(BAR_INSET_PX);
+
+        handler.onUiUpdateCompleted();
+
+        View handleView = handler.getHandleViewForTesting();
+        assertNotNull(handleView);
+        var barLayoutParams =
+                (FrameLayout.LayoutParams)
+                        handleView.findViewById(R.id.side_ui_resize_handle_bar).getLayoutParams();
+        assertEquals(Gravity.RIGHT | Gravity.CENTER_VERTICAL, barLayoutParams.gravity);
+        assertEquals(BAR_INSET_PX, barLayoutParams.rightMargin);
+        assertEquals(0, barLayoutParams.leftMargin);
+    }
+
+    @Test
+    public void testHandleViewBarInset_RightAnchor_InsetFromLeftEdge() {
+        SideUiResizeHandler handler = createHandler(AnchorSide.RIGHT);
+        when(mSideUiContainer.supportsManualResize()).thenReturn(true);
+        when(mSideUiContainer.getResizeHandleBarInsetPx()).thenReturn(BAR_INSET_PX);
+
+        handler.onUiUpdateCompleted();
+
+        View handleView = handler.getHandleViewForTesting();
+        assertNotNull(handleView);
+        var barLayoutParams =
+                (FrameLayout.LayoutParams)
+                        handleView.findViewById(R.id.side_ui_resize_handle_bar).getLayoutParams();
+        assertEquals(Gravity.LEFT | Gravity.CENTER_VERTICAL, barLayoutParams.gravity);
+        assertEquals(BAR_INSET_PX, barLayoutParams.leftMargin);
+        assertEquals(0, barLayoutParams.rightMargin);
     }
 
     @Test

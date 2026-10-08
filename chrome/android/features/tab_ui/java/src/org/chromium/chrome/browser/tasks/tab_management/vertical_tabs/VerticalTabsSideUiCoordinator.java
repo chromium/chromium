@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.transition.ChangeBounds;
 import android.transition.Fade;
 import android.transition.Transition;
@@ -282,6 +283,15 @@ public class VerticalTabsSideUiCoordinator
         return mRootView
                 .getResources()
                 .getDimensionPixelSize(R.dimen.vertical_tabs_rail_horizontal_margin);
+    }
+
+    @Override
+    public @Px Integer getResizeHandleBarInsetPx() {
+        // Align the bar with the tab list scrollbars, which are drawn at the end of the tab lists.
+        // The tab lists extend into the rail's inner padding by their negative end margin.
+        Resources res = mRootView.getResources();
+        return res.getDimensionPixelSize(R.dimen.vertical_tabs_rail_horizontal_margin)
+                + res.getDimensionPixelSize(R.dimen.vertical_tabs_scrollbar_margin_end);
     }
 
     @Override

@@ -41,7 +41,8 @@ import java.lang.annotation.RetentionPolicy;
  *
  * <p>The handle is a strip overlaying the inner edge of the anchor container, i.e. the edge facing
  * the web contents. Its width comes from {@link SideUiContainer#getResizeHandleWidthPx}, and it
- * draws a bar at its center. It also changes the pointer icon on hover.
+ * draws a bar at its center, or at {@link SideUiContainer#getResizeHandleBarInsetPx} from the
+ * container's inner edge. It also changes the pointer icon on hover.
  *
  * <p>The handle {@link View} is created lazily the first time the bound container is resizable, and
  * is removed when the container's {@link View} is detached from the anchor container.
@@ -182,6 +183,7 @@ import java.lang.annotation.RetentionPolicy;
                             mAnchorContainer,
                             gravity,
                             mContainer.getResizeHandleWidthPx(),
+                            mContainer.getResizeHandleBarInsetPx(),
                             mContainer.getResizeHandleContentDescriptionRes(),
                             /* onTouchListener= */ this);
             mAnchorContainer.addView(mHandleView);
@@ -335,14 +337,16 @@ import java.lang.annotation.RetentionPolicy;
     }
 
     /**
-     * Creates the handle {@link View}: a strip with a bar drawn at its center. The caller is
-     * responsible for adding it to {@code parent}.
+     * Creates the handle {@link View}: a strip with a bar drawn at its center, or at {@code
+     * containerBarInsetPx} from the edge given by {@code gravity}. The caller is responsible for
+     * adding it to {@code parent}.
      */
     private static View createHandleView(
             Context context,
             ViewGroup parent,
             int gravity,
             @Px @Nullable Integer containerHandleWidthPx,
+            @Px @Nullable Integer containerBarInsetPx,
             @StringRes int contentDescriptionRes,
             View.OnTouchListener onTouchListener) {
         View handleView =
@@ -352,6 +356,17 @@ import java.lang.annotation.RetentionPolicy;
         layoutParams.gravity = gravity;
         if (containerHandleWidthPx != null) layoutParams.width = containerHandleWidthPx;
         handleView.setLayoutParams(layoutParams);
+        if (containerBarInsetPx != null) {
+            View barView = handleView.findViewById(R.id.side_ui_resize_handle_bar);
+            var barLayoutParams = (FrameLayout.LayoutParams) barView.getLayoutParams();
+            barLayoutParams.gravity = gravity | Gravity.CENTER_VERTICAL;
+            if (gravity == Gravity.RIGHT) {
+                barLayoutParams.rightMargin = containerBarInsetPx;
+            } else {
+                barLayoutParams.leftMargin = containerBarInsetPx;
+            }
+            barView.setLayoutParams(barLayoutParams);
+        }
         if (contentDescriptionRes != Resources.ID_NULL) {
             handleView.setContentDescription(context.getString(contentDescriptionRes));
         }

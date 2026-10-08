@@ -262,8 +262,15 @@ public class VerticalTabRailLayoutUnitTest {
                 expectedButtonMarginStart,
                 ((ViewGroup.MarginLayoutParams) searchButton.getLayoutParams()).getMarginStart());
 
-        // The footer keeps the expanded layout.
+        // The footer keeps the expanded layout, with the new tab button starting at the same offset
+        // as the tab rows.
+        View newTabButton = mRailLayout.getNewTabButton();
         assertEquals(LinearLayout.HORIZONTAL, mRailLayout.getFooterContainer().getOrientation());
+        assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, newTabButton.getLayoutParams().width);
+        assertEquals(
+                VerticalTabRailLayout.getCollapsedRailCenteringMarginStart(
+                        mActivity, TabVerticalViewBinder.getCollapsedTabItemWidth(mActivity)),
+                ((ViewGroup.MarginLayoutParams) newTabButton.getLayoutParams()).getMarginStart());
 
         // Collapsing keeps the exact same positions.
         mRailLayout.setCollapseState(RailCollapseState.COLLAPSED);
@@ -274,6 +281,10 @@ public class VerticalTabRailLayoutUnitTest {
         assertEquals(
                 expectedButtonMarginStart,
                 ((ViewGroup.MarginLayoutParams) searchButton.getLayoutParams()).getMarginStart());
+        // The collapsed footer centers the new tab button, so it has no explicit offset.
+        assertEquals(
+                0,
+                ((ViewGroup.MarginLayoutParams) newTabButton.getLayoutParams()).getMarginStart());
 
         // Expanding resets the explicit offsets.
         mRailLayout.setCollapseState(RailCollapseState.EXPANDED);
@@ -283,6 +294,9 @@ public class VerticalTabRailLayoutUnitTest {
         assertEquals(
                 0,
                 ((ViewGroup.MarginLayoutParams) searchButton.getLayoutParams()).getMarginStart());
+        assertEquals(
+                0,
+                ((ViewGroup.MarginLayoutParams) newTabButton.getLayoutParams()).getMarginStart());
     }
 
     @Test
@@ -322,16 +336,17 @@ public class VerticalTabRailLayoutUnitTest {
         View searchLabel = mRailLayout.findViewById(R.id.tab_search_label);
         int buttonWidth = mRailLayout.getHeaderButtonWidthPxForTesting();
 
-        // Hovering: the button spans the rail and shows the label 8dp after the icon.
+        // Hovering: the button spans the rail and shows the label aligned with the tab titles.
         mRailLayout.setCollapseState(RailCollapseState.EXPANDED_FOR_HOVERING);
         assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, searchButton.getLayoutParams().width);
         assertEquals(buttonWidth, searchIcon.getLayoutParams().width);
         assertEquals(View.VISIBLE, searchLabel.getVisibility());
-        assertEquals(
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tabs_tab_search_label_margin_start),
-                ((ViewGroup.MarginLayoutParams) searchLabel.getLayoutParams()).getMarginStart());
+        int searchLabelStart =
+                ((ViewGroup.MarginLayoutParams) searchButton.getLayoutParams()).getMarginStart()
+                        + buttonWidth
+                        + ((ViewGroup.MarginLayoutParams) searchLabel.getLayoutParams())
+                                .getMarginStart();
+        assertEquals(VerticalTabRailLayout.getHoverTabTitleStart(mActivity), searchLabelStart);
 
         // Collapsed: icon-only button.
         mRailLayout.setCollapseState(RailCollapseState.COLLAPSED);
@@ -347,7 +362,7 @@ public class VerticalTabRailLayoutUnitTest {
     }
 
     @Test
-    public void testExpandedForHovering_SeparatorSpansTabWidth() {
+    public void testExpandedForHovering_SeparatorKeepsCollapsedPosition() {
         ConstraintLayout.LayoutParams params =
                 (ConstraintLayout.LayoutParams)
                         mRailLayout.getPinnedTabsSeparatorView().getLayoutParams();
@@ -357,23 +372,25 @@ public class VerticalTabRailLayoutUnitTest {
                         .getDimensionPixelSize(R.dimen.vertical_tabs_pinned_separator_width);
         int expectedMarginStart =
                 VerticalTabRailLayout.getCollapsedRailCenteringMarginStart(
-                        mActivity, TabVerticalViewBinder.getCollapsedTabItemWidth(mActivity));
+                        mActivity, separatorWidth);
 
-        // Hovering: spans the tab row width.
+        // Hovering: extends to the end of the tab rows from the collapsed start.
         mRailLayout.setCollapseState(RailCollapseState.EXPANDED_FOR_HOVERING);
         assertEquals(ConstraintLayout.LayoutParams.MATCH_CONSTRAINT, params.width);
         assertEquals(expectedMarginStart, params.getMarginStart());
+        assertEquals(0f, params.horizontalBias, 0f);
 
-        // Collapsed: fixed width, centered.
+        // Collapsed: same position as hovering.
         mRailLayout.setCollapseState(RailCollapseState.COLLAPSED);
         assertEquals(separatorWidth, params.width);
-        assertEquals(0, params.getMarginStart());
+        assertEquals(expectedMarginStart, params.getMarginStart());
+        assertEquals(0f, params.horizontalBias, 0f);
 
         // Expanded: fixed width, centered.
-        mRailLayout.setCollapseState(RailCollapseState.EXPANDED_FOR_HOVERING);
         mRailLayout.setCollapseState(RailCollapseState.EXPANDED);
         assertEquals(separatorWidth, params.width);
         assertEquals(0, params.getMarginStart());
+        assertEquals(0.5f, params.horizontalBias, 0f);
     }
 
     @Test

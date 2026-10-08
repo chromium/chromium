@@ -74,7 +74,6 @@ found in the LICENSE file.
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginStart="@dimen/vertical_tabs_tab_search_label_margin_start"
                 android:text="@string/vertical_tabs_tab_search"
                 android:singleLine="true"
                 android:ellipsize="end"

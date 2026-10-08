@@ -21,6 +21,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.Ver
 
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.transition.ChangeBounds;
 import android.transition.Fade;
 import android.transition.Transition;
@@ -408,6 +409,17 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
                                 .getDimensionPixelSize(
                                         R.dimen.vertical_tabs_rail_horizontal_margin)),
                 mCoordinator.getResizeHandleWidthPx());
+    }
+
+    @Test
+    public void testResizeHandleBarInset_MatchesScrollbarInset() {
+        Resources res = mActivity.getResources();
+        int scrollbarInsetFromRailEdge =
+                res.getDimensionPixelSize(R.dimen.vertical_tabs_rail_horizontal_margin)
+                        + res.getDimensionPixelSize(R.dimen.vertical_tabs_scrollbar_margin_end);
+        assertEquals(
+                Integer.valueOf(scrollbarInsetFromRailEdge),
+                mCoordinator.getResizeHandleBarInsetPx());
     }
 
     @Test
