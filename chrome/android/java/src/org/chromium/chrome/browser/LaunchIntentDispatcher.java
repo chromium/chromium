@@ -475,7 +475,7 @@ public class LaunchIntentDispatcher {
         if (!startedNavigationEarly) maybePrefetchDnsInBackground();
 
         Intent intent = new Intent(mIntent);
-        boolean identityShared = maybePutCallingAppPackage(intent);
+        maybePutCallingAppPackage(intent);
 
         // Create and fire a launch intent.
         Intent launchIntent = createCustomTabActivityIntent(mActivity, intent);
@@ -496,14 +496,13 @@ public class LaunchIntentDispatcher {
         }
 
         mActivity.startActivity(launchIntent, null);
-        RecordHistogram.recordBooleanHistogram("CustomTabs.IdentityShared", identityShared);
         return true;
     }
 
     // Pass the target Activity the package name of the calling app.
     // EXTRA_LAUNCHED_FROM_PACKAGE: set only when identity sharing is enabled by the calling app
     // EXTRA_CALLING_ACTIVITY_PACKAGE: from either startActivityForResult or identity sharing
-    private boolean maybePutCallingAppPackage(Intent intent) {
+    private void maybePutCallingAppPackage(Intent intent) {
         // Strip EXTRA_CALLING_ACTIVITY_PACKAGE/EXTRA_LAUNCHED_FROM_PACKAGE if present on
         // the original intent so that it cannot be spoofed by CCT client apps.
         IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE);
@@ -515,11 +514,9 @@ public class LaunchIntentDispatcher {
         if (packageName != null) {
             intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, packageName);
         }
-        boolean hasIdentitySharingPackageName = packageNameIdentitySharing != null;
-        if (hasIdentitySharingPackageName) {
+        if (packageNameIdentitySharing != null) {
             intent.putExtra(IntentHandler.EXTRA_LAUNCHED_FROM_PACKAGE, packageNameIdentitySharing);
         }
-        return hasIdentitySharingPackageName;
     }
 
     private boolean maybeStartNavigation() {
