@@ -125,27 +125,6 @@ struct AnchorElementPointerOut {
   mojo_base.mojom.TimeDelta hover_dwell_time;
 };
 
-// Represents different user interaction types used for computing preloading ML
-// model inputs..
-enum AnchorElementUserInteractionEventForMLModelType {
-  kPointerOver,
-  kPointerOut,
-  kEnteredViewport,
-  kLeftViewport,
-  kUnknown,
-};
-
-struct AnchorElementPointerEventForMLModel {
-  // The ID of the anchor that pointer hovered over it.
-  uint32 anchor_id;
-
-  // Whether the point event triggered by mouse or not.
-  bool is_mouse;
-
-  // User interaction event type.
-  AnchorElementUserInteractionEventForMLModelType user_interaction_event_type;
-};
-
 struct AnchorElementPointerDown {
   // The ID of the anchor that pointer down event happened over it.
   uint32 anchor_id;
@@ -235,12 +214,6 @@ interface AnchorElementMetricsHost {
   // This is called for all anchor elements.
   ReportAnchorElementPointerDataOnHoverTimerFired(
     AnchorElementPointerDataOnHoverTimerFired pointer_data);
-
-  // This is called whenever a pointer event is triggered and intended to be
-  // used by the preloading heuristics ML model.
-  // This is called for all anchor elements.
-  ProcessPointerEventUsingMLModel(
-    AnchorElementPointerEventForMLModel pointer_event);
 
   // Asks the browser whether to send subsequent updates immediately
   // instead of rate limiting.

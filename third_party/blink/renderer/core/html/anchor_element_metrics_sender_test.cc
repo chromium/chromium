@@ -126,10 +126,6 @@ class MockAnchorElementMetricsHost
                                removed_elements.end());
   }
 
-  void ProcessPointerEventUsingMLModel(
-      mojom::blink::AnchorElementPointerEventForMLModelPtr pointer_event)
-      override {}
-
   void ShouldSkipUpdateDelays(
       ShouldSkipUpdateDelaysCallback callback) override {
     // We don't use this mechanism to disable the delay of reports, as the tests

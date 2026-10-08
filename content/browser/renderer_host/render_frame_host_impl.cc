@@ -5307,14 +5307,6 @@ void RenderFrameHostImpl::OnCreateChildFrame(
       /*is_dummy_frame_for_inner_tree=*/false, std::move(sandbox_origin_token));
 }
 
-void RenderFrameHostImpl::OnPreloadingHeuristicsModelDone(const GURL& url,
-                                                          float score) {
-  if (auto* preloading_decider =
-          PreloadingDecider::GetOrCreateForCurrentDocument(this)) {
-    preloading_decider->OnPreloadingHeuristicsModelDone(url, score);
-  }
-}
-
 void RenderFrameHostImpl::CreateChildFrame(
     const blink::LocalFrameToken& frame_token,
     const blink::InitiatorStateToken& initiator_state_token,

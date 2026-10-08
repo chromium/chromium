@@ -906,7 +906,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       ukm::SourceId document_ukm_source_id,
       std::unique_ptr<base::UnguessableToken> sandbox_origin_token = nullptr);
 
-  void OnPreloadingHeuristicsModelDone(const GURL& url, float score) override;
 
   // Update this frame's state at the appropriate time when a navigation
   // commits. This is called by Navigator::DidNavigate as a helper, in the

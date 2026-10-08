@@ -1220,13 +1220,6 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // RenderDocument is fully enabled.
   virtual bool ShouldChangeRenderFrameHostOnSameSiteNavigation() const = 0;
 
-  // The embedder calls this method when a prediction model believes that the
-  // user is likely to click on an anchor element and wants to report the
-  // likelihood of the click. The `score` is the probability that a user will
-  // click on the `url`, and it is a value between 0 and 1.
-  virtual void OnPreloadingHeuristicsModelDone(const GURL& url,
-                                               float score) = 0;
-
   // Checks if `seqno` is known to have originated from this RFH. `callback`
   // will only be called with true if `seqno` represents the last clipboard
   // write made by all RFHs.

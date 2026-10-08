@@ -204,9 +204,11 @@ enum OptimizationTarget {
   // Target for segmentation: Determine what modules a user should see on their
   // Desktop New Tab Page.
   OPTIMIZATION_TARGET_SEGMENTATION_DESKTOP_NTP_MODULE = 38;
-  // Target for predicting candidate links for speculation-rule based
-  // preloading.
-  OPTIMIZATION_TARGET_PRELOADING_HEURISTICS = 39;
+  // Deprecated: was the target for predicting candidate links for
+  // speculation-rule based preloading (the on-device ML prefetch model),
+  // removed in favor of renderer-side link-selection heuristics. The value is
+  // retained (not reused) to preserve wire compatibility.
+  DEPRECATED_OPTIMIZATION_TARGET_PRELOADING_HEURISTICS = 39;
   // Target for determining text safety.
   OPTIMIZATION_TARGET_TEXT_SAFETY = 40;
   // Target for ranking Android home modules.

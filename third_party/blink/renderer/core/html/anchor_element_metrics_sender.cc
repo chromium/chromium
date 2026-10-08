@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
-#include "third_party/blink/renderer/core/pointer_type_names.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom-shared.h"
@@ -332,24 +331,6 @@ void AnchorElementMetricsSender::MaybeReportAnchorElementPointerEvent(
 
   const auto anchor_id = AnchorElementId(element);
   const AtomicString& event_type = pointer_event.type();
-
-  auto pointer_event_for_ml_model =
-      mojom::blink::AnchorElementPointerEventForMLModel::New();
-  pointer_event_for_ml_model->anchor_id = anchor_id;
-  pointer_event_for_ml_model->is_mouse =
-      pointer_event.pointerType() == pointer_type_names::kMouse;
-  if (event_type == event_type_names::kPointerover) {
-    pointer_event_for_ml_model->user_interaction_event_type = mojom::blink::
-        AnchorElementUserInteractionEventForMLModelType::kPointerOver;
-  } else if (event_type == event_type_names::kPointerout) {
-    pointer_event_for_ml_model->user_interaction_event_type = mojom::blink::
-        AnchorElementUserInteractionEventForMLModelType::kPointerOut;
-  } else {
-    pointer_event_for_ml_model->user_interaction_event_type =
-        mojom::blink::AnchorElementUserInteractionEventForMLModelType::kUnknown;
-  }
-  metrics_host_->ProcessPointerEventUsingMLModel(
-      std::move(pointer_event_for_ml_model));
 
   auto it = anchor_elements_timing_stats_.find(anchor_id);
   if (it == anchor_elements_timing_stats_.end()) {

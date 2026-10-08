@@ -15,16 +15,11 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
 #include "base/system/sys_info.h"
-#include "base/time/default_tick_clock.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
-#include "chrome/browser/navigation_predictor/preloading_model_keyed_service.h"
-#include "chrome/browser/navigation_predictor/preloading_model_keyed_service_factory.h"
-#include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/preloading_data.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -100,66 +95,6 @@ int GetLinearBucketForRatioArea(int value) {
   return ukm::GetLinearBucketMin(static_cast<int64_t>(value), 5);
 }
 
-base::TimeDelta MLModelExecutionTimerStartDelay() {
-  return base::Milliseconds(
-      blink::features::kPreloadingModelTimerStartDelay.Get());
-}
-
-base::TimeDelta MLModelExecutionTimerInterval() {
-  return base::Milliseconds(
-      blink::features::kPreloadingModelTimerInterval.Get());
-}
-
-base::TimeDelta MLModelMaxHoverTime() {
-  return blink::features::kPreloadingModelMaxHoverTime.Get();
-}
-
-void RecordMetricsForModelTraining(
-    const PreloadingModelKeyedService::Inputs& inputs,
-    ukm::SourceId ukm_source,
-    std::optional<double> sampling_likelihood,
-    bool is_accurate) {
-  constexpr double kBucketSpacing = 1.3;
-
-  const int sampling_likelihood_per_million =
-      static_cast<int>(1'000'000 * sampling_likelihood.value_or(1.0));
-  const int sampling_amount_bucket = ukm::GetExponentialBucketMin(
-      1'000'000 - sampling_likelihood_per_million, kBucketSpacing);
-
-  ukm::builders::Preloading_NavigationPredictorModelTrainingData builder(
-      ukm_source);
-
-  builder.SetSamplingAmount(sampling_amount_bucket);
-  builder.SetIsAccurate(is_accurate);
-  builder.SetContainsImage(inputs.contains_image);
-  // Font size is already bucketed. See `FontSizeBucket`.
-  builder.SetFontSize(inputs.font_size);
-  builder.SetHasTextSibling(inputs.has_text_sibling);
-  builder.SetIsBold(inputs.is_bold);
-  builder.SetIsInIframe(inputs.is_in_iframe);
-  builder.SetIsURLIncrementedByOne(inputs.is_url_incremented_by_one);
-  builder.SetNavigationStartToLinkLoggedMs(ukm::GetExponentialBucketMin(
-      inputs.navigation_start_to_link_logged.InMilliseconds(), kBucketSpacing));
-  builder.SetPathDepth(inputs.path_depth);
-  // Path length is already bucketed.
-  CHECK_EQ(
-      inputs.path_length,
-      ukm::GetLinearBucketMin(static_cast<int64_t>(inputs.path_length), 10),
-      base::NotFatalUntil::M161);
-  builder.SetPathLength(inputs.path_length);
-  builder.SetPercentClickableArea(
-      GetLinearBucketForRatioArea(inputs.percent_clickable_area));
-  builder.SetPercentVerticalDistance(
-      GetLinearBucketForLinkLocation(inputs.percent_vertical_distance));
-  builder.SetSameHost(inputs.is_same_host);
-  builder.SetHoverDwellTimeMs(ukm::GetExponentialBucketMin(
-      inputs.hover_dwell_time.InMilliseconds(), kBucketSpacing));
-  builder.SetPointerHoveringOverCount(ukm::GetExponentialBucketMin(
-      inputs.pointer_hovering_over_count, kBucketSpacing));
-
-  builder.Record(ukm::UkmRecorder::Get());
-}
-
 bool MaySendTraffic() {
   // TODO(b/290223353): Due to concerns about the amount of traffic this feature
   // would create on desktop, we'll just enable for a random sample of clients.
@@ -190,8 +125,7 @@ bool MaySendTraffic() {
 }  // namespace
 
 NavigationPredictor::AnchorElementData::AnchorElementData(
-    blink::mojom::AnchorElementMetricsPtr metrics,
-    base::TimeTicks first_report_timestamp)
+    blink::mojom::AnchorElementMetricsPtr metrics)
     : ratio_distance_root_top(metrics->ratio_distance_root_top),
       ratio_area(static_cast<uint8_t>(metrics->ratio_area * 100)),
       is_in_iframe(metrics->is_in_iframe),
@@ -201,8 +135,7 @@ NavigationPredictor::AnchorElementData::AnchorElementData(
       has_text_sibling(metrics->has_text_sibling),
       is_bold_font(IsBoldFont(metrics->font_weight)),
       font_size(GetFontSizeFromPx(metrics->font_size_px)),
-      target_url(metrics->target_url),
-      first_report_timestamp(first_report_timestamp) {}
+      target_url(metrics->target_url) {}
 
 NavigationPredictor::AnchorElementData::~AnchorElementData() = default;
 
@@ -211,8 +144,7 @@ NavigationPredictor::NavigationPredictor(
     mojo::PendingReceiver<AnchorElementMetricsHost> receiver)
     : content::DocumentService<blink::mojom::AnchorElementMetricsHost>(
           render_frame_host,
-          std::move(receiver)),
-      clock_(base::DefaultTickClock::GetInstance()) {
+          std::move(receiver)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   // When using content::Page::IsPrimary, bfcache can cause returning a false in
   // the back/forward navigation. So, DCHECK only checks if current page is
@@ -220,7 +152,6 @@ NavigationPredictor::NavigationPredictor(
   // https://crbug.com/40193806.
   CHECK(!IsPrerendering(render_frame_host), base::NotFatalUntil::M161);
 
-  navigation_start_ = NowTicks();
   ukm_recorder_ = ukm::UkmRecorder::Get();
   ukm_source_id_ = render_frame_host.GetMainFrame()->GetPageUkmSourceId();
 }
@@ -290,7 +221,6 @@ void NavigationPredictor::ReportNewAnchorElements(
     return;
   }
   std::vector<GURL> new_predictions;
-  const base::TimeTicks now = NowTicks();
   for (auto& element : elements) {
     AnchorId anchor_id(element->anchor_id);
     if (anchors_.find(anchor_id) != anchors_.end()) {
@@ -335,7 +265,7 @@ void NavigationPredictor::ReportNewAnchorElements(
     }
 
     anchors_.emplace(std::piecewise_construct, std::forward_as_tuple(anchor_id),
-                     std::forward_as_tuple(std::move(element), now));
+                     std::forward_as_tuple(std::move(element)));
   }
 
   for (uint32_t removed_element : removed_elements) {
@@ -361,141 +291,6 @@ void NavigationPredictor::ReportNewAnchorElements(
             kAnchorElementsParsedFromWebPage,
         new_predictions);
   }
-}
-
-void NavigationPredictor::OnPreloadingHeuristicsModelDone(
-    GURL url,
-    PreloadingModelKeyedService::Result result) {
-  if (!result.has_value()) {
-    return;
-  }
-  render_frame_host().OnPreloadingHeuristicsModelDone(url, result.value());
-}
-
-void NavigationPredictor::ProcessPointerEventUsingMLModel(
-    blink::mojom::AnchorElementPointerEventForMLModelPtr pointer_event) {
-  // Find anchor elements data.
-  AnchorId anchor_id(pointer_event->anchor_id);
-  auto it = anchors_.find(anchor_id);
-  if (it == anchors_.end()) {
-    return;
-  }
-
-  AnchorElementData& anchor = it->second;
-  switch (pointer_event->user_interaction_event_type) {
-    case blink::mojom::AnchorElementUserInteractionEventForMLModelType::
-        kPointerOut: {
-      anchor.pointer_over_timestamp.reset();
-      ml_model_candidate_.reset();
-      break;
-    }
-    case blink::mojom::AnchorElementUserInteractionEventForMLModelType::
-        kPointerOver: {
-      // Currently we only process mouse based events.
-      if (!pointer_event->is_mouse) {
-        return;
-      }
-      // Ignore anchors pointing to the same document.
-      if (IsTargetURLTheSameAsDocument(anchor)) {
-        return;
-      }
-
-      anchor.pointer_over_timestamp = NowTicks();
-      anchor.pointer_hovering_over_count++;
-      ml_model_candidate_ = anchor_id;
-      if (!ml_model_execution_timer_.IsRunning()) {
-        ml_model_execution_timer_.Start(
-            FROM_HERE, MLModelExecutionTimerStartDelay(),
-            base::BindOnce(&NavigationPredictor::OnMLModelExecutionTimerFired,
-                           base::Unretained(this)));
-      }
-      break;
-    }
-    default:
-      break;
-  }
-}
-
-void NavigationPredictor::OnMLModelExecutionTimerFired() {
-  // Check whether preloading is enabled or not.
-  Profile* profile =
-      Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
-  if (prefetch::IsSomePreloadingEnabled(*profile->GetPrefs()) !=
-      content::PreloadingEligibility::kEligible) {
-    return;
-  }
-
-  // Execute the model.
-  PreloadingModelKeyedService* model_service =
-      PreloadingModelKeyedServiceFactory::GetForProfile(profile);
-  if (!model_service) {
-    return;
-  }
-
-  if (!ml_model_candidate_.has_value()) {
-    return;
-  }
-  auto it = anchors_.find(ml_model_candidate_.value());
-  if (it == anchors_.end()) {
-    return;
-  }
-
-  AnchorElementData& anchor = it->second;
-
-  PreloadingModelKeyedService::Inputs inputs;
-  inputs.contains_image = anchor.contains_image;
-  inputs.font_size = anchor.font_size;
-  inputs.has_text_sibling = anchor.has_text_sibling;
-  inputs.is_bold = anchor.is_bold_font;
-  inputs.is_in_iframe = anchor.is_in_iframe;
-  inputs.is_url_incremented_by_one = anchor.is_url_incremented_by_one;
-  inputs.navigation_start_to_link_logged =
-      anchor.first_report_timestamp - navigation_start_;
-  auto path_info = GetUrlPathLengthDepthAndHash(anchor.target_url);
-  inputs.path_length = path_info.path_length;
-  inputs.path_depth = path_info.path_depth;
-  inputs.percent_clickable_area = anchor.ratio_area;
-  inputs.percent_vertical_distance =
-      static_cast<int>(anchor.ratio_distance_root_top * 100);
-
-  inputs.is_same_host = anchor.is_same_host;
-  auto to_timedelta = [this](std::optional<base::TimeTicks> ts) {
-    return ts.has_value() ? NowTicks() - ts.value() : base::TimeDelta();
-  };
-  // TODO(329691634): Using the real viewport entry time for
-  // `entered_viewport_to_left_viewport` produces low quality results.
-  // We could remove it from the model, if we can't get this to be useful.
-  inputs.entered_viewport_to_left_viewport = base::TimeDelta();
-  inputs.hover_dwell_time = to_timedelta(anchor.pointer_over_timestamp);
-  inputs.pointer_hovering_over_count = anchor.pointer_hovering_over_count;
-  if (model_score_callback_) {
-    std::move(model_score_callback_).Run(inputs);
-  }
-
-  content::PreloadingData* preloading_data =
-      content::PreloadingData::GetOrCreateForWebContents(
-          content::WebContents::FromRenderFrameHost(&render_frame_host()));
-  preloading_data->OnPreloadingHeuristicsModelInput(
-      anchor.target_url,
-      base::BindOnce(&RecordMetricsForModelTraining, inputs,
-                     render_frame_host().GetPageUkmSourceId()));
-  model_service->Score(
-      &scoring_model_task_tracker_, inputs,
-      base::BindOnce(&NavigationPredictor::OnPreloadingHeuristicsModelDone,
-                     weak_ptr_factory_.GetWeakPtr(), anchor.target_url));
-
-  if (inputs.hover_dwell_time < MLModelMaxHoverTime() &&
-      !ml_model_execution_timer_.IsRunning()) {
-    ml_model_execution_timer_.Start(
-        FROM_HERE, MLModelExecutionTimerInterval(),
-        base::BindOnce(&NavigationPredictor::OnMLModelExecutionTimerFired,
-                       base::Unretained(this)));
-  }
-}
-
-void NavigationPredictor::SetModelScoreCallbackForTesting(
-    ModelScoreCallbackForTesting callback) {
-  model_score_callback_ = std::move(callback);
 }
 
 // static

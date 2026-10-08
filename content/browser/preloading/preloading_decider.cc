@@ -100,17 +100,7 @@ PreloadingDecider::EagernessSet HoverEagernessToExclude(
 
 class PreloadingDecider::BehaviorConfig {
  public:
-  BehaviorConfig()
-      : ml_model_enacts_candidates_(
-            blink::features::kPreloadingModelEnactCandidates.Get()),
-        ml_model_prefetch_moderate_threshold_{std::clamp(
-            blink::features::kPreloadingModelPrefetchModerateThreshold.Get(),
-            0,
-            100)},
-        ml_model_prerender_moderate_threshold_{std::clamp(
-            blink::features::kPreloadingModelPrerenderModerateThreshold.Get(),
-            0,
-            100)} {
+  BehaviorConfig() {
     pointer_down_eagerness_ =
         EagernessSet{blink::mojom::SpeculationEagerness::kConservative,
                      blink::mojom::SpeculationEagerness::kModerate};
@@ -137,9 +127,6 @@ class PreloadingDecider::BehaviorConfig {
       return EagernessSet{blink::mojom::SpeculationEagerness::kModerate};
     } else if (predictor == preloading_predictor::kEagerViewportHeuristic) {
       return EagernessSet{blink::mojom::SpeculationEagerness::kEager};
-    } else if (predictor ==
-               preloading_predictor::kPreloadingHeuristicsMLModel) {
-      return EagernessSet{blink::mojom::SpeculationEagerness::kModerate};
     } else {
       NOTREACHED() << "unexpected predictor " << predictor.name() << "/"
                    << predictor.ukm_value();
@@ -157,26 +144,10 @@ class PreloadingDecider::BehaviorConfig {
       return kNoThreshold;
     } else if (predictor == preloading_predictor::kEagerViewportHeuristic) {
       return kNoThreshold;
-    } else if (predictor ==
-               preloading_predictor::kPreloadingHeuristicsMLModel) {
-      switch (action) {
-        case blink::mojom::SpeculationAction::kPrefetch:
-          return ml_model_prefetch_moderate_threshold_;
-        // TODO(https://crbug.com/428500219): Revisit the threshold for
-        // prerender-until-script; it could be lower than the threshold for
-        // prerender.
-        case blink::mojom::SpeculationAction::kPrerenderUntilScript:
-        case blink::mojom::SpeculationAction::kPrerender:
-          return ml_model_prerender_moderate_threshold_;
-      }
     } else {
       NOTREACHED() << "unexpected predictor " << predictor.name() << "/"
                    << predictor.ukm_value();
     }
-  }
-
-  bool ml_model_enacts_candidates() const {
-    return ml_model_enacts_candidates_;
   }
 
  private:
@@ -186,11 +157,6 @@ class PreloadingDecider::BehaviorConfig {
 
   EagernessSet pointer_down_eagerness_;
   EagernessSet pointer_hover_eagerness_;
-  const bool ml_model_enacts_candidates_ = false;
-  const PreloadingConfidence ml_model_prefetch_moderate_threshold_{
-      kNoThreshold};
-  const PreloadingConfidence ml_model_prerender_moderate_threshold_{
-      kNoThreshold};
 };
 
 DOCUMENT_USER_DATA_KEY_IMPL(PreloadingDecider);
@@ -283,36 +249,6 @@ void PreloadingDecider::OnPointerDown(const GURL& url, bool renderer_enacted) {
   HandleRendererOwnedHeuristic(url,
                                preloading_predictor::kUrlPointerDownOnAnchor,
                                /*fallback_to_preconnect=*/true);
-}
-
-void PreloadingDecider::OnPreloadingHeuristicsModelDone(const GURL& url,
-                                                        float score) {
-  CHECK(base::FeatureList::IsEnabled(
-      blink::features::kPreloadingHeuristicsMLModel));
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(&render_frame_host());
-  auto* preloading_data = static_cast<PreloadingDataImpl*>(
-      PreloadingData::GetOrCreateForWebContents(web_contents));
-  preloading_data->AddExperimentalPreloadingPrediction(
-      /*name=*/"OnPreloadingHeuristicsMLModel",
-      /*url_match_predicate=*/PreloadingData::GetSameURLMatcher(url),
-      /*score=*/score,
-      /*min_score=*/0.0,
-      /*max_score=*/1.0,
-      /*buckets=*/100);
-
-  if (!behavior_config_->ml_model_enacts_candidates()) {
-    return;
-  }
-
-  ml_model_available_ = true;
-
-  const PreloadingConfidence confidence{std::clamp(
-      base::saturated_cast<int>(std::nearbyint(score * 100.f)), 0, 100)};
-
-  MaybeEnactCandidate(url, preloading_predictor::kPreloadingHeuristicsMLModel,
-                      confidence, /*fallback_to_preconnect=*/false,
-                      /*eagerness_to_exclude=*/{});
 }
 
 void PreloadingDecider::OnPointerHover(
@@ -518,12 +454,6 @@ void PreloadingDecider::UpdateSpeculationCandidates(
   preloading_data->SetIsNavigationInDomainCallback(
       preloading_predictor::kUrlPointerHoverOnAnchor, is_new_link_nav);
   if (base::FeatureList::IsEnabled(
-          blink::features::kPreloadingHeuristicsMLModel) &&
-      behavior_config_->ml_model_enacts_candidates()) {
-    preloading_data->SetIsNavigationInDomainCallback(
-        preloading_predictor::kPreloadingHeuristicsMLModel, is_new_link_nav);
-  }
-  if (base::FeatureList::IsEnabled(
           blink::features::kPreloadingModerateViewportHeuristics)) {
     preloading_data->SetIsNavigationInDomainCallback(
         preloading_predictor::kModerateViewportHeuristic, is_new_link_nav);
@@ -678,11 +608,9 @@ void PreloadingDecider::EnactRendererSelectedCandidate(
   // An empty merge means the browser considered none of the on-standby
   // candidates under `key` suitable, even though the key itself is on standby.
   // The renderer picks candidates using its own mirror of the browser's
-  // eagerness sets, so the two normally agree, but IsSuitableCandidate() also
-  // applies browser-only state the renderer cannot see (today: the ML model
-  // superseding the hover heuristic), and the mirrors can drift. Neither is a
-  // reason to crash, so treat "nothing suitable" as a first-class outcome and
-  // decline, as the browser-driven path does when
+  // eagerness sets, so the two normally agree, but the mirrors can drift. That
+  // is not a reason to crash, so treat "nothing suitable" as a first-class
+  // outcome and decline, as the browser-driven path does when
   // GetMatchedPreloadingCandidate() returns nullopt. Enacting anyway would
   // leave `candidate->tags` empty, which violates the non-empty invariant
   // documented on blink.mojom.SpeculationCandidate and trips a CHECK() in the
@@ -970,14 +898,6 @@ bool PreloadingDecider::IsSuitableCandidate(
   EagernessSet eagerness_set_for_predictor =
       behavior_config_->EagernessSetForPredictor(predictor);
   eagerness_set_for_predictor.RemoveAll(eagerness_to_exclude);
-
-  // If the ML model is available, its decisions supersede the hover heuristic.
-  if (ml_model_available_ &&
-      predictor == preloading_predictor::kUrlPointerHoverOnAnchor) {
-    eagerness_set_for_predictor.RemoveAll(
-        behavior_config_->EagernessSetForPredictor(
-            preloading_predictor::kPreloadingHeuristicsMLModel));
-  }
 
   return eagerness_set_for_predictor.Has(candidate->eagerness) &&
          confidence >= behavior_config_->GetThreshold(predictor, action);

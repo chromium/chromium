@@ -11,13 +11,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/task/cancelable_task_tracker.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_metrics_document_data.h"
-#include "chrome/browser/navigation_predictor/preloading_model_keyed_service.h"
 #include "chrome/browser/page_load_metrics/observers/page_anchors_metrics_observer.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/visibility.h"
@@ -43,9 +40,6 @@ class UkmRecorder;
 class NavigationPredictor
     : public content::DocumentService<blink::mojom::AnchorElementMetricsHost> {
  public:
-  using ModelScoreCallbackForTesting = base::OnceCallback<void(
-      const PreloadingModelKeyedService::Inputs& inputs)>;
-
   // These values are persisted to logs.
   enum FontSizeBucket : uint8_t {
     kLessThanTen = 1,
@@ -59,8 +53,6 @@ class NavigationPredictor
   // Create and bind NavigationPredictor.
   static void Create(content::RenderFrameHost* render_frame_host,
                      mojo::PendingReceiver<AnchorElementMetricsHost> receiver);
-
-  void SetModelScoreCallbackForTesting(ModelScoreCallbackForTesting callback);
 
   static void DisableRendererMetricSendingDelayForTesting();
 
@@ -97,12 +89,7 @@ class NavigationPredictor
   void ReportNewAnchorElements(
       std::vector<blink::mojom::AnchorElementMetricsPtr> elements,
       const std::vector<uint32_t>& removed_elements) override;
-  void ProcessPointerEventUsingMLModel(
-      blink::mojom::AnchorElementPointerEventForMLModelPtr pointer_event)
-      override;
   void ShouldSkipUpdateDelays(ShouldSkipUpdateDelaysCallback callback) override;
-
-  void OnMLModelExecutionTimerFired();
 
   // Computes and stores document level metrics, including |number_of_anchors_|
   // etc.
@@ -117,23 +104,14 @@ class NavigationPredictor
   NavigationPredictorMetricsDocumentData&
   GetNavigationPredictorMetricsDocumentData() const;
 
-  // Called when the async preloading heuristics model is done running and the
-  // returned the result.
-  virtual void OnPreloadingHeuristicsModelDone(
-      GURL url,
-      PreloadingModelKeyedService::Result result);
-
   bool IsTargetURLTheSameAsDocument(const AnchorElementData& anchor);
-
-  base::TimeTicks NowTicks() const { return clock_->NowTicks(); }
 
   // A count of clicks to prevent reporting more than 10 clicks to UKM.
   size_t clicked_count_ = 0;
 
   // Stores the anchor element metrics for each anchor ID that we track.
   struct AnchorElementData {
-    AnchorElementData(blink::mojom::AnchorElementMetricsPtr metrics,
-                      base::TimeTicks first_report_timestamp);
+    explicit AnchorElementData(blink::mojom::AnchorElementMetricsPtr metrics);
     ~AnchorElementData();
 
     // The following fields mirror `blink::mojom::AnchorElementMetrics`, but
@@ -151,17 +129,8 @@ class NavigationPredictor
     bool is_bold_font : 1;
     FontSizeBucket font_size;
     GURL target_url;
-
-    // Following fields are used for computing timing inputs of the ML model.
-    base::TimeTicks first_report_timestamp;
-    std::optional<base::TimeTicks> pointer_over_timestamp;
-    size_t pointer_hovering_over_count = 0u;
   };
   std::unordered_map<AnchorId, AnchorElementData> anchors_;
-  // It is the anchor element that the user has recently interacted
-  // with and is a good candidate for the ML model to predict the next user
-  // click.
-  std::optional<AnchorId> ml_model_candidate_;
 
   // The time between navigation start and the last time user clicked on a link.
   std::optional<base::TimeDelta> navigation_start_to_click_;
@@ -182,24 +151,9 @@ class NavigationPredictor
   // UKM recorder
   raw_ptr<ukm::UkmRecorder> ukm_recorder_ = nullptr;
 
-  // The time at which the navigation started.
-  base::TimeTicks navigation_start_;
-
-  // Used to cancel ML model execution requests sent to
-  // `PreloadingModelKeyedService`.
-  base::CancelableTaskTracker scoring_model_task_tracker_;
-
-  raw_ptr<const base::TickClock> clock_;
-
   static bool disable_renderer_metric_sending_delay_for_testing_;
 
-  base::OneShotTimer ml_model_execution_timer_;
-
-  ModelScoreCallbackForTesting model_score_callback_;
-
   SEQUENCE_CHECKER(sequence_checker_);
-
-  base::WeakPtrFactory<NavigationPredictor> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_NAVIGATION_PREDICTOR_NAVIGATION_PREDICTOR_H_

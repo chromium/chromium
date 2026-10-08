@@ -1390,24 +1390,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     base::TimeDelta,
     kPreloadingEagerViewportHeuristicsPresentTime);
 
-// If enabled, the machine learning model will be employed to predict the next
-// click for speculation-rule based pre-loadings.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPreloadingHeuristicsMLModel);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
-                                               kPreloadingModelTimerStartDelay);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
-                                               kPreloadingModelTimerInterval);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
-                                               kPreloadingModelMaxHoverTime);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
-                                               kPreloadingModelEnactCandidates);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kPreloadingModelPrefetchModerateThreshold);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kPreloadingModelPrerenderModerateThreshold);
-
 // If enabled, a viewport based heuristic will be used to predict the next click
 // for speculation-rule based preloading.
 // Predictions are only preloaded when

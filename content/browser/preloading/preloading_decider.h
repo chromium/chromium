@@ -56,9 +56,6 @@ class CONTENT_EXPORT PreloadingDecider
                       blink::mojom::SpeculationEagerness target_eagerness,
                       bool renderer_enacted);
 
-  //  Receives and processes ML model score for 'url' target link.
-  void OnPreloadingHeuristicsModelDone(const GURL& url, float score);
-
   // Receives and processes `url` selected by "moderate" viewport heuristic.
   void OnModerateViewportHeuristicTriggered(const GURL& url,
                                             bool renderer_enacted);
@@ -270,12 +267,6 @@ class CONTENT_EXPORT PreloadingDecider
   // so that it does not span unit tests.
   class BehaviorConfig;
   std::unique_ptr<const BehaviorConfig> behavior_config_;
-
-  // Whether this page has ever received an ML model prediction. Once it has,
-  // the model predictions supersede the hover heuristic. We store this here,
-  // rather than per-BrowserContext, since even if the model is loaded, it may
-  // not run for some pages (e.g. insecure http).
-  bool ml_model_available_ = false;
 
   raw_ptr<PreloadingDeciderObserverForTesting> observer_for_testing_;
   Preconnector preconnector_;

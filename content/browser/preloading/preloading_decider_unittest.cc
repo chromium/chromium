@@ -1038,154 +1038,28 @@ TEST_F(PreloadingDeciderTest,
   EXPECT_EQ(mock_prerender.Get()->prerenders_[0].url, url);
 }
 
-class PreloadingDeciderMLModelTest
-    : public PreloadingDeciderTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  PreloadingDeciderMLModelTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kPreloadingHeuristicsMLModel,
-          {{"enact_candidates", base::ToString(GetParam())}}}},
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(ParameterizedTests,
-                         PreloadingDeciderMLModelTest,
-                         testing::Bool());
-
-TEST_P(PreloadingDeciderMLModelTest, OnPreloadingHeuristicsModelDone) {
-  base::HistogramTester histogram_tester;
-
-  GURL url1{"https://www.example.com"};
-  GetPrimaryMainFrame().OnPreloadingHeuristicsModelDone(
-      /*url=*/url1, /*score=*/0.2);
-
-  GURL url2{"https://www.google.com"};
-  GetPrimaryMainFrame().OnPreloadingHeuristicsModelDone(
-      /*url=*/url2, /*score=*/0.9);
-
-  // Navigate to `url2`.
-  NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(), url2);
-
-  // Check UMA records.
-  histogram_tester.ExpectBucketCount(
-      "Preloading.Experimental.OnPreloadingHeuristicsMLModel.Negative",
-      /*100*0.2=*/20, 1);
-  histogram_tester.ExpectBucketCount(
-      "Preloading.Experimental.OnPreloadingHeuristicsMLModel.Negative",
-      /*100*0.9=*/90, 0);
-  histogram_tester.ExpectBucketCount(
-      "Preloading.Experimental.OnPreloadingHeuristicsMLModel.Positive",
-      /*100*0.2=*/20, 0);
-  histogram_tester.ExpectBucketCount(
-      "Preloading.Experimental.OnPreloadingHeuristicsMLModel.Positive",
-      /*100*0.9=*/90, 1);
-}
-
-class PreloadingDeciderMLModelActiveTest : public PreloadingDeciderTest {
- public:
-  PreloadingDeciderMLModelActiveTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kPreloadingHeuristicsMLModel,
-          {{"enact_candidates", "true"},
-           {"prefetch_moderate_threshold", "40"},
-           {"prerender_moderate_threshold", "60"}}}},
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(PreloadingDeciderMLModelActiveTest,
-       ModelEnactsModeratePrefetchCandidate) {
-  const GURL url = GetSameOriginUrl("/candidate1.html");
-  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-  candidates.push_back(
-      MakeCandidate(url, blink::mojom::SpeculationAction::kPrefetch,
-                    blink::mojom::SpeculationEagerness::kModerate));
-
-  auto* preloading_decider =
-      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
-  ASSERT_TRUE(preloading_decider);
-  preloading_decider->UpdateSpeculationCandidates(candidates);
-
-  const auto& prefetches = GetPrefetchService()->prefetches_;
-
-  EXPECT_TRUE(prefetches.empty());
-  preloading_decider->OnPreloadingHeuristicsModelDone(url, /*score=*/0.99);
-  EXPECT_EQ(1u, prefetches.size());
-}
-
-TEST_F(PreloadingDeciderMLModelActiveTest,
-       ModelEnactsModeratePrerenderCandidate) {
-  const GURL url = GetSameOriginUrl("/candidate1.html");
-  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-  candidates.push_back(
-      MakeCandidate(url, blink::mojom::SpeculationAction::kPrerender,
-                    blink::mojom::SpeculationEagerness::kModerate));
-
-  auto* preloading_decider =
-      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
-  ASSERT_TRUE(preloading_decider);
-  ScopedMockPrerenderer prerenderer(preloading_decider);
-  preloading_decider->UpdateSpeculationCandidates(candidates);
-
-  const auto& prerenders = prerenderer.Get()->prerenders_;
-
-  EXPECT_TRUE(prerenders.empty());
-  preloading_decider->OnPreloadingHeuristicsModelDone(url, /*score=*/0.99);
-  EXPECT_EQ(1u, prerenders.size());
-}
-
-TEST_F(PreloadingDeciderMLModelActiveTest,
-       ModelPrerendersCandidateOverPrefetch) {
-  const GURL url = GetSameOriginUrl("/candidate1.html");
-  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-  candidates.push_back(
-      MakeCandidate(url, blink::mojom::SpeculationAction::kPrerender,
-                    blink::mojom::SpeculationEagerness::kModerate));
-  candidates.push_back(
-      MakeCandidate(url, blink::mojom::SpeculationAction::kPrefetch,
-                    blink::mojom::SpeculationEagerness::kModerate));
-
-  auto* preloading_decider =
-      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
-  ASSERT_TRUE(preloading_decider);
-  ScopedMockPrerenderer prerenderer(preloading_decider);
-  preloading_decider->UpdateSpeculationCandidates(candidates);
-
-  const auto& prefetches = GetPrefetchService()->prefetches_;
-  const auto& prerenders = prerenderer.Get()->prerenders_;
-
-  EXPECT_TRUE(prefetches.empty());
-  EXPECT_TRUE(prerenders.empty());
-  preloading_decider->OnPreloadingHeuristicsModelDone(url, /*score=*/0.99);
-  EXPECT_TRUE(prefetches.empty());
-  EXPECT_EQ(1u, prerenders.size());
-}
-
 // Regression test for crbug.com/550345163: a renderer-selected candidate the
 // browser considers unsuitable must be declined, not enacted with an empty tag
 // list (which used to CHECK() in the SpeculationRulesTags constructor).
 //
-// The ML model is used here because it is the one piece of browser-only state
-// in IsSuitableCandidate() that the renderer cannot mirror: once available, its
-// decisions supersede the hover heuristic, so the hover predictor's whole
-// eagerness set is dropped and nothing on standby matches. The behaviour under
-// test is the general "nothing suitable" path, not anything ML-specific.
-TEST_F(PreloadingDeciderMLModelActiveTest,
+// The renderer picks candidates using its own mirror of the browser's eagerness
+// sets, so the two normally agree, but the mirrors can drift. This reproduces
+// that drift: the renderer reports an "eager" hover, which narrows the hover
+// predictor to "eager" only, while the sole candidate on standby is
+// "moderate". Nothing on standby is then suitable.
+TEST_F(PreloadingDeciderTest,
        RendererSelectedHoverDoesNotEnactWhenNoSuitableCandidate) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kPreloadingEagerHoverHeuristics);
+
   const GURL url = GetSameOriginUrl("/candidate1.html");
   auto candidate =
       MakeCandidate(url, blink::mojom::SpeculationAction::kPrerender,
                     blink::mojom::SpeculationEagerness::kModerate);
   candidate->tags = {"moderate"};
   auto enacted_candidate = candidate.Clone();
+  enacted_candidate->eagerness = blink::mojom::SpeculationEagerness::kEager;
 
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   candidates.push_back(std::move(candidate));
@@ -1198,113 +1072,19 @@ TEST_F(PreloadingDeciderMLModelActiveTest,
 
   const auto& prerenders = prerenderer.Get()->prerenders_;
   ASSERT_TRUE(prerenders.empty());
-
-  // Run the model with a score below the prerender threshold (60). This marks
-  // the model as available without enacting the candidate, mirroring a user
-  // hovering a link the model has already scored as unlikely.
-  preloading_decider->OnPreloadingHeuristicsModelDone(url, /*score=*/0.1);
-  ASSERT_TRUE(prerenders.empty());
   ASSERT_TRUE(preloading_decider->IsOnStandByForTesting(
       url, blink::mojom::SpeculationAction::kPrerender));
 
-  // The renderer has no visibility into the model, so it still enacts on hover.
   preloading_decider->EnactRendererSelectedCandidate(
       std::move(enacted_candidate),
       blink::mojom::SpeculationHeuristic::kPointerHover);
 
-  // The model supersedes hover, so nothing is preloaded...
+  // Nothing was suitable, so nothing is preloaded...
   EXPECT_TRUE(prerenders.empty());
-  // ...and the candidate stays on standby so the model can still enact it.
+  // ...and declining must not consume the candidate: a later heuristic that the
+  // browser does agree with still has to be able to enact it.
   EXPECT_TRUE(preloading_decider->IsOnStandByForTesting(
       url, blink::mojom::SpeculationAction::kPrerender));
-
-  // A later high-confidence model result enacts the candidate normally.
-  preloading_decider->OnPreloadingHeuristicsModelDone(url, /*score=*/0.99);
-  ASSERT_EQ(1u, prerenders.size());
-}
-
-TEST_F(PreloadingDeciderMLModelActiveTest, ModelConfidenceThreshold) {
-  const GURL url = GetSameOriginUrl("/candidate1.html");
-  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-  candidates.push_back(
-      MakeCandidate(url, blink::mojom::SpeculationAction::kPrerender,
-                    blink::mojom::SpeculationEagerness::kModerate));
-  candidates.push_back(
-      MakeCandidate(url, blink::mojom::SpeculationAction::kPrefetch,
-                    blink::mojom::SpeculationEagerness::kModerate));
-
-  auto* preloading_decider =
-      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
-  ASSERT_TRUE(preloading_decider);
-  ScopedMockPrerenderer prerenderer(preloading_decider);
-  preloading_decider->UpdateSpeculationCandidates(candidates);
-
-  const auto& prefetches = GetPrefetchService()->prefetches_;
-  const auto& prerenders = prerenderer.Get()->prerenders_;
-
-  EXPECT_TRUE(prefetches.empty());
-  EXPECT_TRUE(prerenders.empty());
-  // The test is configured such that this is a high enough confidence for
-  // prefetch, but not for prerender.
-  preloading_decider->OnPreloadingHeuristicsModelDone(url, /*score=*/0.50);
-  EXPECT_EQ(1u, prefetches.size());
-  EXPECT_TRUE(prerenders.empty());
-}
-
-TEST_F(PreloadingDeciderMLModelActiveTest, ModelNoPreconnectFallback) {
-  const GURL url = GetSameOriginUrl("/candidate1.html");
-
-  MockContentBrowserClient browser_client;
-
-  auto* preloading_decider =
-      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
-  ASSERT_TRUE(preloading_decider);
-  ScopedMockPrerenderer prerenderer(preloading_decider);
-  auto* preconnect_delegate = browser_client.GetDelegate();
-
-  const auto& prefetches = GetPrefetchService()->prefetches_;
-  const auto& prerenders = prerenderer.Get()->prerenders_;
-
-  EXPECT_FALSE(preconnect_delegate->Target().has_value());
-  EXPECT_TRUE(prefetches.empty());
-  EXPECT_TRUE(prerenders.empty());
-  preloading_decider->OnPreloadingHeuristicsModelDone(url, /*score=*/0.99);
-  EXPECT_FALSE(preconnect_delegate->Target().has_value());
-  EXPECT_TRUE(prefetches.empty());
-  EXPECT_TRUE(prerenders.empty());
-}
-
-TEST_F(PreloadingDeciderMLModelActiveTest, ModelSupersedesHoverHeuristic) {
-  const GURL url = GetSameOriginUrl("/candidate1.html");
-  auto candidate =
-      MakeCandidate(url, blink::mojom::SpeculationAction::kPrefetch,
-                    blink::mojom::SpeculationEagerness::kModerate);
-  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-  candidates.push_back(candidate.Clone());
-
-  auto* preloading_decider =
-      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
-  ASSERT_TRUE(preloading_decider);
-  preloading_decider->UpdateSpeculationCandidates(candidates);
-
-  const auto& prefetches = GetPrefetchService()->prefetches_;
-
-  EXPECT_TRUE(prefetches.empty());
-  preloading_decider->OnPreloadingHeuristicsModelDone(url, /*score=*/0.05);
-  EXPECT_TRUE(prefetches.empty());
-  // The model has indicated that the candidate is not worth prefetching. The
-  // renderer has no visibility into the model, so it still enacts on hover, but
-  // the model supersedes the hover heuristic and the browser declines.
-  preloading_decider->EnactRendererSelectedCandidate(
-      candidate.Clone(), blink::mojom::SpeculationHeuristic::kPointerHover);
-  EXPECT_TRUE(prefetches.empty());
-  // Declining must not consume the candidate.
-  EXPECT_TRUE(preloading_decider->IsOnStandByForTesting(
-      url, blink::mojom::SpeculationAction::kPrefetch));
-  // Pointerdown is not gated by the model, so it still enacts.
-  preloading_decider->EnactRendererSelectedCandidate(
-      std::move(candidate), blink::mojom::SpeculationHeuristic::kPointerDown);
-  EXPECT_EQ(1u, prefetches.size());
 }
 
 }  // namespace

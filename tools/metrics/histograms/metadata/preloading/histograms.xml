@@ -45,9 +45,6 @@ chromium-metrics-reviews@google.com.
                velocity and acceleration suggest it will leave soon. The
                output of this predictor is mouse velocity instead of a
                logit/probability."/>
-  <variant name="OnPreloadingHeuristicsMLModel"
-      summary="The estimated probability that a user will click on a link
-               that is calculated by preloading heuristic ML model."/>
 </variants>
 
 <variants name="GroundTruth">
@@ -139,8 +136,6 @@ chromium-metrics-reviews@google.com.
   <variant name="PointerDownOnNewTabPage"
       summary="When preloading is triggered by mouse down NewTabPage on
                Desktop."/>
-  <variant name="PreloadingHeuristicsMLModel"
-      summary="When preloading is triggered by an ML model prediction."/>
   <variant name="PrewarmDefaultSearchEngine"
       summary="When the default search engine needs to prerender a prewarm
                page."/>

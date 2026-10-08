@@ -134,10 +134,8 @@ inline constexpr PreloadingPredictor kBackGestureNavigation(
     4,
     "BackGestureNavigation");
 
-// Preloading heuristics ML model.
-inline constexpr PreloadingPredictor kPreloadingHeuristicsMLModel(
-    5,
-    "PreloadingHeuristicsMLModel");
+// Value 5 was used by the removed PreloadingHeuristicsMLModel predictor; do
+// not reuse it (it may still appear in historical UKM/UMA data).
 
 // Preloading is triggered by a deterministic viewport-based heuristic for
 // the "moderate" eagerness. Note that this predictor does nothing for the other
