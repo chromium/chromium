@@ -41,7 +41,6 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -298,9 +297,8 @@ public class TabbedNavigationBarColorControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
     @Config(sdk = 30) // Min version needed for e2e everywhere
-    public void testNavBarColorAnimationsEdgeToEdgeEverywhere() {
+    public void testNavBarColorAnimations() {
         when(mTab.getBackgroundColor()).thenReturn(Color.BLUE);
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
 
@@ -322,8 +320,8 @@ public class TabbedNavigationBarColorControllerUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
-    public void testNavBarColorAnimationsEdgeToEdgeBottomChin() {
+    @Config(sdk = 29)
+    public void testNavBarColorAnimations_Legacy() {
         mNavColorController.setIsBottomChinEnabledForTesting(true);
         when(mTab.getBackgroundColor()).thenReturn(Color.BLUE);
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
@@ -346,7 +344,6 @@ public class TabbedNavigationBarColorControllerUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
     public void testHideNavBarDuringOmniboxSwipe() {
         mNavColorController.setIsBottomChinEnabledForTesting(true);
         Mockito.clearInvocations(mEdgeToEdgeSystemBarColorHelper);
@@ -369,7 +366,6 @@ public class TabbedNavigationBarColorControllerUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.BOTTOM_CONTROLS_JANK_IMPROVEMENT)
-    @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
     public void testNavBarDuringOmniboxSwipe_withBottomAttachedUi() {
         mNavColorController.setIsBottomChinEnabledForTesting(true);
         mNavColorController.onBottomAttachedColorChanged(
@@ -473,7 +469,6 @@ public class TabbedNavigationBarColorControllerUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
     public void testOverviewColorChangeWhileHubHiding_doesNotCancelColorTransition() {
         mNavColorController.setIsBottomChinEnabledForTesting(true);
         // Tab color is RED and Hub color is BLUE to match verifyColorAnimationSteps().
