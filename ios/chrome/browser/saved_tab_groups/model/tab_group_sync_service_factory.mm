@@ -113,11 +113,7 @@ TabGroupSyncServiceFactory::GetDefaultFactory() {
 TabGroupSyncServiceFactory::TabGroupSyncServiceFactory()
     : ProfileKeyedServiceFactoryIOS("TabGroupSyncServiceFactory",
                                     TestingCreation::kNoServiceForTests,
-                                    ServiceCreation::kCreateWithProfile),
-      synthetic_field_trial_helper_(std::make_unique<SyntheticFieldTrialHelper>(
-          base::BindRepeating(&TabGroupSyncServiceFactory::OnHadSyncedTabGroup),
-          base::BindRepeating(
-              &TabGroupSyncServiceFactory::OnHadSharedTabGroup))) {
+                                    ServiceCreation::kCreateWithProfile) {
   DependsOn(BrowserListFactory::GetInstance());
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
@@ -135,7 +131,7 @@ TabGroupSyncServiceFactory::~TabGroupSyncServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 TabGroupSyncServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
-  return BuildService(synthetic_field_trial_helper_.get(), profile);
+  return BuildService(GetSyntheticFieldTrialHelper(), profile);
 }
 
 // static
@@ -160,4 +156,14 @@ void TabGroupSyncServiceFactory::OnHadSharedTabGroup(bool had_shared_group) {
                      had_shared_group ? kHasOwnedTabGroupTypeName
                                       : kHasNotOwnedTabGroupTypeName);
 }
+
+// static
+SyntheticFieldTrialHelper*
+TabGroupSyncServiceFactory::GetSyntheticFieldTrialHelper() {
+  static base::NoDestructor<SyntheticFieldTrialHelper> kInstance(
+      base::BindRepeating(&TabGroupSyncServiceFactory::OnHadSyncedTabGroup),
+      base::BindRepeating(&TabGroupSyncServiceFactory::OnHadSharedTabGroup));
+  return kInstance.get();
+}
+
 }  // namespace tab_groups

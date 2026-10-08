@@ -44,7 +44,8 @@ class TabGroupSyncServiceFactory : public ProfileKeyedServiceFactoryIOS {
   static void RegisterFieldTrial(std::string_view trial_name,
                                  std::string_view group_name);
 
-  std::unique_ptr<SyntheticFieldTrialHelper> synthetic_field_trial_helper_;
+  // Returns the singleton SyntheticFieldTrialHelper used by this instance.
+  static SyntheticFieldTrialHelper* GetSyntheticFieldTrialHelper();
 };
 
 }  // namespace tab_groups
