@@ -8,13 +8,28 @@
 #import "components/prefs/pref_service.h"
 #import "components/sync/service/sync_prefs.h"
 
+namespace {
+
+// Deprecated 10/2026.
+constexpr char kCWVAutofillSafeLifecycleEnabled[] =
+    "cwv.autofill.safe_lifecycle_enabled";
+
+}  // namespace
+
 namespace ios_web_view {
 void RegisterCWVAutofillPrefs(PrefRegistrySimple* pref_registry) {
   pref_registry->RegisterBooleanPref(kCWVAutofillAddressSyncEnabled, false);
   pref_registry->RegisterBooleanPref(kCWVAutofillVCNUsageEnabled, false);
+  // Deprecated 10/2026. Registered only so that
+  // `MigrateObsoleteCWVAutofillPrefs` can clear persisted values.
   pref_registry->RegisterBooleanPref(kCWVAutofillSafeLifecycleEnabled, false);
   pref_registry->RegisterBooleanPref(kCWVAutofillScopedFormActivityEnabled,
                                      false);
+}
+
+void MigrateObsoleteCWVAutofillPrefs(PrefService* prefs) {
+  // Added 10/2026.
+  prefs->ClearPref(kCWVAutofillSafeLifecycleEnabled);
 }
 
 bool IsAutofillAddressSyncEnabled(const PrefService* prefs) {
@@ -31,14 +46,6 @@ bool IsAutofillVCNUsageEnabled(const PrefService* prefs) {
 
 void SetAutofillVCNUsageEnabled(PrefService* prefs, bool enabled) {
   prefs->SetBoolean(kCWVAutofillVCNUsageEnabled, enabled);
-}
-
-bool IsAutofillSafeLifecycleEnabled(const PrefService* prefs) {
-  return prefs->GetBoolean(kCWVAutofillSafeLifecycleEnabled);
-}
-
-void SetAutofillSafeLifecycleEnabled(PrefService* prefs, bool enabled) {
-  prefs->SetBoolean(kCWVAutofillSafeLifecycleEnabled, enabled);
 }
 
 bool IsAutofillScopedFormActivityEnabled(const PrefService* prefs) {

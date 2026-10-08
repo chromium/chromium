@@ -109,6 +109,7 @@ WebViewBrowserState::WebViewBrowserState(
     PrefServiceFactory factory;
     factory.set_user_prefs(user_pref_store);
     prefs_ = factory.Create(pref_registry.get());
+    MigrateObsoleteBrowserStatePrefs(prefs_.get());
   }
 
   BrowserStateDependencyManager::GetInstance()->CreateBrowserStateServices(

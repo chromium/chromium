@@ -127,11 +127,11 @@
 }
 
 - (void)setAutofillSafeLifecycleEnabled:(BOOL)enabled {
-  ios_web_view::SetAutofillSafeLifecycleEnabled(_prefService, enabled);
+  // No-op: see the deprecation note in the header.
 }
 
 - (BOOL)isAutofillSafeLifecycleEnabled {
-  return ios_web_view::IsAutofillSafeLifecycleEnabled(_prefService);
+  return YES;
 }
 
 - (void)setAutofillScopedFormActivityEnabled:(BOOL)enabled {

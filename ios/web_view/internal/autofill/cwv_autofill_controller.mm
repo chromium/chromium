@@ -198,9 +198,6 @@ struct FocusedFieldState {
   // `std::nullopt` when no field is tracked.
   std::optional<FocusedFieldState> _focusedField;
 
-  // YES if CWVAutofillController is hardened against WebState destruction.
-  BOOL _safeLifecycleEnabled;
-
   // YES if CWVAutofillController scopes cached form activity to the focused
   // field.
   BOOL _scopedFormActivityEnabled;
@@ -272,8 +269,6 @@ struct FocusedFieldState {
   if (self) {
     DCHECK(webState);
     _webState = webState;
-    _safeLifecycleEnabled =
-        ios_web_view::IsAutofillSafeLifecycleEnabled(prefService);
     _scopedFormActivityEnabled =
         ios_web_view::IsAutofillScopedFormActivityEnabled(prefService);
 
@@ -351,7 +346,7 @@ struct FocusedFieldState {
                       completionHandler:
                           (void (^)(NSArray<CWVAutofillSuggestion*>* _Nonnull))
                               completionHandler {
-  if ([self isLifecycleStateInvalid]) {
+  if (![self hasValidState]) {
     completionHandler(@[]);
     return;
   }
@@ -426,7 +421,7 @@ struct FocusedFieldState {
         resultHandler(@[]);
         return;
       }
-      if ([strongSelf isLifecycleStateInvalid]) {
+      if (![strongSelf hasValidState]) {
         resultHandler(@[]);
         return;
       }
@@ -531,7 +526,7 @@ struct FocusedFieldState {
 - (void)fetchFullCardDetailsForCard:(CWVCreditCard*)card
                   completionHandler:(CWVFetchFullCardDetailsCompletionHandler)
                                         completionHandler {
-  if ([self isLifecycleStateInvalid]) {
+  if (![self hasValidState]) {
     if (completionHandler) {
       NSError* error = [NSError errorWithDomain:CWVAutofillErrorDomain
                                            code:CWVAutofillErrorUnknown
@@ -1451,10 +1446,6 @@ struct FocusedFieldState {
   if (decision == CWVPasswordUserDecisionYes) {
     form->Save();
   }
-}
-
-- (BOOL)isLifecycleStateInvalid {
-  return _safeLifecycleEnabled && ![self hasValidState];
 }
 
 - (BOOL)hasValidState {

@@ -52,4 +52,8 @@ void RegisterBrowserStatePrefs(
       ->RegisterBrowserStatePrefsForServices(pref_registry);
 }
 
+void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
+  ios_web_view::MigrateObsoleteCWVAutofillPrefs(prefs);
+}
+
 }  // namespace ios_web_view

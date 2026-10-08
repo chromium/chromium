@@ -147,9 +147,6 @@
 // When enabled, -[CWVGlobalState setDumpWithoutCrashingHandler:] is made available.
 #define CWV_DUMP_WITHOUT_CRASHING_HANDLER_AVAILABLE 1
 
-// Supports -[CWVPreferences autofillSafeLifecycleEnabled].
-#define IOS_WEB_VIEW_SUPPORTS_AUTOFILL_SAFE_LIFECYCLE 1
-
 // Supports -[CWVUIDelegate webView:buildMenuWithBuilder:].
 #define CWV_SUPPORTS_BUILD_MENU_WITH_BUILDER 1
 

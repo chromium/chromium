@@ -72,6 +72,7 @@
 #import "net/base/apple/url_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
@@ -1436,8 +1437,6 @@ TEST_P(CWVAutofillControllerTest, DidReceiveUnmaskOtpVerificationResult) {
 }
 
 TEST_P(CWVAutofillControllerTest, WebStateDestroyedDuringFetch) {
-  ios_web_view::SetAutofillSafeLifecycleEnabled(&pref_service_, true);
-
   RegisterFormActivity();
 
   __block void (^suggestionsAvailable)(BOOL) = nil;
@@ -1516,7 +1515,7 @@ TEST_P(CWVAutofillControllerTest, MethodsNoOpAfterWebStateDestroyed) {
   [autofill_controller_ focusPreviousField];
   EXPECT_TRUE(frame_ptr->GetLastJavaScriptCall().empty());
 
-  __block BOOL fetch_completion_was_called = NO;
+  __block NSArray<CWVAutofillSuggestion*>* fetched_suggestions = nil;
   [autofill_controller_
       fetchSuggestionsForFormWithName:kTestFormName
                       fieldIdentifier:kTestFieldIdentifier
@@ -1524,9 +1523,9 @@ TEST_P(CWVAutofillControllerTest, MethodsNoOpAfterWebStateDestroyed) {
                               frameID:frame_id_
                     completionHandler:^(
                         NSArray<CWVAutofillSuggestion*>* suggestions) {
-                      fetch_completion_was_called = YES;
+                      fetched_suggestions = suggestions;
                     }];
-  EXPECT_FALSE(fetch_completion_was_called);
+  EXPECT_NSEQ(@[], fetched_suggestions);
 
   autofill::CreditCard credit_card = autofill::test::GetCreditCard();
   CWVCreditCard* cwv_credit_card =
@@ -2204,6 +2203,23 @@ TEST_F(CWVAutofillControllerLegacyFormActivityTest,
   EXPECT_EQ(kInputFieldRendererID, last_suggestions_query_.fieldRendererID);
   EXPECT_NSEQ(kTestFieldValue, last_suggestions_query_.typedValue);
   EXPECT_FALSE(last_suggestions_had_user_gesture_);
+}
+
+using CWVAutofillPrefsTest = PlatformTest;
+
+// Tests that `MigrateObsoleteCWVAutofillPrefs` clears a persisted value of the
+// deprecated `cwv.autofill.safe_lifecycle_enabled` pref.
+TEST_F(CWVAutofillPrefsTest, MigrateObsoleteClearsSafeLifecyclePref) {
+  constexpr char kObsoleteSafeLifecyclePref[] =
+      "cwv.autofill.safe_lifecycle_enabled";
+  TestingPrefServiceSimple prefs;
+  ios_web_view::RegisterCWVAutofillPrefs(prefs.registry());
+  prefs.SetBoolean(kObsoleteSafeLifecyclePref, true);
+  ASSERT_TRUE(prefs.HasPrefPath(kObsoleteSafeLifecyclePref));
+
+  ios_web_view::MigrateObsoleteCWVAutofillPrefs(&prefs);
+
+  EXPECT_FALSE(prefs.HasPrefPath(kObsoleteSafeLifecyclePref));
 }
 
 }  // namespace
