@@ -15221,6 +15221,21 @@
             ]
         }
     ],
+    "SaasUsageReportingChromeOS": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SaasUsageReporting"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafeBrowsingDailyPhishingReportsLimit": [
         {
             "platforms": [
