@@ -21,6 +21,7 @@
 #import "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #import "components/page_content_annotations/core/page_content_annotation_type.h"
 #import "components/prefs/pref_change_registrar.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_evaluator.h"
 #import "ios/chrome/browser/intelligence/page_classification/page_classification_service.h"
@@ -52,7 +53,8 @@ class ContextualCueingCapTrackerService;
 class ContextualCueingTabHelper
     : public web::WebStateObserver,
       public web::WebStateUserData<ContextualCueingTabHelper>,
-      public GeminiService::Observer {
+      public GeminiService::Observer,
+      public signin::IdentityManager::Observer {
  public:
   struct BackgroundTabContext {
     GURL url;
@@ -177,6 +179,12 @@ class ContextualCueingTabHelper
   // GeminiService::Observer:
   void OnGeminiEligibilityChanged() override;
 
+  // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
+
  private:
   friend class web::WebStateUserData<ContextualCueingTabHelper>;
   friend class ContextualCueingTabHelperTest;
@@ -234,13 +242,24 @@ class ContextualCueingTabHelper
   // Checks if history sync is enabled.
   bool IsHistorySyncEnabled(ProfileIOS* profile);
 
+  // Checks if `profile` has a signed-in primary account.
+  bool IsUserSignedIn(ProfileIOS* profile);
+
   // Checks if the user is eligible for Gemini.
   bool IsUserEligibleForGemini(ProfileIOS* profile);
+
+  // Checks if the user belongs to an enabled audience tier for contextual cues
+  // (`kShowCuesToConsentedUsers`, `kShowCuesToSignedInUsers`,
+  // `kShowCuesToAllUsers`). Signed-in users must additionally be eligible for
+  // Gemini; signed-out users are only allowed by the "all users" tier and must
+  // not be blocked by enterprise policy.
+  bool IsUserEligibleForContextualCues(ProfileIOS* profile);
 
   // Checks if the user has enabled Gemini suggestions in settings.
   bool IsGeminiSuggestionsSettingEnabled() const;
 
-  // Callback invoked when Gemini suggestions setting or policies change.
+  // Callback invoked when the Gemini suggestions setting, the Gemini consent,
+  // sign-in state, or policies change.
   void OnSuggestionsPreferenceChanged();
 
   // Returns the CapTrackerService for the associated profile, or nullptr.
@@ -261,6 +280,9 @@ class ContextualCueingTabHelper
   PrefChangeRegistrar pref_change_registrar_;
   base::ScopedObservation<GeminiService, GeminiService::Observer>
       gemini_service_observation_{this};
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   // Runs `feature_engagement::Tracker::Dismissed` when the contextual cue chip
   // stops showing (or on tab helper destruction). Empty when not active.

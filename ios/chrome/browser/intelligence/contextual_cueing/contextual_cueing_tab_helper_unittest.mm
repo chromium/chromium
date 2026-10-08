@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/fake_gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_cap_tracker_service_factory.h"
 #import "ios/chrome/browser/intelligence/contextual_cueing/features.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -389,6 +390,10 @@ class ContextualCueingTabHelperTest : public PlatformTest {
     mutator.set_can_use_gemini_in_chrome(true);
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 
+    // The consented-users tier is the only one enabled by default, so the
+    // baseline test user must have accepted the Gemini consent.
+    profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
+
     web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->SetBrowserState(profile_.get());
     web_state_->WasShown();
@@ -441,6 +446,22 @@ class ContextualCueingTabHelperTest : public PlatformTest {
     cue.mutable_anchored_message_cue()->set_anchored_message_text("Summarize?");
     cue.mutable_anchored_message_cue()->set_action_text("Summarize");
     return cue;
+  }
+
+  // Re-initializes `scoped_feature_list` with the fixture's default cueing
+  // params plus `extra_params`, so tests can override individual params (e.g.
+  // audience tiers) without losing the classifier and model execution setup.
+  void InitFeatureListWithExtraParams(
+      base::test::ScopedFeatureList& scoped_feature_list,
+      base::FieldTrialParams extra_params) {
+    extra_params[kGeminiContextualSuggestionsCuesOnDeviceClassifierParam] =
+        "true";
+    extra_params[kGeminiContextualSuggestionsCuesServerModelExecutionParam] =
+        "true";
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {{kGeminiContextualSuggestionsCues, extra_params},
+         {kPageActionMenu, {}}},
+        {});
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1044,6 +1065,180 @@ TEST_F(ContextualCueingTabHelperTest, GeminiEligibilityAllowed) {
   histogram_tester.ExpectBucketCount(kContextualCueingDecisionHistogram,
                                      ContextualCueingDecision::kUserIneligible,
                                      0);
+}
+
+// Tests that a signed-in user who has not accepted the Gemini consent is
+// ineligible by default, since only the consented-users tier is enabled.
+TEST_F(ContextualCueingTabHelperTest, UnconsentedUserBlockedByDefault) {
+  base::HistogramTester histogram_tester;
+  web_state_->SetCurrentURL(GURL("https://example.com/store/item123"));
+  profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, false);
+
+  ContextualCueingTabHelper::CreateForWebState(web_state_.get());
+  auto* tab_helper = ContextualCueingTabHelper::FromWebState(web_state_.get());
+  tab_helper->PageLoaded(web_state_.get(),
+                         web::PageLoadCompletionStatus::SUCCESS);
+
+  EXPECT_FALSE(tab_helper->GetCategories().has_value());
+  EXPECT_FALSE(
+      fake_page_classification_service_->last_classified_web_state_id_.valid());
+  histogram_tester.ExpectBucketCount(kContextualCueingDecisionHistogram,
+                                     ContextualCueingDecision::kUserIneligible,
+                                     1);
+}
+
+// Tests that an unconsented signed-in user becomes eligible once the
+// signed-in users tier is enabled.
+TEST_F(ContextualCueingTabHelperTest, UnconsentedUserAllowedBySignedInTier) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  InitFeatureListWithExtraParams(scoped_feature_list,
+                                 {{kShowCuesToSignedInUsers.name, "true"}});
+  base::HistogramTester histogram_tester;
+  web_state_->SetCurrentURL(GURL("https://example.com/store/item123"));
+  profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, false);
+
+  ContextualCueingTabHelper::CreateForWebState(web_state_.get());
+  auto* tab_helper = ContextualCueingTabHelper::FromWebState(web_state_.get());
+  tab_helper->PageLoaded(web_state_.get(),
+                         web::PageLoadCompletionStatus::SUCCESS);
+
+  EXPECT_EQ(fake_page_classification_service_->last_classified_web_state_id_,
+            web_state_->GetUniqueIdentifier());
+  histogram_tester.ExpectBucketCount(kContextualCueingDecisionHistogram,
+                                     ContextualCueingDecision::kUserIneligible,
+                                     0);
+}
+
+// Tests that signed-out users are ineligible by default.
+TEST_F(ContextualCueingTabHelperTest, SignedOutUserBlockedByDefault) {
+  base::HistogramTester histogram_tester;
+  web_state_->SetCurrentURL(GURL("https://example.com/store/item123"));
+  signin::ClearPrimaryAccount(
+      IdentityManagerFactory::GetForProfile(profile_.get()));
+
+  ContextualCueingTabHelper::CreateForWebState(web_state_.get());
+  auto* tab_helper = ContextualCueingTabHelper::FromWebState(web_state_.get());
+  tab_helper->PageLoaded(web_state_.get(),
+                         web::PageLoadCompletionStatus::SUCCESS);
+
+  EXPECT_FALSE(tab_helper->GetCategories().has_value());
+  EXPECT_FALSE(
+      fake_page_classification_service_->last_classified_web_state_id_.valid());
+  histogram_tester.ExpectBucketCount(kContextualCueingDecisionHistogram,
+                                     ContextualCueingDecision::kUserIneligible,
+                                     1);
+}
+
+// Tests that the all-users tier allows signed-out users and exempts them from
+// the history sync requirement, which they cannot satisfy.
+TEST_F(ContextualCueingTabHelperTest, SignedOutUserAllowedByAllUsersTier) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  InitFeatureListWithExtraParams(scoped_feature_list,
+                                 {{kShowCuesToAllUsers.name, "true"}});
+  base::HistogramTester histogram_tester;
+  web_state_->SetCurrentURL(GURL("https://example.com/store/item123"));
+  signin::ClearPrimaryAccount(
+      IdentityManagerFactory::GetForProfile(profile_.get()));
+  auto* sync_service = static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetForProfile(profile_.get()));
+  sync_service->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
+
+  ContextualCueingTabHelper::CreateForWebState(web_state_.get());
+  auto* tab_helper = ContextualCueingTabHelper::FromWebState(web_state_.get());
+  tab_helper->PageLoaded(web_state_.get(),
+                         web::PageLoadCompletionStatus::SUCCESS);
+
+  EXPECT_EQ(fake_page_classification_service_->last_classified_web_state_id_,
+            web_state_->GetUniqueIdentifier());
+  histogram_tester.ExpectBucketCount(kContextualCueingDecisionHistogram,
+                                     ContextualCueingDecision::kUserIneligible,
+                                     0);
+  histogram_tester.ExpectBucketCount(kContextualCueingDecisionHistogram,
+                                     ContextualCueingDecision::kHistorySyncOff,
+                                     0);
+}
+
+// Tests that the all-users tier still honors the Gemini enterprise policy for
+// signed-out users.
+TEST_F(ContextualCueingTabHelperTest,
+       SignedOutUserBlockedByPolicyInAllUsersTier) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  InitFeatureListWithExtraParams(scoped_feature_list,
+                                 {{kShowCuesToAllUsers.name, "true"}});
+  base::HistogramTester histogram_tester;
+  web_state_->SetCurrentURL(GURL("https://example.com/store/item123"));
+  signin::ClearPrimaryAccount(
+      IdentityManagerFactory::GetForProfile(profile_.get()));
+  profile_->GetPrefs()->SetInteger(
+      prefs::kGeminiEnabledByPolicy,
+      static_cast<int>(gemini::SettingsPolicy::kNotAllowed));
+
+  ContextualCueingTabHelper::CreateForWebState(web_state_.get());
+  auto* tab_helper = ContextualCueingTabHelper::FromWebState(web_state_.get());
+  tab_helper->PageLoaded(web_state_.get(),
+                         web::PageLoadCompletionStatus::SUCCESS);
+
+  EXPECT_FALSE(
+      fake_page_classification_service_->last_classified_web_state_id_.valid());
+  histogram_tester.ExpectBucketCount(kContextualCueingDecisionHistogram,
+                                     ContextualCueingDecision::kUserIneligible,
+                                     1);
+}
+
+// Tests that clearing the Gemini consent (e.g. on sign-out) cancels in-flight
+// classification for a user who was only eligible through the consented tier.
+TEST_F(ContextualCueingTabHelperTest, ConsentClearedCancelsClassification) {
+  fake_page_classification_service_->set_auto_respond(false);
+  web_state_->SetCurrentURL(GURL("https://example.com/store/item123"));
+
+  ContextualCueingTabHelper::CreateForWebState(web_state_.get());
+  auto* tab_helper = ContextualCueingTabHelper::FromWebState(web_state_.get());
+  tab_helper->PageLoaded(web_state_.get(),
+                         web::PageLoadCompletionStatus::SUCCESS);
+  ASSERT_EQ(fake_page_classification_service_->last_classified_web_state_id_,
+            web_state_->GetUniqueIdentifier());
+  ASSERT_TRUE(
+      fake_page_classification_service_->cancelled_web_state_ids_.empty());
+
+  profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, false);
+
+  EXPECT_FALSE(tab_helper->GetCategories().has_value());
+  ASSERT_EQ(fake_page_classification_service_->cancelled_web_state_ids_.size(),
+            1u);
+  EXPECT_EQ(fake_page_classification_service_->cancelled_web_state_ids_[0],
+            web_state_->GetUniqueIdentifier());
+}
+
+// Test that signing out cancels in-flight classification for an unconsented
+// user in the signed-in users tier, even when `prefs::kIOSBwgConsent` does not
+// change.
+TEST_F(ContextualCueingTabHelperTest,
+       SignOutCancelsClassificationInSignedInUsersTier) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  InitFeatureListWithExtraParams(scoped_feature_list,
+                                 {{kShowCuesToSignedInUsers.name, "true"}});
+  profile_->GetPrefs()->ClearPref(prefs::kIOSBwgConsent);
+  fake_page_classification_service_->set_auto_respond(false);
+  web_state_->SetCurrentURL(GURL("https://example.com/store/item123"));
+
+  ContextualCueingTabHelper::CreateForWebState(web_state_.get());
+  auto* tab_helper = ContextualCueingTabHelper::FromWebState(web_state_.get());
+  tab_helper->PageLoaded(web_state_.get(),
+                         web::PageLoadCompletionStatus::SUCCESS);
+  ASSERT_EQ(fake_page_classification_service_->last_classified_web_state_id_,
+            web_state_->GetUniqueIdentifier());
+  ASSERT_TRUE(
+      fake_page_classification_service_->cancelled_web_state_ids_.empty());
+
+  signin::ClearPrimaryAccount(
+      IdentityManagerFactory::GetForProfile(profile_.get()));
+
+  EXPECT_FALSE(tab_helper->GetCategories().has_value());
+  ASSERT_EQ(fake_page_classification_service_->cancelled_web_state_ids_.size(),
+            1u);
+  EXPECT_EQ(fake_page_classification_service_->cancelled_web_state_ids_[0],
+            web_state_->GetUniqueIdentifier());
 }
 
 // Tests that when model execution is disabled by feature flag, MES is not
