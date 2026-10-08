@@ -21,9 +21,9 @@
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -694,7 +694,7 @@ void AutocorrectManager::OnActivate(const std::string& engine_id) {
       // must exist at all times in the system to provide typing (including
       // login screens, guest sessions, etc). Make sure we are only recording
       // this metric when a real user has logged into their profile.
-      ProfileHelper::IsUserProfile(profile_) && profile_->IsRegularProfile() &&
+      ash::IsUserBrowserContext(profile_) && profile_->IsRegularProfile() &&
       !profile_->IsGuestSession() && !chromeos::IsKioskSession()) {
     SetPhysicalKeyboardAutocorrectAsEnabledByDefault(pref_service, engine_id);
   }
