@@ -250,6 +250,26 @@ public class TileGroupUnitTest {
     }
 
     @Test
+    public void testTileLoading_DataChanged_CancelsActiveDragSession() {
+        SuggestionsUiDelegate uiDelegate = mSuggestionsUiDelegate;
+        when(uiDelegate.isVisible()).thenReturn(true);
+        TileGroup tileGroup =
+                new TileGroup(
+                        mTileRenderer,
+                        uiDelegate,
+                        mContextMenuManager,
+                        mTileGroupDelegate,
+                        mTileDragDelegate,
+                        mTileGroupObserver,
+                        mOfflinePageBridge);
+        tileGroup.startObserving(MAX_TILES_TO_FETCH);
+
+        mMostVisitedSites.setTileSuggestionsPassive(URLS);
+
+        verify(mTileDragDelegate).cancelActiveSession();
+    }
+
+    @Test
     public void testTileLoadingWhenVisibleBlocked() {
         SuggestionsUiDelegate uiDelegate = mSuggestionsUiDelegate;
         when(uiDelegate.isVisible()).thenReturn(true);

@@ -447,9 +447,7 @@ public class TileGroup implements MostVisitedSites.Observer {
      * active drag session that's based on stale data.
      */
     private void maybeKillDragSession() {
-        if (mTileDragDelegate.hasTileDragSession()) {
-            mTileDragDelegate.cancelActiveSession();
-        }
+        mTileDragDelegate.cancelActiveSession();
     }
 
     /** Loads tile data from {@link #mPendingChanges.siteSuggestions} and clears it afterwards. */
