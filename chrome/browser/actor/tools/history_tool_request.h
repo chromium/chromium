@@ -63,10 +63,16 @@ class HistoryForwardToolRequest : public TabToolRequest {
 class ReloadPageToolRequest : public TabToolRequest {
  public:
   static constexpr char kName[] = "ReloadPage";
+  // Canonical model-facing name exposed in LLM prompt schemas and indexed by
+  // `ToolRegistry` for lookup and routing via `GetToolDefinition()`.
+  static constexpr std::string_view kModelFacingName = "reload_page";
 
   explicit ReloadPageToolRequest(tabs::TabHandle tab_handle,
                                  bool bypass_cache = false);
   ~ReloadPageToolRequest() override;
+
+  // Returns the `ToolId::kReloadPage` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   void Apply(ToolRequestVisitorFunctor& f) const override;
 

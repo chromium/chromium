@@ -33,6 +33,10 @@ constexpr std::string_view kGoBackToolDescription =
 constexpr std::string_view kGoForwardToolDescription =
     "Go forward to the next page in history.";
 
+// Default description for the `reload_page` tool.
+constexpr std::string_view kReloadPageToolDescription =
+    "Reload the current page.";
+
 ToolRequest::CreateToolResult CreateHistoryTool(
     TaskId task_id,
     ToolDelegate& tool_delegate,
@@ -122,6 +126,13 @@ ReloadPageToolRequest::ReloadPageToolRequest(TabHandle tab_handle,
                                              bool bypass_cache)
     : TabToolRequest(tab_handle), bypass_cache_(bypass_cache) {}
 ReloadPageToolRequest::~ReloadPageToolRequest() = default;
+
+// static
+std::optional<ToolDefinition> ReloadPageToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kReloadPage, kModelFacingName,
+                               kReloadPageToolDescription)
+      .Build();
+}
 
 ToolRequest::CreateToolResult ReloadPageToolRequest::CreateTool(
     TaskId task_id,

@@ -35,7 +35,9 @@ enum class ToolId {
   kGoBack = 7,
   // Navigates the active tab forward one entry in session history.
   kGoForward = 8,
-  kMaxValue = kGoForward,
+  // Reloads the current page in the active tab.
+  kReloadPage = 9,
+  kMaxValue = kReloadPage,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer
