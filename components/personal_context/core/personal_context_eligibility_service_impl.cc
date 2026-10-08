@@ -227,6 +227,14 @@ PersonalContextEligibilityServiceImpl::PersonalContextEligibilityServiceImpl(
         base::BindRepeating(
             &PersonalContextEligibilityServiceImpl::UpdateEligibilityState,
             base::Unretained(this)));
+    if (base::FeatureList::IsEnabled(
+            features::kPersonalContextRequireSettingsToggleForEncryption)) {
+      pref_registrar_.Add(
+          prefs::kPersonalContextInAutofillSettingsToggleStatus,
+          base::BindRepeating(
+              &PersonalContextEligibilityServiceImpl::UpdateEligibilityState,
+              base::Unretained(this)));
+    }
   }
   UpdateEligibilityState();
 }
@@ -331,6 +339,14 @@ bool PersonalContextEligibilityServiceImpl::ComputeEligibilityForEncryption()
     const {
   if (!is_initialized_ ||
       eligibility_state_ != PersonalContextEligibilityState::kEligible) {
+    return false;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kPersonalContextRequireSettingsToggleForEncryption) &&
+      (!pref_service_ ||
+       !pref_service_->GetBoolean(
+           prefs::kPersonalContextInAutofillSettingsToggleStatus))) {
     return false;
   }
 

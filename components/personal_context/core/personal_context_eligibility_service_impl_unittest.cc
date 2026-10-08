@@ -629,5 +629,44 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
   EXPECT_TRUE(service().IsEligibleForEncryption());
 }
 
+TEST_F(PersonalContextEligibilityServiceImplTest,
+       EncryptionEligibilityRequiresSettingsToggle) {
+  base::test::ScopedFeatureList feature_list{
+      features::kPersonalContextRequireSettingsToggleForEncryption};
+  CreateService("us");
+
+  testing::StrictMock<MockPersonalContextEligibilityServiceObserver> observer;
+  base::ScopedObservation<PersonalContextEligibilityService,
+                          PersonalContextEligibilityService::Observer>
+      scoped_observation(&observer);
+  scoped_observation.Observe(&service());
+
+  ASSERT_TRUE(service().IsInitialized());
+  ASSERT_EQ(service().GetEligibilityState(),
+            PersonalContextEligibilityState::kEligible);
+  ASSERT_TRUE(service().IsEligibleForEncryption());
+
+  // Turning off the Autofill settings toggle disables encryption eligibility
+  // without changing general Personal Context eligibility.
+  EXPECT_CALL(observer, OnEncryptionEligibilityChanged(false));
+
+  pref_service_.SetBoolean(
+      prefs::kPersonalContextInAutofillSettingsToggleStatus, false);
+
+  EXPECT_EQ(service().GetEligibilityState(),
+            PersonalContextEligibilityState::kEligible);
+  EXPECT_FALSE(service().IsEligibleForEncryption());
+
+  // Re-enabling the Autofill settings toggle restores encryption eligibility.
+  EXPECT_CALL(observer, OnEncryptionEligibilityChanged(true));
+
+  pref_service_.SetBoolean(
+      prefs::kPersonalContextInAutofillSettingsToggleStatus, true);
+
+  EXPECT_EQ(service().GetEligibilityState(),
+            PersonalContextEligibilityState::kEligible);
+  EXPECT_TRUE(service().IsEligibleForEncryption());
+}
+
 }  // namespace
 }  // namespace personal_context

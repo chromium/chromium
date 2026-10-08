@@ -16,4 +16,7 @@ BASE_FEATURE(kPersonalContextLogNonEligibilityUma,
 BASE_FEATURE(kPersonalContextHandleEncryptedPayloads,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPersonalContextRequireSettingsToggleForEncryption,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace personal_context::features
