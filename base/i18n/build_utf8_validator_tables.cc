@@ -65,19 +65,18 @@ const char kProlog[] =
     "\n"
     "#include \"base/i18n/utf8_validator_tables.h\"\n"
     "\n"
-    "namespace base {\n"
-    "namespace internal {\n"
+    "#include <array>\n"
     "\n"
-    "const uint8_t kUtf8ValidatorTables[] = {\n";
+    "namespace base::internal {\n"
+    "\n"
+    "// clang-format off\n"
+    "const std::array<uint8_t, 168> kUtf8ValidatorTables = {\n";
 
 const char kEpilog[] =
     "};\n"
+    "// clang-format on\n"
     "\n"
-    "const size_t kUtf8ValidatorTablesSize = "
-    "std::size(kUtf8ValidatorTables);\n"
-    "\n"
-    "}  // namespace internal\n"
-    "}  // namespace base\n";
+    "}  // namespace base::internal\n";
 
 // Ranges are inclusive at both ends--they represent [from, to]
 class Range {

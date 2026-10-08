@@ -7,6 +7,7 @@
 
 #include <elf.h>
 
+#include <array>
 #include <optional>
 #include <string_view>
 
@@ -29,7 +30,7 @@ namespace debug {
 // Release builds use SHA1 (40 bytes), but other linkers may use other methods.
 // Support up to 64 (for blake3 & SHA256).
 constexpr size_t kMaxBuildIdStringLength = 64;
-using ElfBuildIdBuffer = char[kMaxBuildIdStringLength + 1];
+using ElfBuildIdBuffer = std::array<char, kMaxBuildIdStringLength + 1>;
 
 // Hex-encodes the build ID from the ELF binary located at |elf_mapped_base|.
 // Returns the length of the build ID in bytes, or zero if the build ID couldn't
@@ -38,7 +39,7 @@ using ElfBuildIdBuffer = char[kMaxBuildIdStringLength + 1];
 // characters. Otherwise, the output is lowercased.
 size_t BASE_EXPORT ReadElfBuildId(const void* elf_mapped_base,
                                   bool uppercase,
-                                  ElfBuildIdBuffer build_id);
+                                  ElfBuildIdBuffer& build_id);
 
 // Returns the library name from the ELF file mapped at |elf_mapped_base|.
 // Returns an empty result if the name could not be read.

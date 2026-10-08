@@ -44,7 +44,7 @@ std::string GetUniqueBuildId(const void* module_addr) {
   }
 
   // Append 0 for the age value.
-  return std::string(build_id, build_id_length) + "0";
+  return std::string(build_id.data(), build_id_length) + "0";
 }
 
 // Returns the offset from |module_addr| to the first byte following the last

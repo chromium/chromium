@@ -191,8 +191,7 @@ TEST(ElfReaderTestWithCurrentElfImage, ReadElfBuildId) {
   }
 #endif
 
-  for (size_t i = 0; i < build_id_size; ++i) {
-    char c = UNSAFE_TODO(build_id[i]);
+  for (char c : base::span(build_id).first(build_id_size)) {
     EXPECT_TRUE(IsHexDigit(c));
     EXPECT_FALSE(IsAsciiLower(c));
   }

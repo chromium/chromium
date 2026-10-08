@@ -90,7 +90,7 @@ ModuleData GetMainModuleData() {
       } else {
         module_data.path = base::MakeAbsoluteFilePath(module_data_path).value();
       }
-      module_data.build_id = std::string(build_id, build_id_length);
+      module_data.build_id = std::string(build_id.data(), build_id_length);
     }
   }
   return module_data;

@@ -91,7 +91,7 @@ class SymbolMap {
     std::array<Segment, kMaxSegmentCount> segments;
     size_t segment_count = 0;
     char name[ZX_MAX_NAME_LEN + 1] = {};
-    char build_id[kMaxBuildIdStringLength + 1] = {};
+    ElfBuildIdBuffer build_id = {};
   };
 
   SymbolMap();
@@ -276,7 +276,7 @@ void StackTrace::OutputToStreamWithPrefixImpl(
     }
 
     *os << "{{{module:" << module_id << ":" << module_entry.name
-        << ":elf:" << module_entry.build_id << "}}}\n";
+        << ":elf:" << module_entry.build_id.data() << "}}}\n";
 
     for (size_t i = 0; i < module_entry.segment_count; ++i) {
       const SymbolMap::Segment& segment = module_entry.segments[i];

@@ -180,7 +180,8 @@ void StackTrace::OutputToStreamWithPrefixImpl(
       size_t build_id_len =
           ReadElfBuildId(dl_info.dli_fbase, /*uppercase=*/false, build_id);
       if (build_id_len > 0) {
-        *os << " (BuildId: " << std::string_view(build_id, build_id_len) << ")";
+        *os << " (BuildId: " << std::string_view(build_id.data(), build_id_len)
+            << ")";
       }
     }
 

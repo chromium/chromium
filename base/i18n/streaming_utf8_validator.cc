@@ -8,21 +8,10 @@
 
 #include "base/i18n/streaming_utf8_validator.h"
 
-#include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/i18n/utf8_validator_tables.h"
 
 namespace base {
-namespace {
-
-uint8_t StateTableLookup(uint8_t offset) {
-  DCHECK_LT(offset, internal::kUtf8ValidatorTablesSize);
-  return UNSAFE_TODO(internal::kUtf8ValidatorTables[offset]);
-}
-
-}  // namespace
-
 StreamingUtf8Validator::State StreamingUtf8Validator::AddBytes(
     base::span<const uint8_t> data) {
   // Copy |state_| into a local variable so that the compiler doesn't have to be
@@ -36,9 +25,9 @@ StreamingUtf8Validator::State StreamingUtf8Validator::AddBytes(
       state = internal::I18N_UTF8_VALIDATOR_INVALID_INDEX;
       break;
     }
-    const uint8_t shift_amount = StateTableLookup(state);
+    const uint8_t shift_amount = internal::kUtf8ValidatorTables[state];
     const uint8_t shifted_char = (ch & 0x7F) >> shift_amount;
-    state = StateTableLookup(state + shifted_char + 1);
+    state = internal::kUtf8ValidatorTables[state + shifted_char + 1];
     // State may be INVALID here, but this code is optimised for the case of
     // valid UTF-8 and it is more efficient (by about 2%) to not attempt an
     // early loop exit unless we hit an ASCII character.

@@ -232,7 +232,7 @@ struct FrameDetails {
       base::debug::ElfBuildIdBuffer build_id;
       size_t build_id_length = base::debug::ReadElfBuildId(
           reinterpret_cast<void*>(executable_start_addr()), true, build_id);
-      return std::string(build_id, build_id_length);
+      return std::string(build_id.data(), build_id_length);
     }());
     if (library_name) {
       module_name = std::string(*library_name);

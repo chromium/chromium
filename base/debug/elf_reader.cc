@@ -61,7 +61,7 @@ const Ehdr* GetElfHeader(const void* elf_mapped_base) {
 
 size_t ReadElfBuildId(const void* elf_mapped_base,
                       bool uppercase,
-                      ElfBuildIdBuffer build_id) {
+                      ElfBuildIdBuffer& build_id) {
   // NOTE: Function should use async signal safe calls only.
 
   const Ehdr* elf_header = GetElfHeader(elf_mapped_base);
@@ -109,7 +109,7 @@ size_t ReadElfBuildId(const void* elf_mapped_base,
 
     // Validate that the serialized build ID will fit inside |build_id|.
     size_t note_size = current_note->n_descsz;
-    if ((note_size * 2) > kMaxBuildIdStringLength) {
+    if ((note_size * 2) >= build_id.size()) {
       continue;
     }
 
@@ -119,11 +119,10 @@ size_t ReadElfBuildId(const void* elf_mapped_base,
         bits::AlignUp(current_note->n_namesz, static_cast<Word>(4)));
     size_t i = 0;
     for (i = 0; i < current_note->n_descsz; ++i) {
-      strings::SafeSNPrintf(&UNSAFE_TODO(build_id[i * 2]), 3,
-                            (uppercase ? "%02X" : "%02x"),
+      strings::SafeSNPrintf(&build_id[i * 2], 3, (uppercase ? "%02X" : "%02x"),
                             UNSAFE_TODO(build_id_raw[i]));
     }
-    UNSAFE_TODO(build_id[i * 2]) = '\0';
+    build_id[i * 2] = '\0';
 
     // Return the length of the string.
     return i * 2;

@@ -7,6 +7,8 @@
 #include <errno.h>
 #include <stddef.h>
 
+#include <array>
+
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,42 +61,37 @@ TEST(StringPrintfTest, StringAppendfInt) {
 // Make sure that lengths exactly around the initial buffer size are handled
 // correctly.
 TEST(StringPrintfTest, StringPrintfBounds) {
-  const int kSrcLen = 1026;
-  char src[kSrcLen];
-  std::fill_n(src, kSrcLen, 'A');
-
-  wchar_t srcw[kSrcLen];
-  std::fill_n(srcw, kSrcLen, 'A');
-
-  char16_t src16[kSrcLen];
-  std::fill_n(src16, kSrcLen, 'A');
+  constexpr int kSrcLen = 1026;
+  std::array<char, kSrcLen> src;
+  src.fill('A');
 
   for (int i = 1; i < 3; i++) {
-    UNSAFE_TODO(src[kSrcLen - i]) = 0;
+    src[kSrcLen - i] = 0;
     std::string out;
-    EXPECT_EQ(src, StringPrintf("%s", src));
+    EXPECT_EQ(src.data(), StringPrintf("%s", src.data()));
   }
 }
 
 // Test very large sprintfs that will cause the buffer to grow.
 TEST(StringPrintfTest, Grow) {
-  char src[1026];
-  for (auto& i : src) {
-    i = 'A';
-  }
-  src[1025] = 0;
+  std::array<char, 1026> src;
+  src.fill('A');
+  src.back() = 0;
 
   const char fmt[] = "%sB%sB%sB%sB%sB%sB%s";
 
   const int kRefSize = 320000;
   char* ref = new char[kRefSize];
 #if BUILDFLAG(IS_WIN)
-  UNSAFE_TODO(sprintf_s(ref, kRefSize, fmt, src, src, src, src, src, src, src));
+  UNSAFE_TODO(sprintf_s(ref, kRefSize, fmt, src.data(), src.data(), src.data(),
+                        src.data(), src.data(), src.data(), src.data()));
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  UNSAFE_TODO(snprintf(ref, kRefSize, fmt, src, src, src, src, src, src, src));
+  UNSAFE_TODO(snprintf(ref, kRefSize, fmt, src.data(), src.data(), src.data(),
+                       src.data(), src.data(), src.data(), src.data()));
 #endif
 
-  EXPECT_EQ(ref, StringPrintf(fmt, src, src, src, src, src, src, src));
+  EXPECT_EQ(ref, StringPrintf(fmt, src.data(), src.data(), src.data(),
+                              src.data(), src.data(), src.data(), src.data()));
   delete[] ref;
 }
 
@@ -111,14 +108,12 @@ TEST(StringPrintfTest, GrowBoundary) {
   // Our buffer should be one larger than the size of StringAppendVT's stack
   // buffer.
   // And need extra one for NULL-terminator.
-  const int kBufLen = kStringUtilBufLen + 1 + 1;
-  char src[kBufLen];
-  for (int i = 0; i < kBufLen - 1; ++i) {
-    UNSAFE_TODO(src[i]) = 'a';
-  }
-  src[kBufLen - 1] = 0;
+  constexpr int kBufLen = kStringUtilBufLen + 1 + 1;
+  std::array<char, kBufLen> src;
+  src.fill('a');
+  src.back() = 0;
 
-  EXPECT_EQ(src, StringPrintf("%s", src));
+  EXPECT_EQ(src.data(), StringPrintf("%s", src.data()));
 }
 
 // Test that StringPrintf and StringAppendV do not change errno.
