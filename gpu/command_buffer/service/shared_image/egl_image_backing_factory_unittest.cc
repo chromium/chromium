@@ -478,6 +478,68 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, UploadReadback) {
   EXPECT_EQ(src_pixels, dst_pixels);
 }
 
+TEST_P(EGLImageBackingFactoryThreadSafeTest, UploadReadbackCrossThreadWithTLS) {
+  const auto mailbox = Mailbox::Generate();
+  const auto format = get_format();
+  const gfx::Size size(4, 4);
+  const auto color_space = gfx::ColorSpace::CreateSRGB();
+  const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
+  const gpu::SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE;
+
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox,
+      {format, size, color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+       usage, "TestLabel"},
+      surface_handle, /*is_thread_safe=*/true);
+  ASSERT_NE(backing, nullptr);
+
+  std::vector<uint8_t> src_pixels(size.width() * size.height() * 4, 0xFF);
+  for (size_t i = 0; i < src_pixels.size(); ++i) {
+    src_pixels[i] = static_cast<uint8_t>(i % 256);
+  }
+
+  SkImageInfo info = SkImageInfo::Make(
+      size.width(), size.height(), kRGBA_8888_SkColorType, kPremul_SkAlphaType);
+  SkPixmap pixmap(info, src_pixels.data(), info.minRowBytes());
+
+  std::vector<uint8_t> dst_pixels(src_pixels.size(), 0);
+  SkPixmap dst_pixmap(info, dst_pixels.data(), info.minRowBytes());
+
+  // Perform UploadFromMemory and ReadbackToMemory on a second thread where no
+  // GL context is initially current, relying on the thread-local
+  // SharedContextState to make its GL context current.
+  std::thread second_thread([&]() {
+    scoped_refptr<gl::GLSurface> surface2;
+    scoped_refptr<gl::GLContext> context2;
+    scoped_refptr<SharedContextState> context_state2;
+    GpuDriverBugWorkarounds workarounds;
+    CreateSharedContext(workarounds, surface2, context2, context_state2);
+    SharedContextState::SetForCurrentThread(context_state2.get());
+
+    // Release the GL context so UploadFromMemory must make it current via TLS.
+    context2->ReleaseCurrent(surface2.get());
+    EXPECT_EQ(gl::GLContext::GetCurrent(), nullptr);
+    EXPECT_TRUE(backing->UploadFromMemory({pixmap}));
+
+    // Release the GL context again via context_state2 (whose
+    // last_current_surface_ was set by MakeCurrent() during UploadFromMemory)
+    // so ReadbackToMemory must also make it current via TLS.
+    context_state2->ReleaseCurrent(surface2.get());
+    EXPECT_EQ(gl::GLContext::GetCurrent(), nullptr);
+    EXPECT_TRUE(backing->ReadbackToMemory({dst_pixmap}));
+
+    SharedContextState::ClearForCurrentThread();
+    context_state2->MakeCurrent(surface2.get(), /*needs_gl=*/true);
+    context_state2.reset();
+    context2.reset();
+    surface2.reset();
+  });
+
+  second_thread.join();
+  EXPECT_EQ(src_pixels, dst_pixels);
+}
+
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
 
 // TODO(crbug.com/332947916): fix these tests to run on Android/GLES

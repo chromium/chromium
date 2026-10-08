@@ -17,6 +17,7 @@
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "ui/gl/buildflags.h"
+#include "ui/gl/gl_context.h"
 #include "ui/gl/gl_fence_egl.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/scoped_binders.h"
@@ -27,8 +28,22 @@
 #endif
 
 namespace gpu {
+namespace {
 
+bool EnsureGLContextCurrent() {
+  if (gl::GLContext::GetCurrent()) {
+    return true;
+  }
+  SharedContextState* shared_context_state =
+      SharedContextState::GetForCurrentThread();
+  if (!shared_context_state) {
+    LOG(ERROR) << "No GLContext or SharedContextState current on thread";
+    return false;
+  }
+  return shared_context_state->MakeCurrent(nullptr, /*needs_gl=*/true);
+}
 
+}  // namespace
 
 // Implementation of GLTextureImageRepresentation which uses GL texture
 // which is an EGLImage sibling.
@@ -592,6 +607,10 @@ void EGLImageBacking::MarkForDestruction() {
 }
 
 bool EGLImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
+  if (!EnsureGLContextCurrent()) {
+    return false;
+  }
+
   if (!BeginWrite()) {
     return false;
   }
@@ -631,6 +650,10 @@ bool EGLImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
 }
 
 bool EGLImageBacking::ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) {
+  if (!EnsureGLContextCurrent()) {
+    return false;
+  }
+
   {
     AutoLock auto_lock(this);
     if (is_writing_) {
