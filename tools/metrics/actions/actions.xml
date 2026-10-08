@@ -32853,6 +32853,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.BottomBar.Disabled">
+  <owner>madhavpruthi@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <description>
+    Logged when the user turns the bottom bar off in Appearance settings.
+    Android only.
+  </description>
+</action>
+
+<action name="Settings.BottomBar.Enabled">
+  <owner>madhavpruthi@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <description>
+    Logged when the user turns the bottom bar on in Appearance settings. Android
+    only.
+  </description>
+</action>
+
 <action name="Settings.BWGSettings">
   <owner>joemerramos@google.com</owner>
   <description>

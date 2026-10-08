@@ -14,6 +14,7 @@ import androidx.preference.Preference;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -33,6 +34,7 @@ import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -50,9 +52,13 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
 
     public static final String PREF_BOOKMARK_BAR = "bookmark_bar";
     public static final String PREF_BOOKMARK_BAR_SWITCH = "bookmark_bar_switch";
+    public static final String PREF_BOTTOM_BAR_SWITCH = "bottom_bar_switch";
     public static final String PREF_TOOLBAR_SHORTCUT = "toolbar_shortcut";
     public static final String PREF_UI_THEME = "ui_theme";
     public static final String PREF_TAB_POSITION = "tab_position";
+
+    private static final String USER_ACTION_BOTTOM_BAR_ENABLED = "Settings.BottomBar.Enabled";
+    private static final String USER_ACTION_BOTTOM_BAR_DISABLED = "Settings.BottomBar.Disabled";
 
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
@@ -73,6 +79,7 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
         mUseProfileUserPrefs = DeviceInfo.isDesktop();
         initBookmarkBarPref();
         initToolbarShortcutPref();
+        initBottomBarPref();
         initTabPositionPref();
     }
 
@@ -106,6 +113,7 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
         super.onStart();
         updateBookmarkBarPref();
         updateUiThemePref();
+        updateBottomBarPref();
         updateTabPositionPref();
 
         TrackerFactory.getTrackerForProfile(getProfile())
@@ -281,6 +289,37 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
                 });
     }
 
+    /** Initializes the bottom bar switch, or removes it when it should not be offered. */
+    private void initBottomBarPref() {
+        if (!BottomBarConfigUtils.shouldShowSettingsToggle(getContext())) {
+            removePreference(PREF_BOTTOM_BAR_SWITCH);
+            return;
+        }
+        ChromeSwitchPreference bottomBarSwitch = findPreference(PREF_BOTTOM_BAR_SWITCH);
+        assert bottomBarSwitch != null;
+        bottomBarSwitch.setOnPreferenceChangeListener(
+                (pref, newValue) -> {
+                    boolean enabled = (boolean) newValue;
+                    BottomBarConfigUtils.setBottomBarUserEnabled(enabled);
+                    RecordUserAction.record(
+                            enabled
+                                    ? USER_ACTION_BOTTOM_BAR_ENABLED
+                                    : USER_ACTION_BOTTOM_BAR_DISABLED);
+                    return true;
+                });
+    }
+
+    /**
+     * Syncs the bottom bar switch with the current pref value, if the switch is present. {@code
+     * TwoStatePreference#setChecked} does not invoke {@code OnPreferenceChangeListener}, so this
+     * does not record user actions when opening the fragment.
+     */
+    private void updateBottomBarPref() {
+        ChromeSwitchPreference bottomBarSwitch = findPreference(PREF_BOTTOM_BAR_SWITCH);
+        if (bottomBarSwitch == null) return;
+        bottomBarSwitch.setChecked(BottomBarConfigUtils.isBottomBarUserEnabled());
+    }
+
     private void removePreference(String prefKey) {
         getPreferenceScreen().removePreference(findPreference(prefKey));
     }
@@ -423,6 +462,10 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
 
                     if (!VerticalTabUtils.isVerticalTabsEligible(context)) {
                         indexData.removeEntryForKey(prefFragment, PREF_TAB_POSITION);
+                    }
+
+                    if (!BottomBarConfigUtils.shouldShowSettingsToggle(context)) {
+                        indexData.removeEntryForKey(prefFragment, PREF_BOTTOM_BAR_SWITCH);
                     }
 
                     shouldShowToolbarShortcutPrefAsync(

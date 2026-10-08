@@ -999,6 +999,15 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_TAB_POSITION_EXPAND_TABS_ON_HOVER" desc="Title of the switch in the tab position settings page that turns on or off expanding the collapsed vertical tabs side panel when the mouse pointer hovers over it." translateable="false">
         Auto expand tabs on hover
       </message>
+      <!-- Bottom bar settings. -->
+      <!-- TODO(crbug.com/556961273): Make translateable once the copy is final. -->
+      <message name="IDS_BOTTOM_BAR_SETTING_TITLE" desc="Title of the switch in the Appearance settings page that shows or hides the bottom toolbar (a bar at the bottom of the screen with buttons such as new tab, tab switcher and menu). [CHAR_LIMIT=32]" translateable="false">
+        Show bottom toolbar
+      </message>
+      <!-- TODO(crbug.com/556961273): Make translateable once the copy is final. -->
+      <message name="IDS_BOTTOM_BAR_SETTING_SUMMARY" desc="Summary shown under the 'Show bottom toolbar' switch in the Appearance settings page. The bottom toolbar is a row of navigation and tool buttons (for example new tab, tab switcher and menu) anchored to the bottom of the screen so they are easier to reach with one hand. It is separate from the 'Address bar' setting, which only moves the address bar between the top and bottom of the screen." translateable="false">
+        Keep navigation and tools to the bottom for easy reach
+      </message>
       <if expr="enable_extensions_core">
         <message name="IDS_EXTENSIONS_PIN_TO_TOOLBAR_SETTING" desc="Title Text of the button that pins the extensions menu icon (the puzzle piece icon) to the toolbar.">
           Pin to toolbar

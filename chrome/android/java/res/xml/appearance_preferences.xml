@@ -19,25 +19,31 @@ found in the LICENSE file.
         android:order="1"
         android:title="@string/toolbar_shortcut" />
 
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="bottom_bar_switch"
+        android:order="2"
+        android:title="@string/bottom_bar_setting_title"
+        android:summary="@string/bottom_bar_setting_summary" />
+
 <!--The following bookmarks bar settings preferences repeat
 the same order, title and summary because they are mutually
 exclusive options. -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.appearance.settings.BookmarkBarSettingsFragment"
         android:key="bookmark_bar"
-        android:order="2"
+        android:order="3"
         android:title="@string/bookmark_bar_setting" />
 
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="bookmark_bar_switch"
-        android:order="2"
+        android:order="3"
         android:title="@string/bookmark_bar_setting"
         android:summary="@string/bookmark_bar_setting_subtitle" />
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.appearance.settings.TabPositionSettingsFragment"
         android:key="tab_position"
-        android:order="3"
+        android:order="4"
         android:title="@string/tab_position_settings_title" />
 
 </PreferenceScreen>
