@@ -35,6 +35,9 @@ class CobrowseBrowserAgent : public BrowserUserData<CobrowseBrowserAgent>,
   // Returns the current Cobrowse context.
   CobrowseContext* GetCobrowseContext();
 
+  // Terminates the cobrowse session and hides the assistant.
+  void TerminateSession();
+
   // CobrowseTabHelper::Delegate:
   bool CanShowAssistantForWebState(web::WebState* web_state) override;
   void ConfigureAssistantContextForWebState(web::WebState* web_state) override;
@@ -43,9 +46,6 @@ class CobrowseBrowserAgent : public BrowserUserData<CobrowseBrowserAgent>,
   bool ShouldHideAssistantForWebState(web::WebState* web_state) override;
   void SetCobrowseContext(CobrowseContext* context) override;
   bool IsWebStateActive(web::WebState* web_state) override;
-
-  // Terminates the cobrowse session and hides the assistant.
-  void TerminateSession();
 
   // TabsDependencyInstaller:
   void OnWebStateInserted(web::WebState* web_state) override;
@@ -58,6 +58,17 @@ class CobrowseBrowserAgent : public BrowserUserData<CobrowseBrowserAgent>,
   friend class BrowserUserData<CobrowseBrowserAgent>;
 
   explicit CobrowseBrowserAgent(Browser* browser);
+
+  // Called when eligibility changes.
+  void OnEligibilityChanged();
+
+  // Returns true if the incoming context update should be accepted.
+  // Explicitly rejects contexts originating from an empty query navigation
+  // (e.g. q=&) which occur due to an upstream bug. Only reject if there
+  // are no attached items and no server session tokens, as a user could
+  // legitimately send an empty text query with an attachment or valid session
+  // tokens.
+  bool ShouldAcceptContextUpdate(CobrowseContext* context) const;
 
   // The provider for UI state information.
   raw_ptr<UIStateProvider> ui_state_provider_ = nullptr;
@@ -74,16 +85,6 @@ class CobrowseBrowserAgent : public BrowserUserData<CobrowseBrowserAgent>,
   // Registrar for observing preference changes.
   PrefChangeRegistrar pref_change_registrar_;
 
-  // Called when eligibility changes.
-  void OnEligibilityChanged();
-
-  // Returns true if the incoming context update should be accepted.
-  // Explicitly rejects contexts originating from an empty query navigation
-  // (e.g. q=&) which occur due to an upstream bug. Only reject if there
-  // are no attached items and no server session tokens, as a user could
-  // legitimately send an empty text query with an attachment or valid session
-  // tokens.
-  bool ShouldAcceptContextUpdate(CobrowseContext* context) const;
   // Observer for `SceneState` transitions. Listens for when the scene enters
   // the foreground active state to terminate any active cobrowse session if the
   // Start Surface inactivity threshold has elapsed.
