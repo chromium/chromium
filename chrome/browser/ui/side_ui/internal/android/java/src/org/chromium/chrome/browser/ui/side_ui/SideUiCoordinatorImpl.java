@@ -785,6 +785,13 @@ final class SideUiCoordinatorImpl
             transitionSet.addTransition(
                     SideUiContainerTransition.createContainerTransition(
                             anchorContainer, side, oldRenderedWidth, newRenderedWidth));
+            // Move the resize handle along with the container's inner edge on resize. Showing and
+            // hiding slide the whole anchor container, which already moves the handle.
+            SideUiResizeHandler resizeHandler = mResizeHandlers.get(side);
+            if (resizeHandler != null && oldRenderedWidth > 0 && newRenderedWidth > 0) {
+                Transition handleTransition = resizeHandler.createResizeTransition();
+                if (handleTransition != null) transitionSet.addTransition(handleTransition);
+            }
         }
 
         List<Transition> transitions =

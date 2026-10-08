@@ -1701,10 +1701,10 @@ public class SideUiCoordinatorImplTest {
                 resizeHandleView,
                 mRightAnchorContainer.getChildAt(mRightAnchorContainer.getChildCount() - 1));
 
-        // A container that stops being resizable hides the handle.
+        // A container that stops being resizable hides the handle, but keeps it laid out.
         sideUiContainer.mSupportsManualResize = false;
         mCoordinator.updateUi(uiUpdateRequest);
-        assertEquals(View.GONE, resizeHandleView.getVisibility());
+        assertEquals(View.INVISIBLE, resizeHandleView.getVisibility());
 
         // Closing the container removes the handle along with the container's View.
         sideUiContainer.mHasContentForTabMap.put(mTab, false);

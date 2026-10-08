@@ -10,6 +10,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.SystemClock;
+import android.transition.ChangeBounds;
+import android.transition.Transition;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -156,8 +158,17 @@ import java.lang.annotation.RetentionPolicy;
 
     /** Syncs the handle with the bound container's state after a UI update. */
     /* package */ void onUiUpdateCompleted() {
-        if (!mContainer.supportsManualResize() || !isAnchorContainerShown()) {
+        if (!isAnchorContainerShown()) {
             if (mHandleView != null) mHandleView.setVisibility(View.GONE);
+            return;
+        }
+
+        if (!mContainer.supportsManualResize()) {
+            // Use INVISIBLE rather than GONE, so that the handle keeps being laid out at the
+            // container's current inner edge. If an animated resize makes the container resizable
+            // again (e.g. pinning a hover-expanded rail), ChangeBounds then animates the handle
+            // from the old edge to the new one, instead of the handle popping up at the new edge.
+            if (mHandleView != null) mHandleView.setVisibility(View.INVISIBLE);
             return;
         }
 
@@ -192,6 +203,20 @@ import java.lang.annotation.RetentionPolicy;
         clearDragState();
         mAnchorContainer.removeView(mHandleView);
         mHandleView = null;
+    }
+
+    /**
+     * Returns a {@link Transition} that moves the handle along with the container's inner edge
+     * during an animated resize, or null if the handle isn't laid out.
+     *
+     * <p>The anchor container is animated with {@link ChangeBounds}, which lays out its children
+     * only once on transition start, so without this the handle would jump to its final position
+     * right away. An {@link View#INVISIBLE} handle is targeted too, so that it moves from the right
+     * starting position if it is shown by the same update.
+     */
+    /* package */ @Nullable Transition createResizeTransition() {
+        if (mHandleView == null || mHandleView.getVisibility() == View.GONE) return null;
+        return new ChangeBounds().addTarget(mHandleView);
     }
 
     // View.OnTouchListener implementation:
