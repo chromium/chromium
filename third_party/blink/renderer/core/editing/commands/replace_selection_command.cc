@@ -2405,10 +2405,6 @@ UChar NextCharacterForOffset(Text& text, wtf_size_t offset) {
 
 bool ReplaceSelectionCommand::ShouldNormalizeNbspInInsertedContent(
     EditingState* editing_state) const {
-  if (!RuntimeEnabledFeatures::NormalizeNbspForPasteAndDropEnabled()) {
-    return false;
-  }
-
   if (editing_state->IsAborted()) {
     return false;
   }
@@ -2419,13 +2415,7 @@ bool ReplaceSelectionCommand::ShouldNormalizeNbspInInsertedContent(
   }
 
   Node* node = EndingSelection().Anchor().AnchorNode();
-  if (!node) {
-    return false;
-  }
-
-  return RuntimeEnabledFeatures::NormalizeNbspRichTextOnlyEnabled()
-             ? IsRichlyEditable(*node)
-             : IsEditable(*node);
+  return node && IsRichlyEditable(*node);
 }
 
 // Converts U+00A0 (&nbsp;) to a regular space where it is surrounded by
