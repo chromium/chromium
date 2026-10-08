@@ -9222,6 +9222,14 @@
     "expiry_milestone": 160
   },
   {
+    "name": "snapshot-concurrent-access",
+    "owners": [
+      "junov@chromium.org",
+      "bling-fundamentals@google.com"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "snapshot-downsample-image",
     "owners": [ "asamidoi@chromium.org", "justincohen@chromium.org" ],
     "expiry_milestone": 160

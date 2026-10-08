@@ -23,6 +23,9 @@ BASE_DECLARE_FEATURE(kSnapshotDownsampleImage);
 // Feature flag to enable background decoding of tab grid images.
 BASE_DECLARE_FEATURE(kSnapshotBackgroundDecode);
 
+// Feature flag to enable concurrent access in the snapshot file manager.
+BASE_DECLARE_FEATURE(kSnapshotConcurrentAccess);
+
 extern "C" {
 #endif  // __cplusplus
 
@@ -34,6 +37,9 @@ bool IsSnapshotDownsampleImageEnabled(void);
 
 // Returns true if the kSnapshotBackgroundDecode feature flag is enabled.
 bool IsSnapshotBackgroundDecodeEnabled(void);
+
+// Returns true if the kSnapshotConcurrentAccess feature flag is enabled.
+bool IsSnapshotConcurrentAccessEnabled(void);
 
 #ifdef __cplusplus
 }  // extern "C"

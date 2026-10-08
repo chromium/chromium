@@ -1825,6 +1825,12 @@ inline constexpr char kSnapshotCompressedJPEGQualityDescription[] =
     "Reduces snapshot JPEG quality from 1.0 to 0.97 for visually lossless "
     "compression, reducing file size by ~3-5x.";
 
+inline constexpr char kSnapshotConcurrentAccessName[] =
+    "Snapshot Concurrent Access";
+inline constexpr char kSnapshotConcurrentAccessDescription[] =
+    "Enables concurrent reading, writing, and decoding of tab snapshot images "
+    "on the background thread pool.";
+
 inline constexpr char kSnapshotDownsampleImageName[] =
     "Snapshot Downsample Image";
 inline constexpr char kSnapshotDownsampleImageDescription[] =

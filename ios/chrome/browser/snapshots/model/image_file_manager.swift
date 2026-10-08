@@ -54,8 +54,10 @@ extension SnapshotReadImageTrace: @unchecked Sendable {}
     self.imageScale = SnapshotImageScale.imageScaleForDevice()
     self.mainTaskGroup = DispatchGroup()
     self.backgroundTaskGroup = DispatchGroup()
+    let attributes: DispatchQueue.Attributes =
+      IsSnapshotConcurrentAccessEnabled() ? .concurrent : []
     self.backgroundTaskQueue = DispatchQueue(
-      label: "org.chromium.image_file_manager", qos: .default)
+      label: "org.chromium.image_file_manager", qos: .default, attributes: attributes)
     super.init()
 
     createStorageDirectory(directory: storageDirectoryUrl)
@@ -200,7 +202,7 @@ extension SnapshotReadImageTrace: @unchecked Sendable {}
   // Removes all images from disk.
   func removeAllImages() {
     backgroundTaskGroup.enter()
-    backgroundTaskQueue.async(group: backgroundTaskGroup) { [weak self] in
+    backgroundTaskQueue.async(group: backgroundTaskGroup, flags: .barrier) { [weak self] in
       guard let self = self else { return }
       do {
         // Delete the directory storing all images and create a brand new directory with the same
@@ -225,7 +227,7 @@ extension SnapshotReadImageTrace: @unchecked Sendable {}
     }
 
     backgroundTaskGroup.enter()
-    backgroundTaskQueue.async(group: backgroundTaskGroup) { [self, filesToKeep] in
+    backgroundTaskQueue.async(group: backgroundTaskGroup, flags: .barrier) { [self, filesToKeep] in
       guard
         let enumerator = FileManager.default.enumerator(
           at: storageDirectory,
@@ -299,7 +301,7 @@ extension SnapshotReadImageTrace: @unchecked Sendable {}
   // Creates a directory that stores images.
   private func createStorageDirectory(directory: URL) {
     backgroundTaskGroup.enter()
-    backgroundTaskQueue.async(group: backgroundTaskGroup) { [weak self] in
+    backgroundTaskQueue.async(group: backgroundTaskGroup, flags: .barrier) { [weak self] in
       guard let self = self else { return }
       do {
         try FileManager.default.createDirectory(
