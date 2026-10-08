@@ -168,6 +168,13 @@ inline constexpr char kSyncToSigninMigrationState[] =
 inline constexpr char kFirstTimeTriedToMigrateSyncFeaturePausedToSignin[] =
     "sync.first_time_tried_to_migrate_sync_feature_paused_to_signin";
 
+#if !BUILDFLAG(IS_CHROMEOS)
+// Name of a boolean pref recording whether legacy APPS and APP_SETTINGS data in
+// DataTypeStore went through a one-off wipe.
+inline constexpr char kWipedAppsAndAppSettingsData[] =
+    "sync.wiped_apps_and_app_settings_data";
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace internal
 }  // namespace syncer::prefs
 

@@ -10,11 +10,13 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -80,6 +82,10 @@ class DataTypeStoreServiceImplTest : public testing::Test {
   DataTypeStoreServiceImplTest() {
     pref_service_.registry()->RegisterBooleanPref(
         prefs::internal::kMigrateReadingListFromLocalToAccount, false);
+#if !BUILDFLAG(IS_CHROMEOS)
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::internal::kWipedAppsAndAppSettingsData, false);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   }
 
  protected:
@@ -196,6 +202,82 @@ TEST_F(DataTypeStoreServiceImplTest,
         prefs::internal::kMigrateReadingListFromLocalToAccount));
   }
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(DataTypeStoreServiceImplTest,
+       ShouldWipeAppsAndAppSettingsDataIfFeatureEnabled) {
+  base::FilePath temp_path = base::CreateUniqueTempDirectoryScopedToTest();
+  // Put some data for APPS, APP_SETTINGS, and WEB_APPS into the default store.
+  {
+    auto service =
+        std::make_unique<DataTypeStoreServiceImpl>(temp_path, &pref_service_);
+    const RepeatingDataTypeStoreFactory default_store_factory =
+        service->GetStoreFactory();
+    std::unique_ptr<DataTypeStore> apps_store =
+        ExerciseStoreFactoryAndWait(default_store_factory, DataType::APPS);
+    std::unique_ptr<DataTypeStore> app_settings_store =
+        ExerciseStoreFactoryAndWait(default_store_factory,
+                                    DataType::APP_SETTINGS);
+    std::unique_ptr<DataTypeStore> web_apps_store =
+        ExerciseStoreFactoryAndWait(default_store_factory, DataType::WEB_APPS);
+    WriteDataAndWait(apps_store.get(), "key", "apps_data");
+    WriteDataAndWait(app_settings_store.get(), "key", "app_settings_data");
+    WriteDataAndWait(web_apps_store.get(), "key", "web_apps_data");
+  }
+
+  // Recreate the service with `kSyncWipeAppsAndAppSettingsData` disabled. The
+  // data should remain unchanged.
+  base::test::ScopedFeatureList feature_list_disabled;
+  feature_list_disabled.InitAndDisableFeature(kSyncWipeAppsAndAppSettingsData);
+  ASSERT_FALSE(
+      pref_service_.GetBoolean(prefs::internal::kWipedAppsAndAppSettingsData));
+  {
+    auto service =
+        std::make_unique<DataTypeStoreServiceImpl>(temp_path, &pref_service_);
+    const RepeatingDataTypeStoreFactory default_store_factory =
+        service->GetStoreFactory();
+    std::unique_ptr<DataTypeStore> apps_store =
+        ExerciseStoreFactoryAndWait(default_store_factory, DataType::APPS);
+    std::unique_ptr<DataTypeStore> app_settings_store =
+        ExerciseStoreFactoryAndWait(default_store_factory,
+                                    DataType::APP_SETTINGS);
+    std::unique_ptr<DataTypeStore> web_apps_store =
+        ExerciseStoreFactoryAndWait(default_store_factory, DataType::WEB_APPS);
+    EXPECT_THAT(ReadDataAndWait(apps_store.get(), "key"), Eq("apps_data"));
+    EXPECT_THAT(ReadDataAndWait(app_settings_store.get(), "key"),
+                Eq("app_settings_data"));
+    EXPECT_THAT(ReadDataAndWait(web_apps_store.get(), "key"),
+                Eq("web_apps_data"));
+    EXPECT_FALSE(pref_service_.GetBoolean(
+        prefs::internal::kWipedAppsAndAppSettingsData));
+  }
+
+  // Enable `kSyncWipeAppsAndAppSettingsData` and recreate the service. APPS and
+  // APP_SETTINGS data should be wiped, while WEB_APPS data remains intact.
+  base::test::ScopedFeatureList feature_list_enabled(
+      kSyncWipeAppsAndAppSettingsData);
+  {
+    auto service =
+        std::make_unique<DataTypeStoreServiceImpl>(temp_path, &pref_service_);
+    const RepeatingDataTypeStoreFactory default_store_factory =
+        service->GetStoreFactory();
+    std::unique_ptr<DataTypeStore> apps_store =
+        ExerciseStoreFactoryAndWait(default_store_factory, DataType::APPS);
+    std::unique_ptr<DataTypeStore> app_settings_store =
+        ExerciseStoreFactoryAndWait(default_store_factory,
+                                    DataType::APP_SETTINGS);
+    std::unique_ptr<DataTypeStore> web_apps_store =
+        ExerciseStoreFactoryAndWait(default_store_factory, DataType::WEB_APPS);
+    EXPECT_THAT(ReadDataAndWait(apps_store.get(), "key"), Eq(std::nullopt));
+    EXPECT_THAT(ReadDataAndWait(app_settings_store.get(), "key"),
+                Eq(std::nullopt));
+    EXPECT_THAT(ReadDataAndWait(web_apps_store.get(), "key"),
+                Eq("web_apps_data"));
+    EXPECT_TRUE(pref_service_.GetBoolean(
+        prefs::internal::kWipedAppsAndAppSettingsData));
+  }
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 }  // namespace syncer

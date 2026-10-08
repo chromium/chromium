@@ -234,6 +234,10 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(
       prefs::internal::kFirstTimeTriedToMigrateSyncFeaturePausedToSignin,
       base::Time());
+#if !BUILDFLAG(IS_CHROMEOS)
+  registry->RegisterBooleanPref(prefs::internal::kWipedAppsAndAppSettingsData,
+                                false);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   SyncFeatureStatusForMigrationsRecorder::RegisterProfilePrefs(registry);
 }
