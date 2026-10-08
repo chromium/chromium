@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_task_runner.h"
 
+#include "base/auto_reset.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -104,13 +105,18 @@ void InspectorTaskRunner::PerformSingleInterruptingTaskDontWait() {
   }
 }
 
-void InspectorTaskRunner::V8InterruptCallback(v8::Isolate*, void* data) {
+void InspectorTaskRunner::V8InterruptCallback(v8::Isolate* isolate,
+                                              void* data) {
   InspectorTaskRunner* runner = static_cast<InspectorTaskRunner*>(data);
   Task task = runner->TakeNextInterruptingTask();
   runner->Release();
   if (!task) {
     return;
   }
+  // Retain ourselves just in case something happens in the task callback
+  // and the task runner gets disposed.
+  scoped_refptr<InspectorTaskRunner> self(runner);
+  base::AutoReset<bool> auto_reset(&runner->is_interrupting_, true);
   std::move(task).Run();
 }
 

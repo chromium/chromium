@@ -187,6 +187,10 @@ void DevToolsAgent::Trace(Visitor* visitor) const {
   visitor->Trace(sessions_);
 }
 
+bool DevToolsAgent::IsInterruptingExecution() {
+  return inspector_task_runner_->IsInterrupting();
+}
+
 void DevToolsAgent::Dispose() {
   HeapHashSet<Member<DevToolsSession>> copy(sessions_);
   for (auto& session : copy)

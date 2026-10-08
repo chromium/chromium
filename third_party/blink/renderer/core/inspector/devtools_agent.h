@@ -88,6 +88,8 @@ class CORE_EXPORT DevToolsAgent : public GarbageCollected<DevToolsAgent>,
       scoped_refptr<base::SingleThreadTaskRunner>);
   virtual void Trace(Visitor*) const;
 
+  bool IsInterruptingExecution();
+
  private:
   friend class DevToolsSession;
   class IOAgent;
