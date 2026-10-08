@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.fusebox;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -23,6 +24,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
@@ -614,11 +616,49 @@ public class FuseboxPopupUnitTest {
                 /* useScrollableCarousel= */ false,
                 CurrentTabPlacement.WITH_ATTACHMENTS);
 
-        // Call onFling directly on the exposed listener to avoid flaky MotionEvents.
+        // Call the exposed listener directly to avoid flaky MotionEvents. A fling only dismisses
+        // once onScroll has classified the gesture as a downward swipe.
+        var listener = mFuseboxPopup.mScrollView.mGestureListener;
+        MotionEvent move = MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE, 0, 0, 0);
+        listener.onScroll(null, move, /* distanceX= */ 0, /* distanceY= */ -1);
+        move.recycle();
         int minFlingVelocity = ViewConfiguration.get(mActivity).getScaledMinimumFlingVelocity();
-        mFuseboxPopup.mScrollView.mGestureListener.onFling(null, null, 0, minFlingVelocity + 1);
+        listener.onFling(null, null, 0, minFlingVelocity + 1);
 
         verify(mPopupWindow).dismiss();
+    }
+
+    @Test
+    public void testDownwardScroll_interceptsTouch_whenBottomSheet() {
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ true,
+                /* useCarousel= */ true,
+                /* useScrollableCarousel= */ true,
+                CurrentTabPlacement.WITH_ATTACHMENTS);
+        FuseboxScrollView scrollView = mFuseboxPopup.mScrollView;
+        MotionEvent move = MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE, 0, 0, 0);
+
+        // Exactly the minimum vertical slope.
+        scrollView.mGestureListener.onScroll(null, move, /* distanceX= */ 1, /* distanceY= */ -2);
+
+        assertTrue(scrollView.onInterceptTouchEvent(move));
+        move.recycle();
+    }
+
+    @Test
+    public void testDiagonalScroll_doesNotInterceptTouch_whenBottomSheet() {
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ true,
+                /* useCarousel= */ true,
+                /* useScrollableCarousel= */ true,
+                CurrentTabPlacement.WITH_ATTACHMENTS);
+        FuseboxScrollView scrollView = mFuseboxPopup.mScrollView;
+        MotionEvent move = MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE, 0, 0, 0);
+
+        scrollView.mGestureListener.onScroll(null, move, /* distanceX= */ 1, /* distanceY= */ -1);
+
+        assertFalse(scrollView.onInterceptTouchEvent(move));
+        move.recycle();
     }
 
     @Test
