@@ -95,6 +95,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityInterface;
 import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.settings.SettingsTestRule;
+import org.chromium.chrome.browser.settings.search.SettingsSearchCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.autofill.MandatoryReauthAuthenticationFlowEvent;
@@ -106,6 +107,7 @@ import org.chromium.components.autofill.payments.PaymentInstrument;
 import org.chromium.components.browser_ui.settings.CardWithButtonPreference;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.payments.AndroidPaymentAppFactory;
 import org.chromium.components.payments.PackageManagerDelegate;
 import org.chromium.components.policy.test.annotations.Policies;
@@ -1885,6 +1887,31 @@ public class AutofillPaymentMethodsFragmentTest {
                         .findPreference(AutofillPaymentMethodsFragment.PREF_PAYMENT_APPS);
         assertNotNull(paymentAppsPref);
         assertTrue(paymentAppsPref.isEnabled());
+    }
+
+    @Test
+    @MediumTest
+    public void testSearchIndex_paymentAppsHasBreadcrumb() throws Exception {
+        mSettingsTestRule.startSettingsActivity();
+
+        // AndroidPaymentAppsFragment has no main menu key, so URL navigation to /paymentApps
+        // relies on its breadcrumb to pick the main menu row to highlight.
+        List<SettingsIndexData.Entry> breadcrumb =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            SettingsIndexData.reset();
+                            return SettingsSearchCoordinator.ensureIndexBuilt(
+                                            ContextUtils.getApplicationContext(),
+                                            ProfileManager.getLastUsedRegularProfile())
+                                    .getBreadcrumbEntries(
+                                            AndroidPaymentAppsFragment.class.getName(), null);
+                        });
+
+        assertNotNull(breadcrumb);
+        SettingsIndexData.Entry paymentAppsEntry = breadcrumb.get(breadcrumb.size() - 1);
+        assertEquals(AutofillPaymentMethodsFragment.PREF_PAYMENT_APPS, paymentAppsEntry.key);
+        assertEquals(
+                AutofillPaymentMethodsFragment.class.getName(), paymentAppsEntry.parentFragment);
     }
 
     @Test
