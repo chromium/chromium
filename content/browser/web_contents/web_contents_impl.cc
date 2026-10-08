@@ -699,9 +699,6 @@ RenderProcessHostPriority GetRenderProcessHostPriority(
 void RecordRendererUnresponsiveMetrics(
     bool web_contents_visible,
     RenderWidgetHostImpl* render_widget_host) {
-  base::UmaHistogramBoolean("Renderer.Unresponsive.Visibility",
-                            web_contents_visible);
-
   if (!web_contents_visible) {
     return;
   }
