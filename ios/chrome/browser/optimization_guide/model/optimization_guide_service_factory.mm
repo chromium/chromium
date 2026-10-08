@@ -84,20 +84,6 @@ std::unique_ptr<KeyedService> BuildOptimizationGuideService(
 }  // namespace
 
 // static
-OptimizationGuideService* OptimizationGuideServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<OptimizationGuideService>(
-      profile, /*create=*/true);
-}
-
-// static
-OptimizationGuideServiceFactory*
-OptimizationGuideServiceFactory::GetInstance() {
-  static base::NoDestructor<OptimizationGuideServiceFactory> instance;
-  return instance.get();
-}
-
-// static
 void OptimizationGuideServiceFactory::InitializePredictionModelStore() {
   base::FilePath model_downloads_dir;
   base::PathService::Get(ios::DIR_USER_DATA, &model_downloads_dir);
@@ -109,11 +95,13 @@ void OptimizationGuideServiceFactory::InitializePredictionModelStore() {
       .Initialize(model_downloads_dir);
 }
 
-OptimizationGuideServiceFactory::OptimizationGuideServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("OptimizationGuideService",
-                                    ServiceCreation::kCreateWithProfile,
-                                    TestingCreation::kNoServiceForTests,
-                                    ProfileSelection::kOwnInstanceInIncognito) {
+OptimizationGuideServiceFactory::OptimizationGuideServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "OptimizationGuideService",
+          ServiceCreation::kCreateWithProfile,
+          TestingCreation::kNoServiceForTests,
+          ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(BackgroundDownloadServiceFactory::GetInstance());
   DependsOn(BrowserListFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
@@ -121,8 +109,6 @@ OptimizationGuideServiceFactory::OptimizationGuideServiceFactory()
   DependsOn(PrivateAiServiceFactory::GetInstance());
 #endif
 }
-
-OptimizationGuideServiceFactory::~OptimizationGuideServiceFactory() = default;
 
 // static
 OptimizationGuideServiceFactory::TestingFactory
