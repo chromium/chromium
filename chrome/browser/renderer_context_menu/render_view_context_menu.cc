@@ -274,6 +274,7 @@
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -4055,7 +4056,11 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       ExecRegionSearch(event_flags, true);
       break;
     case IDC_CONTENT_CONTEXT_ASK_GOOGLE_ABOUT_THIS_PAGE:
-      chrome::ExecAskGoogleAboutThisPage(GetBrowser());
+      chrome::ExecAskGoogleAboutThisPage(
+          GetBrowser(),
+          lens::LensOverlayInvocationSource::kContentAreaContextMenuPage,
+          omnibox::ChromeAimEntryPoint::
+              DESKTOP_CHROME_PAGE_CONTEXT_MENU_ASK_GOOGLE);
       break;
     case IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH:
       ExecRegionSearch(event_flags, false);

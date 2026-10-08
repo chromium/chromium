@@ -192,6 +192,7 @@ source_set("impl") {
       "//services/metrics/public/cpp:metrics_cpp",
       "//services/metrics/public/cpp:ukm_builders",
       "//services/service_manager/public/cpp",
+      "//third_party/omnibox_proto",
       "//ui/gfx",
       "//ui/menus",
       "//url",

@@ -28,6 +28,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 
 DEFINE_USER_DATA(LensOverlayHomeworkPageActionController);
 
@@ -97,7 +98,9 @@ void LensOverlayHomeworkPageActionController::HandlePageActionEvent(
           contextual_tasks::kContextualTasksUpdatedEntryPoints)) {
     chrome::ExecAskGoogleAboutThisPage(
         tab_->GetBrowserWindowInterface(),
-        lens::LensOverlayInvocationSource::kHomeworkActionChip);
+        lens::LensOverlayInvocationSource::kHomeworkActionChip,
+        omnibox::ChromeAimEntryPoint::
+            DESKTOP_CHROME_CHROMNIENT_HOMEWORK_ACTION_CHIP);
   } else {
     LensSearchController* const controller =
         LensSearchController::FromTabWebContents(tab_->GetContents());

@@ -241,6 +241,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "printing/buildflags/buildflags.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/actions/actions.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
@@ -3737,7 +3738,12 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                chrome::ExecAskGoogleAboutThisPage(bwi);
+                chrome::ExecAskGoogleAboutThisPage(
+                    bwi,
+                    lens::LensOverlayInvocationSource::
+                        kContentAreaContextMenuPage,
+                    omnibox::ChromeAimEntryPoint::
+                        DESKTOP_CHROME_PAGE_CONTEXT_MENU_ASK_GOOGLE);
               },
               bwi))
           .SetActionId(kActionContentContextAskGoogleAboutThisPage)
@@ -4295,7 +4301,9 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                   return;
                 }
                 chrome::ExecAskGoogleAboutThisPage(
-                    bwi, lens::LensOverlayInvocationSource::kAppMenu);
+                    bwi, lens::LensOverlayInvocationSource::kAppMenu,
+                    omnibox::ChromeAimEntryPoint::
+                        DESKTOP_CHROME_APP_MENU_ASK_GOOGLE);
               },
               bwi))
           .SetActionId(kActionAskGoogleAboutThisPageFromAppMenu)
