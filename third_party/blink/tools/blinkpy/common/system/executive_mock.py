@@ -140,7 +140,7 @@ class MockExecutive(object):
         args,
         cwd=None,
         env=None,
-        input=None,  # pylint: disable=redefined-builtin
+        input=None,
         timeout_seconds=None,
         error_handler=None,
         return_exit_code=False,
@@ -168,7 +168,7 @@ class MockExecutive(object):
             )
 
         if self._exception:
-            raise self._exception  # pylint: disable=raising-bad-type
+            raise self._exception
         if self._should_throw:
             raise ScriptError(
                 'MOCK ScriptError',

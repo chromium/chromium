@@ -11,9 +11,7 @@ import sys
 import requests
 
 # vpython-provided modules
-# pylint: disable=import-error
 from mcp.server import fastmcp
-# pylint: enable=import-error
 
 GITHUB_API_KEY = os.environ.get("BLINK_SPEC_GITHUB_API_KEY", "")
 
@@ -35,9 +33,9 @@ def get_github_issues_repo_for_spec(spec: str) -> str:
 
     spec = spec.upper()
     if spec == "CSS" or spec == "CSSWG":
-        return f"https://github.com/w3c/csswg-drafts/issues"
+        return "https://github.com/w3c/csswg-drafts/issues"
     elif spec == "HTML" or spec == "WHATWG":
-        return f"https://github.com/whatwg/html/issues"
+        return "https://github.com/whatwg/html/issues"
 
     return "Unknown spec: {spec}"
 

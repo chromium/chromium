@@ -8,7 +8,7 @@ for more details about the presubmit API built into gcl.
 """
 
 
-def _RunUmaHistogramChecks(input_api, output_api):  # pylint: disable=C0103
+def _RunUmaHistogramChecks(input_api, output_api):
     import sys
 
     original_sys_path = sys.path
@@ -26,8 +26,8 @@ def _RunUmaHistogramChecks(input_api, output_api):  # pylint: disable=C0103
                 'histograms',
             )
         ]
-        import update_histogram_enum  # pylint: disable=F0401
-        import update_scheduler_enums  # pylint: disable=F0401
+        import update_histogram_enum
+        import update_scheduler_enums
     finally:
         sys.path = original_sys_path
 
@@ -55,13 +55,13 @@ def _RunUmaHistogramChecks(input_api, output_api):  # pylint: disable=C0103
     return []
 
 
-def CheckChangeOnUpload(input_api, output_api):  # pylint: disable=C0103
+def CheckChangeOnUpload(input_api, output_api):
     results = []
     results.extend(_RunUmaHistogramChecks(input_api, output_api))
     return results
 
 
-def CheckChangeOnCommit(input_api, output_api):  # pylint: disable=C0103
+def CheckChangeOnCommit(input_api, output_api):
     results = []
     results.extend(_RunUmaHistogramChecks(input_api, output_api))
     return results

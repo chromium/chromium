@@ -48,11 +48,11 @@ tools_dir = os.path.dirname(
 if tools_dir not in sys.path:
     sys.path.insert(0, tools_dir)
 
-from blinkpy.common import exit_codes
-from blinkpy.common import read_checksum_from_png
-from blinkpy.common.system.system_host import SystemHost
-from blinkpy.web_tests.port.driver import DriverInput, DriverOutput
-from blinkpy.web_tests.port.factory import PortFactory
+from blinkpy.common import exit_codes  # noqa: E402
+from blinkpy.common import read_checksum_from_png  # noqa: E402
+from blinkpy.common.system.system_host import SystemHost  # noqa: E402
+from blinkpy.web_tests.port.driver import DriverInput, DriverOutput  # noqa: E402
+from blinkpy.web_tests.port.factory import PortFactory  # noqa: E402
 
 
 class MockDRTPort(object):

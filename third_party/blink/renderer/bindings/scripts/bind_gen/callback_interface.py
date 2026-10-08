@@ -181,7 +181,7 @@ def generate_callback_interface(callback_interface_identifier):
     assert not operation_entries
 
     # Installer functions
-    is_unconditional = lambda entry: entry.exposure_conditional.is_always_true
+    is_unconditional = lambda entry: entry.exposure_conditional.is_always_true  # noqa: E731
     assert all(is_unconditional(entry) for entry in constant_entries)
     (
         install_unconditional_props_decl,

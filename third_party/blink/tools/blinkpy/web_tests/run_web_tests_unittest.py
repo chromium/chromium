@@ -52,7 +52,7 @@ from blinkpy.web_tests.views.printing import Printer
 def parse_args(extra_args=None, tests_included=False, show_results=False):
     extra_args = extra_args or []
     args = []
-    if not '--platform' in extra_args:
+    if '--platform' not in extra_args:
         args.extend(['--platform', 'test'])
     if not {'--jobs', '-j', '--child-processes'}.intersection(set(args)):
         args.extend(['--jobs', '1'])
@@ -789,7 +789,7 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
 
     def test_no_flag_specific_files_json_results(self):
         host = MockHost()
-        port = host.port_factory.get('test-win-win7')
+        port = host.port_factory.get('test-win-win7')  # noqa: F841
         host.filesystem.write_text_file(
             '/tmp/additional.txt',
             '# results: [ Timeout ]\nfailures/expected/text.html [ Timeout ]',
@@ -3822,7 +3822,6 @@ class MainTest(unittest.TestCase):
     def test_exception_handling(self):
         orig_run_fn = run_web_tests.run
 
-        # pylint: disable=unused-argument
         def interrupting_run(port, options, args, printer):
             raise KeyboardInterrupt
 

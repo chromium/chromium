@@ -33,18 +33,18 @@ def _setup_sys_path():
 
 _setup_sys_path()
 
-from .async_iterator import generate_async_iterators
-from .callback_function import generate_callback_functions
-from .callback_interface import generate_callback_interfaces
-from .dictionary import generate_dictionaries
-from .enumeration import generate_enumerations
-from .interface import generate_interfaces
-from .namespace import generate_namespaces
-from .observable_array import generate_observable_arrays
-from .sync_iterator import generate_sync_iterators
-from .task_queue import TaskQueue
-from .typedef import generate_typedefs
-from .union import generate_unions
+from .async_iterator import generate_async_iterators  # noqa: E402, F401
+from .callback_function import generate_callback_functions  # noqa: E402, F401
+from .callback_interface import generate_callback_interfaces  # noqa: E402, F401
+from .dictionary import generate_dictionaries  # noqa: E402, F401
+from .enumeration import generate_enumerations  # noqa: E402, F401
+from .interface import generate_interfaces  # noqa: E402, F401
+from .namespace import generate_namespaces  # noqa: E402, F401
+from .observable_array import generate_observable_arrays  # noqa: E402, F401
+from .sync_iterator import generate_sync_iterators  # noqa: E402, F401
+from .task_queue import TaskQueue  # noqa: E402, F401
+from .typedef import generate_typedefs  # noqa: E402, F401
+from .union import generate_unions  # noqa: E402, F401
 
 
 def init(

@@ -61,7 +61,7 @@ class DumpReaderMultipart(DumpReader):
         dump = self._read_dump(dump_file)
         if not dump:
             return None
-        if not 'upload_file_minidump' in dump:
+        if 'upload_file_minidump' not in dump:
             return None
 
         self._generate_breakpad_symbols_if_necessary()
@@ -76,7 +76,7 @@ class DumpReaderMultipart(DumpReader):
         ]
         try:
             stack = self._host.executive.run_command(cmd, stderr=None)
-        except:
+        except:  # noqa: E722
             _log.warning('Failed to execute "%s"', ' '.join(cmd))
             stack = None
         finally:
@@ -123,7 +123,7 @@ class DumpReaderMultipart(DumpReader):
                             payload.decode('utf-8')
                         )
                 return data
-            except:
+            except:  # noqa: E722
                 pass
         return None
 
@@ -189,7 +189,7 @@ class DumpReaderMultipart(DumpReader):
                 ]
                 try:
                     self._host.executive.run_command(cmd)
-                except:
+                except:  # noqa: E722
                     _log.error('Failed to execute "%s"', ' '.join(cmd))
         finally:
             queue.put(None)

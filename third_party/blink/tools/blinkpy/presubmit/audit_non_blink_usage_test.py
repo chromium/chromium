@@ -15,7 +15,6 @@ class TestAuditNonBlinkUsageTest(unittest.TestCase):
 
     def test_valid_compiled_config(self):
         # We need to test this protected data.
-        # pylint: disable=W0212
         for entry in audit._COMPILED_CONFIG:
             for path in entry['paths']:
                 self.assertIsInstance(path, str)

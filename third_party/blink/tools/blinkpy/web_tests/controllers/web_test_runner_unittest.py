@@ -113,7 +113,6 @@ class WebTestRunnerTests(unittest.TestCase):
             text='', image=None, image_hash=None, audio=None
         )
 
-    # pylint: disable=protected-access
     def _runner(self, port=None):
         # FIXME: we shouldn't have to use run_web_tests.py to get the options we need.
         options = run_web_tests.parse_args(['--platform', 'test-mac-mac10.11'])[
@@ -566,7 +565,6 @@ class WorkerTests(unittest.TestCase):
         name = 'dummy_caller'
 
     def test_worker_no_manifest_update(self):
-        # pylint: disable=protected-access
         options = run_web_tests.parse_args(['--platform', 'test-mac-mac10.11'])[
             0
         ]

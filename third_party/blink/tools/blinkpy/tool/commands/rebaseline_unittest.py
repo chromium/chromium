@@ -30,12 +30,12 @@ from blinkpy.web_tests.port.test import MOCK_WEB_TESTS
 
 
 class BaseTestCase(unittest.TestCase):
-    command_constructor = lambda: None
+    command_constructor = lambda: None  # noqa: E731
 
     def setUp(self):
         self.tool = MockBlinkTool()
         self.command = self.command_constructor()
-        self.command._tool = self.tool  # pylint: disable=protected-access
+        self.command._tool = self.tool
         self.tool.builders = BuilderList(
             {
                 'MOCK Mac10.10 (dbg)': {
@@ -418,7 +418,6 @@ class TestAbstractParallelRebaselineCommand(BaseTestCase):
         )
 
     def test_suffixes_for_actual_failures_for_non_wpt(self):
-        # pylint: disable=protected-access
         build = Build('MOCK Win7')
         self.tool.results_fetcher.set_results(
             build,
@@ -836,7 +835,7 @@ class TestRebaselineUpdatesExpectationsFiles(BaseTestCase):
     def setUp(self):
         super(TestRebaselineUpdatesExpectationsFiles, self).setUp()
 
-        def mock_run_command(*args, **kwargs):  # pylint: disable=unused-argument
+        def mock_run_command(*args, **kwargs):
             return '{"add": [], "remove-lines": [{"test": "userscripts/first-test.html", "port_name": "test-mac-mac10.11"}]}\n'
 
         self.tool.executive = MockExecutive(run_command_fn=mock_run_command)
@@ -1319,7 +1318,6 @@ class TestRebaselineExecute(BaseTestCase):
         )
 
     def test_rebaseline(self):
-        # pylint: disable=protected-access
         self.command._builders_to_pull_from = lambda: ['MOCK Win7']
         self._setup_mock_build_data()
         self.command.execute(
@@ -1348,7 +1346,6 @@ class TestRebaselineExecute(BaseTestCase):
         self.tool.main.assert_not_called()
 
     def test_rebaseline_directory(self):
-        # pylint: disable=protected-access
         self.command._builders_to_pull_from = lambda: ['MOCK Win7']
 
         self._setup_mock_build_data()

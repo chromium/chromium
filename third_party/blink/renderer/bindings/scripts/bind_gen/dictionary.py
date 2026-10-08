@@ -839,9 +839,9 @@ def make_fill_template_properties_function(cg_context):
 def make_fill_values_function(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
-    S = SymbolNode
+    S = SymbolNode  # noqa: F841
     T = TextNode
-    F = FormatNode
+    F = FormatNode  # noqa: F841
 
     func_def = CxxFuncDefNode(
         name="FillValues",

@@ -14,7 +14,7 @@ CHROMIUM_SRC_DIR = os.path.realpath(
 
 sys.path.append(os.path.join(CHROMIUM_SRC_DIR, 'testing'))
 
-from pytype_common import pytype_runner
+from pytype_common import pytype_runner  # noqa: E402
 
 EXTRA_PATHS_COMPONENTS = [('testing',)]
 EXTRA_PATHS = [

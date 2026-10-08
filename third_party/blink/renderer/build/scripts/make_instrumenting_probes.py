@@ -25,9 +25,9 @@ _THIRD_PARTY_DIR = os.path.normpath(
 # Insert at 1 so at front to override system libraries, and
 # after path[0] == invoking script dir
 sys.path.insert(1, _THIRD_PARTY_DIR)
-import jinja2
+import jinja2  # noqa: E402
 
-from blinkbuild.name_style_converter import NameStyleConverter
+from blinkbuild.name_style_converter import NameStyleConverter  # noqa: E402
 
 
 def _json5_loads(lines):

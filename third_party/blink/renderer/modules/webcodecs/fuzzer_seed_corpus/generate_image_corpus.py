@@ -28,7 +28,7 @@ sys.path.insert(
     ),
 )
 
-from binary_proto_generator import BinaryProtoGenerator
+from binary_proto_generator import BinaryProtoGenerator  # noqa: E402
 
 EXTENSIONS_MAP = {
     "avif": "image/avif",
@@ -49,9 +49,8 @@ class ImageDecoderProtoGenerator(BinaryProtoGenerator):
         globals()['fuzzer_inputs_pb2'] = fuzzer_inputs_pb2
 
     def EmptyProtoInstance(self):
-        # pylint: disable=undefined-variable
         # `fuzzer_inputs_pb2` is placed directly in `globals()`
-        return fuzzer_inputs_pb2.ImageDecoderApiInvocationSequence()
+        return fuzzer_inputs_pb2.ImageDecoderApiInvocationSequence()  # noqa: F821
 
     def ProcessPb(self, opts, pb):
         self._outdir = opts.outdir

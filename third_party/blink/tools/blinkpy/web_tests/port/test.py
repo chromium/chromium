@@ -1058,8 +1058,6 @@ class TestDriver(Driver):
 
     next_pid = 1
 
-    # pylint: disable=protected-access
-
     def __init__(self, *args, **kwargs):
         super(TestDriver, self).__init__(*args, **kwargs)
         self.started = False
@@ -1100,7 +1098,7 @@ class TestDriver(Driver):
 
         if (
             'flaky/text.html' in test_name
-            and not test_name in self._port._flakes
+            and test_name not in self._port._flakes
         ):
             self._port._flakes.add(test_name)
             actual_text = b'flaky text failure'

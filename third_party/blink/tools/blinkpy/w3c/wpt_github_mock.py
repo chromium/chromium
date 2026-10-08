@@ -7,7 +7,6 @@ from blinkpy.w3c.wpt_github import MergeError, WPTGitHub
 
 class MockWPTGitHub(object):
     # Some unused arguments may be included to match the real class's API.
-    # pylint: disable=unused-argument
 
     def __init__(
         self,

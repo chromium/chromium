@@ -213,28 +213,28 @@ _regexp_compile_cache = {}
 
 def match(pattern, s):
     """Matches the string with the pattern, caching the compiled regexp."""
-    if not pattern in _regexp_compile_cache:
+    if pattern not in _regexp_compile_cache:
         _regexp_compile_cache[pattern] = sre_compile.compile(pattern)
     return _regexp_compile_cache[pattern].match(s)
 
 
 def search(pattern, s):
     """Searches the string for the pattern, caching the compiled regexp."""
-    if not pattern in _regexp_compile_cache:
+    if pattern not in _regexp_compile_cache:
         _regexp_compile_cache[pattern] = sre_compile.compile(pattern)
     return _regexp_compile_cache[pattern].search(s)
 
 
 def sub(pattern, replacement, s):
     """Substitutes occurrences of a pattern, caching the compiled regexp."""
-    if not pattern in _regexp_compile_cache:
+    if pattern not in _regexp_compile_cache:
         _regexp_compile_cache[pattern] = sre_compile.compile(pattern)
     return _regexp_compile_cache[pattern].sub(replacement, s)
 
 
 def subn(pattern, replacement, s):
     """Substitutes occurrences of a pattern, caching the compiled regexp."""
-    if not pattern in _regexp_compile_cache:
+    if pattern not in _regexp_compile_cache:
         _regexp_compile_cache[pattern] = sre_compile.compile(pattern)
     return _regexp_compile_cache[pattern].subn(replacement, s)
 
@@ -1956,7 +1956,7 @@ def check_style(clean_lines, line_number, file_state, error):
     # Don't want to use "raw" either, because we don't want to check inside C++11
     # raw strings,
     raw_lines = clean_lines.lines_without_raw_strings
-    line = raw_lines[line_number]
+    line = raw_lines[line_number]  # noqa: F841
 
     # Some more style checks
     check_ctype_functions(clean_lines, line_number, file_state, error)
@@ -2002,7 +2002,7 @@ def check_include_line(
         return
 
     include = matched.group(2)
-    is_system = matched.group(1) == '<'
+    is_system = matched.group(1) == '<'  # noqa: F841
 
     duplicate_header = include in include_state
     if not duplicate_header:
@@ -2345,7 +2345,7 @@ def check_identifier_name_in_declaration(
         matched = match(declaration_regexp, line)
         if not matched:
             return
-        identifier = matched.group('identifier')
+        identifier = matched.group('identifier')  # noqa: F841
         character_after_identifier = matched.group('character_after_identifier')
 
         # If we removed a non-for-control statement, the character after
@@ -2838,7 +2838,7 @@ def check_for_include_what_you_use(filename, clean_lines, include_state, error):
                 required[header] = (line_number, template)
 
         # The following function is just a speed up, no semantics are changed.
-        if not '<' in line:  # Reduces the cpu time usage by skipping lines.
+        if '<' not in line:  # Reduces the cpu time usage by skipping lines.
             continue
 
         for pattern, template, header in _re_pattern_templates:

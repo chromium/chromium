@@ -239,7 +239,7 @@ class ExtendedAttributes(object):
             return False
         if len(lhs) != len(rhs):
             return False
-        for l, r in zip(lhs, rhs):
+        for l, r in zip(lhs, rhs):  # noqa: E741
             if not ExtendedAttribute.equals(l, r):
                 return False
         return True

@@ -86,7 +86,6 @@ class Product:
 
     def update_runner_options(self, options: argparse.Namespace):
         options.processes = self.processes
-        # pylint: disable=assignment-from-none
         options.browser_version = self.get_version()
         if self._options.stable:
             options.channel = 'stable'
@@ -251,7 +250,7 @@ class ChromeAndroidBase(Product):
             self.browser_apk = options.browser_apk
         else:
             self.browser_apk = self.default_browser_apk
-        self.adb_binary = devil_env.config.FetchPath('adb')  # pylint: disable=undefined-variable;
+        self.adb_binary = devil_env.config.FetchPath('adb')
         self.devices = []
 
     @contextlib.contextmanager
@@ -288,7 +287,6 @@ class ChromeAndroidBase(Product):
             pass
 
     def get_devices(self):
-        # pylint: disable=undefined-variable
         serial = None
         if self._options.avd_config:
             _log.info(f'Installing emulator from {self._options.avd_config}')
@@ -323,7 +321,7 @@ class ChromeAndroidBase(Product):
     @contextlib.contextmanager
     def test_env(self):
         with super().test_env():
-            devil_chromium.Initialize(adb_path=self.adb_binary)  # pylint: disable=undefined-variable;
+            devil_chromium.Initialize(adb_path=self.adb_binary)
             self.devices = self.get_devices()
             if not self.devices:
                 raise Exception(
@@ -356,7 +354,7 @@ class ChromeAndroidBase(Product):
                     version_provider,
                 )
                 return version
-            except CommandFailedError:  # pylint: disable=undefined-variable;
+            except CommandFailedError:
                 _log.warning(
                     'Failed to retrieve version of %s (package: %r)',
                     self.name,
@@ -387,7 +385,6 @@ class ChromeAndroidBase(Product):
         if self._options.stable:
             return 'com.android.chrome'
         if self.browser_apk:
-            # pylint: disable=undefined-variable;
             with contextlib.suppress(apk_helper.ApkHelperError):
                 return apk_helper.GetPackageName(self.browser_apk)
         return None
@@ -413,7 +410,7 @@ class ChromeAndroidBase(Product):
     def provision_devices(self):
         """Provisions a set of Android devices in parallel."""
         contexts = [self._provision_device(device) for device in self.devices]
-        self._tasks.enter_context(SyncParallelizer(contexts))  # pylint: disable=undefined-variable;
+        self._tasks.enter_context(SyncParallelizer(contexts))
 
     @contextlib.contextmanager
     def _provision_device(self, device):
@@ -457,7 +454,6 @@ class WebView(ChromeAndroidBase):
 
     def _install_webview(self, device):
         # Prioritize local builds.
-        # pylint: disable=undefined-variable;
         return webview_app.UseWebViewProvider(device, self.webview_provider)
 
     def get_browser_package_name(self):
@@ -469,7 +465,6 @@ class WebView(ChromeAndroidBase):
         # Use the version from the webview provider, not the shell, since the
         # provider is distributed to end users. The shell is developer-facing,
         # so its version is usually not actively updated.
-        # pylint: disable=undefined-variable;
         with contextlib.suppress(apk_helper.ApkHelperError):
             return apk_helper.GetPackageName(self.webview_provider)
 

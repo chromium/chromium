@@ -8,8 +8,8 @@ from blinkpy.common import path_finder
 
 path_finder.add_typ_dir_to_sys_path()
 
-from typ import host, json_results, expectations_parser, artifacts, result_sink
-from typ.fakes import host_fake
+from typ import host, json_results, expectations_parser, artifacts, result_sink  # noqa: E402
+from typ.fakes import host_fake  # noqa: E402
 
 
 # Some test names include spaces, which aren't allowed in typ's expectation

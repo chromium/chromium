@@ -8,8 +8,6 @@ from blinkpy.common.net.git_cl import CLStatus, CLSummary, GitCL
 from blinkpy.common.net.rpc import BuildbucketClient
 from blinkpy.common.system.executive import ScriptError
 
-# pylint: disable=unused-argument
-
 
 class MockGitCL:
     def __init__(

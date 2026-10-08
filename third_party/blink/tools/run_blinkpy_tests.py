@@ -36,7 +36,7 @@ from blinkpy.common.system.filesystem import FileSystem
 
 path_finder.add_typ_dir_to_sys_path()
 
-import typ
+import typ  # noqa: E402
 
 
 def main():

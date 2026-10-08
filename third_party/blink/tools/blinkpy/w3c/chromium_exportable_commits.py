@@ -224,7 +224,6 @@ def _is_commit_exported(
 class CommitExportState(object):
     """An enum class for exportability states of a Chromium commit."""
 
-    # pylint: disable=pointless-string-statement
     # String literals are used as attribute docstrings (PEP 257).
 
     IGNORED = 'ignored'

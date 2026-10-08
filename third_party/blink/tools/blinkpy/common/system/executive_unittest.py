@@ -40,7 +40,7 @@ script_dir = os.path.dirname(
 if script_dir not in sys.path:
     sys.path.insert(0, script_dir)
 
-from blinkpy.common.system.executive import Executive, ScriptError
+from blinkpy.common.system.executive import Executive, ScriptError  # noqa: E402
 
 
 class ScriptErrorTest(unittest.TestCase):

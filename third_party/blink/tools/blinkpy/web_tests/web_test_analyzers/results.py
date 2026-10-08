@@ -4,7 +4,7 @@
 """Module for working with BigQuery results."""
 
 from collections import defaultdict
-from typing import List, Tuple
+from typing import List, Tuple  # noqa: F401
 
 from flake_suppressor_common import common_typing as ct
 from flake_suppressor_common import tag_utils

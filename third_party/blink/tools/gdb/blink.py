@@ -576,7 +576,7 @@ class PrintPathToRootCommand(gdb.Command):
         frame = gdb.selected_frame()
         try:
             val = gdb.Frame.read_var(frame, arg)
-        except:
+        except:  # noqa: E722
             print("No such variable, or invalid type")
             return
 

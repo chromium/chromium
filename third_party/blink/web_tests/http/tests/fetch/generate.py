@@ -69,7 +69,7 @@ def generate_directory(relative_path, contexts, original_options):
 
 
 def main():
-    basic_contexts = ['window', 'workers', 'serviceworker']
+    basic_contexts = ['window', 'workers', 'serviceworker']  # noqa: F841
 
     generate_directory(
         '',

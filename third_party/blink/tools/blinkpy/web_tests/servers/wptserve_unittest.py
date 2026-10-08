@@ -37,8 +37,6 @@ class TestWPTServe(LoggingTestCase):
             'blinkpy.web_tests.controllers.web_test_runner'
         ).propagate = True
 
-    # pylint: disable=protected-access
-
     def test_init_start_cmd_without_ws_handlers(self):
         server = WPTServe(self.port, '/foo')
         expected_start_cmd = [

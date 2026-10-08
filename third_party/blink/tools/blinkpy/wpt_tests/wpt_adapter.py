@@ -34,10 +34,10 @@ from blinkpy.wpt_tests.test_loader import TestLoader, wpt_url_to_blink_test
 from blinkpy.wpt_tests.wpt_results_processor import WPTResultsProcessor
 
 path_finder.bootstrap_wpt_imports()
-import mozlog
-from tools.wpt import run
-from tools.wpt.virtualenv import Virtualenv
-from wptrunner import wptcommandline, wptlogging
+import mozlog  # noqa: E402
+from tools.wpt import run  # noqa: E402
+from tools.wpt.virtualenv import Virtualenv  # noqa: E402
+from wptrunner import wptcommandline, wptlogging  # noqa: E402
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('run_wpt_tests')

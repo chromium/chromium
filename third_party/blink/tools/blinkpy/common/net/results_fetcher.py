@@ -31,13 +31,12 @@ import logging
 import re
 from typing import Sequence
 
-# pylint: disable=unused-import; `Build` is imported by other modules
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.luci_auth import LuciAuth
 from blinkpy.common.net.rpc import Build, ResultDBClient
 from blinkpy.common.net.web_test_results import WebTestResults
-from blinkpy.common.system.filesystem import FileSystem
-from blinkpy.web_tests.builder_list import BuilderList
+from blinkpy.common.system.filesystem import FileSystem  # noqa: F401
+from blinkpy.web_tests.builder_list import BuilderList  # noqa: F401
 
 _log = logging.getLogger(__name__)
 

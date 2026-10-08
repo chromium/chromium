@@ -13,7 +13,6 @@ import os
 import re
 
 try:
-    # pylint: disable=C0103
     module_name = 'audit_non_blink_usage'
     module_path = os.path.join(
         os.path.dirname(inspect.stack()[0][1]),
@@ -256,28 +255,14 @@ def _CheckStyle(input_api, output_api):
                 )
             )
 
-    # By default, the pylint canned check lints all Python files together to
-    # check for potential problems between dependencies. This is slow to run
-    # across all of Blink (>2 min), so only lint affected files.
-    affected_python_files = [
-        input_api.os_path.relpath(file_path, input_api.PresubmitLocalPath())
-        for file_path in files
-        if input_api.fnmatch.fnmatch(file_path, '*.py')
-    ]
-    if affected_python_files:
-        pylintrc = input_api.os_path.join('tools', 'blinkpy', 'pylintrc')
-        results.extend(
-            input_api.RunTests(
-                input_api.canned_checks.GetPylint(
-                    input_api,
-                    output_api,
-                    files_to_check=[
-                        re.escape(path) for path in affected_python_files
-                    ],
-                    pylintrc=pylintrc,
-                )
+    results.extend(
+        input_api.RunTests(
+            input_api.canned_checks.GetRuff(
+                input_api,
+                output_api,
             )
         )
+    )
     return results
 
 
@@ -313,7 +298,8 @@ def _CheckForForbiddenChromiumCode(input_api, output_api):
     for f in input_api.AffectedFiles():
         path = f.LocalPath()
         errors = audit_non_blink_usage.check(
-            path, [(i + 1, l) for i, l in enumerate(f.NewContents())]
+            path,
+            [(i + 1, l) for i, l in enumerate(f.NewContents())],  # noqa: E741
         )
         if errors:
             errors = audit_non_blink_usage.check(path, f.ChangedContents())

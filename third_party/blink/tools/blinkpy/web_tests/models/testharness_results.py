@@ -7,7 +7,7 @@ import enum
 import functools
 import re
 from collections import Counter
-from typing import FrozenSet, Iterator, List, NamedTuple, Optional, Tuple
+from typing import FrozenSet, Iterator, List, NamedTuple, Optional, Tuple  # noqa: F401
 
 
 class LineType(enum.StrEnum):

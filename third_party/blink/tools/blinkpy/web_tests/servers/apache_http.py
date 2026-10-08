@@ -171,7 +171,7 @@ class ApacheHTTP(server_base.ServerBase):
         # See https://bugs.webkit.org/show_bug.cgi?id=98602#c7
         try:
             socket.getaddrinfo('::1', 0, 0, 0, 0, socket.AI_ADDRCONFIG)
-        except:
+        except:  # noqa: E722
             enable_ipv6 = False
 
         for mapping in self._mappings:

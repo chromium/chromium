@@ -537,7 +537,7 @@ class ComputedStyleBaseWriter(json5_generator.Writer):
 
         # Organise fields into a tree structure where the root group
         # is ComputedStyleBase.
-        group_parameters = dict(
+        group_parameters = dict(  # noqa: F841
             [
                 (conf["name"], conf["cumulative_distribution"])
                 for conf in json5_generator.Json5File.load_from_files(

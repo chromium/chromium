@@ -11,7 +11,7 @@ import re
 from typing import Any, Dict, List
 from urllib.parse import quote
 
-from collections import namedtuple
+from collections import namedtuple  # noqa: F401
 from requests.exceptions import HTTPError
 from requests.exceptions import InvalidURL
 

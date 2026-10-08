@@ -87,7 +87,7 @@ class MacPortTest(port_testcase.PortTestCase):
 
     def test_path_to_apache_config_file(self):
         port = self.make_port()
-        port._apache_version = lambda: '2.4'  # pylint: disable=protected-access
+        port._apache_version = lambda: '2.4'
         self.assertEqual(
             port.path_to_apache_config_file(),
             '/mock-checkout/third_party/blink/tools/apache_config/apache2-httpd-2.4-php7.conf',
@@ -100,8 +100,8 @@ class MacPortTest(port_testcase.PortTestCase):
         """
         port = self.make_port(os_version='mac15')
         self.assertFalse(port.default_smoke_test_only())
-        all_tests_platform = MockPlatformInfo('mac', 'mac15')
+        all_tests_platform = MockPlatformInfo('mac', 'mac15')  # noqa: F841
 
     def test_default_timeout_ms(self):
         port = self.make_port(os_version='mac15')
-        default_timeout = port._default_timeout_ms()
+        default_timeout = port._default_timeout_ms()  # noqa: F841

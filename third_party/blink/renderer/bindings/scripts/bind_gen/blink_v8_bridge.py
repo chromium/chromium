@@ -682,7 +682,7 @@ def make_blink_to_v8_value(
     assert isinstance(error_exit_return_statement, str)
     assert isinstance(creation_context_script_state, str)
 
-    T = TextNode
+    T = TextNode  # noqa: F841
     F = FormatNode
 
     if "NodeWrapInOwnContext" in idl_type.effective_annotations:
@@ -788,7 +788,7 @@ def make_default_value_expr(idl_type, default_value):
             if default_value.is_type_compatible_with(member_type):
                 member_type = member_type
                 break
-        assert not (member_type is None) or default_value.idl_type.is_nullable
+        assert member_type is not None or default_value.idl_type.is_nullable
 
         pattern = "MakeGarbageCollected<{}>({})"
         union_class_name = blink_class_name(union_type.union_definition_object)

@@ -7,13 +7,13 @@ import datetime
 import os
 import posixpath
 import typing
-from typing import List, Optional
+from typing import List, Optional  # noqa: F401
 
 from blinkpy.web_tests.stale_expectation_removal import constants
 from blinkpy.web_tests.stale_expectation_removal import data_types
 
-from unexpected_passes_common import constants as common_constants
-from unexpected_passes_common import data_types as common_data_types
+from unexpected_passes_common import constants as common_constants  # noqa: F401
+from unexpected_passes_common import data_types as common_data_types  # noqa: F401
 from unexpected_passes_common import queries as queries_module
 
 # This query gets us the most recent |num_builds| CI builds from the past month

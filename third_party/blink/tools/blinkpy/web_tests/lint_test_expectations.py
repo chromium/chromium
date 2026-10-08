@@ -33,7 +33,7 @@ import optparse
 import posixpath
 import re
 import traceback
-from typing import List, Optional
+from typing import List, Optional  # noqa: F401
 
 from blinkpy.common import exit_codes
 from blinkpy.common.host import Host
@@ -45,7 +45,7 @@ from blinkpy.web_tests.models.test_expectations import (
     ParseError,
 )
 from blinkpy.web_tests.models.typ_types import ResultType
-from blinkpy.web_tests.port.base import Port
+from blinkpy.web_tests.port.base import Port  # noqa: F401
 
 _log = logging.getLogger(__name__)
 
@@ -71,8 +71,8 @@ def lint(port):
     host = port.host
     failures = []
     warnings = []
-    all_system_specifiers = set()
-    all_build_specifiers = set(port.ALL_BUILD_TYPES)
+    all_system_specifiers = set()  # noqa: F841
+    all_build_specifiers = set(port.ALL_BUILD_TYPES)  # noqa: F841
 
     expectations_dict = port.all_expectations_dict()
     for path in port.extra_expectations_files():
@@ -595,7 +595,7 @@ def main(argv, stderr, host=None):
         exit_status = run_checks(host, options)
     except KeyboardInterrupt:
         exit_status = exit_codes.INTERRUPTED_EXIT_STATUS
-    except Exception as error:  # pylint: disable=broad-except
+    except Exception as error:
         print('\n%s raised: %s' % (error.__class__.__name__, error), stderr)
         traceback.print_exc(file=stderr)
         exit_status = exit_codes.EXCEPTIONAL_EXIT_STATUS

@@ -43,7 +43,7 @@ def validate_property(prop, props_by_name):
     implement the ParseShorthand function.
     """
     name = prop.name
-    has_method = lambda x: x in prop.property_methods
+    has_method = lambda x: x in prop.property_methods  # noqa: E731
     assert prop.is_property or prop.is_descriptor, (
         'Entry must be a property, descriptor, or both [%s]' % name
     )
@@ -752,9 +752,9 @@ class CSSProperties(object):
         # otherwise '-alternative-foo' will sort according to
         # '-alternative-...', when it will really be exposed to
         # parsing/serialization as just 'foo'.
-        sorting_name = lambda p: p.ultimate_property.name.original
-        is_prefixed = lambda p: sorting_name(p).startswith('-')
-        is_not_prefixed = lambda p: not is_prefixed(p)
+        sorting_name = lambda p: p.ultimate_property.name.original  # noqa: E731
+        is_prefixed = lambda p: sorting_name(p).startswith('-')  # noqa: E731
+        is_not_prefixed = lambda p: not is_prefixed(p)  # noqa: E731
 
         prefixed = filter(is_prefixed, self._properties_including_aliases)
         unprefixed = filter(is_not_prefixed, self._properties_including_aliases)
@@ -827,7 +827,7 @@ class CSSProperties(object):
         This excludes properties with 'alternative_of' set, because such properties
         have the same web-facing name as the main property.
         """
-        non_alternative = lambda p: not p.alternative_of
+        non_alternative = lambda p: not p.alternative_of  # noqa: E731
         return list(filter(non_alternative, self._properties_including_aliases))
 
     @property

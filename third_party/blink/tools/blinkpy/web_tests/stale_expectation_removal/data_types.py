@@ -5,7 +5,7 @@
 
 import datetime
 import fnmatch
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Union  # noqa: F401
 
 from unexpected_passes_common import data_types
 

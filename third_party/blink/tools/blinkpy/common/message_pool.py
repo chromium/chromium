@@ -251,7 +251,7 @@ class _MessagePool(object):
 
     @staticmethod
     def _handle_worker_exception(source, exception_type, exception_value, _):
-        if exception_type == KeyboardInterrupt:
+        if exception_type == KeyboardInterrupt:  # noqa: E721
             raise exception_type(exception_value)
         raise WorkerException(str(exception_value))
 
@@ -422,7 +422,7 @@ class _WorkerProcess(multiprocessing.Process):
         if self._running_inline:
             raise exception_value.with_traceback(exception_traceback)
 
-        if exception_type == KeyboardInterrupt:
+        if exception_type == KeyboardInterrupt:  # noqa: E721
             _log.debug('%s: interrupted, exiting', self.name)
             stack_utils.log_traceback(_log.debug, exception_traceback)
         else:

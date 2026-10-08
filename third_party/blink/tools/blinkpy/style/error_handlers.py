@@ -104,7 +104,7 @@ class DefaultStyleErrorHandler(object):
         self._increment_error_count()  # Increment the total.
 
         # Increment the category total.
-        if not category in self._category_totals:
+        if category not in self._category_totals:
             self._category_totals[category] = 1
         else:
             self._category_totals[category] += 1
@@ -113,7 +113,7 @@ class DefaultStyleErrorHandler(object):
 
     def _max_reports(self, category):
         """Return the maximum number of errors to report."""
-        if not category in self._configuration.max_reports_per_category:
+        if category not in self._configuration.max_reports_per_category:
             return None
         return self._configuration.max_reports_per_category[category]
 

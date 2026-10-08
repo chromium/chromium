@@ -133,7 +133,7 @@ class PlatformInfo:
                 )
                 _, columns, _, _ = struct.unpack('HHHH', packed)
                 return columns
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             return sys.maxsize
 
     def get_machine(self):
@@ -163,7 +163,7 @@ class PlatformInfo:
 
     def _determine_mac_version(self, mac_version_string):
         major_release = int(mac_version_string.split('.')[0])
-        minor_release = int(mac_version_string.split('.')[1])
+        minor_release = int(mac_version_string.split('.')[1])  # noqa: F841
         assert 13 <= major_release, (
             'Unsupported mac OS version: %s' % mac_version_string
         )

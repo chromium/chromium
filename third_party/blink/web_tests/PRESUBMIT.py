@@ -353,7 +353,7 @@ def _CheckForUnlistedTestFolder(input_api, output_api):
     if not unlisted_dirs:
         return []
 
-    dir_plural = "directories" if len(unlisted_dirs) > 1 else "directory"
+    dir_plural = "directories" if len(unlisted_dirs) > 1 else "directory"  # noqa: F841
     error_message = (
         'This CL adds new directories under `//third_party/blink/web_tests/` '
         'without updating `//third_party/blink/web_tests/BUILD.gn`. Please '
@@ -428,7 +428,7 @@ def _CheckForExtraVirtualBaselines(input_api, output_api):
             os_path.join(input_api.PresubmitLocalPath(), "virtual")
         ):
             suite = f.split('/')[0]
-            if not suite in known_virtual_suites:
+            if suite not in known_virtual_suites:
                 path = os_path.relpath(
                     os_path.join(input_api.PresubmitLocalPath(), "virtual", f),
                     input_api.change.RepositoryRoot(),
@@ -447,7 +447,7 @@ def _CheckForExtraVirtualBaselines(input_api, output_api):
                 if len(path_components) < 3 or path_components[1] != 'virtual':
                     continue
                 suite = path_components[2]
-                if not suite in known_virtual_suites:
+                if suite not in known_virtual_suites:
                     path = os_path.relpath(
                         os_path.join(input_api.PresubmitLocalPath(), subdir, f),
                         input_api.change.RepositoryRoot(),
@@ -460,7 +460,7 @@ def _CheckForExtraVirtualBaselines(input_api, output_api):
                     )
     else:
         for f, suite in check_files:
-            if not suite in known_virtual_suites:
+            if suite not in known_virtual_suites:
                 path = os_path.relpath(
                     os_path.join(input_api.PresubmitLocalPath(), f),
                     input_api.change.RepositoryRoot(),
@@ -497,7 +497,7 @@ class _DoctypeParser(HTMLParser):
 def _IsDoctypeHTMLSet(lines):
     """Returns true if the given HTML file starts with <!DOCTYPE html>."""
     parser = _DoctypeParser()
-    for l in lines:
+    for l in lines:  # noqa: E741
         parser.feed(l)
 
     return re.match("DOCTYPE\s*html\s*$", parser.doctype, re.IGNORECASE)

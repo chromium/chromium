@@ -32,7 +32,6 @@ see the TestLogStream class, and perhaps also the LogTesting class.
 import logging
 import unittest
 
-# pylint: disable=invalid-name
 # Camel-case names were used here to match the style of the TestCase
 # methods. It would also be alright to change these to lowercase.
 

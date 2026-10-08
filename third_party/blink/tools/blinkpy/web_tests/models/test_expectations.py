@@ -371,7 +371,7 @@ class TestExpectations:
 
     def _tags_conflict(self, t1, t2):
         os_to_version = self._os_to_version()
-        if not t1 in os_to_version and not t2 in os_to_version:
+        if t1 not in os_to_version and t2 not in os_to_version:
             return t1 != t2
         elif t1 in os_to_version and t2 in os_to_version:
             return t1 != t2
@@ -863,7 +863,7 @@ class TestExpectationsCache:
     def __init__(self):
         self._cache: Dict[Tuple[str, Optional[str]], TestExpectations] = {}
 
-    def load(self, port: 'Port') -> TestExpectations:
+    def load(self, port: 'Port') -> TestExpectations:  # noqa: F821
         cache_key = port.name(), port.get_option('flag_specific')
         expectations = self._cache.get(cache_key)
         if not expectations:

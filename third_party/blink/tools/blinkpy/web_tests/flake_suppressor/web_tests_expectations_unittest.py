@@ -12,7 +12,7 @@ import urllib.error
 
 from blinkpy.web_tests.flake_suppressor import web_tests_expectations
 
-from pyfakefs import fake_filesystem_unittest  # pylint:disable=import-error
+from pyfakefs import fake_filesystem_unittest
 
 
 class GetExpectationFileForSuiteUnittest(unittest.TestCase):

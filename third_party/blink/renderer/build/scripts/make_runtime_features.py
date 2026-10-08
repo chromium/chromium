@@ -189,7 +189,6 @@ class RuntimeFeatureWriter(BaseRuntimeFeatureWriter):
             }
         if os.path.isfile(file_name):
             with open(os.path.abspath(file_name)) as pickle_file:
-                # pylint: disable=broad-except
                 try:
                     if pickle.load(pickle_file) == features_map:
                         return

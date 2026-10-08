@@ -70,7 +70,7 @@ def _CheckForExtraPlatformBaselines(input_api, output_api):
 
     results = []
     for f, platform in check_files:
-        if not platform in known_platforms:
+        if platform not in known_platforms:
             path = os_path.relpath(
                 os_path.join(input_api.PresubmitLocalPath(), f),
                 input_api.change.RepositoryRoot(),

@@ -12,7 +12,6 @@ from blinkpy.w3c.gerrit import (
     OutputOption,
 )
 # Some unused arguments may be included to match the real class's API.
-# pylint: disable=unused-argument
 
 
 class MockGerritAPI:

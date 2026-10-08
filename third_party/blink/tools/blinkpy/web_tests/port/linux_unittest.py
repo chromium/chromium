@@ -75,7 +75,7 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
         self.assertEqual(
             port.baseline_version_dir(),
             port._absolute_baseline_path(expected_paths[0]),
-        )  # pylint: disable=protected-access
+        )
         self.assertEqual(len(port.baseline_search_path()), len(expected_paths))
         for i, path in enumerate(expected_paths):
             self.assertTrue(port.baseline_search_path()[i].endswith(path))
@@ -102,7 +102,6 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
         self.assertTrue(port.path_to_driver().endswith('OtherDriver'))
 
     def test_path_to_image_diff(self):
-        # pylint: disable=protected-access
         self.assertEqual(
             self.make_port()._path_to_image_diff(),
             '/mock-checkout/out/Release/image_diff',

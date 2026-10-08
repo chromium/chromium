@@ -10,7 +10,7 @@ for more details about the presubmit API built into gcl.
 PRESUBMIT_VERSION = '2.0.0'
 
 
-def CheckHistograms(input_api, output_api):  # pylint: disable=C0103
+def CheckHistograms(input_api, output_api):
     import sys
 
     original_sys_path = sys.path.copy()
@@ -23,8 +23,8 @@ def CheckHistograms(input_api, output_api):  # pylint: disable=C0103
                 'histograms',
             )
         )
-        import update_histogram_enum  # pylint: disable=F0401
-        import update_use_counter_css  # pylint: disable=F0401
+        import update_histogram_enum
+        import update_use_counter_css
     finally:
         sys.path = original_sys_path
 

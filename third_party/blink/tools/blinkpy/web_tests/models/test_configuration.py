@@ -26,9 +26,9 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import copy
-import itertools
-from functools import reduce
+import copy  # noqa: F401
+import itertools  # noqa: F401
+from functools import reduce  # noqa: F401
 
 
 class TestConfiguration(object):

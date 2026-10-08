@@ -13,10 +13,10 @@ _SRC_ROOT = os.path.abspath(os.path.join(_THIS_DIR, '..', '..', '..', '..'))
 sys.path.insert(0, _THIS_DIR)
 sys.path.append(_SRC_ROOT)
 
-from PRESUBMIT_test_mocks import MockAffectedFile
-from PRESUBMIT_test_mocks import MockInputApi
-from PRESUBMIT_test_mocks import MockOutputApi
-import PRESUBMIT
+from PRESUBMIT_test_mocks import MockAffectedFile  # noqa: E402
+from PRESUBMIT_test_mocks import MockInputApi  # noqa: E402
+from PRESUBMIT_test_mocks import MockOutputApi  # noqa: E402
+import PRESUBMIT  # noqa: E402
 
 _FEATURES_FILE = 'runtime_enabled_features.json5'
 _OVERRIDE_FILE = 'runtime_enabled_features.override.json5'

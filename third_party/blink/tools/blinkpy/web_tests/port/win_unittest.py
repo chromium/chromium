@@ -51,7 +51,7 @@ class WinPortTest(port_testcase.PortTestCase):
         port._executive = MockExecutive(should_log=True)
         output = output_capture.OutputCapture()
         orig_environ = port.host.environ.copy()
-        env = output.assert_outputs(self, port.setup_environ_for_server)
+        env = output.assert_outputs(self, port.setup_environ_for_server)  # noqa: F841
         self.assertEqual(orig_environ['PATH'], port.host.environ.get('PATH'))
 
     def assert_name(self, port_name, os_version_string, expected):
@@ -100,7 +100,7 @@ class WinPortTest(port_testcase.PortTestCase):
         self.assertEqual(
             port.baseline_version_dir(),
             port._absolute_baseline_path(expected_paths[0]),
-        )  # pylint: disable=protected-access
+        )
         self.assertEqual(len(port.baseline_search_path()), len(expected_paths))
         for i, path in enumerate(expected_paths):
             self.assertTrue(port.baseline_search_path()[i].endswith(path))

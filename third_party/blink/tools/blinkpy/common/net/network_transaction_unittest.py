@@ -60,7 +60,7 @@ class NetworkTransactionTest(LoggingTestCase):
         try:
             transaction.run(self._raise_exception)
             did_throw_exception = False
-        except Exception as error:  # pylint: disable=broad-except
+        except Exception as error:
             did_process_exception = True
             self.assertEqual(error, self.exception)
         self.assertTrue(did_throw_exception)

@@ -53,7 +53,7 @@ else:
     import shlex
     import select
 
-    _quote_cmd = lambda cmdline: ' '.join(shlex.quote(arg) for arg in cmdline)
+    _quote_cmd = lambda cmdline: ' '.join(shlex.quote(arg) for arg in cmdline)  # noqa: E731
 
 _log = logging.getLogger(__name__)
 
@@ -63,10 +63,10 @@ _trailing_spaces_re = re.compile('(.*?)( +)$')
 def quote_data(data):
     txt = repr(data).replace('\\n', '\\n\n')[1:-1]
     lines = []
-    for l in txt.splitlines():
+    for l in txt.splitlines():  # noqa: E741
         m = _trailing_spaces_re.match(l)
         if m:
-            l = m.group(1) + m.group(2).replace(' ', '\x20')
+            l = m.group(1) + m.group(2).replace(' ', '\x20')  # noqa: E741
         lines.append(l)
     return lines
 

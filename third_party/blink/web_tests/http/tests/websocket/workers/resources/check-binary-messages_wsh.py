@@ -1,4 +1,4 @@
-from pywebsocket3 import common
+from pywebsocket3 import common  # noqa: F401
 from pywebsocket3 import msgutil
 from pywebsocket3 import util
 

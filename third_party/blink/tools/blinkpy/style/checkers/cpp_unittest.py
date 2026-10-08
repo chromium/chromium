@@ -68,7 +68,7 @@ class ErrorCollector(object):
             ' which is not in STYLE_CATEGORIES' % (message, category),
         )
 
-        if self._lines_to_check and not line_number in self._lines_to_check:
+        if self._lines_to_check and line_number not in self._lines_to_check:
             return False
 
         if self._filter.should_check(category, ''):

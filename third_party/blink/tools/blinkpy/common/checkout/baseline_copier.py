@@ -34,7 +34,7 @@ class BaselineCopier:
         self,
         test_name: str,
         suffix: str,
-        baseline_set: 'TestBaselineSet',
+        baseline_set: 'TestBaselineSet',  # noqa: F821
     ) -> Iterator[CopyOperation]:
         """Find the minimal set of copied baselines to preserve expectations.
 
@@ -136,7 +136,7 @@ class BaselineCopier:
     def _locations_to_rebaseline(
         self,
         test: str,
-        baseline_set: 'TestBaselineSet',
+        baseline_set: 'TestBaselineSet',  # noqa: F821
     ) -> Iterator[BaselineLocation]:
         for build, step_name, port_name in baseline_set.runs_for_test(test):
             flag_specific = None

@@ -17,9 +17,9 @@ from blinkpy.wpt_tests.test_loader import (
 )
 
 path_finder.bootstrap_wpt_imports()
-from tools.manifest.manifest import load_and_update
-from wptrunner import wptlogging, wpttest
-from wptrunner.testloader import Subsuite
+from tools.manifest.manifest import load_and_update  # noqa: E402
+from wptrunner import wptlogging, wpttest  # noqa: E402
+from wptrunner.testloader import Subsuite  # noqa: E402
 
 
 class TestLoaderTestCase(unittest.TestCase):

@@ -39,11 +39,11 @@ from blinkpy.wpt_tests.wpt_results_processor import (
 )
 
 path_finder.bootstrap_wpt_imports()
-from manifest.item import ManifestItem
-from tools.manifest.manifest import Manifest
-from wptrunner import manifestexpected, testloader, testrunner, wpttest
-from wptrunner.wptmanifest import node as wptnode
-from wptrunner.wptmanifest.backends import static
+from manifest.item import ManifestItem  # noqa: E402
+from tools.manifest.manifest import Manifest  # noqa: E402
+from wptrunner import manifestexpected, testloader, testrunner, wpttest  # noqa: E402
+from wptrunner.wptmanifest import node as wptnode  # noqa: E402
+from wptrunner.wptmanifest.backends import static  # noqa: E402
 
 _log = logging.getLogger(__name__)
 

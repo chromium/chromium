@@ -34,7 +34,7 @@ from blinkpy.common import exit_codes
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.common.system.log_testing import LoggingTestCase
-from blinkpy.common.system.platform_info_mock import MockPlatformInfo
+from blinkpy.common.system.platform_info_mock import MockPlatformInfo  # noqa: F401
 from blinkpy.common.system.system_host import SystemHost
 from blinkpy.common.system.system_host_mock import MockSystemHost
 from blinkpy.web_tests.port.base import Port
@@ -52,7 +52,6 @@ class PortTestCase(LoggingTestCase):
     """Tests that all Port implementations must pass."""
 
     # Some tests in this class test or override protected methods
-    # pylint: disable=protected-access
 
     HTTP_PORTS = (8000, 8080, 8443)
     WEBSOCKET_PORTS = (8880,)
@@ -230,21 +229,21 @@ class PortTestCase(LoggingTestCase):
             )
 
         # Images are different.
-        port._executive = MockExecutive(run_command_fn=mock_run_command)  # pylint: disable=protected-access
+        port._executive = MockExecutive(run_command_fn=mock_run_command)
         diff, stats, err = port.diff_image('EXPECTED', 'ACTUAL')
         self.assertEqual(diff, mock_image_diff)
         self.assertEqual(stats, {"maxDifference": 30, "totalPixels": 100})
         self.assertEqual(err, None)
 
         # Images are the same.
-        port._executive = MockExecutive(exit_code=0)  # pylint: disable=protected-access
+        port._executive = MockExecutive(exit_code=0)
         self.assertEqual(None, port.diff_image('EXPECTED', 'ACTUAL')[0])
 
         # Images are the same up to fuzzy diff.
         port._executive = MockExecutive(
             output='Found pixels_different: 250, max_channel_diff: 35',
             exit_code=0,
-        )  # pylint: disable=protected-access
+        )
         diff, stats, err = port.diff_image(
             'EXPECTED',
             'ACTUAL',
@@ -256,7 +255,7 @@ class PortTestCase(LoggingTestCase):
         self.assertEqual(err, None)
 
         # There was some error running image_diff.
-        port._executive = MockExecutive(exit_code=2)  # pylint: disable=protected-access
+        port._executive = MockExecutive(exit_code=2)
         exception_raised = False
         try:
             port.diff_image('EXPECTED', 'ACTUAL')
@@ -266,7 +265,7 @@ class PortTestCase(LoggingTestCase):
 
     def test_diff_image_crashed(self):
         port = self.make_port()
-        port._executive = MockExecutive(should_throw=True, exit_code=2)  # pylint: disable=protected-access
+        port._executive = MockExecutive(should_throw=True, exit_code=2)
         self.assertEqual(
             port.diff_image('EXPECTED', 'ACTUAL'),
             (

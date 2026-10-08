@@ -92,7 +92,7 @@ class TestResultSink:
         """
         # the message structure of the dict can be found at
         # https://chromium.googlesource.com/infra/luci/luci-go/+/master/resultdb/proto/type/common.proto#56
-        pair = lambda k, v: {'key': k, 'value': v}
+        pair = lambda k, v: {'key': k, 'value': v}  # noqa: E731
 
         # According to //third_party/blink/web_tests/SlowTests, a test is
         # considered slow if it is slower than ~30% of its timeout since test

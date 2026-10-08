@@ -824,7 +824,7 @@ class IdlCompiler(object):
         self._ir_map.move_to_new_phase()
 
         def make_groups(group_ir_class, operations):
-            sort_key = lambda x: (x.is_static, x.identifier)
+            sort_key = lambda x: (x.is_static, x.identifier)  # noqa: E731
             return [
                 group_ir_class(list(operations_in_group))
                 for key, operations_in_group in itertools.groupby(

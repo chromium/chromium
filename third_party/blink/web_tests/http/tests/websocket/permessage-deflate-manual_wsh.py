@@ -28,12 +28,12 @@
 
 from urllib import parse
 
-import zlib
+import zlib  # noqa: F401
 from pywebsocket3 import common
 from pywebsocket3 import util
 from pywebsocket3.extensions import PerMessageDeflateExtensionProcessor
-from pywebsocket3.extensions import ExtensionProcessorInterface
-from pywebsocket3.common import ExtensionParameter
+from pywebsocket3.extensions import ExtensionProcessorInterface  # noqa: F401
+from pywebsocket3.common import ExtensionParameter  # noqa: F401
 
 _GOODBYE_MESSAGE = 'Goodbye'
 _ENABLE_MESSAGE = 'EnableCompression'

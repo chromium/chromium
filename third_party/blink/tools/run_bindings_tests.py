@@ -29,7 +29,7 @@ from blinkpy.common import path_finder
 
 path_finder.add_typ_dir_to_sys_path()
 
-import typ
+import typ  # noqa: E402
 
 
 def create_argument_parser():

@@ -92,7 +92,7 @@ def bootstrap_wpt_imports():
         sys.path.insert(0, path)
     # This module is under `//third_party/wpt_tools/wpt/tools`, and has the side
     # effect of inserting wpt-related directories into `sys.path`.
-    from tools import localpaths  # pylint: disable=unused-import
+    from tools import localpaths  # noqa: F401
 
 
 def add_depot_tools_dir_to_os_path():

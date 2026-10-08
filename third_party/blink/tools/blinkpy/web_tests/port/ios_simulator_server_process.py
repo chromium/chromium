@@ -8,7 +8,7 @@ import select
 import socket
 
 from blinkpy.web_tests.port.server_process import ServerProcess
-from blinkpy.web_tests.port import driver
+from blinkpy.web_tests.port import driver  # noqa: F401
 
 _log = logging.getLogger(__name__)
 
@@ -87,7 +87,7 @@ class IOSSimulatorServerProcess(ServerProcess):
         # the socket as a pipe dup() the file descriptor and pass it to
         # os.fdopen().
         stdio_socket, _ = listen_socket.accept()
-        fd = stdio_socket.fileno()  # pylint: disable=no-member
+        fd = stdio_socket.fileno()
         stdin_pipe = os.fdopen(os.dup(fd), 'wb', 0)
         stdout_pipe = os.fdopen(os.dup(fd), 'rb', 0)
         stdio_socket.close()

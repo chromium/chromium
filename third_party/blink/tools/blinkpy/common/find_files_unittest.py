@@ -44,7 +44,6 @@ class MockWinFileSystem(object):
 
 class TestWinNormalize(unittest.TestCase):
     def assert_filesystem_normalizes(self, filesystem):
-        # pylint: disable=protected-access
         self.assertEqual(
             find_files._normalize(
                 filesystem,

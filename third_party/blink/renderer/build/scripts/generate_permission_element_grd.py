@@ -11,7 +11,7 @@ _SRC_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', '..')
 )
 sys.path.append(os.path.join(_SRC_PATH, 'tools', 'grit'))
-from grit.extern import tclib
+from grit.extern import tclib  # noqa: E402
 
 kGrdTemplate = '''<?xml version="1.0" encoding="utf-8"?>
 <!--

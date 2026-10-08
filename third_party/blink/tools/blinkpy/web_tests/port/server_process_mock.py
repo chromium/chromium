@@ -41,7 +41,6 @@ class MockServerProcess(object):
     ):
         # port_obj and name are unused, but are maintained for compatibility
         # with server_process.ServerProcess.
-        # pylint: disable=unused-argument
         self.timed_out = False
         self.lines = lines or [b'#READY']
         self.crashed = crashed

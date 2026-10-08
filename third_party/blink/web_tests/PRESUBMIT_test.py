@@ -3,14 +3,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import fnmatch
-import functools
-import json
+import fnmatch  # noqa: F401
+import functools  # noqa: F401
+import json  # noqa: F401
 import unittest
 import sys
 import os
-import posixpath
-from unittest import mock
+import posixpath  # noqa: F401
+from unittest import mock  # noqa: F401
 import PRESUBMIT
 
 _DIR_SOURCE_ROOT = os.path.normpath(
@@ -18,7 +18,7 @@ _DIR_SOURCE_ROOT = os.path.normpath(
 )
 sys.path.append(_DIR_SOURCE_ROOT)
 
-from PRESUBMIT_test_mocks import MockInputApi, MockOutputApi, MockAffectedFile
+from PRESUBMIT_test_mocks import MockInputApi, MockOutputApi, MockAffectedFile  # noqa: E402
 
 
 class PresubmitTest(unittest.TestCase):

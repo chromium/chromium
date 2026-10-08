@@ -249,7 +249,7 @@ class Executive:
 
     def running_pids(self, process_name_filter=None):
         if not process_name_filter:
-            process_name_filter = lambda process_name: True
+            process_name_filter = lambda process_name: True  # noqa: E731
 
         running_pids = []
         for line in self._running_processes():
@@ -345,7 +345,7 @@ class Executive:
         args,
         cwd=None,
         env=None,
-        input=None,  # pylint: disable=redefined-builtin
+        input=None,
         timeout_seconds=None,
         error_handler=None,
         return_exit_code=False,

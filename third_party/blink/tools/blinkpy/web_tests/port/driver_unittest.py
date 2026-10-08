@@ -38,8 +38,6 @@ from blinkpy.web_tests.port.server_process_mock import MockServerProcess
 
 
 class DriverTest(unittest.TestCase):
-    # pylint: disable=protected-access
-
     def make_port(self, **extra_options):
         return Port(
             MockSystemHost(),

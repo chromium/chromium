@@ -231,13 +231,13 @@ checks = [
 ]
 
 
-def CheckChangeOnUpload(input_api, output_api):  # pylint: disable=C0103
+def CheckChangeOnUpload(input_api, output_api):
     return [
         message for check in checks for message in check(input_api, output_api)
     ]
 
 
-def CheckChangeOnCommit(input_api, output_api):  # pylint: disable=C0103
+def CheckChangeOnCommit(input_api, output_api):
     return [
         message for check in checks for message in check(input_api, output_api)
     ]

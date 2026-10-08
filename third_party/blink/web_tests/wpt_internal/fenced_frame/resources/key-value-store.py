@@ -23,7 +23,7 @@ def main(request, response):
     # check. We need the looser check so that if the URL contains `&value=` to
     # set the value equal to the empty string (a case we need to support), this
     # condition still evaluates to true and we enter this branch.
-    if value != None:
+    if value != None:  # noqa: E711
         # We opted for (2) above which is the looser of the truthiness tests
         # that lets empty strings into this branch. So you might think that when
         # the URL contains `&value=`, then the `value` variable here would be

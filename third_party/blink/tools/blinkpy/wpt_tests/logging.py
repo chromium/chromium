@@ -18,8 +18,8 @@ from blinkpy.common import path_finder
 from blinkpy.wpt_tests.test_loader import wpt_url_to_blink_test
 
 path_finder.bootstrap_wpt_imports()
-import mozlog
-from mozlog.formatters.base import BaseFormatter
+import mozlog  # noqa: E402
+from mozlog.formatters.base import BaseFormatter  # noqa: E402
 
 
 class GroupingFormatter(mozlog.formatters.GroupingFormatter):
@@ -94,7 +94,6 @@ class MachFormatter(mozlog.formatters.MachFormatter):
     def __call__(self, data):
         self.summary(data)
 
-        # pylint: disable=bad-super-call; intentional call to grandparent class
         output = super(BaseFormatter, self).__call__(data)
         if output is None:
             return

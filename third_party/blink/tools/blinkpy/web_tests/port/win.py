@@ -37,7 +37,7 @@ import tempfile
 try:
     import winreg as _winreg
 except ImportError:
-    _winreg = None  # pylint: disable=invalid-name
+    _winreg = None
 
 from blinkpy.common.memoized import memoized
 from blinkpy.web_tests.breakpad.dump_reader_win import DumpReaderWin
@@ -217,7 +217,7 @@ class WinPort(base.Port):
             try:
                 self._executive.run_command([python, '--version'])
                 return python
-            except:
+            except:  # noqa: E722
                 pass
         raise WindowsError('Unable to find a valid python3 command name')
 

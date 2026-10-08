@@ -16,7 +16,6 @@ def CheckChange(input_api, output_api):
     results = []
     try:
         sys.path.append(input_api.change.RepositoryRoot())
-        # pylint: disable=no-name-in-module,import-outside-toplevel
         from build.ios import presubmit_support
 
         results += presubmit_support.CheckBundleData(

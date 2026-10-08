@@ -88,8 +88,6 @@ def parse_suffixes(option, opt_str, value, parser):
 class AbstractRebaseliningCommand(Command):
     """Base class for rebaseline-related commands."""
 
-    # pylint: disable=abstract-method; not overriding `execute()`
-
     # Generic option groups (list of options):
     platform_options = command_line.platform_options(use_globs=True)
     wpt_options = command_line.wpt_options()
@@ -175,7 +173,7 @@ class AbstractRebaseliningCommand(Command):
         self,
         options: optparse.Values,
         args: List[str],
-        tool: Optional['BlinkTool'] = None,
+        tool: Optional['BlinkTool'] = None,  # noqa: F821
     ) -> int:
         self._tool = tool
         for option, value in vars(options).items():
@@ -372,8 +370,6 @@ RebaselineFailureReason.DESCRIPTIONS = {
 
 class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
     """Base class for rebaseline commands that do some tasks in parallel."""
-
-    # pylint: disable=abstract-method; not overriding `execute()`
 
     MAX_WORKERS: ClassVar[int] = 16
 

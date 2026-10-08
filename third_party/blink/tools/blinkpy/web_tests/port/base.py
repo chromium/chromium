@@ -43,7 +43,7 @@ import tempfile
 import time
 from collections import defaultdict
 from copy import deepcopy
-from datetime import datetime
+from datetime import datetime  # noqa: F401
 from typing import (
     ByteString,
     Collection,
@@ -73,14 +73,14 @@ from blinkpy.common.net.web_test_results import (
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.path import abspath_to_uri
 from blinkpy.w3c.wpt_manifest import (
-    FuzzyRange,
+    FuzzyRange,  # noqa: F401
     FuzzyParameters,
     Relation,
     WPTManifest,
     MANIFEST_NAME,
 )
 from blinkpy.web_tests.models.test_configuration import TestConfiguration
-from blinkpy.web_tests.models.test_run_results import TestRunException
+from blinkpy.web_tests.models.test_run_results import TestRunException  # noqa: F401
 from blinkpy.web_tests.models.typ_types import (
     TestExpectations,
     ResultType,
@@ -2201,7 +2201,7 @@ class Port(object):
     def operating_system(self):
         raise NotImplementedError
 
-    def version(self):
+    def version(self):  # noqa: F811
         """Returns a string indicating the version of a given platform
 
         For example, "win10" or "linux". This is used to help identify the
@@ -3044,8 +3044,8 @@ class Port(object):
                 % (
                     name_str,
                     pid_str,
-                    '\n'.join(('STDOUT: ' + l) for l in stdout_lines),
-                    '\n'.join(('STDERR: ' + l) for l in stderr_lines),
+                    '\n'.join(('STDOUT: ' + l) for l in stdout_lines),  # noqa: E741
+                    '\n'.join(('STDERR: ' + l) for l in stderr_lines),  # noqa: E741
                 )
             ).encode('utf8', 'replace'),
             self._get_crash_site(stderr_lines),

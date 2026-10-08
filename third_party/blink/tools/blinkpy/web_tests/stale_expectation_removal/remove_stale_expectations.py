@@ -8,15 +8,15 @@ import sys
 
 assert sys.version_info[0] == 3
 
-from blinkpy.web_tests.stale_expectation_removal import builders
-from blinkpy.web_tests.stale_expectation_removal import data_types
-from blinkpy.web_tests.stale_expectation_removal import expectations
-from blinkpy.web_tests.stale_expectation_removal import queries
-from unexpected_passes_common import argument_parsing
-from unexpected_passes_common import builders as common_builders
-from unexpected_passes_common import data_types as common_data_types
-from unexpected_passes_common import expectations as common_expectations
-from unexpected_passes_common import result_output
+from blinkpy.web_tests.stale_expectation_removal import builders  # noqa: E402
+from blinkpy.web_tests.stale_expectation_removal import data_types  # noqa: E402
+from blinkpy.web_tests.stale_expectation_removal import expectations  # noqa: E402
+from blinkpy.web_tests.stale_expectation_removal import queries  # noqa: E402
+from unexpected_passes_common import argument_parsing  # noqa: E402
+from unexpected_passes_common import builders as common_builders  # noqa: E402
+from unexpected_passes_common import data_types as common_data_types  # noqa: E402
+from unexpected_passes_common import expectations as common_expectations  # noqa: E402
+from unexpected_passes_common import result_output  # noqa: E402
 
 
 def ParseArgs() -> argparse.Namespace:

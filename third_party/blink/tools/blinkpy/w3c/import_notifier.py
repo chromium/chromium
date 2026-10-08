@@ -113,7 +113,7 @@ class ImportNotifier:
         repo = self.host.project_config.gerrit_project
         _log.info(f'Identifying failures for {repo}@{import_rev} ({cl.url})')
         if self._bugs_already_filed(cl):
-            _log.info(f'Bugs have already been filed.')
+            _log.info('Bugs have already been filed.')
             return {}, cl
         wpt_start_rev, _ = self.latest_wpt_import(self.git, f'{import_rev}~1')
 
@@ -237,10 +237,10 @@ class ImportNotifier:
         # TODO(crbug.com/329869593): Consider notifying about any new failure
         # (as determined by subtest name), not just baselines with increasing
         # total failures.
-        is_error = lambda line: line.line_type is LineType.HARNESS_ERROR
+        is_error = lambda line: line.line_type is LineType.HARNESS_ERROR  # noqa: E731
         if sum(map(is_error, new_failures)) > sum(map(is_error, old_failures)):
             return True
-        is_subtest = lambda line: line.line_type is LineType.SUBTEST
+        is_subtest = lambda line: line.line_type is LineType.SUBTEST  # noqa: E731
         return sum(map(is_subtest, new_failures)) > sum(
             map(is_subtest, old_failures)
         )
@@ -357,7 +357,7 @@ class ImportNotifier:
                 imported_commits, full_directory
             )
             links_list = '\n[0]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_test_expectations.md\n'
-            dir_metadata_path = self.host.filesystem.join(
+            dir_metadata_path = self.host.filesystem.join(  # noqa: F841
                 directory, "DIR_METADATA"
             )
             epilogue = (

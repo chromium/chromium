@@ -23,7 +23,7 @@ def web_socket_do_extra_handshake(request):
 
 
 def web_socket_transfer_data(request):
-    line = request.ws_stream.receive_message()
+    line = request.ws_stream.receive_message()  # noqa: F841
     # Hello
     payload = b'\xf2\x48\xcd\xc9\xc9\x07\x00\x00\x00\xff\xff'
     # Strip \x00\x00\xff\xff

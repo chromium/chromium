@@ -149,7 +149,7 @@ class InFile(object):
             name, value = line.split('=')
         else:
             name, value = line, True
-        if not name in self.parameters:
+        if name not in self.parameters:
             self._fatal(
                 "Unknown parameter: '%s' in line:\n%s\nKnown parameters: %s"
                 % (name, line, self.parameters.keys())

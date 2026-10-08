@@ -294,11 +294,11 @@ class TestExporter:
             if self.create_draft_pr:
                 if self.dry_run:
                     _log.info(
-                        f'[dry_run] Would have marked PR with node ID '
+                        '[dry_run] Would have marked PR with node ID '
                         '{pull_request.node_id!r} as ready for review.'
                     )
                 else:
-                    pr_response = self.graphql.mark_ready_for_review(
+                    pr_response = self.graphql.mark_ready_for_review(  # noqa: F841
                         pull_request.node_id
                     )
                     _log.info(
@@ -362,7 +362,7 @@ class TestExporter:
 
         # This is outside of the try block because if there's a problem communicating
         # with the GitHub API, we should hard fail.
-        branch = self.github.get_pr_branch(pull_request.number)
+        branch = self.github.get_pr_branch(pull_request.number)  # noqa: F841
 
         try:
             self.github.merge_pr(pull_request.number)

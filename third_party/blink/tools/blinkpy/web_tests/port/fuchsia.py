@@ -35,7 +35,7 @@ import sys
 import threading
 import time
 
-from argparse import Namespace
+from argparse import Namespace  # noqa: F401
 from blinkpy.common import exit_codes
 from blinkpy.common.path_finder import WEB_TESTS_LAST_COMPONENT
 from blinkpy.common.path_finder import get_chromium_src_dir
@@ -53,9 +53,6 @@ def _import_fuchsia_runner():
         0, os.path.join(get_chromium_src_dir(), 'build/fuchsia/test')
     )
 
-    # pylint: disable=import-error
-    # pylint: disable=invalid-name
-    # pylint: disable=redefined-outer-name
     global \
         SDK_ROOT, \
         SDK_TOOLS_DIR, \
@@ -78,9 +75,6 @@ def _import_fuchsia_runner():
 
     global run_symbolizer
     from ffx_integration import run_symbolizer
-    # pylint: enable=import-error
-    # pylint: enable=invalid-name
-    # pylint: disable=redefined-outer-name
 
 
 # Path to the content shell package relative to the build directory.
@@ -224,7 +218,7 @@ class FuchsiaPort(base.Port):
             self._zircon_logger = SubprocessOutputLogger(
                 symbolized_klog_proc, 'Zircon'
             )
-        except:
+        except:  # noqa: E722
             return exit_codes.NO_DEVICES_EXIT_STATUS
 
     def clean_up_test_run(self):
@@ -391,7 +385,7 @@ class FuchsiaServerProcess(server_process.ServerProcess):
         # the socket as a pipe dup() the file descriptor and pass it to
         # os.fdopen().
         stdio_socket, _ = listen_socket.accept()
-        fd = stdio_socket.fileno()  # pylint: disable=no-member
+        fd = stdio_socket.fileno()
         stdin_pipe = os.fdopen(os.dup(fd), "wb", 0)
         stdout_pipe = os.fdopen(os.dup(fd), "rb", 0)
         stdio_socket.close()

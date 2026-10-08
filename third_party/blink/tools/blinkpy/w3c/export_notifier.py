@@ -15,7 +15,7 @@ import logging
 from typing import Mapping
 
 from blinkpy.w3c.common import CHANGE_ID_FOOTER, WPT_REVISION_FOOTER, WPT_GH_URL
-from blinkpy.w3c.gerrit import GerritCL, GerritError
+from blinkpy.w3c.gerrit import GerritCL, GerritError  # noqa: F401
 from blinkpy.w3c.wpt_github import GitHubError
 
 _log = logging.getLogger(__name__)

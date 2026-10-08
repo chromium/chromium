@@ -119,7 +119,7 @@ class BuilderList:
         is_cq=False,
         flag_specific=None,
     ):
-        _lower_specifiers = lambda specifiers: {s.lower() for s in specifiers}
+        _lower_specifiers = lambda specifiers: {s.lower() for s in specifiers}  # noqa: E731
         exclude_specifiers = _lower_specifiers(exclude_specifiers or {})
         include_specifiers = _lower_specifiers(include_specifiers or {})
         builders = []

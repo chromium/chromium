@@ -44,9 +44,9 @@ BLINK_TOOLS_PATH = os.path.abspath(
 if BLINK_TOOLS_PATH not in sys.path:
     sys.path.append(BLINK_TOOLS_PATH)
 
-from blinkpy.common.system.filesystem import FileSystem
-from blinkpy.common.system.log_utils import configure_logging
-from blinkpy.web_tests.port.base import ARTIFACTS_SUB_DIR
+from blinkpy.common.system.filesystem import FileSystem  # noqa: E402
+from blinkpy.common.system.log_utils import configure_logging  # noqa: E402
+from blinkpy.web_tests.port.base import ARTIFACTS_SUB_DIR  # noqa: E402
 
 _log = logging.getLogger(__name__)
 
@@ -129,7 +129,7 @@ class MergeFailure(Exception):
     def assert_type_eq(cls, name, objs):
         obj_0 = objs[0]
         for obj_n in objs[1:]:
-            if type(obj_0) != type(obj_n):
+            if type(obj_0) != type(obj_n):  # noqa: E721
                 raise cls("Types don't match", name, (obj_0, obj_n))
 
 
@@ -182,7 +182,7 @@ class JSONMerger(Merger):
                 raise MergeFailure("Unable to merge!", name, (obj_0, obj_n))
         return obj_0
 
-    def merge_listlike(self, lists, name=None):  # pylint: disable=unused-argument
+    def merge_listlike(self, lists, name=None):
         """Merge things which are "list like" (tuples, lists, sets)."""
         MergeFailure.assert_type_eq(name, lists)
         output = list(lists[0])
@@ -823,7 +823,7 @@ def mark_missing_shards(
         fs: filesystem object - MockFileSystem or FileSystem.
     """
     # summary.json is produced by swarming client.
-    if fs != None:
+    if fs != None:  # noqa: E711
         filesystem = fs
     else:
         filesystem = FileSystem()
@@ -831,7 +831,7 @@ def mark_missing_shards(
     try:
         with filesystem.open_binary_file_for_reading(summary_json) as f:
             summary = json.load(f)
-    except (IOError, ValueError) as e:
+    except (IOError, ValueError):
         raise MergeFailure(
             'summary_json is missing or can not be read', summary_json, None
         )

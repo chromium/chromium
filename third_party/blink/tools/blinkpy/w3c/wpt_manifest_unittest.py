@@ -209,7 +209,7 @@ class WPTManifestUnitTest(unittest.TestCase):
         host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'external/wpt/MANIFEST.json', manifest_json
         )
-        manifest = WPTManifest.from_file(
+        manifest = WPTManifest.from_file(  # noqa: F841
             host.port_factory.get(),
             MOCK_WEB_TESTS + 'external/wpt/MANIFEST.json',
         )

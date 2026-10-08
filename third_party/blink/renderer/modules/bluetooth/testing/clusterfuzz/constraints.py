@@ -15,7 +15,6 @@ import uuid
 # This script needs the utils.py and fuzzy_types.py modules in order
 # to work. This files are copied by the setup.py script and not checked-in
 # next to this code, so we need to disable the style warning.
-# pylint: disable=F0401
 from resources import utils
 from resources import fuzzy_types
 

@@ -69,7 +69,7 @@ from blinkpy.web_tests.models.typ_types import (
 )
 
 path_finder.bootstrap_wpt_imports()
-from wptrunner import wpttest
+from wptrunner import wpttest  # noqa: E402
 
 _log = logging.getLogger(__name__)
 _status_mapping = collections.OrderedDict(

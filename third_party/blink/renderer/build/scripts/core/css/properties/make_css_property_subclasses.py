@@ -44,11 +44,11 @@ class CSSPropertiesWriter(json5_generator.Writer):
 
         # Clean up all the files that were previously generated. This prevents
         # accidentally including a stale header in the future.
-        old_file = lambda prop: (
+        old_file = lambda prop: (  # noqa: E731
             prop.namespace_group.lower() + '/' + prop.name.to_snake_case()
         )
-        old_h = lambda prop: old_file(prop) + '.h'
-        old_cc = lambda prop: old_file(prop) + '.cc'
+        old_h = lambda prop: old_file(prop) + '.h'  # noqa: E731
+        old_cc = lambda prop: old_file(prop) + '.cc'  # noqa: E731
         self._cleanup |= set(map(old_h, all_properties))
         self._cleanup |= set(map(old_cc, all_properties))
 

@@ -37,7 +37,6 @@ import optparse
 import sys
 from concurrent.futures import ThreadPoolExecutor
 
-# pylint: disable=cyclic-import; `rebaseline_cl -> rebaseline` false positive
 from blinkpy.common.host import Host
 from blinkpy.tool.commands.analyze_baselines import AnalyzeBaselines
 from blinkpy.tool.commands.command import HelpPrintingOptionParser

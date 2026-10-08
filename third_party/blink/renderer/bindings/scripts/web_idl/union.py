@@ -142,10 +142,10 @@ class Union(
         WithComponent.__init__(self, sorted(components), readonly=True)
         WithDebugInfo.__init__(self)
 
-        sort_key_typename = lambda idl_type: (
+        sort_key_typename = lambda idl_type: (  # noqa: E731
             idl_type.type_name_with_extended_attribute_key_values
         )
-        sort_key_identifier = lambda x: x.identifier
+        sort_key_identifier = lambda x: x.identifier  # noqa: E731
 
         self._idl_types = tuple(ir.union_types)
         self._member_tokens = ir.token

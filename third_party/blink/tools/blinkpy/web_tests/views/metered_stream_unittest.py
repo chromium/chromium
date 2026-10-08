@@ -103,7 +103,7 @@ class RegularTest(unittest.TestCase):
         return self.stream.getvalue().splitlines()
 
     def test_log_after_update(self):
-        buflist = self._log_after_update()
+        buflist = self._log_after_update()  # noqa: F841
         self.assertEqual(self.stream.getvalue().splitlines(), ['foo', 'bar'])
 
     def test_log_args(self):

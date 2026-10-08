@@ -27,7 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import errno
-import fnmatch
+import fnmatch  # noqa: F401
 import hashlib
 import json
 import logging

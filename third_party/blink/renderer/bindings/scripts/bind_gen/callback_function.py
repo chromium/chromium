@@ -600,8 +600,8 @@ def make_invoke_and_catch_function(
         arg_name for arg_type, arg_name in arg_type_and_names
     ]
 
-    decls = SequenceNode()
-    defs = SequenceNode()
+    decls = SequenceNode()  # noqa: F841
+    defs = SequenceNode()  # noqa: F841
 
     func_def = CxxFuncDefNode(
         name=function_name,

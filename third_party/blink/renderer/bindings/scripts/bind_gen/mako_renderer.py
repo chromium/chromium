@@ -186,8 +186,8 @@ def _guess_caller_name(caller):
             for index, value in enumerate(caller.outer, 1):
                 if value is caller:
                     return "{}-of-{}-in-list".format(index, len(caller.outer))
-        except:
+        except:  # noqa: E722
             pass
         return "<no name>"
-    except:
+    except:  # noqa: E722
         return "<unknown>"

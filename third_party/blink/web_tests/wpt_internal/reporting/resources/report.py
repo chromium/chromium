@@ -79,11 +79,11 @@ def main(request, response):
     if request.method == 'GET':
         try:
             timeout = float(request.GET.first(b"timeout"))
-        except:
+        except:  # noqa: E722
             timeout = 0.5
         try:
             min_count = int(request.GET.first(b"min_count"))
-        except:
+        except:  # noqa: E722
             min_count = 1
         retain = b"retain" in request.GET
 

@@ -30,7 +30,7 @@
 import fnmatch
 import optparse
 import re
-import sys
+import sys  # noqa: F401
 from copy import deepcopy
 
 from blinkpy.common.path_finder import PathFinder

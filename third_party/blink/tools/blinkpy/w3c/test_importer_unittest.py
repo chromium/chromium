@@ -1168,7 +1168,7 @@ class TestImporterTest(LoggingTestCase):
 
         targets_list = ["test1", "# test3", "test4", "test5"]
         insert_key = "test2"
-        filter = lambda key: key.startswith("test")
+        filter = lambda key: key.startswith("test")  # noqa: E731, F841
 
         insert_index = test_importer.find_insert_index_ignore_comments(
             targets_list, insert_key

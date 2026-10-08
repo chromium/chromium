@@ -311,7 +311,7 @@ class TestImporter:
                     self.project_git.add_list([path])
 
                 self._generate_manifest()
-            except ParseError as e:
+            except ParseError:
                 raise
             finally:
                 message = 'Update test expectations and baselines.'
@@ -607,7 +607,7 @@ class TestImporter:
         first ensures if upstream deletes some files, we also delete them.
         """
         _log.info('Cleaning out tests from %s.', self.dest_path)
-        should_remove = lambda fs, dirname, basename: is_file_exportable(
+        should_remove = lambda fs, dirname, basename: is_file_exportable(  # noqa: E731
             fs.relpath(fs.join(dirname, basename), self.finder.chromium_base()),
             self.host.project_config,
         )
@@ -1049,7 +1049,7 @@ class TestImporter:
             _log.info("Added tests:\n" + "\n".join(added_tests))
             _log.info("Deleted tests:\n" + "\n".join(deleted_tests))
         else:
-            _log.info(f'No idlharness changes. Skipping testlist update.')
+            _log.info('No idlharness changes. Skipping testlist update.')
 
         with self.fs.open_text_file_for_reading(testlist_path) as f:
             testlist_lines = f.read().split("\n")

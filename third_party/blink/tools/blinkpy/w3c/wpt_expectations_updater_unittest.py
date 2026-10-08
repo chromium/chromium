@@ -213,7 +213,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         )
         host.filesystem.write_text_file(
             expectations_path,
-            textwrap.dedent(f"""\
+            textwrap.dedent("""\
                 # tags: [ Mac10.10 Mac10.11 Mac Trusty Precise Linux Win7 Win10 Win ]
                 # results: [ Pass Timeout ]
                 """),
@@ -1204,7 +1204,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
 
     def test_clean_up_affected_tests_arg_does_not_raise_exception(self):
         host = self.mock_host()
-        updater = WPTExpectationsUpdater(
+        updater = WPTExpectationsUpdater(  # noqa: F841
             host,
             ['--clean-up-affected-tests-only', '--clean-up-test-expectations'],
         )

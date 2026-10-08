@@ -136,7 +136,7 @@ def _get_map_likes(target_store):
     for interface in target_store.get(INTERFACES):
         if interface.maplike:
             map_likes.append(interface.maplike)
-    return iterables
+    return iterables  # noqa: F821
 
 
 def _get_namespaces(target_store):
@@ -170,7 +170,7 @@ def _get_set_likes(target_store):
     for interface in target_store.get(INTERFACES):
         if interface.setlike:
             set_likes.append(interface.setlike)
-    return iterables
+    return iterables  # noqa: F821
 
 
 """

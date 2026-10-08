@@ -8,7 +8,6 @@ import unittest
 from blinkpy.common.pretty_diff import BinaryHunk, DiffFile, DiffHunk
 
 # This test contains tests for protected methods.
-# pylint: disable=protected-access
 
 
 class TestFileDiff(unittest.TestCase):

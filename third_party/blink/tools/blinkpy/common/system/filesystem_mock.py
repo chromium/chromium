@@ -52,8 +52,6 @@ def _ensure_binary_contents(file_contents):
 
 
 class MockFileSystem(object):
-    # pylint: disable=unused-argument
-
     sep = '/'
     pardir = '..'
 
@@ -152,7 +150,7 @@ class MockFileSystem(object):
     def files_under(self, path, dirs_to_skip=None, file_filter=None):
         dirs_to_skip = dirs_to_skip or []
 
-        filter_all = lambda fs, dirpath, basename: True
+        filter_all = lambda fs, dirpath, basename: True  # noqa: E731
 
         file_filter = file_filter or filter_all
         files = []
@@ -198,7 +196,7 @@ class MockFileSystem(object):
         glob_string = glob_string.replace('/\\*\\*', '(|/.*)')
         glob_string = glob_string.replace('\\*', '[^\\/]*')
         glob_string = glob_string.replace('\\/', '/')
-        path_filter = lambda path: re.fullmatch(glob_string, path)
+        path_filter = lambda path: re.fullmatch(glob_string, path)  # noqa: E731
 
         # We could use fnmatch.fnmatch, but that might not do the right thing on Windows.
         existing_files = [
@@ -289,7 +287,7 @@ class MockFileSystem(object):
             return 0
         self._raise_not_found(path)
 
-    def mktemp(self, suffix='', prefix='tmp', dir=None, **_):  # pylint: disable=redefined-builtin
+    def mktemp(self, suffix='', prefix='tmp', dir=None, **_):
         if dir is None:
             dir = self.sep + '__im_tmp'
         curno = self.current_tmpno
@@ -302,7 +300,7 @@ class MockFileSystem(object):
             def __init__(self, fs, **kwargs):
                 self._kwargs = kwargs
                 self._filesystem = fs
-                self._directory_path = fs.mktemp(**kwargs)  # pylint: disable=protected-access
+                self._directory_path = fs.mktemp(**kwargs)
                 fs.maybe_make_directory(self._directory_path)
 
             def __str__(self):
@@ -589,7 +587,6 @@ class WriteThroughBinaryFile(io.BytesIO):
 
 
 class FileSystemTestCase(unittest.TestCase):
-    # pylint: disable=invalid-name
     # Use assertFilesAdded to be consistent with unittest.
 
     class _AssertFilesAddedContext(object):

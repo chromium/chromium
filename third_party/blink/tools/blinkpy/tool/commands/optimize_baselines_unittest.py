@@ -174,7 +174,7 @@ class TestOptimizeBaselines(BaseTestCase, LoggingTestCase):
             json.dumps({}),
         )
 
-        exit_code = self.command.check_arguments_and_execute(
+        exit_code = self.command.check_arguments_and_execute(  # noqa: F841
             optparse.Values(
                 {
                     'suffixes': ['txt', 'wav', 'png'],

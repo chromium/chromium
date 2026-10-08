@@ -29,7 +29,7 @@
 import base64
 import logging
 import re
-import shlex
+import shlex  # noqa: F401
 import time
 
 from blinkpy.common.system import path
@@ -612,7 +612,7 @@ class Driver(TestURIMapper):
         while (
             not server_process.timed_out
             and not server_process.has_crashed()
-            and not text in line.rstrip()
+            and text not in line.rstrip()
         ):
             output += line
             line = server_process.read_stdout_line(deadline)
@@ -859,7 +859,6 @@ class Driver(TestURIMapper):
                     _log.error(
                         'Last character read from DRT stdout line was not a newline!  This indicates either a NRWT or DRT bug.'
                     )
-                # pylint: disable=protected-access
                 content_length_before_header_check = block._content_length
                 self._process_stdout_line(block, out_line)
                 # FIXME: Unlike HTTP, DRT dumps the content right after printing a Content-Length header.

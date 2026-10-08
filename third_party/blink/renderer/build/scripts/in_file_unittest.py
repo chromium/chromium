@@ -82,10 +82,10 @@ name2
         in_files = ['some_sample_file.json']
         assertion_thrown = False
         try:
-            in_file = InFile.load_from_files(in_files, None, None, None)
+            in_file = InFile.load_from_files(in_files, None, None, None)  # noqa: F841
         except AssertionError:
             assertion_thrown = True
-        except:
+        except:  # noqa: E722
             pass
         self.assertTrue(assertion_thrown)
 

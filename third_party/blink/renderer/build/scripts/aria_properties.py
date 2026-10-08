@@ -11,7 +11,7 @@ PYJSON5_DIR = os.path.join(
 )
 sys.path.insert(0, PYJSON5_DIR)
 
-import json5  # pylint: disable=import-error
+import json5  # noqa: E402
 
 
 class ARIAReader(object):

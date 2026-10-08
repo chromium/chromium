@@ -270,7 +270,7 @@ class WPTExpectationsUpdater:
         completed_results, missing_results, final_results = [], [], []
         tests_to_rebaseline = set()
 
-        fetcher = self.host.results_fetcher
+        fetcher = self.host.results_fetcher  # noqa: F841
         incomplete_builds = GitCL.filter_incomplete(build_to_status)
         for build, job_status in build_to_status.items():
             for suite in self.suites_for_builder(build.builder_name):
@@ -623,7 +623,7 @@ class WPTExpectationsUpdater:
         """
         deleted_files = self._list_deleted_files()
         renamed_files = self._list_renamed_files()
-        modified_files = self._list_modified_files()
+        modified_files = self._list_modified_files()  # noqa: F841
 
         for path in self._test_expectations.expectations_dict:
             _log.info(
@@ -822,7 +822,7 @@ class WPTExpectationsUpdater:
 
     def can_rebaseline(self, result: WebTestResult) -> bool:
         """Checks if a test can be rebaselined."""
-        if not self.port.get_wpt_type(result.test_name()) in {
+        if self.port.get_wpt_type(result.test_name()) not in {
             'testharness',
             'wdspec',
         }:

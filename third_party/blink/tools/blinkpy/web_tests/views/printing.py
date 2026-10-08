@@ -30,7 +30,7 @@
 import argparse
 import logging
 import math
-import optparse
+import optparse  # noqa: F401
 
 from blinkpy.web_tests.models import test_expectations
 from blinkpy.web_tests.models.typ_types import ResultType

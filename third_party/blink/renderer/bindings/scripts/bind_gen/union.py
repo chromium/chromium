@@ -1041,7 +1041,7 @@ def make_direct_tov8_functions(cg_context):
         if member.is_null:
             continue
         traits_type = native_value_tag(member.idl_type)
-        arg_type = member.type_info.member_ref_t
+        arg_type = member.type_info.member_ref_t  # noqa: F841
         func_def = CxxFuncDefNode(
             "DirectToV8",
             arg_decls=[

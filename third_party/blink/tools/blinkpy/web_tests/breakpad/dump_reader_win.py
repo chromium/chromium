@@ -26,7 +26,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import errno
+import errno  # noqa: F401
 import logging
 import os
 
@@ -57,7 +57,7 @@ class DumpReaderWin(DumpReader):
 
     def _get_pid_from_dump(self, dump_file):
         with self._host.filesystem.open_text_file_for_reading(dump_file) as f:
-            crash_keys = dict([l.split(':', 1) for l in f.read().splitlines()])
+            crash_keys = dict([l.split(':', 1) for l in f.read().splitlines()])  # noqa: E741
             if 'pid' in crash_keys:
                 return crash_keys['pid']
         return None
@@ -75,7 +75,7 @@ class DumpReaderWin(DumpReader):
         ]
         try:
             stack = self._host.executive.run_command(cmd)
-        except:
+        except:  # noqa: E722
             _log.warning('Failed to execute "%s"', ' '.join(cmd))
         else:
             return stack
@@ -95,7 +95,7 @@ class DumpReaderWin(DumpReader):
         cdb = self._host.filesystem.join(self._build_dir, 'cdb', 'cdb.exe')
         try:
             _ = self._host.executive.run_command([cdb, '-version'])
-        except:
+        except:  # noqa: E722
             pass
         else:
             self._cdb_path = cdb

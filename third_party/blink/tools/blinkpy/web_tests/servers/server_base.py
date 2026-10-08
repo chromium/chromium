@@ -38,9 +38,7 @@ _log = logging.getLogger(__name__)
 
 # This module is dynamically imported when the WebTransport over HTTP/3 server
 # is enabled. It only works with python3.
-# pylint: disable=invalid-name
 webtransport_h3_server = None
-# pylint: enable=invalid-name
 
 
 def _is_webtransport_h3_server_running(port):
@@ -391,7 +389,7 @@ class ServerBase(object):
                     raise ServerError('Port %d is already in use.' % port)
                 elif self._platform.is_win() and error.errno in (
                     errno.WSAEACCES,
-                ):  # pylint: disable=no-member
+                ):
                     raise ServerError('Port %d is already in use.' % port)
                 else:
                     raise

@@ -48,7 +48,7 @@ def _RunBindingsTests(input_api, output_api):
     FILES_TO_SKIP = (r'.*\bv8[\\\/].*',)
 
     # Skip if nothing to do
-    source_filter = lambda x: input_api.FilterSourceFile(
+    source_filter = lambda x: input_api.FilterSourceFile(  # noqa: E731
         x,
         files_to_check=input_api.DEFAULT_FILES_TO_CHECK + FILES_TO_CHECK,
         files_to_skip=input_api.DEFAULT_FILES_TO_SKIP + FILES_TO_SKIP,

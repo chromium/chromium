@@ -21,7 +21,7 @@ PYJSON5_DIR = os.path.join(
     'src',
 )
 sys.path.append(PYJSON5_DIR)
-import json5
+import json5  # noqa: E402
 
 # Set to True to break all unknown orgs out using their domain name
 SPLIT_OTHERS = False

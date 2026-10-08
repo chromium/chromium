@@ -5,7 +5,7 @@
 import optparse
 import logging
 
-from blinkpy.common.system.platform_info_mock import MockPlatformInfo
+from blinkpy.common.system.platform_info_mock import MockPlatformInfo  # noqa: F401
 from blinkpy.web_tests.port import ios
 from blinkpy.web_tests.port import port_testcase
 
@@ -66,7 +66,7 @@ class IOSPortTest(port_testcase.PortTestCase):
 
     def test_path_to_apache_config_file(self):
         port = self.make_port()
-        port._apache_version = lambda: '2.4'  # pylint: disable=protected-access
+        port._apache_version = lambda: '2.4'
         self.assertEqual(
             port.path_to_apache_config_file(),
             '/mock-checkout/third_party/blink/tools/apache_config/apache2-httpd-2.4-php7.conf',

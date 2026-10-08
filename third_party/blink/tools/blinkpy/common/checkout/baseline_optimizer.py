@@ -466,7 +466,7 @@ class ResultDigest:
         if path is None:
             return cls(cls._IMPLICIT_EXTRA_RESULT, path, is_extra_result=True)
         assert fs.exists(path), f'{path!r} does not exist'
-        if path.endswith(f'.png') and is_reftest:
+        if path.endswith('.png') and is_reftest:
             return cls('', path, is_extra_result=True)
 
         with fs.open_binary_file_for_reading(path) as baseline_file:

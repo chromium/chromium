@@ -80,7 +80,7 @@ def _merge_doc(doc, doc2):
 
 
 def _is_valid(valid_values, value, valid_keys=None):
-    if type(value) == str and all([type(i) == str for i in valid_values]):
+    if type(value) == str and all([type(i) == str for i in valid_values]):  # noqa: E721
         return any(
             [
                 (value == valid)

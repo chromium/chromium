@@ -38,7 +38,7 @@ from blinkpy.web_tests.builder_list import BuilderList
     'blinkpy.common.net.rpc.BuildbucketClient.execute_batch', lambda self: []
 )
 class RebaselineCLTest(BaseTestCase, LoggingTestCase):
-    command_constructor = lambda self: RebaselineCL(MockBlinkTool())
+    command_constructor = lambda self: RebaselineCL(MockBlinkTool())  # noqa: E731
 
     def setUp(self):
         BaseTestCase.setUp(self)

@@ -28,7 +28,7 @@
 
 import hashlib
 import logging
-import re
+import re  # noqa: F401
 from typing import Optional
 
 from blinkpy.web_tests.port.base import FuzzyRange
@@ -149,7 +149,7 @@ class SingleTestRunner(object):
         # indicate problems found by a sanitizer (ASAN, LSAN, etc.), but we will report
         # on other crashes and timeouts as well.
         driver_output = self._driver.run_test(self._driver_input())
-        expected_driver_output = self._expected_driver_output()
+        expected_driver_output = self._expected_driver_output()  # noqa: F841
         failures = self._handle_error(driver_output)
         return self._build_test_result(driver_output, failures)
 

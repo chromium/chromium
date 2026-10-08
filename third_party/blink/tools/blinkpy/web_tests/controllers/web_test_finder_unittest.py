@@ -257,7 +257,7 @@ class WebTestFinderTests(unittest.TestCase):
         self.assertEqual(set(tests[1]), set(['fast/css/1.html']))
 
     def test_split_chunks(self):
-        split = web_test_finder.WebTestFinder._split_into_chunks  # pylint: disable=protected-access
+        split = web_test_finder.WebTestFinder._split_into_chunks
 
         tests = ['1', '2', '3', '4']
         self.assertEqual(['1', '2', '3', '4'], split(tests, 0, 1))

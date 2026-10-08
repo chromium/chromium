@@ -119,7 +119,6 @@ class Testprinter(unittest.TestCase):
     def test_print_config(self):
         printer, err = self.get_printer()
         # FIXME: Make it so these options don't have to be set directly.
-        # pylint: disable=protected-access
         printer._options.timeout_ms = 6000
         printer._options.slow_timeout_ms = 12000
         printer._options.order = 'random'

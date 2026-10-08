@@ -263,7 +263,7 @@ def redeem_request_from_string(s: str) -> RedeemRequest:
     decoded_bytes = base64_str_to_bytes(s)
     buf = DataBuffer(decoded_bytes)
 
-    token_len = buf.read_int(2)
+    token_len = buf.read_int(2)  # noqa: F841
     key_id = buf.read_int(4)
     nonce = buf.read_bytes(TRUST_TOKEN_NONCE_LEN)
 

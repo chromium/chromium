@@ -6,7 +6,7 @@
 import json
 import logging
 import socket
-import time
+import time  # noqa: F401
 
 from blinkpy.web_tests.port.tvos_simulator_server_process import (
     TVOSSimulatorServerProcess,

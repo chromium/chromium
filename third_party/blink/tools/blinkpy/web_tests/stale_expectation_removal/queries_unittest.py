@@ -6,13 +6,13 @@
 import datetime
 import os
 import unittest
-from unittest import mock
+from unittest import mock  # noqa: F401
 
 from blinkpy.web_tests.stale_expectation_removal import constants
 from blinkpy.web_tests.stale_expectation_removal import data_types
-from blinkpy.web_tests.stale_expectation_removal import queries
+from blinkpy.web_tests.stale_expectation_removal import queries  # noqa: F401
 from blinkpy.web_tests.stale_expectation_removal import unittest_utils as wt_uu
-from unexpected_passes_common import constants as common_constants
+from unexpected_passes_common import constants as common_constants  # noqa: F401
 from unexpected_passes_common import data_types as common_data_types
 from unexpected_passes_common import expectations as common_expectations
 from unexpected_passes_common import queries as common_queries

@@ -3455,7 +3455,7 @@ def main():
                 contents = f.read()
                 disallowed_identifiers = check(
                     path,
-                    [(i + 1, l) for i, l in enumerate(contents.splitlines())],
+                    [(i + 1, l) for i, l in enumerate(contents.splitlines())],  # noqa: E741
                 )
                 if disallowed_identifiers:
                     print('%s uses disallowed identifiers:' % path)

@@ -14,8 +14,8 @@ from abc import ABC, abstractmethod
 import struct
 from typing import Any, List, Union
 
-_as_bytes = lambda x: x if isinstance(x, bytes) else bytes(x, "utf-8")
-_strxor = lambda str1, str2: bytes(s1 ^ s2 for (s1, s2) in zip(str1, str2))
+_as_bytes = lambda x: x if isinstance(x, bytes) else bytes(x, "utf-8")  # noqa: E731
+_strxor = lambda str1, str2: bytes(s1 ^ s2 for (s1, s2) in zip(str1, str2))  # noqa: E731
 
 
 def to_hex(octet_string: Union[bytes, str]) -> str:
@@ -34,7 +34,7 @@ def to_hex(octet_string: Union[bytes, str]) -> str:
     if isinstance(octet_string, str):
         return "".join("{:02x}".format(ord(c)) for c in octet_string)
     if not isinstance(octet_string, bytes):
-        raise ValueError(f"Input must be a string or bytes.")
+        raise ValueError("Input must be a string or bytes.")
     return "".join("{:02x}".format(c) for c in octet_string)
 
 

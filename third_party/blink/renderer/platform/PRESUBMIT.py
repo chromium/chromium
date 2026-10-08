@@ -28,10 +28,8 @@ def RuntimeEnabledFeatures(input_api, filename):
         if json5_path not in sys.path:
             sys.path.insert(0, json5_path)
             path_added = True
-        # pylint: disable=import-outside-toplevel
         import json5
 
-        # pylint: enable=import-outside-toplevel
         with open(filename, encoding='utf-8') as f:
             return json5.load(f)['data']
     finally:

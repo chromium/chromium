@@ -151,7 +151,6 @@ class GlobalVariablesTest(unittest.TestCase):
 
     def defaults(self):
         # Access to a protected member _check_blink_style_defaults
-        # pylint: disable=W0212
         return style._check_blink_style_defaults()
 
     def test_blink_base_filter_rules(self):

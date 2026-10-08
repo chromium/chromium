@@ -4,8 +4,6 @@
 # found in the LICENSE file.
 #
 # Note: running this test requires installing the package python-mock.
-# pylint: disable=C0103
-# pylint: disable=F0401
 import PRESUBMIT
 
 import os.path
@@ -16,10 +14,10 @@ import unittest
 _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(_THIS_DIR, '..', '..'))
 
-import mock
-from PRESUBMIT_test_mocks import MockInputApi
-from PRESUBMIT_test_mocks import MockOutputApi
-from PRESUBMIT_test_mocks import MockAffectedFile
+import mock  # noqa: E402
+from PRESUBMIT_test_mocks import MockInputApi  # noqa: E402
+from PRESUBMIT_test_mocks import MockOutputApi  # noqa: E402
+from PRESUBMIT_test_mocks import MockAffectedFile  # noqa: E402
 
 
 class Capture(object):
@@ -36,9 +34,9 @@ class Capture(object):
 class PresubmitTest(unittest.TestCase):
     @mock.patch('subprocess.Popen')
     @mock.patch('PRESUBMIT_test_mocks.MockInputApi.RunTests', create=True)
-    @mock.patch('PRESUBMIT_test_mocks.MockCannedChecks.GetPylint', create=True)
+    @mock.patch('PRESUBMIT_test_mocks.MockCannedChecks.GetRuff', create=True)
     def testCheckChangeOnUploadWithBlinkAndChromiumFiles(
-        self, _, _run_tests, _get_pylint
+        self, _, _run_tests, _get_ruff
     ):
         """This verifies that CheckChangeOnUpload will only call
         check_blink_style.py on non-test files.
@@ -61,19 +59,13 @@ class PresubmitTest(unittest.TestCase):
             ]
         )
         # Access to a protected member _CheckStyle
-        # pylint: disable=W0212
         PRESUBMIT._CheckStyle(mock_input_api, MockOutputApi())
-        mock_input_api.canned_checks.GetPylint.assert_called_once_with(
+        mock_input_api.canned_checks.GetRuff.assert_called_once_with(
             mock.ANY,
             mock.ANY,
-            files_to_check=[r'file_blink\.py'],
-            pylintrc=mock_input_api.os_path.join(
-                'tools', 'blinkpy', 'pylintrc'
-            ),
         )
 
         capture = Capture()
-        # pylint: disable=E1101
         subprocess.Popen.assert_called_with(capture, stderr=-1)
         self.assertEqual(6, len(capture.value))
         self.assertEqual(
@@ -85,13 +77,12 @@ class PresubmitTest(unittest.TestCase):
         """This verifies that CheckChangeOnUpload will skip calling
         check_blink_style.py if the affected file list is empty.
         """
-        diff_file_chromium1_h = ['some diff']
-        diff_file_chromium2_h = ['another diff']
-        diff_file_layout_test_html = ['more diff']
+        diff_file_chromium1_h = ['some diff']  # noqa: F841
+        diff_file_chromium2_h = ['another diff']  # noqa: F841
+        diff_file_layout_test_html = ['more diff']  # noqa: F841
         mock_input_api = MockInputApi()
         mock_input_api.files = []
         # Access to a protected member _CheckStyle
-        # pylint: disable=W0212
         PRESUBMIT._CheckStyle(mock_input_api, MockOutputApi())
         self.assertEqual(0, subprocess.Popen.call_count)
 
@@ -143,7 +134,6 @@ class PresubmitTest(unittest.TestCase):
             ]
         )
         # Access to a protected member _CheckForWrongMojomIncludes
-        # pylint: disable=W0212
         errors = PRESUBMIT._CheckForWrongMojomIncludes(
             mock_input_api, MockOutputApi()
         )
@@ -176,7 +166,6 @@ class PresubmitTest(unittest.TestCase):
             ]
         )
         # Access to a protected member _CheckForWrongMojomIncludes
-        # pylint: disable=W0212
         errors = PRESUBMIT._CheckForWrongMojomIncludes(
             mock_input_api, MockOutputApi()
         )
@@ -209,7 +198,6 @@ class CxxDependencyTest(unittest.TestCase):
             ]
         )
         # Access to a protected member
-        # pylint: disable=W0212
         return PRESUBMIT._CheckForForbiddenChromiumCode(
             mock_input_api, MockOutputApi()
         )

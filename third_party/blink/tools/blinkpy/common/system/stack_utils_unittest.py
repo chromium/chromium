@@ -67,6 +67,6 @@ class StackUtilsTest(unittest.TestCase):
 
         try:
             raise ValueError
-        except:
+        except:  # noqa: E722
             stack_utils.log_traceback(logger, sys.exc_info()[2])
         self.assertTrue(msgs)

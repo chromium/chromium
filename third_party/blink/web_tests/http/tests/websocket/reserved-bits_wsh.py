@@ -17,7 +17,7 @@ def web_socket_do_extra_handshake(request):
         return
 
     global bit
-    compressed = match.group(1)
+    compressed = match.group(1)  # noqa: F841
     bit = int(match.group(2))
     request.ws_extension_processors = []  # using no extension response
 

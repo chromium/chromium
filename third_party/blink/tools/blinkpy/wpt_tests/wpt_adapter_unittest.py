@@ -244,7 +244,7 @@ class WPTAdapterTest(unittest.TestCase):
         )
         files_before = dict(self.fs.files)
         with self.assertRaises(KeyboardInterrupt):
-            with adapter.test_env() as options:
+            with adapter.test_env() as options:  # noqa: F841
                 raise KeyboardInterrupt
         # Remove deleted temporary files (represented with null contents).
         files = {

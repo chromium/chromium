@@ -8,3 +8,6 @@ extend-exclude = [
 
 [format]
 quote-style = "preserve"
+
+[lint]
+unfixable = ["F401"]

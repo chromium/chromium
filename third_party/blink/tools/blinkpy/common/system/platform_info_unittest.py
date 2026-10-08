@@ -43,7 +43,7 @@ def fake_sys(platform_str='darwin', windows_version_tuple=None):
         stdin = io.StringIO()
         platform = platform_str
         if windows_version_tuple:
-            getwindowsversion = lambda x: windows_version_tuple
+            getwindowsversion = lambda x: windows_version_tuple  # noqa: E731
 
     return FakeSysModule()
 

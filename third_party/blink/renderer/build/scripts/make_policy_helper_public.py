@@ -13,7 +13,7 @@ class PublicPermissionsPolicyFeatureWriter(json5_generator.Writer):
         super(PublicPermissionsPolicyFeatureWriter, self).__init__(
             json5_file_path, output_dir
         )
-        runtime_features = []
+        runtime_features = []  # noqa: F841
         permissions_policy_features = []
 
         for feature in self.json5_file.name_dictionaries:

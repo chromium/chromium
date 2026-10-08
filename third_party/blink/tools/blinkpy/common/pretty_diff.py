@@ -174,7 +174,7 @@ class DiffFile(object):
                 cgi.escape('\n'.join(self._info))
             )
         else:
-            old_binary, new_binary = self._binaries  # pylint: disable=unpacking-non-sequence
+            old_binary, new_binary = self._binaries
             if self._old_name and old_binary:
                 result_html += old_binary.prettify(
                     self._mime_from_name(self._old_name), 'del'

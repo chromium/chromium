@@ -90,7 +90,7 @@ class ExtendedAttributeDescriptor(object):
         return self._name
 
     def validate(self, assert_, target_object, ext_attr):
-        T = ExtendedAttributeDescriptor.Target
+        T = ExtendedAttributeDescriptor.Target  # noqa: F841
         F = ExtendedAttributeDescriptor.Form
 
         failure_count = [0]

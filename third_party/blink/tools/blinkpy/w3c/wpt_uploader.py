@@ -58,7 +58,6 @@ class WptReportUploader(object):
                     "Find latest completed build %d" % build.get("number")
                 )
 
-                # pylint: disable=unsubscriptable-object
                 urls = self._host.results_fetcher.fetch_wpt_report_urls(
                     build["id"]
                 )

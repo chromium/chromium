@@ -171,7 +171,7 @@ class CheckBlinkStyle(object):
 
         error_count = style_processor.error_count
         file_count = file_reader.file_count
-        delete_only_file_count = file_reader.delete_only_file_count
+        delete_only_file_count = file_reader.delete_only_file_count  # noqa: F841
 
         _log.info('Total errors found: %d in %d files', error_count, file_count)
         # We fail when style errors are found.

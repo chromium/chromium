@@ -119,7 +119,7 @@ def convert_trie_to_flat_paths(trie, prefix=None):
         if prefix:
             name = prefix + "/" + name
 
-        if len(data) and not "actual" in data and not "expected" in data:
+        if len(data) and "actual" not in data and "expected" not in data:
             result.update(convert_trie_to_flat_paths(data, name))
         else:
             result[name] = data

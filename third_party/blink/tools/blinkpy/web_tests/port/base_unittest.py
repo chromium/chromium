@@ -420,7 +420,6 @@ class PortTest(LoggingTestCase):
             '[{"name": "special-flag", "args": ["--special"]}]',
         )
 
-        # pylint: disable=protected-access
         port._options.additional_platform_directory = []
         port._options.additional_driver_flag = ['--flag-not-affecting']
         port._options.flag_specific = 'special-flag'
@@ -694,7 +693,7 @@ class PortTest(LoggingTestCase):
         test_file = 'fast/test.html'
 
         # Simple additional platform directory
-        port._options.additional_platform_directory = ['/tmp/local-baselines']  # pylint: disable=protected-access
+        port._options.additional_platform_directory = ['/tmp/local-baselines']
         self.assertEqual(port.baseline_version_dir(), '/tmp/local-baselines')
 
         self.assertEqual(
@@ -723,7 +722,7 @@ class PortTest(LoggingTestCase):
         )
 
         # Multiple additional platform directories
-        port._options.additional_platform_directory = [  # pylint: disable=protected-access
+        port._options.additional_platform_directory = [
             '/foo',
             '/tmp/local-baselines',
         ]
@@ -871,7 +870,6 @@ class PortTest(LoggingTestCase):
 
     def test_flag_specific_config_name_from_options(self):
         port_a = self.make_port(options=optparse.Values({}))
-        # pylint: disable=protected-access
         self.assertEqual(port_a._specified_additional_driver_flags(), [])
         self.assertIsNone(port_a.flag_specific_config_name())
 
@@ -896,7 +894,6 @@ class PortTest(LoggingTestCase):
 
         port_a = self.make_port(options=optparse.Values({}))
         port_a.host.filesystem.write_text_file(flag_file, '--aa')
-        # pylint: disable=protected-access
         self.assertEqual(port_a._specified_additional_driver_flags(), ['--aa'])
         # Additional driver flags don't affect flag_specific_config_name.
         self.assertIsNone(port_a.flag_specific_config_name())
@@ -938,7 +935,6 @@ class PortTest(LoggingTestCase):
     def test_flag_specific_option(self):
         port_a = self.make_port(options=optparse.Values({'flag_specific': 'a'}))
         self._write_flag_specific_config(port_a)
-        # pylint: disable=protected-access
         self.assertEqual(port_a.flag_specific_config_name(), 'a')
         self.assertEqual(port_a._specified_additional_driver_flags(), ['--aa'])
 
@@ -1030,7 +1026,6 @@ class PortTest(LoggingTestCase):
         self.assertEqual(tests, [])
 
     def test_update_manifest_once_by_default(self):
-        # pylint: disable=protected-access
         port = self.make_port(with_tests=True)
         port.wpt_manifest('external/wpt')
         port.wpt_manifest('external/wpt')
@@ -1038,7 +1033,6 @@ class PortTest(LoggingTestCase):
         self.assertEqual(len(port.host.executive.calls), 1)
 
     def test_no_manifest_update_with_existing_manifest(self):
-        # pylint: disable=protected-access
         port = self.make_port(with_tests=True)
         port.set_option_default('manifest_update', False)
         filesystem = port.host.filesystem
@@ -1052,7 +1046,6 @@ class PortTest(LoggingTestCase):
         self.assertEqual(len(port.host.executive.calls), 0)
 
     def test_no_manifest_update_without_existing_manifest(self):
-        # pylint: disable=protected-access
         port = self.make_port(with_tests=True)
         port.set_option_default('manifest_update', False)
 
@@ -2806,7 +2799,7 @@ class PortTest(LoggingTestCase):
             dir_name = '/tmp/layout-test-results' + '_' + str(x)
             self._make_fake_test_result(port.host, dir_name)
         port.limit_archived_results_count()
-        deleted_dir_count = 0
+        deleted_dir_count = 0  # noqa: F841
         for x in range(1, 6):
             dir_name = '/tmp/layout-test-results' + '_' + str(x)
             self.assertFalse(port.host.filesystem.exists(dir_name))
@@ -2817,20 +2810,20 @@ class PortTest(LoggingTestCase):
     def _assert_config_file_for_platform(self, port, platform, config_file):
         port.host.platform = MockPlatformInfo(os_name=platform)
         self.assertEqual(
-            port._apache_config_file_name_for_platform(),  # pylint: disable=protected-access
+            port._apache_config_file_name_for_platform(),
             config_file,
         )
 
     def _assert_config_file_for_linux(self, port, config_file):
         port.host.platform = MockPlatformInfo(os_name='linux')
         self.assertEqual(
-            port._apache_config_file_name_for_platform(),  # pylint: disable=protected-access
+            port._apache_config_file_name_for_platform(),
             config_file,
         )
 
     def test_apache_config_file_name_for_platform(self):
         port = self.make_port()
-        port._apache_version = lambda: '2.4'  # pylint: disable=protected-access
+        port._apache_version = lambda: '2.4'
         self._assert_config_file_for_platform(
             port, 'linux', 'apache2-httpd-2.4-php7.conf'
         )

@@ -552,7 +552,7 @@ class Git:
             ['log', commit + '..master', '--format=%H', '--reverse']
         ).split()
 
-    def git_commit_detail(self, commit, format=None):  # pylint: disable=redefined-builtin
+    def git_commit_detail(self, commit, format=None):
         args = ['log', '-1', commit]
         if format:
             args.append('--format=' + format)

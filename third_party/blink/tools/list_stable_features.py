@@ -19,7 +19,7 @@ from blinkpy.common.checkout.git import Git
 
 finder = path_finder.PathFinder(FileSystem())
 sys.path.append(finder.path_from_chromium_base('third_party', 'pyjson5', 'src'))
-import json5
+import json5  # noqa: E402
 
 
 def version_to_ints(version):
@@ -36,7 +36,7 @@ def list_milestone_tags(git):
             version = version_to_ints(line)
             major = version[0]
             if (
-                not major in milestones
+                major not in milestones
                 or version_to_ints(milestones[major]) < version
             ):
                 milestones[major] = line

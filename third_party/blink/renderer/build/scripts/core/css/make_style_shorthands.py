@@ -69,7 +69,7 @@ class Expansion(object):
 
     @property
     def enabled_longhands(self):
-        include = lambda longhand: (
+        include = lambda longhand: (  # noqa: E731
             not longhand.runtime_flag or self.is_enabled(longhand.runtime_flag)
         )
         return list(filter(include, self._longhands))

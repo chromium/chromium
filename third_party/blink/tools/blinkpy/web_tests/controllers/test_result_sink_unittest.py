@@ -12,7 +12,7 @@ from urllib.parse import urlparse
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.web_tests.controllers.test_result_sink import CreateTestResultSink
-from blinkpy.web_tests.controllers.test_result_sink import TestResultSink
+from blinkpy.web_tests.controllers.test_result_sink import TestResultSink  # noqa: F401
 from blinkpy.web_tests.models import test_failures, test_results
 from blinkpy.web_tests.models.typ_types import FailureReason, ResultType
 from blinkpy.web_tests.port.driver import DriverOutput

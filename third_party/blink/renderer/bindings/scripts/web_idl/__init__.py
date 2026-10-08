@@ -36,47 +36,47 @@ def _setup_sys_path():
 
 _setup_sys_path()
 
-from . import file_io
-from .argument import Argument
-from .ast_group import AstGroup
-from .async_iterator import AsyncIterator
-from .attribute import Attribute
-from .callback_function import CallbackFunction
-from .callback_interface import CallbackInterface
-from .composition_parts import Component
-from .composition_parts import DebugInfo
-from .composition_parts import Identifier
-from .constant import Constant
-from .constructor import Constructor
-from .constructor import ConstructorGroup
-from .database import Database
-from .database_builder import build_database
-from .dictionary import Dictionary
-from .dictionary import DictionaryMember
-from .enumeration import Enumeration
-from .exposure import Exposure
-from .extended_attribute import ExtendedAttribute
-from .extended_attribute import ExtendedAttributes
-from .function_like import FunctionLike
-from .function_like import OverloadGroup
-from .idl_type import IdlType
-from .interface import AsyncIterable
-from .interface import IndexedAndNamedProperties
-from .interface import Interface
-from .interface import Iterable
-from .interface import LegacyWindowAlias
-from .interface import Maplike
-from .interface import Setlike
-from .interface import Stringifier
-from .literal_constant import LiteralConstant
-from .namespace import Namespace
-from .observable_array import ObservableArray
-from .operation import Operation
-from .operation import OperationGroup
-from .runtime_enabled_features import RuntimeEnabledFeatures
-from .sync_iterator import SyncIterator
-from .typedef import Typedef
-from .union import Union
+from . import file_io  # noqa: E402, F401
+from .argument import Argument  # noqa: E402, F401
+from .ast_group import AstGroup  # noqa: E402, F401
+from .async_iterator import AsyncIterator  # noqa: E402, F401
+from .attribute import Attribute  # noqa: E402, F401
+from .callback_function import CallbackFunction  # noqa: E402, F401
+from .callback_interface import CallbackInterface  # noqa: E402, F401
+from .composition_parts import Component  # noqa: E402, F401
+from .composition_parts import DebugInfo  # noqa: E402, F401
+from .composition_parts import Identifier  # noqa: E402, F401
+from .constant import Constant  # noqa: E402, F401
+from .constructor import Constructor  # noqa: E402, F401
+from .constructor import ConstructorGroup  # noqa: E402, F401
+from .database import Database  # noqa: E402, F401
+from .database_builder import build_database  # noqa: E402, F401
+from .dictionary import Dictionary  # noqa: E402, F401
+from .dictionary import DictionaryMember  # noqa: E402, F401
+from .enumeration import Enumeration  # noqa: E402, F401
+from .exposure import Exposure  # noqa: E402, F401
+from .extended_attribute import ExtendedAttribute  # noqa: E402, F401
+from .extended_attribute import ExtendedAttributes  # noqa: E402, F401
+from .function_like import FunctionLike  # noqa: E402, F401
+from .function_like import OverloadGroup  # noqa: E402, F401
+from .idl_type import IdlType  # noqa: E402, F401
+from .interface import AsyncIterable  # noqa: E402, F401
+from .interface import IndexedAndNamedProperties  # noqa: E402, F401
+from .interface import Interface  # noqa: E402, F401
+from .interface import Iterable  # noqa: E402, F401
+from .interface import LegacyWindowAlias  # noqa: E402, F401
+from .interface import Maplike  # noqa: E402, F401
+from .interface import Setlike  # noqa: E402, F401
+from .interface import Stringifier  # noqa: E402, F401
+from .literal_constant import LiteralConstant  # noqa: E402, F401
+from .namespace import Namespace  # noqa: E402, F401
+from .observable_array import ObservableArray  # noqa: E402, F401
+from .operation import Operation  # noqa: E402, F401
+from .operation import OperationGroup  # noqa: E402, F401
+from .runtime_enabled_features import RuntimeEnabledFeatures  # noqa: E402
+from .sync_iterator import SyncIterator  # noqa: E402, F401
+from .typedef import Typedef  # noqa: E402, F401
+from .union import Union  # noqa: E402, F401
 
 
 def init(runtime_enabled_features_paths):

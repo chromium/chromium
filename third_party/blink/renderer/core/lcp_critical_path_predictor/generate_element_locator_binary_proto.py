@@ -26,7 +26,7 @@ sys.path.insert(
     ),
 )
 
-from binary_proto_generator import BinaryProtoGenerator
+from binary_proto_generator import BinaryProtoGenerator  # noqa: E402
 
 
 class ElementLocatorProtoGenerator(BinaryProtoGenerator):
@@ -36,9 +36,8 @@ class ElementLocatorProtoGenerator(BinaryProtoGenerator):
         globals()['element_locator_pb2'] = element_locator_pb2
 
     def EmptyProtoInstance(self):
-        # pylint: disable=undefined-variable
         # `element_locator_pb2` is placed directly in `globals()`
-        return element_locator_pb2.ElementLocator()
+        return element_locator_pb2.ElementLocator()  # noqa: F821
 
     def ProcessPb(self, opts, pb):
         binary_pb_str = pb.SerializeToString()

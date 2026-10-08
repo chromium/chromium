@@ -306,7 +306,7 @@ def bind_callback_local_vars(code_node, cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
     S = SymbolNode
-    T = TextNode
+    T = TextNode  # noqa: F841
     F = FormatNode
 
     local_vars = []
@@ -909,11 +909,11 @@ def bind_return_value(code_node, cg_context, overriding_args=None):
                 nodes.append(F("auto&& ${return_value} = {};", api_call))
                 if (
                     not cg_context.does_override_idl_return_type
-                    and not "PromiseIDLTypeMismatch"
-                    in cg_context.member_like.extended_attributes
+                    and "PromiseIDLTypeMismatch"
+                    not in cg_context.member_like.extended_attributes
                 ):
                     return_type = native_value_tag(cg_context.return_type)
-                    idl_return_type = cg_context.return_type
+                    idl_return_type = cg_context.return_type  # noqa: F841
                     nodes.append(
                         F(
                             "static_assert(bindings::IsReturnTypeCompatible<{}, std::remove_cvref_t<decltype(${return_value})>>, \"{}\");",
@@ -1443,7 +1443,7 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
         )
 
     # V8 specific optimization: BufferSource = ArrayBufferView or ArrayBuffer
-    is_typedef_name = lambda t, name: t.is_typedef and t.identifier == name
+    is_typedef_name = lambda t, name: t.is_typedef and t.identifier == name  # noqa: E731
     func_like = find(
         lambda t, u: is_typedef_name(t.unwrap(typedef=False), "BufferSource")
     )
@@ -1568,7 +1568,7 @@ def make_overload_dispatcher(cg_context):
 
     overload_group = cg_context.property_
     items = overload_group.effective_overload_set()
-    args_size = lambda item: len(item.type_list)
+    args_size = lambda item: len(item.type_list)  # noqa: E731
     items_grouped_by_arg_size = itertools.groupby(
         sorted(items, key=args_size, reverse=True), key=args_size
     )
@@ -1653,7 +1653,7 @@ def make_report_coop_access(cg_context):
     values = ext_attrs.values_of("CrossOrigin")
     if cg_context.attribute_get and not (not values or "Getter" in values):
         return None
-    elif cg_context.attribute_set and not ("Setter" in values):
+    elif cg_context.attribute_set and "Setter" not in values:
         return None
 
     return TextNode("${blink_receiver}->ReportCoopAccess(${property_name});")
@@ -2319,11 +2319,11 @@ def nadc_parameter_v8_type_and_symbol_node(
 def make_attribute_set_nadc_callback_def(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
-    if not "NoAllocDirectCall" in cg_context.attribute.extended_attributes:
+    if "NoAllocDirectCall" not in cg_context.attribute.extended_attributes:
         return None, None
     if (
-        not "Setter"
-        in cg_context.attribute.extended_attributes.get(
+        "Setter"
+        not in cg_context.attribute.extended_attributes.get(
             "NoAllocDirectCall"
         ).values
     ):
@@ -3882,7 +3882,7 @@ def make_indexed_property_iterable_to_list_callback(cg_context, function_name):
     )
     body = func_def.body
 
-    T = TextNode
+    T = TextNode  # noqa: F841
     F = FormatNode
 
     body.append(
@@ -6467,7 +6467,7 @@ def _make_install_prototype_object(cg_context):
         # Iff the interface has an unscopable member, then collect all
         # unscopable members including ones in inherited interfaces.
         # Otherwise, do not create an @@unscopables object.
-        is_unscopable = lambda member: (
+        is_unscopable = lambda member: (  # noqa: E731
             "Unscopable" in member.extended_attributes
         )
         unscopables.extend(filter(is_unscopable, interface.attributes))
@@ -7388,7 +7388,7 @@ def make_indexed_and_named_property_callbacks_and_install_node(cg_context):
             func_defs.append(EmptyNode())
 
     def most_derived_interface(*interfaces):
-        key = lambda interface: len(interface.inclusive_inherited_interfaces)
+        key = lambda interface: len(interface.inclusive_inherited_interfaces)  # noqa: E731
         return sorted(filter(None, interfaces), key=key)[-1]
 
     interface.enable_index_of = (
@@ -8784,9 +8784,9 @@ def generate_class_like(
     supplemental_install_node.append(EmptyNode())
 
     # Installer functions
-    is_unconditional = lambda entry: entry.exposure_conditional.is_always_true
-    is_context_dependent = lambda entry: entry.is_context_dependent
-    is_context_independent = lambda e: (
+    is_unconditional = lambda entry: entry.exposure_conditional.is_always_true  # noqa: E731
+    is_context_dependent = lambda entry: entry.is_context_dependent  # noqa: E731
+    is_context_independent = lambda e: (  # noqa: E731
         not is_context_dependent(e) and not is_unconditional(e)
     )
     (
