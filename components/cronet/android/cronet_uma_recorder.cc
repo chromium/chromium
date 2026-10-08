@@ -38,16 +38,22 @@ void CronetUmaCallback(std::string_view histogram_name,
 }
 
 struct SampledMetric final {
-  uint64_t hash;
+  // Nullopt when the token is "*".
+  std::optional<uint64_t> hash;
   double sampling_rate;
 };
 
 SampledMetric ParseAllowlistToken(std::string_view token) {
   const auto token_parts = base::SplitStringOnce(token, ':');
-  uint64_t hash;
-  CHECK(base::StringToUint64(
-      token_parts.has_value() ? token_parts->first : token, &hash))
-      << "Failed to parse name hash: " << token;
+  const std::string_view target =
+      token_parts.has_value() ? token_parts->first : token;
+  std::optional<uint64_t> hash;
+  if (target != "*") {
+    uint64_t parsed_hash;
+    CHECK(base::StringToUint64(target, &parsed_hash))
+        << "Failed to parse name hash: " << token;
+    hash = parsed_hash;
+  }
 
   double rate = 1.0;
   if (token_parts.has_value()) {
@@ -56,22 +62,6 @@ SampledMetric ParseAllowlistToken(std::string_view token) {
         << "Failed to parse filter rate (0.0-1.0): " << token;
   }
   return {.hash = hash, .sampling_rate = rate};
-}
-
-std::optional<absl::flat_hash_map<uint64_t, double>> ParseAllowlistWithRate(
-    const std::string& allowlist) {
-  if (allowlist == "*") {
-    return std::nullopt;
-  }
-
-  absl::flat_hash_map<uint64_t, double> allowed_hashes_with_rate;
-  const std::vector<std::string_view> tokens = base::SplitStringPiece(
-      allowlist, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  for (const auto& token : tokens) {
-    const auto metric = ParseAllowlistToken(token);
-    allowed_hashes_with_rate.insert({metric.hash, metric.sampling_rate});
-  }
-  return allowed_hashes_with_rate;
 }
 }  // namespace
 
@@ -104,17 +94,32 @@ CronetUmaRecorder& CronetUmaRecorder::GetInstance() {
 }
 
 CronetUmaRecorder::CronetUmaRecorder(base::PassKey<CronetUmaRecorder>,
-                                     const std::string& allowlist)
-    : allowed_name_hashes_with_rate_(ParseAllowlistWithRate(allowlist)) {}
+                                     const std::string& allowlist) {
+  bool wildcard_seen = false;
+  const std::vector<std::string_view> tokens = base::SplitStringPiece(
+      allowlist, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  for (const auto& token : tokens) {
+    const auto metric = ParseAllowlistToken(token);
+    if (metric.hash.has_value()) {
+      allowed_name_hashes_with_rate_.insert(
+          {*metric.hash, metric.sampling_rate});
+    } else {
+      CHECK(!wildcard_seen)
+          << "\"*\" must appear at most once in the allowlist: " << allowlist;
+      wildcard_seen = true;
+      all_non_declared_hashes_probability_ = metric.sampling_rate;
+    }
+  }
+}
 
 CronetUmaRecorder::~CronetUmaRecorder() = default;
 
 bool CronetUmaRecorder::IsHashAllowed(uint64_t name_hash) const {
-  if (!allowed_name_hashes_with_rate_.has_value()) {
-    return true;
-  }
-  auto it = allowed_name_hashes_with_rate_->find(name_hash);
-  if (it == allowed_name_hashes_with_rate_->end()) {
+  auto it = allowed_name_hashes_with_rate_.find(name_hash);
+  const double sampling_rate = it != allowed_name_hashes_with_rate_.end()
+                                   ? it->second
+                                   : all_non_declared_hashes_probability_;
+  if (sampling_rate == 0.0) {
     return false;
   }
   // We use base::ShouldRecordSubsampledMetric for filtering because it is
@@ -122,7 +127,7 @@ bool CronetUmaRecorder::IsHashAllowed(uint64_t name_hash) const {
   // XorShift128+), which takes ~2ns per call to generate a random number,
   // compared to ~800ns for cryptographically secure generators like
   // base::RandDouble().
-  return base::ShouldRecordSubsampledMetric(it->second);
+  return base::ShouldRecordSubsampledMetric(sampling_rate);
 }
 
 void CronetUmaRecorder::AddSample(uint64_t name_hash, int32_t value) {

@@ -29,15 +29,13 @@ class CronetUmaRecorder final {
   // Must be called exactly once at startup (typically from JNI InitNative).
   //
   // The `allowlist` parameter specifies which UMA histograms are allowed to be
-  // recorded. Format options:
-  // 1. "*" : Allows all histograms (disables filtering).
-  // 2. "hash1:rate1,hash2:rate2,..." : A comma-separated list of decimal
-  // uint64_t name hashes, optionally followed by a colon and a double
-  // filtering rate between 0.0 and 1.0.
-  // Only histograms whose name hashes match the list will be recorded,
-  // sampled at the specified rate. In the absence of a rate, 1.0 (100%) is
-  // assumed.
-  // Example: "2937041049411630354:0.5,8946698020320526722"
+  // recorded. Format: "hash1:rate1,hash2:rate2,..." : A comma-separated list
+  // of decimal uint64_t name hashes, optionally followed by a colon and a
+  // double filtering rate between 0.0 and 1.0. "*" may be used in place of a
+  // hash to match all histograms not explicitly listed.
+  // Only histograms matching the list will be recorded, sampled at the
+  // specified rate. In the absence of a rate, 1.0 (100%) is assumed.
+  // Example: "*:0.01,2937041049411630354:0.5,8946698020320526722"
   static void InitializeWithAllowlist(const std::string& allowlist);
 
   // Must be called after Initialize.
@@ -63,9 +61,13 @@ class CronetUmaRecorder final {
   bool IsHashAllowed(uint64_t name_hash) const;
 
   // UMA filter allowlist mapping name hashes to filtering rates (in
-  // [0.0, 1.0]). If nullopt, all hashes are allowed with rate 1.0.
-  const std::optional<absl::flat_hash_map<uint64_t, double>>
-      allowed_name_hashes_with_rate_;
+  // [0.0, 1.0]).
+  absl::flat_hash_map<uint64_t, double> allowed_name_hashes_with_rate_;
+
+  // Filtering rate (in [0.0, 1.0]) applied to name hashes not present in
+  // `allowed_name_hashes_with_rate_`, as configured via "*" in the allowlist.
+  // Defaults to 0.0 (not recorded) when "*" is absent.
+  double all_non_declared_hashes_probability_ = 0.0;
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_ =
       base::ThreadPool::CreateSequencedTaskRunner(

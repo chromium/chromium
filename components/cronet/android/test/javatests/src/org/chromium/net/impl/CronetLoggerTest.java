@@ -963,7 +963,7 @@ public final class CronetLoggerTest {
         final long allowedHash = 2937041049411630354L;
 
         final String filteredHistogram = "Test.Cronet.Uma2";
-        final long filteredHash = 7019680913562261270L;
+        final long filteredHash = -5922953903820684402L;
 
         // Trigger both histograms.
         CronetUmaRecorder.triggerUmaHistogramForTesting(allowedHistogram, 42);
@@ -1045,7 +1045,7 @@ public final class CronetLoggerTest {
         final long allowedHash2 = 8946698020320526722L;
 
         final String filteredHistogram = "Test.Cronet.Uma3";
-        final long filteredHash = 7019680913562261270L;
+        final long filteredHash = -3222861928807346624L;
 
         CronetUmaRecorder.triggerUmaHistogramForTesting(allowedHistogram1, 42);
         CronetUmaRecorder.triggerUmaHistogramForTesting(allowedHistogram2, 43);
@@ -1103,6 +1103,54 @@ public final class CronetLoggerTest {
         // Rounding outward to integers guarantees > 99.9999% probability of falling in [195, 305].
         assertThat(samples.size()).isAtLeast(195);
         assertThat(samples.size()).isAtMost(305);
+    }
+
+    @Test
+    @SmallTest
+    @Flags(
+            stringFlags = {
+                @StringFlag(name = CronetLibraryLoader.CRONET_UMA_ALLOWLIST_FLAG, value = "*:0.5")
+            })
+    public void testCronetUmaLoggingWildcardWithRate() throws Exception {
+        mTestRule.getTestFramework().startEngine();
+
+        mTestLogger.clearUmaSamples();
+
+        final long hash = 2937041049411630354L;
+        for (int i = 0; i < 500; i++) {
+            CronetUmaRecorder.triggerUmaHistogramForTesting("Test.Cronet.Uma", i);
+        }
+
+        // Same bounds as testCronetUmaLoggingWithRateSubsampled.
+        waitForUmaSamples(hash, 195);
+        Thread.sleep(1000);
+        assertThat(getMatchingSamples(hash).size()).isAtMost(305);
+    }
+
+    @Test
+    @SmallTest
+    @Flags(
+            stringFlags = {
+                @StringFlag(
+                        name = CronetLibraryLoader.CRONET_UMA_ALLOWLIST_FLAG,
+                        value = "*,2937041049411630354:0.0")
+            })
+    public void testCronetUmaLoggingWildcardWithSpecificOverride() throws Exception {
+        mTestRule.getTestFramework().startEngine();
+
+        mTestLogger.clearUmaSamples();
+
+        final long overriddenHash = 2937041049411630354L;
+        final long wildcardHash = -5922953903820684402L;
+
+        // Trigger the overridden histogram first: samples are processed in FIFO
+        // order, so once the wildcard sample arrives the overridden one would
+        // already have been logged if it had been (incorrectly) allowed.
+        CronetUmaRecorder.triggerUmaHistogramForTesting("Test.Cronet.Uma", 42);
+        CronetUmaRecorder.triggerUmaHistogramForTesting("Test.Cronet.Uma2", 43);
+
+        waitForUmaSamples(wildcardHash, 1);
+        assertThat(getMatchingSamples(overriddenHash)).isEmpty();
     }
 
     @Test
