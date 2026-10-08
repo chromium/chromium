@@ -758,10 +758,9 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
   //
   bool enable_depth_texture = false;
   GLenum depth_texture_format = GL_NONE;
-  if (!workarounds_.disable_depth_texture &&
-      (gfx::HasExtension(extensions, "GL_OES_depth_texture") ||
-       gfx::HasExtension(extensions, "GL_ANGLE_depth_texture"))) {
-    // Note that we don't expose depth_texture extenion on top of ES3 if
+  if (gfx::HasExtension(extensions, "GL_OES_depth_texture") ||
+      gfx::HasExtension(extensions, "GL_ANGLE_depth_texture")) {
+    // Note that we don't expose depth_texture extension on top of ES3 if
     // the depth_texture extension isn't exposed by the ES3 driver.
     // This is because depth textures are filterable under linear mode in
     // ES2 + extension, but not in core ES3.

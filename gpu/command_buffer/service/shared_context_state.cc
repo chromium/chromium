@@ -1346,7 +1346,6 @@ void SharedContextState::RestoreBufferBindings() const {
 
 void SharedContextState::RestoreFramebufferBindings() const {
   PessimisticallyResetGrContext();
-  context_state_->fbo_binding_for_scissor_workaround_dirty = true;
   context_state_->stencil_state_changed_since_validation = true;
 }
 

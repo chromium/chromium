@@ -401,7 +401,6 @@ struct GPU_GLES2_EXPORT ContextState {
   bool pack_reverse_row_order = false;
   bool ignore_cached_state = false;
 
-  mutable bool fbo_binding_for_scissor_workaround_dirty = false;
   mutable bool stencil_state_changed_since_validation = true;
 
   GLuint current_draw_framebuffer_client_id = 0;

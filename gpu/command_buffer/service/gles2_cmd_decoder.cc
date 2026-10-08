@@ -811,7 +811,6 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
   // Workarounds
   void OnFboChanged() const;
   void ApplyRecreateFboWorkaroundIfNeeded() const;
-  void OnUseFramebuffer() const;
   void UpdateFramebufferSRGB(Framebuffer* framebuffer);
 
   // TODO(gman): Cache these pointers?
@@ -923,10 +922,6 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
   // Get the service side ID for the bound read framebuffer.
   // If it's back buffer, 0 is returned.
   GLuint GetBoundReadFramebufferServiceId();
-
-  // Get the service side ID for the bound draw framebuffer.
-  // If it's back buffer, 0 is returned.
-  GLuint GetBoundDrawFramebufferServiceId() const;
 
   // Get the format/type of the currently bound frame buffer (either FBO or
   // regular back buffer).
@@ -4346,9 +4341,6 @@ bool GLES2DecoderImpl::CheckBoundDrawFramebufferValid(
     }
   }
 
-  if (!SupportsSeparateFramebufferBinds())
-    OnUseFramebuffer();
-
   UpdateFramebufferSRGB(framebuffer);
   return true;
 }
@@ -4424,20 +4416,6 @@ GLuint GLES2DecoderImpl::GetBoundReadFramebufferServiceId() {
   Framebuffer* framebuffer = GetBoundReadFramebuffer();
   if (framebuffer) {
     return framebuffer->service_id();
-  }
-  if (surface_.get()) {
-    return surface_->GetBackingFramebufferObject();
-  }
-  return 0;
-}
-
-GLuint GLES2DecoderImpl::GetBoundDrawFramebufferServiceId() const {
-  Framebuffer* framebuffer = GetBoundDrawFramebuffer();
-  if (framebuffer) {
-    return framebuffer->service_id();
-  }
-  if (offscreen_target_frame_buffer_.get()) {
-    return offscreen_target_frame_buffer_->id();
   }
   if (surface_.get()) {
     return surface_->GetBackingFramebufferObject();
@@ -5478,35 +5456,7 @@ void GLES2DecoderImpl::ApplyRecreateFboWorkaroundIfNeeded() const {
 }
 
 void GLES2DecoderImpl::OnFboChanged() const {
-  state_.fbo_binding_for_scissor_workaround_dirty = true;
   state_.stencil_state_changed_since_validation = true;
-}
-
-// Called after the FBO is checked for completeness.
-void GLES2DecoderImpl::OnUseFramebuffer() const {
-  if (!state_.fbo_binding_for_scissor_workaround_dirty)
-    return;
-  state_.fbo_binding_for_scissor_workaround_dirty = false;
-
-  if (workarounds().force_update_scissor_state_when_binding_fbo0 &&
-      GetBoundDrawFramebufferServiceId() == 0) {
-    // The theory is that FBO0 keeps some internal (in HW regs maybe?) scissor
-    // test state, but the driver forgets to update it with GL_SCISSOR_TEST
-    // when FBO0 gets bound. (So it stuck with whatever state we last switched
-    // from it.)
-    // If the internal scissor test state was enabled, it does update its
-    // internal scissor rect with GL_SCISSOR_BOX though.
-    if (state_.enable_flags.cached_scissor_test) {
-      // The driver early outs if the new state matches previous state so some
-      // shake up is needed.
-      api()->glDisableFn(GL_SCISSOR_TEST);
-      api()->glEnableFn(GL_SCISSOR_TEST);
-    } else {
-      // Ditto.
-      api()->glEnableFn(GL_SCISSOR_TEST);
-      api()->glDisableFn(GL_SCISSOR_TEST);
-    }
-  }
 }
 
 void GLES2DecoderImpl::DoBindFramebuffer(GLenum target, GLuint client_id) {
