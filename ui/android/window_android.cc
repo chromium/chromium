@@ -12,6 +12,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -404,9 +405,8 @@ void WindowAndroid::ReleasePointerLock(ViewAndroid& view_android) {
 }
 
 void WindowAndroid::OnWindowPointerLockRelease(JNIEnv* env) {
-  DCHECK(pointer_locking_view_);
-  pointer_locking_view_->OnPointerLockRelease();
-  pointer_locking_view_ = nullptr;
+  CHECK(pointer_locking_view_);
+  std::exchange(pointer_locking_view_, nullptr)->OnPointerLockRelease();
 }
 
 void WindowAndroid::OnWindowPositionChanged(JNIEnv* env) {
