@@ -191,6 +191,10 @@ const char* ErrorPanelTypeToHistogramSuffix(mojom::ErrorPanelType error_type) {
   }
 }
 
+bool ShouldDisableLoadingOverlay() {
+  return base::FeatureList::IsEnabled(features::kGlicSsr);
+}
+
 }  // namespace
 
 class GlicNoWebviewContentsManager::Metrics {
@@ -416,10 +420,10 @@ GlicNoWebviewContentsManager::OverlayContentsManager::DetermineOverlayState(
     return mojom::OverlayState::NewError(*error_type);
   }
 
-  // Input 2: Guest presentation. When the guest is ready, or displaying a login
-  // or in-page error page, the guest WebContents is shown and no overlay is
-  // needed.
-  if (guest_state != GuestState::kLoading) {
+  // Input 2: Guest presentation. When the guest is ready, displaying a login
+  // or in-page error page, or when the loading overlay is disabled, the guest
+  // WebContents is shown and no overlay is needed.
+  if (guest_state != GuestState::kLoading || ShouldDisableLoadingOverlay()) {
     return nullptr;
   }
 
@@ -813,7 +817,8 @@ GlicNoWebviewContentsManager::CalculateDesiredState() const {
   if (overlay_manager_.error_type().has_value()) {
     return DisplayState::kShowingOverlay;
   }
-  if (guest_state_.get() != GuestState::kLoading) {
+  if (guest_state_.get() != GuestState::kLoading ||
+      ShouldDisableLoadingOverlay()) {
     return DisplayState::kShowingGuest;
   }
   return DisplayState::kShowingOverlay;
@@ -1016,6 +1021,10 @@ void GlicNoWebviewContentsManager::TransitionTo(DisplayState next_state) {
     case DisplayState::kShowingGuest:
       CancelOverlayDeletion();
       NotifyWebContentsChanged();
+      // Stop the timer so UpdateLoadingTimer() restarts it from zero if the
+      // guest is still loading (e.g. under kGlicSsr), granting the full visible
+      // loading duration.
+      loading_timer_.Stop();
       // Destroy the loading overlay once the guest is ready and swapped.
       ScheduleOverlayDeletion(base::Milliseconds(0));
       break;

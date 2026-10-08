@@ -1300,4 +1300,39 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
   histogram_tester.ExpectTotalCount("Glic.Contents.LoadCompleteTime", 1);
 }
 
+class GlicNoWebviewSsrOverlayBrowserTest
+    : public GlicNoWebviewOverlayBrowserTest {
+ public:
+  GlicNoWebviewSsrOverlayBrowserTest() {
+    ssr_feature_list_.InitAndEnableFeature(features::kGlicSsr);
+  }
+
+ private:
+  base::test::ScopedFeatureList ssr_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewSsrOverlayBrowserTest,
+                       BypassesLoadingOverlayButShowsErrorPanels) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+
+  // Even while the guest is still loading (/title1.html does not bootstrap the
+  // Glic client), kGlicSsr mounts the guest WebContents directly without
+  // showing the loading overlay.
+  EXPECT_EQ(manager->guest_state().get(),
+            GlicNoWebviewContentsManager::GuestState::kLoading);
+  EXPECT_EQ(manager->state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingGuest);
+  EXPECT_EQ(manager->active_web_contents(), manager->guest_contents());
+  EXPECT_FALSE(manager->GetOverlayStateForTesting());
+
+  // Error overlays still take precedence when an error occurs.
+  InvalidateAccount(GetProfile());
+  ASSERT_OK(WaitForErrorPanelType(mojom::ErrorPanelType::kSignIn));
+  EXPECT_EQ(manager->state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingOverlay);
+  EXPECT_EQ(manager->active_web_contents(), manager->overlay_contents());
+}
+
 }  // namespace glic

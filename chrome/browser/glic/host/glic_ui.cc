@@ -347,7 +347,8 @@ GlicUI::GlicUI(content::WebUI* web_ui)
                      base::FeatureList::IsEnabled(features::kGlicDebugWebview));
 
   source->AddBoolean(
-      "noLoader", base::FeatureList::IsEnabled(features::kGlicNoWebUiLoader));
+      "noLoader", base::FeatureList::IsEnabled(features::kGlicNoWebUiLoader) ||
+                      base::FeatureList::IsEnabled(features::kGlicSsr));
 
   source->AddBoolean("enableWebClientUnresponsiveMetrics",
                      base::FeatureList::IsEnabled(
