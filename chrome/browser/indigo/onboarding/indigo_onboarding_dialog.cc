@@ -188,6 +188,7 @@ IndigoOnboardingDialog::IndigoOnboardingDialog(
   view_observation_.Observe(web_view.get());
 
   delegate_ = std::make_unique<views::DialogDelegate>();
+  delegate_->SetInitiallyFocusedView(web_view.get());
   delegate_->SetContentsView(std::move(web_view));
   delegate_->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   delegate_->SetShowCloseButton(false);
@@ -210,6 +211,7 @@ IndigoOnboardingDialog::IndigoOnboardingDialog(
 
   auto params = std::make_unique<tabs::TabDialogManager::Params>();
   tab_dialog_manager->ShowDialog(widget_.get(), std::move(params));
+  web_view_ptr->RequestFocus();
 }
 
 IndigoOnboardingDialog::~IndigoOnboardingDialog() {
