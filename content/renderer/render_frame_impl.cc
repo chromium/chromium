@@ -35,7 +35,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/process/process.h"
@@ -2537,15 +2536,11 @@ void RenderFrameImpl::NotifyResourceResponseReceived(
     network::mojom::URLResponseHeadPtr response_head,
     network::mojom::RequestDestination request_destination,
     bool is_ad_resource) {
-  if (!blink::IsRequestDestinationFrame(request_destination)) {
-    bool notify = ShouldNotifySubresourceResponseStarted(
-        GetWebView()->GetRendererPreferences());
-    UMA_HISTOGRAM_BOOLEAN(
-        "Renderer.ReduceSubresourceResponseIPC.DidNotifyBrowser", notify);
-    if (notify) {
-      GetFrameHost()->SubresourceResponseStarted(final_response_url,
-                                                 response_head->cert_status);
-    }
+  if (!blink::IsRequestDestinationFrame(request_destination) &&
+      ShouldNotifySubresourceResponseStarted(
+          GetWebView()->GetRendererPreferences())) {
+    GetFrameHost()->SubresourceResponseStarted(final_response_url,
+                                               response_head->cert_status);
   }
   DidStartResponse(final_response_url, request_id, std::move(response_head),
                    request_destination, is_ad_resource);
