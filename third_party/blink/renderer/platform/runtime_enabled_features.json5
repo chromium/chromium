@@ -3869,9 +3869,9 @@
       status: "stable",
     },
     {
-      // See crbug.com/40910996
+      // See crbug.com/40910996 crbug.com/569803503
       name: "InlineContainingBlockSkipOpaque",
-      status: "stable",
+      status: "test",
     },
     {
       name: "InlineCursorSkipNonIfc",
