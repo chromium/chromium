@@ -1588,16 +1588,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.PreMainMessageLoopRunImplLongTime" units="ms"
-    expires_after="2025-09-14">
-  <owner>rkaplow@chromium.org</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    The amount of time that elapsed during
-    ChromeBrowserMainParts::PreMainMessageLoopRunImpl.
-  </summary>
-</histogram>
-
 <histogram
     name="Startup.Renderer.LoadTime.ApplicationStartToRendererStartRunLoop"
     units="ms" expires_after="2027-04-04">
