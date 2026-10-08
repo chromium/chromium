@@ -27,7 +27,6 @@
 #include "base/strings/string_view_util.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/printscanmgr/printscanmgr_client.h"
-#include "chromeos/dbus/common/dbus_library_error.h"
 #include "chromeos/printing/ppd_line_reader.h"
 #include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_configuration.h"

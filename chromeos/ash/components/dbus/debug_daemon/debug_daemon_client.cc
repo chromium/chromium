@@ -37,7 +37,6 @@
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/metrics.h"
-#include "chromeos/dbus/common/dbus_library_error.h"
 #include "chromeos/dbus/common/pipe_reader.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
