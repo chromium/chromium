@@ -6124,15 +6124,6 @@
     "expiry_milestone": 152
   },
   {
-    "name": "hide-aim-omnibox-entrypoint-on-user-input",
-    "owners": [
-      "hannahrogers@chromium.org",
-      "jdonnelly@chromium.org",
-      "khalidpeer@chromium.org",
-      "chrome-desktop-search@google.com"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "hide-fusebox-voice-lens-actions",
     "owners": [
     "stkhapugin@chromium.org", "bling-flags@google.com"],

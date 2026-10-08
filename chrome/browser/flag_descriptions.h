@@ -2979,11 +2979,6 @@ inline constexpr char kHeavyAdPrivacyMitigationsDescription[] =
     "Enables privacy mitigations for the heavy ad intervention. Disabling "
     "this makes the intervention deterministic. Defaults to enabled.";
 
-inline constexpr char kHideAimOmniboxEntrypointOnUserInputName[] =
-    "AI Entrypoint Disabled on User Input";
-inline constexpr char kHideAimOmniboxEntrypointOnUserInputDescription[] =
-    "Hide the Omnibox entrypoint for AI Mode while user is typing.";
-
 inline constexpr char kHistoryEmbeddingsName[] = "History Embeddings";
 inline constexpr char kHistoryEmbeddingsDescription[] =
     "When enabled, the history embeddings feature may operate.";

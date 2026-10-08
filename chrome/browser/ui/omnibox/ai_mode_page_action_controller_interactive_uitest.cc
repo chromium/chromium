@@ -96,8 +96,7 @@ class AiModePageActionControllerInteractiveUiTest
     features_.InitWithFeaturesAndParameters(
         /*enabled_features*/ {{omnibox::internal::kWebUIOmniboxPopup, {}},
                               {omnibox::internal::kWebUIOmniboxAimPopup, {}}},
-        /*disabled_features*/ {kHideAimEntrypointOnUserInput,
-                               kHideAimEntrypointForUrlSuggestions});
+        /*disabled_features*/ {kHideAimEntrypointForUrlSuggestions});
   }
 
   InteractiveTestApi::MultiStep OpenTabWithPageUrlAndFocusOmnibox(
@@ -216,35 +215,6 @@ IN_PROC_BROWSER_TEST_F(AiModePageActionControllerInteractiveUiTest,
                     chrome::ToggleShowAiModeOmniboxButton(browser());
                   })),
                   CheckChipVisible(/*visible=*/false));
-}
-
-class AiModePageActionControllerHideEntryPointOnEditInteractiveUiTest
-    : public AiModePageActionControllerInteractiveUiTest {
- protected:
-  void InitializeFeatures() override {
-    features_.InitWithFeaturesAndParameters(
-        /*enabled_features*/ {{kHideAimEntrypointOnUserInput, {}},
-                              {omnibox::internal::kWebUIOmniboxPopup, {}},
-                              {omnibox::internal::kWebUIOmniboxAimPopup, {}}},
-        /*disabled_features*/ {});
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(
-    AiModePageActionControllerHideEntryPointOnEditInteractiveUiTest,
-    HiddenWhileEditingOmnibox) {
-  RunTestSequence(OpenTabWithPageUrlAndFocusOmnibox(),
-                  OpenOmniboxPopupByTypingASingleZero(),
-                  CheckChipVisible(/*visible=*/false));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    AiModePageActionControllerHideEntryPointOnEditInteractiveUiTest,
-    VisibleWhileNotEditingOmnibox) {
-  RunTestSequence(OpenTabWithPageUrlAndFocusOmnibox(),
-                  OpenOmniboxPopupByTypingASingleZero(),
-                  SendKeyPress(GetTargetElementId(), ui::VKEY_BACK),
-                  CheckChipVisible(/*visible=*/true));
 }
 
 class AiModePageActionControllerHideEntryPointForUrlInteractiveUiTest

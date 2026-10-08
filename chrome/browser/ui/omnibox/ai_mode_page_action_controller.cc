@@ -211,13 +211,6 @@ bool AiModePageActionController::ShouldShowPageAction(
     return false;
   }
 
-  // If the feature is enabled to hide the AIM entrypoint on user input, don't
-  // show the AIM entrypoint if the user typed text is non-empty.
-  if (base::FeatureList::IsEnabled(omnibox::kHideAimEntrypointOnUserInput) &&
-      !edit_model->user_text().empty()) {
-    return false;
-  }
-
   if (omnibox::kShowRhsAimHint.Get()) {
     return false;
   }

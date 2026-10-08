@@ -187,12 +187,6 @@ BASE_FEATURE(kDynamicAimSubmit, DISABLED);
 const base::FeatureParam<bool> kShowRhsAimHint{&kDynamicAimSubmit,
                                                "Omnibox_ShowRhsAimHint", false};
 
-// Hides the AIM entrypoint in the Omnibox when user input is in progress. Only
-// used on desktop platforms.
-BASE_FEATURE(kHideAimEntrypointOnUserInput,
-             "OmniboxHideAimEntrypointOnUserInput",
-             DISABLED);
-
 // Hides the AIM entrypoint in the Omnibox when the default suggestion is a URL.
 // Only used on desktop platforms.
 BASE_FEATURE(kHideAimEntrypointForUrlSuggestions, ENABLED);

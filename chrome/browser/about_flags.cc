@@ -6709,11 +6709,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensOverlayOmniboxEntryPointDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensOverlayOmniboxEntryPoint)},
 
-    {"hide-aim-omnibox-entrypoint-on-user-input",
-     flag_descriptions::kHideAimOmniboxEntrypointOnUserInputName,
-     flag_descriptions::kHideAimOmniboxEntrypointOnUserInputDescription,
-     kOsDesktop, FEATURE_VALUE_TYPE(omnibox::kHideAimEntrypointOnUserInput)},
-
     {"omnibox-allow-ai-mode-matches",
      flag_descriptions::kOmniboxAllowAiModeMatchesName,
      flag_descriptions::kOmniboxAllowAiModeMatchesDescription, kOsDesktop,
