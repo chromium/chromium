@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -43,6 +44,7 @@ import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.tabs.TabAlert;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -55,6 +57,8 @@ public abstract class ReorderStrategyTestBase {
     protected static final int TAB_WIDTH = 50;
     protected static final float EFFECTIVE_TAB_WIDTH =
             TAB_WIDTH - StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
+    protected static final int EFFECTIVE_PINNED_TAB_WIDTH =
+            (int) (StripLayoutUtils.PINNED_TAB_WIDTH_DP - StripLayoutUtils.TAB_OVERLAP_WIDTH_DP);
     protected static final PointF DRAG_START_POINT = new PointF(70f, 20f);
 
     protected static final Token GROUP_ID1 = new Token(/* high= */ 1L, /* low= */ 1L);
@@ -89,6 +93,13 @@ public abstract class ReorderStrategyTestBase {
     protected StripLayoutTab[] mStripTabs = new StripLayoutTab[0];
     protected StripLayoutGroupTitle[] mGroupTitles = new StripLayoutGroupTitle[0];
     protected StripLayoutView[] mStripViews = new StripLayoutView[0];
+    protected StripLayoutTab mPinnedTab1;
+    protected StripLayoutTab mPinnedTab2;
+    protected StripLayoutTab mUngroupedTab;
+    protected StripLayoutGroupTitle mGroupTitle1;
+    protected StripLayoutGroupTitle mGroupTitle2;
+    protected StripLayoutView[] mExpandedGroup;
+    protected StripLayoutView[] mCollapsedGroup;
 
     protected StripLayoutTab mInteractingTab;
     protected StripLayoutGroupTitle mInteractingGroupTitle;
@@ -136,6 +147,79 @@ public abstract class ReorderStrategyTestBase {
                         /* alertState= */ TabAlert.NONE);
         setDrawProperties(tab, x);
         return tab;
+    }
+
+    protected StripLayoutTab buildPinnedStripTab(int id, int x) {
+        StripLayoutTab tab = buildStripTab(id, x);
+        tab.setIsPinned(true);
+        tab.setWidth(StripLayoutUtils.PINNED_TAB_WIDTH_DP);
+        Tab modelTab = mModel.getTabById(id);
+        if (modelTab != null) {
+            modelTab.setIsPinned(true);
+        }
+        return tab;
+    }
+
+    /**
+     * Sets up a strip layout with pinned tabs at the front:
+     * [Pinned1][Pinned2][Unpinned][ExpandedGroup][CollapsedGroup][LastTab]
+     */
+    protected void setupStripViewsWithPinnedTabs() {
+        // Reset mModel and clear group state on the 6 existing tabs.
+        reset(mModel);
+        when(mModel.getTabUngrouper()).thenReturn(mTabUnGrouper);
+        for (int id : TAB_IDS) {
+            mModel.getTabById(id).setTabGroupId(null);
+        }
+        mModel.setIndex(0, TabSelectionType.FROM_USER);
+
+        int pinnedEffectiveWidth = EFFECTIVE_PINNED_TAB_WIDTH;
+        mPinnedTab1 = buildPinnedStripTab(TAB_ID1, /* x= */ 0);
+        mPinnedTab2 = buildPinnedStripTab(TAB_ID2, pinnedEffectiveWidth);
+
+        int startX = 2 * pinnedEffectiveWidth;
+        List<StripLayoutView> viewsList = new ArrayList<>();
+        List<StripLayoutTab> tabsList = new ArrayList<>();
+        List<StripLayoutGroupTitle> titlesList = new ArrayList<>();
+
+        viewsList.add(mPinnedTab1);
+        viewsList.add(mPinnedTab2);
+        tabsList.add(mPinnedTab1);
+        tabsList.add(mPinnedTab2);
+
+        mUngroupedTab = buildStripTab(TAB_ID3, startX);
+        viewsList.add(mUngroupedTab);
+        tabsList.add(mUngroupedTab);
+        startX += TAB_WIDTH;
+
+        mGroupTitle1 = buildGroupTitle(GROUP_ID1, startX);
+        StripLayoutTab groupTab1 = buildStripTab(TAB_ID4, startX + TAB_WIDTH);
+        mockTabGroup(GROUP_ID1, mModel.getTabById(TAB_ID4));
+        mGroupTitle1.setBottomIndicatorWidth(2 * TAB_WIDTH);
+        mExpandedGroup = new StripLayoutView[] {mGroupTitle1, groupTab1};
+        viewsList.add(mGroupTitle1);
+        viewsList.add(groupTab1);
+        titlesList.add(mGroupTitle1);
+        tabsList.add(groupTab1);
+
+        mGroupTitle2 = buildGroupTitle(GROUP_ID2, startX + 2 * TAB_WIDTH);
+        StripLayoutTab groupTab2 = buildStripTab(TAB_ID5, startX + 3 * TAB_WIDTH);
+        mockTabGroup(GROUP_ID2, mModel.getTabById(TAB_ID5));
+        mGroupTitle2.setCollapsed(true);
+        groupTab2.setCollapsed(true);
+        mCollapsedGroup = new StripLayoutView[] {mGroupTitle2, groupTab2};
+        viewsList.add(mGroupTitle2);
+        viewsList.add(groupTab2);
+        titlesList.add(mGroupTitle2);
+        tabsList.add(groupTab2);
+
+        StripLayoutTab lastTab = buildStripTab(TAB_ID6, startX + 4 * TAB_WIDTH);
+        viewsList.add(lastTab);
+        tabsList.add(lastTab);
+
+        mStripViews = viewsList.toArray(new StripLayoutView[0]);
+        mStripTabs = tabsList.toArray(new StripLayoutTab[0]);
+        mGroupTitles = titlesList.toArray(new StripLayoutGroupTitle[0]);
     }
 
     private void setDrawProperties(StripLayoutView view, int x) {
