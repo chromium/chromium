@@ -803,6 +803,11 @@ inline constexpr char kEnableLensOnIPadName[] = "Enable Lens on iPad";
 inline constexpr char kEnableLensOnIPadDescription[] =
     "When enabled, enables Lens Viewfinder entry points on iPad.";
 
+inline constexpr char kEnableLensViewFinderUnifiedExperienceName[] =
+    "Enable LVF Unified Experience";
+inline constexpr char kEnableLensViewFinderUnifiedExperienceDescription[] =
+    "Enables Lens View Finder unified experience";
+
 inline constexpr char kEnableNewStartupFlowName[] = "EnableNewStartupFlow";
 inline constexpr char kEnableNewStartupFlowDescription[] =
     "Enables the EnableNewStartupFlow feature.";
