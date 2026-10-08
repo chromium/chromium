@@ -23,6 +23,8 @@ class OriginGatingServiceFactory;
 
 class OriginGatingService : public KeyedService {
  public:
+  OriginGatingService() = delete;
+  explicit OriginGatingService(base::PassKey<OriginGatingService>);
   explicit OriginGatingService(base::PassKey<OriginGatingServiceFactory>);
   OriginGatingService(const OriginGatingService&) = delete;
   OriginGatingService& operator=(const OriginGatingService&) = delete;
@@ -52,8 +54,6 @@ class OriginGatingService : public KeyedService {
   void Shutdown() override;
 
  private:
-  OriginGatingService();
-
   CheckerId::Generator id_generator_;
 
   absl::flat_hash_map<CheckerId, std::unique_ptr<OriginGatingChecker>>
