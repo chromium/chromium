@@ -1202,10 +1202,14 @@ import java.util.function.Supplier;
     private void launchDrivePicker(Profile profile) {
         long startTime = TimeUtils.elapsedRealtimeMillis();
         DriveFilePickerClient.getInstance()
-                .launchPicker(mWindowAndroid, profile, /* mimeTypes= */ null)
+                .launchPicker(
+                        mWindowAndroid,
+                        profile,
+                        /* mimeTypes= */ null,
+                        /* allowMultiSelect= */ true)
                 .then(
-                        metadata -> {
-                            if (metadata == null) {
+                        files -> {
+                            if (files.isEmpty()) {
                                 FuseboxMetrics.recordDrivePickerOutcome(
                                         MobileFuseboxPickerOutcome.MANUAL_USER_EXIT);
                                 handlePickerCanceled();
@@ -1215,16 +1219,19 @@ import java.util.function.Supplier;
 
                             FuseboxMetrics.recordDrivePickerOutcome(
                                     MobileFuseboxPickerOutcome.ATTACHMENT_ADDED);
-                            FuseboxMetrics.recordDriveDocumentType(
-                                    metadata.mimeType, metadata.title);
-
-                            var attachment =
-                                    FuseboxAttachment.forDrive(
-                                            mContext,
-                                            metadata,
-                                            startTime,
-                                            FuseboxAttachmentButtonType.DRIVE_FILES);
-                            uploadAndAddAttachment(attachment);
+                            try (var batchToken = mModelList.beginBatchEdit()) {
+                                for (var metadata : files) {
+                                    if (mModelList.getRemainingAttachments() == 0) break;
+                                    FuseboxMetrics.recordDriveDocumentType(
+                                            metadata.mimeType, metadata.title);
+                                    uploadAndAddAttachment(
+                                            FuseboxAttachment.forDrive(
+                                                    mContext,
+                                                    metadata,
+                                                    startTime,
+                                                    FuseboxAttachmentButtonType.DRIVE_FILES));
+                                }
+                            }
                         },
                         exception -> {
                             FuseboxMetrics.recordDrivePickerOutcome(

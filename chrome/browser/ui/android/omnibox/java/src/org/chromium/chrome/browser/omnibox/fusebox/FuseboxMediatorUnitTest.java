@@ -376,9 +376,9 @@ public class FuseboxMediatorUnitTest {
         TabLoadingService.setInstanceForTesting(mTabLoadingService);
         lenient().doReturn(true).when(mDriveFilePickerClient).isAvailable(any(), any());
         lenient()
-                .doReturn(Promise.fulfilled(null))
+                .doReturn(Promise.fulfilled(List.of()))
                 .when(mDriveFilePickerClient)
-                .launchPicker(any(), any(), any());
+                .launchPicker(any(), any(), any(), anyBoolean());
         DriveDisclaimerBridgeJni.setInstanceForTesting(mDriveDisclaimerBridgeNatives);
 
         mInputStateSupplier.set(DEFAULT_INPUT_STATE);
@@ -1560,9 +1560,9 @@ public class FuseboxMediatorUnitTest {
                         /* resourceKey= */ null,
                         "Test Doc",
                         DriveIconUtils.MIME_TYPE_GOOGLE_DOCS);
-        doReturn(Promise.fulfilled(metadata))
+        doReturn(Promise.fulfilled(List.of(metadata)))
                 .when(mDriveFilePickerClient)
-                .launchPicker(mWindowAndroid, mProfile, null);
+                .launchPicker(mWindowAndroid, mProfile, null, true);
         doReturn("token123")
                 .when(mComposeboxQueryControllerBridge)
                 .addDriveFile("drive_id", null, "Test Doc", DriveIconUtils.MIME_TYPE_GOOGLE_DOCS);
@@ -1573,6 +1573,29 @@ public class FuseboxMediatorUnitTest {
         assertTrue(mModel.get(FuseboxProperties.ATTACHMENTS_VISIBLE));
         assertEquals(1, mAttachments.size());
         assertEquals("Test Doc", mAttachments.get(0).title);
+    }
+
+    @Test
+    public void onDrivePickerClicked_pickerMultipleFiles_attachesAllInOrder() {
+        setDriveConsentStatus(DisclaimerStatus.ACCEPTED);
+        var first = new DriveAttachmentMetadata("id_1", null, "Doc 1", "application/pdf");
+        var second = new DriveAttachmentMetadata("id_2", null, "Doc 2", "application/pdf");
+        doReturn(Promise.fulfilled(List.of(first, second)))
+                .when(mDriveFilePickerClient)
+                .launchPicker(mWindowAndroid, mProfile, null, true);
+        doReturn("token1")
+                .when(mComposeboxQueryControllerBridge)
+                .addDriveFile(eq("id_1"), any(), any(), any());
+        doReturn("token2")
+                .when(mComposeboxQueryControllerBridge)
+                .addDriveFile(eq("id_2"), any(), any(), any());
+
+        mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_CLICKED).run();
+        ShadowLooper.idleMainLooper();
+
+        assertEquals(2, mAttachments.size());
+        assertEquals("Doc 1", mAttachments.get(0).title);
+        assertEquals("Doc 2", mAttachments.get(1).title);
     }
 
     @Test
@@ -1595,7 +1618,7 @@ public class FuseboxMediatorUnitTest {
 
         mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_CLICKED).run();
 
-        verify(mDriveFilePickerClient, never()).launchPicker(any(), any(), any());
+        verify(mDriveFilePickerClient, never()).launchPicker(any(), any(), any(), anyBoolean());
     }
 
     @Test
@@ -1604,7 +1627,7 @@ public class FuseboxMediatorUnitTest {
 
         mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_CLICKED).run();
 
-        verify(mDriveFilePickerClient, never()).launchPicker(any(), any(), any());
+        verify(mDriveFilePickerClient, never()).launchPicker(any(), any(), any(), anyBoolean());
     }
 
     @Test
