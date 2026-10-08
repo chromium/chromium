@@ -1616,9 +1616,7 @@ class ExtensionUpdaterTest : public testing::Test {
     TestingProfile profile;
     // TODO(crbug.com/396722906): Delete this when CrxInstaller no longer has
     // dependencies on ExtensionService.
-    static_cast<TestExtensionSystem*>(ExtensionSystem::Get(&profile))
-        ->CreateExtensionService(base::CommandLine::ForCurrentProcess(),
-                                 base::FilePath(), false);
+    static_cast<TestExtensionSystem*>(ExtensionSystem::Get(&profile))->Init();
     scoped_refptr<MockCrxInstaller> mock_installer =
         base::MakeRefCounted<MockCrxInstaller>(&profile);
 
